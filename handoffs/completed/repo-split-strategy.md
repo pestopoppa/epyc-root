@@ -2,7 +2,7 @@
 
 **Created**: 2026-02-20
 **Last Updated**: 2026-02-25
-**Status**: PHASE 3 COMPLETE — Phase 4 next
+**Status**: ALL PHASES COMPLETE
 **Priority**: High — prerequisite for FOSS release and maintainability
 **Scope Note**: Includes pre-split root workload infra optimization for Claude Code/Codex governance workflows. Excludes orchestrator runtime/inference optimization changes.
 **Supersedes**: `handoffs/active/open_source_orchestrator.md` (stub)
@@ -1034,22 +1034,31 @@ Section 10 is complete when:
 8. ~~Embedded git repos~~: Removed .git dirs from research/eagle-official, frspec/FR-Spec, specmquant/SpecMQuant (committed as plain files)
 9. ~~Pushed~~: `pestopoppa/epyc-inference-research` main branch
 
-### Phase 4: Create epyc-root (umbrella + governance)
+### Phase 4: Create epyc-root (umbrella + governance) — COMPLETE
 
-1. Fresh repo with structure from §3
-2. Copy governance files per migration map (hooks, skills, validation, agents, handoffs, progress, logs)
-3. Write `CLAUDE.md`, `SPEC.md`, `dependency-map.json`
-4. Create `scripts/setup.sh` and `scripts/clone-repos.sh`
-5. Create `.claude/settings.json` with cross-repo hooks
-6. Port all finalized Phase 0.x docs and contracts into root
-7. Test: `./scripts/setup.sh` from scratch clones all child repos and orchestrator runs
-8. Push to `pestopoppa/epyc-root`
+**Goal**: Governance and cross-repo coordination has a home.
+**Completed**: 2026-02-25 | **Repo**: https://github.com/pestopoppa/epyc-root
 
-### Phase 5: Deprecate monorepo
+1. ~~Fresh repo~~: 274 files, 4.2MB total (lean governance, no application code)
+2. ~~Governance files~~: `.claude/` (settings, skills, commands), `agents/`, `handoffs/`, `progress/`, orchestration governance (BLOCKED_TASKS, progress reports, template)
+3. ~~Scripts~~: hooks (7), validate (7+config), nightshift (5), session (9), system (2), utils (agent_log.sh, agent_log_analyze.sh)
+4. ~~Docs~~: guides/agent-workflows, recovery, reference/agent-config, constants-governance.md
+5. ~~CLAUDE.md~~: Cross-repo coordination guide (repo map, dependency edges, governance infra, handoff workflow)
+6. ~~SPEC.md~~: Operational specification (logging, hooks, permissions, cross-repo coordination)
+7. ~~README.md~~: Setup instructions, repo map, dependency graph
+8. ~~`dependency-map.json`~~: 4 formal coupling edges between repos
+9. ~~`scripts/setup.sh` + `clone-repos.sh`~~: Clone all child repos, install orchestrator, verify llama.cpp
+10. ~~Logs~~: Agent audit trail + canvases (not server runtime logs)
+11. ~~Pushed~~: `pestopoppa/epyc-root` main branch
 
-1. Update `amd-epyc-inference` README: "This repo has been split. See epyc-root."
-2. Archive the repo (GitHub archive feature)
-3. Do NOT delete — preserve as historical reference
+### Phase 5: Deprecate monorepo — COMPLETE
+
+**Goal**: Redirect users to new repos, preserve history.
+**Completed**: 2026-02-25
+
+1. ~~Updated README~~: Redirect with repo table, quick start, rationale (via GitHub API, commit `10aa388`)
+2. ~~Archived~~: `pestopoppa/amd-epyc-inference` set to read-only via GitHub API
+3. ~~Preserved~~: All commit history intact, not deleted
 
 ---
 
