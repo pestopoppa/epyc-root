@@ -1,0 +1,401 @@
+{
+  "nodes": [
+    {
+      "id": "layer_infra",
+      "type": "group",
+      "x": 0,
+      "y": 0,
+      "width": 1400,
+      "height": 200,
+      "label": "Infrastructure Layer (Servers)"
+    },
+    {
+      "id": "layer_core",
+      "type": "group",
+      "x": 0,
+      "y": 240,
+      "width": 1400,
+      "height": 200,
+      "label": "Core Orchestration"
+    },
+    {
+      "id": "layer_memory",
+      "type": "group",
+      "x": 0,
+      "y": 480,
+      "width": 1400,
+      "height": 200,
+      "label": "Memory Systems (MemRL)"
+    },
+    {
+      "id": "layer_tools",
+      "type": "group",
+      "x": 0,
+      "y": 720,
+      "width": 1400,
+      "height": 160,
+      "label": "Tool & Plugin Layer"
+    },
+    {
+      "id": "orchestrator_api",
+      "type": "text",
+      "x": 40,
+      "y": 40,
+      "width": 160,
+      "height": 80,
+      "text": "**Orchestrator API**\n:8000 (FastAPI)\nEntry point for all requests",
+      "color": "1"
+    },
+    {
+      "id": "frontdoor",
+      "type": "text",
+      "x": 220,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Frontdoor**\n:8080\nQwen3-Coder-30B\nMoE6 → 18 t/s",
+      "color": "4"
+    },
+    {
+      "id": "coder_esc",
+      "type": "text",
+      "x": 380,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Coder Escalation**\n:8081\nQwen2.5-Coder-32B\nSpec+Lookup → 39 t/s",
+      "color": "4"
+    },
+    {
+      "id": "worker_explore",
+      "type": "text",
+      "x": 540,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Worker Explore**\n:8082\nQwen2.5-7B-f16\nSpec+Lookup → 44 t/s",
+      "color": "5"
+    },
+    {
+      "id": "architect_gen",
+      "type": "text",
+      "x": 700,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Architect General**\n:8083\nQwen3-235B\nMoE4 → 6.75 t/s",
+      "color": "6"
+    },
+    {
+      "id": "architect_code",
+      "type": "text",
+      "x": 860,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Architect Coding**\n:8084\nQwen3-Coder-480B\nMoE3 → 10.3 t/s",
+      "color": "6"
+    },
+    {
+      "id": "ingest",
+      "type": "text",
+      "x": 1020,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Ingest**\n:8085\nQwen3-Next-80B\nMoE4 (NO SPEC!)",
+      "color": "3"
+    },
+    {
+      "id": "worker_vision",
+      "type": "text",
+      "x": 1180,
+      "y": 40,
+      "width": 140,
+      "height": 80,
+      "text": "**Vision**\n:8086/:8087\nQwen2.5-VL-7B\nQwen3-VL-30B",
+      "color": "2"
+    },
+    {
+      "id": "embedder_pool",
+      "type": "text",
+      "x": 1180,
+      "y": 130,
+      "width": 140,
+      "height": 50,
+      "text": "**Embedder Pool**\n:8090-8095 (6x BGE)",
+      "color": "5"
+    },
+    {
+      "id": "appstate",
+      "type": "text",
+      "x": 40,
+      "y": 280,
+      "width": 200,
+      "height": 120,
+      "text": "**AppState**\nsrc/api/state.py\n\n• llm_primitives\n• routing_facade\n• q_scorer, episodic_store\n• failure_graph, hypothesis_graph\n• tool_registry",
+      "color": "1"
+    },
+    {
+      "id": "llm_primitives",
+      "type": "text",
+      "x": 260,
+      "y": 280,
+      "width": 160,
+      "height": 100,
+      "text": "**LLMPrimitives**\nsrc/llm_primitives/\n\nInference abstraction\nBackend selection\nToken tracking",
+      "color": "4"
+    },
+    {
+      "id": "routing_facade",
+      "type": "text",
+      "x": 440,
+      "y": 280,
+      "width": 180,
+      "height": 100,
+      "text": "**RoutingFacade**\nsrc/routing_facade.py\n\nLearned + rule-based\nconfidence_threshold=0.7\nEscalation decisions",
+      "color": "1"
+    },
+    {
+      "id": "escalation_policy",
+      "type": "text",
+      "x": 640,
+      "y": 280,
+      "width": 160,
+      "height": 100,
+      "text": "**EscalationPolicy**\nsrc/escalation.py\n\nRule-based fallback\nRetry/Escalate/Fail\nMax retries config",
+      "color": "3"
+    },
+    {
+      "id": "failure_router",
+      "type": "text",
+      "x": 820,
+      "y": 280,
+      "width": 180,
+      "height": 100,
+      "text": "**LearnedEscalation**\nsrc/failure_router.py\n\nQ-learning advisory\nSimilar case lookup\nConfidence scoring",
+      "color": "6"
+    },
+    {
+      "id": "chat_pipeline",
+      "type": "text",
+      "x": 1020,
+      "y": 280,
+      "width": 160,
+      "height": 100,
+      "text": "**Chat Pipeline**\nsrc/api/routes/\nchat_pipeline/\n\nRouting → Stages\nREPL execution",
+      "color": "4"
+    },
+    {
+      "id": "registry_loader",
+      "type": "text",
+      "x": 1200,
+      "y": 280,
+      "width": 160,
+      "height": 100,
+      "text": "**RegistryLoader**\nsrc/registry_loader.py\n\nmodel_registry.yaml\nRole → Model mapping",
+      "color": "5"
+    },
+    {
+      "id": "episodic_store",
+      "type": "text",
+      "x": 40,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**EpisodicStore**\nrepl_memory/episodic_store.py\n\nSQLite: sessions/episodic.db\n507 memories\nRole routing history",
+      "color": "2"
+    },
+    {
+      "id": "faiss_store",
+      "type": "text",
+      "x": 240,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**FAISSStore**\nrepl_memory/faiss_store.py\n\n1024-dim BGE vectors\n4042 embeddings\nSimilarity search",
+      "color": "2"
+    },
+    {
+      "id": "q_scorer",
+      "type": "text",
+      "x": 440,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**QScorer**\nrepl_memory/q_scorer.py\n\nQ-table: action→role\nAvg Q-value: 0.94\nIdle-time scoring",
+      "color": "6"
+    },
+    {
+      "id": "parallel_embedder",
+      "type": "text",
+      "x": 640,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**ParallelEmbedder**\nrepl_memory/parallel_embedder.py\n\nProbe-first fan-out\n6 BGE instances\n~50ms latency",
+      "color": "5"
+    },
+    {
+      "id": "failure_graph",
+      "type": "text",
+      "x": 840,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**FailureGraph**\nrepl_memory/failure_graph.py\n\nKuzu ~14MB\n13 failures, 45 symptoms\nAnti-memory patterns",
+      "color": "3"
+    },
+    {
+      "id": "hypothesis_graph",
+      "type": "text",
+      "x": 1040,
+      "y": 520,
+      "width": 180,
+      "height": 120,
+      "text": "**HypothesisGraph**\nrepl_memory/hypothesis_graph.py\n\nKuzu ~4.6MB\n15 hypotheses\nAction→Task confidence",
+      "color": "6"
+    },
+    {
+      "id": "seed_loader",
+      "type": "text",
+      "x": 1240,
+      "y": 520,
+      "width": 140,
+      "height": 120,
+      "text": "**SeedLoader**\nrepl_memory/seed_loader.py\n\ngraph_seeds.yaml\n104 canonical seeds",
+      "color": "5"
+    },
+    {
+      "id": "repl_executor",
+      "type": "text",
+      "x": 40,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**REPLExecutor**\nchat_pipeline/repl_executor.py\n\nTool dispatch\nSandbox enforcement\nResult streaming",
+      "color": "4"
+    },
+    {
+      "id": "tool_registry",
+      "type": "text",
+      "x": 240,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**ToolRegistry**\nsrc/tool_registry.py\n\nPermission checks\nBuiltin + MCP tools\nSecurity policies",
+      "color": "3"
+    },
+    {
+      "id": "plugin_loader",
+      "type": "text",
+      "x": 440,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**ToolPluginLoader**\nsrc/tool_loader.py\n\nManifest discovery\nHot-reload support\n5 plugins, 10 tools",
+      "color": "5"
+    },
+    {
+      "id": "canvas_export",
+      "type": "text",
+      "x": 640,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**Canvas Export**\nsrc/canvas_export.py\n\nGraph → JSON Canvas\nHypothesis coloring\nGrid/Radial layout",
+      "color": "2"
+    },
+    {
+      "id": "canvas_import",
+      "type": "text",
+      "x": 840,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**Canvas Import**\nsrc/canvas_import.py\n\nDiff detection\nConstraint extraction\nTOON encoding",
+      "color": "2"
+    },
+    {
+      "id": "mcp_server",
+      "type": "text",
+      "x": 1040,
+      "y": 760,
+      "width": 180,
+      "height": 100,
+      "text": "**MCP Server**\nsrc/mcp_server.py\n\nCanvas MCP tools\nPlugin management\nTool exposure",
+      "color": "1"
+    },
+    {
+      "id": "vision_pipeline",
+      "type": "text",
+      "x": 1240,
+      "y": 760,
+      "width": 140,
+      "height": 100,
+      "text": "**VisionPipeline**\nsrc/vision/\n\nImage analysis\nFace detection\nVideo processing",
+      "color": "2"
+    },
+    {
+      "id": "nextplaid_code",
+      "type": "text",
+      "x": 960,
+      "y": 130,
+      "width": 140,
+      "height": 50,
+      "text": "**NextPLAID-code**\n:8088 (LateOn-Code-edge)",
+      "color": "6"
+    },
+    {
+      "id": "nextplaid_docs",
+      "type": "text",
+      "x": 1110,
+      "y": 130,
+      "width": 160,
+      "height": 50,
+      "text": "**NextPLAID-docs**\n:8089 (answerai-colbert-sm)",
+      "color": "6"
+    }
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "orchestrator_api", "toNode": "appstate", "label": "creates"},
+    {"id": "e2", "fromNode": "appstate", "toNode": "llm_primitives", "label": "owns"},
+    {"id": "e3", "fromNode": "appstate", "toNode": "routing_facade", "label": "owns"},
+    {"id": "e4", "fromNode": "appstate", "toNode": "q_scorer", "label": "owns"},
+    {"id": "e5", "fromNode": "appstate", "toNode": "episodic_store", "label": "owns"},
+    {"id": "e6", "fromNode": "appstate", "toNode": "failure_graph", "label": "owns"},
+    {"id": "e7", "fromNode": "appstate", "toNode": "hypothesis_graph", "label": "owns"},
+    {"id": "e8", "fromNode": "appstate", "toNode": "tool_registry", "label": "owns"},
+    {"id": "e9", "fromNode": "routing_facade", "toNode": "escalation_policy", "label": "fallback"},
+    {"id": "e10", "fromNode": "routing_facade", "toNode": "failure_router", "label": "advisory"},
+    {"id": "e11", "fromNode": "llm_primitives", "toNode": "frontdoor", "label": "calls"},
+    {"id": "e12", "fromNode": "llm_primitives", "toNode": "coder_esc", "label": "calls"},
+    {"id": "e13", "fromNode": "llm_primitives", "toNode": "worker_explore", "label": "calls"},
+    {"id": "e14", "fromNode": "llm_primitives", "toNode": "architect_gen", "label": "calls"},
+    {"id": "e15", "fromNode": "llm_primitives", "toNode": "architect_code", "label": "calls"},
+    {"id": "e16", "fromNode": "llm_primitives", "toNode": "ingest", "label": "calls"},
+    {"id": "e17", "fromNode": "llm_primitives", "toNode": "worker_vision", "label": "calls"},
+    {"id": "e18", "fromNode": "llm_primitives", "toNode": "registry_loader", "label": "reads"},
+    {"id": "e19", "fromNode": "failure_router", "toNode": "q_scorer", "label": "queries"},
+    {"id": "e20", "fromNode": "failure_router", "toNode": "episodic_store", "label": "queries"},
+    {"id": "e21", "fromNode": "episodic_store", "toNode": "faiss_store", "label": "similarity"},
+    {"id": "e22", "fromNode": "faiss_store", "toNode": "parallel_embedder", "label": "embeds"},
+    {"id": "e23", "fromNode": "parallel_embedder", "toNode": "embedder_pool", "label": "fan-out"},
+    {"id": "e24", "fromNode": "q_scorer", "toNode": "failure_graph", "label": "anti-memory"},
+    {"id": "e25", "fromNode": "q_scorer", "toNode": "hypothesis_graph", "label": "confidence"},
+    {"id": "e26", "fromNode": "failure_graph", "toNode": "seed_loader", "label": "seeds"},
+    {"id": "e27", "fromNode": "hypothesis_graph", "toNode": "seed_loader", "label": "seeds"},
+    {"id": "e28", "fromNode": "chat_pipeline", "toNode": "repl_executor", "label": "dispatches"},
+    {"id": "e29", "fromNode": "repl_executor", "toNode": "tool_registry", "label": "checks"},
+    {"id": "e30", "fromNode": "tool_registry", "toNode": "plugin_loader", "label": "discovers"},
+    {"id": "e31", "fromNode": "mcp_server", "toNode": "plugin_loader", "label": "manages"},
+    {"id": "e32", "fromNode": "mcp_server", "toNode": "canvas_export", "label": "exposes"},
+    {"id": "e33", "fromNode": "mcp_server", "toNode": "canvas_import", "label": "exposes"},
+    {"id": "e34", "fromNode": "canvas_export", "toNode": "hypothesis_graph", "label": "reads"},
+    {"id": "e35", "fromNode": "canvas_export", "toNode": "failure_graph", "label": "reads"},
+    {"id": "e36", "fromNode": "chat_pipeline", "toNode": "vision_pipeline", "label": "routes"},
+    {"id": "e37", "fromNode": "vision_pipeline", "toNode": "worker_vision", "label": "calls"},
+    {"id": "e38", "fromNode": "repl_executor", "toNode": "nextplaid_code", "label": "code_search()"},
+    {"id": "e39", "fromNode": "repl_executor", "toNode": "nextplaid_docs", "label": "doc_search()"}
+  ]
+}

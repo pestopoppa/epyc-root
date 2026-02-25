@@ -1,0 +1,29 @@
+# Repos (cloned by scripts/clone-repos.sh)
+repos/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Runtime
+logs/*.log
+!logs/agent_audit.log
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code ephemeral
+.claude/plans/
+.claude/settings.local.json
+
+# Temp
+tmp/

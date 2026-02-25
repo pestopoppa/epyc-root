@@ -1,0 +1,36 @@
+{
+  "edges": [
+    {
+      "from": "epyc-orchestrator",
+      "to": "epyc-llama",
+      "coupling": "binary",
+      "from_patterns": ["src/config/models.py", "orchestration/model_registry.yaml"],
+      "to_files": ["build/bin/llama-server"],
+      "notes": "Orchestrator launches llama-server via subprocess. Path from ORCHESTRATOR_PATHS_LLAMA_SERVER env var."
+    },
+    {
+      "from": "epyc-orchestrator",
+      "to": "epyc-inference-research",
+      "coupling": "data",
+      "from_patterns": ["orchestration/model_registry.yaml"],
+      "to_files": ["benchmarks/results/**"],
+      "notes": "Registry references benchmark results for routing weights. One-way data flow."
+    },
+    {
+      "from": "epyc-inference-research",
+      "to": "epyc-llama",
+      "coupling": "binary",
+      "from_patterns": ["scripts/benchmark/run_inference.sh"],
+      "to_files": ["build/bin/llama-server", "build/bin/llama-bench"],
+      "notes": "Benchmarks invoke llama.cpp binaries."
+    },
+    {
+      "from": "epyc-root",
+      "to": "epyc-orchestrator",
+      "coupling": "validation",
+      "from_patterns": ["scripts/hooks/*.sh", "scripts/validate/*.py"],
+      "to_files": ["orchestration/task_ir.schema.json"],
+      "notes": "Root governance hooks validate orchestrator artifacts. Development-time only."
+    }
+  ]
+}
