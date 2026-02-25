@@ -8,10 +8,15 @@ Register a new model with VERIFIED configuration. Uses registry as single source
 
 Run the Python onboarding module and guide the user through confirming the results.
 
+The model registry and onboarding scripts live in **epyc-inference-research**:
+- Registry: `repos/epyc-inference-research/orchestration/model_registry.yaml`
+- Scripts: `repos/epyc-inference-research/scripts/lib/`
+
 ### Step 1: Run Onboarding
 
 ```bash
-python3 /mnt/raid0/llm/claude/scripts/lib/onboard.py "$ARGUMENTS"
+EPYC_RESEARCH_ROOT="${EPYC_RESEARCH_ROOT:-repos/epyc-inference-research}"
+python3 "$EPYC_RESEARCH_ROOT/scripts/lib/onboard.py" "$ARGUMENTS"
 ```
 
 This will:
@@ -63,8 +68,9 @@ Options:
 After user confirms, add the entry:
 
 ```python
-import sys
-sys.path.insert(0, "/mnt/raid0/llm/claude/scripts/lib")
+import sys, os
+research_root = os.environ.get("EPYC_RESEARCH_ROOT", "repos/epyc-inference-research")
+sys.path.insert(0, os.path.join(research_root, "scripts/lib"))
 from registry import load_registry
 
 registry = load_registry()
@@ -78,8 +84,9 @@ Run validation to confirm the new entry works with all configs:
 
 ```bash
 python3 << 'EOF'
-import sys
-sys.path.insert(0, "/mnt/raid0/llm/claude/scripts/lib")
+import sys, os
+research_root = os.environ.get("EPYC_RESEARCH_ROOT", "repos/epyc-inference-research")
+sys.path.insert(0, os.path.join(research_root, "scripts/lib"))
 from registry import load_registry
 from executor import Executor
 
@@ -100,18 +107,20 @@ Ask the user:
 
 **If YES and this is a TARGET model:**
 ```bash
-cd /mnt/raid0/llm/claude/scripts/benchmark
+EPYC_RESEARCH_ROOT="${EPYC_RESEARCH_ROOT:-repos/epyc-inference-research}"
+cd "$EPYC_RESEARCH_ROOT/scripts/benchmark"
 ./run_benchmark.py --model NEW_ROLE_NAME
 ```
 
 **If YES and this is a DRAFT model:**
 Run benchmarks on all targets that can use this draft:
 ```bash
-cd /mnt/raid0/llm/claude/scripts/benchmark
+EPYC_RESEARCH_ROOT="${EPYC_RESEARCH_ROOT:-repos/epyc-inference-research}"
+cd "$EPYC_RESEARCH_ROOT/scripts/benchmark"
 # Get targets from registry
 python3 -c "
-import sys
-sys.path.insert(0, '../lib')
+import sys, os
+sys.path.insert(0, os.path.join('..', 'lib'))
 from registry import load_registry
 registry = load_registry()
 targets = registry.get_targets_for_draft('DRAFT_ROLE_NAME')
@@ -125,9 +134,9 @@ done
 ## Error Handling
 
 **If onboarding fails:**
-- Model not found → suggest searching: `find /mnt/raid0/llm -name "*PATTERN*" -type f`
-- Already in registry → show existing role name, ask if user wants to re-benchmark
-- Health check failed → report the error, suggest manual investigation
+- Model not found -> suggest searching: `find /mnt/raid0/llm -name "*PATTERN*" -type f`
+- Already in registry -> show existing role name, ask if user wants to re-benchmark
+- Health check failed -> report the error, suggest manual investigation
 
 **If health check needs special flags:**
 The onboarding module automatically tries different flag combinations. If a model needs `--no-conversation` or `--jinja`, this is recorded and included in the registry entry.

@@ -13,7 +13,7 @@ Execute the remaining checklist items from the handoff. Phases 1-2 are already c
 Run actual API calls to verify the knowledge tools work end-to-end (not just mocked):
 
 ```bash
-cd /mnt/raid0/llm/claude
+cd repos/epyc-orchestrator
 python3 << 'EOF'
 from src.tools.knowledge import search_arxiv, search_papers, search_wikipedia, get_wikipedia_article, search_books
 
@@ -71,8 +71,8 @@ Create `docs/chapters/chapter-24-knowledge-tools-mcp.md` documenting:
 
 Reference the existing chapters for style:
 ```bash
-ls docs/chapters/
-head -30 docs/chapters/chapter-01-*.md  # See format
+ls repos/epyc-inference-research/docs/chapters/
+head -30 repos/epyc-inference-research/docs/chapters/chapter-01-*.md  # See format
 ```
 
 ### Step 3: Update Handoff Table
@@ -94,7 +94,7 @@ rm handoffs/active/mcp-knowledge-tools.md
 ### Step 5: Run Gates
 
 ```bash
-cd /mnt/raid0/llm/claude && make gates
+cd repos/epyc-orchestrator && make gates
 ```
 
 ## Important Notes

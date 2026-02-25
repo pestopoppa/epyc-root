@@ -12,13 +12,13 @@
 #   - Can create branches, edit files, commit
 #   - Cannot push to GitHub (no gh auth) — nightshift handles push on host
 #
-# Nightshift operates in a worktree at /mnt/raid0/llm/claude-nightshift
-# to avoid disrupting agents working on main in /mnt/raid0/llm/claude.
+# Nightshift operates in a worktree at /mnt/raid0/llm/epyc-root-nightshift
+# to avoid disrupting agents working on main in /mnt/raid0/llm/epyc-root.
 
 set -euo pipefail
 
 # Worktree path — nightshift works here, not in the main checkout
-WORKTREE="/mnt/raid0/llm/claude-nightshift"
+WORKTREE="/mnt/raid0/llm/epyc-root-nightshift"
 
 CONTAINER_ID="$(docker ps -q -f "ancestor=vsc-claude-e51ac396fef248434826b5406ff85b7fc60ec88212497878e70375898b83bdb6-uid" 2>/dev/null | head -1)"
 
@@ -28,8 +28,8 @@ if [[ -z "$CONTAINER_ID" ]]; then
 fi
 
 if [[ -z "$CONTAINER_ID" ]]; then
-  echo "error: no devcontainer running for /mnt/raid0/llm/claude" >&2
-  echo "hint: run 'devc /mnt/raid0/llm/claude' to start it" >&2
+  echo "error: no devcontainer running for /mnt/raid0/llm/epyc-root" >&2
+  echo "hint: run 'devc /mnt/raid0/llm/epyc-root' to start it" >&2
   exit 1
 fi
 

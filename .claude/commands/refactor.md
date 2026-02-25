@@ -18,13 +18,13 @@ Map the target's boundaries:
 
 ```bash
 # File inventory
-find /mnt/raid0/llm/claude/$ARGUMENTS -type f -name "*.py" | head -100
+find $ARGUMENTS -type f -name "*.py" | head -100
 
 # Line counts
-find /mnt/raid0/llm/claude/$ARGUMENTS -name "*.py" -exec wc -l {} + | sort -rn | head -20
+find $ARGUMENTS -name "*.py" -exec wc -l {} + | sort -rn | head -20
 
 # Import graph (who depends on what)
-grep -rn "^from \|^import " /mnt/raid0/llm/claude/$ARGUMENTS --include="*.py" | head -50
+grep -rn "^from \|^import " $ARGUMENTS --include="*.py" | head -50
 ```
 
 Identify:
@@ -77,9 +77,9 @@ Map the testing landscape for the scope:
 **Coverage mapping:**
 ```bash
 # Find test files corresponding to source files in scope
-for src in $(find /mnt/raid0/llm/claude/$ARGUMENTS -name "*.py" -not -name "__init__.py"); do
+for src in $(find $ARGUMENTS -name "*.py" -not -name "__init__.py"); do
   base=$(basename "$src" .py)
-  match=$(find /mnt/raid0/llm/claude/tests/ -name "test_${base}.py" 2>/dev/null)
+  match=$(find tests/ -name "test_${base}.py" 2>/dev/null)
   if [ -n "$match" ]; then
     echo "✓ $src → $match"
   else
@@ -104,9 +104,9 @@ For each source file, determine:
 ```bash
 # When source files changed, did the corresponding tests change too?
 # Files that change without test updates are higher risk
-git -C /mnt/raid0/llm/claude log --format='' --name-only --since="2025-12-01" -- $ARGUMENTS | sort -u | while read src; do
+git log --format='' --name-only --since="2025-12-01" -- $ARGUMENTS | sort -u | while read src; do
   base=$(basename "$src" .py)
-  test_changes=$(git -C /mnt/raid0/llm/claude log --format='' --name-only --since="2025-12-01" -- "tests/**/test_${base}.py" | wc -l)
+  test_changes=$(git log --format='' --name-only --since="2025-12-01" -- "tests/**/test_${base}.py" | wc -l)
   echo "$src → test changes: $test_changes"
 done
 ```
@@ -137,8 +137,8 @@ Where:
 
 ```bash
 # Check change frequency for files in scope
-git -C /mnt/raid0/llm/claude log --oneline --since="2025-12-01" -- $ARGUMENTS | wc -l
-git -C /mnt/raid0/llm/claude log --format='' --name-only --since="2025-12-01" -- $ARGUMENTS | sort | uniq -c | sort -rn | head -20
+git log --oneline --since="2025-12-01" -- $ARGUMENTS | wc -l
+git log --format='' --name-only --since="2025-12-01" -- $ARGUMENTS | sort | uniq -c | sort -rn | head -20
 ```
 
 ### Step 6: Design the Refactoring Plan
@@ -171,12 +171,12 @@ Include:
 
 ```bash
 # Ensure the handoff is well-formed and referenced files exist
-for f in $(grep -oP '`[^`]*\.py`' /mnt/raid0/llm/claude/handoffs/active/refactoring.md | tr -d '`'); do
-  [ -f "/mnt/raid0/llm/claude/$f" ] && echo "✓ $f" || echo "✗ MISSING: $f"
+for f in $(grep -oP '`[^`]*\.py`' handoffs/active/refactoring.md | tr -d '`'); do
+  [ -f "$f" ] && echo "✓ $f" || echo "✗ MISSING: $f"
 done
 
 # Run gates
-cd /mnt/raid0/llm/claude && make gates
+make gates
 ```
 
 ## Handoff Template

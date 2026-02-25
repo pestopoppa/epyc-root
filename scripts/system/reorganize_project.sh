@@ -3,7 +3,7 @@
 # Works bottom-up (leaves to root) to reorganize the project structure
 #
 # Changes:
-# 1. Move /mnt/raid0/llm/LOGS → /mnt/raid0/llm/claude/logs
+# 1. Move /mnt/raid0/llm/LOGS → logs/
 # 2. Consolidate model_routing/ (8 files) → docs/model-routing.md
 # 3. Consolidate RESEARCH_WRITER_*.md (3 files) → docs/research-writer.md
 # 4. Move stray scripts from /mnt/raid0/llm/ → scripts/legacy/
@@ -199,10 +199,10 @@ update_path_references() {
 
   # Define path mappings (old → new)
   declare -A PATH_MAPPINGS=(
-    ["/mnt/raid0/llm/LOGS"]="/mnt/raid0/llm/claude/logs"
-    ["/mnt/raid0/llm/claude/agent_log.sh"]="/mnt/raid0/llm/claude/scripts/utils/agent_log.sh"
-    ["/mnt/raid0/llm/claude/agent_log_analyze.sh"]="/mnt/raid0/llm/claude/scripts/utils/agent_log_analyze.sh"
-    ["/mnt/raid0/llm/claude/experiments/"]="/mnt/raid0/llm/claude/research/"
+    ["/mnt/raid0/llm/LOGS"]="$PROJECT_ROOT/logs"
+    ["$PROJECT_ROOT/agent_log.sh"]="$PROJECT_ROOT/scripts/utils/agent_log.sh"
+    ["$PROJECT_ROOT/agent_log_analyze.sh"]="$PROJECT_ROOT/scripts/utils/agent_log_analyze.sh"
+    ["$PROJECT_ROOT/experiments/"]="$PROJECT_ROOT/research/"
   )
 
   local updated=0

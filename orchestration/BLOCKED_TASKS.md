@@ -425,7 +425,7 @@ numactl --interleave=all /mnt/raid0/llm/llama.cpp/build/bin/llama-cli \
   -t 96 -n 100 -p "Write a Python quicksort:" --no-display-prompt
 
 # 4. Read refactoring plan
-cat /mnt/raid0/llm/claude/research/mtp_investigation.md | grep -A 100 "MTP Refactoring Plan"
+cat repos/epyc-inference-research/research/mtp_investigation.md | grep -A 100 "MTP Refactoring Plan"
 ```
 
 ---
@@ -579,7 +579,7 @@ rm ggml/src/ggml-cpu/arch/x86/avx512-helpers.h
 export PATH="/mnt/raid0/llm/npm-global/bin:/mnt/raid0/llm/tools/devc/bin:$PATH"
 
 # Launch devcontainer
-devc /mnt/raid0/llm/claude
+devc /mnt/raid0/llm/epyc-root
 
 # ✅ DONE: Claude-as-Judge BLIND Re-Scoring (77 models, 2026-01-16)
 # Results: benchmarks/results/reviews/BLIND_RESCORE_2026-01-16.md

@@ -28,10 +28,13 @@ set -euo pipefail
 #   ./scripts/session/reset_episodic_memory.sh --keep-archive       # Keep replay archive
 #   ./scripts/session/reset_episodic_memory.sh --keep-seen --keep-skills --keep-archive
 
-MEMORY_DIR="/mnt/raid0/llm/claude/orchestration/repl_memory/sessions"
-KUZU_DIR="/mnt/raid0/llm/claude/orchestration/repl_memory/kuzu_db"
-META_ARCHIVE_DIR="/mnt/raid0/llm/claude/orchestration/repl_memory/meta_archive"
-EVAL_DIR="/mnt/raid0/llm/claude/benchmarks/results/eval"
+EPYC_ORCHESTRATOR_ROOT="${EPYC_ORCHESTRATOR_ROOT:-/mnt/raid0/llm/epyc-orchestrator}"
+EPYC_RESEARCH_ROOT="${EPYC_RESEARCH_ROOT:-/mnt/raid0/llm/epyc-inference-research}"
+
+MEMORY_DIR="$EPYC_ORCHESTRATOR_ROOT/orchestration/repl_memory/sessions"
+KUZU_DIR="$EPYC_ORCHESTRATOR_ROOT/orchestration/repl_memory/kuzu_db"
+META_ARCHIVE_DIR="$EPYC_ORCHESTRATOR_ROOT/orchestration/repl_memory/meta_archive"
+EVAL_DIR="$EPYC_RESEARCH_ROOT/benchmarks/results/eval"
 DB_PATH="$MEMORY_DIR/episodic.db"
 FAISS_PATH="$MEMORY_DIR/embeddings.faiss"
 IDMAP_PATH="$MEMORY_DIR/id_map.npy"
@@ -85,8 +88,8 @@ get_api_pid() {
 }
 
 restart_api() {
-  local log_file="/mnt/raid0/llm/claude/logs/orchestrator_autolaunch.log"
-  cd /mnt/raid0/llm/claude
+  local log_file="$EPYC_ORCHESTRATOR_ROOT/logs/orchestrator_autolaunch.log"
+  cd "$EPYC_ORCHESTRATOR_ROOT"
   python3 -m uvicorn src.api:app --host 127.0.0.1 --port 8000 --log-level warning \
     >>"$log_file" 2>&1 &
   sleep 3
@@ -125,7 +128,7 @@ else:
 # 2. Reset FAISS index to empty (embedding dim derived from config)
 python3 -c "
 import sys
-sys.path.insert(0, '/mnt/raid0/llm/claude')
+sys.path.insert(0, '$EPYC_ORCHESTRATOR_ROOT')
 from pathlib import Path
 import numpy as np
 try:
@@ -183,7 +186,7 @@ else:
   if [[ -f "$SKILL_FAISS_PATH" ]]; then
     python3 -c "
 import sys, numpy as np
-sys.path.insert(0, '/mnt/raid0/llm/claude')
+sys.path.insert(0, '$EPYC_ORCHESTRATOR_ROOT')
 try:
     import faiss
     from orchestration.repl_memory.embedder import EmbeddingConfig

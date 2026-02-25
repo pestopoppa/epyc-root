@@ -86,7 +86,7 @@ The `src/` tree has accumulated structural debt across rapid development. Key sy
 Refactor code work is complete; remaining validation is one end-of-handoff gates run.
 
 ```bash
-cd /mnt/raid0/llm/claude
+cd repos/epyc-orchestrator
 make gates
 ```
 

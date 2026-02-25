@@ -81,6 +81,10 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - `scripts/session/verify_llama_cpp.sh` — Check llama.cpp branch safety
 - `scripts/nightshift/` — Autonomous overnight run infrastructure
 
+## Path History
+
+Progress logs and handoffs dated before 2026-02-25 reference `/mnt/raid0/llm/claude` (the pre-split monorepo). Those paths are no longer valid. Use the repository structure documented above.
+
 ## Code Style
 
 - Shell: `#!/bin/bash` with `set -euo pipefail`

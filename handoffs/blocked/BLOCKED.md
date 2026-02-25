@@ -58,7 +58,7 @@ pgrep -af llama-completion
 export PATH="/mnt/raid0/llm/npm-global/bin:/mnt/raid0/llm/tools/devc/bin:$PATH"
 
 # Launch devcontainer
-devc /mnt/raid0/llm/claude
+devc /mnt/raid0/llm/epyc-root
 
 # Inside container - Orchestrator Integration (CODE COMPLETE - TEST ONLY):
 claude --dangerously-skip-permissions -p \

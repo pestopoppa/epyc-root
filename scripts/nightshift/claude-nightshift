@@ -8,7 +8,7 @@
 
 set -euo pipefail
 
-WORKTREE="/mnt/raid0/llm/claude-nightshift"
+WORKTREE="/mnt/raid0/llm/epyc-root-nightshift"
 REAL_CLAUDE="/home/daniele/.local/bin/claude"
 
 # If we're in the nightshift worktree, route through devcontainer

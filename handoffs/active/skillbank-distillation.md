@@ -1169,7 +1169,7 @@ Ch27 should contain the full references section. Other chapters should cross-ref
 
 ```bash
 # Phase 1: Create SkillBank core
-cd /mnt/raid0/llm/claude
+cd repos/epyc-orchestrator
 # Start with skill_bank.py and skill_retriever.py
 
 # Phase 2: Distillation pipeline

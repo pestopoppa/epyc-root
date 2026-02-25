@@ -17,7 +17,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-WORKTREE="/mnt/raid0/llm/claude-nightshift"
+WORKTREE="/mnt/raid0/llm/epyc-root-nightshift"
 LOG_DIR="$PROJECT_ROOT/logs/nightshift"
 DISABLE_FLAG="$PROJECT_ROOT/.nightshift_disabled"
 

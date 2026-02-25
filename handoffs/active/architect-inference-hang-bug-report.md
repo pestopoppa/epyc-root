@@ -160,7 +160,7 @@ grep -A5 'ROLE=architect' /mnt/raid0/llm/tmp/inference_tap.log | tail -20
 # For architect roles, should_stream_role returns True (HEAVY_STREAM_ROLES is empty)
 
 # Check server-side SSE events (if server has debug logging)
-tail -f /mnt/raid0/llm/claude/logs/llama-server-8084.log
+tail -f /mnt/raid0/llm/epyc-orchestrator/logs/llama-server-8084.log
 
 # Check Python-side streaming read timeout
 grep -n 'stream\|timeout\|read_timeout' src/backends/llama_server.py
