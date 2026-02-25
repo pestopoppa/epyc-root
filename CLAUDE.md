@@ -6,13 +6,22 @@ Umbrella repository for cross-repo coordination and governance. No application c
 
 ## Repository Map
 
-| Repo | Location | Purpose |
-|------|----------|---------|
-| epyc-orchestrator | `repos/epyc-orchestrator/` | Production multi-model orchestration |
-| epyc-inference-research | `repos/epyc-inference-research/` | Benchmarks, experiments, model eval |
-| epyc-llama | `repos/epyc-llama/` | Custom llama.cpp fork |
+All repos are already cloned on this machine. Use the absolute paths below.
 
-Child repos are cloned into `repos/` by `scripts/clone-repos.sh`.
+| Repo | Absolute Path | Purpose |
+|------|---------------|---------|
+| epyc-root (this) | `/mnt/raid0/llm/epyc-root` | Governance, agents, hooks, handoffs, progress |
+| epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration (`src/`, `tests/`) |
+| epyc-inference-research | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, seeding, model registry, research |
+| epyc-llama | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork |
+
+Key scripts by repo:
+- **Seeding/benchmarking**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/` (seed_specialist_routing.py, seeding_*.py)
+- **Server management**: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/` (orchestrator_stack.py)
+- **Model registry (full)**: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`
+- **Model registry (lean)**: `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
+
+For fresh setups: `scripts/clone-repos.sh` clones into `repos/` with symlinks.
 
 ## Dependency Map
 
