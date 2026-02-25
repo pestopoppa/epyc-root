@@ -39,9 +39,15 @@ Rule: start with the cheapest model likely to succeed, escalate only when blocke
 - Keep durable project knowledge in `docs/`, not in role prompts.
 - Prefer mechanical checks over prose-only reminders.
 
+## Multi-Repo Context
+
+This project spans four repositories. Agent files here in `epyc-root` provide cross-repo governance.
+Orchestrator code lives in `epyc-orchestrator`, research in `epyc-inference-research`, llama.cpp in `epyc-llama`.
+See `.claude/dependency-map.json` for coupling edges.
+
 ## Migration Note
 
 - Legacy long-form role playbooks were intentionally split.
 - Operational detail moved to `docs/guides/agent-workflows/`.
-- Schema and reference consistency is enforced via `scripts/validate/` and hooks in `scripts/hooks/`.
+- Schema and reference consistency is enforced via `scripts/validate/` and hooks in `scripts/hooks/` (in this repo).
 - Full design rationale: `docs/reference/agent-config/AGENT_FILE_LOGIC.md`.

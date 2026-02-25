@@ -1,6 +1,19 @@
 # Agent Execution Contract
 
-This file is the top-level contract for agents working in this repository.
+This file is the top-level contract for agents working in the EPYC project.
+
+## Project Structure
+
+This project spans four repositories:
+
+| Repo | Purpose | Key Content |
+|------|---------|-------------|
+| **epyc-root** (this repo) | Governance, coordination | agents/, hooks, skills, handoffs, progress |
+| **epyc-orchestrator** | Production orchestration | `src/`, `tests/`, `orchestration/` (runtime) |
+| **epyc-inference-research** | Research & benchmarks | `benchmarks/`, `research/`, `scripts/benchmark/`, full model registry |
+| **epyc-llama** | llama.cpp fork | Custom patches, kernel work |
+
+Cross-repo dependency map: `.claude/dependency-map.json`
 
 ## Scope
 

@@ -14,7 +14,7 @@ Own architecture-level decisions, cross-agent coordination, and technical sequen
 
 - Current objective and constraints
 - Relevant benchmark results and logs
-- Current status from `CLAUDE.md` and impacted docs
+- Current status from the relevant repo's `CLAUDE.md` and impacted docs
 
 ## Outputs
 

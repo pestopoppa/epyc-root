@@ -32,11 +32,15 @@ Turn raw experiments and engineering outcomes into accurate, decision-ready rese
 
 ## Data Sources
 
-- `logs/research_report.md`
-- `logs/zen5_benchmark_*.csv`
-- `logs/tested_models.json`
-- `logs/agent_audit.log`
-- `docs/reference/benchmarks/RESULTS.md`
+In `epyc-inference-research`:
+- `docs/reference/benchmarks/RESULTS.md` — master benchmark table
+- `docs/reference/models/QUIRKS.md` — model issues and workarounds
+- `orchestration/model_registry.yaml` — full model catalog
+- `benchmarks/results/` — raw run data and reviews
+
+In `epyc-root`:
+- `logs/agent_audit.log` — agent execution trail
+- `progress/` — daily progress reports
 
 ## Guardrails
 

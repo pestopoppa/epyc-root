@@ -4,7 +4,7 @@
 
 - Prefer typed boundaries for external data.
 - Use enums and constants, not ad hoc strings.
-- Gate optional features with `src/features.py`.
+- Gate optional features with feature flags in the relevant repo's config layer.
 - Log exceptions with context; do not use silent `except: pass`.
 - Use thread-safe state update paths for shared mutable state.
 
@@ -24,12 +24,27 @@
 - Reuse existing modules and utilities before adding new helpers.
 - Place new files according to existing project layout.
 
-## Placement Rules
+## Placement Rules (Multi-Repo)
 
+This project spans four repositories. Place files in the correct one:
+
+| Content | Repository |
+|---------|-----------|
+| Orchestrator code (`src/`, `tests/`, `orchestration/`) | `epyc-orchestrator` |
+| Benchmarks, research, model registry (full) | `epyc-inference-research` |
+| Governance, hooks, agents, handoffs, progress | `epyc-root` (this repo) |
+| llama.cpp patches and builds | `epyc-llama` |
+
+Within `epyc-orchestrator`:
 - Feature flags: `src/features.py`
 - Roles/routing metadata: `src/roles.py` and model registry
 - API routes/models/services/state: `src/api/`
 - Tests: `tests/unit/` and `tests/integration/`
+
+Within `epyc-root`:
+- Agent definitions: `agents/`
+- Cross-repo policy: `agents/shared/`
+- Governance validation: `scripts/validate/`
 - Architecture and design rationale: `docs/`
 
 ## Verification Minimum

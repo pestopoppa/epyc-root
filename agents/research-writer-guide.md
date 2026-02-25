@@ -5,7 +5,7 @@ Canonical workflow location: `docs/guides/agent-workflows/research-writer.md`.
 
 ## Primary Script
 
-Use `scripts/utils/report_update_workflow.sh` to gather validated inputs before writing.
+Use `scripts/utils/report_update_workflow.sh` (in `epyc-inference-research`) to gather validated inputs before writing.
 
 ## Core Commands
 
