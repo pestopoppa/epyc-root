@@ -1,8 +1,10 @@
+> **ARCHIVED — COMPLETED**: This handoff describes historical state. The decomposition was completed: the monolith was refactored from ~2,967 to ~1,583 lines with 10 extracted `seeding_*.py` modules. The `_v2.py` symlink points to the refactored file. The script lives in `epyc-inference-research/scripts/benchmark/`. Always check the actual code for current state.
+
 # Handoff: seed_specialist_routing.py Decomposition (2,967 LOC → 6 modules + hub)
 
-**Status**: IN PROGRESS — extraction done, swap deferred
+**Status**: COMPLETED
 **Created**: 2026-02-10
-**Updated**: 2026-02-10
+**Updated**: 2026-02-26
 **Priority**: Medium (not blocking active work)
 **Scope**: `scripts/benchmark/seed_specialist_routing.py` monolith decomposition
 

@@ -81,9 +81,9 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - `scripts/session/verify_llama_cpp.sh` — Check llama.cpp branch safety
 - `scripts/nightshift/` — Autonomous overnight run infrastructure
 
-## Path History
+## Historical Documentation Warning
 
-Progress logs and handoffs dated before 2026-02-25 reference `/mnt/raid0/llm/claude` (the pre-split monorepo). Those paths are no longer valid. Use the repository structure documented above.
+Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHANGELOG.md` describe historical state — they may reference `/mnt/raid0/llm/claude` (the pre-split monorepo, archived 2026-02-25) and describe code structure that has since changed. **Always verify against actual code before trusting archived descriptions.** Use the repository structure documented above for current paths.
 
 ## Code Style
 
