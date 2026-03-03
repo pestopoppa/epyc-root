@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-03-03
+
+- **Web research content deduplication** (handoff 06):
+  - Paragraph-level SHA256 dedup in `_dedup_pages()` — removes duplicate paragraphs across fetched pages before worker synthesis. First-seen (highest search rank) wins; short paragraphs (<80 chars) kept unconditionally.
+  - Rank-ordered page processing — pages now processed in search-rank order instead of `as_completed` (arbitrary) order.
+  - Anchored synthesis prompting — worker model instructed to only use retrieved content and cite source URLs.
+  - Dedup stats (`dedup_paragraphs_removed`, `dedup_chars_saved`) added to `web_research` return dict.
+  - Files: `epyc-orchestrator/src/tools/web/research.py`, `epyc-orchestrator/tests/unit/test_web_research_dedup.py` (8 tests).
+
+- **Tool policy fix: `web_research` added to `group:web`**:
+  - Cascading policy grants of `group:web` now correctly include `web_research` alongside `web_fetch` and `web_search`.
+  - File: `epyc-orchestrator/src/tool_policy.py`.
+
 ## 2026-02-24
 
 - **Model-tier routing optimization (10.8) added to AB test matrix**:
