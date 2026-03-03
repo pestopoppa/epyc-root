@@ -1593,3 +1593,13 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 {"ts":"2026-03-04T00:30:00+01:00","session":"ses_chapter_redistribution","level":"INFO","cat":"TASK_START","msg":"Delete originals and commit","details":"29 old files deleted from research, 8 commits across 4 repos"}
 {"ts":"2026-03-04T00:30:00+01:00","session":"ses_chapter_redistribution","level":"INFO","cat":"TASK_END","msg":"Delete originals and commit","details":"outcome=success; zero broken links verified"}
 {"ts":"2026-03-04T00:30:00+01:00","session":"ses_chapter_redistribution","level":"INFO","cat":"SESSION_END","msg":"Chapter redistribution complete","details":"29 chapters → 4 repos, all cross-refs transformed, 11808 lines preserved"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"SESSION_START","msg":"Post-redistribution documentation audit","details":"Audit 29 chapters against today's code changes, update gaps"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_START","msg":"Audit chapters for gaps","details":"15 chapters identified with missing feature coverage"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_END","msg":"Audit chapters for gaps","details":"outcome=success; 15 chapters need updates across 3 repos"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_START","msg":"Update 11 orchestrator chapters","details":"+173 lines: feature flags, web_research, session log, scratchpad, budgets, rewards"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_END","msg":"Update 11 orchestrator chapters","details":"outcome=success"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_START","msg":"Update 3 research chapters","details":"+81 lines: suites, pool stats, Search-R1 rewards"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_END","msg":"Update 3 research chapters","details":"outcome=success"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_START","msg":"Update llama.cpp chapter","details":"+28 lines: v2 branch, SSM checkpoint, rebase history"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_END","msg":"Update llama.cpp chapter","details":"outcome=success"}
+{"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"SESSION_END","msg":"Documentation audit complete","details":"15 chapters updated, 282 lines added across 3 repos"}
