@@ -1,6 +1,6 @@
 # Search-R1 Reward Design for Web Research
 
-**Status**: IMPLEMENTED — Steps 0–4 complete, Step 5 blocked on #03
+**Status**: IMPLEMENTED — Steps 0–5 complete
 **Created**: 2026-03-03
 **Assessed**: 2026-03-03
 **Priority**: P1
@@ -141,12 +141,16 @@ Original handoff had top-level `Depends On: #03` which would block all work. Onl
   - `routing.py` line ~749: `HybridRouter.route()` — decision point
 - Exploration/exploitation policy changes (Thompson sampling, UCB) deferred — requires more data first. Current greedy + fallback is adequate until reward signals are producing meaningful differentiation.
 
-### Step 5: Integrate with scratchpad memory (BLOCKED on #03)
-- **Depends on**: `03-session-scratchpad-memory.md`
-- Use scratchpad insights as signal for reward computation
-- "Did the model discover and record the key insight?" → reward component
-- Track insight quality across turns
-- **Interim**: Even without scratchpad, can check if model's final answer contains information from web_research syntheses (simple containment check)
+### Step 5: Integrate with scratchpad memory — IMPLEMENTED
+- **Depends on**: `03-session-scratchpad-memory.md` (now complete)
+- `scratchpad_insights` surfaced in `ChatResponse` (serialized from `task_state.scratchpad_entries`)
+- Captured in `RoleResult.scratchpad_insights` during seeding
+- `compute_scratchpad_rewards()` in `seeding_rewards.py`:
+  - `sp_insight_count`: raw count of insights
+  - `sp_web_insight_ratio`: fraction of insights mentioning web-related keywords (when web_research used)
+  - `sp_answer_containment`: fraction of insight keywords appearing in final answer
+- Rewards computed per-config in `_compute_3way_metadata()`, stored in `metadata["scratchpad_rewards"]`
+- Injected into MemRL reward context via `_inject_3way_rewards_http()`
 
 ## Acceptance Criteria
 
