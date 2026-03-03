@@ -41,6 +41,7 @@ scripts/
   system/             System audit scripts
   utils/              Agent logging functions
 docs/
+  infrastructure/          Hardware and storage documentation (2 chapters)
   guides/agent-workflows/  Agent persona documentation
   recovery/                Recovery and triage procedures
   reference/agent-config/  Agent file logic, CLAUDE.md matrix
