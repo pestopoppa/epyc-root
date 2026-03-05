@@ -21,6 +21,10 @@
   - Files: `routing_graph.py` (MODIFIED), `reset_episodic_memory.sh` (MODIFIED), `graph_router_weights.npz` (NEW).
   - Handoffs completed: `graphrouter-memrl-augmentation.md`, `colbert-zero-research-integration.md`.
 
+- **Handoff cleanup**: 6 handoffs archived — validation-sweep, feature-validation-battery, repl-session-log, refactoring (`make gates` passed), architect-inference-hang, backend-saturation-504-429.
+
+- **Tier 3 feature enablement**: `approval_gates`, `resume_tokens`, `side_effect_tracking`, `structured_tool_output` enabled in `orchestrator_stack.py`.
+
 - **Inference lock starvation fix validated**:
   - Root cause: PrefixRouter `num_slots=4` vs llama-server `-np 2` mismatch.
   - 40/40 concurrent requests pass. Defense-in-depth: lock watchdog, streaming cancel check, tighter httpx timeouts.
