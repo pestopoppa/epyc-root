@@ -142,14 +142,29 @@ The supervised stage BEFORE distillation bridges the performance gap. Our curren
 - Integration point in HybridRouter (fast first-pass, fall back to retrieval if confidence < 0.6)
 - Evaluation protocol (held-out trajectories, latency measurement)
 
+### Implementation (2026-03-05)
+
+**Prerequisite fix**: Added `EpisodicStore.get_all_memories()` — bulk retrieval method needed by `routing_graph.py:135` and training pipeline.
+
+**Files created/modified**:
+- `orchestration/repl_memory/episodic_store.py` — `get_all_memories()` method
+- `scripts/graph_router/extract_training_data.py` — Phase 2 extraction
+- `orchestration/repl_memory/routing_classifier.py` — Phase 3 MLP classifier
+- `scripts/graph_router/train_routing_classifier.py` — Phase 3 training script
+- `scripts/graph_router/ab_test_classifier.py` — Phase 4 A/B test harness
+- `orchestration/repl_memory/retriever.py` — HybridRouter classifier integration
+- `src/features.py` — `routing_classifier` feature flag
+- `scripts/session/reset_episodic_memory.sh` — Reset-safety (classifier weight cleanup)
+- `docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md` — Design doc
+
 ### Phases
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Architecture design document | PENDING |
-| 2 | Training data extraction script | FUTURE |
-| 3 | Prototype classifier | FUTURE |
-| 4 | A/B test vs HybridRouter | FUTURE |
+| 1 | Architecture design document | DONE |
+| 2 | Training data extraction script | DONE |
+| 3 | Prototype classifier | DONE |
+| 4 | A/B test vs HybridRouter | DONE (harness ready, needs live seeding window) |
 
 ---
 
@@ -158,7 +173,7 @@ The supervised stage BEFORE distillation bridges the performance gap. Our curren
 | File | Update |
 |------|--------|
 | `CHANGELOG.md` | ColBERT-Zero findings entry |
-| `orchestration/BLOCKED_TASKS.md` | New entries for both tracks |
+| `coordination/BLOCKED_TASKS.md` | New entries for both tracks |
 | `docs/reference/models/QUIRKS.md` | Retrieval model quirks (LateOn-Code prefixes, dim mismatch, ONNX gap) |
 | `docs/reference/benchmarks/RESULTS.md` | Retrieval section with current + candidate benchmarks |
 | `research/colbert_zero_review.md` | Literature review (CREATED) |
@@ -184,5 +199,5 @@ The supervised stage BEFORE distillation bridges the performance gap. Our curren
 - [x] Docs container swapped to GTE-ModernColBERT-v1
 - [x] 10-query qualitative comparison (5 better, 4 same, 0 worse)
 - [x] MemRL distillation design doc written (`docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md`)
-- [ ] `make gates` passes
-- [ ] model_registry.yaml swap finalized (currently old model in launch_command, new in candidate comment)
+- [x] `make gates` passes (2026-03-05)
+- [x] model_registry.yaml swap finalized — `orchestrator_stack.py` updated to GTE-ModernColBERT-v1 (2026-03-05)

@@ -1,7 +1,7 @@
 # GraphRouter MemRL Augmentation
 
 **Created**: 2026-02-20
-**Status**: BLOCKED — Waiting for episodic memory accumulation before GAT training
+**Status**: READY — 1,640 episodic memories available, GAT training unblocked
 **Priority**: MEDIUM (cold-start optimization)
 
 ## Summary
@@ -57,9 +57,13 @@ python3 scripts/graph_router/onboard_model.py \
 
 **DO NOT ARCHIVE** — This handoff stays active until GAT training is complete.
 
-**Prerequisite**: Run `seed_specialist_routing.py` to accumulate 500+ episodic memories first. The training script will refuse to run below this threshold.
+**Current state** (as of 2026-03-04):
+- Memory threshold met: 1,640 episodic memories (500 required)
+- All 49 unit tests passing
+- No trained weights file exists yet (`graph_router_weights.npz`)
+- `ORCHESTRATOR_GRAPH_ROUTER` not yet set in `orchestrator_stack.py`
 
-**When ready** (check with `SELECT COUNT(*) FROM episodes` in episodic store):
+**Next steps**:
 
 ```bash
 # 1. Train GAT weights
@@ -79,3 +83,11 @@ export ORCHESTRATOR_GRAPH_ROUTER=1
 ```
 
 **After training passes**: Update status to COMPLETE, archive this handoff.
+
+## Related: Routing Classifier Distillation (2026-03-05)
+
+A complementary offline routing classifier was implemented in ColBERT-Zero Track 2. Unlike the GAT (which generalizes through graph structure for cold-start), the routing classifier distills episodic Q-values into a fast MLP for high-confidence routing decisions. Both integrate into `HybridRouter`:
+- **GraphRouter**: Parallel signal blended at 10-30% weight, cold-start optimization
+- **Routing Classifier**: Fast first-pass, skips retrieval entirely at ≥0.8 confidence
+
+See `orchestration/repl_memory/routing_classifier.py` and `docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md`.

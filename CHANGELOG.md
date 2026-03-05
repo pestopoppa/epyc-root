@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-03-05
+
+- **MemRL Distillation Pipeline (Phases 2-4) — ColBERT-Zero Track 2**:
+  - Offline routing classifier distilled from episodic memory Q-values. 2-layer MLP (~140K params), pure numpy, <0.1ms inference. Q-value weighted cross-entropy loss trains the classifier to learn from confident routing decisions.
+  - **`EpisodicStore.get_all_memories()`**: Bulk retrieval method with filters for action_type, include_embeddings, min_update_count. Unblocks `routing_graph.py:135` and training pipeline.
+  - **Training data extraction** (`scripts/graph_router/extract_training_data.py`): Extracts 1031-dim features (1024 BGE embedding + task_type one-hot + context features) with Q-value sample weights.
+  - **Routing classifier** (`orchestration/repl_memory/routing_classifier.py`): Mini-batch SGD, cosine LR decay, early stopping. Save/load via `.npz`. `load()` returns `None` for missing weights (reset-safe).
+  - **HybridRouter integration** (`orchestration/repl_memory/retriever.py`): Classifier as fast first-pass in `route()` and `route_with_mode()`. Confidence threshold 0.8 — only skips retrieval when very confident.
+  - **Feature flag**: `routing_classifier` (`ORCHESTRATOR_ROUTING_CLASSIFIER=1`). Default off — enable after A/B test.
+  - **A/B test harness** (`scripts/graph_router/ab_test_classifier.py`): Pass rate, latency, routing distribution comparison with Fisher exact test for significance.
+  - **Reset safety**: `reset_episodic_memory.sh` deletes stale classifier weights + auto-creates retrain handoff reminder.
+  - **Design doc**: `docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md`.
+  - 25 new tests (episodic store + classifier). Files: `episodic_store.py`, `routing_classifier.py`, `retriever.py`, `features.py` (MODIFIED); `extract_training_data.py`, `train_routing_classifier.py`, `ab_test_classifier.py`, `test_episodic_store.py` (NEW).
+
+- **Inference lock starvation fix validated**:
+  - Root cause: PrefixRouter `num_slots=4` vs llama-server `-np 2` mismatch.
+  - 40/40 concurrent requests pass. Defense-in-depth: lock watchdog, streaming cancel check, tighter httpx timeouts.
+
 ## 2026-03-03
 
 - **Web research content deduplication** (handoff 06):

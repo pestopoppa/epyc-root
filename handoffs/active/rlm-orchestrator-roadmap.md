@@ -405,6 +405,15 @@ Residual optional work (non-blocking):
 
 ---
 
+### 2026-03-05 incremental update (MemRL Distillation Pipeline)
+
+- Implemented ColBERT-Zero Track 2: routing classifier distilled from episodic memory Q-values.
+- New feature flag: `routing_classifier` (`ORCHESTRATOR_ROUTING_CLASSIFIER`). Default off — enable after A/B test.
+- `EpisodicStore.get_all_memories()` added — bulk retrieval method needed by `routing_graph.py:135` and the training pipeline.
+- Files: `routing_classifier.py`, `extract_training_data.py`, `train_routing_classifier.py`, `ab_test_classifier.py` (NEW); `episodic_store.py`, `retriever.py`, `features.py`, `reset_episodic_memory.sh` (MODIFIED).
+- Reset-safe: weights auto-deleted on memory reset, handoff auto-created for retraining.
+- 25 new tests. See `docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md`.
+
 ## 4) Follow-On Tasks Recommended (Post-Roadmap)
 
 1. Add a lightweight delegation SLO report job (daily summary from logs): p50/p95 delegation latency, timeout rate, report-handle emission rate.
@@ -415,6 +424,7 @@ Residual optional work (non-blocking):
    - define a single risk/benefit scoring rubric for candidate flags,
    - require a standard evidence pack per flag (targeted tests + bounded live probe + rollback drill),
    - enforce staged rollout gates (`off` -> `shadow` -> `default-on`) with explicit pass/fail criteria recorded in roadmap/progress/changelog.
+6. **Extend budget controls with recursion depth + call count limits** — continues R1/D2 budget propagation work. Adds formal recursion depth caps (prevent infinite escalation loops), per-worker call count budgets, and per-task aggregate token envelopes. Tracked in `handoffs/active/01-fast-rlm-budget-controls.md` (research source: [Fast-RLM](https://github.com/avbiswas/fast-rlm)).
 
 ---
 
@@ -446,7 +456,7 @@ These edits should happen alongside R1-R4 implementation PRs.
 
 ### Tracker updates required with each closure step
 
-- `orchestration/BLOCKED_TASKS.md`
+- `coordination/BLOCKED_TASKS.md`
 - `handoffs/README.md` (if active/archived transitions occur)
 - `CHANGELOG.md`
 

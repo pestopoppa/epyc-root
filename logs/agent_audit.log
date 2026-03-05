@@ -1603,3 +1603,23 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 {"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_START","msg":"Update llama.cpp chapter","details":"+28 lines: v2 branch, SSM checkpoint, rebase history"}
 {"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"TASK_END","msg":"Update llama.cpp chapter","details":"outcome=success"}
 {"ts":"2026-03-04T01:15:00+01:00","session":"ses_doc_audit","level":"INFO","cat":"SESSION_END","msg":"Documentation audit complete","details":"15 chapters updated, 282 lines added across 3 repos"}
+[2026-03-03T23:47:41Z] SESSION_START | Validation sweep handoff + stale cleanup
+[2026-03-03T23:47:41Z] TASK_COMPLETE | Create handoffs/active/validation-sweep-live-models.md | 10-item live-model validation checklist
+[2026-03-03T23:47:41Z] TASK_COMPLETE | Archive pre-split-optimization-ab-test-plan.md | Moved active→completed with archival note
+[2026-03-03T23:47:41Z] TASK_COMPLETE | Create progress/2026-03/2026-03-04.md | Daily progress report
+[2026-03-04T17:56:04Z] TASK_COMPLETE | watch_seeding_tui | Created standalone observer TUI (watch_seeding.py), fixed TapTailer cross-process buffering bug in seeding_tui.py
+[2026-03-04T19:02:22Z] TASK_COMPLETE | full-benchmark-rescore | Rescored all 126 model configs across P0-P4; summary.csv fully updated with rigorous scores
+
+[2026-03-05T00:00:00Z] SESSION_START purpose="MemRL Distillation Pipeline (Phases 2-4)"
+[2026-03-05T00:00:01Z] TASK_START description="Implement routing classifier distillation pipeline" reasoning="ColBERT-Zero Track 2: offline MLP classifier from episodic Q-values"
+[2026-03-05T00:00:02Z] TASK_END description="Add EpisodicStore.get_all_memories()" result="success"
+[2026-03-05T00:00:03Z] TASK_END description="Create training data extraction script" result="success"
+[2026-03-05T00:00:04Z] TASK_END description="Create routing classifier module" result="success"
+[2026-03-05T00:00:05Z] TASK_END description="Create training script" result="success"
+[2026-03-05T00:00:06Z] TASK_END description="Integrate classifier into HybridRouter" result="success"
+[2026-03-05T00:00:07Z] TASK_END description="Add routing_classifier feature flag" result="success"
+[2026-03-05T00:00:08Z] TASK_END description="Create A/B test harness" result="success"
+[2026-03-05T00:00:09Z] TASK_END description="Add reset-safety to reset_episodic_memory.sh" result="success"
+[2026-03-05T00:00:10Z] TASK_END description="Write design doc MEMRL_DISTILLATION_DESIGN.md" result="success"
+[2026-03-05T00:00:11Z] TASK_END description="Write 25 unit tests" result="success"
+[2026-03-05T00:00:12Z] TASK_END description="Update documentation (CHANGELOG, handoffs, guides, chapters)" result="success"
