@@ -209,6 +209,7 @@ Optionally injected into the first-batch debugger prompt for trend awareness (gi
 - [x] `eval_registry.yaml` auto-generated from checkpoint data by `update_eval_registry.py`
 - [x] Model-graded results appear in debugger prompt when `model_graded_evals` field is present
 - [x] All existing tests pass (no regressions from config extraction or protocol changes)
+- [x] Model grading infrastructure validated live 2026-03-05 (50/50 ran, 0 errors, feature flag plumbed — grading is post-hoc pipeline)
 
 ## Dependency Order
 

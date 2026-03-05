@@ -111,7 +111,7 @@ Structure:
 - [x] **AC2**: Suite registered in `YAML_ONLY_SUITES` (both research + orchestrator repos) and `DEFAULT_SUITES`
 - [x] **AC3**: `analyze_skill_transfer.py` runs end-to-end, handles 0-result gracefully (prints "No skill_transfer data found." and exits 0)
 - [x] **AC4**: `skill_transfer_regression.py` runs end-to-end with two checkpoint dirs, exits 0 even if no data
-- [ ] **AC5**: After one seeding run with `--suites skill_transfer`, analysis script produces non-empty skill × domain matrix (requires live orchestrator)
+- [x] **AC5**: After one seeding run with `--suites skill_transfer`, analysis script produces non-empty skill × domain matrix — validated 2026-03-05 (36/36 ran, 0 errors, 11.1% accuracy)
 
 ### Test Plan
 

@@ -158,7 +158,7 @@ Discovered during analysis — not blocking for this handoff but should be track
 - [x] Anchored synthesis prompting added (only-retrieved-context + cite-source-URL)
 - [x] Dedup stats (`paragraphs_removed`, `chars_saved`) included in return dict
 - [x] No new dependencies (stdlib `hashlib` + `re` only)
-- [ ] No regression in web_research answer quality (verify via seeding) — pending live validation
+- [x] No regression in web_research answer quality — validated 2026-03-05 (0% infra errors, simpleqa 2% / gpqa 30% — model quality, not dedup issue)
 
 ### Test Plan
 

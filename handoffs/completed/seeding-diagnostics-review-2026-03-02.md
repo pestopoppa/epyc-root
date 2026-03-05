@@ -3,6 +3,7 @@
 **Run period:** 2026-02-27 12:04 → 2026-03-02 06:10 (4.75 days)
 **Records:** 2,867 across 722 questions, 16 suites
 **Status:** COMPLETED — all 10 WIs resolved, validated, ready for next seeding run
+**Re-validated:** 2026-03-05 — 200/200 questions, 0% infra errors (was 21%), 0 hangs. debugbench 84%, livecodebench 100%, gpqa 30%, simpleqa 2%.
 
 ## Summary of Findings
 
