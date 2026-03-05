@@ -14,6 +14,13 @@
   - **Design doc**: `docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md`.
   - 25 new tests (episodic store + classifier). Files: `episodic_store.py`, `routing_classifier.py`, `retriever.py`, `features.py` (MODIFIED); `extract_training_data.py`, `train_routing_classifier.py`, `ab_test_classifier.py`, `test_episodic_store.py` (NEW).
 
+- **GraphRouter GAT training + reset-safety**:
+  - GAT weights trained: 32,486 memories → 17 task types, 17 clusters, 7 edges, 54.9% edge accuracy (111K params, early stopped at epoch 20).
+  - Bugs fixed: `_clear_graph()` preserved LLMRole nodes; escalation role extraction (`escalate:X->Y` → role Y); fallback task_type clustering when per-memory embeddings unavailable.
+  - **Reset safety unified**: `reset_episodic_memory.sh` deletes both classifier AND GAT weights, creates single `retrain-routing-models.md` handoff covering both.
+  - Files: `routing_graph.py` (MODIFIED), `reset_episodic_memory.sh` (MODIFIED), `graph_router_weights.npz` (NEW).
+  - Handoffs completed: `graphrouter-memrl-augmentation.md`, `colbert-zero-research-integration.md`.
+
 - **Inference lock starvation fix validated**:
   - Root cause: PrefixRouter `num_slots=4` vs llama-server `-np 2` mismatch.
   - 40/40 concurrent requests pass. Defense-in-depth: lock watchdog, streaming cancel check, tighter httpx timeouts.
