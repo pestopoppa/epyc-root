@@ -1684,3 +1684,9 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
   RESULT: success — GLM-4.7-REAP, MiniMax M2.1 x2, Phi-4 x2, Qwen3-Next-80B, Qwen3-30B-Thinking x2
   FILES_MODIFIED: scripts/lib/registry.py, scripts/benchmark/run_benchmark.py, orchestration/model_registry.yaml, 6 suite YAMLs
   REPO: epyc-inference-research
+
+[2026-03-06T21:00:00Z] SESSION server-crash-recovery-fix
+  TASK: Fix moe_spec_lookup configs skipping due to undetected server crash
+  RESULT: success — crash recovery now handles ss.server not None + not is_running(); ss.lookup reset on MoE restart
+  FILES_MODIFIED: scripts/benchmark/run_benchmark.py
+  REPO: epyc-inference-research
