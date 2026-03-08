@@ -1,5 +1,30 @@
 # Changelog
 
+## 2026-03-08
+
+- **AutoPilot: Continuous recursive optimization framework**:
+  - Full implementation of 4-species optimization loop for autonomous orchestration tuning.
+  - **Species**: Seeder (3-way eval + Q-value training), NumericSwarm (Optuna NSGA-II, 5 surfaces, 16 params), PromptForge (Claude CLI prompt mutation, 5 mutation types), StructuralLab (checkpointing, routing model training, SkillBank distillation, memory reset lifecycle).
+  - **EvalTower**: Tiered validation T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m), wrapping existing seeding/scoring infrastructure. Train/validate split: debug suites train routing, HF benchmarks validate.
+  - **ParetoArchive**: 4D non-dominated sorting (quality, speed, -cost, reliability) with hypervolume indicator, genealogy tracking, production-best tagging.
+  - **SafetyGate**: Quality floor (≥2.0/3.0), per-suite regression guard (≤-0.1), architect routing cap (≤80%), throughput floor (≥80% baseline), 3-failure auto-rollback.
+  - **MetaOptimizer**: Species budget rebalancing every 50 trials based on effectiveness rates, memory phase, and hypervolume stagnation.
+  - **Progress plots**: 6 auto-generated matplotlib visualizations (hypervolume trend, Pareto frontier, species effectiveness, per-suite heatmap, memory convergence, trial timeline).
+  - **Controller**: Claude CLI meta-reasoning with `--resume` session persistence, structured `json:autopilot_actions` output, autonomous fallback mode (`--no-controller`).
+  - **CLI**: `autopilot.py start|status|pause|resume|report|plot|checkpoint|restore`. Process locking, graceful shutdown, state persistence.
+  - Files: 14 new Python files in `epyc-orchestrator/scripts/autopilot/`, `autopilot_baseline.yaml`, `autopilot-continuous-optimization.md` handoff.
+
+## 2026-03-06
+
+- **SkillBank handoff audit + documentation update**:
+  - `handoffs/active/skillbank-distillation.md` updated to reflect completed implementation (Phases 1-8, ~2,020 lines, 139 tests).
+  - Stale references fixed: `SKILLBANK_ENABLED` → `ORCHESTRATOR_SKILLBANK`, `Ch27` → `Ch15`, `Codex 5.2` → `Codex (gpt-5.3-codex)`, `repos/epyc-orchestrator` → absolute paths.
+  - Implementation Record (§13) rewritten from future-tense spec to past-tense inventory with file paths and line counts.
+  - Open Questions Q1/Q3/Q4/Q5 marked RESOLVED with implementation details.
+  - New sections added: Production Activation Runbook (§18), A/B Test Protocol (§19), Operational Procedures (§20).
+  - Chapter cross-references added: Ch08 (failure lesson formalization), Ch10 (escalation reduction via skills), Ch14 (skill diagnostics), Ch16 (skill effectiveness scoring). Ch09 already had skill seeding section.
+  - Files: `skillbank-distillation.md`, `08-graph-reasoning.md`, `09-memory-seeding.md` (no change needed), `10-escalation-and-routing.md`, `14-security-and-monitoring.md`, `16-calibration-and-risk-control.md`, `CHANGELOG.md`.
+
 ## 2026-03-05
 
 - **MemRL Distillation Pipeline (Phases 2-4) — ColBERT-Zero Track 2**:

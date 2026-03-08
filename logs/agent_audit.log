@@ -1690,3 +1690,30 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
   RESULT: success — crash recovery now handles ss.server not None + not is_running(); ss.lookup reset on MoE restart
   FILES_MODIFIED: scripts/benchmark/run_benchmark.py
   REPO: epyc-inference-research
+
+[2026-03-07T21:00:00Z] SESSION qwen35-benchmark-review-and-table-update
+  TASK: Review Qwen3.5 benchmark results across both runs (20260303_170903, 20260307_111801)
+  RESULT: success — 12 models with 60-61q baselines, identified 3 sentinel TPS values, compiled speed+quality table
+  TASK: Update master benchmark table (RESULTS.md) with all Qwen3.5 entries
+  RESULT: success — 14 entries added across 4 tier sections, corrected inflated 35B scores (90%→83%)
+  TASK: Update qwen35-frontdoor-benchmark.md handoff with Phase 2 results
+  RESULT: success — rescored Phase 1 section, added Phase 2 results table, updated checklist
+  TASK: Investigate missing 35B variant results (Q4KS/Q5KS/Q6K/Q8_0)
+  RESULT: confirmed deleted during token budget fix, review CSVs preserved in git, re-run in progress
+  FILES_MODIFIED: docs/reference/benchmarks/RESULTS.md (epyc-inference-research), handoffs/active/qwen35-frontdoor-benchmark.md, progress/2026-03/2026-03-07.md, logs/agent_audit.log
+  REPO: epyc-root, epyc-inference-research
+
+[2026-03-08T09:00:00Z] SESSION benchmark-consolidation-and-defaults
+  TASK: Consolidate all benchmark results into single run directory
+  RESULT: success — 795 files merged into 20260303_170903 (934 total, 105 models), no deletions, cp --no-clobber preserves newer versions
+  TASK: Make --resume the default behavior in run_benchmark.py
+  RESULT: success — default now resumes latest run, --new-run flag for fresh starts
+  FILES_MODIFIED: scripts/benchmark/run_benchmark.py (epyc-inference-research)
+  REPO: epyc-inference-research
+{"ts":"2026-03-08T21:30:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"SESSION_START","msg":"AutoPilot continuous optimization implementation","details":"new_session=ses_20260308_autopilot"}
+{"ts":"2026-03-08T21:30:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"TASK_START","msg":"Implement AutoPilot framework","details":"Full 4-species optimization loop: seeder, numeric_swarm, prompt_forge, structural_lab + eval_tower + pareto_archive + safety_gate"}
+{"ts":"2026-03-08T21:35:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"FILE_MODIFY","msg":"epyc-orchestrator/scripts/autopilot/","details":"action=create; 14 Python files: autopilot.py, experiment_journal.py, pareto_archive.py, safety_gate.py, eval_tower.py, config_applicator.py, meta_optimizer.py, progress_plots.py, sentinel_questions.yaml, species/{__init__,seeder,numeric_swarm,prompt_forge,structural_lab}.py"}
+{"ts":"2026-03-08T21:40:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"FILE_MODIFY","msg":"epyc-orchestrator/orchestration/autopilot_baseline.yaml","details":"action=create; Frozen baseline metrics for safety gate"}
+{"ts":"2026-03-08T21:42:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"FILE_MODIFY","msg":"epyc-root/handoffs/active/autopilot-continuous-optimization.md","details":"action=create; Full handoff document with architecture, integration points, verification plan"}
+{"ts":"2026-03-08T21:45:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"TASK_END","msg":"Implement AutoPilot framework","details":"outcome=success; 14 files, all syntax checks pass, foundation tests pass (journal, pareto, safety, meta, optuna, action extraction)"}
+{"ts":"2026-03-08T21:50:00+01:00","session":"ses_20260308_autopilot","level":"INFO","cat":"TASK_START","msg":"Update documentation and push","details":"CHANGELOG, progress report, agent audit log, git commits"}
