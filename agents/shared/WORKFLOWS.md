@@ -38,7 +38,7 @@
 
 1. Reconcile handoff checklist against real code/tests before marking complete.
 2. Extract durable findings into docs and agent playbooks; keep handoff as execution log, not the only source of truth.
-3. Update roadmap/blocker trackers (`handoffs/README.md`, `orchestration/BLOCKED_TASKS.md`) in `epyc-root`.
+3. Update roadmap/blocker trackers (`handoffs/README.md`, `coordination/BLOCKED_TASKS.md`) in `epyc-root`.
 4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used.
 5. Move handoff from `handoffs/active/` to `handoffs/completed/` only after docs + trackers + evidence are in place.
 

@@ -86,4 +86,4 @@ Document key architectural or implementation decisions.
 
 `PROGRESS_YYYY-MM-DD.md` or `PROGRESS_Sprint-N.md`
 
-Store in: `orchestration/progress/`
+Store in: `coordination/progress/`

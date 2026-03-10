@@ -1,7 +1,15 @@
 # Pre-Split Optimization A/B Test Plan — Root Workload Infra
 
-**Created**: 2026-02-21  
-**Status**: READY FOR EXECUTION  
+**Created**: 2026-02-21
+**Archived**: 2026-03-04
+**Status**: ARCHIVED — partially executed, no longer executable in current form
+
+> **Archival Note (2026-03-04):**
+> - **Concrete outcome**: 10.8 model-tier routing validated as **KEEP** (-15.2% cost, 0% quality delta). This is the only optimization that completed full live A/B testing.
+> - **Remaining 0.x/10.7.x optimizations** were never A/B tested against live models.
+> - **Not executable**: Scripts referenced below (in `scripts/root_workload/ab/`) were created in the pre-split monorepo and moved to `epyc-inference-research` during the repo split. Paths in this handoff are broken.
+> - **Reference value**: The experiment design (Section 10), decision function (Section 10.6), and per-optimization flag map (Section 11) remain useful as methodology references if these optimizations are revisited.
+
 **Primary Reference**: `handoffs/active/repo-split-strategy.md` (Section 10)
 
 ---
