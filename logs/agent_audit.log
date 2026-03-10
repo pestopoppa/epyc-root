@@ -1750,3 +1750,33 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 {"ts":"2026-03-09T23:00:08+01:00","session":"ses_20260309_stack_review","level":"INFO","cat":"FILE_MODIFY","msg":"epyc-root/handoffs/active/yarn-context-extension-research.md","details":"action=create; YaRN research stub with references"}
 {"ts":"2026-03-09T23:00:09+01:00","session":"ses_20260309_stack_review","level":"INFO","cat":"FILE_MODIFY","msg":"epyc-root/progress/2026-03/2026-03-07.md","details":"action=edit; +Stack swap analysis section, +YaRN, +397B scoring gap"}
 {"ts":"2026-03-09T23:00:10+01:00","session":"ses_20260309_stack_review","level":"INFO","cat":"SESSION_END","msg":"Stack swap analysis complete","details":"outcome=success"}
+
+[2026-03-09T21:55:00Z] SESSION_START | agent=claude-opus-4-6 | purpose=Handoff validation: skillbank-distillation + search-r1-reward-design
+[2026-03-09T21:14:00Z] TASK_START | task=skillbank-unit-tests | desc=Run 101 SkillBank unit tests
+[2026-03-09T21:14:02Z] TASK_END | task=skillbank-unit-tests | result=success | detail=101/101 passed in 2.04s
+[2026-03-09T21:14:16Z] TASK_START | task=episodic-store-check | desc=Verify trajectory volume for distillation
+[2026-03-09T21:14:17Z] TASK_END | task=episodic-store-check | result=success | detail=32,524 memories (threshold 500)
+[2026-03-09T21:17:41Z] TASK_START | task=skillbank-distillation | desc=Run distillation with frontdoor teacher (180 trajectories)
+[2026-03-09T21:23:46Z] TASK_END | task=skillbank-distillation | result=success | detail=57 skills (27 routing, 18 failure_lesson, 12 escalation), 365s
+[2026-03-09T21:31:48Z] TASK_START | task=search-r1-seeding | desc=3-way seeding on simpleqa (5q × 4 strategies)
+[2026-03-09T21:55:04Z] TASK_END | task=search-r1-seeding | result=success | detail=20/20 rewards injected, WORKER 100% pass rate
+[2026-03-09T21:55:10Z] TASK_START | task=make-gates | desc=Run make gates (schema, shellcheck, format, lint)
+[2026-03-09T21:55:20Z] TASK_END | task=make-gates | result=partial | detail=4/5 passed, nextplaid-reindex timeout (inference contention)
+[2026-03-09T21:55:30Z] HANDOFF_CLOSED | handoff=skillbank-distillation | moved_to=completed
+[2026-03-09T21:55:30Z] HANDOFF_CLOSED | handoff=05-search-r1-reward-design | moved_to=completed
+[2026-03-09T21:56:00Z] STACK_STOP | desc=Full orchestrator stack stopped (--all)
+[2026-03-09T21:56:00Z] SESSION_END | agent=claude-opus-4-6 | handoffs_closed=2
+[2026-03-10T08:00:00Z] SESSION_START | agent=claude-opus-4-6 | purpose=specexec-verification-profiling
+[2026-03-10T08:00:00Z] TASK_START | task=specexec-phase1 | desc=Batch verification latency curve (5 models x 10 batch sizes x 2 NUMA modes)
+[2026-03-10T08:08:00Z] TASK_END | task=specexec-phase1 | result=success | detail=10 CSVs generated, thesis partially refuted (4-5x at N=64 for Q4_K_M, 1.69x for f16)
+[2026-03-10T08:08:00Z] TASK_START | task=specexec-phase2 | desc=Draft model per-token generation cost (9 drafters)
+[2026-03-10T08:09:00Z] TASK_END | task=specexec-phase2 | result=success | detail=Fastest: Qwen2.5-Coder-0.5B (185 t/s), Slowest: Qwen3.5-0.8B (44 t/s)
+[2026-03-10T08:09:00Z] TASK_START | task=specexec-phase3 | desc=Large-K linear speculation (4 pairs x 5 K values = 20 configs)
+[2026-03-10T11:00:00Z] TASK_END | task=specexec-phase3 | result=success | detail=Throughput flat K=16 to K=256 for all pairs. Linear spec saturated at K=16.
+[2026-03-10T11:00:00Z] TASK_START | task=specexec-plots | desc=Generate publication-quality plots
+[2026-03-10T11:01:00Z] TASK_END | task=specexec-plots | result=success | detail=8 plots generated (latency curves, NUMA comparisons, draft costs, throughput vs K)
+[2026-03-10T11:01:00Z] TASK_START | task=specexec-docs | desc=Fill experiment doc, update Chapter 10, update handoffs
+[2026-03-10T11:30:00Z] TASK_END | task=specexec-docs | result=success | detail=Experiment doc complete, Chapter 10 Section 10 updated, downstream handoffs annotated with empirical data
+[2026-03-10T11:30:00Z] HANDOFF_CLOSED | handoff=specexec-verification-profiling | moved_to=completed
+[2026-03-10T11:30:00Z] HANDOFF_UNBLOCKED | handoff=hsd-hierarchical-self-speculation | status=ready
+[2026-03-10T11:30:00Z] SESSION_END | agent=claude-opus-4-6 | handoffs_closed=1 | handoffs_unblocked=1
