@@ -1,0 +1,4 @@
+name: research-intake
+display_name: Research Intake
+short_description: Process research URLs into indexed, cross-referenced intake entries.
+default_prompt: Process the provided research URLs through the intake pipeline.
