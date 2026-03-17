@@ -273,7 +273,7 @@
 
 ### Notes on RLM deltas vs current code
 
-- D1 context compaction: effectively implemented as session compaction in graph execution (`src/graph/helpers.py`, feature `session_compaction`).
+- D1 context compaction: effectively implemented as session compaction in graph execution (`src/graph/helpers.py`, feature `session_compaction`). **Further context management work superseded by `handoffs/active/context-folding-progressive.md`** — progressive 4-phase upgrade from single-level compaction to two-tier condensation with process reward telemetry, informed by Context-Folding (intake-154), AgentFold (intake-155), MemAgent (intake-156), and ReSum (intake-157).
 - D2 budget propagation: partially implemented (delegation and lock/deadline paths), not yet end-to-end through all sub-LM calls.
 - D3 depth-based model override: implemented with config/env/registry wiring, worker-only + max-depth guardrails, and production default-on rollout (`get_features(production=True)`).
 - D4 persistence protocol: versioned protocol boundary and restore compatibility diagnostics implemented; future protocol-version migrations remain optional.
@@ -489,3 +489,30 @@ When all open items above are complete:
 1. Extract final findings to docs chapters.
 2. Update blocked/task trackers and changelog with closure evidence.
 3. Archive this handoff from `handoffs/active/` to `handoffs/archived/`.
+
+## Research Intake Update — 2026-03-16
+
+### New Related Research
+- **[intake-153] "Recursive Language Models"** (arxiv:2512.24601)
+  - Relevance: This IS the foundational RLM paper — now has standalone intake entry
+  - Key technique: Symbolic recursion via REPL environment offloading
+  - Reported results: GPT-5 RLM 91.3% BrowseComp+; RLM-Qwen3-8B 32% CodeQA with 1K fine-tune samples
+  - Delta from current approach: EPYC implements 80% of RLM; remaining gaps are async sub-calls and forced exploration validation
+
+- **[intake-154] "Context-Folding"** (arxiv:2510.11967)
+  - Relevance: 10x context reduction via procedural branching — more aggressive than session_compaction
+  - Key technique: FoldGRPO (RL with process rewards for task decomposition)
+  - Reported results: 10x active context reduction, matches ReAct on Deep Research/SWE
+  - Delta: RL-driven fold decisions vs our rule-based compaction; process rewards could improve MemRL routing
+
+- **[intake-155] "AgentFold"** (arxiv:2510.24699)
+  - Relevance: Two-level condensation (granular + deep) for long-horizon web agents
+  - Key technique: Retrospective consolidation — cognitive-inspired proactive context management
+  - Reported results: 36.2% BrowseComp with 30B-A3B model, surpasses 671B models
+  - Delta: SFT-only (no RL), two-tier compression vs our single-level compaction
+
+- **[intake-157] "ReSum"** (arxiv:2509.13313)
+  - Relevance: Periodic summarization for web search agents — closest match to session_compaction
+  - Key technique: ReSum-GRPO with advantage broadcasting across summary boundaries
+  - Reported results: +8.2% over ReAct with RL training; 33.3% BrowseComp-zh
+  - Delta: Advantage broadcasting solves credit assignment across summary points — applicable to our session log

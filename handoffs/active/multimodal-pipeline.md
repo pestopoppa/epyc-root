@@ -206,3 +206,53 @@ pytest tests/vision/ -v
 # Qwen3-TTS debug (if resuming Path A)
 cd /mnt/raid0/llm/llama.cpp-experimental && git branch --show-current
 ```
+
+## Research Intake Update — 2026-03-14
+
+### New Related Research
+- **[intake-123] "Qwen3-TTS"** (arxiv:2601.15621)
+  - Relevance: Open-source TTS directly relevant to the blocked TTS component of this pipeline
+  - Key technique: Dual-track language model architecture with two speech tokenizers — 25Hz for semantic content (streaming) and 12Hz for ultra-low-latency (97ms first-packet)
+  - Reported results: 1.835% WER across 10 languages, 0.789 speaker similarity; outperforms MiniMax and ElevenLabs
+  - Delta from current approach: TTS was blocked on voice synthesis integration. Qwen3-TTS is Apache 2.0, supports voice cloning with 3s reference audio, and has a HuggingFace Space demo. Could unblock the TTS component.
+
+- **[intake-121] "Moondream 3 Preview"**
+  - Relevance: Compact MoE VLM (9B total / 2B active) could serve as an efficient vision worker
+  - Key technique: 64 experts / 8 activated per token, first 4 layers dense, SigLIP vision encoder, 32K context
+  - Delta from current approach: Vision pipeline uses larger models. Moondream3's 2B active params with MoE efficiency could be a faster alternative for simple vision tasks.
+
+### Deep-Dive Findings (2026-03-15)
+
+**Source**: `research/deep-dives/multimodal-moondream3-qwen3tts.md`
+
+#### Moondream 3: DEFER
+
+Full assessment confirms deferral. BSL 1.1 license is restrictive for production. llama.cpp GGUF support unverified for Moondream 3's novel MoE architecture (64 experts, learned attention temperature scaling). No tool calling capability (our `worker_vision` requires agentic tool calls). Preview state with unoptimized inference and no published standard benchmarks (MMMU, DocVQA, TextVQA). No escalation path (we have Qwen3-VL-30B-A3B for vision_escalation). The native detect/point capabilities are interesting but don't justify replacing our proven Qwen2.5-VL stack.
+
+**Re-evaluate if**: Stable release with verified GGUF, published benchmarks, tool calling, or license change.
+
+#### Qwen3-TTS: VIABLE as PyTorch Sidecar (Alternative Path C)
+
+The deep-dive confirms Qwen3-TTS cannot run through llama-server (audio codec decoder, multi-codebook MTP, ConvNet upsampler are all non-GGUF). However, it works well as a **standalone PyTorch service**:
+
+| Attribute | Value |
+|-----------|-------|
+| Model | Qwen3-TTS-12Hz-0.6B-Base |
+| VRAM | ~1-3 GB (BF16) |
+| First-packet latency | 97 ms |
+| Languages | 10 (zh, en, ja, ko, de, fr, ru, pt, es, it) |
+| Voice cloning | 3-second reference audio |
+| License | Apache 2.0 |
+| Serving | PyTorch + FastAPI wrapper on port 8110 |
+
+This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, blocked) and Path B (MiniCPM-O built-in TTS, untested):
+
+- **Path C**: Run Qwen3-TTS-0.6B as a standalone PyTorch sidecar service. No llama.cpp dependency. FastAPI wrapper accepting text + voice config, returning streaming audio. Feature-flagged behind `ORCHESTRATOR_TTS_ENABLED`.
+
+**Advantage over Path A**: No C++ debugging needed — uses official PyTorch inference. **Advantage over Path B**: Independent service, doesn't couple TTS to a specific vision model. **Disadvantage**: Separate inference stack to maintain (PyTorch, not llama-server).
+
+**Action items** (when TTS becomes a priority):
+- [ ] Prototype: FastAPI wrapper around `Qwen3TTSModel.from_pretrained()` on port 8110
+- [ ] Benchmark VRAM and latency on EPYC hardware
+- [ ] Add `worker_tts` role to model_registry.yaml (gated behind feature flag)
+- [ ] Design voice cloning guardrails before enabling

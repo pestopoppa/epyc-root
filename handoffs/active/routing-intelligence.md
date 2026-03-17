@@ -102,10 +102,10 @@ Built as part of the MemRL subsystem, not tracked in this handoff at the time:
 
 **Exemplar seeding gap closed (2026-03-06)**: `src/api/__init__.py` lifespan now calls `seed_memory(force=False)` after MemRL initialization. Auto-seeds classification exemplars from YAML on first startup; no-op on subsequent starts if store already has memories.
 
-### Phase 3: Factual-Risk Scorer (shadow mode) — SCAFFOLDING COMPLETE (2026-03-05)
+### Phase 3: Factual-Risk Scorer (shadow mode) — SHADOW ACTIVE (2026-03-15)
 
 Scorer implemented in `src/classifiers/factual_risk.py` (280 lines, regex-only, 43 tests passing).
-Currently deployed with `mode: off`. Pipeline wiring complete (2026-03-06) — `_route_request()` calls `assess_risk()` when mode != "off", attaches score/band to `RoutingResult`. To activate shadow logging, change `factual_risk.mode` from `"off"` to `"shadow"` in `classifier_config.yaml`.
+Pipeline wiring complete (2026-03-06) — `_route_request()` calls `assess_risk()` when mode != "off", attaches score/band to `RoutingResult`. **Activated to shadow mode 2026-03-15** — factual risk score/band now logged on every request in `routing_meta` alongside `difficulty_score`/`difficulty_band`.
 
 Add risk features to a new `src/classifiers/factual_risk.py`:
 - Query intent flags (asks-for-facts/dates/names/citations)
@@ -365,3 +365,51 @@ make gates
 | 2026-03-05 | Claude | Phase 2 marked complete (built independently). Phase 0: 1/3 items fixed, 2 remain. Added Integration Map (10 subsystems). Fixed stale file paths (chat_pipeline/ refactor). Strengthened Phase 3 design (removed spaCy, added per-role calibration, conformal interaction). Extended Phase 4 (EscalationContext fields, A/B methodology). Expanded Phase 6 (rollback criteria, canary %). Added baselines section. Updated config shape to match actual YAML. |
 | 2026-03-05 | Claude | Implemented Phase 0 (2 remaining telemetry items), Phase 3 scorer scaffolding (280 lines, 43 tests, mode: off), EscalationContext risk fields, factual_risk config section. Zero inference, zero behavior change — all behind mode: off or default values. |
 | 2026-03-06 | Claude | Closed Phase 2 exemplar seeding gap (auto-seed on API init). Shadow-mode pipeline wiring in `_route_request()`. Risk fields on `RoutingResult` and `RoleResult`. Config loader default fallback aligned. Ready for shadow mode — flip `factual_risk.mode` to `"shadow"`. |
+
+## Research Intake Update — 2026-03-14
+
+### New Related Research
+- **[intake-120] "Reasoning Models Struggle to Control their CoT"** (arxiv:2603.05706)
+  - Relevance: CoT controllability metrics directly inform factual-risk routing decisions — models that can't hide reasoning are easier to monitor
+  - Key technique: CoT-Control evaluation suite (13,000+ tasks) measuring whether models can selectively hide/alter chain-of-thought
+  - Reported results: 0.1%-15.4% controllability across frontier models; lower controllability = higher monitorability
+  - Delta from current approach: Routing intelligence currently scores factual risk but doesn't account for reasoning model monitorability. Low CoT controllability means reasoning traces are trustworthy signals for routing decisions.
+
+- **[intake-103] "Thinking to Recall"** (arxiv:2603.09906)
+  - Relevance: Shows CoT reasoning expands factual recall boundary but creates hallucination risks through generative self-retrieval — directly relevant to factual risk scoring
+  - Key technique: Hallucination-free trajectory filtering improves accuracy by +8-12%
+  - Delta from current approach: Factual risk classifier (Phase 3) could incorporate reasoning trace quality assessment — filtering hallucinated intermediate steps before scoring final-answer confidence.
+
+### Deep-Dive Findings (2026-03-15)
+
+**Source**: `research/deep-dives/reasoning-recall-cot-controllability.md`
+
+#### Omega Metric — Per-Suite Reasoning Benefit Signal
+
+The Omega metric (arxiv:2603.09906) measures how much reasoning expands a model's effective capability boundary per benchmark suite. High Omega = reasoning is critical; low Omega = reasoning tokens are wasted.
+
+**Integration path**: Compute Omega per-suite using existing seeding infrastructure (pass@k with reasoning ON vs OFF). Store as annotation in model_registry.yaml. When difficulty_signal.py moves to enforce mode, use pre-computed Omega values to decide whether a reasoning model is worth the extra tokens for a given question type.
+
+**Cross-reference**: Also tracked in `reasoning-compression.md` Action 6.
+
+#### Output-Side Verified-Fact Filtering
+
+Paper 1 shows hallucinated intermediate facts in `<think>` blocks predict hallucinated final answers (41.4% vs 26.4% accuracy on SimpleQA). This suggests an output-side complement to our input-side `factual_risk.py`:
+
+```
+Input  → factual_risk.assess_risk(prompt)     → input risk score (fast, regex)
+Output → factual_risk.verify_reasoning(trace)  → output risk score (slow, model-based)
+Combined = f(input_risk, output_risk)
+```
+
+The input-side scorer gates whether to run the expensive output-side verification — only prompts with medium/high input risk warrant output verification. This extends Phase 4 (enforce mode) with a two-stage risk assessment.
+
+**Implementation**: Extract factual claims from `<think>` blocks using entity/date/number patterns (similar to existing `_extract_features` but applied to model output). Cross-reference against high-confidence sources. Gate behind `factual_risk.mode = "enforce"` AND high input-side risk score to control cost.
+
+### Context-Folding Process Reward Integration
+
+**Cross-reference**: `context-folding-progressive.md` Phase 3
+
+Process reward telemetry from the context-folding progressive handoff provides a `segment_advantage` signal computed at consolidation boundaries. This signal measures per-turn contribution to task progress using token_budget_ratio, on_scope, and tool_success_ratio rewards with position-weighted advantage broadcasting (from ReSum-GRPO, arxiv:2509.13313).
+
+**Integration path for Phase 5**: The `segment_advantage` signal can enrich MemRL Q-values — episodes with high segment advantage should receive a Q-value bonus, improving routing accuracy for tasks that benefit from sustained multi-turn reasoning. Position-weighted advantage broadcasting is also directly applicable to delegation episode training (later turns in a delegation loop carry more signal about whether the delegation succeeded).

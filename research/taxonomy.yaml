@@ -1,0 +1,113 @@
+# Research Taxonomy — EPYC Project
+# Categories for classifying inference optimization research.
+# Each entry can belong to multiple categories (categories field is a list).
+
+categories:
+  speculative_decoding:
+    label: Speculative Decoding
+    description: Draft-verify paradigms including tree, linear, self-speculation, and hierarchical approaches.
+    related_chapters:
+      - 01-speculative-decoding.md
+      - 03-prompt-lookup.md
+      - 05-deprecated-approaches.md
+      - 10-advanced-speculative-decoding.md
+    subcategories:
+      - tree_speculation
+      - self_speculation
+      - hierarchical_speculation
+      - draft_model_selection
+
+  moe_optimization:
+    label: MoE Optimization
+    description: Mixture-of-Experts inference optimization including expert pruning, routing, and offloading.
+    related_chapters:
+      - 02-moe-optimization.md
+
+  retrieval_augmented_decoding:
+    label: Retrieval-Augmented Decoding
+    description: RAG, retrieval-augmented generation, and grounded decoding techniques.
+    related_chapters: []
+
+  kv_cache:
+    label: KV Cache Optimization
+    description: KV cache compression, quantization, eviction, shared prefix caching, paged attention.
+    related_chapters:
+      - 04-radix-attention.md
+    subcategories:
+      - cache_compression
+      - cache_sharing
+      - paged_attention
+
+  quantization:
+    label: Quantization
+    description: Weight and activation quantization, mixed-precision, calibration methods.
+    related_chapters: []
+
+  benchmark_methodology:
+    label: Benchmark Methodology
+    description: Evaluation frameworks, scoring methods, dataset construction, statistical rigor.
+    related_chapters:
+      - 06-benchmarking-framework.md
+      - 07-benchmark-suite-construction.md
+
+  cost_aware_routing:
+    label: Cost-Aware Routing
+    description: Request routing based on cost, latency, quality tradeoffs across model tiers.
+    related_chapters:
+      - 08-cost-aware-rewards.md
+
+  agent_architecture:
+    label: Agent Architecture
+    description: Multi-agent systems, tool use, REPL-driven code generation, orchestration patterns.
+    related_chapters:
+      - 09-claude-debugger.md
+
+  context_extension:
+    label: Context Extension
+    description: Long-context methods including YaRN, RoPE scaling, sliding window, and sparse attention.
+    related_chapters: []
+
+  inference_serving:
+    label: Inference Serving
+    description: Serving infrastructure, batching, scheduling, continuous batching, disaggregated serving.
+    related_chapters: []
+
+  memory_augmented:
+    label: Memory-Augmented Models
+    description: External memory, episodic memory, working memory integration for LLMs.
+    related_chapters: []
+
+  training_distillation:
+    label: Training & Distillation
+    description: Knowledge distillation, fine-tuning, LoRA, RLHF, DPO, and training optimization.
+    related_chapters: []
+
+  multimodal:
+    label: Multimodal
+    description: Vision-language models, image understanding, multimodal reasoning.
+    related_chapters: []
+
+  routing_intelligence:
+    label: Routing Intelligence
+    description: Classifier-based routing, difficulty estimation, factual risk scoring, delegation policy.
+    related_chapters: []
+
+  hardware_optimization:
+    label: Hardware Optimization
+    description: GPU/CPU kernel optimization, NUMA-aware scheduling, operator fusion, flash attention.
+    related_chapters: []
+
+  ssm_hybrid:
+    label: SSM & Hybrid Architectures
+    description: State-space models (Mamba), SSM-attention hybrids, linear attention variants.
+    related_chapters: []
+
+  autonomous_research:
+    label: Autonomous Research
+    description: AI-driven research workflows, automated experimentation, self-improving systems.
+    related_chapters: []
+
+  swarm_techniques:
+    label: Swarm Techniques
+    description: Multi-agent swarm coordination, parallel exploration, ensemble methods.
+    related_chapters: []

@@ -191,3 +191,179 @@ python scripts/autopilot/autopilot.py restore
 - `httpx` (already installed) — API calls
 - `scikit-learn` (optional) — Cluster-based robust selection
 - `claude` CLI (on PATH) — Controller meta-reasoning (optional, --no-controller for autonomous mode)
+
+## Research Intake Update — 2026-03-14
+
+### New Related Research
+- **[intake-108] "EvoScientist: Multi-Agent Evolving AI Scientists"** (arxiv:2603.08127)
+  - Relevance: Directly addresses multi-agent scientific discovery with persistent memory — core pattern for AutoPilot's recursive optimization
+  - Key technique: Three specialized agents (Researcher, Engineer, Evolution Manager) with persistent ideation + experimentation memory modules enabling continuous improvement across iterations
+  - Reported results: Outperforms 7 SOTA systems in novelty, feasibility, relevance, and clarity; substantially improved code execution success rates
+  - Delta from current approach: AutoPilot uses 4 optimizer species with a Pareto archive; EvoScientist separates idea generation from execution with an Evolution Manager for knowledge distillation — this separation pattern could inform AutoPilot's species design
+
+- **[intake-106] "Agentic Critical Training (ACT)"** (arxiv:2603.08706)
+  - Relevance: RL-based self-reflection training for agents — relevant to AutoPilot's optimizer species learning to judge action quality
+  - Key technique: GRPO-based training where models learn to identify superior actions among alternatives
+  - Reported results: +5.07 points over imitation learning, transfers across model sizes (4B→8B trajectories)
+  - Delta from current approach: AutoPilot evaluates via benchmark tower; ACT shows agents can learn quality-awareness through RL
+
+- **[intake-105] "PostTrainBench"** (arxiv:2603.08640)
+  - Relevance: Benchmarks autonomous post-training by agents — informs what AutoPilot-style systems can realistically achieve
+  - Key technique: Evaluates frontier agents autonomously post-training LLMs under 10h/1xH100 constraint
+  - Reported results: Best agent (Opus 4.6) at 23.2% vs 51.1% official, but can surpass baselines on targeted tasks; performance plateaus after ~5 hours
+  - Delta from current approach: Sets empirical expectations for autonomous optimization capabilities
+
+### Deep-Dive Findings (2026-03-15)
+
+**Source**: `research/deep-dives/agent-architectures-paperclip-agentrxiv.md`
+
+#### Cost Governance Gap
+
+Paperclip (arxiv:2502.01157) implements cost-aware LLM selection with explicit per-request cost tracking. Our orchestrator currently has **zero cost tracking** — no field on `RoutingResult`, no per-request token cost accumulation, no cost dimension in routing decisions.
+
+**Implemented**: Added `estimated_cost: float` to `RoutingResult`. Computed in `_route_request()` as `_TIER_COST_WEIGHTS[tier] × est_tokens / 1M` (tier A=10, B=3, C=1, D=0.2). Logged in `routing_meta` as telemetry. Default 0.0 (backward compatible). 3 tests added.
+
+**Next step**: Wire into Pareto archive's cost dimension (currently approximated). Becomes critical if/when we add external API fallback (cloud models have explicit per-token pricing).
+
+#### Retrieval-Augmented Autopilot Iteration
+
+AgentRxiv's pattern of retrieving similar past problems/solutions to guide current iteration maps onto AutoPilot's continuous optimization loop. Currently, AutoPilot's species operate independently — each trial starts fresh without consulting past trial outcomes beyond the Pareto archive.
+
+**Proposed enhancement**: When PromptForge proposes a prompt mutation, first retrieve similar past mutations from the experiment journal (JSONL) to inform the mutation direction. When NumericSwarm suggests parameters, retrieve past trials in the same parameter neighborhood. This is essentially RAG for the optimizer loop.
+
+**Implementation**: The experiment journal (`autopilot_journal.jsonl`) already stores full trial details. Add a retrieval step (embed trial description, cosine similarity search) before each species proposes an action. Could reuse the existing MemRL retriever infrastructure.
+
+**Priority**: Low — only valuable after AutoPilot has accumulated enough trial history to make retrieval useful (50+ trials).
+
+#### EvoScientist Knowledge Distillation Gap (intake-108)
+
+**Source**: `research/deep-dives/evoscientist-multi-agent-evolution.md`
+
+EvoScientist's Evolution Manager (EMA) separates knowledge distillation from ideation/execution. Three channels: IDE (direction distillation from successes), IVE (failure analysis with LLM-summarized root causes), ESE (strategy distillation from engineer trajectories). Ablation shows +45.83 gap from full evolution vs none; ESE alone gives +10.17pp code execution success.
+
+**Key finding**: Our AutoPilot species are **memoryless** — the experiment journal is comprehensive but passive. Species code never retrieves past trial outcomes:
+- `Seeder.run_batch()`: no past trial reads
+- `NumericSwarm.suggest_trial()`: Optuna internal state only
+- `PromptForge.propose_mutation()`: current failure context only, no past mutation outcomes
+- `StructuralLab`: no past experiment consultation
+
+Journal's `summary_text()` only consumed by Controller (last 20 entries as flat text) — poor substitute for targeted semantic retrieval.
+
+**Proposed improvements** (ordered by effort):
+
+1. **Failure analysis on rejection** — **DONE** (2026-03-15): `SafetyGate.analyze_failure()` builds structured narrative (VIOLATIONS/DEGRADED SUITES/ROUTING IMBALANCE/WARNINGS). `failure_analysis: str` field on `JournalEntry`. Wired into autopilot main loop. 6 tests.
+
+2. **Strategy memory store** — **DONE** (2026-03-15): `StrategyStore` in `orchestration/repl_memory/strategy_store.py` — FAISS+SQLite, reuses `FAISSEmbeddingStore` and `TaskEmbedder`. Registered in `__init__.py`. 8 tests. Prerequisite for items 3-4.
+
+3. **Evolution Manager species** (medium effort, highest long-term value): 5th species that runs every 5 trials, distills knowledge from recent outcomes into strategy memory via LLM summarization. Use explore worker (Qwen2.5-7B, port 8082) for cost-efficient processing.
+
+4. **Species retrieval integration** (low effort once store exists): Wire `strategy_memory.retrieve()` into each species' proposal method. Biggest impact for PromptForge — add "Past mutation insights" to `_build_mutation_prompt()`.
+
+**What NOT to adopt from EvoScientist**: Elo-based ranking (our Pareto archive is superior), fixed pipeline (our species architecture is more flexible), external embedding models (reuse existing FAISS infrastructure).
+
+#### AutoResearch Ecosystem — Deep Dive (intake-148, intake-149)
+
+**Source**: PraxLab (github.com/Hamza-Mos/praxlab), AutoResearch (github.com/karpathy/autoresearch)
+
+The autoresearch pattern (Karpathy, March 2026) demonstrates that **tightly constrained agents** — one file, one metric, fixed 5-minute budget — outperform open-ended experimentation. 700 autonomous experiments produced ~20 additive improvements, 11% efficiency gain on Time-to-GPT-2. No programmatic orchestrator — the LLM IS the loop, guided by `program.md`.
+
+PraxLab extends this with structured experiment memory (SQLite: hypotheses→experiments→results with mechanism confirmation/refutation), modular training approaches (pretrain/rl/sl/prime/gepa), git worktree isolation per experiment, and `lab` CLI (5 commands, zero deps) for cross-session knowledge persistence via `git rev-parse --git-common-dir`.
+
+**Key architectural differences from AutoPilot:**
+- Autoresearch has NO orchestrator code — trust is in the LLM's judgment + `results.tsv` ratchet
+- PraxLab's `lab failures` dumps failed approaches at session start — agents never retry known-bad ideas
+- Both use git as the rollback mechanism (commit before, `git reset HEAD~1` on failure)
+- Autoresearch's simplicity criterion: "0.001 improvement + 20 lines of hacky code = not worth it"
+- PraxLab's `--mechanism-confirmed`/`--mechanism-refuted` flags close the hypothesis loop
+
+**Deep-dive audit identified 13 recommended actions** against our AutoPilot codebase, organized by priority:
+
+##### HIGH PRIORITY — Wiring bugs (infrastructure built but not connected)
+
+**1. Wire `failure_context` into PromptForge dispatch** (LOW effort)
+`propose_mutation()` accepts `failure_context` and `per_suite_quality` parameters, but `dispatch_action()` at `autopilot.py:264` never passes them. PromptForge mutations are currently blind to why previous attempts failed. Fix: extract last failure narrative from journal and pass to `propose_mutation()`.
+
+**2. Feed failure narratives into controller prompt** (LOW effort)
+`SafetyGate.analyze_failure()` produces structured narratives stored in `JournalEntry.failure_analysis`, but `summary_text()` strips them to one-line summaries. The controller re-proposes similar failing actions because it never sees *why* things failed. Fix: add `recent_failures_text(n=5)` method returning failure narratives for the last N failed trials, inject into controller prompt.
+
+**3. Populate `parent_trial` and `config_diff` journal fields** (LOW effort)
+Both fields exist on `JournalEntry` but are never written. Without lineage tracking, neither the controller nor any analysis tool can reconstruct "trial 47 was a refinement of trial 42." Autoresearch gets this for free via git lineage; PraxLab gets it via hypothesis→experiment FK. Fix: set `parent_trial` to previous trial ID for same species, compute `config_diff` from action dict delta.
+
+##### MEDIUM PRIORITY — Structural improvements from autoresearch patterns
+
+**4. `lab failures`-style query at species proposal time** (MEDIUM effort)
+PraxLab's `lab failures` dumps all failed approaches for the current task at session start. Our species have no equivalent. Add `journal.recent_failures(species=X, n=10)` and inject into each species' proposal context. Highest impact for PromptForge and StructuralLab.
+
+**5. Per-suite quality trends in controller prompt** (MEDIUM effort)
+The controller sees only aggregate quality — cannot say "coder suite declining for 5 trials." Add `journal.suite_quality_trend(last_n=10)` fed into controller prompt template.
+
+**6. Persist `_consecutive_failures` counter** (TRIVIAL effort)
+Safety gate's failure counter lives in memory, resets on process restart. After crash/restart, gate loses "2 of 3 failures before rollback" state. Fix: serialize to `autopilot_state.json`.
+
+**7. Invalidate stale Optuna trials after regime changes** (MEDIUM effort)
+When StructuralLab changes feature flags or PromptForge changes prompts, the optimization landscape shifts. Old Optuna trials become misleading. Add `numeric_swarm.mark_epoch(reason)` after structural/prompt changes that creates a new Optuna study or marks a regime boundary.
+
+**8. Hypothesis-mechanism tracking on JournalEntry** (LOW effort)
+PraxLab's SQLite stores not just outcomes but *why* something was tried and the *mechanism* expected to cause improvement. Our `JournalEntry` has `summary_text` but no structured hypothesis field. Adding `hypothesis: str` and `expected_mechanism: str` would improve Strategy Store retrieval quality.
+
+##### LOWER PRIORITY — Design philosophy imports
+
+**9. Tighter per-trial scope** (design change)
+Our species propose actions across multiple dimensions simultaneously. Autoresearch constrains to one-file, one-variable changes for clean attribution. Consider constraining each trial to a single variable change — may improve convergence and make `config_diff` meaningful.
+
+**10. Simplicity criterion for PromptForge** (LOW effort)
+Autoresearch rejects improvements that add disproportionate complexity. Add prompt length delta to mutation evaluation — reject mutations that increase prompt size by >20% for <0.02 quality improvement.
+
+**11. Git worktree isolation for PromptForge** (MEDIUM effort)
+PraxLab isolates each experiment in a worktree. PromptForge currently mutates prompts in-place with git snapshots for rollback. Worktree isolation would make parallel prompt experiments safe and rollback trivial.
+
+**12. Explicit eval trust boundary** (LOW effort, documentation)
+Autoresearch's `prepare.py` is explicitly immutable — the agent cannot game the metric. Our EvalTower's scoring code is theoretically accessible to species. Make the eval trust boundary explicit in species constraints.
+
+**13. Grep-parseable metric output from eval scripts** (LOW effort)
+Autoresearch outputs `val_bpb: 0.993` for automated extraction. Standardize benchmark scripts to `key: value` stdout format to enable automated log analysis and `results.tsv`-style scoreboards.
+
+#### GPD Governance Patterns — Deep Dive (intake-150)
+
+**Source**: Get Physics Done (github.com/psi-oss/get-physics-done)
+
+Deep-dive into GPD's four-phase workflow revealed six patterns directly applicable to EPYC governance (epyc-root + root-archetype), beyond the physics domain. GPD is a 23-agent, 61-command system with 6 MCP servers, 19 tiered verification checks, and a `ResearchContract` as central governance object.
+
+**Gap analysis against our governance architecture** (from `agents/shared/`, `scripts/validate/`, `scripts/hooks/`):
+
+| Gap | Current State | GPD Pattern |
+|-----|--------------|-------------|
+| No plan/task decomposition | Handoff → execution, no intermediate | Phase → Plan → Wave → Task with dependency DAG |
+| Validators run manually | 5 validators exist, none triggered automatically | Verification registry with tiered auto-dispatch |
+| No formal planning phase for new work | Handoff creation is free-form | ResearchContract: scope, claims, acceptance tests, forbidden proxies |
+| No cross-role handoff protocol | Lead-developer delegation matrix, no artifact contract | Agent-to-agent artifact verification on disk |
+| No session continuity state machine | Reconstruct from MEMORY.md + handoffs | Dual-write state (MD+JSON) with crash recovery + execution guards |
+| Verification is advisory | Output contract in AGENT_INSTRUCTIONS.md, not enforced | Never-skippable gates (first-result, skeptical re-questioning, pre-fanout) |
+
+**Recommended actions for epyc-root governance** (ordered by impact):
+
+**14. Handoff contract template** (LOW effort)
+GPD's `ResearchContract` binds scope to verification. Add a structured template to handoff creation requiring: scope (in/out), acceptance criteria, forbidden shortcuts, and verification method. Currently handoffs are free-form markdown with no required fields beyond status/created.
+
+**15. Wire validators into pre-commit or post-session hook** (MEDIUM effort)
+Our 5 validators (`validate_agents_structure.py`, `validate_agents_references.py`, `validate_claude_md_matrix.py`, `validate_doc_drift.py`, `check_numeric_literals.py`) exist but never run automatically. GPD's verification registry auto-dispatches checks by tier. Wire our validators into a post-session or pre-commit hook so drift is caught before it accumulates.
+
+**16. Skeptical re-questioning gate for AutoPilot** (MEDIUM effort)
+GPD's most novel governance pattern: execution halts when results are "proxy-only" (metric improved but via shortcut) or "anchor-thin" (no comparison to established result). Maps directly to AutoPilot's safety gate — add a `proxy_check()` that flags trials where quality improved but per-suite breakdown shows improvement concentrated in easy suites only. Currently the gate checks aggregate quality floor but not whether improvement is substantive.
+
+**17. Forbidden proxy tracking** (LOW effort)
+GPD explicitly tracks "forbidden proxies" — tempting shortcuts that don't actually demonstrate capability. For AutoPilot, this means maintaining a list of known-ineffective optimization directions (e.g., "lowering REPL token cap to improve speed at cost of quality") that species should never re-propose. Complements the `lab failures` pattern (#4 above) but is proactive rather than reactive.
+
+**18. Context budget management for nightshift/autopilot** (MEDIUM effort)
+GPD tracks context pressure (GREEN→RED) and auto-pauses at thresholds. Our nightshift and autopilot sessions can run for hours without context awareness. Add pressure-based pause points: at 60% context, checkpoint state; at 80%, force pause and create `.continue-here.md` equivalent.
+
+**19. Convention locking for feature flag immutability** (LOW effort)
+GPD's convention lock prevents changing notation once established. Apply same pattern to AutoPilot: once a trial establishes a baseline config, lock those parameters from species modification until explicitly unlocked. Prevents StructuralLab from accidentally reverting NumericSwarm's optimized parameters.
+
+#### Cheat-Sheet Distillation Insight (intake-142)
+
+**Source**: arxiv:2509.20820 "Distilling Many-Shot ICL into a Cheat Sheet" (EMNLP 2025)
+
+When implementing `distill_skillbank` (StructuralLab action), adopt cheat-sheet's **difficulty-focused prompting**: "identify which examples you find most difficult, create a cheat sheet for only those." This outperformed broader textbook-style distillation in ablation (90.0% vs 88.9% avg on BBH). The principle: distill hard cases only, don't waste tokens on what the model already handles.
+
+Also: cheat sheets transfer across models (GPT-4.1 → Gemini 2.0 Flash). Test whether skills distilled from architect-tier models improve worker-tier behavior — if so, distillation becomes a cross-tier knowledge transfer mechanism.

@@ -1780,3 +1780,222 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-10T11:30:00Z] HANDOFF_CLOSED | handoff=specexec-verification-profiling | moved_to=completed
 [2026-03-10T11:30:00Z] HANDOFF_UNBLOCKED | handoff=hsd-hierarchical-self-speculation | status=ready
 [2026-03-10T11:30:00Z] SESSION_END | agent=claude-opus-4-6 | handoffs_closed=1 | handoffs_unblocked=1
+
+[2026-03-10T14:35:00Z] SESSION: HSD benchmark analysis and SSM checkpoint investigation
+[2026-03-10T14:35:00Z] TASK_START: "Self-speculation benchmark analysis" reason="Benchmarks complete, analyzing results and updating docs"
+[2026-03-10T14:35:00Z] FINDING: Qwen3.5 hybrid SSM: all speculation configs 33-52% slower than baseline due to SSM checkpoint/restore overhead
+[2026-03-10T14:35:00Z] FINDING: Qwen3 dense: self-spec acceptance rates near-zero (0.5-1.5%) — early-exit logits not useful without SWIFT/LayerSkip training
+[2026-03-10T14:35:00Z] FINDING: SSM checkpoint does full GPU→CPU→GPU roundtrip (~2GB per round) — optimization opportunities: GPU-GPU copy, lazy restore, partial checkpoint
+[2026-03-10T14:35:00Z] FINDING: External draft works on dense models (production config), self-speculation not viable on any tested architecture
+[2026-03-10T14:35:00Z] UPDATE: handoffs/active/hsd-hierarchical-self-speculation.md — status updated with benchmark results and remaining work
+[2026-03-10T14:35:00Z] UPDATE: progress/2026-03/2026-03-10.md — added dense model test results and SSM checkpoint analysis
+[2026-03-10T14:35:00Z] TASK_END: "Self-speculation benchmark analysis" status=success
+
+[2026-03-10T23:00:00Z] SESSION_START | purpose="SSM checkpoint optimization + HiSpec external draft benchmark"
+[2026-03-10T23:00:01Z] TASK_START | desc="Implement double-buffer pointer swap for SSM checkpoint/restore" | reason="Eliminate restore memcpy (~144MB) via O(1) pointer swap to unblock speculation on hybrid SSM models"
+[2026-03-10T23:15:00Z] TASK_END | desc="Double-buffer optimization implemented" | result="success" | details="shadow_r_l/shadow_s_l tensors, ggml_backend_tensor_copy for checkpoint, std::swap for restore, partial cell metadata save"
+[2026-03-10T23:15:01Z] TASK_START | desc="Create HiSpec + external draft benchmark script" | reason="Test intermediate verification with external drafter on dense Qwen3-32B + validate SSM checkpoint optimization on Qwen3.5-9B"
+[2026-03-10T23:25:00Z] TASK_END | desc="Benchmark script created" | result="success" | details="bench_hispec_external.sh: 5 dense configs (baseline, 2 external drafters, 2 HiSpec depths) + 4 SSM configs"
+[2026-03-10T23:25:01Z] TASK_START | desc="Update handoff, progress, audit log" | reason="Document implementation status"
+[2026-03-10T23:30:00Z] TASK_END | desc="Documentation updated" | result="success"
+[2026-03-10T23:45:00Z] TASK_START | desc="Run SSM checkpoint optimization benchmark" | reason="Validate double-buffer pointer swap improvement on Qwen3.5-9B"
+[2026-03-10T23:55:00Z] TASK_END | desc="SSM benchmark complete" | result="success" | details="External draft +9.5% (10.59→11.60), Qwen2.5-Coder-0.5B best at -7.5% vs baseline (14.58 t/s)"
+[2026-03-10T23:55:01Z] TASK_START | desc="Run HiSpec external draft benchmark on Qwen3-32B" | reason="Test intermediate verification with external drafter on dense model"
+[2026-03-11T00:30:00Z] TASK_END | desc="HiSpec benchmark complete" | result="success" | details="External draft +55% (8.44→13.07), HiSpec -10% (intermediate logits reject good drafts, same root cause as self-spec)"
+[2026-03-11T00:30:01Z] TASK_END | desc="Update docs with all benchmark results" | result="success"
+[2026-03-11T01:00:00Z] TASK_START | desc="Implement freeze-recurrent speculation" | reason="Eliminate all SSM checkpoint/restore overhead by skipping recurrent state writes during speculation"
+[2026-03-11T01:30:00Z] TASK_END | desc="Freeze-recurrent implemented" | result="success" | details="cparams.freeze_recurrent flag, llama_set_freeze_recurrent() API, guarded state writes in qwen35.cpp/qwen35moe.cpp/qwen3next.cpp, server-context.cpp integration"
+[2026-03-11T01:30:01Z] TASK_START | desc="Run freeze-recurrent benchmark on Qwen3.5-9B" | reason="Validate whether stale SSM state during speculation is viable"
+[2026-03-11T02:00:00Z] TASK_END | desc="Freeze-recurrent benchmark complete" | result="success" | details="BREAKTHROUGH: freeze+Qwen2.5-Coder-0.5B = 15.96 t/s (+5.4% vs 15.14 baseline). First time speculation beats baseline on hybrid SSM. Accept rate 47.9% (vs 62.7% unfrozen). Applicable to qwen35/qwen35moe/qwen3next."
+[2026-03-11T02:00:01Z] TASK_END | desc="Update handoff/progress/logs" | result="success"
+[2026-03-11T02:30:00Z] TASK_START | desc="Handoff closeout: 4 remaining items" | reason="HSD Phase 1 validation, prompt lookup segfault, architecture gating, Chapter 10 update"
+[2026-03-11T03:00:00Z] TASK_END | desc="HSD Phase 1 --no-hsd toggle" | result="success" | details="enable_hsd_recovery bool in common.h, --no-hsd flag in arg.cpp, guard in sampling.cpp. Build clean."
+[2026-03-11T03:00:01Z] TASK_END | desc="Prompt lookup segfault fix" | result="success" | details="Guard on llama_memory_has_recurrent() in server-context.cpp speculation loop. Auto-disables lookup for hybrid SSM slots. Startup warning added."
+[2026-03-11T03:00:02Z] TASK_END | desc="Architecture detection warnings" | result="success" | details="Startup warnings in server-context.cpp for --n-layer-exit-draft on hybrid (SSM overhead) and dense (no early-exit training). Warning-only, non-blocking."
+[2026-03-11T03:00:03Z] TASK_END | desc="Chapter 10 empirical results" | result="success" | details="Section 11 added to 10-advanced-speculative-decoding.md: 8 subsections covering self-spec, HiSpec, checkpoint opt, freeze-recurrent, external draft, decision matrix."
+[2026-03-11T03:00:04Z] TASK_END | desc="HSD handoff closeout complete" | result="success" | details="All 4 remaining items done. Handoff status=COMPLETE. Files changed: common.h, arg.cpp, sampling.cpp, server-context.cpp (llama.cpp), chapter 10 (research)."
+[2026-03-11T04:30:00Z] TASK_END | desc="HSD A/B benchmark" | result="success" | details="Qwen3-32B + Qwen2.5-Coder-0.5B, 20 prompts. WITH HSD: 13.03 t/s, 53.16% accept. WITHOUT HSD: 12.93 t/s, 52.18% accept. Delta: +0.8% throughput, +0.98pp acceptance. Small but free gain."
+[2026-03-11T04:30:01Z] TASK_END | desc="Prompt lookup fix revised: auto freeze-recurrent" | result="success" | details="Auto freeze-recurrent for ALL hybrid speculation. Lookup works on hybrid via frozen SSM. Per-round tracking: slot.freeze_recurrent_active + draft_from_lookup. Checkpoint path now dead code for hybrid models."
+[2026-03-11T04:30:02Z] TASK_END | desc="HSD handoff fully closed" | result="success" | details="All 4 items complete with benchmarks. Code: common.h, arg.cpp, sampling.cpp, server-context.cpp. Docs: chapter 10 section 11. Data: hsd_ab_20260310_222219.csv."
+[2026-03-11T05:00:00Z] TASK_END | desc="HSD handoff merged to production" | result="success" | details="feature/ssm-checkpoint-opt merged to production-consolidated-v2. 13 files, +475/-94. Commit 44255f33b. Handoff moved to completed/."
+[2026-03-11T05:00:01Z] TASK_END | desc="Tree-speculation handoff updated" | result="success" | details="Status: blocked→ready. Added HSD empirical data section (8 findings). Updated dependency graph and conflict analysis. Auto freeze-recurrent, HSD recovery, prompt lookup fix all inherited by tree spec."
+[2026-03-11T06:00:00Z] SESSION_START | desc="Tree-speculation handoff audit" | details="Audit and update tree-speculation-numa-drafting.md for implementation readiness"
+[2026-03-11T06:00:01Z] TASK_START | desc="Audit tree-speculation handoff" | reasoning="Verify line numbers, architecture accuracy, branch strategy, and fix issues before implementation"
+[2026-03-11T06:30:00Z] TASK_END | desc="Audit tree-speculation handoff" | result="success" | details="9 edits applied: (1) branch strategy llama.cpp-experimental→feature/tree-speculation, (2) files summary table updated, (3) polymorphic state architecture documented (common_speculative_state_tree with Option C design), (4) speculative.cpp Create/Modify→Modify + added common.h, (5) stale server line numbers fixed (drafted 157→161, n_draft_total 171-172→175-176), (6) DySpec pseudocode: per-node→wave-based batched expansion, (7) Phase 3 design deferral note added, (8) Phase 4 refocused from ref-counted KV to tree-aware attention mask, (9) degenerate tree validation added"
+[2026-03-11T06:30:01Z] SESSION_END | desc="Tree-speculation handoff audit complete" | details="Handoff now implementation-ready for Phase 1"
+[2026-03-10T23:17:03Z] SESSION_START purpose="Tree speculation Phase 1+2 implementation"
+[2026-03-10T23:17:03Z] TASK_END task="Phase 1: Tree speculation in llama.cpp server" status=success files=5 lines_added=662 branch=feature/tree-speculation
+[2026-03-10T23:19:22Z] TASK_END task="Phase 2: DySpec heap-based dynamic tree construction" status=success
+
+[2026-03-11T01:45:00] TASK tree-speculation-debugging
+  Action: Fixed 3 critical runtime bugs in tree speculation
+  Bugs: (1) draft n_seq_max=1, (2) non-unified KV seq_cp failure, (3) KV/prompt_dft mismatch
+  Result: tree speculation functional, validated at 57.6 t/s / 95.4% accept
+  Files: common/speculative.cpp, tools/server/server-context.cpp
+  Status: success
+
+[2026-03-11T01:45:00] TASK tree-speculation-benchmark
+  Action: Running p_split sweep benchmark on pair 1 (Qwen2.5-7B-f16 + 0.5B-f16)
+  Status: in-progress
+
+2026-03-14 tree-speculation Phase 3 multi-path target verification
+  - Added n_seq_max override to common_params, kv_unified auto-bump gated on --kv-unified flag
+  - Multi-path verification enabled for dense models, disabled for hybrid/recurrent (fundamental SSM incompatibility)
+  - Fixed KV copy bug: position-bounded seq_cp to avoid duplicate prompt KV entries
+  - Benchmarked 3 model pairs: 7B f16, 32B Q4 dense, 122B MoE hybrid
+  - Result: tree not yet a net win — overhead exceeds benefit of alternative path discovery
+  - Root cause: get_best_path() returns draft-optimal path, not greedy — causes path 0 to underperform linear
+  - Critical next step: return greedy path as slot.drafted to guarantee no regression vs linear
+  - Files: common/common.h, common/common.cpp, tools/server/server-context.cpp
+  - Data: epyc-inference-research/data/tree_speculation/server_sweep_20260314_*.csv
+  - Branch: feature/tree-speculation off production-consolidated-v2
+
+2026-03-14 tree-speculation greedy path fix
+  - Added get_greedy_path() to speculation_tree struct (follows primary/top-1 children)
+  - Changed draft() to return get_greedy_path() instead of get_best_path()
+  - Guarantees path 0 never worse than linear — tree can only improve via alt path wins
+  - Impact: minimal on 32B pair (374/502 → 375/503 — paths already agree ~99% of the time)
+  - Root cause of regression is construction overhead, not path selection
+  - Round-level: tree gets +21% more accepted/round (2.74 vs 2.26) but overhead offsets gain
+  - Files: common/speculative.h, common/speculative.cpp
+  - Branch: feature/tree-speculation off production-consolidated-v2
+
+2026-03-15 reasoning-compression implementation (3 actions)
+  Action 1 — Conciseness prompting: DONE
+  - Added conciseness instructions to worker_general.md, worker_math.md, coder_primary.md
+  - Hot-swap files, no restart needed
+  - architect_* and coder_escalation already had conciseness suffixes
+  Action 2 — TrimR evaluation: READY
+  - Created epyc-inference-research/scripts/benchmark/eval_trimr.py
+  - Created epyc-inference-research/docs/experiments/trimr-reasoning-pruning.md
+  - Supports full/think-strip/trimr strategies, dry-run validated
+  - Awaiting model availability for live evaluation
+  Action 3 — Difficulty-adaptive routing signal: DONE
+  - Created epyc-orchestrator/src/classifiers/difficulty_signal.py (~230 lines)
+  - 7 regex features: prompt_length, multi_step, constraints, code, math, nesting, ambiguity
+  - Wired into RoutingResult, EscalationContext, _route_request(), classifier_config.yaml
+  - 30/30 tests passing (tests/classifiers/test_difficulty_signal.py)
+  - Deployed in shadow mode (logs telemetry, no routing changes)
+  - Handoff updated: handoffs/active/reasoning-compression.md (stub → in-progress)
+[2026-03-14T23:30:53Z] SESSION_START | Phase 5 branching reduction experiment
+[2026-03-14T23:30:53Z] TASK | Phase 5a: reduced branching (7/5/3/2→4/3/2, cap 32→16) | result=reverted | Pair 1: +2.7% (was +4.4%), Pair 5: -4.1% (was -5.2%), Pair 8: -6.6% (was +2.0%). Fewer branches reduced both overhead AND accepted tokens — net negative. All changes reverted.
+2026-03-15T09:03:27Z | SESSION_START | Phase 6: Adaptive Tree Speculation — benchmark validation
+2026-03-15T09:08:34Z | TASK_START | Benchmark pairs 1,5,8 with bench_tree_speculation_server.sh
+
+---
+[2026-03-15T23:45:00Z] SESSION: research-deep-dive-handoff-integration
+[2026-03-15T23:45:00Z] TASK_START: "Update handoffs with deep-dive findings" reason="7 research deep-dive reports completed by parallel agents; map findings to existing active handoffs"
+[2026-03-15T23:45:00Z] ACTION: Read 7 deep-dive reports from research/deep-dives/
+[2026-03-15T23:45:00Z] ACTION: Updated reasoning-compression.md — added Actions 4-7 (n-gram loop detection, band-adaptive token budgets, Omega metric, controllability validation)
+[2026-03-15T23:45:00Z] ACTION: Updated routing-intelligence.md — added Omega metric routing signal + output-side verified-fact filtering
+[2026-03-15T23:45:00Z] ACTION: Updated autopilot-continuous-optimization.md — added cost governance gap + retrieval-augmented iteration
+[2026-03-15T23:45:00Z] ACTION: Updated multimodal-pipeline.md — Moondream 3 DEFER confirmed, Qwen3-TTS documented as Path C (PyTorch sidecar)
+[2026-03-15T23:45:00Z] TASK_END: "Update handoffs with deep-dive findings" result="success" — 4 handoffs updated, 0 new handoffs needed, 3 reports correctly filed as no-action
+2026-03-15T10:08:34Z | TASK_START | Phase 6: Adaptive EMA p_split modulation — implementation
+2026-03-15T10:08:35Z | TASK_END | Phase 6 implementation | success | 5 edits in server-context.cpp, clean build
+2026-03-15T10:08:35Z | TASK_START | Phase 6: Benchmark pairs 1,5,8 with bench_tree_speculation_server.sh
+2026-03-15T10:30:00Z | TASK_END | Phase 6 benchmark | success | Pair 1: +3.0%, Pair 5: -5.5%, Pair 8: -7.5%. EMA never triggers bypass — all pairs in 40-85% band.
+2026-03-15T10:30:00Z | TASK_START | Phase 6: Revert — acceptance rate is wrong signal
+2026-03-15T10:31:00Z | TASK_END | Phase 6 revert | success | All 5 changes reverted, clean rebuild, handoff/progress updated
+2026-03-15T10:31:00Z | SESSION_END | Phase 6 adaptive tree — implemented, benchmarked, found ineffective, reverted. Key insight: verification cost (quantization/arch) not acceptance rate is the deciding variable for tree viability.
+
+[2026-03-15T23:55:00Z] TASK_START: "Quick wins from handoff review" reason="Implement low-effort, high-value items from reasoning-compression and routing-intelligence handoffs"
+[2026-03-15T23:55:00Z] ACTION: Flipped factual_risk mode off→shadow in classifier_config.yaml
+[2026-03-15T23:55:00Z] ACTION: Added factual_risk_score/band + difficulty_score/band to routing_meta telemetry in routing.py
+[2026-03-15T23:55:00Z] ACTION: Extended log_delegation() and log_delegation_decision() with difficulty_score/band parameters
+[2026-03-15T23:55:00Z] ACTION: Created detect_think_block_loop() in quality_detector.py — 4-gram loop detection in <think> blocks
+[2026-03-15T23:55:00Z] ACTION: Added 8 tests for think-block loop detection — 99/99 tests passing
+[2026-03-15T23:55:00Z] ACTION: Verified conciseness prompts use stylistic language (safe) not suppression language (dangerous)
+[2026-03-15T23:55:00Z] TASK_END: "Quick wins from handoff review" result="success" — 4 quick wins implemented, 99/99 tests passing
+[2026-03-15T24:30:00Z] SESSION_START: "Three quick wins: band-adaptive budgets + estimated cost + memory nudge"
+[2026-03-15T24:30:00Z] TASK_START: "Band-adaptive token budgets" reason="reasoning-compression Action 5 — flat 5000 cap provably suboptimal (CIB Prop 4.1)"
+[2026-03-15T24:30:00Z] ACTION: Added difficulty_band to TaskState, propagated from RoutingResult via repl_executor.py
+[2026-03-15T24:30:00Z] ACTION: Made _repl_turn_token_cap() band-aware (easy=1500, medium=3500, hard=7000), gated behind enforce mode
+[2026-03-15T24:30:00Z] ACTION: Updated call site in _execute_turn() to pass state.difficulty_band
+[2026-03-15T24:30:00Z] ACTION: Added 7 tests for band-adaptive token cap — 37/37 difficulty_signal tests passing
+[2026-03-15T24:30:00Z] TASK_END: "Band-adaptive token budgets" result="success"
+[2026-03-15T24:30:00Z] TASK_START: "Estimated cost on RoutingResult" reason="Paperclip gap — zero per-request cost tracking"
+[2026-03-15T24:30:00Z] ACTION: Added estimated_cost field to RoutingResult, _TIER_COST_WEIGHTS dict, computed in _route_request()
+[2026-03-15T24:30:00Z] ACTION: Added 3 estimated_cost tests — all passing
+[2026-03-15T24:30:00Z] TASK_END: "Estimated cost on RoutingResult" result="success"
+[2026-03-15T24:30:00Z] TASK_START: "Memory curation nudge" reason="Hermes B4 — zero cross-session preference persistence"
+[2026-03-15T24:30:00Z] ACTION: Appended behavioral nudge to frontdoor.md (in-session only, no store yet)
+[2026-03-15T24:30:00Z] TASK_END: "Memory curation nudge" result="success"
+[2026-03-15T24:30:00Z] ACTION: Updated 3 handoffs, 2 doc chapters, progress report, audit log
+[2026-03-15T24:30:00Z] SESSION_END: "Three quick wins" result="success" — 10 new tests, 109/109 total passing
+2026-03-15T10:44:25Z | TASK_START | Phase 4: f16 target validation — 32B f16 benchmark (pair 10, 256 tokens)
+2026-03-15T10:58:00Z | TASK_END | Phase 4 256t benchmark | success | 5.01→5.80 t/s (+15.8%), biggest tree win
+2026-03-15T11:01:20Z | TASK_START | Phase 4: f16 sustained validation (512 tokens)
+2026-03-15T11:45:00Z | TASK_END | Phase 4 512t benchmark | success | 5.75→6.36 t/s (+10.6% sustained)
+2026-03-15T12:03:00Z | TASK_START | Phase 4: Q8_0 quant comparison (pair 11, 256 tokens)
+2026-03-15T12:35:00Z | TASK_END | Phase 4 Q8 benchmark | success | 9.30→9.53 t/s (+2.5%). Three-way gradient confirmed: Q4 -5.5%, Q8 +2.5%, f16 +15.8%
+2026-03-15T12:35:00Z | TASK_END | Phase 4 complete | success | Tree viable for f16 (strong) and Q8 (marginal), not Q4. Crossover at Q8 quantization level.
+[2026-03-15T25:00:00Z] SESSION_START: "Research deep-dives batch 2 — intakes 126, 129, 108, 111"
+[2026-03-15T25:00:00Z] ACTION: Launched 4 parallel deep-dive agents (FlowSteer, short-m@k, EvoScientist, AReaL)
+[2026-03-15T25:00:00Z] ACTION: intake-126 FlowSteer — blocked on Qwen3.5 (no build_cvec), SEAL baseline viable on dense models
+[2026-03-15T25:00:00Z] ACTION: intake-129 short-m@k — HIGH: length alarm heuristic (cancel+regen at 1.5x budget) is zero-cost
+[2026-03-15T25:00:00Z] ACTION: intake-108 EvoScientist — HIGH: Evolution Manager pattern fills AutoPilot species memory gap
+[2026-03-15T25:00:00Z] ACTION: intake-111 AReaL — NOT RELEVANT: 128+ H800 GPU system, 6 OOM mismatch with our routing training
+[2026-03-15T25:00:00Z] ACTION: Saved 4 reports to research/deep-dives/
+[2026-03-15T25:00:00Z] ACTION: Merged findings into reasoning-compression (Actions 8-9) and autopilot (distillation gap) handoffs
+[2026-03-15T25:00:00Z] SESSION_END: "Deep-dives batch 2" result="success" — 4 reports, 2 handoffs updated, all 22 actionable intakes now covered
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"SESSION_START","msg":"Phase 8 Approach 0: frozen multi-path on hybrid models","details":"new_session=ses_20260315_171027_779162"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_START","msg":"Implement and benchmark frozen multi-path on hybrid models","details":"Remove has_recurrent guard, auto-enable kv_unified, benchmark 4 Qwen3.5 models"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_END","msg":"Implement and benchmark frozen multi-path on hybrid models","details":"outcome=failure"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_START","msg":"Diagnose kv_unified crash and revert hybrid gate","details":"seq_cp cross-stream assertion fixed, results -53% to -62%, guard restored"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_END","msg":"Diagnose kv_unified crash and revert hybrid gate","details":"outcome=success"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_START","msg":"Update handoff progress and logs","details":"Document Approach 0 results, add Approach C recurrent co-drafting"}
+{"ts":"2026-03-15T17:10:27+01:00","session":"ses_20260315_171027_779162","level":"INFO","cat":"TASK_END","msg":"Update handoff progress and logs","details":"outcome=success"}
+[2026-03-15T17:20:18Z] TASK Phase_8_Approach_A_implementation SUCCESS details="Per-path sequential recurrent replay for hybrid tree speculation. 170 lines, 7 change sites in server-context.cpp. Build clean zero warnings."
+[2026-03-15T19:28:13Z] TASK Phase_8_Approach_A_benchmark FAILURE details="Net-negative: -60% to -66% throughput. Full-model decode per path, not recurrent-only. Guard restored."
+[2026-03-15T19:29:52Z] SESSION_START agent=claude-code purpose='CMV deep-dive: output spill implementation + research intake (Neural Thickets + Lossless Claw + CMV)'
+[2026-03-15T19:29:52Z] TASK_END task='Implement _spill_if_truncated() CMV Action 11' status=success reason='Feature flag output_spill_to_file, _spill_if_truncated() in helpers.py, 9 tests, wired into _execute_turn()'
+[2026-03-15T19:29:52Z] TASK_END task='Think block stripping investigation (Action 10)' status=n/a reason='Raw LLM output not carried into next-turn context in REPL architecture'
+[2026-03-15T19:29:52Z] TASK_END task='Research intake: intake-139 through intake-141' status=success reason='Neural Thickets (not_applicable), Lossless Claw (worth_investigating), CMV (worth_investigating)'
+[2026-03-16T00:16:01+01:00] SESSION_START | LangGraph ecosystem deep-dive + migration handoff
+[2026-03-16T00:16:01+01:00] TASK_END | Write langgraph-ecosystem-comparison.md | success
+[2026-03-16T00:16:01+01:00] TASK_END | Create langgraph-migration.md handoff | success
+[2026-03-16T00:16:01+01:00] TASK_END | Update hermes + progress | success
+[2026-03-16T00:24:26Z] SESSION_START | LangGraph pre-migration Steps 1-2 implementation
+[2026-03-16T00:24:26Z] TASK_COMPLETE | Implemented state_history_snapshots + generalized_interrupts feature flags, full state serialization, interrupt protocol, wired into _execute_turn(), 11 new tests (all passing)
+[2026-03-16T14:30:00Z] SESSION_START | Research intake: PraxLab + AutoResearch deep-dive
+[2026-03-16T14:30:00Z] TASK_COMPLETE | Research intake intake-148 (autoresearch) + intake-149 (praxlab) | success | 2 entries indexed, autopilot handoff updated
+[2026-03-16T14:30:00Z] TASK_COMPLETE | Deep-dive audit: 13 recommended actions for AutoPilot | success | 3 HIGH (wiring bugs), 4 MEDIUM (structural), 6 LOWER (philosophy). Handoff + index updated.
+[2026-03-16T15:00:00Z] TASK_COMPLETE | Research intake intake-150 (get-physics-done) | success | 1 entry indexed, verdict: not_applicable, no handoff updates
+[2026-03-16T08:44:03Z] SESSION_START | Phase 8 Approach C: checkpoint+clone_cell hybrid tree benchmark
+[2026-03-16T08:44:03Z] TASK_END | success | clone_cell tail pointer fix + A/B benchmark: -60% throughput, guard restored
+[2026-03-16T16:00:00Z] TASK_COMPLETE | Deep-dive intake-150 (GPD) governance audit | success | Upgraded to medium/worth_investigating. 6 new recommended actions (#14-19) for epyc-root governance. Handoff updated.
+[2026-03-16T11:21:29Z] SESSION_START | SSM Hybrid Acceleration: Phase 1 MoE Self-Draft implementation + benchmark
+[2026-03-16T11:21:29Z] TASK_START | Handoff audit corrections | Phase 2 wrong premise, Phase 1 incorrect impl approach
+[2026-03-16T11:21:29Z] TASK_END | Handoff audit corrections | success
+[2026-03-16T11:21:29Z] TASK_START | Phase 1 implementation (4 files in llama.cpp) | --moe-n-expert-draft flag, self-draft context, fix has_draft check
+[2026-03-16T11:21:29Z] TASK_END | Phase 1 implementation (4 files in llama.cpp) | success
+[2026-03-16T11:21:29Z] TASK_START | Step 0 benchmark: 3 models | Qwen3.5-35B hybrid 1.18x, Qwen3-Coder-30B 1.35x, Qwen3-235B 1.79x
+[2026-03-16T11:21:29Z] TASK_END | Step 0 benchmark: 3 models | success
+[2026-03-16T11:21:29Z] FINDING | MoE self-draft viable on pure MoE (1.35-1.79x) but not hybrid SSM (1.18x). Expert FFN size / total FLOPS ratio is key factor.
+
+[2026-03-16T22:00:00Z] SESSION_START | SSM hybrid acceleration: Phase 1 acceptance + Phase 3 implementation
+[2026-03-16T22:00:01Z] TASK_START | Phase 3 attention-only draft | Implement skip_recurrent in llama.cpp graph builder, fix hybrid memory crash
+[2026-03-16T22:30:00Z] TASK_END | Phase 3 attention-only draft | failure | NOT VIABLE: 0.51x throughput (49% slower). Near-zero acceptance on Qwen3.5-35B-A3B. 10 attn layers alone produce incoherent output.
+[2026-03-16T22:30:01Z] FINDING | All self-draft approaches exhausted for hybrid SSM | MoE 1.18x, attn-only 0.51x, layer-exit -44-51%, tree -53-66%. Only external draft + freeze-recurrent remains viable.
+[2026-03-16T22:35:00Z] TASK_START | Phase 1 MoE self-draft acceptance benchmark | Qwen3-235B-A22B, --moe-n-expert-draft 1/2, --draft-max 8/16
+[2026-03-16T22:35:01Z] FINDING | MoE self-draft tree mode bug | Target n_seq_max=1 blocks tree verification. Fixed: forced linear mode for self-draft.
+[2026-03-16T23:00:00Z] TASK_END | Phase 1 MoE self-draft acceptance benchmark | failure | NOT VIABLE: 1-expert 2.9% acceptance (0.50x), 2-expert 55% acceptance (0.72x). No sweet spot.
+[2026-03-16T23:00:01Z] FINDING | MoE self-draft fundamental flaw | Reducing experts doesn't make model "slightly dumber" — it produces categorically different token distributions. Expert routing IS the decision mechanism. Draft-target quality gap scales with speedup gap.
+[2026-03-16T23:00:02Z] FINDING | All self-draft approaches exhausted | MoE (0.50-0.72x), attn-only (0.51x), layer-exit (-44-51%), tree (-53-66%). MTP heads (co-trained draft) are the remaining path.
+[2026-03-16T23:00:03Z] FINDING | llama.cpp MTP status | Infrastructure present (tensor loading, GGUF keys), inference NOT implemented. Forward pass skips nextn layers. Phase 5 action: check Qwen3.5 for MTP weights, implement MTP-1 forward pass.
+[2026-03-16T23:05:00Z] SESSION_END | SSM hybrid acceleration: Phase 1 acceptance + Phase 3 implementation
+[2026-03-16T23:30:00Z] FINDING | Qwen3.5 MTP weights CONFIRMED | 785 MTP tensors in HF checkpoint. mtp_num_hidden_layers=1. Full transformer block (attn + 256 MoE experts + shared expert + norms + projection).
+[2026-03-16T23:30:01Z] FINDING | GGUF conversion strips MTP | convert_hf_to_gguf.py:4497 — Qwen3NextModel.modify_tensors strips all mtp.* tensors. All existing GGUF files lack MTP.
+[2026-03-16T23:30:02Z] FINDING | BailingMoe2 reference implementation | Lines 9410-9427 have working MTP conversion: remaps mtp.layers.{L} to model.layers.{L+num_hidden_layers}. Use as template for Qwen3.5.
+
+[2026-03-16T23:30:00Z] SESSION_START | purpose="MTP-1 speculative decoding implementation for Qwen3.5"
+[2026-03-16T23:30:01Z] TASK_START | desc="Inspect MTP tensor shapes from HF checkpoint" | reasoning="Verify architecture before coding"
+[2026-03-16T23:35:00Z] TASK_END | desc="Inspect MTP tensor shapes" | result="success" | details="785 MTP tensors, full attention (gated Q), 256 experts, shared embed/lm_head, 0.84B params"
+[2026-03-16T23:35:01Z] TASK_START | desc="Implement MTP GGUF conversion + C++ loading + forward pass" | reasoning="Steps 1-3 of Phase 5 plan"
+[2026-03-16T23:55:00Z] TASK_END | desc="MTP implementation" | result="success" | details="7 files, ~200 lines, build succeeds, backward compatible"
+[2026-03-16T23:55:01Z] TASK_START | desc="Download HF shards for conversion" | reasoning="Need all 14 shards, only 3 present"
+[2026-03-16T23:55:02Z] TASK_END | desc="Download initiated" | result="in_progress" | details="11 shards (~50GB) downloading in background"
+{"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"SESSION_START","msg":"Handoff enrichment for autonomous agent run","details":"new_session=ses_20260317_153716_754637"}
+{"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"TASK_START","msg":"Enrich 4 inference acceleration handoffs for nightshift autonomy","details":"Audit revealed gaps in handoffs"}
+{"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"TASK_END","msg":"Enrich 4 inference acceleration handoffs","details":"outcome=success"}
