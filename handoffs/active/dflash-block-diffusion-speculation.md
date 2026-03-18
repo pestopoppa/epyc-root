@@ -1,6 +1,6 @@
 # Handoff: DFlash Block Diffusion Speculative Decoding
 
-**Status**: UNBLOCKED (2026-03-18). 19 commits on feature/dflash-speculation. Per-token: 28.8%. Previous 0.1% block results INVALIDATED by OMP_NUM_THREADS=1 devcontainer bug. Multi-token conditioning fix implemented (commit 8f00c1899). Devcontainer rebuilt with build tools + OMP fix — ready for end-to-end block-mode test.
+**Status**: ACTIVE (2026-03-18). 21 commits on feature/dflash-speculation. **lm_head fix applied**: per-token 27% acceptance (pipeline correct). Block-mode 1.4% — multi-position prediction (positions 2-15) fails, position 1 correct. Next: Python reference comparison to diagnose multi-position issue, then NUMA tests.
 **Created**: 2026-03-17
 **Updated**: 2026-03-18
 **Related**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md), [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md)

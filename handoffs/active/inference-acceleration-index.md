@@ -18,7 +18,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **UNBLOCKED** (19 commits, multi-token fix ready) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | ~4.6 expected/block (paper: 6.49) | Rebuild + block-mode server test |
+| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **ACTIVE** (21 commits, lm_head fixed) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | 27% per-token, block 1.4% (pos 2-15 fail) | Python ref comparison + KV cache accum |
 | [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | T1-T4 + draft_max optimized | DySpec tree, draft_max tuning | **+17-21% via draft_max on 3 prod models** | +19.4% frontdoor | Apply registry changes |
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | Exhausted, Phase 4 UNBLOCKED | MoE self-draft, attn-only, tree, MTP | Hybrid (Qwen3.5) | +5.4% (ext draft only) | NUMA-parallel reopener |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
@@ -37,23 +37,24 @@ Zero code changes — parameter-only update in model_registry.yaml.
 
 ## Immediate Action Items (priority order)
 
-1. **DFlash block-mode server test** (highest priority)
-   - Devcontainer is rebuilt with OMP_NUM_THREADS fix + build tools (cmake, build-essential)
-   - `cd /mnt/raid0/llm/llama.cpp-dflash && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target llama-server -j$(nproc)`
-   - Run server with DFlash drafter, send request, check draft acceptance rate in logs
-   - Per-token acceptance is 28.8% — block-mode should give ~4.6 accepted per 16-token block
-   - If block acceptance is still low, check the "Known Bugs" section at the bottom of `dflash-block-diffusion-speculation.md`
-   - Key bugs to verify: multi-token conditioning (`n_ctx_tokens > 1` in cross data), graph rebuild on cross dimension change
+1. **NUMA tests** (highest priority — container rebuilt with NUMA access)
+   - Verify: `numactl --hardware` should show 2-node topology
+   - S2: NUMA parallel decode on Qwen3.5-35B-A3B (1, 2, 4 concurrent)
+   - T5/T5b: tree speculation on NUMA dual-node (Qwen2.5-Coder-32B f16)
+   - T6: tree speculation on NUMA dual-node (Qwen3-Coder-480B-A35B Q4_K_M)
 
-2. **Apply production draft_max changes** (ready to deploy)
+2. **DFlash multi-position investigation** (block acceptance ~1.4%)
+   - lm_head fix applied (commit 4c4cf2208): per-token 27%, block ~1.4%
+   - Position 1 correct, positions 2-15 fail — need Python reference comparison
+   - Install PyTorch + run HF DFlash model on same prompt → compare per-position logits
+   - Test with f32 drafter GGUF to rule out f16 precision
+   - Implement KV cache accumulation (HF accumulates `past_key_values_draft`, we clear each round)
+
+3. **Apply production draft_max changes** (ready to deploy)
    - `frontdoor`: add `draft_max: 32` (+19.4%)
    - `architect_general`: add `draft_max: 32` (+17.1%)
    - `architect_coding`: add `draft_max: 48` (+20.6%)
    - In `epyc-orchestrator/orchestration/model_registry.yaml`
-
-3. **NUMA tests** (if on bare metal)
-   - T5/T5b/T6: tree speculation on NUMA dual-node
-   - S2: NUMA parallel decode
 
 ## Active Work Streams
 
@@ -84,11 +85,11 @@ All inference optimization work in llama.cpp MUST follow these rules:
 
 ## Key Artifacts
 
-- **DFlash worktree**: `/mnt/raid0/llm/llama.cpp-dflash` on `feature/dflash-speculation` (19 commits)
+- **DFlash worktree**: `/mnt/raid0/llm/llama.cpp-dflash` on `feature/dflash-speculation` (21 commits, lm_head fix applied)
 - **DFlash GGUFs**: `/mnt/raid0/llm/cache/dflash/` (dev + production, with shared embed/lm_head)
 - **Acceptance tool**: `tools/dflash-acceptance/` in the worktree
 - **Benchmark data**: `epyc-inference-research/data/tree_speculation/`
-- **Devcontainer status**: Rebuilt 2026-03-18 with `build-essential`, `cmake`, OMP_NUM_THREADS fix, wildcard `safe.directory`
+- **Devcontainer status**: Rebuilding 2026-03-18 for NUMA access (privileged + numactl)
 
 ## Pre-Downloaded Models
 
@@ -132,7 +133,7 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | D2 | dflash | 1 | Qwen3-Coder-30B-A3B-DFlash | GGUF conversion + load test | CRITICAL | ✅ DONE — LLM_ARCH_DFLASH + key_length override |
 | D3 | dflash | 2 | Any target | Hidden state extraction API | CRITICAL | ✅ DONE — API validated, unique per-layer values |
 | D4 | dflash | 3 | Qwen3-Coder-30B-A3B + DFlash | Forward pass + acceptance rate | CRITICAL | ✅ **27.0% acceptance** (with RoPE, paper: ~40%) |
-| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ⚠️ Prior results INVALID (OMP=1 bug). AR: 36.5 t/s. DFlash: retest with multi-token conditioning fix |
+| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ⚠️ lm_head fixed: per-token 27%, block 1.4%. Multi-position (pos 2-15) fails. AR wins: 36.5 t/s |
 | T1 | tree | done | Qwen3-Coder-480B-A35B Q4_K_M | Tree spec (pair 9) | HIGH | ✅ DONE — -7.6% (5.10→4.71 t/s) |
 | T2 | tree | done | Qwen2.5-Coder-32B f16 | Tree spec (pair 10) | HIGH | ✅ DONE — +10.2% (6.05→6.67 t/s) |
 | T3 | tree | done | Qwen3-Coder-30B-A3B Q4_K_M (frontdoor) | Tree spec (pair 15) | MEDIUM | ✅ DONE — -13.0% (40.92→35.62 t/s) |

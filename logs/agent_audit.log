@@ -1999,3 +1999,8 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 {"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"SESSION_START","msg":"Handoff enrichment for autonomous agent run","details":"new_session=ses_20260317_153716_754637"}
 {"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"TASK_START","msg":"Enrich 4 inference acceleration handoffs for nightshift autonomy","details":"Audit revealed gaps in handoffs"}
 {"ts":"2026-03-17T15:37:16+01:00","session":"ses_20260317_153716_754637","level":"INFO","cat":"TASK_END","msg":"Enrich 4 inference acceleration handoffs","details":"outcome=success"}
+{"timestamp":"2026-03-18T14:27:13","session":"session-2026-03-18c","level":"INFO","category":"session","message":"DFlash lm_head fix + multi-position diagnosis"}
+{"timestamp":"2026-03-18T14:27:13","session":"session-2026-03-18c","level":"INFO","category":"task","message":"Share target lm_head with drafter","details":{"status":"success","commit":"4c4cf2208","result":"0% -> 27% per-token acceptance"}}
+{"timestamp":"2026-03-18T14:27:13","session":"session-2026-03-18c","level":"INFO","category":"task","message":"Multi-position block diagnosis","details":{"status":"partial","result":"block 1.4%, only position 1 works, positions 2-15 fail"}}
+{"timestamp":"2026-03-18T14:27:13","session":"session-2026-03-18c","level":"INFO","category":"task","message":"HF source code audit","details":{"status":"success","finding":"extract_context_feature offset=1 confirms layer indices correct"}}
+{"timestamp":"2026-03-18T14:27:13","session":"session-2026-03-18c","level":"INFO","category":"session_end","message":"Session complete. Container rebuild needed for NUMA access."}
