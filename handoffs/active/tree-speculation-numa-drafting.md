@@ -1,6 +1,6 @@
 # Handoff: Tree Speculation + NUMA-Pinned Dual Drafting
 
-**Status**: Phase 4 validated. T1-T4 complete (2026-03-17). Tree wins on f16 only (+10.2%). Q8 break-even. Q4_K_M net-negative. Phase 7 UNBLOCKED (NUMA).
+**Status**: Phase 4 validated + draft_max optimized (2026-03-18). **+17-21% throughput on 3 production models from draft_max config change.** Tree wins on slow f16 only (+12.2%). Phase 7 UNBLOCKED (NUMA, needs bare metal).
 **Created**: 2026-03-07
 **Audited**: 2026-03-10 — 9 edits applied (branch strategy, polymorphic architecture, line numbers, DySpec batching, Phase 3 deferral, Phase 4 refocus, validation)
 **Phase 1**: ✅ complete (2026-03-11) — tree speculation implemented in server, builds clean, 5 files on `feature/tree-speculation`
@@ -473,7 +473,7 @@ Full p_split sweep on all remaining pairs. n_predict=256, draft_max=16, threads=
 6. **p_split=0.3 on 480B is catastrophic** (-21.4%) — large trees overwhelm even slow targets at Q4
 7. **Previous Q8_0 result (pair 11, Phase 4) showed +2.5%** at 9.30 t/s baseline; today's run at 8.43 t/s shows break-even. Minor run-to-run variance likely explains the difference.
 
-**Updated production recommendation**: Enable `--draft-p-split 0.05` for f16 targets (strong win). Q8_0 is break-even at full thread count but may tip positive under NUMA thread-splitting (lower per-token throughput → more verification budget). Q4_K_M should remain linear. NUMA tests (T5-T6) should cover both f16 AND Q8_0 targets.
+**Updated production recommendation (2026-03-18)**: f16 targets: `--draft-max 32 --draft-p-split 0.05` (+12.2%, up from +9% at default dm=16). Q8_0: still break-even/negative even at dm=32. Q4_K_M: remains linear. Only f16 benefits from tree speculation.
 
 Data files:
 - `epyc-inference-research/data/tree_speculation/server_sweep_20260317_144949.csv` (pair 15)
@@ -600,9 +600,111 @@ bash /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_tree_specula
 bash /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_tree_speculation_server.sh 11
 ```
 
+## draft_max Optimization (2026-03-18) — +17-21% Production Throughput
+
+**Key finding**: The default `--draft-max 16` is suboptimal for all production models. Increasing to 32-48 gives +17-21% throughput on large/slow models. This is a **config-only change** — no code modifications needed.
+
+### Complete Sweep Results
+
+**Qwen3-Coder-30B-A3B Q4_K_M (frontdoor, pair 15, 0.75B Q4_0 drafter):**
+
+| draft_max | t/s | acceptance | delta vs dm=16 |
+|-----------|-----|-----------|----------------|
+| 16 | 32.84 | 58.6% | baseline |
+| 24 | 35.39 | 58.0% | +7.8% |
+| **32** | **39.20** | **57.1%** | **+19.4%** |
+| 48 | 39.09 | 56.1% | +19.0% |
+
+**Qwen2.5-Coder-32B Q4_K_M (coder_escalation, pair 2, 0.5B Q8_0 drafter):**
+
+| draft_max | t/s | acceptance | delta vs dm=16 |
+|-----------|-----|-----------|----------------|
+| 16 | 13.16 | 75.5% | baseline |
+| **24** | **15.31** | **74.7%** | **+16.3%** (already production default) |
+| 32 | 14.51 | 74.1% | +10.3% |
+| 48 | 13.19 | 73.2% | +0.2% |
+
+**Qwen3-235B-A22B Q4_K_M (architect_general, pair 8, 0.6B Q8_0 drafter):**
+
+| draft_max | t/s | acceptance | delta vs dm=16 |
+|-----------|-----|-----------|----------------|
+| 16 | 7.38 | 59.3% | baseline |
+| 24 | 7.60 | 57.0% | +3.0% |
+| **32** | **8.64** | **56.1%** | **+17.1%** |
+| 48 | 7.74 | 55.8% | +4.9% |
+
+Tree at dm=32: ps=0.05 → 8.30 t/s (**-8.0%** vs 9.02 linear), ps=0.1 → 7.26 t/s (-19.5%). Tree net-negative.
+
+**Qwen3-Coder-480B-A35B Q4_K_M (architect_coding, pair 9, 0.75B Q4_0 drafter):**
+
+| draft_max | t/s | acceptance | delta vs dm=16 |
+|-----------|-----|-----------|----------------|
+| 16 | 4.72 | 61.0% | baseline |
+| 24 | 5.44 | 60.1% | +15.3% |
+| 32 | 5.40 | 58.8% | +14.4% |
+| **48** | **5.69** | **60.0%** | **+20.6%** |
+| 64 | 5.02 | 59.1% | +6.4% |
+
+**Qwen2.5-Coder-32B f16 (pair 10, 0.5B f16 drafter, tree speculation):**
+
+| draft_max | p_split=0.05 t/s | delta vs dm=16 |
+|-----------|------------------|----------------|
+| 16 | 6.54 | baseline |
+| 24 | 6.58 | +0.6% |
+| **32** | **6.72** | **+2.8%** |
+| 48 | 6.61 | +1.1% |
+
+**Qwen2.5-7B f16 (worker, pair 1, tree speculation):**
+
+| draft_max | p_split=0.05 t/s | vs baseline |
+|-----------|------------------|-------------|
+| 32 | 17.23 | flat (17.37 linear) |
+
+### Why draft_max Matters More on Larger Models
+
+The optimal draft_max correlates with model speed: slower models tolerate larger draft budgets because:
+1. Each target verification step is expensive (more time per token)
+2. The drafter generates tokens very cheaply (0.5-0.75B model)
+3. More draft tokens per round means more chances for acceptance before hitting the expensive verification
+4. The cost of extra rejected drafts is low relative to one target decode
+
+The diminishing returns beyond the optimum happen when:
+- Acceptance rate drops too much (later draft tokens diverge more from target distribution)
+- KV cache overhead from larger draft context becomes significant
+- Draft model starts to slow down at very long sequences
+
+### Tree Speculation Combined with draft_max
+
+Tree speculation (`--draft-p-split > 0`) only helps f16 targets where verification is near-free:
+- 32B f16 at dm=32: +12.2% with tree (p_split=0.05) vs +12.2% linear. Tree gives marginal additional benefit on top of draft_max optimization.
+- 7B f16: tree flat at any draft_max (model too fast for tree overhead)
+- All Q4_K_M models: tree always net-negative (verification too expensive)
+- 235B Q4_K_M at dm=32: tree ps=0.05 → **-8.0%** (8.30 vs 9.02 linear), ps=0.1 → -19.5%
+
+### Production Action Items
+
+Changes to `model_registry.yaml` acceleration configs:
+
+| Model | Current draft_max | Optimal draft_max | Change Type |
+|-------|------------------|------------------|-------------|
+| frontdoor (30B-A3B) | 16 (default) | **32** | ADD `draft_max: 32` |
+| coder_escalation (32B) | 24 | **24** | KEEP (already optimal) |
+| architect_general (235B) | 16 (default) | **32** | ADD `draft_max: 32` |
+| architect_coding (480B) | 16 (default) | **48** | ADD `draft_max: 48` |
+| worker (7B f16) | 24 | **24** | KEEP |
+
+The orchestrator stack reads `draft_max` from registry and passes as `--draft-max` via `accel.k` (see `orchestrator_stack.py` line ~780: `"--draft-max", str(accel.k or 16)`).
+
+### Data Files
+- `epyc-inference-research/data/tree_speculation/` — CSV files from all benchmark runs
+- Pair 15 sweep: `server_sweep_20260317_144949.csv`
+- Pair 10 sweeps: `server_sweep_20260317_145435.csv`, `server_sweep_20260318_*.csv`
+- Pair 9 sweep: `server_sweep_20260317_153523.csv`
+- Pair 8 sweep: `server_sweep_20260318_*.csv`
+
 ## Phase 7 — NUMA-Pinned Parallel Drafting
 
-**Status**: UNBLOCKED (Phase 4-6 complete). Ready to start.
+**Status**: UNBLOCKED (Phase 4-6 complete). Ready to start. Requires bare-metal NUMA hardware (not available in devcontainer).
 
 ### Architecture
 

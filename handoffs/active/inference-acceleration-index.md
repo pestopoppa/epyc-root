@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-03-17
+**Updated**: 2026-03-18
 
 ## Agent Operating Instructions
 
@@ -18,10 +18,42 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED: NOT VIABLE on CPU** (16 commits) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | AR wins: 36.5 > 32.3 baseline | Move to completed/ |
-| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | T1-T4 COMPLETE, Phase 7 UNBLOCKED | DySpec tree, NUMA | Dense f16 (+10.2%), Q8 (break-even), Q4 (net-negative) | +10.2% f16 | NUMA dual-node (T5-T6) |
+| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **UNBLOCKED** (19 commits, multi-token fix ready) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | ~4.6 expected/block (paper: 6.49) | Rebuild + block-mode server test |
+| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | T1-T4 + draft_max optimized | DySpec tree, draft_max tuning | **+17-21% via draft_max on 3 prod models** | +19.4% frontdoor | Apply registry changes |
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | Exhausted, Phase 4 UNBLOCKED | MoE self-draft, attn-only, tree, MTP | Hybrid (Qwen3.5) | +5.4% (ext draft only) | NUMA-parallel reopener |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
+
+## CRITICAL: draft_max Optimization (2026-03-18)
+
+**+15-20% throughput across ALL production models by changing `--draft-max` from 16 to 32-48.**
+
+| Model | Role | Change | Delta |
+|-------|------|--------|-------|
+| Qwen3-Coder-30B-A3B | frontdoor | dm 16→32 | **+19.4%** |
+| Qwen3-235B-A22B | architect_general | dm 16→32 | **+17.1%** |
+| Qwen3-Coder-480B-A35B | architect_coding | dm 16→48 | **+20.6%** |
+
+Zero code changes — parameter-only update in model_registry.yaml.
+
+## Immediate Action Items (priority order)
+
+1. **DFlash block-mode server test** (highest priority)
+   - Devcontainer is rebuilt with OMP_NUM_THREADS fix + build tools (cmake, build-essential)
+   - `cd /mnt/raid0/llm/llama.cpp-dflash && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build --target llama-server -j$(nproc)`
+   - Run server with DFlash drafter, send request, check draft acceptance rate in logs
+   - Per-token acceptance is 28.8% — block-mode should give ~4.6 accepted per 16-token block
+   - If block acceptance is still low, check the "Known Bugs" section at the bottom of `dflash-block-diffusion-speculation.md`
+   - Key bugs to verify: multi-token conditioning (`n_ctx_tokens > 1` in cross data), graph rebuild on cross dimension change
+
+2. **Apply production draft_max changes** (ready to deploy)
+   - `frontdoor`: add `draft_max: 32` (+19.4%)
+   - `architect_general`: add `draft_max: 32` (+17.1%)
+   - `architect_coding`: add `draft_max: 48` (+20.6%)
+   - In `epyc-orchestrator/orchestration/model_registry.yaml`
+
+3. **NUMA tests** (if on bare metal)
+   - T5/T5b/T6: tree speculation on NUMA dual-node
+   - S2: NUMA parallel decode
 
 ## Active Work Streams
 
@@ -49,6 +81,14 @@ All inference optimization work in llama.cpp MUST follow these rules:
 4. **Build validation**: Run `cmake --build build --target llama-server` and verify clean build before any benchmark
 5. **Recovery**: If build breaks on feature branch: `git stash` or `git checkout -- .` — never touch production
 6. **Worktree cleanup**: `git worktree remove /mnt/raid0/llm/llama.cpp-dflash` cleans up completely if abandoned
+
+## Key Artifacts
+
+- **DFlash worktree**: `/mnt/raid0/llm/llama.cpp-dflash` on `feature/dflash-speculation` (19 commits)
+- **DFlash GGUFs**: `/mnt/raid0/llm/cache/dflash/` (dev + production, with shared embed/lm_head)
+- **Acceptance tool**: `tools/dflash-acceptance/` in the worktree
+- **Benchmark data**: `epyc-inference-research/data/tree_speculation/`
+- **Devcontainer status**: Rebuilt 2026-03-18 with `build-essential`, `cmake`, OMP_NUM_THREADS fix, wildcard `safe.directory`
 
 ## Pre-Downloaded Models
 
@@ -92,16 +132,16 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | D2 | dflash | 1 | Qwen3-Coder-30B-A3B-DFlash | GGUF conversion + load test | CRITICAL | ✅ DONE — LLM_ARCH_DFLASH + key_length override |
 | D3 | dflash | 2 | Any target | Hidden state extraction API | CRITICAL | ✅ DONE — API validated, unique per-layer values |
 | D4 | dflash | 3 | Qwen3-Coder-30B-A3B + DFlash | Forward pass + acceptance rate | CRITICAL | ✅ **27.0% acceptance** (with RoPE, paper: ~40%) |
-| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ✅ AR: 36.5 t/s (58.6% acc) vs DFlash: ~15.8 t/s (2-7% acc) — DFlash SLOWER |
+| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ⚠️ Prior results INVALID (OMP=1 bug). AR: 36.5 t/s. DFlash: retest with multi-token conditioning fix |
 | T1 | tree | done | Qwen3-Coder-480B-A35B Q4_K_M | Tree spec (pair 9) | HIGH | ✅ DONE — -7.6% (5.10→4.71 t/s) |
 | T2 | tree | done | Qwen2.5-Coder-32B f16 | Tree spec (pair 10) | HIGH | ✅ DONE — +10.2% (6.05→6.67 t/s) |
 | T3 | tree | done | Qwen3-Coder-30B-A3B Q4_K_M (frontdoor) | Tree spec (pair 15) | MEDIUM | ✅ DONE — -13.0% (40.92→35.62 t/s) |
 | T4 | tree | done | Qwen2.5-Coder-32B Q8_0 | Tree spec (pair 11) | MEDIUM | ✅ DONE — +0.1% (8.43→8.44 t/s) |
-| S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | NOT STARTED |
-| D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | NOT STARTED |
-| T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA dual-node tree | MEDIUM | NOT STARTED |
-| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA dual-node tree | LOW | NOT STARTED |
-| D7 | dflash | 6 | Qwen3.5-35B-A3B (hybrid) | NUMA parallel verify | MEDIUM | NOT STARTED |
+| S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | BLOCKED — needs bare-metal NUMA |
+| D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | BLOCKED — needs block-mode bug fix first |
+| T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA dual-node tree | MEDIUM | BLOCKED — needs bare-metal NUMA |
+| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA dual-node tree | LOW | BLOCKED — needs bare-metal NUMA |
+| D7 | dflash | 6 | Qwen3.5-35B-A3B (hybrid) | NUMA parallel verify | MEDIUM | BLOCKED — needs block-mode fix + NUMA |
 | S1 | ssm | 4 | Qwen3-Next-80B-A3B Q4_K_M | NUMA prefill pipeline | LOW | DEFERRED |
 
 ## Agent Task Ordering

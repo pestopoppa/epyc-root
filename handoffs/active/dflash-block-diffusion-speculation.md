@@ -1,8 +1,8 @@
 # Handoff: DFlash Block Diffusion Speculative Decoding
 
-**Status**: Phase 2 COMPLETE + Phase 3 scaffold (2026-03-17). Hidden state extraction API validated. Target layer outputs captured with correct per-layer values (ggml_dup prevents aliasing). Dimension match confirmed: concat(5×2048)=10240 = fc.weight input. Phase 3b (cross-attention + fc conditioning) UNBLOCKED.
+**Status**: UNBLOCKED (2026-03-18). 19 commits on feature/dflash-speculation. Per-token: 28.8%. Previous 0.1% block results INVALIDATED by OMP_NUM_THREADS=1 devcontainer bug. Multi-token conditioning fix implemented (commit 8f00c1899). Devcontainer rebuilt with build tools + OMP fix — ready for end-to-end block-mode test.
 **Created**: 2026-03-17
-**Updated**: 2026-03-17
+**Updated**: 2026-03-18
 **Related**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md), [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md)
 
 ## Agent Operating Instructions
@@ -586,3 +586,98 @@ Cross-reference: [`tree-speculation-numa-drafting.md`](tree-speculation-numa-dra
 - `z-lab/Qwen3-8B-DFlash-b16` — HuggingFace model (dev/iteration)
 - MTP-1 implementation: `handoffs/completed/mtp-speculative-decoding.md` — precedent for GGUF conversion, hidden state API
 - Tree infrastructure: `handoffs/active/tree-speculation-numa-drafting.md` — DySpec tree for Phase 5 composition
+
+## Known Bugs — Block-Mode Acceptance (0.1% vs expected ~40%)
+
+### Symptoms
+- Per-token acceptance: **27%** (fresh conditioning each step in acceptance tool)
+- Block-mode acceptance: **0.1%** (16 tokens per block in server)
+- The 27% proves conditioning WORKS. The 0.1% block means something breaks in batch processing.
+
+### Root Cause Candidates (priority order)
+
+**1. Embedding input method (MOST LIKELY)**
+- HF code: `noise_embedding = target.model.embed_tokens(block_output_ids)` → passes **float embeddings** directly to `self(noise_embedding=...)` 
+- Our code: passes **token IDs** through `build_inp_embd(model.tok_embd)` which does embedding lookup using drafter's dequantized Q4→f16 table
+- The DFlash model's `forward()` takes `noise_embedding` as a tensor, NOT token IDs. There's no embedding lookup in the drafter.
+- **Fix**: Use `llama_batch.embd` instead of `llama_batch.token` to pass pre-computed embeddings from the target model to the drafter
+
+**2. Cross-attention graph caching/reuse**
+- The graph builder creates different tensors depending on whether `cross` data is set
+- With `can_reuse()`, the graph might be reused from a non-cross build, bypassing the cross-attention path
+- **Fix**: Verify the graph is rebuilt when cross data changes (add `can_reuse` check for cross data)
+
+**3. Attention mask for batch of 16 tokens**
+- Cross-attention uses `nullptr` mask (fully permissive non-causal)
+- But the KV-cache attention path (for self-attention fallback) uses a causal mask
+- In block mode, the cross path's K/V dimensions are [n_ctx+16, ...] while Q is [16, ...]
+- If the wrong attention path is selected, the mask/dimension mismatch could cause garbage output
+- **Fix**: Verify which attention path is actually taken during batch decode
+
+**4. Token 0 position semantics**
+- The first token in the block is `id_last` (an already-accepted token)
+- The HF code outputs logits from positions 1..15 (`[:, -block_size+1:, :]`)
+- Our sampling reads positions 0..14 — might be off by one
+
+### Debugging Plan
+1. Write a Python reference that runs the HF DFlash model on the same prompt and prints the block draft tokens — compare with our C++ output
+2. Check if `build_inp_embd` with `batch.embd` (float input) works in the DFlash graph builder
+3. Add logging in `llm_build_dflash` to verify which attention path (cross vs KV) is actually taken
+4. Compare fc+hidden_norm output values between HF and our implementation on the same input
+
+### ROOT CAUSE FOUND (2026-03-18): Single-Token Conditioning
+
+**The primary bug**: We were passing `n_enc=1` (1 context token) to `llama_set_cross_data` when the DFlash model expects hidden states for ALL context tokens. The HF code:
+```python
+target_hidden = extract_context_feature(output.hidden_states, self.target_layer_ids)
+# shape: [n_taps * hidden_size, n_context_tokens]
+```
+
+Our code was extracting hidden states for all tokens but only copying 1 token's worth into the conditioning buffer. Fixed in commit 8f00c1899 — now concatenates all context tokens.
+
+**Second bug**: Graph rebuild crash when `cross->n_enc` changes between calls. The graph builder creates `cross_inp` tensor sized by `n_enc`. When this changes (0→N on first conditioning, or N→M between rounds), the graph needs rebuilding but the caching system doesn't detect the dimension change.
+
+**Fix**: Force graph invalidation when cross data dimensions change. Check `can_reuse()` in `llm_graph_input_dflash_cross` to return `false` when dimensions differ.
+
+**Expected impact**: With proper multi-token conditioning, block-mode acceptance should increase dramatically. The drafter sees the full context (not just 1 embedding), which is what enables the paper's τ=6.49.
+
+### Session 2026-03-18b: Block-Mode Server Test — 4 Fixes Applied, 0% Persists
+
+**Fixes applied (all compiled + server tested):**
+
+1. **Graph rebuild fix** (`src/llama-graph.h`, `src/llama-context.cpp`):
+   - Added `cross_n_enc` field to `llm_graph_params` to snapshot cross dimensions at graph build time
+   - `allow_reuse()` compares `cross_n_enc` values, preventing stale graph reuse when cross data changes
+   - **Result**: Server starts without crash ✅
+
+2. **Target model embeddings** (`include/llama.h`, `src/llama-context.cpp`, `common/speculative.cpp`):
+   - Added `llama_model_get_token_embeddings()` API — reads rows from target's tok_embd, handles quantized dequantization
+   - Block-mode batch uses `batch.embd` (float) instead of `batch.token`, bypassing drafter's dummy tok_embd
+   - Matches HF: `noise_embedding = target.model.embed_tokens(block_output_ids)`
+
+3. **RoPE position alignment** (`common/speculative.cpp`):
+   - Batch positions start at `n_ctx_tokens` so Q positions match K noise positions in pos_k
+   - Q[n_ctx+i] → K_noise[n_ctx+i] → distance 0 (correct). Previously Q[i] → K_noise[n_ctx+i] → distance n_ctx (wrong)
+
+4. **Sampling offset** (`common/speculative.cpp`):
+   - Sample from positions 1..15 (skip pos 0 = id_last). Matches HF `[:, -block_size+1:, :]`
+
+**Test result**: Server starts, DFlash conditioning confirmed active:
+```
+DFLASH: conditioned with 9 ctx tokens, cross_dim=10240
+DFLASH: conditioned with 15 ctx tokens, cross_dim=10240
+```
+Block-mode acceptance: **still 0%** (draft_n=1785, accepted=0 for 128 tokens at ~10 t/s).
+
+**Most likely remaining root cause: dummy lm_head**
+
+The drafter's `output.weight` is a dummy tensor (from GGUF conversion). HF code uses `target.lm_head()` for final logits. Our code uses the drafter's dummy weight. This would produce garbage logits regardless of how correct the hidden state computation is.
+
+**Fix options for lm_head (next session):**
+- **Option A** (preferred): At drafter load time, detect shared embed/output and replace drafter's dummy tensors with target's actual tensors
+- **Option B**: Add API to project drafter hidden states through target's lm_head in speculation code
+- **Option C**: In GGUF converter, copy target's actual embed_tokens and lm_head into the drafter GGUF
+
+**Other investigation items:**
+- Verify flash attention handles asymmetric Q/K/V with nullptr mask (`--no-flash-attn` diagnostic)
+- Write Python reference script comparing HF DFlash vs C++ output layer-by-layer
