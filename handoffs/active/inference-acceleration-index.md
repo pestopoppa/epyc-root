@@ -18,9 +18,10 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED** — C++ verified correct | DFlash block diffusion | MoE (frontdoor) | 27% per-token, block 1.4% (expected) | NOT VIABLE on Q4_K_M: AR wins (36.5 vs 13 t/s) |
-| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | **Phase 7 COMPLETE** — NUMA 4-way validated | DySpec tree, draft_max, NUMA parallel | **6-7x via NUMA 4-way** on ≤65GB models | +19.4% dm, 6.7x NUMA | Deploy NUMA orchestrator config |
-| [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **S2 COMPLETE** — NUMA validated | NUMA parallel decode | Hybrid (Qwen3.5) | **6.9x via NUMA 4-way** (49.7 vs 7.25 t/s) | Deploy NUMA orchestrator config |
+| [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md) | **READY TO DEPLOY** | NUMA 4-way parallel + taskset | All production models | **6.7x frontdoor** | Implement in orchestrator_stack.py |
+| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED** — C++ verified correct | DFlash block diffusion | MoE (frontdoor) | 27% per-token, block 1.4% (expected) | NOT VIABLE on Q4_K_M |
+| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | **Phase 7 COMPLETE** — NUMA 4-way validated | DySpec tree, draft_max, NUMA parallel | **6-7x via NUMA 4-way** on ≤65GB models | +19.4% dm, 6.7x NUMA | See deployment handoff |
+| [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **COMPREHENSIVE** — S2-S5 + sweep + quant | NUMA parallel, quant scaling | Hybrid (Qwen3.5) | **6.9x 35B-A3B**, ~12 t/s ceiling all others | See deployment handoff |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
