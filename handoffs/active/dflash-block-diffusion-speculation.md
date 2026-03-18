@@ -681,3 +681,48 @@ The drafter's `output.weight` is a dummy tensor (from GGUF conversion). HF code 
 **Other investigation items:**
 - Verify flash attention handles asymmetric Q/K/V with nullptr mask (`--no-flash-attn` diagnostic)
 - Write Python reference script comparing HF DFlash vs C++ output layer-by-layer
+
+### Session 2026-03-18c: lm_head Fix Applied — Per-Token 27%, Block Still ~1%
+
+**Commit**: `4c4cf2208` on `feature/dflash-speculation` (21st commit)
+
+**Fix applied: Share target's lm_head with drafter** (Option A from above)
+- Added `llama_model_share_output_weight()` API (`include/llama.h`, `src/llama-model.cpp`)
+- At DFlash init time, drafter's `model.output` pointer is replaced with target's actual output weight (Q6_K [2048x151936])
+- Called in `common_speculative_init()` when DFlash architecture is detected
+- **Result**: 0% → non-zero acceptance
+
+**Key finding: HF `extract_context_feature` has `offset=1`**
+- In `utils.py`: `hidden_states[layer_id + offset]` where `offset = 1`
+- `target_layer_ids = [1,12,23,34,45]` → `hidden_states[2,13,24,35,46]`
+- This maps to C++ layer outputs `{1,12,23,34,45}` (original indices were CORRECT)
+
+**Diagnostic results:**
+
+| Mode | Acceptance | Speed | Notes |
+|------|-----------|-------|-------|
+| `--draft-max 2` (1 draft/round) | **27.0%** | 21.3 t/s | Matches per-token tool |
+| `--draft-max 16` (15 drafts/round) | **1.4%** | 13.0 t/s | Only position 1 works |
+| `--draft-max 16 -fa off` | **0.68%** | 8.4 t/s | Flash attn not the issue |
+| `--draft-max 16` (long prompt) | **0.85%** | 11.1 t/s | Context length doesn't help |
+
+**Root cause analysis for multi-position failure:**
+- Position 1 argmax is IDENTICAL in 2-token and 16-token mode (same token predicted)
+- The pipeline is correct: conditioning, fc projection, attention, RoPE, lm_head all verified against HF source
+- Positions 2-15 produce specific but WRONG predictions (not repeated/garbage)
+- Expected overall with only position 1 working: 27%/15 = 1.8% ~ observed 1.4%
+- Flash attention tested: not the cause (`-fa off` gives worse results)
+
+**Multi-position failure hypotheses (ranked by likelihood):**
+
+1. **KV cache accumulation** (CONFIRMED DIFFERENCE): HF code accumulates K/V in `past_key_values_draft` across rounds. Our code clears KV cache every round. Only affects round 2+ — round 1 should match HF, yet multi-position still fails in round 1.
+
+2. **Subtle attention numerical issue**: With 16 noise tokens (all mask-token embedding), self-attention distributes across many near-identical K entries. Model was trained to handle this, but ggml compute may differ from PyTorch.
+
+3. **Missing model component**: Implicit dependency not captured in our implementation.
+
+**Next steps for multi-position investigation:**
+1. Install PyTorch on a machine with space and run HF DFlash model on same prompt — compare per-position logits
+2. Test with f32 drafter GGUF to rule out f16 precision issue
+3. Implement KV cache accumulation (required for round 2+ regardless)
+4. Check if multi-position works for the DEV model (Qwen3-8B-DFlash-b16)
