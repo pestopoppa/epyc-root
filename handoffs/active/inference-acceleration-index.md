@@ -18,8 +18,8 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | Phase 0 COMPLETE | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | Projected 2-4x | Phase 1: GGUF conversion |
-| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | Phase 4 done, Phase 7 UNBLOCKED | DySpec tree, NUMA | Dense f16 (+15.8%), Q4 (overhead-limited) | +15.8% f16 | Pairs 9-11, 15 + NUMA |
+| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED: NOT VIABLE on CPU** (16 commits) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | AR wins: 36.5 > 32.3 baseline | Move to completed/ |
+| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | T1-T4 COMPLETE, Phase 7 UNBLOCKED | DySpec tree, NUMA | Dense f16 (+10.2%), Q8 (break-even), Q4 (net-negative) | +10.2% f16 | NUMA dual-node (T5-T6) |
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | Exhausted, Phase 4 UNBLOCKED | MoE self-draft, attn-only, tree, MTP | Hybrid (Qwen3.5) | +5.4% (ext draft only) | NUMA-parallel reopener |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 
@@ -88,15 +88,15 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | ID | Handoff | Phase | Model | Test | Priority | Status |
 |----|---------|-------|-------|------|----------|--------|
 | D0 | dflash | 0 | Qwen3-Coder-30B-A3B-DFlash | Inspect config, document tensors | CRITICAL | ✅ DONE |
-| D1 | dflash | 1 | Qwen3-8B-DFlash-b16 | GGUF conversion + load test | CRITICAL | NOT STARTED |
-| D2 | dflash | 1 | Qwen3-Coder-30B-A3B-DFlash | GGUF conversion + load test | CRITICAL | NOT STARTED |
-| D3 | dflash | 2 | Any target | Hidden state extraction API | CRITICAL | NOT STARTED |
-| D4 | dflash | 3 | Qwen3-8B + DFlash-b16 | Forward pass + acceptance rate | CRITICAL | NOT STARTED |
-| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | NOT STARTED |
-| T1 | tree | pending | Qwen3-Coder-480B-A35B Q4_K_M | Tree spec (pair 9) | HIGH | NOT RUN |
-| T2 | tree | pending | Qwen2.5-Coder-32B f16 | Tree spec (pair 10) | HIGH | NOT RUN |
-| T3 | tree | pending | Qwen3-Coder-30B-A3B Q4_K_M (frontdoor) | Tree spec (new pair 15) | MEDIUM | NOT RUN |
-| T4 | tree | pending | Qwen2.5-Coder-32B Q8_0 | Tree spec (pair 11) | MEDIUM | NOT RUN |
+| D1 | dflash | 1 | Qwen3-8B-DFlash-b16 | GGUF conversion + load test | CRITICAL | ✅ DONE — loads as Qwen3 |
+| D2 | dflash | 1 | Qwen3-Coder-30B-A3B-DFlash | GGUF conversion + load test | CRITICAL | ✅ DONE — LLM_ARCH_DFLASH + key_length override |
+| D3 | dflash | 2 | Any target | Hidden state extraction API | CRITICAL | ✅ DONE — API validated, unique per-layer values |
+| D4 | dflash | 3 | Qwen3-Coder-30B-A3B + DFlash | Forward pass + acceptance rate | CRITICAL | ✅ **27.0% acceptance** (with RoPE, paper: ~40%) |
+| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ✅ AR: 36.5 t/s (58.6% acc) vs DFlash: ~15.8 t/s (2-7% acc) — DFlash SLOWER |
+| T1 | tree | done | Qwen3-Coder-480B-A35B Q4_K_M | Tree spec (pair 9) | HIGH | ✅ DONE — -7.6% (5.10→4.71 t/s) |
+| T2 | tree | done | Qwen2.5-Coder-32B f16 | Tree spec (pair 10) | HIGH | ✅ DONE — +10.2% (6.05→6.67 t/s) |
+| T3 | tree | done | Qwen3-Coder-30B-A3B Q4_K_M (frontdoor) | Tree spec (pair 15) | MEDIUM | ✅ DONE — -13.0% (40.92→35.62 t/s) |
+| T4 | tree | done | Qwen2.5-Coder-32B Q8_0 | Tree spec (pair 11) | MEDIUM | ✅ DONE — +0.1% (8.43→8.44 t/s) |
 | S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | NOT STARTED |
 | D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | NOT STARTED |
 | T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA dual-node tree | MEDIUM | NOT STARTED |

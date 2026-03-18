@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE (low priority — reference material, not urgent)
 **Created**: 2026-03-03
-**Revised**: 2026-03-03 (audit pass — cross-referenced against llama.cpp, D2L repo, HuggingFace checkpoints)
+**Revised**: 2026-03-17 (added QVAC Fabric/BitNet research context, Finding 8, Phase A-bis)
 **Priority**: P3 — low priority, high-effort experimental
 **Effort**: High
 **Source**: [Doc-to-LoRA paper (arxiv.org/pdf/2602.15902)](https://arxiv.org/pdf/2602.15902) | [Paper Breakdown](https://paperbreakdown.com/abs/2602.15902)
@@ -125,6 +125,25 @@ A hypernetwork trained on Qwen3-4B **cannot** generate adapters for Qwen2.5 mode
 
 No `--lora` in `build_server_command()`, no `lora_path` in `ModelConfig`, no `"lora"` field in `_build_payload()`. Full integration is Phase B scope.
 
+### Finding 8: llama.cpp training infrastructure — gap analysis vs QVAC Fabric
+
+Our fork has `llama_opt_init()`, `llama_opt_epoch()` (`include/llama.h:1592-1620`) and working `examples/training/finetune.cpp`.
+
+| Capability | Status | Details |
+|---|---|---|
+| Training API | Present | `llama_opt_init()`, `llama_opt_epoch()` in `include/llama.h` |
+| Backward ops | Present | SILU_BACK, RMS_NORM_BACK, ROPE_BACK, OUT_PROD, OPT_STEP_ADAM (CUDA), CROSS_ENTROPY_LOSS_BACK |
+| Masked loss | **Missing** | No `CROSS_ENTROPY_LOSS_MASKED` (QVAC adds this for assistant-only token loss). Workaround: mask at dataset level |
+| Training precision | Constrained | F32 KV cache required — no F16 for OUT_PROD |
+| BitNet LoRA compat | Structural | `bitnet.cpp` uses `build_lora_mm` at 6 call sites — LoRA adapters structurally compatible with BitNet inference |
+
+**Conclusion**: CPU LoRA fine-tuning already possible via `finetune.cpp` for supported models. Masked loss is a convenience gap, not a blocker. QVAC's Vulkan/Metal GPU kernels are NOT APPLICABLE (GT 1030 display-only, no Vulkan compute).
+
+Reference files:
+- `/mnt/raid0/llm/llama.cpp/include/llama.h` (lines 1592-1620)
+- `/mnt/raid0/llm/llama.cpp/examples/training/finetune.cpp`
+- `/mnt/raid0/llm/llama.cpp/src/models/bitnet.cpp`
+
 ## References
 
 - [Doc-to-LoRA paper](https://arxiv.org/pdf/2602.15902)
@@ -136,6 +155,11 @@ No `--lora` in `build_server_command()`, no `lora_path` in `ModelConfig`, no `"l
 - llama.cpp LoRA converter: `convert_lora_to_gguf.py`
 - PEFT tensor naming: `base_model.model.model.layers.{n}.mlp.down_proj.lora_{A,B}.weight`
 - Worker token caps: `_repl_turn_token_cap()` in `src/graph/helpers.py`
+- QVAC Fabric repo: [github.com/tetherto/qvac-fabric-llm.cpp](https://github.com/tetherto/qvac-fabric-llm.cpp) (Apache 2.0)
+- QVAC BitNet blog: [huggingface.co/blog/qvac/fabric-llm-finetune-bitnet](https://huggingface.co/blog/qvac/fabric-llm-finetune-bitnet)
+- BitNet 2B4T paper: [arxiv.org/abs/2504.12285](https://arxiv.org/abs/2504.12285) (MIT)
+- BitNet 2B4T model: [huggingface.co/microsoft/bitnet-b1.58-2B-4T](https://huggingface.co/microsoft/bitnet-b1.58-2B-4T)
+- llama.cpp training API: `include/llama.h:1592-1620`, `examples/training/finetune.cpp`
 
 ## Implementation Steps (Phase A — CPU Validation)
 
@@ -331,6 +355,28 @@ python convert_lora_to_gguf.py \
 
 **NO-GO**: Quality gap too large or pipeline breaks. Archive with findings.
 
+### Phase A-bis — BitNet 2B4T Quality Validation (Optional, 2 hours)
+
+Independent of D2L pipeline. Purpose: baseline BitNet quality vs existing worker model.
+
+**Procedure**:
+1. Download `microsoft/bitnet-b1.58-2B-4T-GGUF` (TQ1_0, ~400 MB)
+2. Serve with `llama-server -m bitnet-2B4T.gguf -c 4096 -np 1`
+3. Run question pool subset (50 questions, coding + reasoning):
+   ```bash
+   cd /mnt/raid0/llm/epyc-inference-research
+   python scripts/benchmark/seed_specialist_routing.py \
+       --model bitnet-2b4t --questions 50 --categories coding,reasoning
+   ```
+4. Compare vs Qwen2.5-Coder-1.5B Q4_K_M on same questions
+5. Record throughput (tok/s on CPU)
+
+**Acceptance**: Quality comparison table. Decision: viable `worker_fast` candidate?
+
+**Context**: QVAC benchmarks show BitNet 2B4T at 60-64% win rate vs Q4 Qwen3-1.7B (LLM-as-Judge). ARC 49.91, GSM8K 58.38. Memory: 0.4 GB vs ~2 GB for comparable models. Likely weaker than Qwen2.5-Coder-1.5B (code-specialized) but worth validating given 5x memory advantage.
+
+---
+
 ## Phase B Scope (NOT this handoff — requires GO decision + cloud GPUs)
 
 ### Hypernetwork Retraining
@@ -347,6 +393,7 @@ python convert_lora_to_gguf.py \
 | `epyc-orchestrator/scripts/server/orchestrator_stack.py:637` | Emit `--lora`/`--lora-init-without-apply` in `build_server_command()` |
 | `epyc-orchestrator/src/backends/llama_server.py:655` | Add `"lora"` field to `_build_payload()` |
 | `epyc-orchestrator/src/llm_primitives/inference.py` | Add `adapter_id` to `InferenceRequest` |
+| `epyc-orchestrator/orchestration/model_registry.yaml` | Add `bitnet_model:` entry if Phase A-bis shows viable quality |
 
 ## Files to Create (Phase A)
 
@@ -374,3 +421,36 @@ python convert_lora_to_gguf.py \
 - [ ] Quality comparison: adapter F1 vs context-stuffing F1 on SQuAD subset (Step 4)
 - [ ] Latency analysis: adapter generation + inference vs context-stuffing, break-even computed (Step 4)
 - [ ] GO/DEFER/NO-GO decision documented (Step 5)
+
+## Research Intake Update — 2026-03-17
+
+### QVAC Fabric BitNet LoRA (intakes 162-164)
+
+**What**: llama.cpp fork (`qvac-fabric-llm.cpp`, Apache 2.0) with Vulkan/Metal GPU backends for BitNet ternary inference + LoRA fine-tuning on mobile GPUs (Adreno, Mali, Apple). Results: BitNet-1B LoRA fine-tuning in 3m31s (4090), 1h45m (iPhone 16); 131 tok/s inference on iPhone 16.
+
+**Relationship to D2L**: Complementary, not competing. QVAC = traditional supervised LoRA fine-tuning on-device. D2L = zero-shot hypernetwork-generated adapters. Both produce GGUF LoRA adapters consumed by the same llama.cpp inference API.
+
+**EPYC applicability**:
+| QVAC Feature | Applicable? | Reason |
+|---|---|---|
+| GPU ternary compute kernels | **NO** | GT 1030 display-only, no Vulkan compute |
+| Mobile LoRA fine-tuning | **NO** | No mobile deployment target |
+| LoRA training APIs | **PARTIALLY REDUNDANT** | Our fork already has `llama_opt_init`/`llama_opt_epoch` (see Finding 8) |
+| GGUF adapter format | **VALIDATED** | 30 MB adapters work end-to-end in their benchmarks |
+| `CROSS_ENTROPY_LOSS_MASKED` | **USEFUL** | Only missing backward op for assistant-only token loss (workaround: dataset-level masking) |
+
+**Actionable**: If traditional LoRA fine-tuning becomes desirable for Qwen2.5, our fork already has the infra. The only gap is masked loss (`CROSS_ENTROPY_LOSS_MASKED`), which can be worked around at the dataset level. No code cherry-picking recommended — fork divergence is high (b7248 vs production-consolidated-v2).
+
+### BitNet b1.58 2B4T (intake 165)
+
+**What**: Microsoft's official 2B ternary model (MIT license, 4T training tokens). Native 1.58-bit quantization with BitLinear layers, ternary weight mapping {-1, 0, +1}.
+
+**Quality benchmarks**:
+| Metric | BitNet 2B4T | Comparable |
+|---|---|---|
+| Memory | 0.4 GB | ~2 GB (Qwen2.5-1.5B Q4) |
+| ARC | 49.91 | — |
+| GSM8K | 58.38 | — |
+| QVAC LLM-Judge vs Q4 Qwen3-1.7B | 60-64% win rate | Quality gap remains |
+
+**Decision**: Not for production. Competitive with Qwen2.5-1.5B on general benchmarks but likely weaker than Qwen2.5-Coder-1.5B (code-specialized). The 5x memory advantage (0.4 vs 2 GB) is compelling only if quality holds — Phase A-bis provides the validation path.

@@ -111,3 +111,8 @@ categories:
     label: Swarm Techniques
     description: Multi-agent swarm coordination, parallel exploration, ensemble methods.
     related_chapters: []
+
+  document_processing:
+    label: Document Processing
+    description: PDF parsing, OCR, document extraction, table recognition, reading order analysis for LLM pipelines.
+    related_chapters: []

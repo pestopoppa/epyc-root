@@ -256,3 +256,13 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 - [ ] Benchmark VRAM and latency on EPYC hardware
 - [ ] Add `worker_tts` role to model_registry.yaml (gated behind feature flag)
 - [ ] Design voice cloning guardrails before enabling
+
+## Research Intake Update — 2026-03-17
+
+### New Related Research
+- **[intake-161] "OpenDataLoader PDF - PDF Parser for AI-ready data"** (repo: opendataloader-project/opendataloader-pdf)
+  - Relevance: Direct alternative/upgrade for the orchestrator's document processing pipeline (`pdf_router.py` → pdftotext/LightOnOCR → document_chunker)
+  - Key technique: XY-Cut++ reading order algorithm, hybrid local+AI extraction, 0.93 table accuracy
+  - Reported results: 0.90 overall accuracy (#1 vs docling 0.86, marker 0.83, pymupdf4llm 0.57); 0.05s/page local, 0.43s/page hybrid
+  - Delta from current approach: Current pipeline splits born-digital (pdftotext) vs scanned (LightOnOCR) with no dedicated table extraction. OpenDataLoader provides unified extraction (text + tables + figures + bboxes) with built-in prompt injection filtering. Trade-off: Java dependency vs current pure Python+CLI stack. Python SDK available (`langchain-opendataloader-pdf`).
+  - Evaluation path: Benchmark against current `pdf_router.py` on real document workloads, especially multi-column and table-heavy PDFs

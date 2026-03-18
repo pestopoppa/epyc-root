@@ -3782,3 +3782,280 @@
   - 100GB N-gram trie is heavy but feasible on high-RAM systems
   - Lower acceptance than DFlash (τ=3.76 vs 6.49) — DFlash is the better port target
   - Training recipe published (unlike DFlash) — useful reference for training custom drafters
+- id: intake-160
+  arxiv_id: null
+  url: https://github.com/p-e-w/heretic
+  source_type: repo
+  title: Heretic - Fully automatic censorship removal for language models
+  categories:
+  - training_distillation
+  key_claims:
+  - Fully automatic abliteration with TPE-based parameter optimization via Optuna
+  - Co-minimizes refusals and KL divergence from original model simultaneously
+  - Achieves lower KL divergence (0.16) than manual abliteration (0.45-1.04) on Gemma-3-12B
+  - Supports dense, multimodal, and most MoE architectures
+  - Interpolated float-valued refusal direction indices and component-specific parameters
+  techniques:
+  - Directional ablation (abliteration)
+  - TPE hyperparameter optimization (Optuna)
+  - Difference-of-means refusal direction computation
+  - Component-specific ablation (attention out-proj + MLP down-proj)
+  - KL divergence regularization
+  reported_results:
+  - 'Gemma-3-12B-IT: 3/100 refusals with KL=0.16 (vs 0.45-1.04 for prior methods)'
+  - '~45 min on RTX 3090 for Llama-3.1-8B-Instruct'
+  - '1000+ community models on HuggingFace'
+  novelty: medium
+  relevance: none
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-03-17'
+  cross_references:
+    intake:
+    - intake-116
+  notes: >-
+    Heretic is a polished, automatic abliteration tool that improves on manual
+    abliteration by using TPE optimization to find optimal ablation parameters
+    per-layer, co-minimizing refusals and KL divergence. The novelty is in the
+    optimization loop (Optuna + parametrized weight kernels), not the underlying
+    technique (directional ablation from Arditi et al. 2024). Related to
+    intake-116 (OBLITERATUS) but more automated and with better KL preservation.
+    Does NOT support SSMs/hybrid models — explicitly excluded. Not relevant to
+    EPYC's inference optimization focus (no throughput/latency implications).
+- id: intake-161
+  arxiv_id: null
+  url: https://github.com/opendataloader-project/opendataloader-pdf
+  source_type: repo
+  title: OpenDataLoader PDF - PDF Parser for AI-ready data
+  categories:
+  - document_processing
+  - multimodal
+  key_claims:
+  - 0.90 overall accuracy and 0.93 table extraction across 200 real-world PDFs in hybrid mode
+  - XY-Cut++ algorithm for reading order analysis across multi-column layouts
+  - 0.05s/page deterministic local mode, 0.43s/page hybrid mode with AI backends
+  - Built-in OCR supporting 80+ languages for scanned documents
+  - Prompt injection filtering (hidden text, zero-size fonts, off-page content)
+  techniques:
+  - XY-Cut++ reading order algorithm
+  - Hybrid local+AI extraction pipeline
+  - Tagged PDF structure preservation and generation
+  - Prompt injection filtering for LLM safety
+  reported_results:
+  - '0.90 overall accuracy (ranked #1 vs docling 0.86, marker 0.83, pymupdf4llm 0.57)'
+  - '0.93 table extraction accuracy'
+  - '0.05s/page local mode, 0.43s/page hybrid mode'
+  - '2.2k GitHub stars, 151 forks'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-03-17'
+  cross_references:
+    handoffs:
+    - multimodal-pipeline.md
+    orchestrator_files:
+    - src/services/pdf_router.py
+    - src/services/document_preprocessor.py
+    - src/services/lightonocr_server.py
+    - src/services/document_chunker.py
+  notes: >-
+    OpenDataLoader PDF is a Java-based PDF parsing tool for extracting structured
+    data (Markdown, JSON with bounding boxes, HTML) from PDFs for RAG/LLM pipelines.
+    Has Python SDK and LangChain integration. Directly relevant to the orchestrator's
+    existing document processing pipeline (pdf_router.py → pdftotext/LightOnOCR →
+    document_chunker → figure_analyzer). Key potential improvements over current stack:
+    (1) XY-Cut++ reading order may outperform pdftotext for multi-column layouts,
+    (2) 0.93 table extraction accuracy vs current pipeline which has no dedicated table
+    extraction, (3) unified extraction (text + tables + figures + bboxes) vs current
+    split between pdftotext and LightOnOCR, (4) prompt injection filtering built-in
+    (hidden text, zero-size fonts). Trade-off: Java dependency (current stack is pure
+    Python + CLI tools). Could serve as alternative backend in pdf_router.py for
+    born-digital PDFs, or replace the pdftotext probe entirely. Worth benchmarking
+    against current pipeline on the orchestrator's real document workloads.
+  deep_dive: research/deep-dives/opendataloader-pdf-pipeline-integration.md
+- id: intake-162
+  arxiv_id: null
+  url: https://github.com/tetherto/qvac-fabric-llm.cpp
+  source_type: repo
+  title: 'QVAC Fabric LLM.cpp: llama.cpp fork with Vulkan/Metal BitNet GPU inference and LoRA fine-tuning'
+  categories:
+  - quantization
+  - hardware_optimization
+  - training_distillation
+  key_claims:
+  - First GPU backend (Vulkan + Metal) for BitNet b1.58 ternary inference with bit-exact CPU equivalence
+  - LoRA fine-tuning of BitNet models on mobile GPUs (Adreno, Mali, Apple) — first known implementation
+  - Dynamic tiling algorithm for 128 MiB SSBO-limited mobile GPUs
+  - Memory-based model loading for WebAssembly, encrypted, and network-streamed deployments
+  - Supports TQ1_0 (1.69 bpw) and TQ2_0 (2.06 bpw) ternary quantization formats
+  techniques:
+  - BitNet b1.58 ternary quantization (TQ1_0, TQ2_0)
+  - Vulkan compute shaders for ternary matrix ops
+  - LoRA fine-tuning with frozen ternary base weights + FP16 adapters
+  - Dynamic tiling for mobile GPU memory constraints
+  - Memory-buffer model loading (no filesystem required)
+  reported_results:
+  - 'BitNet-1B on NVIDIA 4090: 258 tok/s'
+  - 'BitNet-1B on iPhone 16: 131 tok/s (6.2x over CPU)'
+  - 'BitNet-1B on Samsung S25 Adreno: 27.2 tok/s (11.3x over CPU)'
+  - 'BitNet-13B uses 29% less VRAM than Qwen3-4B Q4 (2789 vs ~3900 MB)'
+  - 'BitNet-2B achieves 60-64% win rate vs Qwen3-1.7B Q4 via LLM-as-Judge'
+  - '99.04% same-top-token rate with KL divergence < 0.0003 vs CPU'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-03-17'
+  cross_references:
+    intake:
+    - intake-073
+    - intake-119
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    code:
+    - llama.cpp/src/models/bitnet.cpp
+  notes: >-
+    llama.cpp fork (based on b7248) adding Vulkan/Metal GPU backends for BitNet
+    ternary inference and LoRA training. Our epyc-llama fork already has
+    bitnet.cpp model support and TQ1_0/TQ2_0 quantization types, but lacks the
+    Vulkan GPU kernels for ternary ops that QVAC implements. The mobile GPU
+    focus (Adreno, Mali) is out of EPYC's server-side scope, but the Vulkan
+    ternary compute shaders could be cherry-picked if BitNet models become
+    production-relevant. Dynamic tiling algorithm is clever but specific to
+    mobile memory constraints (128 MiB SSBO). Related to intake-073 (edge
+    speculative decoding) and the Doc-to-LoRA handoff (08).
+- id: intake-163
+  arxiv_id: null
+  url: https://github.com/tetherto/qvac-rnd-fabric-llm-bitnet
+  source_type: repo
+  title: 'QVAC RnD Fabric BitNet: benchmarks and evaluations for GPU-accelerated BitNet'
+  categories:
+  - quantization
+  - benchmark_methodology
+  key_claims:
+  - Comprehensive benchmarks of BitNet ternary inference across mobile and desktop GPUs
+  - PubMedQA-based evaluation of LoRA fine-tuned BitNet models
+  - BitNet-125M fine-tunable in ~10 minutes on Samsung S25
+  techniques:
+  - LLM-as-Judge evaluation for BitNet quality assessment
+  - PubMedQA domain-specific instruction tuning
+  - Cross-platform GPU benchmarking (Adreno, Mali, Apple, NVIDIA)
+  reported_results:
+  - 'BitNet-1B LoRA fine-tuning on 4090: 3m 31s per epoch'
+  - 'BitNet-1B LoRA fine-tuning on iPhone 16: 1h 45m per epoch'
+  - 'BitNet-1.7B LoRA on Adreno: 1h 18m per epoch'
+  - 'BitNet-125M on Samsung S25: ~10 min total'
+  - 'TQ1_0 4-5x higher throughput than TQ2_0 on iPhone 16'
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-03-17'
+  cross_references:
+    intake:
+    - intake-162
+  notes: >-
+    Companion benchmarks/eval repo for QVAC Fabric (intake-162). Contains
+    PubMedQA evaluation scripts and cross-device performance data. The
+    benchmark methodology (LLM-as-Judge for ternary model quality) is standard.
+    Mobile-focused results not directly applicable to EPYC server workloads.
+    Interesting data point: TQ1_0 is 4-5x faster than TQ2_0 on Apple but
+    TQ2_0 is favored on Adreno — backend-specific kernel performance varies
+    significantly. Low standalone value; context for intake-162.
+- id: intake-164
+  arxiv_id: null
+  url: https://huggingface.co/blog/qvac/fabric-llm-finetune-bitnet
+  source_type: blog
+  title: 'LoRA Fine-Tuning BitNet b1.58 LLMs on Heterogeneous Edge GPUs via QVAC Fabric'
+  categories:
+  - quantization
+  - hardware_optimization
+  - training_distillation
+  key_claims:
+  - First cross-platform LoRA fine-tuning framework for BitNet b1.58 on GPUs
+  - BitNet enables ~2x larger models on edge devices vs Q4 quantized models
+  - 13B-scale BitNet models can run on hardware that struggles with 4B Q4 models
+  - Unified Vulkan backend for both training and inference forward/backward passes
+  - Masked loss (assistant-only) for instruction tuning of ternary models
+  techniques:
+  - BitNet b1.58 with BitLinear layers replacing standard linear layers
+  - LoRA (r=8, alpha=16) with frozen ternary weights + FP16 adapters
+  - AdamW optimizer with linear LR decay and warmup
+  - Dynamic tiling for mobile GPU SSBO constraints
+  - Supervised fine-tuning with masked loss on assistant tokens only
+  reported_results:
+  - 'BitNet-1B TQ1_0 VRAM: 614 MiB (77.8% less than Gemma-3-1B FP16)'
+  - 'BitNet-2.7B: 1228 MiB vs Qwen3-1.7B 4403 MiB (3.5x smaller)'
+  - 'BitNet-7B TQ1_0: ~1.9 GB vs TQ2_0: ~4.3 GB'
+  - 'iPhone 16 TQ1_0: 130.7 tps (6.2x over CPU 21.2 tps)'
+  - 'Samsung S25 TQ1_0: 27.2 tps (11.3x over CPU 2.4 tps)'
+  - 'Pixel 9 Mali: ~8.2 tps (2.1x over CPU)'
+  - 'BitNet-2.7B TQ2_0 fine-tune on Pixel 9: 304 min/epoch (5x faster than TQ1_0)'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-03-17'
+  references:
+  - 'Ma et al. 2024: The Era of 1-Bit LLMs (BitNet b1.58)'
+  - 'Hu et al. 2022: LoRA (ICLR)'
+  - 'Wang et al. 2025: BitNet.cpp'
+  - 'SN et al. 2025: Edge-First Generalized LLM LoRA Fine-Tuning'
+  cross_references:
+    intake:
+    - intake-162
+    - intake-163
+    - intake-073
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >-
+    Detailed technical writeup of the QVAC Fabric BitNet project (intake-162).
+    Key insight for EPYC: BitNet's 1.58-bit weight representation allows ~2x
+    model size at same memory budget compared to Q4. At server scale, a
+    BitNet-13B at 2.8 GB VRAM is interesting for multi-model orchestration
+    scenarios where memory is the bottleneck. The LoRA fine-tuning with frozen
+    ternary weights is architecturally clean — adapters are FP16 overlays on
+    ternary base. However, BitNet model quality (60-64% win rate vs Q4 at
+    similar effective size) suggests quality gap remains. Our llama.cpp fork
+    has bitnet.cpp but lacks GPU ternary kernels. References Ma et al. 2024
+    (BitNet b1.58) and Wang et al. 2025 (BitNet.cpp CPU-only).
+- id: intake-165
+  arxiv_id: '2504.12285'
+  url: https://arxiv.org/abs/2504.12285
+  source_type: paper
+  title: 'BitNet b1.58 2B4T Technical Report'
+  categories:
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - First open-source native 1-bit LLM at 2B parameter scale, trained on 4T tokens
+  - Performance on par with full-precision LLMs of similar size
+  - Substantially reduced memory footprint, energy consumption, and decoding latency
+  - BitLinear layers with absolute mean quantization mapping weights to ternary {-1, 0, +1}
+  techniques:
+  - Native 1.58-bit quantization (BitLinear layers)
+  - Absolute mean quantization for ternary weight mapping
+  - 4T token training corpus
+  reported_results:
+  - 'Matches leading open-weight full-precision 2B models on language, math, coding, conversation'
+  - 'GPU and CPU inference implementations released'
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-162
+  verdict: worth_investigating
+  ingested_date: '2026-03-17'
+  cross_references:
+    intake:
+    - intake-162
+    - intake-164
+  notes: >-
+    Microsoft's official BitNet 2B model and technical report — the model that
+    QVAC Fabric (intake-161) targets for GPU inference and LoRA fine-tuning.
+    Relevant to EPYC as a reference for ternary model quality baselines. Our
+    llama.cpp fork has bitnet.cpp architecture support and TQ1_0/TQ2_0 quant
+    types, so this model should be loadable. Key question: does BitNet quality
+    at 2B scale justify the engineering investment in GPU ternary kernels vs
+    just using Q4_K_M at the same memory budget? QVAC's benchmarks show 60-64%
+    win rate vs Q4 Qwen3-1.7B which suggests a quality gap remains.

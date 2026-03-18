@@ -24,6 +24,7 @@ The taxonomy (`research/taxonomy.yaml`) defines 18 categories for classifying re
 | `ssm_hybrid` | Mamba, SSM-attention hybrids, linear attention |
 | `autonomous_research` | AI-driven research workflows |
 | `swarm_techniques` | Multi-agent swarm coordination |
+| `document_processing` | PDF parsing, OCR, table recognition, reading order for LLM pipelines |
 
 ## Usage
 

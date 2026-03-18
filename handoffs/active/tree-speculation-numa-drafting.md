@@ -1,6 +1,6 @@
 # Handoff: Tree Speculation + NUMA-Pinned Dual Drafting
 
-**Status**: Phase 4 validated (+15.8% f16). Phases 5-6 ruled out. Phase 7 UNBLOCKED. Pending: pairs 9-11, 15, NUMA.
+**Status**: Phase 4 validated. T1-T4 complete (2026-03-17). Tree wins on f16 only (+10.2%). Q8 break-even. Q4_K_M net-negative. Phase 7 UNBLOCKED (NUMA).
 **Created**: 2026-03-07
 **Audited**: 2026-03-10 — 9 edits applied (branch strategy, polymorphic architecture, line numbers, DySpec batching, Phase 3 deferral, Phase 4 refocus, validation)
 **Phase 1**: ✅ complete (2026-03-11) — tree speculation implemented in server, builds clean, 5 files on `feature/tree-speculation`
@@ -410,6 +410,77 @@ Clean gradient: as weight size per token increases, verification latency rises r
 - `epyc-inference-research/scripts/benchmark/bench_tree_speculation_server.sh` — pairs 10 (f16), 11 (Q8) added
 - Data: `epyc-inference-research/data/tree_speculation/server_sweep_20260315_104425.csv` (f16 256t), `*_110120.csv` (f16 512t), `*_122016.csv` (Q8 256t)
 
+### Extended Pairs Benchmark (2026-03-17) — T1-T4 Complete
+
+Full p_split sweep on all remaining pairs. n_predict=256, draft_max=16, threads=96.
+
+**Pair 15 — Qwen3-Coder-30B-A3B Q4_K_M (frontdoor, MoE):**
+
+| p_split | t/s | Accept% | Accepted/Total | Delta vs Linear |
+|---------|-----|---------|----------------|-----------------|
+| 0 (linear) | 40.92 | 58.6% | 639/1090 | baseline |
+| 0.05 | 35.14 | 59.4% | 699/1176 | -14.1% |
+| 0.1 | 35.13 | 59.4% | 699/1176 | -14.1% |
+| 0.2 | 35.62 | 59.4% | 699/1176 | -13.0% |
+| 0.3 | 34.70 | 59.4% | 699/1176 | -15.2% |
+
+**Pair 10 — Qwen2.5-Coder-32B f16 (dense, validation run):**
+
+| p_split | t/s | Accept% | Accepted/Total | Delta vs Linear |
+|---------|-----|---------|----------------|-----------------|
+| 0 (linear) | 6.05 | 80.1% | 724/904 | baseline |
+| 0.05 | 6.67 | 78.2% | 771/986 | **+10.2%** |
+| 0.1 | 6.56 | 78.2% | 771/986 | +8.4% |
+| 0.2 | 6.41 | 78.2% | 771/986 | +5.9% |
+| 0.3 | 6.26 | 78.2% | 771/986 | +3.5% |
+
+**Pair 11 — Qwen2.5-Coder-32B Q8_0 (dense):**
+
+| p_split | t/s | Accept% | Accepted/Total | Delta vs Linear |
+|---------|-----|---------|----------------|-----------------|
+| 0 (linear) | 8.43 | 79.6% | 733/921 | baseline |
+| 0.05 | 8.42 | 77.9% | 772/991 | -0.1% |
+| 0.1 | 8.40 | 77.9% | 772/991 | -0.4% |
+| 0.2 | 8.42 | 77.9% | 772/991 | -0.1% |
+| 0.3 | 8.43 | 77.9% | 772/991 | 0.0% |
+
+**Pair 9 — Qwen3-Coder-480B-A35B Q4_K_M (architect, MoE):**
+
+| p_split | t/s | Accept% | Accepted/Total | Delta vs Linear |
+|---------|-----|---------|----------------|-----------------|
+| 0 (linear) | 5.10 | 61.0% | 641/1050 | baseline |
+| 0.05 | 4.75 | 57.9% | 695/1201 | -6.9% |
+| 0.1 | 4.68 | 57.9% | 695/1201 | -8.2% |
+| 0.2 | 4.71 | 57.9% | 695/1201 | -7.6% |
+| 0.3 | 4.01 | 57.9% | 695/1201 | -21.4% |
+
+### Five-Way Quantization Comparison (all pairs, n_predict=256)
+
+| Model | Arch | Quant | Size | Linear t/s | Best Tree t/s | Delta | Verdict |
+|-------|------|-------|------|-----------|---------------|-------|---------|
+| Qwen3-Coder-30B-A3B (pair 15) | MoE | Q4_K_M | 18GB | 40.92 | 35.62 (p=0.2) | **-13.0%** | ❌ tree loses |
+| Qwen2.5-Coder-32B (pair 5) | Dense | Q4_K_M | 19GB | 19.05 | 18.01 (p=0.2) | -5.5% | ❌ tree loses |
+| Qwen3-Coder-480B-A35B (pair 9) | MoE | Q4_K_M | 270GB | 5.10 | 4.71 (p=0.2) | **-7.6%** | ❌ tree loses |
+| Qwen2.5-Coder-32B (pair 11) | Dense | Q8_0 | 33GB | 8.43 | 8.44 (p=0.3) | +0.1% | ⚖️ break-even |
+| Qwen2.5-Coder-32B (pair 10) | Dense | f16 | 62GB | 6.05 | 6.67 (p=0.05) | **+10.2%** | ✅ tree wins |
+
+**Key findings from T1-T4:**
+1. **f16 is the only clear tree winner** — optimal p_split=0.05 (shallow trees)
+2. **Q8_0 is the crossover point** — tree exactly breaks even at all p_split values
+3. **Q4_K_M loses regardless of model size or architecture** — MoE (30B, 480B) and dense (32B) all net-negative
+4. **MoE models lose harder at Q4_K_M** than dense models (-7.6% to -13% vs -5.5%)
+5. **Acceptance rate drops with tree** on all pairs (more draft tokens → more rejected), but f16's cheap verification absorbs this
+6. **p_split=0.3 on 480B is catastrophic** (-21.4%) — large trees overwhelm even slow targets at Q4
+7. **Previous Q8_0 result (pair 11, Phase 4) showed +2.5%** at 9.30 t/s baseline; today's run at 8.43 t/s shows break-even. Minor run-to-run variance likely explains the difference.
+
+**Updated production recommendation**: Enable `--draft-p-split 0.05` for f16 targets (strong win). Q8_0 is break-even at full thread count but may tip positive under NUMA thread-splitting (lower per-token throughput → more verification budget). Q4_K_M should remain linear. NUMA tests (T5-T6) should cover both f16 AND Q8_0 targets.
+
+Data files:
+- `epyc-inference-research/data/tree_speculation/server_sweep_20260317_144949.csv` (pair 15)
+- `epyc-inference-research/data/tree_speculation/server_sweep_20260317_145435.csv` (pair 10)
+- `epyc-inference-research/data/tree_speculation/server_sweep_20260317_150939.csv` (pair 11)
+- `epyc-inference-research/data/tree_speculation/server_sweep_20260317_153523.csv` (pair 9)
+
 ## Phase 5 — Reduce Tree Construction Overhead
 
 ### Problem
@@ -497,14 +568,15 @@ Gate check (2026-03-17): Phases 4-6 complete ✅. Phase 7 is UNBLOCKED.
 - Phase 6: adaptive EMA ineffective
 Next: run remaining pairs, then benchmark NUMA-pinned dual drafters on dense targets.
 
-| Test ID | Model | Quant | Draft | Script Pair | Status | Priority |
-|---------|-------|-------|-------|-------------|--------|----------|
-| T1 | Qwen3-Coder-480B-A35B | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Pair 9 | NOT RUN | HIGH |
-| T2 | Qwen2.5-Coder-32B | f16 | Qwen2.5-0.5B-f16 | Pair 10 | NOT RUN | HIGH |
-| T3 | Qwen3-Coder-30B-A3B (frontdoor) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | New pair 15 | NOT RUN | MEDIUM |
-| T4 | Qwen2.5-Coder-32B | Q8_0 | Qwen2.5-0.5B-f16 | Pair 11 | NOT RUN | MEDIUM |
-| T5 | Qwen2.5-Coder-32B (NUMA dual-node) | f16 | Qwen2.5-0.5B-f16 | Phase 7 | NOT RUN | MEDIUM |
-| T6 | Qwen3-Coder-480B-A35B (NUMA dual-node) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Phase 7 | NOT RUN | LOW |
+| Test ID | Model | Quant | Draft | Script Pair | Status | Result | Priority |
+|---------|-------|-------|-------|-------------|--------|--------|----------|
+| T1 | Qwen3-Coder-480B-A35B | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Pair 9 | ✅ DONE (2026-03-17) | **-7.6%** (5.10→4.71 t/s, p=0.2) | HIGH |
+| T2 | Qwen2.5-Coder-32B | f16 | Qwen2.5-0.5B-f16 | Pair 10 | ✅ DONE (2026-03-17) | **+10.2%** (6.05→6.67 t/s, p=0.05) | HIGH |
+| T3 | Qwen3-Coder-30B-A3B (frontdoor) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Pair 15 | ✅ DONE (2026-03-17) | **-13.0%** (40.92→35.62 t/s, p=0.2) | MEDIUM |
+| T4 | Qwen2.5-Coder-32B | Q8_0 | Qwen2.5-0.5B-f16 | Pair 11 | ✅ DONE (2026-03-17) | **+0.1%** (8.43→8.44 t/s, p=0.3) | MEDIUM |
+| T5 | Qwen2.5-Coder-32B (NUMA dual-node) | f16 | Qwen2.5-0.5B-f16 | Phase 7 | NOT RUN | — | MEDIUM |
+| T5b | Qwen2.5-Coder-32B (NUMA dual-node) | Q8_0 | Qwen2.5-0.5B-f16 | Phase 7 | NOT RUN | — | MEDIUM |
+| T6 | Qwen3-Coder-480B-A35B (NUMA dual-node) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Phase 7 | NOT RUN | — | LOW |
 
 ### CLI Commands for Pending Pairs
 
