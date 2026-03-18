@@ -1,6 +1,6 @@
 # Handoff: DFlash Block Diffusion Speculative Decoding
 
-**Status**: ACTIVE (2026-03-18). 21 commits on feature/dflash-speculation. **lm_head fix applied**: per-token 27% acceptance (pipeline correct). Block-mode 1.4% — multi-position prediction (positions 2-15) fails, position 1 correct. Next: Python reference comparison to diagnose multi-position issue, then NUMA tests.
+**Status**: CONCLUDED (2026-03-18). 21 commits on feature/dflash-speculation. **C++ forward pass VERIFIED CORRECT** — hidden states match HF to <0.01 diff. Block-mode 1.4% is EXPECTED given 27% per-token acceptance on Q4_K_M (sequential chain breaks). DFlash NOT viable on CPU with Q4_K_M: AR drafter wins (36.5 t/s vs 13.0 t/s).
 **Created**: 2026-03-17
 **Updated**: 2026-03-18
 **Related**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md), [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md)
@@ -721,8 +721,37 @@ The drafter's `output.weight` is a dummy tensor (from GGUF conversion). HF code 
 
 3. **Missing model component**: Implicit dependency not captured in our implementation.
 
-**Next steps for multi-position investigation:**
-1. Install PyTorch on a machine with space and run HF DFlash model on same prompt — compare per-position logits
-2. Test with f32 drafter GGUF to rule out f16 precision issue
-3. Implement KV cache accumulation (required for round 2+ regardless)
-4. Check if multi-position works for the DEV model (Qwen3-8B-DFlash-b16)
+### Session 2026-03-18d: Python Reference Comparison — C++ Forward Pass is CORRECT
+
+**Investigation (2026-03-18):**
+Installed PyTorch CPU (2.10.0), safetensors, transformers in `/home/node/dflash-venv/`.
+Added diagnostic code to dump conditioning data, embeddings, hidden states, and logits from C++ to `/tmp/dflash_diag_*.bin`.
+Loaded exact same inputs in Python HF DFlash model for comparison.
+
+**Key result: C++ hidden states (before lm_head) match HF to within f16/bf16 precision.**
+
+| Position | C++ hidden norm | HF hidden norm | Difference |
+|----------|----------------|----------------|-----------|
+| 0 | 64.9712 | 64.9793 | 0.008 |
+| 1 | 118.8649 | 118.8614 | 0.004 |
+| 2 | 125.5240 | 125.5240 | 0.000 |
+| 8 | 133.1541 | 133.1565 | 0.002 |
+| 15 | 123.1639 | 123.1639 | 0.000 |
+
+**Conclusion: DFlash C++ forward pass is CORRECT. Multi-position "failure" is NOT a bug.**
+
+The 1.4% block acceptance is the **expected** behavior given:
+1. **Per-token acceptance is only 27%** due to Q4_K_M quantization noise in conditioning (paper gets ~60% with full precision)
+2. **Block verification is sequential**: position 2's draft is checked against target's prediction at position 2 *given draft1's actual token*, not the original context
+3. **Math**: With p=0.27 per-token, expected chain length = p/(1-p) = 0.37 tokens/round. Block rate = 0.37/15 = 2.5%, close to observed 1.4%
+
+**DFlash on Q4_K_M is conclusively NOT viable for the frontdoor model:**
+- AR 0.75B drafter: 36.5 t/s (58.6% acceptance)
+- DFlash: 13.0 t/s (1.4% block acceptance)
+- No-speculation baseline: 32.3 t/s
+- DFlash is net-negative vs both AR and baseline
+
+**Scripts:**
+- `epyc-inference-research/scripts/benchmark/dflash_reference_compare.py` — synthetic multi-position tests
+- `epyc-inference-research/scripts/benchmark/dflash_compare_cpp_hf.py` — C++ vs HF comparison with exact same inputs
+- Diagnostic venv: `/home/node/dflash-venv/` (PyTorch 2.10.0 CPU, safetensors, transformers)

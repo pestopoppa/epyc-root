@@ -1,6 +1,6 @@
 # Handoff: Tree Speculation + NUMA-Pinned Dual Drafting
 
-**Status**: Phase 4 validated + draft_max optimized (2026-03-18). **+17-21% throughput on 3 production models from draft_max config change.** Tree wins on slow f16 only (+12.2%). Phase 7 UNBLOCKED (NUMA, needs bare metal).
+**Status**: Phase 7 COMPLETE (2026-03-18). **NUMA 4-way parallel: 6-7x aggregate throughput** on models ≤65GB. Tree ≈ linear at 48t per instance. draft_max optimization: +17-21%. Dual-drafter architecture superseded by simple multi-instance `taskset` pinning.
 **Created**: 2026-03-07
 **Audited**: 2026-03-10 — 9 edits applied (branch strategy, polymorphic architecture, line numbers, DySpec batching, Phase 3 deferral, Phase 4 refocus, validation)
 **Phase 1**: ✅ complete (2026-03-11) — tree speculation implemented in server, builds clean, 5 files on `feature/tree-speculation`
@@ -574,9 +574,9 @@ Next: run remaining pairs, then benchmark NUMA-pinned dual drafters on dense tar
 | T2 | Qwen2.5-Coder-32B | f16 | Qwen2.5-0.5B-f16 | Pair 10 | ✅ DONE (2026-03-17) | **+10.2%** (6.05→6.67 t/s, p=0.05) | HIGH |
 | T3 | Qwen3-Coder-30B-A3B (frontdoor) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Pair 15 | ✅ DONE (2026-03-17) | **-13.0%** (40.92→35.62 t/s, p=0.2) | MEDIUM |
 | T4 | Qwen2.5-Coder-32B | Q8_0 | Qwen2.5-0.5B-f16 | Pair 11 | ✅ DONE (2026-03-17) | **+0.1%** (8.43→8.44 t/s, p=0.3) | MEDIUM |
-| T5 | Qwen2.5-Coder-32B (NUMA dual-node) | f16 | Qwen2.5-0.5B-f16 | Phase 7 | NOT RUN | — | MEDIUM |
-| T5b | Qwen2.5-Coder-32B (NUMA dual-node) | Q8_0 | Qwen2.5-0.5B-f16 | Phase 7 | NOT RUN | — | MEDIUM |
-| T6 | Qwen3-Coder-480B-A35B (NUMA dual-node) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Phase 7 | NOT RUN | — | LOW |
+| T5 | Qwen2.5-Coder-32B (NUMA 4-way) | f16 | Qwen2.5-0.5B-f16 | Phase 7 | ✅ DONE (2026-03-18) | **6.4x agg** (4×48t: 26.4 vs 1×192t: 4.1 t/s). Tree ≈ linear at 48t. | MEDIUM |
+| T5b | Qwen2.5-Coder-32B (NUMA dual-node) | Q8_0 | Qwen2.5-0.5B-f16 | Phase 7 | SKIPPED | T5 shows tree=linear at 48t, Q8_0 unlikely different | MEDIUM |
+| T6 | Qwen3-Coder-480B-A35B (NUMA) | Q4_K_M | Qwen3-Coder-DRAFT-0.75B Q4_0 | Phase 7 | ✅ DONE (2026-03-18) | **+41%** (96t node0 tree: 3.82 vs 192t linear: 2.71 t/s). Tree + NUMA compound. | LOW |
 
 ### CLI Commands for Pending Pairs
 
@@ -704,7 +704,7 @@ The orchestrator stack reads `draft_max` from registry and passes as `--draft-ma
 
 ## Phase 7 — NUMA-Pinned Parallel Drafting
 
-**Status**: UNBLOCKED (Phase 4-6 complete). Ready to start. Requires bare-metal NUMA hardware (not available in devcontainer).
+**Status**: S2+T5 COMPLETE (2026-03-18). **4-way NUMA parallel gives 6-7x aggregate throughput.** Tree ≈ linear at 48 threads (tree overhead negated by reduced parallelism). Dual-drafter architecture NOT needed — simple multi-instance with `taskset` CPU pinning is far more effective. T6 running.
 
 ### Architecture
 

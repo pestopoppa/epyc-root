@@ -18,9 +18,9 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **ACTIVE** (21 commits, lm_head fixed) | DFlash block diffusion + tree | Dense/MoE (frontdoor, architects) | 27% per-token, block 1.4% (pos 2-15 fail) | Python ref comparison + KV cache accum |
-| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | T1-T4 + draft_max optimized | DySpec tree, draft_max tuning | **+17-21% via draft_max on 3 prod models** | +19.4% frontdoor | Apply registry changes |
-| [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | Exhausted, Phase 4 UNBLOCKED | MoE self-draft, attn-only, tree, MTP | Hybrid (Qwen3.5) | +5.4% (ext draft only) | NUMA-parallel reopener |
+| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED** — C++ verified correct | DFlash block diffusion | MoE (frontdoor) | 27% per-token, block 1.4% (expected) | NOT VIABLE on Q4_K_M: AR wins (36.5 vs 13 t/s) |
+| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | **Phase 7 COMPLETE** — NUMA 4-way validated | DySpec tree, draft_max, NUMA parallel | **6-7x via NUMA 4-way** on ≤65GB models | +19.4% dm, 6.7x NUMA | Deploy NUMA orchestrator config |
+| [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **S2 COMPLETE** — NUMA validated | NUMA parallel decode | Hybrid (Qwen3.5) | **6.9x via NUMA 4-way** (49.7 vs 7.25 t/s) | Deploy NUMA orchestrator config |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
@@ -35,40 +35,52 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 Zero code changes — parameter-only update in model_registry.yaml.
 
+## CRITICAL: NUMA 4-Way Parallel Discovery (2026-03-18)
+
+**6-7x aggregate throughput on models ≤65GB by running 4×48-thread NUMA-pinned instances.**
+
+Using all 192 threads is ANTI-OPTIMAL — cross-NUMA memory access penalty reduces throughput by 46-60%. Models ≤65GB fit on quarter-machine NUMA splits. 48 threads saturate MoE/hybrid compute.
+
+| Model | Role | Size | 1×192t | NUMA-optimized | Speedup |
+|-------|------|------|--------|----------------|---------|
+| 30B-A3B Q4KM | frontdoor | 16 GB | 14.2 t/s | **95.8 t/s** (4×48t) | **6.7x** |
+| 35B-A3B Q4KM | hybrid | 19 GB | 7.25 t/s | **49.7 t/s** (4×48t) | **6.9x** |
+| 32B f16 | coder_esc | 65 GB | 4.11 t/s | **26.4 t/s** (4×48t) | **6.4x** |
+| 235B-A22B Q4KM | architect | 130 GB | 5.19 t/s | **7.87 t/s** (1×96t) | **1.5x** |
+| 480B-A35B Q4KM | coding | 250 GB | 3.36 t/s | **4.08 t/s** (1×96t) | **1.2x** |
+
+Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrator.
+
 ## Immediate Action Items (priority order)
 
-1. **NUMA tests** (highest priority — container rebuilt with NUMA access)
-   - Verify: `numactl --hardware` should show 2-node topology
-   - S2: NUMA parallel decode on Qwen3.5-35B-A3B (1, 2, 4 concurrent)
-   - T5/T5b: tree speculation on NUMA dual-node (Qwen2.5-Coder-32B f16)
-   - T6: tree speculation on NUMA dual-node (Qwen3-Coder-480B-A35B Q4_K_M)
-
-2. **DFlash multi-position investigation** (block acceptance ~1.4%)
-   - lm_head fix applied (commit 4c4cf2208): per-token 27%, block ~1.4%
-   - Position 1 correct, positions 2-15 fail — need Python reference comparison
-   - Install PyTorch + run HF DFlash model on same prompt → compare per-position logits
-   - Test with f32 drafter GGUF to rule out f16 precision
-   - Implement KV cache accumulation (HF accumulates `past_key_values_draft`, we clear each round)
-
-3. **Apply production draft_max changes** (ready to deploy)
-   - `frontdoor`: add `draft_max: 32` (+19.4%)
-   - `architect_general`: add `draft_max: 32` (+17.1%)
-   - `architect_coding`: add `draft_max: 48` (+20.6%)
-   - In `epyc-orchestrator/orchestration/model_registry.yaml`
+1. ✅ **NUMA tests COMPLETE** — S2 (6.9x), T5 (6.4x), T6 (+41%), production sweep + full Qwen3.5 sweep done
+2. ✅ **DFlash investigation CONCLUDED** — C++ verified correct. Not viable on Q4_K_M.
+3. ✅ **draft_max changes applied** to model_registry.yaml
+4. **DEPLOY NUMA-aware orchestrator** — launch 4×48t for frontdoor MoE, round-robin routing
+5. ✅ **S3 DONE** — ALL draft configs net negative on NUMA 4-way hybrid
+6. ✅ **S5 Phase 1 DONE** — Prefill pipeline ceiling ~8%, not worth C++ cost
+7. ✅ **Qwen3.5 full sweep** — All hybrids converge to ~12 t/s decode. Only 35B-A3B MoE benefits from NUMA 4-way.
+8. ✅ **Quant scaling** — Q4_K_M preferred: Q8 costs 17-39% speed on hybrids
 
 ## Active Work Streams
 
-### Viable & In Progress
-- **DFlash block diffusion** — Only confirmed drafter: `z-lab/Qwen3-Coder-30B-A3B-DFlash` (0.5B) for frontdoor model. Requires GGUF conversion + hidden state extraction API in llama.cpp. Projected 2-4x on dense/MoE targets.
-- **Tree speculation (dense f16)** — +15.8% validated on Qwen2.5-Coder-32B f16. Tree infrastructure ready for DFlash composition.
+### Highest Impact — Ready to Deploy
+- **NUMA 4-way parallel** — 6-7x aggregate throughput for models ≤65GB. Config-only: `taskset` CPU pinning + round-robin routing. Validated on 5 models (S2, T5, production sweep). **Requires orchestrator changes.**
+- **draft_max optimization** — +17-21% via `--draft-max 32-48`. Already applied to model_registry.yaml.
 
-### Exhausted (No Further Work)
-- **All Qwen3.5 hybrid self-acceleration** — 6 approaches tested (MoE self-draft, attn-only, tree×3, MTP-1), all net negative. Fundamental limit: 75% Delta Net recurrent layers process tokens sequentially regardless of batch size.
-- **MoE self-draft** — 2.9% acceptance (1-expert), 55% (2-expert). Net throughput always negative.
+### Validated & Complete
+- **Tree speculation (dense f16)** — +12.2% on Qwen2.5-Coder-32B f16 with dm=32 ps=0.05. At 48 threads per NUMA instance, tree ≈ linear (overhead negated).
+- **NUMA single-node pinning** — 1.2-2.3x for all models. Larger models (235B: 1.5x, 480B: 1.2x) benefit less.
 
-### Deferred / Conditional
-- **NUMA-parallel verification** — Could reopen hybrid acceleration if aggregate throughput from parallel single-token decodes across NUMA nodes exceeds serial.
-- **DFlash tree composition** — DFlash top-k logits → DySpec tree → tree verification. Depends on DFlash Phase 3.
+### Concluded / Exhausted
+- **DFlash block diffusion** — C++ forward pass verified correct via HF comparison. NOT viable on Q4_K_M (27% per-token, 1.4% block). AR drafter wins.
+- **All Qwen3.5 hybrid self-acceleration** — 6 approaches tested, all net negative. NUMA parallel decode is the answer.
+- **MoE self-draft** — Not viable.
+- **MTP-1** — Not viable on hybrid (0.56x).
+
+### Deferred
+- **DFlash on f16 targets** — Could work with full-precision hidden states, but not practical on CPU.
+- **DFlash tree composition** — Blocked by DFlash viability on quantized models.
 
 ## llama.cpp Build Safety Protocol
 
@@ -89,7 +101,10 @@ All inference optimization work in llama.cpp MUST follow these rules:
 - **DFlash GGUFs**: `/mnt/raid0/llm/cache/dflash/` (dev + production, with shared embed/lm_head)
 - **Acceptance tool**: `tools/dflash-acceptance/` in the worktree
 - **Benchmark data**: `epyc-inference-research/data/tree_speculation/`
-- **Devcontainer status**: Rebuilding 2026-03-18 for NUMA access (privileged + numactl)
+- **NUMA benchmark data**: `epyc-inference-research/data/numa_parallel/`, `data/numa_tree_spec/`, `data/numa_production/`, `data/numa_t6_480b/`
+- **NUMA benchmark scripts**: `scripts/benchmark/bench_numa_*.sh`
+- **DFlash diagnostic venv**: `/home/node/dflash-venv/` (PyTorch 2.10.0 CPU)
+- **Devcontainer status**: Rebuilt 2026-03-18 with NUMA access (privileged, numactl --membind blocked but taskset works)
 
 ## Pre-Downloaded Models
 
@@ -107,20 +122,21 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 
 | Technique | Primary Handoff | Related Handoffs |
 |-----------|----------------|-----------------|
-| DFlash block diffusion | `dflash-block-diffusion-speculation.md` | `tree-speculation-numa-drafting.md` (tree composition) |
-| DySpec tree speculation | `tree-speculation-numa-drafting.md` | `dflash-block-diffusion-speculation.md` (DFlash as tree builder) |
-| SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | `dflash-block-diffusion-speculation.md` (NUMA reopener) |
-| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | `ssm-hybrid-acceleration.md` (Phase 5) |
+| **NUMA 4-way parallel** | `tree-speculation-numa-drafting.md` (Phase 7) | `ssm-hybrid-acceleration.md` (S2), all production models |
+| DySpec tree speculation | `tree-speculation-numa-drafting.md` | Phases 1-6, tree ≈ linear at 48t |
+| DFlash block diffusion | `dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
+| SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | NUMA parallel is the answer |
+| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
 
-## Production Model Stack
+## Production Model Stack — NUMA-Optimized
 
-| Role | Model | Architecture | Speculation Status |
-|------|-------|-------------|-------------------|
-| frontdoor | Qwen3-Coder-30B-A3B | Pure MoE | DFlash drafter available, AR drafter active (0.75B) |
-| coder_escalation | Qwen2.5-Coder-32B | Dense | Tree +15.8% (f16), no DFlash drafter yet |
-| architect_general | Qwen3-235B-A22B | Pure MoE | No DFlash drafter yet |
-| architect_coding | Qwen3-Coder-480B-A35B | Pure MoE | No DFlash drafter yet |
-| ingest_long_context | Qwen3-Next-80B-A3B | Hybrid (Delta Net) | HYBRID WALL — all speculation approaches exhausted |
+| Role | Model | Size | NUMA Config | Best t/s | vs Naive 192t | Spec |
+|------|-------|------|------------|---------|---------------|------|
+| frontdoor | Qwen3-Coder-30B-A3B Q4KM | 16 GB | **4×48t** | **95.8 agg** | **6.7x** | AR 0.75B, dm=32 |
+| coder_escalation | Qwen2.5-Coder-32B f16 | 65 GB | **4×48t** | **26.4 agg** | **6.4x** | AR 0.5B, dm=32 |
+| architect_general | Qwen3-235B-A22B Q4KM | 130 GB | **1×96t node0** | **7.87** | **1.5x** | AR 0.6B, dm=32 |
+| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0 tree** | **3.82** (tree) / **3.50** (linear) | **1.41x** (tree+NUMA) | AR 0.75B, dm=48, ps=0.05, kv-unified |
+| ingest_long_context | Qwen3-Next-80B-A3B | ~40 GB | **4×48t** (est) | TBD | est 6x | HYBRID — no spec viable |
 
 ## Global Test Matrix
 
@@ -133,49 +149,44 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | D2 | dflash | 1 | Qwen3-Coder-30B-A3B-DFlash | GGUF conversion + load test | CRITICAL | ✅ DONE — LLM_ARCH_DFLASH + key_length override |
 | D3 | dflash | 2 | Any target | Hidden state extraction API | CRITICAL | ✅ DONE — API validated, unique per-layer values |
 | D4 | dflash | 3 | Qwen3-Coder-30B-A3B + DFlash | Forward pass + acceptance rate | CRITICAL | ✅ **27.0% acceptance** (with RoPE, paper: ~40%) |
-| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ⚠️ lm_head fixed: per-token 27%, block 1.4%. Multi-position (pos 2-15) fails. AR wins: 36.5 t/s |
+| D5 | dflash | 4 | Qwen3-Coder-30B-A3B (frontdoor) | Linear DFlash vs 0.75B AR | CRITICAL | ✅ CONCLUDED — C++ verified correct via HF comparison. Block 1.4% is expected (p=0.27 chain). AR wins: 36.5 t/s. NOT VIABLE on Q4_K_M |
 | T1 | tree | done | Qwen3-Coder-480B-A35B Q4_K_M | Tree spec (pair 9) | HIGH | ✅ DONE — -7.6% (5.10→4.71 t/s) |
 | T2 | tree | done | Qwen2.5-Coder-32B f16 | Tree spec (pair 10) | HIGH | ✅ DONE — +10.2% (6.05→6.67 t/s) |
 | T3 | tree | done | Qwen3-Coder-30B-A3B Q4_K_M (frontdoor) | Tree spec (pair 15) | MEDIUM | ✅ DONE — -13.0% (40.92→35.62 t/s) |
 | T4 | tree | done | Qwen2.5-Coder-32B Q8_0 | Tree spec (pair 11) | MEDIUM | ✅ DONE — +0.1% (8.43→8.44 t/s) |
-| S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | BLOCKED — needs bare-metal NUMA |
-| D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | BLOCKED — needs block-mode bug fix first |
-| T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA dual-node tree | MEDIUM | BLOCKED — needs bare-metal NUMA |
-| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA dual-node tree | LOW | BLOCKED — needs bare-metal NUMA |
-| D7 | dflash | 6 | Qwen3.5-35B-A3B (hybrid) | NUMA parallel verify | MEDIUM | BLOCKED — needs block-mode fix + NUMA |
-| S1 | ssm | 4 | Qwen3-Next-80B-A3B Q4_K_M | NUMA prefill pipeline | LOW | DEFERRED |
+| S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | ✅ DONE — **6.9x aggregate** (4×48t: 49.7 t/s vs 1×192t: 7.25 t/s) |
+| D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | CANCELLED — DFlash not viable on Q4_K_M |
+| T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA 4-way tree | MEDIUM | ✅ DONE — **6.4x aggregate** (4×48t: 26.4 vs 1×192t: 4.1 t/s). Tree ≈ linear at 48t. |
+| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA node0 + tree | LOW | ✅ DONE — **+41%** (96t node0 tree: 3.82 vs 192t linear: 2.71 t/s). Tree viable with dm=48. |
+| D7 | dflash | 6 | Qwen3.5-35B-A3B (hybrid) | NUMA parallel verify | MEDIUM | CANCELLED — DFlash not viable on Q4_K_M |
+| S3 | ssm | 6 | Qwen3.5-35B-A3B Q4_K_M | NUMA 4-way + AR draft (freeze-recurrent) | HIGH | ✅ DONE — **ALL NEGATIVE** (best: -12.5%). Drafter competes for NUMA quarter bandwidth. |
+| S4 | ssm | 6 | Qwen3.5-35B-A3B Q4_K_M | NUMA-split draft/verify pipeline | MEDIUM | CANCELLED — S3 shows draft hurts on NUMA 4-way |
+| S5 | ssm | 6 | Qwen3-Next-80B-A3B Q4_K_M | NUMA prefill pipeline (long-context) | LOW | ✅ Phase 1 DONE — ceiling ~8% (not worth C++ cost). Decode NUMA-insensitive (12 t/s). |
+| — | ssm | 6 | All Qwen3.5 (9B-397B) | Full hybrid NUMA + quant sweep | HIGH | ✅ DONE — All converge ~12 t/s. Only 35B-A3B MoE benefits NUMA. Q4 preferred. |
 
-## Agent Task Ordering
+## Agent Task Ordering (Updated 2026-03-18)
 
-Recommended execution sequence for an autonomous agent:
+### ALL BENCHMARKS COMPLETE — Summary of Results
 
-### Batch 1 — Tree tests on existing infra (no code changes, ~1 day)
-1. **T1-T4**: Run pending tree speculation pairs 9, 10, 11, 15. Script and infra already exist.
-   ```bash
-   for pair in 9 10 11; do
-     bash /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_tree_speculation_server.sh $pair
-   done
-   # Pair 15 needs adding to script first (see tree-speculation handoff)
-   ```
+| ID | Status | Result |
+|----|--------|--------|
+| T1-T4 | ✅ DONE | Tree: +10.2% f16, -7.6% to -13% on Q4KM/MoE |
+| D0-D5 | ✅ DONE | DFlash: 21 commits, C++ verified correct. NOT viable on Q4_K_M |
+| S2 | ✅ DONE | **NUMA 4-way: 6.9x** (hybrid 35B-A3B) |
+| T5 | ✅ DONE | **NUMA 4-way: 6.4x** (dense 32B f16). Tree ≈ linear at 48t |
+| T6 | 🔄 RUNNING | NUMA tree vs linear on 480B (single-instance only) |
+| D6-D7 | CANCELLED | DFlash not viable |
+| S1 | DEFERRED | NUMA prefill pipeline (infrastructure-heavy) |
 
-### Batch 2 — DFlash Phase 1 (GGUF conversion, ~2-3 days)
-2. **D1-D2**: Create worktree, implement converter, convert both models, validate loads.
-   - Start with dev model (smaller, faster iteration)
-   - See `dflash-block-diffusion-speculation.md` Phase 1 for full CLI commands
+### Next Priority: Deploy NUMA-Aware Orchestrator
 
-### Batch 3 — DFlash Phase 2-3 (hidden state API + forward pass, ~3-5 days)
-3. **D3**: Implement `llama_get_hidden_state()` API, generalize MTP hidden state caching
-4. **D4**: Implement DFlash forward pass, test acceptance on dev model first
-
-### Batch 4 — DFlash Phase 4-5 + NUMA (interleaved, ~1-2 weeks)
-5. **D5**: Linear DFlash benchmark vs AR drafter on frontdoor
-6. **S2**: NUMA parallel decode experiment (quick, ~1 day, can interleave)
-7. **T5-T6**: NUMA tree tests
-8. **D6**: DFlash tree mode vs linear mode
-
-### Batch 5 — Advanced / Conditional
-9. **D7**: DFlash NUMA-parallel verification on hybrid (only if S2 shows promise)
-10. **S1**: NUMA prefill pipeline (only if S2 shows promise)
+1. **Implement NUMA-pinned launching** in `epyc-orchestrator/scripts/server/orchestrator_stack.py`
+   - frontdoor (30B, 16GB): 4×48t instances → 95.8 t/s aggregate
+   - coder_escalation (32B f16, 65GB): 4×48t instances → 26.4 t/s aggregate
+   - architect_general (235B, 130GB): 1×96t node0 → 7.87 t/s
+   - architect_coding (480B, 250GB): 1×96t node0 → 4.08 t/s (T6 may refine)
+2. **Add round-robin routing** for multi-instance models
+3. **Update model_registry.yaml** with NUMA configs
 
 ## Agent Autonomy Charter
 

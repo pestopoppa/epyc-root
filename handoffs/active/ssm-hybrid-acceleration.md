@@ -1,8 +1,8 @@
 # Handoff: SSM Hybrid Acceleration
 
-**Status**: ALL SELF-ACCELERATION APPROACHES EXHAUSTED. Phase 5 (MTP-1) has 78.5% acceptance but speculation loop yields 0.56x (SLOWER) due to 2-token batch costing 3-4x single decode on hybrid recurrent. See `handoffs/completed/mtp-speculative-decoding.md`.
+**Status**: COMPREHENSIVE (2026-03-18). S2-S5 complete. **NUMA 4-way = 6.9x on 35B-A3B MoE** (only model that benefits). All other hybrids converge to ~12 t/s (recurrent-dominated). Draft hurts on all NUMA configs. Prefill pipeline ceiling ~8% (not worth C++ cost). Q4_K_M strongly preferred (Q8 = 17-39% slower).
 **Created**: 2026-03-15
-**Updated**: 2026-03-17
+**Updated**: 2026-03-18
 **Blocked by**: None — phases are independently pursuable
 **Blocks**: None
 **Related**: tree-speculation-numa-drafting (Phase 8 covers STree, orthogonal to this handoff)
@@ -329,39 +329,29 @@ print(f'ctx={$ctx} TTFT={time.time()-t0:.2f}s')
 done
 ```
 
-### NUMA-Parallel Verification Test Matrix
+### NUMA-Parallel Verification Test Matrix — S2 RESULTS (2026-03-18)
 
-Cross-reference with DFlash Phase 6. Tests concurrent single-token decodes across NUMA nodes to assess whether NUMA parallelism can reopen draft-verify paradigms on hybrid models.
+**COMPLETED** via taskset-based CPU pinning (numactl --membind blocked in container).
 
-| Config | Concurrent Decodes | NUMA Binding | Model | Expected Outcome |
-|--------|-------------------|-------------|-------|-----------------|
-| Baseline | 1 | interleave=all, 96 threads | Qwen3.5-35B-A3B Q4_K_M (19 GB) | ~11 t/s (known) |
-| NUMA-0 | 1 | node 0 only, 48 threads | Qwen3.5-35B-A3B Q4_K_M | ~6-8 t/s (half bandwidth) |
-| Dual-NUMA | 2 (one per node) | node 0 + node 1, 48 threads each | Qwen3.5-35B-A3B Q4_K_M | ~12-16 t/s aggregate? |
-| Quad-NUMA | 4 (two per node) | 2×node0 + 2×node1, 24 threads each | Qwen3.5-35B-A3B Q4_K_M | bandwidth-limited? |
+| Config | Instances | Threads | Per-inst t/s | Aggregate t/s | vs Baseline |
+|--------|-----------|---------|-------------|---------------|-------------|
+| A (baseline) | 1 | 192 (all) | 7.25 | 7.25 | 1.0x |
+| B (single-node) | 1 | 96 (node 0) | 13.39 | 13.39 | **1.85x** |
+| C (2-way seq) | 2 | 96 each | n0=13.3, n1=11.4 | **24.68** | **3.4x** |
+| C (2-way conc) | 2 | 96 each | n0=9.4, n1=10.0 | **19.38** | **2.7x** |
+| D (4-way) | 4 | 48 each | n0=13.2-13.6, n1=11.3-11.6 | **49.66** | **6.9x** |
 
-```bash
-# Baseline: single decode, interleaved
-numactl --interleave=all \
-  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/bartowski/Qwen3.5-35B-A3B-abliterated-GGUF/Qwen3.5-35B-A3B-abliterated-Q4_K_M.gguf \
-  -t 96 --port 8199
+**Key findings:**
+1. **192 threads is ANTI-OPTIMAL** for this model — cross-NUMA penalty reduces throughput by 46% vs single-node
+2. **48 threads saturate compute** — the MoE+recurrent architecture doesn't benefit from more threads
+3. **4×48-thread instances** give 6.9x aggregate throughput with near-zero per-instance degradation
+4. **Node 1 is ~85% of node 0** consistently (first-touch page cache bias)
+5. **Concurrent 2-way** gives 2.7x (per-instance drops ~25% from inter-node traffic)
 
-# Dual-NUMA: two servers, one per node (model fits in single node at 19GB)
-numactl --cpunodebind=0 --membind=0 \
-  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/bartowski/Qwen3.5-35B-A3B-abliterated-GGUF/Qwen3.5-35B-A3B-abliterated-Q4_K_M.gguf \
-  -t 48 --port 8199 &
+**NUMA-parallel verification IS VIABLE**: aggregate 4-way (49.7 t/s) >> single baseline (7.25 t/s). The orchestrator should launch 4 NUMA-pinned instances and route requests round-robin.
 
-numactl --cpunodebind=1 --membind=1 \
-  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/bartowski/Qwen3.5-35B-A3B-abliterated-GGUF/Qwen3.5-35B-A3B-abliterated-Q4_K_M.gguf \
-  -t 48 --port 8200 &
-
-# Send concurrent requests to both and measure aggregate t/s
-```
-
-**If aggregate dual-NUMA > 1.5× single baseline**: NUMA-parallel verification becomes viable — each node verifies one draft token independently, bypassing the batched verification wall.
+Script: `epyc-inference-research/scripts/benchmark/bench_numa_cd_only.sh`
+Data: `epyc-inference-research/data/numa_parallel/`
 
 ### Risk
 
@@ -389,9 +379,137 @@ Phase 5 (MTP heads)      ──→ NOT VIABLE — 78.5% acceptance but 0.56x thr
 **Fundamental limitation**: 75% Delta Net recurrent layers process tokens sequentially regardless of batch size. Multi-token verification batches cost N × single-token decode, making ALL draft-verify paradigms net-negative on hybrid models.
 
 **Remaining acceleration paths** (non-speculation):
-1. External draft + freeze-recurrent (+5.4% validated)
+1. External draft + freeze-recurrent (+5.4% validated on 9B)
 2. Prompt lookup
 3. NUMA-aware prefill pipelining (Phase 4, deferred)
+
+## Phase 6 — NUMA-Parallel Hybrid Acceleration (2026-03-18)
+
+Three experiments to compound NUMA 4-way (S2: 6.9x) with speculation on hybrid models.
+
+### S3: NUMA 4-way + External AR Draft
+
+**Status**: READY TO RUN
+**Hypothesis**: External draft +5.4% (HSD result on 9B) compounds with NUMA 4-way (S2: 6.9x).
+
+**Background**: HSD handoff showed freeze-recurrent + Qwen2.5-Coder-0.5B f16 drafter gives +5.4% on Qwen3.5-9B. Same-family Qwen3.5-0.8B was -20.3% (too slow as drafter). Drafter speed is critical for freeze-recurrent: acceptance drops ~13pp from stale SSM state, so fast drafting is essential.
+
+**Test matrix** (all on Qwen3.5-35B-A3B Q4_K_M):
+
+| Config | Instances | Threads | Drafter | Extra Args |
+|--------|-----------|---------|---------|------------|
+| S3-A | 4×48t | NUMA quarters | None (baseline) | — |
+| S3-B | 4×48t | NUMA quarters | Qwen3.5-0.8B Q8_0 | `--draft-max 16` |
+| S3-C | 4×48t | NUMA quarters | Qwen3.5-0.8B Q8_0 | `--draft-max 32` |
+| S3-D | 4×48t | NUMA quarters | Qwen2.5-Coder-0.5B f16 | `--draft-max 16` |
+| S3-E | 4×48t | NUMA quarters | Qwen2.5-Coder-0.5B f16 | `--draft-max 32` |
+| S3-F | 1×96t node0 | single-node | Qwen2.5-Coder-0.5B f16 | `--draft-max 16` (reproduce +5.4%) |
+
+**Model paths**:
+- Target: `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-UD-Q4_K_M.gguf`
+- Drafter A: `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-0.8B-GGUF/Qwen3.5-0.8B-Q8_0.gguf`
+- Drafter B: `/mnt/raid0/llm/models/Qwen2.5-0.5B-Instruct-f16.gguf`
+
+**Note**: freeze-recurrent activates automatically for hybrid models with any speculation. No explicit flag needed — `server-context.cpp` auto-detects hybrid architecture.
+
+**Success criteria**: Any S3-B..E config > S3-A (49.7 t/s from S2) would mean speculation helps on NUMA-pinned hybrid.
+
+### S3 Results (2026-03-18)
+
+| Config | Drafter | dm | Aggregate t/s | vs Baseline |
+|--------|---------|-----|--------------|-------------|
+| **S3-A** (baseline) | none | — | **48.21** | — |
+| S3-B | Qwen3.5-0.8B Q8_0 | 16 | 35.16 | **-27%** |
+| S3-C | Qwen3.5-0.8B Q8_0 | 32 | 38.01 | **-21%** |
+| S3-D | Qwen2.5-0.5B f16 | 16 | 42.17 | **-12.5%** |
+| S3-E | Qwen2.5-0.5B f16 | 32 | 38.42 | **-20%** |
+
+**CONCLUSION: Speculation is NET NEGATIVE on NUMA 4-way hybrid.** The drafter competes with the target for NUMA quarter resources (48 threads shared between target + drafter). High variance — some instances randomly drop to 5 t/s. The HSD +5.4% (measured at 96 threads single-instance) doesn't survive at 48 threads.
+
+**Optimal config for hybrid**: 4×48t WITHOUT speculation = 48.2 t/s aggregate (6.6x vs naive 192t).
+
+This effectively blocks S4 (NUMA-split draft/verify pipeline) — if simple draft hurts, a complex pipeline won't help.
+
+### S4: NUMA-Split Draft/Verify Pipeline
+
+**Status**: NEEDS DESIGN
+**Hypothesis**: Dedicating NUMA resources to drafting vs verification avoids the batched-verify wall.
+
+**Architecture**:
+```
+┌───────────────────────────────────────────────────┐
+│  Node 0 (cores 0-47)         Node 1 (cores 48-95) │
+│  ┌─────────────────┐         ┌──────────────────┐ │
+│  │ Drafter (0.5B)  │───────→ │ Target (35B-A3B) │ │
+│  │ generates N     │ draft   │ verifies 1-by-1  │ │
+│  │ candidates fast │ tokens  │ (single-token    │ │
+│  │                 │←───────│  decode = fast    │ │
+│  │                 │ accept/ │  on hybrid)      │ │
+│  │                 │ reject  │                  │ │
+│  └─────────────────┘         └──────────────────┘ │
+└───────────────────────────────────────────────────┘
+```
+
+**Key insight**: On hybrid models, multi-token batched verification costs N × single-token (the recurrent layers are sequential regardless). But single-token verification is fast. By pipelining draft and verify on separate NUMA nodes:
+1. Drafter on node 0 generates N candidates in N × (drafter_time)
+2. Target on node 1 verifies each candidate as a single-token decode
+3. Accepted tokens stream back to drafter for next round
+4. No batched verification needed — each verify is just 1 token
+
+**Implementation options**:
+- **Option A**: Two llama-server instances + Python coordinator that shuttles tokens between them via HTTP API
+- **Option B**: Custom C++ pipeline in a single process with thread affinity per NUMA node
+
+**Challenge**: Keeping target and drafter KV caches synchronized. After each accepted token, both need to advance their context. The drafter also needs to know which tokens were accepted to continue correctly.
+
+**Risk**: If drafter latency (per token) > target latency (per token), pipelining adds no benefit. On hybrid models, the target does single-token at ~13.4 t/s (from S2 Config B). The drafter (0.5B) should be >100 t/s even at 48 threads. So the pipeline should be target-bottlenecked, meaning the drafter can generate multiple candidates while the target verifies one.
+
+**Prerequisite**: S3 results — if S3 shows external draft is net-negative even on NUMA, S4's more complex pipeline is unlikely to help.
+
+### S5: NUMA Prefill Pipeline for Long-Context Hybrid
+
+**Status**: PHASE 1 COMPLETE (2026-03-18). **Prefill pipelining NOT worth implementing** — prefill scales only 1.08x from 192→96 threads at 8K context. Decode is NUMA-insensitive (~12 t/s regardless).
+
+**Phase 1 results** (Qwen3-Next-80B-A3B Q4_K_M, 46 GB):
+
+| Config | Threads | Prefill 8K t/s | Decode t/s |
+|--------|---------|---------------|-----------|
+| A (all) | 192 | 148.0 | 12.07 |
+| B (node0) | 96 | 136.9 | 12.14 |
+
+Prefill barely benefits from additional threads at long context (1.08x). Decode is completely NUMA-insensitive. Pipeline implementation (requiring C++ state export/import APIs) offers ~8% ceiling — **not worth the engineering cost**.
+
+**Main NUMA value for 80B**: 2×96t aggregate throughput for serving concurrent requests.
+
+### Qwen3.5 Full Hybrid Sweep (2026-03-18)
+
+**All Qwen3.5 hybrid models converge to ~12 t/s decode** regardless of size:
+
+| Model | Size | Active Params | 1×192t | 1×96t | 4×48t agg | Best |
+|-------|------|--------------|--------|-------|-----------|------|
+| 9B | 5.3 GB | ~9B (dense) | ~12.2 | — | — | — |
+| 27B | 16 GB | ~27B (dense) | 12.3 | 11.8 | **24.4** | **2.0x** |
+| 35B-A3B | 19 GB | ~3B (MoE) | 7.25* | 13.4 | **49.7** | **6.9x** |
+| 122B-A10B | 69 GB | ~10B (MoE) | 12.6 | 12.5 | — | ~1.0x |
+| 397B-A17B | 205 GB | ~17B (MoE) | 12.4 | 11.4 | — | ~1.0x |
+
+*35B-A3B at 192t suffers massive cross-NUMA penalty (7.25 t/s) because MoE's few active params make it bandwidth-bound.
+
+**Key insight**: The 35B-A3B MoE is unique — its low active parameter count (3B) makes it NUMA-sensitive, enabling 6.9x with 4-way pinning. All other Qwen3.5 models are recurrent-dominated at ~12 t/s.
+
+### Quantization Scaling on Hybrid Models (2026-03-18)
+
+**Higher quants DO reduce decode speed** — weight reads are not negligible:
+
+| Model | Q4_K_M | Q6_K | Q8_0 | Q8/Q4 |
+|-------|--------|------|------|-------|
+| 9B (dense) | 12.2 t/s | 11.2 t/s | **7.5 t/s** | **61%** |
+| 27B (dense) | 12.4 t/s | 9.3 t/s | — | — |
+| 35B-A3B (MoE) | 11.4 t/s | — | **9.5 t/s** | **83%** |
+
+**MoE hybrids retain more speed at higher quants** (83% at Q8) because fewer params are read per token. Dense hybrids are more bandwidth-sensitive (61% at Q8).
+
+**Production recommendation**: Q4_K_M strongly preferred for Qwen3.5 hybrids — recurrent state update (constant cost) fills most of the compute budget, so higher quants buy marginal quality at 17-39% speed cost.
 
 ## Validation Checklist
 
@@ -491,6 +609,23 @@ Implemented standalone MTP speculation loop (`tools/mtp-speculation/`). New APIs
 **Root cause**: Same fundamental limitation as tree speculation — 75% Delta Net recurrent layers process tokens sequentially regardless of batch size. This makes ALL draft-verify paradigms net-negative on Qwen3.5 hybrid.
 
 **Would work on non-recurrent models**: On pure attention architectures (e.g. Qwen2.5, Llama), 2-token batch ≈ 1.05x single decode cost, so 78.5% acceptance would yield ~1.5x speedup. Note: Qwen3.5-27B is also hybrid Delta Net (3:1 recurrent:attention) — same limitation applies despite being dense FFN (not MoE).
+
+## Research Intake Update — 2026-03-18
+
+### New Related Research
+- **[intake-166] "Flash-MoE: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro"** (github:danveloper/flash-moe)
+  - Relevance: SSD expert streaming runs the same 397B MoE model we benchmark, but on consumer hardware (48GB Mac) via disk offloading
+  - Key technique: Parallel pread() + Direct I/O (F_NOCACHE) streams inactive experts from SSD, overlapping I/O with GPU compute
+  - Reported results: 5.55 t/s on M3 Max with 2-bit expert quantization (K=4 activation)
+  - Delta from current approach: We keep 397B in DRAM (~205GB Q4_K_XL); this streams from disk with 2-bit quant (~44% smaller). Our server has ample RAM so offloading isn't needed, but 2-bit expert quant could free memory for multi-model scenarios
+
+- **[intake-167] "FlashMoE: ML-Based Cache Replacement for MoE SSD Offloading"** (arxiv:2601.17063)
+  - Relevance: Academic treatment of expert caching for SSD-offloaded MoE — 51% hit rate improvement over LRU/LFU, 2.6x speedup
+  - Delta: More sophisticated caching than naive eviction if we ever operate memory-constrained
+
+- **[intake-168] "SpecMoEOff: Hiding Offloading Latency with Speculative Decoding"** (arxiv:2508.21706)
+  - Relevance: Combines speculative decoding with expert offloading — speculation generates multi-token batches to amortize I/O latency
+  - Delta: Would NOT help our hybrid models (speculation yields 0.56x), but applicable to pure-attention MoE candidates
 
 ## Closeout
 
