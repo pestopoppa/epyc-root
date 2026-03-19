@@ -14,9 +14,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'rks: The Sparsely-Gated Mixture-of-Experts Layer*. ICLR 2017.
-    https://arxiv.org/abs/1701.06538  ### Expert Reduction and Efficiency  4. Rajbhandari,
-    S., Li, C., Yao, Z., Zhan'
+  citation_context: 'rks: The Sparsely-Gated Mixture-of-Experts Layer*. ICLR 2017. https://arxiv.org/abs/1701.06538  ### Expert
+    Reduction and Efficiency  4. Rajbhandari, S., Li, C., Yao, Z., Zhan'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -32,9 +31,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ed Question Answering? Try ARC, the AI2 Reasoning Challenge.*
-    https://arxiv.org/abs/1803.05457 2. Cobbe, K., et al. (2021). *Training Verifiers
-    to Solve Math Word Problems (G
+  citation_context: ed Question Answering? Try ARC, the AI2 Reasoning Challenge.* https://arxiv.org/abs/1803.05457 2. Cobbe,
+    K., et al. (2021). *Training Verifiers to Solve Math Word Problems (G
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -50,9 +48,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: h Conditional Computation and Automatic Sharding*. ICLR 2021.
-    https://arxiv.org/abs/2006.16668  3. Shazeer, N., Mirhoseini, A., Maziarz, K.,
-    Davis, A., Le, Q., Hinton, G., &
+  citation_context: h Conditional Computation and Automatic Sharding*. ICLR 2021. https://arxiv.org/abs/2006.16668  3. Shazeer,
+    N., Mirhoseini, A., Maziarz, K., Davis, A., Le, Q., Hinton, G., &
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -68,9 +65,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '*Measuring Massive Multitask Language Understanding (MMLU).*
-    https://arxiv.org/abs/2009.03300 5. Chen, M., et al. (2021). *Evaluating Large
-    Language Models Trained on Code ('
+  citation_context: '*Measuring Massive Multitask Language Understanding (MMLU).* https://arxiv.org/abs/2009.03300 5. Chen,
+    M., et al. (2021). *Evaluating Large Language Models Trained on Code ('
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -87,9 +83,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: arsity*. Journal of Machine Learning Research, 23(120), 1-39.
-    https://arxiv.org/abs/2101.03961  2. Lepikhin, D., Lee, H., Xu, Y., Chen, D.,
-    Firat, O., Huang, Y., ... & Chen,
+  citation_context: arsity*. Journal of Machine Learning Research, 23(120), 1-39. https://arxiv.org/abs/2101.03961  2. Lepikhin,
+    D., Lee, H., Xu, Y., Chen, D., Firat, O., Huang, Y., ... & Chen,
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -105,9 +100,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: easuring Mathematical Problem Solving With the MATH Dataset.*
-    https://arxiv.org/abs/2103.03874 4. Hendrycks, D., et al. (2021). *Measuring Massive
-    Multitask Language Understa
+  citation_context: easuring Mathematical Problem Solving With the MATH Dataset.* https://arxiv.org/abs/2103.03874 4. Hendrycks,
+    D., et al. (2021). *Measuring Massive Multitask Language Understa
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -123,9 +117,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: valuating Large Language Models Trained on Code (HumanEval).*
-    https://arxiv.org/abs/2107.03374 6. Austin, J., et al. (2021). *Program Synthesis
-    with Large Language Models (MB
+  citation_context: valuating Large Language Models Trained on Code (HumanEval).* https://arxiv.org/abs/2107.03374 6. Austin,
+    J., et al. (2021). *Program Synthesis with Large Language Models (MB
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -142,9 +135,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 2021). *Program Synthesis with Large Language Models (MBPP).*
-    https://arxiv.org/abs/2108.07732 7. Zhou, J., et al. (2023). *Instruction-Following
-    Evaluation for Large Languag
+  citation_context: 2021). *Program Synthesis with Large Language Models (MBPP).* https://arxiv.org/abs/2108.07732 7. Zhou,
+    J., et al. (2023). *Instruction-Following Evaluation for Large Languag
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -160,9 +152,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 1). *Training Verifiers to Solve Math Word Problems (GSM8K).*
-    https://arxiv.org/abs/2110.14168 3. Hendrycks, D., et al. (2021). *Measuring Mathematical
-    Problem Solving With t
+  citation_context: 1). *Training Verifiers to Solve Math Word Problems (GSM8K).* https://arxiv.org/abs/2110.14168 3. Hendrycks,
+    D., et al. (2021). *Measuring Mathematical Problem Solving With t
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -178,9 +169,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: e and Training to Power Next-Generation AI Scale*. ICML 2022.
-    https://arxiv.org/abs/2201.05596  5. Kim, Y., Awadalla, H. H., Muzio, A., Elbayad,
-    M., & Esser, S. K. (2023). *M
+  citation_context: e and Training to Power Next-Generation AI Scale*. ICML 2022. https://arxiv.org/abs/2201.05596  5. Kim,
+    Y., Awadalla, H. H., Muzio, A., Elbayad, M., & Esser, S. K. (2023). *M
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -196,9 +186,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ls to Follow Instructions with Human Feedback*. NeurIPS 2022.
-    https://arxiv.org/abs/2203.02155  ### Long Context Evaluation  6. Liu, N. F.,
-    Lin, K., Hewitt, J., Paranjape, A.'
+  citation_context: 'ls to Follow Instructions with Human Feedback*. NeurIPS 2022. https://arxiv.org/abs/2203.02155  ### Long
+    Context Evaluation  6. Liu, N. F., Lin, K., Hewitt, J., Paranjape, A.'
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -214,9 +203,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ng-to-delegate / learning-to-defer** - A Little Learning Is a
-    Dangerous Thing (`arXiv:2206.01855`, cited by LaCy) - Current lesson: defer policies
-    need calibrated uncertainty +'
+  citation_context: 'ng-to-delegate / learning-to-defer** - A Little Learning Is a Dangerous Thing (`arXiv:2206.01855`, cited
+    by LaCy) - Current lesson: defer policies need calibrated uncertainty +'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -232,9 +220,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'rugalGPT: `arXiv:2305.05176` (LLM cascades/routing) - Language
-    Model Cascades: `arXiv:2207.10342` - Chain-of-Verification: `arXiv:2309.11495`
-    (factuality checks) - Learning to'
+  citation_context: 'rugalGPT: `arXiv:2305.05176` (LLM cascades/routing) - Language Model Cascades: `arXiv:2207.10342` - Chain-of-Verification:
+    `arXiv:2309.11495` (factuality checks) - Learning to'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -251,9 +238,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ctness** - Toolformer (`arXiv:2302.04761`) - PAL (`arXiv:2211.10435`)
-    - ReAct (`arXiv:2210.03629`) - Current lesson: decomposition and tool-use improve
-    reliability, but routing'
+  citation_context: 'ctness** - Toolformer (`arXiv:2302.04761`) - PAL (`arXiv:2211.10435`) - ReAct (`arXiv:2210.03629`) -
+    Current lesson: decomposition and tool-use improve reliability, but routing'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -269,9 +255,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'mposition pipelines for correctness** - Toolformer (`arXiv:2302.04761`)
-    - PAL (`arXiv:2211.10435`) - ReAct (`arXiv:2210.03629`) - Current lesson: decomposition
-    and tool-use imp'
+  citation_context: 'mposition pipelines for correctness** - Toolformer (`arXiv:2302.04761`) - PAL (`arXiv:2211.10435`) -
+    ReAct (`arXiv:2210.03629`) - Current lesson: decomposition and tool-use imp'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -287,9 +272,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: the 40th International Conference on Machine Learning (ICML).
-    https://arxiv.org/abs/2211.17192  2. Chen, C., Borgeaud, S., Irving, G., Lespiau,
-    J. B., Sifre, L., & Jumper, J.
+  citation_context: the 40th International Conference on Machine Learning (ICML). https://arxiv.org/abs/2211.17192  2. Chen,
+    C., Borgeaud, S., Irving, G., Lespiau, J. B., Sifre, L., & Jumper, J.
   cross_references:
     chapters:
     - 01-speculative-decoding.md
@@ -305,9 +289,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ge Model Decoding with Speculative Sampling*. arXiv preprint.
-    https://arxiv.org/abs/2302.01318  3. Xia, H., Ge, T., Wang, P., Chen, S., Wei,
-    F., & Sui, Z. (2024). *Unlocking
+  citation_context: ge Model Decoding with Speculative Sampling*. arXiv preprint. https://arxiv.org/abs/2302.01318  3. Xia,
+    H., Ge, T., Wang, P., Chen, S., Wei, F., & Sui, Z. (2024). *Unlocking
   cross_references:
     chapters:
     - 01-speculative-decoding.md
@@ -323,9 +306,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 't features.  3. **Tool/decomposition pipelines for correctness**
-    - Toolformer (`arXiv:2302.04761`) - PAL (`arXiv:2211.10435`) - ReAct (`arXiv:2210.03629`)
-    - Current lesson: dec'
+  citation_context: 't features.  3. **Tool/decomposition pipelines for correctness** - Toolformer (`arXiv:2302.04761`) -
+    PAL (`arXiv:2211.10435`) - ReAct (`arXiv:2210.03629`) - Current lesson: dec'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -341,9 +323,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '*Speculative Decoding with Big Little Decoder*. NeurIPS 2023.
-    https://arxiv.org/abs/2302.07863  5. Sun, Z., Suresh, A. T., Ro, J. H., Beirami,
-    A., Jain, H., & Yu, F. (2024).'
+  citation_context: '*Speculative Decoding with Big Little Decoder*. NeurIPS 2023. https://arxiv.org/abs/2302.07863  5. Sun,
+    Z., Suresh, A. T., Ro, J. H., Beirami, A., Jain, H., & Yu, F. (2024).'
   cross_references:
     chapters:
     - 01-speculative-decoding.md
@@ -359,9 +340,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'sless Acceleration of Large Language Models*. arXiv preprint.
-    https://arxiv.org/abs/2304.04487  ### Retrieval-Based Speculative Decoding  3.
-    He, Z., Zhong, Z., Cai, T., Lee,'
+  citation_context: 'sless Acceleration of Large Language Models*. arXiv preprint. https://arxiv.org/abs/2304.04487  ### Retrieval-Based
+    Speculative Decoding  3. He, Z., Zhong, Z., Cai, T., Lee,'
   cross_references:
     chapters:
     - 03-prompt-lookup.md
@@ -378,9 +358,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ow to Use Large Language Models While Reducing Cost and Improving
-    Performance," arXiv:2305.05176 (2023). https://arxiv.org/abs/2305.05176  ### Cost-Spectrum
-    Contrastive Routing'
+  citation_context: 'ow to Use Large Language Models While Reducing Cost and Improving Performance," arXiv:2305.05176 (2023).
+    https://arxiv.org/abs/2305.05176  ### Cost-Spectrum Contrastive Routing'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -399,8 +378,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: enerative LLM Serving with Tree-based Speculative Inference and
-    Verification" [[arXiv:2305.09781](https://arxiv.org/abs/2305.09781)]  SpecInfer
+  citation_context: enerative LLM Serving with Tree-based Speculative Inference and Verification" [[arXiv:2305.09781](https://arxiv.org/abs/2305.09781)]  SpecInfer
     replaces single-sequence draft-t
   cross_references:
     chapters:
@@ -417,8 +395,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '/arxiv.org/abs/2504.12337` - Self-Adaptive Language Toolkit.
-    `https://arxiv.org/abs/2305.11711`  Internal architecture references: - `docs/chapters/10-orchestration-architect'
+  citation_context: '/arxiv.org/abs/2504.12337` - Self-Adaptive Language Toolkit. `https://arxiv.org/abs/2305.11711`  Internal
+    architecture references: - `docs/chapters/10-orchestration-architect'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -434,9 +412,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'rk for Methods that Learn from Human Feedback*. NeurIPS 2023.
-    https://arxiv.org/abs/2305.14387  ### Agentic and Tool Use Evaluation  10. Patil,
-    S. G., Zhang, T., Wang, X., &'
+  citation_context: 'rk for Methods that Learn from Human Feedback*. NeurIPS 2023. https://arxiv.org/abs/2305.14387  ### Agentic
+    and Tool Use Evaluation  10. Patil, S. G., Zhang, T., Wang, X., &'
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -452,9 +429,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ture of Experts with Capacity Factor Tuning*. arXiv preprint.
-    https://arxiv.org/abs/2305.14705  ### SSM and Hybrid Architectures  6. Gu, A.,
-    & Dao, T. (2024). *Mamba: Linear-'
+  citation_context: 'ture of Experts with Capacity Factor Tuning*. arXiv preprint. https://arxiv.org/abs/2305.14705  ### SSM
+    and Hybrid Architectures  6. Gu, A., & Dao, T. (2024). *Mamba: Linear-'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -470,9 +446,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'la: Large Language Model Connected with Massive APIs (BFCL).*
-    https://arxiv.org/abs/2305.15334 9. Kamradt, G. (2023). *Needle in a Haystack:
-    Pressure Testing LLMs.* https://g'
+  citation_context: 'la: Large Language Model Connected with Massive APIs (BFCL).* https://arxiv.org/abs/2305.15334 9. Kamradt,
+    G. (2023). *Needle in a Haystack: Pressure Testing LLMs.* https://g'
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -489,9 +464,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: sis for LLM KV Cache Compression at Test Time*. NeurIPS 2023.
-    https://arxiv.org/abs/2305.17118  4. Zhang, Z., Sheng, Y., Zhou, T., Chen, T.,
-    Zheng, L., Cai, R., ... & Stoica,
+  citation_context: sis for LLM KV Cache Compression at Test Time*. NeurIPS 2023. https://arxiv.org/abs/2305.17118  4. Zhang,
+    Z., Sheng, Y., Zhou, T., Chen, T., Zheng, L., Cai, R., ... & Stoica,
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -507,9 +481,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: LM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023.
-    https://arxiv.org/abs/2306.05685  2. Hendrycks, D., Burns, C., Basart, S., Zou,
-    A., Mazeika, M., Song, D., & Ste
+  citation_context: LM-as-a-Judge with MT-Bench and Chatbot Arena*. NeurIPS 2023. https://arxiv.org/abs/2306.05685  2. Hendrycks,
+    D., Burns, C., Basart, S., Zou, A., Mazeika, M., Song, D., & Ste
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -525,9 +498,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: Generative Inference of Large Language Models*. NeurIPS 2023.
-    https://arxiv.org/abs/2306.14048  5. Ge, S., Zhang, Y., Liu, L., Zhang, M., Han,
-    J., & Gao, J. (2024). *Model Te
+  citation_context: Generative Inference of Large Language Models*. NeurIPS 2023. https://arxiv.org/abs/2306.14048  5. Ge,
+    S., Zhang, Y., Liu, L., Zhang, M., Han, J., & Gao, J. (2024). *Model Te
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -543,9 +515,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'he Middle: How Language Models Use Long Contexts*. TACL 2024.
-    https://arxiv.org/abs/2307.03172  7. Kamradt, G. (2023). *Needle in a Haystack:
-    Pressure Testing LLMs*. GitHub R'
+  citation_context: 'he Middle: How Language Models Use Long Contexts*. TACL 2024. https://arxiv.org/abs/2307.03172  7. Kamradt,
+    G. (2023). *Needle in a Haystack: Pressure Testing LLMs*. GitHub R'
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -561,9 +532,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: Language Models to Master 16000+ Real-world APIs*. ICLR 2024.
-    https://arxiv.org/abs/2307.16789  </details>  ---  **See Also:** [Master Benchmark
-    Results](../reference/benchma
+  citation_context: Language Models to Master 16000+ Real-world APIs*. ICLR 2024. https://arxiv.org/abs/2307.16789  </details>  ---  **See
+    Also:** [Master Benchmark Results](../reference/benchma
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -579,8 +549,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071)
-    (ICLR 2024) - **GitHub**: [jquesnelle/yarn](https://github.com/jquesnelle/yarn'
+  citation_context: 'Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071) (ICLR
+    2024) - **GitHub**: [jquesnelle/yarn](https://github.com/jquesnelle/yarn'
   cross_references:
     handoffs:
     - yarn-context-extension-research.md
@@ -597,9 +567,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Large Language Model Serving with PagedAttention*. SOSP 2023.
-    https://arxiv.org/abs/2309.06180  ### KV Cache Optimization  3. Liu, Z., Wang,
-    J., Dao, T., Zhou, T., Yuan, B.,'
+  citation_context: 'Large Language Model Serving with PagedAttention*. SOSP 2023. https://arxiv.org/abs/2309.06180  ### KV
+    Cache Optimization  3. Liu, Z., Wang, J., Dao, T., Zhou, T., Yuan, B.,'
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -617,9 +586,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'outing) - Language Model Cascades: `arXiv:2207.10342` - Chain-of-Verification:
-    `arXiv:2309.11495` (factuality checks) - Learning to Route LLMs: `arXiv:2501.12388`
-    - Bipartite R'
+  citation_context: 'outing) - Language Model Cascades: `arXiv:2207.10342` - Chain-of-Verification: `arXiv:2309.11495` (factuality
+    checks) - Learning to Route LLMs: `arXiv:2501.12388` - Bipartite R'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -636,9 +604,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Discard: Adaptive KV Cache Compression for LLMs*. ICLR 2024.
-    https://arxiv.org/abs/2310.01801  ### LLM Serving Systems  6. Yu, G. I., Jeong,
-    J. S., Kim, G. W., Kim, S., & Ch'
+  citation_context: 'Discard: Adaptive KV Cache Compression for LLMs*. ICLR 2024. https://arxiv.org/abs/2310.01801  ### LLM
+    Serving Systems  6. Yu, G. I., Jeong, J. S., Kim, G. W., Kim, S., & Ch'
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -654,9 +621,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ': https://github.com/microsoft/LLMLingua - LLMLingua-2 Paper:
-    https://arxiv.org/abs/2310.05736 - Existing pipeline: `src/services/document_preprocessor.py`
-    - Two-stage config'
+  citation_context: ': https://github.com/microsoft/LLMLingua - LLMLingua-2 Paper: https://arxiv.org/abs/2310.05736 - Existing
+    pipeline: `src/services/document_preprocessor.py` - Two-stage config'
   cross_references:
     handoffs:
     - cmprsr_prompt_compression.md
@@ -672,9 +638,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'st Speculative Decoding via Optimal Transport*. NeurIPS 2023.
-    https://arxiv.org/abs/2310.15141  ### PARD (Parallel Aligned Draft)  6. AMD Research.
-    (2025). *PARD: Permutation'
+  citation_context: 'st Speculative Decoding via Optimal Transport*. NeurIPS 2023. https://arxiv.org/abs/2310.15141  ### PARD
+    (Parallel Aligned Draft)  6. AMD Research. (2025). *PARD: Permutation'
   cross_references:
     chapters:
     - 01-speculative-decoding.md
@@ -690,9 +655,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ion-Following Evaluation for Large Language Models (IFEval).*
-    https://arxiv.org/abs/2311.07911 8. Patil, S. G., et al. (2023). *Gorilla: Large
-    Language Model Connected with M'
+  citation_context: 'ion-Following Evaluation for Large Language Models (IFEval).* https://arxiv.org/abs/2311.07911 8. Patil,
+    S. G., et al. (2023). *Gorilla: Large Language Model Connected with M'
   cross_references:
     chapters:
     - 06-benchmarking-framework.md
@@ -709,9 +673,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '3). *REST: Retrieval-Based Speculative Decoding*. NAACL 2024.
-    https://arxiv.org/abs/2311.08252  4. Zhang, A., Deng, C., Oguz, B., Ott, M., &
-    Çelikyilmaz, A. (2024). *RASD: Re'
+  citation_context: '3). *REST: Retrieval-Based Speculative Decoding*. NAACL 2024. https://arxiv.org/abs/2311.08252  4. Zhang,
+    A., Deng, C., Oguz, B., Ott, M., & Çelikyilmaz, A. (2024). *RASD: Re'
   cross_references:
     chapters:
     - 03-prompt-lookup.md
@@ -728,9 +691,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'me Sequence Modeling with Selective State Spaces*. COLM 2024.
-    https://arxiv.org/abs/2312.00752  12. Anthony, Q., Tokpanov, Y., Glorioso, P.,
-    & Berner, D. (2024). *BlackMamba:'
+  citation_context: 'me Sequence Modeling with Selective State Spaces*. COLM 2024. https://arxiv.org/abs/2312.00752  12. Anthony,
+    Q., Tokpanov, Y., Glorioso, P., & Berner, D. (2024). *BlackMamba:'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -748,9 +710,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ution of Structured Language Model Programs*. arXiv preprint.
-    https://arxiv.org/abs/2312.07104  2. Kwon, W., Li, Z., Zhuang, S., Sheng, Y.,
-    Zheng, L., Yu, C. H., ... & Stoica
+  citation_context: ution of Structured Language Model Programs*. arXiv preprint. https://arxiv.org/abs/2312.07104  2. Kwon,
+    W., Li, Z., Zhuang, S., Sheng, Y., Zheng, L., Yu, C. H., ... & Stoica
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -769,9 +730,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: tive Drafting for Even Faster LLM Inference*. arXiv preprint.
-    https://arxiv.org/pdf/2312.11462  14. Spector, B., & Re, C. (2024). *Accelerating
-    LLM Inference with Staged Spec
+  citation_context: tive Drafting for Even Faster LLM Inference*. arXiv preprint. https://arxiv.org/pdf/2312.11462  14. Spector,
+    B., & Re, C. (2024). *Accelerating LLM Inference with Staged Spec
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -787,9 +747,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'e: A Comprehensive Survey of Speculative Decoding*. ACL 2024.
-    https://arxiv.org/abs/2401.07851  ### K-Value and Temperature Optimization  4.
-    Kim, S., Mangalam, K., Moon, S.,'
+  citation_context: 'e: A Comprehensive Survey of Speculative Decoding*. ACL 2024. https://arxiv.org/abs/2401.07851  ### K-Value
+    and Temperature Optimization  4. Kim, S., Mangalam, K., Moon, S.,'
   cross_references:
     chapters:
     - 01-speculative-decoding.md
@@ -805,9 +764,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ting LLM Generation with Multiple Decoding Heads*. ICML 2024.
-    https://arxiv.org/abs/2401.10774  9. FasterDecoding. (2024). *Medusa GitHub Repository*.
-    https://github.com/Fast
+  citation_context: ting LLM Generation with Multiple Decoding Heads*. ICML 2024. https://arxiv.org/abs/2401.10774  9. FasterDecoding.
+    (2024). *Medusa GitHub Repository*. https://github.com/Fast
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -825,9 +783,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Sampling Requires Rethinking Feature Uncertainty*. ICML 2024.
-    https://arxiv.org/abs/2401.15077  2. Li, Y., Wei, F., Zhang, C., & Zhang, H. (2024).
-    *EAGLE-2: Faster Inference'
+  citation_context: 'Sampling Requires Rethinking Feature Uncertainty*. ICML 2024. https://arxiv.org/abs/2401.15077  2. Li,
+    Y., Wei, F., Zhang, C., & Zhang, H. (2024). *EAGLE-2: Faster Inference'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -843,9 +800,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ': Mixture of Experts for State-Space Models*. arXiv preprint.
-    https://arxiv.org/abs/2402.01771  ### Cascade Methods  13. Chen, Z., Yang, X.,
-    Lin, J., Sun, C., Huang, J., & Ch'
+  citation_context: ': Mixture of Experts for State-Space Models*. arXiv preprint. https://arxiv.org/abs/2402.01771  ### Cascade
+    Methods  13. Chen, Z., Yang, X., Lin, J., Sun, C., Huang, J., & Ch'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -861,8 +817,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'et al., "Sequoia: Scalable, Robust, and Hardware-aware Speculative
-    Decoding" [[arXiv:2402.12374](https://arxiv.org/abs/2402.12374)] **Code**: [github.com/Infini-AI-Lab/Sequoia'
+  citation_context: 'et al., "Sequoia: Scalable, Robust, and Hardware-aware Speculative Decoding" [[arXiv:2402.12374](https://arxiv.org/abs/2402.12374)]
+    **Code**: [github.com/Infini-AI-Lab/Sequoia'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -878,9 +834,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ncy Tradeoff in LLM Inference with Sarathi-Serve*. OSDI 2024.
-    https://arxiv.org/abs/2403.02310  ### Radix Tree Data Structures  8. Morrison,
-    D. R. (1968). *PATRICIA—Practical'
+  citation_context: 'ncy Tradeoff in LLM Inference with Sarathi-Serve*. OSDI 2024. https://arxiv.org/abs/2403.02310  ### Radix
+    Tree Data Structures  8. Morrison, D. R. (1968). *PATRICIA—Practical'
   cross_references:
     chapters:
     - 04-radix-attention.md
@@ -896,9 +851,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ': A Hybrid Transformer-Mamba Language Model*. arXiv preprint.
-    https://arxiv.org/abs/2403.19887  ### Qwen Model Documentation  8. Qwen Team.
-    (2024). *Qwen3 Technical Report*.'
+  citation_context: ': A Hybrid Transformer-Mamba Language Model*. arXiv preprint. https://arxiv.org/abs/2403.19887  ### Qwen
+    Model Documentation  8. Qwen Team. (2024). *Qwen3 Technical Report*.'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -914,9 +868,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'n and Rationalization for LLMs via Multi-Agent Deliberation.    *arXiv
-    preprint arXiv:2404.09127*.  ---  ## Appendix: Compute Cost Summary  ### Training
-    a Complete Failure Pred'
+  citation_context: 'n and Rationalization for LLMs via Multi-Agent Deliberation.    *arXiv preprint arXiv:2404.09127*.  ---  ##
+    Appendix: Compute Cost Summary  ### Training a Complete Failure Pred'
   cross_references:
     handoffs:
     - early-failure-prediction.md
@@ -932,9 +885,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'al., "LayerSkip: Enabling Early Exit Inference and Self-Speculative
-    Decoding" [[arXiv:2404.16710](https://arxiv.org/abs/2404.16710)]  Draft generated
-    by exiting at an earlier l'
+  citation_context: 'al., "LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding" [[arXiv:2404.16710](https://arxiv.org/abs/2404.16710)]  Draft
+    generated by exiting at an earlier l'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -951,9 +903,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'g LLM Inference with Staged Speculative Decoding*. ICML 2024.
-    https://arxiv.org/abs/2405.19261  ### Curated Literature  15. Zhang, H., et al.
-    (2024). *SpeculativeDecodingPape'
+  citation_context: 'g LLM Inference with Staged Speculative Decoding*. ICML 2024. https://arxiv.org/abs/2405.19261  ### Curated
+    Literature  15. Zhang, H., et al. (2024). *SpeculativeDecodingPape'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -987,9 +938,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: allel Speculative Decoding for Interactive LLM Inference on Consumer
-    Devices" [[arXiv:2406.02532](https://arxiv.org/abs/2406.02532)]  SpecExec contains
-    what may be the single m
+  citation_context: allel Speculative Decoding for Interactive LLM Inference on Consumer Devices" [[arXiv:2406.02532](https://arxiv.org/abs/2406.02532)]  SpecExec
+    contains what may be the single m
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1007,9 +957,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'nce of Language Models with Dynamic Draft Trees*. EMNLP 2024.
-    https://arxiv.org/abs/2406.16858  3. SafeAI Lab. (2024). *EAGLE: Extrapolation
-    Algorithm for Greater Language-mo'
+  citation_context: 'nce of Language Models with Dynamic Draft Trees*. EMNLP 2024. https://arxiv.org/abs/2406.16858  3. SafeAI
+    Lab. (2024). *EAGLE: Extrapolation Algorithm for Greater Language-mo'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -1025,9 +974,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'g et al., "OPT-Tree: Speculative Decoding with Adaptive Draft
-    Tree Structure" [[arXiv:2406.17276](https://arxiv.org/abs/2406.17276)] **Code**:
-    [github.com/Jikai0Wang/OPT-Tree]('
+  citation_context: 'g et al., "OPT-Tree: Speculative Decoding with Adaptive Draft Tree Structure" [[arXiv:2406.17276](https://arxiv.org/abs/2406.17276)]
+    **Code**: [github.com/Jikai0Wang/OPT-Tree]('
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1043,9 +991,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'iew): https://openreview.net/forum?id=lLR61sHcS5 3. RouteLLM:
-    https://arxiv.org/abs/2406.18665 4. SGLang / RadixAttention context: https://arxiv.org/abs/2312.07104
-    5. Router-'
+  citation_context: 'iew): https://openreview.net/forum?id=lLR61sHcS5 3. RouteLLM: https://arxiv.org/abs/2406.18665 4. SGLang
+    / RadixAttention context: https://arxiv.org/abs/2312.07104 5. Router-'
   cross_references:
     handoffs:
     - orchestration-architecture-optimization-handoff.md
@@ -1061,9 +1008,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: uncertain payoff |  **What It Was:** LUT-based low-bit inference
-    (EuroSys 2025, arXiv:2407.00088)  **Why We're Not Pursuing:** Our existing speculative
-    decoding already gives 1
+  citation_context: uncertain payoff |  **What It Was:** LUT-based low-bit inference (EuroSys 2025, arXiv:2407.00088)  **Why
+    We're Not Pursuing:** Our existing speculative decoding already gives 1
   cross_references:
     handoffs:
     - cpu-optimization.md
@@ -1079,9 +1025,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '**Paper**: "PEARL: Parallel Speculative Decoding with Adaptive
-    Draft Length" [[arXiv:2408.11850](https://arxiv.org/abs/2408.11850)]  PEARL eliminates
-    the mutual waiting proble'
+  citation_context: '**Paper**: "PEARL: Parallel Speculative Decoding with Adaptive Draft Length" [[arXiv:2408.11850](https://arxiv.org/abs/2408.11850)]  PEARL
+    eliminates the mutual waiting proble'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1098,9 +1043,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ecks) - Learning to Route LLMs: `arXiv:2501.12388` - Bipartite
-    Routing Graphs: `arXiv:2410.03834` (ICLR 2025, used by GraphRouter)  ---  ## KPIs  -
-    **Primary**: Factuality@Cost'
+  citation_context: 'ecks) - Learning to Route LLMs: `arXiv:2501.12388` - Bipartite Routing Graphs: `arXiv:2410.03834` (ICLR
+    2025, used by GraphRouter)  ---  ## KPIs  - **Primary**: Factuality@Cost'
   cross_references:
     handoffs:
     - graphrouter-memrl-augmentation.md
@@ -1117,8 +1061,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '*Paper**: "ParallelSpec: Parallel Drafter for Efficient Speculative
-    Decoding" [[arXiv:2410.05589](https://arxiv.org/abs/2410.05589)]  ParallelSpec
+  citation_context: '*Paper**: "ParallelSpec: Parallel Drafter for Efficient Speculative Decoding" [[arXiv:2410.05589](https://arxiv.org/abs/2410.05589)]  ParallelSpec
     replaces the autoregressive d'
   cross_references:
     chapters:
@@ -1135,8 +1078,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '"SWIFT: On-the-Fly Self-Speculative Decoding for LLM Inference
-    Acceleration" [[arXiv:2410.06916](https://arxiv.org/abs/2410.06916)]  **Plug-and-play**:
+  citation_context: '"SWIFT: On-the-Fly Self-Speculative Decoding for LLM Inference Acceleration" [[arXiv:2410.06916](https://arxiv.org/abs/2410.06916)]  **Plug-and-play**:
     No training required. A'
   cross_references:
     chapters:
@@ -1153,8 +1095,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'al., "DySpec: Faster Speculative Decoding with Dynamic Token
-    Tree Structure" [[arXiv:2410.11744](https://arxiv.org/abs/2410.11744)]  DySpec
+  citation_context: 'al., "DySpec: Faster Speculative Decoding with Dynamic Token Tree Structure" [[arXiv:2410.11744](https://arxiv.org/abs/2410.11744)]  DySpec
     uses **heap-based greedy expansion*'
   cross_references:
     chapters:
@@ -1171,9 +1112,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'er-query cost.  **Reference**: "Learning to Route LLMs with Confidence
-    Tokens," arXiv:2410.13284 (2024). https://arxiv.org/html/2410.13284v2  </details>  ##
-    Industry Consensus'
+  citation_context: 'er-query cost.  **Reference**: "Learning to Route LLMs with Confidence Tokens," arXiv:2410.13284 (2024).
+    https://arxiv.org/html/2410.13284v2  </details>  ## Industry Consensus'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -1189,9 +1129,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Paper**: "SpecHub: Provable Acceleration to Multi-Draft Speculative
-    Decoding" [[arXiv:2411.05289](https://arxiv.org/abs/2411.05289)]  When K draft
-    models (or K samples from one'
+  citation_context: 'Paper**: "SpecHub: Provable Acceleration to Multi-Draft Speculative Decoding" [[arXiv:2411.05289](https://arxiv.org/abs/2411.05289)]  When
+    K draft models (or K samples from one'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1207,9 +1146,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Qwen Team. (2024). *Qwen2.5 Technical Report*. Alibaba Group.
-    https://arxiv.org/abs/2412.15115  </details>  ---  *Previous: [Chapter 01: Speculative
-    Decoding](01-speculative-'
+  citation_context: 'Qwen Team. (2024). *Qwen2.5 Technical Report*. Alibaba Group. https://arxiv.org/abs/2412.15115  </details>  ---  *Previous:
+    [Chapter 01: Speculative Decoding](01-speculative-'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -1225,9 +1163,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '23219) 18. "Dovetail: CPU/GPU Heterogeneous Speculative Decoding,"
-    EMNLP 2025. [arXiv:2412.18934](https://arxiv.org/abs/2412.18934)  ### Speculative
-    Speculative Decoding 19. Ku'
+  citation_context: '23219) 18. "Dovetail: CPU/GPU Heterogeneous Speculative Decoding," EMNLP 2025. [arXiv:2412.18934](https://arxiv.org/abs/2412.18934)  ###
+    Speculative Speculative Decoding 19. Ku'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1243,9 +1180,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Verification: `arXiv:2309.11495` (factuality checks) - Learning
-    to Route LLMs: `arXiv:2501.12388` - Bipartite Routing Graphs: `arXiv:2410.03834`
-    (ICLR 2025, used by GraphRouter'
+  citation_context: 'Verification: `arXiv:2309.11495` (factuality checks) - Learning to Route LLMs: `arXiv:2501.12388` - Bipartite
+    Routing Graphs: `arXiv:2410.03834` (ICLR 2025, used by GraphRouter'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -1262,9 +1198,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 's with native vision capabilities (e.g., Qwen3.5).  **License:**
-    MIT. Citation: arXiv:2502.12054.  </details>  ## Current Pool Statistics  Across
-    all 23 suites we have 56,448 q'
+  citation_context: 's with native vision capabilities (e.g., Qwen3.5).  **License:** MIT. Citation: arXiv:2502.12054.  </details>  ##
+    Current Pool Statistics  Across all 23 suites we have 56,448 q'
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -1280,9 +1215,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '://arxiv.org/abs/2410.06916) 13. EAGLE-3: "Scaling up Inference
-    Acceleration." [arXiv:2503.01840](https://arxiv.org/abs/2503.01840)  ### Parallel
-    and Multi-Draft Speculation 14'
+  citation_context: '://arxiv.org/abs/2410.06916) 13. EAGLE-3: "Scaling up Inference Acceleration." [arXiv:2503.01840](https://arxiv.org/abs/2503.01840)  ###
+    Parallel and Multi-Draft Speculation 14'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1298,9 +1232,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'D: Retrieval-Augmented Speculative Decoding*. arXiv preprint.
-    https://arxiv.org/abs/2503.03434  ### Suffix Tree Methods  5. Cai, T., Li, Y.,
-    Geng, Z., Peng, H., Lee, J. D., C'
+  citation_context: 'D: Retrieval-Augmented Speculative Decoding*. arXiv preprint. https://arxiv.org/abs/2503.03434  ### Suffix
+    Tree Methods  5. Cai, T., Li, Y., Geng, Z., Peng, H., Lee, J. D., C'
   cross_references:
     chapters:
     - 03-prompt-lookup.md
@@ -1316,8 +1249,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '- Dynamic LLM Routing from Benchmarking to Policy Learning. `https://arxiv.org/abs/2504.12337`
-    - Self-Adaptive Language Toolkit. `https://arxiv.org/abs/2305.11711`  Internal'
+  citation_context: '- Dynamic LLM Routing from Benchmarking to Policy Learning. `https://arxiv.org/abs/2504.12337` - Self-Adaptive
+    Language Toolkit. `https://arxiv.org/abs/2305.11711`  Internal'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -1333,9 +1266,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'tic Evaluation of Physical Perception and Reasoning in LLMs.*
-    https://arxiv.org/abs/2504.16074 11. Zhang, X., et al. (2025). *PhysReason: A
-    Comprehensive Benchmark towards Ph'
+  citation_context: 'tic Evaluation of Physical Perception and Reasoning in LLMs.* https://arxiv.org/abs/2504.16074 11. Zhang,
+    X., et al. (2025). *PhysReason: A Comprehensive Benchmark towards Ph'
   cross_references:
     chapters:
     - 07-benchmark-suite-construction.md
@@ -1351,9 +1283,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: . Qwen Team. (2024). *Qwen3 Technical Report*. Alibaba Group.
-    https://arxiv.org/abs/2505.09388  9. Qwen Team. (2024). *Qwen2.5 Technical Report*.
-    Alibaba Group. https://arxiv
+  citation_context: . Qwen Team. (2024). *Qwen3 Technical Report*. Alibaba Group. https://arxiv.org/abs/2505.09388  9. Qwen
+    Team. (2024). *Qwen2.5 Technical Report*. Alibaba Group. https://arxiv
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -1369,8 +1300,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: LLM Inference on Edge with Speculative Decoding and Hetero-Core
-    Parallelism" [[arXiv:2505.23219](https://arxiv.org/abs/2505.23219)]  Ghidorah
+  citation_context: LLM Inference on Edge with Speculative Decoding and Hetero-Core Parallelism" [[arXiv:2505.23219](https://arxiv.org/abs/2505.23219)]  Ghidorah
     partitions speculative decoding a
   cross_references:
     chapters:
@@ -1387,9 +1317,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '/ Background 20. "CLaSp: In-Context Layer Skip for Self-Speculative
-    Decoding." [arXiv:2505.24196](https://arxiv.org/abs/2505.24196) 21. Speculative
-    Decoding Papers Collection.'
+  citation_context: '/ Background 20. "CLaSp: In-Context Layer Skip for Self-Speculative Decoding." [arXiv:2505.24196](https://arxiv.org/abs/2505.24196)
+    21. Speculative Decoding Papers Collection.'
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -1406,9 +1335,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'Teaching LLMs Multi-Round Routing and Aggregation via Reinforcement
-    Learning," arXiv:2506.09033 (2025). https://arxiv.org/abs/2506.09033  ### FrugalGPT
-    (Stanford, 2023)  Found'
+  citation_context: 'Teaching LLMs Multi-Round Routing and Aggregation via Reinforcement Learning," arXiv:2506.09033 (2025).
+    https://arxiv.org/abs/2506.09033  ### FrugalGPT (Stanford, 2023)  Found'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -1424,9 +1352,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'adeoff by up to 25%.  **Reference**: "Cost-Aware Contrastive
-    Routing for LLMs," arXiv:2508.12491 (2025). https://arxiv.org/html/2508.12491  ###
-    LLMRank (October 2025)  Feature-'
+  citation_context: 'adeoff by up to 25%.  **Reference**: "Cost-Aware Contrastive Routing for LLMs," arXiv:2508.12491 (2025).
+    https://arxiv.org/html/2508.12491  ### LLMRank (October 2025)  Feature-'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -1442,9 +1369,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ency.  **Reference**: "LLMRank: Understanding LLM Strengths for
-    Model Routing," arXiv:2510.01234 (2025). https://arxiv.org/html/2510.01234  ###
-    Self-REF (October 2024)  Confide'
+  citation_context: 'ency.  **Reference**: "LLMRank: Understanding LLM Strengths for Model Routing," arXiv:2510.01234 (2025).
+    https://arxiv.org/html/2510.01234  ### Self-REF (October 2024)  Confide'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -1460,9 +1386,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '**Paper**: Kumar et al., "HiSpec: Hierarchical Speculative Decoding
-    for LLMs" [[arXiv:2510.01336](https://arxiv.org/abs/2510.01336)]  HiSpec addresses
-    **verification latency**'
+  citation_context: '**Paper**: Kumar et al., "HiSpec: Hierarchical Speculative Decoding for LLMs" [[arXiv:2510.01336](https://arxiv.org/abs/2510.01336)]  HiSpec
+    addresses **verification latency**'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1478,9 +1403,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '.py -v ```  ---  ## 10) Research References  ### Delethink /
-    Markovian Thinker (arXiv:2510.06557, McGill NLP)  **Core claim**: Reasoning in
-    LLMs exhibits a Markovian property —'
+  citation_context: '.py -v ```  ---  ## 10) Research References  ### Delethink / Markovian Thinker (arXiv:2510.06557, McGill
+    NLP)  **Core claim**: Reasoning in LLMs exhibits a Markovian property —'
   cross_references:
     handoffs:
     - context-window-management.md
@@ -1496,9 +1420,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'ter: Training Cost-Aware LLMs Orchestration System via Reinforcement
-    Learning," arXiv:2510.08439 (2025). https://arxiv.org/abs/2510.08439  ### RouteLLM
-    (LMSYS, ICLR 2025)  Rout'
+  citation_context: 'ter: Training Cost-Aware LLMs Orchestration System via Reinforcement Learning," arXiv:2510.08439 (2025).
+    https://arxiv.org/abs/2510.08439  ### RouteLLM (LMSYS, ICLR 2025)  Rout'
   cross_references:
     chapters:
     - 08-cost-aware-rewards.md
@@ -1514,9 +1437,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: lative Drafting for Even Faster LLM Inference*. NeurIPS 2025.
-    https://arxiv.org/abs/2510.26843  5. Elhoushi, M., Shrivastava, A., Liskovich,
-    D., Hosmer, B., Wasti, B., Lai, L
+  citation_context: lative Drafting for Even Faster LLM Inference*. NeurIPS 2025. https://arxiv.org/abs/2510.26843  5. Elhoushi,
+    M., Shrivastava, A., Liskovich, D., Hosmer, B., Wasti, B., Lai, L
   cross_references:
     chapters:
     - 05-deprecated-approaches.md
@@ -1532,9 +1454,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'aml` (compression.enabled=false)  ---  **Sources**: - Cmprsr:
-    https://arxiv.org/abs/2511.12281 - LLMLingua: https://github.com/microsoft/LLMLingua  ---  ##
-    Resume Command  ``'
+  citation_context: 'aml` (compression.enabled=false)  ---  **Sources**: - Cmprsr: https://arxiv.org/abs/2511.12281 - LLMLingua:
+    https://github.com/microsoft/LLMLingua  ---  ## Resume Command  ``'
   cross_references:
     handoffs:
     - cmprsr_prompt_compression.md
@@ -1550,9 +1471,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: Large-Scale Reasoning Model Inference with Sparse Self-Speculative
-    Decoding" [[arXiv:2512.01278](https://arxiv.org/abs/2512.01278)]  SparseSpec uses
-    the **same model as both d
+  citation_context: Large-Scale Reasoning Model Inference with Sparse Self-Speculative Decoding" [[arXiv:2512.01278](https://arxiv.org/abs/2512.01278)]  SparseSpec
+    uses the **same model as both d
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1568,9 +1488,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'e, S. (2025). > *Zero-Overhead Introspection for Adaptive Test-Time
-    Compute*. > arXiv:2512.01457. https://arxiv.org/abs/2512.01457  ### Method  ZIP-RC
-    repurposes 64 unused voca'
+  citation_context: 'e, S. (2025). > *Zero-Overhead Introspection for Adaptive Test-Time Compute*. > arXiv:2512.01457. https://arxiv.org/abs/2512.01457  ###
+    Method  ZIP-RC repurposes 64 unused voca'
   cross_references:
     handoffs:
     - early-failure-prediction.md
@@ -1586,9 +1505,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '*Can LLMs Predict Their Own Failures? Self-Awareness via Internal
-    Circuits*. > arXiv:2512.20578. https://arxiv.org/abs/2512.20578  ### Method  Gnosis
-    adds a ~5M parameter "fai'
+  citation_context: '*Can LLMs Predict Their Own Failures? Self-Awareness via Internal Circuits*. > arXiv:2512.20578. https://arxiv.org/abs/2512.20578  ###
+    Method  Gnosis adds a ~5M parameter "fai'
   cross_references:
     handoffs:
     - early-failure-prediction.md
@@ -1604,8 +1522,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '3 **Paper**: [End-to-End Test-Time Training for Long Context](https://arxiv.org/abs/2512.23675)
-    **Reference Repo**: https://github.com/test-time-training/e2e  ---  ## Executi'
+  citation_context: '3 **Paper**: [End-to-End Test-Time Training for Long Context](https://arxiv.org/abs/2512.23675) **Reference
+    Repo**: https://github.com/test-time-training/e2e  ---  ## Executi'
   cross_references:
     handoffs:
     - vanilla-ttt-feasibility.md
@@ -1621,9 +1539,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'L exploration strategies without modifying model weights.  **Paper
-    Reference:** arXiv:2601.03192 - "MemRL: Self-Evolving Agents via Runtime Reinforcement
-    Learning on Episodic M'
+  citation_context: 'L exploration strategies without modifying model weights.  **Paper Reference:** arXiv:2601.03192 - "MemRL:
+    Self-Evolving Agents via Runtime Reinforcement Learning on Episodic M'
   cross_references:
     handoffs:
     - json-canvas-plugin-architecture.md
@@ -1641,8 +1558,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'rcoming Joint Intractability with Lossless Hierarchical Speculative
-    Decoding" [[arXiv:2601.05724](https://arxiv.org/abs/2601.05724)] **Code**: [github.com/ZhouYuxuanYX/Hierarch'
+  citation_context: 'rcoming Joint Intractability with Lossless Hierarchical Speculative Decoding" [[arXiv:2601.05724](https://arxiv.org/abs/2601.05724)]
+    **Code**: [github.com/ZhouYuxuanYX/Hierarch'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1658,9 +1575,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'codec: https://huggingface.co/Qwen/Qwen3-TTS-Tokenizer-12Hz -
-    Technical report: arXiv 2601.15621 - Pipecat (audio transport): https://github.com/pipecat-ai/pipecat
-    - OuteTTS re'
+  citation_context: 'codec: https://huggingface.co/Qwen/Qwen3-TTS-Tokenizer-12Hz - Technical report: arXiv 2601.15621 - Pipecat
+    (audio transport): https://github.com/pipecat-ai/pipecat - OuteTTS re'
   cross_references:
     handoffs:
     - qwen3-tts-voice-synthesis.md
@@ -1676,9 +1592,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'SkillRL: Evolving Agents via Recursive Skill-Augmented Reinforcement
-    Learning.* arXiv:2602.08234. https://arxiv.org/abs/2602.08234  - **Core contribution**:
-    Automated discovery'
+  citation_context: 'SkillRL: Evolving Agents via Recursive Skill-Augmented Reinforcement Learning.* arXiv:2602.08234. https://arxiv.org/abs/2602.08234  -
+    **Core contribution**: Automated discovery'
   cross_references:
     handoffs:
     - skillbank-distillation.md
@@ -1694,8 +1609,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'velopments **Effort**: None (monitoring only) **Source**: [ConceptLM
-    (arxiv.org/pdf/2602.08984)](https://arxiv.org/pdf/2602.08984) | [Substack breakdown](https://arxiviq.subs'
+  citation_context: 'velopments **Effort**: None (monitoring only) **Source**: [ConceptLM (arxiv.org/pdf/2602.08984)](https://arxiv.org/pdf/2602.08984)
+    | [Substack breakdown](https://arxiviq.subs'
   cross_references:
     handoffs:
     - 11-conceptlm-monitoring.md
@@ -1711,9 +1626,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'large code corpus.  ### Research: SoftMatcha v2  - **Paper**:
-    https://arxiv.org/pdf/2602.10908 - **Code**: https://github.com/softmatcha/softmatcha2
-    (Python+Rust, Apache 2.0)'
+  citation_context: 'large code corpus.  ### Research: SoftMatcha v2  - **Paper**: https://arxiv.org/pdf/2602.10908 - **Code**:
+    https://github.com/softmatcha/softmatcha2 (Python+Rust, Apache 2.0)'
   cross_references:
     handoffs:
     - hybrid-lookup-spec-decode.md
@@ -1729,9 +1643,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'e starting Phase 3, record results here.  ---  ## Research References  -
-    LaCy: `arXiv:2602.12005` (factual-risk-aware call placement) - FrugalGPT: `arXiv:2305.05176`
-    (LLM casca'
+  citation_context: 'e starting Phase 3, record results here.  ---  ## Research References  - LaCy: `arXiv:2602.12005` (factual-risk-aware
+    call placement) - FrugalGPT: `arXiv:2305.05176` (LLM casca'
   cross_references:
     handoffs:
     - delegation-escalation-factual-risk-routing-track.md
@@ -1748,9 +1661,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'fort**: ~1 developer-day (see sizing below) **Source**: [SkillsBench
-    (arxiv.org/pdf/2602.12670)](https://arxiv.org/pdf/2602.12670)  ## Research Review  ###
-    SkillsBench: Bench'
+  citation_context: 'fort**: ~1 developer-day (see sizing below) **Source**: [SkillsBench (arxiv.org/pdf/2602.12670)](https://arxiv.org/pdf/2602.12670)  ##
+    Research Review  ### SkillsBench: Bench'
   cross_references:
     handoffs:
     - 07-skillsbench-eval-suite.md
@@ -1766,8 +1678,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'uracy across our VL models (Qwen2.5-VL-7B, Qwen3-VL-30B, MiniCPM-O).  -
-    Paper: [arXiv:2602.15257](https://arxiv.org/abs/2602.15257) - Blog: [lighton.ai/lighton-blogs/introducin'
+  citation_context: 'uracy across our VL models (Qwen2.5-VL-7B, Qwen3-VL-30B, MiniCPM-O).  - Paper: [arXiv:2602.15257](https://arxiv.org/abs/2602.15257)
+    - Blog: [lighton.ai/lighton-blogs/introducin'
   cross_references:
     handoffs:
     - multimodal-pipeline.md
@@ -1783,8 +1695,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '-effort experimental **Effort**: High **Source**: [Doc-to-LoRA
-    paper (arxiv.org/pdf/2602.15902)](https://arxiv.org/pdf/2602.15902) | [Paper Breakdown](https://paperbreakdown.'
+  citation_context: '-effort experimental **Effort**: High **Source**: [Doc-to-LoRA paper (arxiv.org/pdf/2602.15902)](https://arxiv.org/pdf/2602.15902)
+    | [Paper Breakdown](https://paperbreakdown.'
   cross_references:
     handoffs:
     - 08-doc-to-lora-prototype.md
@@ -1800,9 +1712,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: ': ACTIVE **Created**: 2026-02-20 **Priority**: MEDIUM **Paper**:
-    [ColBERT-Zero (arXiv:2602.16609)](https://arxiv.org/abs/2602.16609) — Chaffin
-    et al., LightOn AI, Feb 2026 **Li'
+  citation_context: ': ACTIVE **Created**: 2026-02-20 **Priority**: MEDIUM **Paper**: [ColBERT-Zero (arXiv:2602.16609)](https://arxiv.org/abs/2602.16609)
+    — Chaffin et al., LightOn AI, Feb 2026 **Li'
   cross_references:
     handoffs:
     - colbert-zero-research-integration.md
@@ -1818,8 +1729,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'elayed Tree Expansion (Feb 2026)  **Paper**: "Dynamic Delayed
-    Tree Expansion" [[arXiv:2602.16994](https://arxiv.org/abs/2602.16994)]  Standard
+  citation_context: 'elayed Tree Expansion (Feb 2026)  **Paper**: "Dynamic Delayed Tree Expansion" [[arXiv:2602.16994](https://arxiv.org/abs/2602.16994)]  Standard
     tree methods branch immediately f'
   cross_references:
     chapters:
@@ -1836,9 +1746,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: 'blocked on `03-session-scratchpad-memory.md`) **Source**: [Search-R1
-    (arxiv.org/pdf/2602.19526)](https://arxiv.org/pdf/2602.19526)  ## Research Review  ###
-    Search-R1: Trainin'
+  citation_context: 'blocked on `03-session-scratchpad-memory.md`) **Source**: [Search-R1 (arxiv.org/pdf/2602.19526)](https://arxiv.org/pdf/2602.19526)  ##
+    Research Review  ### Search-R1: Trainin'
   cross_references:
     handoffs:
     - 05-search-r1-reward-design.md
@@ -1854,8 +1763,8 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
-  citation_context: '(ICLR 2026)  **Paper**: Kumar, Dao & May, "Speculative Speculative
-    Decoding" [[arXiv:2603.03251](https://arxiv.org/abs/2603.03251)] **Code**: [github.com/tanishqkumar/ssd](htt'
+  citation_context: '(ICLR 2026)  **Paper**: Kumar, Dao & May, "Speculative Speculative Decoding" [[arXiv:2603.03251](https://arxiv.org/abs/2603.03251)]
+    **Code**: [github.com/tanishqkumar/ssd](htt'
   cross_references:
     chapters:
     - 10-advanced-speculative-decoding.md
@@ -1886,8 +1795,8 @@
   - Generative self-retrieval
   - Hallucination-free trajectory filtering
   reported_results:
-  - '+12.2% on SimpleQA-Verified with verified-fact filtering'
-  - '+5.1% on EntityQuestions with verified-fact filtering'
+  - +12.2% on SimpleQA-Verified with verified-fact filtering
+  - +5.1% on EntityQuestions with verified-fact filtering
   - 26.4% vs 41.4% accuracy gap between hallucinated and clean traces
   novelty: high
   relevance: medium
@@ -2299,7 +2208,7 @@
   arxiv_id: '2603.05706'
   url: https://openai.com/index/reasoning-models-chain-of-thought-controllability/
   source_type: blog
-  title: 'Reasoning Models Struggle to Control their Chains of Thought, and That''s Good'
+  title: Reasoning Models Struggle to Control their Chains of Thought, and That's Good
   categories:
   - agent_architecture
   - benchmark_methodology
@@ -2681,20 +2590,18 @@
     - orchestration/repl_memory/failure_graph.py (Kuzu graph store — same DB engine)
     - orchestration/repl_memory/faiss_store.py (vector store — same function)
     - orchestration/repl_memory/strategy_store.py (FAISS+SQLite strategy retrieval)
-  notes: >
-    Cognee's document→KG pipeline (cognify) has no equivalent in EPYC — we don't
-    ingest documents into knowledge graphs. Our memory system is purpose-built for
-    orchestration (Q-values, failure anti-memory, strategy retrieval), not general
-    knowledge management. The graph+vector hybrid retrieval overlaps with our
-    TwoPhaseRetriever but at a different abstraction level. Multi-tenancy is
-    irrelevant (single-user local system). Main takeaway: we already use Kuzu +
-    FAISS for the same underlying infrastructure. Cognee's value is in the
-    document-to-KG construction pipeline, which is not a current need.
+  notes: 'Cognee''s document→KG pipeline (cognify) has no equivalent in EPYC — we don''t ingest documents into knowledge graphs.
+    Our memory system is purpose-built for orchestration (Q-values, failure anti-memory, strategy retrieval), not general
+    knowledge management. The graph+vector hybrid retrieval overlaps with our TwoPhaseRetriever but at a different abstraction
+    level. Multi-tenancy is irrelevant (single-user local system). Main takeaway: we already use Kuzu + FAISS for the same
+    underlying infrastructure. Cognee''s value is in the document-to-KG construction pipeline, which is not a current need.
+
+    '
 - id: intake-136
   arxiv_id: '2505.24478'
   url: https://arxiv.org/abs/2505.24478
   source_type: paper
-  title: 'Optimizing the Interface Between Knowledge Graphs and LLMs for Complex Reasoning'
+  title: Optimizing the Interface Between Knowledge Graphs and LLMs for Complex Reasoning
   categories:
   - memory_augmented
   - benchmark_methodology
@@ -2712,15 +2619,15 @@
   expanded_from: intake-135
   verdict: not_applicable
   ingested_date: '2026-03-15'
-  notes: >
-    Companion paper to Cognee repo. Hyperparameter tuning study, not architectural
-    innovation. Preliminary version. No specific benchmark numbers in abstract.
-    Not applicable to EPYC — we don't do document-to-KG RAG pipelines.
+  notes: 'Companion paper to Cognee repo. Hyperparameter tuning study, not architectural innovation. Preliminary version.
+    No specific benchmark numbers in abstract. Not applicable to EPYC — we don''t do document-to-KG RAG pipelines.
+
+    '
 - id: intake-137
   arxiv_id: null
   url: https://www.percepta.ai/blog/can-llms-be-computers
   source_type: blog
-  title: 'Can LLMs Be Computers? (2D Attention Heads for Program Execution)'
+  title: Can LLMs Be Computers? (2D Attention Heads for Program Execution)
   categories:
   - agent_architecture
   key_claims:
@@ -2735,17 +2642,16 @@
   discovered_via: input
   verdict: not_applicable
   ingested_date: '2026-03-15'
-  notes: >
-    Theoretical CS result about transformers as universal computers. Interesting
-    academically but not applicable to LLM inference serving. 2D attention heads
-    are a novel architectural concept for sequential program execution, not for
-    standard LLM generation. No overlap with speculative decoding, routing, or
-    REPL execution patterns.
+  notes: 'Theoretical CS result about transformers as universal computers. Interesting academically but not applicable to
+    LLM inference serving. 2D attention heads are a novel architectural concept for sequential program execution, not for
+    standard LLM generation. No overlap with speculative decoding, routing, or REPL execution patterns.
+
+    '
 - id: intake-138
   arxiv_id: null
   url: https://blog.dottxt.ai/external-constraints.html
   source_type: blog
-  title: 'External Constraints for Structured Generation (dottxt/Outlines)'
+  title: External Constraints for Structured Generation (dottxt/Outlines)
   categories:
   - inference_serving
   - agent_architecture
@@ -2767,15 +2673,13 @@
     - src/backends/protocol.py (json_schema + grammar fields on InferenceRequest)
     - src/backends/llama_server.py (GBNF grammar support in llama-server calls)
     - src/features.py (output_formalizer flag — post-processing, not generation-time)
-  notes: >
-    From dottxt, the team behind Outlines structured generation framework. The
-    external constraints pattern (narrowing enums at generation time rather than
-    pre-enumerating in schema) is a practical improvement. We already support
-    GBNF grammars and JSON schema via llama-server, but don't do runtime value
-    set narrowing. Would become relevant if we need to constrain outputs to
-    context-dependent value sets (e.g., valid model names from registry, valid
-    tool names from permission policy). Not a current need.
+  notes: 'From dottxt, the team behind Outlines structured generation framework. The external constraints pattern (narrowing
+    enums at generation time rather than pre-enumerating in schema) is a practical improvement. We already support GBNF grammars
+    and JSON schema via llama-server, but don''t do runtime value set narrowing. Would become relevant if we need to constrain
+    outputs to context-dependent value sets (e.g., valid model names from registry, valid tool names from permission policy).
+    Not a current need.
 
+    '
 - id: intake-139
   arxiv_id: '2603.12228'
   url: https://arxiv.org/abs/2603.12228
@@ -2808,21 +2712,18 @@
     handoffs:
     - reasoning-compression.md
     - autopilot-continuous-optimization.md
-  notes: >
-    Fascinating science on weight space geometry — pretrained models sit in dense
-    thickets of task-specific experts. However, the technique requires K forward
-    passes (K=8-16) for majority vote ensembling, making it antithetical to our
-    throughput-focused inference serving. The perturbation approach is also
-    training-adjacent (requires validation set to select top-K experts). No
-    actionable integration path for EPYC's inference stack. The GRPO/ES
-    comparisons are informative context for AutoPilot's optimization species
-    but don't change our approach.
+  notes: 'Fascinating science on weight space geometry — pretrained models sit in dense thickets of task-specific experts.
+    However, the technique requires K forward passes (K=8-16) for majority vote ensembling, making it antithetical to our
+    throughput-focused inference serving. The perturbation approach is also training-adjacent (requires validation set to
+    select top-K experts). No actionable integration path for EPYC''s inference stack. The GRPO/ES comparisons are informative
+    context for AutoPilot''s optimization species but don''t change our approach.
 
+    '
 - id: intake-140
   arxiv_id: null
   url: https://github.com/martian-engineering/lossless-claw
   source_type: repo
-  title: 'Lossless Claw — LCM (Lossless Context Management) plugin for OpenClaw'
+  title: Lossless Claw — LCM (Lossless Context Management) plugin for OpenClaw
   categories:
   - agent_architecture
   - memory_augmented
@@ -2851,18 +2752,15 @@
     - src/session/sqlite_store.py (SQLite-based session storage)
     handoffs:
     - rlm-orchestrator-roadmap.md
-  notes: >
-    LCM's DAG-based approach with three-level deterministic escalation is more
-    sophisticated than our session_compaction feature. The immutable store + active
-    context dual-state design maps well to our session persistence architecture.
-    Key differentiator: LCM never discards messages — it only replaces them with
-    summaries in the active context while keeping originals retrievable. Our
-    session_compaction is simpler (summarize old context). The agent tools
-    (grep/describe/expand on compacted history) are a pattern worth noting for
-    our REPL sessions. Based on the LCM paper at papers.voltropy.com/LCM and
-    the Recursive Language Models framework (arxiv:2512.24601). TypeScript/Go,
-    1.6k stars, MIT licensed, v0.3.0 released 2026-03-12.
+  notes: 'LCM''s DAG-based approach with three-level deterministic escalation is more sophisticated than our session_compaction
+    feature. The immutable store + active context dual-state design maps well to our session persistence architecture. Key
+    differentiator: LCM never discards messages — it only replaces them with summaries in the active context while keeping
+    originals retrievable. Our session_compaction is simpler (summarize old context). The agent tools (grep/describe/expand
+    on compacted history) are a pattern worth noting for our REPL sessions. Based on the LCM paper at papers.voltropy.com/LCM
+    and the Recursive Language Models framework (arxiv:2512.24601). TypeScript/Go, 1.6k stars, MIT licensed, v0.3.0 released
+    2026-03-12.
 
+    '
 - id: intake-141
   arxiv_id: '2602.22402'
   url: https://arxiv.org/abs/2602.22402
@@ -2897,20 +2795,18 @@
     - src/session/sqlite_store.py (session storage, no DAG structure)
     handoffs:
     - rlm-orchestrator-roadmap.md
-  notes: >
-    CMV's key insight is removing mechanical bloat (raw tool outputs, base64,
-    metadata) while preserving the model's synthesis verbatim. This is orthogonal
-    to our session_compaction which summarizes everything. The 39% reduction for
-    tool-use sessions is particularly relevant — our REPL sessions generate
-    substantial tool output. The version-controlled DAG with branch/trim primitives
-    could enable session forking for escalation retries. Reference implementation
-    at CosmoNaught/claude-code-cmv. By Cosmo Santoni, Feb 2026.
+  notes: 'CMV''s key insight is removing mechanical bloat (raw tool outputs, base64, metadata) while preserving the model''s
+    synthesis verbatim. This is orthogonal to our session_compaction which summarizes everything. The 39% reduction for tool-use
+    sessions is particularly relevant — our REPL sessions generate substantial tool output. The version-controlled DAG with
+    branch/trim primitives could enable session forking for escalation retries. Reference implementation at CosmoNaught/claude-code-cmv.
+    By Cosmo Santoni, Feb 2026.
 
+    '
 - id: intake-142
   arxiv_id: '2509.20820'
   url: https://arxiv.org/abs/2509.20820
   source_type: paper
-  title: 'Distilling Many-Shot In-Context Learning into a Cheat Sheet'
+  title: Distilling Many-Shot In-Context Learning into a Cheat Sheet
   categories:
   - training_distillation
   - cost_aware_routing
@@ -2939,21 +2835,18 @@
     handoffs:
     - autopilot-continuous-optimization.md
     - routing-intelligence.md
-  notes: >
-    Maps to our SkillBank distillation pipeline — both distill many examples into
-    compact reusable knowledge. Key differences: cheat sheets are holistic task-level
-    summaries, our skills are individual Q-value-weighted entries. The difficulty-focused
-    distillation prompt (identify hard examples, distill only those) could inform
-    AutoPilot's StructuralLab distillation strategy. The 35x token compression with
-    maintained accuracy validates aggressive exemplar compression. Cross-model transfer
-    finding relevant for our multi-model stack (architect cheat sheets could inform
-    worker behavior). EMNLP 2025 Findings.
+  notes: 'Maps to our SkillBank distillation pipeline — both distill many examples into compact reusable knowledge. Key differences:
+    cheat sheets are holistic task-level summaries, our skills are individual Q-value-weighted entries. The difficulty-focused
+    distillation prompt (identify hard examples, distill only those) could inform AutoPilot''s StructuralLab distillation
+    strategy. The 35x token compression with maintained accuracy validates aggressive exemplar compression. Cross-model transfer
+    finding relevant for our multi-model stack (architect cheat sheets could inform worker behavior). EMNLP 2025 Findings.
 
+    '
 - id: intake-143
   arxiv_id: null
   url: https://github.com/langchain-ai/langchain
   source_type: repo
-  title: 'LangChain — Agent Engineering Platform'
+  title: LangChain — Agent Engineering Platform
   categories:
   - agent_architecture
   key_claims:
@@ -2972,17 +2865,16 @@
   cross_references:
     codebase:
     - src/graph/ (our orchestrator is a custom graph-based agent, not built on LangChain)
-  notes: >
-    High-level LLM application framework. We have our own purpose-built orchestrator
-    with deeper integration (multi-tier routing, MemRL, SkillBank, speculative decoding
-    control). LangChain's value is breadth of integrations and community — not relevant
-    since we run local llama-server models. No actionable integration path.
+  notes: 'High-level LLM application framework. We have our own purpose-built orchestrator with deeper integration (multi-tier
+    routing, MemRL, SkillBank, speculative decoding control). LangChain''s value is breadth of integrations and community
+    — not relevant since we run local llama-server models. No actionable integration path.
 
+    '
 - id: intake-144
   arxiv_id: null
   url: https://github.com/langchain-ai/deepagents
   source_type: repo
-  title: 'Deep Agents — Batteries-Included Agent Harness (LangGraph)'
+  title: Deep Agents — Batteries-Included Agent Harness (LangGraph)
   categories:
   - agent_architecture
   - memory_augmented
@@ -3008,20 +2900,17 @@
     - src/graph/helpers.py (_spill_if_truncated — parallel to their file-based output storage)
     handoffs:
     - hermes-agent-integration.md
-  notes: >
-    Architectural parallel to our REPL + escalation pipeline. Key patterns that
-    mirror ours: sub-agent delegation (our escalation), context summarization
-    (our session_compaction), file-based output storage (our output spill).
-    Their approach is more opinionated/turnkey; ours is more sophisticated
-    (multi-tier routing, MemRL Q-values, difficulty-adaptive budgets). The
-    write_todos planning tool is interesting — lightweight task decomposition
-    that could inform our workspace_state blackboard.
+  notes: 'Architectural parallel to our REPL + escalation pipeline. Key patterns that mirror ours: sub-agent delegation (our
+    escalation), context summarization (our session_compaction), file-based output storage (our output spill). Their approach
+    is more opinionated/turnkey; ours is more sophisticated (multi-tier routing, MemRL Q-values, difficulty-adaptive budgets).
+    The write_todos planning tool is interesting — lightweight task decomposition that could inform our workspace_state blackboard.
 
+    '
 - id: intake-145
   arxiv_id: null
   url: https://github.com/langchain-ai/agent-protocol
   source_type: repo
-  title: 'Agent Protocol — Framework-Agnostic Agent Serving Standard'
+  title: Agent Protocol — Framework-Agnostic Agent Serving Standard
   categories:
   - agent_architecture
   - inference_serving
@@ -3048,19 +2937,17 @@
     - orchestration/repl_memory/ (episodic + strategy store — maps to Store)
     handoffs:
     - hermes-agent-integration.md
-  notes: >
-    Framework-agnostic API standard that maps cleanly to our existing primitives:
-    Runs → task execution, Threads → session persistence, Store → episodic memory.
-    LangGraph Platform implements a superset. If we ever expose the orchestrator
-    as an agent server (beyond the current /chat endpoint), this spec is the
-    interop standard to follow. The agent introspection pattern (advertising
-    capabilities via JSON Schema) could inform our role/model registry API.
+  notes: 'Framework-agnostic API standard that maps cleanly to our existing primitives: Runs → task execution, Threads → session
+    persistence, Store → episodic memory. LangGraph Platform implements a superset. If we ever expose the orchestrator as
+    an agent server (beyond the current /chat endpoint), this spec is the interop standard to follow. The agent introspection
+    pattern (advertising capabilities via JSON Schema) could inform our role/model registry API.
 
+    '
 - id: intake-146
   arxiv_id: null
   url: https://github.com/langchain-ai/langgraph
   source_type: repo
-  title: 'LangGraph — Low-Level Agent Orchestration as Graphs'
+  title: LangGraph — Low-Level Agent Orchestration as Graphs
   categories:
   - agent_architecture
   - inference_serving
@@ -3087,21 +2974,18 @@
     - orchestration/repl_memory/ (episodic memory — persistent across sessions)
     handoffs:
     - hermes-agent-integration.md
-  notes: >
-    Most architecturally relevant LangChain project — our orchestrator uses the
-    same graph-based execution paradigm (pydantic_graph with nodes, edges, typed
-    TaskState). Key differences: LangGraph is a generic framework, we have a
-    purpose-built orchestrator with domain-specific features (multi-tier model
-    routing, speculative decoding control, MemRL Q-values). LangGraph's durable
-    execution (checkpoint/resume from failure) is more mature than our
-    resume_tokens feature. Their human-in-the-loop (inspect/modify state at any
-    point) is more general than our approval_gates (escalation boundaries only).
+  notes: 'Most architecturally relevant LangChain project — our orchestrator uses the same graph-based execution paradigm
+    (pydantic_graph with nodes, edges, typed TaskState). Key differences: LangGraph is a generic framework, we have a purpose-built
+    orchestrator with domain-specific features (multi-tier model routing, speculative decoding control, MemRL Q-values). LangGraph''s
+    durable execution (checkpoint/resume from failure) is more mature than our resume_tokens feature. Their human-in-the-loop
+    (inspect/modify state at any point) is more general than our approval_gates (escalation boundaries only).
 
+    '
 - id: intake-147
   arxiv_id: null
   url: https://docs.langchain.com/langsmith/home
   source_type: blog
-  title: 'LangSmith — AI Agent Observability and Evaluation Platform'
+  title: LangSmith — AI Agent Observability and Evaluation Platform
   categories:
   - agent_architecture
   key_claims:
@@ -3124,12 +3008,11 @@
     - src/pipeline_monitor/ (our pipeline monitoring)
     - src/graph/repl_tap.py (execution tracing via tap files)
     - src/graph/session_log.py (turn-by-turn execution journal)
-  notes: >
-    Commercial SaaS observability platform. We have our own pipeline monitoring
-    (claude_debugger, repl_tap, session_log, inference_tap). LangSmith's visual
-    execution tracing is more polished but requires external service dependency.
-    Not applicable for our local-first architecture. The prompt versioning pattern
-    is interesting but we already have hot-swappable .md prompts.
+  notes: 'Commercial SaaS observability platform. We have our own pipeline monitoring (claude_debugger, repl_tap, session_log,
+    inference_tap). LangSmith''s visual execution tracing is more polished but requires external service dependency. Not applicable
+    for our local-first architecture. The prompt versioning pattern is interesting but we already have hot-swappable .md prompts.
+
+    '
 - id: intake-148
   arxiv_id: null
   url: https://github.com/karpathy/autoresearch
@@ -3159,20 +3042,14 @@
   cross_references:
     handoffs:
     - autopilot-continuous-optimization.md
-  notes: >-
-    Parent project that inspired PraxLab. 630 lines, no orchestrator code —
-    the LLM IS the loop via program.md instructions. Three files: prepare.py
-    (immutable eval), train.py (mutable genome), program.md (strategy). Git
-    branch = monotonic improvement lineage; results.tsv = full audit trail
-    (untracked). Deep-dive audit (2026-03-16) identified 13 recommended
-    actions for AutoPilot — 3 HIGH (wiring bugs: failure_context not passed
-    to PromptForge, failure narratives not in controller prompt, parent_trial
-    never populated), 4 MEDIUM (failures query, per-suite trends, persist
-    consecutive_failures, Optuna epoch invalidation), 6 LOWER (hypothesis
-    fields, tighter scope, simplicity criterion, worktree isolation, eval
-    trust boundary, grep-parseable metrics). Key absent patterns: no parallel
-    exploration, no uncertainty quantification (single runs = noise-vulnerable),
-    no structured search strategy beyond LLM judgment.
+  notes: 'Parent project that inspired PraxLab. 630 lines, no orchestrator code — the LLM IS the loop via program.md instructions.
+    Three files: prepare.py (immutable eval), train.py (mutable genome), program.md (strategy). Git branch = monotonic improvement
+    lineage; results.tsv = full audit trail (untracked). Deep-dive audit (2026-03-16) identified 13 recommended actions for
+    AutoPilot — 3 HIGH (wiring bugs: failure_context not passed to PromptForge, failure narratives not in controller prompt,
+    parent_trial never populated), 4 MEDIUM (failures query, per-suite trends, persist consecutive_failures, Optuna epoch
+    invalidation), 6 LOWER (hypothesis fields, tighter scope, simplicity criterion, worktree isolation, eval trust boundary,
+    grep-parseable metrics). Key absent patterns: no parallel exploration, no uncertainty quantification (single runs = noise-vulnerable),
+    no structured search strategy beyond LLM judgment.'
 - id: intake-149
   arxiv_id: null
   url: https://github.com/Hamza-Mos/praxlab
@@ -3208,22 +3085,15 @@
     - intake-108
   handoffs_updated:
   - autopilot-continuous-optimization.md
-  notes: >-
-    Extends autoresearch with structured experiment memory (SQLite: 3 tables —
-    hypotheses with mechanism field, experiments with hypothesis FK, results
-    with mechanism_confirmed bool and theory_revision). Lab CLI: 5 commands
-    (hypothesis, experiment, result, context, failures). Database shared across
-    git worktrees via git-common-dir. 550+ experiments across 5 workspaces.
-    Key patterns for AutoPilot: (1) lab failures query at session start prevents
-    retrying known-bad approaches — maps to journal.recent_failures() injection
-    into species proposals, (2) hypothesis→mechanism→confirmation loop closes
-    the "why did we try this" gap in our JournalEntry, (3) worktree isolation
-    enables parallel experiments with shared DB, (4) explicit CAN/CANNOT
-    boundaries in program.md (mutable vs immutable files) — maps to eval trust
-    boundary for species. Blog insights from 100+ experiments: cosine LR kills
-    RL (decays to zero unnoticed), agents excel at execution but lack strategic
-    judgment, Claude Code outperforms Codex on calibration (consistent LR,
-    LoRA rank choices vs Codex's 4-8x variance).
+  notes: 'Extends autoresearch with structured experiment memory (SQLite: 3 tables — hypotheses with mechanism field, experiments
+    with hypothesis FK, results with mechanism_confirmed bool and theory_revision). Lab CLI: 5 commands (hypothesis, experiment,
+    result, context, failures). Database shared across git worktrees via git-common-dir. 550+ experiments across 5 workspaces.
+    Key patterns for AutoPilot: (1) lab failures query at session start prevents retrying known-bad approaches — maps to journal.recent_failures()
+    injection into species proposals, (2) hypothesis→mechanism→confirmation loop closes the "why did we try this" gap in our
+    JournalEntry, (3) worktree isolation enables parallel experiments with shared DB, (4) explicit CAN/CANNOT boundaries in
+    program.md (mutable vs immutable files) — maps to eval trust boundary for species. Blog insights from 100+ experiments:
+    cosine LR kills RL (decays to zero unnoticed), agents excel at execution but lack strategic judgment, Claude Code outperforms
+    Codex on calibration (consistent LR, LoRA rank choices vs Codex''s 4-8x variance).'
 - id: intake-150
   arxiv_id: null
   url: https://github.com/psi-oss/get-physics-done
@@ -3238,7 +3108,8 @@
   - Four-phase structured workflow (Formulate → Plan → Execute → Verify) for physics research
   - Convention locking across 18 physics fields for notation/sign consistency
   - Wave-based task parallelization within phases for multi-agent execution
-  - Six-pass manuscript validation with physics-specific checks (dimensional analysis, limiting cases, symmetry, conservation laws)
+  - Six-pass manuscript validation with physics-specific checks (dimensional analysis, limiting cases, symmetry, conservation
+    laws)
   - Installs as plugin into 4 AI runtimes (Claude Code, Gemini CLI, Codex, OpenCode) via MCP
   techniques:
   - convention_locking
@@ -3258,24 +3129,17 @@
     - autopilot-continuous-optimization.md
   handoffs_updated:
   - autopilot-continuous-optimization.md
-  notes: >-
-    Deep-dive (2026-03-16) upgraded from low/not_applicable to medium/worth_investigating.
-    GPD's four-phase workflow (Formulate->Plan->Execute->Verify) maps onto gaps in our
-    governance architecture. Full system: 23 agents, 61 commands, 6 MCP servers,
-    19 verification checks across 4 tiers, 18-field convention locking (immutable
-    once set), dual-write state (MD+JSON with crash recovery), wave-based
-    parallelism with topological sort, ResearchContract as central governance
-    object (scope, claims, deliverables, acceptance tests, forbidden proxies),
-    model profiles (5 profiles x 23 agents, behavioral not just model selection),
-    context budget management (pressure thresholds GREEN->RED with auto-pause),
-    execution guards (first-result gate, skeptical re-questioning, pre-fanout
-    review -- never skippable even in yolo mode). Six governance patterns directly
-    applicable to epyc-root: (1) ResearchContract binding scope to verification,
-    (2) convention locking for config immutability, (3) automatic validation
-    pipeline (vs our manual-run validators), (4) plan/task decomposition layer
-    (vs our handoff->execution with no intermediate), (5) skeptical re-questioning
-    gate for proxy-only results, (6) forbidden proxy tracking to prevent tempting
-    shortcuts. See handoff update for full recommended actions.
+  notes: 'Deep-dive (2026-03-16) upgraded from low/not_applicable to medium/worth_investigating. GPD''s four-phase workflow
+    (Formulate->Plan->Execute->Verify) maps onto gaps in our governance architecture. Full system: 23 agents, 61 commands,
+    6 MCP servers, 19 verification checks across 4 tiers, 18-field convention locking (immutable once set), dual-write state
+    (MD+JSON with crash recovery), wave-based parallelism with topological sort, ResearchContract as central governance object
+    (scope, claims, deliverables, acceptance tests, forbidden proxies), model profiles (5 profiles x 23 agents, behavioral
+    not just model selection), context budget management (pressure thresholds GREEN->RED with auto-pause), execution guards
+    (first-result gate, skeptical re-questioning, pre-fanout review -- never skippable even in yolo mode). Six governance
+    patterns directly applicable to epyc-root: (1) ResearchContract binding scope to verification, (2) convention locking
+    for config immutability, (3) automatic validation pipeline (vs our manual-run validators), (4) plan/task decomposition
+    layer (vs our handoff->execution with no intermediate), (5) skeptical re-questioning gate for proxy-only results, (6)
+    forbidden proxy tracking to prevent tempting shortcuts. See handoff update for full recommended actions.'
 - id: intake-151
   arxiv_id: null
   url: https://github.com/abhigyanpatwari/GitNexus
@@ -3288,7 +3152,8 @@
   - retrieval_augmented_decoding
   key_claims:
   - Builds knowledge graphs from codebases using Tree-sitter AST parsing across 13 languages
-  - Precomputed relational intelligence (clustering, impact analysis, execution flows) at index time eliminates multi-query graph RAG
+  - Precomputed relational intelligence (clustering, impact analysis, execution flows) at index time eliminates multi-query
+    graph RAG
   - 7 MCP tools expose structured codebase context (query, context, impact, detect_changes, rename, cypher, list_repos)
   - Hybrid search combining BM25 full-text and semantic retrieval with reciprocal rank fusion (RRF)
   - Leiden community detection groups related symbols into functional clusters
@@ -3308,23 +3173,16 @@
     handoffs:
     - claude-code-local-constellation-routing.md
   deep_dive: research/deep-dives/gitnexus-codebase-intelligence.md
-  notes: >-
-    Codebase intelligence platform that indexes repos into graph DBs (KuzuDB)
-    and exposes structured context via 7 MCP tools. Core innovation: precomputed
-    relational intelligence — clustering (Leiden), impact analysis, execution
-    flow tracing at index time. 8-phase pipeline: structure → parse (Tree-sitter,
-    13 langs) → imports → calls (confidence 0.3-0.9) → heritage → clustering →
-    processes → search (BM25 + semantic + RRF k=60). Directly addresses our
-    coding agents' biggest gap: coder_escalation and architect_coding discover
-    dependencies via trial-and-error grep/REPL cycles (O(N) in depth, burns
-    tokens on exploration). GitNexus's impact tool gives blast radius in one
-    call, context tool gives 360-degree symbol view, detect_changes maps staged
-    diffs to affected processes. Deep-dive identifies 4 integration paths —
-    Path D (3 REPL tools wrapping GitNexus queries, ~100 lines) has highest ROI.
-    Key patterns worth adopting: confidence-scored edges, process-grouped search
-    results, entry point scoring heuristic, dual-confidence refactoring.
-    PolyForm Noncommercial license — fine for personal use. Python reimplementation
-    viable via tree-sitter + leidenalg + kuzu Python bindings if needed.
+  notes: 'Codebase intelligence platform that indexes repos into graph DBs (KuzuDB) and exposes structured context via 7 MCP
+    tools. Core innovation: precomputed relational intelligence — clustering (Leiden), impact analysis, execution flow tracing
+    at index time. 8-phase pipeline: structure → parse (Tree-sitter, 13 langs) → imports → calls (confidence 0.3-0.9) → heritage
+    → clustering → processes → search (BM25 + semantic + RRF k=60). Directly addresses our coding agents'' biggest gap: coder_escalation
+    and architect_coding discover dependencies via trial-and-error grep/REPL cycles (O(N) in depth, burns tokens on exploration).
+    GitNexus''s impact tool gives blast radius in one call, context tool gives 360-degree symbol view, detect_changes maps
+    staged diffs to affected processes. Deep-dive identifies 4 integration paths — Path D (3 REPL tools wrapping GitNexus
+    queries, ~100 lines) has highest ROI. Key patterns worth adopting: confidence-scored edges, process-grouped search results,
+    entry point scoring heuristic, dual-confidence refactoring. PolyForm Noncommercial license — fine for personal use. Python
+    reimplementation viable via tree-sitter + leidenalg + kuzu Python bindings if needed.'
 - id: intake-152
   arxiv_id: null
   url: https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html
@@ -3363,30 +3221,21 @@
     - 02-moe-optimization.md
   handoffs_updated:
   - ssm-hybrid-acceleration.md
-  notes: >-
-    Production serving recipe for Qwen3.5 hybrid models with actionable
-    configuration insights for our llama.cpp stack. Key takeaways: (1) MTP-1
-    speculative decoding — model-native Multi-Token Prediction heads as draft
-    source. Unlike our failed self-draft approaches (expert reduction 1.18x,
-    attention-only -49%, layer exit -44% to -51%), MTP heads were co-trained
-    with the model specifically for multi-token prediction. Check whether GGUF
-    conversion preserves MTP head weights and whether llama.cpp has MTP
-    support. (2) Text-only vs multimodal separation — skipping vision encoder
-    enables different throughput optimization paths. Our orchestrator could
-    benefit from similar mode-aware server configuration (text-only requests
-    skip multimodal overhead). (3) Hybrid cache alignment — recurrent state
-    management requires special handling; graph capture sizes must be reduced.
-    Confirms our finding that hybrid state is fundamentally harder to cache
-    than pure transformer KV. (4) Prefix caching explicitly experimental for
-    hybrids — validates our challenge with recurrent state invalidation during
-    prompt caching. (5) YaRN RoPE scaling for >262K — relevant to our
-    yarn-context-extension-research handoff.
-
+  notes: 'Production serving recipe for Qwen3.5 hybrid models with actionable configuration insights for our llama.cpp stack.
+    Key takeaways: (1) MTP-1 speculative decoding — model-native Multi-Token Prediction heads as draft source. Unlike our
+    failed self-draft approaches (expert reduction 1.18x, attention-only -49%, layer exit -44% to -51%), MTP heads were co-trained
+    with the model specifically for multi-token prediction. Check whether GGUF conversion preserves MTP head weights and whether
+    llama.cpp has MTP support. (2) Text-only vs multimodal separation — skipping vision encoder enables different throughput
+    optimization paths. Our orchestrator could benefit from similar mode-aware server configuration (text-only requests skip
+    multimodal overhead). (3) Hybrid cache alignment — recurrent state management requires special handling; graph capture
+    sizes must be reduced. Confirms our finding that hybrid state is fundamentally harder to cache than pure transformer KV.
+    (4) Prefix caching explicitly experimental for hybrids — validates our challenge with recurrent state invalidation during
+    prompt caching. (5) YaRN RoPE scaling for >262K — relevant to our yarn-context-extension-research handoff.'
 - id: intake-153
   arxiv_id: '2512.24601'
   url: https://arxiv.org/abs/2512.24601
   source_type: paper
-  title: 'Recursive Language Models'
+  title: Recursive Language Models
   authors:
   - Alex L. Zhang
   - Tim Kraska
@@ -3427,22 +3276,19 @@
     - 08-cost-aware-rewards.md
     intake:
     - intake-140
-  notes: >
-    Paper analyzed in Jan 2026 (progress/2026-01/2026-01-13.md). EPYC implements
-    80% of RLM patterns: REPL sandbox, context-as-variable, llm_call/llm_batch,
-    exploration tools, recursion depth limits, call count budgets, per-task token
-    budgets. Remaining gaps: async parallel sub-LM calls (partial), forced
-    exploration validation (not started), per-query cost tracking (partial).
-    RadixAttention (Chapter 04) provides 40-60% prefill reduction for shared
-    prefix sub-calls. LangGraph migration will formalize RLM sub-agents as
-    subgraphs. No inference-level optimization (KV cache, spec decoding) discussed
+  notes: 'Paper analyzed in Jan 2026 (progress/2026-01/2026-01-13.md). EPYC implements 80% of RLM patterns: REPL sandbox,
+    context-as-variable, llm_call/llm_batch, exploration tools, recursion depth limits, call count budgets, per-task token
+    budgets. Remaining gaps: async parallel sub-LM calls (partial), forced exploration validation (not started), per-query
+    cost tracking (partial). RadixAttention (Chapter 04) provides 40-60% prefill reduction for shared prefix sub-calls. LangGraph
+    migration will formalize RLM sub-agents as subgraphs. No inference-level optimization (KV cache, spec decoding) discussed
     in paper — the async sub-call scheduling opportunity maps to our orchestrator.
 
+    '
 - id: intake-154
   arxiv_id: '2510.11967'
   url: https://arxiv.org/abs/2510.11967
   source_type: paper
-  title: 'Scaling Long-Horizon LLM Agent via Context-Folding'
+  title: Scaling Long-Horizon LLM Agent via Context-Folding
   authors:
   - Weiwei Sun
   - Miao Lu
@@ -3480,14 +3326,12 @@
     handoffs:
     - rlm-orchestrator-roadmap.md
     - reasoning-compression.md
-  notes: >
-    Context-Folding's procedural branching maps to our worker escalation pattern.
-    The 10x context reduction via folding is more aggressive than our session_compaction.
-    FoldGRPO's process rewards for decomposition could improve our MemRL routing
-    decisions — rewarding effective task splitting rather than just final outcome.
-    Key difference from RLM: Context-Folding uses RL to learn WHEN to fold;
-    RLM uses code-based decomposition. Both are complementary.
+  notes: 'Context-Folding''s procedural branching maps to our worker escalation pattern. The 10x context reduction via folding
+    is more aggressive than our session_compaction. FoldGRPO''s process rewards for decomposition could improve our MemRL
+    routing decisions — rewarding effective task splitting rather than just final outcome. Key difference from RLM: Context-Folding
+    uses RL to learn WHEN to fold; RLM uses code-based decomposition. Both are complementary.
 
+    '
 - id: intake-155
   arxiv_id: '2510.24699'
   url: https://arxiv.org/abs/2510.24699
@@ -3538,13 +3382,12 @@
     - src/graph/session_log.py
     handoffs:
     - reasoning-compression.md
-  notes: >
-    Two-level condensation (granular + deep) is more nuanced than our binary
-    session_compaction. The SFT-only approach (no RL) makes it easier to adopt.
-    30B-A3B model size matches Qwen3.5-35B-A3B in our stack. BrowseComp results
-    are impressive for a non-RL approach. The retrospective consolidation framing
-    could improve how we decide what to keep vs compress in session logs.
+  notes: 'Two-level condensation (granular + deep) is more nuanced than our binary session_compaction. The SFT-only approach
+    (no RL) makes it easier to adopt. 30B-A3B model size matches Qwen3.5-35B-A3B in our stack. BrowseComp results are impressive
+    for a non-RL approach. The retrospective consolidation framing could improve how we decide what to keep vs compress in
+    session logs.
 
+    '
 - id: intake-156
   arxiv_id: '2507.02259'
   url: https://arxiv.org/abs/2507.02259
@@ -3589,14 +3432,12 @@
     intake:
     - intake-140
     - intake-141
-  notes: >
-    MemAgent's segment-based reading with overwrite is simpler than CMV/LCM
-    approaches but achieves remarkable extrapolation (437x context extension).
-    The DAPO multi-conversation training is novel — trains the agent to manage
-    memory across conversation boundaries. Less sophisticated than Lossless Claw
-    but potentially more practical for CPU-bound inference where we need minimal
-    overhead.
+  notes: 'MemAgent''s segment-based reading with overwrite is simpler than CMV/LCM approaches but achieves remarkable extrapolation
+    (437x context extension). The DAPO multi-conversation training is novel — trains the agent to manage memory across conversation
+    boundaries. Less sophisticated than Lossless Claw but potentially more practical for CPU-bound inference where we need
+    minimal overhead.
 
+    '
 - id: intake-157
   arxiv_id: '2509.13313'
   url: https://arxiv.org/abs/2509.13313
@@ -3647,14 +3488,12 @@
     - src/features.py
     handoffs:
     - reasoning-compression.md
-  notes: >
-    ReSum's periodic summarization is closest to our session_compaction feature.
-    The advantage broadcasting technique for RL training across summary boundaries
-    is novel — solves the credit assignment problem when rewards are delayed past
-    summarization points. WebResummer-30B results on BrowseComp-zh (33.3%) are
-    competitive with AgentFold (47.3%) despite simpler approach. Could inform
-    our web_research tool's context management.
+  notes: 'ReSum''s periodic summarization is closest to our session_compaction feature. The advantage broadcasting technique
+    for RL training across summary boundaries is novel — solves the credit assignment problem when rewards are delayed past
+    summarization points. WebResummer-30B results on BrowseComp-zh (33.3%) are competitive with AgentFold (47.3%) despite
+    simpler approach. Could inform our web_research tool''s context management.
 
+    '
 - id: intake-158
   arxiv_id: '2602.06036'
   url: https://arxiv.org/abs/2602.06036
@@ -3668,7 +3507,8 @@
   - speculative_decoding
   - inference_serving
   key_claims:
-  - Block diffusion model drafts multiple tokens in parallel in a single forward pass, replacing sequential autoregressive drafting
+  - Block diffusion model drafts multiple tokens in parallel in a single forward pass, replacing sequential autoregressive
+    drafting
   - Context-aware conditioning on target model features improves draft quality and acceptance rates
   - Up to 6x lossless acceleration over autoregressive baselines, 2.5x over EAGLE-3
   - Lightweight drafter architecture adds minimal overhead
@@ -3703,21 +3543,15 @@
   handoffs_updated:
   - mtp-speculative-decoding.md
   - ssm-hybrid-acceleration.md
-  notes: >-
-    DFlash targets the EXACT model we're optimizing (Qwen3.5-35B-A3B) with
-    impressive 2.4-2.8x GPU speedups. However, CRITICAL BLOCKER: DFlash requires
-    SGLang or vLLM — NO llama.cpp support, no GGUF, no CPU inference path. The
-    block diffusion approach is fundamentally GPU-oriented (parallel denoising
-    requires batched matmuls). For our CPU-bound EPYC stack, this is not directly
-    adoptable. Our MTP-1 approach (78.5% acceptance, Step 7 pending) achieves
-    comparable projected gains (1.5-1.7x) within llama.cpp natively. DFlash
-    validates that Qwen3.5-35B-A3B is highly amenable to speculative decoding —
-    the model architecture cooperates well with draft-verify paradigms. If we
-    ever add GPU serving (vLLM/SGLang backend), DFlash becomes immediately
-    relevant. The EAGLE-3 comparison (DFlash 2.5x faster) is notable because
-    EAGLE-3 already failed on our GGUF stack (0% acceptance, intake-005). Block
-    diffusion's parallel drafting is orthogonal to tree verification — could
-    theoretically combine with our tree speculation for dense models.
+  notes: 'DFlash targets the EXACT model we''re optimizing (Qwen3.5-35B-A3B) with impressive 2.4-2.8x GPU speedups. However,
+    CRITICAL BLOCKER: DFlash requires SGLang or vLLM — NO llama.cpp support, no GGUF, no CPU inference path. The block diffusion
+    approach is fundamentally GPU-oriented (parallel denoising requires batched matmuls). For our CPU-bound EPYC stack, this
+    is not directly adoptable. Our MTP-1 approach (78.5% acceptance, Step 7 pending) achieves comparable projected gains (1.5-1.7x)
+    within llama.cpp natively. DFlash validates that Qwen3.5-35B-A3B is highly amenable to speculative decoding — the model
+    architecture cooperates well with draft-verify paradigms. If we ever add GPU serving (vLLM/SGLang backend), DFlash becomes
+    immediately relevant. The EAGLE-3 comparison (DFlash 2.5x faster) is notable because EAGLE-3 already failed on our GGUF
+    stack (0% acceptance, intake-005). Block diffusion''s parallel drafting is orthogonal to tree verification — could theoretically
+    combine with our tree speculation for dense models.'
   deep_dive: research/deep-dives/dflash-dart-diffusion-speculation.md
   deep_dive_findings:
   - Drafter IS portable to GGUF — 5-layer transformer with shared embed/LM head, 0.5B params, ~300MB Q4_K_M
@@ -3727,7 +3561,6 @@
   - Requires new llama.cpp API for per-layer hidden state extraction (5 layer taps)
   - Block-sparse attention is the hardest component but can try causal-only fallback
   - Estimated port effort 13-20 days
-
 - id: intake-159
   arxiv_id: '2601.19278'
   url: https://arxiv.org/abs/2601.19278
@@ -3769,12 +3602,9 @@
     - 10-advanced-speculative-decoding.md
     intake:
     - intake-158
-  notes: >-
-    DART is a parallel diffusion-inspired drafter similar in spirit to DFlash
-    but with N-gram-enforced tree pruning for better semantic continuity.
-    Reports 2.03x-3.44x speedups, ~30% over EAGLE-3. Same GPU-only limitation
-    as DFlash — no llama.cpp path. Less directly relevant than DFlash because
-    no Qwen3.5 model weights are published. Worth tracking as the diffusion-
+  notes: DART is a parallel diffusion-inspired drafter similar in spirit to DFlash but with N-gram-enforced tree pruning for
+    better semantic continuity. Reports 2.03x-3.44x speedups, ~30% over EAGLE-3. Same GPU-only limitation as DFlash — no llama.cpp
+    path. Less directly relevant than DFlash because no Qwen3.5 model weights are published. Worth tracking as the diffusion-
     based speculative decoding family matures.
   deep_dive: research/deep-dives/dflash-dart-diffusion-speculation.md
   deep_dive_findings:
@@ -3803,8 +3633,8 @@
   - KL divergence regularization
   reported_results:
   - 'Gemma-3-12B-IT: 3/100 refusals with KL=0.16 (vs 0.45-1.04 for prior methods)'
-  - '~45 min on RTX 3090 for Llama-3.1-8B-Instruct'
-  - '1000+ community models on HuggingFace'
+  - ~45 min on RTX 3090 for Llama-3.1-8B-Instruct
+  - 1000+ community models on HuggingFace
   novelty: medium
   relevance: none
   discovered_via: input
@@ -3813,15 +3643,11 @@
   cross_references:
     intake:
     - intake-116
-  notes: >-
-    Heretic is a polished, automatic abliteration tool that improves on manual
-    abliteration by using TPE optimization to find optimal ablation parameters
-    per-layer, co-minimizing refusals and KL divergence. The novelty is in the
-    optimization loop (Optuna + parametrized weight kernels), not the underlying
-    technique (directional ablation from Arditi et al. 2024). Related to
-    intake-116 (OBLITERATUS) but more automated and with better KL preservation.
-    Does NOT support SSMs/hybrid models — explicitly excluded. Not relevant to
-    EPYC's inference optimization focus (no throughput/latency implications).
+  notes: Heretic is a polished, automatic abliteration tool that improves on manual abliteration by using TPE optimization
+    to find optimal ablation parameters per-layer, co-minimizing refusals and KL divergence. The novelty is in the optimization
+    loop (Optuna + parametrized weight kernels), not the underlying technique (directional ablation from Arditi et al. 2024).
+    Related to intake-116 (OBLITERATUS) but more automated and with better KL preservation. Does NOT support SSMs/hybrid models
+    — explicitly excluded. Not relevant to EPYC's inference optimization focus (no throughput/latency implications).
 - id: intake-161
   arxiv_id: null
   url: https://github.com/opendataloader-project/opendataloader-pdf
@@ -3843,9 +3669,9 @@
   - Prompt injection filtering for LLM safety
   reported_results:
   - '0.90 overall accuracy (ranked #1 vs docling 0.86, marker 0.83, pymupdf4llm 0.57)'
-  - '0.93 table extraction accuracy'
-  - '0.05s/page local mode, 0.43s/page hybrid mode'
-  - '2.2k GitHub stars, 151 forks'
+  - 0.93 table extraction accuracy
+  - 0.05s/page local mode, 0.43s/page hybrid mode
+  - 2.2k GitHub stars, 151 forks
   novelty: medium
   relevance: medium
   discovered_via: input
@@ -3859,20 +3685,15 @@
     - src/services/document_preprocessor.py
     - src/services/lightonocr_server.py
     - src/services/document_chunker.py
-  notes: >-
-    OpenDataLoader PDF is a Java-based PDF parsing tool for extracting structured
-    data (Markdown, JSON with bounding boxes, HTML) from PDFs for RAG/LLM pipelines.
-    Has Python SDK and LangChain integration. Directly relevant to the orchestrator's
-    existing document processing pipeline (pdf_router.py → pdftotext/LightOnOCR →
-    document_chunker → figure_analyzer). Key potential improvements over current stack:
-    (1) XY-Cut++ reading order may outperform pdftotext for multi-column layouts,
-    (2) 0.93 table extraction accuracy vs current pipeline which has no dedicated table
-    extraction, (3) unified extraction (text + tables + figures + bboxes) vs current
-    split between pdftotext and LightOnOCR, (4) prompt injection filtering built-in
-    (hidden text, zero-size fonts). Trade-off: Java dependency (current stack is pure
-    Python + CLI tools). Could serve as alternative backend in pdf_router.py for
-    born-digital PDFs, or replace the pdftotext probe entirely. Worth benchmarking
-    against current pipeline on the orchestrator's real document workloads.
+  notes: 'OpenDataLoader PDF is a Java-based PDF parsing tool for extracting structured data (Markdown, JSON with bounding
+    boxes, HTML) from PDFs for RAG/LLM pipelines. Has Python SDK and LangChain integration. Directly relevant to the orchestrator''s
+    existing document processing pipeline (pdf_router.py → pdftotext/LightOnOCR → document_chunker → figure_analyzer). Key
+    potential improvements over current stack: (1) XY-Cut++ reading order may outperform pdftotext for multi-column layouts,
+    (2) 0.93 table extraction accuracy vs current pipeline which has no dedicated table extraction, (3) unified extraction
+    (text + tables + figures + bboxes) vs current split between pdftotext and LightOnOCR, (4) prompt injection filtering built-in
+    (hidden text, zero-size fonts). Trade-off: Java dependency (current stack is pure Python + CLI tools). Could serve as
+    alternative backend in pdf_router.py for born-digital PDFs, or replace the pdftotext probe entirely. Worth benchmarking
+    against current pipeline on the orchestrator''s real document workloads.'
   deep_dive: research/deep-dives/opendataloader-pdf-pipeline-integration.md
 - id: intake-162
   arxiv_id: null
@@ -3899,9 +3720,9 @@
   - 'BitNet-1B on NVIDIA 4090: 258 tok/s'
   - 'BitNet-1B on iPhone 16: 131 tok/s (6.2x over CPU)'
   - 'BitNet-1B on Samsung S25 Adreno: 27.2 tok/s (11.3x over CPU)'
-  - 'BitNet-13B uses 29% less VRAM than Qwen3-4B Q4 (2789 vs ~3900 MB)'
-  - 'BitNet-2B achieves 60-64% win rate vs Qwen3-1.7B Q4 via LLM-as-Judge'
-  - '99.04% same-top-token rate with KL divergence < 0.0003 vs CPU'
+  - BitNet-13B uses 29% less VRAM than Qwen3-4B Q4 (2789 vs ~3900 MB)
+  - BitNet-2B achieves 60-64% win rate vs Qwen3-1.7B Q4 via LLM-as-Judge
+  - 99.04% same-top-token rate with KL divergence < 0.0003 vs CPU
   novelty: medium
   relevance: medium
   discovered_via: input
@@ -3915,16 +3736,12 @@
     - 08-doc-to-lora-prototype.md
     code:
     - llama.cpp/src/models/bitnet.cpp
-  notes: >-
-    llama.cpp fork (based on b7248) adding Vulkan/Metal GPU backends for BitNet
-    ternary inference and LoRA training. Our epyc-llama fork already has
-    bitnet.cpp model support and TQ1_0/TQ2_0 quantization types, but lacks the
-    Vulkan GPU kernels for ternary ops that QVAC implements. The mobile GPU
-    focus (Adreno, Mali) is out of EPYC's server-side scope, but the Vulkan
-    ternary compute shaders could be cherry-picked if BitNet models become
-    production-relevant. Dynamic tiling algorithm is clever but specific to
-    mobile memory constraints (128 MiB SSBO). Related to intake-073 (edge
-    speculative decoding) and the Doc-to-LoRA handoff (08).
+  notes: llama.cpp fork (based on b7248) adding Vulkan/Metal GPU backends for BitNet ternary inference and LoRA training.
+    Our epyc-llama fork already has bitnet.cpp model support and TQ1_0/TQ2_0 quantization types, but lacks the Vulkan GPU
+    kernels for ternary ops that QVAC implements. The mobile GPU focus (Adreno, Mali) is out of EPYC's server-side scope,
+    but the Vulkan ternary compute shaders could be cherry-picked if BitNet models become production-relevant. Dynamic tiling
+    algorithm is clever but specific to mobile memory constraints (128 MiB SSBO). Related to intake-073 (edge speculative
+    decoding) and the Doc-to-LoRA handoff (08).
 - id: intake-163
   arxiv_id: null
   url: https://github.com/tetherto/qvac-rnd-fabric-llm-bitnet
@@ -3946,7 +3763,7 @@
   - 'BitNet-1B LoRA fine-tuning on iPhone 16: 1h 45m per epoch'
   - 'BitNet-1.7B LoRA on Adreno: 1h 18m per epoch'
   - 'BitNet-125M on Samsung S25: ~10 min total'
-  - 'TQ1_0 4-5x higher throughput than TQ2_0 on iPhone 16'
+  - TQ1_0 4-5x higher throughput than TQ2_0 on iPhone 16
   novelty: low
   relevance: low
   discovered_via: input
@@ -3955,19 +3772,16 @@
   cross_references:
     intake:
     - intake-162
-  notes: >-
-    Companion benchmarks/eval repo for QVAC Fabric (intake-162). Contains
-    PubMedQA evaluation scripts and cross-device performance data. The
-    benchmark methodology (LLM-as-Judge for ternary model quality) is standard.
-    Mobile-focused results not directly applicable to EPYC server workloads.
-    Interesting data point: TQ1_0 is 4-5x faster than TQ2_0 on Apple but
-    TQ2_0 is favored on Adreno — backend-specific kernel performance varies
-    significantly. Low standalone value; context for intake-162.
+  notes: 'Companion benchmarks/eval repo for QVAC Fabric (intake-162). Contains PubMedQA evaluation scripts and cross-device
+    performance data. The benchmark methodology (LLM-as-Judge for ternary model quality) is standard. Mobile-focused results
+    not directly applicable to EPYC server workloads. Interesting data point: TQ1_0 is 4-5x faster than TQ2_0 on Apple but
+    TQ2_0 is favored on Adreno — backend-specific kernel performance varies significantly. Low standalone value; context for
+    intake-162.'
 - id: intake-164
   arxiv_id: null
   url: https://huggingface.co/blog/qvac/fabric-llm-finetune-bitnet
   source_type: blog
-  title: 'LoRA Fine-Tuning BitNet b1.58 LLMs on Heterogeneous Edge GPUs via QVAC Fabric'
+  title: LoRA Fine-Tuning BitNet b1.58 LLMs on Heterogeneous Edge GPUs via QVAC Fabric
   categories:
   - quantization
   - hardware_optimization
@@ -4009,22 +3823,17 @@
     - intake-073
     handoffs:
     - 08-doc-to-lora-prototype.md
-  notes: >-
-    Detailed technical writeup of the QVAC Fabric BitNet project (intake-162).
-    Key insight for EPYC: BitNet's 1.58-bit weight representation allows ~2x
-    model size at same memory budget compared to Q4. At server scale, a
-    BitNet-13B at 2.8 GB VRAM is interesting for multi-model orchestration
-    scenarios where memory is the bottleneck. The LoRA fine-tuning with frozen
-    ternary weights is architecturally clean — adapters are FP16 overlays on
-    ternary base. However, BitNet model quality (60-64% win rate vs Q4 at
-    similar effective size) suggests quality gap remains. Our llama.cpp fork
-    has bitnet.cpp but lacks GPU ternary kernels. References Ma et al. 2024
-    (BitNet b1.58) and Wang et al. 2025 (BitNet.cpp CPU-only).
+  notes: 'Detailed technical writeup of the QVAC Fabric BitNet project (intake-162). Key insight for EPYC: BitNet''s 1.58-bit
+    weight representation allows ~2x model size at same memory budget compared to Q4. At server scale, a BitNet-13B at 2.8
+    GB VRAM is interesting for multi-model orchestration scenarios where memory is the bottleneck. The LoRA fine-tuning with
+    frozen ternary weights is architecturally clean — adapters are FP16 overlays on ternary base. However, BitNet model quality
+    (60-64% win rate vs Q4 at similar effective size) suggests quality gap remains. Our llama.cpp fork has bitnet.cpp but
+    lacks GPU ternary kernels. References Ma et al. 2024 (BitNet b1.58) and Wang et al. 2025 (BitNet.cpp CPU-only).'
 - id: intake-165
   arxiv_id: '2504.12285'
   url: https://arxiv.org/abs/2504.12285
   source_type: paper
-  title: 'BitNet b1.58 2B4T Technical Report'
+  title: BitNet b1.58 2B4T Technical Report
   categories:
   - quantization
   - hardware_optimization
@@ -4038,8 +3847,8 @@
   - Absolute mean quantization for ternary weight mapping
   - 4T token training corpus
   reported_results:
-  - 'Matches leading open-weight full-precision 2B models on language, math, coding, conversation'
-  - 'GPU and CPU inference implementations released'
+  - Matches leading open-weight full-precision 2B models on language, math, coding, conversation
+  - GPU and CPU inference implementations released
   novelty: medium
   relevance: medium
   discovered_via: expansion
@@ -4050,12 +3859,168 @@
     intake:
     - intake-162
     - intake-164
-  notes: >-
-    Microsoft's official BitNet 2B model and technical report — the model that
-    QVAC Fabric (intake-161) targets for GPU inference and LoRA fine-tuning.
-    Relevant to EPYC as a reference for ternary model quality baselines. Our
-    llama.cpp fork has bitnet.cpp architecture support and TQ1_0/TQ2_0 quant
-    types, so this model should be loadable. Key question: does BitNet quality
-    at 2B scale justify the engineering investment in GPU ternary kernels vs
-    just using Q4_K_M at the same memory budget? QVAC's benchmarks show 60-64%
-    win rate vs Q4 Qwen3-1.7B which suggests a quality gap remains.
+  notes: 'Microsoft''s official BitNet 2B model and technical report — the model that QVAC Fabric (intake-161) targets for
+    GPU inference and LoRA fine-tuning. Relevant to EPYC as a reference for ternary model quality baselines. Our llama.cpp
+    fork has bitnet.cpp architecture support and TQ1_0/TQ2_0 quant types, so this model should be loadable. Key question:
+    does BitNet quality at 2B scale justify the engineering investment in GPU ternary kernels vs just using Q4_K_M at the
+    same memory budget? QVAC''s benchmarks show 60-64% win rate vs Q4 Qwen3-1.7B which suggests a quality gap remains.'
+- id: intake-166
+  url: https://github.com/danveloper/flash-moe
+  source_type: repo
+  title: 'Flash-MoE: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro'
+  categories:
+  - moe_optimization
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - Runs Qwen3.5-397B (397B MoE) on MacBook Pro with 48GB RAM at 5.5+ t/s
+  - SSD expert streaming via parallel pread() with Direct I/O (F_NOCACHE)
+  - 2-bit expert quantization reducing model size 44% while preserving quality
+  - Hand-tuned Metal compute kernels for matmul, attention, and normalization
+  - Deferred GPU computation overlapping I/O with processing
+  - Built in 24 hours (human + AI collaboration), 142 commits
+  techniques:
+  - SSD expert streaming (parallel pread)
+  - 2-bit MoE expert quantization
+  - Metal compute kernels
+  - Deferred GPU computation (I/O overlap)
+  - Direct I/O (F_NOCACHE) bypassing OS page cache
+  - Accelerate BLAS for linear attention layers
+  reported_results:
+  - 5.55 t/s best config (2-bit experts, K=4 activation) on M3 Max 48GB
+  - 7.05 t/s peak single token (warm cache)
+  - 44% model size reduction from 2-bit expert quantization
+  references:
+  - Apple LLM in a Flash (arxiv:2312.11514)
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-03-18'
+  cross_references:
+    intake:
+    - intake-167
+    - intake-168
+    handoffs:
+    - ssm-hybrid-acceleration.md
+  notes: 'Pure C/Objective-C + Metal inference engine. Key innovation is SSD expert streaming: inactive MoE experts are stored
+    on disk and loaded on demand via parallel pread() with F_NOCACHE (Direct I/O), overlapping I/O with GPU computation. 2-bit
+    expert quantization uses grouped affine quantization (group_size=64, RMSE 0.0017-0.0023 vs full precision, no perplexity
+    data reported). Reduces the 397B model to fit in 48GB SSD streaming budget. For EPYC: our 397B at Q4_K_XL (~205GB)
+    fits in server RAM so SSD streaming isn''t immediately needed, but the 2-bit quant concept could reduce memory footprint
+    to ~100GB, freeing RAM for multi-model orchestration. Metal kernels are Apple-specific and not transferable. The I/O overlap
+    pattern (deferred GPU compute while loading next expert) is architecturally interesting for any offloading scenario.
+    Transferable insight: removing app-level weight caching for OS page cache gave 38% speedup — surfaced multi-model page cache
+    contention opportunity for our ~650GB mmap serving stack (see multi-model-page-cache.md handoff). No pure-attention MoE in our
+    production stack, so SpecMoEOff-style speculation+offloading is inapplicable. Inspired by Apple''s LLM in a Flash
+    (arxiv:2312.11514).'
+  arxiv_id: null
+- id: intake-167
+  arxiv_id: '2601.17063'
+  url: https://arxiv.org/abs/2601.17063
+  source_type: paper
+  title: 'FlashMoE: Reducing SSD I/O Bottlenecks via ML-Based Cache Replacement for MoE Inference on Edge Devices'
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  key_claims:
+  - ML-based cache replacement combining recency and frequency signals for expert reuse
+  - SSD offloading architecture for memory-constrained MoE inference
+  - Up to 51% cache hit rate improvement over LRU/LFU
+  - Up to 2.6x speedup versus existing MoE inference systems
+  techniques:
+  - ML-based expert cache replacement (adaptive recency + frequency)
+  - SSD expert offloading
+  reported_results:
+  - 51% cache hit improvement over LRU/LFU
+  - 2.6x speedup over existing MoE inference systems
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-166
+  verdict: worth_investigating
+  ingested_date: '2026-03-18'
+  cross_references:
+    intake:
+    - intake-166
+    - intake-168
+  notes: 'Academic treatment of the same problem space as flash-moe (intake-166): SSD-based expert offloading for MoE models.
+    Key differentiator is the ML-based cache replacement policy (vs simple LRU) that predicts which experts to keep in RAM.
+    The 51% cache hit improvement is significant — it means fewer SSD reads per token. For EPYC: if we ever need to run 397B
+    on a memory-constrained node, this caching strategy would be more sophisticated than naive eviction. Published January
+    2026.'
+- id: intake-168
+  arxiv_id: '2508.21706'
+  url: https://arxiv.org/abs/2508.21706
+  source_type: paper
+  title: 'SpecMoEOff: Accelerating MoE Inference by Hiding Offloading Latency with Speculative Decoding'
+  categories:
+  - moe_optimization
+  - speculative_decoding
+  key_claims:
+  - Combines speculative decoding with expert offloading to hide I/O latency
+  - Roofline analysis for GPU/CPU orchestration
+  - Custom CPU chunked attention verification kernel
+  - Automated hyperparameter tuning for speculative decoding parameters
+  techniques:
+  - Speculative decoding to enlarge per-expert workload
+  - Expert offloading with I/O latency hiding
+  - CPU chunked attention verification kernel
+  - Automated spec-decode hyperparameter tuning
+  reported_results:
+  - 2.5x decode throughput over state-of-the-art MoE offloading
+  novelty: high
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-166
+  verdict: worth_investigating
+  ingested_date: '2026-03-18'
+  cross_references:
+    intake:
+    - intake-166
+    - intake-167
+    handoffs:
+    - ssm-hybrid-acceleration.md
+  notes: 'Interesting combination of two techniques we''ve explored separately: speculative decoding and MoE optimization.
+    The key insight is that speculative decoding generates multiple tokens to verify at once, which means each expert processes
+    a larger batch — amortizing the offload latency. For EPYC: our SSM-hybrid models block speculation (0.56x with MTP), so
+    this combined approach wouldn''t help Qwen3.5 specifically. Confirmed inapplicable: ALL Qwen3 MoE models in our production
+    stack are hybrid Delta Net (Qwen3.5-35B-A3B, Qwen3-Next-80B-A3B) or pure MoE where speculation already tested and failed
+    (MoE self-draft 0.50-0.72x). No pure-attention MoE models in stack — SpecMoEOff is a dead end for current models. Would
+    only become relevant if non-hybrid MoE models are added to production. The CPU chunked attention kernel is interesting
+    for our CPU-first inference stack. Published August 2025.'
+- id: intake-169
+  arxiv_id: '2312.11514'
+  url: https://arxiv.org/abs/2312.11514
+  source_type: paper
+  title: 'LLM in a Flash: Efficient Large Language Model Inference with Limited Memory'
+  categories:
+  - hardware_optimization
+  - moe_optimization
+  key_claims:
+  - Flash memory-based LLM inference for memory-constrained devices
+  - Windowing technique reduces data transfer by reusing activated neurons
+  - Row-column bundling optimized for sequential flash access patterns
+  - 4-5x CPU speedup, 20-25x GPU speedup via sparsity-aware loading
+  techniques:
+  - Flash memory weight streaming
+  - Windowing (neuron reuse across tokens)
+  - Row-column bundling (sequential access optimization)
+  - Sparsity-aware context-adaptive loading
+  reported_results:
+  - 4-5x inference speedup on CPU
+  - 20-25x inference speedup on GPU
+  novelty: medium
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-166
+  verdict: worth_investigating
+  ingested_date: '2026-03-18'
+  cross_references:
+    intake:
+    - intake-166
+  notes: 'Apple''s foundational 2023 paper on flash storage-based LLM inference. Inspired flash-moe (intake-166). The windowing
+    and row-column bundling techniques are specific to Apple''s flash storage architecture. The sparsity-aware loading concept
+    is the most transferable idea: only load neurons/experts predicted to be active. For EPYC: low direct relevance since
+    we operate with sufficient DRAM, but the theoretical framework for I/O-aware inference planning is sound. Published at
+    ACL 2024.'

@@ -79,6 +79,9 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 - **MoE self-draft** — Not viable.
 - **MTP-1** — Not viable on hybrid (0.56x).
 
+### Memory Management
+- **Multi-model page cache optimization** — [`multi-model-page-cache.md`](multi-model-page-cache.md). ~650GB mmap'd models may cause page cache contention. 5 experiments: baseline residency, mlock for hot models, page-in verification, NUMA hard binding, cooldown tuning.
+
 ### Deferred
 - **DFlash on f16 targets** — Could work with full-precision hidden states, but not practical on CPU.
 - **DFlash tree composition** — Blocked by DFlash viability on quantized models.

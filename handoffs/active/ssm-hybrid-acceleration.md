@@ -626,6 +626,7 @@ Implemented standalone MTP speculation loop (`tools/mtp-speculation/`). New APIs
 - **[intake-168] "SpecMoEOff: Hiding Offloading Latency with Speculative Decoding"** (arxiv:2508.21706)
   - Relevance: Combines speculative decoding with expert offloading — speculation generates multi-token batches to amortize I/O latency
   - Delta: Would NOT help our hybrid models (speculation yields 0.56x), but applicable to pure-attention MoE candidates
+  - **Confirmed inapplicable**: No pure-attention MoE models in our production stack. ALL Qwen3 MoE variants are hybrid Delta Net (recurrent-dominated). SpecMoEOff is a dead end for current models.
 
 ## Closeout
 
