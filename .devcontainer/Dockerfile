@@ -5,6 +5,8 @@
 # - Passwordless sudo for the non-root user
 # - NO firewall / network restrictions (internet enabled)
 # - tmux installed
+# - C++ build tools (cmake, g++) for llama.cpp compilation
+# - NUMA support (numactl, privileged mode)
 
 ARG NODE_IMAGE=node:22-bookworm-slim
 FROM ${NODE_IMAGE} AS node
@@ -80,11 +82,15 @@ COPY --from=node /usr/local/ /usr/local/
 RUN node -v && npm -v
 
 # Ensure git worktrees use relative paths by default.
+# Wildcard safe.directory: all bind-mounted repos are trusted.
 RUN git config --system worktree.useRelativePaths true \
   && git config --system --add safe.directory '*'
 
-RUN if ! id -u "node" >/dev/null 2>&1; then \
-    useradd -m -s /usr/bin/fish "node"; \
+# Match host UID (1000) to avoid file ownership conflicts on bind mounts.
+# Ubuntu 25.10 has a default 'ubuntu' user at uid 1000 — remove it first.
+RUN userdel -r ubuntu 2>/dev/null || true; \
+  if ! id -u "node" >/dev/null 2>&1; then \
+    useradd -u 1000 -m -s /usr/bin/fish "node"; \
   fi
 
 # Ensure default node user has access to the global npm prefix.

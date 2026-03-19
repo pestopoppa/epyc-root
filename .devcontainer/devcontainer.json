@@ -49,6 +49,13 @@
     "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly"
   ],
   "privileged": true,
+  "runArgs": [
+    "--shm-size=16g",
+    "--network=host",
+    "--pid=host",
+    "--ipc=host",
+    "--ulimit", "memlock=-1:-1"
+  ],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
