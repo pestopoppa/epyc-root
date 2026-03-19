@@ -2033,3 +2033,8 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-18T23:30:00Z] TASK_START description="Final documentation update" reasoning="Persist all S5, sweep, quant findings to handoffs, progress, memory"
 [2026-03-18T23:45:00Z] TASK_END description="Final documentation update" status="success"
 [2026-03-18T23:45:00Z] SESSION_END summary="Session 2026-03-18d COMPLETE. NUMA 4-way (6-7x MoE), DFlash verified correct (not viable Q4KM), full Qwen3.5 hybrid sweep (all ~12 t/s), quant scaling (Q4 preferred), S3-S5 complete. 14 benchmark scripts, 8 data dirs, comprehensive handoff updates."
+[2026-03-19T00:00:00Z] SESSION_START purpose="Page cache optimization (S1-S3)"
+[2026-03-19T00:05:00Z] TASK_END description="S1: Baseline page residency" status="success" result="480B cold-start=185s (!), 235B=7.3s, 30B=7.9s. 480B lost 37GB RSS when 30B loaded. System at 867/1100GB."
+[2026-03-19T00:20:00Z] TASK_END description="S3: Page-in verification" status="success" result="480B: 14.5x improvement (185s→12.7s). But zero-sum: paging in 480B evicts 235B pages."
+[2026-03-19T00:30:00Z] TASK_END description="S2: mlock test" status="inconclusive" result="VmLck=0 — container lacks CAP_IPC_LOCK. Needs bare-metal."
+[2026-03-19T00:30:00Z] FINDING description="Page cache contention is real. Root cause: ~508GB models in ~1.1TB RAM. Page-in helps individual models but is zero-sum. Recommend: load order optimization, page-in health checks, mlock on bare metal, consider 397B hybrid to replace 480B."
