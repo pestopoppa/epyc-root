@@ -1,6 +1,6 @@
 # Handoff: Multi-Model Page Cache Optimization
 
-**Status**: S1-S3 COMPLETE (2026-03-19). **480B cold-start = 185s** (page cache eviction). Page-in verification gives 14.5x improvement but is zero-sum at current memory pressure. mlock blocked in container. Root cause: ~508 GB models in ~1.1 TB RAM.
+**Status**: S1-S3 COMPLETE, **S2 CONFIRMED** (2026-03-19). **480B cold-start = 185s** (page cache eviction). Page-in verification gives 14.5x improvement but is zero-sum at current memory pressure. **mlock WORKS: frontdoor stays 250ms after 380 GB of other models load (vs 7.9s without mlock).** Root cause: ~508 GB models in ~1.1 TB RAM.
 **Created**: 2026-03-19
 **Priority**: MEDIUM — potential latency reduction for multi-model concurrent serving
 **Blocks**: None
@@ -204,11 +204,34 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 
 **Key finding**: Page-in helps the 480B dramatically (14.5x) but paging in 480B (252 GB) evicts 235B pages. The system is at capacity — touching one model's pages evicts another's. **This is a zero-sum game at current memory pressure (~508 GB models in 1.1 TB).**
 
-### S2 Results: mlock INCONCLUSIVE
+### S2 Results: mlock CONFIRMED WORKING
 
-`--mlock` did NOT actually lock pages (VmLck = 0.00 GB) — container lacks `CAP_IPC_LOCK`. Would need bare-metal testing. Lower latency in S2 was due to less total memory pressure (only 2 models vs 3).
+**Container rebuilt with `--ulimit memlock=-1:-1` + privileged mode. mlock now works.**
 
-### S4: SKIPPED — `numactl --membind` blocked in container (same as NUMA benchmarks).
+**Setup**: Frontdoor (30B) loaded FIRST with `--mlock`, then 480B (250 GB) and 235B (130 GB) loaded without mlock. Total: 380 GB of models competing for page cache after frontdoor.
+
+**mlock verification**:
+- VmLck = **17.60 GB** (vs 0.00 GB in previous attempt) — pages actually locked
+- RSS = 83.16 GB, stable across all 3 phases — never evicted
+
+**Latency comparison (frontdoor)**:
+
+| Phase | Latency | Notes |
+|-------|---------|-------|
+| warm-baseline (no competition) | 264 ms | Clean system, only frontdoor loaded |
+| post-480B (250 GB loaded) | 254-266 ms | **No degradation** |
+| post-all (380 GB loaded) | **250-261 ms** | **No degradation** |
+| S1 reference (no mlock) | 7,897 ms cold | 30x worse without mlock |
+
+**Unlocked models still show cold-start issues**:
+- 480B post-all-1: 9,079 ms (cold), post-all-2: 2,688 ms (warming)
+- 235B post-all-1: 8,865 ms (cold), post-all-2: 1,292 ms (warming)
+
+**Conclusion**: `--mlock` completely eliminates page cache eviction for the locked model. The 17.5 GB cost is trivial in a 1.1 TB system. This is the strongest mitigation tested — unlike page-in verification (S3), mlock is not zero-sum.
+
+### S4: Previously blocked, now available
+
+`numactl --membind` works in rebuilt container (privileged mode). However, existing NUMA research (2026-03-18d) already validates taskset + first-touch as effective (6-7x gains). S4 deferred — mlock (S2) addresses the page cache problem more directly than binding strategy.
 
 ### S5: SKIPPED — lower priority than S1-S3. Cooldown tuning unlikely to help when the fundamental issue is total model size (~508 GB) approaching system RAM (~1.1 TB) with competing page cache demands.
 
@@ -217,10 +240,11 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 1. **Page cache contention is a real production problem** — 480B cold-start of 185 seconds is catastrophic
 2. **Page-in verification helps dramatically** for individual models (14.5x for 480B) but is zero-sum at current memory pressure
 3. **Root cause is total model footprint (~508 GB) with only ~1.1 TB RAM** — any model loading evicts other models' cached pages
-4. **Actionable mitigations**:
+4. **mlock is the strongest mitigation** — completely eliminates eviction for locked models (30x improvement vs no mlock), NOT zero-sum unlike page-in verification
+5. **Actionable mitigations** (updated priority order):
+   - **`--mlock` for latency-critical models** (CONFIRMED): Lock frontdoor (17.5 GB) + ingest (~46 GB) = 63.5 GB locked. Cost is trivial in 1.1 TB system. Requires `ulimit -l unlimited` (set via `--ulimit memlock=-1:-1` in container or sysctl on bare metal). **Frontdoor latency: 250ms stable vs 7,900ms without mlock.**
    - **Load order matters**: Load the largest model FIRST, smallest last (smallest gets evicted least)
-   - **Page-in verification as health check**: Touch all pages after load, before adding to routing pool. Cost: ~26s for 480B — acceptable one-time startup cost.
-   - **mlock for critical models**: Lock frontdoor (17.5 GB) + ingest (46 GB) to prevent eviction. Needs bare-metal `CAP_IPC_LOCK`.
+   - **Page-in verification as health check**: Touch all pages after load, before adding to routing pool. Cost: ~26s for 480B — acceptable one-time startup cost. Use for unlocked models.
    - **Reduce concurrent model count**: If possible, don't load all 5 models simultaneously. Load architect models on-demand (cold-start of 7-12s is acceptable for non-interactive roles).
    - **Consider replacing 480B with 397B hybrid**: Qwen3.5-397B-A17B (205 GB) at 12.4 t/s is 3.6x faster than 480B (3.4 t/s) and saves 45 GB of memory pressure. Quality eval needed.
 
@@ -228,8 +252,8 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 
 - [x] S1: Baseline residency measured for 3 production models (480B, 235B, 30B)
 - [x] S1: Cold vs warm latency delta quantified — 480B: 185s cold → 8ms warm
-- [x] S2: mlock blocked in container (VmLck=0, needs CAP_IPC_LOCK)
+- [x] S2: **mlock CONFIRMED** — VmLck=17.6 GB, frontdoor 250ms stable after 380 GB loaded (30x vs no mlock)
 - [x] S3: Page-in verification — 14.5x improvement for 480B, but zero-sum with other models
-- [x] S4: SKIPPED — numactl --membind blocked in container
+- [x] S4: Deferred — numactl --membind now works but existing NUMA research covers binding strategy
 - [ ] S5: SKIPPED — low priority given root cause analysis
 - [x] Results published in progress notes

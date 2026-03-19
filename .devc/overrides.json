@@ -1,0 +1,14 @@
+{
+  "privileged": true,
+  "runArgs": [
+    "--shm-size=16g",
+    "--network=host",
+    "--pid=host",
+    "--ipc=host",
+    "--ulimit", "memlock=-1:-1"
+  ],
+  "containerEnv": {
+    "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin",
+    "OMP_NUM_THREADS": null
+  }
+}

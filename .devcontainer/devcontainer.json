@@ -48,14 +48,6 @@
     "source=gh-config,target=/home/node/.config/gh,type=volume",
     "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly"
   ],
-  "privileged": true,
-  "runArgs": [
-    "--shm-size=16g",
-    "--network=host",
-    "--pid=host",
-    "--ipc=host",
-    "--ulimit", "memlock=-1:-1"
-  ],
   "containerEnv": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
@@ -63,5 +55,14 @@
     "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin"
   },
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "privileged": true,
+  "runArgs": [
+    "--shm-size=16g",
+    "--network=host",
+    "--pid=host",
+    "--ipc=host",
+    "--ulimit",
+    "memlock=-1:-1"
+  ]
 }
