@@ -229,9 +229,19 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 
 **Conclusion**: `--mlock` completely eliminates page cache eviction for the locked model. The 17.5 GB cost is trivial in a 1.1 TB system. This is the strongest mitigation tested — unlike page-in verification (S3), mlock is not zero-sum.
 
-### S4: Previously blocked, now available
+### S4 Results: NUMA Binding — No Measurable Difference
 
-`numactl --membind` works in rebuilt container (privileged mode). However, existing NUMA research (2026-03-18d) already validates taskset + first-touch as effective (6-7x gains). S4 deferred — mlock (S2) addresses the page cache problem more directly than binding strategy.
+Tested 3 memory binding strategies with 235B on node1 as cross-NUMA pressure:
+
+| Config | P50 | P95 | P99 | Mean | NUMA placement |
+|--------|-----|-----|-----|------|---------------|
+| A: taskset only (first-touch) | 922ms | 1091ms | 4415ms | 1009ms | N0=83.11 GB, N1=0.01 GB |
+| B: numactl --preferred=0 | 936ms | 1101ms | 4360ms | 1022ms | N0=83.11 GB, N1=0.01 GB |
+| C: numactl --membind=0 | 912ms | 1075ms | 4285ms | 996ms | N0=83.11 GB, N1=0.01 GB |
+
+**All configs within noise (~2-3%)**. NUMA page placement is identical — first-touch already puts all pages on the local node when CPUs are pinned via taskset. Hard binding (`--membind`) adds no measurable benefit for models that fit on a single NUMA node.
+
+**Conclusion**: `taskset` alone (current production default) is sufficient. No need to add `numactl --membind` complexity.
 
 ### S5: SKIPPED — lower priority than S1-S3. Cooldown tuning unlikely to help when the fundamental issue is total model size (~508 GB) approaching system RAM (~1.1 TB) with competing page cache demands.
 
@@ -254,6 +264,6 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 - [x] S1: Cold vs warm latency delta quantified — 480B: 185s cold → 8ms warm
 - [x] S2: **mlock CONFIRMED** — VmLck=17.6 GB, frontdoor 250ms stable after 380 GB loaded (30x vs no mlock)
 - [x] S3: Page-in verification — 14.5x improvement for 480B, but zero-sum with other models
-- [x] S4: Deferred — numactl --membind now works but existing NUMA research covers binding strategy
+- [x] S4: **No difference** — membind/preferred/first-touch all within 2-3% noise, identical NUMA placement
 - [ ] S5: SKIPPED — low priority given root cause analysis
 - [x] Results published in progress notes
