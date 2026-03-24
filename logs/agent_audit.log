@@ -2038,3 +2038,33 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-19T00:20:00Z] TASK_END description="S3: Page-in verification" status="success" result="480B: 14.5x improvement (185s→12.7s). But zero-sum: paging in 480B evicts 235B pages."
 [2026-03-19T00:30:00Z] TASK_END description="S2: mlock test" status="inconclusive" result="VmLck=0 — container lacks CAP_IPC_LOCK. Needs bare-metal."
 [2026-03-19T00:30:00Z] FINDING description="Page cache contention is real. Root cause: ~508GB models in ~1.1TB RAM. Page-in helps individual models but is zero-sum. Recommend: load order optimization, page-in health checks, mlock on bare metal, consider 397B hybrid to replace 480B."
+[2026-03-20T12:00:00Z] SESSION_START purpose="Research intake: MathSmith (AAAI 2026) + benchmark dataset collection + formalizer eval handoff"
+[2026-03-20T12:05:00Z] TASK_START description="Research intake: MathSmith repo (github.com/Jasaxion/MathSmith)" reasoning="Process AAAI 2026 paper through intake pipeline, cross-reference against existing MathSmith integration"
+[2026-03-20T12:10:00Z] TASK_END description="Research intake: MathSmith" status="success" result="intake-170 added. Novelty=low, relevance=medium, verdict=already_integrated. MathSmith-Hard already deployed as math_formalizer. New: HC variant, 1.7B-32B models, GRPO reward docs."
+[2026-03-20T12:15:00Z] TASK_START description="Collect AIME2024/2025 + OlympiadBench benchmark datasets" reasoning="High-signal competition-level math benchmarks for formalizer A/B testing and autopilot refinement"
+[2026-03-20T12:30:00Z] TASK_END description="Collect benchmark datasets" status="success" result="Added aime suite (60q: AIME2024+2025, exact_match) and olympiadbench suite (674q, substring). Pool rebuilt: 57,182q across 25 suites."
+[2026-03-20T12:35:00Z] TASK_START description="Deep dive MathSmith canonicalizer proposal staleness" reasoning="Assess MATHSMITH_CANONICALIZER_PROPOSAL.md — 3+ months old, formalizer is deployed but proposal never formalized as handoff"
+[2026-03-20T12:45:00Z] TASK_END description="Deep dive canonicalizer proposal" status="success" result="Formalizer fully deployed (Phase 4 Done). Q4_K_M at 14.2 t/s (normal). Q8_0 speed bug (3.3 t/s) never root-caused. forbid:speculative_decoding stale. No A/B formalize-then-solve test exists. HC variant updated 9 days ago."
+[2026-03-20T12:50:00Z] TASK_START description="Create handoff: MathSmith HC formalizer eval + A/B testing" reasoning="Formalize next steps: HC model download, spec decode validation, A/B benchmark on AIME+OlympiadBench"
+[2026-03-20T12:55:00Z] TASK_END description="Create handoff" status="success" result="handoffs/active/mathsmith-hc-formalizer-eval.md created (5 steps: S1-S5). Added to inference-acceleration-index.md."
+[2026-03-20T12:55:00Z] SESSION_END summary="Session 2026-03-20c: Research intake (MathSmith AAAI 2026, intake-170), 2 benchmark suites added (AIME 60q + OlympiadBench 674q, pool now 57,182q/25 suites), canonicalizer deep dive (deployed but HC upgrade warranted), new handoff created."
+[2026-03-20T$(date +%H:%M:%S%z)] SESSION_START | Research intake: FormalQualBench + OpenGauss deep dive + handoff restructuring
+[2026-03-20T$(date +%H:%M:%S%z)] TASK | research-intake | 3 URLs processed (intake-171 to intake-173) | success
+[2026-03-20T$(date +%H:%M:%S%z)] TASK | deep-dive | OpenGauss architecture analysis (10 patterns identified) | success
+[2026-03-20T$(date +%H:%M:%S%z)] TASK | handoff-restructure | Split hermes-agent-integration.md → 3 focused handoffs | success
+[2026-03-20T$(date +%H:%M:%S%z)] TASK | handoff-enrich | Two-layer memory architecture + deterministic override flags | success
+[2026-03-20T$(date +%H:%M:%S%z)] TASK | progress-update | Updated 2026-03-20.md session 2026-03-20b | success
+[2026-03-20T$(date +%H:%M:%S%z)] SESSION_END | All tasks completed
+[2026-03-20T18:00:00Z] SESSION_START purpose="Research intake: BackLite (moonmath.ai) + nanochat PR #633"
+[2026-03-20T18:02:00Z] TASK_START description="Research intake: BackLite blog + repo + nanochat PR" reasoning="Process 3 URLs through intake pipeline — sparse backward-pass training acceleration"
+[2026-03-20T18:05:00Z] TASK_END description="Research intake: BackLite" status="success" result="4 entries added (intake-177 to intake-180). All verdict=not_applicable. Training-only optimization (H100 FA3), EPYC is CPU inference. Expansion: LiteAttention (arXiv:2511.11062) discovered."
+[2026-03-20T18:06:00Z] FINDING description="BackLite: dynamic attention sparsity for backward pass. 2.10% training speedup on nanochat GPT-2, gradient cosine >0.99 at >50% sparsity. Elegant approach but requires H100+FA3, not transferable to CPU inference."
+[2026-03-20T18:07:00Z] SESSION_END summary="Session 2026-03-20e: Research intake (BackLite + nanochat PR #633 + LiteAttention expansion). 4 entries (intake-177 to 180), all not_applicable. Training-only GPU optimization, no EPYC relevance."
+[2026-03-24T11:00:00Z] SESSION_START purpose="Coder quant quality benchmarks: Claude-as-Judge scoring for Q8_0 and f16"
+[2026-03-24T11:01:00Z] TASK_START description="Score Q8 and f16 coder benchmark responses" reasoning="122 responses (61 per model) need Claude-as-Judge scoring to complete coder quant decision matrix"
+[2026-03-24T11:15:00Z] TASK_END description="Score Q8 and f16 responses" status="success" result="Q8: 136/183 raw (74.3%), 47/61 pass (77%). f16: 133/183 raw (72.7%), 45/61 pass (74%). Written to coder_escalation_{q8,f16}_baseline.csv"
+[2026-03-24T11:16:00Z] FINDING description="Coder quant quality: f16 offers ZERO improvement over Q4KM (identical 74% pass, identical 133/183 raw). Q8 gains only +2 questions at 24% speed cost. Quality ceiling is model architecture, not quantization. All three quants score identically on instruction_precision (20/33)."
+[2026-03-24T11:17:00Z] DECISION description="Q4_K_M confirmed as optimal coder_escalation quant" reasoning="Same quality as f16, 1.7x faster, 3.5x less RAM. Saves 186 GB across 4 NUMA instances."
+[2026-03-24T11:18:00Z] TASK_START description="Update documentation and push" reasoning="Update RESULTS.md, handoffs, orchestrator_stack.py comments, model_registry check, progress report"
+[2026-03-24T11:20:00Z] TASK_END description="Update documentation and push" status="success" result="RESULTS.md updated with quality scores. numa-orchestrator-deployment.md decision matrix complete. orchestrator_stack.py stale comments fixed. rebuild_summary.py fixed for legacy JSON."
+[2026-03-24T11:21:00Z] SESSION_END summary="Session 2026-03-24a: Coder quant quality benchmarks complete. Q4_K_M confirmed optimal (74% quality = f16, 1.7x faster, 3.5x less RAM). All docs updated, committed, pushed."

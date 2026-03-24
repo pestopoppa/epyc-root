@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-03-18
+**Updated**: 2026-03-21
 
 ## Agent Operating Instructions
 
@@ -18,11 +18,13 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md) | **READY TO DEPLOY** | NUMA 4-way parallel + taskset | All production models | **6.7x frontdoor** | Implement in orchestrator_stack.py |
+| [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md) | **DEPLOYED + SWEEP VERIFIED** | NUMA 4-way parallel + taskset | All production models | **6.7x frontdoor** | Update registry with verified params, round-robin routing, worker replacement |
 | [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED** — C++ verified correct | DFlash block diffusion | MoE (frontdoor) | 27% per-token, block 1.4% (expected) | NOT VIABLE on Q4_K_M |
 | [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | **Phase 7 COMPLETE** — NUMA 4-way validated | DySpec tree, draft_max, NUMA parallel | **6-7x via NUMA 4-way** on ≤65GB models | +19.4% dm, 6.7x NUMA | See deployment handoff |
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **COMPREHENSIVE** — S2-S5 + sweep + quant | NUMA parallel, quant scaling | Hybrid (Qwen3.5) | **6.9x 35B-A3B**, ~12 t/s ceiling all others | See deployment handoff |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
+| [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
+| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **READY — model downloaded** | REAP expert pruning (permanent) | MoE (Qwen3-Coder-30B-A3B) | TBD (25% near-lossless per paper) | Add registry entry, sweep draft_max/p_split, then quality benchmark |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
 
@@ -46,7 +48,7 @@ Using all 192 threads is ANTI-OPTIMAL — cross-NUMA memory access penalty reduc
 |-------|------|------|--------|----------------|---------|
 | 30B-A3B Q4KM | frontdoor | 16 GB | 14.2 t/s | **95.8 t/s** (4×48t) | **6.7x** |
 | 35B-A3B Q4KM | hybrid | 19 GB | 7.25 t/s | **49.7 t/s** (4×48t) | **6.9x** |
-| 32B f16 | coder_esc | 65 GB | 4.11 t/s | **26.4 t/s** (4×48t) | **6.4x** |
+| 32B Q4KM | coder_esc | 18.5 GB | 10.8 t/s | **43.3 t/s** (4×48t) | **4.0x** |
 | 235B-A22B Q4KM | architect | 130 GB | 5.19 t/s | **7.87 t/s** (1×96t) | **1.5x** |
 | 480B-A35B Q4KM | coding | 250 GB | 3.36 t/s | **4.08 t/s** (1×96t) | **1.2x** |
 
@@ -57,16 +59,20 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 1. ✅ **NUMA tests COMPLETE** — S2 (6.9x), T5 (6.4x), T6 (+41%), production sweep + full Qwen3.5 sweep done
 2. ✅ **DFlash investigation CONCLUDED** — C++ verified correct. Not viable on Q4_K_M.
 3. ✅ **draft_max changes applied** to model_registry.yaml
-4. **DEPLOY NUMA-aware orchestrator** — launch 4×48t for frontdoor MoE, round-robin routing
+4. ✅ **NUMA-aware orchestrator DEPLOYED** (2026-03-19) — taskset pinning, model swaps (frontdoor→Qwen3.5-35B, architect→Qwen3.5-122B)
 5. ✅ **S3 DONE** — ALL draft configs net negative on NUMA 4-way hybrid
 6. ✅ **S5 Phase 1 DONE** — Prefill pipeline ceiling ~8%, not worth C++ cost
 7. ✅ **Qwen3.5 full sweep** — All hybrids converge to ~12 t/s decode. Only 35B-A3B MoE benefits from NUMA 4-way.
 8. ✅ **Quant scaling** — Q4_K_M preferred: Q8 costs 17-39% speed on hybrids
+9. ✅ **Coder quant quality benchmarks** (2026-03-24) — Q4KM = f16 quality (74%), confirmed optimal. Saves 186 GB RAM.
+10. **Round-robin routing** — multi-instance frontdoor/coder need request distribution (src/ changes required)
+11. **Benchmark 35B NUMA 4-way with moe6+lookup** — verify aggregate throughput under production accel config
+12. **Worker NUMA configs** — explore/vision still need NUMA pinning tuning
 
 ## Active Work Streams
 
-### Highest Impact — Ready to Deploy
-- **NUMA 4-way parallel** — 6-7x aggregate throughput for models ≤65GB. Config-only: `taskset` CPU pinning + round-robin routing. Validated on 5 models (S2, T5, production sweep). **Requires orchestrator changes.**
+### Highest Impact — Deployed
+- **NUMA 4-way parallel** — DEPLOYED 2026-03-19. taskset CPU pinning in orchestrator_stack.py. Model swaps: frontdoor→Qwen3.5-35B (moe6+lu), architect→Qwen3.5-122B (moe8+spec+lu). **Remaining: round-robin routing (src/ changes).**
 - **draft_max optimization** — +17-21% via `--draft-max 32-48`. Already applied to model_registry.yaml.
 
 ### Validated & Complete
@@ -132,15 +138,17 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | NUMA parallel is the answer |
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
 
-## Production Model Stack — NUMA-Optimized
+## Production Model Stack — NUMA-Optimized (Deployed 2026-03-19)
 
-| Role | Model | Size | NUMA Config | Best t/s | vs Naive 192t | Spec |
-|------|-------|------|------------|---------|---------------|------|
-| frontdoor | Qwen3-Coder-30B-A3B Q4KM | 16 GB | **4×48t** | **95.8 agg** | **6.7x** | AR 0.75B, dm=32 |
-| coder_escalation | Qwen2.5-Coder-32B f16 | 65 GB | **4×48t** | **26.4 agg** | **6.4x** | AR 0.5B, dm=32 |
-| architect_general | Qwen3-235B-A22B Q4KM | 130 GB | **1×96t node0** | **7.87** | **1.5x** | AR 0.6B, dm=32 |
-| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0 tree** | **3.82** (tree) / **3.50** (linear) | **1.41x** (tree+NUMA) | AR 0.75B, dm=48, ps=0.05, kv-unified |
-| ingest_long_context | Qwen3-Next-80B-A3B | ~40 GB | **4×48t** (est) | TBD | est 6x | HYBRID — no spec viable |
+| Role | Model | Size | NUMA Config | Best t/s | Accel | Notes |
+|------|-------|------|------------|---------|-------|-------|
+| frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **~19.6/inst, ~78 agg** | moe6+lookup | NEW: swapped from 30B-A3B, mlock enabled |
+| coder_escalation | Qwen2.5-Coder-32B f16 | 65 GB | **4×48t** | **26.4 agg** | AR 0.5B, dm=32 | unchanged |
+| architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **12.6** | moe8+spec_q8_k8+lookup | NEW: swapped from 235B, saves 64 GB |
+| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0 tree** | **3.82** | AR 0.75B, dm=48, ps=0.05 | unchanged |
+| ingest_long_context | Qwen3-Next-80B-A3B Q4KM | 46 GB | **1×96t node0** | **~12** | none (SSM) | mlock enabled |
+
+**Total footprint**: ~701 GB (with multi-instance copies). Saves ~64 GB vs previous stack (235B replaced by 122B).
 
 ## Global Test Matrix
 
@@ -182,15 +190,15 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | D6-D7 | CANCELLED | DFlash not viable |
 | S1 | DEFERRED | NUMA prefill pipeline (infrastructure-heavy) |
 
-### Next Priority: Deploy NUMA-Aware Orchestrator
+### Next Priority: Complete NUMA Deployment
 
-1. **Implement NUMA-pinned launching** in `epyc-orchestrator/scripts/server/orchestrator_stack.py`
-   - frontdoor (30B, 16GB): 4×48t instances → 95.8 t/s aggregate
-   - coder_escalation (32B f16, 65GB): 4×48t instances → 26.4 t/s aggregate
-   - architect_general (235B, 130GB): 1×96t node0 → 7.87 t/s
-   - architect_coding (480B, 250GB): 1×96t node0 → 4.08 t/s (T6 may refine)
-2. **Add round-robin routing** for multi-instance models
-3. **Update model_registry.yaml** with NUMA configs
+1. ✅ **NUMA-pinned launching DEPLOYED** in `orchestrator_stack.py` (2026-03-19)
+   - frontdoor (Qwen3.5-35B, 20GB): 4×48t instances, moe6+lookup, ~19.6 t/s/inst
+   - coder_escalation (32B f16, 65GB): 4×48t instances, 26.4 t/s aggregate
+   - architect_general (Qwen3.5-122B, 69GB): 1×96t node0, moe8+spec+lu, 12.6 t/s
+   - architect_coding (480B, 250GB): 1×96t node0, tree dm=48, 3.82 t/s
+2. **Add round-robin routing** for multi-instance models (frontdoor ports 8080/8180/8280/8380, coder ports 8081/8181/8281/8381) — requires src/ changes
+3. **Benchmark 35B NUMA 4-way** with moe6+lookup to validate aggregate throughput
 
 ## Agent Autonomy Charter
 
