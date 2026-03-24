@@ -24,7 +24,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **COMPREHENSIVE** — S2-S5 + sweep + quant | NUMA parallel, quant scaling | Hybrid (Qwen3.5) | **6.9x 35B-A3B**, ~12 t/s ceiling all others | See deployment handoff |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
-| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **READY — model downloaded** | REAP expert pruning (permanent) | MoE (Qwen3-Coder-30B-A3B) | TBD (25% near-lossless per paper) | Add registry entry, sweep draft_max/p_split, then quality benchmark |
+| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **PHASE 1-2 COMPLETE** | REAP expert pruning (permanent) | MoE (REAP-25B from 30B-A3B) | **39.6 t/s, 61% quality** | Phase 3: run REAP ourselves at 25-40%, Phase 4: aggressive 50% |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
 

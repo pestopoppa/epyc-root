@@ -1,6 +1,6 @@
 # REAP — MoE Expert Pruning Evaluation
 
-**Status**: READY — GGUF downloaded, config tuning pending
+**Status**: PHASE 1-2 COMPLETE — 39.6 t/s, 61% quality (truncation-limited). Phase 3-4 pending.
 **Created**: 2026-03-20 (via research intake)
 **Updated**: 2026-03-22
 **Categories**: moe_optimization, quantization, inference_serving
@@ -82,7 +82,7 @@ New `reap_25b_frontdoor` role in model_registry.yaml:
 
 ## 4-Phase Evaluation Plan
 
-### Phase 1: Speed Optimization (NEXT — before quality benchmark)
+### Phase 1: Speed Optimization (COMPLETE — 2026-03-24)
 
 1. Add `reap_25b_frontdoor` to model registry (follow worker/frontdoor entry format)
 2. Baseline measurement: single 48t instance, no acceleration, record raw t/s
@@ -94,14 +94,54 @@ New `reap_25b_frontdoor` role in model_registry.yaml:
 8. NUMA config: 4×48t quarters (15 GB fits trivially, same pattern as worker/frontdoor)
 9. Record optimal config and compare: REAP-25B optimal vs base 30B-A3B optimal (39.1 t/s) vs frontdoor (19.6 t/s)
 
-### Phase 2: Quality Benchmark (at optimal config from Phase 1)
+**Phase 1 Results (2026-03-24):**
 
-1. Run `./run_benchmark.py --model reap_25b_frontdoor --server-mode` at optimal server config
-2. Compare quality (Claude-as-Judge 0-3) against:
-   - Base 30B-A3B (Q4KM already has quality data: 74%, 45/61) — same arch, measures REAP quality loss
-   - Frontdoor 35B hybrid (quality 2.48/3) — production replacement comparison
-3. Speed comparison: REAP-25B optimal t/s vs worker 39.1 t/s vs frontdoor 19.6 t/s
-4. Loop detection stress test: 4 temps × 6 prompt types per 0xSero methodology (key risk: REAP-20% showed repetition loops)
+| Config | Avg t/s | vs Worker (39.1) |
+|--------|---------|------------------|
+| **dm=24 linear** | **39.62** | **101%** |
+| dm=48 linear | 39.13 | 100% |
+| baseline (no spec) | 33.21 | 85% (15% faster than unpruned base 28.7) |
+| dm=16 tree ps=0.05 | 30.83 | 79% — tree HURTS |
+| dm=8 lookup | 37.91 | 97% — lookup safe (pure MoE) |
+
+Optimal: dm=24, ps=0, linear only. Lookup safe but doesn't help on short prompts.
+
+### Phase 2: Quality Benchmark (COMPLETE — 2026-03-24)
+
+1. ~~Run `./run_benchmark.py --model reap_25b --server-mode`~~ DONE
+2. ~~Compare quality against baselines~~ DONE (see results below)
+3. ~~Speed comparison~~ DONE
+4. Loop detection stress test: NOT YET — 4 temps × 6 prompt types per 0xSero methodology
+
+**Phase 2 Results (2026-03-24):**
+
+| Suite | REAP-25B | Q4KM Coder-32B | Notes |
+|-------|----------|----------------|-------|
+| agentic (10) | **26/30 (87%)** | 27/30 (90%) | Near-identical |
+| coder (10) | 18/30 (60%) | 20/30 (67%) | Truncation at 256 tokens |
+| general (10) | 21/30 (70%) | 20/30 (67%) | REAP slightly better |
+| IP (11) | 18/33 (55%) | 20/33 (61%) | T3 failures same across all models |
+| math (10) | 13/30 (43%) | 21/30 (70%) | Worst — all truncated before answers |
+| thinking (10) | 14/30 (47%) | 19/30 (63%) | Truncation + 1 genuine error |
+| **TOTAL** | **110/183 (60%)** | **133/183 (73%)** | |
+| **Pass (≥2)** | **37/61 (61%)** | **45/61 (74%)** | |
+
+**Key observations:**
+- 13pp gap is primarily **truncation at 256 max_tokens**, not reasoning deficiency
+- Agentic suite (tool calls fit in 256 tokens) scores nearly identical
+- Math/thinking hit hardest — need more tokens for multi-step reasoning
+- No repetition loops detected (unlike REAP-20% on other models)
+- A rerun with 512 max_tokens would give more accurate quality numbers
+
+**Decision matrix:**
+
+| Model | Quality | Speed | 4×48t agg | RAM | Best for |
+|-------|---------|-------|-----------|-----|----------|
+| REAP-25B | 61% | 39.6 t/s | ~158 t/s | 15 GB | Fast frontdoor, try-cheap-first worker |
+| Q4KM Coder-32B | 74% | 10.8 t/s | ~43 t/s | 18.5 GB | Quality coder specialist |
+| 35B hybrid moe6 | ~79%* | 12.7 t/s | ~51 t/s | 20 GB | Current frontdoor (hybrid, no spec) |
+
+*35B quality from earlier scoring, not directly comparable (different model family)
 
 ### Phase 3: Run REAP Ourselves (if Phase 2 positive)
 
