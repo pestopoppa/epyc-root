@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-03-21
+**Updated**: 2026-03-24
 
 ## Agent Operating Instructions
 
@@ -65,14 +65,14 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 7. ✅ **Qwen3.5 full sweep** — All hybrids converge to ~12 t/s decode. Only 35B-A3B MoE benefits from NUMA 4-way.
 8. ✅ **Quant scaling** — Q4_K_M preferred: Q8 costs 17-39% speed on hybrids
 9. ✅ **Coder quant quality benchmarks** (2026-03-24) — Q4KM = f16 quality (74%), confirmed optimal. Saves 186 GB RAM.
-10. **Round-robin routing** — multi-instance frontdoor/coder need request distribution (src/ changes required)
+10. ✅ **Round-robin routing** (2026-03-24) — `RoundRobinBackend` in `src/backends/round_robin.py`. Comma-separated URLs in config. frontdoor + coder distribute across 4 NUMA instances.
 11. **Benchmark 35B NUMA 4-way with moe6+lookup** — verify aggregate throughput under production accel config
 12. **Worker NUMA configs** — explore/vision still need NUMA pinning tuning
 
 ## Active Work Streams
 
 ### Highest Impact — Deployed
-- **NUMA 4-way parallel** — DEPLOYED 2026-03-19. taskset CPU pinning in orchestrator_stack.py. Model swaps: frontdoor→Qwen3.5-35B (moe6+lu), architect→Qwen3.5-122B (moe8+spec+lu). **Remaining: round-robin routing (src/ changes).**
+- **NUMA 4-way parallel** — DEPLOYED 2026-03-19, round-robin routing added 2026-03-24. taskset CPU pinning + `RoundRobinBackend` for multi-instance roles. **Remaining: benchmark 35B 4×48t with moe6+lookup.**
 - **draft_max optimization** — +17-21% via `--draft-max 32-48`. Already applied to model_registry.yaml.
 
 ### Validated & Complete
@@ -143,12 +143,12 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | Role | Model | Size | NUMA Config | Best t/s | Accel | Notes |
 |------|-------|------|------------|---------|-------|-------|
 | frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **~19.6/inst, ~78 agg** | moe6+lookup | NEW: swapped from 30B-A3B, mlock enabled |
-| coder_escalation | Qwen2.5-Coder-32B f16 | 65 GB | **4×48t** | **26.4 agg** | AR 0.5B, dm=32 | unchanged |
-| architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **12.6** | moe8+spec_q8_k8+lookup | NEW: swapped from 235B, saves 64 GB |
-| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0 tree** | **3.82** | AR 0.75B, dm=48, ps=0.05 | unchanged |
+| coder_escalation | **Qwen2.5-Coder-32B Q4KM** | **18.5 GB** | **4×48t** | **43.3 agg** | AR 0.5B, dm=32, ps=0.05, tree+lu | Q4KM confirmed 2026-03-24 (=f16 quality, 1.7x faster, 3.5x less RAM) |
+| architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **4.3** | moe8+spec+lu, dm=24, ps=0 | Sweep-corrected: dm=24 (was 8), 4.3 (was 12.6) |
+| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0** | **7.0** | AR 0.75B, dm=24, ps=0 (NO tree) | Sweep-corrected: tree harmful (-19%), dm=24 (was 48) |
 | ingest_long_context | Qwen3-Next-80B-A3B Q4KM | 46 GB | **1×96t node0** | **~12** | none (SSM) | mlock enabled |
 
-**Total footprint**: ~701 GB (with multi-instance copies). Saves ~64 GB vs previous stack (235B replaced by 122B).
+**Total footprint**: ~515 GB (with multi-instance copies). Saves 186 GB vs f16 coder + 64 GB vs 235B architect.
 
 ## Global Test Matrix
 
@@ -169,7 +169,7 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | S2 | ssm | xref | Qwen3.5-35B-A3B Q4_K_M | NUMA parallel decode (1,2,4 concurrent) | MEDIUM | ✅ DONE — **6.9x aggregate** (4×48t: 49.7 t/s vs 1×192t: 7.25 t/s) |
 | D6 | dflash | 5 | Qwen3-Coder-30B-A3B (frontdoor) | DFlash tree vs linear | HIGH | CANCELLED — DFlash not viable on Q4_K_M |
 | T5 | tree | 7 | Qwen2.5-Coder-32B f16 | NUMA 4-way tree | MEDIUM | ✅ DONE — **6.4x aggregate** (4×48t: 26.4 vs 1×192t: 4.1 t/s). Tree ≈ linear at 48t. |
-| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA node0 + tree | LOW | ✅ DONE — **+41%** (96t node0 tree: 3.82 vs 192t linear: 2.71 t/s). Tree viable with dm=48. |
+| T6 | tree | 7 | Qwen3-Coder-480B-A35B Q4_K_M | NUMA node0 + tree | LOW | ✅ DONE — **+41%** (96t node0 tree: 3.82 vs 192t linear: 2.71). BUT sweep corrected: tree HARMFUL (-19%), use dm=24 ps=0 linear only → 7.0 t/s |
 | D7 | dflash | 6 | Qwen3.5-35B-A3B (hybrid) | NUMA parallel verify | MEDIUM | CANCELLED — DFlash not viable on Q4_K_M |
 | S3 | ssm | 6 | Qwen3.5-35B-A3B Q4_K_M | NUMA 4-way + AR draft (freeze-recurrent) | HIGH | ✅ DONE — **ALL NEGATIVE** (best: -12.5%). Drafter competes for NUMA quarter bandwidth. |
 | S4 | ssm | 6 | Qwen3.5-35B-A3B Q4_K_M | NUMA-split draft/verify pipeline | MEDIUM | CANCELLED — S3 shows draft hurts on NUMA 4-way |
@@ -186,17 +186,18 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 | D0-D5 | ✅ DONE | DFlash: 21 commits, C++ verified correct. NOT viable on Q4_K_M |
 | S2 | ✅ DONE | **NUMA 4-way: 6.9x** (hybrid 35B-A3B) |
 | T5 | ✅ DONE | **NUMA 4-way: 6.4x** (dense 32B f16). Tree ≈ linear at 48t |
-| T6 | 🔄 RUNNING | NUMA tree vs linear on 480B (single-instance only) |
+| T6 | ✅ DONE | NUMA node0: +41% vs 192t. Sweep corrected: tree harmful, linear dm=24 → 7.0 t/s |
 | D6-D7 | CANCELLED | DFlash not viable |
 | S1 | DEFERRED | NUMA prefill pipeline (infrastructure-heavy) |
 
 ### Next Priority: Complete NUMA Deployment
 
-1. ✅ **NUMA-pinned launching DEPLOYED** in `orchestrator_stack.py` (2026-03-19)
-   - frontdoor (Qwen3.5-35B, 20GB): 4×48t instances, moe6+lookup, ~19.6 t/s/inst
-   - coder_escalation (32B f16, 65GB): 4×48t instances, 26.4 t/s aggregate
-   - architect_general (Qwen3.5-122B, 69GB): 1×96t node0, moe8+spec+lu, 12.6 t/s
-   - architect_coding (480B, 250GB): 1×96t node0, tree dm=48, 3.82 t/s
+1. ✅ **NUMA-pinned launching DEPLOYED** in `orchestrator_stack.py` (2026-03-19, updated 2026-03-24)
+   - frontdoor (Qwen3.5-35B, 20GB): 4×48t instances, moe6+lookup, ~19.6 t/s/inst, ~78 agg
+   - coder_escalation (32B Q4KM, 18.5GB): 4×48t instances, spec+tree+lu dm=32 ps=0.05, ~43.3 agg
+   - architect_general (Qwen3.5-122B, 69GB): 1×96t node0, moe8+spec+lu dm=24, 4.3 t/s
+   - architect_coding (480B, 250GB): 1×96t node0, spec+lu dm=24 ps=0 (NO tree), 7.0 t/s
+   - worker (30B-A3B, 16GB): 1×24t Q0A, spec dm=8, 39.1 t/s
 2. **Add round-robin routing** for multi-instance models (frontdoor ports 8080/8180/8280/8380, coder ports 8081/8181/8281/8381) — requires src/ changes
 3. **Benchmark 35B NUMA 4-way** with moe6+lookup to validate aggregate throughput
 

@@ -338,7 +338,7 @@ Model swaps in `model_registry.yaml`:
 
 ### Remaining Work
 
-1. **Round-robin routing** — Multi-instance models need request routing across their ports. Requires `epyc-orchestrator/src/` changes. Currently only primary port (8080/8081) is used by the API.
+1. ~~**Round-robin routing**~~ — DONE (2026-03-24). `RoundRobinBackend` wraps multi-instance backends. Config uses comma-separated URLs. frontdoor (4 instances) and coder_escalation (4 instances) now distribute requests round-robin.
 2. **Benchmark validation** — Qwen3.5-35B on NUMA 4×48t with moe6+lookup needs direct benchmarking. The ~78 t/s estimate extrapolates from single-instance × NUMA scaling factor.
 3. ~~**Coder quant quality benchmark**~~ — DONE (2026-03-24). Q4KM (74%) ≈ f16 (74%) > Q8 (77%) but Q4KM is 1.3-1.7x faster and 1.8-3.5x less RAM. Q4_K_M confirmed as optimal.
 4. **Architect 2-instance** — 122B at 69GB could run 2×96t for ~2x aggregate if architect throughput bottlenecks.
