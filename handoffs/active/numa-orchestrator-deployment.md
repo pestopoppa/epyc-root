@@ -39,36 +39,20 @@ Quarter splits:
 
 ### Per-Model Launch Configuration
 
-#### Frontdoor: Qwen3.5-35B-A3B Q4_K_M (20 GB) — **4 instances, NUMA quarters, moe6+lookup**
+#### Frontdoor: Qwen3.5-35B-A3B Q4_K_M (20 GB) — **4 instances, NUMA quarters, moe6**
 
 ```bash
 # Instance 1 (NUMA quarter 0A)
 taskset -c 0-23,96-119 /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
   -m /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-Q4_K_M.gguf \
-  --override-kv qwen3moe.expert_used_count=int:6 --lookup \
+  --override-kv qwen35moe.expert_used_count=int:6 \
   -t 48 -np 1 --port 8080 -ngl 0 --mlock
-
-# Instance 2 (NUMA quarter 0B)
-taskset -c 24-47,120-143 /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-Q4_K_M.gguf \
-  --override-kv qwen3moe.expert_used_count=int:6 --lookup \
-  -t 48 -np 1 --port 8081 -ngl 0 --mlock
-
-# Instance 3 (NUMA quarter 1A)
-taskset -c 48-71,144-167 /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-Q4_K_M.gguf \
-  --override-kv qwen3moe.expert_used_count=int:6 --lookup \
-  -t 48 -np 1 --port 8082 -ngl 0 --mlock
-
-# Instance 4 (NUMA quarter 1B)
-taskset -c 72-95,168-191 /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3.5-35B-A3B-GGUF/Qwen3.5-35B-A3B-Q4_K_M.gguf \
-  --override-kv qwen3moe.expert_used_count=int:6 --lookup \
-  -t 48 -np 1 --port 8083 -ngl 0 --mlock
+# ... repeat for ports 8081-8083 on other quarters
 ```
 
-**Benchmark**: ~19.6 t/s per instance with moe6+lookup, ~78 t/s aggregate (4 instances)
-**Routing**: Round-robin across ports 8080-8083 (NOT YET IMPLEMENTED — needs src/ changes)
+**Benchmark (measured 2026-03-24)**: 12.7 t/s per instance, **~50.8 t/s aggregate** (4 instances)
+**Routing**: Round-robin via `RoundRobinBackend` (implemented 2026-03-24)
+**WARNING**: `--lookup` causes segfault on Qwen3.5 hybrids after 1-3 prompts — DO NOT USE until fixed. moe6-only is stable.
 **Note**: Swapped from Qwen3-Coder-30B-A3B (2026-03-19). No AR drafter — speculation is net-negative on Qwen3.5 hybrids (S3 result). mlock enabled for stable latency.
 
 #### Coder Escalation: Qwen2.5-Coder-32B Q4_K_M (18.5 GB) — **4 instances, spec+tree+lookup**
@@ -239,6 +223,7 @@ All HOT-tier models should use `--mlock` (total ~775 GB locked, 355 GB remaining
 4. **Don't pipeline prefill** (S5) — ceiling is ~8%, not worth the C++ complexity.
 5. **Don't merge `feature/dflash-speculation`** — DFlash NOT viable on Q4_K_M (27% per-token, 1.4% block).
 6. **Don't omit `--draft-p-split 0`** for linear speculation — production binary defaults `p_split=0.1` (tree ON). Silent tree activation causes `kv_unified=true`, `n_seq_max=9`, and draft truncation overhead.
+7. **Don't use `--lookup` on Qwen3.5 hybrid models** — causes segfault after 1-3 prompts due to prompt cache + recurrent state corruption (diagnosed 2026-03-24, related to llama.cpp PR #13194). moe6-only is stable at 12.7 t/s. Lookup may work after upstream fix or with REAP permanent pruning.
 
 ## Verification Checklist
 
@@ -275,7 +260,7 @@ All spec decode params verified by comprehensive sweep (`bench_all_spec_sweeps.s
 - 122B: dm=24 optimal (was 8). Still linear only. Throughput 4.3 (was claimed 12.6 — old number was different model/config).
 - Coder: Using Q4KM here (not f16). Tree beneficial on Q4KM (ps=0.05). 4×48t aggregate 43.3 t/s.
 
-**Frontdoor correction (2026-03-24 benchmark):** 4×48t moe6 measured at 12.7 t/s/inst, ~50.8 t/s aggregate (was estimated 19.6/78). The 19.6 figure included lookup acceleration which requires a pre-built ngram corpus — without it, `--lookup` is a no-op. Actual gain is moe6-only.
+**Frontdoor correction (2026-03-24 benchmark):** 4×48t moe6 measured at 12.7 t/s/inst, ~50.8 t/s aggregate (was estimated 19.6/78). `--lookup` causes segfault on Qwen3.5 hybrid SSM models after 1-3 prompts (prompt cache + recurrent state corruption, related to PR #13194). moe6-only is stable. **Do NOT use `--lookup` on Qwen3.5 hybrids until fixed.**
 
 **Total model footprint**: ~515 GB (with 4x frontdoor + 4x coder copies)
 
