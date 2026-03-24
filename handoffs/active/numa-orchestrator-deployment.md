@@ -264,7 +264,7 @@ All spec decode params verified by comprehensive sweep (`bench_all_spec_sweeps.s
 
 | Role | Model | NUMA Config | Accel | dm | ps | Per-Instance t/s | Aggregate t/s |
 |------|-------|-------------|-------|----|----|-----------------|---------------|
-| frontdoor | **Qwen3.5-35B-A3B** Q4KM (20 GB) | **4×48t** | moe6+lookup | — | — | ~19.6 | **~78 t/s** |
+| frontdoor | **Qwen3.5-35B-A3B** Q4KM (20 GB) | **4×48t** | moe6 (lookup needs corpus) | — | — | **12.7** | **~50.8 t/s** |
 | coder_escalation | Qwen2.5-Coder-32B Q4KM (18.5 GB) | **4×48t** | spec+tree+lu | 32 | 0.05 | 10.8 | **~43.3 t/s** |
 | architect_general | **Qwen3.5-122B-A10B** Q4KM (69 GB) | **1×96t node0** | moe8+spec+lu | 24 | 0 | 4.3 | **4.3 t/s** |
 | architect_coding | Qwen3-Coder-480B-A35B Q4KM (250 GB) | **1×96t node0** | spec+lu (NO tree) | 24 | 0 | 7.0 | **7.0 t/s** |
@@ -275,7 +275,9 @@ All spec decode params verified by comprehensive sweep (`bench_all_spec_sweeps.s
 - 122B: dm=24 optimal (was 8). Still linear only. Throughput 4.3 (was claimed 12.6 — old number was different model/config).
 - Coder: Using Q4KM here (not f16). Tree beneficial on Q4KM (ps=0.05). 4×48t aggregate 43.3 t/s.
 
-**Total model footprint**: ~701 GB (with 4x frontdoor + 4x coder copies)
+**Frontdoor correction (2026-03-24 benchmark):** 4×48t moe6 measured at 12.7 t/s/inst, ~50.8 t/s aggregate (was estimated 19.6/78). The 19.6 figure included lookup acceleration which requires a pre-built ngram corpus — without it, `--lookup` is a no-op. Actual gain is moe6-only.
+
+**Total model footprint**: ~515 GB (with 4x frontdoor + 4x coder copies)
 
 *Note: Single-instance models (architect, ingest) run on node0 only, freeing node1 cores for multi-instance models. The NUMA partitioning prevents cross-model memory interference.
 

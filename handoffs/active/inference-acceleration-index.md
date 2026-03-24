@@ -66,7 +66,7 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 8. ✅ **Quant scaling** — Q4_K_M preferred: Q8 costs 17-39% speed on hybrids
 9. ✅ **Coder quant quality benchmarks** (2026-03-24) — Q4KM = f16 quality (74%), confirmed optimal. Saves 186 GB RAM.
 10. ✅ **Round-robin routing** (2026-03-24) — `RoundRobinBackend` in `src/backends/round_robin.py`. Comma-separated URLs in config. frontdoor + coder distribute across 4 NUMA instances.
-11. **Benchmark 35B NUMA 4-way with moe6+lookup** — verify aggregate throughput under production accel config
+11. ✅ **Benchmark 35B NUMA 4-way** (2026-03-24) — measured 12.7 t/s/inst, ~50.8 agg (moe6-only). Lookup needs ngram corpus to activate — without it the 19.6 estimate was wrong. Segfault after 2 prompts (stability issue, not perf).
 12. **Worker NUMA configs** — explore/vision still need NUMA pinning tuning
 
 ## Active Work Streams
@@ -142,7 +142,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 
 | Role | Model | Size | NUMA Config | Best t/s | Accel | Notes |
 |------|-------|------|------------|---------|-------|-------|
-| frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **~19.6/inst, ~78 agg** | moe6+lookup | NEW: swapped from 30B-A3B, mlock enabled |
+| frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **12.7/inst, ~50.8 agg** | moe6 (lookup needs corpus) | Measured 2026-03-24: 19.6 was with lookup corpus, 12.7 is moe6-only |
 | coder_escalation | **Qwen2.5-Coder-32B Q4KM** | **18.5 GB** | **4×48t** | **43.3 agg** | AR 0.5B, dm=32, ps=0.05, tree+lu | Q4KM confirmed 2026-03-24 (=f16 quality, 1.7x faster, 3.5x less RAM) |
 | architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **4.3** | moe8+spec+lu, dm=24, ps=0 | Sweep-corrected: dm=24 (was 8), 4.3 (was 12.6) |
 | architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0** | **7.0** | AR 0.75B, dm=24, ps=0 (NO tree) | Sweep-corrected: tree harmful (-19%), dm=24 (was 48) |
