@@ -367,3 +367,27 @@ GPD's convention lock prevents changing notation once established. Apply same pa
 When implementing `distill_skillbank` (StructuralLab action), adopt cheat-sheet's **difficulty-focused prompting**: "identify which examples you find most difficult, create a cheat sheet for only those." This outperformed broader textbook-style distillation in ablation (90.0% vs 88.9% avg on BBH). The principle: distill hard cases only, don't waste tokens on what the model already handles.
 
 Also: cheat sheets transfer across models (GPT-4.1 → Gemini 2.0 Flash). Test whether skills distilled from architect-tier models improve worker-tier behavior — if so, distillation becomes a cross-tier knowledge transfer mechanism.
+
+#### Hard-Negative Training Data for Routing Classifier (intake-176)
+
+**Source**: ReasonIR (arxiv:2504.20595) — synthetic data generation for reasoning-aware retrieval
+
+**Applies to**: `CHECKPOINT → TRAIN MLP + GAT` step in StructuralLab lifecycle. Currently `extract_training_data.py` generates training pairs from Q-values (positive = high-Q action for a given task context, implicit negative = random other actions). This lacks **explicit hard negatives** — examples that are semantically similar to the query but led to different optimal routing.
+
+**Proposed change**: After extracting Q-value training pairs, generate contrastive hard negatives by finding same-domain tasks that succeeded with *different* roles. Example: "implement quicksort" (Q-value high for REPL/worker_coder) vs "explain quicksort complexity" (Q-value high for direct/worker_general). These are close in BGE-large embedding space but require different routing — exactly the decision boundary the MLP needs to learn.
+
+ReasonIR's methodology: for each document, create a "plausibly related but ultimately unhelpful" negative. Adapted to routing: for each (task, best_role) pair, find the nearest-neighbor task in embedding space where a *different* role had the highest Q-value. This is a data pipeline change in `structural_lab.py` / `extract_training_data.py`, not an architecture change. Estimate: ~2 days to implement + validate via A/B gate.
+
+---
+
+## Future: Dynamic Stack Assembly (2026-03-24)
+
+The autopilot's optimization surface should expand beyond routing parameters to include **which models run and how they're provisioned**. Currently the orchestrator stack (model selection, NUMA pinning, instance counts) is statically configured in `orchestrator_stack.py`. The autopilot should be able to reconfigure this at session boundaries based on observed workload.
+
+**Concrete example**: For a single-user code-heavy session, the optimal stack might be 1×30B-A3B-spec frontdoor (39 t/s) + 4×coder Q4KM (43 t/s agg) + 1×architect. For a multi-session research intake, it might be 4×35B moe6 (50.8 t/s agg) + 1×coder + 1×ingest. The NumericSwarm species could explore this as additional dimensions in the NSGA-II search.
+
+**Infrastructure ready**: `RoundRobinBackend` (2026-03-24) supports runtime backend list changes. `orchestrator_stack.py` would need a reconfigure API. Minimum hot-swap latency: ~30-60s (drain + restart + mlock).
+
+**Constraint**: Primary user is single (Daniele). Per-request latency usually matters more than aggregate throughput. Internal pipeline concurrency (frontdoor→coder→architect) is the main source of parallelism.
+
+See `routing-intelligence.md` § "Dynamic Stack Assembly" for the full design and tradeoff table.

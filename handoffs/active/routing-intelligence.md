@@ -413,3 +413,88 @@ The input-side scorer gates whether to run the expensive output-side verificatio
 Process reward telemetry from the context-folding progressive handoff provides a `segment_advantage` signal computed at consolidation boundaries. This signal measures per-turn contribution to task progress using token_budget_ratio, on_scope, and tool_success_ratio rewards with position-weighted advantage broadcasting (from ReSum-GRPO, arxiv:2509.13313).
 
 **Integration path for Phase 5**: The `segment_advantage` signal can enrich MemRL Q-values — episodes with high segment advantage should receive a Q-value bonus, improving routing accuracy for tasks that benefit from sustained multi-turn reasoning. Position-weighted advantage broadcasting is also directly applicable to delegation episode training (later turns in a delegation loop carry more signal about whether the delegation succeeded).
+
+## Research Intake Update — 2026-03-20
+
+### New Related Research
+- **[intake-174] "Reason-ModernColBERT: Late-Interaction Retriever for Reasoning Tasks"** (HuggingFace: lightonai/Reason-ModernColBERT)
+  - Relevance: Late-interaction (ColBERT MaxSim) dramatically outperforms dense retrieval on reasoning-intensive tasks — our episodic memory uses FAISS dense vectors for strategy retrieval
+  - Key technique: 150M ColBERT model with ModernBERT backbone, trained on ReasonIR-HQ reasoning triplets
+  - Reported results: +7.3 NDCG@10 over dense retrieval on same data; competitive with 7B+ models at 150M params
+  - Delta from current approach: Our `strategy_store.py` uses single-vector FAISS similarity — multi-vector late interaction could capture token-level reasoning patterns missed by dense embeddings
+
+- **[intake-176] "ReasonIR: Training Retrievers for Reasoning Tasks"** (arxiv:2504.20595)
+  - Relevance: Training data methodology for reasoning-aware retrieval — directly applicable to improving episodic memory retrieval quality
+  - Key technique: Synthetic reasoning query generation with hard negatives
+  - Reported results: 29.9 NDCG@10 on BRIGHT (SoTA at publication)
+  - Delta from current approach: Our episodic memory training data is derived from Q-values, not reasoning-focused triplets — ReasonIR's data generation pipeline could improve routing classifier training data
+
+## CRITICAL: Q-Scorer baseline_tps Calibration (2026-03-20)
+
+**File**: `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` lines 62-67
+
+The `baseline_tps_by_role` values used for cost penalty normalization are **inflated** — they came from one-off peak measurements, not systematic benchmarks. The comprehensive spec param sweep (2026-03-20) reveals the real sustained throughput:
+
+| Role | Registry (inflated) | Sweep (real) | Source of inflated value |
+|------|-------------------|-------------|------------------------|
+| `coder_escalation` | **39.44** | **10.8** (Q4KM 48t) | Single warm-cache summarization prompt, 2026-01-28 |
+| `frontdoor` | 18.3 | ~19.6 (35B moe6+lu) | Likely reasonable (close to sweep) |
+| `architect_general` | 6.75 | **2.5** (122B 192t) / **4.2** (122B 96t) | Unclear origin, possibly old 235B model |
+| `architect_coding` | 10.3 | TBD (480B sweep pending) | Unclear origin |
+
+**Impact**: With `coder_escalation` baseline at 39.44 but real throughput at ~10.8, the cost penalty formula (`cost_ratio = elapsed / expected_elapsed`) thinks coder is ~3.6x slower than expected on EVERY request. This systematically penalizes the coder role's Q-values, biasing routing away from coder escalation.
+
+**Fix (two sources of truth)**:
+- **Q-scorer `baseline_tps_by_role`**: Use deployment-mode t/s from the comprehensive sweep (e.g. coder Q4KM 48t = 10.8). These reflect real production throughput under NUMA pinning.
+- **Registry `throughput` field**: Use `run_benchmark.py --speed-questions 3` values (192t interleave reference). These are for quality/speed tracking across model versions.
+- **Registry `draft_max`/`p_split`**: Use deployment-mode optimal params from sweep (may differ from 192t optimal).
+- The two numbers will differ (192t vs NUMA deployment) and that is intentional — they measure different things.
+
+**Note on methodology**: `run_benchmark.py` always runs at 192t with `numactl --interleave=all` — it has no NUMA deployment awareness. The comprehensive sweep (`bench_all_spec_sweeps.sh`) measures at actual deployment thread counts with taskset. Both are valid; they serve different purposes.
+
+---
+
+## Future Direction: Dynamic Stack Assembly (2026-03-24)
+
+### Problem
+
+The orchestrator stack (which models, how many instances, NUMA pinning, acceleration) is currently statically configured. But the optimal config depends on runtime conditions:
+
+| Scenario | Optimal frontdoor config | Why |
+|----------|------------------------|-----|
+| Single user, serial chat | 1×30B-A3B spec (39 t/s) | Max per-request speed |
+| Single user, pipeline (FD→coder→arch) | 1×35B moe6 + free cores for coder | Internal concurrency needs parallel models |
+| Burst traffic / multi-session | 4×35B moe6 (50.8 t/s agg) | Parallel users, throughput > latency |
+| Code-heavy session | 1×35B + 4×coder + 1×arch | Coder needs more cores than frontdoor |
+
+### Proposal
+
+The routing-intelligence agent (or autopilot) should have authority to **reconfigure the stack at session boundaries**:
+
+1. **Observe**: Queue depth, request types, latency distribution, core utilization
+2. **Decide**: Pick optimal model assignment and instance count per role
+3. **Execute**: Drain in-flight requests, restart instances with new config, re-mlock
+4. **Verify**: Confirm health checks pass, measure first-request latency
+
+### Constraints
+
+- **Single primary user** (Daniele): high concurrency is rare, but internal pipeline concurrency exists
+- **Hot-swap latency**: Reconfiguring requires draining + restart + mlock. Minimum ~30-60s for a full stack change. Cannot switch mid-inference.
+- **Session-boundary switching** is practical: at conversation start, pick config based on declared intent (code session vs research vs general)
+- **RoundRobinBackend** already supports this — swap the backends list and the next request goes to the new config
+
+### Connection to Routing Intelligence
+
+This is the **infrastructure layer** below semantic routing. The classifier decides *which role* handles a request; the stack assembler decides *how that role is provisioned*. They compose:
+
+```
+Request → Classifier (role selection) → Stack Assembler (instance selection) → Backend
+```
+
+The Q-scorer's `baseline_tps_by_role` would need to be dynamic too — if the stack assembler switches frontdoor from 4×35B to 1×30B-spec, the baseline t/s changes from 12.7 to 39.1.
+
+### See Also
+
+- `autopilot-continuous-optimization.md` — Autonomous tuning framework
+- `numa-orchestrator-deployment.md` — Current static NUMA deployment
+- `RoundRobinBackend` in `epyc-orchestrator/src/backends/round_robin.py` — Runtime instance routing
