@@ -143,7 +143,43 @@ Optimal: dm=24, ps=0, linear only. Lookup safe but doesn't help on short prompts
 
 *35B quality from earlier scoring, not directly comparable (different model family)
 
-### Phase 3: Run REAP Ourselves (if Phase 2 positive)
+### Phase 2b: Pre-Pruned 480B Downloads (NEXT — no GPU needed)
+
+Two pre-pruned versions of our production architect_coding model (Qwen3-Coder-480B-A35B) are available:
+
+**Download commands (run from host):**
+```bash
+# 363B (25% pruned) — GGUF ready, 219 GB Q4_K_M
+huggingface-cli download unsloth/Qwen3-Coder-REAP-363B-A35B-GGUF \
+  --include "Qwen3-Coder-REAP-363B-A35B-Q4_K_M*.gguf" \
+  --local-dir /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Coder-REAP-363B-A35B-GGUF
+
+# 246B (50% pruned) — FP8 safetensors, needs GGUF conversion
+huggingface-cli download cerebras/Qwen3-Coder-REAP-246B-A35B-FP8 \
+  --local-dir /mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-FP8
+# Then convert: python3 llama.cpp/convert_hf_to_gguf.py <path> --outtype q4_k_m
+```
+
+| Model | Pruning | Q4_K_M Size | vs Production 480B (250 GB) | Quality (Cerebras claims) |
+|-------|---------|-------------|----------------------------|--------------------------|
+| **REAP-363B-A35B** | 25% | **219 GB** | **-31 GB** | 97.6% HumanEval retained |
+| **REAP-246B-A35B** | 50% | **~130 GB est** | **-120 GB** | 96.7% SWE-Bench retained |
+
+Same 35B active params, same architecture, same draft model compatible. Speed should be equal or faster (fewer experts = less routing overhead, same pattern as REAP-25B being 15% faster than base).
+
+**Evaluation plan (per model):**
+
+1. Add registry entry (roles section + server_mode section)
+2. Baseline speed: single 96t instance, no acceleration, record raw t/s
+3. Spec decode sweep: dm={8,16,24,32,48}, ps={0,0.05} — same draft model (Qwen3-Coder-0.75B)
+4. Lookup test: with/without `--lookup` (pure MoE — should be safe)
+5. NUMA test: 1×96t node0 (same as current 480B deployment)
+6. Quality: `run_benchmark.py --model <role> --server-mode --skip-long-context`
+7. Claude-as-Judge scoring (6 agents, 61 questions)
+8. Compare: REAP vs production 480B (7.0 t/s, dm=24, ps=0)
+9. Decision: deploy if quality ≥95% of 480B base AND speed ≥ 7.0 t/s AND RAM savings meaningful
+
+### Phase 3: Run REAP Ourselves (if Phase 2b positive)
 
 1. Run REAP at 25%, 30%, 40% on Qwen3-Coder-30B-A3B using CerebrasResearch/reap
 2. Custom calibration from our production workload (agentic coding + tool calls)
