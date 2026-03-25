@@ -1,6 +1,6 @@
 # REAP — MoE Expert Pruning Evaluation
 
-**Status**: PHASE 1-2 COMPLETE — 39.6 t/s, 61% quality (truncation-limited). Phase 3-4 pending.
+**Status**: PHASE 1-2 + 2b(363B) COMPLETE. 25B: 39.6 t/s, 66% quality. 363B: 6.54 t/s (93% of 480B, not compelling). 246B conversion pending.
 **Created**: 2026-03-20 (via research intake)
 **Updated**: 2026-03-22
 **Categories**: moe_optimization, quantization, inference_serving
@@ -143,41 +143,39 @@ Optimal: dm=24, ps=0, linear only. Lookup safe but doesn't help on short prompts
 
 *35B quality from earlier scoring, not directly comparable (different model family)
 
-### Phase 2b: Pre-Pruned 480B Downloads (NEXT — no GPU needed)
+### Phase 2b: Pre-Pruned 480B Evaluation
 
-Two pre-pruned versions of our production architect_coding model (Qwen3-Coder-480B-A35B) are available:
+#### REAP-363B (25% pruned) — COMPLETE (2026-03-25)
 
-**Download commands (run from host):**
+Downloaded (219 GB Q4_K_M, 5 shards) and benchmarked.
+
+| Config | Avg t/s | vs 480B (7.0) |
+|--------|---------|---------------|
+| **dm=48 linear** | **6.54** | **93%** |
+| dm=24 linear | 6.34 | 91% |
+| dm=24 lookup | 5.04 | 72% — lookup hurts |
+| dm=16 tree | 4.96 | 71% — tree hurts |
+| baseline | 3.77 | 54% |
+
+**Verdict: NOT compelling for single-model deployment.** 7% slower, 31 GB savings irrelevant at 1.13 TB. Tree and lookup both harmful (~22%). REAP on large MoE is a GPU VRAM optimization — our CPU RAM budget is not the bottleneck.
+
+**Value case: concurrent-model RAM budgeting.** In dynamic stack assembly scenarios where two conversations need different large models simultaneously (e.g. REAP-246B for architect + freed RAM for extra workers), the RAM savings matter. Not relevant for single-conversation use.
+
+#### REAP-246B (50% pruned) — PENDING
+
+FP8 safetensors only, needs GGUF conversion. ~130 GB estimated at Q4_K_M (vs 250 GB unpruned). This is the more interesting test — 120 GB savings could enable concurrent large-model deployment.
+
 ```bash
-# 363B (25% pruned) — GGUF ready, 219 GB Q4_K_M
-huggingface-cli download unsloth/Qwen3-Coder-REAP-363B-A35B-GGUF \
-  --include "Qwen3-Coder-REAP-363B-A35B-Q4_K_M*.gguf" \
-  --local-dir /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Coder-REAP-363B-A35B-GGUF
-
-# 246B (50% pruned) — FP8 safetensors, needs GGUF conversion
+# Download (run from host)
 huggingface-cli download cerebras/Qwen3-Coder-REAP-246B-A35B-FP8 \
   --local-dir /mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-FP8
-# Then convert: python3 llama.cpp/convert_hf_to_gguf.py <path> --outtype q4_k_m
+
+# Convert to GGUF Q4_K_M
+cd /mnt/raid0/llm/llama.cpp
+python3 convert_hf_to_gguf.py /mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-FP8 --outtype q4_k_m
 ```
 
-| Model | Pruning | Q4_K_M Size | vs Production 480B (250 GB) | Quality (Cerebras claims) |
-|-------|---------|-------------|----------------------------|--------------------------|
-| **REAP-363B-A35B** | 25% | **219 GB** | **-31 GB** | 97.6% HumanEval retained |
-| **REAP-246B-A35B** | 50% | **~130 GB est** | **-120 GB** | 96.7% SWE-Bench retained |
-
-Same 35B active params, same architecture, same draft model compatible. Speed should be equal or faster (fewer experts = less routing overhead, same pattern as REAP-25B being 15% faster than base).
-
-**Evaluation plan (per model):**
-
-1. Add registry entry (roles section + server_mode section)
-2. Baseline speed: single 96t instance, no acceleration, record raw t/s
-3. Spec decode sweep: dm={8,16,24,32,48}, ps={0,0.05} — same draft model (Qwen3-Coder-0.75B)
-4. Lookup test: with/without `--lookup` (pure MoE — should be safe)
-5. NUMA test: 1×96t node0 (same as current 480B deployment)
-6. Quality: `run_benchmark.py --model <role> --server-mode --skip-long-context`
-7. Claude-as-Judge scoring (6 agents, 61 questions)
-8. Compare: REAP vs production 480B (7.0 t/s, dm=24, ps=0)
-9. Decision: deploy if quality ≥95% of 480B base AND speed ≥ 7.0 t/s AND RAM savings meaningful
+**Evaluation plan:** Same 9-step pipeline as Phase 2b above.
 
 ### Phase 3: Run REAP Ourselves (if Phase 2b positive)
 
