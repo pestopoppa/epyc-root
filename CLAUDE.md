@@ -14,12 +14,14 @@ All repos are already cloned on this machine. Use the absolute paths below.
 | epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator` | Production orchestration (`src/`, `tests/`) |
 | epyc-inference-research | `/mnt/raid0/llm/epyc-inference-research` | Benchmarks, seeding, model registry, research |
 | epyc-llama | `/mnt/raid0/llm/llama.cpp` | Custom llama.cpp fork |
+| hermes-agent (upstream) | `/mnt/raid0/llm/hermes-agent` | Agent frontend (Nous Research, not a child repo) |
 
 Key scripts by repo:
 - **Seeding/benchmarking**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/` (seed_specialist_routing.py, seeding_*.py)
 - **Server management**: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/` (orchestrator_stack.py)
 - **Model registry (full)**: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`
 - **Model registry (lean)**: `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
+- **Hermes setup**: `/mnt/raid0/llm/epyc-root/scripts/hermes/` (setup, config, launch script)
 
 For fresh setups: `scripts/clone-repos.sh` clones into `repos/` with symlinks.
 
@@ -64,6 +66,17 @@ Handoffs track cross-repo work items:
 - `handoffs/active/` — In-progress work
 - `handoffs/blocked/` — Waiting on dependencies
 - `handoffs/archived/` — Historical reference
+
+### Handoff Index Documents
+
+When creating an index that coordinates multiple handoffs, it must be an **actionable coordination point** — not a passive navigation document. Required sections:
+1. **Prioritized task list with checkboxes** — extract all outstanding tasks from linked handoffs, ordered by priority and dependency
+2. **Dependency graph** — which tasks block which
+3. **Cross-cutting concerns** — how changes in one subsystem affect others
+4. **Reporting instructions** — what to update after task completion
+5. **Key file locations** — implementation targets
+
+An agent pointed at an index should be able to autonomously discover, prioritize, and execute outstanding work across all linked subsystems.
 - `handoffs/completed/` — Done
 
 When completing handoffs, extract findings to docs, then move to `completed/`.
