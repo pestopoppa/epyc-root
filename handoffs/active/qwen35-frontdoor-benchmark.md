@@ -149,9 +149,9 @@ Add module-level convenience wrapper (matching `result_exists()` pattern ~line 3
 **File**: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`
 
 Add after existing qwen35 block (~line 1083):
-- 11 dense roles (2B×3, 4B×3, 9B×3, 27B×2) with `architecture: dense`
+- 11 dense-FFN hybrid roles (2B×3, 4B×3, 9B×3, 27B×2) with `architecture: ssm_hybrid` (corrected 2026-03-25: ALL Qwen3.5 are hybrid Delta Net, not pure attention)
 - 2 MoE roles (122B, 397B) with `architecture: qwen35moe`, `baseline_experts` and `override_key: qwen35moe.expert_used_count`
-- All Qwen3.5 models: `constraints.forbid: [eagle]` (SSM layers incompatible)
+- All Qwen3.5 models: `constraints.forbid: [eagle, speculative_decoding, prompt_lookup]` (Delta Net recurrent layers make spec decode net-negative)
 - MoE reduction ranges: 122B tests `[4,6]` (baseline 8), 397B tests `[4,6,8]` (baseline 10)
 
 **Temperature overrides** on each Qwen3.5 role (from HuggingFace model cards):
@@ -222,9 +222,9 @@ Models that forbid spec decode (MiniMax, GLM, SSM hybrids) are unaffected — th
 - Skip baselines (already done)
 - Run on 3 slowest baseline questions: lookup, spec, moe+lookup, moe+spec, moe+spec+lookup at each expert count
 
-### Dense models (27B, 9B, 4B, 2B):
+### Dense-FFN hybrid models (27B, 9B, 4B, 2B):
 - Full baseline quality tests (all suites)
-- Then on 3 slowest baseline questions: spec decode, lookup (if <20GB), spec+lookup
+- ~~Then on 3 slowest baseline questions: spec decode, lookup (if <20GB), spec+lookup~~ — NOT VIABLE: all Qwen3.5 are hybrid Delta Net, spec decode is net-negative
 
 ### MoE models (122B, 397B) — downloaded, pending benchmark:
 - Full baseline + MoE reduction quality tests (all expert counts)
@@ -467,8 +467,10 @@ Qwen3.5 is robust to quantization (Unsloth/Benjamin Marie confirmed). Our data s
 - [ ] Score 397B agentic suite (10 questions with TPS data, 0 quality-scored)
 - [ ] Test moe6+lookup on Q5_K_S (may close speed gap with Q4_K_M)
 - [ ] Re-score production models with 4096-token budget for fair comparison
-- [ ] Execute recommended swaps (architect_general, worker_general)
-- [ ] A/B test frontdoor candidates with live traffic
+- [x] Execute swap: architect_general → Qwen3.5-122B-A10B Q4_K_M (deployed 2026-03-19, moe8+spec_q8_k8+lookup)
+- [x] Execute swap: frontdoor → Qwen3.5-35B-A3B Q4_K_M (deployed 2026-03-19, moe6+lookup, 4×48t NUMA)
+- [ ] Execute swap: worker_general → Qwen3.5-4B Q8_0 (pending traffic analysis)
+- [ ] A/B test frontdoor with live traffic (Qwen3.5-35B now deployed)
 
 ## Closeout
 
@@ -516,6 +518,7 @@ Qwen3.5 is robust to quantization (Unsloth/Benjamin Marie confirmed). Our data s
 - [x] TPS statistics (median/mean/SD) computed for all models
 - [x] Stack swap recommendations documented
 - [x] Public benchmark comparison integrated
-- [ ] Execute stack swaps (architect_general → 122B, worker_general → 4B Q8_0)
-- [ ] A/B test frontdoor candidates
+- [x] Execute stack swaps: architect_general → 122B DONE, frontdoor → Qwen3.5-35B-A3B Q4_K_M DONE (2026-03-19)
+- [ ] Execute worker_general swap → Qwen3.5-4B Q8_0 (pending traffic analysis)
+- [ ] A/B test frontdoor candidates (Qwen3.5-35B now deployed, needs live validation)
 - [ ] Move handoff to `completed/`

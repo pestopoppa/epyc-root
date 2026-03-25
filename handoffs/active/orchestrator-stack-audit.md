@@ -32,7 +32,7 @@ Best candidates from existing benchmarks:
 
 Speed trade-off: 47 t/s → ~24 t/s (-49%). Still interactive (24 t/s = 1400 tok/min).
 
-**Wild card: Qwen3.5-27B dense** — a 28B dense model that should be fully compatible with spec decode + prompt lookup. If quality holds (~80-85%), spec decode could push it to 30-40+ t/s, closing the speed gap with the current frontdoor while gaining the Qwen3.5 quality improvements. This is the most promising unexplored option.
+**~~Wild card: Qwen3.5-27B dense~~** — STALE (2026-03-25): ALL Qwen3.5 variants (0.8B–397B) are hybrid Delta Net (3:1 recurrent:attention), NOT pure attention. Spec decode is not viable — verification batches cost ~Nx single decode due to sequential recurrent processing. Baseline speeds: 9B ~12-14 t/s, 27B ~8-9 t/s. Quality: 9B Q4KM 75%, 27B Q6K 85%. Registry corrected to `architecture: ssm_hybrid`.
 
 **Open questions (block implementation)**:
 - Spec decode tested with 1 speed question only — inconclusive. Need full 70-question suite test.
@@ -75,11 +75,11 @@ These need to be downloaded and benchmarked before deciding the architect swap.
 
 ### Models to download (GGUF quants from HuggingFace)
 - [ ] unsloth Qwen3.5-35B-A3B Q6_K / Q8_0 (if published — currently only Q4_K_M exists as non-abliterated)
-- [ ] **Qwen3.5-27B** (dense, 28B) — spec decode compatible! Potential frontdoor at high speed
+- [x] **Qwen3.5-27B** (hybrid Delta Net, 28B) — spec decode NOT viable (baseline 8.8-9.4 t/s)
 - [ ] **Qwen3.5-122B-A10B** (MoE, 10B active) — architect_general candidate (~65GB at Q4_K_M)
 - [ ] **Qwen3.5-397B-A17B** (MoE, 17B active) — ultimate architect candidate (~200GB at Q4_K_M)
-- [ ] **Qwen3.5-9B** (dense, 10B) — worker_explore candidate (if quality > Qwen2.5-7B's 44%)
-- [ ] **Qwen3.5-4B** (dense, 5B) — fast worker candidate
+- [x] **Qwen3.5-9B** (hybrid Delta Net, 10B) — spec decode NOT viable (baseline 12.7-14.5 t/s)
+- [x] **Qwen3.5-4B** (hybrid Delta Net, 5B) — benchmarked, spec decode NOT viable
 - [ ] Qwen3.5-2B / 0.8B — draft model candidates for spec decode with 27B
 
 ### Benchmarks — Phase 1 (35B-A3B acceleration gaps)
@@ -88,11 +88,11 @@ These need to be downloaded and benchmarked before deciding the architect swap.
 - [ ] Qwen3.5 35B tool use / REPL format compatibility test with frontdoor system prompt
 
 ### Benchmarks — Phase 2 (new models)
-- [ ] Qwen3.5-27B baseline + spec decode sweep (dense → spec should work!)
+- [x] Qwen3.5-27B baseline (hybrid — spec decode NOT viable, all variants converge ~12 t/s)
 - [ ] Qwen3.5-122B-A10B baseline + MoE reduction sweep
 - [ ] Qwen3.5-397B-A17B baseline + MoE reduction (if memory allows)
-- [ ] Qwen3.5-9B baseline + spec decode (worker candidate)
-- [ ] Qwen3.5-4B baseline (fast worker candidate)
+- [x] Qwen3.5-9B baseline (hybrid — spec decode NOT viable)
+- [x] Qwen3.5-4B baseline (hybrid — spec decode NOT viable)
 
 ### Benchmarks — Phase 3 (validation)
 - [ ] 480B as architect_general: 5 complex non-coding problems manually
