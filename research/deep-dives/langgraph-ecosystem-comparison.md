@@ -103,7 +103,7 @@ LangChain's Deep Agents (`create_deep_agent`) is a batteries-included agent with
 
 | # | Recommendation | Effort | Dependencies | Status |
 |---|---------------|--------|-------------|--------|
-| 1 | Agent Protocol naming alignment | None (documentation) | Next API surface change | Documented in hermes-agent-integration.md |
+| 1 | Agent Protocol naming alignment | None (documentation) | Next API surface change | Documented in orchestrator-conversation-management.md |
 | 2 | State history snapshots at node transitions | ~50 lines | None | Handoff: langgraph-migration.md |
 | 3 | interrupt() generalization in approval_gate.py | ~100 lines | None | Handoff: langgraph-migration.md |
 | 4 | LangGraph migration (subgraph composition, checkpoints, state immutability) | Large | Careful migration plan | Handoff: langgraph-migration.md |

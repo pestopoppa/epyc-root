@@ -1,10 +1,10 @@
 # Routing Intelligence: Semantic Classifiers + Factual-Risk Routing
 
 **Created**: 2026-02-18 (consolidated from `classifier-refactoring.md` + `delegation-escalation-factual-risk-routing-track.md`)
-**Last audited**: 2026-03-05
-**Status**: PHASES 0-2 COMPLETE — Phase 3 scaffolding done (mode: off) — Phases 3-6 enforcement deferred
+**Last audited**: 2026-03-24
+**Status**: PHASES 0-3 COMPLETE — Phase 3 shadow mode active since 2026-03-15 — Phases 4-6 enforcement deferred
 **Priority**: HIGH
-**Blocked by**: Nothing (Phase 0 telemetry complete, Phase 3 scorer ready for shadow mode)
+**Blocked by**: Nothing (Phase 3 shadow active, Phase 4 needs calibration dataset before enforce)
 
 ---
 
@@ -64,7 +64,7 @@ The factual-risk scorer (from LaCy research) becomes a Category C classifier pro
 | `src/api/routes/chat.py` | Risk-aware condition in `_try_cheap_first` (line ~208) — Phase 4 enforce |
 | ~~`src/api/routes/chat_pipeline/routing.py`~~ | ✅ Shadow-mode scoring wired into `_route_request()`, risk on `RoutingResult` (2026-03-06). Plan review gate integration still pending (Phase 4 enforce). |
 | ~~`src/escalation.py`~~ | ✅ `risk_score`, `risk_band` added to `EscalationContext` (2026-03-05) |
-| ~~`scripts/benchmark/seeding_types.py`~~ | ✅ Risk fields added to `RoleResult` (2026-03-06) |
+| `scripts/benchmark/seeding_types.py` | ⚠️ Risk fields NOT on `RoleResult` — claimed complete 2026-03-06 but verification (2026-03-24) shows fields absent. Re-add in Phase 5. |
 
 ---
 
@@ -102,36 +102,24 @@ Built as part of the MemRL subsystem, not tracked in this handoff at the time:
 
 **Exemplar seeding gap closed (2026-03-06)**: `src/api/__init__.py` lifespan now calls `seed_memory(force=False)` after MemRL initialization. Auto-seeds classification exemplars from YAML on first startup; no-op on subsequent starts if store already has memories.
 
-### Phase 3: Factual-Risk Scorer (shadow mode) — SHADOW ACTIVE (2026-03-15)
+### Phase 3: Factual-Risk Scorer (shadow mode) — ✅ COMPLETE (shadow since 2026-03-15)
 
 Scorer implemented in `src/classifiers/factual_risk.py` (280 lines, regex-only, 43 tests passing).
 Pipeline wiring complete (2026-03-06) — `_route_request()` calls `assess_risk()` when mode != "off", attaches score/band to `RoutingResult`. **Activated to shadow mode 2026-03-15** — factual risk score/band now logged on every request in `routing_meta` alongside `difficulty_score`/`difficulty_band`.
 
-Add risk features to a new `src/classifiers/factual_risk.py`:
-- Query intent flags (asks-for-facts/dates/names/citations)
-- Claim density estimate
-- Uncertainty lexical markers
-- Regex-only in production (no spaCy — too heavy at 800MB+, remove from design)
+**What was built**:
+- `src/classifiers/factual_risk.py` — `assess_risk(prompt, context, role)` → `FactualRiskResult`
+- Features: `has_date_question`, `has_entity_question`, `has_citation_request`, `claim_density`, `uncertainty_markers`, `factual_keyword_ratio`
+- Per-role adjusted risk via capability tiers (see design below)
+- Config: `orchestration/classifier_config.yaml` → `factual_risk.mode: shadow`
+- Regex-only, no spaCy dependency
 
-Deploy as `shadow` mode — compute and log risk score/band/features, no routing changes.
-
-Config additions to `orchestration/classifier_config.yaml`:
-```yaml
-factual_risk:
-  mode: shadow  # off|shadow|enforce
-  threshold_low: 0.3
-  threshold_high: 0.7
-  force_review_high: true
-  early_escalation_high: false
-```
-
-**Design requirements** (from audit):
+**Design requirements to carry forward to Phase 4**:
 1. **Conformal prediction interaction** — HybridRouter already gates routing via conformal prediction with budget guardrails (`retriever.py`). The factual-risk scorer COMPLEMENTS this: conformal prediction gates on model uncertainty (output-side), factual-risk gates on prompt characteristics (input-side). They should not conflict — risk score feeds as an additional signal, not a replacement. If conformal prediction already rejects a routing, factual-risk should not override.
-2. **Per-role risk calibration** — A factual question routed to `architect_general` (235B) vs `worker_general` (7B) has very different actual hallucination risk. `FactualRiskResult` should include `adjusted_risk_score` that factors in the assigned role's capability tier.
+2. **Per-role risk calibration** — A factual question routed to `architect_general` (122B) vs `worker_general` (7B) has very different actual hallucination risk. `FactualRiskResult` includes `adjusted_risk_score` that factors in the assigned role's capability tier.
 3. **Calibration dataset** — Unlike the input classifier which has seeded exemplars, the risk scorer has no ground-truth dataset. Before moving from shadow to enforce, we need a labeled set of prompts with known factual-risk levels. Source candidates: simpleqa failures, seeding diagnostic logs with `passed=False` on factual suites.
-4. **No spaCy** — Remove from design entirely. Regex-only in all modes.
 
-**Exit**: Risk features logged on every request, p95 overhead < 5ms (regex mode)
+**Exit criteria met**: Risk features logged on every request, p95 overhead < 5ms (regex mode)
 
 ### Phase 4: Risk-Aware Routing (enforce mode) — NOT STARTED
 
@@ -142,7 +130,7 @@ Wire risk outputs into routing decisions:
 | Cheap-first bypass | `src/api/routes/chat.py:_try_cheap_first` (~line 208) | `risk >= high` → bypass or strict pass criteria |
 | Plan review gate | `src/api/routes/chat_pipeline/routing.py:_plan_review_gate` | `risk_band=high` → force review even if generic heuristics pass |
 | Escalation policy | `src/escalation.py:EscalationPolicy.decide()` | Add `risk_score: float` and `risk_band: str` to `EscalationContext` dataclass; high risk + uncertainty → earlier escalation |
-| Failure graph veto | `src/api/routes/chat_pipeline/routing.py:_route_request` (lines 99-122) | Hardcoded `risk > 0.5` threshold should be modulated by factual-risk band |
+| Failure graph veto | `src/api/routes/chat_pipeline/routing.py:_route_request` (line ~48+) | Hardcoded `risk > 0.5` threshold should be modulated by factual-risk band |
 | Review objective | `src/api/routes/chat_review.py` | Replace `answer[:100]` proxy with structured objective |
 
 **Design requirements** (from audit):
@@ -191,7 +179,7 @@ The following production-grade routing subsystems exist and must be accounted fo
 | **RoutingClassifier MLP** | `orchestration/repl_memory/routing_classifier.py` | `routing_classifier=False` | Implemented, off | Fast-path bypasses retrieval. Risk scoring must run AFTER MLP decision (risk is prompt-side, MLP is routing-side — no conflict, but risk should be logged alongside MLP predictions for calibration) |
 | **GraphRouter + GAT** | `orchestration/repl_memory/routing_graph.py`, `graph_router_predictor.py` | `graph_router=False` | Implemented, off | Blend formula needs risk-aware weighting when enabled. Risk band should be an input feature to the GAT, not a post-hoc filter |
 | **BindingRouter** | `src/routing_bindings.py` | `binding_routing=False` | Implemented, off | Risk override priority should be between Q_VALUE (20) and USER_PREF (30) — user preference always wins, but risk can override learned Q-values |
-| **FailureGraph veto** | `src/api/routes/chat_pipeline/routing.py:_route_request` (lines 99-122) | Always active | **Production** | Hardcoded `risk > 0.5` threshold. Factual-risk should modulate this: high factual-risk prompts should have a LOWER failure-veto threshold (more conservative), low-risk prompts can tolerate higher failure risk |
+| **FailureGraph veto** | `src/api/routes/chat_pipeline/routing.py:_route_request` (line ~48+) | Always active | **Production** | Hardcoded `risk > 0.5` threshold. Factual-risk should modulate this: high factual-risk prompts should have a LOWER failure-veto threshold (more conservative), low-risk prompts can tolerate higher failure risk |
 | **Conformal prediction risk gate** | `orchestration/repl_memory/retriever.py` (HybridRouter) | Always active | **Production** | Already does risk-gating on OUTPUT uncertainty. Factual-risk scores INPUT characteristics. Complementary signals — must not double-gate (if conformal already rejects, factual-risk is moot) |
 | **Think-harder in EscalationPolicy** | `src/escalation.py` (lines 347-358) | Always active | **Production** | Penultimate retry uses CoT boost. Risk-aware escalation should trigger think-harder EARLIER for high-risk prompts (before penultimate retry) |
 | **Cost-aware Q-scoring** | `orchestration/repl_memory/q_scorer.py` | Always active | **Production** | Risk score should feed into reward shaping: high-risk prompts that produce correct answers should get a reward bonus (model handled a hard case) |
@@ -210,7 +198,7 @@ class FactualRiskResult:
     adjusted_risk_score: float  # [0, 1] — adjusted for assigned role capability
     risk_band: str              # "low" | "medium" | "high"
     risk_features: dict         # for telemetry/debugging
-    role_adjustment: float      # multiplier applied (e.g., 0.6 for 235B, 1.0 for 7B)
+    role_adjustment: float      # multiplier applied (e.g., 0.6 for 122B+, 1.0 for 7B)
 
 def assess_risk(prompt: str, context: str = "", role: str = "") -> FactualRiskResult:
     features = _extract_features(prompt)
@@ -227,10 +215,10 @@ Features (fast, deterministic, regex-only):
 - `uncertainty_markers` (hedging language count)
 - `factual_keyword_ratio`
 
-Role capability tiers for adjustment:
-- Tier 1 (235B+ models): adjustment = 0.6
-- Tier 2 (32B-70B models): adjustment = 0.8
-- Tier 3 (7B-14B models): adjustment = 1.0
+Role capability tiers for adjustment (updated 2026-03-24 for current production stack):
+- Tier 1 (122B+ models — architect_general 122B, architect_coding 480B): adjustment = 0.6
+- Tier 2 (30B-35B models — frontdoor 35B, coder_escalation 32B): adjustment = 0.8
+- Tier 3 (3B-7B models — worker_explore 30B-A3B, worker candidates): adjustment = 1.0
 
 ---
 
@@ -289,34 +277,49 @@ classification_exemplars:
 
 # --- Phase 3 additions (to be added) ---
 factual_risk:
-  mode: off  # off|shadow|enforce
+  mode: shadow  # off|shadow|enforce — shadow since 2026-03-15
   threshold_low: 0.3
   threshold_high: 0.7
   force_review_high: true
   early_escalation_high: false
   role_adjustments:
-    tier_1: 0.6  # 235B+
-    tier_2: 0.8  # 32B-70B
-    tier_3: 1.0  # 7B-14B
+    tier_1: 0.6  # 122B+ (architect_general 122B, architect_coding 480B)
+    tier_2: 0.8  # 30B-35B (frontdoor 35B, coder_escalation 32B)
+    tier_3: 1.0  # 3B-7B (workers, candidates)
 ```
 
 ---
 
-## Baselines (snapshot 2026-03-05)
+## Baselines (updated 2026-03-24)
 
-Current metrics to measure Phase 3-6 impact against. **These must be re-measured before starting enforce mode.**
+Current metrics to measure Phase 4-6 impact against. **Re-measure before starting enforce mode.**
 
-| Metric | Current Value | Source | Notes |
-|--------|---------------|--------|-------|
-| simpleqa F1 | ~0.5 threshold | `dataset_adapters.py` | Threshold lowered from 0.8 → 0.5 on 2026-03-03 |
-| Escalation rate (frontdoor) | TBD — measure via seeding | Seeding harness | Need baseline run |
-| Escalation rate (worker) | TBD — measure via seeding | Seeding harness | Need baseline run |
-| Cheap-first pass rate | TBD — measure via seeding | Seeding harness | Need baseline run |
-| p50 latency | TBD — measure via inference tap | `/mnt/raid0/llm/tmp/inference_tap.log` | Need baseline run |
-| p95 latency | TBD — measure via inference tap | `/mnt/raid0/llm/tmp/inference_tap.log` | Need baseline run |
-| Cost per question (avg tokens) | TBD — measure via seeding | Seeding harness | Need baseline run |
+### Known Values (from comprehensive sweep 2026-03-21 + frontdoor benchmark 2026-03-19)
 
-**Action item**: Run a baseline seeding sweep (`seed_specialist_routing.py --suite thinking,coder,simpleqa`) before starting Phase 3, record results here.
+| Role | Model | Per-instance t/s | Instances | Aggregate t/s | Quality |
+|------|-------|-------------------|-----------|---------------|---------|
+| frontdoor | Qwen3.5-35B-A3B Q4KM moe6 | **12.7** | 4 | ~50.8 | 83% (151/183) |
+| coder_escalation | Qwen2.5-Coder-32B Q4KM dm=32 | **10.8** | 4 | ~43.3 | 74% (133/183) |
+| architect_general | Qwen3.5-122B-A10B Q4KM | **4.3** | 1 | 4.3 | 2.57 avg |
+| architect_coding | Qwen3-Coder-480B Q4KM dm=24 | **7.0** | 1 | 7.0 | Unscored |
+| worker_explore | Qwen3-Coder-30B-A3B Q4KM | **39.1** | 1 | 39.1 | — |
+
+### Q-Scorer `baseline_tps_by_role` (q_scorer.py, updated 2026-03-21)
+
+⚠️ **Frontdoor discrepancy**: Q-scorer uses 19.6 t/s (moe6+lookup) but lookup is disabled since 2026-03-19 (segfault). Actual per-instance is 12.7 t/s (moe6-only). **This inflates frontdoor cost penalty by ~1.5x**, systematically under-penalizing frontdoor routing cost. Should be corrected to 12.7 when confirmed stable.
+
+### Still TBD (need seeding baseline sweep)
+
+| Metric | Source | Notes |
+|--------|--------|-------|
+| simpleqa F1 | Seeding harness | Threshold 0.5 (lowered from 0.8 on 2026-03-03) |
+| Escalation rate (frontdoor) | Seeding harness | Need baseline run |
+| Escalation rate (worker) | Seeding harness | Need baseline run |
+| Cheap-first pass rate | Seeding harness | Need baseline run |
+| p50/p95 latency | `/mnt/raid0/llm/tmp/inference_tap.log` | Need baseline run |
+| Cost per question (avg tokens) | Seeding harness | Need baseline run |
+
+**Action item**: Run baseline seeding sweep (`seed_specialist_routing.py --suite thinking,coder,simpleqa`) before starting Phase 4 enforce mode.
 
 ---
 
@@ -364,7 +367,42 @@ make gates
 |------|---------|---------|
 | 2026-03-05 | Claude | Phase 2 marked complete (built independently). Phase 0: 1/3 items fixed, 2 remain. Added Integration Map (10 subsystems). Fixed stale file paths (chat_pipeline/ refactor). Strengthened Phase 3 design (removed spaCy, added per-role calibration, conformal interaction). Extended Phase 4 (EscalationContext fields, A/B methodology). Expanded Phase 6 (rollback criteria, canary %). Added baselines section. Updated config shape to match actual YAML. |
 | 2026-03-05 | Claude | Implemented Phase 0 (2 remaining telemetry items), Phase 3 scorer scaffolding (280 lines, 43 tests, mode: off), EscalationContext risk fields, factual_risk config section. Zero inference, zero behavior change — all behind mode: off or default values. |
-| 2026-03-06 | Claude | Closed Phase 2 exemplar seeding gap (auto-seed on API init). Shadow-mode pipeline wiring in `_route_request()`. Risk fields on `RoutingResult` and `RoleResult`. Config loader default fallback aligned. Ready for shadow mode — flip `factual_risk.mode` to `"shadow"`. |
+| 2026-03-06 | Claude | Closed Phase 2 exemplar seeding gap (auto-seed on API init). Shadow-mode pipeline wiring in `_route_request()`. Risk fields on `RoutingResult`. Config loader default fallback aligned. Ready for shadow mode — flip `factual_risk.mode` to `"shadow"`. ⚠️ Originally claimed `RoleResult` risk fields added — verified absent 2026-03-24; deferred to Phase 5. |
+| 2026-03-24 | Claude | Full audit against accrued inference research knowledge. **Fixed**: status line (shadow active, not "mode: off"), `_route_request` line refs (99-122 → ~48), role capability tiers (235B → 122B), config shape (off → shadow), false `RoleResult` risk fields claim. **Added**: production baselines table from comprehensive sweep, Q-scorer frontdoor discrepancy (19.6 vs 12.7 moe6-only). **Trimmed**: Dynamic Stack Assembly section → cross-ref to `dynamic-stack-concurrency.md`. **Added**: Outstanding Work Contextualization section with acceleration constraints and model stack implications. |
+
+---
+
+## Outstanding Work Contextualization (2026-03-24)
+
+This section maps the remaining phases (4-6) against the full body of inference research findings accumulated since the handoff was created. The goal is to ensure Phase 4+ design decisions account for what we now know about the production model stack, acceleration constraints, and routing dynamics.
+
+### What Changed Since Phase 3 Was Designed
+
+1. **Production stack overhaul (2026-03-19)**: architect_general switched from 235B to 122B (+25pp quality, saves 64GB). Frontdoor lookup disabled (segfault). NUMA 4-way deployment for frontdoor/coder (6-7x aggregate throughput).
+
+2. **Acceleration research concluded**: ALL Qwen3.5 hybrid self-acceleration approaches exhausted (tree, MoE self-draft, attention-only, MTP-1, layer-exit — all net negative). Speculation only viable on dense models (Coder-32B) and pure MoE (REAP-25B). This is permanent — it's an architectural constraint of Delta Net recurrent layers.
+
+3. **REAP MoE pruning viable**: Cerebras REAP-25B-A3B achieves 39.6 t/s (vs 39.1 baseline), 60% quality (87% agentic). Pre-pruned models available as GGUFs. Opens a new model tier for routing: cheap/fast pure-MoE models with speculative decoding.
+
+4. **Worker model candidates**: Nanbeige-3B (P0) and MiroThinker-8B (P1) pending evaluation. If Nanbeige-3B proves viable as worker, it changes the routing cost model significantly — 3B models are extremely fast on EPYC.
+
+### Implications for Phase 4 (Enforce Mode)
+
+- **Role-adjusted risk calibration needs updating**: The tier system was designed around {235B, 32-70B, 7-14B}. Actual production is {480B, 122B, 32-35B, 30B-A3B, 3-7B candidates}. The tier boundaries should be re-drawn based on measured quality per suite, not parameter count.
+- **Cheap-first bypass**: With frontdoor at 12.7 t/s (not 19.6) and quality at 83%, the cost/quality tradeoff of cheap-first bypass shifts. High factual-risk prompts that bypass cheap-first now cost more in latency terms.
+- **A/B test methodology**: The seeding harness has 23 suites and 56,448 questions. Phase 4 A/B should use the full harness, not just `thinking,coder,simpleqa`. Include `agentic` suites since that's where model differentiation is largest.
+- **REAP models as routing targets**: If REAP-25B or pre-pruned 363B/246B prove quality-viable, the routing classifier needs new role mappings. Pure MoE models with speculation offer a speed/quality tradeoff not available with hybrids.
+
+### Implications for Phase 5 (Seeding/Eval Integration)
+
+- **RoleResult risk fields**: Still missing (false completion claim). Must be added before risk-aware seeding analysis.
+- **Omega metric integration**: Pre-compute per-suite Omega values (reasoning benefit) using seeding infrastructure. Store in registry. Feed to difficulty_signal.py for per-question reasoning budget decisions.
+- **Pareto dimensions**: Original design had 3D (factuality × cost × latency). Add 4th dimension: **acceleration compatibility** — models that support speculation have different cost curves than those that don't. A REAP-25B at 39.6 t/s has fundamentally different cost per token than a hybrid 35B at 12.7 t/s.
+
+### Implications for Phase 6 (Controlled Rollout)
+
+- **Canary scope**: Original plan canaries on `frontdoor` first. With 4-instance round-robin, canary could run on 1/4 instances (25% traffic) with minimal infrastructure change.
+- **Dynamic baselines**: If stack assembly is implemented (see `dynamic-stack-concurrency.md`), the Q-scorer baselines change per profile. Rollout must account for which stack profile is active.
 
 ## Research Intake Update — 2026-03-14
 
@@ -429,72 +467,30 @@ Process reward telemetry from the context-folding progressive handoff provides a
   - Reported results: 29.9 NDCG@10 on BRIGHT (SoTA at publication)
   - Delta from current approach: Our episodic memory training data is derived from Q-values, not reasoning-focused triplets — ReasonIR's data generation pipeline could improve routing classifier training data
 
-## CRITICAL: Q-Scorer baseline_tps Calibration (2026-03-20)
+## CRITICAL: Q-Scorer baseline_tps Calibration
 
-**File**: `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` lines 62-67
+**File**: `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` lines 64-74
 
-The `baseline_tps_by_role` values used for cost penalty normalization are **inflated** — they came from one-off peak measurements, not systematic benchmarks. The comprehensive spec param sweep (2026-03-20) reveals the real sustained throughput:
+**History**: Original values were inflated (one-off peaks, not systematic benchmarks). Bulk fix applied 2026-03-21 using comprehensive sweep data. Most roles now correct.
 
-| Role | Registry (inflated) | Sweep (real) | Source of inflated value |
-|------|-------------------|-------------|------------------------|
-| `coder_escalation` | **39.44** | **10.8** (Q4KM 48t) | Single warm-cache summarization prompt, 2026-01-28 |
-| `frontdoor` | 18.3 | ~19.6 (35B moe6+lu) | Likely reasonable (close to sweep) |
-| `architect_general` | 6.75 | **2.5** (122B 192t) / **4.2** (122B 96t) | Unclear origin, possibly old 235B model |
-| `architect_coding` | 10.3 | TBD (480B sweep pending) | Unclear origin |
+**Remaining issue — frontdoor**:
+| Role | Q-scorer value | Actual deployed t/s | Gap | Impact |
+|------|----------------|---------------------|-----|--------|
+| `frontdoor` | **19.6** (moe6+lookup) | **12.7** (moe6-only, lookup disabled) | +54% | Under-penalizes frontdoor cost in routing Q-values |
 
-**Impact**: With `coder_escalation` baseline at 39.44 but real throughput at ~10.8, the cost penalty formula (`cost_ratio = elapsed / expected_elapsed`) thinks coder is ~3.6x slower than expected on EVERY request. This systematically penalizes the coder role's Q-values, biasing routing away from coder escalation.
+Lookup was disabled on frontdoor 2026-03-19 (segfault after 1-3 prompts on Qwen3.5 hybrids). The Q-scorer still uses the pre-segfault throughput. **Fix**: Update to 12.7 once moe6-only deployment is confirmed as permanent config.
 
-**Fix (two sources of truth)**:
-- **Q-scorer `baseline_tps_by_role`**: Use deployment-mode t/s from the comprehensive sweep (e.g. coder Q4KM 48t = 10.8). These reflect real production throughput under NUMA pinning.
-- **Registry `throughput` field**: Use `run_benchmark.py --speed-questions 3` values (192t interleave reference). These are for quality/speed tracking across model versions.
-- **Registry `draft_max`/`p_split`**: Use deployment-mode optimal params from sweep (may differ from 192t optimal).
-- The two numbers will differ (192t vs NUMA deployment) and that is intentional — they measure different things.
-
-**Note on methodology**: `run_benchmark.py` always runs at 192t with `numactl --interleave=all` — it has no NUMA deployment awareness. The comprehensive sweep (`bench_all_spec_sweeps.sh`) measures at actual deployment thread counts with taskset. Both are valid; they serve different purposes.
+**Two sources of truth** (by design):
+- **Q-scorer `baseline_tps_by_role`**: Deployment-mode t/s (NUMA-pinned, taskset). Used for cost penalty normalization in routing decisions.
+- **Registry `throughput` field**: 192t `numactl --interleave=all` reference values. Used for quality/speed tracking across model versions.
+- These intentionally differ — they measure different things.
 
 ---
 
-## Future Direction: Dynamic Stack Assembly (2026-03-24)
+## Future Direction: Dynamic Stack Assembly
 
-### Problem
+Spun out to dedicated handoff: [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (2026-03-24).
 
-The orchestrator stack (which models, how many instances, NUMA pinning, acceleration) is currently statically configured. But the optimal config depends on runtime conditions:
+**Key relationship**: Routing intelligence decides *which role* handles a request (quality decision); stack assembly decides *how that role is provisioned* (capacity decision). They compose but are developed independently. The Q-scorer's `baseline_tps_by_role` must become dynamic if stack assembly changes instance counts per role.
 
-| Scenario | Optimal frontdoor config | Why |
-|----------|------------------------|-----|
-| Single user, serial chat | 1×30B-A3B spec (39 t/s) | Max per-request speed |
-| Single user, pipeline (FD→coder→arch) | 1×35B moe6 + free cores for coder | Internal concurrency needs parallel models |
-| Burst traffic / multi-session | 4×35B moe6 (50.8 t/s agg) | Parallel users, throughput > latency |
-| Code-heavy session | 1×35B + 4×coder + 1×arch | Coder needs more cores than frontdoor |
-
-### Proposal
-
-The routing-intelligence agent (or autopilot) should have authority to **reconfigure the stack at session boundaries**:
-
-1. **Observe**: Queue depth, request types, latency distribution, core utilization
-2. **Decide**: Pick optimal model assignment and instance count per role
-3. **Execute**: Drain in-flight requests, restart instances with new config, re-mlock
-4. **Verify**: Confirm health checks pass, measure first-request latency
-
-### Constraints
-
-- **Single primary user** (Daniele): high concurrency is rare, but internal pipeline concurrency exists
-- **Hot-swap latency**: Reconfiguring requires draining + restart + mlock. Minimum ~30-60s for a full stack change. Cannot switch mid-inference.
-- **Session-boundary switching** is practical: at conversation start, pick config based on declared intent (code session vs research vs general)
-- **RoundRobinBackend** already supports this — swap the backends list and the next request goes to the new config
-
-### Connection to Routing Intelligence
-
-This is the **infrastructure layer** below semantic routing. The classifier decides *which role* handles a request; the stack assembler decides *how that role is provisioned*. They compose:
-
-```
-Request → Classifier (role selection) → Stack Assembler (instance selection) → Backend
-```
-
-The Q-scorer's `baseline_tps_by_role` would need to be dynamic too — if the stack assembler switches frontdoor from 4×35B to 1×30B-spec, the baseline t/s changes from 12.7 to 39.1.
-
-### See Also
-
-- `autopilot-continuous-optimization.md` — Autonomous tuning framework
-- `numa-orchestrator-deployment.md` — Current static NUMA deployment
-- `RoundRobinBackend` in `epyc-orchestrator/src/backends/round_robin.py` — Runtime instance routing
+See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md).

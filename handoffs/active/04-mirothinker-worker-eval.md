@@ -74,3 +74,15 @@ Open-source deep research agent with 80.8% on GAIA-Val-165. Features MiroFlow fr
 - [ ] MiroVerse dataset evaluated for SFT potential
 - [ ] Long-horizon stress test completed
 - [ ] Decision documented: adopt / specialize / reject
+
+## Research Intake Update — 2026-03-20
+
+### ColBERT Reranker for web_research Pipeline (intake-174)
+
+**Source**: Reason-ModernColBERT (lightonai) — 150M late-interaction retriever, competitive with 7B+ dense models on reasoning-intensive benchmarks (BRIGHT)
+
+**Context**: MiroThinker achieves 80.8% on GAIA-Val-165 with up to 400 tool calls per task. Our `web_research` pipeline (search → parallel fetch → worker synthesis) currently has no reranking stage — the explore worker (Qwen2.5-7B, port 8082) receives all fetched pages and synthesizes directly. This means the worker spends tokens on low-relevance pages that DuckDuckGo ranked highly by keyword match but are semantically weak for reasoning tasks.
+
+**Proposed addition to Step 2 (benchmark against Qwen2.5-7B)**: When benchmarking web_research tasks specifically, measure how many fetched pages actually contribute to the final synthesis. If >30% of fetched pages are discarded or contribute nothing, a reranking stage would reclaim those tokens. Reason-ModernColBERT (150M, 128-dim multi-vector, MaxSim) runs in ~5ms on CPU for reranking 10-20 pages and doesn't compete for llama-server inference slots — it's a separate model entirely. The late-interaction advantage is largest on exactly the reasoning-heavy queries where web_research matters most (Biology +7, Earth Science +9.6 NDCG@10 vs dense).
+
+**Integration path**: After DuckDuckGo fetch, encode pages + query via Reason-ModernColBERT, rerank by MaxSim score, pass only top-K to explore worker. This reduces worker context pressure and improves synthesis quality on reasoning tasks — directly comparable to MiroThinker's approach of selecting relevant tool outputs before synthesis.

@@ -1,0 +1,107 @@
+# Hermes Agent — Local llama-server Configuration
+# EPYC standalone mode: Qwen3-Coder-30B-A3B on port 8099
+# Phase 2 swap: change base_url to http://localhost:8000/v1 (orchestrator)
+
+# =============================================================================
+# Model — local llama-server (OpenAI-compatible)
+# =============================================================================
+model:
+  # Auto-detected from /v1/models endpoint (llama-server serves exactly one model)
+  default: ""
+  provider: "auto"
+  base_url: "http://localhost:8099/v1"
+  api_key: "sk-no-key"
+  # Explicit context length — overrides /v1/props detection which can report
+  # per-slot values when -np > 1. Must match llama-server -c flag.
+  context_length: 32768
+
+# =============================================================================
+# Auxiliary Models — all point at same local endpoint
+# =============================================================================
+# Single local model handles everything: compression, extraction, etc.
+# No cloud API calls for any auxiliary task.
+auxiliary:
+  vision:
+    provider: "main"
+    model: ""
+    base_url: "http://localhost:8099/v1"
+    api_key: "sk-no-key"
+  compression:
+    provider: "main"
+    model: ""
+    base_url: "http://localhost:8099/v1"
+    api_key: "sk-no-key"
+  web_extract:
+    provider: "main"
+    model: ""
+  session_search:
+    provider: "main"
+    model: ""
+
+# =============================================================================
+# Context Compression — use local model
+# =============================================================================
+compression:
+  enabled: true
+  threshold: 0.50
+  target_ratio: 0.20
+  protect_last_n: 20
+  # Use local endpoint for compression (no cloud calls)
+  summary_model: ""
+  summary_provider: "main"
+
+# =============================================================================
+# Delegation — subagents use same local endpoint
+# =============================================================================
+delegation:
+  max_iterations: 30
+  default_toolsets: ["terminal", "file"]
+  # Inherit parent's provider (local endpoint)
+
+# =============================================================================
+# Terminal — local execution
+# =============================================================================
+terminal:
+  backend: "local"
+  cwd: "."
+  timeout: 180
+  lifetime_seconds: 300
+
+# =============================================================================
+# Toolsets — local-only tools, no cloud dependencies
+# =============================================================================
+# Disable: vision (needs multimodal), image_gen (FAL), browser (Browserbase),
+#          moa (OpenRouter), rl (Tinker), tts (cloud STT)
+# Keep: terminal, file, skills, todo, memory, session_search, cronjob
+platform_toolsets:
+  cli: [terminal, file, skills, todo, memory, session_search, cronjob]
+
+# =============================================================================
+# Memory
+# =============================================================================
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  nudge_interval: 10
+  flush_min_turns: 6
+
+# =============================================================================
+# Agent Behavior
+# =============================================================================
+agent:
+  max_turns: 30
+  verbose: false
+  reasoning_effort: "medium"
+
+# =============================================================================
+# Display
+# =============================================================================
+display:
+  compact: false
+  tool_progress: all
+  streaming: true
+  show_reasoning: false
+  bell_on_complete: true
+  skin: default

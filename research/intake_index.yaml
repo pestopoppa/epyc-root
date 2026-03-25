@@ -2899,7 +2899,7 @@
     - src/graph/helpers.py (session_compaction — parallel to their context summarization)
     - src/graph/helpers.py (_spill_if_truncated — parallel to their file-based output storage)
     handoffs:
-    - hermes-agent-integration.md
+    - hermes-agent-index.md
   notes: 'Architectural parallel to our REPL + escalation pipeline. Key patterns that mirror ours: sub-agent delegation (our
     escalation), context summarization (our session_compaction), file-based output storage (our output spill). Their approach
     is more opinionated/turnkey; ours is more sophisticated (multi-tier routing, MemRL Q-values, difficulty-adaptive budgets).
@@ -2936,7 +2936,7 @@
     - src/session/ (session persistence — maps to Threads)
     - orchestration/repl_memory/ (episodic + strategy store — maps to Store)
     handoffs:
-    - hermes-agent-integration.md
+    - hermes-agent-index.md
   notes: 'Framework-agnostic API standard that maps cleanly to our existing primitives: Runs → task execution, Threads → session
     persistence, Store → episodic memory. LangGraph Platform implements a superset. If we ever expose the orchestrator as
     an agent server (beyond the current /chat endpoint), this spec is the interop standard to follow. The agent introspection
@@ -2973,7 +2973,7 @@
     - src/graph/approval_gate.py (human-in-the-loop at escalation boundaries)
     - orchestration/repl_memory/ (episodic memory — persistent across sessions)
     handoffs:
-    - hermes-agent-integration.md
+    - hermes-agent-index.md
   notes: 'Most architecturally relevant LangChain project — our orchestrator uses the same graph-based execution paradigm
     (pydantic_graph with nodes, edges, typed TaskState). Key differences: LangGraph is a generic framework, we have a purpose-built
     orchestrator with domain-specific features (multi-tier model routing, speculative decoding control, MemRL Q-values). LangGraph''s
@@ -4024,3 +4024,987 @@
     is the most transferable idea: only load neurons/experts predicted to be active. For EPYC: low direct relevance since
     we operate with sufficient DRAM, but the theoretical framework for I/O-aware inference planning is sound. Published at
     ACL 2024.'
+- id: intake-170
+  arxiv_id: '2508.05592'
+  url: https://github.com/Jasaxion/MathSmith
+  source_type: repo
+  title: 'MathSmith: Towards Extremely Hard Mathematical Reasoning by Forging Synthetic Problems with a Reinforced Policy'
+  authors:
+  - Shaoxiong Zhan
+  - Yanlin Lai
+  - Ziyu Lu
+  - Dahua Lin
+  - Ziqing Yang
+  - Fei Tan
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  techniques:
+  - GRPO with structural/reasoning/consistency rewards
+  - 9 difficulty-enhancing strategies
+  - concept-pair sampling from PlanetMath
+  - weakness-focused self-improvement
+  key_claims:
+  - Generates novel math problems from scratch via RL rather than modifying existing ones
+  - 9 difficulty-enhancing strategies (multi-step reasoning, cross-topic, implicit logic, distractors, abstract modeling, multiple paths, advanced manipulation, extreme conditions, non-standard representation)
+  - GRPO reward combines structural validity + reasoning complexity + answer consistency
+  - Consistent improvement on GSM8K, MATH-500, AIME2024, AIME2025, OlympiadBench
+  - 'Qwen3-8B long-CoT: AIME2024 66.7->76.7, AIME2025 63.3->70.0, MATH-500 94.4->96.4'
+  reported_results:
+    Qwen2.5-7B-Instruct_short:
+      AIME2024: '16.7 -> 23.3'
+      AIME2025: '6.7 -> 10.0'
+      MATH-500: '72.2 -> 75.2'
+    Qwen3-8B_short:
+      AIME2024: '30.0 -> 33.3'
+      AIME2025: '16.7 -> 23.3'
+      MATH-500: '82.8 -> 84.4'
+    Qwen3-8B_long:
+      AIME2024: '66.7 -> 76.7'
+      AIME2025: '63.3 -> 70.0'
+      MATH-500: '94.4 -> 96.4'
+  novelty: low
+  relevance: medium
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    research:
+    - MATHSMITH_CANONICALIZER_PROPOSAL.md
+    - RESULTS_SUMMARY.md
+    model_registry:
+    - math_formalizer (MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q8_0)
+    - math_formalizer_q4 (MathSmith-Hard-Problem-Synthesizer-Qwen3-8B.Q4_K_M)
+    benchmarks:
+    - summary.csv (rows 15-16)
+  notes: >
+    Formal publication (AAAI 2026) of MathSmith framework. The older MathSmith-Hard-Problem-Synthesizer-Qwen3-8B
+    model is already deployed in the EPYC stack as math_formalizer role. This paper adds: (1) formal GRPO reward
+    design documentation, (2) new Qwen3 1.7B-32B model variants on HuggingFace, (3) weakness-focused
+    self-improvement loop. The new 32B variant and updated training may warrant re-evaluation as formalizer
+    replacement. v3 from 2026-03-08.
+- id: intake-171
+  arxiv_id: null
+  url: https://www.math.inc/formalqualbench
+  source_type: blog
+  title: 'FormalQualBench: Graduate-Level Lean 4 Autoformalization Benchmark'
+  authors:
+  - Math, Inc.
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - Specification-based evaluation using comparator prevents unsound proofs bypassing the kernel
+  - Harder than SorryDB, TaoBench, RLMEval — requires full auto-formalization without existing proofs
+  - Open-source tools with MCP/skills harnesses outperform closed-source and bash-only approaches
+  - 23 graduate-level theorems, 8/23 solved by best agent (OpenGauss)
+  techniques:
+  - comparator-based verification (sandboxed Lean kernel check)
+  - specification-based agent workflow (expert-verified Lean statements only)
+  - multi-harness agent evaluation (Skills, MCP, bash-only)
+  reported_results:
+    OpenGauss: '8/23 solved, $24.93/solve, 1h48m/solve'
+    Claude_Code_Skills: '5/23 solved, $13.47/solve, 51m/solve'
+    opencode_Opus: '5/23 solved, $22.22/solve, 1h31m/solve'
+    Codex: '5/23 solved, ~40m/solve'
+    Claude_Code_bash: '4/23 solved, $23.16/solve, 1h45m/solve'
+  referenced_arxiv_ids:
+  - '2603.02668'
+  novelty: high
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-170
+    handoffs:
+    - hermes-agent-index.md
+  notes: >
+    New benchmark for Lean 4 autoformalization at graduate math level. Interesting agent evaluation
+    methodology (comparator-based verification, multi-harness comparison). Not directly applicable to
+    EPYC inference optimization, but the agent harness patterns (MCP vs Skills vs bash-only) and
+    cost/time metrics are informative for orchestrator agent design. References SorryDB (2603.02668).
+- id: intake-172
+  arxiv_id: null
+  url: https://www.math.inc/opengauss
+  source_type: blog
+  title: 'OpenGauss: Open Source Autoformalization Harness for Lean'
+  authors:
+  - Math, Inc.
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - State-of-the-art on FormalQualBench (8/23)
+  - Stronger, faster, and more cost-efficient than alternatives
+  - Parallel subagent coordination for proof engineering
+  - Built for practical Lean workflows, not just benchmark demos
+  techniques:
+  - parallel subagent coordination
+  - specification-based evaluation via Lean FRO Comparator
+  - MCP + LSP integration for Lean tooling
+  novelty: high
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-171
+    handoffs:
+    - hermes-agent-index.md
+  notes: >
+    Open-source multi-agent harness for Lean 4. Relevance to EPYC: (1) forked from hermes-agent which
+    we are evaluating for integration, (2) parallel subagent coordination patterns may inform orchestrator
+    design, (3) MCP/LSP integration approach. Not directly applicable to inference optimization but the
+    agent architecture patterns are worth tracking.
+  deep_dive: research/deep-dives/opengauss-architecture-analysis.md
+- id: intake-173
+  arxiv_id: null
+  url: https://github.com/math-inc/OpenGauss
+  source_type: repo
+  title: 'OpenGauss GitHub Repository — Lean Workflow Orchestrator'
+  authors:
+  - Math, Inc.
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - CLI-based multi-agent frontend for Lean 4 proving and formalization
+  - Managed workflow spawning (/prove, /draft, /autoprove, /formalize, /autoformalize)
+  - Session isolation and preflight validation
+  - Swarm management for parallel workflow runs
+  techniques:
+  - child process management for isolated workflow agents
+  - MCP and LSP integration
+  - upward directory traversal for project discovery (.gauss/project.yaml)
+  - session state tracking for swarm management
+  dependencies:
+  - Python 3.x
+  - uv/uvx package manager
+  - ripgrep
+  - claude CLI or codex backend
+  - Lean 4 with lean4-skills plugin
+  novelty: high
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-172
+    handoffs:
+    - hermes-agent-index.md
+  notes: >
+    156 stars, 13 forks. Forked from nousresearch/hermes-agent. Key architectural patterns:
+    project-scoped config (.gauss/project.yaml), managed backend spawning, swarm coordination
+    for parallel agents. Supports both claude and codex backends. MIT licensed. The child process
+    isolation and swarm management patterns are relevant to our orchestrator multi-agent work.
+  deep_dive: research/deep-dives/opengauss-architecture-analysis.md
+- id: intake-174
+  arxiv_id: null
+  url: https://huggingface.co/lightonai/Reason-ModernColBERT
+  source_type: repo
+  title: 'Reason-ModernColBERT: Late-Interaction Retriever for Reasoning Tasks'
+  authors:
+  - Antoine Chaffin
+  - Raphaël Sourty
+  - LightOn AI
+  categories:
+  - retrieval_augmented_decoding
+  - routing_intelligence
+  key_claims:
+  - 150M parameter ColBERT model outperforms 7B+ dense retrievers on reasoning-intensive benchmarks (BRIGHT)
+  - Late interaction (MaxSim) gives +7.3 NDCG@10 over dense retrieval on same training data
+  - Trained on ReasonIR-HQ dataset (100K triplets) in <3 hours on 8×H100 using PyLate
+  - With GPT-4 reasoning traces as queries, achieves 30.28 NDCG@10 (vs 29.96 for ReasonIR-8B, 45x larger)
+  - Asymmetric query/document length scaling — benefits from shorter focused queries despite long-sequence training
+  techniques:
+  - Late interaction (ColBERT MaxSim)
+  - ModernBERT backbone (answerdotai/ModernBERT-base)
+  - CachedContrastive loss (Gao et al., 2021)
+  - ReasonIR-HQ synthetic reasoning triplets
+  reported_results:
+  - 'BRIGHT full mean: 22.62 NDCG@10 (vs ReasonIR-8B 24.38, GritLM-7B 20.95, OpenAI 17.87)'
+  - 'BRIGHT StackExchange mean: 27.43 (best among all models including 8B)'
+  - 'With GPT-4 reasoning traces: 30.28 full mean (+7.66 from standard queries)'
+  - 'Late vs Dense on same data: 19.61 vs 12.31 full mean'
+  referenced_arxiv_ids:
+  - '1908.10084'
+  - '2101.06983'
+  - '2504.20595'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-099
+    - intake-175
+    - intake-176
+    handoffs:
+    - routing-intelligence.md
+  notes: >
+    Deep dive analysis (2026-03-20): ColBERT for episodic memory is NOT a good fit — wrong scale (our store
+    has 500-2000 memories, not millions), wrong query format (structured serialized strings like
+    "type:coding | objective:..." not natural-language reasoning), and marginal impact given Q-value
+    dominance (0.7 weight in Phase 2 ranking). Storage overhead 6x (128-dim per token vs single 1024-dim
+    vector). The BRIGHT benchmark win is on corpus-scale natural-language reasoning retrieval, which doesn't
+    transfer to our structured routing queries.
+
+    Actual value: (1) web_research reranker candidate — 150M ColBERT reranker is 50x cheaper than 7B models
+    and competitive on reasoning queries. If we add a reranking stage to web_research (search → fetch →
+    rerank → synthesize), this model is a strong candidate. (2) The ReasonIR hard-negative methodology
+    (intake-176) is more applicable than the model itself — "plausibly related but ultimately unhelpful"
+    documents map to a known routing failure mode where semantically similar tasks get identical routing
+    despite needing different handling. CC-BY-NC-4.0 license; Apache 2.0 reproduction path documented.
+- id: intake-175
+  arxiv_id: '2508.03555'
+  url: https://arxiv.org/abs/2508.03555
+  source_type: paper
+  title: 'PyLate: Flexible Training and Retrieval for Late Interaction Models'
+  authors:
+  - Antoine Chaffin
+  - Raphaël Sourty
+  categories:
+  - retrieval_augmented_decoding
+  - training_distillation
+  key_claims:
+  - Library built on Sentence Transformers for training and deploying ColBERT models
+  - Supports contrastive learning and knowledge distillation training paradigms
+  - FastPLAID indexing with product quantization reduces storage by 10x
+  - Multi-GPU training with GradCache-based CachedContrastive loss for large effective batch sizes
+  - Can construct ColBERT models from most pre-trained language models (not limited to BERT)
+  techniques:
+  - CachedContrastive loss (GradCache)
+  - PLAID indexing (product quantization)
+  - MaxSim late interaction scoring
+  - Knowledge distillation from cross-encoders
+  - Cross-GPU gradient gathering
+  reported_results:
+  - 'Published at ACM CIKM 2025'
+  - 'Sub-200ms latency through centroid-based retrieval'
+  - 'Reason-ModernColBERT trained in <3 hours on 8xH100 using PyLate'
+  referenced_arxiv_ids:
+  - '2101.06983'
+  - '2112.01488'
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-174
+    - intake-099
+  notes: >
+    PyLate is the training/inference framework behind Reason-ModernColBERT. While the library itself isn't
+    directly applicable to our llama.cpp-based inference stack, it's relevant as the toolchain for anyone
+    wanting to fine-tune ColBERT models for domain-specific retrieval. If we ever pursued ColBERT-based
+    episodic memory retrieval (replacing FAISS dense vectors), PyLate would be the training framework.
+    MIT licensed. The PLAID indexing could be interesting for efficient multi-vector storage.
+- id: intake-176
+  arxiv_id: '2504.20595'
+  url: https://arxiv.org/abs/2504.20595
+  source_type: paper
+  title: 'ReasonIR: Training Retrievers for Reasoning Tasks'
+  authors: []
+  categories:
+  - retrieval_augmented_decoding
+  - benchmark_methodology
+  key_claims:
+  - First retriever specifically trained for general reasoning tasks
+  - Synthetic data generation pipeline creates challenging reasoning queries with hard negatives
+  - ReasonIR-8B achieves 29.9 NDCG@10 (without reranker) and 36.9 (with reranker) on BRIGHT
+  - Existing retrieval training datasets focus on short factual queries — reasoning tasks need different data
+  - Mixture of synthetic + public data training strategy
+  techniques:
+  - Synthetic reasoning query generation
+  - Hard negative mining for reasoning tasks
+  - BRIGHT benchmark evaluation
+  reported_results:
+  - '29.9 NDCG@10 on BRIGHT (no reranker)'
+  - '36.9 NDCG@10 on BRIGHT (with reranker)'
+  - 'State-of-the-art on reasoning-intensive retrieval at time of publication'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-174
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-174
+    handoffs:
+    - routing-intelligence.md
+  notes: >
+    Deep dive analysis (2026-03-20): The most transferable finding is the hard-negative generation
+    methodology, not the retriever model itself. ReasonIR generates "plausibly related but ultimately
+    unhelpful" documents as negatives — this maps directly to a routing failure mode where semantically
+    similar tasks (e.g., "implement quicksort" vs "explain quicksort complexity") get identical routing
+    despite needing different handling (REPL vs direct). Our extract_training_data.py generates training
+    pairs from Q-values but has no hard-negative generation. Adding contrastive negatives — same-domain
+    tasks that succeeded with DIFFERENT roles — could sharpen the routing classifier MLP's decision boundary.
+
+    The +22.6% GPQA and +6.4% MMLU RAG improvements suggest that when ReasonIR is used as a RAG retriever
+    (not routing), it materially improves downstream answer quality on reasoning tasks. Relevant if we
+    expand web_research with better source retrieval. Dataset (100K triplets) publicly available on HF.
+    Note: DIVER (arXiv:2508.07995) subsequently achieved 45.8 NDCG@10 on BRIGHT, surpassing ReasonIR.
+
+- id: intake-177
+  arxiv_id: null
+  url: https://moonmath.ai/posts/introducing-backlite/
+  source_type: blog
+  title: 'BackLite: Attention Backpropagation Acceleration Using Dynamic Sparsity'
+  authors:
+  - MoonMath.ai (Dor Shmilovich et al.)
+  categories:
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - First algorithm to exploit dynamic attention sparsity for backward-pass acceleration
+  - Tracks negligible attention values during forward pass, masks them during backprop
+  - Works with any transformer architecture (LLMs, video diffusion)
+  - 2.10% wall-clock speedup on nanochat GPT-2 training (1.76h vs 1.80h)
+  - Gradient cosine similarity >0.99 at >50% sparsity in calibrated mode
+  techniques:
+  - BackLite (dynamic sparse backward pass)
+  - LiteAttention (foundational forward-pass sparsity)
+  - FlashAttention 3 extension
+  reported_results:
+  - '2.10% training speedup on nanochat 1.3B GPT-2'
+  - '~30% sparsity at negl_prob=0.01 on Wan 2.1 diffusion'
+  - '>50% sparsity with cosine similarity >0.99 in calibrated mode'
+  - 'Gradient L2 relative difference ~3%'
+  related_arxiv:
+  - '2205.14135'
+  - '2307.08691'
+  - '2511.11062'
+  - '2503.20314'
+  novelty: high
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >
+    Training-only optimization requiring H100/H200 GPUs with FA3. EPYC stack is CPU inference
+    on AMD EPYC 9655 with no training-capable GPUs. The dynamic sparsity detection concept
+    (forward-pass LSE statistics to backward-pass tile masking) is elegant but not transferable
+    to our CPU inference workload. Cross-ref to doc-to-lora is tangential (llama.cpp CPU
+    fine-tuning, not FA3).
+
+- id: intake-178
+  arxiv_id: null
+  url: https://github.com/moonmath-ai/BackLite
+  source_type: repo
+  title: 'BackLite — FA3 sparse backward pass implementation'
+  categories:
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - Drop-in optimization layer for FlashAttention 3 backward pass
+  - Tunable negl_prob parameter controls sparsity-accuracy tradeoff
+  - Per-sample adaptive masking from actual attention statistics
+  - Requires H100/H200 + CUDA 12.8 + C++20
+  techniques:
+  - BackLite Triton kernel
+  - Tile-level LSE-based sparsity mask
+  reported_results:
+  - 'See blog post intake-177 for benchmarks'
+  novelty: high
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-177
+  notes: >
+    Implementation repo for intake-177. MIT licensed. Hopper GPU only.
+
+- id: intake-179
+  arxiv_id: null
+  url: https://github.com/karpathy/nanochat/pull/633
+  source_type: repo
+  title: 'nanochat PR #633: BackLite integration — 2.10% training speedup'
+  authors:
+  - omershlo (Shlomtz)
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - BackLite integrated as highest-priority attention backend (BackLite > FA3 > SDPA)
+  - 1.76h time-to-GPT-2 (down from 1.80h baseline), 2.10% wall-clock speedup
+  - CORE score 0.2586 (above GPT-2 threshold 0.2565), val_bpb 0.7200
+  - 4 independent runs show mean CORE 0.2586 with spread 0.2516-0.2648
+  - BackLite only applies during training; inference always uses vanilla FA3
+  techniques:
+  - BackLite negl_prob warmup schedule (100 steps)
+  - Pre-compiled dual code paths (avoids torch.compile recompilation)
+  reported_results:
+  - '2.10% wall-clock speedup (1.76h vs 1.80h)'
+  - 'CORE 0.2586 (above 0.2565 GPT-2 threshold)'
+  - 'val_bpb +0.27% regression (0.72003 vs 0.71808)'
+  - 'CORE -3.9% relative to baseline (still passing)'
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-177
+    - intake-178
+  notes: >
+    Real-world validation of BackLite on karpathy's nanochat leaderboard. PR is CLOSED
+    (labeled "leaderboard candidate"). The 2.10% speedup is modest but quality preservation
+    (CORE still above threshold) validates the sparse backward-pass approach. Not applicable
+    to EPYC — training optimization on H100 GPUs.
+
+- id: intake-180
+  arxiv_id: '2511.11062'
+  url: https://arxiv.org/abs/2511.11062
+  source_type: paper
+  title: 'LiteAttention: A Temporal Sparse Attention for Diffusion Transformers'
+  authors:
+  - Dor Shmilovich
+  - Tony Wu
+  - Aviad Dahan
+  - Yuval Domb
+  categories:
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - Attention sparsity patterns exhibit strong temporal coherence across denoising steps
+  - Skip redundant tiles by propagating sparsity decisions forward
+  - Inference-only optimization for video diffusion transformers
+  - No quality degradation on production diffusion models
+  techniques:
+  - Temporal sparsity propagation
+  - Tile-level attention masking (forward pass)
+  reported_results:
+  - 'Substantial speedups on production video diffusion models'
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: expansion
+  expanded_from: intake-177
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-177
+  notes: >
+    Foundational work that BackLite builds upon. Inference-only for diffusion denoising.
+    Both are GPU-only. Temporal coherence insight not transferable to autoregressive LLM
+    inference on CPU.
+
+- id: intake-181
+  arxiv_id: '2510.13999'
+  url: https://arxiv.org/abs/2510.13999
+  source_type: paper
+  title: 'REAP the Experts: Why Pruning Prevails for One-Shot MoE Compression'
+  authors:
+  - Mike Lasby
+  - Ivan Lazarevich
+  - Nish Sinnadurai
+  - Sean Lie
+  - Yani Ioannou
+  - Vithursan Thangarasa
+  categories:
+  - moe_optimization
+  - quantization
+  - inference_serving
+  key_claims:
+  - Router-weighted expert activation pruning (REAP) removes entire MoE experts based on saliency = gate_weight × activation_norm
+  - One-shot, no fine-tuning required — prune and deploy immediately
+  - Pruning mathematically superior to merging — merging introduces irreducible error from router policy variance
+  - 25% pruning is near-lossless across coding, math, and creative writing
+  - 50% pruning retains ~92% coding quality, far exceeds merging methods (HC-SMoE collapses to 0.008 on creative writing vs REAP 0.718)
+  - Tested on 20B to 1T parameter MoE models including Qwen3-30B-A3B
+  techniques:
+  - Router-weighted expert activation pruning (REAP)
+  - One-shot structured MoE compression
+  - Saliency scoring via S_j = mean(gate_value × activation_norm)
+  reported_results:
+  - 'Qwen3-30B-A3B at 25%: near-lossless (HumanEval +2.4pp, MBPP -0.3pp)'
+  - 'Qwen3-30B-A3B at 50%: coding 0.557, math 0.875, creative 0.718'
+  - 'Qwen3-Coder-480B at 50%: retains 97.6% baseline coding, 96.7% SWE-Bench'
+  - 'MiniMax-M2 at 25%: AIME25 +6.6pp, HumanEval 0.0pp delta'
+  - 'Paper-wide mean: -2.8% at 25%, -8.0% at 50% (coding)'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    intake:
+    - intake-183
+    - intake-185
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created:
+  - reap-moe-expert-pruning.md
+  notes: >
+    ICLR 2026 paper from Cerebras. Directly applicable to our Qwen3 MoE stack.
+    Cerebras already ships Qwen3-Coder-REAP-25B-A3B. Our Chapter 02 covers runtime
+    expert reduction (inference-time routing restriction) — REAP is the permanent-pruning
+    counterpart. Removes whole experts = real memory savings + faster inference.
+    Calibration data mix critical for retaining code ability.
+
+- id: intake-182
+  arxiv_id: '2309.05516'
+  url: https://arxiv.org/abs/2309.05516
+  source_type: paper
+  title: 'Optimize Weight Rounding via Signed Gradient Descent for the Quantization of LLMs'
+  authors:
+  - Wenhua Cheng
+  - Weiwei Zhang
+  - Haihao Shen
+  - Yiyang Cai
+  - Xin He
+  - Kaokao Lv
+  categories:
+  - quantization
+  key_claims:
+  - SignRound (AutoRound) learns rounding offsets + clipping bounds via signed gradient descent
+  - 200 optimization steps with 128 calibration samples
+  - Marginal improvement over GPTQ/AWQ at 4-bit (+0.1-0.7% accuracy)
+  - Dramatic advantage at 2-bit (up to 2.1x relative accuracy vs GPTQ)
+  - Joint optimization of rounding and clipping boundaries
+  techniques:
+  - AutoRound / SignRound weight-only PTQ
+  - Learnable rounding offset V + clipping parameters alpha, beta
+  - Signed gradient descent optimization
+  reported_results:
+  - 'W4G128 Mistral-7B: 62.62% vs GPTQ 62.32% vs AWQ 62.16%'
+  - 'W2G128 Mistral-7B: 52.71% vs GPTQ 39.61% vs AWQ 30.06%'
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-181
+  notes: >
+    Intel, EMNLP 2024. GGUF export path uses RTN (iters=0), NOT the full SignRound
+    optimization — so AutoRound GGUF is functionally equivalent to llama-quantize.
+    The quality advantage only manifests in native AutoRound format via vLLM/Transformers.
+    Not relevant for our llama.cpp/GGUF stack at 4-bit. Would matter if we moved to
+    vLLM or needed INT2/INT3 extreme compression.
+
+- id: intake-183
+  arxiv_id: null
+  url: https://github.com/0xsero
+  source_type: repo
+  title: '0xSero GitHub Profile — Sybil Solutions'
+  categories:
+  - inference_serving
+  key_claims:
+  - Community practitioner applying REAP + AutoRound to MoE models
+  - 196 repos, pinned projects include vllm-studio and elizaOS/eliza
+  - vllm-studio is a language model development tool (294 stars)
+  techniques:
+  - REAP expert pruning (applied, not authored)
+  - AutoRound W4A16 quantization (applied)
+  - DPO/GRPO/SFT fine-tuning
+  novelty: low
+  relevance: low
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-184
+  notes: >
+    0xSero is a community contributor, not the REAP author (Cerebras).
+    Profile bio: "Orchestrator" at Sybil Solutions. vllm-studio may be worth
+    investigating if we explore vLLM as an alternative backend.
+
+- id: intake-184
+  arxiv_id: null
+  url: https://huggingface.co/0xSero
+  source_type: repo
+  title: '0xSero HuggingFace Profile — 28 REAP/AutoRound Models'
+  categories:
+  - moe_optimization
+  - quantization
+  - inference_serving
+  key_claims:
+  - 28 models across GLM-4.7, GLM-4.6, MiniMax-M2.1, DeepSeek-V3.2, Kimi-K2.5, Nemotron-3, INTELLECT-3
+  - REAP pruning at 25-50% + AutoRound W4A16 double-compression
+  - GLM-4.7-REAP-50-W4A16 achieves ~6.5x total compression (700GB → 92GB)
+  - Calibration datasets optimized for code/tool/agentic workloads
+  - Most popular model GLM-4.7-REAP-218B-A32B-W4A16 (212 likes, ~108GB)
+  techniques:
+  - REAP expert pruning (25-50%)
+  - AutoRound W4A16 quantization
+  - DPO, GRPO, SFT fine-tuning
+  - QLoRA SFT (NousCoder-14B)
+  reported_results:
+  - 'GLM-4.7-REAP-218B-A32B-W4A16: 375 tok/s prefill, 38.5 tok/s gen on 8x RTX 3090'
+  - 'Kimi-K2.5-PRISM-REAP-72: 33.4 tok/s single, 145.5 tok/s 8-concurrent on 8x 3090'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-20'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    intake:
+    - intake-181
+    - intake-182
+  notes: >
+    Comprehensive applied work. Nemotron-3 Super models are all draft status.
+    Kimi-K2.5 model explicitly marked broken weights. GLM-4.7 REAP models are
+    the most mature. NousCoder-14B fine-tunes trained on personal Claude/Cursor
+    conversations — interesting training data approach for coding models.
+
+- id: intake-185
+  arxiv_id: null
+  url: https://github.com/CerebrasResearch/reap
+  source_type: repo
+  title: 'CerebrasResearch/reap — Official REAP Implementation'
+  categories:
+  - moe_optimization
+  key_claims:
+  - Official Apache 2.0 implementation of REAP pruning
+  - Supports Qwen3, GLM-4, Mixtral, Llama-4, DeepSeek, MiniMax, Kimi architectures
+  - One-shot pruning with configurable compression ratios
+  - Cerebras ships official pruned models on HuggingFace
+  techniques:
+  - REAP expert pruning
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-181
+  ingested_date: '2026-03-20'
+  cross_references:
+    intake:
+    - intake-181
+  notes: >
+    Key repo for evaluating REAP on our Qwen3 models. Cerebras already publishes
+    Qwen3-Coder-REAP-25B-A3B — we could either use their pre-pruned model or
+    run REAP ourselves on our specific model variants. Apache 2.0 license.
+
+- id: intake-186
+  arxiv_id: null
+  url: https://huggingface.co/cerebras/Qwen3-Coder-REAP-25B-A3B
+  source_type: repo
+  title: 'Cerebras Qwen3-Coder-REAP-25B-A3B — Official Pre-Pruned Model'
+  categories:
+  - moe_optimization
+  - inference_serving
+  key_claims:
+  - 128 experts pruned to 103 (20% reduction), 25B total / 3B active
+  - Near-lossless quality — HumanEval +2.4pp, MBPP -0.3pp vs base 30B
+  - 262K native context (1M with YaRN)
+  - Standard qwen3moe architecture — no custom code needed
+  techniques:
+  - REAP expert pruning (20%)
+  reported_results:
+  - 'HumanEval: 94.5 vs 92.1 base (+2.4)'
+  - 'HumanEval+: 89.0 vs 87.8 base (+1.2)'
+  - 'MBPP: 87.3 vs 87.6 base (-0.3)'
+  - 'LiveCodeBench: 35.2 vs 35.2 base (0.0)'
+  - 'BFCL-v3: 62.2 vs 63.2 base (-1.0)'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-181
+  ingested_date: '2026-03-21'
+  cross_references:
+    intake:
+    - intake-181
+    - intake-185
+    - intake-187
+  notes: >
+    This is the model we should benchmark first. Cerebras official, Apache 2.0.
+    Same model family as our frontdoor (Qwen3-Coder-30B-A3B). GGUF quants
+    available from bartowski (intake-187).
+
+- id: intake-187
+  arxiv_id: null
+  url: https://huggingface.co/bartowski/cerebras_Qwen3-Coder-REAP-25B-A3B-GGUF
+  source_type: repo
+  title: 'bartowski GGUF Quants of REAP-25B — llama.cpp Ready'
+  categories:
+  - moe_optimization
+  - quantization
+  key_claims:
+  - 31 GGUF quantization variants of Cerebras REAP-25B
+  - Requires llama.cpp b6810+
+  - Standard qwen3moe architecture, drop-in compatible
+  - Q4_K_M = 15.2 GB, Q8_0 = 26.5 GB, BF16 = 49.8 GB
+  techniques:
+  - GGUF quantization of REAP-pruned model
+  reported_results:
+  - 'Q4_K_M: 15.2 GB (vs ~18 GB for base 30B Q4_K_M estimated)'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-186
+  ingested_date: '2026-03-21'
+  cross_references:
+    intake:
+    - intake-181
+    - intake-186
+  notes: >
+    CONFIRMS REAP + GGUF + llama.cpp works today. This is the fastest path to
+    evaluating REAP on our stack — download Q4_K_M, run through our benchmark
+    suite, compare to base Qwen3-Coder-30B-A3B Q4_K_M.
+
+- id: intake-188
+  arxiv_id: '2603.06003'
+  url: https://arxiv.org/abs/2603.06003
+  source_type: paper
+  title: 'EvoESAP: Non-Uniform Expert Pruning for MoE via Evolutionary Search'
+  categories:
+  - moe_optimization
+  key_claims:
+  - Decouples within-layer expert ranking from across-layer budget allocation
+  - Uses evolutionary search for non-uniform layer-wise sparsity
+  - Compatible with REAP as a within-layer ranking criterion
+  - Non-uniform allocation is strictly better than uniform pruning
+  techniques:
+  - Evolutionary search for layer-wise expert budgets
+  - Non-uniform structured MoE pruning
+  reported_results:
+  - '+19.6% on MATH-500 at 50% sparsity over uniform baselines'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: search
+  expanded_from: intake-181
+  ingested_date: '2026-03-21'
+  cross_references:
+    intake:
+    - intake-181
+  notes: >
+    March 2026. Key extension to REAP — instead of removing the same fraction
+    of experts from every layer, use evolutionary search to allocate pruning
+    budget non-uniformly. Could be combined with REAP for better quality at
+    50% compression. Directly relevant if we push beyond 25% pruning.
+
+- id: intake-189
+  arxiv_id: '2603.02217'
+  url: https://arxiv.org/abs/2603.02217
+  source_type: paper
+  title: 'Router Knowledge Distillation for MoE Compression'
+  categories:
+  - moe_optimization
+  key_claims:
+  - All expert pruning methods (including REAP) suffer router-expert mismatch
+  - Router unchanged after pruning causes suboptimal expert routing
+  - Lightweight router-only distillation recovers additional quality
+  - Larger gains on fine-grained MoEs (many small experts)
+  techniques:
+  - Router knowledge distillation post-pruning
+  reported_results:
+  - 'Quality recovery on fine-grained MoEs (Qwen3, DeepSeek architectures)'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: search
+  expanded_from: intake-181
+  ingested_date: '2026-03-21'
+  cross_references:
+    intake:
+    - intake-181
+    - intake-188
+  notes: >
+    February 2026. Addresses REAP's main theoretical weakness. Our Qwen3-Coder
+    has 128 experts — exactly the fine-grained MoE architecture where router KD
+    shows largest gains. Could be a post-processing step after REAP pruning
+    to recover quality, especially at 50% compression.
+
+- id: intake-190
+  arxiv_id: '2507.00390'
+  url: https://arxiv.org/abs/2507.00390
+  source_type: paper
+  title: 'MoNE: Replacing Redundant MoE Experts with Lightweight Novices'
+  categories:
+  - moe_optimization
+  key_claims:
+  - Identifies redundant experts via access frequency + output variance
+  - Replaces (not removes) experts with lightweight novice estimators
+  - Maintains model topology while reducing compute
+  techniques:
+  - Expert replacement with lightweight novice networks
+  reported_results:
+  - '0.14 performance drop at 25% pruning on Qwen2-57B-A14B'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-181
+  ingested_date: '2026-03-21'
+  cross_references:
+    intake:
+    - intake-181
+  notes: >
+    ICLR 2026. Alternative to REAP — replaces experts instead of removing them.
+    Maintains model topology but adds lightweight replacement networks. Less
+    memory savings than REAP (novice weights still present) but potentially
+    better quality retention. Lower priority than REAP for our use case
+    since we want actual memory reduction.
+- id: intake-191
+  arxiv_id: '2504.19874'
+  url: https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/
+  source_type: blog
+  title: 'TurboQuant: Redefining AI Efficiency with Extreme Compression'
+  authors:
+  - Amir Zandieh
+  - Vahab Mirrokni
+  categories:
+  - kv_cache_optimization
+  - quantization
+  - inference_serving
+  key_claims:
+  - 6x+ KV cache memory reduction without accuracy loss via 3-4 bit quantization
+  - Data-oblivious compression — no training or fine-tuning required
+  - 8x attention speedup on H100 GPUs vs 32-bit baseline
+  - Combines PolarQuant (polar coordinates) and QJL (1-bit JL transform)
+  - Maintains perfect accuracy on needle-in-haystack tasks
+  techniques:
+  - TurboQuant (combined KV cache quantization framework)
+  - PolarQuant (polar coordinate KV compression)
+  - QJL (Quantized Johnson-Lindenstrauss Transform)
+  reported_results:
+  - '6x+ KV cache memory reduction across benchmarks'
+  - '8x attention speedup (4-bit TurboQuant vs 32-bit baseline, H100)'
+  - 'Perfect needle-in-haystack accuracy'
+  - 'Superior recall vs PQ and RabbiQ baselines'
+  models_tested:
+  - Gemma
+  - Mistral
+  - Llama-3.1-8B-Instruct
+  benchmarks:
+  - LongBench
+  - Needle In A Haystack
+  - ZeroSCROLLS
+  - RULER
+  - L-Eval
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: user
+  ingested_date: '2026-03-24'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - yarn-context-extension-research.md
+    - numa-orchestrator-deployment.md
+    intake:
+    - intake-192
+    - intake-193
+  handoffs_updated:
+  - yarn-context-extension-research.md
+  handoffs_created:
+  - kv-cache-quantization.md
+  notes: >
+    Google Research blog (2026-03-24). Two-stage framework: MSE quantizer (PolarQuant)
+    + 1-bit QJL residual. 3.5 bits/channel = quality-neutral, 2.5 bits = marginal
+    degradation. 8x attention speedup on H100. Well-spec'd architecture with
+    reference implementation (QJL GitHub). Directly applicable to our CPU stack
+    for memory-bandwidth reduction during attention at long contexts.
+- id: intake-192
+  arxiv_id: '2502.02617'
+  url: https://arxiv.org/abs/2502.02617
+  source_type: paper
+  title: 'PolarQuant: Quantizing KV Caches with Polar Transformation'
+  authors:
+  - Insu Han
+  categories:
+  - kv_cache_optimization
+  - quantization
+  key_claims:
+  - Transforms KV embeddings into polar coordinates for quantization
+  - Random preconditioning produces tightly bounded angle distributions
+  - Eliminates normalization overhead (no per-block zero-point/scale storage)
+  - 4.2x KV cache compression with best quality scores vs state-of-the-art
+  techniques:
+  - Polar coordinate transformation for KV quantization
+  - Random preconditioning
+  reported_results:
+  - '4.2x+ KV cache compression'
+  - 'Best quality scores vs state-of-the-art methods'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-191
+  ingested_date: '2026-03-24'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - yarn-context-extension-research.md
+    - kv-cache-quantization.md
+    intake:
+    - intake-191
+    - intake-193
+  notes: >
+    Component technique of TurboQuant. Published 2025-02. Recursive polar
+    coordinate transform: O(d log d) per vector, 4.2x compression. Bit
+    allocation: 4b (level 1) + 2b (levels 2-4) + f16 norm. CUDA kernels
+    on RTX A6000. Pure arithmetic — portable to CPU. Same group as QJL.
+- id: intake-193
+  arxiv_id: '2406.03482'
+  url: https://arxiv.org/abs/2406.03482
+  source_type: paper
+  title: 'QJL: 1-Bit Quantized JL Transform for KV Cache Quantization with Zero Overhead'
+  authors:
+  - Amir Zandieh
+  - Majid Daliri
+  - Insu Han
+  categories:
+  - kv_cache_optimization
+  - quantization
+  key_claims:
+  - 1-bit KV cache quantization via Johnson-Lindenstrauss transform + sign-bit quantization
+  - Zero memory overhead — no quantization constants stored
+  - Unbiased inner product estimator with minimal distortion
+  - 5x KV cache reduction to 3 bits without accuracy loss
+  techniques:
+  - Quantized Johnson-Lindenstrauss Transform
+  - Sign-bit quantization
+  reported_results:
+  - '5x+ KV cache memory reduction at 3 bits'
+  - 'Faster runtime than full-precision baseline'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-191
+  ingested_date: '2026-03-24'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - yarn-context-extension-research.md
+    - kv-cache-quantization.md
+    intake:
+    - intake-191
+    - intake-192
+  notes: >
+    AAAI 2025. JL projection + sign-bit quantization = 1 bit per dim. Key
+    insight: asymmetric estimator (full-precision query, quantized KV).
+    Zero normalization overhead. GitHub: github.com/amirzandieh/QJL with
+    CUDA kernels for Llama 2/3. Algorithmic approach is pure arithmetic,
+    portable to CPU with AVX-512.
