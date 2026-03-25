@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-03-25
+
+- **Dynamic NUMA-Aware Concurrent Routing — Strategic Plan**:
+  - `dynamic-stack-concurrency.md`: Replaced STUB (92 lines) with comprehensive strategic analysis (329 lines). NUMA quarter scheduling model, KV state migration (verified llama.cpp hybrid save/restore), single-to-multi instance transition for pure MoE, HOT/WARM/COLD tiering as autoresearch target, 6-phase strategic sequence.
+  - `routing-and-optimization-index.md`: New umbrella index (135 lines) linking routing-intelligence, autopilot, and dynamic-stack-concurrency handoffs. 5 cross-cutting concerns documented, dependency graph between subsystems.
+  - `program.md`: Autoresearch strategy document (243 lines) in `epyc-orchestrator/scripts/autopilot/`. Karpathy-pattern experiment loop (hypothesize → commit → evaluate → keep/revert → repeat). Debug suite pass rate as primary metric. 5-tier experiment priorities, mutable/immutable boundaries, known dead ends, escalation criteria.
+  - `autopilot-continuous-optimization.md`: Added autoresearch evolution section — Claude-Debugger subsumption, stack-config as optimization axis (8 axes), program.md reference, model-agnostic design.
+
 ## 2026-03-08
 
 - **AutoPilot: Continuous recursive optimization framework**:

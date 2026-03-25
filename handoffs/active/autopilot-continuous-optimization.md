@@ -380,14 +380,73 @@ ReasonIR's methodology: for each document, create a "plausibly related but ultim
 
 ---
 
-## Future: Dynamic Stack Assembly (2026-03-24)
+## Evolution: Seeding → Claude-Debugger → AutoPilot → AutoResearch (2026-03-25)
 
-The autopilot's optimization surface should expand beyond routing parameters to include **which models run and how they're provisioned**. Currently the orchestrator stack (model selection, NUMA pinning, instance counts) is statically configured in `orchestrator_stack.py`. The autopilot should be able to reconfigure this at session boundaries based on observed workload.
+### Evolution Chain
 
-**Concrete example**: For a single-user code-heavy session, the optimal stack might be 1×30B-A3B-spec frontdoor (39 t/s) + 4×coder Q4KM (43 t/s agg) + 1×architect. For a multi-session research intake, it might be 4×35B moe6 (50.8 t/s agg) + 1×coder + 1×ingest. The NumericSwarm species could explore this as additional dimensions in the NSGA-II search.
+```
+Seeding (passive eval, human fixes)
+  → Claude-Debugger (active anomaly detection + Claude fixes during seeding)
+    → AutoPilot (4-species continuous optimization)
+      → AutoResearch (autonomous hypothesis-driven optimization)
+```
 
-**Infrastructure ready**: `RoundRobinBackend` (2026-03-24) supports runtime backend list changes. `orchestrator_stack.py` would need a reconfigure API. Minimum hot-swap latency: ~30-60s (drain + restart + mlock).
+### Claude-Debugger Subsumption
 
-**Constraint**: Primary user is single (Daniele). Per-request latency usually matters more than aggregate throughput. Internal pipeline concurrency (frontdoor→coder→architect) is the main source of parallelism.
+The Claude-Debugger (`src/pipeline_monitor/claude_debugger.py`) provides anomaly detection + hot-fix capabilities during seeding runs. Rather than maintaining it as a separate subprocess, its capabilities are **subsumed into the autoresearch framework**:
 
-See `routing-intelligence.md` § "Dynamic Stack Assembly" for the full design and tradeoff table.
+- **Anomaly detection** → runs as part of the experiment evaluation loop (post-trial analysis)
+- **Hot-fix generation** → replaced by PromptForge's `targeted_fix` mutation with failure context
+- **Session monitoring** → replaced by SafetyGate's consecutive failure detection + auto-rollback
+
+The debugger code remains as reference but is not invoked separately. AutoResearch handles the same failure detection and correction loop as part of its experiment cycle.
+
+### Stack-Config as Optimization Axis
+
+The optimization surface now includes the full stack configuration:
+
+| Axis | Species | Application Method |
+|------|---------|-------------------|
+| Model selection per role | StructuralLab | Restart (edit model_registry.yaml + orchestrator_stack.py) |
+| Instance counts | StructuralLab | Restart |
+| NUMA topology | StructuralLab | Restart |
+| Tier assignment (HOT/WARM/COLD) | StructuralLab | Restart (mlock flags) |
+| Acceleration flags | NumericSwarm | Restart (draft_max, moe_experts, lookup) |
+| Cascade depth | StructuralLab | Restart (add/remove routing tiers) |
+| General model prompting | PromptForge | Hot-swap (prompt .md files) |
+| TOON compression | NumericSwarm | Hot-swap (encoding params) |
+
+Stack experiments are expensive (require restart, ~2-5 min per trial). The autoresearch loop batches them: prompt/numeric experiments run hot-swap between stack experiments.
+
+### program.md — Autoresearch Strategy Document
+
+Located at `scripts/autopilot/program.md`. This is the single strategy document that guides autonomous experimentation, following the Karpathy autoresearch pattern:
+
+- **Setup phase**: Initialize run, verify stack health, read state + recent failures
+- **Immutable boundary**: Evaluation methodology, scoring, safety gates, core orchestrator code
+- **Mutable scope**: Prompts, configs, registry, stack topology, feature flags, specialist pipelines
+- **Goal metric**: Debug suite pass rate (deterministic, no LLM judge) for fast iteration
+- **Experiment loop**: Hypothesize → commit → evaluate → keep/revert → repeat forever
+- **Git-based ratchet**: Every improvement is a commit; degradations are reverted; best config always recoverable
+- **Known dead ends**: Documents approaches that have been empirically exhausted (hybrid acceleration, lookup segfault, etc.)
+
+Key design principles from autoresearch ecosystem research:
+- **One variable per experiment** (clean attribution)
+- **Simplicity criterion** (reject disproportionate complexity for marginal gain)
+- **NEVER STOP** (continue experiments indefinitely until human interrupts)
+- **Failure memory** (never retry known-bad approaches — `lab failures` pattern from PraxLab)
+
+### Model-Agnostic Design
+
+The framework tests any model available in the registry. New models (REAP variants, Nanbeige, MiroThinker, future downloads) become candidates with minimal manual effort — add to registry, autoresearch discovers and evaluates.
+
+### Connection to Dynamic Stack Assembly
+
+See [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) for the full NUMA scheduling architecture. Key integration points:
+
+- **Infrastructure ready**: `RoundRobinBackend` supports runtime backend list changes
+- **Stack experiments**: StructuralLab can modify `orchestrator_stack.py` within program.md constraints
+- **Tier optimization**: HOT vs WARM vs COLD assignment is an autoresearch experiment, not a hardcoded decision
+- **Constraint**: Primary user is single (Daniele). Per-request latency usually matters more than aggregate throughput
+
+See also [`routing-and-optimization-index.md`](routing-and-optimization-index.md) for the umbrella view of all three optimization subsystems and their cross-cutting concerns.
