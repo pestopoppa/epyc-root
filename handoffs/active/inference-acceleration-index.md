@@ -67,7 +67,7 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 9. ✅ **Coder quant quality benchmarks** (2026-03-24) — Q4KM = f16 quality (74%), confirmed optimal. Saves 186 GB RAM.
 10. ✅ **Round-robin routing** (2026-03-24) — `RoundRobinBackend` in `src/backends/round_robin.py`. Comma-separated URLs in config. frontdoor + coder distribute across 4 NUMA instances.
 11. ✅ **Benchmark 35B NUMA 4-way** (2026-03-24) — measured 12.7 t/s/inst, ~50.8 agg (moe6-only). Lookup needs ngram corpus to activate — without it the 19.6 estimate was wrong. Segfault after 2 prompts (stability issue, not perf).
-12. **Worker NUMA configs** — explore/vision still need NUMA pinning tuning
+12. ✅ **Worker NUMA configs** — CLOSED (2026-03-25). Reviewed: worker_explore (39.1 t/s at 48t Q0A) and worker_vision (24t Q0B) already optimal. No actionable improvement found.
 
 ## Active Work Streams
 
