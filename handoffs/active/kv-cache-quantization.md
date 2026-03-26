@@ -1,9 +1,123 @@
 # KV Cache Quantization (TurboQuant / PolarQuant / QJL)
 
-**Status**: ALL PHASES COMPLETE (0-4, 3b). Production config: Hadamard q4_0 (--kv-hadamard -ctk q8_0 -ctv q4_0). TurboQuant/QJL implemented but needs outlier correction for quality — not production-viable at competitive compression ratios.
+**Status**: ACTIVE — split attention implementation in progress. See "Current Work — Resume Here" section below.
+**Production config**: Hadamard q4_0 (`--kv-hadamard -ctk q8_0 -ctv q4_0`) — deployed, quality-neutral, 2.5x compression.
+**TurboQuant**: Working at short prompts (speed-neutral 4K-128K). Long-prefill gen speed degraded (3.4 t/s vs 7.7 f16) due to dequant+concat overhead. Split attention needed for both quality and speed.
 **Created**: 2026-03-24 (via research intake)
 **Priority**: MEDIUM-HIGH
 **Categories**: kv_cache_optimization, quantization, inference_serving, memory_bandwidth
+
+## Current Work — Resume Here
+
+### What's Done
+All code is on branch `hadamard-kv-smoothing` in `/mnt/raid0/llm/llama.cpp-experimental`. Build: `build-hadamard/`.
+
+**Working end-to-end:**
+- Phase 1 (Hadamard): `--kv-hadamard -ctk q8_0 -ctv q4_0` — quality-neutral, zero overhead. Production-ready.
+- Phase 2 (PolarQuant): `GGML_TYPE_POLAR_Q4` — 5.12x compression, PPL +0.229. Working but quality gap.
+- Phase 3 (TurboQuant): `GGML_TYPE_TURBO_Q3` — 4.41x compression. Hybrid buffer with eviction.
+- Hybrid precision buffer: `llama_kv_cache_hybrid_prec` (ISWA pattern), eviction from kv_recent(f16)→kv_old(turbo_q3), dual-cache attention via dequant+concat.
+- Short prompts at 4K-128K context: speed-neutral (±2% of f16), correct output.
+- QJL attention kernel: wired in `ops.cpp` (`k_is_qjl` dispatch), Gaussian JL matrix, outlier correction.
+
+**What's broken:**
+- Long-prefill gen speed: 3.4-4.9 t/s vs 7.7 f16 at 14.5K filled context. Bottleneck: per-token eviction (CPU-side turbo_q3 quantize) + dequant+concat in attention graph.
+- Long-prefill quality: turbo_q3 dequant (PolarQuant reconstruction) produces garbage at long filled contexts ("self-balancing self-balancing..."). The dequant path has too much error.
+
+### What To Do Next: Split Attention
+
+**The critical fix for BOTH speed AND quality**. Instead of dequanting old K to f32 and concatenating with recent K, compute attention in two parts:
+
+```
+kq_recent = Q × K_recent^T      (f16 matmul, exact — no error)
+kq_old    = QJL_score(Q, K_old)  (sign-bit scoring — uses turbo_q3 directly)
+kq        = concat(kq_old, kq_recent)  (score matrices, not K tensors)
+softmax(kq, combined_mask)
+kqv       = kq × V_combined     (V is dequanted, which works fine)
+```
+
+**Why this fixes quality:** The dequant path reconstructs K vectors from turbo_q3 (PolarQuant reconstruction with 3.1-bit error). The QJL scoring path uses sign bits directly to estimate Q·K dot products via the JL lemma — this preserves inner products without reconstruction. The recent K (f16) gives exact scores.
+
+**Why this fixes speed:** No dequant+cast chain (turbo_q3→f32→concat per layer per token). QJL scoring is XNOR+popcount (fast). The recent K attention uses standard flash attn. Only V needs dequant (which works).
+
+### Implementation Details
+
+**Code was partially written but had issues. Here's what to do:**
+
+1. **In `build_attn` (llama-graph.cpp, line ~1902)**: The hybrid precision block currently does dequant+concat. Replace with:
+   - `kq_recent = ggml_mul_mat(k_recent, q)` — standard matmul on f16 K
+   - For old K: use `turbo_qjl_score_projected()` from `ggml-turbo-quant.c` OR dequant old K to f32 and use `ggml_mul_mat(k_old_f32, q)` as a first step
+   - `kq = ggml_concat(kq_old, kq_recent, 0)` — concat SCORES (dim 0 = KV positions)
+   - `kq = ggml_soft_max_ext(kq, mask, scale, ...)` — single softmax over combined scores
+   - For V: dequant old V to f32, concat with recent V, transpose, `ggml_mul_mat(v_combined_t, kq)`
+   - This is the non-flash attention path (matmul-based, not `ggml_flash_attn_ext`)
+
+2. **The `return cur` issue**: The split attention block returns directly from `build_attn`, including the `wo` projection. The caller must NOT apply `wo` again. This was correctly handled in the attempted implementation.
+
+3. **Key gotcha — LD_LIBRARY_PATH**: The experimental build's shared libraries conflict with the production build at `/mnt/raid0/llm/llama.cpp/build/bin/`. ALWAYS use `env LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build-hadamard/bin` or `LD_LIBRARY_PATH=... command` prefix. Do NOT use `export LD_LIBRARY_PATH` as it doesn't persist between tool calls.
+
+4. **V transpose**: The non-flash path needs V transposed: `[n_kv, n_embd_head_v, ...]` not `[n_embd_head_v, n_kv, ...]`. Use `ggml_cont(ggml_transpose(v))`.
+
+5. **Mask**: The expanded kq_mask already handles both old and recent regions (implemented in `build_attn_inp_kv`, `set_input` with memmove shift).
+
+### After Split Attention
+
+1. **Batch eviction**: Currently evicts per-token. Change to evict every N tokens (e.g., 64) to amortize the CPU-side quantize cost.
+2. **Graph caching**: Old V concat doesn't change between tokens — investigate caching.
+3. **QJL scoring integration**: Replace `ggml_mul_mat(k_old_f32, q)` with `turbo_qjl_score_projected()` called from a custom ggml op or via the existing `k_is_qjl` dispatch in ops.cpp.
+
+### Files Modified (all in `/mnt/raid0/llm/llama.cpp-experimental`)
+
+| File | What |
+|------|------|
+| `ggml/include/ggml.h` | `GGML_TYPE_POLAR_Q4` (40), `GGML_TYPE_TURBO_Q3` (41) |
+| `ggml/src/ggml.c` | Type traits for both types |
+| `ggml/src/ggml-cpu/ggml-cpu.c` | CPU type traits (from_float) |
+| `ggml/src/ggml-cpu/ops.cpp` | Flash attn QJL dispatch (`k_is_qjl`) |
+| `ggml/src/ggml-polar-quant.h/.c` | PolarQuant quantize/dequantize |
+| `ggml/src/ggml-turbo-quant.h/.c` | TurboQuant quantize/dequantize/QJL scoring |
+| `ggml/src/CMakeLists.txt` | Added polar-quant and turbo-quant sources |
+| `src/llama-hadamard.h/.cpp` | Walsh-Hadamard Transform for KV smoothing |
+| `src/llama-kv-cache-hybrid-prec.h/.cpp` | Hybrid precision KV cache (ISWA pattern) |
+| `src/llama-kv-cache.h/.cpp` | Added public accessors (get_used, get_cells, get_k/v_tensor) |
+| `src/llama-graph.h` | `kv_old` fields on input + params + context; `llama_kv_cache` fwd decl |
+| `src/llama-graph.cpp` | Hadamard in build_attn, dual-cache attention (split attn WIP) |
+| `src/llama-context.h/.cpp` | `get_hybrid_kv_old()`, `get_hybrid_n_evicted()`, `n_kv_recent` params |
+| `src/llama-model.cpp` | `create_memory()` hook for turbo_q3 → hybrid cache |
+| `src/llama-cparams.h` | `kv_hadamard`, `n_kv_recent` |
+| `include/llama.h` | `kv_hadamard`, `n_kv_recent` in context params |
+| `common/common.h` | `kv_hadamard`, `n_kv_recent` |
+| `common/common.cpp` | Propagation |
+| `common/arg.cpp` | `--kv-hadamard`, `--kv-recent N`, `polar_q4`, `turbo_q3` in cache types |
+| `src/CMakeLists.txt` | Added hybrid-prec source |
+
+### Benchmark Data
+
+**Short prompt (500 gen from 65-tok prompt, Qwen2.5-7B):**
+
+| Context | f16 t/s | turbo_q3 t/s | q8_0/q4_0 t/s |
+|---------|---------|--------------|---------------|
+| 4K | 15.95 | 16.49 (+3.4%) | 16.25 |
+| 16K | 16.45 | 16.51 (+0.4%) | 16.25 |
+| 64K | 16.67 | 16.41 (-1.6%) | 16.71 |
+| 128K | 16.73 | 16.56 (-1.0%) | 16.86 |
+
+**Long prefill (gen after 14.5K prefill):**
+
+| Config | Prefill t/s | Gen t/s |
+|--------|-------------|---------|
+| f16 | 213.8 | 7.70 |
+| q8_0/q4_0 | 102.5 | 7.41 |
+| turbo_q3 (dequant+concat) | 277.6 | 3.38 |
+
+**Perplexity (Qwen2.5-7B, 10 chunks):**
+
+| Config | PPL | vs f16 |
+|--------|-----|--------|
+| f16 | 7.166 | — |
+| q4_0 + Hadamard | 6.912 | +0.017 |
+| q8_0/q4_0 + Hadamard | 6.886 | -0.010 |
+| polar_q4 | 7.394 | +0.229 |
 
 ## Objective
 
@@ -783,7 +897,113 @@ Switched from Rademacher (±1) to Gaussian JL matrix (matching paper). Added top
 4. Requires `llama_kv_cache` architecture change (dual tensor per layer) or graph-level split in `build_attn`
 5. Estimated effort: 2-3 days of KV cache engineering
 
-**Production recommendation**: Hadamard q4_0 (Phase 1) for immediate deployment. QJL + hybrid buffer for future work when >4x K-cache compression is needed at extended contexts (256K+). All implementations preserved on `hadamard-kv-smoothing` branch.
+### Phase 3d: Hybrid Precision Buffer (IN PROGRESS)
+
+**Status**: Plan approved, parameter plumbing done, header created. Implementation needs: `.cpp` body + graph integration + model hook.
+
+**Plan file**: `/home/node/.claude/plans/fancy-whistling-hejlsberg.md`
+
+**Completed**:
+1. `n_kv_recent` parameter plumbed through 6 files (llama.h, cparams, common, arg, propagation)
+2. `src/llama-kv-cache-hybrid-prec.h/.cpp` created (ISWA-style dual cache: kv_recent f16 + kv_old turbo_q3)
+3. `src/llama-model.cpp` — `create_memory()` hook for turbo_q3 → hybrid cache
+4. `src/CMakeLists.txt` updated
+5. Gaussian JL matrix in turbo-quant.c (replacing Rademacher)
+6. Outlier correction (top-8 key dims at f16)
+7. Builds clean, **chunk 1 PPL = 6.17** (matches f16 baseline) — buffer architecture validated
+
+**Update (2026-03-25 late)**:
+- Multi-chunk bug FIXED: `init_batch` delegates to `kv_recent->init_batch()`. **PPL = 7.166 matches f16 baseline exactly.**
+- Buffer architecture validated. kv_old allocated (turbo_q3), no interference with kv_recent.
+- **Context baseline**: 512 ctx f16 = PPL 7.17, 128 ctx f16 = PPL 14.04. Hybrid buffer target: between these (128 exact + compressed old).
+- Full plumbing: `kv_old` flows through `graph_params` → `llm_graph_context` → `build_attn_inp_kv` → `build_attn`. Public accessors added to `llama_kv_cache` (get_used, get_cells, get_k_tensor, get_v_tensor).
+- Dual-cache concat attempted in `build_attn` but blocked by: (1) raw tensor is 3D, attention view is 4D — need matching views, (2) kq_mask must be expanded to span both caches. Stubbed with TODO.
+- `get_hybrid_kv_old()` on `llama_context` detects hybrid cache and extracts kv_old pointer.
+- **Dual-cache attention WORKING** (2026-03-25): 4D views, cast, concat, expanded mask with shift all functional. PPL = 6.94 (matches f16 baseline). Old cache is -inf masked (no data yet). The attention path will automatically read from kv_old once eviction populates it (kv_old->get_used() > 0 triggers concat).
+
+**Remaining** (one piece — eviction data copy):
+
+Both architectural blockers are RESOLVED:
+- 4D view matching: ✅ implemented in `build_attn` using `ggml_view_4d` with stride calculation from `get_k()`
+- kq_mask expansion: ✅ expanded to `[n_kv_old + n_kv_recent, ...]`, recent portion shifted right via `memmove`, old portion filled with `-inf`
+
+**COMPLETE — eviction + benchmark (2026-03-26)**:
+
+Server benchmark (Qwen2.5-7B, 200 tokens, 512 ctx):
+
+| Config | Gen t/s | vs f16 |
+|--------|---------|--------|
+| f16 baseline | 15.67 | — |
+| turbo_q3 hybrid (kv-recent=64) | **16.21** | **+3.4%** |
+| turbo_q3 hybrid (kv-recent=128) | 15.90 | +1.5% |
+
+**Speed-neutral with correct output at 512 ctx.** Eviction active, dual-cache attention working.
+
+**4K crash FIXED (2026-03-26)**: replaced `seq_rm` with direct `cells.rm(cell_idx)`. Now works at all context lengths.
+
+**Full context-length benchmark** (Qwen2.5-7B-Instruct f16, 500 tokens):
+
+| Context | f16 gen t/s | turbo_q3 gen t/s | vs f16 | q8_0/q4_0 gen t/s |
+|---------|-------------|------------------|--------|-------------------|
+| 4K | 15.95 | 16.49 | +3.4% | 16.25 |
+| 16K | 16.45 | 16.51 | +0.4% | 16.25 |
+| 64K | 16.67 | 16.41 | -1.6% | 16.71 |
+| 128K | 16.73 | 16.56 | -1.0% | 16.86 |
+
+**All speed-neutral at short prompt (500 gen from 65-tok prompt), correct output, no crashes from 4K to 128K.**
+
+**Long-prefill benchmark** (Qwen2.5-7B, gen after 14.5K token prefill):
+
+| Config | Prefill t/s | Gen t/s | Gen vs f16 |
+|--------|-------------|---------|------------|
+| f16 | 213.8 | 7.70 | — |
+| q8_0/q4_0 | 102.5 | 7.41 | -3.8% |
+| q4_0/q4_0 | 111.5 | 7.48 | -2.9% |
+| turbo_q3 (kv-recent=512) | **277.6** | 3.38 | -56% |
+
+turbo_q3 has fastest prefill (+30% vs f16). Gen at 14.5K prefill: 3.38-4.86 t/s depending on cast path (vs 7.70 f16). Two bottlenecks:
+1. **Per-token eviction**: CPU-side turbo_q3 quantization (128×128 matmul per evicted cell per layer)
+2. **Concat overhead**: creating 14K-row concatenated K/V tensors per layer per decode step
+3. **K quality**: turbo_q3 dequant (PolarQuant reconstruction) has high error — output degenerates at long prefill. **QJL scoring (bypassing dequant) is required for quality**.
+
+**Next steps for production-viable TurboQuant gen speed:**
+1. Split attention: compute QK scores separately for old K (QJL) and recent K (exact), concat scores, single softmax, combined V weighted sum
+2. Graph caching: old K/V concat doesn't change between tokens — cache it instead of recomputing
+3. Batch eviction: evict in bulk (e.g., every 64 tokens) instead of per-token
+
+**Bugs fixed during benchmarking**:
+- `ggml_cast` from turbo_q3→f16 unsupported — fixed with two-stage cast (turbo_q3→f32→f16)
+- Eviction `cells.rm()` replacing `seq_rm()` position range — fixed direct cell removal
+- Multi-stream `get_used()` summing all streams — fixed
+
+**Previously: last remaining piece — eviction data copy** (now done):
+- When `kv_recent->get_used() > n_kv_recent`, copy oldest cells' K data to kv_old
+- Read: `kv_recent->get_k_tensor(il)->data` + cell_index offset (f16 rows)
+- Quantize: `quantize_row_turbo_q3_ref(f32_buf, dst_block, n_embd_k_gqa)` (need f16→f32→turbo_q3)
+- Write: `kv_old->get_k_tensor(il)->data` + old_cell_index offset
+- Track: increment `n_evicted`, report via `kv_old->get_used()`
+- The attention path automatically picks up the data (concat triggers when `n_kv_old > 0`)
+
+**Then QJL scoring swap**:
+- Replace `ggml_cast(k_old_4d, f16)` + `ggml_concat` with direct QJL scoring
+- The flash attention dispatch for `GGML_TYPE_TURBO_Q3` K-type is already in `ops.cpp`
+- Just pass the raw turbo_q3 K tensor to `build_attn_mha` instead of dequanting
+
+**Context baselines** (Qwen2.5-7B, 10 chunks):
+- 512 context f16: PPL 7.17 (target)
+- 128 context f16: PPL 14.04 (limited context)
+- Hybrid buffer should achieve PPL between these
+
+**Context baselines** (Qwen2.5-7B, 10 chunks):
+- 512 context f16: PPL 7.17 (target)
+- 128 context f16: PPL 14.04 (limited context — what we get without kv_old)
+- Hybrid buffer should achieve PPL between 7.17 and 14.04, closer to 7.17 with QJL scoring
+
+**Plan file**: `/home/node/.claude/plans/fancy-whistling-hejlsberg.md`
+
+**Key design**: Initial impl dequantizes old K to f16 for attention (validates buffer architecture). QJL sign-bit scoring is layered on later as performance optimization.
+
+**Production recommendation**: Hadamard q4_0 (Phase 1) for immediate deployment. Hybrid buffer for future work when >4x K-cache compression is needed at extended contexts (256K+). All implementations preserved on `hadamard-kv-smoothing` branch.
 
 ### Phase 2: PolarQuant Implementation (5-7 days)
 
@@ -981,6 +1201,34 @@ Phase 2 benchmark results
         → Stick with Hadamard q4 (simpler, good enough)
         → Phase 3 cancelled
 ```
+
+## Final Benchmark Summary (2026-03-26)
+
+**Server benchmark** (Qwen2.5-7B-Instruct f16 weights, 200 tokens, 512 ctx):
+
+| Config | Gen t/s | vs f16 | K Compression | Quality |
+|--------|---------|--------|---------------|---------|
+| f16 baseline | 15.67 | — | 1x | baseline |
+| turbo_q3 hybrid (kv-recent=64) | **16.21** | **+3.4%** | **4.41x** | correct |
+| turbo_q3 hybrid (kv-recent=128) | 15.90 | +1.5% | 4.41x | correct |
+
+**All KV quant configs** (Qwen2.5-Coder-32B, production binary):
+
+| Config | Gen t/s | PPL vs f16 | K Compression | Overhead |
+|--------|---------|------------|---------------|----------|
+| f16 baseline | 9.44 | — | 1x | — |
+| q8_0/q4_0 | 9.48 | -0.007 | 2.46x | none |
+| q8_0/q4_0 + Hadamard | — | -0.010 | 2.46x | none |
+| q4_0/q4_0 | 9.31 | +0.055 | 3.56x | none |
+| q4_0/q4_0 + Hadamard | — | +0.017 | 3.56x | none |
+| turbo_q3 hybrid | 16.21* | TBD (long ctx) | 4.41x K | none |
+
+*Measured on Qwen2.5-7B, different model.
+
+**Validation** (Qwen2.5-Coder-32B):
+- Spec decode + q8_0/q4_0: 19.15 t/s (+3.3% vs f16)
+- Needle-in-haystack q8_0/q4_0: 9/9 at 1K/4K/16K
+- Needle-in-haystack q4_0/q4_0: 8/9 (1× startup, not quality)
 
 ## References
 
