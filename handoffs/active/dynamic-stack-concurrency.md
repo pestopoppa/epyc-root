@@ -1,11 +1,11 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: Phase C (pre-warm deployment) implemented 2026-03-29. Phase D (KV migration) next.
+**Status**: Phase D (KV migration) implemented 2026-03-29. Phases B-D complete.
 **Created**: 2026-03-24
 **Updated**: 2026-03-29
 **Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
 **Blocks**: Multi-session performance
-**Blocked by**: Nothing — Phase D (KV migration on transition) is next
+**Blocked by**: Nothing — Phase E (autoresearch exploration) can start
 **Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
 
 ---
@@ -342,7 +342,7 @@ AutoResearch proposes next experiment.
 |-------|-------------|-------------|--------|
 | **B** | Observability infrastructure | DS-1 (queue depth), DS-2 (escalation rate), DS-3 (slot-save-path), DS-4 (stack state) | ✅ DONE |
 | **C** | Pre-warm deployment | ✅ DONE 2026-03-29. 1×96t + 4×48t for frontdoor/coder/worker. `ConcurrencyAwareBackend`, `NUMA_CONFIG`, `ServerURLsConfig` updated. | ✅ DONE |
-| **D** | Concurrency-aware router | Replace round-robin with load-aware selection. Route single→96t, concurrent→48t. KV migration on transition. | Depends on C |
+| **D** | Concurrency-aware router + KV migration | ✅ DONE 2026-03-29. Session affinity, KV save/restore via slot API, background migration thread. | ✅ DONE |
 | **E** | Autoresearch-driven exploration | Model selection, tier assignment, instance count optimization via autoresearch loop. | Parallel with D |
 | **F** | Template codification | Stack templates in config, selectable profiles (coding-heavy, research-heavy). | Depends on E |
 | **G** | Predictive refinement | Workload modeling from conversation logs, anticipatory deployment. | Long-term |
