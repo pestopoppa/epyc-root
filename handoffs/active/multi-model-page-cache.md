@@ -27,8 +27,9 @@ The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models to
 | worker_vision | Qwen3-VL-30B-A3B Q4KM | 18 GB | 1×24t | YES |
 | **Total** | | **~327 GB** | | **all mlocked** |
 
-**Previous total (with 480B)**: ~508 GB (45% of 1.1 TB) — page cache eviction was a real problem.
-**Current total (with REAP-246B)**: ~327 GB (29% of 1.1 TB) — **804 GB free**, no eviction possible even under full load.
+**Previous total (with 480B, 1× workers)**: ~508 GB (45% of 1.1 TB) — page cache eviction was a real problem.
+**Current total (with REAP-246B, multi-instance)**: ~361 GB (32% of 1.1 TB) — **769 GB free**, no eviction possible.
+Includes: mmap shared weights (330 GB) + per-instance KV/compute/draft (31 GB across 19 instances).
 
 ## Experiment S1: Baseline Page Residency Measurement
 

@@ -154,17 +154,20 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
 | **Nemotron Mamba2 eval** | `nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no deployment action |
 
-## Production Model Stack — NUMA-Optimized (Deployed 2026-03-19)
+## Production Model Stack — NUMA-Optimized (Updated 2026-03-29)
 
-| Role | Model | Size | NUMA Config | Best t/s | Accel | Notes |
-|------|-------|------|------------|---------|-------|-------|
-| frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **12.7/inst, ~50.8 agg** | moe6 (lookup needs corpus) | Measured 2026-03-24: 19.6 was with lookup corpus, 12.7 is moe6-only |
-| coder_escalation | **Qwen2.5-Coder-32B Q4KM** | **18.5 GB** | **4×48t** | **43.3 agg** | AR 0.5B, dm=32, ps=0.05, tree+lu | Q4KM confirmed 2026-03-24 (=f16 quality, 1.7x faster, 3.5x less RAM) |
-| architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **4.3** | moe8+spec+lu, dm=24, ps=0 | Sweep-corrected: dm=24 (was 8), 4.3 (was 12.6) |
-| architect_coding | **REAP-246B Q4KM** | **139 GB** | **1×96t node0** | **8.0** | AR 0.75B, dm=32, ps=0 (NO tree) | Replaced 480B (2026-03-29): +9pp quality, +14% speed, -44% RAM |
-| ingest_long_context | Qwen3-Next-80B-A3B Q4KM | 46 GB | **1×96t node0** | **~12** | none (SSM) | mlock enabled |
+| Role | Model | Size | NUMA Config | Per-inst t/s | Agg t/s | Accel |
+|------|-------|------|------------|-------------|---------|-------|
+| frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | 12.7 | **~50.8** | moe6 |
+| coder_escalation | **Qwen2.5-Coder-32B Q4KM** | 18.5 GB | **4×48t** | 10.8 | **~43.3** | dm=32, ps=0.05, tree+lu |
+| architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **2×96t** | 4.3 | **~8.3** | moe8+spec, dm=24, ps=0 |
+| architect_coding | **REAP-246B Q4KM** | **139 GB** | **2×96t** | **8.0** | **16.5** | dm=32, ps=0 |
+| ingest_long_context | Qwen3-Next-80B-A3B Q4KM | 46 GB | 1×96t | ~12 | ~12 | SSM, moe4 |
+| worker_explore | **Qwen3-Coder-30B-A3B Q4KM** | 16 GB | **4×48t** | **39.1** | **~156** | dm=8, spec+lu |
+| worker_vision | Qwen2.5-VL-7B Q4KM | 4 GB | 1×24t | ~24 | ~24 | — |
+| vision_escalation | Qwen3-VL-30B-A3B Q4KM | 18 GB | 1×96t | TBD | TBD | — |
 
-**Total footprint**: ~404 GB (with multi-instance copies). Saves 111 GB vs 480B architect swap.
+**Total footprint**: ~361 GB (330 GB shared weights + 31 GB per-instance KV/compute). 32% of 1.1 TB RAM, 769 GB free. All mlocked.
 
 ## Global Test Matrix
 
