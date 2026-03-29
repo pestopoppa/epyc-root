@@ -1,8 +1,9 @@
 # Handoff: Multi-Model Page Cache Optimization
 
-**Status**: S1-S3 COMPLETE, **S2 CONFIRMED** (2026-03-19). **480B cold-start = 185s** (page cache eviction). Page-in verification gives 14.5x improvement but is zero-sum at current memory pressure. **mlock WORKS: frontdoor stays 250ms after 380 GB of other models load (vs 7.9s without mlock).** Root cause: ~508 GB models in ~1.1 TB RAM.
+**Status**: **LARGELY RESOLVED** (2026-03-29). REAP-246B swap reduced model footprint from ~508 GB to ~327 GB (29% of 1.1 TB). With 804 GB free, page cache eviction is no longer a production concern. mlock deployed on all roles as defense-in-depth. Original 480B cold-start problem (185s) eliminated by model removal.
 **Created**: 2026-03-19
-**Priority**: MEDIUM — potential latency reduction for multi-model concurrent serving
+**Updated**: 2026-03-29
+**Priority**: LOW — problem resolved by REAP-246B model swap
 **Blocks**: None
 **Blocked by**: None — all experiments can run on production stack
 **Related**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md)
@@ -13,16 +14,21 @@ Research intake of flash-moe (intake-166) surfaced a transferable insight: remov
 
 The EPYC 9655 has ~1.1TB RAM across 2 NUMA nodes. Production serves 5+ models totaling ~650GB (all loaded via mmap). When all models are loaded, they fit in physical memory — but page cache pressure during model loading can evict pages from already-loaded models, causing first-request latency spikes from page faults.
 
-### Production Model Memory Footprint
+### Production Model Memory Footprint (Updated 2026-03-29)
 
-| Role | Model | Size | NUMA Config |
-|------|-------|------|------------|
-| frontdoor | Qwen3-Coder-30B-A3B Q4KM | 17.5 GB | 4×48t |
-| coder_escalation | Qwen2.5-Coder-32B f16 | 65 GB | 4×48t |
-| architect_general | Qwen3-235B-A22B Q4KM | 130 GB | 1×96t node0 |
-| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | 1×96t node0 |
-| ingest | Qwen3-Next-80B-A3B Q4KM | ~46 GB | 4×48t (est) |
-| **Total** | | **~508 GB** | |
+| Role | Model | Size | NUMA Config | mlock |
+|------|-------|------|------------|-------|
+| frontdoor | Qwen3.5-35B-A3B Q4KM | 20 GB | 4×48t | YES |
+| coder_escalation | Qwen2.5-Coder-32B Q4KM | 18.5 GB | 4×48t | YES |
+| architect_general | Qwen3.5-122B-A10B Q4KM | 69 GB | 1×96t node0 | YES |
+| architect_coding | **REAP-246B Q4KM** | **139 GB** | 1×96t node0 | YES |
+| ingest | Qwen3-Next-80B-A3B Q4KM | 46 GB | 1×96t node0 | YES |
+| worker_explore | Qwen3-Coder-30B-A3B Q4KM | 16 GB | 1×48t | YES |
+| worker_vision | Qwen3-VL-30B-A3B Q4KM | 18 GB | 1×24t | YES |
+| **Total** | | **~327 GB** | | **all mlocked** |
+
+**Previous total (with 480B)**: ~508 GB (45% of 1.1 TB) — page cache eviction was a real problem.
+**Current total (with REAP-246B)**: ~327 GB (29% of 1.1 TB) — **804 GB free**, no eviction possible even under full load.
 
 ## Experiment S1: Baseline Page Residency Measurement
 
@@ -247,16 +253,18 @@ Tested 3 memory binding strategies with 235B on node1 as cross-NUMA pressure:
 
 ### Conclusions
 
-1. **Page cache contention is a real production problem** — 480B cold-start of 185 seconds is catastrophic
-2. **Page-in verification helps dramatically** for individual models (14.5x for 480B) but is zero-sum at current memory pressure
-3. **Root cause is total model footprint (~508 GB) with only ~1.1 TB RAM** — any model loading evicts other models' cached pages
-4. **mlock is the strongest mitigation** — completely eliminates eviction for locked models (30x improvement vs no mlock), NOT zero-sum unlike page-in verification
-5. **Actionable mitigations** (updated priority order):
-   - **`--mlock` for latency-critical models** (CONFIRMED): Lock frontdoor (17.5 GB) + ingest (~46 GB) = 63.5 GB locked. Cost is trivial in 1.1 TB system. Requires `ulimit -l unlimited` (set via `--ulimit memlock=-1:-1` in container or sysctl on bare metal). **Frontdoor latency: 250ms stable vs 7,900ms without mlock.**
-   - **Load order matters**: Load the largest model FIRST, smallest last (smallest gets evicted least)
-   - **Page-in verification as health check**: Touch all pages after load, before adding to routing pool. Cost: ~26s for 480B — acceptable one-time startup cost. Use for unlocked models.
-   - **Reduce concurrent model count**: If possible, don't load all 5 models simultaneously. Load architect models on-demand (cold-start of 7-12s is acceptable for non-interactive roles).
-   - **Consider replacing 480B with 397B hybrid**: Qwen3.5-397B-A17B (205 GB) at 12.4 t/s is 3.6x faster than 480B (3.4 t/s) and saves 45 GB of memory pressure. Quality eval needed.
+1. **Page cache contention WAS a real production problem** — 480B cold-start of 185 seconds was catastrophic
+2. **Root cause was total model footprint (~508 GB) approaching system RAM (~1.1 TB)** — loading one model evicted another's pages
+3. **REAP-246B swap (2026-03-29) largely resolves this** — footprint dropped to ~327 GB (29%), leaving 804 GB free. No eviction possible.
+4. **mlock deployed on all roles as defense-in-depth** — eliminates eviction even under unexpected memory pressure (30x improvement proven in S2)
+5. **Page-in verification (S3) is no longer needed** — was zero-sum at 508 GB, but at 327 GB all models fit comfortably. Could revisit if footprint grows.
+6. **NUMA binding (S4) adds nothing** — taskset first-touch already optimal
+
+**Current production mitigations (all deployed):**
+- `--mlock` on all server roles (orchestrator_stack.py)
+- `ulimit -l unlimited` via container config
+- taskset CPU pinning for NUMA locality
+- REAP-246B replacing 480B (biggest single improvement: -181 GB)
 
 ## Validation Checklist
 
