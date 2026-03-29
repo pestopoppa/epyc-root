@@ -56,6 +56,8 @@ Port the best conversation management patterns from Hermes Agent and OpenGauss i
 **Files to create**:
 - `epyc-orchestrator/src/context_compression.py` — protected-zone compressor with tool pair sanitization
 
+**Cross-reference**: B2 tool-pair sanitization (`_sanitize_tool_pairs()`) overlaps with `context-folding-progressive.md` Phase 1 (two-level condensation) — both modify session compaction. Coordinate sequencing: context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic layers on top. Alternatively, extract `_sanitize_tool_pairs()` as a standalone prerequisite for both. See `routing-and-optimization-index.md` Cross-Cutting Concern #8.
+
 ### B3: Skill Hub Interop (from agentskills.io) — LOW PRIORITY
 
 **Gap**: None critical. Our SkillRL skillbank is more sophisticated (Q-value weighted retrieval vs. flat file listing).

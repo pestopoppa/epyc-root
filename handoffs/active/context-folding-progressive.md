@@ -204,7 +204,8 @@ def segment_advantage(turns: list[TurnRecord]) -> float:
 |---------|-------------|
 | `reasoning-compression.md` | Phase 2 shares eval methodology (Claude-as-Judge scoring, `eval_trimr.py` pattern); SFT data collection mirrors TrimR pattern |
 | `routing-intelligence.md` | Phase 3 `segment_advantage` feeds Phase 5 MemRL Q-value enrichment; advantage broadcasting applicable to delegation episodes |
-| `rlm-orchestrator-roadmap.md` | D1 Context Compaction superseded by this handoff for further context management work |
+| ~~`rlm-orchestrator-roadmap.md`~~ | ARCHIVED 2026-03-29 — D1 Context Compaction superseded by this handoff |
+| `routing-and-optimization-index.md` | Phase 0-1 should precede autoresearch baseline (P5-AR-1); Phase 3 process rewards tracked as upstream dependency (concern #7) |
 
 ---
 

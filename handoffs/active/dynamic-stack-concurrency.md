@@ -6,7 +6,7 @@
 **Priority**: MEDIUM (routing optimization is higher priority, but this unblocks full NUMA utilization)
 **Blocks**: Nothing currently
 **Blocked by**: Autoresearch bootstrap (Phase A), observability infrastructure (Phase B)
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
+**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
 
 ---
 

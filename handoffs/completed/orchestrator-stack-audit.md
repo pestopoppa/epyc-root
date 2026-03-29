@@ -1,9 +1,15 @@
 # Orchestrator Stack Lineup Audit
 
-**Status**: BLOCKED (validation sweep running; additional models to download/benchmark)
-**Priority**: HIGH
-**Blocked by**: qwen35-frontdoor-benchmark.md (needs full-suite spec/lookup tests), active validation sweep
-**Related**: qwen35-frontdoor-benchmark.md, full-benchmark-rescore.md (completed)
+**Status**: ARCHIVED (2026-03-29) — purpose fulfilled by other handoffs
+**Archived**: 2026-03-29
+**Archive reason**: Both recommended stack changes were executed through other work:
+- Change 1 (frontdoor → Qwen3.5-35B-A3B): deployed via NUMA deployment 2026-03-19, benchmarked in `qwen35-frontdoor-benchmark.md` (completed)
+- Change 2 (architect_general → Qwen3.5-122B-A10B): deployed via NUMA deployment 2026-03-19
+- architect_coding → REAP-246B: deployed via `reap-moe-expert-pruning.md` (completed), replaces 480B
+- Remaining item (Qwen3.5-397B-A17B download): optional future exploration — create a new handoff if pursued
+**Priority**: HIGH (historical)
+**Blocked by**: N/A (archived)
+**Related**: qwen35-frontdoor-benchmark.md, full-benchmark-rescore.md (completed), numa-orchestrator-deployment.md (completed), reap-moe-expert-pruning.md (completed)
 
 ## Current Stack vs Rescored Quality
 

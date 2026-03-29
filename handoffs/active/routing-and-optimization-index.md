@@ -22,6 +22,10 @@
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phases 0-3 done, shadow active | Phase 4: risk-aware enforce |
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Impl complete, 13 wiring gaps | Wire failure context, then bootstrap autoresearch |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Strategic analysis complete | Phase B: observability instrumentation |
+| KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Planning (4 phases designed) | Phase 0: raise compaction trigger to 0.75 |
+| Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
+| ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
 
@@ -37,7 +41,7 @@ These are HIGH priority because the code exists but isn't wired up. Low effort, 
 
 - [ ] **AP-3: Populate `parent_trial` and `config_diff` journal fields** — Both fields exist on `JournalEntry` but are never written. No lineage tracking. See § item 3.
 
-- [ ] **RI-0: Fix Q-scorer frontdoor baseline** — `q_scorer.py` uses 19.6 t/s (moe6+lookup) but lookup disabled since 2026-03-19 (segfault). Actual: 12.7 t/s. Under-penalizes frontdoor cost by ~1.5x. Location: `baseline_tps_by_role` in `orchestration/repl_memory/q_scorer.py`.
+- [ ] **RI-0: Fix Q-scorer frontdoor baseline** — `q_scorer.py` baseline is stale: frontdoor is now Qwen3.5-35B-A3B (was Qwen3-Coder-30B), and lookup was disabled 2026-03-19 (segfault). Old value: 19.6 t/s (moe6+lookup). Current actual: ~12.7 t/s (moe6, no lookup). `baseline_tps_by_role` must be updated to match current stack. Under-penalizes frontdoor cost. Location: `orchestration/repl_memory/q_scorer.py`.
 
 ### P1 — Routing Intelligence Phase 4 (risk-aware enforcement)
 
@@ -91,7 +95,7 @@ These unblock data-driven stack scheduling.
 
 ### P5 — AutoResearch Bootstrap (Phase A)
 
-- [ ] **AR-1: Establish debug suite baseline** — Run full debug suite (579 questions) against current production config. Record pass rate in `autopilot_baseline.yaml`. This is the "before" number.
+- [ ] **AR-1: Establish debug suite baseline** — Run full debug suite (579 questions) against current production config. Record pass rate in `autopilot_baseline.yaml`. This is the "before" number. **Note**: Context-folding Phase 0-1 should ideally complete before this baseline capture, since raising the compaction trigger (0.60 → 0.75) and adding two-level condensation changes session quality behavior. Otherwise, the baseline reflects a compaction policy that is about to change.
 
 - [ ] **AR-2: Smoke test autoresearch loop** — `python scripts/autopilot/autopilot.py start --dry-run --max-trials 5`. Verify journal writes, safety gate, Pareto archive. Fix any integration issues.
 
@@ -131,6 +135,18 @@ Lower priority refinements.
 
 - [ ] **AP-13: Grep-parseable metric output** — Standardize benchmark output to `key: value` format. See § item 13.
 
+### P9 — Legacy Cleanup & Operational Debt
+
+Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
+
+- [ ] **LC-1: Delegation SLO report** — Add lightweight daily summary from logs: p50/p95 delegation latency, timeout rate, report-handle emission rate.
+
+- [ ] **LC-2: Chain anomaly detection** — Flag frequent fallback-to-seq or repeated wave stalls in debugger.
+
+- [ ] **LC-3: Remove `worker_code` legacy naming** — Remove from docs/prompts/constants once compatibility window officially closed.
+
+- [ ] **LC-4: Shared-result cache for delegation** — Evaluate content-hash keyed report snippet cache for repeated delegated subtasks.
+
 ---
 
 ## Cross-Cutting Concerns
@@ -152,6 +168,15 @@ When risk-aware routing goes to enforce (RI-2 through RI-6), high-risk prompts t
 ### 5. Conversation Logs Feed All Three
 Observed patterns inform routing (Q-value training), autopilot (experiment evaluation), and stack (demand patterns, tier utilization). This mirrors episodic memory's Q-value accumulation loop.
 
+### 6. KV Cache Config ↔ Stack Capacity
+`kv-cache-quantization.md` — Hadamard + q4_0 K / f16 V is the production KV config. DS-3 (`--slot-save-path`) interacts with KV quantization config — if KV type changes, save/restore format may need updating. Dynamic stack assembly (DS-6) must account for per-model KV quantization when computing memory budgets.
+
+### 7. Context Folding ↔ AutoResearch Baseline
+`context-folding-progressive.md` Phase 0-1 (compaction trigger + two-level condensation) changes session quality behavior. The autoresearch baseline (AR-1) should be captured AFTER Phase 0-1 is deployed, or the "before" number will reflect a compaction policy that is about to change. Phase 3 process rewards feed MemRL Q-value enrichment (routing-intelligence Phase 5).
+
+### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
+`orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both.
+
 ---
 
 ## Dependency Graph
@@ -167,15 +192,23 @@ P2 (autopilot structural) ─ independent of P1, can run in parallel
 P3 (routing Phase 5) ──── depends on P1 complete (need enforce mode data)
   │
 P4 (observability) ─────── independent, can run in parallel with P1-P3
+  │                          note: DS-3 (slot-save-path) interacts with
+  │                          kv-cache-quantization config (concern #6)
+  │
+CF (context folding 0-1) ── independent of P0-P4, can start immediately
+  │                           SHOULD precede P5 (affects baseline measurement)
   │
 P5 (autoresearch bootstrap) ── benefits from P0 + P2 (cleaner autopilot)
   │                              benefits from P4 (telemetry for stack exps)
+  │                              SHOULD follow CF Phase 0-1 (stable baseline)
   │
 P6 (routing Phase 6 rollout) ── depends on P1 A/B results (RI-7)
   │
 P7 (dynamic stack impl) ──── depends on P4 (telemetry) + P5 (baseline)
   │
 P8 (autopilot refinements) ── lowest priority, independent
+  │
+P9 (legacy cleanup) ──────── independent, any time
 ```
 
 ---
@@ -187,6 +220,30 @@ After completing any task group, update:
 2. The relevant handoff document (update status, add implementation notes)
 3. `progress/YYYY-MM/YYYY-MM-DD.md` with session summary
 4. `CHANGELOG.md` if the change is significant
+
+---
+
+## Upstream Dependencies
+
+This index consumes data and findings from:
+
+| Source | Handoff | What It Provides |
+|--------|---------|-----------------|
+| Inference acceleration | [`inference-acceleration-index.md`](inference-acceleration-index.md) | Benchmark results, model speed/quality data, NUMA deployment findings. Stack config changes originate from acceleration work. |
+| KV cache quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Production KV config (`--kv-hadamard -ctk q4_0 -ctv f16`), memory budget inputs for stack planning. |
+
+Changes in upstream handoffs may invalidate assumptions in this index (e.g., model speed numbers, memory footprints). After any upstream deployment, verify RI-0 baseline and stack table in `dynamic-stack-concurrency.md`.
+
+## Related Infrastructure
+
+These handoffs are relevant to orchestration quality but out-of-scope for this index's task list:
+
+| Handoff | Relevant Aspects | Out-of-Scope Aspects |
+|---------|-----------------|---------------------|
+| [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | B2 (context compression), B5 (session analytics), B6 (multi-backend) | B1 (user modeling), B3 (skill hub), B7 (injection scanning) |
+| [`langgraph-migration.md`](langgraph-migration.md) | Graph execution architecture affects routing and escalation paths | Migration planning, LangGraph API surface |
+| [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 3 process rewards feed routing intelligence | Phases 0-2 compaction mechanics |
+| ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | ARCHIVED 2026-03-29. Follow-on tasks extracted to P9. | All R1-R6 tracks complete. |
 
 ---
 
@@ -205,3 +262,5 @@ After completing any task group, update:
 | Seeding types | `epyc-orchestrator/scripts/benchmark/seeding_types.py` |
 | Model registry (full) | `epyc-inference-research/orchestration/model_registry.yaml` |
 | Debug suite pool | `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` |
+| Model registry (lean) | `epyc-orchestrator/orchestration/model_registry.yaml` |
+| KV cache config | `epyc-llama` production branch (`--kv-hadamard` flag in `orchestrator_stack.py`) |

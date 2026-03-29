@@ -3,7 +3,7 @@
 **Status**: stub
 **Created**: 2026-03-20 (via research intake)
 **Categories**: training_distillation, benchmark_methodology
-**Depends on**: rlm-orchestrator-roadmap.md (Phase 4 Formalizer — Done)
+**Depends on**: ~~rlm-orchestrator-roadmap.md~~ (Phase 4 Formalizer — Done, roadmap archived 2026-03-29)
 
 ## Objective
 

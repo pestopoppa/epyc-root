@@ -2,7 +2,9 @@
 
 **Created**: 2026-01-13
 **Updated**: 2026-02-19
-**Status**: Active (refreshed after lock-starvation + programmatic-tool-chaining implementation)
+**Status**: ARCHIVED (2026-03-29)
+**Archived**: 2026-03-29
+**Archive reason**: R1-R6 all complete. Phase 7 (hyperparameter tuning) superseded by `autopilot-continuous-optimization.md` (2026-03-08), which implements continuous multi-species optimization with Pareto archive, safety gates, and staged rollout — a superset of what Phase 7 envisioned. Follow-on tasks 1-4 extracted to `routing-and-optimization-index.md` § P9. Task 5 (feature vetting) superseded by autopilot safety gates. Task 6 references `01-fast-rlm-budget-controls.md` which never existed — the underlying work (budget propagation) was completed as R1/D2. D1 context compaction superseded by `context-folding-progressive.md`. MemRL distillation (2026-03-05 section) is complementary to `routing-intelligence.md` Phase 2. Section 5 doc edit spec references stale chapter numbers (pre-renumbering) — verify against actual files before using.
 **Primary Goal**: close remaining orchestration/runtime gaps with implementation-ready tasks for next session
 **Related**:
 - `handoffs/archived/programmatic-tool-chaining.md`
