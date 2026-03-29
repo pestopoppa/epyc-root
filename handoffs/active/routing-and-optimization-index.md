@@ -98,7 +98,7 @@ These unblock data-driven stack scheduling.
 
 - [ ] **AR-1: Establish debug suite baseline** — Run full debug suite (579 questions) against current production config. Record pass rate in `autopilot_baseline.yaml`. This is the "before" number. **Note**: Context-folding Phase 0-1 should ideally complete before this baseline capture, since raising the compaction trigger (0.60 → 0.75) and adding two-level condensation changes session quality behavior. Otherwise, the baseline reflects a compaction policy that is about to change.
 
-- [ ] **AR-2: Smoke test autoresearch loop** — `python scripts/autopilot/autopilot.py start --dry-run --max-trials 5`. Verify journal writes, safety gate, Pareto archive. Fix any integration issues.
+- [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
 - [ ] **AR-3: First live autoresearch run** — Follow `program.md` setup phase. Start with Tier 1 experiments (prompt optimization — hot-swap, fast iteration). Target: at least one "keep" result.
 
@@ -128,11 +128,11 @@ Lower priority refinements.
 
 - [ ] **AP-9: Tighter per-trial scope** — Constrain each trial to single-variable changes. See `autopilot-continuous-optimization.md` § item 9.
 
-- [ ] **AP-10: Simplicity criterion for PromptForge** — Reject mutations that increase prompt size >20% for <0.02 quality improvement. See § item 10.
+- [x] **AP-10: Simplicity criterion for PromptForge** — ✅ 2026-03-29. After safety gate passes, checks prompt size increase >20% with quality delta <0.02 — reverts if criterion violated.
 
 - [ ] **AP-11: Git worktree isolation for PromptForge** — Parallel prompt experiments in worktrees. See § item 11.
 
-- [ ] **AP-12: Explicit eval trust boundary** — Document that species cannot modify eval code. See § item 12.
+- [x] **AP-12: Explicit eval trust boundary** — ✅ 2026-03-29. Added trust boundary table to `program.md` showing OUTSIDE (species-modifiable) vs INSIDE (immutable eval) files.
 
 - [ ] **AP-13: Grep-parseable metric output** — Standardize benchmark output to `key: value` format. See § item 13.
 
