@@ -1,7 +1,8 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: Implementation complete (Phase 1-3), ready for integration testing
+**Status**: All wiring gaps closed (AP-1–8, 10, 12). AR-2 smoke test passed. TUI built (--tui). Ready for AR-1 baseline + AR-3 live run.
 **Created**: 2026-03-08
+**Updated**: 2026-03-29
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 ## Architecture

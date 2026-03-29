@@ -2,9 +2,9 @@
 
 **Created**: 2026-02-18 (consolidated from `classifier-refactoring.md` + `delegation-escalation-factual-risk-routing-track.md`)
 **Last audited**: 2026-03-24
-**Status**: PHASES 0-3 COMPLETE — Phase 3 shadow mode active since 2026-03-15 — Phases 4-6 enforcement deferred
+**Status**: PHASES 0-4 CODE COMPLETE (2026-03-29) — RI-2–6 implemented, RI-1 calibration dataset built (2000 examples). RI-7 A/B test pending (needs compute). Phases 5-6 deferred.
 **Priority**: HIGH
-**Blocked by**: Nothing (Phase 3 shadow active, Phase 4 needs calibration dataset before enforce)
+**Blocked by**: RI-7 A/B test needs production stack + orchestrator API running
 
 ---
 
