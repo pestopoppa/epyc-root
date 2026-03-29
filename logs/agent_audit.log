@@ -2119,3 +2119,106 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-28T11:40:00Z] TASK_END description="Phase 5: Report & persist" status="partial" result="39 YAML entries staged at .claude/intake-staging-2026-03-28.yaml. Could not append to research/intake_index.yaml due to filesystem hook. Report output to conversation."
 [2026-03-28T11:40:00Z] SESSION_END summary="Session 2026-03-28a: Research intake of 38 URLs. 36 not_applicable (LLM psychology/interpretability). 2 high-relevance TurboQuant CUDA entries. 1 expansion entry. All staged under .claude/ due to filesystem hook. Key finding: TurboQuant llama.cpp ecosystem matured — multiple working implementations, upstream feature request open."
 [2026-03-28T13:00:00Z] TASK_END description="REAP-246B NUMA sweep" status="success" result="2×96t sequential: 16.49 t/s (1.92x). 2×96t concurrent: 11.74 t/s (1.37x). Near-linear scaling in sequential mode. Fixed wait bug in script. Concurrent drops from bandwidth contention at 139 GB/instance."
+[2026-03-28T14:00:00Z] SESSION_START summary="Intake pipeline completion + Nemotron evaluation handoff"
+[2026-03-28T14:05:00Z] TASK_START description="Assess yolo agent intake output" reasoning="Check what was completed vs blocked by write permissions"
+[2026-03-28T14:08:00Z] TASK_END description="Assess yolo agent intake output" status="success" result="Intake entries 194-232 already merged. Field reports 233-236 collide with separate session entries (Goedel-Code-Prover, Leanstral, REAP GGUF)."
+[2026-03-28T14:10:00Z] TASK_START description="Fix ID collision and append field reports" reasoning="Renumber field reports to intake-237–240 to avoid collision with existing 233-236"
+[2026-03-28T14:12:00Z] TASK_END description="Fix ID collision and append field reports" status="success" result="4 field report entries (Nemotron field report, Nemotron paper, small model learnings, GEPA) appended as intake-237–240. Index now has 240 entries."
+[2026-03-28T14:15:00Z] TASK_START description="Check llama.cpp Mamba2 MoE support" reasoning="Critical blocker for Nemotron evaluation — need to know if architecture is supported before creating handoff"
+[2026-03-28T14:20:00Z] FINDING description="llama.cpp FULLY SUPPORTS Mamba2 MoE via LLM_ARCH_NEMOTRON_H_MOE. Implementation in src/models/nemotron-h.cpp + mamba-base.cpp. GGUFs available from bartowski, mradermacher. Issue #20570 (assertion) resolved 2026-03-15. No blockers — ready to download and benchmark."
+[2026-03-28T14:20:00Z] TASK_END description="Check llama.cpp Mamba2 MoE support" status="success" result="Fully supported. GGUFs available. No open issues."
+[2026-03-28T14:25:00Z] TASK_START description="Create Nemotron evaluation handoff + cross-reference updates" reasoning="New handoff for model replacement evaluation, plus GEPA cross-refs to routing/autopilot handoffs"
+[2026-03-28T14:30:00Z] TASK_END description="Create Nemotron evaluation handoff + cross-reference updates" status="success" result="Created nemotron-mamba2-evaluation.md (5-phase plan). Updated 4 handoffs: ssm-hybrid-acceleration (Nemotron xref), inference-acceleration-index (landscape + xref map), routing-intelligence (GEPA reference), autopilot-continuous-optimization (GEPA as PromptForge replacement candidate)."
+[2026-03-28T14:35:00Z] TASK_START description="Update progress report and audit log" reasoning="Persist session work"
+[2026-03-28T14:35:00Z] TASK_END description="Update progress report and audit log" status="success" result="Progress file updated with session 2026-03-28e. Recommended actions updated (Mamba2 support check marked DONE, download+benchmark promoted to #2)."
+[2026-03-28T14:35:00Z] SESSION_END summary="Session 2026-03-28e: Completed intake pipeline from yolo agent. Fixed ID collision (233-236→237-240). Confirmed llama.cpp Mamba2 MoE fully supported. Created nemotron-mamba2-evaluation.md handoff. Updated 4 handoffs with cross-references (Nemotron + GEPA). 240 total intake entries."
+[2026-03-28T13:08:00Z] SESSION_START summary="Apply staged intake + TurboQuant deep dive"
+[2026-03-28T13:08:00Z] TASK_START description="Apply staged files from devc container" reasoning="Filesystem hook blocked writes in container; applying on production machine"
+[2026-03-28T13:09:00Z] TASK_END description="Apply staged files" status="success" result="4 operations: intake_index.yaml 193→232 entries, progress report copied, audit log appended, KV cache handoff updated with references + ecosystem status"
+[2026-03-28T13:10:00Z] TASK_START description="TurboQuant ecosystem deep dive" reasoning="Intake flagged 2 high-relevance TurboQuant entries; deep dive on CUDA fork, upstream discussion, ik_llama.cpp implementation"
+[2026-03-28T13:30:00Z] TASK_END description="TurboQuant ecosystem deep dive" status="success" result="7 independent implementations found. Key findings: (1) ikawrakow confirms Hadamard+q4_0 > TQ3 on CPU (PPL 6.5939 vs 6.6872, 2.2x faster). (2) TQ3 fails on small models (PPL 1216 at 0.6B, worse than q4_0+khad at 8B). (3) Norm correction (store ||x||/||recon(x)||) makes TQ3 beat q8_0. (4) Fused dequant via pre-rotated Q eliminates cast overhead."
+[2026-03-28T13:30:00Z] FINDING description="Our 7B TQ3 benchmarks were in the model-size failure zone. Must retest on 32B+ for fair comparison."
+[2026-03-28T13:31:00Z] TASK_START description="Update KV cache handoff with deep dive findings" reasoning="Add ecosystem confirmation, model-size dependency, norm correction, fused dequant, bug watch list, revised priorities"
+[2026-03-28T13:35:00Z] TASK_END description="Update KV cache handoff" status="success" result="Added Deep Dive Findings section with ecosystem benchmarks, norm correction technique, fused dequant path, bug watch list, revised priority list with decision gate"
+[2026-03-28T13:35:00Z] SESSION_END summary="Session 2026-03-28b: Applied all staged intake files. Deep dive on TurboQuant ecosystem (7 implementations). Ecosystem confirms our Hadamard+q4_0 finding. TQ3 quality is model-size dependent — our 7B tests were unfair. Norm correction and fused dequant are the two actionable techniques. Handoff updated with full findings and decision gate."
+[2026-03-28T14:00:00Z] SESSION_START summary="KV cache handoff audit, bug fixes, long-context validation"
+[2026-03-28T14:00:00Z] TASK_START description="Audit all KV cache phases (0-3d)" reasoning="Systematic audit of hybrid buffer implementation"
+[2026-03-28T14:10:00Z] TASK_END description="Bug fixes in hybrid buffer" status="success" result="4 bugs fixed: (1) mask always -inf for old cells, (2) n_evicted not reset on clear, (3) eviction during prefill, (4) GQA shape mismatch in split attention"
+[2026-03-28T14:15:00Z] TASK_START description="Long-context benchmark at 32K" reasoning="Validate q8_0/q4_0 production config at extended context"
+[2026-03-28T14:25:00Z] TASK_END description="Long-context benchmark" status="success" result="q8_0/q4_0 correct at 32K (598.2s, +9% wall). q4_0/q4_0 produces garbage at 32K. Hybrid buffer architecture is memory-negative (dual allocation). Standard single-cache with quantized types is correct approach."
+[2026-03-28T14:25:00Z] FINDING description="Hybrid buffer architecture dead end — dual-cache allocates 2x full context = memory-negative. Standard -ctk q8_0 -ctv q4_0 is strictly better."
+[2026-03-28T14:25:00Z] FINDING description="q4_0/q4_0 degrades at 32K on 7B model. May be model-size dependent per session 2026-03-28b findings."
+[2026-03-28T14:30:00Z] SESSION_END summary="Session 2026-03-28c: KV cache handoff audit complete. 4 bugs fixed. Long-context validated (q8_0/q4_0 correct at 32K, q4_0/q4_0 garbage). Hybrid buffer architecture dead end. TQ3/QJL post-mortem: S=256 insufficient (paper uses S=512), competitive bit rates favor q4_0+Hadamard. Production: Hadamard Phase 1 cherry-pick, everything else archived."
+[2026-03-28T15:00:00Z] SESSION_START summary="Field report intake — Nemotron-Cascade 2 + GEPA"
+[2026-03-28T15:00:00Z] TASK_START description="Process colleague field reports" reasoning="2 field reports with benchmark data and prompt optimization techniques"
+[2026-03-28T15:10:00Z] TASK_END description="Field report intake" status="success" result="4 entries (intake-237 to intake-240). Nemotron-Cascade 2: Mamba2 hybrid MoE, 187 t/s vs Qwen3.5 112 t/s on RTX 3090 (67% faster), IMO/AIME/IOI/ICPC gold. GEPA: Genetic-Pareto prompt optimizer, ICLR 2026 Oral, outperforms GRPO by 6%."
+[2026-03-28T15:10:00Z] FINDING description="Nemotron-Cascade 2 (30B-A3B Mamba2 MoE): 67% faster than Qwen3.5-35B-A3B on GPU, no KV cache needed, 625K context flat. Key question: llama.cpp Mamba2 MoE CPU support status."
+[2026-03-28T15:15:00Z] SESSION_END summary="Session 2026-03-28d: Nemotron-Cascade 2 is highest-signal finding — 67% faster than our Qwen3.5 at same active params, superior benchmark scores, Mamba2 hybrid avoids KV cache entirely. GEPA prompt optimizer worth evaluating for routing classifier. 4 intake entries added."
+[2026-03-28T13:51:46Z] SESSION_START | Nemotron-Cascade 2 CPU benchmark evaluation
+[2026-03-28T13:51:46Z] TASK_START | Download Q4_K_M GGUF | 67% GPU speed advantage over frontdoor — need CPU numbers
+{"ts":"2026-03-28T17:00:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"SESSION_START","msg":"llama.cpp working tree cleanup + commit","details":"Review uncommitted changes on production-consolidated-v2, cross-reference with handoffs/progress, commit and push"}
+{"ts":"2026-03-28T17:05:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Review 20 modified files in llama.cpp","details":"Cross-reference with progress 03-15 through 03-17, ssm-hybrid-acceleration handoff, inference-acceleration-index"}
+{"ts":"2026-03-28T17:10:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Review 20 modified files in llama.cpp","details":"outcome=success; All changes traced to completed research: MTP-1 (13 files), MoE self-draft (3), skip-recurrent (9), clone-cell (2), batch fix (1), docs (3). Nothing stale."}
+{"ts":"2026-03-28T17:15:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Clean junk files","details":"Delete stray shell output files (5), repack.cpp.bak, perf.data, examples/eagle/"}
+{"ts":"2026-03-28T17:15:30+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Clean junk files","details":"outcome=success; 8 items removed"}
+{"ts":"2026-03-28T17:20:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Commit and push","details":"3 commits: hybrid research (ffb4ad4), tools+skills (937bd12), gitignore (f55bf68)"}
+{"ts":"2026-03-28T17:25:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Commit and push","details":"outcome=success; Pushed to fork/production-consolidated-v2. Working tree clean for KV cache compression work."}
+{"ts":"2026-03-28T17:30:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"SESSION_END","msg":"llama.cpp working tree cleanup complete","details":"3 commits pushed. 20 modified files committed (MTP-1, MoE self-draft, skip-recurrent, clone-cell, batch fix, docs). 8 junk items removed. 3 items gitignored (math-tools, bench-kv-block, avx512-helpers.h). Tree clean for yolo agent."}
+{"ts":"2026-03-28T17:45:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"SESSION_START","msg":"Hadamard KV smoothing cherry-pick to production","details":"Apply patch from llama.cpp-experimental/hadamard-kv-smoothing to production-consolidated-v2"}
+{"ts":"2026-03-28T17:50:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Apply Hadamard patch","details":"10 files: 2 new (hadamard.h/.cpp) + 8 modified. Manual apply due to patch format issues."}
+{"ts":"2026-03-28T17:55:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Apply Hadamard patch","details":"outcome=success; Fixed build error: missing kv_hadamard in default params initializer (llama-context.cpp:2958)"}
+{"ts":"2026-03-28T18:00:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Build verification","details":"cmake --build build --target llama-server -j 192"}
+{"ts":"2026-03-28T18:05:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Build verification","details":"outcome=success; llama-server built clean, 100% targets"}
+{"ts":"2026-03-28T18:10:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_START","msg":"Commit and push Hadamard","details":"Commit b51c905ec pushed to fork/production-consolidated-v2"}
+{"ts":"2026-03-28T18:10:30+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"TASK_END","msg":"Commit and push Hadamard","details":"outcome=success; 10 files, +141 lines"}
+{"ts":"2026-03-28T18:15:00+01:00","session":"ses_20260328_cleanup","level":"INFO","cat":"SESSION_END","msg":"Hadamard cherry-pick complete","details":"--kv-hadamard flag available on production-consolidated-v2. Validated: PPL +0.017 vs +0.055 plain q4_0, zero overhead, needle 9/9."}
+
+[2026-03-28T23:59:00Z] SESSION: KV cache quantization handoff audit + implementation
+  AGENT: claude-opus-4-6
+  DURATION: ~8 hours
+  HANDOFF: handoffs/active/kv-cache-quantization.md
+  
+  TASKS COMPLETED:
+  - Audited all phases (0-3d) of KV cache quantization handoff
+  - Fixed 4 bugs in hybrid buffer path (mask, n_evicted reset, prefill guard, GQA shapes)
+  - Replaced non-flash split attention with flash+concat approach
+  - Implemented TQ3 norm correction, tested on 7B and 32B — TQ3 lost decision gate
+  - Discovered V dequant is entire prefill bottleneck (71% regression from V=q4_0)
+  - Changed production config: q4_0 K / f16 V for pure-attention models (zero prefill cost)
+  - Validated Q35 frontdoor q4_0/q4_0 (quality-neutral on hybrid)
+  - Validated Coder-32B q4_0/f16 (PPL identical, needle-in-haystack 9/9)
+  - Cherry-picked Hadamard to production (commit b51c905ec)
+  - Rebuilt production binary with --kv-hadamard
+  - Enabled --kv-hadamard in orchestrator_stack.py
+  - Updated model_registry.yaml with new KV configs
+  - Found q4_0 K bug on f16-weights 7B model (not production risk)
+  
+  KEY FINDINGS:
+  - Hybrid buffer architecture is memory-negative (archived)
+  - TurboQuant/PolarQuant/QJL not production-viable (archived)
+  - V=q4_0 causes 71% prefill regression; V=f16 has zero cost
+  - Hadamard closes q4_0 PPL gap from +0.055 to +0.017
+  - Production config: q4_0 K + f16 V + --kv-hadamard
+  
+  FILES MODIFIED:
+  - /mnt/raid0/llm/llama.cpp/src/llama-hadamard.h (NEW)
+  - /mnt/raid0/llm/llama.cpp/src/llama-hadamard.cpp (NEW)
+  - /mnt/raid0/llm/llama.cpp/src/llama-graph.cpp (Hadamard insertions)
+  - /mnt/raid0/llm/llama.cpp/src/llama-graph.h (build_hadamard decl)
+  - /mnt/raid0/llm/llama.cpp/src/llama-cparams.h (kv_hadamard)
+  - /mnt/raid0/llm/llama.cpp/include/llama.h (kv_hadamard param)
+  - /mnt/raid0/llm/llama.cpp/common/common.h (kv_hadamard)
+  - /mnt/raid0/llm/llama.cpp/common/arg.cpp (--kv-hadamard flag)
+  - /mnt/raid0/llm/llama.cpp/src/llama-context.cpp (param propagation)
+  - /mnt/raid0/llm/llama.cpp/src/CMakeLists.txt (build)
+  - /mnt/raid0/llm/llama.cpp/src/llama-kv-cache.cpp (f32 cast guard)
+  - /mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py (config)
+  - /mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml (config)
+  - /mnt/raid0/llm/epyc-root/handoffs/active/kv-cache-quantization.md (updated)
+  - /mnt/raid0/llm/epyc-root/progress/2026-03/2026-03-28.md (updated)
+[2026-03-28T17:01:15Z] TASK_END | Nemotron CPU benchmarks complete | success
+[2026-03-28T17:01:15Z] FINDINGS | Nemotron-Cascade-2 Q4_K_M CPU results: 192t=19.4, 96t=38.7, 48t=40.6, 4x48t=41.7 agg (vs Qwen3.5: 7.3, 13.4, 12.4, 49.7)
+[2026-03-28T17:03:52Z] SESSION_END | Nemotron-Cascade 2 evaluation complete. NOT replacing frontdoor: 4-way 41.7 vs 49.7 t/s (-16%). Single-inst 40.6 vs 12.4 (+227%).
+[2026-03-28T18:51:50Z] TASK_END | Nemotron quality benchmark responses collected (59/63 tests). Claude-as-Judge scoring pending. | success
+[2026-03-29T11:12:10Z] TASK_END | Nemotron quality scoring complete: 69% total, 42% IP. NOT replacing frontdoor (Qwen3.5 83%). Math specialist potential 87%. | success
+[2026-03-29T11:21:00Z] SESSION_END | Nemotron-Cascade 2 evaluation CONCLUDED. No deployment action. 69% quality (42% IP) vs worker 78% (73% IP). Speed similar (40.9 vs 39.1). NUMA 2x48t insight: 51.1 t/s at 63% efficiency on single NUMA node. Master benchmark table rebuilt. All handoffs/progress/logs updated.

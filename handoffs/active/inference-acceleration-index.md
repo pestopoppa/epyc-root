@@ -25,6 +25,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 | [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **246B PRODUCTION CANDIDATE** | REAP expert pruning (permanent) | MoE (246B from 480B, 25B from 30B) | **246B: 8.0 t/s, 82% quality, 139 GB** | Deploy 246B as architect_coding replacement? |
+| [`nemotron-mamba2-evaluation.md`](nemotron-mamba2-evaluation.md) | **CONCLUDED — NO ACTION** | Mamba2 MoE (Nemotron-Cascade 2) | Evaluated for all roles | 40.9 t/s (1×48t), 69% quality, 42% IP | Worker beats on every axis. Mamba2 NUMA scaling insight retained. |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
 
@@ -110,7 +111,21 @@ All inference optimization work in llama.cpp MUST follow these rules:
 - **DFlash worktree**: `/mnt/raid0/llm/llama.cpp-dflash` on `feature/dflash-speculation` (21 commits, lm_head fix applied)
 - **DFlash GGUFs**: `/mnt/raid0/llm/cache/dflash/` (dev + production, with shared embed/lm_head)
 - **Acceptance tool**: `tools/dflash-acceptance/` in the worktree
+- **MTP tools**: `tools/mtp-acceptance/`, `tools/mtp-speculation/` on `production-consolidated-v2` (committed 2026-03-28)
+- **KV cache experimental**: `/mnt/raid0/llm/llama.cpp-experimental` on `hadamard-kv-smoothing` branch
 - **Benchmark data**: `epyc-inference-research/data/tree_speculation/`
+
+## Code Commit Log (2026-03-28)
+
+All hybrid acceleration research committed to `production-consolidated-v2` and pushed to `fork` remote:
+
+| Commit | Scope | Size |
+|--------|-------|------|
+| `ffb4ad4` | MTP-1 inference, MoE self-draft, skip-recurrent draft, clone-cell API, batch allocator fix, GitNexus docs | 20 files, +995/-75 |
+| `937bd12` | MTP acceptance/speculation benchmark tools, Claude skills | 10 files, +1088 |
+| `f55bf68` | Gitignore (math-tools, bench-kv-block, avx512-helpers.h) | 1 file, +7 |
+
+Working tree clean — ready for KV cache compression work.
 - **NUMA benchmark data**: `epyc-inference-research/data/numa_parallel/`, `data/numa_tree_spec/`, `data/numa_production/`, `data/numa_t6_480b/`
 - **NUMA benchmark scripts**: `scripts/benchmark/bench_numa_*.sh`
 - **DFlash diagnostic venv**: `/home/node/dflash-venv/` (PyTorch 2.10.0 CPU)
@@ -137,6 +152,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | DFlash block diffusion | `dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
 | SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | NUMA parallel is the answer |
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
+| **Nemotron Mamba2 eval** | `nemotron-mamba2-evaluation.md` | FRONTDOOR CANDIDATE — 2×48t = 51.1 t/s (beats Qwen3.5 4×48t). Quality pending. |
 
 ## Production Model Stack — NUMA-Optimized (Deployed 2026-03-19)
 
