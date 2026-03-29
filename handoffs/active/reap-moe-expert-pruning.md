@@ -1,8 +1,8 @@
 # REAP — MoE Expert Pruning Evaluation
 
-**Status**: PHASE 1-2 + 2b COMPLETE. **246B PRODUCTION CANDIDATE: 77% quality (official), 8.4 t/s (+20%), 139 GB (-44%)** — better than unpruned 480B on every axis. NUMA sweep pending.
+**Status**: **246B DEPLOYED** as architect_coding (2026-03-29). Replaces 480B. 82% quality (+9pp), 8.0 t/s (+14%), 139 GB (-44%). 480B deprecated and deleted.
 **Created**: 2026-03-20 (via research intake)
-**Updated**: 2026-03-22
+**Updated**: 2026-03-29
 **Categories**: moe_optimization, quantization, inference_serving
 
 ## Objective

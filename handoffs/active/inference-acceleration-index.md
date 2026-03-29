@@ -24,7 +24,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **COMPREHENSIVE** — S2-S5 + sweep + quant | NUMA parallel, quant scaling | Hybrid (Qwen3.5) | **6.9x 35B-A3B**, ~12 t/s ceiling all others | See deployment handoff |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
-| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **246B PRODUCTION CANDIDATE** | REAP expert pruning (permanent) | MoE (246B from 480B, 25B from 30B) | **246B: 8.0 t/s, 82% quality, 139 GB** | Deploy 246B as architect_coding replacement? |
+| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **246B DEPLOYED** | REAP expert pruning (permanent) | MoE (246B replaces 480B) | **8.0 t/s, 82% quality, 139 GB** | Deployed as architect_coding 2026-03-29. 480B deleted. |
 | [`nemotron-mamba2-evaluation.md`](nemotron-mamba2-evaluation.md) | **CONCLUDED — NO ACTION** | Mamba2 MoE (Nemotron-Cascade 2) | Evaluated for all roles | 40.9 t/s (1×48t), 69% quality, 42% IP | Worker beats on every axis. Mamba2 NUMA scaling insight retained. |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
@@ -152,7 +152,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | DFlash block diffusion | `dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
 | SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | NUMA parallel is the answer |
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
-| **Nemotron Mamba2 eval** | `nemotron-mamba2-evaluation.md` | FRONTDOOR CANDIDATE — 2×48t = 51.1 t/s (beats Qwen3.5 4×48t). Quality pending. |
+| **Nemotron Mamba2 eval** | `nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no deployment action |
 
 ## Production Model Stack — NUMA-Optimized (Deployed 2026-03-19)
 
@@ -161,10 +161,10 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | frontdoor | **Qwen3.5-35B-A3B Q4KM** | 20 GB | **4×48t** | **12.7/inst, ~50.8 agg** | moe6 (lookup needs corpus) | Measured 2026-03-24: 19.6 was with lookup corpus, 12.7 is moe6-only |
 | coder_escalation | **Qwen2.5-Coder-32B Q4KM** | **18.5 GB** | **4×48t** | **43.3 agg** | AR 0.5B, dm=32, ps=0.05, tree+lu | Q4KM confirmed 2026-03-24 (=f16 quality, 1.7x faster, 3.5x less RAM) |
 | architect_general | **Qwen3.5-122B-A10B Q4KM** | 69 GB | **1×96t node0** | **4.3** | moe8+spec+lu, dm=24, ps=0 | Sweep-corrected: dm=24 (was 8), 4.3 (was 12.6) |
-| architect_coding | Qwen3-Coder-480B-A35B Q4KM | 250 GB | **1×96t node0** | **7.0** | AR 0.75B, dm=24, ps=0 (NO tree) | Sweep-corrected: tree harmful (-19%), dm=24 (was 48) |
+| architect_coding | **REAP-246B Q4KM** | **139 GB** | **1×96t node0** | **8.0** | AR 0.75B, dm=32, ps=0 (NO tree) | Replaced 480B (2026-03-29): +9pp quality, +14% speed, -44% RAM |
 | ingest_long_context | Qwen3-Next-80B-A3B Q4KM | 46 GB | **1×96t node0** | **~12** | none (SSM) | mlock enabled |
 
-**Total footprint**: ~515 GB (with multi-instance copies). Saves 186 GB vs f16 coder + 64 GB vs 235B architect.
+**Total footprint**: ~404 GB (with multi-instance copies). Saves 111 GB vs 480B architect swap.
 
 ## Global Test Matrix
 

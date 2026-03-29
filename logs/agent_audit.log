@@ -2222,3 +2222,4 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-28T18:51:50Z] TASK_END | Nemotron quality benchmark responses collected (59/63 tests). Claude-as-Judge scoring pending. | success
 [2026-03-29T11:12:10Z] TASK_END | Nemotron quality scoring complete: 69% total, 42% IP. NOT replacing frontdoor (Qwen3.5 83%). Math specialist potential 87%. | success
 [2026-03-29T11:21:00Z] SESSION_END | Nemotron-Cascade 2 evaluation CONCLUDED. No deployment action. 69% quality (42% IP) vs worker 78% (73% IP). Speed similar (40.9 vs 39.1). NUMA 2x48t insight: 51.1 t/s at 63% efficiency on single NUMA node. Master benchmark table rebuilt. All handoffs/progress/logs updated.
+[2026-03-29T11:31:29Z] TASK_END | REAP-246B deployed as architect_coding. 480B deleted (271 GB freed). Registry, stack, index updated. Impact analysis: all references use role name, swap is transparent. | success
