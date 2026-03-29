@@ -1,11 +1,11 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: Phase B (observability) complete — DS-1 through DS-4 implemented 2026-03-29
+**Status**: Phase B (observability) complete — DS-1 through DS-4 implemented 2026-03-29. Pre-warm strategy designed.
 **Created**: 2026-03-24
 **Updated**: 2026-03-29
-**Priority**: MEDIUM (routing optimization is higher priority, but this unblocks full NUMA utilization)
-**Blocks**: Nothing currently
-**Blocked by**: Autoresearch bootstrap (Phase A)
+**Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
+**Blocks**: Multi-session performance
+**Blocked by**: Nothing — Phase C (pre-warm deployment) can start immediately
 **Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
 
 ---
@@ -55,24 +55,64 @@ REAP-246B swap (2026-03-29) reduced footprint from ~540 GB to ~361 GB — from 4
 
 ---
 
-## Part 2: Single-to-Multi Instance Transition
+## Part 2: Pre-Warm Strategy — All Configs Always Running
 
-### The KV Migration Scenario (Validated for Pure MoE)
+### Core Principle: Use Abundant RAM to Eliminate Cold Starts
 
-For pure MoE models (30B-A3B), NUMA scaling differs from hybrid:
-- **1x96t (half-machine, node-pinned)**: 29.5-36 t/s raw; with spec+lookup potentially 45-55 t/s (untested)
-- **1x48t (quarter)**: 39.1 t/s (with spec+lookup, measured)
-- **4x48t (all quarters)**: ~156 t/s aggregate (estimated), 39.1 per request
+With 769 GB free (32% utilization), we should pre-launch **both** single-instance (max throughput) and multi-instance (max concurrency) configs for every role. No restarts, no cold starts, no migrations that require teardown.
 
-If 96t single-instance is faster than 48t (plausible for pure MoE), the transition is:
-1. Start conversation on 1x96t (max per-request speed)
-2. Second conversation arrives -> save KV state (~1-5s)
-3. Migrate to 4x48t config (39 t/s per request, 156 t/s aggregate)
-4. Restore state to one instance, new conversation starts on another
+### Pre-Warm Architecture for Frontdoor (Reference Example)
 
-**This works because it's the same model** — KV state transfer is valid within identical model+quant.
+**5 pre-launched instances** — all holding the same Qwen3.5-35B-A3B Q4KM (19 GB each):
 
-### KV State Transfer Capabilities (Verified in llama.cpp)
+| Instance | Config | Port | NUMA | Use Case |
+|----------|--------|------|------|----------|
+| FD-full | 1×96t | 8080 | node0 | Max single-session speed (higher per-request t/s) |
+| FD-q0a | 1×48t | 8180 | Q0A | Concurrent session slot 1 |
+| FD-q0b | 1×48t | 8280 | Q0B | Concurrent session slot 2 |
+| FD-q1a | 1×48t | 8380 | Q1A | Concurrent session slot 3 |
+| FD-q1b | 1×48t | 8480 | Q1B | Concurrent session slot 4 |
+
+**Additional RAM cost**: +19 GB (1 extra instance) = 380 GB total stack (34% of RAM). Trivial.
+
+### Smart Routing (Concurrency-Aware)
+
+The `RoundRobinBackend` is replaced with a **concurrency-aware router**:
+
+```
+Single session active:
+  → Route to FD-full (1×96t, best per-request throughput)
+
+Second session arrives:
+  1. Save KV state from FD-full: POST /slots/0?action=save (~50ms-5s)
+  2. Restore on FD-q0a: POST /slots/0?action=restore
+  3. Route new session to FD-q0b
+  4. FD-full becomes idle (available for next single-session request)
+
+Third+ sessions:
+  → Route to next idle quarter instance (FD-q1a, FD-q1b)
+
+All sessions complete:
+  → Next request goes back to FD-full for max speed
+```
+
+**Key insight**: FD-full (96t) always stays running. It's the fast path. Quarter instances are always running too. The only dynamic operation is KV state save/restore, which is lightweight (existing llama.cpp API, already enabled via DS-3 `--slot-save-path`).
+
+### Applies to ALL Pure MoE Roles
+
+Any role where 96t single-instance outperforms 48t per-instance benefits:
+
+| Role | Full Instance | Quarter Instances | Extra RAM |
+|------|--------------|-------------------|-----------|
+| frontdoor (35B-A3B) | 1×96t | 4×48t | +19 GB |
+| coder_escalation (32B) | 1×96t | 4×48t | +18.5 GB |
+| worker_explore (30B-A3B) | 1×96t | 4×48t | +16 GB |
+
+**Total extra**: ~54 GB for full pre-warm across 3 roles → ~415 GB total stack (37% of RAM). Still leaves 715 GB free.
+
+For large models (architect 122B, REAP 246B), 2×96t is already the right config — they can't fit in a quarter. These keep their current setup.
+
+### KV State Transfer (Verified in llama.cpp)
 
 **API endpoints (stable, production-ready):**
 ```
@@ -92,7 +132,7 @@ POST /slots/{id}?action=erase
 - Save/restore latency: 40-50ms (small), 1-5s (production conversations)
 
 **Requirements:**
-- Server must launch with `--slot-save-path <dir>` flag
+- Server must launch with `--slot-save-path <dir>` flag ✅ (DS-3, implemented 2026-03-29)
 - File-based only — no built-in cross-process transfer
 - Same model + same quantization required for restore
 
@@ -104,22 +144,18 @@ void llama_memory_hybrid::state_write(io, seq_id, flags) {
     mem_recr->state_write(io, seq_id, flags);  // Delta Net state
 }
 ```
-Extended flags: `LLAMA_STATE_SEQ_FLAGS_PARTIAL_ONLY=1` saves recurrent state only (lightweight).
 
-**What would need to be built for dynamic migration:**
+### What Needs to Be Built
 
-| Feature | Status | Effort |
-|---------|--------|--------|
-| State save/restore to files | Exists | — |
-| Binary state buffer API | Exists | — |
-| HTTP state export endpoint | Missing | ~200 LOC |
-| Cross-instance state relay | Missing | Medium |
-| Model compat checking (beyond arch) | Partial | Small |
-| Incremental state sync | Missing | High |
-
-### Applies to ALL Pure MoE Roles
-
-The single-to-multi transition isn't just for frontdoor. Any pure MoE model where single-instance speed exceeds per-quarter speed benefits: coder candidates, workers, ingest models. The scheduler must track which models support this pattern.
+| Feature | Status | Effort | Notes |
+|---------|--------|--------|-------|
+| State save/restore to files | ✅ Exists | — | `--slot-save-path` wired (DS-3) |
+| Binary state buffer API | ✅ Exists | — | llama.cpp stable API |
+| `NUMA_CONFIG` with full+quarter | **TODO** | Small | Add 1×96t entry per role |
+| Concurrency-aware router | **TODO** | Medium | Replace round-robin selection in `RoundRobinBackend` |
+| KV migration orchestrator | **TODO** | Medium | Save from full, restore to quarter, on concurrent arrival |
+| Queue depth → routing decision | **TODO** | Small | Use DS-1 `_active_per_instance` data |
+| Fallback to full when idle | **TODO** | Small | Route to 96t when all quarters idle |
 
 ---
 
@@ -300,28 +336,34 @@ AutoResearch proposes next experiment.
 
 ---
 
-## Strategic Sequence
+## Strategic Sequence (Revised 2026-03-29)
 
-| Phase | Description | Deliverable |
-|-------|-------------|-------------|
-| **A** | Autoresearch bootstrap | `program.md`, debug suite scoring, autonomous experimentation |
-| **B** | Observability infrastructure | ✅ DONE 2026-03-29. DS-1 (queue depth), DS-2 (escalation rate), DS-3 (slot-save-path), DS-4 (stack state in routing meta) |
-| **C** | Autoresearch-driven model & stack exploration | Empirically-grounded stack configuration |
-| **D** | Deterministic quarter scheduler | Event-driven NUMA allocation, KV save/restore, overflow queuing |
-| **E** | Template codification | Stack templates in config, dynamic backend add/remove |
-| **F** | Conversation-log-driven refinement | Predictive workload model, anticipatory deployment |
+| Phase | Description | Deliverable | Status |
+|-------|-------------|-------------|--------|
+| **B** | Observability infrastructure | DS-1 (queue depth), DS-2 (escalation rate), DS-3 (slot-save-path), DS-4 (stack state) | ✅ DONE |
+| **C** | Pre-warm deployment | Launch 1×96t + 4×48t for frontdoor/coder/worker. Update `NUMA_CONFIG`, add ports. | **NEXT** |
+| **D** | Concurrency-aware router | Replace round-robin with load-aware selection. Route single→96t, concurrent→48t. KV migration on transition. | Depends on C |
+| **E** | Autoresearch-driven exploration | Model selection, tier assignment, instance count optimization via autoresearch loop. | Parallel with D |
+| **F** | Template codification | Stack templates in config, selectable profiles (coding-heavy, research-heavy). | Depends on E |
+| **G** | Predictive refinement | Workload modeling from conversation logs, anticipatory deployment. | Long-term |
+
+**Key change from original sequence**: Pre-warm deployment (C) and concurrency-aware routing (D) now come BEFORE autoresearch (E), because:
+1. Pre-warm is a pure RAM trade (54 GB extra) with zero downside — improves throughput immediately
+2. Concurrent sessions are a real use case — round-robin is insufficient
+3. Autoresearch can run in parallel and benefits from the pre-warm infra (stack experiments without restarts)
 
 ---
 
-## What This Is NOT
+## Design Assumptions
 
-- NOT a replacement for routing intelligence (which model handles which task type)
-- NOT per-request optimization (too slow to reconfigure)
-- NOT exhaustive search of all combinations (autoresearch explores intelligently)
+- **Multi-session is normal**: User runs parallel Claude Code sessions, autoresearch generates concurrent eval requests. Round-robin is insufficient — load-aware routing with KV migration is required.
+- **RAM is abundant**: 769 GB free at 32% utilization. Pre-warming extra instances costs <60 GB. Always prefer pre-launched instances over cold starts.
+- **No restarts for experiments**: StructuralLab stack experiments should toggle which pre-launched instances are in the active rotation, not restart servers. Restart-free experimentation enables faster autoresearch iteration.
+- **Per-request latency matters**: Single-session requests should get maximum throughput (96t). Only sacrifice per-request speed when concurrency demands it.
 
 ## Key Insight
 
-Routing intelligence determines *which model* for each task (quality decision). Stack assembly determines *how that model is provisioned* (capacity decision). The two compose but develop independently.
+Routing intelligence determines *which model* for each task (quality decision). Stack assembly determines *how that model is provisioned* (capacity decision). The pre-warm strategy makes these fully orthogonal — routing doesn't need to know about NUMA topology, and the concurrency-aware router handles instance selection transparently.
 
 ## See Also
 

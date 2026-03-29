@@ -21,7 +21,7 @@
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | All 8 wiring gaps closed (AP-1–8) | Bootstrap autoresearch (AR-1, AR-2, AR-3) |
-| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phase B complete (DS-1–4) | Phase C-F: scheduler + templates |
+| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phase B done, pre-warm designed | **Phase C: pre-warm deployment (HIGH)** |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Planning (4 phases designed) | Phase 0: raise compaction trigger to 0.75 |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
@@ -183,33 +183,33 @@ Observed patterns inform routing (Q-value training), autopilot (experiment evalu
 ## Dependency Graph
 
 ```
-P0 (wiring bugs) ──────────────────────────── no dependencies, do first
+✅ P0 (wiring bugs) ──────────── DONE (AP-1–3, RI-0)
+✅ P1 (routing Phase 4 code) ─── DONE (RI-2–6). RI-1 + RI-7 need compute.
+✅ P2 (autopilot structural) ─── DONE (AP-4–8, 10, 12)
+✅ P4 (observability) ─────────── DONE (DS-1–4)
+✅ CF Phase 0 ──────────────────── DONE (trigger 0.60→0.75)
   │
-P1 (routing Phase 4) ─── needs RI-1 calibration dataset first
-  │                        also benefits from RI-0 baseline fix (P0)
+  ├── DS-C (pre-warm deploy) ──── HIGH PRIORITY. No dependencies.
+  │     Add 1×96t + 4×48t instances for frontdoor/coder/worker.
+  │     Pure RAM trade (+54 GB), enables concurrent sessions.
   │
-P2 (autopilot structural) ─ independent of P1, can run in parallel
+  ├── DS-D (concurrency router) ── Depends on DS-C.
+  │     Replace round-robin with load-aware. KV migration on transition.
   │
-P3 (routing Phase 5) ──── depends on P1 complete (need enforce mode data)
+  ├── P5 (autoresearch) ──────── PARALLEL with DS-C/D.
+  │     AR-1 baseline (needs compute), AR-3 first live run.
+  │     Benefits from DS-C (no-restart experiments).
   │
-P4 (observability) ─────── independent, can run in parallel with P1-P3
-  │                          note: DS-3 (slot-save-path) interacts with
-  │                          kv-cache-quantization config (concern #6)
+  ├── P1 remaining ────────────── RI-1 calibration dataset (needs compute)
+  │     └── RI-7 A/B test (needs compute, depends on RI-1)
+  │           └── P6 (routing rollout) depends on RI-7
   │
-CF (context folding 0-1) ── independent of P0-P4, can start immediately
-  │                           SHOULD precede P5 (affects baseline measurement)
+  ├── P3 (routing Phase 5) ──── depends on P1 A/B results
   │
-P5 (autoresearch bootstrap) ── benefits from P0 + P2 (cleaner autopilot)
-  │                              benefits from P4 (telemetry for stack exps)
-  │                              SHOULD follow CF Phase 0-1 (stable baseline)
+  ├── DS-E/F (templates, prediction) ── after DS-D + P5 data
   │
-P6 (routing Phase 6 rollout) ── depends on P1 A/B results (RI-7)
-  │
-P7 (dynamic stack impl) ──── depends on P4 (telemetry) + P5 (baseline)
-  │
-P8 (autopilot refinements) ── lowest priority, independent
-  │
-P9 (legacy cleanup) ──────── independent, any time
+  ├── P8 (autopilot refinements) ── lower priority
+  └── P9 (legacy cleanup) ──────── independent
 ```
 
 ---
