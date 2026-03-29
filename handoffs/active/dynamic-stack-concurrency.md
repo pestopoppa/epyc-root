@@ -1,11 +1,11 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: Phase B (observability) complete — DS-1 through DS-4 implemented 2026-03-29. Pre-warm strategy designed.
+**Status**: Phase C (pre-warm deployment) implemented 2026-03-29. Phase D (KV migration) next.
 **Created**: 2026-03-24
 **Updated**: 2026-03-29
 **Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
 **Blocks**: Multi-session performance
-**Blocked by**: Nothing — Phase C (pre-warm deployment) can start immediately
+**Blocked by**: Nothing — Phase D (KV migration on transition) is next
 **Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
 
 ---
@@ -39,19 +39,19 @@ Result: 4x48t NUMA-pinned gives **6-7x aggregate throughput** vs 1x192t interlea
 
 ### Current Stack (updated 2026-03-29 — REAP-246B swap + NUMA multi-instance)
 
-| Role | Model | Size | Instances | Weights (shared) | Private | Per-inst t/s |
-|------|-------|------|-----------|-----------------|---------|-------------|
-| frontdoor | Qwen3.5-35B-A3B Q4KM | 20 GB | 4×48t | 20 GB | 4 GB | 12.7 (moe6) |
-| coder_escalation | Qwen2.5-Coder-32B Q4KM | 18.5 GB | 4×48t | 18.5 GB | 10 GB | 10.8 (spec dm=32) |
-| architect_general | Qwen3.5-122B-A10B Q4KM | 69 GB | 2×96t | 69 GB | 4 GB | 4.3 (~8.3 agg) |
-| architect_coding | **REAP-246B Q4KM** | **139 GB** | **2×96t** | **139 GB** | **4 GB** | **8.0 (16.5 agg)** |
-| ingest | Qwen3-Next-80B-A3B Q4KM | 46 GB | 1×96t | 46 GB | 0.5 GB | ~12 |
-| worker_explore | Qwen3-Coder-30B-A3B Q4KM | 16 GB | **4×48t** | 16 GB | 6 GB | **39.1 (~156 agg)** |
-| worker_vision | Qwen2.5-VL-7B Q4KM | 4 GB | 1×24t | 4 GB | 0.5 GB | ~24 |
-| vision_escalation | Qwen3-VL-30B-A3B Q4KM | 18 GB | 1×96t | 18 GB | 1.5 GB | TBD |
-| **Total loaded** | | | | **330 GB** | **31 GB** | **361 GB (32% of RAM)** |
+| Role | Model | Size | Instances | Config | Per-inst t/s |
+|------|-------|------|-----------|--------|-------------|
+| frontdoor | Qwen3.5-35B-A3B Q4KM | 20 GB | **1×96t + 4×48t** | pre-warm, ConcurrencyAware | 12.7 (48t), TBD (96t) |
+| coder_escalation | Qwen2.5-Coder-32B Q4KM | 18.5 GB | **1×96t + 4×48t** | pre-warm, ConcurrencyAware | 10.8 (48t) |
+| architect_general | Qwen3.5-122B-A10B Q4KM | 69 GB | 2×96t | RoundRobin | 4.3 (~8.3 agg) |
+| architect_coding | REAP-246B Q4KM | 139 GB | 2×96t | RoundRobin | 8.0 (16.5 agg) |
+| ingest | Qwen3-Next-80B-A3B Q4KM | 46 GB | 1×96t | single | ~12 |
+| worker_explore | Qwen3-Coder-30B-A3B Q4KM | 16 GB | **1×96t + 4×48t** | pre-warm, ConcurrencyAware | 39.1 (48t) |
+| worker_vision | Qwen2.5-VL-7B Q4KM | 4 GB | 1×24t | single | ~24 |
+| vision_escalation | Qwen3-VL-30B-A3B Q4KM | 18 GB | 1×96t | single | TBD |
+| **Total loaded** | | | | | **~415 GB (37% of RAM)** |
 
-REAP-246B swap (2026-03-29) reduced footprint from ~540 GB to ~361 GB — from 48% to 32% of RAM. All models can be loaded simultaneously with 769 GB free. Dynamic stack assembly is now a throughput optimization, not a memory management necessity.
+Pre-warm deployment (2026-03-29): +54 GB over previous config (361 → 415 GB). 3 roles now have 5 instances each (1 full-speed + 4 concurrent). 715 GB free for KV caches + OS. `ConcurrencyAwareBackend` routes single session to 96t, concurrent sessions to 48t instances.
 
 ---
 
@@ -341,7 +341,7 @@ AutoResearch proposes next experiment.
 | Phase | Description | Deliverable | Status |
 |-------|-------------|-------------|--------|
 | **B** | Observability infrastructure | DS-1 (queue depth), DS-2 (escalation rate), DS-3 (slot-save-path), DS-4 (stack state) | ✅ DONE |
-| **C** | Pre-warm deployment | Launch 1×96t + 4×48t for frontdoor/coder/worker. Update `NUMA_CONFIG`, add ports. | **NEXT** |
+| **C** | Pre-warm deployment | ✅ DONE 2026-03-29. 1×96t + 4×48t for frontdoor/coder/worker. `ConcurrencyAwareBackend`, `NUMA_CONFIG`, `ServerURLsConfig` updated. | ✅ DONE |
 | **D** | Concurrency-aware router | Replace round-robin with load-aware selection. Route single→96t, concurrent→48t. KV migration on transition. | Depends on C |
 | **E** | Autoresearch-driven exploration | Model selection, tier assignment, instance count optimization via autoresearch loop. | Parallel with D |
 | **F** | Template codification | Stack templates in config, selectable profiles (coding-heavy, research-heavy). | Depends on E |
