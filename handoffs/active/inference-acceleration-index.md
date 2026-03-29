@@ -18,14 +18,22 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md) | **DEPLOYED + SWEEP VERIFIED** | NUMA 4-way parallel + taskset | All production models | **6.7x frontdoor** | Update registry with verified params, round-robin routing, worker replacement |
-| [`dflash-block-diffusion-speculation.md`](dflash-block-diffusion-speculation.md) | **CONCLUDED** — C++ verified correct | DFlash block diffusion | MoE (frontdoor) | 27% per-token, block 1.4% (expected) | NOT VIABLE on Q4_K_M |
-| [`tree-speculation-numa-drafting.md`](tree-speculation-numa-drafting.md) | **Phase 7 COMPLETE** — NUMA 4-way validated | DySpec tree, draft_max, NUMA parallel | **6-7x via NUMA 4-way** on ≤65GB models | +19.4% dm, 6.7x NUMA | See deployment handoff |
-| [`ssm-hybrid-acceleration.md`](ssm-hybrid-acceleration.md) | **COMPREHENSIVE** — S2-S5 + sweep + quant | NUMA parallel, quant scaling | Hybrid (Qwen3.5) | **6.9x 35B-A3B**, ~12 t/s ceiling all others | See deployment handoff |
-| [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | MTP-1 native heads | Hybrid — NOT VIABLE (0.56x) | N/A | Moved to completed/ |
+| [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977 |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
-| [`reap-moe-expert-pruning.md`](reap-moe-expert-pruning.md) | **246B DEPLOYED** | REAP expert pruning (permanent) | MoE (246B replaces 480B) | **8.0 t/s, 82% quality, 139 GB** | Deployed as architect_coding 2026-03-29. 480B deleted. |
-| [`nemotron-mamba2-evaluation.md`](nemotron-mamba2-evaluation.md) | **CONCLUDED — NO ACTION** | Mamba2 MoE (Nemotron-Cascade 2) | Evaluated for all roles | 40.9 t/s (1×48t), 69% quality, 42% IP | Worker beats on every axis. Mamba2 NUMA scaling insight retained. |
+
+### Archived (completed/)
+
+| Handoff | Final Status | Key Result |
+|---------|-------------|------------|
+| [`numa-orchestrator-deployment.md`](../completed/numa-orchestrator-deployment.md) | DEPLOYED | NUMA 4-way: 6.7x frontdoor, all roles multi-instance |
+| [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) | CONCLUDED | NOT VIABLE on Q4_K_M (27% per-token, AR wins) |
+| [`tree-speculation-numa-drafting.md`](../completed/tree-speculation-numa-drafting.md) | COMPLETE | Tree ≈ linear at 48t; NUMA 4-way is the real win |
+| [`ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) | COMPREHENSIVE | NUMA 4-way = 6.9x on MoE; all hybrid accel net negative |
+| [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | NOT VIABLE on hybrid (0.56x) |
+| [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md) | **246B DEPLOYED** | 82% quality, 8.0 t/s, 139 GB — replaces 480B |
+| [`nemotron-mamba2-evaluation.md`](../completed/nemotron-mamba2-evaluation.md) | CONCLUDED | 69% quality, no deployment. Mamba2 NUMA insight retained. |
+| [`multi-model-page-cache.md`](../completed/multi-model-page-cache.md) | RESOLVED | Footprint 508→361 GB, mlock deployed, no eviction |
+| [`qwen35-frontdoor-benchmark.md`](../completed/qwen35-frontdoor-benchmark.md) | COMPLETE | Stack recommendations executed |
 
 ## CRITICAL: draft_max Optimization (2026-03-18)
 
@@ -145,14 +153,17 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 
 ## Cross-Reference Map
 
-| Technique | Primary Handoff | Related Handoffs |
-|-----------|----------------|-----------------|
-| **NUMA 4-way parallel** | `tree-speculation-numa-drafting.md` (Phase 7) | `ssm-hybrid-acceleration.md` (S2), all production models |
-| DySpec tree speculation | `tree-speculation-numa-drafting.md` | Phases 1-6, tree ≈ linear at 48t |
-| DFlash block diffusion | `dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
-| SSM/hybrid acceleration | `ssm-hybrid-acceleration.md` | NUMA parallel is the answer |
-| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | Not viable (0.56x) |
-| **Nemotron Mamba2 eval** | `nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no deployment action |
+| Technique | Primary Handoff | Status |
+|-----------|----------------|--------|
+| **NUMA multi-instance** | `completed/numa-orchestrator-deployment.md` | DEPLOYED — all roles multi-instance |
+| **REAP expert pruning** | `completed/reap-moe-expert-pruning.md` | DEPLOYED — 246B replaces 480B |
+| **KV cache quantization** | `kv-cache-quantization.md` | ACTIVE — Hadamard deployed, monitoring TurboQuant |
+| Tree speculation | `completed/tree-speculation-numa-drafting.md` | COMPLETE — tree ≈ linear at 48t |
+| DFlash block diffusion | `completed/dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
+| SSM/hybrid acceleration | `completed/ssm-hybrid-acceleration.md` | COMPREHENSIVE — NUMA is the answer |
+| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | CLOSED — not viable (0.56x) |
+| Nemotron Mamba2 eval | `completed/nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no action |
+| Page cache optimization | `completed/multi-model-page-cache.md` | RESOLVED — 361 GB footprint, mlock deployed |
 
 ## Production Model Stack — NUMA-Optimized (Updated 2026-03-29)
 

@@ -2225,3 +2225,4 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-29T11:31:29Z] TASK_END | REAP-246B deployed as architect_coding. 480B deleted (271 GB freed). Registry, stack, index updated. Impact analysis: all references use role name, swap is transparent. | success
 [2026-03-29T11:34:38Z] TASK_END | Page cache handoff updated: REAP-246B swap resolved contention (508→327 GB, 29% utilization). mlock already deployed on all roles. No further action needed. | success
 [2026-03-29T11:39:57Z] TASK_END | Multi-instance NUMA deployment: architect_coding 2×96t (16.5 t/s), architect_general 2×96t (~8.3), worker 4×48t (~156). Total stack 361 GB (32% RAM). All handoffs updated. | success
+[2026-03-29T11:47:38Z] SESSION_END | Full session: Nemotron eval (concluded), REAP-246B deployed, 480B deleted (271 GB), NUMA multi-instance for all roles (361 GB total, 32% RAM), page cache resolved, 8 handoffs archived to completed/. All repos clean.
