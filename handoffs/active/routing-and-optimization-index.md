@@ -48,7 +48,7 @@ These are HIGH priority because the code exists but isn't wired up. Low effort, 
 
 Phases 0-3 built the risk scorer and put it in shadow mode. Phase 4 makes it affect routing decisions. **Prerequisite**: calibration dataset (labeled prompts with known risk levels — source from simpleqa failures + seeding diagnostics).
 
-- [ ] **RI-1: Build calibration dataset** — Collect labeled set of prompts with known factual-risk levels. Sources: simpleqa failures, seeding diagnostic logs with `passed=False` on factual suites. Minimum 200 labeled examples. See `routing-intelligence.md` § Phase 3 design requirements.
+- [x] **RI-1: Build calibration dataset** — ✅ 2026-03-29. `build_factual_risk_calibration.py` extracts 2,000 labeled examples (1,314 high, 616 low, 70 medium) from seeding_diagnostics.jsonl (781 with eval ground truth) + question_pool.jsonl (1,219 tier-based). Output: `orchestration/factual_risk_calibration.jsonl`.
 
 - [x] **RI-2: Cheap-first risk bypass** — ✅ 2026-03-29. `_try_cheap_first()` now returns `None` (skip) when `routing.factual_risk_band == "high"`. High-risk factual prompts go directly to normal pipeline.
 
