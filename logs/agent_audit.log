@@ -2226,3 +2226,13 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-29T11:34:38Z] TASK_END | Page cache handoff updated: REAP-246B swap resolved contention (508→327 GB, 29% utilization). mlock already deployed on all roles. No further action needed. | success
 [2026-03-29T11:39:57Z] TASK_END | Multi-instance NUMA deployment: architect_coding 2×96t (16.5 t/s), architect_general 2×96t (~8.3), worker 4×48t (~156). Total stack 361 GB (32% RAM). All handoffs updated. | success
 [2026-03-29T11:47:38Z] SESSION_END | Full session: Nemotron eval (concluded), REAP-246B deployed, 480B deleted (271 GB), NUMA multi-instance for all roles (361 GB total, 32% RAM), page cache resolved, 8 handoffs archived to completed/. All repos clean.
+[2026-03-29T14:00:00Z] SESSION_START | Orchestration handoff batch implementation — P0 wiring, P1 routing Phase 4, P2 autopilot structural, P4 observability
+[2026-03-29T14:05:00Z] TASK_START | Batch 1a: AutoPilot wiring bugs (AP-1,2,3) + structural improvements (AP-4,5,6,8) | 7 tasks in scripts/autopilot/
+[2026-03-29T14:20:00Z] TASK_END | Batch 1a complete. AP-1: failure_context into PromptForge. AP-2: failure narratives in summary_text. AP-3: parent_trial+config_diff. AP-4: recent_failures(). AP-5: suite_quality_trend(). AP-6: persist consecutive_failures. AP-8: hypothesis+expected_mechanism fields. RI-8 verified done. | success
+[2026-03-29T14:25:00Z] TASK_START | Batch 1b: RI-0 Q-scorer baseline fix | q_scorer.py
+[2026-03-29T14:30:00Z] TASK_END | RI-0: frontdoor 19.6→12.7 (lookup disabled), architect_coding 7.0→8.0 (REAP-246B), memory_cost 5.0→3.5 | success
+[2026-03-29T14:35:00Z] TASK_START | Batch 1c: Observability instrumentation DS-1,2,3,4 | 6 files across src/ and scripts/
+[2026-03-29T14:55:00Z] TASK_END | DS-1: queue depth telemetry (round_robin.py + routing_meta). DS-2: escalation rate (AppState + chat.py + helpers.py). DS-3: --slot-save-path in orchestrator_stack.py. DS-4: stack state in routing telemetry. Phase B complete. | success
+[2026-03-29T15:00:00Z] TASK_START | P1 Routing Phase 4 code (RI-2,3,4,5,6) + AP-7 | 6 files
+[2026-03-29T15:25:00Z] TASK_END | RI-2: cheap-first risk bypass. RI-3: plan review gate risk integration. RI-4: escalation think-harder on first failure for high risk. RI-5: failure veto threshold modulated by risk band (0.3/0.5/0.7), factual risk moved before veto. RI-6: structured review context. AP-7: Optuna mark_epoch() after regime changes. | success
+[2026-03-29T15:30:00Z] TASK_END | Documentation updated: routing-and-optimization-index (17 checkboxes marked), autopilot handoff (8 items updated), dynamic-stack handoff (Phase B done), routing-intelligence handoff, progress report. | success

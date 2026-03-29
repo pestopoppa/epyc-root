@@ -19,9 +19,9 @@
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
-| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phases 0-3 done, shadow active | Phase 4: risk-aware enforce |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Impl complete, 13 wiring gaps | Wire failure context, then bootstrap autoresearch |
-| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Strategic analysis complete | Phase B: observability instrumentation |
+| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | All 8 wiring gaps closed (AP-1–8) | Bootstrap autoresearch (AR-1, AR-2, AR-3) |
+| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phase B complete (DS-1–4) | Phase C-F: scheduler + templates |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Planning (4 phases designed) | Phase 0: raise compaction trigger to 0.75 |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
@@ -35,13 +35,13 @@
 
 These are HIGH priority because the code exists but isn't wired up. Low effort, high value.
 
-- [ ] **AP-1: Wire `failure_context` into PromptForge dispatch** — `autopilot.py:264` never passes `failure_context`/`per_suite_quality` to `propose_mutation()`. PromptForge mutations are blind to why previous attempts failed. See `autopilot-continuous-optimization.md` § "HIGH PRIORITY" item 1.
+- [x] **AP-1: Wire `failure_context` into PromptForge dispatch** — ✅ 2026-03-29. `dispatch_action()` now extracts last 5 PromptForge failures from journal and passes `failure_context` + `per_suite_quality` to `propose_mutation()`. Also added `journal` parameter to `dispatch_action()`.
 
-- [ ] **AP-2: Feed failure narratives into controller prompt** — `SafetyGate.analyze_failure()` produces structured narratives in `JournalEntry.failure_analysis`, but `summary_text()` strips them. Controller re-proposes similar failing actions. See § item 2.
+- [x] **AP-2: Feed failure narratives into controller prompt** — ✅ 2026-03-29. `summary_text()` now appends compact failure analysis (truncated to 200 chars) for failed trials. Controller can see why trials failed.
 
-- [ ] **AP-3: Populate `parent_trial` and `config_diff` journal fields** — Both fields exist on `JournalEntry` but are never written. No lineage tracking. See § item 3.
+- [x] **AP-3: Populate `parent_trial` and `config_diff` journal fields** — ✅ 2026-03-29. `parent_trial` set to most recent trial from same species. `config_diff` computed as key-level delta between current and parent config_snapshot.
 
-- [ ] **RI-0: Fix Q-scorer frontdoor baseline** — `q_scorer.py` baseline is stale: frontdoor is now Qwen3.5-35B-A3B (was Qwen3-Coder-30B), and lookup was disabled 2026-03-19 (segfault). Old value: 19.6 t/s (moe6+lookup). Current actual: ~12.7 t/s (moe6, no lookup). `baseline_tps_by_role` must be updated to match current stack. Under-penalizes frontdoor cost. Location: `orchestration/repl_memory/q_scorer.py`.
+- [x] **RI-0: Fix Q-scorer frontdoor baseline** — ✅ 2026-03-29. Updated `baseline_tps_by_role`: frontdoor 19.6→12.7 (moe6, no lookup), architect_coding 7.0→8.0 (REAP-246B). Also updated `memory_cost_by_role` for architect_coding: 5.0→3.5 (139GB vs 271GB).
 
 ### P1 — Routing Intelligence Phase 4 (risk-aware enforcement)
 
@@ -49,15 +49,15 @@ Phases 0-3 built the risk scorer and put it in shadow mode. Phase 4 makes it aff
 
 - [ ] **RI-1: Build calibration dataset** — Collect labeled set of prompts with known factual-risk levels. Sources: simpleqa failures, seeding diagnostic logs with `passed=False` on factual suites. Minimum 200 labeled examples. See `routing-intelligence.md` § Phase 3 design requirements.
 
-- [ ] **RI-2: Cheap-first risk bypass** — `src/api/routes/chat.py:_try_cheap_first` (~line 208). When `risk >= high`, bypass cheap-first or apply strict pass criteria. See § Phase 4 table.
+- [x] **RI-2: Cheap-first risk bypass** — ✅ 2026-03-29. `_try_cheap_first()` now returns `None` (skip) when `routing.factual_risk_band == "high"`. High-risk factual prompts go directly to normal pipeline.
 
-- [ ] **RI-3: Plan review gate risk integration** — `routing.py:_plan_review_gate`. High `risk_band` → force review even if generic heuristics pass. See § Phase 4 table.
+- [x] **RI-3: Plan review gate risk integration** — ✅ 2026-03-29. `_plan_review_gate()` forces review when `factual_risk_band == "high"` AND `factual_risk_mode == "enforce"`, regardless of complexity heuristics.
 
-- [ ] **RI-4: Escalation policy risk-awareness** — `src/escalation.py:EscalationPolicy.decide()`. High risk + uncertainty → trigger think-harder EARLIER (before penultimate retry). See § Phase 4 table.
+- [x] **RI-4: Escalation policy risk-awareness** — ✅ 2026-03-29. `EscalationPolicy.decide()` triggers think-harder on FIRST failure (not penultimate retry) when `risk_band == "high"` and `risk_score > 0.5`. Early deep thinking is cheaper than multiple shallow retries.
 
-- [ ] **RI-5: Failure graph veto modulation** — `routing.py:_route_request` (line ~48+). Hardcoded `risk > 0.5` threshold should be modulated by factual-risk band. See § Phase 4 table.
+- [x] **RI-5: Failure graph veto modulation** — ✅ 2026-03-29. Factual risk scoring moved BEFORE failure graph veto. Threshold modulated: high→0.3, medium→0.5, low→0.7 (was hardcoded 0.5). High-risk prompts trigger more conservative specialist vetoing.
 
-- [ ] **RI-6: Structured review objective** — `src/api/routes/chat_review.py`. Replace `answer[:100]` proxy with `{"task_type", "risk_band", "key_claims", "verification_focus"}`. See § Phase 4 design requirements.
+- [x] **RI-6: Structured review objective** — ✅ 2026-03-29. Both progress log and MemRL episode storage now include `task_type`, `risk_band`, `verification_focus`. Feedback truncation raised from 100→200 chars.
 
 - [ ] **RI-7: A/B test Phase 4** — Run seeding harness with `factual_risk_mode=enforce` vs `off`. Compare simpleqa F1, escalation rate, cost, p95 latency. Minimum 500 questions per arm, p < 0.05. See § Phase 4 design requirements.
 
@@ -65,19 +65,19 @@ Phases 0-3 built the risk scorer and put it in shadow mode. Phase 4 makes it aff
 
 Medium priority. These improve autoresearch effectiveness before it starts running at scale.
 
-- [ ] **AP-4: `lab failures` query at species proposal time** — Add `journal.recent_failures(species=X, n=10)` and inject into each species' proposal context. Prevents re-attempting known-bad ideas. See `autopilot-continuous-optimization.md` § item 4.
+- [x] **AP-4: `lab failures` query at species proposal time** — ✅ 2026-03-29. Added `journal.recent_failures(species, n)` method. Already wired into AP-1's PromptForge dispatch (extracts last 5 failures for the species).
 
-- [ ] **AP-5: Per-suite quality trends in controller prompt** — Add `journal.suite_quality_trend(last_n=10)`. Controller currently can't see "coder suite declining for 5 trials." See § item 5.
+- [x] **AP-5: Per-suite quality trends in controller prompt** — ✅ 2026-03-29. Added `journal.suite_quality_trend(last_n)` method returning per-suite quality over time. Added `### Suite Quality Trends` section to controller prompt template with decline/improve direction indicators.
 
-- [ ] **AP-6: Persist `_consecutive_failures` counter** — Safety gate's failure counter resets on restart. Serialize to `autopilot_state.json`. See § item 6 (trivial effort).
+- [x] **AP-6: Persist `_consecutive_failures` counter** — ✅ 2026-03-29. `SafetyGate.__init__()` accepts `consecutive_failures` param. Loaded from / saved to `autopilot_state.json` each trial.
 
-- [ ] **AP-7: Invalidate stale Optuna trials after regime changes** — When StructuralLab changes flags or PromptForge changes prompts, old Optuna trials become misleading. Add `numeric_swarm.mark_epoch(reason)`. See § item 7.
+- [x] **AP-7: Invalidate stale Optuna trials after regime changes** — ✅ 2026-03-29. Added `NumericSwarm.mark_epoch(reason)` + `_study_name()` with epoch suffix. Called in `dispatch_action()` after accepted prompt mutations and structural experiments. Old studies preserved for history, new studies start clean.
 
-- [ ] **AP-8: Hypothesis-mechanism tracking on JournalEntry** — Add `hypothesis: str` and `expected_mechanism: str` fields. Improves Strategy Store retrieval. See § item 8.
+- [x] **AP-8: Hypothesis-mechanism tracking on JournalEntry** — ✅ 2026-03-29. Added `hypothesis: str` and `expected_mechanism: str` fields to `JournalEntry` dataclass. JSONL load/save updated. Fields available for Strategy Store retrieval.
 
 ### P3 — Routing Intelligence Phase 5 (seeding integration)
 
-- [ ] **RI-8: Add risk fields to `RoleResult`** — `scripts/benchmark/seeding_types.py` line 167. Fields: `risk_score`, `risk_band`, `risk_features`. Was falsely marked complete 2026-03-06; verified absent 2026-03-24. See `routing-intelligence.md` § Phase 5.
+- [x] **RI-8: Add risk fields to `RoleResult`** — ✅ Verified 2026-03-29. Fields exist at `seeding_types.py:230-234` with `factual_risk_` prefix: `factual_risk_score`, `factual_risk_adjusted`, `factual_risk_band`, `factual_risk_features`. Original probe used wrong naming convention; actual implementation is correct.
 
 - [ ] **RI-9: Threshold sweep in seeding harness** — Reuse existing `--suite` mechanism. Sweep risk thresholds and emit Pareto reports (factuality vs cost vs latency).
 
@@ -85,13 +85,13 @@ Medium priority. These improve autoresearch effectiveness before it starts runni
 
 These unblock data-driven stack scheduling.
 
-- [ ] **DS-1: Instrument queue depth telemetry** — Log per-role request frequency, queue depth, active/idle instance count. Location: `src/api/routes/chat.py` request handler + `src/backends/round_robin.py`.
+- [x] **DS-1: Instrument queue depth telemetry** — ✅ 2026-03-29. `RoundRobinBackend` now tracks per-instance active/total counts, idle instances, seconds since last request. `get_stats()` exposes all. Queue depth injected into `routing_meta` in `_route_request()`.
 
-- [ ] **DS-2: Instrument escalation rate telemetry** — Track escalation chains per session. Location: `src/escalation.py`, `progress_logger.py`.
+- [x] **DS-2: Instrument escalation rate telemetry** — ✅ 2026-03-29. `AppState.record_escalation(from, to)` tracks total escalations and per-path counts (e.g., "frontdoor→coder"). Wired into streaming chat.py (2 call sites) and graph helpers. `get_stats()` returns escalation_rate and escalations_by_path.
 
-- [ ] **DS-3: Add `--slot-save-path` to production launches** — Enable KV state save/restore in `orchestrator_stack.py` server launch commands. See `dynamic-stack-concurrency.md` § Part 2.
+- [x] **DS-3: Add `--slot-save-path` to production launches** — ✅ 2026-03-29. `build_server_command()` appends `--slot-save-path <cache_dir>/kv_slots/<role>` for all roles. Per-role subdirectories created automatically.
 
-- [ ] **DS-4: Log stack state alongside routing telemetry** — Which models loaded, which NUMA quarters assigned, instance counts. Enables correlation between stack config and routing outcomes.
+- [x] **DS-4: Log stack state alongside routing telemetry** — ✅ 2026-03-29. `routing_meta["stack_state"]` populated from `state.registry.roles` with model name, tier, and instance count. Logged via `log_task_started()` in progress JSONL.
 
 ### P5 — AutoResearch Bootstrap (Phase A)
 

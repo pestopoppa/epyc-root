@@ -287,31 +287,31 @@ PraxLab extends this with structured experiment memory (SQLite: hypotheses→exp
 
 ##### HIGH PRIORITY — Wiring bugs (infrastructure built but not connected)
 
-**1. Wire `failure_context` into PromptForge dispatch** (LOW effort)
-`propose_mutation()` accepts `failure_context` and `per_suite_quality` parameters, but `dispatch_action()` at `autopilot.py:264` never passes them. PromptForge mutations are currently blind to why previous attempts failed. Fix: extract last failure narrative from journal and pass to `propose_mutation()`.
+**1. Wire `failure_context` into PromptForge dispatch** — ✅ DONE 2026-03-29
+`dispatch_action()` now extracts last 5 PromptForge failures via `journal.recent_failures(species="prompt_forge", n=5)` and passes `failure_context` + last eval's `per_suite_quality` to `propose_mutation()`. Added `journal` parameter to `dispatch_action()` signature.
 
-**2. Feed failure narratives into controller prompt** (LOW effort)
-`SafetyGate.analyze_failure()` produces structured narratives stored in `JournalEntry.failure_analysis`, but `summary_text()` strips them to one-line summaries. The controller re-proposes similar failing actions because it never sees *why* things failed. Fix: add `recent_failures_text(n=5)` method returning failure narratives for the last N failed trials, inject into controller prompt.
+**2. Feed failure narratives into controller prompt** — ✅ DONE 2026-03-29
+`summary_text()` now appends compact `FAILED: ...` suffix (200 char limit) for entries with `failure_analysis`. Also added `### Suite Quality Trends` section to controller prompt template showing per-suite quality trajectories with ↓ DECLINING / ↑ improving indicators.
 
-**3. Populate `parent_trial` and `config_diff` journal fields** (LOW effort)
-Both fields exist on `JournalEntry` but are never written. Without lineage tracking, neither the controller nor any analysis tool can reconstruct "trial 47 was a refinement of trial 42." Autoresearch gets this for free via git lineage; PraxLab gets it via hypothesis→experiment FK. Fix: set `parent_trial` to previous trial ID for same species, compute `config_diff` from action dict delta.
+**3. Populate `parent_trial` and `config_diff` journal fields** — ✅ DONE 2026-03-29
+Before `journal.record()`, computes `parent_trial` as last trial ID from same species via `journal.by_species()`. `config_diff` computed as key-level delta between current action dict and parent's `config_snapshot`.
 
 ##### MEDIUM PRIORITY — Structural improvements from autoresearch patterns
 
-**4. `lab failures`-style query at species proposal time** (MEDIUM effort)
-PraxLab's `lab failures` dumps all failed approaches for the current task at session start. Our species have no equivalent. Add `journal.recent_failures(species=X, n=10)` and inject into each species' proposal context. Highest impact for PromptForge and StructuralLab.
+**4. `lab failures`-style query at species proposal time** — ✅ DONE 2026-03-29
+Added `journal.recent_failures(species=None, n=10)` method filtering entries with non-empty `failure_analysis`. Already wired into PromptForge dispatch via AP-1.
 
-**5. Per-suite quality trends in controller prompt** (MEDIUM effort)
-The controller sees only aggregate quality — cannot say "coder suite declining for 5 trials." Add `journal.suite_quality_trend(last_n=10)` fed into controller prompt template.
+**5. Per-suite quality trends in controller prompt** — ✅ DONE 2026-03-29
+Added `journal.suite_quality_trend(last_n=10)` returning `{suite: [(trial_id, quality), ...]}`. Controller prompt now includes `### Suite Quality Trends` section with directional indicators (↓ DECLINING when recent avg drops >0.05 vs older avg).
 
-**6. Persist `_consecutive_failures` counter** (TRIVIAL effort)
-Safety gate's failure counter lives in memory, resets on process restart. After crash/restart, gate loses "2 of 3 failures before rollback" state. Fix: serialize to `autopilot_state.json`.
+**6. Persist `_consecutive_failures` counter** — ✅ DONE 2026-03-29
+`SafetyGate.__init__()` accepts `consecutive_failures: int = 0` parameter. Main loop loads from `state["consecutive_failures"]` on startup, saves after each trial.
 
-**7. Invalidate stale Optuna trials after regime changes** (MEDIUM effort)
-When StructuralLab changes feature flags or PromptForge changes prompts, the optimization landscape shifts. Old Optuna trials become misleading. Add `numeric_swarm.mark_epoch(reason)` after structural/prompt changes that creates a new Optuna study or marks a regime boundary.
+**7. Invalidate stale Optuna trials after regime changes** — ✅ DONE 2026-03-29
+Added `NumericSwarm.mark_epoch(reason)` which increments an epoch counter and clears cached studies. New studies get `_epochN` suffix. `_study_name()` encapsulates naming. Wired into `dispatch_action()`: called after accepted prompt mutations (`prompt_mutation`) and structural experiments (`structural_experiment`). Old studies preserved in SQLite for historical reference.
 
-**8. Hypothesis-mechanism tracking on JournalEntry** (LOW effort)
-PraxLab's SQLite stores not just outcomes but *why* something was tried and the *mechanism* expected to cause improvement. Our `JournalEntry` has `summary_text` but no structured hypothesis field. Adding `hypothesis: str` and `expected_mechanism: str` would improve Strategy Store retrieval quality.
+**8. Hypothesis-mechanism tracking on JournalEntry** — ✅ DONE 2026-03-29
+Added `hypothesis: str = ""` and `expected_mechanism: str = ""` fields to `JournalEntry` dataclass. JSONL loader updated with `.get()` defaults. Fields ready for Strategy Store semantic retrieval; species can populate when proposing actions.
 
 ##### LOWER PRIORITY — Design philosophy imports
 

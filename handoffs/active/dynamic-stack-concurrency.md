@@ -1,11 +1,11 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: Strategic analysis complete — implementation deferred to Phase D
+**Status**: Phase B (observability) complete — DS-1 through DS-4 implemented 2026-03-29
 **Created**: 2026-03-24
-**Updated**: 2026-03-25
+**Updated**: 2026-03-29
 **Priority**: MEDIUM (routing optimization is higher priority, but this unblocks full NUMA utilization)
 **Blocks**: Nothing currently
-**Blocked by**: Autoresearch bootstrap (Phase A), observability infrastructure (Phase B)
+**Blocked by**: Autoresearch bootstrap (Phase A)
 **Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
 
 ---
@@ -305,7 +305,7 @@ AutoResearch proposes next experiment.
 | Phase | Description | Deliverable |
 |-------|-------------|-------------|
 | **A** | Autoresearch bootstrap | `program.md`, debug suite scoring, autonomous experimentation |
-| **B** | Observability infrastructure | Telemetry (queue depth, NUMA util, escalation rate), `--slot-save-path` |
+| **B** | Observability infrastructure | ✅ DONE 2026-03-29. DS-1 (queue depth), DS-2 (escalation rate), DS-3 (slot-save-path), DS-4 (stack state in routing meta) |
 | **C** | Autoresearch-driven model & stack exploration | Empirically-grounded stack configuration |
 | **D** | Deterministic quarter scheduler | Event-driven NUMA allocation, KV save/restore, overflow queuing |
 | **E** | Template codification | Stack templates in config, dynamic backend add/remove |
