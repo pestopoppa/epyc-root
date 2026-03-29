@@ -1,44 +1,129 @@
 # KV Cache Quantization (TurboQuant / PolarQuant / QJL)
 
-**Status**: ACTIVE — split attention implementation in progress. See "Current Work — Resume Here" section below.
-**Production config**: Hadamard q4_0 (`--kv-hadamard -ctk q8_0 -ctv q4_0`) — deployed, quality-neutral, 2.5x compression.
-**TurboQuant**: Working at short prompts (speed-neutral 4K-128K). Long-prefill gen speed degraded (3.4 t/s vs 7.7 f16) due to dequant+concat overhead. Split attention needed for both quality and speed.
+**Status**: ACTIVE — Hadamard Phase 1 cherry-picked to production (`b51c905`, 2026-03-28). TurboQuant/PolarQuant/QJL/hybrid buffer ABANDONED. See "Current Work — Resume Here" section below.
+**Production config**: `--kv-hadamard -ctk q4_0 -ctv f16` (pure-attention models) or `-ctk q4_0 -ctv q4_0` (hybrid SSM). Quality-neutral, zero overhead.
+**TurboQuant hybrid**: Split attention working. Gen speed ~5.2 t/s at 14.5K filled context (was 3.4 t/s, f16 baseline 7.7 t/s). Quality correct. Old K uses q4_0 (not turbo_q3 — PolarQuant dequant too lossy). **ARCHIVED** — q4_0+Hadamard matches quality with zero complexity.
 **Created**: 2026-03-24 (via research intake)
+**Updated**: 2026-03-28
 **Priority**: MEDIUM-HIGH
 **Categories**: kv_cache_optimization, quantization, inference_serving, memory_bandwidth
 
 ## Current Work — Resume Here
 
-### What's Done
-All code is on branch `hadamard-kv-smoothing` in `/mnt/raid0/llm/llama.cpp-experimental`. Build: `build-hadamard/`.
+### What's Done (2026-03-26 update)
+All experimental code is on branch `hadamard-kv-smoothing` in `/mnt/raid0/llm/llama.cpp-experimental`. Build: `build-hadamard/`.
+
+**Hadamard Phase 1 cherry-picked to production** (2026-03-28): Commit `b51c905` on `production-consolidated-v2` in `/mnt/raid0/llm/llama.cpp`. Pushed to `fork` remote. 10 files, +141 lines. Build verified clean. CLI: `--kv-hadamard` (env: `LLAMA_ARG_KV_HADAMARD`).
 
 **Working end-to-end:**
 - Phase 1 (Hadamard): `--kv-hadamard -ctk q8_0 -ctv q4_0` — quality-neutral, zero overhead. Production-ready.
 - Phase 2 (PolarQuant): `GGML_TYPE_POLAR_Q4` — 5.12x compression, PPL +0.229. Working but quality gap.
 - Phase 3 (TurboQuant): `GGML_TYPE_TURBO_Q3` — 4.41x compression. Hybrid buffer with eviction.
-- Hybrid precision buffer: `llama_kv_cache_hybrid_prec` (ISWA pattern), eviction from kv_recent(f16)→kv_old(turbo_q3), dual-cache attention via dequant+concat.
+- Hybrid precision buffer: `llama_kv_cache_hybrid_prec` (ISWA pattern), eviction from kv_recent(f16)→kv_old(q4_0+Hadamard), split attention.
+- **Split attention WORKING** (2026-03-26): separate QK scoring for old (q4_0→f32 matmul) and recent (f16 matmul), concat scores, single softmax, combined V weighted sum. Quality correct at 14.5K filled context.
 - Short prompts at 4K-128K context: speed-neutral (±2% of f16), correct output.
 - QJL attention kernel: wired in `ops.cpp` (`k_is_qjl` dispatch), Gaussian JL matrix, outlier correction.
 
-**What's broken:**
-- Long-prefill gen speed: 3.4-4.9 t/s vs 7.7 f16 at 14.5K filled context. Bottleneck: per-token eviction (CPU-side turbo_q3 quantize) + dequant+concat in attention graph.
-- Long-prefill quality: turbo_q3 dequant (PolarQuant reconstruction) produces garbage at long filled contexts ("self-balancing self-balancing..."). The dequant path has too much error.
+**Key design change**: Old K cache uses **q4_0** (not turbo_q3). PolarQuant reconstruction (turbo_q3 dequant) has too much error for direct K reconstruction. q4_0 + Hadamard is quality-neutral (PPL +0.017) and fast to dequant. The hybrid buffer still gives the benefit of the ISWA architecture (small f16 working set + large compressed archive).
 
-### What To Do Next: Split Attention
+**Bugs fixed (2026-03-26)**:
+1. **Mask always -inf for old cells** (`llama-graph.cpp:424`): `set_input` filled old portion of kq_mask with -inf, so old K/V was never attended to. Fixed: unmask with 0.0f.
+2. **n_evicted not reset on clear** (`llama-kv-cache-hybrid-prec.cpp:clear`): After cache clear between requests, stale n_evicted caused next request to read cleared/invalid old data. Fixed: reset n_evicted=0 in clear() and seq_rm().
+3. **Eviction during prefill** (`llama-kv-cache-hybrid-prec.cpp:init_update`): During multi-token prefill batches, eviction corrupted quality by compressing tokens before attention could read them. Fixed: added `in_prefill` flag set in `init_batch(n_ubatch>1)`, checked in `init_update` to skip eviction.
+4. **Shape mismatch in split attention** (`llama-graph.cpp:1928`): K and Q views not permuted for GQA broadcasting (n_head_kv vs n_head in wrong dimension). Fixed: added permute(0,2,1,3) for Q, K, and K_old before matmul, matching `build_attn_mha` non-flash path.
 
-**The critical fix for BOTH speed AND quality**. Instead of dequanting old K to f32 and concatenating with recent K, compute attention in two parts:
+**Current benchmark (Qwen2.5-7B, 14.5K prefill + 200 gen, 16K ctx):**
 
-```
-kq_recent = Q × K_recent^T      (f16 matmul, exact — no error)
-kq_old    = QJL_score(Q, K_old)  (sign-bit scoring — uses turbo_q3 directly)
-kq        = concat(kq_old, kq_recent)  (score matrices, not K tensors)
-softmax(kq, combined_mask)
-kqv       = kq × V_combined     (V is dequanted, which works fine)
-```
+| Config | Gen t/s (est) | Quality |
+|--------|---------------|---------|
+| f16 baseline | 7.70 | correct |
+| turbo_q3 (old, dequant+concat) | 3.38 | garbage |
+| **hybrid q4_0+Hadamard split attn** | **~5.2** | **correct** |
 
-**Why this fixes quality:** The dequant path reconstructs K vectors from turbo_q3 (PolarQuant reconstruction with 3.1-bit error). The QJL scoring path uses sign bits directly to estimate Q·K dot products via the JL lemma — this preserves inner products without reconstruction. The recent K (f16) gives exact scores.
+**Short prompt (1500 gen, 4K ctx, no prefill):** 15.7 t/s wall, coherent essay output — speed-neutral.
 
-**Why this fixes speed:** No dequant+cast chain (turbo_q3→f32→concat per layer per token). QJL scoring is XNOR+popcount (fast). The recent K attention uses standard flash attn. Only V needs dequant (which works).
+**Perplexity (2026-03-26, Qwen2.5-7B, 10 chunks, ctx=512):**
+
+| Config | PPL | vs f16 |
+|--------|-----|--------|
+| f16 baseline | 1.5375 ±0.040 | — |
+| hybrid q4_0+Hadamard (kv-recent=128) | 1.5375 ±0.040 | **identical** |
+
+**Quality-neutral** at short context (512 tokens).
+
+**Long-context benchmark (2026-03-26, Qwen2.5-7B, 32K native context, 31.8K prompt + 200 gen):**
+
+| Config @ 32K | RSS (MB) | Wall (s) | KV Savings | Quality |
+|---|---|---|---|---|
+| f16/f16 | 16,386 | 549.8 | baseline | correct |
+| q8_0/q4_0 | 15,322 | 598.2 (+9%) | -1.1 GB (-6%) | **correct** |
+| q4_0/q4_0 | 15,098 | 561.1 | -1.3 GB (-8%) | **garbage** |
+
+**Critical finding**: q4_0/q4_0 degrades at full 32K context — produces garbage output. q8_0/q4_0 remains correct. The 9% wall time increase is the flash attention dequant overhead during prefill.
+
+**Implication**: q4_0 K is NOT safe at extended contexts. Production coder config (q8_0/q4_0) is validated. For frontdoor Q35 (q4_0/q4_0), the hybrid architecture (75% SSM, 25% attention) may mask the degradation — needs separate testing.
+
+**Hybrid buffer architecture finding**: The dual-cache design (kv_recent + kv_old) allocates BOTH at full context size, using MORE memory than a single f16 cache. The design intended kv_recent to be small (512 cells), but prefill requires full-size recent cache. This makes the hybrid buffer memory-negative for production use. The standard single-cache with quantized KV types (`-ctk q8_0 -ctv q4_0`) is the correct approach for memory savings.
+
+**Optimization history (2026-03-26)**:
+1. Non-flash split attention (matmul-based): 5.2 t/s at 14.5K — correct quality, 32% slower than f16
+2. Removed K cast (fused dequant in mul_mat): no improvement (108.9 vs 107.1s — noise)
+3. **Switched to flash attention + concat**: cast old K/V to f16, concat with recent, single `ggml_flash_attn_ext` call via `build_attn_mha`. Short-prompt: **14.4 t/s** (vs 15.7 f16 = 8% gap). Long-prefill 14.5K: still ~5.1 t/s — the q4_0→f16 cast at 14K × 28 layers per decode token is unavoidable ~30% overhead.
+4. Batch eviction (every 64 tokens): marginal 1.5% improvement (105.4 vs 107.0s). Eviction is not the bottleneck — it only runs during the first ~100 decode tokens after prefill.
+
+**Bottleneck analysis**: The 30% gen speed gap at 14.5K filled context is the q4_0→f16 cast cost. At 14K old positions × 512 elements × 28 layers × 2 (K+V), each decode token casts ~400 MB of data. This is inherent to having compressed KV data — ANY quantized KV scheme pays this dequant cost. The benefit is memory: 14K positions at q4_0 use ~31 MB K + 448 MB V(f16) vs 448+448 = 896 MB at f16. At 256K+ context, this 2x memory savings is significant.
+
+### Production Action Items
+
+1. [x] **Test Q35 frontdoor q4_0/q4_0 at 4K context** (2026-03-28): Q35 hybrid absorbs KV quant completely. PPL: f16=1.2510, q4_0/q4_0=1.2466, q4_0/f16=1.2333. All within noise. Frontdoor q4_0/q4_0 VALIDATED.
+
+2. [x] **Validate q4_0/f16 on Coder-32B** (2026-03-28): PPL 1.0034 (vs f16 1.0033 — identical). Speed: 45.56s/chunk (vs f16 46.08s — 1% faster). Needle-in-haystack: **9/9 at 1K/4K/16K**. Production config VALIDATED.
+
+3. [x] **Hadamard cherry-picked to production** (2026-03-28): Commit `b51c905ec` on production-consolidated-v2. CLI: `--kv-hadamard`. 10 files (2 new + 8 modified). Covers standard KV, ISWA, flash and non-flash paths. Production binary rebuilt, `--kv-hadamard` enabled in orchestrator_stack.py. Also added f32 cast guard in `cpy_k`/`cpy_v` for safety (commit pending).
+
+**NOTE: q4_0 K bug on Qwen2.5-7B-f16**: q4_0 K produces PPL 2642 (garbage) on this specific model (4 KV heads, n_embd_k_gqa=512) on BOTH experimental and production binaries. q8_0 K works fine. This affects ONLY the f16-weights 7B model used for development testing — all production models (Q4_K_M weights, 8+ KV heads) work correctly. Root cause unknown (not a build issue, not set_rows, reproduces on both binaries). Needs upstream investigation.
+
+4. [ ] **Monitor upstream TurboQuant**: `ggml-org/llama.cpp` issue #20977. Our TQ3 decision gate tested **norm correction only** (1 of 4 ecosystem fixes) on a **7B model** (known failure zone for TQ3). What we tried vs what exists:
+
+   | Fix | Us | Ecosystem | Impact |
+   |-----|-----|-----------|--------|
+   | Norm correction (store ‖x‖/‖recon(x)‖) | ✅ Implemented | spiritbuun: TQ3 beats q8_0 by 1.17% | Quality: PPL improved 77% on 7B, still +5.9% vs q4_0 on 32B |
+   | S=512 for initial layers | ❌ Not tried | Paper: required for SNR≥1.6 | Quality: could close the remaining gap, needs dynamic block size |
+   | Fused dequant (WHT Q once, dot vs codebook) | ❌ Cancelled at gate | spiritbuun/animehacker: +6.5% decode | Speed: TQ3 could bypass vec_dot entirely — dot codebook indices directly. Potentially faster than q4_0's vec_dot_q4_0_q8_0 |
+   | 32-block format (vs our 128-block) | ❌ Not tried | Aaryan-Kapoor: better ggml integration | Quality+speed: different codebook, different error profile, native FA parallelism |
+
+   **Why we stopped too early**: The decision gate was quality-only (PPL). But TQ3 with fused dequant could offer **better speed** than q4_0 — the codebook dot avoids per-element dequantization entirely. We tested 1 of 4 fixes on a model in TQ3's known failure zone. A fair test would combine all 4 fixes on a 32B+ model and measure both PPL AND decode speed.
+
+   **Counter-argument**: ikawrakow's full implementation (all fixes) on EPYC 9975 shows Hadamard+q4_0 at 1279 tok/s vs TQ3 at 573 tok/s on Qwen3.5-35B — **2.2x faster**. This is the strongest data point: even with all optimizations, TQ3 is slower on CPU. The fused dequant helps but doesn't overcome the fundamental overhead of codebook lookup vs simple q4_0 dequant on AVX-512.
+
+   **Revisit criteria**: If upstream merges TQ3 natively (issue #20977) with fused FA kernel, retest on Coder-32B measuring **both** PPL and tok/s. If TQ3 matches q4_0 quality AND speed, the 4.4x compression (vs 3.6x) becomes meaningful at 256K+ context.
+
+### Abandoned (review 2026-03-28, no reactivation warranted)
+
+- **Hybrid buffer** (Phase 3d): Memory-negative (2x allocation). Standard single-cache strictly better.
+- **PolarQuant** (Phase 2): PPL +0.229, worse than q4_0+Hadamard at equivalent bits.
+- **TurboQuant/QJL** (Phase 3): Lost decision gate on 32B even with norm correction (+5.9% PPL vs q4_0's +0.001%).
+- **Flash attn V dequant kernel**: Root cause was V=q4_0 path. Fixed by switching to V=f16 in production config. Kernel optimization only needed if someone wants q4_0/q4_0 on pure-attention models.
+
+### Hybrid Buffer Work: Archived
+
+The dual-cache hybrid buffer (Phases 3d+) is archived as research:
+- Memory-negative (2x cache allocation)
+- Speed-negative at long context (cast+concat overhead)
+- The standard single-cache with quantized KV types is strictly better
+- Code preserved on `hadamard-kv-smoothing` branch in llama.cpp-experimental
+
+### TurboQuant/QJL: Post-Mortem
+
+**Why Google got quality-neutral 3.5-bit and we got PPL 16K:**
+1. S=256 uniform (paper: S=512 for initial 25% layers). SNR at S=256,d=128 = 1.13 (noise ≈ signal).
+2. PPL metric (paper: task-based evals where softmax suppresses noise on low-weight tokens).
+3. At competitive bit rates (S=512 + outliers = ~4.5 bits effective), q4_0+Hadamard matches with zero complexity.
+4. Not a hardware limitation — same math on CPU/GPU. Speed advantage of CUDA kernels doesn't translate.
+5. **Model-size dependent** (per 2026-03-28b session): TQ3 catastrophic on ≤8B, approaches f16 at 35B+. Our 7B tests were in the failure zone.
+6. **Norm correction** (spiritbuun fork): storing `||x||/||reconstruct(x)||` makes TQ3 beat q8_0 by 1.17%. One-line fix we didn't implement.
+
+**Revisit path**: When upstream llama.cpp merges TurboQuant (issue #20977), retest on Qwen2.5-Coder-32B with norm correction. The fused dequant approach (pre-rotate Q, dot against codebook directly) solves our 30% cast overhead.
 
 ### Implementation Details
 
@@ -468,19 +553,34 @@ At 256K this starts to matter significantly, especially if we're running multipl
 
 **Deployment**: q4_0/q4_0 for Q35 frontdoor, q8_0/q4_0 for Coder escalation. Pending orchestrator_stack.py + registry update.
 
-### Flash Attention CPU Dequant Optimization (Future Task)
+### Flash Attention CPU Dequant Optimization — ROOT CAUSE FOUND (2026-03-28)
 
-**Priority**: MEDIUM — does not block Phase 1 or production deployment. Affects prefill latency only, and only on pure-attention models with long prompts.
+**Priority**: HIGH — **production config change recommended**.
+**Status**: Root cause identified. V dequant (q4_0→f32) in flash attention is the ENTIRE prefill bottleneck. K dequant is not the issue.
 
-**Problem**: The `ggml_flash_attn_ext` CPU kernel in `ggml/src/ggml-cpu/ops.cpp` (line ~8635+) has a dequantization overhead that causes 2-3x prefill slowdown when KV cache uses q4_0 or q8_0 types vs f16.
+**Problem**: The `ggml_flash_attn_ext` CPU kernel in `ggml/src/ggml-cpu/ops.cpp` (line ~8635+) has a dequantization overhead that causes 2-3x prefill slowdown when KV cache uses q4_0 V type vs f16.
 
-**Root cause analysis**:
+**Root cause (2026-03-28)**: Benchmarked 4 KV type combinations at 4K context on Coder-32B Q4_K_M:
 
-The flash attention CPU kernel processes KV data in tiles. For each tile, it must:
-1. Load K/V data from cache
-2. Dequantize to f32 if type != f32/f16
-3. Compute QK^T dot products
-4. Apply softmax
+| Config | Time/chunk | vs f16/f16 | Analysis |
+|---|---|---|---|
+| f16/f16 | 37.91s | baseline | — |
+| **q4_0/f16** | **37.42s** | **-1%** | K dequant is FREE (bandwidth savings offset cost) |
+| q8_0/f16 | 40.57s | +7% | q8_0 K reads more bytes than q4_0 |
+| **q8_0/q4_0** | **64.87s** | **+71%** | **V dequant is the ENTIRE bottleneck** |
+
+**The V dequant path** (`v_to_float` → f32 buffer → `vec_mad_f32`) is the sole cause. The K path uses fused `kq_vec_dot` which is already optimized. The f16 V path uses native `ggml_vec_mad_f16` (single pass, no intermediate buffer).
+
+**Recommended production config change**: `q4_0 K / f16 V` (+ Hadamard on K) instead of current `q8_0 K / q4_0 V`:
+- **Zero prefill regression** (actually 1% FASTER than f16/f16)
+- K compression: 4x (vs 2x with q8_0)
+- V at f16: lossless quality, fast flash attention path
+- With Hadamard: K PPL +0.017 (quality-neutral)
+- Memory: K=0.25x + V=1x = 0.625x of f16 (37% savings vs 71% with q4_0/q4_0)
+
+**Original root cause analysis (still valid for context)**:
+
+The flash attention CPU kernel processes KV data per-position. For each KV position, it must:
 5. Compute weighted V sum
 
 The dequant step (2) is the bottleneck. For f16 KV, the load+convert is a single `_mm512_cvtph_ps` (1 cycle latency). For q4_0/q8_0, dequant requires:
@@ -1245,3 +1345,125 @@ Phase 2 benchmark results
 - llama.cpp draft model KV bug: https://github.com/ggml-org/llama.cpp/issues/11200
 - llama.cpp KV cache PR: https://github.com/ggml-org/llama.cpp/pull/7527
 - vLLM quantized KV docs: https://docs.vllm.ai/en/latest/features/quantization/quantized_kvcache/
+- TurboQuant llama.cpp CUDA fork: https://github.com/spiritbuun/llama-cpp-turboquant-cuda
+- TurboQuant upstream discussion: https://github.com/ggml-org/llama.cpp/discussions/20969
+- TurboQuant upstream feature request: https://github.com/ggml-org/llama.cpp/issues/20977
+- ik_llama.cpp TurboQuant PR: https://github.com/ikawrakow/ik_llama.cpp/issues/1509
+- vLLM TurboQuant feature request: https://github.com/vllm-project/vllm/issues/38171
+
+## Research Intake Update — 2026-03-28
+
+### New Related Research
+- **[intake-194] "llama-cpp-turboquant-cuda"** (github:spiritbuun/llama-cpp-turboquant-cuda)
+  - Relevance: Direct CUDA implementation of TurboQuant 3-bit KV cache quantization in llama.cpp fork
+  - Key technique: TurboQuant turbo3 with Flash Attention CUDA kernels for NVIDIA GPUs
+  - Reported results: 98.8% of q8_0 prefill speed, norm correction makes turbo3 PPL beat q8_0
+  - Delta from current approach: We have turbo_q3 hybrid at 16.21 t/s (Qwen2.5-7B) but no CUDA kernels; this fork provides production CUDA path
+
+### Ecosystem Status (via expansion)
+- **Upstream llama.cpp**: Feature request open (issue #20977), discussion active (#20969). Separate Hadamard-only PR #21038 by ggerganov adds `-khad`/`-vhad` flags on existing q4_0/q8_0 types.
+- **ik_llama.cpp**: Working CPU+CUDA implementation ready for review (issue #1509), 18/18 tests passing, MSE matches paper
+- **vLLM**: Feature request open (issue #38171)
+- **Multiple independent forks** validating TurboQuant claims: TQ3 MSE=0.034, TQ4 MSE=0.009, 4.9x compression vs FP16
+- **700K+ token context** demonstrated on single RTX 5090 (32GB) with turbo3
+- **7 distinct implementations**: spiritbuun (CUDA), TheTom (Metal), animehacker (CUDA), Aaryan-Kapoor (CPU), ik_llama.cpp, ubergarm, upstream PR #21038
+
+### Deep Dive Findings (2026-03-28)
+
+#### External Confirmation: Hadamard+q4_0 > TurboQuant on CPU
+
+ikawrakow's benchmarks on Qwen3.5-35B-A3B (EPYC 9975) independently confirm our finding that Hadamard+q4_0 beats TurboQuant:
+
+| Config | PPL | tok/s |
+|---|---|---|
+| f16/f16 | 6.5792 | 1292 |
+| `-khad q4_0 -vhad q4_0` | **6.5939** | **1279** |
+| `tq3_0 / tq3_0` | 6.6872 | 573 |
+
+Hadamard+q4_0 is better quality AND 2.2x faster on CPU. TQ3's only advantage is compression (4.4x vs 3.6x). This matches our own result where we abandoned turbo_q3 for K in favor of q4_0+Hadamard.
+
+#### CRITICAL: TurboQuant Quality is Model-Size Dependent
+
+ikawrakow tested systematically across model sizes:
+- **Qwen3-0.6B**: TQ3 PPL **1216.23** vs f16 13.51 — **catastrophic failure**
+- **Qwen3-8B**: TQ3 PPL 8.15 vs q4_0+khad 7.38 — worse than Hadamard+q4_0
+- **Qwen3.5-35B-A3B**: TQ3 PPL approaches f16 — but 75% recurrent, only 25% uses KV cache
+
+The "lossless compression" claim only holds for large models where head_dim=128 provides enough coordinates for WHT to gaussianize the distribution. **Our Qwen2.5-7B test model is in the failure zone.** Must re-benchmark on Qwen2.5-Coder-32B or larger to get a fair comparison.
+
+**DONE (2026-03-28)**: Re-ran TQ3 on Coder-32B Q4_K_M with norm correction. Result: TQ3 PPL 1.4676 vs q4_0 PPL 1.3875 (+5.9%). TQ3 ABANDONED — q4_0 strictly better even at 32B.
+
+#### Norm Correction — Trivial Fix for TQ3 Quality
+
+spiritbuun's key innovation: store `||x|| / ||reconstruct(x)||` instead of `||x||` as the per-block norm. The reconstruction norm accounts for cumulative quantization error in codebook lookup + rotation inverse. Zero decode-time cost (same storage, same multiply). Computed during quantization by doing a full dequant of the just-quantized block.
+
+Result on Qwen3.5-27B Q6_K (RTX 3090):
+- q8_0: PPL 5.8375
+- turbo3 without norm correction: PPL ~5.85
+- turbo3 WITH norm correction: PPL **5.7690** (beats q8_0 by 1.17%)
+
+**Implementation**: In `ggml-turbo-quant.c`, restructured dequant to factor norm as final multiplier (not in sign_mag computation). Quantize: set norm=1.0, dequant, measure ||unit_recon||, store original_norm/||unit_recon||. Removed outlier override from dequant (outliers used by QJL scoring path only).
+
+**Result (2026-03-28, turbo_q3 V with norm correction):**
+
+Qwen2.5-7B (10 chunks, ctx=512):
+- Without norm correction: PPL 9.017 → **With: PPL 2.13** (77% gap reduction, still not competitive)
+
+Qwen2.5-Coder-32B Q4_K_M (10 chunks, ctx=512):
+
+| Config | PPL | vs f16 |
+|---|---|---|
+| f16 V | 1.3861 | — |
+| **turbo_q3 V (norm corrected)** | **1.4676** | **+0.082 (+5.9%)** |
+| q4_0 V | 1.3875 | +0.001 (identical) |
+
+**DECISION: TQ3 ABANDONED.** Even with norm correction on 32B, turbo_q3 adds +5.9% PPL while q4_0 is identical to f16. Norm correction helped (77% gap reduction on 7B, measurable improvement on 32B) but q4_0 is strictly better at the same or lower complexity. Proceeding to rebase onto upstream Hadamard PR #21038.
+
+#### Fused Dequant — The Path to Eliminating Our 30% Speed Gap
+
+The ecosystem solves the dequant overhead (our bottleneck) via fused flash attention kernels:
+1. Pre-rotate Q via WHT once per head (O(d log d) = 896 FLOPs for head_dim=128)
+2. Dot rotated Q directly against codebook centroids in packed K cache
+3. No materialized dequant buffer, no q4_0→f16 cast
+
+Key insight: `dot(Q, dequant(K)) = dot(WHT(Q), codebook[indices]) * scale`. The WHT of Q is done once, then scoring is 128 lookups + 128 MADs per KV position.
+
+spiritbuun reports moving Q FWHT out of the vec kernel gave +6.5% decode gain. animehacker describes the same approach as "MMVQ kernel fusion."
+
+For CPU implementation: write a custom `vec_dot_tq3_0_q8_1` kernel in `ggml-cpu/ops.cpp`. The ik_llama.cpp approach with `GGML_IQK_FA_ALL_QUANTS=ON` provides a template.
+
+#### Key Bugs Found Across Ecosystem (Watch List)
+
+| Bug | Impact | Fix |
+|---|---|---|
+| WHT normalization `1/block_size` vs `1/sqrt(block_size)` | Garbage PPL | Must use `1/sqrt(32)` = 0.17677... not `1/32` = 0.03125 |
+| V cache transpose + block quantization | Crash (`ne00 % block_size != 0`) | Store V non-transposed (`v_trans=false`), dequant then transpose in graph |
+| WHT in graph vs during quantization | PPL 23.5 instead of 6.2 | Do WHT during quantization (`set_rows`), NOT graph-side |
+| CPU dequant only supports F32 dest | Crash on F16 target | Always dequant to F32, then cast |
+
+#### Block Size Decision: 32 vs 128
+
+- **32-block** (Aaryan-Kapoor, animehacker): 14 bytes = 2B fp16 scale + 8B qs + 4B qr = 3.5 bpw. Better ggml integration, works with FA parallelism.
+- **128-block** (ik_llama.cpp, spiritbuun): 52 bytes = 4B float32 norm + 48B packed = 3.25 bpw. Matches paper exactly.
+- **Our implementation**: `GGML_TYPE_TURBO_Q3` at type 41, 3.6 bpw. If proceeding with TQ3, 32-block integrates more cleanly.
+
+#### Lloyd-Max Codebook Values (Reference)
+
+3-bit (8 centroids), unit-norm vectors after WHT:
+```
+// ik_llama.cpp (paper-exact, 128-block, float32 norm)
+{-0.18904037, -0.11879502, -0.06702922, -0.02174971,
+  0.02174971,  0.06702922,  0.11879502,  0.18904037}
+
+// Aaryan-Kapoor (32-block, fp16 scale, pre-scaled by ~11.42)
+{-2.1573, -1.3336, -0.7434, -0.2428,
+  0.2428,  0.7434,  1.3336,  2.1573}
+```
+
+#### Revised Priority for This Handoff
+
+1. **Retest TQ3 on Qwen2.5-Coder-32B** — our 7B results are pessimistic due to model size
+2. **Implement norm correction** — trivial, may make turbo_q3 K viable again (1 day)
+3. **Monitor upstream PR #21038** — if `-khad`/`-vhad` lands in mainline, rebase instead of maintaining custom WHT
+4. **Fuse dequant into vec_dot kernel** — eliminates the 30% cast overhead (3-5 days)
+5. **Decision gate after steps 1-2**: If TQ3+norm correction on 32B still loses to Hadamard+q4_0, abandon TQ3 and adopt upstream Hadamard. The extra 0.8x compression (4.4x vs 3.6x) may not justify the complexity on a 1.13 TB system.

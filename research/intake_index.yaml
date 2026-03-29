@@ -5008,3 +5008,1315 @@
     Zero normalization overhead. GitHub: github.com/amirzandieh/QJL with
     CUDA kernels for Llama 2/3. Algorithmic approach is pure arithmetic,
     portable to CPU with AVX-512.
+- id: intake-194
+  url: https://github.com/spiritbuun/llama-cpp-turboquant-cuda
+  source_type: repo
+  title: 'llama-cpp-turboquant-cuda: CUDA TurboQuant Fork of llama.cpp'
+  authors:
+  - spiritbuun
+  categories:
+  - kv_cache_optimization
+  - quantization
+  - cuda_inference
+  key_claims:
+  - CUDA implementation of TurboQuant 3-bit KV cache quantization in llama.cpp
+  - Norm correction makes turbo3 PPL beat q8_0 on CUDA
+  - 98.8% of q8_0 prefill speed using dequant-then-MMA path
+  techniques:
+  - TurboQuant turbo3 CUDA kernels
+  - Flash Attention integration
+  - Norm correction for quality improvement
+  reported_results:
+  - '98.8% of q8_0 prefill speed'
+  - 'turbo3 PPL beats q8_0 with norm correction'
+  - '4.6x compression vs fp16'
+  novelty: medium
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references:
+    handoffs:
+    - kv-cache-quantization.md
+    intake:
+    - intake-191
+    - intake-192
+    - intake-193
+  notes: >
+    CUDA fork of llama.cpp implementing TurboQuant. Relevant because our
+    KV cache quantization handoff tracks TurboQuant but we lack CUDA kernels.
+    This provides a production CUDA path. Also see ik_llama.cpp issue #1509
+    for a CPU+CUDA implementation with 18/18 tests passing.
+
+- id: intake-195
+  url: https://github.com/ggml-org/llama.cpp/discussions/20969
+  source_type: blog
+  title: 'TurboQuant - Extreme KV Cache Quantization (llama.cpp discussion)'
+  categories:
+  - kv_cache_optimization
+  - quantization
+  key_claims:
+  - Upstream llama.cpp community discussion on TurboQuant integration
+  - Multiple independent implementations validating paper claims
+  - TQ3 MSE=0.034 matching paper, TQ4 MSE=0.009
+  techniques:
+  - TurboQuant
+  reported_results:
+  - 'TQ3: 4.9x compression vs FP16'
+  - 'TQ4: 3.8x compression vs FP16'
+  - '700K+ token context on single RTX 5090 (32GB)'
+  novelty: medium
+  relevance: high
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-194
+  ingested_date: '2026-03-28'
+  cross_references:
+    handoffs:
+    - kv-cache-quantization.md
+    intake:
+    - intake-191
+    - intake-194
+
+- id: intake-196
+  arxiv_id: '2307.11760'
+  url: https://arxiv.org/abs/2307.11760
+  source_type: paper
+  title: 'Large Language Models Understand and Can be Enhanced by Emotional Stimuli'
+  authors:
+  - Cheng Li et al.
+  categories:
+  - llm_prompting
+  - emotion_psychology
+  key_claims:
+  - EmotionPrompt combines emotional stimuli with task prompts for LLM performance gains
+  - 8% relative improvement on Instruction Induction, 115% on BIG-Bench
+  techniques:
+  - EmotionPrompt
+  reported_results:
+  - '8% relative improvement on Instruction Induction'
+  - '115% improvement on BIG-Bench'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: LLM emotional prompting. No relevance to inference optimization.
+
+- id: intake-197
+  arxiv_id: '2405.02814'
+  url: https://arxiv.org/abs/2405.02814
+  source_type: paper
+  title: 'NegativePrompt: Leveraging Psychology for LLMs Enhancement via Negative Emotional Stimuli'
+  authors:
+  - Xu Wang et al.
+  categories:
+  - llm_prompting
+  - emotion_psychology
+  key_claims:
+  - Negative emotional stimuli improve LLM performance
+  - 12.89% gain on Instruction Induction, 46.25% on BIG-Bench
+  techniques:
+  - NegativePrompt
+  reported_results:
+  - '12.89% improvement on Instruction Induction'
+  - '46.25% improvement on BIG-Bench'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: IJCAI 2024. Negative emotional prompting. No relevance to inference optimization.
+
+- id: intake-198
+  arxiv_id: '2502.05489'
+  url: https://arxiv.org/abs/2502.05489
+  source_type: paper
+  title: 'Mechanistic Interpretability of Emotion Inference in Large Language Models'
+  authors:
+  - Ala N. Tak et al.
+  categories:
+  - mechanistic_interpretability
+  - emotion_psychology
+  key_claims:
+  - Emotion representations localized to mid-layer regions in LLMs
+  - Causal interventions on appraisal concepts steer emotional generation
+  techniques:
+  - Linear probing
+  - Activation patching
+  - Appraisal concept modulation
+  reported_results:
+  - 'Emotion signal peaks at mid-layers'
+  - '40%+ accuracy on emotion classification'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: Mechanistic interpretability of emotions. No relevance to inference optimization.
+
+- id: intake-199
+  arxiv_id: '2510.04064'
+  url: https://arxiv.org/abs/2510.04064
+  source_type: paper
+  title: 'Decoding Emotion in the Deep: How LLMs Represent, Retain, and Express Emotion'
+  authors:
+  - Jingxiang Zhang et al.
+  categories:
+  - mechanistic_interpretability
+  - emotion_psychology
+  key_claims:
+  - LLMs develop well-defined internal geometry of emotion
+  - Emotional signal peaks at 75% network depth
+  - 400K utterance dataset released
+  techniques:
+  - Layer-wise probing
+  - PCA with KDE visualization
+  reported_results:
+  - '80.58% accuracy on Qwen3-8B'
+  - 'Negative emotions persist 2-3x longer than positive'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-200
+  arxiv_id: '2602.21223'
+  url: https://arxiv.org/abs/2602.21223
+  source_type: paper
+  title: 'Measuring Pragmatic Influence in Large Language Model Instructions'
+  authors:
+  - Yilin Geng et al.
+  categories:
+  - llm_prompting
+  - instruction_following
+  key_claims:
+  - Pragmatic framing shifts LLM behavior without altering task content
+  - Hierarchical framing most effective across models
+  - 400 influence prefix instantiations, 13 strategies
+  techniques:
+  - Directive-framing decomposition
+  - Priority-based measurement
+  reported_results:
+  - 'Framed compliance 26.6-63.7% across 5 models'
+  - 'Strategy rankings show Spearman correlations 0.78-0.99'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-201
+  arxiv_id: '2410.02185'
+  url: https://arxiv.org/abs/2410.02185
+  source_type: paper
+  title: 'POSIX: A Prompt Sensitivity Index For Large Language Models'
+  authors:
+  - Anwoy Chatterjee et al.
+  categories:
+  - llm_evaluation
+  - prompt_sensitivity
+  key_claims:
+  - POSIX metric measures LLM sensitivity to prompt variations
+  - Instruction tuning doesn't reduce sensitivity
+  - Few-shot exemplars significantly decrease prompt sensitivity
+  techniques:
+  - POSIX (Prompt Sensitivity Index)
+  reported_results:
+  - 'Llama-2-7B: 1.12 sensitivity to templates vs 0.083 to spelling errors'
+  - 'Single few-shot reduces sensitivity from 1.12 to 0.513'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-202
+  arxiv_id: '2510.22042'
+  url: https://arxiv.org/abs/2510.22042
+  source_type: paper
+  title: 'Emotions Where Art Thou: Understanding the Emotional Latent Space of LLMs'
+  authors:
+  - Benjamin Reichman et al.
+  categories:
+  - mechanistic_interpretability
+  - emotion_psychology
+  key_claims:
+  - LLMs encode emotions in low-dimensional directionally consistent manifold
+  - Emotional representations distributed throughout networks
+  - Learned steering module can steer emotions while preserving semantics
+  techniques:
+  - ML-AURA (neuron selectivity)
+  - Centered-SVD
+  - Learned Steering Module
+  reported_results:
+  - 'Cosine similarity 0.84-0.93 across models'
+  - '>85% steering accuracy across languages'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-203
+  arxiv_id: '2510.11328'
+  url: https://arxiv.org/abs/2510.11328
+  source_type: paper
+  title: "Do LLMs 'Feel'? Emotion Circuits Discovery and Control"
+  authors:
+  - Chenxi Wang et al.
+  categories:
+  - mechanistic_interpretability
+  - emotion_psychology
+  key_claims:
+  - Context-agnostic emotion directions identified via causal analysis
+  - Global emotion circuits mapped in LLMs
+  - 99.65% emotion-expression accuracy on test set
+  techniques:
+  - Emotion circuit discovery
+  - Analytical decomposition
+  reported_results:
+  - '99.65% emotion-expression accuracy'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-204
+  arxiv_id: '2505.14352'
+  url: https://arxiv.org/abs/2505.14352
+  source_type: paper
+  title: 'Towards Eliciting Latent Knowledge from LLMs with Mechanistic Interpretability'
+  authors:
+  - Bartosz Cywinski et al.
+  categories:
+  - mechanistic_interpretability
+  - safety
+  key_claims:
+  - Taboo model describes secret word without stating it
+  - Logit lens and sparse autoencoders can reveal concealed information
+  techniques:
+  - Logit lens
+  - Sparse autoencoders
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-205
+  arxiv_id: '2409.17167'
+  url: https://arxiv.org/abs/2409.17167
+  source_type: paper
+  title: 'StressPrompt: Does Stress Impact LLMs and Human Performance Similarly?'
+  authors:
+  - Guobin Shen et al.
+  categories:
+  - llm_prompting
+  - emotion_psychology
+  key_claims:
+  - LLMs perform optimally under moderate stress (Yerkes-Dodson law)
+  - Stress prompts alter internal representations mirroring human responses
+  techniques:
+  - StressPrompt
+  reported_results:
+  - 'Performance peaks at moderate stress levels'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-206
+  arxiv_id: '2507.21133'
+  url: https://arxiv.org/abs/2507.21133
+  source_type: paper
+  title: 'Analysis of Threat-Based Manipulation in Large Language Models'
+  authors:
+  - Atil Samancioglu et al.
+  categories:
+  - llm_safety
+  - prompt_manipulation
+  key_claims:
+  - Threat-based manipulations reveal systematic vulnerabilities in LLMs
+  - Effect sizes up to +1336% from threat prompts
+  techniques:
+  - Threat taxonomy framework
+  reported_results:
+  - 'Effect sizes up to +1336%'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-207
+  url: https://openreview.net/forum?id=vSbV01bdvf
+  source_type: paper
+  title: 'Unknown (OpenReview 403 — fetch failed)'
+  categories:
+  - unknown
+  novelty: unknown
+  relevance: unknown
+  verdict: unknown
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: OpenReview returned 403. Could not fetch paper details.
+
+- id: intake-208
+  arxiv_id: '2502.08009'
+  url: https://arxiv.org/abs/2502.08009
+  source_type: paper
+  title: 'The Geometry of Prompting: Unveiling Distinct Mechanisms of Task Adaptation'
+  authors:
+  - Artem Kirsanov et al.
+  categories:
+  - mechanistic_interpretability
+  - prompting
+  key_claims:
+  - Different prompting methods achieve similar performance through distinct mechanisms
+  - Input distribution samples and label semantics key in few-shot learning
+  - Synergistic and interfering task interactions at representational level
+  techniques:
+  - Statistical physics framework for representation geometry
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-209
+  arxiv_id: '2410.19221'
+  url: https://arxiv.org/abs/2410.19221
+  source_type: paper
+  title: 'Can Stories Help LLMs Reason? Curating Information Space Through Narrative'
+  authors:
+  - Vahid Sadiri Javadi et al.
+  categories:
+  - llm_prompting
+  - reasoning
+  key_claims:
+  - Story of Thought (SoT) integrates narrative structures into prompting
+  - Outperforms other techniques on GPQA and JEEBench
+  techniques:
+  - Story of Thought (SoT)
+  reported_results:
+  - 'Outperforms baselines on physics, chemistry, math, biology questions'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-210
+  arxiv_id: '2602.07164'
+  url: https://arxiv.org/abs/2602.07164
+  source_type: paper
+  title: 'Your Language Model Secretly Contains Personality Subnetworks'
+  authors:
+  - Ruimeng Ye et al.
+  categories:
+  - mechanistic_interpretability
+  - persona
+  key_claims:
+  - LLMs contain persona-specialized subnetworks without external training
+  - Training-free contrastive pruning isolates personality parameters
+  techniques:
+  - Contrastive pruning for persona subnetworks
+  reported_results:
+  - 'Stronger persona alignment than baselines without training'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-211
+  arxiv_id: '2507.20936'
+  url: https://arxiv.org/abs/2507.20936
+  source_type: paper
+  title: 'Dissecting Persona-Driven Reasoning via Activation Patching'
+  authors:
+  - Ansh Poonia et al.
+  categories:
+  - mechanistic_interpretability
+  - persona
+  key_claims:
+  - Early MLP layers process persona token syntax/semantics
+  - Middle MHA layers shape outputs from persona representations
+  techniques:
+  - Activation patching
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-212
+  arxiv_id: '2505.24539'
+  url: https://arxiv.org/abs/2505.24539
+  source_type: paper
+  title: 'Localizing Persona Representations in LLMs'
+  authors:
+  - Celia Cintas et al.
+  categories:
+  - mechanistic_interpretability
+  - persona
+  key_claims:
+  - Persona representations diverge primarily in final third of decoder layers
+  - Political ideologies show distinct spatial separation
+  techniques:
+  - Dimension reduction for persona localization
+  reported_results:
+  - 'Divergence in final third of decoder layers'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-213
+  arxiv_id: '2502.12055'
+  url: https://arxiv.org/abs/2502.12055
+  source_type: paper
+  title: 'Designing Role Vectors to Improve LLM Inference Behaviour'
+  authors:
+  - Daniele Poterti et al.
+  categories:
+  - mechanistic_interpretability
+  - persona
+  key_claims:
+  - Role vectors from activations improve task performance in relevant domains
+  - Marginal effect on unrelated tasks
+  techniques:
+  - Role vectors via activation addition and directional ablation
+  reported_results:
+  - 'Improved task performance in relevant domains'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: Despite "inference" in title, this is about behavioral steering, not inference optimization.
+
+- id: intake-214
+  arxiv_id: '2601.02896'
+  url: https://arxiv.org/abs/2601.02896
+  source_type: paper
+  title: 'Bridging Mechanistic Interpretability and Prompt Engineering with Gradient Ascent'
+  authors:
+  - Harshvardhan Saini et al.
+  categories:
+  - mechanistic_interpretability
+  - prompt_optimization
+  key_claims:
+  - RESGA and SAEGA optimize prompts aligned with persona directions
+  - Sycophancy reduction from 79.24% to 49.90%
+  techniques:
+  - RESGA
+  - SAEGA
+  reported_results:
+  - 'Sycophancy reduced from 79.24% to 49.90%'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-215
+  arxiv_id: '2602.15669'
+  url: https://arxiv.org/abs/2602.15669
+  source_type: paper
+  title: 'PERSONA: Dynamic Inference-Time Personality Control via Activation Vector Algebra'
+  authors:
+  - Xiachong Feng et al.
+  categories:
+  - mechanistic_interpretability
+  - persona
+  key_claims:
+  - Personality traits as extractable orthogonal directions in activation space
+  - Training-free framework matching fine-tuning performance
+  techniques:
+  - Personality vector algebra
+  - Context-aware activation adaptation
+  reported_results:
+  - '9.60 vs 9.61 (fine-tuning) on PersonalityBench'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-216
+  arxiv_id: '2410.19750'
+  url: https://arxiv.org/abs/2410.19750
+  source_type: paper
+  title: 'The Geometry of Concepts: Sparse Autoencoder Feature Structure'
+  authors:
+  - Yuxiao Li et al.
+  categories:
+  - mechanistic_interpretability
+  - sparse_autoencoders
+  key_claims:
+  - Three-level structure in SAE features (atomic parallelograms, lobes, anisotropic geometry)
+  - Power-law eigenvalue distributions across layers
+  techniques:
+  - Sparse autoencoder structural analysis
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-217
+  arxiv_id: '2505.11611'
+  url: https://arxiv.org/abs/2505.11611
+  source_type: paper
+  title: 'Signal in the Noise: Polysemantic Interference Transfers and Predicts Cross-Model Influence'
+  authors:
+  - Bofan Gong et al.
+  categories:
+  - mechanistic_interpretability
+  - sparse_autoencoders
+  key_claims:
+  - Polysemantic interference patterns transfer from small to large models
+  - Interventions from small models predict behavior in larger instruction-tuned models
+  techniques:
+  - Polysemantic interference analysis
+  - Cross-model transfer interventions
+  reported_results:
+  - 'Reliable transfer from Pythia-70M/GPT-2-Small to larger models'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: ICLR 2026. Interesting for interpretability but not inference optimization.
+
+- id: intake-218
+  arxiv_id: '2409.14507'
+  url: https://arxiv.org/abs/2409.14507
+  source_type: paper
+  title: 'A is for Absorption: Studying Feature Splitting and Absorption in Sparse Autoencoders'
+  authors:
+  - David Chanin et al.
+  categories:
+  - mechanistic_interpretability
+  - sparse_autoencoders
+  key_claims:
+  - Feature absorption: parent features fail to activate, subsumed by child features
+  - Sparse decomposition of hierarchical features not robust
+  techniques:
+  - Feature absorption metrics
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: NeurIPS 2025 Oral. SAE interpretability, not inference optimization.
+
+- id: intake-219
+  arxiv_id: '2602.06801'
+  url: https://arxiv.org/abs/2602.06801
+  source_type: paper
+  title: 'On the Non-Identifiability of Steering Vectors in Large Language Models'
+  authors:
+  - Sohan Venkatesh et al.
+  categories:
+  - mechanistic_interpretability
+  - safety
+  key_claims:
+  - Steering vectors are fundamentally non-identifiable due to large equivalence classes
+  - Orthogonal perturbations perform nearly as well as trained steering vectors
+  techniques:
+  - Steering vector equivalence class analysis
+  reported_results:
+  - 'Orthogonal perturbations match trained steering vectors'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-220
+  arxiv_id: '2503.05613'
+  url: https://arxiv.org/abs/2503.05613
+  source_type: paper
+  title: 'A Survey on Sparse Autoencoders: Interpreting the Internal Mechanisms of LLMs'
+  authors:
+  - Dong Shu et al.
+  categories:
+  - mechanistic_interpretability
+  - sparse_autoencoders
+  - survey
+  key_claims:
+  - Comprehensive survey of SAE techniques for LLM interpretability
+  - Covers technical frameworks, feature explanation, evaluation, applications
+  techniques:
+  - Sparse Autoencoder survey
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-221
+  arxiv_id: '2502.05209'
+  url: https://arxiv.org/abs/2502.05209
+  source_type: paper
+  title: 'Model Tampering Attacks Enable More Rigorous Evaluations of LLM Capabilities'
+  authors:
+  - Zora Che et al.
+  categories:
+  - safety
+  - evaluation
+  key_claims:
+  - Model tampering attacks as complementary evaluation method
+  - Harmful capability follows low-dimensional robustness subspace
+  - State-of-art unlearning reversed within 16 fine-tuning steps
+  techniques:
+  - Model tampering attacks
+  - Latent activation/weight modification
+  reported_results:
+  - 'Unlearning reversed within 16 steps of fine-tuning'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-222
+  arxiv_id: '2507.22928'
+  url: https://arxiv.org/abs/2507.22928
+  source_type: paper
+  title: 'How does Chain of Thought Think? Mechanistic Interpretability of CoT with SAE'
+  authors:
+  - Xi Chen et al.
+  categories:
+  - mechanistic_interpretability
+  - chain_of_thought
+  key_claims:
+  - CoT-specific features boost accuracy only in larger models (2.8B+)
+  - Scale threshold exists for CoT effectiveness
+  - Valuable information dispersed across many features
+  techniques:
+  - Sparse autoencoders on CoT reasoning
+  - Activation patching
+  reported_results:
+  - 'Confidence improvement from 1.2 to 4.3 on correct answers'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-223
+  arxiv_id: '2402.18312'
+  url: https://arxiv.org/abs/2402.18312
+  source_type: paper
+  title: 'How to think step-by-step: A mechanistic understanding of chain-of-thought reasoning'
+  authors:
+  - Subhabrata Dutta et al.
+  categories:
+  - mechanistic_interpretability
+  - chain_of_thought
+  key_claims:
+  - LLMs deploy multiple parallel pathways for step-by-step reasoning
+  - Functional division in middle layers between pretraining biases and context
+  techniques:
+  - Attention mechanism analysis for CoT
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-224
+  url: https://openreview.net/forum?id=Luq7xtaYeD
+  source_type: paper
+  title: 'Investigating the Effects of Emotional Stimuli Type and Intensity on LLM Behavior'
+  categories:
+  - llm_prompting
+  - emotion_psychology
+  key_claims:
+  - Studies how emotional prompting affects LLM performance
+  techniques:
+  - Emotional stimuli prompting
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-225
+  arxiv_id: '2311.10054'
+  url: https://arxiv.org/abs/2311.10054
+  source_type: paper
+  title: 'When "A Helpful Assistant" Is Not Really Helpful: Personas in System Prompts Do Not Improve LLM Performance'
+  authors:
+  - Mingqian Zheng et al.
+  categories:
+  - llm_prompting
+  - persona
+  key_claims:
+  - Adding personas in system prompts does not improve model performance
+  - 162 roles tested across 2,410 factual questions
+  techniques:
+  - Systematic persona evaluation
+  reported_results:
+  - 'No improvement over baseline across 162 roles'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-226
+  arxiv_id: '2408.08631'
+  url: https://arxiv.org/abs/2408.08631
+  source_type: paper
+  title: 'Persona is a Double-edged Sword: Mitigating Negative Impact of Role-playing Prompts'
+  authors:
+  - Junseok Kim et al.
+  categories:
+  - llm_prompting
+  - persona
+  key_claims:
+  - Role-playing degrades performance in 7/12 datasets for Llama3
+  - Jekyll & Hyde framework ensembles role-playing and neutral prompts
+  techniques:
+  - Jekyll & Hyde framework
+  reported_results:
+  - 'Role-playing degraded 7/12 Llama3 datasets'
+  - 'Jekyll & Hyde improved overall reasoning'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-227
+  arxiv_id: '2508.05880'
+  url: https://arxiv.org/abs/2508.05880
+  source_type: paper
+  title: 'Large Language Models Show Fragile Cognitive Reasoning About Human Emotions'
+  authors:
+  - Sree Bhattacharyya et al.
+  categories:
+  - llm_evaluation
+  - emotion_psychology
+  key_claims:
+  - CoRE benchmark probes implicit cognitive structures for emotion interpretation
+  - Models show misalignment with human judgments and instability across contexts
+  techniques:
+  - CoRE benchmark
+  reported_results:
+  - 'Systematic misalignment with human emotional judgments'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-228
+  arxiv_id: '2503.11381'
+  url: https://arxiv.org/abs/2503.11381
+  source_type: paper
+  title: 'Modeling Subjectivity in Cognitive Appraisal with Language Models'
+  authors:
+  - Yuxiang Zhou et al.
+  categories:
+  - nlp_cognitive_science
+  - emotion_psychology
+  key_claims:
+  - Personality traits and demographics critical for measuring subjectivity
+  - Existing calibration methods often underperform
+  techniques:
+  - Fine-tuned models and prompt-based LLMs for cognitive appraisal
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: EMNLP 2025 Findings. Cognitive appraisal modeling.
+
+- id: intake-229
+  url: https://ceur-ws.org/Vol-4084/
+  source_type: blog
+  title: 'HyperAgents 2025: Second International Workshop on Hypermedia Multi-Agent Systems'
+  categories:
+  - multi_agent_systems
+  - web_systems
+  key_claims:
+  - Workshop on hypermedia-based multi-agent systems
+  - Covers BDI agents, MCP for web automation, LLM-based web agents
+  - 12 papers (1 regular, 11 short)
+  techniques:
+  - Hypermedia multi-agent systems
+  - Model Context Protocol for web automation
+  reported_results: []
+  novelty: low
+  relevance: low
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: ECAI 2025 workshop. MCP mention is tangential to agent infrastructure.
+
+- id: intake-230
+  url: https://docs.arcprize.org/
+  source_type: blog
+  title: 'ARC-AGI-3: Interactive Reasoning Benchmark'
+  categories:
+  - benchmark
+  - reasoning_evaluation
+  key_claims:
+  - Interactive reasoning benchmark for AI agent generalization
+  - Evaluates exploration, perception-to-action, memory, goal acquisition
+  - Shift from static to dynamic assessment
+  techniques:
+  - ARC-AGI-3 benchmark toolkit
+  reported_results: []
+  novelty: low
+  relevance: low
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: Agent reasoning benchmark. Not directly relevant to inference optimization.
+
+- id: intake-231
+  url: https://arc-agi-swarm.vercel.app/
+  source_type: blog
+  title: 'ARC-AGI-3 Swarm: Collaborative AI Agent Competition Platform'
+  categories:
+  - multi_agent_systems
+  - benchmark
+  key_claims:
+  - Collaborative platform for autonomous AI agent competition
+  - Uses Claude Code or Codex for agent strategy submission
+  techniques:
+  - Multi-agent swarm competition
+  reported_results: []
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+
+- id: intake-232
+  arxiv_id: '2511.18177'
+  url: https://arxiv.org/abs/2511.18177
+  source_type: paper
+  title: 'Rethinking Retrieval: From Traditional RAG to Agentic and Non-Vector Reasoning Systems'
+  authors:
+  - Elias Lumer et al.
+  categories:
+  - rag
+  - information_retrieval
+  key_claims:
+  - First systematic evaluation of vector-based agentic RAG vs hierarchical node-based systems
+  - Vector-based RAG achieves 68% win rate on SEC filings
+  - Cross-encoder reranking improves retrieval by 59%
+  techniques:
+  - Hybrid search with metadata filtering
+  - Cross-encoder reranking
+  - Small-to-big chunk retrieval
+  reported_results:
+  - '68% win rate for vector-based RAG'
+  - '59% improvement from cross-encoder reranking'
+  - '65% win rate for small-to-big chunk retrieval'
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: Financial domain RAG. Not relevant to inference optimization.
+
+- id: intake-233
+  arxiv_id: '2603.19329'
+  url: https://arxiv.org/abs/2603.19329
+  source_type: paper
+  title: 'Goedel-Code-Prover: Hierarchical Proof Search for Open State-of-the-Art Code Verification'
+  authors:
+  - Zenan Li
+  - Ziran Yang
+  - Deyuan (Mike) He
+  - Haoyu Zhao
+  - Andrew Zhao
+  - Shange Tang
+  - Kaiyu Yang
+  - Aarti Gupta
+  - Zhendong Su
+  - Chi Jin
+  categories:
+  - formal_verification
+  - theorem_proving
+  - reinforcement_learning
+  key_claims:
+  - Hierarchical proof search decomposes verification goals into simpler subgoals via recursive lemma decomposition
+  - Decomposition score combines constructive justification and structural effectiveness
+  - 8B model outperforms neural provers 4-84x larger (32B-671B) and GPT-5.3-Codex
+  - Unified policy trained via SFT + hybrid RL (GRPO + SFT replay) with online Lean 4 verification rewards
+  - Two-stage pipeline - decompose then prove with compiler feedback loops
+  techniques:
+  - Hierarchical proof search
+  - Recursive lemma decomposition
+  - Decomposition scoring (constructive justification + structural effectiveness)
+  - GRPO with online Lean 4 verification rewards
+  - SFT replay in hybrid RL
+  reported_results:
+  - '62.0% overall prove success rate on 427 tasks (2.6x over strongest baseline)'
+  - '68.8% on Verina (189 problems)'
+  - '54.0% on Clever (161 problems)'
+  - '62.3% on AlgoVeri (77 problems)'
+  - 'Outperforms GPT-5.3-Codex (18.5% success rate)'
+  novelty: medium
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: direct
+  ingested_date: '2026-03-28'
+  cross_references:
+    handoffs:
+    - mathsmith-hc-formalizer-eval.md
+    - lean-proving-pipeline.md
+    research:
+    - deep-dives/opengauss-architecture-analysis.md
+    - deep-dives/goedel-code-prover-analysis.md
+    related_intake:
+    - intake-170
+    - intake-235
+  notes: Vanilla Qwen3-8B, trivial GGUF conversion (~4.5 GB Q4_K_M). Specialist model candidate for Lean 4 verification. Tier 2 executor in two-tier proving pipeline with Leanstral.
+
+- id: intake-234
+  arxiv_id: '2505.23135'
+  url: https://arxiv.org/abs/2505.23135
+  source_type: paper
+  title: 'Verina: Benchmarking Verifiable Code Generation'
+  authors:
+  - Zhe Ye
+  - Zhengxu Yan
+  - Jingxuan He
+  - Timothe Kasriel
+  - Kaiyu Yang
+  - Dawn Song
+  categories:
+  - formal_verification
+  - benchmark_methodology
+  key_claims:
+  - 189 manually curated Lean 4 coding tasks with descriptions, implementations, specs, proofs, and test suites
+  - Modular evaluation of code, specification, and proof generation
+  - Best model (o3) achieves 72.6% code correctness but only 4.9% proof success
+  - Proof generation is the critical bottleneck in verifiable code development
+  techniques:
+  - Modular benchmark design (code + spec + proof evaluation)
+  - Lean 4 verification pipeline
+  reported_results:
+  - 'OpenAI o3: 72.6% code, 52.3% specs, 4.9% proofs'
+  - 'OpenAI o4-mini: 61.4% code, 51.0% specs, 3.6% proofs'
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: expansion
+  expanded_from: intake-233
+  ingested_date: '2026-03-28'
+  cross_references: {}
+  notes: Benchmark used by Goedel-Code-Prover. Not directly applicable to inference optimization but relevant to FormalQualBench context.
+
+- id: intake-235
+  url: https://mistral.ai/news/leanstral
+  source_type: blog
+  title: 'Leanstral: Open-Source Foundation for Trustworthy Vibe-Coding'
+  authors:
+  - Mistral AI
+  categories:
+  - formal_verification
+  - theorem_proving
+  - moe_optimization
+  key_claims:
+  - First open-source AI agent built specifically for Lean 4 formal verification
+  - 120B total / 6B active MoE architecture
+  - Trained natively for Lean type system, tactic language, and proof obligations
+  - Integrates with Lean LSP via MCP (lean-lsp-mcp tooling)
+  - New FLTEval benchmark for real-world software verification
+  techniques:
+  - MoE architecture (120B/6B) for theorem proving
+  - Lean LSP integration via MCP
+  - FLTEval benchmark framework
+  reported_results:
+  - 'pass@2 score 26.3 (beats Sonnet by 2.6 points)'
+  - '$36 cost vs Sonnet $549 for equivalent eval'
+  novelty: medium
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: search
+  expanded_from: intake-233
+  ingested_date: '2026-03-28'
+  cross_references:
+    research:
+    - deep-dives/opengauss-architecture-analysis.md
+    - deep-dives/leanstral-architecture-analysis.md
+    handoffs:
+    - lean-proving-pipeline.md
+    related_intake:
+    - intake-233
+  notes: DeepSeek V3-style MoE (deepseek2 arch in llama.cpp). 95% routed expert weight — ideal REAP candidate. Community GGUFs exist. Tier 1 planner in two-tier proving pipeline with Goedel-CP-8B.
+
+- id: intake-236
+  arxiv_id: null
+  url: https://huggingface.co/0xSero/Qwen-3.5-28B-A3B-REAP
+  source_type: repo
+  title: '0xSero/Qwen-3.5-28B-A3B-REAP — REAP 20% on Hybrid Qwen3.5'
+  authors:
+  - 0xSero
+  categories:
+  - moe_optimization
+  - inference_serving
+  key_claims:
+  - REAP 20% expert pruning applied to Qwen3.5-35B-A3B (HYBRID Delta Net model — contradicts our assumption that REAP is pure-MoE only)
+  - 256 → 205 experts, ~29B params, 71GB → 53GB bf16 (25% memory reduction)
+  - 'HumanEval: 76.2% → 73.2% (-3pp), MMLU: 84.3% → 80.9% (-3.5pp)'
+  - 'Perplexity 6.83 → 9.51 (+39%) — MUCH worse than pure MoE REAP quality retention'
+  - 'vLLM throughput essentially flat (1.02x batch=1, 0.95-0.97x batch>1) — routing overhead dominates'
+  - Calibration on mixed code/math/science dataset (1000 samples, 4 sources)
+  techniques:
+  - REAP expert pruning on hybrid Delta Net + MoE model
+  - Router weight renormalization post-pruning
+  reported_results:
+  - 'HumanEval pass@1: 73.2% (from 76.2%, -3.0pp)'
+  - 'HumanEval+ pass@1: 70.1% (from 72.0%, -1.9pp)'
+  - 'MMLU: 80.89% (from 84.34%, -3.45pp)'
+  - 'MMLU Humanities: 76.35% (from 82.40%, -6.05pp — worst subscore)'
+  - 'WikiText-2 PPL: 9.51 (from 6.83, +39%)'
+  - 'vLLM 4xRTX3090 batch=1: 12.5 tok/s (from 12.3, +1.6%)'
+  - 'Memory: 53GB bf16 (from 71GB, -25%)'
+  novelty: medium
+  relevance: high
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-03-28'
+  cross_references:
+    intake:
+    - intake-181
+    - intake-183
+    - intake-184
+    handoffs:
+    - reap-moe-expert-pruning.md
+  handoffs_updated:
+  - reap-moe-expert-pruning.md
+  notes: >
+    KEY FINDING: REAP CAN be applied to hybrid Qwen3.5-35B-A3B despite our handoff
+    stating "NOT supported by REAP repo — only pure MoE layers." 0xSero likely pruned
+    only the MoE layers while leaving Delta Net recurrent layers untouched. However,
+    quality degradation is notably worse than pure MoE REAP: PPL +39% vs near-lossless
+    at 20-25% on pure MoE (Qwen3). This suggests hybrid models are less tolerant of
+    expert pruning — the remaining experts must compensate for fixed recurrent layer
+    capacity. The vLLM throughput being flat confirms our finding that routing overhead
+    dominates at small batch sizes. For our llama.cpp/CPU stack, the GGUF would be
+    smaller but speculation behavior on hybrid REAP is unknown. Phase 3 of our handoff
+    should consider testing this if we ever want REAP on the hybrid frontdoor.
+
+- id: intake-237
+  source_type: field_report
+  title: 'Nemotron-Cascade 2 vs Qwen3.5-35B-A3B: Mamba2 vs Delta Net RTX 3090 Benchmark'
+  reported_by: colleague
+  categories:
+  - ssm_hybrid
+  - inference_speed
+  - architecture_comparison
+  - gpu_inference
+  key_claims:
+  - Nemotron-Cascade 2 (Mamba2 30B-A3B) achieves 187 t/s flat from 4K to 625K context on RTX 3090
+  - Qwen3.5-35B-A3B (Delta Net) achieves 112 t/s flat from 4K to 262K on same RTX 3090
+  - Mamba2 is 67% faster than Delta Net at same active parameter count on same hardware
+  - Nemotron needs only -ngl 99 -np 1, auto-allocates 625K context with no KV cache flags
+  - Qwen3.5 needs KV cache quantization (q8_0) to fit 262K context in 24GB VRAM
+  - Both architectures show flat (context-independent) generation speed
+  - Nemotron-Cascade 2 is gold medal winner at IMO 2025, IOI 2025, ICPC World Finals 2025
+  techniques:
+  - Mamba2-Transformer hybrid MoE (Nemotron architecture)
+  - Delta Net gated linear attention hybrid MoE (Qwen3.5 architecture)
+  reported_results:
+  - 'Nemotron-Cascade 2: 187 t/s, flat 4K-625K, RTX 3090'
+  - 'Qwen3.5-35B-A3B: 112 t/s, flat 4K-262K, RTX 3090'
+  - 'Delta difference: 67% speed advantage for Mamba2 at same active params'
+  - 'Nemotron IMO 2025: 35pts (Gold), AIME 2025: 92.4, IOI 2025: 439.3 (Gold)'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: field_report
+  ingested_date: '2026-03-28'
+  cross_references:
+    handoffs:
+    - tree-speculation-numa-drafting.md
+    intake:
+    - intake-238
+  notes: >
+    Critical architecture comparison. Our production worker is Qwen3.5-35B-A3B
+    (Delta Net). Nemotron-Cascade 2 uses Mamba2 (same 30B MoE, 3B active) and
+    is 67% faster on GPU. On our EPYC CPU stack the comparison may differ.
+    Key question: does llama.cpp support Mamba2 MoE yet?
+
+- id: intake-238
+  arxiv_id: '2603.19220'
+  url: https://arxiv.org/abs/2603.19220
+  source_type: paper
+  title: 'Nemotron-Cascade 2: Post-Training LLMs with Cascade RL and Multi-Domain On-Policy Distillation'
+  authors:
+  - NVIDIA Nemotron Team
+  categories:
+  - ssm_hybrid
+  - post_training
+  - moe_optimization
+  - reasoning
+  key_claims:
+  - 30B MoE with 3B active params achieves gold medal in IMO, IOI, ICPC simultaneously
+  - Cascade RL training pipeline (7 stages)
+  - Built on Nemotron-3-Nano-30B-A3B-Base (Mamba2-Transformer hybrid MoE)
+  - Second open-weight LLM after DeepSeek-V3.2-Speciale to achieve IMO gold
+  - 20x fewer active parameters than comparable gold-medal models
+  techniques:
+  - Cascade RL (multi-stage reinforcement learning)
+  - On-policy distillation
+  - Tool-integrated reasoning (TIR)
+  - Mamba2-Transformer hybrid MoE architecture
+  reported_results:
+  - 'IMO 2025: 35pts (Gold Medal)'
+  - 'AIME 2025: 92.4 (98.6 with TIR)'
+  - 'IOI 2025: 439.3 (Gold Medal)'
+  - 'ICPC World Finals 2025: 10/12 (Gold Medal)'
+  - 'LiveCodeBench v6: 87.2'
+  - 'GPQA-Diamond: 76.1'
+  - 'MMLU-Pro: 79.8'
+  novelty: high
+  relevance: high
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-237
+  ingested_date: '2026-03-28'
+  cross_references:
+    handoffs:
+    - tree-speculation-numa-drafting.md
+    intake:
+    - intake-237
+  notes: >
+    Post-training recipe open-sourced. Cascade RL is a 7-stage pipeline.
+    Mamba2-Transformer hybrid base (Nemotron-3-Nano) shipped Dec 2025.
+    262K context window. License: NVIDIA Open Model License.
+
+- id: intake-239
+  source_type: field_report
+  title: 'Small Model Deployment Learnings: Qwen3.5-4B, Outlines, LoRA, RL Thresholds'
+  reported_by: colleague
+  categories:
+  - small_model_deployment
+  - constrained_decoding
+  - finetuning
+  - rl_training
+  key_claims:
+  - Qwen3.5-4B is very fast and multimodal, needs ~1-2K tokens context for good performance
+  - Outlines (dottxt) hijacks logit processing for guaranteed structured outputs
+  - Small models are immensely LoRA-finetunable; 0.8B recommended for local training
+  - RL finetuning threshold: if baseline reward < 20%, skip RL and do SFT with synthetic data first
+  - GEPA can quickly optimize prompts given an eval dataset
+  techniques:
+  - Outlines constrained decoding (logit-level guidance)
+  - LoRA fine-tuning for small models
+  - SFT with synthetic data as RL prerequisite
+  - GEPA prompt optimization
+  reported_results:
+  - 'RL reward baseline threshold: 20% minimum before attempting RL'
+  - '0.8B models finetunable locally with LoRA'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: field_report
+  ingested_date: '2026-03-28'
+  cross_references:
+    intake:
+    - intake-103
+    - intake-240
+
+- id: intake-240
+  arxiv_id: '2507.19457'
+  url: https://arxiv.org/abs/2507.19457
+  source_type: paper
+  title: 'GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning'
+  categories:
+  - prompt_optimization
+  - rl_alternative
+  - eval_methodology
+  key_claims:
+  - Genetic-Pareto prompt optimizer with natural language reflection
+  - Outperforms GRPO by 6% avg and up to 20% with up to 35x fewer rollouts
+  - Outperforms MIPROv2 (leading prompt optimizer) by over 10%
+  - Actionable Side Information (ASI) is text-optimization analogue of gradient
+  techniques:
+  - GEPA (Genetic-Pareto prompt evolution)
+  - Actionable Side Information (ASI)
+  - Pareto-aware selection
+  reported_results:
+  - 'Outperforms GRPO by 6% avg, up to 20%'
+  - 'Uses up to 35x fewer rollouts than RL'
+  - 'Outperforms MIPROv2 by >10%'
+  - '+12% accuracy on AIME-2025 vs MIPROv2'
+  novelty: high
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-239
+  ingested_date: '2026-03-28'
+  cross_references:
+    intake:
+    - intake-239
+  notes: >
+    ICLR 2026 Oral. Available as DSPy optimizer (dspy.GEPA) and in DeepEval.
+    GitHub: github.com/gepa-ai/gepa. Key use case for EPYC: optimizing routing
+    classifier prompts. 35x rollout reduction vs RL makes it practical for
+    prompt-level optimization.

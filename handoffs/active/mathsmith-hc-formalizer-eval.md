@@ -83,3 +83,12 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - HC = High Consistency: GRPO reward adds answer consistency dimension on top of structural validity + reasoning complexity
 - The existing `formalizer.py` implementation should work with the HC model without code changes — it's the same Qwen3-8B architecture
 - AIME + OlympiadBench suites added to question pool on 2026-03-20 (intake-170 follow-up)
+
+## Research Intake Update — 2026-03-28
+
+### New Related Research
+- **[intake-233] "Goedel-Code-Prover: Hierarchical Proof Search for Open State-of-the-Art Code Verification"** (arxiv:2603.19329)
+  - Relevance: Uses same Qwen3-8B base + GRPO training pipeline for Lean 4 proof generation
+  - Key technique: Hierarchical proof search with recursive lemma decomposition + decomposition score combining constructive justification and structural effectiveness
+  - Reported results: 62.0% prove success on 427 tasks (2.6x over strongest baseline), beats GPT-5.3-Codex (18.5%)
+  - Delta from current approach: Goedel trains for code verification proofs (specs→proofs), MathSmith trains for problem formalization (NL→formal). Same model family, different downstream task. Their GRPO + online Lean verification reward signal is analogous to HC's consistency reward but applied to proof correctness rather than answer consistency.

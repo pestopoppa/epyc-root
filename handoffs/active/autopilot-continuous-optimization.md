@@ -213,6 +213,13 @@ python scripts/autopilot/autopilot.py restore
   - Reported results: Best agent (Opus 4.6) at 23.2% vs 51.1% official, but can surpass baselines on targeted tasks; performance plateaus after ~5 hours
   - Delta from current approach: Sets empirical expectations for autonomous optimization capabilities
 
+- **[intake-240] "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning"** (arxiv:2507.19457)
+  - Relevance: **Direct replacement candidate for PromptForge species**. Genetic-Pareto prompt optimizer with natural language reflection. Outperforms GRPO by 6% avg (up to 20%) with 35x fewer rollouts. Outperforms MIPROv2 by >10%.
+  - Key technique: Pareto-aware selection + Actionable Side Information (ASI, text-optimization analogue of gradient). Population-based evolution handles multi-objective (quality × speed × cost × reliability) natively — maps directly onto our 4D Pareto archive.
+  - Available as: `dspy.GEPA` (drop-in DSPy optimizer) and DeepEval framework. GitHub: `github.com/gepa-ai/gepa`.
+  - Delta from current approach: PromptForge uses heuristic mutation operators (targeted_fix, compress, crossover). GEPA's principled evolutionary search with proven convergence properties could replace the mutation loop entirely. The 35x rollout reduction vs RL makes it practical for prompt-level optimization where RL (GRPO) is too expensive.
+  - ICLR 2026 Oral.
+
 ### Deep-Dive Findings (2026-03-15)
 
 **Source**: `research/deep-dives/agent-architectures-paperclip-agentrxiv.md`

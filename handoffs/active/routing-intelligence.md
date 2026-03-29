@@ -331,6 +331,7 @@ Current metrics to measure Phase 4-6 impact against. **Re-measure before startin
 - Chain-of-Verification: `arXiv:2309.11495` (factuality checks)
 - Learning to Route LLMs: `arXiv:2501.12388`
 - Bipartite Routing Graphs: `arXiv:2410.03834` (ICLR 2025, used by GraphRouter)
+- GEPA: `arXiv:2507.19457` (ICLR 2026 Oral, genetic-Pareto prompt evolution — outperforms GRPO by 6% avg with 35x fewer rollouts. Available as `dspy.GEPA`. Applicable to Phases 4-5: evolve risk-scorer prompts and threshold frontiers. See intake-240)
 
 ---
 

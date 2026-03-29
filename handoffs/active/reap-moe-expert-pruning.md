@@ -36,7 +36,7 @@ All 6 original open questions resolved by deep dive agents:
 | Calibration recipe? | 51% evol-codealpaca + 24% xlam-function-calling + 24% SWE-smith (1,360 samples) | 0xSero deep dive |
 | Cerebras pre-pruned usable? | YES — Q4_K_M = 15.19 GB, downloaded to bartowski/ dir | bartowski GGUF deep dive |
 | Memory savings? | 15 GB vs ~18 GB base (−16% at Q4_K_M) | Cerebras models deep dive |
-| Qwen3.5 hybrid? | NOT supported by REAP repo — only pure MoE layers | REAP repo deep dive |
+| Qwen3.5 hybrid? | NOT supported by REAP repo officially — but 0xSero applied it to Qwen3.5-35B-A3B (intake-236). Works but PPL +39% at 20% pruning vs near-lossless on pure MoE. Hybrid less tolerant. | REAP repo deep dive + intake-236 |
 
 ## Critical Findings from Deep Dives
 
@@ -226,6 +226,16 @@ Downloaded FP8 safetensors, converted to f16 GGUF, quantized to Q4_K_M (139 GB).
 - Calibration data quality is critical — missing code data causes code-expert pruning
 - 0xSero's GLM-4.7-REAP work shows the technique is mature and community-validated
 - Goldilocks finding: 30-40% may be better than 25% — Phase 3 will test this
+
+## Research Intake Update — 2026-03-28
+
+### New Related Research
+- **[intake-236] "0xSero/Qwen-3.5-28B-A3B-REAP — REAP 20% on Hybrid Qwen3.5"** (huggingface.co/0xSero/Qwen-3.5-28B-A3B-REAP)
+  - Relevance: **Contradicts our assumption** that REAP only works on pure MoE. 0xSero applied REAP 20% to our exact hybrid production model (Qwen3.5-35B-A3B).
+  - Key technique: REAP expert pruning on hybrid Delta Net + MoE architecture (256 → 205 experts)
+  - Reported results: HumanEval -3pp, MMLU -3.5pp, but PPL +39% (6.83 → 9.51). vLLM throughput flat.
+  - Delta from current approach: We only tested REAP on pure MoE (Qwen3-Coder-30B-A3B). This shows hybrid REAP is technically feasible but quality degradation is significantly worse than pure MoE REAP at the same pruning ratio. The 39% PPL increase at just 20% pruning compares unfavorably to near-lossless results on pure MoE at 25%.
+  - **Implication for Phase 3**: If we want REAP on the hybrid frontdoor, expect ~3-6pp quality loss at 20% (vs near-lossless on pure MoE at 25%). The hybrid recurrent layers create a tighter quality budget for expert removal. The pure MoE path (Qwen3-Coder REAP-25B) remains the stronger option.
 
 ## Cross-References
 

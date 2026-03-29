@@ -7,6 +7,15 @@
     "--ipc=host",
     "--ulimit", "memlock=-1:-1"
   ],
+  "mounts": [
+    "source=/mnt/raid0/llm,target=/mnt/raid0/llm,type=bind",
+    "source=/opt/AMD,target=/opt/AMD,type=bind,readonly",
+    "source=commandhistory-epyc,target=/commandhistory,type=volume",
+    "source=claude-code-config-epyc,target=/home/node/.claude,type=volume",
+    "source=codex-config-epyc,target=/home/node/.codex,type=volume",
+    "source=gh-config-epyc,target=/home/node/.config/gh,type=volume",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly"
+  ],
   "containerEnv": {
     "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin",
     "OMP_NUM_THREADS": null

@@ -2,7 +2,7 @@
 
 **Status**: COMPREHENSIVE (2026-03-18). S2-S5 complete. **NUMA 4-way = 6.9x on 35B-A3B MoE** (only model that benefits). All other hybrids converge to ~12 t/s (recurrent-dominated). Draft hurts on all NUMA configs. Prefill pipeline ceiling ~8% (not worth C++ cost). Q4_K_M strongly preferred (Q8 = 17-39% slower).
 **Created**: 2026-03-15
-**Updated**: 2026-03-18
+**Updated**: 2026-03-28
 **Blocked by**: None — phases are independently pursuable
 **Blocks**: None
 **Related**: tree-speculation-numa-drafting (Phase 8 covers STree, orthogonal to this handoff)
@@ -627,6 +627,30 @@ Implemented standalone MTP speculation loop (`tools/mtp-speculation/`). New APIs
   - Relevance: Combines speculative decoding with expert offloading — speculation generates multi-token batches to amortize I/O latency
   - Delta: Would NOT help our hybrid models (speculation yields 0.56x), but applicable to pure-attention MoE candidates
   - **Confirmed inapplicable**: No pure-attention MoE models in our production stack. ALL Qwen3 MoE variants are hybrid Delta Net (recurrent-dominated). SpecMoEOff is a dead end for current models.
+
+## Research Intake Update — 2026-03-28
+
+### Nemotron-Cascade 2: Mamba2 vs Delta Net Architecture Comparison (intake-237, intake-238)
+
+Colleague field report benchmarked Nemotron-Cascade 2 (Mamba2 30B-A3B) against our Qwen3.5-35B-A3B (Delta Net) on RTX 3090: **187 t/s vs 112 t/s — 67% speed advantage for Mamba2** at the same active parameter count. Both show flat (context-independent) generation. Nemotron needs no KV cache flags and handles 625K context natively.
+
+**Critically, llama.cpp fully supports Mamba2 MoE** via `LLM_ARCH_NEMOTRON_H_MOE` (in `src/models/nemotron-h.cpp`). GGUFs are available from bartowski and mradermacher.
+
+This does NOT reopen Delta Net self-acceleration (all approaches exhausted above). Instead, it raises a **model replacement question**: is Mamba2 a better recurrent architecture for our CPU stack? The GPU advantage may or may not translate — Delta Net and Mamba2 have different recurrent state update costs.
+
+**Full evaluation**: See [`nemotron-mamba2-evaluation.md`](nemotron-mamba2-evaluation.md) for the benchmark plan.
+
+## Code Status (2026-03-28)
+
+All hybrid acceleration research code committed to `production-consolidated-v2` and pushed to `fork` remote:
+
+| Commit | Description |
+|--------|-------------|
+| `ffb4ad4` | MTP-1 inference, MoE self-draft, skip-recurrent, clone-cell API, batch allocator fix (20 files, +995/-75) |
+| `937bd12` | MTP acceptance/speculation benchmark tools + Claude skills (10 files, +1088) |
+| `f55bf68` | Gitignore cleanup (math-tools, bench-kv-block, avx512 header) |
+
+Working tree clean. All implementations complete but NOT VIABLE on hybrid models (documented above). Infrastructure reusable for pure-attention models.
 
 ## Closeout
 
