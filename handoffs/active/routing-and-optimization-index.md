@@ -25,6 +25,7 @@
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Planning (4 phases designed) | Phase 0: raise compaction trigger to 0.75 |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0 complete | Phase 1: two-level condensation |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -143,7 +144,7 @@ Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Task
 
 - [ ] **LC-2: Chain anomaly detection** — Flag frequent fallback-to-seq or repeated wave stalls in debugger.
 
-- [ ] **LC-3: Remove `worker_code` legacy naming** — Remove from docs/prompts/constants once compatibility window officially closed.
+- [x] **LC-3: Remove `worker_code` legacy naming** — ✅ 2026-03-29. Removed from model_registry.yaml (both full and lean), orchestrator_stack.py port map, inference.py comment, 2 doc chapters. Historical benchmark JSON preserved.
 
 - [ ] **LC-4: Shared-result cache for delegation** — Evaluate content-hash keyed report snippet cache for repeated delegated subtasks.
 

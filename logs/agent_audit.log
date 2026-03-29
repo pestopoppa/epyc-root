@@ -2236,3 +2236,5 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-29T15:00:00Z] TASK_START | P1 Routing Phase 4 code (RI-2,3,4,5,6) + AP-7 | 6 files
 [2026-03-29T15:25:00Z] TASK_END | RI-2: cheap-first risk bypass. RI-3: plan review gate risk integration. RI-4: escalation think-harder on first failure for high risk. RI-5: failure veto threshold modulated by risk band (0.3/0.5/0.7), factual risk moved before veto. RI-6: structured review context. AP-7: Optuna mark_epoch() after regime changes. | success
 [2026-03-29T15:30:00Z] TASK_END | Documentation updated: routing-and-optimization-index (17 checkboxes marked), autopilot handoff (8 items updated), dynamic-stack handoff (Phase B done), routing-intelligence handoff, progress report. | success
+[2026-03-29T15:40:00Z] TASK_START | CF Phase 0 + LC-3 legacy cleanup | config, helpers, registries, docs
+[2026-03-29T15:50:00Z] TASK_END | CF-0: compaction trigger 0.60→0.75 (configurable via env). LC-3: worker_code alias removed from registries, port map, docs. | success
