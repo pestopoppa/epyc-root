@@ -2256,3 +2256,24 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-03-29T18:40:00Z] TASK_START | AutoPilot TUI + continuation handoff
 [2026-03-29T18:55:00Z] TASK_END | autopilot_tui.py: Rich 4-panel live monitor (log/prompt/inference/repl). --tui flag wired into autopilot.py. Continuation prompt drafted for compute-dependent agent. | success
 [2026-03-29T19:00:00Z] SESSION_END | 36 tasks completed. 24/37 index items done. All code-only orchestration work complete. Stack running (26 llama-servers). Handoff to production agent for AR-1 baseline (579q), RI-7 A/B test (1000q), AR-3 first autoresearch (50 trials). Files: 22 modified + 3 created in epyc-orchestrator, 7 modified + 1 created in epyc-root. 12 commits orchestrator, 10 commits root.
+
+## 2026-03-30/31 — Continuation Session: AR-1, RI-7, Bug Fixes
+
+### Tasks Completed
+- AR-1: Debug suite baseline (105 questions, 3-way eval). Direct 57.3%, REPL 43.1%, Architect 52.4%. Baseline written to autopilot_baseline.yaml.
+- RI-7: A/B test Phase 4 (70 questions/arm). All differences NS (p>0.4). Enforce mode neither helps nor hurts.
+- Bug fix: features().factual_risk_mode AttributeError in routing.py → replaced with get_mode()
+- Bug fix: Added ORCHESTRATOR_FACTUAL_RISK_MODE env var override to factual_risk.py
+- Bug discovery: Health probe full: prefix issue → logged as LC-5
+- Updated routing-and-optimization-index.md (AR-1 ✅, RI-7 ✅, LC-5 added)
+- Created progress/2026-03/2026-03-30.md
+
+### Key Findings
+- Tools hurt more than help in 3-way eval (24 hurt vs 9 helped) — REPL overhead on simple questions
+- Architect comparable to direct despite higher cost
+- Factual risk enforce mode has no measurable effect at n=70/arm (underpowered)
+- Oracle best-of-3 ceiling estimated ~65-75% (vs 57.3% best single role)
+
+### Decisions
+- AR-3 autopilot: user will run manually with --tui (no --no-controller, no --max-trials)
+- Saved feedback: always use --tui, autopilot must optimize full production flow

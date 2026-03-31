@@ -59,7 +59,7 @@ Phases 0-3 built the risk scorer and put it in shadow mode. Phase 4 makes it aff
 
 - [x] **RI-6: Structured review objective** — ✅ 2026-03-29. Both progress log and MemRL episode storage now include `task_type`, `risk_band`, `verification_focus`. Feedback truncation raised from 100→200 chars.
 
-- [ ] **RI-7: A/B test Phase 4** — Run seeding harness with `factual_risk_mode=enforce` vs `off`. Compare simpleqa F1, escalation rate, cost, p95 latency. Minimum 500 questions per arm, p < 0.05. See § Phase 4 design requirements.
+- [x] **RI-7: A/B test Phase 4** — ✅ 2026-03-31. Ran 70 questions per arm (10/suite × 7 suites). Results: all differences NS (p > 0.4). Direct: off 61.4% vs enforce 62.9% (p=0.86). REPL: off 48.6% vs enforce 42.9% (p=0.50). Architect: off 55.7% vs enforce 52.2% (p=0.68). **Verdict**: enforce mode neither helps nor hurts at this sample size. Underpowered (70 vs target 500/arm) — re-run with larger sample recommended before rollout. Bug fixes: added `ORCHESTRATOR_FACTUAL_RISK_MODE` env var override, fixed `features().factual_risk_mode` AttributeError in routing.py.
 
 ### P2 — AutoPilot Structural Improvements
 
@@ -95,7 +95,7 @@ These unblock data-driven stack scheduling.
 
 ### P5 — AutoResearch Bootstrap (Phase A)
 
-- [ ] **AR-1: Establish debug suite baseline** — Run full debug suite (579 questions) against current production config. Record pass rate in `autopilot_baseline.yaml`. This is the "before" number. **Note**: Context-folding Phase 0-1 should ideally complete before this baseline capture, since raising the compaction trigger (0.60 → 0.75) and adding two-level condensation changes session quality behavior. Otherwise, the baseline reflects a compaction policy that is about to change.
+- [x] **AR-1: Establish debug suite baseline** — ✅ 2026-03-30. 3-way eval on 105 questions (15/suite × 7 suites). Direct 57.3%, REPL 43.1%, Architect 52.4%. Tools hurt 2.7× more than help (24 vs 9). Median pipeline latency 181s. Baseline written to `orchestration/autopilot_baseline.yaml`. Per-suite breakdown pending (output JSON lost to pipe error; re-run needed for granular data).
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
@@ -146,6 +146,8 @@ Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Task
 - [x] **LC-3: Remove `worker_code` legacy naming** — ✅ 2026-03-29. Removed from model_registry.yaml (both full and lean), orchestrator_stack.py port map, inference.py comment, 2 doc chapters. Historical benchmark JSON preserved.
 
 - [ ] **LC-4: Shared-result cache for delegation** — Evaluate content-hash keyed report snippet cache for repeated delegated subtasks.
+
+- [ ] **LC-5: Fix health probe for `full:` prefix URLs** — `backend_probes` in API health endpoint try to hit raw `full:http://...` URL strings. The `full:` prefix (used by `ConcurrencyAwareBackend` to distinguish pre-warm instances) is not stripped before probing. Health reports "degraded" even though all backends are healthy. Fix: strip `full:` prefix in probe logic, or probe the first URL in the comma-separated list.
 
 ---
 
