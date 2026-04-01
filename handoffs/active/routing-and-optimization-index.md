@@ -20,7 +20,7 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | All 8 wiring gaps closed (AP-1–8) | Bootstrap autoresearch (AR-1, AR-2, AR-3) |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-1/AR-2 done. AR-3 first run failed (9 bugs fixed), ready for relaunch | Relaunch AR-3 with expanded autonomy |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0 complete | Phase 1: two-level condensation |
@@ -99,7 +99,7 @@ These unblock data-driven stack scheduling.
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
-- [ ] **AR-3: First live autoresearch run** — Follow `program.md` setup phase. Start with Tier 1 experiments (prompt optimization — hot-swap, fast iteration). Target: at least one "keep" result.
+- [ ] **AR-3: First live autoresearch run** — First attempt (2026-04-01) failed: 9 wiring bugs found and fixed (sentinel scoring typo, program.md disconnected, TUI bugs, journal fields empty, web_research unregistered, wrong script paths). Program.md rewritten with expanded autonomy (can modify `src/**/*.py` with git safety). State reset, ready for clean relaunch. Target: at least one "keep" result from Tier 1 prompt optimization.
 
 ### P6 — Routing Intelligence Phase 6 (controlled rollout)
 
