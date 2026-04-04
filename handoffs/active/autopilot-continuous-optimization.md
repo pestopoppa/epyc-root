@@ -255,17 +255,20 @@ All core infrastructure verified in code as of 2026-04-01:
 - [x] Catastrophic shrinkage guard — >50% reduction blocked for code and prompts (2026-04-04)
 - [x] Revert commits — reverts auto-committed to prevent corruption as HEAD (2026-04-04)
 - [x] TUI on_question for EvalTower — prompt panel shows actual questions during deep eval (2026-04-04)
+- [x] Hybrid eval gate — T0 fast-reject + T1 real gate replaces saturated T0-only eval (2026-04-04)
+- [x] Tier-aware safety gate — quality floor and regression scaled by eval tier (2026-04-04)
+- [x] Baseline recalibration — recalibrated to T1/T2 scale (q=1.16) from inflated T0 scale (2026-04-04)
 
 ## Remaining Work — Prioritized
 
 ### HIGH priority (next compute session)
 
 1. **AR-3 continuation**: Relaunch — `python scripts/autopilot/autopilot.py start --tui`
-   - Run 2 (2026-04-02–04): 44 trials, 6 frontier. One useful change: `get_direct_answer_prefix()` in resolver.py (q 2.4→3.0)
+   - Run 2 (2026-04-02–04): 46 trials, 7 frontier. One useful change: `get_direct_answer_prefix()` in resolver.py (q 2.4→3.0)
    - **Corruption incident**: Trial ~25 replaced escalation.py (454→3 lines). API down 11+ hours. Safety hardened (5 gaps fixed).
-   - T0 saturated at q=3.0 after T15 — no optimization signal. Deep eval declining (1.30→1.18).
-   - **Before relaunch**: Consider expanding T0 sentinel pool or using T2 as keep/discard metric.
-   - State at trial_counter=38
+   - ~~T0 saturated at q=3.0~~ **FIXED**: Hybrid eval (T0 fast-reject + T1 real gate) now gives honest signal per trial.
+   - Baseline recalibrated to T1 scale (q=1.16). Safety gate tier-aware.
+   - State at trial_counter=46
 
 ### DEFERRED (explicit reasons)
 

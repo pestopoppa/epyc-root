@@ -20,11 +20,15 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 44 trials, 1 useful change, corruption incident. Safety hardened. | Relaunch AR-3 (expand T0 sentinels first) |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 46 trials. Safety hardened + hybrid eval (T1 real gate). | Relaunch AR-3 |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0 complete | Phase 1: two-level condensation |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
+| LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | pre-migration-complete (analysis done) | Execute migration: pydantic_graph → LangGraph |
+| CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | READY TO IMPLEMENT | Adapter hardening, MCP contract, endpoint compat |
+| Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
+| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, ready for AR-3 validation | Live validation via next AR-3 run |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -238,14 +242,14 @@ Changes in upstream handoffs may invalidate assumptions in this index (e.g., mod
 
 ## Related Infrastructure
 
-These handoffs are relevant to orchestration quality but out-of-scope for this index's task list:
+These handoffs are tracked in other indices but have cross-cutting impact here:
 
-| Handoff | Relevant Aspects | Out-of-Scope Aspects |
-|---------|-----------------|---------------------|
-| [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | B2 (context compression), B5 (session analytics), B6 (multi-backend) | B1 (user modeling), B3 (skill hub), B7 (injection scanning) |
-| [`langgraph-migration.md`](langgraph-migration.md) | Graph execution architecture affects routing and escalation paths | Migration planning, LangGraph API surface |
-| [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 3 process rewards feed routing intelligence | Phases 0-2 compaction mechanics |
-| ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | ARCHIVED 2026-03-29. Follow-on tasks extracted to P9. | All R1-R6 tracks complete. |
+| Handoff | Index | Relevant Aspects |
+|---------|-------|-----------------|
+| [`context-folding-progressive.md`](context-folding-progressive.md) | this index | Phase 3 process rewards feed routing intelligence; Phases 0-2 compaction mechanics |
+| [`tool-output-compression.md`](tool-output-compression.md) | research-evaluation | RTK/native hooks reduce context pressure, interacts with autopilot token costs |
+| [`reasoning-compression.md`](reasoning-compression.md) | research-evaluation | TrimR/difficulty_signal shares scorer infra with factual-risk routing |
+| ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | archived | Follow-on tasks extracted to P9. |
 
 ---
 
