@@ -29,7 +29,7 @@ epyc-orchestrator/scripts/autopilot/
   experiment_journal.py     # Dual TSV + JSONL logging with rotation
   pareto_archive.py         # 4D non-dominated sorting + hypervolume indicator
   safety_gate.py            # Quality floor, regression guards, rollback triggers
-  eval_tower.py             # Tiered evaluation wrapping seeding infrastructure
+  eval_tower.py             # Tiered evaluation wrapping seeding infrastructure (on_question callback for TUI)
   config_applicator.py      # Hot-swap vs restart parameter routing
   meta_optimizer.py         # Species budget rebalancing + stagnation detection
   progress_plots.py         # 6 matplotlib visualizations (auto-updated)
@@ -254,6 +254,7 @@ All core infrastructure verified in code as of 2026-04-01:
 - [x] Deep code mutation validation — shrinkage + public names + import test (2026-04-04)
 - [x] Catastrophic shrinkage guard — >50% reduction blocked for code and prompts (2026-04-04)
 - [x] Revert commits — reverts auto-committed to prevent corruption as HEAD (2026-04-04)
+- [x] TUI on_question for EvalTower — prompt panel shows actual questions during deep eval (2026-04-04)
 
 ## Remaining Work — Prioritized
 
