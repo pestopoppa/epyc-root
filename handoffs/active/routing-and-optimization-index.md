@@ -20,7 +20,7 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-1/AR-2 done. AR-3 first run failed (9 bugs fixed), ready for relaunch | Relaunch AR-3 with expanded autonomy |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 44 trials, 1 useful change, corruption incident. Safety hardened. | Relaunch AR-3 (expand T0 sentinels first) |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0 complete | Phase 1: two-level condensation |
@@ -99,7 +99,7 @@ These unblock data-driven stack scheduling.
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
-- [ ] **AR-3: First live autoresearch run** — First attempt (2026-04-01) failed: 9 wiring bugs found and fixed (sentinel scoring typo, program.md disconnected, TUI bugs, journal fields empty, web_research unregistered, wrong script paths). Program.md rewritten with expanded autonomy (can modify `src/**/*.py` with git safety). State reset, ready for clean relaunch. Target: at least one "keep" result from Tier 1 prompt optimization.
+- [ ] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). T0 sentinels saturated at q=3.0 — need larger eval pool before relaunch.
 
 ### P6 — Routing Intelligence Phase 6 (controlled rollout)
 
