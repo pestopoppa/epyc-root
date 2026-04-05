@@ -42,9 +42,9 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 
 ## Work Items
 
-### S1: Registry cleanup (low effort)
-- [ ] Remove `forbid: speculative_decoding` from `formalizer` and `formalizer_q4` registry entries
-- [ ] Update notes to reflect current state
+### S1: Registry cleanup (low effort) — DONE 2026-04-05
+- [x] Remove `forbid: speculative_decoding` from `formalizer` and `formalizer_q4` registry entries (both orchestrator + research registries)
+- [x] Update notes to reflect current state
 
 ### S2: Download and quantize HC model
 - [ ] Check mradermacher/bartowski for pre-made GGUFs of `Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B`

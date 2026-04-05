@@ -1,8 +1,8 @@
 # Hermes/OpenGauss as Outer Shell
 
-**Status**: in-progress (Phase 1 infra complete, Phase 2 config tuning next)
+**Status**: in-progress (Phase 1 complete, Phase 2 routing API done, skills + validation pending)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
-**Updated**: 2026-03-25
+**Updated**: 2026-04-05
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
 **Repos**: https://github.com/NousResearch/hermes-agent, https://github.com/math-inc/OpenGauss
 **Decision**: Vanilla Hermes (not OpenGauss) — OpenGauss is Lean 4-specific; Hermes has first-class custom endpoint support
@@ -193,6 +193,60 @@ hermes  # or: cd /mnt/raid0/llm/hermes-agent && python cli.py
 2. Context burns fast: 7.6K/16K (47%) after one exchange
 3. Context mismatch: `-c 32768` in script but Hermes sees 16K
 4. Effective throughput much lower than raw 39 t/s
+
+## Phase 2 Implementation (2026-04-05)
+
+### Routing API Override Parameters — DONE
+
+Added 3 new extension fields to `OpenAIChatRequest` (`src/api/models/openai.py`):
+- `x_max_escalation`: Cap escalation tier (`A`, `B1`, `B2`, `C`)
+- `x_force_model`: Force specific model by registry name, bypassing all routing
+- `x_disable_repl`: Skip REPL code execution, force direct text response
+
+Wiring in `openai_compat.py`:
+- `x_force_model` takes precedence over `x_orchestrator_role` (which already exists)
+- `x_disable_repl` bypasses REPL loop in both streaming and non-streaming paths
+- `x_max_escalation` passed through to routing metadata (full graph enforcement pending LangGraph migration)
+- All override fields appear in `x_orchestrator_metadata` when `x_show_routing=true`
+
+**Hermes slash command → API parameter mapping**:
+| Hermes Command | API Parameter | Value |
+|---------------|---------------|-------|
+| `/use architect` | `x_orchestrator_role` | `architect` |
+| `/use biggest` | `x_force_model` | `architect_qwen2_5_72b` |
+| `/escalation off` | `x_max_escalation` | `A` |
+| `/escalation B1` | `x_max_escalation` | `B1` |
+| `/nocode` | `x_disable_repl` | `true` |
+| (default) | (none) | Normal MemRL routing |
+
+**Status**: API-side complete. Hermes-side skill authoring (to map slash commands to API params) deferred — requires Hermes skill YAML files + testing with running backend.
+
+### Config Parameter Mapping
+
+| Hermes Config Key | Orchestrator Behavior | Effective? |
+|-------------------|----------------------|-----------|
+| `base_url` | Points Hermes at llama-server or orchestrator endpoint | YES |
+| `compression.enabled` | Hermes-side context compression (independent of orchestrator) | YES |
+| `compression.threshold` | Token ratio trigger (0.5 = compress at 50% context used) | YES |
+| `compression.protected_turns` | Turns never compressed (first/last) | YES |
+| `delegation.max_iterations` | Hermes child agent turn cap | YES (Hermes-internal) |
+| `memory.max_chars` | MEMORY.md size limit | YES |
+| `toolsets.*` | Which Hermes tools are available | YES |
+| `temperature` | Passed to llama-server | YES |
+| `max_tokens` | Passed to llama-server | YES |
+| `vision_model` | N/A when pointing at text-only endpoint | NO-OP |
+| `web_search_model` | N/A (cloud tool disabled) | NO-OP |
+
+### Auth Flow Design — DEFERRED
+
+Single-user only for now. No auth on any endpoint. When multi-user is needed, add API key auth to `/v1/chat/completions` (bearer token checked against config file). Not implementing until there's a concrete multi-user use case.
+
+### Remaining Phase 2 Work
+
+- [ ] Write Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands (needs hermes-agent skill format investigation)
+- [ ] Validate streaming compatibility with new override params (needs inference)
+- [ ] Test `x_disable_repl` end-to-end (needs inference)
+- [ ] Test `x_max_escalation` with full graph (depends on LangGraph migration)
 
 ## Research Intake Updates
 

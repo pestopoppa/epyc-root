@@ -1,8 +1,9 @@
 # Nanbeige4.1-3B Worker Evaluation
 
-**Status**: ACTIVE
+**Status**: ARCHIVED (2026-04-05) — superseded by Qwen3-Coder-30B-A3B worker decision
 **Created**: 2026-03-03
-**Priority**: P0 — direct worker model candidate, informs all subsequent worker decisions
+**Priority**: ~~P0~~ — superseded; worker tier uses 30B-A3B, not 3B/7B class
+**Move to**: `handoffs/archived/` when directory permissions allow
 **Effort**: Low
 **Source**: [Nanbeige4.1-3B (huggingface.co/papers/2602.13367)](https://huggingface.co/papers/2602.13367)
 

@@ -4,7 +4,8 @@
       "command": "/home/daniele/miniforge3/bin/python3",
       "args": ["/mnt/raid0/llm/epyc-orchestrator/src/mcp_server.py"],
       "env": {
-        "PYTHONPATH": "/mnt/raid0/llm/epyc-orchestrator"
+        "PYTHONPATH": "/mnt/raid0/llm/epyc-orchestrator",
+        "ORCHESTRATOR_CLAUDE_CODE_MCP_CHAT": "1"
       }
     }
   }

@@ -2379,3 +2379,24 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-04-05T18:30:00+00:00] TASK_START: Documentation updates (progress report, commit, push)
 [2026-04-05T18:30:00+00:00] TASK_END: Documentation updates — success
 [2026-04-05T18:30:00+00:00] SESSION_END: Effective throughput complete
+
+=== SESSION START: 2026-04-05T19:30:25Z ===
+Purpose: Handoff audit + Hermes Phase 2 routing API
+
+[2026-04-05T19:30:25Z] TASK_START: Archive superseded worker eval handoffs (02-nanbeige, 04-mirothinker)
+  Reasoning: 30B-A3B worker decision supersedes 3B/7B/8B evaluations
+[2026-04-05T19:30:25Z] TASK_END: Archive superseded worker eval handoffs → success
+[2026-04-05T19:30:25Z] TASK_START: Extract ColBERT reranker proposal to new stub
+  Reasoning: Valuable intake-174 content independent of archived MiroThinker eval
+[2026-04-05T19:30:25Z] TASK_END: Extract ColBERT reranker proposal → success
+[2026-04-05T19:30:25Z] TASK_START: MathSmith S1 registry cleanup (remove forbid:speculative_decoding)
+  Reasoning: Q4_K_M verified at 16.1 t/s with spec decode
+[2026-04-05T19:30:25Z] TASK_END: MathSmith S1 registry cleanup → success
+[2026-04-05T19:30:25Z] TASK_START: Hermes Phase 2 routing API (x_max_escalation, x_force_model, x_disable_repl)
+  Reasoning: Deterministic override flags for outer shell → orchestrator integration
+[2026-04-05T19:30:25Z] TASK_END: Hermes Phase 2 routing API → success
+[2026-04-05T19:30:25Z] TASK_START: Update indices, CHANGELOG, progress report
+  Reasoning: Synchronize documentation across all touched handoffs
+[2026-04-05T19:30:25Z] TASK_END: Update indices and documentation → success
+
+=== SESSION END: 2026-04-05T19:30:25Z ===

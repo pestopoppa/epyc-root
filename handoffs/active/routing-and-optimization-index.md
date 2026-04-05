@@ -24,7 +24,7 @@
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a (summarizer eval, needs inference), Phase 2b (free-zone sweep, needs inference), Phase 3c (quality monitor, deferred) |
-| Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
+| Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 1 complete (hybrid bridge + 7 LG nodes + 24 tests) | Phase 2: State migration + dual-run validation |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | READY TO IMPLEMENT | Adapter hardening, MCP contract, endpoint compat |
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
@@ -160,7 +160,7 @@ Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Task
 Check these before modifying any subsystem — changes in one affect the others.
 
 ### 1. Q-Scorer Baselines ↔ Stack Config
-`routing-intelligence.md` § baselines defines per-role t/s used by `q_scorer.py`. If the stack changes (different models, instance counts), `baseline_tps_by_role` MUST update. **Current issue**: frontdoor baseline stale (RI-0).
+`routing-intelligence.md` § baselines defines per-role t/s used by `q_scorer.py`. If the stack changes (different models, instance counts), `baseline_tps_by_role` MUST update. ~~**Current issue**: frontdoor baseline stale (RI-0).~~ ✅ Fixed 2026-03-29 (frontdoor 19.6→12.7, architect_coding 7.0→8.0).
 
 ### 2. Routing Quality → Stack Capacity
 High escalation rate from routing means more specialist instances needed. Low escalation rate means more frontdoor instances may be optimal. Routing classifier quality directly affects what the scheduler provisions.

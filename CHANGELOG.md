@@ -2,6 +2,17 @@
 
 ## 2026-04-05
 
+- **Hermes outer shell Phase 2 — routing override API**:
+  - Added `x_max_escalation`, `x_force_model`, `x_disable_repl` to `OpenAIChatRequest` (`src/api/models/openai.py`).
+  - Wired in `openai_compat.py`: force_model > orchestrator_role > model precedence, disable_repl bypasses REPL loop, override state in routing metadata.
+  - Documented Hermes slash command → API parameter mapping and config parameter mapping (effective vs no-op) in `hermes-outer-shell.md`.
+
+- **Handoff audit + cleanup**:
+  - Archived `02-nanbeige-3b-worker-eval.md` and `04-mirothinker-worker-eval.md` — both superseded by Qwen3-Coder-30B-A3B worker decision (2026-03-21). Worker tier no longer evaluating 3B/7B/8B candidates.
+  - Extracted ColBERT reranking proposal (intake-174) from MiroThinker handoff into new stub: `colbert-reranker-web-research.md`. Proposes Reason-ModernColBERT (150M) as CPU-side reranker for `web_research` pipeline.
+  - MathSmith S1 registry cleanup: removed stale `forbid: speculative_decoding` from `formalizer` and `formalizer_q4` in both orchestrator and research model registries. Q4_K_M already has verified spec decode at 16.1 t/s.
+  - Updated master-handoff-index standalone table, routing-and-optimization-index conversation management status.
+
 - **Orchestrator Conversation Management (B-series) — 7 Modules Complete + Integration Wired**:
   - Cherry-picked best conversation management patterns from Hermes Agent and OpenGauss into the EPYC orchestrator. 6 new source modules (~1,210 lines), 99 tests, 4 feature flags, 5 integration wiring points.
   - **B7: Prompt Injection Scanning** (`src/security/injection_scanner.py`): 10 regex threat patterns + invisible unicode detection (11 categories). Frozen `ScanResult` dataclass. Feature flag: `ORCHESTRATOR_INJECTION_SCANNING` (production default: on). 16 tests.

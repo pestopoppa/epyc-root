@@ -35,7 +35,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
-| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 1 infra complete, Phase 2 config next | LOW | 2026-03-25 |
+| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills + validation pending | LOW | 2026-04-05 |
 | [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
 | [open_source_orchestrator.md](open_source_orchestrator.md) | Future | stub (awaiting MemRL validation) | LOW | 2026-02-02 |
 
@@ -56,9 +56,11 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 ### P2 — Hermes Outer Shell (low urgency)
 
-- [ ] Phase 2: Config tuning — user preference overrides, Hermes API parameter mappings
-- [ ] Design routing API: `routing_override`, `max_escalation`, `force_model` parameters
-- [ ] Auth flow for multi-user deployment
+- [x] Phase 2: Config tuning — ✅ 2026-04-05. Config parameter mapping documented in handoff. Effective vs no-op params identified.
+- [x] Design routing API — ✅ 2026-04-05. 3 new fields on `OpenAIChatRequest`: `x_max_escalation`, `x_force_model`, `x_disable_repl`. Wired in `openai_compat.py`. Slash command → API mapping documented.
+- [ ] Auth flow for multi-user deployment — deferred (single-user only for now)
+- [ ] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands
+- [ ] Streaming + override param validation (needs inference)
 
 ### P3 — Conversation Management (LOW value)
 

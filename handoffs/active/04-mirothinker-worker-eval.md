@@ -1,10 +1,11 @@
 # MiroThinker Worker Evaluation
 
-**Status**: ACTIVE
+**Status**: ARCHIVED (2026-04-05) — superseded by Qwen3-Coder-30B-A3B worker decision
 **Created**: 2026-03-03
-**Priority**: P1 — depends on #02 results for comparison baseline
+**Priority**: ~~P1~~ — superseded; blocker #02 also archived
 **Effort**: Medium
-**Depends On**: `02-nanbeige-3b-worker-eval.md` (for benchmark comparison baseline)
+**Depends On**: ~~`02-nanbeige-3b-worker-eval.md`~~ (archived)
+**Note**: ColBERT reranking proposal (intake-174) extracted to `colbert-reranker-web-research.md`
 **Source**: [MiroThinker (github.com/MiroMindAI/MiroThinker)](https://github.com/MiroMindAI/MiroThinker)
 
 ## Research Review

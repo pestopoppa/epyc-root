@@ -36,7 +36,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
 | 8 | MED | CC local integration (READY TO IMPLEMENT) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
-| 10 | LOW | Hermes outer shell Phase 2 | [hermes-agent-index](hermes-agent-index.md) P2 |
+| 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills + validation pending) | [hermes-agent-index](hermes-agent-index.md) P2 |
 
 ---
 
@@ -58,9 +58,10 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [02-nanbeige-3b-worker-eval.md](02-nanbeige-3b-worker-eval.md) | Model candidate | active | P0 | 2026-03-03 STALE |
-| [04-mirothinker-worker-eval.md](04-mirothinker-worker-eval.md) | Model candidate | active (depends on #02) | P1 | 2026-03-20 |
-| [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub | LOW | 2026-03-29 |
+| ~~[02-nanbeige-3b-worker-eval.md](02-nanbeige-3b-worker-eval.md)~~ | Model candidate | ARCHIVED (superseded by 30B-A3B) | — | 2026-04-05 |
+| ~~[04-mirothinker-worker-eval.md](04-mirothinker-worker-eval.md)~~ | Model candidate | ARCHIVED (superseded by 30B-A3B) | — | 2026-04-05 |
+| [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
+| [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
 
 ---
 
