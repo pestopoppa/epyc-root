@@ -6320,3 +6320,921 @@
     GitHub: github.com/gepa-ai/gepa. Key use case for EPYC: optimizing routing
     classifier prompts. 35x rollout reduction vs RL makes it practical for
     prompt-level optimization.
+- id: intake-241
+  arxiv_id: null
+  url: https://www.mdpi.com/2504-4990/8/2/48
+  source_type: paper
+  title: 'LEAF: LLM Edge Assessment Framework for Generative AI on the Edge'
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - Integrates Circular Economy principles into edge LLM evaluation metrics
+  - Five-pillar assessment (Circular Economy Score, Energy Efficiency, Tokens/Second, BERTScore, Latency)
+  - Addresses privacy, latency, and cost concerns of centralized LLM deployment
+  - Framework for evaluating LLM performance specifically on edge hardware
+  techniques:
+  - LEAF five-pillar edge assessment framework
+  - Joules-per-token energy efficiency metric
+  - Circular Economy Score for sustainability evaluation
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-01'
+  cross_references: {}
+  notes: >
+    Edge inference evaluation framework. EPYC focuses on server/desktop inference
+    (EPYC 9655, multi-GPU), not edge deployment. The Joules/Token metric could
+    inform power-aware benchmarking if we ever measure energy, but this is not
+    an active concern.
+- id: intake-242
+  arxiv_id: null
+  url: https://mistral.ai/news/voxtral-tts
+  source_type: blog
+  title: 'Voxtral TTS: Mistral Text-to-Speech Model'
+  categories:
+  - multimodal
+  key_claims:
+  - 4B parameter TTS with 3.4B transformer decoder + 390M flow-matching acoustic transformer
+  - 9 languages, 3-second voice adaptation, 70ms latency
+  - Outperforms ElevenLabs Flash v2.5 in naturalness (human eval)
+  - Custom neural audio codec with semantic VQ (8192 vocab) + acoustic FSQ at 12.5Hz
+  - Real-time factor ~9.7x, up to 2 min audio generation
+  techniques:
+  - Autoregressive transformer with flow-matching acoustic decoder
+  - Custom neural audio codec (semantic VQ + acoustic FSQ)
+  - 3-second voice adaptation
+  reported_results:
+  - 'Superior naturalness vs ElevenLabs Flash v2.5'
+  - '70ms model latency for 500 chars + 10s voice sample'
+  - '$0.016 per 1000 characters'
+  novelty: low
+  relevance: none
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-01'
+  cross_references: {}
+  notes: >
+    TTS model, entirely outside EPYC's scope of LLM text inference optimization.
+    The flow-matching decoder architecture is technically interesting but not
+    applicable to our work. Open-weight on HuggingFace (CC BY NC 4.0).
+- id: intake-243
+  arxiv_id: null
+  url: https://github.com/instructkr/claude-code
+  source_type: repo
+  title: 'Claw Code — Clean-Room Python Rewrite of Claude Code Harness Patterns'
+  categories:
+  - agent_architecture
+  key_claims:
+  - Clean-room Python rewrite of Claude Code's agent harness architecture
+  - Fastest GitHub repo to 50K stars (2 hours), now 93K+
+  - Built using oh-my-codex (OmX) orchestration in a single overnight session
+  - Captures tool wiring, query engine, task management, and command patterns
+  - Rust port in progress on dev/rust branch
+  techniques:
+  - Clean-room reimplementation (no source copying)
+  - OmX $team mode for parallel code review
+  - Port manifest pattern for tracking reimplementation coverage
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+  notes: >
+    DEEP-DIVE REVISION (was: worth_investigating). Python side is scaffolding —
+    66 .py files but ~30 are __init__.py stubs loading JSON metadata. Tools
+    (184 entries) and commands (207) are catalogued names, not implementations.
+    query_engine.py counts chars, never calls an LLM. Rust side (conversation.rs,
+    compact.rs) has real but incomplete implementations. OmX orchestration is
+    mentioned but not documented. Adds zero value beyond the leak analysis
+    (intake-249). The 93K stars are hype-driven, not quality-driven.
+- id: intake-244
+  arxiv_id: '2603.28052'
+  url: https://arxiv.org/abs/2603.28052
+  source_type: paper
+  title: 'Meta-Harness: End-to-End Optimization of Model Harnesses'
+  authors: Yoonho Lee, Roshen Nair, Qizheng Zhang, Kangwook Lee, Omar Khattab, Chelsea Finn
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - LLM system performance depends heavily on harness design (code managing info storage/retrieval/presentation)
+  - Text optimizers (e.g. DSPy) compress feedback too aggressively for harness optimization
+  - Agentic proposer with filesystem access to source code, scores, and execution traces outperforms text-only optimizers
+  - Automated harness search surpasses hand-engineered baselines on multiple tasks
+  techniques:
+  - Meta-Harness (outer-loop agentic harness search)
+  - Filesystem-based experimental trace access for the proposer agent
+  - Automated harness code generation and evaluation
+  reported_results:
+  - 'Text classification: +7.7 points over SOTA with 4x fewer context tokens'
+  - 'Math reasoning: +4.7 avg accuracy on 200 IMO-level problems across 5 models'
+  - 'Agentic coding: surpasses hand-engineered baselines on TerminalBench-2'
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - routing-and-optimization-index.md
+    - routing-intelligence.md
+    codebase:
+    - src/api/routes/ (orchestrator harness is our equivalent of the "harness" concept)
+    - orchestration/prompts/ (prompt templates are harness components)
+  notes: >
+    Directly applicable to EPYC. Our orchestrator IS a model harness — the prompt
+    templates, tool definitions, routing logic, and escalation pipeline are all
+    harness components that Meta-Harness could optimize. The key insight is that
+    text-level prompt optimizers (DSPy/GEPA) miss structural harness improvements
+    that code-level search can find. Chelsea Finn + Omar Khattab (DSPy creator)
+    co-authoring suggests this is the successor to pure prompt optimization.
+    Immediate experiment: apply Meta-Harness to our routing prompt templates.
+- id: intake-245
+  arxiv_id: '2603.23516'
+  url: https://arxiv.org/abs/2603.23516
+  source_type: paper
+  title: 'MSA: Memory Sparse Attention for Efficient End-to-End Memory Model Scaling to 100M Tokens'
+  authors: Yu Chen, Runkai Chen, Sheng Yi, Xinda Zhao, Xiaohong Li, Jianjin Zhang, Jun Sun, Chuanrui Hu, Yunyun Han, Lidong Bing, Yafeng Deng, Tianqiao Chen
+  categories:
+  - kv_cache
+  - context_extension
+  key_claims:
+  - Decouples memory capacity from reasoning for lifetime-scale context
+  - Linear complexity for both training and inference
+  - Less than 9% degradation scaling from 16K to 100M tokens
+  - 100M-token inference on 2xA800 GPUs
+  - Surpasses frontier LLMs and SOTA RAG on long-context benchmarks
+  techniques:
+  - Scalable sparse attention mechanism
+  - Document-wise RoPE
+  - KV cache compression with Memory Parallel
+  - Memory Interleaving for multi-hop reasoning across segments
+  novelty: high
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - kv-cache-quantization.md
+  notes: >
+    DEEP-DIVE REVISION (was: worth_investigating). MSA is TRAINING-ONLY — requires
+    158.95B token continued pretraining + new router projector parameters + Document-wise
+    RoPE (incompatible with standard RoPE without retraining). KV cache chunk mean
+    pooling is NOT extractable without trained routing. Memory Parallel is multi-GPU
+    distributed serving, not local optimization. Zero extractable value for our
+    inference-only stack. BONUS FINDING: Deep-dive discovered ChunkKV (arXiv:2502.00299)
+    — training-free chunk-level KV compression, retains 12% of KV cache matching full
+    cache quality, 26.5% throughput improvement. Track ChunkKV in kv-cache-quantization
+    handoff instead. Also: ggerganov PR #21038 applies Hadamard rotation to existing
+    KV quant types — 25-77% PPL improvement for free.
+- id: intake-246
+  arxiv_id: null
+  url: https://github.com/turbo-tan/llama.cpp-tq3
+  source_type: repo
+  title: 'llama.cpp-tq3 — TQ3_1S 3.5-bit Walsh-Hadamard Transform Quantization'
+  categories:
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - TQ3_1S achieves Q4_0 quality at 10% smaller model size (3.5 bpw)
+  - Based on RaBitQ-inspired Walsh-Hadamard Transform
+  - CUDA kernels for efficient dequantization
+  - Enables 27B models on 16GB GPUs with 15 tok/s TG, 221 tok/s PP
+  techniques:
+  - TQ3_1S (3.5-bit WHT quantization format)
+  - RaBitQ-inspired Walsh-Hadamard Transform for quantization
+  - Custom CUDA dequantization kernels
+  reported_results:
+  - 'Q4_0 quality at ~10% smaller size'
+  - '27B model on 16GB GPU: 15 tok/s generation, 221 tok/s prompt processing'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - kv-cache-quantization.md
+    intake:
+    - intake-186 (bitnet.cpp — ternary quantization TQ1_0/TQ2_0)
+  notes: >
+    DEEP-DIVE REVISION (was: new_opportunity). DO NOT MERGE — immature (3 commits,
+    1 contributor, no peer review), no CPU kernels, no Q4_K_M comparison, no Qwen2.5
+    benchmarks, undocumented conversion tooling. Only tested on Qwen3.5-27B; author
+    warns 9B models are "much less forgiving." Our bottleneck is throughput, not VRAM.
+    CRITICAL: upstream going different direction — ggerganov PR #21038 applies Hadamard
+    rotation to ALL existing KV quant types (Q4_0, Q8_0 etc.) without new types,
+    25-77% PPL improvement. PR #21089 adds CPU TurboQuant KV cache (TBQ3_0/TBQ4_0).
+    MONITOR: (1) PR #21038 for free KV quality improvement, (2) PR #21089 for 5.2x
+    KV compression, (3) TQ3_1S weight quant only if upstream adopts + multi-model
+    benchmarks appear. WHT may shatter MoE sparse routing (~367K ghost activations).
+- id: intake-247
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'Claude Code — Unshipped Features Inventory (src.zip 2026-03-31)'
+  categories:
+  - agent_architecture
+  key_claims:
+  - KAIROS (always-on background assistant with channels and webhooks)
+  - COORDINATOR_MODE (one Claude orchestrates N workers with restricted toolsets)
+  - CONTEXT_COLLAPSE (three compaction strategies — reactive, micro, context inspection)
+  - HISTORY_SNIP (surgical removal of conversation history segments)
+  - AGENT_MEMORY_SNAPSHOT (persist agent memory state across sessions)
+  - WEB_BROWSER_TOOL (Playwright/CDP browser control, not web_fetch)
+  - PROACTIVE (agents sleep, wait, self-resume without user prompts)
+  - TOKEN_BUDGET (per-session/per-agent token spend cap)
+  techniques:
+  - Multi-strategy context compaction (reactive + micro + inspection)
+  - Coordinator mode with per-worker tool restriction
+  - Cron-scheduled agent triggers
+  - Agent memory snapshots for cross-session persistence
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - claude-code-local-constellation-routing.md
+    - orchestrator-conversation-management.md
+    - context-folding-progressive.md
+    codebase:
+    - src/graph/session_compaction.py (our context management — CC has 3 strategies vs our 1)
+    - src/graph/graph.py (our coordinator is single-orchestrator like COORDINATOR_MODE)
+  notes: >
+    Key takeaways for EPYC: (1) COORDINATOR_MODE validates our single-orchestrator
+    multi-worker architecture. (2) CONTEXT_COLLAPSE with 3 strategies (reactive,
+    micro, inspection) is more sophisticated than our single session_compaction —
+    worth studying for context-folding-progressive handoff. (3) TOKEN_BUDGET
+    is the per-session cost control we discussed. (4) PROACTIVE agents that
+    self-resume map to our autopilot-continuous-optimization concept.
+    (5) HISTORY_SNIP (surgical context removal) is more targeted than our
+    full compaction — could inform our reasoning-compression work.
+- id: intake-248
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'SiliconSwarm@Ensue — Multi-Agent ANE Optimization via Collective Intelligence'
+  categories:
+  - autonomous_research
+  - swarm_techniques
+  - hardware_optimization
+  key_claims:
+  - 6 autonomous agents on 6 Macs collaboratively optimized ANE inference
+  - Up to 6.31x faster than Apple CoreML on DistilBERT
+  - Shared memory layer (Ensue) publishes results + insights + hypotheses every iteration
+  - Failures shared instantly — one agent's dead end prevents others from repeating it
+  - Breakthrough came from cross-agent knowledge transfer, not isolated experimentation
+  techniques:
+  - 9-step optimization loop (query swarm → edit kernel → build → verify → benchmark → publish)
+  - Reverse-engineered ANE APIs bypassing CoreML
+  - Collective intelligence via shared memory (Ensue)
+  - Accuracy-gated kernel acceptance (SST-2 benchmark, >91% required)
+  reported_results:
+  - 'M4 Max: 0.860ms vs CoreML 4.630ms (5.4x faster)'
+  - 'M4 Mini: 1.508ms vs CoreML 1.639ms (Neural-Ninja agent)'
+  - 'Best overall: 6.31x faster than CoreML'
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - autopilot-continuous-optimization.md
+  notes: >
+    Most relevant entry in this batch. The SiliconSwarm pattern maps directly
+    to our autopilot-continuous-optimization concept: autonomous agents running
+    optimization loops with shared learning. Key differences from our autopilot:
+    (1) their agents share insights in real-time via Ensue (we use file-based
+    handoffs), (2) they optimize hardware kernels (we optimize inference configs),
+    (3) accuracy gating ensures quality (we use benchmark regression). The
+    breakthrough-via-cross-pollination result (Neural-Ninja plateaued alone,
+    succeeded after connecting to swarm) is strong evidence for multi-agent
+    research coordination. actionable: apply this pattern to our
+    inference acceleration — multiple agents exploring different optimization
+    axes (quantization, batch size, speculation config) sharing findings.
+- id: intake-249
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'Claude Code Repo Leak Analysis — Harness Architecture Deep Dive (@neural_avb via Codex)'
+  categories:
+  - agent_architecture
+  key_claims:
+  - CC success is combination of strong system prompt + dedicated tool surface + real execution harness
+  - Prompt split into stable front half + dynamic back half for cache efficiency (SYSTEM_PROMPT_DYNAMIC_BOUNDARY)
+  - Tool prompts shape behavior at tool level, not just global level
+  - Subagents are first-class (fresh specialized + forked with inherited context)
+  - Tool restriction model turns agents into roles (Explore=read-only, Plan=read-only)
+  - Compaction is a whole subsystem (microcompact, context collapse, autocompact, reactive)
+  - CC uses file-path fuzzy index (not AST/embedding), relies on LSP/MCP for deeper indexing
+  techniques:
+  - Prompt cache-aware engineering (stable prefix + dynamic suffix)
+  - Distributed behavior constraints (tool-level prompts, not just system prompt)
+  - Two subagent modes (fresh specialized vs forked context-inheriting)
+  - Per-agent tool restrictions as role definitions
+  - Multi-strategy compaction subsystem
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-01'
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+    - orchestrator-conversation-management.md
+    - context-folding-progressive.md
+    codebase:
+    - src/graph/graph.py (our single-orchestrator vs CC's subagent system)
+    - src/graph/session_compaction.py (our compaction vs CC's 4-strategy approach)
+    - orchestration/prompts/ (our prompt templates vs CC's cache-aware prompt engineering)
+  notes: >
+    Codex-generated analysis comparing CC and Codex harnesses. Key architectural
+    patterns relevant to EPYC: (1) prompt cache boundary engineering — we should
+    apply SYSTEM_PROMPT_DYNAMIC_BOUNDARY concept to our prompt templates for
+    API cost reduction. (2) Tool-level behavior shaping — we currently put all
+    behavior in the system prompt; distributing constraints to tool definitions
+    could reduce prompt size. (3) Forked subagents for context hygiene — offloading
+    noisy work to forks that inherit context but keep main thread clean. Our
+    escalation pipeline is cruder (full context copy). (4) CC's file-path fuzzy
+    index (not AST) is simpler than expected — validates our grep/glob approach.
+
+- id: intake-250
+  arxiv_id: null
+  url: https://github.com/avbiswas/text-albumentations
+  source_type: repo
+  title: 'text-albumentations — Synthetic Data Generation Engine for Instruction Tuning'
+  categories:
+  - training_distillation
+  key_claims:
+  - Structured augmentation pipeline transforms raw text into instruction-tuning datasets
+  - 7 built-in augmentation types (QA, bullets, rephrasing, continuation, triplets, comparison, retrieval)
+  - Pydantic-based typed outputs with Alpaca-format serialization
+  - Supports local Outlines models and OpenAI APIs
+  - Separates concerns into augmentations, response formats, adapters, runtimes, runners
+  techniques:
+  - Structured generation + simple priors for dataset creation
+  - Pydantic schema-driven output validation
+  - Batch processing with shared schemas
+  novelty: medium
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-04'
+  cross_references:
+    chapters: []
+    handoffs: []
+  notes: >
+    Synthetic data gen tool for instruction tuning. Not directly relevant to
+    EPYC's inference optimization focus. Could be tangentially useful if we
+    ever need to generate fine-tuning data for specialist models, but that's
+    not on our roadmap.
+
+- id: intake-251
+  arxiv_id: null
+  url: https://huggingface.co/collections/mlx-community/gemma-4
+  source_type: blog
+  title: 'Gemma 4 MLX Collection — Apple MLX Optimized Gemma 4 Models'
+  categories:
+  - quantization
+  - multimodal
+  key_claims:
+  - Gemma 4 family includes 31B, 26B-A4B (MoE), E4B, E2B variants
+  - E4B and E2B are Any-to-Any multimodal (image/text/audio)
+  - 26B-A4B is a MoE variant with 4B active parameters
+  - Available in bf16, 8bit, 6bit, 5bit, 4bit, mxfp8, mxfp4, nvfp4 quantizations
+  - 16.2k downloads for 26B-A4B-it-4bit (most popular)
+  techniques:
+  - MLX-specific quantization formats (mxfp4, mxfp8)
+  - MoE with 4B active parameters at 26B total
+  reported_results:
+  - 54 upvotes, 50+ contributors on HuggingFace
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    codebase:
+    - orchestration/model_registry.yaml (has Gemma 3 entries, no Gemma 4 yet)
+    handoffs:
+    - multimodal-pipeline.md
+  notes: >
+    Gemma 4 is the successor to Gemma 3 (which we have in our registry).
+    The 26B-A4B MoE variant (4B active) is interesting — similar active
+    parameter count to our Qwen3.5-35B-A3B but from Google. The E2B/E4B
+    any-to-any multimodal models could be relevant for multimodal-pipeline.
+    UPDATE: GGUF versions ARE available from Google on HuggingFace (Q4_K_M,
+    Q8_0 etc). llama.cpp supports Gemma 4 image+text natively. Ready to
+    evaluate on EPYC immediately. The 26B-A4B MoE GGUF is the priority
+    candidate for benchmarking against Qwen3.5-35B-A3B. See also intake-252.
+
+- id: intake-252
+  arxiv_id: null
+  url: https://deepmind.google/models/gemma/
+  source_type: blog
+  title: 'Gemma 4 Official — Google DeepMind Open Model Family'
+  categories:
+  - multimodal
+  - quantization
+  key_claims:
+  - '"byte for byte, the most capable open models" for reasoning and agentic workflows'
+  - E2B/E4B for mobile/IoT, 26B/31B for desktop
+  - Specialized variants include MedGemma, ShieldGemma, VaultGemma, EmbeddingGemma, FunctionGemma, TranslateGemma
+  - Available on Kaggle, HF, Keras, PyTorch, JAX, Ollama, Google Cloud, LM Studio
+  techniques:
+  - Any-to-Any multimodal (text, image, audio in E-series)
+  - MoE architecture for parameter efficiency (26B-A4B)
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    codebase:
+    - orchestration/model_registry.yaml (Gemma 3 entries present)
+    handoffs:
+    - multimodal-pipeline.md
+  notes: >
+    Companion to intake-251. FunctionGemma variant could be interesting for
+    tool-use/agentic tasks. TranslateGemma (55 languages) is specialized.
+    Main action: wait for GGUF conversions, then evaluate 26B-A4B against
+    Qwen3.5-35B-A3B on our benchmark suite. The MoE architecture means
+    our REAP expert pruning research may apply.
+
+- id: intake-253
+  arxiv_id: null
+  url: https://docs.anarchai.org/
+  source_type: blog
+  title: 'mesh-llm — Decentralized P2P LLM Inference with MoE Expert Sharding'
+  categories:
+  - inference_serving
+  - moe_optimization
+  - agent_architecture
+  key_claims:
+  - Automatic MoE model distribution by expert shards with zero cross-node traffic
+  - Dense models split by pipeline (layers), MoE models split by expert
+  - Nostr-based peer discovery with gossip-protocol demand rebalancing
+  - Speculative decoding with local draft models yields 38% throughput gains on code
+  - Zero-transfer loading from local GGUF (111s → 5s load time)
+  - Blackboard agent collaboration system for multi-agent coordination
+  techniques:
+  - MoE expert sharding across nodes (zero cross-node traffic during inference)
+  - Gossip-protocol demand-aware rebalancing (60s activation)
+  - Nostr relay peer discovery with VRAM/region scoring
+  - Latency-aware pipeline splits
+  - Blackboard multi-agent gossip system
+  reported_results:
+  - 111s → 5s model load time with zero-transfer loading
+  - 38% throughput gain from speculative decoding on code
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - autopilot-continuous-optimization.md
+  notes: >
+    Built on Rust + iroh + llama.cpp. The MoE expert sharding with zero
+    cross-node traffic is technically interesting — our models run on a single
+    EPYC node so distributed inference isn't needed, but the expert sharding
+    approach validates some of our REAP thinking (experts can be independently
+    managed). The blackboard agent collaboration maps to our SiliconSwarm
+    research (intake-248). Spec decode integration in distributed context
+    is a reference point. Low priority for EPYC since we're single-node.
+
+- id: intake-254
+  arxiv_id: null
+  url: https://github.com/block/goose
+  source_type: repo
+  title: 'Goose — Open Source Autonomous AI Coding Agent by Block'
+  categories:
+  - agent_architecture
+  key_claims:
+  - Local extensible open source AI agent for engineering tasks
+  - Builds projects, writes/executes code, debugs, orchestrates workflows autonomously
+  - Desktop and CLI interfaces
+  - Multi-model configuration for performance/cost optimization
+  - MCP server integration for tool extensibility
+  techniques:
+  - Autonomous end-to-end task execution (not suggestion-based)
+  - MCP-based tool/extension system
+  - Multi-model routing for cost optimization
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+  notes: >
+    Rust (58%) + TypeScript (34%) coding agent. Multi-model cost optimization
+    is relevant to our routing-intelligence work. MCP integration pattern is
+    a reference for our harness. "Works with any LLM" approach is similar to
+    our multi-provider orchestrator. Worth monitoring as competitive reference
+    but no immediate actionable technique for EPYC.
+
+- id: intake-255
+  arxiv_id: null
+  url: https://github.com/clido-ai/clido-cli
+  source_type: repo
+  title: 'Clido — Multi-Provider CLI Coding Agent in Rust'
+  categories:
+  - agent_architecture
+  key_claims:
+  - Local-first multi-provider CLI coding agent (16 AI backends)
+  - 23 built-in tools with safety-first permission model
+  - Session awareness with cost/usage metrics per session
+  - Profile-based provider switching per task
+  - Declarative YAML workflows with validation
+  techniques:
+  - Profile-based multi-provider routing (switch models per task)
+  - Real-time cost tracking with per-session budget management
+  - Declarative YAML workflow automation
+  - Permission modes (default/accept-all/plan)
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+  notes: >
+    Pure Rust single binary. The per-session cost tracking and budget management
+    is a concrete implementation of what our orchestrator needs (TOKEN_BUDGET
+    from CC analysis in intake-249). Profile-based provider switching maps to
+    our routing intelligence. YAML declarative workflows are a simpler version
+    of our task graph. Reference implementation, not a technique to adopt.
+
+- id: intake-256
+  arxiv_id: '2604.01178'
+  url: https://arxiv.org/abs/2604.01178
+  source_type: paper
+  title: 'Screening Is Enough — Multiscreen Architecture Replacing Softmax Attention'
+  categories:
+  - kv_cache
+  - inference_serving
+  - ssm_hybrid
+  key_claims:
+  - Multiscreen achieves comparable validation loss with ~40% fewer parameters than Transformer baseline
+  - Stable optimization at substantially larger learning rates than Transformers
+  - Little to no degradation in retrieval at context lengths far beyond training
+  - 2.3-3.2x inference latency reduction at 100K-token contexts vs Transformers
+  - Screening evaluates each key against explicit threshold, discarding irrelevant keys
+  techniques:
+  - Screening mechanism (absolute query-key relevance replacing softmax relative competition)
+  - Minimal Positional Encoding (MiPE, RoPE on first 2 coords, conditionally activated)
+  - Trim-and-Square transform for distance-unaware relevance
+  - Softmask for distance-aware key filtering
+  - TanhNorm for bounded output normalization
+  - Gated Screening Tile (screening unit + GLU-style gating)
+  reported_results:
+  - 40% parameter savings at comparable validation loss
+  - Transformer diverges at lr >= 2^-4, Multiscreen stable
+  - 286M Multiscreen near-perfect retrieval at 2^12 to 2^17 context
+  - 353M Transformer significant accuracy degradation beyond training context
+  - 'Base: 2.3x speedup (1.72s vs 4.04s at 100K context)'
+  - 'After continual pretraining: 3.2x speedup (1.26s vs 4.05s at 100K)'
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-04-04'
+  referenced_arxiv_ids:
+  - '2501.19399'
+  - '2307.08621'
+  - '2306.15595'
+  - '2209.11895'
+  - '2302.13971'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - kv-cache-quantization.md
+  notes: >
+    HIGHEST PRIORITY entry. Multiscreen is a fundamentally different attention
+    mechanism that replaces softmax with absolute thresholding. Key implications
+    for EPYC: (1) 2.3-3.2x latency reduction at long contexts directly addresses
+    our inference speed goals. (2) 40% parameter savings means smaller models
+    for same quality — changes our model selection calculus. (3) Unlike Delta
+    Net (our current hybrid architecture focus), Multiscreen preserves the
+    attention paradigm but makes it sub-quadratic via key screening — potentially
+    compatible with our existing KV cache and speculation infrastructure.
+    (4) Training stability at high LR could enable faster fine-tuning.
+    Key question: will llama.cpp support Multiscreen? No GGUF models exist yet.
+    This is pre-trained research, not a deployable model family — but if adopted
+    by a major model provider, it would change the inference optimization landscape.
+
+- id: intake-257
+  arxiv_id: null
+  url: https://github.com/vercel-labs/agent-browser
+  source_type: repo
+  title: 'agent-browser — Rust CLI for AI-Driven Browser Automation'
+  categories:
+  - agent_architecture
+  key_claims:
+  - Fast native Rust CLI for browser automation with AI agents
+  - Accessibility tree snapshot output optimized for LLM consumption
+  - Semantic locators (ARIA role, label, text) alongside CSS selectors
+  - Persistent browser daemon minimizes startup overhead
+  - Batch JSON command execution for multi-step workflows
+  techniques:
+  - Accessibility tree as AI-optimized page representation
+  - Semantic element discovery over brittle CSS selectors
+  - Chrome DevTools Protocol (CDP) integration
+  - Persistent daemon architecture
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-04'
+  cross_references:
+    chapters: []
+    handoffs: []
+  notes: >
+    Browser automation tool for AI agents. Not relevant to EPYC's inference
+    optimization focus. The accessibility-tree-as-LLM-input pattern is an
+    interesting general technique but we don't do browser automation.
+
+- id: intake-258
+  arxiv_id: '2603.29957'
+  url: https://arxiv.org/abs/2603.29957
+  source_type: paper
+  title: 'Think Anywhere in Code Generation'
+  authors: Xue Jiang, Tianyu Zhang, Ge Li, Mengyang Liu, Taozhi Chen, Zhenhua Xu, Binhua Li, Wenpin Jiao, Zhi Jin, Yongbin Li, Yihong Dong
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - On-demand reasoning mechanism allows LLMs to invoke thinking at any token position during code generation
+  - Two-stage training pipeline combines cold-start SFT with RLVR reinforcement learning
+  - Model learns to place reasoning at high-entropy positions (assignments, returns) without explicit supervision
+  - Achieves SOTA on 4 code benchmarks while using 238-306 fewer reasoning tokens than GRPO baseline
+  - Cross-domain generalization to math reasoning without retraining
+  techniques:
+  - Think-Anywhere (inline reasoning blocks via <thinkanywhere> tokens)
+  - Cold-start training (automatic data construction from reasoning LLMs + LoRA SFT)
+  - RLVR with GRPO algorithm and hierarchical reward (structural + correctness)
+  - Semantic-aware special token embedding initialization
+  reported_results:
+  - 'LeetCode: 69.4% (+18.8pp over base Qwen2.5-Coder-7B)'
+  - 'LiveCodeBench: 37.2% (+2.9pp)'
+  - 'HumanEval: 91.5% (+3.1pp)'
+  - 'MBPP: 82.9% (+12.2pp)'
+  - '238-306 fewer reasoning tokens than GRPO baseline'
+  - 'Upfront thinking shortened ~35-50%'
+  - 'AIME 2024 pass@1: 5.3% -> 17.3% (cross-domain transfer)'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  referenced_arxiv_ids:
+  - '2107.03374'
+  - '2402.03300'
+  - '2505.22312'
+  - '2510.18471'
+  - '2505.19640'
+  - '2512.03176'
+  - '2402.07316'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - routing-intelligence.md
+  handoffs_updated:
+  - reasoning-compression.md
+  - routing-intelligence.md
+  notes: >
+    Interesting complement to our reasoning compression work. While our current
+    approaches (TrimR, FlowSteer, OPSDC) compress or prune existing reasoning
+    chains, Think Anywhere trains the model to reason only where needed.
+    The finding that models naturally learn to reason at high-entropy positions
+    (assignments, returns) could inform our difficulty_signal.py — generation-time
+    entropy could be a stronger signal than prompt-level features for adaptive
+    token budgets. However, we don't train models, so direct adoption requires
+    upstream model providers to implement this. Main value: theoretical insight
+    for our routing and token budget decisions.
+
+- id: intake-259
+  arxiv_id: null
+  url: https://github.com/rtk-ai/rtk
+  source_type: repo
+  title: 'RTK — Rust Token Killer: CLI Proxy for LLM Token Compression'
+  categories:
+  - context_extension
+  - agent_architecture
+  key_claims:
+  - CLI proxy reduces LLM token consumption by 60-90% on common dev commands
+  - Single Rust binary with zero dependencies and less than 10ms overhead
+  - Supports 100+ commands across file ops, git, test runners, linters, package managers
+  - Transparent shell hook integration with Claude Code, Cursor, Gemini CLI, and others
+  - Four compression strategies applied per command type
+  techniques:
+  - Smart filtering (noise removal — comments, whitespace, boilerplate)
+  - Categorical grouping (files by directory, errors by type)
+  - Smart truncation (first/last N lines instead of full output)
+  - Deduplication with occurrence counts
+  - Shell hook command rewriting (transparent proxy)
+  reported_results:
+  - '80% token reduction on file listings (ls/tree)'
+  - '70% reduction on file reads (cat/read)'
+  - '90% reduction on test output (cargo test)'
+  - 'Typical 30-min session: 118K -> 24K tokens (80% overall)'
+  - 'Less than 10ms overhead per command'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-04'
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+  handoffs_updated:
+  - context-folding-progressive.md
+  handoffs_created:
+  - tool-output-compression.md
+  notes: >
+    Practical tool operating at a different layer than our context management
+    work. While context-folding compresses conversation history, RTK compresses
+    tool outputs before they enter the context. These are complementary: RTK
+    reduces input tokens, context-folding manages accumulation. For our autopilot
+    infrastructure (Claude API calls), RTK could reduce per-session token costs
+    by 60-80%. For local llama.cpp sessions with constrained context windows,
+    the upstream compression would reduce compaction frequency. 17.3k GitHub
+    stars indicates strong adoption. Integration path: Claude Code PreToolUse
+    hook — straightforward to deploy.
+
+- id: intake-260
+  arxiv_id: '2603.18886'
+  url: https://arxiv.org/abs/2603.18886
+  source_type: paper
+  title: 'Reasoning over Mathematical Objects: On-Policy Reward Modeling and Test Time Aggregation'
+  authors:
+  - Pranjal Aggarwal
+  - Marjan Ghazvininejad
+  - Seungone Kim
+  - Ilia Kulikov
+  - et al. (21 authors)
+  categories:
+  - benchmark_methodology
+  - cost_aware_routing
+  key_claims:
+  - Introduces Principia suite for formally structured mathematical expression benchmarks
+  - On-policy judge training enhances mathematical reasoning evaluation
+  - Test-time aggregation via on-policy training scales compute effectively
+  - Strong models (Qwen3-235B, o3) show degraded performance on Principia
+  techniques:
+  - On-policy reward modeling
+  - Test-time aggregation
+  - LLM-based judge training
+  reported_results:
+  - Significant improvements across LLM backbones on mathematical reasoning
+  - Cross-format generalization across math, numerical, and MCQA tasks
+  novelty: medium
+  relevance: low
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-05'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - long-context-eval-datasets.md
+  notes: >
+    Primarily about mathematical reasoning benchmarks and reward models for
+    formal derivations. On-policy reward modeling concept is related to our
+    cost-aware routing work (Chapter 08) but the math-specific focus makes
+    it tangential. Test-time aggregation is an interesting scaling technique
+    but we already cover aggregation patterns in our routing pipeline.
+
+- id: intake-261
+  arxiv_id: '2604.02268'
+  url: https://arxiv.org/abs/2604.02268
+  source_type: paper
+  title: 'Skill0: In-Context Agentic Reinforcement Learning for Skill Internalization'
+  authors:
+  - Zhengxi Lu
+  - Zhiyuan Yao
+  - Jinyang Wu
+  - Chengcheng Han
+  - et al.
+  categories:
+  - agent_architecture
+  - training_distillation
+  - memory_augmented
+  key_claims:
+  - First RL framework enabling agents to internalize external skills into model parameters
+  - In-Context RL (ICRL) combines skill guidance during training with complete skill removal at inference
+  - Dynamic curriculum with helpfulness-driven annealing adaptively withdraws skills
+  - +9.7% on ALFWorld and +6.6% on Search-QA vs standard RL baselines
+  techniques:
+  - In-Context Reinforcement Learning (ICRL)
+  - Helpfulness-Driven Dynamic Curriculum
+  - Relevance-Driven Skill Grouping
+  - Context Rendering (visual compression)
+  reported_results:
+  - 'ALFWorld: 87.9% success (vs 82.4% SkillRL), 0.38k tokens/step (vs 2.21k)'
+  - 'Search-QA: 40.8% accuracy (vs 38.9% SkillRL), 0.18k tokens/step (vs 0.87k)'
+  - '7B models: 89.8% ALFWorld, 44.4% Search-QA'
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-05'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - orchestrator-conversation-management.md
+    completed:
+    - skillbank-distillation.md
+    - 07-skillsbench-eval-suite.md
+    intake:
+    - intake-262
+  handoffs_updated:
+  - context-folding-progressive.md
+  notes: >
+    Directly related to our completed SkillBank distillation work — both address
+    skill transfer, but Skill0 uses RL-based internalization vs our trajectory
+    distillation approach. The dynamic curriculum concept (withdrawing context
+    when policy stops benefiting) could inform compaction scheduling in
+    context-folding. Token efficiency gains (5-6x reduction vs SkillRL) validate
+    the value of context-efficient agent architectures. Not immediately actionable
+    since we use pre-trained models at inference time, but relevant if we pursue
+    fine-tuning for the orchestrator.
+
+- id: intake-262
+  arxiv_id: '2601.04786'
+  url: https://arxiv.org/abs/2601.04786
+  source_type: paper
+  title: 'AgentOCR: Reimagining Agent History via Optical Self-Compression'
+  authors:
+  - Lang Feng
+  - Fuchao Yang
+  - Feng Chen
+  - Haiyang Xu
+  - et al.
+  categories:
+  - memory_augmented
+  - agent_architecture
+  key_claims:
+  - Converts observation-action histories to compact rendered images for token reduction
+  - Segment optical caching eliminates redundant re-rendering via hashable decomposition
+  - Agent learns adaptive compression rates via RL (agentic self-compression)
+  - Preserves >95% text-based agent performance with >50% token reduction
+  - 20x rendering speedup via segment optical caching
+  techniques:
+  - AgentOCR framework
+  - Segment Optical Caching
+  - Agentic Self-Compression
+  reported_results:
+  - '>50% token consumption reduction'
+  - '>95% performance retention vs text baseline'
+  - 20x rendering speedup from segment optical caching
+  novelty: medium
+  relevance: medium
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-261
+  ingested_date: '2026-04-05'
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    intake:
+    - intake-261
+  handoffs_updated:
+  - context-folding-progressive.md
+  notes: >
+    Cited by Skill0 as a baseline. The modality shift (text→image) is not
+    applicable to our text-only llama.cpp stack, but two architectural concepts
+    are transferable: (1) segment-based caching with hash keys maps directly to
+    our segment-based compaction design in context-folding Phase 1, and (2)
+    adaptive compression rates (agent chooses its own compression level per step)
+    could inform dynamic compaction aggressiveness. The >50% token reduction with
+    >95% performance retention sets a useful benchmark for our own compaction
+    quality targets.

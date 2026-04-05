@@ -27,6 +27,7 @@ Highest-impact work across all domains. Each item points to where the details li
 |---|----------|------|----------------|
 | 1 | HIGH | AR-3 relaunch (expand T0 sentinels, safety-hardened) | [routing-and-optimization-index](routing-and-optimization-index.md) P5 |
 | 2 | ~~HIGH~~ | ~~Context folding Phase 1~~ ✅ 2026-04-04 | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 1 |
+| 2a | MED | Context folding Phase 1+/2/3 (segment dedup, helpfulness scoring, role-aware compaction) | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
 | 4 | HIGH | B1 user modeling + B2 context compression | [hermes-agent-index](hermes-agent-index.md) P0 |
 | 5 | MED | TrimR deployment (reasoning compression Tier 1) | [research-evaluation-index](research-evaluation-index.md) P0 |
