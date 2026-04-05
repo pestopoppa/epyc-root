@@ -23,7 +23,7 @@
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 46 trials. Safety hardened + hybrid eval (T1 real gate). | Relaunch AR-3 |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
-| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0 complete | Phase 1: two-level condensation |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0+1 complete | Phase 2: summarizer quality assessment |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | Active, 7 work items | B1 user modeling, B2 context compression |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | pre-migration-complete (analysis done) | Execute migration: pydantic_graph → LangGraph |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | READY TO IMPLEMENT | Adapter hardening, MCP contract, endpoint compat |
@@ -143,7 +143,7 @@ Lower priority refinements.
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
 
-- [ ] **LC-1: Delegation SLO report** — Add lightweight daily summary from logs: p50/p95 delegation latency, timeout rate, report-handle emission rate.
+- [x] **LC-1: Delegation SLO report** — ✅ 2026-04-04. `scripts/server/delegation_slo_report.py` parses progress JSONL logs, computes p50/p95/p99 latency, success/failure/timeout rates, delegation lineage distribution, escalation paths, per-role latency breakdown. Supports `--date`, `--from/--to`, `--json`.
 
 - [ ] **LC-2: Chain anomaly detection** — Flag frequent fallback-to-seq or repeated wave stalls in debugger.
 
@@ -151,7 +151,7 @@ Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Task
 
 - [ ] **LC-4: Shared-result cache for delegation** — Evaluate content-hash keyed report snippet cache for repeated delegated subtasks.
 
-- [ ] **LC-5: Fix health probe for `full:` prefix URLs** — `backend_probes` in API health endpoint try to hit raw `full:http://...` URL strings. The `full:` prefix (used by `ConcurrencyAwareBackend` to distinguish pre-warm instances) is not stripped before probing. Health reports "degraded" even though all backends are healthy. Fix: strip `full:` prefix in probe logic, or probe the first URL in the comma-separated list.
+- [x] **LC-5: Fix health probe for `full:` prefix URLs** — ✅ 2026-04-04. `_probe_core_backends()` in `health.py` now strips `full:` prefix and takes first URL from comma-separated lists before probing.
 
 ---
 

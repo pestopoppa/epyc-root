@@ -1,6 +1,6 @@
 # Context-Folding: Progressive Session Compaction Upgrade
 
-**Status**: Phase 0 complete (2026-03-29), Phase 1 next
+**Status**: Phase 0 complete (2026-03-29), Phase 1 complete (2026-04-04), Phase 2 next
 **Created**: 2026-03-17
 **Categories**: context_management, session_compaction, rl_training_data
 **Priority**: HIGH
@@ -227,3 +227,31 @@ python3 -m pytest tests/unit/test_session_log.py -v -k "reward or advantage"
 # Full gate
 python3 -m pytest tests/unit/ -x -q
 ```
+
+## Research Intake Update — 2026-04-01
+
+### New Related Research
+- **[intake-249] "Claude Code Repo Leak Analysis — Prompt Cache Boundary Engineering"**
+  - Pattern: **SYSTEM_PROMPT_DYNAMIC_BOUNDARY**. CC splits the system prompt into a stable front half (cached across turns) and a dynamic back half (varies per session). Two mechanisms: `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` marks the split point; `DANGEROUS_uncachedSystemPromptSection` flags sections that change often and must not be cached blindly.
+  - Delta from current approach: Our `resolve_prompt()` in `resolver.py` loads prompt templates on every request without optimizing for cache boundaries. For local llama.cpp inference, the analogue is KV cache prefix sharing — if the first N tokens of the prompt are identical across requests, the KV cache for those tokens can be reused. For API calls (autopilot controller using Claude), this directly reduces cost.
+  - Concrete adoption (local inference): Structure `orchestration/prompts/*.md` so the stable content (role definition, tool descriptions, operating constraints) comes first and session-variable content (task description, user message, context window) comes last. This maximizes KV cache prefix hits across requests to the same model.
+  - Concrete adoption (API calls): When the autopilot controller calls Claude API, ensure the system prompt prefix is identical across iterations. Move per-iteration content (current experiment, evaluation results) to the user message, not the system prompt.
+  - Synergy with Phase 1: The two-level condensation (granular + deep) should preserve the stable prompt prefix when compacting — never fold role definitions or tool descriptions into the summary.
+  - Effort: Low for prompt restructuring. Medium for llama.cpp prefix caching investigation (need to verify `--cache-reuse` or similar flag behavior).
+
+- **[intake-247] "Claude Code Unshipped Features — Multi-Strategy Compaction"**
+  - Pattern: **CONTEXT_COLLAPSE** — CC has 3 compaction strategies vs our 1. (1) Reactive: on-demand when context overflows. (2) Micro: incremental trimming of low-value content without full recompression. (3) Context inspection: a tool the agent can invoke to examine its own context state.
+  - Pattern: **HISTORY_SNIP** — surgical removal of specific conversation history segments without full compaction. Removes a single large tool output or failed experiment trace while preserving everything else.
+  - Delta: We have single-level compaction triggered at 60% context fill. No incremental trimming, no surgical removal, no agent-inspectable context state.
+  - Relevance to Phase 1: HISTORY_SNIP maps to Phase 1's "segment-based reading with overwrite" from MemAgent (intake-156). Micro-compaction maps to the "granular condensation" tier. CONTEXT_COLLAPSE's 3-strategy approach validates the multi-tier direction this handoff is already pursuing.
+  - Concrete adoption: Phase 1 should implement HISTORY_SNIP as a byproduct — the segment-based architecture naturally supports removing individual segments. Add a `trim_segment(segment_id)` API alongside the full `compact()` call.
+
+## Research Intake Update — 2026-04-04
+
+### New Related Research
+- **[intake-259] "RTK — Rust Token Killer"** (https://github.com/rtk-ai/rtk)
+  - Relevance: CLI proxy that reduces LLM token consumption by 60-90% on common dev commands (ls, git, cargo test, etc.) via smart filtering, grouping, truncation, and deduplication. 17.3k GitHub stars, active development.
+  - Key technique: Pre-model input compression — rewrites shell command outputs before they enter the context window. Four strategies: noise removal, categorical grouping, smart truncation, line deduplication with counts. <10ms overhead per command.
+  - Reported results: 80% reduction on file listings, 70% on file reads, 90% on test output. Typical 30-min session: 118K→24K tokens.
+  - Delta from current approach: Our context-folding operates at the session level (compacting conversation history). RTK operates upstream — compressing tool outputs before they enter the context at all. These are complementary layers: RTK shrinks inputs, context-folding compresses the accumulation. Together they could multiplicatively reduce context pressure.
+  - Integration path: RTK ships as a Claude Code PreToolUse hook. Could be deployed as a harness hook in our autopilot infrastructure to reduce token costs on Claude API calls. Also relevant for local llama.cpp sessions where context windows are constrained (8K-32K).

@@ -2277,3 +2277,62 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 ### Decisions
 - AR-3 autopilot: user will run manually with --tui (no --no-controller, no --max-trials)
 - Saved feedback: always use --tui, autopilot must optimize full production flow
+[2026-04-01T11:31:20Z] SESSION_START | Research intake: 9 entries (intake-241–249), deep-dive 7, 4 handoffs updated, cross-ref map refreshed
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-241–242: LEAF + Voxtral TTS → not_applicable
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-243: Claw Code → not_applicable (scaffolding only)
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-244: Meta-Harness → new_opportunity CONFIRMED. Handoff: meta-harness-optimization.md
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-245: MSA → not_applicable (training-only). Bonus: ChunkKV discovered
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-246: TQ3_1S → monitor only. Upstream PR #21038 is real opportunity
+[2026-04-01T11:31:20Z] TASK_COMPLETE | intake-247–249: CC insights → autopilot + context-folding + conversation-mgmt handoffs updated
+[2026-04-01T11:31:20Z] TASK_COMPLETE | cross-reference-map.md refreshed: +1 category (context_management), 7 categories updated
+[2026-04-01T11:31:20Z] SESSION_END | success
+[2026-04-01T12:00:00Z] SESSION_START | AutoPilot handoff finalization: audit, restructure, implement B1-B5
+[2026-04-01T12:00:00Z] TASK_COMPLETE | Track A: Handoff restructured 489→295 lines, new Implementation Status + Remaining Work + Research References sections
+[2026-04-01T12:00:00Z] TASK_COMPLETE | B1: Wire strategy_store.retrieve() into PromptForge dispatch + store() on Pareto improvements
+[2026-04-01T12:00:00Z] TASK_COMPLETE | B2: Failure blacklist — failure_blacklist.yaml + auto-append on rollback + controller prompt section
+[2026-04-01T12:00:00Z] TASK_COMPLETE | B3: Execution trace feedback — capture_recent_traces() in eval_tower.py → PromptForge
+[2026-04-01T12:00:00Z] TASK_COMPLETE | B4: insights_text() method on ExperimentJournal for cross-species synthesis
+[2026-04-01T12:00:00Z] TASK_COMPLETE | B5: Cross-species fertilization — insights injected into PromptForge context
+[2026-04-01T12:00:00Z] TASK_COMPLETE | All 3 modified .py files pass ast.parse(), YAML validates
+[2026-04-01T12:00:00Z] SESSION_END | success — autopilot handoff remains active (compute-dependent tasks outstanding)
+[2026-04-01T13:00:00Z] SESSION_START | Autopilot #4-8 + Meta-Harness Tier 2 implementation
+[2026-04-01T13:00:00Z] TASK_COMPLETE | #5: Skeptical re-questioning gate — _proxy_check() in SafetyGate
+[2026-04-01T13:00:00Z] TASK_COMPLETE | #6: Forbidden proxies — 7 entries seeded in failure_blacklist.yaml from Known Dead Ends
+[2026-04-01T13:00:00Z] TASK_COMPLETE | #8: Per-species token budgets — SPECIES_TOKEN_BUDGETS in meta_optimizer.py
+[2026-04-01T13:00:00Z] TASK_COMPLETE | #7: Context budget management — auto-checkpoint every 25 trials
+[2026-04-01T13:00:00Z] TASK_COMPLETE | #4: Evolution Manager species — 5th species for knowledge distillation
+[2026-04-01T13:00:00Z] TASK_COMPLETE | Meta-Harness Tier 2: code_mutation action type + allowlist + ast validation
+[2026-04-01T13:00:00Z] TASK_COMPLETE | Both handoffs updated: autopilot (26 items done) + meta-harness (Tier 1+2 done)
+[2026-04-01T13:00:00Z] SESSION_END | success — all code implementations complete, ready for AR-3 compute run
+[2026-04-02T14:30:00Z] SESSION_START | AR-3 post-mortem: crash analysis + bug fix
+[2026-04-02T14:30:00Z] TASK_COMPLETE | Root cause: extract_action() returned list-wrapped action [{}], check_blacklist() called .get() on list
+[2026-04-02T14:30:00Z] TASK_COMPLETE | Fix: _unwrap_action() unwraps lists, check_blacklist() guards against non-dict action/pattern
+[2026-04-02T14:30:00Z] TASK_COMPLETE | AR-3 results documented: 14 trials, 3 frontier, 3 auto-blacklists, 1 code_mutation (syntax fail)
+[2026-04-02T14:30:00Z] SESSION_END | success — autopilot ready for relaunch
+[2026-04-04T20:00:00Z] SESSION_START | Research intake: arxiv:2603.29957 + github:rtk-ai/rtk
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Phase 1: Fetched & extracted both URLs, checked for duplicates (none), appended intake-258 + intake-259 to index
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Phase 2: Cross-referenced against 12 active handoffs, scored novelty/relevance (both medium/medium)
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Phase 3: Literature expansion — checked 6 referenced arXiv IDs (1 already indexed, 5 generic RL papers, 0 expanded)
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Phase 4a: Updated reasoning-compression.md (Think Anywhere) + context-folding-progressive.md (RTK)
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Phase 5: Report generated, index validated (0 new errors, 155 pre-existing)
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Deep dive: Think Anywhere — full ablation, position analysis, token efficiency, cross-domain transfer, deployment implications
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Deep dive: RTK — architecture (12 strategies), Claude Code hook mechanism, security concerns (shell injection, telemetry), compensation problem, 376 open issues
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Created handoff: tool-output-compression.md (Phase 0: RTK trial, Phase 1: deploy, Phase 2: native reimplementation)
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Updated routing-intelligence.md: added deferred "Generation-Time Entropy Signal" section from Think Anywhere findings
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Updated intake_index.yaml: intake-258 + intake-259 cross-refs to new handoffs
+[2026-04-04T20:00:00Z] TASK_COMPLETE | Updated cross-reference-map.md: context_management category now includes tool-output-compression.md + RTK search terms
+[2026-04-04T20:00:00Z] SESSION_END | success — 2 intakes processed, 2 deep dives, 1 new handoff, 2 handoffs updated
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 0: Archived 2 continuation prompts to handoffs/archived/
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 1: Created research-evaluation-index.md (7 handoffs, P0-P4 tasks, dependency graph, cross-cutting concerns)
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 2: Created pipeline-integration-index.md (4 handoffs, P0-P4 tasks, RAM/NUMA concerns)
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 3: Upgraded hermes-agent-index.md to CLAUDE.md compliance (added 5 required sections, task extraction from 3 handoffs)
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 4: Expanded routing-and-optimization-index.md (+4 handoffs: langgraph-migration, CC local integration, retrain-routing-models, meta-harness)
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 5: Created master-handoff-index.md — single entry point with decision tree, priority queue, domain table, standalone handoffs, freshness protocol
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 6: Added master index reference to CLAUDE.md handoff workflow section
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Step 7: Created check_handoff_freshness.sh — flags stale (30d+) and aging (14d+) handoffs. Found 4 stale, 4 aging.
+[2026-04-04T21:00:00Z] TASK_COMPLETE | Verification: 100% coverage — all 32 handoffs reachable within 2 hops from master index
+[2026-04-05T12:00:00Z] SESSION_START | Non-inference task sprint: LC-5, CF Phase 1, LC-1
+[2026-04-05T12:00:00Z] TASK_COMPLETE | LC-5: Fixed health probe full: prefix URL bug in health.py _probe_core_backends()
+[2026-04-05T12:15:00Z] TASK_COMPLETE | CF Phase 1: Two-level condensation — ConsolidatedSegment, granular accumulation, Tier 2 consolidation at boundaries. Feature flag ORCHESTRATOR_TWO_LEVEL_CONDENSATION. 7 files modified, 16 tests.
+[2026-04-05T12:30:00Z] TASK_COMPLETE | LC-1: delegation_slo_report.py — p50/p95/p99 latency, success/failure/timeout rates, per-role breakdown, --json output
+[2026-04-05T12:30:00Z] TASK_COMPLETE | Updated handoffs: context-folding-progressive.md, routing-and-optimization-index.md, master-handoff-index.md
