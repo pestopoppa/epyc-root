@@ -51,8 +51,8 @@
 
 - [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
 - [ ] Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2a
-- [ ] Free-zone compression threshold sweep — `context-folding-progressive.md` Phase 2b (intake-261/262)
-- [ ] Helpfulness scoring calibration — `context-folding-progressive.md` Phase 2c (intake-261)
+- [ ] Free-zone compression threshold sweep — `context-folding-progressive.md` Phase 2b (intake-261/262). Eval skeleton: `eval_compaction_sweep.py --dry-run` ready.
+- [x] Helpfulness scoring heuristic — ✅ 2026-04-05. `segment_helpfulness()` + `prioritized_compaction()` in `session_log.py`. LLM-based calibration deferred: `eval_helpfulness_calibration.py --dry-run` ready.
 
 ### P3 — Long-Context Evaluation Datasets
 

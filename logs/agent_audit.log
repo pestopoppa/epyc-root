@@ -2344,3 +2344,12 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-04-05T14:15:00Z] SESSION_COMPLETE | All LC- and AP- tasks in P8/P9 now complete. 8 tasks total this session.
 [2026-04-05T15:00:00Z] TASK_COMPLETE | Package A launch script: package_a_instrumented_eval.sh — 5 tasks from 1 eval run, auto-restart API, TrimR integration
 [2026-04-05T15:00:00Z] TASK_START | Package A instrumented eval running (15q/suite × 10 suites × 3-way = 450 evals)
+[2026-04-05T13:12:38Z] SESSION_START: Context Folding Phases 1+/2c/3a/3b implementation
+[2026-04-05T13:12:38Z] TASK_COMPLETE: CF Phase 1+ SegmentCache (success) — Hash-based segment dedup
+[2026-04-05T13:12:38Z] TASK_COMPLETE: CF Phase 3a RewardSignals (success) — Process reward telemetry
+[2026-04-05T13:12:38Z] TASK_COMPLETE: CF Phase 2c helpfulness (success) — Heuristic segment scoring
+[2026-04-05T13:12:38Z] TASK_COMPLETE: CF Phase 3b CompactionProfile (success) — Role-aware compaction + quality monitor
+[2026-04-05T13:12:38Z] TASK_COMPLETE: Eval skeletons (success) — eval_compaction_sweep.py + eval_helpfulness_calibration.py
+[2026-04-05T13:12:38Z] TASK_COMPLETE: Unit tests (success) — 32 new, 50 total, 0.06s
+[2026-04-05T13:12:38Z] FILES_MODIFIED: epyc-orchestrator: features.py, session_log.py, helpers.py, state.py, test_session_log.py
+[2026-04-05T13:12:38Z] FILES_CREATED: eval_compaction_sweep.py, eval_helpfulness_calibration.py

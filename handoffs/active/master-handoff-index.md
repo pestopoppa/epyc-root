@@ -27,9 +27,10 @@ Highest-impact work across all domains. Each item points to where the details li
 |---|----------|------|----------------|
 | 1 | HIGH | AR-3 relaunch (expand T0 sentinels, safety-hardened) | [routing-and-optimization-index](routing-and-optimization-index.md) P5 |
 | 2 | ~~HIGH~~ | ~~Context folding Phase 1~~ ✅ 2026-04-04 | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 1 |
-| 2a | MED | Context folding Phase 1+/2/3 (segment dedup, helpfulness scoring, role-aware compaction) | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
+| 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests) | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
+| 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
-| 4 | HIGH | B1 user modeling + B2 context compression | [hermes-agent-index](hermes-agent-index.md) P0 |
+| 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
 | 5 | MED | TrimR deployment (reasoning compression Tier 1) | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | MED | RTK / tool output compression evaluation | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
@@ -45,7 +46,7 @@ Highest-impact work across all domains. Each item points to where the details li
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 2 active + archived | Most work complete, monitoring phase |
-| Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1/B2 high priority, shell low priority |
+| Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 code complete (6/7), B4 remaining, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | reasoning-compression active, rest stubs/monitoring |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
