@@ -279,7 +279,7 @@ All core infrastructure verified in code as of 2026-04-01:
 
 ### Design considerations (no implementation needed)
 
-6. **Tighter per-trial scope**: Constrain each trial to single-variable changes for clean attribution (autoresearch pattern). Consider as policy in `program.md` rather than code enforcement.
+6. ~~**Tighter per-trial scope**~~: ✅ 2026-04-05. Implemented as code enforcement via `_validate_single_variable()` in `autopilot.py`. Rejects multi-file, multi-flag, and multi-param actions before dispatch.
 7. **Explicit eval trust boundary**: Document that EvalTower scoring code is immutable — species must never modify it. Add to `program.md` constraints.
 
 ## Research References
