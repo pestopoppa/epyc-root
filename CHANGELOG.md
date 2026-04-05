@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-04-05
+
+- **Orchestrator Conversation Management (B-series) — 7 Modules Complete + Integration Wired**:
+  - Cherry-picked best conversation management patterns from Hermes Agent and OpenGauss into the EPYC orchestrator. 6 new source modules (~1,210 lines), 99 tests, 4 feature flags, 5 integration wiring points.
+  - **B7: Prompt Injection Scanning** (`src/security/injection_scanner.py`): 10 regex threat patterns + invisible unicode detection (11 categories). Frozen `ScanResult` dataclass. Feature flag: `ORCHESTRATOR_INJECTION_SCANNING` (production default: on). 16 tests.
+  - **B2: Context Compression** (`src/context_compression.py`): `ContextCompressor` with protected zones (first 3 + last 5 turns), `sanitize_tool_pairs()` for orphaned tool_call/result fix, `align_boundary_forward()`, type-aware tool output summarization (error=verbatim, file_read=stub, repl=summary). Feature flag: `ORCHESTRATOR_CONTEXT_COMPRESSION`. 22 tests.
+  - **B1: User Modeling** (`src/user_modeling/`): SQLite-backed `ProfileStore` with § delimiter, 4KB cap, LRU eviction, injection scanning on writes. `deriver.py` for background preference extraction. 4 tool functions (`user_profile`, `user_search`, `user_context`, `user_conclude`). Feature flag: `ORCHESTRATOR_USER_MODELING` (requires `injection_scanning`). 18 tests.
+  - **B5: Session Analytics + Token Budgeting** (`src/session_analytics.py`): `SessionTokenBudget` with `ORCHESTRATOR_MAX_SESSION_TOKENS` env var, compaction at 70%, hard-stop at 100%. `compute_analytics()` for tool usage ranking, role distribution, outcome breakdown. Feature flag: `ORCHESTRATOR_SESSION_TOKEN_BUDGET`. 12 tests.
+  - **B3: Skill Hub Interop** (`src/skill_hub_interop.py`): SKILL.md parse/export (agentskills.io compatible), 6 security threat patterns, directory batch loader. Extends existing `skillbank` flag. 13 tests.
+  - **B6: Multi-Backend Abstraction** (`src/backends/server_lifecycle.py`): `ServerLifecycle` Protocol, `LlamaServerLifecycle` (full: NUMA, KV config, /health + /slots), `VLLMLifecycle` and `TGILifecycle` stubs, `get_lifecycle()` factory. 18 tests.
+  - **B4: Memory Curation Nudges**: Frontdoor prompt updated to instruct model to persist durable preferences via `user_conclude()` when user_modeling is available.
+  - **Integration wiring**: B1 tools registered in `tool_registry.yaml`; B1 frozen profile injected into system prompt via `builder.py:get_system_prompt()`; B2 compressor wired into `openai_compat.py` for structured messages >8; B5 token budget recorded in `_execute_turn()` and triggers compaction at 70% in `_maybe_compact_context()`.
+  - Files: `src/security/__init__.py`, `src/security/injection_scanner.py`, `src/context_compression.py`, `src/user_modeling/__init__.py`, `src/user_modeling/profile_store.py`, `src/user_modeling/deriver.py`, `src/user_modeling/tools.py`, `src/session_analytics.py`, `src/skill_hub_interop.py`, `src/backends/server_lifecycle.py`. Modified: `src/features.py`, `src/graph/helpers.py`, `src/prompt_builders/builder.py`, `src/api/routes/openai_compat.py`, `orchestration/tool_registry.yaml`, `orchestration/prompts/roles/frontdoor.md`.
+
 ## 2026-03-25
 
 - **Dynamic NUMA-Aware Concurrent Routing — Strategic Plan**:

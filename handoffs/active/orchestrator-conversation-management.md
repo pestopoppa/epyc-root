@@ -1,6 +1,6 @@
 # Orchestrator Conversation Management — Cherry-Pick from Hermes/OpenGauss
 
-**Status**: active (B1/B2/B3/B5/B6/B7 code complete 2026-04-05, awaiting integration validation)
+**Status**: complete (B1-B7 all code complete + integration wired 2026-04-05)
 **Created**: 2026-03-20 (split from hermes-agent-index.md)
 **Updated**: 2026-04-05
 **Parent**: [hermes-agent-index.md](hermes-agent-index.md)
@@ -94,19 +94,15 @@ Port the best conversation management patterns from Hermes Agent and OpenGauss i
 
 **Effort**: Low value. Standard format useful for interop but not blocking.
 
-### B4: Memory Curation Nudges — PARTIAL (depends on B1)
+### B4: Memory Curation Nudges — ✅ CODE COMPLETE 2026-04-05
 
-**Gap**: No persistent cross-session preference storage.
+**Implementation**: Updated `orchestration/prompts/roles/frontdoor.md` to instruct model to persist durable preferences via `user_conclude()` when user_modeling is available. Categories: format, workflow, style, domain, general.
 
-**What to adopt**: Prompt the agent to periodically decide what to persist.
+**Previous (prompt-only)**:
+- Added to `frontdoor.md`: "If the user states a durable preference..."
+- Now extended with: "When user_modeling is available, persist durable preferences via user_conclude()..."
 
-**Implemented (prompt-only)**:
-- Added to `frontdoor.md`: "If the user states a durable preference (output format, verbosity, style, workflow pattern), acknowledge it and incorporate it for the rest of the session."
-- In-session behavioral nudge only — no persistent store yet (requires B1)
-
-**Remaining**: B1 (user modeling store) for cross-session persistence.
-
-**Effort**: Trivial beyond B1.
+**Cross-session persistence**: Now possible via B1 tools (`user_conclude` writes to SQLite, `user_profile` retrieves frozen snapshot injected into system prompt).
 
 ### B5: Session Analytics + Token Budgeting (from OpenGauss + Clido) — ✅ CODE COMPLETE 2026-04-05
 
@@ -169,11 +165,11 @@ Port the best conversation management patterns from Hermes Agent and OpenGauss i
 2. ~~**B2 (Context Compression)**~~ ✅ 2026-04-05. 22 tests.
 3. ~~**B5 (Session Analytics)**~~ ✅ 2026-04-05. 12 tests.
 4. ~~**B6 (Multi-Backend)**~~ ✅ 2026-04-05. 18 tests.
-5. **B4 (Memory Nudges)** — trivial: wire B1 tools into frontdoor prompt for cross-session persistence
+5. ~~**B4 (Memory Nudges)**~~ ✅ 2026-04-05. Frontdoor prompt wired to user_conclude().
 6. ~~**B3 (Skill Hub)**~~ ✅ 2026-04-05. 13 tests.
 7. ~~**B7 (Injection Scanning)**~~ ✅ 2026-04-05. 16 tests. Foundation for B1 write safety.
 
-**Next steps**: Wire B1-B7 into the orchestrator pipeline (register tools, call compressor from helpers.py, inject profile into system prompt). Feature flags added to `src/features.py` — enable via env vars for validation.
+**All items complete.** Integration wired: B1 tools registered in registry YAML, B1 profile injected into system prompt via `builder.py`, B2 compressor wired into OpenAI-compat endpoint, B5 budget tracker wired into `_execute_turn()` and compaction trigger. Enable via env vars for production validation.
 
 ## Agent Protocol Naming Alignment
 

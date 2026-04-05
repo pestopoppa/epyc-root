@@ -36,7 +36,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
 | [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 1 infra complete, Phase 2 config next | LOW | 2026-03-25 |
-| [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | B1/B2/B3/B5/B6/B7 code complete, B4 pending | B4 remaining | 2026-04-05 |
+| [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
 | [open_source_orchestrator.md](open_source_orchestrator.md) | Future | stub (awaiting MemRL validation) | LOW | 2026-02-02 |
 
 ---
@@ -63,7 +63,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 ### P3 — Conversation Management (LOW value)
 
 - [x] **B3: Skill Hub Interop** — ✅ 2026-04-05. `src/skill_hub_interop.py` (SKILL.md parse/export, security scan). 13 tests.
-- [ ] **B4: Memory Curation Nudges** — In-session behavioral only; cross-session now possible via B1 tools
+- [x] **B4: Memory Curation Nudges** — ✅ 2026-04-05. Frontdoor prompt updated to use `user_conclude()` for cross-session persistence.
 
 ### P4 — Open-Source Orchestrator (future)
 
@@ -84,7 +84,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 ✅ P1.B7 (injection scanning)   ──DONE (2026-04-05)──
 P2 (hermes outer shell)        ──depends on orchestrator stabilization──
 ✅ P3.B3 (skill hub)            ──DONE (2026-04-05)──
-P3.B4 (memory curation)        ──B1 done, wire tools into frontdoor──
+✅ P3.B4 (memory curation)      ──DONE (2026-04-05)──
 P4 (open-source)               ──depends on MemRL validation──
 ```
 
