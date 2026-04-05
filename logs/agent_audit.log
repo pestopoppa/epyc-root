@@ -2370,3 +2370,12 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-04-05T13:24:39+00:00] TASK_START: Documentation updates
 [2026-04-05T13:24:39+00:00] TASK_END: Documentation updates — success (handoffs, indices, progress)
 [2026-04-05T13:24:39+00:00] SESSION_END: P1+P3 complete
+[2026-04-05T18:30:00+00:00] SESSION_START: Effective throughput — tool tokens as throughput amplifiers
+[2026-04-05T18:30:00+00:00] TASK_START: Trace token data flow (compute_tps → llama-server → display)
+[2026-04-05T18:30:00+00:00] TASK_END: Trace token data flow — success (identified 3 token sources: model, tool, delegate)
+[2026-04-05T18:30:00+00:00] TASK_START: Implement effective throughput metric (9 files)
+[2026-04-05T18:30:00+00:00] TASK_END: Implement effective throughput — success (compute_effective_tps, tool_output_tokens field, 7 inline tests pass)
+[2026-04-05T18:30:00+00:00] FILES_MODIFIED: epyc-orchestrator: eval_log_format.py, responses.py, chat_delegation.py, stages.py, delegation_stage.py, seeding_types.py, seeding_eval.py, diagnostic.py, seed_specialist_routing.py
+[2026-04-05T18:30:00+00:00] TASK_START: Documentation updates (progress report, commit, push)
+[2026-04-05T18:30:00+00:00] TASK_END: Documentation updates — success
+[2026-04-05T18:30:00+00:00] SESSION_END: Effective throughput complete
