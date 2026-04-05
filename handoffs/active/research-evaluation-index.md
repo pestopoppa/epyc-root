@@ -20,10 +20,10 @@
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed) | HIGH | 2026-04-04 |
-| [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | stub (Phase 0 next) | MEDIUM | 2026-04-04 |
+| [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | Phase 2 native implemented (feature-flagged) | MEDIUM | 2026-04-05 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
-| [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | stub | MEDIUM | 2026-03-26 |
+| [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
 
@@ -39,13 +39,13 @@
 - [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
 - [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6)
 
-### P1 — Tool Output Compression (evaluate RTK)
+### P1 — Tool Output Compression
 
-- [ ] Install RTK binary with `RTK_TELEMETRY_DISABLED=1`
-- [ ] Run one autopilot session with RTK enabled, collect `rtk gain` metrics
-- [ ] Compare net savings (input reduction minus output compensation) against baseline
-- [ ] Go/no-go decision: net ≥40% savings, no EAGAIN errors, no quality regression
-- [ ] If no-go: begin Phase 2 native hook implementation (P0 commands: test runners, git status, git diff)
+- [x] ~~Install RTK binary~~ — SKIPPED: PostToolUse hooks cannot replace built-in tool output. Phase 0 RTK trial deferred.
+- [x] Phase 2 native compression module — ✅ 2026-04-05. `compress_tool_output.py` with 7 handlers (pytest, cargo test, git status/diff/log, ls, build). 27 tests.
+- [x] Orchestrator integration — ✅ 2026-04-05. Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
+- [ ] Enable flag in production and measure net savings on real autopilot sessions
+- [ ] A/B comparison: tool_output_compression on vs off (needs inference)
 
 ### P2 — Reasoning Compression (deferred)
 
@@ -56,10 +56,13 @@
 
 ### P3 — Long-Context Evaluation Datasets
 
-- [ ] Download LongBench to `/mnt/raid0/llm/data/eval/`
-- [ ] Download RULER
-- [ ] Complete Needle-in-a-Haystack integration
-- [ ] Create adapter scripts in `epyc-inference-research/scripts/benchmark/`
+- [x] Download LongBench — ✅ 2026-04-05. Using v2 (parquet-native, 503 MCQ). v1 uses deprecated HF scripts.
+- [x] Download RULER — ✅ 2026-04-05. Cloned, adapter generates NIAH tasks at configurable lengths.
+- [x] Download ZeroSCROLLS — ✅ 2026-04-05. 538 examples (10 tasks), raw zip download.
+- [x] Download L-Eval — ✅ 2026-04-05. 514 examples (20 tasks), raw JSONL download.
+- [x] Complete Needle-in-a-Haystack integration — ✅ 2026-04-05. Parameterized: 5 lengths × 5 depths = 25 tests. Paul Graham essays haystack.
+- [x] Create adapter scripts — ✅ 2026-04-05. `long_context_adapters.py` (5 classes), registered in `dataset_adapters.py` + `suites.py`.
+- [x] Validation — ✅ 2026-04-05. All 5 suites: OK (1,630 total questions).
 
 ### P4 — YaRN Context Extension (when datasets ready)
 

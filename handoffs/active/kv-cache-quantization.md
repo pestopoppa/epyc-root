@@ -1467,3 +1467,13 @@ For CPU implementation: write a custom `vec_dot_tq3_0_q8_1` kernel in `ggml-cpu/
 3. **Monitor upstream PR #21038** — if `-khad`/`-vhad` lands in mainline, rebase instead of maintaining custom WHT
 4. **Fuse dequant into vec_dot kernel** — eliminates the 30% cast overhead (3-5 days)
 5. **Decision gate after steps 1-2**: If TQ3+norm correction on 32B still loses to Hadamard+q4_0, abandon TQ3 and adopt upstream Hadamard. The extra 0.8x compression (4.4x vs 3.6x) may not justify the complexity on a 1.13 TB system.
+
+## Research Intake Update — 2026-04-04
+
+### New Related Research
+- **[intake-256] "Screening Is Enough — Multiscreen Architecture"** (arxiv:2604.01178)
+  - Relevance: Alternative attention mechanism that replaces softmax with absolute key screening
+  - Key technique: Screening evaluates each key against threshold, discarding irrelevant keys (sub-quadratic)
+  - Reported results: 2.3-3.2x latency reduction at 100K context, 40% parameter savings
+  - Delta from current approach: Our Hadamard KV quantization optimizes standard softmax attention. Multiscreen replaces softmax entirely — if adopted by model providers, it would change the KV cache landscape (screening may not need the same quantization strategies since irrelevant keys are discarded rather than compressed)
+  - Status: WATCH — no models or llama.cpp support yet. See `handoffs/active/multiscreen-attention-evaluation.md`

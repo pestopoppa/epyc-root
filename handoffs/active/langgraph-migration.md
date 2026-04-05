@@ -1,8 +1,8 @@
 # LangGraph Migration — Orchestration Graph
 
-**Status**: pre-migration-complete
+**Status**: phase-1-complete
 **Created**: 2026-03-15
-**Updated**: 2026-03-16
+**Updated**: 2026-04-05
 **Source**: intake-146 (LangGraph), deep-dive `research/deep-dives/langgraph-ecosystem-comparison.md`
 
 ## Objective
@@ -133,9 +133,21 @@ No code changes. Record in this handoff for future API work.
 
 ## Migration Strategy
 
-### Phase 1: Hybrid — LangGraph Subgraph via Bridge Node
+### Phase 1: Hybrid — LangGraph Subgraph via Bridge Node ✅ 2026-04-05
 
 **Entry criteria**: Pre-migration Steps 1-2 complete and validated. ✓ (2026-03-16, 11 tests passing)
+
+**Completed**: 2026-04-05. Full LangGraph StateGraph with all 7 nodes, conditional edges, feature-flagged bridge, 24 tests passing, zero regression on 190 existing graph tests.
+
+**Implementation**:
+- `langgraph>=0.2.0` + `langgraph-checkpoint-sqlite>=2.0.0` added to `pyproject.toml`
+- `src/graph/langgraph/` module created with 4 files:
+  - `state.py` — `OrchestratorState` TypedDict with 3 custom reducers (artifacts, workspace_state, think_harder_roi), `task_state_to_lg()` / `lg_to_task_state()` converters, config constants extracted to `LangGraphConfig`
+  - `nodes.py` — 7 async node functions calling same `_execute_turn()` as pydantic_graph nodes, `RunnableConfig` typed, `_build_ctx()` reconstructs duck-typed `GraphRunContext`
+  - `graph.py` — `build_orchestration_graph()` builds `StateGraph[OrchestratorState]`, conditional edges via `next_node` field, `run_task_lg()` drop-in replacement for `run_task()`, edge validation dicts (`VALID_TRANSITIONS`, `INVALID_TRANSITIONS`)
+  - `bridge.py` — `run_task_auto()` dispatches to LG or PG backend based on `langgraph_bridge` feature flag
+- Feature flag: `langgraph_bridge` (env: `ORCHESTRATOR_LANGGRAPH_BRIDGE`, default: `False`)
+- 24 tests: state round-trip (5), edge validation (4), bridge dispatch (2), node routing (2), reducers (5), graph construction (3), feature flag (3)
 
 **Goal**: Prove LangGraph works within our infrastructure (llama-server, FAISS, httpx async, feature flags) by running one subgraph alongside the existing pydantic_graph.
 

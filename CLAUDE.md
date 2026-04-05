@@ -67,6 +67,8 @@ Handoffs track cross-repo work items:
 - `handoffs/blocked/` — Waiting on dependencies
 - `handoffs/archived/` — Historical reference
 
+**Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — single entry point for discovering all active work. Dispatches to 5 domain-specific sub-indices.
+
 ### Handoff Index Documents
 
 When creating an index that coordinates multiple handoffs, it must be an **actionable coordination point** — not a passive navigation document. Required sections:

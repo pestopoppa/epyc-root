@@ -495,3 +495,28 @@ Spun out to dedicated handoff: [`dynamic-stack-concurrency.md`](dynamic-stack-co
 **Key relationship**: Routing intelligence decides *which role* handles a request (quality decision); stack assembly decides *how that role is provisioned* (capacity decision). They compose but are developed independently. The Q-scorer's `baseline_tps_by_role` must become dynamic if stack assembly changes instance counts per role.
 
 See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md).
+
+---
+
+## Future Direction: Generation-Time Entropy Signal (Deferred)
+
+**Source**: Think Anywhere paper (arxiv:2603.29957, intake-258)
+
+**Insight**: Models trained with Think Anywhere naturally invoke reasoning at positions where token entropy is highest — assignments and return statements in code. The entropy difference between "thinking enabled" and "thinking disabled" at these positions is consistently positive, validating that entropy predicts reasoning need.
+
+**Proposed signal**: Extract per-token logit entropy from llama.cpp during generation. High average entropy over the first N generated tokens = hard problem → route to stronger model or increase token budget. Low entropy = easy → stay on cheap model.
+
+**Implementation sketch**:
+1. llama.cpp already computes logits — entropy is `H = -sum(p * log(p))` over the softmax distribution, O(vocab_size) per token
+2. Expose running average entropy via the `/health` or `/slots` API endpoint (minimal server change)
+3. Read entropy after first ~20 generated tokens as an early difficulty signal
+4. Feed into `difficulty_signal.py` as a generation-time feature alongside the existing prompt-level regex features
+
+**Why deferred**:
+- `difficulty_signal.py` is in shadow mode — prompt-level features haven't been validated yet
+- Adding generation-time signals before validating prompt-level ones makes attribution harder
+- Requires llama.cpp server patch (moderate effort) + orchestrator wiring
+
+**Trigger to activate**: Shadow mode data shows prompt-level difficulty bands have weak correlation with actual benchmark accuracy (e.g., "easy" band has >20% failure rate). At that point, generation-time entropy becomes the logical next signal source.
+
+**Cross-reference**: `reasoning-compression.md` (Think Anywhere intake update), intake-258.

@@ -258,3 +258,11 @@ Every test the agent should run, across all handoffs. Ordered by priority.
 - If a test reveals an unexpected result, investigate before moving on — document the finding
 - Build failures on feature branch: `git stash`, investigate, fix — never touch production
 - If stuck for > 30 minutes on one task, document the blocker and move to the next batch
+
+## Research Intake Update — 2026-04-01
+
+### New Related Research
+- **[intake-246] "llama.cpp-tq3 — TQ3_1S 3.5-bit Walsh-Hadamard Transform Quantization"** (github.com/turbo-tan/llama.cpp-tq3)
+  - **REVISED after deep-dive: DO NOT MERGE.** Immature (3 commits, 1 author, no peer review). Only tested on Qwen3.5-27B vs Q4_0 — no Q4_K_M comparison, no Qwen2.5 benchmarks. Our bottleneck is throughput, not VRAM.
+  - **Monitor instead**: (1) ggerganov PR #21038 — Hadamard rotation on existing KV quant types, 25-77% PPL improvement for free. (2) PR #21089 — CPU TurboQuant KV cache, 5.2x compression.
+  - **Bonus discovery**: ChunkKV (arXiv:2502.00299) — training-free chunk-level KV compression, retains 12% of cache matching full quality. See `tq3-quantization-evaluation.md` for full monitor list.

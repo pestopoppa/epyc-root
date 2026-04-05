@@ -36,7 +36,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
 | [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 1 infra complete, Phase 2 config next | LOW | 2026-03-25 |
-| [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | active, 7 work items | B1/B2 HIGH | 2026-04-04 |
+| [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | B1/B2/B3/B5/B6/B7 code complete, B4 pending | B4 remaining | 2026-04-05 |
 | [open_source_orchestrator.md](open_source_orchestrator.md) | Future | stub (awaiting MemRL validation) | LOW | 2026-02-02 |
 
 ---
@@ -45,14 +45,14 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 ### P0 — Conversation Management (HIGH value, cherry-pick from Hermes/OpenGauss)
 
-- [ ] **B1: User Modeling** — Episodic store + Deriver cron for preference extraction. ~300 lines. `src/user_modeling/` (to create)
-- [ ] **B2: Context Compression** — Protected-zone (first N + last M), tool-pair sanitization, type-aware tool output summary. ~230 lines. **Must sequence after context-folding Phase 1.** `src/context_compression.py` (to create)
-- [ ] **B5: Session Analytics + Token Budgeting** — `ORCHESTRATOR_MAX_SESSION_TOKENS` env var; compact at 70%, hard-stop at 100%. `src/graph/session_log.py` (extend)
+- [x] **B1: User Modeling** — ✅ 2026-04-05. `src/user_modeling/` package (profile_store, deriver, tools). 18 tests.
+- [x] **B2: Context Compression** — ✅ 2026-04-05. `src/context_compression.py` (protected-zone, tool-pair sanitization, type-aware output). 22 tests.
+- [x] **B5: Session Analytics + Token Budgeting** — ✅ 2026-04-05. `src/session_analytics.py` (SessionTokenBudget, analytics queries). 12 tests.
 
 ### P1 — Conversation Management (MEDIUM value)
 
-- [ ] **B6: Multi-Backend Abstraction** — Refactor llama-server management into backend interface; support vLLM/TGI
-- [ ] **B7: Prompt Injection Scanning** — 10-pattern scanner from OpenGauss (~30 lines); defer until user-uploaded context
+- [x] **B6: Multi-Backend Abstraction** — ✅ 2026-04-05. `src/backends/server_lifecycle.py` (ServerLifecycle Protocol, llama/vLLM/TGI). 18 tests.
+- [x] **B7: Prompt Injection Scanning** — ✅ 2026-04-05. `src/security/injection_scanner.py` (10 patterns + invisible unicode). 16 tests.
 
 ### P2 — Hermes Outer Shell (low urgency)
 
@@ -62,8 +62,8 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 ### P3 — Conversation Management (LOW value)
 
-- [ ] **B3: Skill Hub Interop** — agentskills.io format export, security scanning
-- [ ] **B4: Memory Curation Nudges** — In-session behavioral only; cross-session requires B1
+- [x] **B3: Skill Hub Interop** — ✅ 2026-04-05. `src/skill_hub_interop.py` (SKILL.md parse/export, security scan). 13 tests.
+- [ ] **B4: Memory Curation Nudges** — In-session behavioral only; cross-session now possible via B1 tools
 
 ### P4 — Open-Source Orchestrator (future)
 
@@ -77,14 +77,14 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 ## Dependency Graph
 
 ```
-P0.B1 (user modeling)           ──independent──
-P0.B2 (context compression)    ──depends on context-folding Phase 1──
-P0.B5 (session analytics)      ──independent──
-P1.B6 (multi-backend)          ──independent──
-P1.B7 (injection scanning)     ──independent (defer until user uploads)──
+✅ P0.B1 (user modeling)        ──DONE (2026-04-05)──
+✅ P0.B2 (context compression)  ──DONE (2026-04-05)──
+✅ P0.B5 (session analytics)    ──DONE (2026-04-05)──
+✅ P1.B6 (multi-backend)        ──DONE (2026-04-05)──
+✅ P1.B7 (injection scanning)   ──DONE (2026-04-05)──
 P2 (hermes outer shell)        ──depends on orchestrator stabilization──
-P3.B3 (skill hub)              ──independent──
-P3.B4 (memory curation)        ──depends on B1──
+✅ P3.B3 (skill hub)            ──DONE (2026-04-05)──
+P3.B4 (memory curation)        ──B1 done, wire tools into frontdoor──
 P4 (open-source)               ──depends on MemRL validation──
 ```
 

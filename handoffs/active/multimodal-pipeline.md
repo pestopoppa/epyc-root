@@ -266,3 +266,14 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
   - Reported results: 0.90 overall accuracy (#1 vs docling 0.86, marker 0.83, pymupdf4llm 0.57); 0.05s/page local, 0.43s/page hybrid
   - Delta from current approach: Current pipeline splits born-digital (pdftotext) vs scanned (LightOnOCR) with no dedicated table extraction. OpenDataLoader provides unified extraction (text + tables + figures + bboxes) with built-in prompt injection filtering. Trade-off: Java dependency vs current pure Python+CLI stack. Python SDK available (`langchain-opendataloader-pdf`).
   - Evaluation path: Benchmark against current `pdf_router.py` on real document workloads, especially multi-column and table-heavy PDFs
+
+## Research Intake Update — 2026-04-04
+
+### New Related Research
+- **[intake-251] "Gemma 4 MLX Collection"** (HuggingFace mlx-community)
+  - Relevance: Gemma 4 E2B/E4B are Any-to-Any multimodal models (text+image+audio)
+  - Key technique: E4B (8B effective) and E2B (5B effective) with multimodal I/O
+  - Delta from current approach: Our multimodal pipeline uses separate STT/Vision/TTS models. Gemma 4 E-series unifies modalities in a single model — could simplify the pipeline
+  - Blocker: No GGUF available yet (MLX only). Need llama.cpp conversion to evaluate on EPYC
+- **[intake-252] "Gemma 4 Official — DeepMind"** (deepmind.google)
+  - Additional context: 26B-A4B is MoE (4B active) — comparable to our Qwen3.5-35B-A3B slot. FunctionGemma variant relevant to tool-use/agentic tasks

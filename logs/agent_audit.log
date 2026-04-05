@@ -2353,3 +2353,20 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-04-05T13:12:38Z] TASK_COMPLETE: Unit tests (success) — 32 new, 50 total, 0.06s
 [2026-04-05T13:12:38Z] FILES_MODIFIED: epyc-orchestrator: features.py, session_log.py, helpers.py, state.py, test_session_log.py
 [2026-04-05T13:12:38Z] FILES_CREATED: eval_compaction_sweep.py, eval_helpfulness_calibration.py
+[2026-04-05T13:24:39+00:00] TASK_START: P1.1 Build compression module
+[2026-04-05T13:24:39+00:00] TASK_END: P1.1 Build compression module — success (7 handlers, 310 lines)
+[2026-04-05T13:24:39+00:00] TASK_START: P1.2 Write compression tests
+[2026-04-05T13:24:39+00:00] TASK_END: P1.2 Write compression tests — success (27 tests, all pass)
+[2026-04-05T13:24:39+00:00] TASK_START: P1.3 PostToolUse hook
+[2026-04-05T13:24:39+00:00] TASK_END: P1.3 PostToolUse hook — skipped (PostToolUse cannot replace built-in tool output)
+[2026-04-05T13:24:39+00:00] TASK_START: P1.4 Orchestrator integration
+[2026-04-05T13:24:39+00:00] TASK_END: P1.4 Orchestrator integration — success (feature flag + helpers.py wiring)
+[2026-04-05T13:24:39+00:00] TASK_START: P3.1 Infrastructure setup + downloads
+[2026-04-05T13:24:39+00:00] TASK_END: P3.1 Infrastructure setup + downloads — success (5 datasets, 1.45 GB)
+[2026-04-05T13:24:39+00:00] TASK_START: P3.2 Build long-context adapters
+[2026-04-05T13:24:39+00:00] TASK_END: P3.2 Build long-context adapters — success (5 classes, registered)
+[2026-04-05T13:24:39+00:00] TASK_START: P3.3 Validation + download scripts
+[2026-04-05T13:24:39+00:00] TASK_END: P3.3 Validation + download scripts — success (all 5 suites OK, 1630 questions)
+[2026-04-05T13:24:39+00:00] TASK_START: Documentation updates
+[2026-04-05T13:24:39+00:00] TASK_END: Documentation updates — success (handoffs, indices, progress)
+[2026-04-05T13:24:39+00:00] SESSION_END: P1+P3 complete

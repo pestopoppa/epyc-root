@@ -213,6 +213,15 @@ Three families of techniques, ordered by implementation effort:
 - Feature flag: `output_spill_to_file` (production=True, test=False, env=`OUTPUT_SPILL_TO_FILE`)
 - 9 tests in `tests/unit/test_output_spill.py`
 
+## Research Intake Update — 2026-04-04
+
+### New Related Research
+- **[intake-258] "Think Anywhere in Code Generation"** (arxiv:2603.29957)
+  - Relevance: Introduces on-demand inline reasoning during code generation — model learns to invoke `<thinkanywhere>` blocks at high-entropy positions (assignments, returns)
+  - Key technique: Cold-start training + RLVR (GRPO with hierarchical rewards) teaches Qwen2.5-Coder-7B to adaptively reason mid-generation
+  - Reported results: +18.8pp on LeetCode, +12.2pp on MBPP; 238-306 fewer reasoning tokens than GRPO baseline; upfront thinking shortened ~35-50%
+  - Delta from current approach: Our reasoning compression focuses on post-hoc pruning/compression of existing think blocks. Think Anywhere instead trains the model to place reasoning precisely where needed — a complementary angle. The finding that high-entropy positions predict reasoning need could strengthen our difficulty_signal.py routing (currently uses prompt features, not generation-time entropy).
+
 ## Notes
 
 This is the most active research front discovered during the 2026-03-14 intake run. 7 of 10 expansion entries cluster around reasoning compression, approaching the problem from different angles. The theoretical foundation (Information Bottleneck, intake-133) explains why: CoT traces contain information about the response that isn't directly accessible from the prompt, so compression is lossy but bounded. The practical implication is that our current REPL token cap (5000 tokens) is a crude version of what these methods do adaptively — we should upgrade to difficulty-aware reasoning budgets.
