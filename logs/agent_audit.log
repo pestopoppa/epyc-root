@@ -2336,3 +2336,5 @@ LightOnOCR-2 is NOT a custom architecture - it's Mistral3-based (Pixtral + Qwen3
 [2026-04-05T12:15:00Z] TASK_COMPLETE | CF Phase 1: Two-level condensation — ConsolidatedSegment, granular accumulation, Tier 2 consolidation at boundaries. Feature flag ORCHESTRATOR_TWO_LEVEL_CONDENSATION. 7 files modified, 16 tests.
 [2026-04-05T12:30:00Z] TASK_COMPLETE | LC-1: delegation_slo_report.py — p50/p95/p99 latency, success/failure/timeout rates, per-role breakdown, --json output
 [2026-04-05T12:30:00Z] TASK_COMPLETE | Updated handoffs: context-folding-progressive.md, routing-and-optimization-index.md, master-handoff-index.md
+[2026-04-05T13:00:00Z] TASK_COMPLETE | LC-4: delegation_cache.py — in-memory SHA-256 keyed cache for delegation result reuse. 1h TTL, 200 max, integrated into architect loop. 10 tests.
+[2026-04-05T13:30:00Z] TASK_COMPLETE | AP-11: worktree_manager.py — WorktreeManager + ExperimentContext for isolated PromptForge mutations. Auto-reject safety default. PromptForge gains apply_mutation_in_context(). 5 tests.

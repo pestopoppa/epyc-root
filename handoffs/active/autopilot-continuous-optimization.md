@@ -274,7 +274,7 @@ All core infrastructure verified in code as of 2026-04-01:
 
 2. **GEPA integration** (intake-240): Replace PromptForge heuristic mutations with principled evolutionary search (`dspy.GEPA`). Requires DSPy dependency + major refactor. Revisit after AR-3 shows PromptForge limitations.
 3. **Hard-negative training data** (intake-176): Contrastive negatives for routing classifier. Only relevant when 500+ memories exist for retraining.
-4. **Git worktree isolation for PromptForge**: Parallel experiments not yet needed — serial mutation + revert is sufficient.
+4. ~~**Git worktree isolation for PromptForge**~~: ✅ 2026-04-05. Implemented `worktree_manager.py` with `WorktreeManager` + `ExperimentContext`. Auto-reject safety default prevents corruption incidents like AR-3 trial ~25.
 5. **Convention locking** (intake-150): Lock baseline parameters from species modification. Premature without more trials.
 
 ### Design considerations (no implementation needed)
