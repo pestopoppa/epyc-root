@@ -192,29 +192,30 @@ Observed patterns inform routing (Q-value training), autopilot (experiment evalu
 ✅ P1 (routing Phase 4 code) ─── DONE (RI-2–6). RI-1 + RI-7 need compute.
 ✅ P2 (autopilot structural) ─── DONE (AP-4–8, 10, 12)
 ✅ P4 (observability) ─────────── DONE (DS-1–4)
-✅ CF Phase 0 ──────────────────── DONE (trigger 0.60→0.75)
+✅ CF Phase 0+1 ───────────────── DONE (trigger + two-level condensation)
+✅ P8 (autopilot refinements) ─── DONE (AP-9, 11, 13)
+✅ P9 (legacy cleanup) ────────── DONE (LC-1–5)
+  │
+  ├── 🔄 PACKAGE A (running) ──── Instrumented seeding eval
+  │     CF Phase 1 validation + difficulty signal + RI-9 sweep + TrimR
+  │     Output: data/package_a/<timestamp>/
+  │
+  ├── PACKAGE B (next) ────────── AR-3 relaunch + RTK eval
+  │     Depends on Package A results for config decisions
+  │
+  ├── PACKAGE C (after B) ─────── RI-10 canary (3-day passive)
+  │     25% enforce on frontdoor, monitor latency/cost/escalation
   │
   ├── DS-C (pre-warm deploy) ──── HIGH PRIORITY. No dependencies.
   │     Add 1×96t + 4×48t instances for frontdoor/coder/worker.
-  │     Pure RAM trade (+54 GB), enables concurrent sessions.
   │
   ├── DS-D (concurrency router) ── Depends on DS-C.
-  │     Replace round-robin with load-aware. KV migration on transition.
   │
-  ├── P5 (autoresearch) ──────── PARALLEL with DS-C/D.
-  │     AR-1 baseline (needs compute), AR-3 first live run.
-  │     Benefits from DS-C (no-restart experiments).
-  │
-  ├── P1 remaining ────────────── RI-1 calibration dataset (needs compute)
-  │     └── RI-7 A/B test (needs compute, depends on RI-1)
-  │           └── P6 (routing rollout) depends on RI-7
+  ├── P5 (autoresearch) ──────── AR-3 relaunch = Package B.
   │
   ├── P3 (routing Phase 5) ──── depends on P1 A/B results
   │
-  ├── DS-E/F (templates, prediction) ── after DS-D + P5 data
-  │
-  ├── P8 (autopilot refinements) ── lower priority
-  └── P9 (legacy cleanup) ──────── independent
+  └── DS-E/F (templates, prediction) ── after DS-D + P5 data
 ```
 
 ---

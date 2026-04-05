@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-04
+**Updated**: 2026-04-05
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
