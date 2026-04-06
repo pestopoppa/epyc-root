@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-04-06
+
+- **CC Local Integration — Phase 0 (MCP chat tools)**:
+  - Added `orchestrator_chat` and `orchestrator_route_explain` MCP tools to `src/mcp_server.py` (~140 lines). Claude Code sessions can now delegate prompts to the running local orchestrator stack via HTTP POST to `/chat`.
+  - `orchestrator_chat`: 5 params (prompt, context, force_role, force_mode, timeout_s). Full routing pipeline (MemRL, factual risk, mode selection, delegation).
+  - `orchestrator_route_explain`: mock-mode routing analysis — shows routing decision without inference.
+  - Feature flag: `ORCHESTRATOR_CLAUDE_CODE_MCP_CHAT`. Enabled in `.mcp.json`.
+  - 15 tests (`test_mcp_chat_tool.py`).
+
+- **LangGraph Migration Phase 2 — Reducer fix + dual-run validation**:
+  - Fixed critical bug: `_state_update()` returned full lists for `operator.add` fields, causing exponential growth. Now returns deltas via `snapshot_append_lengths()` / `state_update_delta()`.
+  - Added `segment_cache`, `compaction_quality_monitor` to `_SKIP_TO_LG`. Declared `_result` in `OrchestratorState`.
+  - Added `APPEND_FIELDS` constant with automated parity check against TypedDict annotations.
+  - 20 tests (`test_langgraph_phase2.py`): reducer deltas, skip coverage, full 50-field round-trip, 5 dual-run validation scenarios.
+  - Files: `src/graph/langgraph/state.py`, `src/graph/langgraph/nodes.py` (all 7 node functions updated).
+
 ## 2026-04-05
 
 - **Hermes outer shell Phase 2 — routing override API**:

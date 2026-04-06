@@ -34,7 +34,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 5 | MED | TrimR deployment (reasoning compression Tier 1) | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05 (7 handlers, feature-flagged, needs prod validation) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
-| 8 | MED | CC local integration (READY TO IMPLEMENT) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
+| 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05 (MCP chat tools, 15 tests, feature-flagged) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
 | 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills + validation pending) | [hermes-agent-index](hermes-agent-index.md) P2 |
 

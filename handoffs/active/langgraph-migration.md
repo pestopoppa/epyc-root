@@ -1,6 +1,6 @@
 # LangGraph Migration — Orchestration Graph
 
-**Status**: phase-1-complete
+**Status**: phase-2-complete
 **Created**: 2026-03-15
 **Updated**: 2026-04-05
 **Source**: intake-146 (LangGraph), deep-dive `research/deep-dives/langgraph-ecosystem-comparison.md`
@@ -241,6 +241,13 @@ No code changes. Record in this handoff for future API work.
 
 **Validation gate**: Automated test that runs the same task through pydantic_graph TaskState and LangGraph TypedDict state, comparing field values at each node transition. All ~50 fields must round-trip correctly.
 **Rollback**: LangGraph state definition is additive — pydantic_graph TaskState remains the source of truth until Phase 3.
+
+**Phase 2 — ✅ COMPLETE 2026-04-05**:
+- **Critical bug fixed**: `_state_update()` was returning full lists for `operator.add` fields, causing exponential growth. Now returns deltas via `snapshot_append_lengths()` / `state_update_delta()`.
+- **`_SKIP_TO_LG`** expanded: `segment_cache`, `compaction_quality_monitor` added (non-serializable `Any` fields from CF Phase 1+/3b).
+- **`_result`** declared in `OrchestratorState` (was injected without declaration).
+- **`APPEND_FIELDS`** constant with parity check against `OrchestratorState` `operator.add` annotations.
+- **44 tests total** (24 Phase 1 + 20 Phase 2): reducer delta correctness, full 50-field round-trip, 5 dual-run validation scenarios (success, self-loop, escalation, max-turns, budget), `_SKIP_TO_LG` coverage.
 
 ### Phase 3: Node-by-Node Migration
 

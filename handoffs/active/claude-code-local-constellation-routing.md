@@ -1,8 +1,9 @@
 # Handoff: Claude Code Integration with Local LLM Constellation Routing/Delegation
 
-**Created**: 2026-02-13  
-**Status**: READY TO IMPLEMENT  
-**Priority**: HIGH  
+**Created**: 2026-02-13
+**Status**: Phase 0 COMPLETE (MCP chat tools)
+**Updated**: 2026-04-05
+**Priority**: HIGH
 **Scope**: Integrate Claude Code UX/runtime entrypoints with this repo's local orchestration stack for optimized routing + delegation across multiple locally-hosted models.
 
 ## Executive Summary

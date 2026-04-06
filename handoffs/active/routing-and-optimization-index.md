@@ -25,8 +25,8 @@
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a (summarizer eval, needs inference), Phase 2b (free-zone sweep, needs inference), Phase 3c (quality monitor, deferred) |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
-| LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 1 complete (hybrid bridge + 7 LG nodes + 24 tests) | Phase 2: State migration + dual-run validation |
-| CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | READY TO IMPLEMENT | Adapter hardening, MCP contract, endpoint compat |
+| LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 1+2 complete (reducer fix + 44 tests + dual-run validation) | Phase 3: Node-by-node migration |
+| CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | Phase 0 complete (MCP chat tools, 15 tests) | Phase 1: hardening, telemetry |
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, ready for AR-3 validation | Live validation via next AR-3 run |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
