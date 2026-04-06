@@ -2400,3 +2400,7 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 [2026-04-05T19:30:25Z] TASK_END: Update indices and documentation → success
 
 === SESSION END: 2026-04-05T19:30:25Z ===
+[2026-04-06T12:00:00Z] SESSION_START | Package A results review + scorer bug fix + documentation sync
+[2026-04-06T12:00:00Z] TASK_COMPLETE | Package A ran ~10h, ~140+ questions evaluated, crashed on debug_scorer.py word_count NoneType bug
+[2026-04-06T12:00:00Z] TASK_COMPLETE | Fixed debug_scorer.py:381 — count = config.get("count") or threshold or 0
+[2026-04-06T12:00:00Z] TASK_COMPLETE | Documentation sync: progress report, audit log, accumulated handoff changes committed
