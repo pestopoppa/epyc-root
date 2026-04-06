@@ -2411,3 +2411,16 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 [2026-04-06T16:00:00Z] TASK_COMPLETE | eval_log_format.py: _timing_str() surfaces prompt_eval_ms + generation_ms with pp/s and t/s rates
 [2026-04-06T16:00:00Z] TASK_COMPLETE | seeding_eval.py: prompt_eval_ms added to cost_metrics for all 3 actions
 [2026-04-06T16:00:00Z] TASK_COMPLETE | seeding_injection.py: prompt_eval_ms added to reward injection context for Optuna
+{"ts":"2026-04-06T11:20:39+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"SESSION_START","msg":"Bulk inference campaign analysis and documentation","details":"14 tasks consolidated into 4 packages (B-E)"}
+{"ts":"2026-04-06T11:20:39+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_START","msg":"Audit 5 domain indices for inference-dependent tasks","details":"Scanning routing, research, pipeline, hermes, inference indices"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_END","msg":"Audit 5 domain indices for inference-dependent tasks","details":"14 tasks found: 5 routing, 5 research, 3 CF, 2 pipeline/hermes"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_START","msg":"Create bulk-inference-campaign.md handoff","details":"4 packages (B-E) consolidating 14 tasks"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_END","msg":"Create bulk-inference-campaign.md handoff","details":"success"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_START","msg":"Update 4 domain indices + master index","details":"Cross-references to campaign packages"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_END","msg":"Update 4 domain indices + master index","details":"success: routing(dep graph+4 xrefs), research(6 xrefs+concern), master(3 tables), pipeline(1 xref)"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_START","msg":"Append progress report session 4","details":"progress/2026-04/2026-04-06.md"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"TASK_END","msg":"Append progress report session 4","details":"success"}
+{"ts":"2026-04-06T11:26:05+00:00","session":"ses_20260406_112039_1211343","level":"INFO","cat":"SESSION_END","msg":"Bulk inference campaign analysis complete","details":"14 tasks consolidated into 4 packages (B-E). 1 new handoff, 4 index updates, 1 progress append."}
+[2026-04-06T14:00:00Z] TASK_COMPLETE | RI-10 canary ACTIVATED: factual_risk.mode=canary in classifier_config.yaml, API restarted (PID 1213712)
+[2026-04-06T14:00:00Z] TASK_COMPLETE | Difficulty thresholds live: 0.15/0.35 (recalibrated from 0.3/0.6). Verified on running API.
+[2026-04-06T14:00:00Z] TASK_COMPLETE | Package A run 2 complete: 50q, 60%/60%/58%/78.3% (direct/repl/architect/worker), 168 rewards injected

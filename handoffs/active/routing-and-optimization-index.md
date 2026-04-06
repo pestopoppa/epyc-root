@@ -23,7 +23,7 @@
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 46 trials. Safety hardened + hybrid eval (T1 real gate). | Relaunch AR-3 |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
-| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a (summarizer eval, needs inference), Phase 2b (free-zone sweep, needs inference), Phase 3c (quality monitor, deferred) |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D) |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 1+2 complete (reducer fix + 44 tests + dual-run validation) | Phase 3: Node-by-node migration |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | Phase 0 complete (MCP chat tools, 15 tests) | Phase 1: hardening, telemetry |
@@ -83,7 +83,7 @@ Medium priority. These improve autoresearch effectiveness before it starts runni
 
 - [x] **RI-8: Add risk fields to `RoleResult`** — ✅ Verified 2026-03-29. Fields exist at `seeding_types.py:230-234` with `factual_risk_` prefix: `factual_risk_score`, `factual_risk_adjusted`, `factual_risk_band`, `factual_risk_features`. Original probe used wrong naming convention; actual implementation is correct.
 
-- [ ] **RI-9: Threshold sweep in seeding harness** — Reuse existing `--suite` mechanism. Sweep risk thresholds and emit Pareto reports (factuality vs cost vs latency).
+- [ ] **RI-9: Threshold sweep in seeding harness** — Reuse existing `--suite` mechanism. Sweep risk thresholds and emit Pareto reports (factuality vs cost vs latency). (→ Package B, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 ### P4 — Observability Infrastructure (Dynamic Stack Phase B)
 
@@ -103,13 +103,13 @@ These unblock data-driven stack scheduling.
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
-- [ ] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). T0 sentinels saturated at q=3.0 — need larger eval pool before relaunch.
+- [ ] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). T0 sentinels saturated at q=3.0 — need larger eval pool before relaunch. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 ### P6 — Routing Intelligence Phase 6 (controlled rollout)
 
 Depends on Phase 4 A/B results.
 
-- [ ] **RI-10: Shadow → enforce canary** — READY TO ACTIVATE. Canary mode implemented: set `factual_risk.mode: "canary"` in `classifier_config.yaml`. 25% enforce on frontdoor only, 3 days. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Package A telemetry validated risk distribution (80.6% low, 18.7% medium, 0.6% high) and latency correlation (high-risk p50=69s vs low p50=25s).
+- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. 3-day monitoring period (ends ~2026-04-09). Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
 
 - [ ] **RI-11: Enforce expand** — Frontdoor 100% + worker_general, 7 days.
 
@@ -119,7 +119,7 @@ Depends on Phase 4 A/B results.
 
 Depends on observability (P4) and autoresearch baseline (P5).
 
-- [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6.
+- [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 - [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. See § Part 4.
 
@@ -196,22 +196,27 @@ Observed patterns inform routing (Q-value training), autopilot (experiment evalu
 ✅ P8 (autopilot refinements) ─── DONE (AP-9, 11, 13)
 ✅ P9 (legacy cleanup) ────────── DONE (LC-1–5)
   │
-  ├── 🔄 PACKAGE A (running) ──── Instrumented seeding eval
-  │     CF Phase 1 validation + difficulty signal + RI-9 sweep + TrimR
-  │     Output: data/package_a/<timestamp>/
-  │
-  ├── PACKAGE B (next) ────────── AR-3 relaunch + RTK eval
-  │     Depends on Package A results for config decisions
-  │
-  ├── PACKAGE C (after B) ─────── RI-10 canary (3-day passive)
-  │     25% enforce on frontdoor, monitor latency/cost/escalation
+  ├── ✅ PACKAGE A ──────────────── DONE (2026-04-06, 635 decisions, thresholds recalibrated)
+  │     │                            CF Phase 1 validation + difficulty signal + RI-9 profiling + TrimR
+  │     │                            Output: data/package_a/<timestamp>/
+  │     │
+  │     ├── PACKAGE B (next) ─────── Instrumented Seeding v2 (~1d, full stack)
+  │     │     │                       RI-9 + TrimR + difficulty + Omega + tool A/B
+  │     │     │
+  │     │     └── PACKAGE D ────────── AR-3 + RI-10 Canary + CF-3c + DS-5 (multi-day)
+  │     │                               Depends on B for threshold decisions + sentinel expansion
+  │     │
+  │     ├── PACKAGE C ────────────── CF Eval Batch (~½d, individual models, independent)
+  │     │                             CF Phase 2a/2b/2c
+  │     │
+  │     └── PACKAGE E ────────────── Vision + Hermes validation (~1h, independent)
   │
   ├── DS-C (pre-warm deploy) ──── HIGH PRIORITY. No dependencies.
   │     Add 1×96t + 4×48t instances for frontdoor/coder/worker.
   │
   ├── DS-D (concurrency router) ── Depends on DS-C.
   │
-  ├── P5 (autoresearch) ──────── AR-3 relaunch = Package B.
+  ├── P5 (autoresearch) ──────── AR-3 relaunch = Package D.
   │
   ├── P3 (routing Phase 5) ──── depends on P1 A/B results
   │
@@ -250,6 +255,7 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 | [`context-folding-progressive.md`](context-folding-progressive.md) | this index | Phase 3a process rewards feed routing intelligence; Phase 3b role-aware profiles affect per-role token costs; Phases 0-2 compaction mechanics |
 | [`tool-output-compression.md`](tool-output-compression.md) | research-evaluation | RTK/native hooks reduce context pressure, interacts with autopilot token costs |
 | [`reasoning-compression.md`](reasoning-compression.md) | research-evaluation | TrimR/difficulty_signal shares scorer infra with factual-risk routing |
+| [`bulk-inference-campaign.md`](bulk-inference-campaign.md) | this index | Packages B-E consolidate 14 inference tasks; B feeds RI-9/TrimR, D feeds AR-3/RI-10/DS-5 |
 | ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | archived | Follow-on tasks extracted to P9. |
 
 ---
