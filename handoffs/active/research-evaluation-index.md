@@ -26,6 +26,7 @@
 | [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
+| [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, session persistence | active | MEDIUM | 2026-04-06 |
 
 ---
 
@@ -70,6 +71,16 @@
 - [ ] Measure KV cache memory impact at 1M context
 - [ ] Measure speed impact of YaRN extension
 
+### P2.5 — Knowledge Base Governance (from intake-268/269/270)
+
+- [ ] Deploy knowledge base linter (`scripts/validate/lint_knowledge_base.py`) — orphan, stale, contradiction, un-actioned intake detection
+- [ ] Add credibility scoring to research-intake skill Phase 2
+- [ ] Add anti-confirmation-bias directive to research-intake Phase 3
+- [ ] Update intake-268/269/270 verdicts and cross-references — ✅ 2026-04-06
+- [ ] Session persistence documentation for research workflows (P2)
+- [ ] qmd semantic search addon documentation (P2, optional)
+- [ ] Upstream linter + templates to root-archetype (companion handoff)
+
 ### Monitoring (no action unless triggered)
 
 - [ ] **TQ3**: Watch PR #21038 for merge, evaluate PR #21089 when merged, read ChunkKV paper
@@ -84,6 +95,7 @@
 P0 (reasoning-compression TrimR)  ──independent──
 P1 (tool-output-compression RTK)  ──independent──
 P2 (reasoning SEAL vectors)       ──depends on model server availability──
+P2.5 (KB governance improvements) ──independent (companion: root-archetype linter)──
 P3 (long-context datasets)        ──independent──
 P4 (YaRN extension)               ──depends on P3 (datasets)──
 TQ3 monitoring                    ──depends on upstream PR merges──
@@ -104,6 +116,8 @@ Multiscreen monitoring            ──depends on external adoption──
 4. **Summarizer quality ↔ context-folding Phase 2a/2b/2c**: Phase 2b (free-zone sweep) and Phase 2c (helpfulness calibration) both require eval infrastructure. Helpfulness calibration (LLM-based Δ_k ground truth) is the most expensive eval — schedule with other benchmark runs. Literature basis: Skill0 (intake-261) helpfulness-driven curriculum, AgentOCR (intake-262) compression quality thresholds.: reasoning-compression's summarizer quality assessment and context-folding Phase 2 share the same eval methodology (Claude-as-Judge scoring). Implement once, use in both.
 
 5. **Bulk Inference Campaign**: Tasks P0 (TrimR, Omega, difficulty validation), P1 (tool compression A/B), and P2 (summarizer quality, free-zone, helpfulness) are consolidated into Packages B and C of [`bulk-inference-campaign.md`](bulk-inference-campaign.md). Package B (seeding eval v2) resolves P0+P1 tasks in a single full-stack run. Package C (CF eval batch) resolves P2 tasks using individual model servers. See that handoff for execution schedule, feature flags, and success criteria.
+
+7. **Knowledge base governance ↔ root-archetype**: The KB linter and skill template patterns from P2.5 are being upstreamed to root-archetype via a companion handoff (`/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`). Epyc-root deploys the linter first as an instance-specific validator, then the generalized version goes to root-archetype. The credibility scoring and anti-confirmation-bias changes are research-intake skill edits that may also be templated in root-archetype's skill scaffold.
 
 6. **Research intake deep-dive caveats (2026-04-06)**: intake-264 (SSD) downgraded to monitor-only — requires 8×B200 SFT, not actionable for inference-only stack. intake-266 (OPD Survey) downgraded to reference-only — training-only methods, agent distillation already solved by SkillBank. No new tasks generated from either. Caveats appended to reasoning-compression.md.
 

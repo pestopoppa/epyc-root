@@ -27,7 +27,7 @@ RELEVANCE_VALUES = {"high", "medium", "low", "none"}
 DISCOVERED_VIA_VALUES = {"seed", "input", "expansion", "search"}
 VERDICT_VALUES = {
     "new_opportunity", "already_integrated", "worth_investigating",
-    "not_applicable", "superseded",
+    "not_applicable", "superseded", "adopt_patterns", "adopt_component",
 }
 
 CROSSREF_DIRS = {

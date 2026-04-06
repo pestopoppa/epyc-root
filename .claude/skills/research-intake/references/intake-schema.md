@@ -15,7 +15,7 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `novelty` | enum | `high`, `medium`, `low`, or `duplicate` |
 | `relevance` | enum | `high`, `medium`, `low`, or `none` |
 | `discovered_via` | enum | `seed`, `input`, `expansion`, or `search` |
-| `verdict` | enum | `new_opportunity`, `already_integrated`, `worth_investigating`, `not_applicable`, or `superseded` |
+| `verdict` | enum | `new_opportunity`, `already_integrated`, `worth_investigating`, `not_applicable`, `superseded`, `adopt_patterns`, or `adopt_component` |
 | `ingested_date` | string | ISO date (YYYY-MM-DD) |
 
 ## Optional Fields
@@ -32,6 +32,7 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `handoffs_updated` | list[string] | Active handoff filenames amended with insights |
 | `handoffs_created` | list[string] | New stub handoff filenames created |
 | `citation_context` | string | Surrounding text where this was cited (seed entries only) |
+| `notes` | string | Free-form analysis notes, deep-dive findings, revision history |
 
 ## Cross-References Object
 

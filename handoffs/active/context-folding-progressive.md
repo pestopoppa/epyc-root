@@ -857,3 +857,16 @@ python3 -m pytest tests/unit/ -x -q
 
 ### Deep-Dive Notes (2026-04-06)
 intake-267 UPGRADED to relevance medium-high during deep dive. The compound retention scoring and hysteresis pattern are directly adoptable. The 5-tier retrieval escalation (strongest ablation at -29.4pp) validates prioritizing segment importance in compaction decisions. Inline LLM curation rejected — incompatible with local model economics (Qwen3-30B-A3B). Our deterministic Tier 1 + bounded Tier 2 approach is the right trade-off.
+
+- **[intake-273] "Context Rot: How Increasing Input Tokens Impacts LLM Performance"** (Chroma)
+  - Relevance: Empirical evidence that LLM performance degrades with input length, especially with low semantic similarity
+  - Key technique: Needle-question similarity measurement; distractor amplification analysis; shuffled vs structured haystack comparison
+  - Reported results: 18 LLMs tested; shuffled haystacks outperform structured across ALL models; low-similarity needles degrade fastest
+  - Delta from current approach: Our compaction summaries are narratively structured — the shuffled-outperforms-structured finding suggests we should experiment with less structured summaries. The semantic similarity dimension is not in our segment retention scoring.
+  - **Actionable**: (1) Add semantic similarity to segment_helpfulness scoring — compress low-similarity segments more aggressively. (2) A/B test shuffled vs structured compaction summaries in eval tower. (3) Actively remove off-topic context (distractor amplification) rather than just summarizing it.
+  - **Deep-dive caveat (2026-04-06)**: Shuffled finding is RETRIEVAL-ONLY (NIAH tasks). For reasoning/synthesis tasks where our compaction summaries are consumed, structured coherence likely still helps. DO NOT restructure summaries based on this alone. The correct experiment is **bullet-point vs narrative** consolidation format, not shuffled vs ordered.
+- **[intake-274] "The Complexity Trap" (arXiv:2508.21433)** — NeurIPS 2025 DL4Code
+  - Relevance: Simple observation masking (stripping old tool outputs) matches LLM summarization for agent context management
+  - Key result: 50% cost reduction vs baseline; hybrid masking+summarization gives 7-11% further savings
+  - Delta from current approach: Validates our two-layer architecture (pattern-based tool compression + LLM conversation summarization). Observation masking ≈ high recency weight in segment_helpfulness — our existing approach already captures this.
+  - **Actionable**: Consider whether `tool_output_compression` should be more aggressive for older tool outputs (age-based compression scaling). The hybrid finding suggests our architecture is already near-optimal.

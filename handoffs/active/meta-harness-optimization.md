@@ -111,3 +111,16 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: Profile-based multi-provider routing with per-session cost tracking and budget management
   - Key technique: Real-time cost tracking per session, declarative YAML workflows, 16 provider backends
   - Delta from current approach: Clido's per-session budget management implements the TOKEN_BUDGET concept from CC analysis (intake-249). Their profile-based provider switching maps to our routing intelligence
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-271] "Skill Issue: Harness Engineering for Coding Agents"** (humanlayer.dev)
+  - Relevance: Practitioner synthesis validating that harness config, not model capability, drives coding agent performance
+  - Key technique: Progressive disclosure, context firewalls (sub-agent isolation), instruction budget management, back-pressure loops
+  - Reported results: TerminalBench-2 rank delta of ~28 positions from harness alone (same Opus 4.6 model)
+  - Delta from current approach: Our PromptForge does mutation but lacks systematic back-pressure loops feeding specific failure signals to harness components. The instruction budget concept (14-22% token overhead) is not tracked in our eval tower.
+- **[intake-272] "Evaluating AGENTS.md" (arXiv:2602.11988)** — ETH Zurich
+  - Relevance: Context files REDUCE task success rates and increase inference cost by 20%+
+  - Key technique: Empirical evaluation of AI-generated vs human-written agent context files on SWE-bench
+  - Delta from current approach: Direct threat to PromptForge code mutations that add instructions. Our thin-map architecture may be optimal, but needs empirical validation. **Action**: add instruction token budget tracking to eval tower; consider "minimal context" ablation in PromptForge.

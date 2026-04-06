@@ -95,6 +95,36 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 - **Handoffs**: `orchestrator-conversation-management.md` (B1: User Modeling)
 - **Search terms**: episodic memory, working memory, external memory, memory-augmented, user modeling
 
+### knowledge_management
+- **Chapters**: (none)
+- **Handoffs**: `knowledge-base-governance-improvements.md`, `context-folding-progressive.md`
+- **Search terms**: knowledge base, LLM wiki, persistent compilation, knowledge hygiene, linting, cross-referencing, intake index, governance
+
+### rag_alternatives
+- **Chapters**: (none)
+- **Handoffs**: `knowledge-base-governance-improvements.md`
+- **Search terms**: RAG alternative, compilation vs retrieval, persistent wiki, structured synthesis, LLM-maintained wiki
+
+### tool_implementation
+- **Chapters**: (none)
+- **Handoffs**: `meta-harness-optimization.md`
+- **Search terms**: CLI tool, Claude Code plugin, developer tooling, agent tooling, MCP server
+
+### local_inference
+- **Chapters**: (none)
+- **Handoffs**: `dynamic-stack-concurrency.md`, `kv-cache-quantization.md`
+- **Search terms**: GGUF, llama.cpp, node-llama-cpp, local inference, on-device, local model serving
+
+### search_retrieval
+- **Chapters**: (none)
+- **Handoffs**: `colbert-reranker-web-research.md`, `knowledge-base-governance-improvements.md`
+- **Search terms**: BM25, vector search, hybrid search, re-ranking, RRF, retrieval pipeline, semantic search, qmd
+
+### document_processing
+- **Chapters**: (none)
+- **Handoffs**: `opendataloader-pipeline-integration.md`
+- **Search terms**: PDF parsing, OCR, table recognition, reading order, document extraction
+
 ## File Locations
 
 All paths are relative to the respective repo root:

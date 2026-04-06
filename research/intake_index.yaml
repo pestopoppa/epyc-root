@@ -7497,14 +7497,19 @@
   - Automated cross-referencing and contradiction detection
   - Periodic lint passes for knowledge hygiene
   novelty: medium
-  relevance: medium
+  relevance: high
   discovered_via: input
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-04-06'
+  handoffs_created:
+  - knowledge-base-governance-improvements.md
+  handoffs_updated:
+  - context-folding-progressive.md
   cross_references:
     handoffs:
     - context-folding-progressive.md
     - reasoning-compression.md
+    - knowledge-base-governance-improvements.md
     intake:
     - intake-144 (Contextual Memory Virtualization)
     - intake-267 (ByteRover agent-native memory)
@@ -7515,7 +7520,9 @@
     framing validates our approach: we compile research into persistent
     handoffs rather than re-discovering context per session. The linting
     concept (contradiction detection, orphan pages, stale claims) could
-    enhance our intake validation.
+    enhance our intake validation. DEEP-DIVE: epyc-root IS an LLM wiki.
+    Lint operation is the highest-value gap. Three-layer architecture
+    validates our governance split. Patterns upstreamed to root-archetype.
 
 - id: intake-269
   arxiv_id: null
@@ -7541,14 +7548,19 @@
   - Session persistence for multi-round research
   - Dual-linking (Obsidian wikilinks + standard markdown)
   novelty: medium
-  relevance: medium
+  relevance: high
   discovered_via: input
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-04-06'
+  handoffs_created:
+  - knowledge-base-governance-improvements.md
+  handoffs_updated:
+  - context-folding-progressive.md
   cross_references:
     handoffs:
     - context-folding-progressive.md
     - hermes-agent-index.md
+    - knowledge-base-governance-improvements.md
     intake:
     - intake-268 (Karpathy LLM Wiki concept)
     - intake-270 (qmd local search)
@@ -7559,7 +7571,10 @@
     but for research rather than inference. Credibility scoring and
     anti-confirmation-bias mechanisms could enhance our research-intake
     skill. Progress scoring with termination thresholds is a pattern
-    adoptable for autopilot session management.
+    adoptable for autopilot session management. DEEP-DIVE: Credibility
+    scoring rubric immediately adoptable. Anti-confirmation-bias is a
+    one-paragraph skill addition. Progress/termination scoring applicable
+    to nightshift. Patterns upstreamed to root-archetype.
 
 - id: intake-270
   arxiv_id: null
@@ -7583,14 +7598,19 @@
   - Natural markdown break point chunking
   - Reciprocal Rank Fusion (RRF)
   novelty: medium
-  relevance: medium
+  relevance: high
   discovered_via: expansion
   expanded_from: intake-269
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-04-06'
+  handoffs_created:
+  - knowledge-base-governance-improvements.md
+  handoffs_updated:
+  - context-folding-progressive.md
   cross_references:
     handoffs:
     - context-folding-progressive.md
+    - knowledge-base-governance-improvements.md
     intake:
     - intake-268 (Karpathy LLM Wiki concept)
     - intake-269 (nvk/llm-wiki)
@@ -7600,7 +7620,10 @@
     retrieval architecture. Natural markdown chunking approach could inform
     context-folding segment boundary detection. RRF fusion for combining
     search signals is a proven technique applicable if we build retrieval
-    into the orchestrator for long-context knowledge lookup.
+    into the orchestrator for long-context knowledge lookup. DEEP-DIVE:
+    Deploy as MCP server for epyc-root semantic search. Break-point scoring
+    formula (baseScore * (1-(d/w)^2*0.7)) extractable for context-folding.
+    2GB models run on CPU, no GPU impact. 359-file corpus is exact target.
 
 # === Deep-dive revisions 2026-04-06 ===
 # intake-263: DOWNGRADED relevance low, verdict not_applicable (ACP is editor-agent protocol, not inference; 2-day-old fork of upstream agentclientprotocol/claude-agent-acp)
@@ -7611,3 +7634,236 @@
 # intake-268: UPGRADED relevance high, verdict adopt_patterns (epyc-root IS an LLM wiki — lint operation is highest-value gap; three-layer architecture validates our governance split; "file query results back" pattern addresses knowledge decay in progress logs)
 # intake-269: UPGRADED novelty medium-high, relevance high, verdict adopt_patterns (credibility scoring rubric immediately adoptable for research-intake; anti-confirmation-bias directive is one-paragraph skill addition; progress/termination scoring applicable to nightshift; parallel agent swarm needs P3 design work)
 # intake-270: UPGRADED novelty medium-high, relevance high, verdict adopt_component (deploy as MCP server for epyc-root semantic search; extract break-point scoring formula for context-folding; 2GB models run on CPU without impacting GPU inference; 359-file corpus is exact target size)
+
+- id: intake-271
+  url: https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents
+  source_type: blog
+  title: 'Skill Issue: Harness Engineering for Coding Agents'
+  authors:
+  - Kyle (@0xblacklight)
+  date: '2026-03-12'
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - Configuration problems (harness), not model limitations, are the primary barrier to coding agent success
+  - 'Coding agent = AI model(s) + harness — the harness configuration surface drives performance gains'
+  - Progressive disclosure and context firewalls (sub-agents) maintain agent coherency across extended tasks
+  - Verification mechanisms and back-pressure loops significantly improve task success rates
+  - Instruction budget management is critical — ETH Zurich shows LLM-generated agentfiles hurt performance by 20%+
+  techniques:
+  - Harness engineering (systematic optimization of agent configuration points)
+  - Progressive disclosure (selectively exposing tools/knowledge to agents)
+  - Context firewall (sub-agents isolating intermediate work from parent thread)
+  - Instruction budget (managing token allocation for system instructions vs task execution)
+  - Back-pressure loops (verification mechanisms feeding failure signals back to agent)
+  results:
+  - 'Opus 4.6 in Claude Code: #33 on TerminalBench-2 in one harness, #5 in a different harness (~28 rank delta)'
+  - 'ETH Zurich (2602.11988): LLM-generated agentfiles hurt performance by 20%+; human-written ones help ~4%'
+  - Agents spend 14-22% more tokens processing context instructions without improving resolution rates
+  - Chroma context rot shows performance degradation at longer contexts, steeper with low semantic similarity
+  referenced_papers:
+  - arxiv:2602.11988 (ETH Zurich agentfile evaluation)
+  - arxiv:2309.00071 (YaRN context extension)
+  - https://research.trychroma.com/context-rot (Chroma context rot)
+  - https://openai.com/index/harness-engineering/ (OpenAI harness engineering)
+  - https://terminalbench.com/ (TerminalBench 2.0)
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - autopilot-continuous-optimization.md
+    intake:
+    - intake-244 (Meta-Harness)
+  notes: >
+    Practitioner synthesis of harness engineering patterns for coding agents. The TerminalBench-2
+    rank delta (~28 positions from harness alone) validates our meta-harness optimization direction.
+    Progressive disclosure maps to our context-folding tiered approach. The context firewall pattern
+    (sub-agent isolation) is already partially implemented in our orchestrator via worker delegation.
+    The instruction budget concern (14-22% token overhead from verbose agentfiles) reinforces our
+    thin-map agent architecture. Key gap: we lack systematic back-pressure loops — autopilot's
+    PromptForge does mutation but doesn't have failure-driven feedback targeting specific harness
+    components. The ETH Zurich finding that LLM-generated agentfiles hurt performance is a caution
+    for PromptForge's code mutation species.
+
+- id: intake-272
+  arxiv_id: '2602.11988'
+  url: https://arxiv.org/abs/2602.11988
+  source_type: paper
+  title: 'Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?'
+  authors:
+  - Thibaud Gloaguen
+  - Niels Mündler
+  - Mark Müller
+  - Veselin Raychev
+  - Martin Vechev
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - Context files (AGENTS.md) tend to REDUCE task success rates compared to providing no repository context
+  - Context files increase inference cost by over 20%
+  - Both AI-generated and human-written context files encourage broader exploration (more testing, more file traversal)
+  - Human-written context files should describe only minimal requirements
+  results:
+  - Task success rate reduction with context files vs no context
+  - Inference cost increase over 20%
+  - Evaluated across multiple coding agents and LLMs on SWE-bench and novel repository issues
+  techniques:
+  - AGENTS.md evaluation framework
+  - Comparison of AI-generated vs human-written context files
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-271
+  verdict: new_opportunity
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    intake:
+    - intake-271 (HumanLayer harness engineering blog)
+    - intake-244 (Meta-Harness)
+  notes: >
+    Critical finding for our agent architecture. If context files hurt performance, our
+    thin-map approach (minimal shared policy + lean role overlays) may be optimal — but
+    we should validate empirically. The 20%+ cost increase from verbose agentfiles directly
+    threatens PromptForge mutations that add instructions. Actionable: (1) benchmark our
+    agent files with/without on SWE-bench subset, (2) add instruction token budget tracking
+    to autopilot eval tower, (3) consider a "minimal context" ablation in PromptForge
+    experiments. The finding that broader exploration doesn't improve success rates challenges
+    the assumption that more context = better agent performance.
+
+- id: intake-273
+  url: https://research.trychroma.com/context-rot
+  source_type: blog
+  title: 'Context Rot: How Increasing Input Tokens Impacts LLM Performance'
+  authors:
+  - Kelly Hong
+  - Anton Troynikov
+  - Jeff Huber
+  date: '2025-07-14'
+  categories:
+  - context_extension
+  - benchmark_methodology
+  key_claims:
+  - LLMs do not process context uniformly — performance varies significantly as input length changes
+  - State-of-the-art models (GPT-4.1, Claude 4, Gemini 2.5, Qwen3) show consistent degradation with increasing input
+  - Low semantic similarity between questions and context compounds degradation at longer contexts
+  - Distractors have non-uniform, amplifying impact on performance as context grows
+  - Structural coherence in context actually hurts performance — shuffled haystacks outperform structured ones
+  techniques:
+  - Needle-question similarity measurement via embedding models
+  - Distractor vs irrelevant content distinction
+  - Haystack structure comparison (original vs shuffled)
+  - LongMemEval adaptation for conversational QA
+  results:
+  - 18 LLMs evaluated across 8 input lengths and 11 needle positions
+  - Lower needle-question similarity (0.4-0.8) shows steeper performance degradation
+  - Claude models show lowest hallucination rates across all tested models
+  - Shuffled haystacks consistently outperform structured ones across all 18 models
+  referenced_papers:
+  - arxiv:2410.10813 (LongMemEval)
+  - arxiv:2409.12640 (Michelangelo)
+  - arxiv:2309.00071 (YaRN)
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-271
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    intake:
+    - intake-271 (HumanLayer harness engineering blog)
+    - intake-154 (Context-Folding paper)
+    - intake-155 (AgentFold)
+  notes: >
+    Directly supports our context-folding and tool-output-compression work. The finding that
+    performance degrades with input length — especially with low semantic similarity — validates
+    aggressive compression of tool outputs before they enter context. The shuffled-outperforms-
+    structured finding is surprising and counter-intuitive: our compaction summaries may benefit
+    from being less narratively structured. Actionable: (1) add semantic similarity scoring to
+    context-folding segment retention (keep high-similarity segments, compress low-similarity
+    aggressively), (2) experiment with shuffled/unstructured compaction summaries in eval tower,
+    (3) the distractor amplification finding suggests we should actively remove off-topic context
+    rather than just summarizing it.
+
+- id: intake-274
+  arxiv_id: '2508.21433'
+  url: https://arxiv.org/abs/2508.21433
+  source_type: paper
+  title: 'The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management'
+  authors:
+  - Tobias Lindenbauer
+  - Igor Slinko
+  - Ludwig Felder
+  - Egor Bogomolov
+  - Yaroslav Zharov
+  categories:
+  - agent_architecture
+  - context_extension
+  key_claims:
+  - Simple observation masking (stripping older tool outputs) matches LLM summarization for agent context management
+  - Observation masking halves cost vs raw agent while matching or exceeding solve rates of LLM summarization
+  - Hybrid approach (masking + summarization) reduces costs by 7-11% beyond individual strategies
+  - Questions the trend toward LLM-based summarization solutions
+  techniques:
+  - Observation masking (strategic omission of older environmental observations)
+  - Hybrid context management (masking + summarization combined)
+  results:
+  - 50% cost reduction via observation masking vs baseline
+  - Matched or marginally surpassed LLM summarization solve rates
+  - Hybrid approach further 7-11% cost reduction
+  - Evaluated across 5 model configurations on SWE-bench Verified + OpenHands
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-273
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    intake:
+    - intake-273 (Chroma context rot)
+    - intake-155 (AgentFold)
+  notes: >
+    Directly validates our tool-output-compression approach. If simple observation masking
+    (stripping old tool outputs) matches LLM summarization, our Phase 2 pattern-based
+    compression (pytest focus on failures, git diff strip boilerplate) may be optimal —
+    possibly better than LLM-based compression for tool outputs. The hybrid finding (7-11%
+    further reduction) suggests our two-layer architecture (compress tool outputs first,
+    then LLM-summarize conversation history) is the right design. Key question: does
+    observation masking interact with our segment retention scoring? Masking old observations
+    is equivalent to setting recency weight very high in segment_helpfulness().
+
+# === Deep-dive revisions 2026-04-06 (intakes 271-274) ===
+# intake-271: CONFIRMED medium novelty, high relevance. Practitioner synthesis, not research contribution.
+#   NEW INSIGHTS: (1) "CLI > MCP for known services" heuristic — genuinely useful, gap in EPYC guidance.
+#   (2) Role-based sub-agents FAIL; context-isolation sub-agents succeed — useful negative result.
+#   (3) Pre-emptive harness design counterproductive; failure-driven config only.
+#   (4) Micro-managed tool access causes "tool thrash". (5) Back-pressure loop is just PostToolUse typecheck hook.
+#   UPSTREAMING: CLI>MCP heuristic, PostStop verification hook, sub-agent isolation guidance → root-archetype.
+#   ACTION: Add `prune` mutation type to PromptForge.
+# intake-272: CONFIRMED high novelty. METHODOLOGY WEAKNESSES: no stat significance (n=138, single samples),
+#   Python-only, monolithic context files only (thin-map NOT tested), SWE-bench isolated patches only.
+#   KEY NUANCE: Context files HELP when documentation is stripped (+2.7%). They're redundant with existing docs,
+#   not inherently harmful. Our thin-map may escape the negative finding.
+#   UPSTREAMING: "No /init CLAUDE.md", "≤400 words", "no overviews", "toolchain requirements only", "human > LLM".
+#   ACTIONS: instruction_token_ratio in eval tower, PromptForge prune mutation, doc-stripped ablation.
+# intake-273: UPGRADED novelty medium → medium-high. Shuffled finding is novel but RETRIEVAL-ONLY — may reverse
+#   for reasoning tasks. DO NOT restructure context-folding summaries. DO run bullet-vs-narrative A/B test.
+#   Chroma conflict of interest noted (sells vector DB). No effect sizes reported.
+#   ACTIONS: bullet-vs-narrative consolidation test, task_relevance candidate 5th signal, distractor-aware context.
+# intake-274: NEW via expansion from 273. Validates tool-output-compression. Two-layer architecture confirmed optimal.

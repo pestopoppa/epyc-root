@@ -1,6 +1,6 @@
 # Research Taxonomy
 
-The taxonomy (`research/taxonomy.yaml`) defines 18 categories for classifying research material.
+The taxonomy (`research/taxonomy.yaml`) defines 24 categories for classifying research material.
 
 ## Categories
 
@@ -25,6 +25,11 @@ The taxonomy (`research/taxonomy.yaml`) defines 18 categories for classifying re
 | `autonomous_research` | AI-driven research workflows |
 | `swarm_techniques` | Multi-agent swarm coordination |
 | `document_processing` | PDF parsing, OCR, table recognition, reading order for LLM pipelines |
+| `knowledge_management` | LLM-compiled knowledge bases, persistent wikis, research intake, knowledge hygiene |
+| `rag_alternatives` | Non-retrieval approaches to knowledge integration — compilation, persistent synthesis |
+| `tool_implementation` | CLI tools, plugins, developer tooling for LLM workflows and agent systems |
+| `local_inference` | On-device inference with GGUF, llama.cpp, node-llama-cpp, local model serving |
+| `search_retrieval` | Hybrid search, BM25, vector search, re-ranking, retrieval pipelines |
 
 ## Usage
 
