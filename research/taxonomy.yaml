@@ -116,3 +116,28 @@ categories:
     label: Document Processing
     description: PDF parsing, OCR, document extraction, table recognition, reading order analysis for LLM pipelines.
     related_chapters: []
+
+  knowledge_management:
+    label: Knowledge Management
+    description: LLM-compiled knowledge bases, persistent wikis, research intake, cross-referencing, and knowledge hygiene.
+    related_chapters: []
+
+  rag_alternatives:
+    label: RAG Alternatives
+    description: Non-retrieval approaches to knowledge integration — compilation, persistent synthesis, structured wikis.
+    related_chapters: []
+
+  tool_implementation:
+    label: Tool Implementation
+    description: CLI tools, plugins, and developer tooling for LLM workflows and agent systems.
+    related_chapters: []
+
+  local_inference:
+    label: Local Inference
+    description: On-device inference with GGUF, llama.cpp, node-llama-cpp, and local model serving.
+    related_chapters: []
+
+  search_retrieval:
+    label: Search & Retrieval
+    description: Hybrid search, BM25, vector search, re-ranking, and retrieval pipelines for knowledge bases.
+    related_chapters: []

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-05
+**Updated**: 2026-04-06
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -27,11 +27,11 @@ Highest-impact work across all domains. Each item points to where the details li
 |---|----------|------|----------------|
 | 1 | HIGH | AR-3 relaunch (expand T0 sentinels, safety-hardened) | [routing-and-optimization-index](routing-and-optimization-index.md) P5 |
 | 2 | ~~HIGH~~ | ~~Context folding Phase 1~~ ✅ 2026-04-04 | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 1 |
-| 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests) | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
-| 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
-| 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
+| 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests). Phase 2c ByteRover enhancement designed (intake-267). | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
+| 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) → Package C/D | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
+| 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) → Package D | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
 | 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
-| 5 | MED | TrimR deployment (reasoning compression Tier 1) | [research-evaluation-index](research-evaluation-index.md) P0 |
+| 5 | MED | TrimR deployment (reasoning compression Tier 1) → Package B | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05 (7 handlers, feature-flagged, needs prod validation) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
 | 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05 (MCP chat tools, 15 tests, feature-flagged) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
@@ -62,6 +62,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | ~~[04-mirothinker-worker-eval.md](04-mirothinker-worker-eval.md)~~ | Model candidate | ARCHIVED (superseded by 30B-A3B) | — | 2026-04-05 |
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
+| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active | HIGH | 2026-04-06 |
 
 ---
 
@@ -77,6 +78,7 @@ Changes in one domain often affect others. Key coupling points:
 | Hermes (B2 context compression) | Routing (context folding Phase 1) | Must sequence B2 after Phase 1 — both modify compaction |
 | Routing (AR-3 autoresearch) | Routing (meta-harness) | Meta-harness Tier 1+2 validated via AR-3 autopilot runs |
 | Pipeline (new models) | Routing (NUMA allocation) | Each pipeline model competes for RAM/quarters with production stack |
+| Bulk inference campaign (B-E) | All 5 domains | 14 tasks → 4 optimized runs; produces data unblocking routing, research, pipeline work |
 
 ---
 

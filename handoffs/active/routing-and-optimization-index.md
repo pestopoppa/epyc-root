@@ -23,7 +23,7 @@
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 46 trials. Safety hardened + hybrid eval (T1 real gate). | Relaunch AR-3 |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
-| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D) |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover enhancement (intake-267, design ready) |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 1+2 complete (reducer fix + 44 tests + dual-run validation) | Phase 3: Node-by-node migration |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | Phase 0 complete (MCP chat tools, 15 tests) | Phase 1: hardening, telemetry |
@@ -139,6 +139,10 @@ Lower priority refinements.
 
 - [x] **AP-13: Grep-parseable metric output** — ✅ 2026-04-05. `EvalResult.to_grep_lines()` emits `METRIC key: value` lines. Logged after each eval in the autopilot main loop. Extract via `grep METRIC autopilot.log`.
 
+- [ ] **AP-14: Structured deficiency classification** — `deficiency_category` enum on JournalEntry. 9 categories from SafetyGate violations. Prerequisite for AR-3 relaunch quality. (intake-265 deep-dive)
+
+- [ ] **AP-15: Species field verification audit** — Confirm all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. (intake-265 deep-dive)
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
@@ -179,6 +183,7 @@ Observed patterns inform routing (Q-value training), autopilot (experiment evalu
 
 ### 7. Context Folding ↔ AutoResearch Baseline
 `context-folding-progressive.md` Phase 0-1 (compaction trigger + two-level condensation) changes session quality behavior. The autoresearch baseline (AR-1) should be captured AFTER Phase 0-1 is deployed, or the "before" number will reflect a compaction policy that is about to change. Phase 3 process rewards feed MemRL Q-value enrichment (routing-intelligence Phase 5). **Updated 2026-04-05**: Phase 2 now includes free-zone threshold sweep and helpfulness scoring (intake-261/262); Phase 3 now includes role-aware compaction profiles that parameterize aggressiveness per orchestrator role. Phase 3b role profiles will directly affect autopilot token costs — `worker_explore` gets more aggressive compaction than `worker_coder`. **Updated 2026-04-05 (session 4)**: Phase 1+ (SegmentCache), 2c (helpfulness scoring), 3a (process rewards), 3b (CompactionProfile + CompactionQualityMonitor) all code-complete with 32 unit tests. Feature flags: `segment_cache_dedup`, `helpfulness_scoring`, `process_reward_telemetry`, `role_aware_compaction` (all off by default).
+**Updated 2026-04-06**: Phase 2c ByteRover enhancement (intake-267) adds compound retention scoring (access_count, importance_score, maturity_tier with hysteresis) to `segment_helpfulness()`. Design documented in handoff. Implementation after Package C — uses Package C Δ_k ground truth for weight calibration.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_explore`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.

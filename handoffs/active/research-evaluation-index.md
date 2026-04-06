@@ -19,7 +19,7 @@
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed) | HIGH | 2026-04-04 |
+| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed) | HIGH | 2026-04-06 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | Phase 2 native implemented (feature-flagged) | MEDIUM | 2026-04-05 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
@@ -33,11 +33,11 @@
 
 ### P0 — Reasoning Compression (actionable now)
 
-- [ ] Run TrimR evaluation on math/gpqa suites (requires model server) — `eval_trimr.py`
+- [ ] Run TrimR evaluation on math/gpqa suites (requires model server) — `eval_trimr.py` (→ Package B, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 - [x] Collect shadow telemetry from `difficulty_signal.py` in production — ✅ 2026-04-06. 635 requests, Package A run.
 - [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. Thresholds recalibrated (0.3/0.6 → 0.15/0.35). Re-validate at new thresholds needed.
-- [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
-- [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6)
+- [ ] If validated: implement enforce mode (route easy→worker, hard→architect) (depends on Package B results)
+- [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6) (→ Package B)
 
 ### P1 — Tool Output Compression
 
@@ -45,13 +45,13 @@
 - [x] Phase 2 native compression module — ✅ 2026-04-05. `compress_tool_output.py` with 7 handlers (pytest, cargo test, git status/diff/log, ls, build). 27 tests.
 - [x] Orchestrator integration — ✅ 2026-04-05. Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 - [ ] Enable flag in production and measure net savings on real autopilot sessions
-- [ ] A/B comparison: tool_output_compression on vs off (needs inference)
+- [ ] A/B comparison: tool_output_compression on vs off (→ Package B)
 
 ### P2 — Reasoning Compression (deferred)
 
 - [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
-- [ ] Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2a
-- [ ] Free-zone compression threshold sweep — `context-folding-progressive.md` Phase 2b (intake-261/262). Eval skeleton: `eval_compaction_sweep.py --dry-run` ready.
+- [ ] Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2a (→ Package C)
+- [ ] Free-zone compression threshold sweep — `context-folding-progressive.md` Phase 2b (intake-261/262). Eval skeleton: `eval_compaction_sweep.py --dry-run` ready. (→ Package C)
 - [x] Helpfulness scoring heuristic — ✅ 2026-04-05. `segment_helpfulness()` + `prioritized_compaction()` in `session_log.py`. LLM-based calibration deferred: `eval_helpfulness_calibration.py --dry-run` ready.
 
 ### P3 — Long-Context Evaluation Datasets
@@ -102,6 +102,10 @@ Multiscreen monitoring            ──depends on external adoption──
 3. **Long-context datasets ↔ KV cache quantization**: Datasets collected here serve both YaRN evaluation and TurboQuant KV cache quality validation (kv-cache-quantization.md Phase 3d). Coordinate dataset format with benchmark scripts.
 
 4. **Summarizer quality ↔ context-folding Phase 2a/2b/2c**: Phase 2b (free-zone sweep) and Phase 2c (helpfulness calibration) both require eval infrastructure. Helpfulness calibration (LLM-based Δ_k ground truth) is the most expensive eval — schedule with other benchmark runs. Literature basis: Skill0 (intake-261) helpfulness-driven curriculum, AgentOCR (intake-262) compression quality thresholds.: reasoning-compression's summarizer quality assessment and context-folding Phase 2 share the same eval methodology (Claude-as-Judge scoring). Implement once, use in both.
+
+5. **Bulk Inference Campaign**: Tasks P0 (TrimR, Omega, difficulty validation), P1 (tool compression A/B), and P2 (summarizer quality, free-zone, helpfulness) are consolidated into Packages B and C of [`bulk-inference-campaign.md`](bulk-inference-campaign.md). Package B (seeding eval v2) resolves P0+P1 tasks in a single full-stack run. Package C (CF eval batch) resolves P2 tasks using individual model servers. See that handoff for execution schedule, feature flags, and success criteria.
+
+6. **Research intake deep-dive caveats (2026-04-06)**: intake-264 (SSD) downgraded to monitor-only — requires 8×B200 SFT, not actionable for inference-only stack. intake-266 (OPD Survey) downgraded to reference-only — training-only methods, agent distillation already solved by SkillBank. No new tasks generated from either. Caveats appended to reasoning-compression.md.
 
 ---
 

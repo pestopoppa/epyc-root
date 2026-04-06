@@ -2,7 +2,7 @@
 
 **Status**: AR-3 run 2 completed (44 trials, 6 frontier, 1 useful change). Safety hardened after file corruption incident. Ready for relaunch.
 **Created**: 2026-03-08
-**Updated**: 2026-04-04
+**Updated**: 2026-04-06
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 ## Architecture
@@ -270,6 +270,13 @@ All core infrastructure verified in code as of 2026-04-01:
    - Baseline recalibrated to T1 scale (q=1.16). Safety gate tier-aware.
    - State at trial_counter=46
 
+
+2. **AP-14: Structured deficiency classification** — Add `deficiency_category` enum to `JournalEntry` in `experiment_journal.py`. Values: QUALITY_FLOOR, REGRESSION, PER_SUITE, ROUTING_DIVERSITY, THROUGHPUT, CONSECUTIVE_FAILURES, CODE_VALIDATION, SHRINKAGE, REVERT. Auto-populated from SafetyGate violation type. Enables journal filtering by failure mode and downstream pattern detection in PromptForge.
+   - Source: intake-265 deep-dive (AutoResearchClaw structured error taxonomy)
+
+3. **AP-15: Species field verification audit** — Verify all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. AP-8 added fields; confirm Seeder, NumericSwarm, PromptForge, StructuralLab, EvolutionManager actually fill them.
+   - Acceptance: 100% of trials have non-empty hypothesis + expected_mechanism in JSONL
+   - Source: intake-265 deep-dive
 ### DEFERRED (explicit reasons)
 
 2. **GEPA integration** (intake-240): Replace PromptForge heuristic mutations with principled evolutionary search (`dspy.GEPA`). Requires DSPy dependency + major refactor. Revisit after AR-3 shows PromptForge limitations.
@@ -296,6 +303,7 @@ All core infrastructure verified in code as of 2026-04-01:
 | 240 | GEPA (arxiv:2507.19457) | Pareto-aware prompt evolution, 35x fewer rollouts vs RL | Deferred (#9) — potential PromptForge replacement |
 | 244 | Meta-Harness (arxiv:2603.28052) | Execution trace feedback +15pts over score-only | **Applied** (B3) — traces fed to PromptForge |
 | 248 | SiliconSwarm@Ensue | Cross-agent knowledge transfer breaks plateaus | **Applied** (B1, B4, B5) — strategy store + insights + cross-species |
+| 265 | Omni-SimpleMem (arxiv:2604.01007) | Bug fixes > tuning on broken baselines; 6-type discovery taxonomy; 4 suitability properties (we pass all 4) | AP-14 deficiency classification, AP-15 field audit |
 
 ## Staleness Notes
 
@@ -312,3 +320,20 @@ All core infrastructure verified in code as of 2026-04-01:
 4. **PromptForge**: Propose mutation, apply, verify git snapshot
 5. **Full loop**: 10 trials across all species, verify journal + Pareto + safety gate
 6. **Overnight**: 8-hour unattended run, check hypervolume trend
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-265] "Omni-SimpleMem: Autoresearch-Guided Discovery of Lifelong Multimodal Agent Memory"** (arxiv:2604.01007)
+  - Relevance: AutoResearchClaw is a 23-stage autonomous research pipeline — directly comparable to our 4-species AutoPilot architecture
+  - Key technique: Multi-agent debate + self-healing execution; autonomous experiment loop (~50 experiments)
+  - Reported results: +411% F1 on LoCoMo, +214% on Mem-Gallery; bug fixes (+175%) > all hyperparameter tuning combined
+  - Delta from current approach: Their finding that bug fixes and architectural changes vastly outperform hyperparameter tuning validates prioritizing Species 2 (PromptForge) and Species 3 (StructuralLab) over Species 1 (NumericSwarm). Consider increasing structural species budget allocation. The 23-stage pipeline with debate is more sophisticated than our 4-species approach — may inform future species design.
+
+- **[intake-267] "ByteRover: Agent-Native Memory Through LLM-Curated Hierarchical Context"** (arxiv:2604.01599)
+  - Relevance: Agent-native memory where the LLM itself curates knowledge in hierarchical markdown files — validates autopilot state management direction
+  - Key technique: Hierarchical Context Tree with importance scoring + recency decay; sub-100ms retrieval
+  - Delta from current approach: Our autopilot_state.json is a flat JSON store. ByteRover's hierarchical approach with LLM-driven curation could inform how autopilot manages its experiment journal and Pareto archive for better context retrieval across long runs.
+
+### Deep-Dive Correction (2026-04-06)
+**Caveat on intake-265**: The "bug fixes > tuning" headline is misleading. The baseline was catastrophically broken (F1=0.117 vs SimpleMem SOTA 0.432) — a missing `response_format=json_object` caused 9x verbosity. The finding generalizes to "fixing broken systems beats tuning broken systems," not "structural always beats numeric." Our AutoPilot operates on a functioning system where NumericSwarm is in the right regime. **No species budget rebalancing needed from this paper alone.** However, two small improvements validated: (1) add structured deficiency classification to experiment_journal.py error handling, (2) ensure all species populate hypothesis/expected_mechanism journal fields. The 4 autoresearch suitability properties (scalar metrics, modular architecture, fast iteration, version-controlled modifications) are a useful checklist — our AutoPilot satisfies all 4.

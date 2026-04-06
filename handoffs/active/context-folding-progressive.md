@@ -108,6 +108,11 @@ class ConsolidatedSegment:
     consolidated: str            # Tier 2 dense paragraph
     trigger: str                 # what triggered consolidation
     timestamp: float
+    # ByteRover enhancement (intake-267)
+    access_count: int = 0              # turns referencing this segment
+    importance_score: float = 0.0      # accumulated: +3 access, +5 update, decay 0.995^Δt
+    maturity_tier: str = "draft"       # draft→validated(≥65)→core(≥85), demote at <35/<60
+    last_accessed_turn: int = 0
 ```
 
 **Acceptance criteria**:
@@ -446,9 +451,75 @@ def prioritized_compaction(segments: list[ConsolidatedSegment],
 - LLM-based calibration script produces Δ_k ground truth for at least 10 session logs
 - Heuristic scores correlate with LLM-based Δ_k (Spearman ρ > 0.5 on calibration set)
 - Telemetry logs per-segment helpfulness scores at each compaction event
+- ByteRover importance scoring accumulates correctly (access +3, update +5, decay 0.995^Δt)
+- Maturity tier hysteresis: promote at 65/85, demote at 35/60, no oscillation within band
 
 **Depends on**: Phase 1 (needs segment architecture), Phase 2a (needs quality evaluation infra), Phase 2b (free-zone thresholds feed PRESERVE_THRESHOLD)
 **Cross-reference**: Shares eval methodology with `reasoning-compression.md` (TrimR evaluation uses same `eval_trimr.py` pattern and Claude-as-Judge scoring)
+
+
+### Phase 2c — ByteRover Enhancement
+
+**Objective**: Incorporate ByteRover compound retention scoring (intake-267, arxiv:2604.01599) into the segment helpfulness heuristic, adding access-frequency tracking, importance accumulation with temporal decay, and maturity tiering with hysteresis thresholds.
+
+**Rationale**: The current 4-signal `segment_helpfulness()` uses recency, reference density, outcome, and content sensitivity. ByteRover adds a complementary dimension: *behavioral importance* — segments frequently accessed across turns are demonstrably useful regardless of recency. The hysteresis pattern (Schmitt trigger) prevents oscillation in tiered retention decisions. Deep-dive confirmed: tiered retrieval with importance scoring is ByteRover's strongest ablation component (-29.4pp when removed).
+
+**Design — importance scoring per segment**, updated on every access:
+
+```python
+def update_importance(segment: ConsolidatedSegment, current_turn: int, event: str):
+    """Update segment importance on access/update events."""
+    delta_t = current_turn - segment.last_accessed_turn
+    segment.importance_score *= 0.995 ** delta_t      # temporal decay
+    if event == "access":
+        segment.importance_score += 3
+        segment.access_count += 1
+    elif event == "update":
+        segment.importance_score += 5
+    segment.last_accessed_turn = current_turn
+    # Hysteresis tiering (Schmitt trigger — gap prevents oscillation)
+    score = segment.importance_score
+    if segment.maturity_tier == "draft" and score >= 65:
+        segment.maturity_tier = "validated"
+    elif segment.maturity_tier == "validated" and score >= 85:
+        segment.maturity_tier = "core"
+    elif segment.maturity_tier == "core" and score < 60:
+        segment.maturity_tier = "validated"
+    elif segment.maturity_tier == "validated" and score < 35:
+        segment.maturity_tier = "draft"
+```
+
+**Modified `segment_helpfulness()` weights** — 4-signal → 6-signal:
+
+```python
+def segment_helpfulness(segment: ConsolidatedSegment, current_turn: int) -> float:
+    recency = ...           # unchanged (linear decay over 20 turns)
+    ref_density = ...       # unchanged (identifier overlap with recent turns)
+    outcome = ...           # unchanged (reward_signals.on_scope)
+    content_sensitivity = ...  # unchanged (text sensitivity heuristic)
+
+    # ByteRover signals
+    importance = min(1.0, segment.importance_score / 100.0)
+    maturity_bonus = {"draft": 0.0, "validated": 0.3, "core": 0.6}[segment.maturity_tier]
+
+    return (0.20 * recency             # was 0.30
+          + 0.20 * ref_density         # was 0.30
+          + 0.15 * outcome             # was 0.20
+          + 0.15 * content_sensitivity # was 0.20
+          + 0.15 * importance          # NEW
+          + 0.15 * maturity_bonus)     # NEW
+```
+
+**Code changes**:
+
+| File | Change |
+|------|--------|
+| `epyc-orchestrator/src/graph/session_log.py` | Add 4 fields to `ConsolidatedSegment`; add `update_importance()`; reweight `segment_helpfulness()` |
+| `epyc-orchestrator/tests/unit/test_session_log.py` | Tests for importance accumulation, decay, hysteresis transitions, reweighted helpfulness |
+
+**No new feature flag** — controlled by existing `helpfulness_scoring` flag (env `ORCHESTRATOR_HELPFULNESS_SCORING`).
+
+**Note**: Weights are design proposals. Calibrate using Package C LLM Δ_k ground truth data. The current 4-signal heuristic will be evaluated during Package C first; ByteRover 6-signal weights layered on afterward.
 
 ---
 
@@ -757,3 +828,32 @@ python3 -m pytest tests/unit/ -x -q
   - Relevance: Converts textual agent histories to compact rendered images, reducing token consumption >50% while retaining >95% performance. Agent learns adaptive compression rates via RL.
   - Key technique: Segment optical caching decomposes history into hashable segments with visual cache (20x rendering speedup). Agentic self-compression lets the agent emit its own compression rate per step.
   - Delta from current approach: Our compaction produces text summaries. AgentOCR converts text to images — a radically different modality. Not directly applicable to our text-only llama.cpp stack, but the segment-based caching architecture and adaptive compression rate concepts are transferable to our segment-based compaction design.
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-268] "LLM Wiki: Persistent LLM-Compiled Knowledge Bases"** (Karpathy gist)
+  - Relevance: Conceptual framework for LLM-maintained persistent knowledge — compilation vs retrieval. Our context-folding produces compacted summaries that are essentially compiled knowledge from session history.
+  - Key technique: Three-layer architecture (raw/wiki/schema) with periodic lint passes for contradiction detection, orphan pages, stale claims. LLM handles cross-referencing and knowledge hygiene autonomously.
+  - Delta from current approach: Context-folding compacts within a session; LLM wiki compiles across sessions into a persistent artifact. The linting concept (detecting contradictions, staleness) could enhance our compaction quality validation — verifying that compacted segments don't introduce contradictions with retained context.
+- **[intake-269] "nvk/llm-wiki: Claude Code Plugin for LLM-Compiled Knowledge Bases"**
+  - Relevance: Working implementation with progress scoring (0-100) and principled termination thresholds — a pattern directly applicable to deciding when context-folding compaction is "good enough."
+  - Key technique: Session persistence via JSON checkpoints for multi-round research. Credibility scoring of sources.
+  - Delta from current approach: Their session persistence model could inform our compaction checkpoint design — storing intermediate compaction state so interrupted sessions can resume without re-processing.
+- **[intake-270] "tobi/qmd: Local Hybrid Search Engine for Markdown Knowledge Bases"**
+  - Relevance: BM25+vector+LLM reranking hybrid search running locally via node-llama-cpp with GGUF models — our exact stack. Natural markdown chunking algorithm for semantic boundary detection.
+  - Key technique: Scoring algorithm finds natural markdown break points instead of hard token boundaries. RRF fusion for combining retrieval signals.
+  - Delta from current approach: Our segment boundary detection for compaction uses heuristic rules. qmd's natural break point detection algorithm could improve our segmentation quality, particularly for markdown-heavy agent conversation histories.
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-267] "ByteRover: Agent-Native Memory Through LLM-Curated Hierarchical Context"** (arxiv:2604.01599)
+  - Relevance: Agent-native memory with LLM-curated hierarchical markdown storage, importance scoring + recency decay
+  - Key technique: Compound retention scoring (access_count + importance_score + maturity_tier) with hysteresis thresholds
+  - Reported results: Competitive on LoCoMo/LongMemEval; 5-tier retrieval escalation strongest component (-29.4pp ablation)
+  - Delta from current approach: Our `segment_helpfulness()` uses 4 static signals. ByteRover adds behavioral importance — segments referenced more often across turns accumulate importance regardless of recency. The hysteresis pattern prevents tier oscillation.
+  - **Adopted**: Phase 2c ByteRover Enhancement subsection added. 4 new fields on ConsolidatedSegment, modified helpfulness weights (4-signal → 6-signal with importance + maturity).
+
+### Deep-Dive Notes (2026-04-06)
+intake-267 UPGRADED to relevance medium-high during deep dive. The compound retention scoring and hysteresis pattern are directly adoptable. The 5-tier retrieval escalation (strongest ablation at -29.4pp) validates prioritizing segment importance in compaction decisions. Inline LLM curation rejected — incompatible with local model economics (Qwen3-30B-A3B). Our deterministic Tier 1 + bounded Tier 2 approach is the right trade-off.

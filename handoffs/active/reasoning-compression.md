@@ -225,3 +225,22 @@ Three families of techniques, ordered by implementation effort:
 ## Notes
 
 This is the most active research front discovered during the 2026-03-14 intake run. 7 of 10 expansion entries cluster around reasoning compression, approaching the problem from different angles. The theoretical foundation (Information Bottleneck, intake-133) explains why: CoT traces contain information about the response that isn't directly accessible from the prompt, so compression is lossy but bounded. The practical implication is that our current REPL token cap (5000 tokens) is a crude version of what these methods do adaptively — we should upgrade to difficulty-aware reasoning budgets.
+
+## Research Intake Update — 2026-04-06
+
+### New Related Research
+- **[intake-264] "Embarrassingly Simple Self-Distillation Improves Code Generation"** (arxiv:2604.01193)
+  - Relevance: Simplest possible self-distillation — temperature-sample own outputs, SFT on them. No verifier, teacher, or RL needed.
+  - Key technique: Simple Self-Distillation (SSD) — resolves precision-exploration conflict by reshaping token distributions contextually
+  - Reported results: Qwen3-30B 42.4% → 55.3% pass@1 on LiveCodeBench v6 (+12.9pp); generalizes across 4B-30B scale
+  - Delta from current approach: Our Tier 3 (OPSDC, intake-110) requires RL + reward model. SSD achieves meaningful gains with just SFT on self-generated data. The finding that self-generated data beats curated data challenges Doc-to-LoRA data curation assumptions.
+
+- **[intake-266] "A Survey of On-Policy Distillation for Large Language Models"** (arxiv:2604.00626)
+  - Relevance: First unified taxonomy of on-policy distillation — contextualizes OPSDC (intake-110) and SSD (intake-264) within f-divergence framework
+  - Key technique: Three-axis OPD taxonomy (feedback signal × teacher access × loss granularity)
+  - Delta from current approach: Explains why off-policy (static teacher data) causes exposure bias → compounding errors. Validates our Tier 3 direction but suggests teacher-free approaches (SSD) may be underweighted.
+
+### Deep-Dive Correction (2026-04-06)
+**Caveat on intake-264 (SSD)**: The 42.4→55.3% LCBv6 result is less impressive than it sounds — Nanbeige-3B (a 3B model) scores 76.9 on LCBv6, and Qwen3-32B baseline is already at 55.7%. Thinking models gain only +2-3pp from SSD. Requires 8xB200 for SFT — not actionable for our inference-only stack. The precision-exploration conflict theory is legitimate but the practical impact is near-zero for GGUF consumers. **Worth monitoring only** for: (a) SSD-trained checkpoints appearing as GGUFs on HuggingFace, (b) inference-time adaptations of the distribution reshaping idea.
+
+**Caveat on intake-266 (OPD Survey)**: Training-only methods exclusively. The exposure bias framing (DAgger bound: on-policy correction reduces error accumulation from O(eT²) to O(eT)) is the main extractable insight — it explains why OPSDC's self-rollout approach works from first principles. The "agent-level distillation" open problem is already addressed by our completed SkillBank pipeline. Useful as a theoretical reference only.

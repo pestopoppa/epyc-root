@@ -7238,3 +7238,376 @@
     could inform dynamic compaction aggressiveness. The >50% token reduction with
     >95% performance retention sets a useful benchmark for our own compaction
     quality targets.
+- id: intake-263
+  arxiv_id: null
+  url: https://github.com/0xSero/claude-acp-server
+  source_type: repo
+  title: 'claude-acp-server — Anthropic API to ACP Translation Layer'
+  categories:
+  - agent_architecture
+  - agent_architecture
+  key_claims:
+  - Translates Anthropic Messages API requests into ACP (Agent Client Protocol) format
+  - Manages persistent claude-agent-acp subprocess with session state
+  - Supports streaming (SSE) and non-streaming responses
+  - Model aliases map Anthropic model names to ACP backend
+  - Session management via x-acp-session-id header for multi-turn conversations
+  techniques:
+  - ACP-to-Anthropic protocol bridging
+  - Transcript bootstrapping (earlier turns folded into ACP session context)
+  - SSE streaming abstraction (agent_message_chunk to Anthropic event sequences)
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - claude-code-local-constellation-routing.md
+    - hermes-agent-index.md
+    research:
+    - opengauss-architecture-analysis.md
+  notes: >
+    ACP is the open standard for AI agent-editor integration (launched Sep 2025,
+    JetBrains co-lead maintainer Feb 2026). This repo is a thin adapter — not
+    novel architecturally, but demonstrates the ACP ecosystem maturing. Our
+    claude-code-local-constellation-routing handoff already evaluates ACP as
+    Path B for external API surface. This confirms ACP tooling exists but does
+    not change our MCP-first integration strategy. Monitor for when ACP becomes
+    first-class in Claude Code itself (currently via community adapters only).
+- id: intake-264
+  arxiv_id: '2604.01193'
+  url: https://arxiv.org/abs/2604.01193
+  source_type: paper
+  title: 'Embarrassingly Simple Self-Distillation Improves Code Generation'
+  authors:
+  - Ruixiang Zhang
+  - Richard He Bai
+  - Huangjie Zheng
+  - Navdeep Jaitly
+  - Ronan Collobert
+  - Yizhe Zhang
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - LLMs improve code generation using only their own raw outputs — no verifier, teacher, or RL
+  - Simple self-distillation (SSD) samples solutions at temperature then fine-tunes with standard SFT
+  - Qwen3-30B-Instruct improves from 42.4% to 55.3% pass@1 on LiveCodeBench v6
+  - Gains concentrate on harder problems
+  - Mechanism traced to precision-exploration conflict — SSD reshapes token distributions contextually
+  techniques:
+  - Simple Self-Distillation (SSD) — temperature sampling + SFT on own outputs
+  - Precision-exploration conflict resolution via distribution reshaping
+  reported_results:
+  - 'Qwen3-30B-Instruct: 42.4% to 55.3% pass@1 on LiveCodeBench v6 (+12.9pp)'
+  - 'Generalizes across Qwen and Llama at 4B, 8B, 30B scale'
+  - 'Gains concentrate on harder problems'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - 08-doc-to-lora-prototype.md
+    intake:
+    - intake-110 (OPSDC self-distillation)
+    - intake-125 (S3-CoT self-sampled reasoning)
+    - intake-258 (Think Anywhere in Code Generation)
+  handoffs_updated:
+  - reasoning-compression.md
+  notes: >
+    Simpler than OPSDC (intake-110) — no reward model, no RL, just temperature
+    sampling + SFT. The precision-exploration conflict framing is novel: SSD
+    suppresses distractor tails where precision matters (boilerplate, syntax)
+    while preserving diversity where exploration matters (algorithm choice,
+    edge cases). Directly complements our reasoning-compression work — OPSDC
+    compresses reasoning tokens, SSD improves the code output itself. Not
+    immediately actionable (requires SFT compute) but the finding that
+    self-generated data beats curated data at scale challenges our Doc-to-LoRA
+    data curation assumptions.
+- id: intake-265
+  arxiv_id: '2604.01007'
+  url: https://arxiv.org/abs/2604.01007
+  source_type: paper
+  title: 'Omni-SimpleMem: Autoresearch-Guided Discovery of Lifelong Multimodal Agent Memory'
+  authors:
+  - Jiaqi Liu
+  - Zipeng Ling
+  - Shi Qiu
+  - Yanqing Liu
+  - Siwei Han
+  - Peng Xia
+  - Haoqin Tu
+  - Zeyu Zheng
+  - Cihang Xie
+  - Charles Fleming
+  - Mingyu Ding
+  - Huaxiu Yao
+  categories:
+  - autonomous_research
+  - memory_augmented
+  - agent_architecture
+  key_claims:
+  - Autonomous research pipeline (AutoResearchClaw) discovers memory framework without human inner-loop
+  - Pipeline executes ~50 experiments autonomously across LoCoMo and Mem-Gallery benchmarks
+  - F1 improves +411% on LoCoMo (0.117 to 0.598) and +214% on Mem-Gallery (0.254 to 0.797)
+  - Bug fixes (+175%) and prompt engineering (+188%) individually exceed all hyperparameter tuning combined
+  - Taxonomy of 6 discovery types; 4 properties making multimodal memory suited for autoresearch
+  techniques:
+  - AutoResearchClaw (23-stage autonomous research pipeline)
+  - Multi-agent debate and self-healing execution
+  - Omni-SimpleMem unified multimodal memory framework
+  reported_results:
+  - 'LoCoMo F1: 0.117 to 0.598 (+411%)'
+  - 'Mem-Gallery F1: 0.254 to 0.797 (+214%)'
+  - 'Bug fixes alone: +175% improvement'
+  - 'Prompt engineering alone: +188% on specific categories'
+  - '~50 experiments executed autonomously'
+  novelty: high
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    intake:
+    - intake-148 (AutoResearch — Karpathy)
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  notes: >
+    The autoresearch methodology is the primary value — not the memory framework
+    itself (multimodal, not applicable to our text-only stack). Key insight for
+    our AutoPilot: bug fixes and architectural changes vastly outperform
+    hyperparameter tuning. Our Species 1 (NumericSwarm/Optuna) focuses on
+    numeric params while Species 2-3 handle structural changes — this validates
+    that Species 2-3 deserve higher budget allocation. The 23-stage pipeline
+    with multi-agent debate is more sophisticated than our 4-species approach.
+    The finding that ~50 experiments suffice for major gains is encouraging for
+    our overnight run budget.
+- id: intake-266
+  arxiv_id: '2604.00626'
+  url: https://arxiv.org/abs/2604.00626
+  source_type: paper
+  title: 'A Survey of On-Policy Distillation for Large Language Models'
+  authors:
+  - Mingyang Song
+  - Mao Zheng
+  categories:
+  - training_distillation
+  key_claims:
+  - First comprehensive survey of On-Policy Distillation (OPD) for LLMs
+  - Unified f-divergence framework over on-policy samples
+  - Three-axis taxonomy — feedback signal, teacher access, loss granularity
+  - Off-policy distillation causes exposure bias leading to compounding errors
+  - Identifies open problems including distillation scaling laws and agent-level distillation
+  techniques:
+  - Unified f-divergence OPD framework
+  - Interactive imitation learning theory for distillation
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-264
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    intake:
+    - intake-110 (OPSDC)
+    - intake-264 (SSD)
+  notes: >
+    Provides the theoretical taxonomy that contextualizes both OPSDC (intake-110,
+    on-policy + outcome-based + teacher-free) and SSD (intake-264, teacher-free
+    self-play). The exposure bias framing explains why self-generated data
+    outperforms curated data. The agent-level distillation open problem is
+    directly relevant to our completed SkillBank pipeline. Useful reference
+    but no immediate action items.
+- id: intake-267
+  arxiv_id: '2604.01599'
+  url: https://arxiv.org/abs/2604.01599
+  source_type: paper
+  title: 'ByteRover: Agent-Native Memory Through LLM-Curated Hierarchical Context'
+  authors:
+  - Andy Nguyen
+  - Danh Doan
+  - Hoang Pham
+  - et al.
+  categories:
+  - memory_augmented
+  - agent_architecture
+  key_claims:
+  - LLM itself curates, structures, and retrieves knowledge (no external vector/graph DB)
+  - Hierarchical Context Tree (Domain to Topic to Subtopic to Entry) with importance scoring and recency decay
+  - Most queries resolved below 100ms without additional LLM calls
+  - All knowledge stored as markdown files locally
+  - Competitive on LoCoMo and LongMemEval benchmarks
+  techniques:
+  - Agent-native memory (LLM as curator)
+  - Hierarchical Context Tree
+  - Importance scoring with recency decay
+  - Markdown-file-based knowledge storage
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-265
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - autopilot-continuous-optimization.md
+    intake:
+    - intake-144 (Contextual Memory Virtualization)
+    - intake-265 (Omni-SimpleMem)
+  notes: >
+    Architecture mirrors our own approach — hierarchical markdown-file storage
+    with LLM curation is exactly what context-folding Phase 1 does with
+    segment-based compaction. The importance scoring + recency decay mechanism
+    could inform our compaction priority scoring. The key differentiator is
+    agent-native: the LLM decides what to remember vs forget, rather than
+    external heuristics. This validates our context-folding direction and
+    suggests we should let the reasoning model itself decide compaction
+    aggressiveness rather than using fixed thresholds.
+
+- id: intake-268
+  arxiv_id: null
+  url: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+  source_type: blog
+  title: 'LLM Wiki: Persistent LLM-Compiled Knowledge Bases'
+  authors:
+  - Andrej Karpathy
+  categories:
+  - knowledge_management
+  - agent_architecture
+  - rag_alternatives
+  key_claims:
+  - Persistent compilation beats repeated retrieval — cross-references pre-built, not re-derived per query
+  - Three-layer architecture (raw sources, LLM-maintained wiki, schema config) is essential
+  - LLMs handle bookkeeping humans abandon (updating links, flagging contradictions, noting gaps)
+  - Human role shifts to curation and direction; LLM does indexing, summarization, cross-referencing
+  - Regular linting audits for contradictions, orphan pages, stale claims, missing cross-references
+  techniques:
+  - LLM-compiled knowledge base (persistent wiki vs RAG)
+  - Three-layer architecture (raw/wiki/schema)
+  - Automated cross-referencing and contradiction detection
+  - Periodic lint passes for knowledge hygiene
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - reasoning-compression.md
+    intake:
+    - intake-144 (Contextual Memory Virtualization)
+    - intake-267 (ByteRover agent-native memory)
+  notes: >
+    Conceptual essay behind the LLM wiki pattern. Our research-intake skill
+    is essentially an implementation of this — structured YAML index with
+    cross-references, maintained by LLM. The "compilation vs retrieval"
+    framing validates our approach: we compile research into persistent
+    handoffs rather than re-discovering context per session. The linting
+    concept (contradiction detection, orphan pages, stale claims) could
+    enhance our intake validation.
+
+- id: intake-269
+  arxiv_id: null
+  url: https://github.com/nvk/llm-wiki
+  source_type: repo
+  title: 'nvk/llm-wiki: Claude Code Plugin for LLM-Compiled Knowledge Bases'
+  authors:
+  - nvk
+  categories:
+  - knowledge_management
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - Parallel multi-agent research (5/8/10 agents for standard/deep/retardmax modes)
+  - Thesis-driven investigation with anti-confirmation-bias mechanisms
+  - Session persistence via .research-session.json for interrupted research
+  - Credibility scoring of sources (peer-review status, recency, authority, bias)
+  - Progress scoring 0-100 with principled termination thresholds
+  techniques:
+  - Parallel agent research orchestration
+  - Anti-confirmation-bias investigation
+  - Credibility scoring pipeline
+  - Session persistence for multi-round research
+  - Dual-linking (Obsidian wikilinks + standard markdown)
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - hermes-agent-index.md
+    intake:
+    - intake-268 (Karpathy LLM Wiki concept)
+    - intake-270 (qmd local search)
+  notes: >
+    Working implementation of Karpathy's LLM wiki as a Claude Code plugin.
+    The parallel agent orchestration (5-10 concurrent researchers) is the
+    most interesting aspect — mirrors our multi-model orchestrator concept
+    but for research rather than inference. Credibility scoring and
+    anti-confirmation-bias mechanisms could enhance our research-intake
+    skill. Progress scoring with termination thresholds is a pattern
+    adoptable for autopilot session management.
+
+- id: intake-270
+  arxiv_id: null
+  url: https://github.com/tobi/qmd
+  source_type: repo
+  title: 'tobi/qmd: Local Hybrid Search Engine for Markdown Knowledge Bases'
+  authors:
+  - Tobi Lütke
+  categories:
+  - knowledge_management
+  - local_inference
+  - search_retrieval
+  key_claims:
+  - Hybrid search combining BM25 full-text, vector semantic, and LLM re-ranking
+  - Runs entirely local via node-llama-cpp with GGUF models — no API keys
+  - Scoring algorithm finds natural markdown break points for semantic chunking
+  - Pipeline includes query expansion, FTS, vector search, RRF fusion, LLM re-ranking, position-aware blending
+  techniques:
+  - BM25 + vector + LLM reranking hybrid search
+  - GGUF model local inference via node-llama-cpp
+  - Natural markdown break point chunking
+  - Reciprocal Rank Fusion (RRF)
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-269
+  verdict: worth_investigating
+  ingested_date: '2026-04-06'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    intake:
+    - intake-268 (Karpathy LLM Wiki concept)
+    - intake-269 (nvk/llm-wiki)
+  notes: >
+    Uses GGUF models via node-llama-cpp for local search — directly on our
+    stack. The hybrid BM25+vector+LLM reranking pipeline is a well-engineered
+    retrieval architecture. Natural markdown chunking approach could inform
+    context-folding segment boundary detection. RRF fusion for combining
+    search signals is a proven technique applicable if we build retrieval
+    into the orchestrator for long-context knowledge lookup.
+
+# === Deep-dive revisions 2026-04-06 ===
+# intake-263: DOWNGRADED relevance low, verdict not_applicable (ACP is editor-agent protocol, not inference; 2-day-old fork of upstream agentclientprotocol/claude-agent-acp)
+# intake-264: DOWNGRADED relevance low, verdict worth_monitoring (55.3% LCBv6 is mediocre vs Nanbeige-3B 76.9; requires 8xB200 SFT; thinking models gain only +2pp; no inference-time path)
+# intake-265: REVISED novelty medium-high (AutoResearchClaw is prior work applied, not new; "bug fixes > tuning" is broken-baseline artifact — F1 started at 0.117 vs SimpleMem SOTA 0.432)
+# intake-266: DOWNGRADED relevance low (training-only methods; agent distillation "open problem" already solved by SkillBank; useful only as theoretical taxonomy reference)
+# intake-267: UPGRADED relevance medium-high (compound retention scoring directly adoptable for context-folding compaction; hysteresis pattern for tiered retention; 5-tier retrieval escalation strongest component at -29.4pp ablation)
+# intake-268: UPGRADED relevance high, verdict adopt_patterns (epyc-root IS an LLM wiki — lint operation is highest-value gap; three-layer architecture validates our governance split; "file query results back" pattern addresses knowledge decay in progress logs)
+# intake-269: UPGRADED novelty medium-high, relevance high, verdict adopt_patterns (credibility scoring rubric immediately adoptable for research-intake; anti-confirmation-bias directive is one-paragraph skill addition; progress/termination scoring applicable to nightshift; parallel agent swarm needs P3 design work)
+# intake-270: UPGRADED novelty medium-high, relevance high, verdict adopt_component (deploy as MCP server for epyc-root semantic search; extract break-point scoring formula for context-folding; 2GB models run on CPU without impacting GPU inference; 359-file corpus is exact target size)

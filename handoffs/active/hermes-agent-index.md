@@ -60,7 +60,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 - [x] Design routing API — ✅ 2026-04-05. 3 new fields on `OpenAIChatRequest`: `x_max_escalation`, `x_force_model`, `x_disable_repl`. Wired in `openai_compat.py`. Slash command → API mapping documented.
 - [ ] Auth flow for multi-user deployment — deferred (single-user only for now)
 - [ ] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands
-- [ ] Streaming + override param validation (needs inference)
+- [x] Streaming + override param validation — ✅ 2026-04-06 (Package E). SSE streaming works, `x_force_model`/`x_max_escalation`/`x_disable_repl` validated. Note: override params must be strings, not ints.
 
 ### P3 — Conversation Management (LOW value)
 
