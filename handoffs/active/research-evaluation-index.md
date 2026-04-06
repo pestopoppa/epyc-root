@@ -34,8 +34,8 @@
 ### P0 — Reasoning Compression (actionable now)
 
 - [ ] Run TrimR evaluation on math/gpqa suites (requires model server) — `eval_trimr.py`
-- [ ] Collect shadow telemetry from `difficulty_signal.py` in production
-- [ ] Validate difficulty signal predictive power against benchmark accuracy
+- [x] Collect shadow telemetry from `difficulty_signal.py` in production — ✅ 2026-04-06. 635 requests, Package A run.
+- [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. Thresholds recalibrated (0.3/0.6 → 0.15/0.35). Re-validate at new thresholds needed.
 - [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
 - [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6)
 

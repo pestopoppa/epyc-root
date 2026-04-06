@@ -109,7 +109,7 @@ These unblock data-driven stack scheduling.
 
 Depends on Phase 4 A/B results.
 
-- [ ] **RI-10: Shadow → enforce canary** — Enable enforce on frontdoor role only, 25% of requests, 3 days. Monitor latency, cost, escalation rate. See `routing-intelligence.md` § Phase 6.
+- [ ] **RI-10: Shadow → enforce canary** — READY TO ACTIVATE. Canary mode implemented: set `factual_risk.mode: "canary"` in `classifier_config.yaml`. 25% enforce on frontdoor only, 3 days. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Package A telemetry validated risk distribution (80.6% low, 18.7% medium, 0.6% high) and latency correlation (high-risk p50=69s vs low p50=25s).
 
 - [ ] **RI-11: Enforce expand** — Frontdoor 100% + worker_general, 7 days.
 

@@ -88,8 +88,8 @@ Three families of techniques, ordered by implementation effort:
 
 ### Remaining Work
 - [ ] Run TrimR evaluation on math/gpqa suites (requires model server)
-- [ ] Collect shadow telemetry from difficulty signal in production
-- [ ] Validate difficulty signal predictive power against benchmark accuracy
+- [x] Collect shadow telemetry from difficulty signal in production — ✅ 2026-04-06. Package A collected 635 routing decisions with shadow predictions.
+- [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. At old thresholds (0.3/0.6): 92% easy, 0% hard, no predictive spread. Recalibrated to 0.15/0.35 for ~40/40/20 split. Medium prompts take 29% longer (p50 36s vs 25s). Re-validation needed at new thresholds.
 - [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
 - [x] FlowSteer deep-dive (intake-126) — blocked on Qwen3.5 (no `build_cvec()` in `qwen35.cpp`), but SEAL linear baseline works on dense Qwen3/Qwen2.5 via `--control-vector`
 - [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
