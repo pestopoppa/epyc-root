@@ -1,6 +1,6 @@
 # Knowledge Base Governance Improvements
 
-**Status**: active (Phase 0/1/4/5a-d complete; Phase 2-3 deferred P2)
+**Status**: completed (all phases done 2026-04-07)
 **Created**: 2026-04-06 (via research intake deep-dive)
 **Updated**: 2026-04-07
 **Categories**: governance, research-intake, skill-enhancement
@@ -31,22 +31,13 @@ Companion handoff in root-archetype: [`knowledge-base-linter.md`](/mnt/raid0/llm
 
 ### Phase 2 — Session persistence docs (P2)
 
-- [ ] Create `references/session-persistence.md` documenting crash recovery pattern:
-  - `.research-session.json` schema: `{session_id, started_at, last_checkpoint, phase, entries_processed, entries_remaining, state}`
-  - Resume protocol: check for existing session file on invocation, offer to resume
-  - 7-day staleness warning
-- [ ] Add checkpoint logic description to SKILL.md Phase 5: after each entry appended, write checkpoint; on invocation, check for session file
+- [x] Create `references/session-persistence.md` — ✅ 2026-04-07. Full schema, resume protocol, 7-day staleness warning, autopilot cross-reference.
+- [x] Add checkpoint logic to SKILL.md — ✅ 2026-04-07. Phase 0 (session resume check) + Phase 5 checkpoint note (update after each append, delete on completion).
 
 ### Phase 3 — qmd semantic search addon docs (P2, optional)
 
-- [ ] Create `references/semantic-search-addon.md` documenting:
-  - qmd (tobi/qmd): local hybrid search using BM25 + vector + LLM reranking via node-llama-cpp
-  - ~2GB GGUF models (embedding 300M, reranker 600M, query expansion 1.7B) on CPU
-  - MCP server integration: add to Claude Code config, get `query`/`get` tools
-  - Corpus: point at `/workspace` root (~359 markdown files)
-  - Use case: replace grep-based cross-referencing in Phase 2 with semantic search
-  - Natural markdown chunking algorithm details (break-point scoring with distance decay)
-- [ ] Note: actual deployment is a separate work item, not part of this handoff
+- [x] Create `references/semantic-search-addon.md` — ✅ 2026-04-07. Covers qmd overview, model requirements (~2GB GGUF), MCP integration, corpus config, Phase 2 use case, chunking algorithm (break-point scoring with distance decay).
+- [x] Note: actual deployment is a separate work item — ✅ documented in the reference file.
 
 ### Phase 5 — Project-wiki skill: build in epyc-root, then upstream (P1, intake-277 deep-dive)
 

@@ -26,7 +26,7 @@
 | [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
-| [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, project-wiki skill | Phase 0/1/4/5a-d DONE; Phase 2-3 deferred (P2) | MEDIUM | 2026-04-07 |
+| [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, project-wiki skill | ALL PHASES COMPLETE | MEDIUM | 2026-04-07 |
 
 ---
 
@@ -86,8 +86,8 @@
 - [x] Add anti-confirmation-bias directive to research-intake Phase 3 — ✅ 2026-04-07
 - [x] Update intake-268/269/270 verdicts and cross-references — ✅ 2026-04-06
 - [x] **Phase 5d**: Upstream project-wiki skill to root-archetype — ✅ 2026-04-07
-- [ ] Session persistence documentation for research workflows (P2)
-- [ ] qmd semantic search addon documentation (P2, optional)
+- [x] Session persistence documentation for research workflows — ✅ 2026-04-07
+- [x] qmd semantic search addon documentation — ✅ 2026-04-07
 
 ### P0.5 — Brevity Prompt Upgrade (from intake-276 deep-dive)
 

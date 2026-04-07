@@ -23,6 +23,10 @@ Do not use when:
 
 Execute these 5 phases in order for each invocation.
 
+### Phase 0 — Session Resume Check
+
+Before starting Phase 1, check for an existing `.research-session.json` in the repo root. If found and less than 7 days old, offer to resume (skip already-processed URLs). If older than 7 days, warn about staleness and suggest starting fresh. See `references/session-persistence.md` for the full schema and protocol.
+
 ### Phase 1 — Fetch & Extract
 
 For each URL provided:
@@ -209,6 +213,7 @@ For entries with `verdict: new_opportunity` AND `relevance: high` that don't mat
    - Continue the ID sequence from the last entry
    - Set `ingested_date` to today
    - Include all fields from the schema
+   - After each entry is appended, update `.research-session.json` checkpoint (move URL from `entries_remaining` to `entries_processed`). On completion of all entries, delete the session file.
 
 3. **Run validation**: Execute `python3 .claude/skills/research-intake/scripts/validate_intake.py` to verify index integrity.
 

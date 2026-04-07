@@ -139,15 +139,13 @@ Lower priority refinements.
 
 - [x] **AP-13: Grep-parseable metric output** — ✅ 2026-04-05. `EvalResult.to_grep_lines()` emits `METRIC key: value` lines. Logged after each eval in the autopilot main loop. Extract via `grep METRIC autopilot.log`.
 
-- [ ] **AP-14: Structured deficiency classification** — `deficiency_category` enum on JournalEntry. 9 categories from SafetyGate violations. Prerequisite for AR-3 relaunch quality. (intake-265 deep-dive)
+- [x] **AP-14: Structured deficiency classification** — ✅ 2026-04-07. `DeficiencyCategory` enum (9 values) in `experiment_journal.py`. `SafetyVerdict.categories` list tags each violation. `deficiency_category` field on `JournalEntry`. Dispatch-level shrinkage/consecutive_failures via `state["_dispatch_deficiency"]` side channel.
 
-- [ ] **AP-15: Species field verification audit** — Confirm all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. (intake-265 deep-dive)
+- [x] **AP-15: Species field verification audit** — ✅ 2026-04-07. Audit found 3/5 species (Seeder, NumericSwarm, StructuralLab) produce empty `hypothesis`. Added fallback logic in main loop: species-specific hypothesis generation + `action.get("type")` as final `expected_mechanism` fallback.
 
-- [ ] **AP-16: Instruction token budget tracking** — Add `instruction_token_count` and `instruction_token_ratio` fields to `EvalResult` in `eval_tower.py`. Count tokens consumed by loaded `.md` templates + system prompt vs total input tokens. Emit via `to_grep_lines()`. Alert threshold: >20% instruction overhead (intake-272: context files add 20%+ cost). Prerequisite for AP-17.
-  - Source: intake-272 (AGENTS.md eval), intake-271 (14-22% overhead finding)
+- [x] **AP-16: Instruction token budget tracking** — ✅ 2026-04-07. `instruction_token_count` and `instruction_token_ratio` on `EvalResult` + `JournalEntry`. `_count_instruction_tokens()` in `eval_tower.py` scans `orchestration/prompts/*.md`. `to_grep_lines()` emits `METRIC instruction_tokens` + `METRIC instruction_ratio`. Warning at >20%. State tracks `_last_instruction_ratio` for AP-17.
 
-- [ ] **AP-17: Structural pruning in StructuralLab** — Add `structural_prune` action type to `dispatch_action()`. StructuralLab proposes deletion of instruction blocks from `.md` prompt files. Acceptance: quality >= baseline AND instruction_token_ratio decreases. Depends on AP-16 for the metric.
-  - Source: intake-272 (context files hurt), intake-271 (failure-driven config principle)
+- [x] **AP-17: Structural pruning in StructuralLab** — ✅ 2026-04-07. `structural_prune` action type in `dispatch_action()`. `prune_block()` method on StructuralLab removes heading-delimited sections. Acceptance: safety gate passes AND instruction_token_ratio decreases. Revert on rejection. Added to controller prompt template.
 
 ### P9 — Legacy Cleanup & Operational Debt
 
