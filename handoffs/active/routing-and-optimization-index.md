@@ -143,6 +143,12 @@ Lower priority refinements.
 
 - [ ] **AP-15: Species field verification audit** — Confirm all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. (intake-265 deep-dive)
 
+- [ ] **AP-16: Instruction token budget tracking** — Add `instruction_token_count` and `instruction_token_ratio` fields to `EvalResult` in `eval_tower.py`. Count tokens consumed by loaded `.md` templates + system prompt vs total input tokens. Emit via `to_grep_lines()`. Alert threshold: >20% instruction overhead (intake-272: context files add 20%+ cost). Prerequisite for AP-17.
+  - Source: intake-272 (AGENTS.md eval), intake-271 (14-22% overhead finding)
+
+- [ ] **AP-17: Structural pruning in StructuralLab** — Add `structural_prune` action type to `dispatch_action()`. StructuralLab proposes deletion of instruction blocks from `.md` prompt files. Acceptance: quality >= baseline AND instruction_token_ratio decreases. Depends on AP-16 for the metric.
+  - Source: intake-272 (context files hurt), intake-271 (failure-driven config principle)
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
@@ -184,6 +190,9 @@ Observed patterns inform routing (Q-value training), autopilot (experiment evalu
 ### 7. Context Folding ↔ AutoResearch Baseline
 `context-folding-progressive.md` Phase 0-1 (compaction trigger + two-level condensation) changes session quality behavior. The autoresearch baseline (AR-1) should be captured AFTER Phase 0-1 is deployed, or the "before" number will reflect a compaction policy that is about to change. Phase 3 process rewards feed MemRL Q-value enrichment (routing-intelligence Phase 5). **Updated 2026-04-05**: Phase 2 now includes free-zone threshold sweep and helpfulness scoring (intake-261/262); Phase 3 now includes role-aware compaction profiles that parameterize aggressiveness per orchestrator role. Phase 3b role profiles will directly affect autopilot token costs — `worker_explore` gets more aggressive compaction than `worker_coder`. **Updated 2026-04-05 (session 4)**: Phase 1+ (SegmentCache), 2c (helpfulness scoring), 3a (process rewards), 3b (CompactionProfile + CompactionQualityMonitor) all code-complete with 32 unit tests. Feature flags: `segment_cache_dedup`, `helpfulness_scoring`, `process_reward_telemetry`, `role_aware_compaction` (all off by default).
 **Updated 2026-04-06**: Phase 2c ByteRover enhancement (intake-267) adds compound retention scoring (access_count, importance_score, maturity_tier with hysteresis) to `segment_helpfulness()`. Design documented in handoff. Implementation after Package C — uses Package C Δ_k ground truth for weight calibration.
+
+### 9. Instruction Budget ↔ PromptForge Mutations
+intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ without improving success rates. Every PromptForge mutation that adds instructions must be evaluated against instruction overhead (AP-16). AP-17 provides the corrective mechanism — structural pruning to reduce instruction load. Agent files should target ≤400 words of toolchain-only instructions (intake-271). This constrains both `prompt_mutation` and `code_mutation` species: quality gains that come with >15% instruction overhead increase should be scrutinized.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_explore`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.

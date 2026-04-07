@@ -277,6 +277,21 @@ All core infrastructure verified in code as of 2026-04-01:
 3. **AP-15: Species field verification audit** — Verify all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. AP-8 added fields; confirm Seeder, NumericSwarm, PromptForge, StructuralLab, EvolutionManager actually fill them.
    - Acceptance: 100% of trials have non-empty hypothesis + expected_mechanism in JSONL
    - Source: intake-265 deep-dive
+
+4. **AP-16: Instruction token budget tracking** — Add `instruction_token_count` (int) and `instruction_token_ratio` (float) to `EvalResult` in `eval_tower.py`.
+   - Implementation: In `run_eval()`, before scoring, count tokens in all loaded `.md` templates (resolver, escalation, tool policy prompts) using `LlamaTokenizer` (already available). Ratio = instruction_tokens / total_input_tokens.
+   - Emit via `to_grep_lines()`: `METRIC instruction_tokens: N` and `METRIC instruction_ratio: 0.XX`.
+   - Add to `JournalEntry` for longitudinal tracking.
+   - Alert: log warning if ratio > 0.20 (intake-272 threshold).
+   - Acceptance: metric appears in JSONL for 10+ consecutive trials.
+   - Source: intake-272 (AGENTS.md eval 20%+ cost), intake-271 (14-22% overhead)
+
+5. **AP-17: Structural pruning in StructuralLab** — New `structural_prune` action type.
+   - Implementation: `structural_lab.py` proposes block-level deletions from `.md` prompt files (full sections, not line-edits). Uses same allowlist as code_mutation.
+   - Safety: deleted block saved in journal for rollback. Quality must be >= baseline AND instruction_token_ratio must decrease.
+   - Depends on AP-16 (need the metric to evaluate prune impact).
+   - Source: intake-272 (context files hurt), intake-271 (failure-driven only)
+
 ### DEFERRED (explicit reasons)
 
 2. **GEPA integration** (intake-240): Replace PromptForge heuristic mutations with principled evolutionary search (`dspy.GEPA`). Requires DSPy dependency + major refactor. Revisit after AR-3 shows PromptForge limitations.
@@ -304,6 +319,10 @@ All core infrastructure verified in code as of 2026-04-01:
 | 244 | Meta-Harness (arxiv:2603.28052) | Execution trace feedback +15pts over score-only | **Applied** (B3) — traces fed to PromptForge |
 | 248 | SiliconSwarm@Ensue | Cross-agent knowledge transfer breaks plateaus | **Applied** (B1, B4, B5) — strategy store + insights + cross-species |
 | 265 | Omni-SimpleMem (arxiv:2604.01007) | Bug fixes > tuning on broken baselines; 6-type discovery taxonomy; 4 suitability properties (we pass all 4) | AP-14 deficiency classification, AP-15 field audit |
+| 271 | Skill Issue: Harness Engineering (HumanLayer) | Harness config drives ~28 TerminalBench-2 rank delta; 14-22% instruction overhead; CLI > MCP heuristic | AP-16, AP-17 |
+| 272 | Evaluating AGENTS.md (ETH Zurich, 2602.11988) | Context files REDUCE success rates, +20% cost; help only when docs absent; thin-map not tested | AP-16, AP-17 |
+| 273 | Context Rot (Chroma) | Shuffled > structured for RETRIEVAL only; semantic similarity compounds degradation | Background — informs CF experiments |
+| 274 | The Complexity Trap (2508.21433) | Observation masking matches LLM summarization at 50% cost; hybrid 7-11% further | Validates two-layer compression architecture |
 
 ## Staleness Notes
 

@@ -71,6 +71,12 @@
 - [ ] Measure KV cache memory impact at 1M context
 - [ ] Measure speed impact of YaRN extension
 
+### P5 — Harness Engineering Experiments (from intake-271/272/273/274 deep-dive)
+
+- [ ] Bullet-vs-narrative consolidation A/B test: run CF Phase 2a eval suite with two compaction summary formats (structured narrative vs flat bullet-point). Tests whether context rot shuffled finding (intake-273) has signal for reasoning tasks. Low cost, high signal. (→ Package C)
+- [ ] Documentation-stripped ablation: replicate intake-272 methodology on our repos. Strip all `.md`, run evals with vs without thin-map agent files. Isolates whether our agent files provide value beyond existing documentation. (→ Package B or standalone)
+- [ ] `task_relevance` as candidate 5th signal in `segment_helpfulness()`: prototype semantic similarity (all-MiniLM-L6-v2, CPU) between segment text and current task description. Depends on bullet-vs-narrative results before shipping. (Design only until Package C data)
+
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270)
 
 - [ ] Deploy knowledge base linter (`scripts/validate/lint_knowledge_base.py`) — orphan, stale, contradiction, un-actioned intake detection
@@ -98,6 +104,7 @@ P2 (reasoning SEAL vectors)       ──depends on model server availability─�
 P2.5 (KB governance improvements) ──independent (companion: root-archetype linter)──
 P3 (long-context datasets)        ──independent──
 P4 (YaRN extension)               ──depends on P3 (datasets)──
+P5 (harness engineering experiments)  ──depends on P3 (datasets) + Package B/C results──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
 Multiscreen monitoring            ──depends on external adoption──
@@ -118,6 +125,8 @@ Multiscreen monitoring            ──depends on external adoption──
 5. **Bulk Inference Campaign**: Tasks P0 (TrimR, Omega, difficulty validation), P1 (tool compression A/B), and P2 (summarizer quality, free-zone, helpfulness) are consolidated into Packages B and C of [`bulk-inference-campaign.md`](bulk-inference-campaign.md). Package B (seeding eval v2) resolves P0+P1 tasks in a single full-stack run. Package C (CF eval batch) resolves P2 tasks using individual model servers. See that handoff for execution schedule, feature flags, and success criteria.
 
 7. **Knowledge base governance ↔ root-archetype**: The KB linter and skill template patterns from P2.5 are being upstreamed to root-archetype via a companion handoff (`/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`). Epyc-root deploys the linter first as an instance-specific validator, then the generalized version goes to root-archetype. The credibility scoring and anti-confirmation-bias changes are research-intake skill edits that may also be templated in root-archetype's skill scaffold.
+
+8. **Tool output compression ↔ Complexity Trap validation**: intake-274 ("The Complexity Trap") validates our two-layer architecture — pattern-based tool compression upstream, LLM conversation summarization downstream. The hybrid finding (7-11% further cost reduction) confirms this design is near-optimal. Package B tool compression A/B will be the first empirical confirmation on our stack. This also informs context-folding: observation masking (stripping old tool outputs) is equivalent to high recency weight in `segment_helpfulness()`.
 
 6. **Research intake deep-dive caveats (2026-04-06)**: intake-264 (SSD) downgraded to monitor-only — requires 8×B200 SFT, not actionable for inference-only stack. intake-266 (OPD Survey) downgraded to reference-only — training-only methods, agent distillation already solved by SkillBank. No new tasks generated from either. Caveats appended to reasoning-compression.md.
 
