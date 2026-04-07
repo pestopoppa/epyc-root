@@ -19,14 +19,14 @@
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed) | HIGH | 2026-04-06 |
+| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 added) | HIGH | 2026-04-07 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | Phase 2 native implemented (feature-flagged) | MEDIUM | 2026-04-05 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
-| [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, session persistence | active | MEDIUM | 2026-04-06 |
+| [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, project-wiki skill | active | MEDIUM | 2026-04-07 |
 
 ---
 
@@ -77,14 +77,24 @@
 - [ ] Documentation-stripped ablation: replicate intake-272 methodology on our repos. Strip all `.md`, run evals with vs without thin-map agent files. Isolates whether our agent files provide value beyond existing documentation. (→ Package B or standalone)
 - [ ] `task_relevance` as candidate 5th signal in `segment_helpfulness()`: prototype semantic similarity (all-MiniLM-L6-v2, CPU) between segment text and current task description. Depends on bullet-vs-narrative results before shipping. (Design only until Package C data)
 
-### P2.5 — Knowledge Base Governance (from intake-268/269/270)
+### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)
 
-- [ ] Deploy knowledge base linter (`scripts/validate/lint_knowledge_base.py`) — orphan, stale, contradiction, un-actioned intake detection
-- [ ] Add credibility scoring to research-intake skill Phase 2
-- [ ] Add anti-confirmation-bias directive to research-intake Phase 3
+- [ ] **Phase 5a**: Create `wiki.yaml` config schema, fix 4 hardcoded `/mnt/raid0/` paths (portability), create `wiki/SCHEMA.md` living taxonomy — P0
+- [ ] **Phase 5b**: Build lint operation into project-wiki skill (absorbs Phase 0 linter): orphan, stale, contradiction, un-actioned intake — P0
+- [ ] **Phase 5c**: Build query operation: "what do we know about X?" → synthesized answer with citations — P1
+- [ ] Add credibility scoring to research-intake skill Phase 2 — P1
+- [ ] Add anti-confirmation-bias directive to research-intake Phase 3 — P1
 - [ ] Update intake-268/269/270 verdicts and cross-references — ✅ 2026-04-06
+- [ ] **Phase 5d**: Upstream validated project-wiki skill to root-archetype — P1, after 5a-c proven
 - [ ] Session persistence documentation for research workflows (P2)
 - [ ] qmd semantic search addon documentation (P2, optional)
+
+### P0.5 — Brevity Prompt Upgrade (from intake-276 deep-dive)
+
+- [ ] **Action 12**: Replace "be concise" with explicit word limits in worker prompts (50w math, "letter + 1 sentence" MC, 10w yes/no) — zero-cost, highest-impact
+- [ ] **Action 13**: Model-tier-differentiated conciseness (aggressive numeric limits for architect >=32B, light for worker 30B-A3B)
+- [ ] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework
+- [ ] **Action 15**: Evaluate TALE dynamic budget estimation as difficulty signal alternative
 - [ ] Upstream linter + templates to root-archetype (companion handoff)
 
 ### Monitoring (no action unless triggered)

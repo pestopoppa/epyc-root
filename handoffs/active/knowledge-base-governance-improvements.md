@@ -61,6 +61,34 @@ Companion handoff in root-archetype: [`knowledge-base-linter.md`](/mnt/raid0/llm
   - Natural markdown chunking algorithm details (break-point scoring with distance decay)
 - [ ] Note: actual deployment is a separate work item, not part of this handoff
 
+### Phase 5 — Project-wiki skill: build in epyc-root, then upstream (P1, intake-277 deep-dive)
+
+epyc-root IS the testbed — it already has ~5.2 MB / 275 files / ~99.5k lines of LLM-compiled knowledge spread across research/, handoffs/, progress/, and deep-dives/. Build the project-wiki skill here first, validate it on our own KB, then extract the portable version to root-archetype.
+
+**Phase 5a — wiki.yaml config + portability fix (epyc-root)**
+- [ ] Design `wiki.yaml` config schema at repo root: cross-reference targets (replacing hardcoded `/mnt/raid0/` paths in validate_intake.py:34,36 and seed_index.py:24), taxonomy (absorbs research/taxonomy.yaml), ingest pipeline flags, scaling thresholds (50/200/500 from Hermes PR#5635)
+- [ ] Fix 4 hardcoded path references: `validate_intake.py` (2), `seed_index.py` (1), `reset_episodic_memory.sh` (1) — read from wiki.yaml or env vars
+- [ ] Create `wiki/SCHEMA.md` as living taxonomy (replaces static `references/taxonomy.md`). Backfill missing categories (mechanistic_interpretability appears 19x in intake but not in taxonomy)
+
+**Phase 5b — Lint operation (epyc-root, absorbs Phase 0)**
+- [ ] Build lint into the project-wiki skill (not as a separate validator script): orphan handoffs, stale entries (>14d aging, >30d stale), contradictory status vs directory, un-actioned intake entries >7d, missing cross-refs between handoffs
+- [ ] This absorbs Phase 0 tasks — the linter IS the lint operation
+
+**Phase 5c — Query operation (epyc-root)**
+- [ ] Add query operation: read wiki.yaml for targets → scan index for relevant entries → read matching handoffs/deep-dives → synthesize answer with citations → optionally persist as new deep-dive page
+- [ ] This fills the biggest gap: currently no way to ask "what do we know about X?" and get compiled knowledge back
+
+**Phase 5d — Upstream to root-archetype**
+- [ ] Extract epyc-specific config from wiki.yaml into `wiki.yaml.template` with `{{TEMPLATE_VARS}}`
+- [ ] Copy validated project-wiki skill to root-archetype `.claude/skills/project-wiki/`
+- [ ] Generalize validate_wiki.py to be config-driven (no project-specific assumptions)
+- [ ] Update root-archetype `init-project.sh` to scaffold wiki structure on clone
+- [ ] Reconcile with existing root-archetype `knowledge-base-linter.md` companion handoff
+
+**Risk**: intake_index.yaml at 308 KB / 277 entries is straining. Hybrid storage (YAML index + markdown pages) doubles write surface. Decision needed: simultaneous writes vs periodic compile. Recommend: **ingest writes YAML only, periodic `wiki compile` operation generates/updates markdown pages** — keeps the hot path simple.
+
+**Dependency**: Phase 0/5b linter should come first (validates lint design). Phase 1 credibility scoring independent but should land before 5d upstream.
+
 ### Phase 4 — Intake index maintenance (P0)
 
 - [ ] Update intake-268 verdict from `worth_investigating` → `adopt_patterns` in YAML body
@@ -75,12 +103,16 @@ Companion handoff in root-archetype: [`knowledge-base-linter.md`](/mnt/raid0/llm
 
 ```
 Phase 4 (intake index cleanup)         ── P0, no deps, do first ──
+Phase 5a (wiki.yaml + portability)     ── P0, no deps, can parallel w/ Phase 4 ──
+Phase 5b (lint operation)              ── P0, absorbs Phase 0 ──
 Phase 1 (skill enhancements)           ── P1, independent ──
+Phase 5c (query operation)             ── P1, after 5a ──
 Phase 2 (session persistence docs)     ── P2, independent ──
 Phase 3 (qmd addon docs)              ── P2, independent, optional ──
+Phase 5d (upstream to root-archetype)  ── P1, after 5a+5b+5c validated in epyc-root ──
 ```
 
-Phase 4 should be done first to keep intake cross-references accurate. Phases 1-3 are independent.
+Phase 4 and 5a can run in parallel (no deps). Phase 5b absorbs Phase 0 (the linter IS the lint operation). Phase 5d only happens after the skill is proven in epyc-root.
 
 ---
 
@@ -94,7 +126,9 @@ Phase 4 should be done first to keep intake cross-references accurate. Phases 1-
 
 4. **qmd ↔ context-folding**: qmd's break-point scoring algorithm for markdown chunking (H1=100, H2=90...H6=50, code=80, with squared-distance decay) is directly applicable to context-folding segment boundary detection. If qmd is deployed, extract this algorithm as a reference for context-folding Phase 3c. Note this in `context-folding-progressive.md`.
 
-5. **Root-archetype companion**: The linter and template patterns from this work are being upstreamed via `/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`. Changes here inform what gets upstreamed. Coordinate timing.
+5. **Root-archetype companion**: The linter and template patterns from this work are being upstreamed via `/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`. **Updated 2026-04-07**: epyc-root is now the proving ground — build project-wiki skill here first (Phase 5a-c), validate on our ~5.2 MB / 275-file KB, then extract to root-archetype (Phase 5d). This reverses the original sequencing which treated epyc-root as a later migration target.
+
+6. **epyc-root IS an LLM wiki**: Audit (2026-04-07) confirms 277 intake entries + 154 handoffs + 87 progress logs + 25 deep-dives = ~99.5k lines of LLM-compiled knowledge. Missing: query operation (can't ask "what do we know about X?"), lint operation (no systematic orphan/stale/contradiction detection), scaling thresholds (intake_index.yaml growing unbounded at 308 KB).
 
 ---
 
@@ -128,3 +162,13 @@ After completing any task:
 | intake-268 | LLM Wiki (Karpathy) | high | adopt_patterns |
 | intake-269 | nvk/llm-wiki | high | adopt_patterns |
 | intake-270 | tobi/qmd | high | adopt_component |
+| intake-277 | Hermes Agent PR#5100: LLM Wiki Skill | medium | already_integrated |
+
+## Research Intake Update — 2026-04-07
+
+### New Related Research
+- **[intake-277] "Hermes Agent PR#5100: LLM Wiki Skill (Karpathy Pattern)"** (github:NousResearch/hermes-agent/pull/5100)
+  - Relevance: Upstream Hermes implementation of the Karpathy LLM Wiki pattern we're adopting
+  - Key technique: Three-layer architecture (raw sources / wiki pages / schema) with ingest/query/lint operations
+  - Reported results: Merged into hermes-agent main via PR#5635 on 2026-04-06
+  - Delta from current approach: Our Phase 0 KB linter aligns with their lint operation (contradictions, orphans, outdated content). Their entity/concept/comparison page taxonomy could inform cross-reference-map.md structure. PR#5635 bundled a skill configuration interface worth reviewing.

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-06
+**Updated**: 2026-04-07
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -31,6 +31,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) → Package C/D | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) → Package D | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
 | 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
+| 4a | MED | Brevity prompt upgrade: explicit word limits (Action 12, zero-cost) | [research-evaluation-index](research-evaluation-index.md) P0.5 |
 | 5 | MED | TrimR deployment (reasoning compression Tier 1) → Package B | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05 (7 handlers, feature-flagged, needs prod validation) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
@@ -47,7 +48,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 2 active + archived | Most work complete, monitoring phase |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active, rest monitoring |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active + Actions 12-15 (brevity), KB governance project-wiki skill in progress |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---

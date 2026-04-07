@@ -7867,3 +7867,206 @@
 #   Chroma conflict of interest noted (sells vector DB). No effect sizes reported.
 #   ACTIONS: bullet-vs-narrative consolidation test, task_relevance candidate 5th signal, distractor-aware context.
 # intake-274: NEW via expansion from 273. Validates tool-output-compression. Two-layer architecture confirmed optimal.
+
+- id: intake-275
+  arxiv_id: null
+  url: https://github.com/pufferai/pufferlib
+  source_type: repo
+  title: 'PufferLib 4.0: 20M Step/s RL Training Without PyTorch'
+  authors:
+  - Joseph Suarez
+  categories:
+  - hardware_optimization
+  key_claims:
+  - 20M steps/second RL training (up from 3-5M in v3.0)
+  - Replaced PyTorch entirely with ~5000 lines of CUDA C
+  - bf16 training stable only after fusing kernels (avoids repeated cast round-trips)
+  - Static contiguous memory allocation enables single-kernel weight updates and gradient zeroing
+  - Bitwise deterministic training via proper CUDA seeding (impossible under PyTorch)
+  - LibTorch lacks torch.compile, profiler, and AMP — C++ Torch API is a dead end
+  - Smaller networks become optimal only when constant overhead is reduced enough
+  techniques:
+  - Fused elementwise CUDA kernels (activations, PPO loss, action sampling)
+  - cudagraphs for inference + training + model update
+  - bf16 with fp32 master weights, fused activations in fp32
+  - Static memory allocator (shape+ptr registration, single contiguous alloc)
+  - Parallel rollouts on separate CUDA streams
+  - Native C environment threading with OMP
+  - Buffered async environment vectorization (replaced round-robin)
+  - Pinned memory for CPU→GPU observation transfer
+  - Multi-GPU via 5 lines of NCCL (replaced DDP)
+  reported_results:
+  - 20M steps/s (Breakout, wallclock-optimal hyperparams)
+  - 4x improvement over PufferLib 3.0 (3-5M steps/s)
+  - Could hit 30-40M with inflated batch sizes (not representative)
+  - Published at Reinforcement Learning Conference 2025 (v2.0 paper)
+  references:
+  - '2406.12905'
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-07'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-and-optimization-index.md
+  notes: >
+    DEEP-DIVE 2026-04-07: UPGRADED relevance low → medium, verdict not_applicable → worth_investigating.
+    PufferLib itself is overkill for our routing problem (its value is 20M env steps/s, but
+    our routing env is trivially fast to simulate). However, the deep-dive uncovered a
+    concrete integration path: train a TINY MLP routing policy (~5-10k params, 2x64 hidden)
+    via standard PPO on offline data from seeding diagnostics + MemRL episodes. This replaces
+    heuristic routing rules while consuming the same classifier features. Inference: sub-microsecond.
+    Deploy by exporting weights as a C header and linking into orchestrator — 50 lines of C.
+    KEY ADJACENT FINDING: BaRP (arXiv:2510.07429) is the closest existing approach — lightweight
+    policy network trained with bandit feedback, preference-conditioned, 16.8% better than
+    GraphRouter at 50% less cost. Also: PROTEUS (2604.00136) uses Lagrangian RL with cost
+    constraints, LLM Bandit (2502.02743) transfers across unseen models. These are more
+    directly applicable than xRouter's 7B-router approach. PufferLib's insight that "less
+    optimized code biases toward larger networks" supports training tiny routers over 7B ones.
+    ACTION: (1) Add BaRP, PROTEUS, LLM Bandit to intake queue for cross-reference.
+    (2) Evaluate feasibility of offline RL routing policy trained on Package A seeding data.
+    (3) The PufferLib MinGRU architecture is unnecessary — routing decisions are stateless.
+
+- id: intake-276
+  arxiv_id: '2604.00025'
+  url: https://arxiv.org/abs/2604.00025
+  source_type: paper
+  title: 'Brevity Constraints Reverse Performance Hierarchies in Language Models'
+  authors:
+  - MD Azizul Hakim
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - On 7.7% of benchmark problems, larger models underperform smaller ones by 28.4pp
+  - Mechanism is scale-dependent verbosity causing errors through overelaboration
+  - Brevity constraints improve large model accuracy by 26pp
+  - Performance gaps reduced by up to two-thirds with brevity constraints
+  - Large models produce 59% more tokens than small models (202 vs 127) with fewer explicit reasoning steps (9.1 vs 10.5)
+  techniques:
+  - Brevity-constrained prompting
+  - Scale-dependent verbosity analysis
+  - Performance hierarchy reversal via output length control
+  reported_results:
+  - 31 models evaluated (0.5B-405B) across 1,485 problems, 5 datasets
+  - 26pp accuracy improvement from brevity constraints on large models
+  - 7.7-15.9pp advantages for large over small after constraints (reversed from original)
+  - Token reduction 60.4% (brief) to 71.1% (direct format)
+  - Math and science benchmarks most affected
+  references: []
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-04-07'
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+  notes: >
+    Strong empirical validation of what EPYC already implements. Our reasoning-compression
+    handoff independently discovered the same principle via OPSDC (intake-110): verbosity
+    harms quality, conciseness improves it. Action 1 (conciseness prompting) deployed to
+    worker_general, worker_math, coder_primary on 2026-03-14. Action 3 (difficulty-adaptive
+    routing via output length ratio) also deployed. This paper provides broader empirical
+    backing (31 models, 5 datasets) for our approach. Key delta: their 7.7% "inverse scaling"
+    finding quantifies the problem size. Our OPSDC-based approach goes further with
+    self-distillation training (Tier 3).
+    DEEP-DIVE 2026-04-07: UPGRADED verdict already_integrated → worth_investigating.
+    Several novel findings NOT yet in EPYC:
+    (1) Our "be concise" prompts are the WEAKEST form of brevity constraint tested. Every
+    adjacent paper (TALE arXiv:2412.18547, CCoT arXiv:2407.19825) finds explicit numeric
+    word limits outperform stylistic instructions. Math sweet spot: 30-60 words. Template:
+    "Provide a BRIEF solution in under 50 words. Show only essential calculation steps."
+    MC template: "Answer with just the letter and ONE sentence explanation."
+    (2) TALE dynamic budget: "Let's think step by step and use less than {beta} tokens"
+    improves GSM8K by +3.1pp while cutting 76% of tokens. Could replace regex difficulty signal.
+    (3) Inverse scaling is domain-specific: BoolQ 11.3%, CommonsenseQA 9.7%, ARC 9.3%,
+    GSM8K 4.3%, MMLU-STEM 3.9%. Comprehension tasks most affected, not math.
+    (4) Model-tier differentiation needed: large models (>=70B) get 60% token reduction from
+    brevity, small models barely affected. worker_math (30B-A3B) needs lighter prompts than
+    architect tier (32B/72B).
+    (5) ACL 2025 verbosity compensation paper: verbosity signals uncertainty. Long response
+    after conciseness prompt = uncertain = escalate. Extends our ratio-based difficulty signal.
+    (6) Deep-thinking tokens (arXiv:2602.13517): raw length negatively correlates with accuracy
+    (r=-0.544). Our 1.5x reasoning alarm threshold may be too conservative.
+    (7) OckBench (2511.05722): smaller models may be MORE expensive per correct answer due to
+    overthinking — challenges "small = cheap" assumption. Measure per-token intelligence.
+    ACTIONS: (A) Replace "be concise" with explicit word limits in worker prompts (50w math,
+    "letter + 1 sentence" MC, 10w yes/no). (B) Add TALE, CCoT, verbosity compensation,
+    deep-thinking tokens, OckBench to intake queue. (C) Differentiate conciseness by model tier.
+    (D) Add OAA metric to eval framework. (E) Measure per-token intelligence across tiers.
+
+- id: intake-277
+  arxiv_id: null
+  url: https://github.com/NousResearch/hermes-agent/pull/5100
+  source_type: repo
+  title: 'Hermes Agent PR#5100: LLM Wiki Skill (Karpathy Pattern)'
+  authors:
+  - Nous Research contributors
+  categories:
+  - knowledge_management
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - Implements Karpathy LLM Wiki pattern as a built-in Hermes Agent skill
+  - Three core operations (ingest/query/lint) for persistent markdown knowledge bases
+  - Three-layer architecture (raw sources / wiki pages / schema)
+  - YAML frontmatter conventions, wikilink cross-referencing, Obsidian compatible
+  - Superseded by PR#5635 which added skill configuration interface
+  techniques:
+  - Persistent markdown knowledge compilation (vs per-query RAG)
+  - Entity/concept/comparison/query page taxonomy
+  - Contradiction detection and orphan page linting
+  - Structured index and changelog patterns
+  reported_results:
+  - PR merged into main via PR#5635 on 2026-04-06
+  references: []
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  expanded_from: intake-268
+  verdict: already_integrated
+  ingested_date: '2026-04-07'
+  cross_references:
+    intake:
+    - intake-268 (Karpathy LLM Wiki concept)
+    - intake-269 (nvk/llm-wiki implementation)
+    handoffs:
+    - knowledge-base-governance-improvements.md
+    - hermes-agent-index.md
+    - hermes-outer-shell.md
+  handoffs_updated:
+  - knowledge-base-governance-improvements.md
+  notes: >
+    This is the upstream Hermes implementation of the Karpathy LLM Wiki pattern
+    we already tracked via intake-268. The PR was superseded by PR#5635 which
+    bundled the skill with a configuration interface. Our knowledge-base-governance
+    handoff already references intake-268 and plans adoption of these patterns.
+    The three-layer architecture (raw/wiki/schema) and lint operations (contradiction
+    detection, orphan pages, outdated content) are directly relevant to our
+    research-intake skill improvements. The entity/concept/comparison page taxonomy
+    could inform how we structure cross-reference-map.md. Key delta vs intake-268:
+    this is an actual implementation, not just the conceptual essay. Worth reviewing
+    the merged PR#5635 for implementation patterns.
+    DEEP-DIVE 2026-04-07: UPGRADED relevance medium → high, verdict → new_opportunity.
+    PR#5635 (+808/-1, 8 files) adds: (1) skill config interface — frontmatter config[]
+    declarations with key/description/default/prompt, stored in config.yaml, injected at
+    runtime. (2) LLM Wiki skill ~400 lines with scaling thresholds: index sub-sectioning
+    at 50+ entries, topic maps at 200+, log rotation at 500+. Mandatory tag taxonomy.
+    Dual-notation for contradicting sources.
+    ROOT-ARCHETYPE UPSTREAM PATH: Refactor research-intake into generic "project-wiki" skill
+    with 3 operations (ingest/query/lint). Key architectural decisions:
+    (A) Hybrid storage: YAML index (machine-readable registry) + markdown pages (human/LLM-readable).
+    (B) wiki.yaml config file replaces hardcoded cross-reference paths and taxonomy — each
+    project declares its own targets and categories at clone time.
+    (C) Generalized validator reads config instead of hardcoding /mnt/raid0/llm/epyc-inference-research/.
+    (D) Query operation (new): read index → find relevant pages → synthesize answer with citations.
+    (E) Lint operation: orphans, staleness, contradictions, un-actioned entries, missing xrefs.
+    SEQUENCING: (1) Complete KB governance Phase 0 linter. (2) Create wiki.yaml config schema +
+    generalized validate_wiki.py. (3) Build project-wiki skill in root-archetype (ingest+lint).
+    (4) Add query operation. (5) Migrate epyc-root from research-intake to project-wiki.
+    RISK: At 274+ entries, single YAML file straining. Hybrid approach doubles write surface.
+    Need to decide: simultaneous writes vs periodic "compile" step.

@@ -291,3 +291,14 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 | Debug suite pool | `epyc-inference-research/benchmarks/prompts/question_pool.jsonl` |
 | Model registry (lean) | `epyc-orchestrator/orchestration/model_registry.yaml` |
 | KV cache config | `epyc-llama` production branch (`--kv-hadamard` flag in `orchestrator_stack.py`) |
+
+## Research Intake Update — 2026-04-07
+
+### New Related Research (intake-275 deep-dive)
+- **[intake-275] "PufferLib 4.0"** — Not directly applicable, but deep-dive uncovered lightweight RL routing alternatives:
+  - **BaRP** (arXiv:2510.07429): Lightweight policy network + bandit feedback, preference-conditioned. 16.8% better than GraphRouter at 50% less cost. Most directly applicable to our stack.
+  - **PROTEUS** (arXiv:2604.00136): Lagrangian RL with explicit cost constraints. Minimizes cost subject to accuracy floor — matches our cost-aware routing philosophy.
+  - **LLM Bandit** (arXiv:2502.02743): Online bandit that transfers across unseen models.
+  - **Key insight**: A tiny MLP routing policy (~5-10k params, 2x64 hidden) trained via PPO on our seeding diagnostics data could replace heuristic routing rules. Sub-microsecond inference. Deploy as 50 lines of C linked into orchestrator.
+  - **vs xRouter (7B)**: xRouter reads full prompt text; tiny MLP operates on pre-extracted classifier features. We already have the feature pipeline (factual_risk, difficulty_signal, keyword classification). The RL policy sits on top.
+  - **Action**: Queue BaRP, PROTEUS, LLM Bandit for next intake batch. Evaluate offline RL feasibility on Package A data.

@@ -20,6 +20,7 @@ Explore reasoning token compression techniques that can reduce inference cost fo
 | intake-133 | Reasoning as Compression (Information Bottleneck theory) | medium | worth_investigating |
 | intake-134 | CoLaR: Dynamic Latent Compression of Reasoning Chains | medium | worth_investigating |
 | intake-130 | Do NOT Think That Much (overthinking analysis) | medium | worth_investigating |
+| intake-276 | Brevity Constraints Reverse Performance Hierarchies | high | worth_investigating |
 | intake-125 | S3-CoT: Self-Sampled Succinct Reasoning | medium | worth_investigating |
 | intake-103 | Thinking to Recall: Reasoning Unlocks Parametric Knowledge | medium | worth_investigating |
 
@@ -98,7 +99,11 @@ Three families of techniques, ordered by implementation effort:
 - [x] Wire band-adaptive token budgets through difficulty_signal enforce mode (Action 5) — `_repl_turn_token_cap()` now accepts `difficulty_band`, returns band-specific cap when mode=enforce (1500/3500/7000). `TaskState.difficulty_band` propagated from `RoutingResult`. Gated behind enforce mode (no behavior change while shadow).
 - [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6)
 - [ ] Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2 (Claude-as-Judge eval of consolidation across model tiers; SFT data collection mirrors `eval_trimr.py` pattern)
-- [x] Audit conciseness prompts: verified stylistic language, not suppression (Action 7)
+- [x] Audit conciseness prompts: verified stylistic language, not suppression (Action 7). **UPDATE 2026-04-07**: intake-276 deep-dive reveals our "be concise" prompts are the weakest form tested — explicit numeric word limits outperform. See Action 12 below.
+- [ ] **Action 12: Upgrade conciseness prompts to explicit word limits** (intake-276 deep-dive). Replace stylistic "be concise" with structured templates: worker_math → "under 50 words, essential steps only"; MC → "letter + ONE sentence"; yes/no → "10 words or less". TALE (2412.18547): "use less than {beta} tokens" gives +3.1pp on GSM8K. CCoT (2407.19825): 30-60 word sweet spot for math reasoning.
+- [ ] **Action 13: Model-tier-differentiated conciseness** (intake-276 deep-dive). Large models (>=32B architect) benefit most from aggressive brevity (60% token reduction). Small models (30B-A3B worker) barely affected. Differentiate: aggressive numeric limits for architect, light stylistic for worker.
+- [ ] **Action 14: Add OAA metric to eval framework** (intake-276 deep-dive, OckBench 2511.05722). Overthinking-Adjusted Accuracy penalizes correct answers using excessive tokens. Also measure per-token intelligence across model tiers — challenges "small = cheap" assumption.
+- [ ] **Action 15: Consider TALE dynamic budget estimation** (intake-276 deep-dive). Zero-shot pre-pass: ask model to estimate token budget before generating. Could replace or supplement regex-based difficulty signal. Trade-off: adds one LLM call but removes classifier heuristics.
 - [x] CMV deep-dive: think block stripping (Action 10) — N/A for our architecture (raw LLM output not carried into next-turn context; REPL stdout is what flows forward)
 - [x] CMV output spill with retrieval pointer (Action 11) — `_spill_if_truncated()` in helpers.py, writes full output/error to `/tmp/{task_id}_{label}_t{turn}.txt` + appends `peek()` pointer. Feature flag `output_spill_to_file`. 9 tests.
 
