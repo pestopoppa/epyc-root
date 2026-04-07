@@ -275,13 +275,14 @@ python3 scripts/benchmark/eval_helpfulness_calibration.py \
 
 ### Prerequisites
 
-- [ ] **BLOCKER 2a**: `eval_summarizer.py` does not exist — must be created per CF Phase 2a spec
-- [ ] **BLOCKER 2b**: `eval_compaction_sweep.py` live eval raises `NotImplementedError` — needs implementation
-- [ ] **BLOCKER 2c**: `eval_helpfulness_calibration.py` live eval raises `NotImplementedError` — needs implementation
-- [x] Session trace files in `/mnt/raid0/llm/tmp/session_*.md` — **250 available** (need 20)
+- [x] **BLOCKER 2a**: `eval_summarizer.py` — ✅ 2026-04-07. Created with 3-tier model support, dry-run mode, CSV output.
+- [x] **BLOCKER 2b**: `eval_compaction_sweep.py` — ✅ 2026-04-07. `evaluate_compaction()` implemented with model/judge port args.
+- [x] **BLOCKER 2c**: `eval_helpfulness_calibration.py` — ✅ 2026-04-07. `run_calibration()` implemented (pure heuristic, no model needed). Tested on 250 real traces: Spearman ρ=0.63-0.65, best config is overlap-heavy (0.1/0.5/0.3/0.1).
+- [x] Session trace files in `/mnt/raid0/llm/tmp/session_*.md` — **252 available** (need 20)
 - [ ] Model servers started individually via `orchestrator_stack.py start --include-warm <role>`
+- [x] Shared infrastructure: `eval_helpers.py` (trace parser, model API, judge helper, identifier extraction)
 
-**Unblocking Package C requires a code session before inference can begin.** The three scripts share a common pattern (load trace, call model, judge quality) — implement one and the others follow.
+**Package C code is ready.** Only model servers needed to run live eval (2a summarizer, 2b compaction). Phase 2c (helpfulness calibration) is already runnable and has produced results.
 
 ### Expected Output
 

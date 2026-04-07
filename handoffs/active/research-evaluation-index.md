@@ -51,9 +51,9 @@
 ### P2 — Reasoning Compression (deferred)
 
 - [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
-- [ ] Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2a (→ Package C)
-- [ ] Free-zone compression threshold sweep — `context-folding-progressive.md` Phase 2b (intake-261/262). Eval skeleton: `eval_compaction_sweep.py --dry-run` ready. (→ Package C)
-- [x] Helpfulness scoring heuristic — ✅ 2026-04-05. `segment_helpfulness()` + `prioritized_compaction()` in `session_log.py`. LLM-based calibration deferred: `eval_helpfulness_calibration.py --dry-run` ready.
+- [ ] Summarizer quality assessment — `eval_summarizer.py` READY (created 2026-04-07), needs model servers to run (→ Package C)
+- [ ] Free-zone compression threshold sweep — `eval_compaction_sweep.py` READY (implemented 2026-04-07), needs model servers to run (→ Package C)
+- [x] Helpfulness scoring calibration — ✅ 2026-04-07. `run_calibration()` implemented (pure heuristic). Tested on 250 traces: Spearman ρ=0.63-0.65, overlap-heavy config best (separation=0.37, NDCG=0.998). Package C LLM-based Δ_k eval still pending.
 
 ### P3 — Long-Context Evaluation Datasets
 
