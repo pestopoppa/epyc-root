@@ -1,0 +1,56 @@
+# wiki.yaml — Project Wiki Configuration
+# Central config for the project-wiki skill and research-intake pipeline.
+# Environment variables: EPYC_RESEARCH_ROOT, EPYC_ORCHESTRATOR_ROOT override paths.
+
+project:
+  name: epyc-root
+  description: "AMD EPYC 9655 inference optimization — governance and coordination"
+
+# Cross-reference targets (replaces hardcoded paths in validate_intake.py and seed_index.py)
+# Use ${ENV_VAR} syntax — scripts expand via os.path.expandvars()
+cross_references:
+  chapters:
+    path: "${EPYC_RESEARCH_ROOT:-/mnt/raid0/llm/epyc-inference-research}/docs/chapters"
+  experiments:
+    path: "${EPYC_RESEARCH_ROOT:-/mnt/raid0/llm/epyc-inference-research}/docs/experiments"
+  handoffs:
+    paths:
+      - "handoffs/active"       # relative to repo root
+      - "handoffs/completed"
+      - "handoffs/archived"
+  research:
+    path: "research"
+  deep_dives:
+    path: "research/deep-dives"
+  intake_index: "research/intake_index.yaml"
+
+# Taxonomy
+taxonomy:
+  source: "wiki/SCHEMA.md"           # living taxonomy with aliases (primary)
+  legacy: "research/taxonomy.yaml"    # static taxonomy (fallback)
+
+# Scaling thresholds (from Hermes PR#5635 patterns)
+scaling:
+  intake_entries_warn: 200       # warn when intake_index.yaml exceeds this count
+  intake_entries_split: 500      # consider splitting into yearly shards at this point
+  handoff_count_warn: 50         # warn when active handoffs exceed this count
+  total_kb_lines_warn: 150000    # warn when total KB lines exceed this
+
+# Lint configuration (consumed by project-wiki skill lint operation)
+lint:
+  stale_days: 30
+  aging_days: 14
+  unactioned_intake_days: 7
+  enabled_passes:
+    - orphan_handoffs
+    - stale_entries
+    - contradictory_status
+    - unactioned_intake
+    - missing_cross_refs
+
+# Ingest pipeline flags (consumed by research-intake skill)
+ingest:
+  credibility_scoring: true
+  anti_confirmation_bias: true
+  max_expansion_entries: 10
+  max_expansion_depth: 2

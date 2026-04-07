@@ -141,3 +141,33 @@ categories:
     label: Search & Retrieval
     description: Hybrid search, BM25, vector search, re-ranking, and retrieval pipelines for knowledge bases.
     related_chapters: []
+
+  mechanistic_interpretability:
+    label: Mechanistic Interpretability
+    description: Sparse autoencoders, circuit analysis, feature visualization in neural networks.
+    related_chapters: []
+
+  emotion_psychology:
+    label: Emotion & Psychology
+    description: Emotion/personality in LLMs, cognitive science of language models, user modeling.
+    related_chapters: []
+
+  llm_prompting:
+    label: LLM Prompting
+    description: Prompt engineering, prompt sensitivity, instruction following, brevity constraints.
+    related_chapters: []
+
+  formal_verification:
+    label: Formal Verification
+    description: Theorem proving, Lean 4, formal methods for code and mathematical correctness.
+    related_chapters: []
+
+  safety:
+    label: Safety
+    description: LLM safety, alignment, jailbreak prevention, adversarial robustness.
+    related_chapters: []
+
+  reinforcement_learning:
+    label: Reinforcement Learning
+    description: RL training, PPO, GRPO, reward modeling, bandit methods for LLM optimization.
+    related_chapters: []

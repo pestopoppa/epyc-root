@@ -76,7 +76,16 @@ For each non-duplicate entry:
    - `low`: tangentially related
    - `none`: out of scope
 
-5. **Assign verdict**:
+5. **Score source credibility** (record as `credibility_score`, integer 0-6 or null):
+   - Peer-reviewed venue (top conference or journal): +2
+   - Published within 12 months: +1 / older than 24 months: -1
+   - Author authority (major lab affiliation, known contributor to the field): +1
+   - Identified bias (commercial product promotion, methodological conflict of interest): -1
+   - Independent corroboration (other papers/repos confirming results): +1 per source (max +2)
+   - Tiers: High (4-6), Medium (2-3), Low (0-1)
+   - Skip scoring (set null) for repos, blog posts with no empirical claims, or duplicate entries
+
+6. **Assign verdict**:
    - `already_integrated`: technique covered in chapters/experiments
    - `new_opportunity`: novel + high relevance → warrants investigation
    - `worth_investigating`: medium novelty or relevance → worth tracking
@@ -95,6 +104,14 @@ Only expand from entries with `relevance >= medium`. Max 10 new entries per run.
 **Tier 2 — Targeted search**:
 - Use WebSearch for `"{technique}" {category} 2025 2026`
 - Check top 5 results for new relevant material
+
+**Tier 2b — Contradicting evidence search**:
+For each key claim from entries with `credibility_score >= 3` (or any entry with `verdict: new_opportunity`):
+- WebSearch for `"{key_claim}" criticism` OR `"{technique}" limitations`
+- Check top 3 results for contradicting evidence, failed replications, or known caveats
+- Record findings in the `contradicting_evidence` field (list of strings, or null if none found)
+- If all key claims align with existing work and no contradictions are found, explicitly note: "No contradicting evidence found — possible confirmation bias risk"
+- This step prevents the intake pipeline from accumulating only supporting evidence
 
 **Tier 3 — Implementation discovery**:
 - WebSearch for `"{paper_title}" site:github.com`

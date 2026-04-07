@@ -7601,7 +7601,7 @@
   relevance: high
   discovered_via: expansion
   expanded_from: intake-269
-  verdict: adopt_patterns
+  verdict: adopt_component
   ingested_date: '2026-04-06'
   handoffs_created:
   - knowledge-base-governance-improvements.md

@@ -29,6 +29,8 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `cross_references` | object | Cross-reference targets (see below) |
 | `expanded_from` | string or null | ID of the entry this was expanded from |
 | `recommended_actions` | list[string] | Suggested follow-up actions |
+| `credibility_score` | integer or null | Source credibility score (0-6). Rubric: peer-reviewed +2, recent +1/old -1, authority +1, bias -1, corroboration +1/source max +2. Null for repos/blogs without empirical claims. |
+| `contradicting_evidence` | list[string] or null | Contradicting evidence found during Tier 2b search. Null if none found or search not performed. |
 | `handoffs_updated` | list[string] | Active handoff filenames amended with insights |
 | `handoffs_created` | list[string] | New stub handoff filenames created |
 | `citation_context` | string | Surrounding text where this was cited (seed entries only) |

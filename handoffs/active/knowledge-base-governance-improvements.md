@@ -1,7 +1,8 @@
 # Knowledge Base Governance Improvements
 
-**Status**: active
+**Status**: active (Phase 0/1/4/5a-d complete; Phase 2-3 deferred P2)
 **Created**: 2026-04-06 (via research intake deep-dive)
+**Updated**: 2026-04-07
 **Categories**: governance, research-intake, skill-enhancement
 **Origin**: intake-268 (Karpathy LLM Wiki), intake-269 (nvk/llm-wiki), intake-270 (tobi/qmd)
 
@@ -17,30 +18,16 @@ Companion handoff in root-archetype: [`knowledge-base-linter.md`](/mnt/raid0/llm
 
 ### Phase 0 — Knowledge base linter for epyc-root (P0)
 
-- [ ] Create `scripts/validate/lint_knowledge_base.py` with 4 lint passes:
-  1. **Orphan handoff detection**: parse all `*-index.md` in `handoffs/active/`, extract referenced filenames, flag unreferenced `.md` files
-  2. **Stale handoff flagging**: stat each file, flag >14d as aging, >30d as stale (complement existing `check_handoff_freshness.sh`)
-  3. **Contradictory status detection**: extract `**Status**:` line, compare against directory placement (`active/` vs `completed/`)
-  4. **Un-actioned intake detection**: find `research/intake_index.yaml` entries with `verdict: worth_investigating` or `new_opportunity` that have no `handoffs_created` field and are >7 days old
-- [ ] Wire into nightshift: add `knowledge-lint` task to epyc-root's nightshift config (if present) or document as a periodic manual check
+- [x] Create lint implementation — ✅ 2026-04-07. ABSORBED by Phase 5b: `.claude/skills/project-wiki/scripts/lint_wiki.py` with 5 passes (orphan, stale, contradictory, un-actioned, missing cross-refs). First run found 4 real errors + 71 warnings.
+- [x] Wire into nightshift — ✅ 2026-04-07. `knowledge-lint` task added to `nightshift.yaml` (priority 4, 72h interval).
 - [ ] After root-archetype version is finalized, reconcile: epyc-root's linter should converge with the upstream template version
 
 ### Phase 1 — Research-intake skill enhancements (P1)
 
-- [ ] Add credibility scoring step to Phase 2 of `.claude/skills/research-intake/SKILL.md`:
-  - After scoring novelty and relevance, score source credibility using rubric:
-    - Peer-reviewed venue: +2
-    - Published within 12 months: +1 / older than 24 months: -1
-    - Author authority: +1
-    - Identified bias: -1
-    - Independent corroboration: +1/source (max +2)
-  - Add `credibility_score` field to intake entries (integer, optional)
-- [ ] Add anti-confirmation-bias "Tier 2b" to Phase 3 (Literature Expansion):
-  - After Tier 2 targeted search, add: "Tier 2b — Contradicting evidence search"
-  - `WebSearch for "{key_claim} criticism" OR "{technique} limitations"`
-  - Any contradicting evidence noted in `contradicting_evidence:` field (list of strings)
-- [ ] Update `references/intake-schema.md` with new fields
-- [ ] Update `scripts/validate_intake.py` to validate `credibility_score` (integer 0-6 or null) and `contradicting_evidence` (list or null)
+- [x] Add credibility scoring step to Phase 2 of `.claude/skills/research-intake/SKILL.md` — ✅ 2026-04-07. Added as step 5 (6-point rubric with tiers), renumbered verdict to step 6.
+- [x] Add anti-confirmation-bias "Tier 2b" to Phase 3 (Literature Expansion) — ✅ 2026-04-07. Inserted after Tier 2, before Tier 3. Searches for criticism/limitations, records in `contradicting_evidence` field.
+- [x] Update `references/intake-schema.md` with new fields — ✅ 2026-04-07. Added `credibility_score` (int 0-6 or null) and `contradicting_evidence` (list[str] or null).
+- [x] Update `scripts/validate_intake.py` to validate `credibility_score` (integer 0-6 or null) and `contradicting_evidence` (list or null) — ✅ 2026-04-07. Both optional, existing entries pass.
 
 ### Phase 2 — Session persistence docs (P2)
 
@@ -66,24 +53,24 @@ Companion handoff in root-archetype: [`knowledge-base-linter.md`](/mnt/raid0/llm
 epyc-root IS the testbed — it already has ~5.2 MB / 275 files / ~99.5k lines of LLM-compiled knowledge spread across research/, handoffs/, progress/, and deep-dives/. Build the project-wiki skill here first, validate it on our own KB, then extract the portable version to root-archetype.
 
 **Phase 5a — wiki.yaml config + portability fix (epyc-root)**
-- [ ] Design `wiki.yaml` config schema at repo root: cross-reference targets (replacing hardcoded `/mnt/raid0/` paths in validate_intake.py:34,36 and seed_index.py:24), taxonomy (absorbs research/taxonomy.yaml), ingest pipeline flags, scaling thresholds (50/200/500 from Hermes PR#5635)
-- [ ] Fix 4 hardcoded path references: `validate_intake.py` (2), `seed_index.py` (1), `reset_episodic_memory.sh` (1) — read from wiki.yaml or env vars
-- [ ] Create `wiki/SCHEMA.md` as living taxonomy (replaces static `references/taxonomy.md`). Backfill missing categories (mechanistic_interpretability appears 19x in intake but not in taxonomy)
+- [x] Design `wiki.yaml` config schema at repo root — ✅ 2026-04-07. Created `wiki.yaml` with project, cross_references (env-var expandable), taxonomy (source + legacy), scaling thresholds, lint config, ingest flags.
+- [x] Fix 4 hardcoded path references — ✅ 2026-04-07. validate_intake.py: refactored to `load_wiki_config()` + `_get_crossref_dirs()`. seed_index.py: `EPYC_RESEARCH_ROOT` env var. check_handoff_freshness.sh: relative path from script dir. reset_episodic_memory.sh: already used env var defaults, no change needed.
+- [x] Create `wiki/SCHEMA.md` as living taxonomy — ✅ 2026-04-07. 30 canonical categories (24 original + 6 new: mechanistic_interpretability, emotion_psychology, llm_prompting, formal_verification, safety, reinforcement_learning) + 34 aliases mapping variant names to canonical categories. taxonomy.yaml also updated with the 6 new categories.
 
 **Phase 5b — Lint operation (epyc-root, absorbs Phase 0)**
-- [ ] Build lint into the project-wiki skill (not as a separate validator script): orphan handoffs, stale entries (>14d aging, >30d stale), contradictory status vs directory, un-actioned intake entries >7d, missing cross-refs between handoffs
-- [ ] This absorbs Phase 0 tasks — the linter IS the lint operation
+- [x] Build lint into the project-wiki skill — ✅ 2026-04-07. `.claude/skills/project-wiki/SKILL.md` (Operation 1) + `scripts/lint_wiki.py` (5 passes, config-driven via wiki.yaml). First run: 4 errors (2 stale, 2 contradictory), 71 warnings (69 un-actioned intake, 2 aging).
+- [x] This absorbs Phase 0 tasks — ✅ the linter IS the lint operation
 
 **Phase 5c — Query operation (epyc-root)**
-- [ ] Add query operation: read wiki.yaml for targets → scan index for relevant entries → read matching handoffs/deep-dives → synthesize answer with citations → optionally persist as new deep-dive page
-- [ ] This fills the biggest gap: currently no way to ask "what do we know about X?" and get compiled knowledge back
+- [x] Add query operation — ✅ 2026-04-07. Operation 2 in project-wiki SKILL.md. `scripts/query_wiki.py` pre-filters intake, handoffs, deep-dives with keyword scoring. Tested: "speculative decoding" returns 15 intake + handoff matches; "knowledge base" returns 45 results across 3 sources.
+- [x] This fills the biggest gap — ✅ "what do we know about X?" now returns compiled results with citations
 
 **Phase 5d — Upstream to root-archetype**
-- [ ] Extract epyc-specific config from wiki.yaml into `wiki.yaml.template` with `{{TEMPLATE_VARS}}`
-- [ ] Copy validated project-wiki skill to root-archetype `.claude/skills/project-wiki/`
-- [ ] Generalize validate_wiki.py to be config-driven (no project-specific assumptions)
-- [ ] Update root-archetype `init-project.sh` to scaffold wiki structure on clone
-- [ ] Reconcile with existing root-archetype `knowledge-base-linter.md` companion handoff
+- [x] Extract epyc-specific config from wiki.yaml into `wiki.yaml.template` — ✅ 2026-04-07. Created `_templates/wiki.yaml.template` with `{{PROJECT_NAME}}`, `{{PROJECT_DESCRIPTION}}` vars.
+- [x] Copy validated project-wiki skill to root-archetype — ✅ 2026-04-07. `.claude/skills/project-wiki/` with SKILL.md, lint_wiki.py, query_wiki.py, lint-passes.md. EPYC-specific language removed.
+- [x] Generalize scripts to be config-driven — ✅ 2026-04-07. Both lint_wiki.py and query_wiki.py read wiki.yaml, fall back to defaults. No project-specific assumptions.
+- [x] Update root-archetype `init-project.sh` to scaffold wiki structure — ✅ 2026-04-07. Creates wiki/ dir, copies wiki.yaml from template with var substitution, scaffolds SCHEMA.md.
+- [x] Reconcile with existing root-archetype `knowledge-base-linter.md` companion handoff — ✅ 2026-04-07. Phases 1-2 marked as superseded by project-wiki skill. Phase 3 credibility rubric created. Phase 4 (session persistence) deferred.
 
 **Risk**: intake_index.yaml at 308 KB / 277 entries is straining. Hybrid storage (YAML index + markdown pages) doubles write surface. Decision needed: simultaneous writes vs periodic compile. Recommend: **ingest writes YAML only, periodic `wiki compile` operation generates/updates markdown pages** — keeps the hot path simple.
 
@@ -91,28 +78,28 @@ epyc-root IS the testbed — it already has ~5.2 MB / 275 files / ~99.5k lines o
 
 ### Phase 4 — Intake index maintenance (P0)
 
-- [ ] Update intake-268 verdict from `worth_investigating` → `adopt_patterns` in YAML body
-- [ ] Update intake-269 verdict from `worth_investigating` → `adopt_patterns` in YAML body
-- [ ] Update intake-270 verdict from `worth_investigating` → `adopt_component` in YAML body
-- [ ] Add `handoffs_created: [knowledge-base-governance-improvements.md]` to all three entries
-- [ ] Add `handoffs_updated: [context-folding-progressive.md]` if not already present
+- [x] Update intake-268 verdict from `worth_investigating` → `adopt_patterns` in YAML body — ✅ already done in prior session
+- [x] Update intake-269 verdict from `worth_investigating` → `adopt_patterns` in YAML body — ✅ already done in prior session
+- [x] Update intake-270 verdict from `worth_investigating` → `adopt_component` in YAML body — ✅ fixed 2026-04-07 (was `adopt_patterns`, corrected to `adopt_component`)
+- [x] Add `handoffs_created: [knowledge-base-governance-improvements.md]` to all three entries — ✅ already present
+- [x] Add `handoffs_updated: [context-folding-progressive.md]` if not already present — ✅ already present
 
 ---
 
 ## Dependency Graph
 
 ```
-Phase 4 (intake index cleanup)         ── P0, no deps, do first ──
-Phase 5a (wiki.yaml + portability)     ── P0, no deps, can parallel w/ Phase 4 ──
-Phase 5b (lint operation)              ── P0, absorbs Phase 0 ──
-Phase 1 (skill enhancements)           ── P1, independent ──
-Phase 5c (query operation)             ── P1, after 5a ──
-Phase 2 (session persistence docs)     ── P2, independent ──
-Phase 3 (qmd addon docs)              ── P2, independent, optional ──
-Phase 5d (upstream to root-archetype)  ── P1, after 5a+5b+5c validated in epyc-root ──
+✅ Phase 4 (intake index cleanup)         ── DONE 2026-04-07 ──
+✅ Phase 5a (wiki.yaml + portability)     ── DONE 2026-04-07 ──
+✅ Phase 5b (lint operation)              ── DONE 2026-04-07, absorbs Phase 0 ──
+✅ Phase 1 (skill enhancements)           ── DONE 2026-04-07 ──
+✅ Phase 5c (query operation)             ── DONE 2026-04-07 ──
+   Phase 2 (session persistence docs)     ── P2, deferred ──
+   Phase 3 (qmd addon docs)              ── P2, deferred, optional ──
+✅ Phase 5d (upstream to root-archetype)  ── DONE 2026-04-07 ──
 ```
 
-Phase 4 and 5a can run in parallel (no deps). Phase 5b absorbs Phase 0 (the linter IS the lint operation). Phase 5d only happens after the skill is proven in epyc-root.
+All P0/P1 phases complete. Only Phase 2 (session persistence docs) and Phase 3 (qmd semantic search docs) remain — both P2 priority, documentation-only.
 
 ---
 
@@ -128,7 +115,7 @@ Phase 4 and 5a can run in parallel (no deps). Phase 5b absorbs Phase 0 (the lint
 
 5. **Root-archetype companion**: The linter and template patterns from this work are being upstreamed via `/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`. **Updated 2026-04-07**: epyc-root is now the proving ground — build project-wiki skill here first (Phase 5a-c), validate on our ~5.2 MB / 275-file KB, then extract to root-archetype (Phase 5d). This reverses the original sequencing which treated epyc-root as a later migration target.
 
-6. **epyc-root IS an LLM wiki**: Audit (2026-04-07) confirms 277 intake entries + 154 handoffs + 87 progress logs + 25 deep-dives = ~99.5k lines of LLM-compiled knowledge. Missing: query operation (can't ask "what do we know about X?"), lint operation (no systematic orphan/stale/contradiction detection), scaling thresholds (intake_index.yaml growing unbounded at 308 KB).
+6. **epyc-root IS an LLM wiki**: Audit (2026-04-07) confirms 277 intake entries + 154 handoffs + 87 progress logs + 25 deep-dives = ~99.5k lines of LLM-compiled knowledge. **Updated 2026-04-07**: All three gaps now closed — query operation via `query_wiki.py`, lint operation via `lint_wiki.py` (5 passes), scaling thresholds in `wiki.yaml`. Remaining gap: semantic search (qmd deployment, Phase 3, deferred P2).
 
 ---
 
@@ -146,14 +133,21 @@ After completing any task:
 
 | Resource | Path |
 |----------|------|
+| Wiki config | `wiki.yaml` |
+| Living taxonomy + aliases | `wiki/SCHEMA.md` |
+| Project-wiki skill | `.claude/skills/project-wiki/SKILL.md` |
+| KB linter (5 passes) | `.claude/skills/project-wiki/scripts/lint_wiki.py` |
+| KB query helper | `.claude/skills/project-wiki/scripts/query_wiki.py` |
 | Research-intake skill | `.claude/skills/research-intake/SKILL.md` |
 | Intake schema reference | `.claude/skills/research-intake/references/intake-schema.md` |
 | Cross-reference map | `.claude/skills/research-intake/references/cross-reference-map.md` |
 | Intake validator | `.claude/skills/research-intake/scripts/validate_intake.py` |
 | Intake index | `research/intake_index.yaml` |
-| Taxonomy | `research/taxonomy.yaml` |
+| Taxonomy (legacy) | `research/taxonomy.yaml` |
 | Context-folding handoff | `handoffs/active/context-folding-progressive.md` |
 | Root-archetype companion | `/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md` |
+| Root-archetype wiki template | `/mnt/raid0/llm/root-archetype/_templates/wiki.yaml.template` |
+| Root-archetype project-wiki skill | `/mnt/raid0/llm/root-archetype/.claude/skills/project-wiki/` |
 
 ## Research Context
 

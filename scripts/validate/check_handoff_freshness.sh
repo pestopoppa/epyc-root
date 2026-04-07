@@ -4,7 +4,9 @@ set -euo pipefail
 # Check handoff freshness — flags files not modified in 30+ days
 # Usage: scripts/validate/check_handoff_freshness.sh [--warn-days N] [--stale-days N]
 
-HANDOFF_DIR="/mnt/raid0/llm/epyc-root/handoffs/active"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+HANDOFF_DIR="${HANDOFF_DIR:-$REPO_ROOT/handoffs/active}"
 WARN_DAYS="${1:-14}"
 STALE_DAYS="${2:-30}"
 NOW=$(date +%s)

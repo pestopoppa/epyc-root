@@ -17,6 +17,7 @@ tasks:
     - ci-fix                       # review & fix failing CI tests
 
     # Analysis-only tasks (reports, no code changes)
+    - knowledge-lint               # KB governance hygiene (orphans, stale, contradictions)
     - dead-code                    # find unused code
     - test-gap                     # identify missing test coverage
     - security-footgun             # security anti-patterns
@@ -31,6 +32,7 @@ tasks:
     td-review: 6
     lint-fix: 5
     auto-dry: 4
+    knowledge-lint: 4
     dead-code: 4
     doc-drift: 3
     docs-backfill: 2
@@ -45,6 +47,7 @@ tasks:
     td-review: 168h                # weekly
     lint-fix: 48h                  # every 2 days
     auto-dry: 336h                 # every 2 weeks
+    knowledge-lint: 72h             # every 3 days
     dead-code: 168h                # weekly
     doc-drift: 336h                # every 2 weeks
     docs-backfill: 336h            # every 2 weeks

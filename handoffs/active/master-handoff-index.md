@@ -48,7 +48,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 2 active + archived | Most work complete, monitoring phase |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active + Actions 12-15 (brevity), KB governance project-wiki skill in progress |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active + Actions 12-15 (brevity), KB governance project-wiki skill DONE (lint+query+upstream) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---

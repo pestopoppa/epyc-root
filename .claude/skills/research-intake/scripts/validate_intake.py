@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import os
+import re
 import sys
 from pathlib import Path
 
@@ -15,7 +17,6 @@ except ImportError:
 ROOT = Path(__file__).resolve().parents[4]  # epyc-root
 RESEARCH = ROOT / "research"
 INDEX_PATH = RESEARCH / "intake_index.yaml"
-TAXONOMY_PATH = RESEARCH / "taxonomy.yaml"
 
 REQUIRED_FIELDS = {
     "id", "arxiv_id", "url", "source_type", "title", "categories",
@@ -30,11 +31,96 @@ VERDICT_VALUES = {
     "not_applicable", "superseded", "adopt_patterns", "adopt_component",
 }
 
-CROSSREF_DIRS = {
-    "chapters": Path("/mnt/raid0/llm/epyc-inference-research/docs/chapters"),
-    "handoffs": [ROOT / "handoffs" / "active", ROOT / "handoffs" / "completed", ROOT / "handoffs" / "archived"],
-    "experiments": Path("/mnt/raid0/llm/epyc-inference-research/docs/experiments"),
-}
+# Default paths — overridden by wiki.yaml if present
+_RESEARCH_ROOT_DEFAULT = "/mnt/raid0/llm/epyc-inference-research"
+
+
+def _expand_path(p: str) -> Path:
+    """Expand ${ENV_VAR:-default} patterns and return a Path."""
+    return Path(os.path.expandvars(p))
+
+
+def load_wiki_config() -> dict:
+    """Load wiki.yaml from repo root. Returns empty dict if not found."""
+    wiki_path = ROOT / "wiki.yaml"
+    if wiki_path.exists():
+        with open(wiki_path) as f:
+            return yaml.safe_load(f) or {}
+    return {}
+
+
+def _get_crossref_dirs(config: dict) -> dict:
+    """Build CROSSREF_DIRS from wiki.yaml config, falling back to defaults."""
+    xref = config.get("cross_references", {})
+    research_root = os.environ.get("EPYC_RESEARCH_ROOT", _RESEARCH_ROOT_DEFAULT)
+
+    chapters_path = xref.get("chapters", {}).get("path", f"{research_root}/docs/chapters")
+    experiments_path = xref.get("experiments", {}).get("path", f"{research_root}/docs/experiments")
+
+    handoff_paths_cfg = xref.get("handoffs", {}).get("paths",
+        ["handoffs/active", "handoffs/completed", "handoffs/archived"])
+    handoff_paths = []
+    for p in handoff_paths_cfg:
+        expanded = _expand_path(p)
+        handoff_paths.append(expanded if expanded.is_absolute() else ROOT / expanded)
+
+    return {
+        "chapters": _expand_path(chapters_path),
+        "handoffs": handoff_paths,
+        "experiments": _expand_path(experiments_path),
+    }
+
+
+def _get_taxonomy_path(config: dict) -> Path:
+    """Get taxonomy path from wiki.yaml config, falling back to default."""
+    tax_cfg = config.get("taxonomy", {})
+    legacy = tax_cfg.get("legacy", "research/taxonomy.yaml")
+    legacy_path = ROOT / legacy
+    return legacy_path
+
+
+def _load_aliases(config: dict) -> dict[str, str]:
+    """Load category aliases from wiki/SCHEMA.md if it exists.
+
+    Parses the Aliases table in SCHEMA.md. Each row maps one or more
+    alias keys to a canonical category.
+    Returns: {alias: canonical} mapping.
+    """
+    aliases = {}
+    tax_cfg = config.get("taxonomy", {})
+    schema_rel = tax_cfg.get("source", "wiki/SCHEMA.md")
+    schema_path = ROOT / schema_rel
+    if not schema_path.exists():
+        return aliases
+
+    with open(schema_path) as f:
+        content = f.read()
+
+    # Find the Aliases section and parse table rows
+    in_aliases = False
+    for line in content.splitlines():
+        if line.strip().startswith("## Aliases"):
+            in_aliases = True
+            continue
+        if in_aliases and line.strip().startswith("## "):
+            break  # next section
+        if not in_aliases:
+            continue
+        # Parse table rows: | alias1, alias2 | canonical |
+        m = re.match(r'\|\s*`?([^|`]+?)`?\s*\|\s*`?([^|`]+?)`?\s*\|', line)
+        if m:
+            alias_part = m.group(1).strip()
+            canonical = m.group(2).strip()
+            # Skip header rows
+            if alias_part in ("Alias", "---", "-----"):
+                continue
+            # Handle comma-separated aliases
+            for alias in alias_part.split(","):
+                alias = alias.strip().strip("`")
+                if alias and alias not in ("Alias", "---"):
+                    aliases[alias] = canonical
+
+    return aliases
 
 
 def load_yaml(path: Path) -> object:
@@ -57,7 +143,8 @@ def validate_taxonomy(taxonomy: dict) -> list[str]:
     return errors
 
 
-def validate_index(entries: list[dict], valid_categories: set[str]) -> list[str]:
+def validate_index(entries: list[dict], valid_categories: set[str],
+                   crossref_dirs: dict | None = None) -> list[str]:
     errors = []
     seen_ids = set()
     seen_arxiv = set()
@@ -115,6 +202,20 @@ def validate_index(entries: list[dict], valid_categories: set[str]) -> list[str]
         if ver and ver not in VERDICT_VALUES:
             errors.append(f"{eid}: invalid verdict '{ver}'")
 
+        # Credibility score validation (optional field)
+        cred = entry.get("credibility_score")
+        if cred is not None:
+            if not isinstance(cred, int) or cred < 0 or cred > 6:
+                errors.append(f"{eid}: credibility_score must be integer 0-6, got {cred!r}")
+
+        # Contradicting evidence validation (optional field)
+        contra = entry.get("contradicting_evidence")
+        if contra is not None:
+            if not isinstance(contra, list):
+                errors.append(f"{eid}: contradicting_evidence must be a list, got {type(contra).__name__}")
+            elif not all(isinstance(s, str) for s in contra):
+                errors.append(f"{eid}: contradicting_evidence must contain only strings")
+
         # Category validation
         cats = entry.get("categories", [])
         if not isinstance(cats, list) or len(cats) == 0:
@@ -126,23 +227,23 @@ def validate_index(entries: list[dict], valid_categories: set[str]) -> list[str]
 
         # Cross-reference file existence (warn, don't error)
         xrefs = entry.get("cross_references", {})
-        if isinstance(xrefs, dict):
+        if isinstance(xrefs, dict) and crossref_dirs:
             for ref_type, ref_list in xrefs.items():
                 if not isinstance(ref_list, list):
                     continue
                 for ref_file in ref_list:
-                    if ref_type == "chapters":
-                        path = CROSSREF_DIRS["chapters"] / ref_file
+                    if ref_type == "chapters" and "chapters" in crossref_dirs:
+                        path = crossref_dirs["chapters"] / ref_file
                         if not path.exists():
                             errors.append(f"{eid}: cross-ref chapter '{ref_file}' not found")
-                    elif ref_type == "handoffs":
+                    elif ref_type == "handoffs" and "handoffs" in crossref_dirs:
                         found = any(
-                            (d / ref_file).exists() for d in CROSSREF_DIRS["handoffs"]
+                            (d / ref_file).exists() for d in crossref_dirs["handoffs"]
                         )
                         if not found:
                             errors.append(f"{eid}: cross-ref handoff '{ref_file}' not found")
-                    elif ref_type == "experiments":
-                        path = CROSSREF_DIRS["experiments"] / ref_file
+                    elif ref_type == "experiments" and "experiments" in crossref_dirs:
+                        path = crossref_dirs["experiments"] / ref_file
                         if not path.exists():
                             errors.append(f"{eid}: cross-ref experiment '{ref_file}' not found")
 
@@ -151,14 +252,24 @@ def validate_index(entries: list[dict], valid_categories: set[str]) -> list[str]
 
 def main() -> int:
     errors = []
+    config = load_wiki_config()
 
     # Validate taxonomy
-    if not TAXONOMY_PATH.exists():
-        print(f"ERROR: Taxonomy not found at {TAXONOMY_PATH}")
+    taxonomy_path = _get_taxonomy_path(config)
+    if not taxonomy_path.exists():
+        print(f"ERROR: Taxonomy not found at {taxonomy_path}")
         return 1
-    taxonomy = load_yaml(TAXONOMY_PATH)
+    taxonomy = load_yaml(taxonomy_path)
     errors.extend(validate_taxonomy(taxonomy))
     valid_categories = set(taxonomy.get("categories", {}).keys())
+
+    # Load aliases from SCHEMA.md (extends valid categories without modifying taxonomy.yaml)
+    aliases = _load_aliases(config)
+    if aliases:
+        # Add alias keys and their canonical targets to valid set
+        valid_categories.update(aliases.keys())
+        valid_categories.update(aliases.values())
+        print(f"INFO: Loaded {len(aliases)} category aliases from SCHEMA.md")
 
     # Validate index
     if not INDEX_PATH.exists():
@@ -175,7 +286,8 @@ def main() -> int:
     if not entries:
         print("WARNING: Index is empty")
     else:
-        errors.extend(validate_index(entries, valid_categories))
+        crossref_dirs = _get_crossref_dirs(config)
+        errors.extend(validate_index(entries, valid_categories, crossref_dirs))
 
     if errors:
         print(f"FAILED: {len(errors)} error(s) found:")

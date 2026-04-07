@@ -8,6 +8,7 @@ initial intake_index.yaml.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from collections import defaultdict
@@ -21,7 +22,8 @@ except ImportError:
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parents[4]  # epyc-root
-RESEARCH_ROOT = Path("/mnt/raid0/llm/epyc-inference-research")
+RESEARCH_ROOT = Path(os.environ.get(
+    "EPYC_RESEARCH_ROOT", "/mnt/raid0/llm/epyc-inference-research"))
 INDEX_PATH = ROOT / "research" / "intake_index.yaml"
 TAXONOMY_PATH = ROOT / "research" / "taxonomy.yaml"
 
