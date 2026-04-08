@@ -8070,3 +8070,317 @@
     (4) Add query operation. (5) Migrate epyc-root from research-intake to project-wiki.
     RISK: At 274+ entries, single YAML file straining. Hybrid approach doubles write surface.
     Need to decide: simultaneous writes vs periodic "compile" step.
+
+- id: intake-278
+  arxiv_id: null
+  url: https://docs.z.ai/guides/llm/glm-5.1
+  source_type: blog
+  title: 'GLM-5.1 API Guide — Z.AI Developer Documentation'
+  categories:
+  - benchmark_methodology
+  - inference_serving
+  - agent_architecture
+  key_claims:
+  - GLM-5.1 aligned with Claude Opus 4.6 in general capability
+  - SWE-Bench Pro 58.4% (claims SOTA, outperforms GPT-5.4 and Claude Opus 4.6)
+  - Sustained execution up to 8 hours on single tasks
+  - KernelBench Level 3 achieves 3.6x geometric mean speedup
+  - 200K context window, 128K max output tokens
+  techniques:
+  - Thinking modes (multiple variants)
+  - Function calling / tool invocation
+  - Context caching
+  - MCP integration
+  reported_results:
+  - 'SWE-Bench Pro: 58.4%'
+  - 'KernelBench Level 3: 3.6x geometric mean speedup'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-07'
+  contradicting_evidence:
+  - Self-reported benchmarks — no independent third-party corroboration of SWE-Bench Pro 58.4%
+  - Evaluation uses Claude Code as test harness, making cross-benchmark comparison difficult
+  - Slowest model in competitive tier at ~44.3 tok/s generation speed
+  - Text-only — no multimodal support, unlike Claude Opus 4.6 and GPT-5.4
+  cross_references:
+    intake:
+    - intake-279
+    - intake-280
+    - intake-281
+  notes: >
+    DEEP-DIVE 2026-04-07: API docs confirm text-only I/O. The 8-hour sustained
+    execution claim is interesting but irrelevant to local inference. MCP integration
+    means GLM-5.1 can be used as an API-side model in our orchestrator if pricing
+    is competitive — but our stack is local-first.
+
+- id: intake-279
+  arxiv_id: null
+  url: https://huggingface.co/zai-org/GLM-5.1
+  source_type: repo
+  title: 'GLM-5.1 HuggingFace Model Card — 754B MoE-DSA Open-Weight Flagship'
+  categories:
+  - moe_optimization
+  - inference_serving
+  - benchmark_methodology
+  key_claims:
+  - 754B total params, GLM-MoE-DSA architecture (Mixture of Experts + Dynamic Sparse Attention)
+  - 256 experts, 40B active params per token, 80 layers
+  - MIT license — fully open weights
+  - Supported by vLLM 0.19.0+, SGLang 0.5.10+, KTransformers, xLLM, llama.cpp GGUF
+  - CyberGym 68.7%, BrowseComp 68.0%, GPQA-Diamond 86.2%, AIME 2026 95.3%
+  techniques:
+  - MoE with Dynamic Sparse Attention (DSA)
+  - Multi-Latent Attention (MLA, 256-dim head)
+  - Multi-Token Prediction (MTP, 3 layers)
+  - INT4 quantization-aware training
+  - FP8 rollout inference
+  reported_results:
+  - 'SWE-Bench Pro: 58.4%'
+  - 'Terminal-Bench 2.0: 63.5% (66.5% with Claude Code)'
+  - 'CyberGym: 68.7%'
+  - 'BrowseComp: 68.0%'
+  - 'GPQA-Diamond: 86.2%'
+  - 'AIME 2026: 95.3%'
+  - 'HMMT Feb 2026: 82.6%'
+  - 'HLE w/Tools: 52.3%'
+  - 'NL2Repo: 42.7%'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-07'
+  contradicting_evidence:
+  - 754B total / 40B active = Q4_K_M is 456GB per unsloth GGUF — impractical for single-node
+  - Distillation concerns — possible training on Claude outputs, ethics questioned by reviewers
+  - Independent reviews rate coding at 94.6% of Claude Opus 4.6, not parity
+  - llama.cpp DSA indexer NOT implemented (PR#19460 merged dense-only, indexer tensors unused)
+  cross_references:
+    intake:
+    - intake-184
+    - intake-278
+    - intake-280
+    - intake-281
+  notes: >
+    DEEP-DIVE 2026-04-07: CRITICAL llama.cpp finding — PR#19460 (merged 2026-02-13)
+    adds GlmMoeDsa arch to llama.cpp but DSA indexer is NOT implemented. Model runs
+    in DENSE attention mode only. Tester reports: 11-13 tok/s gen, PPL 8.75 at Q4
+    within 10K context. Without DSA, performance is unacceptable.
+    GGUF SIZES (unsloth/GLM-5-GGUF, 32.6K downloads/month):
+    Q4_K_M=456GB, Q3_K_M=360GB, Q2_K=276GB, UD-IQ2_XXS=241GB, UD-TQ1_0=176GB.
+    Even Q2_K at 276GB exceeds our 250GB working memory budget.
+    REAP VARIANT EXISTS: 0xSero/GLM-5-REAP-50pct-FP8 = 381B params (128 of 256 experts).
+    BF16 safetensors=763GB. No GGUF available. No quality benchmarks published.
+    At Q4, estimated ~230GB — borderline but DSA support still missing.
+    KTransformers tutorial exists but contains NO performance benchmarks.
+    Baseten production: 186+ tok/s on Blackwell GPUs with NVFP4 — irrelevant to local CPU inference.
+
+- id: intake-280
+  arxiv_id: null
+  url: https://z.ai/blog/glm-5.1
+  source_type: blog
+  title: 'GLM-5.1 Blog Post — Z.AI Announcement (partial fetch)'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - GLM-5.1 is a post-training upgrade to GLM-5, released 2026-03-27
+  - Targets coding performance specifically (agentic engineering focus)
+  - Same base architecture as GLM-5 (744B MoE, 40B active)
+  techniques:
+  - Post-training optimization for coding/agentic tasks
+  - Progressive RL pipeline (SFT then Reasoning RL then Agentic RL then General RL)
+  reported_results: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-07'
+  contradicting_evidence: null
+  notes: >
+    Blog page returned empty content on fetch. Key claims sourced from
+    third-party reviews and search results. GLM-5.1 is an incremental
+    post-training update, not a new base model — same architecture as GLM-5.
+    DEEP-DIVE 2026-04-07: The progressive RL pipeline (SFT → Reasoning RL →
+    Agentic RL → General RL → Cross-Stage Distillation) is architecturally
+    interesting. The cross-stage distillation step specifically addresses
+    catastrophic forgetting across RL stages — recovers skills lost in later
+    stages using teacher models from earlier stages. This technique could
+    inform our own fine-tuning work if we ever SFT workers.
+  cross_references:
+    intake:
+    - intake-278
+    - intake-279
+    - intake-281
+
+- id: intake-281
+  arxiv_id: '2602.15763'
+  url: https://arxiv.org/abs/2602.15763
+  source_type: paper
+  title: 'GLM-5: from Vibe Coding to Agentic Engineering'
+  authors: 'GLM-5 Team, Zhipu AI & Tsinghua University'
+  categories:
+  - moe_optimization
+  - inference_serving
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - 744B total / 40B active MoE with 256 experts, 80 layers
+  - Dynamic Sparse Attention (DSA) reduces attention computation 1.5-2x for long sequences
+  - DSA uses deterministic top-k operator (k=2048) — lossless by construction
+  - Multi-Token Prediction with parameter sharing across 3 layers, acceptance length exceeds DeepSeek-V3.2
+  - Pre-trained on 27T tokens, total budget 28.5T tokens
+  - Progressive context extension — 32K (1T) then 128K (500B) then 200K (50B)
+  - 160B unique SWE tokens from ~10M issue-PR pairs
+  - On-Policy Cross-Stage Distillation recovers skills from earlier training stages
+  - INT4 quantization-aware training during SFT, mixed-precision W4A8 for inference
+  - First open-weights model to reach Artificial Analysis Intelligence Index v4.0 score of 50
+  techniques:
+  - GLM-MoE-DSA (MoE + Dynamic Sparse Attention)
+  - Multi-Latent Attention (MLA, 256-dim head)
+  - Multi-Token Prediction (MTP, 3 speculative layers)
+  - Muon Split optimizer (per-head scale updates)
+  - DP-attention for MLA (prevents KV-cache copying across ranks)
+  - Prefill-Decode disaggregation
+  - GRPO + IcePop reinforcement learning
+  - Agentic RL with 10K+ SWE environments
+  - On-Policy Cross-Stage Distillation
+  - INT4 QAT, FP8 rollout, W4A8 mixed-precision
+  reported_results:
+  - 'SWE-bench Verified: top tier'
+  - 'BrowseComp: 75.9 (with context management)'
+  - 'Vending-Bench 2: $4,432 final balance (#1 open-source)'
+  - 'LMArena Text Arena: #1 open model'
+  - 'LMArena Code Arena: #1 open model'
+  - 'Artificial Analysis Intelligence Index v4.0: 50 (first open-weights)'
+  - '20% improvement over GLM-4.7 across 8 agentic benchmarks'
+  - 'DSA: 1.5-2x attention computation reduction on long sequences'
+  - 'MTP acceptance length exceeds DeepSeek-V3.2 at same speculative steps (4)'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-279
+  ingested_date: '2026-04-07'
+  contradicting_evidence:
+  - Self-reported benchmarks from commercial entity (Zhipu AI)
+  - DSA top-k=2048 may not generalize to all workloads — fixed k is a simplification
+  - MTP acceptance length claim is relative to DeepSeek-V3.2 only, no absolute rate given
+  - 30-40% slower response speed than Claude/GPT in deep analysis mode per reviews
+  - llama.cpp PR#19460 runs WITHOUT DSA — quality degraded, 11-13 tok/s gen at Q4
+  cross_references:
+    intake:
+    - intake-278
+    - intake-279
+    - intake-280
+    - intake-184
+    handoffs:
+    - inference-acceleration-index.md
+    - kv-cache-quantization.md
+  notes: >
+    Primary research paper for GLM-5/5.1 family.
+    DEEP-DIVE 2026-04-07: THREE BLOCKING ISSUES for local deployment:
+    (1) SIZE: Q4_K_M=456GB (full), REAP-50% Q4 est. ~230GB. Our RAM budget is
+    ~250GB working set. Full model is out. REAP-50% is borderline but no GGUF exists.
+    (2) DSA NOT IN LLAMA.CPP: PR#19460 merged dense-only. Indexer tensors preserved
+    in GGUF but unused by C++ code. Without DSA, the model runs full O(L^2) attention
+    on all tokens — 1.5-2x slower than designed. Follow-up PR for DSA indexer discussed
+    but not yet submitted. This makes local llama.cpp inference impractical.
+    (3) QUALITY UNKNOWN: REAP-50% variant (0xSero) has NO published benchmarks.
+    The 50% expert pruning uses refusal_contrast_reap method. At 128/256 experts
+    remaining, routing diversity is halved — quality impact on coding/agentic tasks
+    is completely unknown.
+    TECHNIQUE RELEVANCE REVISED:
+    - DSA: NOT complementary to our Hadamard KV-cache work. DSA selects WHICH tokens
+    to attend to (sparse selection); our Hadamard work compresses HOW KV values are
+    stored (quantization). Different layers of the problem. DSA is relevant to
+    context_extension, not kv_cache. Correcting original assessment.
+    - MTP: Our completed/mtp-speculative-decoding.md found MTP NOT VIABLE on hybrid
+    (0.56x). GLM-5 is pure MoE, not hybrid — different architecture class. Their MTP
+    works because draft and target share the MoE backbone. This does NOT transfer to
+    our hybrid (Mamba2+attention) models.
+    - MLA: Similar to DeepSeek-V3.2's approach. Our models don't use MLA.
+    - Baseten production insight: DSA has short-sequence bypass (skip indexer if seq < k).
+    This means DSA overhead is negative for short contexts — only beneficial at long ctx.
+    LOCAL DEPLOYMENT: unsloth/GLM-5-GGUF (32.6K downloads/month, MIT license).
+    KTransformers CPU/GPU hybrid exists but NO benchmarks published. Single-GPU +
+    300GB RAM setup per KTransformers docs. 2-bit quantized ~241-281GB.
+
+- id: intake-282
+  arxiv_id: null
+  url: https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-s3-files/
+  source_type: blog
+  title: 'Amazon S3 Files: S3 Buckets Accessible as File Systems'
+  authors: 'AWS'
+  categories:
+  - agent_architecture
+  key_claims:
+  - S3 Files makes S3 buckets mountable as POSIX file systems using EFS technology
+  - Delivers ~1ms latency for active data with intelligent caching
+  - Multiple TB/s aggregate read throughput, thousands of concurrent compute connections
+  - No data duplication — file ops translate to S3 API requests in place
+  - Targets AI agent pipelines that need shared state via filesystem conventions
+  techniques:
+  - S3 Files (EFS-backed POSIX mount on S3 buckets)
+  reported_results:
+  - 'GA across 34 AWS regions'
+  - '~1ms latency for cached/active data'
+  - 'Multiple TB/s aggregate read throughput'
+  novelty: medium
+  relevance: none
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-08'
+  contradicting_evidence: null
+  cross_references:
+    intake: []
+    handoffs: []
+  notes: >
+    AWS product announcement, not a research paper. S3 Files adds POSIX file
+    system semantics to S3 buckets via EFS technology. Primarily relevant to
+    cloud-hosted multi-agent pipelines needing shared filesystem state. Not
+    applicable to EPYC's local inference acceleration focus — our workloads
+    run on local NVMe/RAM, not cloud object storage.
+
+- id: intake-283
+  arxiv_id: null
+  url: https://venturebeat.com/data/amazon-s3-files-gives-ai-agents-a-native-file-system-workspace-ending-the
+  source_type: blog
+  title: 'Amazon S3 Files Gives AI Agents a Native File System Workspace (VentureBeat)'
+  authors: 'Sean Michael Kerner (VentureBeat)'
+  categories:
+  - agent_architecture
+  key_claims:
+  - S3 Files ends the object-file split that breaks multi-agent pipelines
+  - AWS internal teams (Kiro, Claude Code integrations) hit this problem first
+  - Multiple agents can access the same mounted bucket simultaneously
+  - Shared state via standard filesystem conventions (subdirectories, files)
+  - No data leaves S3 — eliminates sync pipelines between file and object tiers
+  techniques:
+  - S3 Files (POSIX-over-S3 via EFS)
+  reported_results:
+  - 'Same performance claims as AWS announcement (1ms, multi-TB/s)'
+  novelty: low
+  relevance: none
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-08'
+  contradicting_evidence: null
+  cross_references:
+    intake:
+    - intake-282
+    handoffs: []
+  notes: >
+    VentureBeat coverage of the same S3 Files announcement (intake-282).
+    Adds context that AWS internal agent teams drove the feature. Trade
+    press analysis, no independent benchmarks or novel claims beyond
+    the AWS announcement.

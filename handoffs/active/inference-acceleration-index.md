@@ -266,3 +266,15 @@ Every test the agent should run, across all handoffs. Ordered by priority.
   - **REVISED after deep-dive: DO NOT MERGE.** Immature (3 commits, 1 author, no peer review). Only tested on Qwen3.5-27B vs Q4_0 — no Q4_K_M comparison, no Qwen2.5 benchmarks. Our bottleneck is throughput, not VRAM.
   - **Monitor instead**: (1) ggerganov PR #21038 — Hadamard rotation on existing KV quant types, 25-77% PPL improvement for free. (2) PR #21089 — CPU TurboQuant KV cache, 5.2x compression.
   - **Bonus discovery**: ChunkKV (arXiv:2502.00299) — training-free chunk-level KV compression, retains 12% of cache matching full quality. See `tq3-quantization-evaluation.md` for full monitor list.
+
+## Research Intake Update — 2026-04-07
+
+### New Related Research
+- **[intake-281] "GLM-5: from Vibe Coding to Agentic Engineering"** (arxiv:2602.15763)
+  - **754B/40B-active MoE, 256 experts, DSA + MTP + MLA. MIT license.**
+  - **DSA (Dynamic Sparse Attention)**: Top-k=2048 token selection, 1.5-2x attention reduction on long sequences. NOT complementary to our Hadamard KV-cache work — DSA selects which tokens to attend to, not how KV is compressed. Different problem layer. Relevant to context_extension, not kv_cache.
+  - **MTP**: 3-layer multi-token prediction, acceptance length > DeepSeek-V3.2. But our completed/mtp-speculative-decoding.md found MTP NOT VIABLE on hybrid (0.56x). GLM-5 is pure MoE — different architecture class, results don't transfer to our hybrid models.
+  - **llama.cpp status**: PR#19460 merged 2026-02-13 but DSA indexer NOT implemented. Model runs dense attention = 11-13 tok/s gen at Q4, PPL 8.75. Impractical without indexer.
+  - **REAP-50% exists**: 0xSero/GLM-5-REAP-50pct-FP8 (381B, 128 experts). No GGUF, no benchmarks. Q4 est. ~230GB — borderline but blocked by missing DSA.
+  - **GGUF sizes** (unsloth): Q4_K_M=456GB, Q3_K_M=360GB, Q2_K=276GB, UD-IQ2_XXS=241GB. All exceed our working memory budget for full model.
+  - **Verdict: NOT ACTIONABLE for local deployment.** Three independent blockers: (1) size, (2) missing DSA in llama.cpp, (3) unknown REAP quality. Monitor for llama.cpp DSA indexer PR.
