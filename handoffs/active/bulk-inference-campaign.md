@@ -53,7 +53,7 @@ Package A ran as an instrumented seeding eval on 2026-04-05/06.
 | Task ID | Source | Description |
 |---------|--------|-------------|
 | RI-9 | [routing-and-optimization-index](routing-and-optimization-index.md) P3, [routing-intelligence.md](routing-intelligence.md) Phase 5 | Threshold sweep — Pareto reports (factuality vs cost vs latency). RI-8 (risk fields on `RoleResult`) verified complete. |
-| TrimR eval | [research-evaluation-index](research-evaluation-index.md) P0 | Run `eval_trimr.py` on math/gpqa suites with full/think-strip/trimr strategies |
+| TrimR eval | [research-evaluation-index](research-evaluation-index.md) P0 | **NOT APPLICABLE to current stack.** No production models produce `<think>` blocks. Qwen3.5 models support thinking but llama-server lacks `--jinja` flag. Baseline accuracy captured (frontdoor + coder). See results below. |
 | Difficulty re-validation | [research-evaluation-index](research-evaluation-index.md) P0 | Validate recalibrated 0.15/0.35 thresholds show predictive power |
 | Omega metric | [research-evaluation-index](research-evaluation-index.md) P0 | Per-suite reasoning token waste (Action 6 from reasoning-compression.md) |
 | Tool output A/B | [research-evaluation-index](research-evaluation-index.md) P1 | `TOOL_OUTPUT_COMPRESSION` on vs off comparison |
@@ -194,7 +194,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 ### Success Criteria
 
 - [ ] **RI-9**: Pareto-optimal risk thresholds identified (factuality vs cost vs latency tradeoff curve)
-- [ ] **TrimR**: Per-suite accuracy delta within 2% of full reasoning at ≥30% token savings
+- [x] **TrimR**: NOT APPLICABLE to current stack. Root cause: production binary (build 8218, commit b51c905ec) predates `common_chat_templates_support_enable_thinking()` — Qwen3.5 chat template has `enable_thinking` conditional but the binary's template engine doesn't pass `enable_thinking=true` even with `--jinja --reasoning-budget -1`. **Fix**: rebuild production binary from current `production-consolidated-v2` HEAD (commit 94b0200+ has updated `chat.cpp`). `--jinja` flag added to `orchestrator_stack.py` but has no effect until binary rebuild. Baselines captured: frontdoor (GPQA 5%, math 62%), coder 4×48t (GPQA 48%, math 76%). Escalation value: +43pp GPQA, +14pp math.
 - [ ] **Difficulty**: Recalibrated thresholds show predictive spread (easy success > medium success > hard success)
 - [ ] **Omega**: Identifies ≥2 suites where reasoning tokens are net-negative (accuracy drops with more thinking)
 - [ ] **Tool A/B**: Token savings ≥15% without quality degradation (accuracy delta < 1%)
