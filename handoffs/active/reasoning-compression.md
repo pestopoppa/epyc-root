@@ -249,3 +249,14 @@ This is the most active research front discovered during the 2026-03-14 intake r
 **Caveat on intake-264 (SSD)**: The 42.4→55.3% LCBv6 result is less impressive than it sounds — Nanbeige-3B (a 3B model) scores 76.9 on LCBv6, and Qwen3-32B baseline is already at 55.7%. Thinking models gain only +2-3pp from SSD. Requires 8xB200 for SFT — not actionable for our inference-only stack. The precision-exploration conflict theory is legitimate but the practical impact is near-zero for GGUF consumers. **Worth monitoring only** for: (a) SSD-trained checkpoints appearing as GGUFs on HuggingFace, (b) inference-time adaptations of the distribution reshaping idea.
 
 **Caveat on intake-266 (OPD Survey)**: Training-only methods exclusively. The exposure bias framing (DAgger bound: on-policy correction reduces error accumulation from O(eT²) to O(eT)) is the main extractable insight — it explains why OPSDC's self-rollout approach works from first principles. The "agent-level distillation" open problem is already addressed by our completed SkillBank pipeline. Useful as a theoretical reference only.
+
+## Research Intake Update — 2026-04-08
+
+### New Related Research
+- **[intake-286] "Self-Distilled RLVR (RLSD)"** (arxiv:2604.03128)
+  - Relevance: Extends the OPSDC/SSD distillation line — combines self-distillation for token-level magnitude with RLVR for update direction
+  - Key technique: RLSD separates environment-anchored update direction (RLVR/GRPO) from self-distilled update magnitude (token-level policy differences). Stop-gradient + clipping on teacher signal.
+  - Reported results: Claims higher convergence ceiling and superior training stability vs pure RLVR or pure OPSD
+  - Delta from current approach: Extends our Tier 3 understanding (OPSDC, intake-110). Addresses the known OPSD instability (information leakage → progressive collapse) by limiting distillation to magnitude only. Still requires training infrastructure (8x GPU) — not actionable for inference-only stack.
+  - Known limitations: OPSD component has structural information leakage risk even with clipping; GRPO's sequence-level credit assignment remains a bottleneck; hyperparameter sensitivity to clipping bounds not fully ablated.
+  - Status: MONITOR ONLY — training method, same actionability caveat as intake-264/266.

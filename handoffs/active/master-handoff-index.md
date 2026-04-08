@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-07
+**Updated**: 2026-04-08
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -46,7 +46,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 2 active + archived | Most work complete, monitoring phase |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + archived | KV quantization deployed, KV selection eval phase, monitoring |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active + Actions 12-15 (brevity), KB governance project-wiki skill DONE (lint+query+upstream) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
@@ -64,6 +64,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active | HIGH | 2026-04-06 |
+| [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE | MEDIUM | 2026-04-08 |
 
 ---
 

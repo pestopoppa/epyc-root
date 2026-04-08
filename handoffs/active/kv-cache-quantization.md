@@ -1477,3 +1477,24 @@ For CPU implementation: write a custom `vec_dot_tq3_0_q8_1` kernel in `ggml-cpu/
   - Reported results: 2.3-3.2x latency reduction at 100K context, 40% parameter savings
   - Delta from current approach: Our Hadamard KV quantization optimizes standard softmax attention. Multiscreen replaces softmax entirely — if adopted by model providers, it would change the KV cache landscape (screening may not need the same quantization strategies since irrelevant keys are discarded rather than compressed)
   - Status: WATCH — no models or llama.cpp support yet. See `handoffs/active/multiscreen-attention-evaluation.md`
+
+## Research Intake Update — 2026-04-08
+
+### New Related Research
+- **[intake-284] "TriAttention: Efficient Long Reasoning with Trigonometric KV Compression"** (arxiv:2604.04921)
+  - Relevance: Orthogonal to our Hadamard quantization — TriAttention selects WHICH tokens to keep via pre-RoPE trigonometric scoring; our work compresses HOW values are stored. Potentially complementary (fewer tokens × better quantization).
+  - Key technique: Pre-RoPE Q/K concentration + trigonometric series scoring. Scores key importance without materializing full K/V. Uses offline-calibrated Q centers + norm-based scoring with adaptive weighting.
+  - Reported results: 2.5x throughput, 10.7x KV memory reduction on AIME25, matches Full Attention accuracy (40.8%). 1,405 tok/s vs 223 tok/s on MATH500. Outperforms SnapKV and R-KV at 2048 token budget.
+  - Delta from current approach: Our `--kv-hadamard -ctk q4_0 -ctv f16` is production-deployed quantization. TriAttention is eviction-based — reduces token count rather than compressing representation. In theory, both could stack (evict via TriAttention, then quantize survivors via Hadamard). Major caveat: vLLM-only implementation, NO llama.cpp port exists.
+  - Status: WATCH+EVALUATE — see `handoffs/active/triattention-kv-selection.md` (ACTIVE — research evaluation, S1-S4 pending)
+
+- **[intake-287] "LongFlow: Efficient KV Cache Compression for Reasoning Models"** (arxiv:2603.11504)
+  - Relevance: Another KV eviction approach targeting long-reasoning output (same problem as TriAttention)
+  - Key technique: Fused FlashAttention + token eviction kernel, lightweight importance metric using current query only
+  - Reported results: 11.8x throughput improvement with 80% KV cache compression, minimal accuracy impact
+  - Delta from current approach: Fused kernel approach — tighter integration than TriAttention's plugin model. No llama.cpp port either.
+
+- **[intake-288] "Expected Attention: KV Cache Compression by Estimating Attention from Future Queries Distribution"** (arxiv:2510.00636)
+  - Relevance: Predicts future attention via distributional properties — training-free, works in both prefill and decode
+  - Key technique: Expected Attention scoring + KVPress library (20+ compression techniques benchmarked)
+  - Delta from current approach: KVPress library could be useful as a benchmarking tool for comparing compression approaches. Different scoring basis than TriAttention (distributional vs trigonometric).

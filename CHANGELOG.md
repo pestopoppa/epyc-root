@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-04-08
+
+- **Research Intake 284-288: KV Cache Selection/Eviction Cluster**:
+  - Ingested 5 papers (3 input + 2 expansion): TriAttention (trigonometric KV scoring), In-Place TTT, Self-Distilled RLVR, LongFlow (fused eviction kernel), Expected Attention (Gaussian KV scoring + KVPress library).
+  - Deep-dived all 5 entries (267-line cluster analysis). 4 assessment revisions: Expected Attention upgraded to primary candidate over TriAttention (Flash Attention compatible, explicit quantization stacking, KVPress benchmarking library).
+  - Promoted `triattention-kv-selection.md` from stub to ACTIVE (55 → 106 lines). 4 staged work items (S1-S4), 4 risks (R1-R4), 4 decision gates. Registered in both inference-acceleration-index and master-handoff-index.
+  - Key finding: KV selection (choosing which tokens to keep) is orthogonal to our deployed KV quantization (Hadamard + q4_0). Combined theoretical ceiling: ~21x KV memory reduction. S1-S3 will validate empirically.
+
 ## 2026-04-06
 
 - **CC Local Integration — Phase 0 (MCP chat tools)**:

@@ -8384,3 +8384,269 @@
     Adds context that AWS internal agent teams drove the feature. Trade
     press analysis, no independent benchmarks or novel claims beyond
     the AWS announcement.
+
+- id: intake-284
+  arxiv_id: '2604.04921'
+  url: https://arxiv.org/abs/2604.04921
+  source_type: paper
+  title: 'TriAttention: Efficient Long Reasoning with Trigonometric KV Compression'
+  authors: 'Xi Lin, Wei Huang, Yuxin Xie, Tianfu Fu, Bohan Zhuang, Song Han, Yukang Chen'
+  categories:
+  - kv_cache
+  key_claims:
+  - Pre-RoPE Q/K vectors concentrate around fixed non-zero centers stable across positions (Q/K concentration)
+  - Trigonometric series from these centers predicts which distances queries preferentially attend to
+  - Post-RoPE scoring is inherently unstable — queries rotate with position, making representative queries very few
+  - TriAttention scores key importance via trigonometric distance preference + norm-based scoring without materializing full K/V
+  - Enables deployment of reasoning models on single consumer GPU (24GB RTX 4090)
+  techniques:
+  - TriAttention (trigonometric KV cache compression)
+  - Pre-RoPE Q/K concentration analysis
+  - Trigonometric series attention scoring
+  - Mean Resultant Length (R) adaptive weighting
+  - Norm-based importance scoring
+  reported_results:
+  - '2.5x throughput improvement on AIME25 (32K-token generation)'
+  - '10.7x KV memory reduction matching Full Attention accuracy (40.8%)'
+  - '1,405 tok/s vs 223 tok/s on MATH500 (68.4% vs 69.6% accuracy)'
+  - 'Outperforms SnapKV and R-KV baselines at 2048 token KV budget'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - 'Pre-RoPE concentration assumption validated on 5 architectures (GQA, MHA, MLA) but not universal'
+  - 'vLLM-only implementation — no llama.cpp port exists, limiting applicability to our stack'
+  - 'Requires offline calibration of Q/K frequency statistics per model — adds deployment complexity'
+  - 'DEEP-DIVE: "matches Full Attention" is at throughput-parity operating point only. At fixed 2048 budget: AIME25 32.9% vs 40.8% (−7.9pp), AIME24 42.1% vs 57.1% (−15pp). MATH500 genuinely close: 68.4% vs 69.6%'
+  - 'No quantization interaction tested — unknown if trigonometric scoring degrades on q4_0-quantized K vectors'
+  - 'Recursive reasoning degrades beyond depth 18 on recursive memory benchmark'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    intake:
+    - intake-287
+    - intake-288
+    handoffs:
+    - kv-cache-quantization.md
+    - triattention-kv-selection.md
+  handoffs_updated:
+  - kv-cache-quantization.md
+  handoffs_created:
+  - triattention-kv-selection.md
+  notes: >
+    Orthogonal to our Hadamard KV quantization (--kv-hadamard). TriAttention selects
+    WHICH tokens to keep (eviction); Hadamard compresses HOW values are stored
+    (quantization). Potentially multiplicative: 10.7x selection x 2x quant = ~21x.
+    Song Han lab (MIT/NVIDIA) — high author authority. Apache 2.0 licensed vLLM plugin.
+    Needs llama.cpp port evaluation for our stack. Three input URLs consolidated:
+    project page, HuggingFace, GitHub repo. DEEP-DIVE 2026-04-08: credibility
+    upgraded 3→4 (5 architectures validated including MLA-940heads). Key question:
+    does trigonometric scoring work on Hadamard-rotated q4_0 K vectors? Hadamard
+    preserves norms (orthogonal) but q4_0 introduces norm error. See deep-dive:
+    research/deep-dives/triattention-kv-selection-cluster.md
+
+- id: intake-285
+  arxiv_id: '2604.06169'
+  url: https://arxiv.org/abs/2604.06169
+  source_type: paper
+  title: 'In-Place Test-Time Training'
+  authors: 'Guhao Feng, Shengjie Luo, Kai Hua, Ge Zhang, Di He, Wenhao Huang, Tianle Cai'
+  categories:
+  - context_extension
+  key_claims:
+  - Framework enables models to adapt MLP projection parameters during inference using incoming task data
+  - Chunk-wise update mechanism enables compatibility with context parallelism
+  - Task-aligned objective replaces generic reconstruction with next-token prediction
+  - 4B parameter model achieves superior results on tasks with contexts up to 128K tokens
+  - Drop-in enhancement without requiring model retraining from scratch
+  techniques:
+  - In-Place Test-Time Training (In-Place TTT)
+  - Chunk-wise update mechanism
+  - Context parallelism integration
+  - MLP projection matrix adaptation
+  reported_results:
+  - 'Outperforms competing TTT approaches when pretrained from scratch'
+  - '4B model handles 128K context'
+  - 'Published at ICLR 2026'
+  novelty: medium
+  relevance: low
+  credibility_score: 5
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - '3.4x training latency overhead (gradients of gradients poorly optimized)'
+  - 'TTT framework can deteriorate test accuracy via unconstrained SSL updates interfering with main task'
+  - 'Low hardware utilization and limited state sizes — has not yet demonstrated full potential'
+  - 'Requires training-time integration — not applicable to pre-trained GGUF models'
+  cross_references:
+    intake:
+    - intake-088
+    handoffs:
+    - vanilla-ttt-feasibility.md
+  notes: >
+    ICLR 2026 peer-reviewed (high credibility). Extends prior TTT work (intake-088,
+    End-to-End TTT). Not applicable to EPYC: we serve pre-trained GGUF models via
+    llama.cpp — cannot modify model weights during inference. Interesting theoretically
+    for context extension but fundamentally incompatible with our serving stack.
+
+- id: intake-286
+  arxiv_id: '2604.03128'
+  url: https://arxiv.org/abs/2604.03128
+  source_type: paper
+  title: 'Self-Distilled RLVR (RLSD)'
+  authors: 'Chenxu Yang, Chuanyu Qin, Qingyi Si, Minghui Chen, Naibin Gu, Dingyu Yao, Zheng Lin, Weiping Wang, Jiaqi Wang, Nan Duan'
+  categories:
+  - training_distillation
+  key_claims:
+  - Pure on-policy self-distillation causes severe information leakage and unstable long-term training
+  - Self-distillation is best for extracting fine-grained token-level policy differences (magnitudes)
+  - RLVR provides more reliable update directions from environmental feedback
+  - Combining both achieves superior training stability and higher convergence ceiling
+  - Separates environment-anchored update direction from self-distilled update magnitude
+  techniques:
+  - RLSD (RLVR with Self-Distillation)
+  - Stop-gradient teacher signal with clipping
+  - Token-level magnitude from self-distillation + sequence-level direction from RLVR
+  reported_results:
+  - 'Higher convergence ceiling vs pure RLVR or pure OPSD'
+  - 'Superior training stability'
+  - '66 upvotes on HuggingFace papers'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - 'OPSD component has structural information leakage — mutual information gap drives progressive degradation'
+  - 'Sensitivity to clipping hyperparameter not fully ablated across tasks with varying credit density'
+  - 'GRPO sequence-level credit assignment means every token inherits same advantage regardless of importance'
+  - 'Single model tested (Qwen3-VL-8B) — limited generalizability evidence'
+  - '32x H200 GPUs required — massive compute not representative of typical training'
+  cross_references:
+    intake:
+    - intake-110
+    - intake-264
+    - intake-266
+    handoffs:
+    - reasoning-compression.md
+  handoffs_updated:
+  - reasoning-compression.md
+  notes: >
+    Extends the OPSDC/SSD line tracked in reasoning-compression handoff. Training
+    method requiring GPU infrastructure — not actionable for inference-only stack.
+    DEEP-DIVE 2026-04-08: novelty upgraded low→medium, credibility 2→3. The
+    theoretical framework is genuinely novel: (1) Theorem 1 proves OPSD's KL
+    decomposes into learnable + irreducible mutual information gap, explaining
+    why OPSDC (intake-110) eventually collapses. (2) Impossibility trilemma shows
+    stability/improvement/leakage-free can't coexist under shared params. (3) Bayesian
+    evidence ratio interpretation connects distillation to sequential belief updates.
+    Direction/magnitude decomposition is principled, not ad-hoc. Extractable insight:
+    OPSDC-distilled checkpoints trained >20 steps likely show degradation — prefer
+    early-stopped variants. See deep-dive: research/deep-dives/triattention-kv-selection-cluster.md
+
+- id: intake-287
+  arxiv_id: '2603.11504'
+  url: https://arxiv.org/abs/2603.11504
+  source_type: paper
+  title: 'LongFlow: Efficient KV Cache Compression for Reasoning Models'
+  authors: 'Yi Su, Zhenxu Tian, Dan Qiao, Yuechi Zhou, Juntao Li, Min Zhang'
+  categories:
+  - kv_cache
+  key_claims:
+  - Existing KV cache methods designed for long-input/short-output are ineffective for reasoning models long output
+  - Importance re-evaluation becomes prohibitively expensive during continuous long generation
+  - LongFlow metric requires only current query with negligible computational cost
+  - Fused FlashAttention + token eviction kernel improves system-level efficiency
+  techniques:
+  - LongFlow (KV cache compression for reasoning)
+  - Fused FlashAttention + eviction kernel
+  - Lightweight importance estimation metric
+  reported_results:
+  - '11.8x throughput improvement with 80% KV cache compression'
+  - 'Minimal accuracy impact'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-284
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - 'DEEP-DIVE: Scoring degrades under abrupt distribution shifts (topic switches, tool-use interleaving) — directly impacts orchestrator pipelines'
+  - '11.8x throughput is system-level vs vanilla, NOT comparable to TriAttention 2.5x (accuracy-matched operating point) — apples to oranges'
+  - 'GQA compatibility not discussed'
+  cross_references:
+    intake:
+    - intake-284
+    handoffs:
+    - kv-cache-quantization.md
+    - triattention-kv-selection.md
+  handoffs_updated:
+  - kv-cache-quantization.md
+  notes: >
+    Discovered via literature expansion from intake-284 (TriAttention). DEEP-DIVE
+    2026-04-08: relevance downgraded high→medium. Critical limitation: scoring assumes
+    consecutive queries are similar — degrades under topic switches and tool-use
+    interleaving, which is our primary use case (orchestrator pipeline). The 11.8x
+    headline is system-level throughput vs vanilla, NOT comparable to TriAttention's
+    2.5x (accuracy-matched). Fused Triton kernel (47ms→8ms) is architecturally clean
+    but same llama.cpp portability issue. Scoring metric ||α·v||₁ is zero-overhead
+    (falls out of standard attention computation). Static memory scheme avoids
+    fragmentation. See deep-dive: research/deep-dives/triattention-kv-selection-cluster.md
+
+- id: intake-288
+  arxiv_id: '2510.00636'
+  url: https://arxiv.org/abs/2510.00636
+  source_type: paper
+  title: 'Expected Attention: KV Cache Compression by Estimating Attention from Future Queries Distribution'
+  authors: 'Alessio Devoto, Maximilian Jeblick, Simon Jégou'
+  categories:
+  - kv_cache
+  key_claims:
+  - Predicts how upcoming queries will attend to cached KV pairs using distributional properties
+  - Computes expected attention scores in closed form without access to future tokens
+  - Works seamlessly across both prefilling and decoding phases
+  - Training-free approach
+  techniques:
+  - Expected Attention (distributional KV scoring)
+  - KVPress library (20+ compression techniques benchmarked)
+  reported_results:
+  - 'Outperforms state-of-the-art baselines in both prefill and decode phases'
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-284
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - 'Gaussian assumption approximate — heavy-tailed outlier activations may degrade closed-form accuracy'
+  - 'Does not match trainable methods (DuoAttention) — intentional tradeoff for deployment practicality'
+  - 'Manual compression ratio tuning required per use case — no automated selection'
+  - 'PyTorch implementation explicitly not optimized for efficiency — needs custom CUDA kernels for production'
+  cross_references:
+    intake:
+    - intake-284
+    handoffs:
+    - kv-cache-quantization.md
+    - triattention-kv-selection.md
+  notes: >
+    Discovered via literature expansion from intake-284. DEEP-DIVE 2026-04-08:
+    relevance upgraded medium→high, credibility 3→4. Three key advantages over
+    TriAttention: (1) Flash Attention compatible (SnapKV/H2O are NOT), (2) explicitly
+    discusses quantization orthogonality — can stack with KIVI/KVQuant/our Hadamard,
+    (3) GQA/MQA explicitly supported with per-head adaptive compression. KVPress
+    library includes 20+ techniques with public HuggingFace leaderboard — the right
+    benchmarking tool for evaluating all KV selection approaches. Tested on 6 models
+    across 3 architectures. RULER 4K: 94.7% vs SnapKV 55.7% at 50% compression.
+    MATH-500 at 12x compression: 0.49 accuracy (graceful degradation). May be MORE
+    practically useful than TriAttention for our stack despite weaker decode-only
+    results. See deep-dive: research/deep-dives/triattention-kv-selection-cluster.md

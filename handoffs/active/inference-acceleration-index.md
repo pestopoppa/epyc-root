@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-03-24
+**Updated**: 2026-04-08
 
 ## Agent Operating Instructions
 
@@ -19,6 +19,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977 |
+| [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Research evaluation | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 
 ### Archived (completed/)
