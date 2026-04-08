@@ -18,7 +18,8 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977 |
+| [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **READY** — Study complete | Upstream rebase (517 commits), 23 patches carry-forward | All production | Upstream Hadamard #21038, iSWA, server improvements | Execute cherry-pick playbook in `llama.cpp-experimental` |
+| [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
 | [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Research evaluation | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 
@@ -106,10 +107,10 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 
 All inference optimization work in llama.cpp MUST follow these rules:
 
-1. **Branch discipline**: Work ONLY on dedicated feature branches off `production-consolidated-v2`
+1. **Branch discipline**: Work ONLY on dedicated feature branches off `production-consolidated-v2` (or `production-consolidated-v3` after rebuild — see [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md))
    - DFlash: `feature/dflash-speculation` branch
    - Worktree at `/mnt/raid0/llm/llama.cpp-dflash`
-2. **Never modify `production-consolidated-v2` directly** — it is the production baseline
+2. **Never modify `production-consolidated-v2` (or v3) directly** — it is the production baseline
 3. **Production binary protection**: `/mnt/raid0/llm/llama.cpp/build/bin/llama-server` must remain untouched
 4. **Build validation**: Run `cmake --build build --target llama-server` and verify clean build before any benchmark
 5. **Recovery**: If build breaks on feature branch: `git stash` or `git checkout -- .` — never touch production

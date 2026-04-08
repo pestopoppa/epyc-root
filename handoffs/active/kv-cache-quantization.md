@@ -2,6 +2,7 @@
 
 **Status**: ACTIVE — Hadamard Phase 1 cherry-picked to production (`b51c905`, 2026-03-28). TurboQuant/PolarQuant/QJL/hybrid buffer ABANDONED. See "Current Work — Resume Here" section below.
 **Production config**: `--kv-hadamard -ctk q4_0 -ctv f16` (pure-attention models) or `-ctk q4_0 -ctv q4_0` (hybrid SSM). Quality-neutral, zero overhead.
+**v3 upstream note**: `--kv-hadamard` is superseded by upstream PR #21038 (`744c0c731`, 2026-04-01) which auto-enables identical Walsh-Hadamard rotation when KV types are quantized. In `production-consolidated-v3`, remove `--kv-hadamard` from orchestrator config — rotation is automatic. See [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md).
 **TurboQuant hybrid**: Split attention working. Gen speed ~5.2 t/s at 14.5K filled context (was 3.4 t/s, f16 baseline 7.7 t/s). Quality correct. Old K uses q4_0 (not turbo_q3 — PolarQuant dequant too lossy). **ARCHIVED** — q4_0+Hadamard matches quality with zero complexity.
 **Created**: 2026-03-24 (via research intake)
 **Updated**: 2026-03-28
