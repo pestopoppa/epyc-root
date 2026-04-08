@@ -361,6 +361,95 @@ AutoResearch proposes next experiment.
 - **No restarts for experiments**: StructuralLab stack experiments should toggle which pre-launched instances are in the active rotation, not restart servers. Restart-free experimentation enables faster autoresearch iteration.
 - **Per-request latency matters**: Single-session requests should get maximum throughput (96t). Only sacrifice per-request speed when concurrency demands it.
 
+---
+
+## DS-6 Design Summary (2026-04-08)
+
+Extracted from Part 4 above into an actionable specification for the deterministic quarter scheduler.
+
+### Goal
+
+Replace the static quarter assignment in `orchestrator_stack.py` with an event-driven scheduler that dynamically allocates NUMA quarters to model instances based on demand.
+
+### Current State (Static)
+
+```python
+# orchestrator_stack.py lines 155-161
+NUMA_Q0A = ("0-23,96-119", 48)    # Always frontdoor[0]
+NUMA_Q0B = ("24-47,120-143", 48)  # Always frontdoor[1]
+NUMA_Q1A = ("48-71,144-167", 48)  # Always frontdoor[2]
+NUMA_Q1B = ("72-95,168-191", 48)  # Always frontdoor[3]
+```
+
+Each quarter is permanently assigned to a role. If frontdoor is idle but coder is overloaded, the idle quarters can't help.
+
+### Proposed: Event-Driven Quarter Assignment
+
+**Schedulable events** (from Part 4 table):
+
+| Event | Detection Source | Scheduler Response |
+|-------|-----------------|-------------------|
+| New conversation | HTTP request arrives | Route to available HOT instance; if none, check WARM quarters |
+| Queue depth > 1 | `RoundRobinBackend.get_stats()` | Launch quarter instance if spare quarter available |
+| Escalation needed | Routing decision in `_route_request()` | Ensure specialist is loaded; accept 1-8s WARM latency if not |
+| Architect burst | Large model requested | Drain 2 quarter instances → give architect full NUMA node |
+| Session end | Conversation completes | Mark quarter available for reallocation |
+| Idle timeout | No requests for 60s | Consider evicting to free quarter for other roles |
+
+**Quarter lifecycle**: HOT (loaded, ready, <10ms) → WARM (model on disk, KV-save available, 1-8s) → COLD (not loaded, need full startup, 15-30s).
+
+### Implementation Components
+
+1. **QuarterScheduler class** (new, in `scripts/server/quarter_scheduler.py`):
+   - Maintains `quarter_assignments: dict[str, QuarterState]` — Q0A/Q0B/Q1A/Q1B → {role, port, status, last_request}
+   - `assign(role, priority)` → selects best quarter (prefer idle, then lowest-priority occupant)
+   - `evict(quarter)` → KV-save current model, mark as available
+   - `burst(role, n_quarters)` → drain N quarters for large model (architect)
+
+2. **Integration with ConcurrencyAwareBackend** (existing, `src/backends/round_robin.py`):
+   - Backend already tracks per-instance active/total counts (DS-1)
+   - Scheduler reads backend stats to detect queue depth events
+   - Scheduler calls `orchestrator_stack.py` to start/stop quarter instances
+
+3. **Integration with RoundRobinBackend routing** (existing):
+   - When scheduler reassigns a quarter, update backend's URL list for that role
+   - KV migration via slot API (DS-3 `--slot-save-path`, DS-4 state logging)
+
+### KV Migration Cost Model
+
+| Conversation Length | KV Size (~170 KB/token) | Migration Time |
+|--------------------|-----------------------|---------------|
+| 500 tokens | ~85 MB | 40-50ms |
+| 2K tokens | ~340 MB | 200-300ms |
+| 8K tokens | ~1.4 GB | 1-2s |
+| 32K tokens | ~5.4 GB | 4-8s |
+
+**Decision rule**: Migrate if queue depth > 1 AND expected wait > migration time.
+
+### Design Constraints
+
+- **Memory budget**: 415 GB currently used (37% of 1130 GB). Each quarter instance adds ~16-19 GB (30-35B model at Q4_K_M). Maximum: 6-8 simultaneous quarter instances.
+- **No restart**: Scheduler should toggle which pre-launched instances are active, not restart servers. Pre-warm (Phase C) provides the instance pool.
+- **Burst mode**: Architect models (122B, 246B) need 2-4 quarters (full NUMA node). Burst mode drains quarter instances and gives the node to the architect. Current: 78s teardown/rebuild cycle. Target: <10s via KV migration + pre-warm.
+- **Single-user optimization**: Current workload is primarily single-session. Scheduler should optimize for that case first, with graceful degradation to concurrent mode.
+
+### Open Questions (from Part 6 research questions)
+
+1. Does 96t single-instance outperform 4×48t concurrent? (Need Package B data)
+2. Real-world escalation frequency? (RI-10 canary data will show this)
+3. KV state size validation at production context lengths
+4. Mixed-model NUMA quarter contention (same-node cross-model interference)
+
+### Dependencies
+
+- **Package B results**: Establish throughput baselines for single vs concurrent mode
+- **RI-10 canary data**: Escalation frequency → architect burst demand
+- **DS-5 autoresearch**: Model exploration may change which models need quarters
+
+### Implementation Priority
+
+Phase E (autoresearch-driven stack exploration) comes first — it may change which models are in the stack. DS-6 scheduler is Phase F, building on whatever configuration autoresearch discovers as optimal.
+
 ## Key Insight
 
 Routing intelligence determines *which model* for each task (quality decision). Stack assembly determines *how that model is provisioned* (capacity decision). The pre-warm strategy makes these fully orthogonal — routing doesn't need to know about NUMA topology, and the concurrency-aware router handles instance selection transparently.

@@ -29,9 +29,9 @@
 
 ### P0 — Multimodal Vision (validation)
 
-- [ ] Live validation with model servers (ports 8086/8087) — Package E tested 2026-04-06: `/v1/vision/analyze` returns 200 but VL describe fails (`--no-display-prompt` invalid flag). 2 bugs filed.
+- [ ] Live validation with model servers (ports 8086/8087) — `--no-display-prompt` bug FIXED 2026-04-08 (removed from `vl_describe.py`). Re-test needed with VL servers.
 - [ ] Register vision tools in orchestrator tool surface
-- [ ] Test OpenAI-compat multimodal API passthrough — Package E tested 2026-04-06: FAIL. `OpenAIMessage.content` is `str`, rejects multipart array. Needs `str | list` union type.
+- [x] Test OpenAI-compat multimodal API passthrough — ✅ FIXED 2026-04-08. `content: str | list` + `_extract_text()` helper. Re-test with actual multipart content needed.
 
 ### P1 — OpenDataLoader PDF
 

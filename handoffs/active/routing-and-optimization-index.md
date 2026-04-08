@@ -121,7 +121,7 @@ Depends on observability (P4) and autoresearch baseline (P5).
 
 - [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
-- [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. See § Part 4.
+- [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08): schedulable events, quarter lifecycle (HOT/WARM/COLD), KV migration cost model, burst mode policy. Implementation deferred to Phase F (after autoresearch).
 
 - [ ] **DS-7: Stack templates in orchestrator config** — Encode autoresearch findings as selectable stack profiles. See § Strategic Sequence Phase E.
 

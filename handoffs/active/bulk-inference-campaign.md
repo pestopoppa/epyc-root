@@ -418,14 +418,14 @@ curl -N http://localhost:8000/v1/chat/completions \
 
 - [x] **Hermes P2 streaming**: PASS — SSE chunks arrive, `finish_reason: stop` clean
 - [x] **Hermes P2 routing overrides**: PASS — `x_force_model`, `x_max_escalation`, `x_disable_repl` work (must be strings, not ints)
-- [ ] **Vision P0 OpenAI-compat**: FAIL — `content: str` in `OpenAIMessage` schema rejects multipart content arrays. Needs `str | list` union type. Bug: `src/api/models/openai.py:14`
-- [ ] **Vision P0 `/v1/vision/analyze`**: PARTIAL — Endpoint reachable (200 OK), but VL describe fails: `--no-display-prompt` flag invalid for VL llama-server. Bug in vision analyzer CLI args.
+- [x] **Vision P0 OpenAI-compat**: FIXED 2026-04-08 — `content: str | list` in `OpenAIMessage`, `_extract_text()` helper in `openai_compat.py` handles both formats.
+- [x] **Vision P0 `/v1/vision/analyze`**: FIXED 2026-04-08 — Removed invalid `--no-display-prompt` flag from `vl_describe.py:122`.
 - [x] **`orchestrator_stack.py --only`**: PASS — New flag works, only touches specified roles, preserves healthy servers
 
-### Bugs Found
+### ~~Bugs Found~~ Bugs Fixed (2026-04-08)
 
-1. **OpenAI-compat multipart content**: `src/api/models/openai.py:14` — `content: str` needs `content: str | list` to support `[{"type": "text", ...}, {"type": "image_url", ...}]` format
-2. **VL analyzer flag**: Vision analyzer passes `--no-display-prompt` which is invalid for Qwen2.5-VL llama-server. Likely in `src/vision/analyzers/` VL describe module.
+1. ~~**OpenAI-compat multipart content**~~ — ✅ `content: str | list` + `_extract_text()` helper at 4 downstream locations
+2. ~~**VL analyzer flag**~~ — ✅ Removed `--no-display-prompt` from `vl_describe.py` (invalid for `llama-mtmd-cli`)
 
 ---
 

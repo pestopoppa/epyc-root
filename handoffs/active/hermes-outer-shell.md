@@ -219,7 +219,7 @@ Wiring in `openai_compat.py`:
 | `/nocode` | `x_disable_repl` | `true` |
 | (default) | (none) | Normal MemRL routing |
 
-**Status**: API-side complete. Hermes-side skill authoring (to map slash commands to API params) deferred — requires Hermes skill YAML files + testing with running backend.
+**Status**: API-side complete. Hermes skill YAMLs written 2026-04-08 (`scripts/hermes/skills/use/`, `escalation/`, `nocode/`). Live testing with running backend pending.
 
 ### Config Parameter Mapping
 
@@ -243,7 +243,7 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 
 ### Remaining Phase 2 Work
 
-- [ ] Write Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands (needs hermes-agent skill format investigation)
+- [x] Write Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands — ✅ 2026-04-08. Three SKILL.md files with YAML frontmatter in `scripts/hermes/skills/`. Mapping tables included.
 - [ ] Validate streaming compatibility with new override params (needs inference)
 - [ ] Test `x_disable_repl` end-to-end (needs inference)
 - [ ] Test `x_max_escalation` with full graph (depends on LangGraph migration)
