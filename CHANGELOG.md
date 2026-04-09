@@ -2,6 +2,29 @@
 
 ## 2026-04-09
 
+- **P6 REPL Turn Efficiency — S1a-c + S2a-b**:
+  - Implemented `file_recency.py` frecency module — SQLite-backed `FrecencyStore` with score formula: `freq * log(count+1) + recency * exp(-age/half_life)`, combo boost for repeat (query, file) pairs. 10 tests.
+  - Wired into `_list_dir()` (frecency re-sort) and `code_search()` (score boost). Feature flag: `REPL_FRECENCY`. 7 tests.
+  - Mined autopilot logs: only web_search (94.8%) + search_wikipedia (5.2%) used. File tools never called. 85% zero-tool sessions.
+  - Implemented `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Feature flag: `REPL_COMBINED_OPS`. 18 tests.
+  - Files: `file_recency.py`, `combined_ops.py`, `file_exploration.py`, `code_search.py`, `environment.py`, `mine_repl_patterns.py`, `repl_pattern_analysis.md`.
+
+- **P3a-b Tool Definition Audit + Compression**:
+  - Token audit: `DEFAULT_ROOT_LM_TOOLS` was 841 tokens (647 words), 41 entries, 4 duplicates, 29.8% instruction ratio.
+  - Compressed 55% (647→290 words): removed duplicates, "Do NOT" clauses, merged related tools, flattened sections.
+  - Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B testing. Instruction ratio: 29.8% → 16.0%.
+  - Files: `constants.py`, `__init__.py`, `test_prompt_builders.py`, `token_audit.py`, `token_audit_report.md`.
+
+- **Action 15 Upstream — Linter + Brevity Templates to root-archetype**:
+  - Generalized `lint_wiki.py`: dynamic root detection, configurable paths via wiki.yaml `lint.paths`.
+  - Created 4 brevity templates: `worker_general.md.template`, `worker_math.md.template`, `thinking_reasoning.md.template`, `BREVITY_ADOPTION.md`.
+  - Files: `root-archetype/lint_wiki.py`, `root-archetype/_templates/prompts/`.
+
+- **SEAL Control Vector Prep (Action 8)**:
+  - `generate_pairs.py` (80 contrastive math problems), `eval_cvectors.py` (scaling sweep 0.3/0.5/0.7).
+  - Experiment design doc: `seal-concise-reasoning.md`. Awaiting model servers.
+  - Files: `epyc-inference-research/scripts/seal/`, `epyc-inference-research/docs/experiments/`.
+
 - **Answer-Tag Stop Sequences (Reasoning Compression Action 16)**:
   - Replaced `####` answer markers with `<answer></answer>` XML tags in all benchmark prompts (GSM8K, GAIA, CRUXEval, SimpleQA, HotpotQA, sentinel questions).
   - Added `</answer>` to `direct_stage.py` stop sequences — generation halts immediately after answer, eliminating post-answer rumination loops.

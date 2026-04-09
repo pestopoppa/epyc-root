@@ -20,7 +20,7 @@
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-14 done, 15 eval ready) | HIGH | 2026-04-09 |
-| [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, Phase 3 designed (SkillReducer) | MEDIUM | 2026-04-09 |
+| [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, Phase 3a-b done (55% compression) | MEDIUM | 2026-04-09 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
@@ -28,7 +28,8 @@
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
 | [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, project-wiki skill | ALL PHASES COMPLETE | MEDIUM | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | stub (design ready) | MEDIUM | 2026-04-09 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S4 pending) | MEDIUM | 2026-04-09 |
+| [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |
 
 ---
 
@@ -49,12 +50,13 @@
 - [x] Orchestrator integration — ✅ 2026-04-05. Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 - [ ] Enable flag in production and measure net savings on real autopilot sessions
 - [ ] A/B comparison: tool_output_compression on vs off (→ Package B)
-- [ ] P3a: Token audit of tool definitions across all prompt paths (SkillReducer, intake-302)
-- [ ] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` + A/B test
+- [x] P3a: Token audit of tool definitions — ✅ 2026-04-09. `token_audit.py` + report. 841 tokens, 4 duplicates, 29.8% instruction ratio.
+- [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Old preserved as `VERBOSE_ROOT_LM_TOOLS`. Ratio → 16.0%.
+- [ ] P3d: A/B test compressed vs original on seeding harness
 
 ### P2 — Reasoning Compression (deferred)
 
-- [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
+- [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment). Prep scripts READY: `epyc-inference-research/scripts/seal/generate_pairs.py` (80 problems), `eval_cvectors.py` (scaling sweep). Experiment doc: `docs/experiments/seal-concise-reasoning.md`.
 - [ ] Summarizer quality assessment — `eval_summarizer.py` READY (created 2026-04-07), needs model servers to run (→ Package C)
 - [ ] Free-zone compression threshold sweep — `eval_compaction_sweep.py` READY (implemented 2026-04-07), needs model servers to run (→ Package C)
 - [x] Helpfulness scoring calibration — ✅ 2026-04-07. `run_calibration()` implemented (pure heuristic). Tested on 250 traces: Spearman ρ=0.63-0.65, overlap-heavy config best (separation=0.37, NDCG=0.998). Package C LLM-based Δ_k eval still pending.
@@ -93,9 +95,9 @@ See [memento-block-reasoning-compression.md](memento-block-reasoning-compression
 
 See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega finding: 7/10 suites where REPL tools hurt accuracy. Complementary to WS-1/WS-3 prompt-level fixes.
 
-- [ ] S1a: Implement `file_recency.py` frecency module
-- [ ] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged)
-- [ ] S2a-b: Mine autopilot logs for multi-tool patterns + implement combined ops
+- [x] S1a: Implement `file_recency.py` frecency module — ✅ 2026-04-09. `FrecencyStore` class, SQLite, 10 tests.
+- [x] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged `REPL_FRECENCY`) — ✅ 2026-04-09. 7 wiring tests.
+- [x] S2a-b: Mine autopilot logs + implement combined ops — ✅ 2026-04-09. Finding: only web_search/search_wikipedia used (file tools never called). `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Flag: `REPL_COMBINED_OPS`. 18 tests.
 - [ ] S4: A/B benchmark turn count reduction on seeding harness
 
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)
@@ -116,7 +118,7 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] **Action 13**: Model-tier-differentiated conciseness — ✅ 2026-04-09. Audit + thinking_reasoning suffix update.
 - [x] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework — ✅ 2026-04-07.
 - [ ] **Action 15**: Evaluate TALE dynamic budget estimation — eval script ready (eval_tale_budget.py), awaiting model servers.
-- [ ] Upstream linter + templates to root-archetype (companion handoff)
+- [x] Upstream linter + templates to root-archetype — ✅ 2026-04-09. Generalized `lint_wiki.py` (dynamic root, configurable paths). 4 brevity templates in `_templates/prompts/`. Companion handoff: [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md).
 
 ### Monitoring (no action unless triggered)
 

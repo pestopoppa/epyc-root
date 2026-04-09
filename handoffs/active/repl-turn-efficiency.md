@@ -1,6 +1,6 @@
 # REPL Turn Efficiency — Frecency Discovery + Combined Operations
 
-**Status**: stub
+**Status**: in-progress (S1a-c done, S2a-b done, S4 pending)
 **Created**: 2026-04-09 (from research intake: intake-295, intake-301)
 **Priority**: MEDIUM
 **Categories**: agent_architecture
@@ -56,9 +56,9 @@ FFF.nvim's frecency + combo-boost pattern fills this gap:
 
 ### Work items
 
-- [ ] S1a: Implement `file_recency.py` module with frecency scoring + SQLite persistence
-- [ ] S1b: Wire into `_list_dir()` with feature flag (`REPL_FRECENCY`)
-- [ ] S1c: Wire into `code_search()` with recency boost multiplier (feature-flagged)
+- [x] S1a: Implement `file_recency.py` module with frecency scoring + SQLite persistence — ✅ 2026-04-09. `FrecencyStore` class, SQLite at `data/file_recency.db`, scoring formula with combo boost, 10 tests.
+- [x] S1b: Wire into `_list_dir()` with feature flag (`REPL_FRECENCY`) — ✅ 2026-04-09. Lazy import, dir-first then frecency sort, graceful degradation.
+- [x] S1c: Wire into `code_search()` with recency boost multiplier (feature-flagged) — ✅ 2026-04-09. Score × (1 + 0.3 × frecency), re-sorted. 7 wiring tests.
 
 ---
 
@@ -75,8 +75,8 @@ AXI's combined-operations principle: batch multi-step REPL patterns into single 
 
 ### Work items
 
-- [ ] S2a: Mine autopilot logs (`inference_tap.log`) for multi-tool turn patterns — identify top-5 patterns
-- [ ] S2b: Implement top-3 combined operations as REPL methods (feature-flagged)
+- [x] S2a: Mine autopilot logs for multi-tool turn patterns — ✅ 2026-04-09. `inference_tap.log` does NOT exist; used `autopilot.log` + `seeding_diagnostics.jsonl`. Finding: only web_search (94.8%) and search_wikipedia (5.2%) used. File exploration tools never called. 85% sessions zero-tool. Report: `docs/repl_pattern_analysis.md`.
+- [x] S2b: Implement combined operations as REPL mixin (feature-flagged) — ✅ 2026-04-09. `_CombinedOpsMixin` with `batch_web_search` (addresses 5727 web_search→web_search bigrams), `search_and_verify` (171 bigrams), `peek_grep` (preemptive). Feature flag `REPL_COMBINED_OPS`. 18 tests.
 
 ---
 

@@ -93,7 +93,7 @@ Three families of techniques, ordered by implementation effort:
 - [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. At old thresholds (0.3/0.6): 92% easy, 0% hard, no predictive spread. Recalibrated to 0.15/0.35 for ~40/40/20 split. Medium prompts take 29% longer (p50 36s vs 25s). Re-validation needed at new thresholds.
 - [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
 - [x] FlowSteer deep-dive (intake-126) — blocked on Qwen3.5 (no `build_cvec()` in `qwen35.cpp`), but SEAL linear baseline works on dense Qwen3/Qwen2.5 via `--control-vector`
-- [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment)
+- [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment). **Prep DONE 2026-04-09**: `generate_pairs.py` (80 contrastive problems), `eval_cvectors.py` (scaling sweep at 0.3/0.5/0.7), experiment design doc. Awaiting model servers.
 - [x] Reasoning length alarm: cancel + re-generate when `<think>` exceeds 1.5× band budget (Action 9) — `_check_reasoning_length_alarm()` in helpers.py, double-gated (feature flag + enforce mode), wired into `_execute_turn()` with retry + conciseness nudge, 9 tests
 - [x] Implement n-gram loop detection (Action 4) — added `detect_think_block_loop()` to `quality_detector.py`, 8 tests
 - [x] Wire band-adaptive token budgets through difficulty_signal enforce mode (Action 5) — `_repl_turn_token_cap()` now accepts `difficulty_band`, returns band-specific cap when mode=enforce (1500/3500/7000). `TaskState.difficulty_band` propagated from `RoutingResult`. Gated behind enforce mode (no behavior change while shadow).

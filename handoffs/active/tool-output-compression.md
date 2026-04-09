@@ -1,6 +1,6 @@
 # Tool Token Optimization — Output Compression + Definition Reduction
 
-**Status**: Phase 2 implemented (output compression); Phase 3 designed (definition compression)
+**Status**: Phase 2 implemented (output compression); Phase 3a-b done (definition audit + compression)
 **Created**: 2026-04-04 (via research intake deep dive)
 **Updated**: 2026-04-09
 **Categories**: context_management, agent_architecture
@@ -253,7 +253,7 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 
 ### Work Items
 
-- [ ] P3a: Token audit of tool definitions across all prompt paths
-- [ ] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS`
-- [ ] P3c: Measure `instruction_token_ratio` delta (AP-16)
+- [x] P3a: Token audit of tool definitions across all prompt paths — ✅ 2026-04-09. `scripts/analysis/token_audit.py` + `docs/token_audit_report.md`. DEFAULT: 841 est. tokens (647 words), 41 entries, 4 duplicates. No usage freq data (seeding diagnostics unavailable). Instruction token ratio: 29.8%.
+- [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Removed 4 duplicates, all "Do NOT" clauses, merged related tools, flattened sections. Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B. Instruction token ratio: 16.0%. 162 tests pass.
+- [ ] P3c: Measure `instruction_token_ratio` delta (AP-16) — ratio dropped 29.8% → 16.0% (static measure done; AP-16 runtime measurement pending inference)
 - [ ] P3d: A/B test compressed vs original definitions on seeding harness
