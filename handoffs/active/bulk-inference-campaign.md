@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, B+D pending inference)
+**Status**: active (A+E done, C ready, B in progress — Arm A + telemetry + TrimR done, Arm B + Phase 4 analysis pending)
 **Created**: 2026-04-06
 **Updated**: 2026-04-08
 **Categories**: evaluation, inference, coordination
@@ -194,7 +194,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 ### Success Criteria
 
 - [ ] **RI-9**: Pareto-optimal risk thresholds identified (factuality vs cost vs latency tradeoff curve)
-- [x] **TrimR**: NOT APPLICABLE to current stack. Root cause: production binary (build 8218, commit b51c905ec) predates `common_chat_templates_support_enable_thinking()` — Qwen3.5 chat template has `enable_thinking` conditional but the binary's template engine doesn't pass `enable_thinking=true` even with `--jinja --reasoning-budget -1`. **Fix**: rebuild production binary from current `production-consolidated-v2` HEAD (commit 94b0200+ has updated `chat.cpp`). `--jinja` flag added to `orchestrator_stack.py` but has no effect until binary rebuild. Baselines captured: frontdoor (GPQA 5%, math 62%), coder 4×48t (GPQA 48%, math 76%). Escalation value: +43pp GPQA, +14pp math.
+- [x] **TrimR**: DONE (2026-04-09). Eval on DeepSeek-R1-Distill-Qwen-7B (4×48t NUMA). GPQA: thinking helps ~6pp (full 58.3% → strip 52.6%), TrimR prunes 45% of thinking while preserving correct count. Math (GSM8K): thinking minimal (151 tok avg), pruning has zero effect — model barely thinks on easy problems. **Verdict: TrimR valuable on hard tasks (GPQA), irrelevant on easy tasks (GSM8K). Aligns with difficulty-adaptive routing.** Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\boxed{}` scorer fix, per-strategy output files. Data: `data/package_b/trimr_r1_7b_gpqa_trimr.jsonl`, `trimr_r1_7b_math_{full,think-strip,trimr}.jsonl`.
 - [ ] **Difficulty**: Recalibrated thresholds show predictive spread (easy success > medium success > hard success)
 - [ ] **Omega**: Identifies ≥2 suites where reasoning tokens are net-negative (accuracy drops with more thinking)
 - [ ] **Tool A/B**: Token savings ≥15% without quality degradation (accuracy delta < 1%)

@@ -88,7 +88,7 @@ Three families of techniques, ordered by implementation effort:
 - **Currently in shadow mode**: computes and logs, does NOT influence routing
 
 ### Remaining Work
-- [ ] Run TrimR evaluation on math/gpqa suites (requires model server)
+- [x] Run TrimR evaluation on math/gpqa suites — ✅ 2026-04-09 (Package B). DeepSeek-R1-Distill-Qwen-7B on 4×48t NUMA. **GPQA**: full 58.3% → think-strip 52.6% → trimr 45.7% (2400 avg think tokens, thinking helps ~6pp). **Math (GSM8K)**: 66% all strategies identical (151 avg think tokens — model barely thinks on easy math). **Verdict**: TrimR valuable on hard tasks, irrelevant on easy tasks. Aligns with difficulty-adaptive routing. Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\boxed{}` scorer fix.
 - [x] Collect shadow telemetry from difficulty signal in production — ✅ 2026-04-06. Package A collected 635 routing decisions with shadow predictions.
 - [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. At old thresholds (0.3/0.6): 92% easy, 0% hard, no predictive spread. Recalibrated to 0.15/0.35 for ~40/40/20 split. Medium prompts take 29% longer (p50 36s vs 25s). Re-validation needed at new thresholds.
 - [ ] If validated: implement enforce mode (route easy→worker, hard→architect)
@@ -260,3 +260,35 @@ This is the most active research front discovered during the 2026-03-14 intake r
   - Delta from current approach: Extends our Tier 3 understanding (OPSDC, intake-110). Addresses the known OPSD instability (information leakage → progressive collapse) by limiting distillation to magnitude only. Still requires training infrastructure (8x GPU) — not actionable for inference-only stack.
   - Known limitations: OPSD component has structural information leakage risk even with clipping; GRPO's sequence-level credit assignment remains a bottleneck; hyperparameter sensitivity to clipping bounds not fully ablated.
   - Status: MONITOR ONLY — training method, same actionability caveat as intake-264/266.
+
+## Research Intake Update — 2026-04-08
+
+### New Related Research — Memento Cluster (Block-Level Reasoning Compression)
+
+A cluster of 4 closely related papers/repos on training models to self-compress their reasoning chains by segmenting into blocks and generating dense summaries ("mementos"). This represents a new Tier 3+ approach that goes beyond our existing compression taxonomy.
+
+- **[intake-289] "Memento: Teaching LLMs to Manage Their Own Context"** (Microsoft Research)
+  - Relevance: Directly applicable — trains models to segment reasoning into blocks, compress each into a memento, mask original block KV states. 2-3x peak KV reduction on Qwen3-8B/32B, Phi-4 14B.
+  - Key technique: Dual information stream — memento KV states retain implicit block info even after text masking. Removing this channel drops 15pp on AIME24. Custom vLLM fork with native block masking.
+  - Reported results: Qwen3-32B AIME26: -2.6pp at 2x KV reduction. Gap shrinks with scale (-6.3pp@8B → -3.5pp@32B). RL closes remaining gap.
+  - Delta from current approach: Our TrimR/FlowSteer operate post-hoc; Memento trains the model itself to compress. Requires SFT on OpenMementos (228K traces, MIT). vLLM-based, not llama.cpp — porting block masking to llama-server is non-trivial but conceptually similar to our ISWA hybrid buffer.
+  - Composability: Orthogonal to Hadamard+q4_0 KV quantization — compresses attention span, not precision. Multiplicative savings possible.
+  - **New handoff stub created**: `memento-block-reasoning-compression.md`
+
+- **[intake-290] "OpenMementos-228K"** (HuggingFace dataset, MIT)
+  - Relevance: Training data for Memento approach. 228K reasoning traces with block boundaries and compressed summaries (54% math, 27% science, 19% code). ~6x trace-level compression.
+  - Key technique: 5-stage data pipeline (sentence splitting → boundary scoring → segmentation → summary generation → iterative refinement). Judge-feedback loop: 28% → 92% pass rate.
+  - Delta: The data pipeline itself is valuable — could generate context-folding training data (Phase 2) or TrimR evaluation sets.
+
+- **[intake-292] "InftyThink" (ICLR 2026)** (arxiv:2503.06692)
+  - Relevance: Predecessor approach — iterative reasoning with periodic summarization. Sawtooth memory pattern. 3-11% improvement on MATH500/AIME24/GPQA.
+  - Delta: Text-level only (no KV retention) — Memento shows 15pp loss from missing KV channel. SFT-only (no RL). Peer-reviewed at ICLR.
+
+- **[intake-293] "InftyThink+" (arxiv:2602.06960)** + **[intake-294] "Accordion-Thinking" (arxiv:2602.03249)**
+  - Relevance: Add RL to iterative summarization. InftyThink+: 21% AIME24 gain on 1.5B. Accordion: 3x throughput with Fold/Unfold toggle.
+  - Delta: All text-level — lack Memento's dual stream. Accordion's Fold/Unfold toggle is the most directly usable pattern for our architecture.
+
+### Impact on Existing Actions
+- **Tier 3 taxonomy expanded**: Memento/InftyThink/Accordion form a new sub-family alongside OPSDC (self-distillation) and CoLaR (latent compression). All require training but offer fundamentally different compression vs. inference-only approaches.
+- **Context-folding synergy**: OpenMementos' data pipeline (boundary scoring + iterative refinement) validates our Phase 2 approach and could provide training data for Phase 3 RL.
+- **KV cache composition**: Memento block masking + Hadamard+q4_0 quantization = multiplicative KV savings. Worth investigating once llama.cpp block masking is feasible.
