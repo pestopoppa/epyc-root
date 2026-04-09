@@ -8650,3 +8650,337 @@
     MATH-500 at 12x compression: 0.49 accuracy (graceful degradation). May be MORE
     practically useful than TriAttention for our stack despite weaker decode-only
     results. See deep-dive: research/deep-dives/triattention-kv-selection-cluster.md
+
+- id: intake-289
+  arxiv_id: null
+  url: https://github.com/microsoft/memento
+  source_type: repo
+  title: "Memento: Teaching LLMs to Manage Their Own Context"
+  authors:
+  - Vasilis Kontonis
+  - Yuchen Zeng
+  - Shivam Garg
+  - Lingjiao Chen
+  - Hao Tang
+  - Ziyan Wang
+  - Ahmed Awadallah
+  - Eric Horvitz
+  - John Langford
+  - Dimitris Papailiopoulos
+  categories:
+  - kv_cache
+  - training_distillation
+  - context_extension
+  - inference_serving
+  key_claims:
+  - "Models trained on OpenMementos segment reasoning into blocks, compress each into a memento summary, and attend only to mementos — reducing KV cache 2-3x"
+  - "Dual information stream: memento KV states retain implicit information from masked blocks; removing this channel drops accuracy by 15pp on AIME24"
+  - "Two-stage SFT recipe transfers across Qwen3 (8B/32B), Phi-4 (14B), and Olmo-3-7B with minimal accuracy loss"
+  - "RL fine-tuning on top of Memento SFT closes remaining accuracy gap"
+  - "Custom vLLM fork with native block masking enables 2x throughput improvement"
+  techniques:
+  - block-memento segmentation
+  - iterative judge-refined summarization
+  - KV cache block masking (in-engine attention masking)
+  - dual information stream (text + KV representations)
+  - two-stage SFT (full attention then memento attention)
+  results:
+  - "Qwen3-32B AIME26: 72.6% vs 75.2% base (-2.6pp) at 2x peak KV reduction"
+  - "Qwen3-8B with RL: 64.9% AIME26 (+0.2pp vs control) at 0.56x peak KV"
+  - "~6x trace-level compression (10,900 block tokens to 1,850 memento tokens)"
+  - "Peak KV 0.35-0.47x for models with uniform attention layers"
+  - "Accuracy gap shrinks with scale: -6.3pp at 8B to -3.5pp at 32B"
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: new_opportunity
+  discovered_via: direct
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - "KV cache compression harms arithmetic reasoning 1-40% (arxiv:2512.12008) — Memento's own results confirm 2-7pp loss on competition math"
+  - "Token-dropping methods break reasoning integrity (arxiv:2510.08525) — Memento mitigates via summaries but dual-stream dependency means KV recomputation drops 15pp"
+  - "Sliding-window architectures (Olmo-3) see minimal KV savings (0.85-0.93x) — not universally applicable"
+  - "Failure mode: block masking can induce excessive generation (3x more tokens), increasing total memory-time cost"
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - context-folding-progressive.md
+    - kv-cache-quantization.md
+    intake:
+    - intake-290
+    - intake-291
+    - intake-292
+    - intake-293
+    - intake-294
+  handoffs_updated:
+  - reasoning-compression.md
+  - context-folding-progressive.md
+  handoffs_created:
+  - memento-block-reasoning-compression.md
+  notes: >
+    DEEP-DIVE 2026-04-09 (research/deep-dives/memento-iterative-reasoning-cluster.md).
+    STRONG MATCH to reasoning-compression handoff and context-folding-progressive.
+    Memento operates at a different level than our existing approaches: it trains the
+    model itself to compress reasoning, rather than post-hoc pruning (TrimR) or
+    activation steering (FlowSteer). The dual information stream finding is novel —
+    KV states carry implicit block info even after text is masked (15pp AIME24 drop
+    without KV channel, probing recovers 23-27% of injected passcode from masked
+    positions, architectural not learned). This is orthogonal to our KV cache
+    quantization work (Hadamard+q4_0) and could compose with it: Memento 2-3x ×
+    q4_0 2x = 4-6x KV reduction. Key opportunity: pass@64 Jaccard 96.4% means gap
+    is consistency not capability — combining with m@k voting gives zero-accuracy-cost
+    KV reduction. Key limitation: requires SFT on OpenMementos + llama.cpp block
+    masking (builds on ISWA hybrid buffer work). vLLM implementation is Python-level
+    only, works with vanilla FlashAttention. RL uses CISPO with 7K block length cap
+    and β=0.001 KL penalty. Serving: 1.75x throughput at full concurrency (B200).
+    228K OpenMementos dataset is MIT licensed.
+
+- id: intake-290
+  arxiv_id: null
+  url: https://huggingface.co/datasets/microsoft/OpenMementos
+  source_type: dataset
+  title: "OpenMementos-228K: Segmented Reasoning Traces with Block Summaries"
+  authors:
+  - Vasilis Kontonis
+  - Yuchen Zeng
+  - Shivam Garg
+  - Lingjiao Chen
+  - Hao Tang
+  - Ziyan Wang
+  - Ahmed Awadallah
+  - Eric Horvitz
+  - John Langford
+  - Dimitris Papailiopoulos
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - "228K reasoning traces from OpenThoughts-v3, annotated with block boundaries and compressed summaries"
+  - "5-stage pipeline: sentence splitting, boundary scoring, block segmentation, summary generation, iterative refinement"
+  - "~6x trace-level compression; 92% pass rate after iterative judge refinement (vs 28% single-pass)"
+  techniques:
+  - LLM-scored boundary detection
+  - algorithmic block segmentation (boundary score optimization with balance penalty)
+  - iterative judge-refined summarization (GPT-5.x, 0-10 rubric, 2 rounds)
+  results:
+  - "228,557 examples: 54% math, 27% science, 19% code"
+  - "Median block-level compression: 0.16 (math), 0.18 (code), 0.23 (science)"
+  - "Average block: ~1,150 tokens; average memento: ~194 tokens"
+  - "13.9 GB dataset, MIT licensed"
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: direct
+  ingested_date: '2026-04-08'
+  contradicting_evidence: null
+  cross_references:
+    intake:
+    - intake-289
+    handoffs:
+    - reasoning-compression.md
+  notes: >
+    Companion dataset for Memento (intake-289). The data generation pipeline itself
+    is valuable — boundary scoring + algorithmic segmentation + iterative refinement
+    could be applied to our own reasoning traces for TrimR-style evaluation or
+    context-folding training data. The 92% vs 28% pass rate with iterative refinement
+    validates our context-folding Phase 2 approach of using judge-feedback loops for
+    summarizer quality.
+
+- id: intake-291
+  arxiv_id: null
+  url: https://github.com/rowboatlabs/rowboat
+  source_type: repo
+  title: "Rowboat: Open-Source AI Coworker with Knowledge Graph Memory"
+  categories:
+  - agent_architecture
+  - memory_augmented
+  key_claims:
+  - "Local-first AI coworker that builds persistent knowledge graph from email, calendar, meeting notes"
+  - "Plain Markdown notes with backlinks (Obsidian-compatible) — transparent, editable knowledge store"
+  - "MCP integration for tool use, Composio for product integrations"
+  - "Supports local models via Ollama/LM Studio or hosted APIs"
+  techniques:
+  - knowledge graph as persistent agent memory (Markdown + backlinks)
+  - MCP server integration for tool use
+  - multi-agent workflow IDE (OpenAI Agents SDK)
+  results: null
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: direct
+  ingested_date: '2026-04-08'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+    - langgraph-migration.md
+    - open_source_orchestrator.md
+  notes: >
+    Y Combinator S24 company. Interesting as a reference implementation for knowledge-graph-
+    backed agent memory — relevant to our orchestrator's context management and the
+    hermes-agent frontend integration. Their Markdown+backlinks approach to knowledge
+    persistence is simpler than our session compaction pipeline but may inform
+    human-readable memory design. MCP integration patterns are directly relevant
+    to hermes-outer-shell. Not directly applicable to inference optimization but
+    worth tracking for agent architecture patterns.
+
+- id: intake-292
+  arxiv_id: '2503.06692'
+  url: https://arxiv.org/abs/2503.06692
+  source_type: paper
+  title: "InftyThink: Breaking the Length Limits of Long-Context Reasoning in Large Language Models"
+  authors:
+  - Yuchen Yan
+  - Yongliang Shen
+  - Yang Liu
+  - Jin Jiang
+  - Mengdi Zhang
+  - Jian Shao
+  - Yueting Zhuang
+  categories:
+  - context_extension
+  - training_distillation
+  key_claims:
+  - "Transforms monolithic reasoning into iterative process with intermediate summarization"
+  - "Sawtooth memory pattern enables unbounded reasoning depth with bounded computational cost"
+  - "333K training instances from OpenR1-Math converted to iterative format"
+  techniques:
+  - iterative reasoning with periodic summarization
+  - sawtooth memory pattern
+  - optimal fragment sizing with semantic coherence preservation
+  results:
+  - "3-11% improvement on MATH500, AIME24, GPQA_diamond (Qwen2.5-Math-7B)"
+  - "ICLR 2026 accepted"
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-289
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - "Operates at text level only — no KV state retention (Memento shows 15pp loss from this)"
+  - "Uses separate generation calls (explicit restart) — loses implicit KV channel"
+  cross_references:
+    intake:
+    - intake-289
+    - intake-293
+    - intake-294
+    handoffs:
+    - reasoning-compression.md
+  notes: >
+    Direct predecessor to Memento. Key difference: InftyThink uses text-level context
+    rebuilding (separate generation calls), while Memento retains KV states via in-engine
+    masking. InftyThink is SFT-only (no RL). Published at ICLR 2026, giving it strong
+    peer-review credibility. The fragment sizing approach may inform our context-folding
+    segmentation strategy.
+
+- id: intake-293
+  arxiv_id: '2602.06960'
+  url: https://arxiv.org/abs/2602.06960
+  source_type: paper
+  title: "InftyThink+: Effective and Efficient Infinite-Horizon Reasoning via Reinforcement Learning"
+  authors:
+  - Yuchen Yan
+  - Liang Jiang
+  - Jin Jiang
+  - Shuaicheng Li
+  - Zujie Wen
+  - Zhiqiang Zhang
+  - Jun Zhou
+  - Jian Shao
+  - Yueting Zhuang
+  - Yongliang Shen
+  categories:
+  - context_extension
+  - training_distillation
+  key_claims:
+  - "Two-stage training: SFT cold-start + trajectory-level RL for learned summarization boundaries"
+  - "21% accuracy improvement on AIME24 over base (DeepSeek-R1-Distill-Qwen-1.5B)"
+  - "Model learns strategic decisions about when to summarize and what to preserve"
+  techniques:
+  - trajectory-level reinforcement learning for summarization policy
+  - model-controlled iteration boundaries
+  - two-stage training (SFT + RL)
+  results:
+  - "21% accuracy improvement on AIME24 (DeepSeek-R1-Distill-Qwen-1.5B)"
+  - "Outperforms conventional long-CoT RL"
+  - "Better OOD generalization, reduced inference latency"
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-289
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - "Only tested on 1.5B model — unclear if gains transfer to larger models"
+  - "Text-level context rebuilding like InftyThink — no dual information stream"
+  cross_references:
+    intake:
+    - intake-289
+    - intake-292
+    - intake-294
+    handoffs:
+    - reasoning-compression.md
+  notes: >
+    Adds RL on top of InftyThink's SFT approach. The trajectory-level RL for learned
+    summarization boundaries is conceptually similar to our context-folding Phase 3
+    (FoldGRPO process rewards). Small model only (1.5B), but the 21% AIME24 gain
+    is impressive. Worth comparing with Memento's RL results on 8B.
+
+- id: intake-294
+  arxiv_id: '2602.03249'
+  url: https://arxiv.org/abs/2602.03249
+  source_type: paper
+  title: "Accordion-Thinking: Self-Regulated Step Summaries for Efficient and Readable LLM Reasoning"
+  authors:
+  - Zhicheng Yang
+  - Zhijiang Guo
+  - Yinya Huang
+  - Yongxin Wang
+  - Wenlei Shi
+  - Yiwei Wang
+  - Xiaodan Liang
+  - Jing Tang
+  categories:
+  - context_extension
+  - training_distillation
+  - inference_serving
+  key_claims:
+  - "LLMs learn to self-regulate reasoning granularity through dynamic summarization via RL"
+  - "Fold/Unfold inference modes — accuracy gap vanishes over RL training"
+  - "3x throughput on 48GB GPU while maintaining accuracy"
+  techniques:
+  - fold/unfold inference modes
+  - RL-incentivized self-compression
+  - mid-generation context rebuilding within single inference pass
+  results:
+  - "3x throughput at maintained accuracy on 48GB GPU"
+  - "Accuracy gap between Fold and Unfold modes closes over RL training"
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-289
+  ingested_date: '2026-04-08'
+  contradicting_evidence:
+  - "Mid-generation context rebuilding — still text-level, no KV state retention"
+  - "No model scale specified in abstract — unclear if tested beyond 7B"
+  cross_references:
+    intake:
+    - intake-289
+    - intake-292
+    - intake-293
+    handoffs:
+    - reasoning-compression.md
+    - context-folding-progressive.md
+  notes: >
+    Most similar to Memento in mechanism (single-pass context rebuilding), but operates
+    at text level. The Fold/Unfold toggle is exactly the kind of controllable compression
+    our reasoning-compression handoff needs. The RL approach for learning when to
+    compress aligns with context-folding Phase 3 (FoldGRPO). 3x throughput claim is
+    impressive if it holds at scale.

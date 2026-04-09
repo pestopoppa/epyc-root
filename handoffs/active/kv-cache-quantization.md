@@ -1499,3 +1499,17 @@ For CPU implementation: write a custom `vec_dot_tq3_0_q8_1` kernel in `ggml-cpu/
   - Relevance: Predicts future attention via distributional properties — training-free, works in both prefill and decode
   - Key technique: Expected Attention scoring + KVPress library (20+ compression techniques benchmarked)
   - Delta from current approach: KVPress library could be useful as a benchmarking tool for comparing compression approaches. Different scoring basis than TriAttention (distributional vs trigonometric).
+
+## Research Intake Update — 2026-04-09
+
+### Memento Block Masking — Orthogonal Composability (intake-289)
+
+Memento (Microsoft, intake-289) trains models to segment reasoning into blocks, compress each into a summary, and mask original block KV states. Peak KV reduction: 2-3x on Qwen3-8B/32B, Phi-4 14B.
+
+**Composability with our Hadamard+q4_0**: Memento reduces WHICH KV entries exist (attention span compression). Our quantization reduces HOW each entry is stored (precision compression). These are orthogonal — multiplicative when stacked: Memento 2-3x × q4_0 2x = **4-6x KV reduction**.
+
+**Triple-stack with KV selection**: Adding TriAttention/Expected Attention selection on top could reach 8-60x theoretical.
+
+**Key dependency**: llama.cpp block masking implementation. Uses special tokens (`<|block_start/end|>`, `<|summary_start/end|>`) and KV eviction after summary completion. Our ISWA hybrid buffer work is architecturally similar.
+
+See: [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.

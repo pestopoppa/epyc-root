@@ -18,6 +18,7 @@ Generic model-agnostic local orchestrator with auto-benchmarking + MemRL routing
 | Ollama | Easy local inference | No multi-model orchestration, no routing |
 | LM Studio | GUI local inference | No programmatic routing, no benchmarking |
 | Open Interpreter | Code execution agent | Single model, no comparative routing |
+| Rowboat | Knowledge-graph AI coworker (MCP, Markdown+backlinks) | No multi-model routing, no benchmarking, no RL. Cloud-first (Vercel AI SDK). |
 
 **Unique value**: Auto-discovers models → benchmarks them → learns optimal routing via RL → adapts to hardware.
 

@@ -70,6 +70,20 @@ S1 and S2 can run **in parallel**. S3 depends on S1/S2 results. S4 depends on S1
 - **Gate 3 (after S3)**: IF selection + quantization stacking is quality-neutral at >= 4x combined compression THEN promote to implementation phase. ELSE **CONCLUDE** — KV quantization alone sufficient.
 - **Overall**: IF S1 AND S2 both fail gates THEN **CONCLUDE as NOT VIABLE**.
 
+## Composability: Triple-Stack KV Compression (intake-289, 2026-04-09)
+
+Memento (intake-289) introduces a third orthogonal KV compression dimension — block masking removes entire reasoning blocks, retaining only summary KV states. Combined theoretical ceiling:
+
+| Layer | Method | Compression | Status |
+|-------|--------|-------------|--------|
+| Selection (this handoff) | TriAttention / Expected Attention | 2-10x | S1/S2 evaluating |
+| Quantization | Hadamard + q4_0 | 2x | **Production** (`b51c905`) |
+| Block masking | Memento | 2-3x | Research (memento-block-reasoning-compression.md) |
+
+S3 (selection + quantization stacking) should also consider eventual triple-stack with block masking. Quality cliff under triple compression is the key unknown.
+
+See: [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.
+
 ## Open Questions
 
 - Can TriAttention's pre-RoPE Q/K concentration assumption be validated for our models (Qwen2.5, DeepSeek-R1-Distill)?

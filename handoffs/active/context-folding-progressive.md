@@ -870,3 +870,34 @@ intake-267 UPGRADED to relevance medium-high during deep dive. The compound rete
   - Key result: 50% cost reduction vs baseline; hybrid masking+summarization gives 7-11% further savings
   - Delta from current approach: Validates our two-layer architecture (pattern-based tool compression + LLM conversation summarization). Observation masking ≈ high recency weight in segment_helpfulness — our existing approach already captures this.
   - **Actionable**: Consider whether `tool_output_compression` should be more aggressive for older tool outputs (age-based compression scaling). The hybrid finding suggests our architecture is already near-optimal.
+
+## Research Intake Update — 2026-04-09
+
+### Memento Cluster: Validation + New Opportunities for Phase 2/3
+
+Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/memento-iterative-reasoning-cluster.md`. Key findings for context-folding:
+
+- **[intake-290] OpenMementos Data Pipeline — VALIDATES Phase 2 Methodology**
+  - Their 5-stage pipeline (sentence splitting → boundary scoring → segmentation → summary generation → iterative refinement) is structurally equivalent to our Phase 2 approach
+  - **Key validation**: Iterative judge-refined summarization raises pass rate from 28% to 92% (0-10 rubric, 6 dimensions, 2 refinement rounds). This confirms our judge-feedback loop design is the right approach.
+  - **Compression ratio**: ~6x trace-level (1,150 tokens → 194 tokens per block), stable across domains
+  - **Directly usable**: 228K MIT-licensed traces could serve as Phase 3 RL training data if we fine-tune models for context-aware summarization
+
+- **[intake-293] InftyThink+ — Internal > External Summarization After RL**
+  - After RL training, model's own summaries **outperform** external GPT-4 summaries (AIME24: 50.94% vs 48.42%)
+  - Before RL, external summaries are better (32.40% vs 29.48%)
+  - **Implication for our Phase 2**: Using `worker_explore` (7B) as external summarizer is the correct approach for SFT-era context-folding. But Phase 3 RL should aim to move summarization into the reasoning model itself — learned self-compression beats external compression.
+
+- **[intake-294] Accordion-Thinking Fold/Unfold — Phase 3 Inspiration**
+  - Fold/Unfold toggle: same model, runtime inference choice between compressed and full context
+  - After Mix-RL training, accuracy gap between modes **vanishes** (Fold 52.8% vs Unfold 52.2%)
+  - Throughput: 3-4x in Fold mode on 48GB GPU
+  - **Phase 3 mapping**: Our FoldGRPO process rewards (intake-154) could incorporate Accordion's approach — RL that teaches the model when folding is safe vs. when full context is needed
+
+- **[intake-289] Memento Dual Information Stream — Fundamental Limit of Text-Level Compression**
+  - KV states carry implicit info from masked blocks; removing KV channel drops 15pp on AIME24
+  - **Implication**: Our Phase 1-2 text-level consolidation has a ceiling compared to KV-retaining approaches for reasoning tasks. This doesn't invalidate our approach (we compress conversation history, not reasoning chains), but Phase 3 should evaluate whether retaining KV states for critical consolidated segments improves downstream accuracy.
+
+### Impact on Phase Roadmap
+- **Phase 2 (current)**: No change needed. OpenMementos validates our methodology.
+- **Phase 3**: Expanded scope: (1) FoldGRPO process rewards (existing), (2) Accordion-style Fold/Unfold learned toggle, (3) InftyThink+ efficiency reward for iteration budget control, (4) Investigate KV state retention for critical segments (inspired by Memento's dual stream)

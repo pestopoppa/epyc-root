@@ -2498,3 +2498,19 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-04-09T06:07:35+00:00","session":"ses_20260409_phase4","level":"INFO","cat":"DECISION","msg":"Omega: tools hurt 7/10 suites","details":"agentic -54pp, coder -44pp, general -26pp, math -26pp. Only hotpotqa +12pp and gpqa +6pp benefit."}
 {"ts":"2026-04-09T06:07:35+00:00","session":"ses_20260409_phase4","level":"INFO","cat":"DECISION","msg":"Difficulty signal: no predictive power","details":"Escalation rate flat across easy/medium/hard (62/61/62%). Enforce mode blocked."}
 {"ts":"2026-04-09T06:07:35+00:00","session":"ses_20260409_phase4","level":"INFO","cat":"TASK_END","msg":"Package B Phase 4 complete","details":"RI-9 + difficulty + Omega done. Only Arm B (tool A/B) remaining."}
+[2026-04-09T00:00:00Z] [research-intake] SESSION_START purpose="Research intake 289-294 + deep dive: Memento iterative reasoning cluster"
+[2026-04-09T00:00:01Z] [research-intake] TASK_START description="Phase 1: Fetch & extract 4 URLs" reasoning="4 direct URLs: Rowboat repo, Memento PDF, OpenMementos dataset, Memento repo"
+[2026-04-09T00:00:02Z] [research-intake] TASK_END description="Phase 1: Fetch & extract" status="success" detail="6 entries extracted (4 direct + 2 literature expansion: InftyThink, InftyThink+, Accordion-Thinking from Memento refs)"
+[2026-04-09T00:00:03Z] [research-intake] TASK_START description="Phase 2: Cross-reference" reasoning="Search handoffs, chapters, experiments for matches"
+[2026-04-09T00:00:04Z] [research-intake] TASK_END description="Phase 2: Cross-reference" status="success" detail="Matched reasoning-compression, context-folding, kv-cache-quantization, triattention, hermes, langgraph, open_source_orchestrator"
+[2026-04-09T00:00:05Z] [research-intake] TASK_START description="Phase 3: Literature expansion" reasoning="Reference chasing from Memento related work section"
+[2026-04-09T00:00:06Z] [research-intake] TASK_END description="Phase 3: Literature expansion" status="success" detail="3 new entries from reference chasing (InftyThink arxiv:2503.06692, InftyThink+ arxiv:2602.06960, Accordion-Thinking arxiv:2602.03249)"
+[2026-04-09T00:00:07Z] [research-intake] TASK_START description="Phase 4: Handoff integration" reasoning="Update active handoffs, create stubs for new opportunities"
+[2026-04-09T00:00:08Z] [research-intake] TASK_END description="Phase 4: Handoff integration" status="success" detail="Updated reasoning-compression.md, created memento-block-reasoning-compression.md stub"
+[2026-04-09T00:00:09Z] [research-intake] TASK_START description="Phase 5: Persist & validate" reasoning="Append to intake_index.yaml, run validation"
+[2026-04-09T00:00:10Z] [research-intake] TASK_END description="Phase 5: Persist & validate" status="success" detail="6 entries appended (intake-289 through intake-294), 169 pre-existing validation errors, 4 new cosmetic schema strictness issues"
+[2026-04-09T00:01:00Z] [research-intake] TASK_START description="Deep dive: Memento iterative reasoning cluster" reasoning="User requested thorough deep dive on all 6 entries"
+[2026-04-09T00:01:01Z] [research-intake] TASK_END description="Deep dive: Memento cluster" status="success" detail="350-line comparative analysis at research/deep-dives/memento-iterative-reasoning-cluster.md. 9 opportunities identified. Memento handoff promoted stub→active."
+[2026-04-09T00:02:00Z] [research-intake] TASK_START description="Audit & cross-reference completeness" reasoning="User requested full handoff audit"
+[2026-04-09T00:02:01Z] [research-intake] TASK_END description="Audit & cross-reference" status="success" detail="6 gaps found and fixed: research-evaluation-index registration, master-handoff-index registration, kv-cache-quantization composability xref, triattention triple-stack xref, open_source_orchestrator Rowboat market entry, context-folding Phase 3 expansion"
+[2026-04-09T00:02:02Z] [research-intake] SESSION_END
