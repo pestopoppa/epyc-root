@@ -2514,3 +2514,4 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 [2026-04-09T00:02:00Z] [research-intake] TASK_START description="Audit & cross-reference completeness" reasoning="User requested full handoff audit"
 [2026-04-09T00:02:01Z] [research-intake] TASK_END description="Audit & cross-reference" status="success" detail="6 gaps found and fixed: research-evaluation-index registration, master-handoff-index registration, kv-cache-quantization composability xref, triattention triple-stack xref, open_source_orchestrator Rowboat market entry, context-folding Phase 3 expansion"
 [2026-04-09T00:02:02Z] [research-intake] SESSION_END
+{"ts":"2026-04-09T10:17:04+00:00","session":"ses_20260409_phase4","level":"INFO","cat":"DECISION","msg":"Web search fix: constants.py was the real prompt, not rules.md","details":"DEFAULT_ROOT_LM_RULES said 'when in doubt search first'. Fixed to compute-first priority. API restarted. Arm B running."}

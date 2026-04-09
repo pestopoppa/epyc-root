@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 analysis done, only Arm B tool compression A/B remaining)
+**Status**: active (A+E done, C ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF)
 **Created**: 2026-04-06
 **Updated**: 2026-04-09
 **Categories**: evaluation, inference, coordination
@@ -197,7 +197,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 - [x] **TrimR**: DONE (2026-04-09). Eval on DeepSeek-R1-Distill-Qwen-7B (4×48t NUMA). GPQA: thinking helps ~6pp (full 58.3% → strip 52.6%), TrimR prunes 45% of thinking while preserving correct count. Math (GSM8K): thinking minimal (151 tok avg), pruning has zero effect — model barely thinks on easy problems. **Verdict: TrimR valuable on hard tasks (GPQA), irrelevant on easy tasks (GSM8K). Aligns with difficulty-adaptive routing.** Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\boxed{}` scorer fix, per-strategy output files. Data: `data/package_b/trimr_r1_7b_gpqa_trimr.jsonl`, `trimr_r1_7b_math_{full,think-strip,trimr}.jsonl`.
 - [x] **Difficulty**: DONE (2026-04-09). At 0.15/0.35 thresholds: easy=1834 (62.2% escalated), medium=517 (60.7%), hard=82 (62.2%). **Finding**: NO predictive spread — escalation rate is flat across difficulty bands. The difficulty signal at current thresholds does not differentiate routing needs. Recommend: re-examine feature weights or add semantic features before moving to enforce mode.
 - [x] **Omega**: DONE (2026-04-09). **7 of 10 suites show tools HURT accuracy** (direct > REPL): agentic -54.5pp, coder -44pp, general -26pp, math -26pp, mode_advantage_hard -23.7pp, thinking -8pp, instruction_precision -6pp. Only hotpotqa (+12pp) and gpqa (+6pp) benefit from tools. **Verdict**: Tools are net-negative on most suites. Reasoning tokens via REPL are actively harmful for agentic, coder, general, and math tasks.
-- [ ] **Tool A/B**: DEFERRED — requires Arm B (API restart with `TOOL_OUTPUT_COMPRESSION=0`). Arm A data collected; Arm B is the only remaining Package B inference task.
+- [ ] **Tool A/B**: Arm B RUNNING (2026-04-09). API restarted with `TOOL_OUTPUT_COMPRESSION=0` + web-search-over-reliance fix (constants.py `DEFAULT_ROOT_LM_RULES` was the actual prompt, not rules.md). Arm B tests both tool-compression-OFF and fixed web search guidance simultaneously. Note: not a pure tool-compression-only A/B vs Arm A (which had old web search prompt + no thinking). Arm B has: thinking ON + web search fix + tool compression OFF.
 
 ---
 

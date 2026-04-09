@@ -151,7 +151,7 @@ Lower priority refinements.
 
 Package B Phase 4 found 7/10 suites where REPL mode hurts accuracy vs direct. Root cause: the model web-searches for answers instead of reasoning. `rules.md` actively encouraged this with "Use Python computation, web_search, or llm_call to VERIFY your answer."
 
-- [x] **WS-1: Fix `rules.md` tool selection guidance** — ✅ 2026-04-09. Added TOOL SELECTION PRIORITY hierarchy: compute first → reason from knowledge → web search ONLY for factual gaps. Removed web_search from the "verify your answer" instruction. Added explicit "do NOT web-search for math, code, science" constraint.
+- [x] **WS-1: Fix tool selection guidance** — ✅ 2026-04-09. **Root cause**: `DEFAULT_ROOT_LM_RULES` in `src/prompt_builders/constants.py` (not `rules.md`) was the actual prompt. It said "when in doubt, search first" and "Use web_research for: any factual question." Replaced with priority-ordered guidance: compute → direct answer → reason → search only for genuine gaps. Also updated `rules.md` (secondary, used when `config.rules_file` is set). Arm B running with fix — preliminary check showed 100% web search before fix; monitoring for improvement.
 - [ ] **WS-2: Re-run Omega measurement post-fix** — Compare direct vs REPL accuracy with updated prompts. Target: REPL ≥ direct on ≥5/10 suites (currently 2/10).
 - [ ] **WS-3: Consider cascading tool policy** — `tool_policy.py` supports per-task-type `deny` layers. Could deny `group:web` for math/coder suites at the policy level (belt-and-suspenders with prompt fix).
 
