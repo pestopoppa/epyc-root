@@ -6,7 +6,7 @@
       "coupling": "binary",
       "from_patterns": ["src/config/models.py", "orchestration/model_registry.yaml"],
       "to_files": ["build/bin/llama-server"],
-      "notes": "Orchestrator launches llama-server via subprocess. Path from ORCHESTRATOR_PATHS_LLAMA_SERVER env var."
+      "notes": "Orchestrator launches llama-server via subprocess. Path from ORCHESTRATOR_PATHS_LLAMA_SERVER env var. Production branch: production-consolidated-v3 (rebuilt 2026-04-09, pending binary swap)."
     },
     {
       "from": "epyc-orchestrator",

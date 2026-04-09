@@ -450,6 +450,38 @@ Each quarter is permanently assigned to a role. If frontdoor is idle but coder i
 
 Phase E (autoresearch-driven stack exploration) comes first — it may change which models are in the stack. DS-6 scheduler is Phase F, building on whatever configuration autoresearch discovers as optimal.
 
+## DS-6 Design Audit (2026-04-09)
+
+Review of the DS-6 design spec identified 6 gaps that must be resolved before implementation:
+
+1. **No dynamic URL list update API.** `RoundRobinBackend` and `ServerURLsConfig` hold static role→URL mappings. Scheduler needs `add_instance(role, url)` / `remove_instance(role, url)` methods on the backend — these don't exist yet.
+
+2. **No liveness check.** Scheduler assumes pre-warmed instances are alive. No heartbeat/health protocol for quarter servers. If a quarter server crashes, scheduler has no way to detect it.
+
+3. **Port allocation ambiguity.** Does Q0A always use port 8080 (port stays, role changes), or do ports float? Design needs to clarify whether ports are quarter-fixed or role-fixed.
+
+4. **Burst mode race condition.** Draining 2 quarters for architect leaves in-flight requests to those quarters unhandled. Need a graceful drain protocol (e.g., stop accepting new requests, wait for in-flight to complete, then reassign).
+
+5. **Missing idle-time tracking.** 60s idle timeout requires `idle_since` timestamp per instance. `ConcurrencyAwareBackend` tracks active/total counts but not idle time.
+
+6. **No degradation strategy.** What happens if a quarter is evicted mid-request? Need defined behavior (reject? queue? redirect?).
+
+**Status**: BLOCKED on Phase E dependencies (Package B data, RI-10 canary, DS-5 autoresearch). No scaffolding work recommended — model roster may change entirely.
+
+## DS-7 Design Audit (2026-04-09)
+
+Review of the DS-7 concept identified 4 gaps:
+
+1. **No template schema defined.** A template needs: hot_roles, warm_roles, instance counts, NUMA allocation, model selection, acceleration params (draft_max, p_split), mlock settings. Currently scattered across `NUMA_CONFIG`, `HOT_SERVERS`, and `ServerURLsConfig` in 3 different files.
+
+2. **No selection mechanism.** How to choose a template at startup? `--profile` CLI flag? Env var? Auto-detection? Not specified.
+
+3. **No migration path between templates.** Switching profiles without DS-6 scheduler means full stack restart (~2-3 min). DS-6 would enable graceful transitions.
+
+4. **No resource validation.** Templates could over-subscribe memory. Need constraint checking that total mlock'd instances fit in 1130 GB RAM budget.
+
+**Status**: BLOCKED on Phase E. Templates encode autoresearch findings — can't define template contents until autoresearch identifies optimal configurations.
+
 ## Key Insight
 
 Routing intelligence determines *which model* for each task (quality decision). Stack assembly determines *how that model is provisioned* (capacity decision). The pre-warm strategy makes these fully orthogonal — routing doesn't need to know about NUMA topology, and the concurrency-aware router handles instance selection transparently.

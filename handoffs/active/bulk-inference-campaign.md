@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF)
+**Status**: active (A+E done, C ready, F ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF)
 **Created**: 2026-04-06
 **Updated**: 2026-04-09
 **Categories**: evaluation, inference, coordination

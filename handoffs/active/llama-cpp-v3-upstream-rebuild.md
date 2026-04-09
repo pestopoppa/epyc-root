@@ -1,6 +1,6 @@
 # llama.cpp Upstream Rebuild — production-consolidated-v3
 
-**Status**: READY — Study complete, pending implementation
+**Status**: CHERRY-PICKS COMPLETE — Smoke tests pending (requires inference window)
 **Created**: 2026-04-08
 **Priority**: HIGH (blocks all future llama.cpp feature work)
 **Workstream**: WS2
@@ -18,11 +18,12 @@ Rebuild `production-consolidated-v2` onto current upstream master, gaining 517 c
 | Metric | Value |
 |--------|-------|
 | Fork point | `137435ff` (2026-03-03, kleidiai aarch64 fp16) |
-| Upstream HEAD | `85d482e6b` (517 commits ahead as of 2026-04-08) |
-| Our branch | `production-consolidated-v2` (26 custom commits, 63 files, +6,257 lines) |
-| Carry-forward patches | 23 (26 minus 3 drops) |
-| Files modified by both sides | 40 (conflict zones) |
-| Experimental worktree | `/mnt/raid0/llm/llama.cpp-experimental` — currently on `hadamard-kv-smoothing` (dirty). Will be cleaned and rebased. |
+| Upstream HEAD (at rebuild) | `0ec191e1d` (538 commits ahead as of 2026-04-09) |
+| Source branch | `production-consolidated-v2` (27 custom commits incl. `860ab737c`) |
+| Carry-forward patches | 23 (27 minus 4 drops — see notes) |
+| v3 branch | `production-consolidated-v3` — 24 commits (23 patches + 2 fixups, skipped v1 docs) |
+| Build flags | `-DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON` |
+| Experimental worktree | `/mnt/raid0/llm/llama.cpp-experimental` — on `production-consolidated-v3` |
 | Remotes | `origin` = ggml-org/llama.cpp, `fork` = pestopoppa/llama.cpp |
 
 ---
@@ -71,15 +72,18 @@ These implement features used in completed research. Carry forward for reference
 | 24 | `937bd12ec` | MTP acceptance/speculation benchmark tools | `tools/mtp-acceptance/`, `tools/mtp-speculation/` — our-only directories |
 | 25 | `f55bf68de` | .gitignore updates | Trivial merge |
 
-### Confirmed DROPS (3 patches)
+### Confirmed DROPS (4 patches)
 
 | # | Commit | Reason |
 |---|--------|--------|
 | 21 | `64e0a7080` | Merge commit for HSD branch — content carried by commit #20 (`44255f33b`) |
 | 23 | `ffb4ad417` | MTP-1 / MoE self-draft / skip-recurrent / clone-cell mega-commit (20 files, +995/-75). **All techniques concluded NOT VIABLE** (inference-acceleration-index: MTP 0.56x, MoE self-draft negative, hybrid self-accel all negative). No production value. Research artifacts preserved in progress logs. |
 | 26 | `b51c905ec` | Hadamard KV smoothing (`--kv-hadamard`). **Superseded by upstream PR #21038** (`744c0c731`, 2026-04-01). Upstream auto-enables identical Walsh-Hadamard rotation when `-ctk`/`-ctv` use quantized types. Our `--kv-hadamard` flag, `llama-hadamard.cpp/h` become dead code. Production config gets Hadamard for free on v3. |
+| 27 | `860ab737c` | enable_thinking Jinja fix for PEG parser path. **Superseded by upstream refactor** — `common_chat_template_direct_apply_impl` now passes `enable_thinking` to Jinja for all code paths. |
 
-**Net: 26 patches → 23 to carry forward.**
+Also skipped: `7c30bc307` (toolchain chapter v1) — superseded by `bb21af7cf` (v2 chapter which was applied instead).
+
+**Net: 27 patches → 23 to carry forward.**
 
 ---
 
@@ -361,21 +365,31 @@ If v3 fails validation:
 
 ## Closeout Checklist
 
-- [ ] `llama.cpp-experimental` cleaned and `production-consolidated-v3` branch created from `origin/master`
-- [ ] Phase 1 patches applied (moe-n-expert, lookup, gitignore)
-- [ ] Phase 2 patches applied (SWA optimization + fix)
-- [ ] Phase 3 patches applied (paged attention stack — 7 commits)
-- [ ] Phase 4 patches applied (server slot erase)
-- [ ] Phase 5 patches applied (research features)
-- [ ] Phase 6 patches applied (docs/tooling)
-- [ ] Build passes clean (`cmake -DGGML_CPU_ALL_VARIANTS=ON -DLLAMA_CURL=ON`)
-- [ ] All production models smoke-tested
+- [x] `llama.cpp-experimental` cleaned and `production-consolidated-v3` branch created from `origin/master` (2026-04-09)
+- [x] Phase 1 patches applied — moe-n-expert, lookup, gitignore (enable_thinking dropped — upstream fixed)
+- [x] Phase 2 patches applied — SWA optimization + fix (applied cleanly, HIGH risk was overestimated)
+- [x] Phase 3 patches applied — paged attention stack (7 commits + 2 fixups: GGML_OP_COUNT bump, n_kv scope fix)
+- [x] Phase 4 patches applied — server slot erase (applied cleanly)
+- [x] Phase 5 patches applied — research features (SSM checkpoint + HSD conflicts resolved, tree spec clean)
+- [x] Phase 6 patches applied — docs/tooling (skipped v1 chapter, took v2 instead; MTP tools clean)
+- [x] Build passes clean (`cmake -DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON`)
+- [x] Unit tests pass (test-kv-block: 19/19)
+- [x] Governance files updated — verify_llama_cpp.sh, inference-acceleration-index.md, master-handoff-index.md, this handoff
+- [ ] All production models smoke-tested (deferred — requires inference window, added to bulk-inference-campaign.md)
 - [ ] Feature-specific tests passed
 - [ ] Server integration test passed
 - [ ] NUMA throughput validated
 - [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`)
 - [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements
 - [ ] Orchestrator config updated (remove `--kv-hadamard`, update references)
-- [ ] Governance files updated (verify_llama_cpp.sh, dependency map, active handoffs)
 - [ ] Branch pushed to `fork` remote
 - [ ] This handoff moved to `completed/`
+
+### Build Fixups Applied During Cherry-Pick
+
+| Fixup | Commit | Reason |
+|-------|--------|--------|
+| GGML_OP_COUNT 96→97 | `4eb4776f8` | Paged attention added `GGML_OP_FLASH_ATTN_EXT_PAGED` |
+| n_kv scope fix | `8bc9f585d` | Upstream refactored `build_attn_inp_kv_impl`, `n_kv` not in local scope |
+| CMake flags | — | Upstream now requires `-DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON` with `GGML_CPU_ALL_VARIANTS` |
+| SSM checkpoint stub/restore | — | Lookup patch arrived before SSM patch; stubbed in Phase 1, restored in Phase 5 |

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-08
+**Updated**: 2026-04-09
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -25,7 +25,7 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | # | Priority | Item | Index / Handoff |
 |---|----------|------|----------------|
-| 0 | **HIGH** | **llama.cpp v3 upstream rebuild** (517 commits behind, 23 patches to carry) | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) |
+| 0 | ~~HIGH~~ | ~~llama.cpp v3 upstream rebuild~~ ✅ 2026-04-09 (24 commits cherry-picked, build passes, unit tests pass) | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) |
 | 1 | HIGH | AR-3 relaunch (expand T0 sentinels, safety-hardened) | [routing-and-optimization-index](routing-and-optimization-index.md) P5 |
 | 2 | ~~HIGH~~ | ~~Context folding Phase 1~~ ✅ 2026-04-04 | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 1 |
 | 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests). Phase 2c ByteRover enhancement designed (intake-267). | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
@@ -47,7 +47,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + archived | KV quantization deployed, KV selection eval phase, **v3 upstream rebuild READY**, monitoring |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + archived | KV quantization deployed, KV selection eval phase, **v3 upstream rebuild DONE** (smoke tests pending), monitoring |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression Phase 2 done, eval datasets READY, reasoning active + Actions 12-15 (brevity), KB governance project-wiki skill DONE (lint+query+upstream) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |

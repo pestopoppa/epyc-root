@@ -121,9 +121,9 @@ Depends on observability (P4) and autoresearch baseline (P5).
 
 - [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
-- [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08): schedulable events, quarter lifecycle (HOT/WARM/COLD), KV migration cost model, burst mode policy. Implementation deferred to Phase F (after autoresearch).
+- [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08). **Design audit 2026-04-09**: 6 gaps identified (no dynamic URL update API, no liveness check, port allocation ambiguity, burst mode race condition, missing idle-time tracking, no degradation strategy). See `dynamic-stack-concurrency.md` § DS-6 Design Audit. Implementation deferred to Phase F.
 
-- [ ] **DS-7: Stack templates in orchestrator config** — Encode autoresearch findings as selectable stack profiles. See § Strategic Sequence Phase E.
+- [ ] **DS-7: Stack templates in orchestrator config** — Encode autoresearch findings as selectable stack profiles. **Design audit 2026-04-09**: 4 gaps identified (no template schema, no selection mechanism, no migration path, no resource validation). See `dynamic-stack-concurrency.md` § DS-7 Design Audit. Implementation deferred to Phase F.
 
 ### P8 — AutoPilot Design Philosophy Imports
 
@@ -153,7 +153,7 @@ Package B Phase 4 found 7/10 suites where REPL mode hurts accuracy vs direct. Ro
 
 - [x] **WS-1: Fix tool selection guidance** — ✅ 2026-04-09. **Root cause**: `DEFAULT_ROOT_LM_RULES` in `src/prompt_builders/constants.py` (not `rules.md`) was the actual prompt. It said "when in doubt, search first" and "Use web_research for: any factual question." Replaced with priority-ordered guidance: compute → direct answer → reason → search only for genuine gaps. Also updated `rules.md` (secondary, used when `config.rules_file` is set). Arm B running with fix — preliminary check showed 100% web search before fix; monitoring for improvement.
 - [ ] **WS-2: Re-run Omega measurement post-fix** — Compare direct vs REPL accuracy with updated prompts. Target: REPL ≥ direct on ≥5/10 suites (currently 2/10).
-- [ ] **WS-3: Consider cascading tool policy** — `tool_policy.py` supports per-task-type `deny` layers. Could deny `group:web` for math/coder suites at the policy level (belt-and-suspenders with prompt fix).
+- [x] **WS-3: Cascading tool policy for web denial** — ✅ 2026-04-09. Implemented belt-and-suspenders enforcement: `NO_WEB_TASK_TYPES` constant in `tool_policy.py` (math, coder, thinking, instruction_precision). `tool_context` param added to `REPLEnvironment`. Context threaded through `_invoke_tool`/`_list_tools` → `ToolRegistry.invoke()`/`list_tools()` with `context` param. All 4 REPL creation sites (`repl_executor.py`, `stream_adapter.py`, `stages.py`) derive `no_web` from `routing.task_ir["task_type"]`. Feature flag `cascading_tool_policy` enabled by default (validated in prod). 5 new tests in `test_tool_policy.py` (32 total, all passing).
 
 ### P9 — Legacy Cleanup & Operational Debt
 
