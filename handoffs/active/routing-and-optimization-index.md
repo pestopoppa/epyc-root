@@ -109,7 +109,7 @@ These unblock data-driven stack scheduling.
 
 Depends on Phase 4 A/B results.
 
-- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. 3-day monitoring period (ends ~2026-04-09). Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
+- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. Window extended to 2026-04-12 (was 2026-04-09) — n=16 high-risk samples insufficient for decision, need ≥50. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
 
 - [ ] **RI-11: Enforce expand** — Frontdoor 100% + worker_general, 7 days.
 

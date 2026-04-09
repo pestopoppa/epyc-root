@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, F ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF)
+**Status**: active (A+E done, C ready, F ready + smoke script, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-12.)
 **Created**: 2026-04-06
 **Updated**: 2026-04-09
 **Categories**: evaluation, inference, coordination
@@ -323,7 +323,7 @@ python3 scripts/benchmark/eval_tale_budget.py \
 |---------|--------|-------------|
 | AR-3 | [routing-and-optimization-index](routing-and-optimization-index.md) P5 | Autoresearch relaunch with expanded T0 sentinels |
 | RI-7 re-run | [routing-intelligence.md](routing-intelligence.md) Phase 4 | Large-sample A/B re-run (70q was underpowered). Canary data from RI-10 serves as the re-run — enforce-vs-shadow comparison at production scale. |
-| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). 3-day window ends ~2026-04-09 — decision pending. Package D extends monitoring via AR-3 traffic. |
+| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-12 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
 | CF Phase 3c | [context-folding-progressive.md](context-folding-progressive.md) | Quality monitor validation on real multi-turn sessions |
 | DS-5 | [routing-and-optimization-index](routing-and-optimization-index.md) P7 | Model exploration via StructuralLab species |
 
@@ -335,8 +335,8 @@ factual_risk:
   mode: "canary"          # already live (changed from "shadow" on 2026-04-06)
   canary_ratio: 0.25      # 25% of frontdoor requests get enforce
   canary_roles: [frontdoor]
-# No config change needed for Package D — canary is already active.
-# Decision after 3-day canary (by ~2026-04-09): keep canary, expand to RI-11, or revert.
+# Canary window extended to 2026-04-12 (n=16 high-risk insufficient for decision).
+# Decision after extended window: keep canary, expand to RI-11, or revert.
 ```
 
 **Feature flags**:
@@ -383,14 +383,14 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 ### Prerequisites
 
 - [ ] Package B results analyzed (risk thresholds finalized, difficulty signal validated)
-- [ ] AR-3 sentinel pool expanded beyond current 10 T0 questions (saturated at q=3.0)
-- [ ] `autopilot_baseline.yaml` updated with Package B metrics
+- [x] AR-3 sentinel pool expanded 10 → 39 questions (2026-04-09). Tier 0 (easy) retained + 29 harder (GPQA, olympiad, multi-hop, tool-use). `per_suite_quality` schema added to baseline.
+- [ ] `autopilot_baseline.yaml` updated with Package B metrics (per_suite_quality values pending)
 
 ### Success Criteria
 
 - [ ] **AR-3**: ≥50 trials completed without corruption. ≥1 useful change accepted (Pareto-improving).
 - [ ] **RI-7 re-run**: Canary data produces ≥500 enforce vs ≥1500 shadow decisions. Compare factuality F1, escalation rate, cost. Result is statistically significant (p < 0.05) or confirms NS with adequate power.
-- [ ] **RI-10**: 3 days of canary data. No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
+- [ ] **RI-10**: Extended canary window (ends 2026-04-12, was 2026-04-09). Need ≥50 high-risk samples (had n=16). No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
 - [ ] **CF Phase 3c**: Quality monitor fires on ≥3 consolidation events. No false positives (degradation detected when quality is stable).
 - [ ] **DS-5**: ≥3 model candidates tested via StructuralLab species.
 
