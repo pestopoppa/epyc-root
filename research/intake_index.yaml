@@ -8984,3 +8984,291 @@
     our reasoning-compression handoff needs. The RL approach for learning when to
     compress aligns with context-folding Phase 3 (FoldGRPO). 3x throughput claim is
     impressive if it holds at scale.
+
+- id: intake-295
+  url: https://github.com/dmtrKovalenko/fff.nvim
+  source_type: repo
+  title: 'FFF.nvim: Frecency-Based Fuzzy File Finder for AI Agents'
+  authors:
+  - Dmytro Kovalenko
+  categories:
+  - agent_architecture
+  key_claims:
+  - Frecency-based ranking combines recency and frequency for intelligent file prioritization
+  - Memory-augmented file discovery reduces token consumption and API roundtrips for AI agents
+  - Combo boost mechanism detects repeated query-file patterns and amplifies scores
+  - Rust backend with concurrent threading handles 100K+ file repos efficiently
+  - Supports plain text, regex, and fuzzy matching with mode cycling
+  techniques:
+  - Frecency ranking (recency + frequency scoring)
+  - Combo boost (repeated query-file pattern amplification)
+  - Lazy file list sync (on-demand indexing)
+  results:
+  - "Claims reduced token consumption vs built-in Claude Code file tools"
+  - "Tested on 100K+ file repositories"
+  implementation_urls:
+  - https://github.com/dmtrKovalenko/fff.nvim
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - colbert-reranker-web-research.md
+    - repl-turn-efficiency.md
+  notes: >
+    Frecency + combo-boost file discovery fills a real gap in EPYC's agent
+    navigation stack. Current file discovery is purely semantic (NextPLAID
+    code_search) or regex (grep/peek) with no temporal signal. Frecency would
+    augment list_dir() results, boost code_search() by recency, and bridge
+    the gap while ColGREP is blocked on upstream ONNX panic. Also applicable
+    at root-repo governance level for handoff/progress file prioritization.
+    Low implementation cost — could prototype as file_recency.py REPL module.
+
+- id: intake-296
+  url: https://huggingface.co/collections/z-lab/dflash
+  source_type: repo
+  title: 'DFlash HuggingFace Model Collection'
+  categories:
+  - speculative_decoding
+  novelty: duplicate
+  relevance: high
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  notes: "Duplicate — supplementary to intake-158 (DFlash paper, arXiv:2602.06036). Collection of 14 DFlash draft models for various targets (Qwen3, LLaMA-3.1, Kimi-K2.5, gpt-oss)."
+  cross_references:
+    intake:
+    - intake-158
+
+- id: intake-297
+  url: https://github.com/z-lab/dflash
+  source_type: repo
+  title: 'DFlash GitHub Repository'
+  categories:
+  - speculative_decoding
+  novelty: duplicate
+  relevance: high
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  notes: "Duplicate — implementation repo for intake-158 (DFlash paper). Already listed as implementation_url in intake-158."
+  cross_references:
+    intake:
+    - intake-158
+
+- id: intake-298
+  url: https://z-lab.ai/projects/dflash/
+  source_type: blog
+  title: 'DFlash Project Page — Block Diffusion for Flash Speculative Decoding'
+  categories:
+  - speculative_decoding
+  novelty: duplicate
+  relevance: high
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  notes: >
+    Duplicate — project page for intake-158. Contains additional benchmark detail:
+    6.17x on MATH-500, 5.91x on AIME24, 5.85x on AIME25 (Qwen3-8B). Clarifies
+    architecture: Feature Fusion + KV Injection + Parallel Drafting (block size 16).
+    Key insight: multi-layer DFlash generating 16 tokens has lower latency than
+    1-layer EAGLE-3 generating 8 tokens.
+  cross_references:
+    intake:
+    - intake-158
+
+- id: intake-299
+  url: https://kuri.trilok.ai/
+  source_type: repo
+  title: 'Kuri: Lightweight Browser Automation for AI Agents (Zig)'
+  authors:
+  - Trilok AI
+  categories:
+  - agent_architecture
+  key_claims:
+  - Single 464KB binary with zero dependencies, written in Zig
+  - 3ms cold start via arena-per-request memory management (no GC)
+  - Accessibility-tree-based element references reduce tokens ~66% vs full DOM
+  - 2107 tokens for page snapshot vs 4694 for competitors
+  - HTTP API with 40+ endpoints for navigation, screenshots, JS eval
+  - Built-in auth profiles and security audit capabilities
+  techniques:
+  - Arena-per-request memory management
+  - Accessibility tree element referencing (@eN notation)
+  - Token-optimized page snapshots
+  results:
+  - "464KB binary vs 6000KB+ alternatives"
+  - "3ms cold start"
+  - "2107 tokens for Vercel homepage snapshot (vs 4694 competitor)"
+  - "4110 total tokens for navigate-snapshot-click-evaluate cycle"
+  implementation_urls:
+  - https://kuri.trilok.ai/
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - hermes-outer-shell.md
+  notes: >
+    Interesting Zig-based browser automation with strong token efficiency claims.
+    Hermes currently has browser tool disabled (cloud-dependent via Browserbase).
+    Kuri's local-first, zero-dependency approach could replace it, but browser
+    automation is not a current EPYC priority. File for future reference if
+    hermes-outer-shell needs local browser capability.
+
+- id: intake-300
+  url: https://github.com/SawyerHood/dev-browser
+  source_type: repo
+  title: 'Dev-Browser: Sandboxed Browser Automation for AI Agents'
+  authors:
+  - Sawyer Hood
+  categories:
+  - agent_architecture
+  key_claims:
+  - Sandboxed JS execution via QuickJS WASM (no host access)
+  - Persistent pages across multiple scripts without reconnecting
+  - Full Playwright Page API for DOM interaction
+  - Auto-connects to running Chrome or launches headless Chromium
+  - Claims 40% faster than alternative approaches
+  techniques:
+  - QuickJS WASM sandboxing
+  - Persistent page sessions
+  - Playwright API wrapping
+  results:
+  - "40% faster than alternatives (unspecified baseline)"
+  implementation_urls:
+  - https://github.com/SawyerHood/dev-browser
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - hermes-outer-shell.md
+  notes: >
+    Playwright-based browser automation aimed at Claude Code integration. Overlaps
+    significantly with Kuri (intake-299) in purpose. Less novel — Playwright wrapping
+    is well-trodden. The QuickJS WASM sandboxing is a nice security property.
+    Not applicable to EPYC inference work.
+
+- id: intake-301
+  url: https://axi.md/
+  source_type: blog
+  title: 'AXI: Agent eXperience Interface — 10 Principles for Agent-Ergonomic CLI Design'
+  authors:
+  - Kun Cheng
+  categories:
+  - agent_architecture
+  key_claims:
+  - 10 principles for CLI design treating token budget as first-class constraint
+  - TOON format achieves ~40% token savings over JSON while remaining LLM-parseable
+  - Combined operations (navigate+snapshot, fill+submit) reduce round-trip calls
+  - Pre-computed aggregates eliminate follow-up summary calls
+  - Contextual help appends relevant next-step commands rather than full help text
+  - Content truncation with size hints and --full escape hatches
+  techniques:
+  - TOON (Token-Oriented Object Notation)
+  - Combined operations (multi-step in single command)
+  - Pre-computed aggregates
+  - Progressive disclosure (minimal default, --full for detail)
+  - Contextual suggestions (next-step commands appended to output)
+  results:
+  - "100% success rate across 490 browser automation runs"
+  - "$0.074/task (lowest cost among all conditions)"
+  - "21.5s average duration (fastest)"
+  - "4.5 tool invocations per task (most efficient)"
+  - "GitHub benchmark: 100% success at $0.050/task vs 86%/$0.054 raw CLI"
+  implementation_urls:
+  - https://github.com/kunchenguid/axi
+  - https://www.npmjs.com/package/chrome-devtools-axi
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-09'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - tool-output-compression.md
+    - hermes-outer-shell.md
+    - repl-turn-efficiency.md
+    intake:
+    - intake-302
+  notes: >
+    TOON core is already deployed in EPYC orchestrator (toon_encoder.py) with
+    specialized encoders for file listings (64.6% reduction), escalation context
+    (46.2%), procedures (~55%), memory results (~55%). Architect decision protocol
+    uses TOON notation (D|/I| markers). REPL integration enabled by default.
+    Benchmarked at 50.8% TTFT improvement, 52.5% token reduction (10x target).
+    AXI's design PRINCIPLES beyond TOON remain worth investigating: combined
+    operations (navigate+snapshot in single call), contextual suggestions
+    (append next-likely commands to output), progressive disclosure with --full
+    escape hatches. These could improve REPL turn efficiency.
+
+- id: intake-302
+  arxiv_id: '2603.29919'
+  url: https://arxiv.org/abs/2603.29919
+  source_type: paper
+  title: 'SkillReducer: Optimizing LLM Agent Skills for Token Efficiency'
+  authors:
+  - Yudong Gao
+  - Zongjie Li
+  - Yuanyuanyuan
+  - Zimo Ji
+  - Pingchuan Ma
+  - Shuai Wang
+  categories:
+  - agent_architecture
+  key_claims:
+  - 26.4% of LLM agent skills lack routing descriptions entirely
+  - Over 60% of skill body content provides no actionable guidance
+  - 48% compression in skill descriptions via adversarial delta debugging
+  - 39% compression in skill bodies via taxonomy-driven progressive disclosure
+  - Functional quality improves 2.8% despite content reduction (less-is-more effect)
+  - 0.965 mean retention across 5 models from 4 families
+  techniques:
+  - Adversarial delta debugging (routing description compression)
+  - Taxonomy-driven progressive disclosure (body restructuring)
+  - Faithfulness validation with self-correcting feedback loops
+  results:
+  - "48% description compression"
+  - "39% body compression"
+  - "+2.8% functional quality improvement"
+  - "0.965 mean retention across 5 models, 4 families"
+  - "55,315 skills analyzed"
+  implementation_urls: []
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-301
+  ingested_date: '2026-04-09'
+  contradicting_evidence: null
+  cross_references:
+    intake:
+    - intake-301
+    handoffs:
+    - tool-output-compression.md
+    - meta-harness-optimization.md
+  notes: >
+    Directly complements AXI (intake-301) — while AXI optimizes CLI output format,
+    SkillReducer optimizes the skill/tool definitions themselves. The adversarial
+    delta debugging approach for compressing routing descriptions could be applied
+    to our orchestrator's tool definitions. The taxonomy-driven progressive disclosure
+    mirrors AXI's minimal-default pattern. The less-is-more finding (quality improves
+    with compression) validates our tool-output-compression hypothesis. Could inform
+    Meta-Harness (intake-244) skill optimization.

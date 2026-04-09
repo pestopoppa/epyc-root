@@ -1,8 +1,8 @@
-# Tool Output Compression for Context Efficiency
+# Tool Token Optimization — Output Compression + Definition Reduction
 
-**Status**: Phase 2 implemented — native compression module + orchestrator integration (feature-flagged)
+**Status**: Phase 2 implemented (output compression); Phase 3 designed (definition compression)
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-04-05
+**Updated**: 2026-04-09
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)
@@ -167,8 +167,9 @@ If native compression proves valuable:
 |---------|-------------|
 | `context-folding-progressive.md` | Complementary layers: this handoff compresses tool inputs, context-folding compresses conversation accumulation |
 | `reasoning-compression.md` | Complementary layers: this compresses tool outputs, reasoning-compression compresses model reasoning |
-| `meta-harness-optimization.md` | RTK/native hooks could be deployed as harness optimizations in autopilot |
+| `meta-harness-optimization.md` | RTK/native hooks could be deployed as harness optimizations in autopilot; AP-16 tracks instruction_token_ratio for Phase 3 |
 | `orchestrator-conversation-management.md` | Output compression reduces what enters the conversation, easing conversation management |
+| `repl-turn-efficiency.md` | Complementary: this compresses tokens per tool call, REPL turn efficiency reduces number of tool calls |
 
 ---
 
@@ -185,3 +186,74 @@ If native compression proves valuable:
 - **[intake-273] "Context Rot"** (Chroma) — Performance degrades with input length, especially low-similarity content. Validates aggressive compression of tool outputs before context entry. Distractors (topically related but wrong content) amplify degradation — our compression should strip irrelevant tool output sections, not just truncate.
 - **[intake-274] "The Complexity Trap" (arXiv:2508.21433)** — Simple observation masking (stripping old tool outputs) matches LLM summarization. 50% cost reduction, solve rates maintained. **Direct validation**: our pattern-based compression (Phase 2) is the right approach — possibly better than LLM-based compression for tool outputs. The hybrid finding (masking + summarization = 7-11% further savings) confirms our two-layer architecture (compress tool outputs first, then LLM-summarize conversation). Answers Open Question 4: compress before `_spill_if_truncated()` is correct — upstream compression is strictly better.
 - **[intake-271] "Skill Issue: Harness Engineering"** (HumanLayer) — 14-22% token overhead from verbose agent instructions. Tool outputs that include explanatory framing (e.g., git status headers, pytest collection lines) are effectively "instructions" that consume attention budget without aiding task completion.
+
+## Research Intake Update — 2026-04-09
+
+### New Related Research
+- **[intake-301] "AXI: Agent eXperience Interface"** (axi.md)
+  - Relevance: TOON format achieves ~40% token savings over JSON — directly applicable as wire format for compressed tool outputs
+  - Key technique: Combined operations (navigate+snapshot in single call), pre-computed aggregates (inline totals), progressive disclosure (minimal default + `--full`)
+  - Reported results: 100% success, $0.074/task (lowest), 4.5 turns (most efficient) across 490 browser automation runs
+  - Delta from current approach: Our Phase 2 compresses output *content*; AXI optimizes output *format*. These are complementary — apply TOON encoding after pattern-based compression for multiplicative savings. The progressive disclosure principle (minimal default, explicit `--full`) mirrors our truncation + peek() architecture.
+
+- **[intake-302] "SkillReducer: Optimizing LLM Agent Skills for Token Efficiency"** (arXiv:2603.29919)
+  - Relevance: 48% compression of tool/skill descriptions via adversarial delta debugging — applicable to our orchestrator's tool definitions
+  - Key technique: Taxonomy-driven progressive disclosure separates core rules from supplementary content loaded conditionally
+  - Reported results: 48% description compression, 39% body compression, +2.8% quality improvement (less-is-more)
+  - Delta from current approach: We compress tool *outputs*; SkillReducer compresses tool *definitions*. Combined with AXI's output format optimization, this is a three-layer compression stack: definition → output format → output content.
+
+---
+
+## Phase 3 — Tool Definition Compression (SkillReducer)
+
+**Status**: design ready
+**Source**: intake-302 (SkillReducer, arXiv:2603.29919)
+
+### Objective
+
+Apply SkillReducer's compression principles to orchestrator tool definitions. We compress tool OUTPUTS (Phase 2) but not tool DEFINITIONS. SkillReducer reports 48% description compression, 39% body compression, +2.8% quality improvement (less-is-more effect).
+
+### Target Surface Area
+
+1. **`DEFAULT_ROOT_LM_TOOLS`** in `src/prompt_builders/constants.py` (~2382 words)
+   - Primary tool description block injected into every REPL prompt
+   - Contains 30+ tool descriptions with when-to-use / when-not-to-use patterns
+   - Apply adversarial delta debugging: remove description content, measure task success, keep minimal surviving description
+
+2. **Agent role overlays** (`orchestration/prompts/*.md`)
+   - frontdoor.md, architect_investigate.md, etc.
+   - Each adds role-specific instructions that could be compressed
+   - AP-16 already tracks `instruction_token_ratio` — use as measurement
+
+3. **`tool_registry.py`** tool descriptions
+   - Registered tool descriptions used by `list_tools()`
+   - Visible to the model at runtime
+
+### Implementation Approach
+
+**P3a — Audit current token cost**:
+- Count tokens in each tool definition across all prompt paths
+- Rank by frequency of use (from autopilot logs) * token cost
+- Identify low-value descriptions (tools rarely used but consuming tokens)
+
+**P3b — Manual compression pass**:
+- Remove redundant when-NOT-to-use patterns where obvious from context
+- Collapse duplicate tool entries (e.g., `web_research` appears multiple times in constants.py)
+- Apply progressive disclosure: minimal description + `--help` escape hatch
+- Measure `instruction_token_ratio` before/after via AP-16
+
+**P3c — A/B test**:
+- Run compressed vs original definitions on seeding harness
+- Gate: quality must not regress (SkillReducer's +2.8% finding suggests it won't)
+
+**P3d — Automated compression (future)**:
+- Build adversarial delta debugging script
+- Input: tool definition text + eval suite
+- Output: minimal description that maintains task success
+
+### Work Items
+
+- [ ] P3a: Token audit of tool definitions across all prompt paths
+- [ ] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS`
+- [ ] P3c: Measure `instruction_token_ratio` delta (AP-16)
+- [ ] P3d: A/B test compressed vs original definitions on seeding harness

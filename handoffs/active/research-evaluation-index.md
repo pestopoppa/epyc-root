@@ -20,7 +20,7 @@
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-14 done, 15 eval ready) | HIGH | 2026-04-09 |
-| [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | Phase 2 native implemented (feature-flagged) | MEDIUM | 2026-04-05 |
+| [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, Phase 3 designed (SkillReducer) | MEDIUM | 2026-04-09 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | [long-context-eval-datasets.md](long-context-eval-datasets.md) | Eval dataset collection | READY (5 datasets, adapters integrated) | MEDIUM | 2026-04-05 |
@@ -28,6 +28,7 @@
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
 | [knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md) | KB linter, credibility scoring, anti-bias, project-wiki skill | ALL PHASES COMPLETE | MEDIUM | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | stub (design ready) | MEDIUM | 2026-04-09 |
 
 ---
 
@@ -48,6 +49,8 @@
 - [x] Orchestrator integration — ✅ 2026-04-05. Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 - [ ] Enable flag in production and measure net savings on real autopilot sessions
 - [ ] A/B comparison: tool_output_compression on vs off (→ Package B)
+- [ ] P3a: Token audit of tool definitions across all prompt paths (SkillReducer, intake-302)
+- [ ] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` + A/B test
 
 ### P2 — Reasoning Compression (deferred)
 
@@ -85,6 +88,15 @@ See [memento-block-reasoning-compression.md](memento-block-reasoning-compression
 - [ ] Bullet-vs-narrative consolidation A/B test: run CF Phase 2a eval suite with two compaction summary formats (structured narrative vs flat bullet-point). Tests whether context rot shuffled finding (intake-273) has signal for reasoning tasks. Low cost, high signal. (→ Package C)
 - [ ] Documentation-stripped ablation: replicate intake-272 methodology on our repos. Strip all `.md`, run evals with vs without thin-map agent files. Isolates whether our agent files provide value beyond existing documentation. (→ Package B or standalone)
 - [ ] `task_relevance` as candidate 5th signal in `segment_helpfulness()`: prototype semantic similarity (all-MiniLM-L6-v2, CPU) between segment text and current task description. Depends on bullet-vs-narrative results before shipping. (Design only until Package C data)
+
+### P6 — REPL Turn Efficiency (from intake-295/301)
+
+See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega finding: 7/10 suites where REPL tools hurt accuracy. Complementary to WS-1/WS-3 prompt-level fixes.
+
+- [ ] S1a: Implement `file_recency.py` frecency module
+- [ ] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged)
+- [ ] S2a-b: Mine autopilot logs for multi-tool patterns + implement combined ops
+- [ ] S4: A/B benchmark turn count reduction on seeding harness
 
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)
 
@@ -124,6 +136,7 @@ P2.5 (KB governance improvements) ──independent (companion: root-archetype l
 P3 (long-context datasets)        ──independent──
 P4 (YaRN extension)               ──depends on P3 (datasets)──
 P5 (harness engineering experiments)  ──depends on P3 (datasets) + Package B/C results──
+P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopilot log data; S4 depends on seeding harness──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
 Multiscreen monitoring            ──depends on external adoption──
@@ -146,6 +159,8 @@ Multiscreen monitoring            ──depends on external adoption──
 7. **Knowledge base governance ↔ root-archetype**: The KB linter and skill template patterns from P2.5 are being upstreamed to root-archetype via a companion handoff (`/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`). Epyc-root deploys the linter first as an instance-specific validator, then the generalized version goes to root-archetype. The credibility scoring and anti-confirmation-bias changes are research-intake skill edits that may also be templated in root-archetype's skill scaffold.
 
 8. **Tool output compression ↔ Complexity Trap validation**: intake-274 ("The Complexity Trap") validates our two-layer architecture — pattern-based tool compression upstream, LLM conversation summarization downstream. The hybrid finding (7-11% further cost reduction) confirms this design is near-optimal. Package B tool compression A/B will be the first empirical confirmation on our stack. This also informs context-folding: observation masking (stripping old tool outputs) is equivalent to high recency weight in `segment_helpfulness()`.
+
+9. **REPL turn efficiency ↔ Omega problem**: Turn reduction (P6) and WS-1/WS-3 prompt fixes address the same root cause — tools hurt accuracy on 7/10 suites — from different angles. P6 reduces wasted tool calls structurally (frecency, combined ops); WS-1/WS-3 tighten tool-use policy in prompts. Both should be measured together in WS-2 Omega re-run. Risk: contextual suggestions (S3) may worsen the problem if they encourage more tool use.
 
 6. **Research intake deep-dive caveats (2026-04-06)**: intake-264 (SSD) downgraded to monitor-only — requires 8×B200 SFT, not actionable for inference-only stack. intake-266 (OPD Survey) downgraded to reference-only — training-only methods, agent distillation already solved by SkillBank. No new tasks generated from either. Caveats appended to reasoning-compression.md.
 
@@ -174,3 +189,6 @@ After completing any task:
 | Benchmark scripts | `epyc-inference-research/scripts/benchmark/` |
 | Research intake index | `epyc-root/research/intake_index.yaml` |
 | Cross-reference map | `epyc-root/.claude/skills/research-intake/references/cross-reference-map.md` |
+| File exploration (REPL) | `epyc-orchestrator/src/repl_environment/file_exploration.py` |
+| Tool definitions | `epyc-orchestrator/src/prompt_builders/constants.py` |
+| TOON encoder | `epyc-orchestrator/src/services/toon_encoder.py` |
