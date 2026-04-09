@@ -468,6 +468,124 @@ Review of the DS-6 design spec identified 6 gaps that must be resolved before im
 
 **Status**: BLOCKED on Phase E dependencies (Package B data, RI-10 canary, DS-5 autoresearch). No scaffolding work recommended — model roster may change entirely.
 
+## DS-6 Gap Resolutions (2026-04-09)
+
+Concrete design decisions for each gap identified in the DS-6 audit above. These resolve the spec so implementation can proceed cleanly once Phase E unblocks.
+
+### Gap 1 Resolution: Dynamic URL List Update API
+
+Add thread-safe instance management to `RoundRobinBackend` (`src/backends/round_robin.py`):
+
+```python
+def add_instance(self, url: str) -> None:
+    """Add a backend instance to the rotation. Thread-safe."""
+    with self._lock:
+        self._backends.append(url)
+        self._active_per_instance.append(0)
+        self._total_per_instance.append(0)
+
+def remove_instance(self, url: str) -> bool:
+    """Remove a backend instance. In-flight requests complete normally. Thread-safe."""
+    with self._lock:
+        idx = next((i for i, b in enumerate(self._backends) if self._get_base_url(b) == url), None)
+        if idx is None:
+            return False
+        self._backends.pop(idx)
+        self._active_per_instance.pop(idx)
+        self._total_per_instance.pop(idx)
+        # Counter wraps naturally on next _next() call via modulo
+        return True
+```
+
+Add parallel methods on `ConcurrencyAwareBackend` (`src/backends/concurrency_aware.py`):
+- `register_quarter(role: str, url: str)` — adds to the role's quarter backend list
+- `unregister_quarter(url: str)` — removes from whichever role's list contains it
+
+**Key invariant**: `ServerURLsConfig` remains the boot-time-only config. The `QuarterScheduler` mutates backends at runtime via these methods. Removal only stops new routing — in-flight requests to a removed backend complete normally (the HTTP connection is already established).
+
+### Gap 2 Resolution: Liveness Check
+
+Each quarter server exposes `GET /health` (standard llama-server endpoint, already available).
+
+**Heartbeat protocol**:
+- `QuarterScheduler` runs a background `asyncio.Task` polling each quarter every 10 seconds via `httpx.AsyncClient.get(f"{base_url}/health", timeout=3.0)`
+- State machine per quarter: `HEALTHY` (≥2 consecutive successes) → `SUSPECT` (1 failure) → `DEAD` (3 consecutive failures)
+- On `DEAD`: call `remove_instance(url)` on the relevant backend, mark quarter as `AVAILABLE` for relaunch
+- Leverage existing `BackendCircuit` pattern from `src/api/health_tracker.py` — wrap each quarter in a `BackendCircuit(failure_threshold=3, recovery_timeout=30.0)`
+
+**Relaunch strategy**: On DEAD detection, scheduler invokes `server_lifecycle.restart_server(quarter_id)` (existing module). Quarter state transitions to `LAUNCHING` until next health check succeeds, then back to `HEALTHY`.
+
+### Gap 3 Resolution: Port Allocation — Quarter-Fixed
+
+Ports are **quarter-fixed, not role-fixed**:
+
+| Quarter | Port | Fixed to NUMA Cores |
+|---------|------|-------------------|
+| Q0A | 8080 | 0-23, 96-119 |
+| Q0B | 8180 | 24-47, 120-143 |
+| Q1A | 8280 | 48-71, 144-167 |
+| Q1B | 8380 | 72-95, 168-191 |
+
+When the scheduler reassigns a quarter from role A to role B, the **port stays the same** — only the model loaded on that port changes. Full-node instances (96t) use a separate port range: 8070-8079.
+
+**Rationale**: Quarter-fixed ports are simpler for monitoring (Grafana dashboards key on port), log correlation (port → quarter → NUMA node is stable), and firewall rules (no port churn). The alternative (role-fixed ports) would require port remapping on every reassignment with no operational benefit.
+
+### Gap 4 Resolution: Burst Mode Drain Protocol
+
+3-phase graceful drain when architect needs a full NUMA node (2+ quarters):
+
+**Phase 1 — DRAINING**: Set quarter state to `DRAINING` in `QuarterScheduler.quarter_assignments`. The `RoundRobinBackend._next()` method skips instances in DRAINING state (add state check to the existing round-robin loop). No new requests are routed to these quarters.
+
+**Phase 2 — WAIT**: Poll `_active_per_instance[idx] == 0` for each draining quarter. Timeout: 30 seconds (matches existing `_SLOT_SAVE_TIMEOUT`). During the wait, the burst caller receives an estimated wait time so it can display progress.
+
+**Phase 3 — REASSIGN**: Once all draining quarters reach zero active requests:
+1. KV-save any active conversations via `POST /slots/{id}/save` (slot API from DS-3)
+2. Stop the quarter llama-server instances
+3. Launch the architect instance with full NUMA node allocation
+4. Return the architect instance URL to the caller
+
+**Timeout behavior**: If in-flight requests don't complete within 30s, force-drain — set quarter state to `UNAVAILABLE`, let the in-flight request complete (it will get a connection error on its next LLM call → `_classify_error()` returns `BACKEND_UNAVAILABLE` → normal retry routes to another instance).
+
+### Gap 5 Resolution: Idle-Time Tracking
+
+Add `idle_since: float | None` field to `QuarterState`:
+
+```python
+@dataclass
+class QuarterState:
+    quarter_id: str           # Q0A, Q0B, Q1A, Q1B
+    role: str | None          # Currently assigned role, or None if unassigned
+    port: int                 # Fixed port (see Gap 3)
+    status: QuarterStatus     # HEALTHY, SUSPECT, DEAD, DRAINING, LAUNCHING, AVAILABLE
+    last_request: float       # time.monotonic() of last request start
+    idle_since: float | None  # time.monotonic() when active count hit 0, None while busy
+```
+
+**Tracking mechanism**:
+- In `RoundRobinBackend`: extend with `_last_request_per_instance: list[float]`, updated on each `_next()` call
+- In `ConcurrencyAwareBackend._release()`: when `_active_per_instance[idx]` transitions from >0 to 0, set `idle_since = time.monotonic()` on the corresponding `QuarterState`
+- When a new request arrives: clear `idle_since = None`
+
+**Eviction check**: Scheduler runs a periodic check every 15 seconds. For each quarter where `idle_since is not None and (monotonic() - idle_since) > idle_timeout_s`, the quarter becomes eligible for reassignment. Eviction preference: lowest-priority role first.
+
+**Configurable threshold**: `QuarterScheduler.__init__(idle_timeout_s: float = 60.0)`. Can be tuned based on autoresearch findings about session inter-arrival times.
+
+### Gap 6 Resolution: Degradation Strategy
+
+Mid-eviction safety net (should not occur with the drain protocol in Gap 4, but as defense-in-depth):
+
+1. In-flight request to an evicted quarter gets a connection error from httpx (server stopped)
+2. `_classify_error()` in `src/graph/error_classifier.py` returns `ErrorCategory.BACKEND_UNAVAILABLE`
+3. Existing retry logic: `_should_retry()` returns `True` for transient backend errors (up to `max_retries` per turn)
+4. On retry, `RoundRobinBackend._next()` routes to the next available instance (full-speed 96t, or another quarter for the same role)
+5. If ALL instances for a role are unavailable: `_should_retry()` returns `False` after max retries → `_should_escalate()` triggers tier escalation to the next level
+
+**Net effect**: Transparent retry with ~1-2 second latency bump. No request is lost. The degradation follows the existing error taxonomy — no new error handling code is needed, only the scheduler's drain protocol (Gap 4) prevents the scenario from occurring under normal operation.
+
+**Extreme case**: If both full-node and all quarter instances are unavailable (hardware failure), the request escalates to the next tier in the escalation ladder. If the top-tier architect is also unavailable, the task terminates with a clear error message. This matches the existing behavior for total backend failure.
+
+**Updated status**: Design gaps resolved. Implementation remains BLOCKED on Phase E dependencies.
+
 ## DS-7 Design Audit (2026-04-09)
 
 Review of the DS-7 concept identified 4 gaps:
@@ -481,6 +599,210 @@ Review of the DS-7 concept identified 4 gaps:
 4. **No resource validation.** Templates could over-subscribe memory. Need constraint checking that total mlock'd instances fit in 1130 GB RAM budget.
 
 **Status**: BLOCKED on Phase E. Templates encode autoresearch findings — can't define template contents until autoresearch identifies optimal configurations.
+
+## DS-7 Gap Resolutions (2026-04-09)
+
+Concrete design decisions for each gap identified in the DS-7 audit above.
+
+### Gap 1 Resolution: Template Schema
+
+Formal YAML schema for stack templates. Templates live in `stack_templates/<name>.yaml` relative to the orchestrator root.
+
+```yaml
+# stack_templates/coding-heavy.yaml
+meta:
+  name: coding-heavy
+  description: "Optimized for multi-file coding sessions with strong coder escalation"
+  version: 1
+
+roles:
+  frontdoor:
+    model: Qwen3.5-35B-A3B
+    quant: Q4_K_M
+    tier: HOT                    # HOT | WARM | COLD
+    instances:
+      full:                      # Full NUMA node instance (96t, single-session optimal)
+        threads: 96
+        numa_node: 0
+        port: 8070
+        mlock: true
+      quarters:                  # Quarter instances (48t, concurrent mode)
+        - quarter: Q0A
+          threads: 48
+          port: 8080
+          mlock: true
+        - quarter: Q0B
+          threads: 48
+          port: 8180
+          mlock: true
+        - quarter: Q1A
+          threads: 48
+          port: 8280
+          mlock: true
+        - quarter: Q1B
+          threads: 48
+          port: 8380
+          mlock: true
+
+  coder_escalation:
+    model: Qwen2.5-Coder-32B
+    quant: Q4_K_M
+    tier: HOT
+    instances:
+      full: { threads: 96, numa_node: 1, port: 8071, mlock: true }
+      quarters:
+        - { quarter: Q0A, threads: 48, port: 8081, mlock: true }
+        - { quarter: Q0B, threads: 48, port: 8181, mlock: true }
+        - { quarter: Q1A, threads: 48, port: 8281, mlock: true }
+        - { quarter: Q1B, threads: 48, port: 8381, mlock: true }
+
+  architect_general:
+    model: Qwen3.5-122B-A10B
+    quant: Q4_K_M
+    tier: HOT
+    instances:
+      full: { threads: 96, numa_node: [0, 1], port: 8072, mlock: true }
+      replicas:
+        - { threads: 96, numa_node: [0, 1], port: 8172, mlock: true }
+
+  architect_coding:
+    model: REAP-246B
+    quant: Q4_K_M
+    tier: HOT
+    instances:
+      full: { threads: 96, numa_node: [0, 1], port: 8073, mlock: true }
+      replicas:
+        - { threads: 96, numa_node: [0, 1], port: 8173, mlock: true }
+
+  worker_explore:
+    model: Qwen3-Coder-30B-A3B
+    quant: Q4_K_M
+    tier: HOT
+    instances:
+      full: { threads: 96, numa_node: 0, port: 8074, mlock: true }
+      quarters:
+        - { quarter: Q0A, threads: 48, port: 8084, mlock: true }
+
+acceleration:
+  draft_max: 8
+  p_split: 0.1
+  speculation_enabled: true
+
+resource_budget:
+  max_mlock_gb: 800            # Hard cap on mlock'd model memory
+  max_total_gb: 1000           # Hard cap on all loaded models (mlock + non-mlock)
+  reserve_kv_gb: 130           # Minimum reserved for KV caches + OS overhead
+```
+
+**Dataclass**: `StackTemplate` in `src/config/stack_templates.py` — mirrors the YAML structure using `@dataclass` with validation. Each `RoleConfig` contains `model`, `quant`, `tier`, and `InstanceConfig` entries. Model sizes are resolved against `model_registry.yaml` at load time.
+
+**Key design points**:
+- `quarters` are optional per role — roles that don't need concurrent mode omit them
+- `replicas` vs `quarters`: replicas are full-node instances on different NUMA nodes; quarters are same-node partitions
+- `tier` controls pre-warm behavior: HOT = mlock + always loaded, WARM = loaded but not mlock'd, COLD = not loaded until needed
+- Port assignments follow the quarter-fixed policy from DS-6 Gap 3
+
+### Gap 2 Resolution: Selection Mechanism
+
+Template selection at startup, resolved once at boot:
+
+| Priority | Mechanism | Example |
+|----------|-----------|---------|
+| 1 (highest) | CLI flag | `--stack-profile coding-heavy` |
+| 2 | Env var | `ORCHESTRATOR_STACK_PROFILE=coding-heavy` |
+| 3 (fallback) | Default | `stack_templates/default.yaml` |
+
+**Resolution flow** in `orchestrator_stack.py`:
+1. Parse `--stack-profile <name>` from CLI args (new argparse argument)
+2. If not provided, check `os.environ.get("ORCHESTRATOR_STACK_PROFILE")`
+3. If still not set, use `"default"`
+4. Load `stack_templates/{name}.yaml`
+5. Validate (see Gap 4)
+6. Generate `ServerURLsConfig` and `NUMA_CONFIG` dicts from the template
+7. Proceed with normal startup using generated config
+
+**`default.yaml`**: Matches the current hardcoded configuration exactly — no behavioral change unless a different profile is explicitly selected. This ensures backward compatibility.
+
+**Auto-detection** (future, not in initial implementation): Detect available RAM, GPU, and NUMA topology at startup and select the best-fitting profile. Requires autoresearch data to define "best-fitting." Deferred until autoresearch (DS-5) produces enough profiles to make selection meaningful.
+
+### Gap 3 Resolution: Migration Path Between Templates
+
+Two migration strategies depending on DS-6 scheduler availability:
+
+**Without DS-6 scheduler (current state)** — full restart:
+1. `POST /admin/save-all-kv` — save KV state for all active conversations via slot API
+2. Stop all llama-server instances (graceful shutdown, wait for in-flight)
+3. Load new template YAML, validate
+4. Start new instances per template config
+5. Restore KV states where source and target model match (KV is not transferable across different models)
+6. Estimated downtime: **2-3 minutes** (dominated by model load time for large models)
+
+**With DS-6 scheduler (future)** — diff-based migration:
+1. Compute diff between current and target template: `changed_roles`, `added_roles`, `removed_roles`, `unchanged_roles`
+2. For `unchanged_roles`: no action — instances stay running
+3. For roles where only `tier` changed (e.g., HOT→WARM): toggle mlock via `madvise(MADV_DONTNEED)` — no restart, <1s
+4. For roles where `model` or `quant` changed: use DS-6 drain protocol (Gap 4) to gracefully drain, then swap
+5. For `added_roles`: launch new instances from pre-warm pool if available, else cold start
+6. For `removed_roles`: drain and stop
+7. Target: **<30s** for a 2-role model change (dominated by KV save/restore)
+
+**Constraint**: Both paths are single-user safe. Concurrent-user migration requires a request queue to hold incoming requests during the transition window.
+
+### Gap 4 Resolution: Resource Validation
+
+Validation runs at template load time, before any instances are launched.
+
+**Validation checks**:
+
+```python
+def validate_template(template: StackTemplate, registry: ModelRegistry) -> list[str]:
+    """Returns list of validation errors (empty = valid)."""
+    errors = []
+
+    # 1. Model existence: every model/quant combo in template exists in registry
+    for role in template.roles.values():
+        if not registry.has_model(role.model, role.quant):
+            errors.append(f"Model {role.model} @ {role.quant} not in registry")
+
+    # 2. Memory budget: mlock'd models fit within budget
+    total_mlock_gb = sum(
+        registry.model_size_gb(role.model, role.quant) * role.instance_count
+        for role in template.roles.values()
+        if role.tier == "HOT"
+    )
+    if total_mlock_gb > template.resource_budget.max_mlock_gb:
+        errors.append(f"mlock total {total_mlock_gb:.0f} GB > budget {template.resource_budget.max_mlock_gb} GB")
+
+    # 3. Total memory: all loaded models (HOT + WARM) fit
+    total_loaded_gb = sum(
+        registry.model_size_gb(role.model, role.quant) * role.instance_count
+        for role in template.roles.values()
+        if role.tier in ("HOT", "WARM")
+    )
+    if total_loaded_gb > template.resource_budget.max_total_gb:
+        errors.append(f"Total loaded {total_loaded_gb:.0f} GB > budget {template.resource_budget.max_total_gb} GB")
+
+    # 4. KV reserve: enough headroom for KV caches + OS
+    remaining_gb = 1130 - total_loaded_gb  # 1130 GB = system RAM
+    if remaining_gb < template.resource_budget.reserve_kv_gb:
+        errors.append(f"KV reserve {remaining_gb:.0f} GB < minimum {template.resource_budget.reserve_kv_gb} GB")
+
+    # 5. Port conflicts: no two instances share a port
+    ports = [inst.port for role in template.roles.values() for inst in role.all_instances]
+    if len(ports) != len(set(ports)):
+        errors.append(f"Port conflict: {[p for p in ports if ports.count(p) > 1]}")
+
+    # 6. NUMA conflicts: no two full-node instances on same NUMA node (unless replicas)
+    # (check numa_node overlap across different roles)
+
+    return errors
+```
+
+**Fail-fast behavior**: If `validate_template()` returns any errors, startup aborts immediately with a clear error listing all violated constraints. No partial launch — either the entire template is valid or nothing starts.
+
+**`--validate-only` flag**: New CLI argument that loads and validates the template, prints the resource summary (per-role memory, total mlock, total loaded, KV headroom), and exits without launching any servers. Useful for testing template changes before deployment.
+
+**Updated status**: Design gaps resolved. Implementation remains BLOCKED on Phase E dependencies.
 
 ## Key Insight
 

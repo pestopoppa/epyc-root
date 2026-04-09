@@ -41,10 +41,20 @@
   - 5 new tests (32 total, all passing).
   - Files: `tool_policy.py`, `tool_registry.py`, `environment.py`, `context.py`, `repl_executor.py`, `stream_adapter.py`, `stages.py`, `features.py`.
 
-- **DS-6/DS-7 Design Audit**:
-  - DS-6 (deterministic quarter scheduler): 6 design gaps identified — no dynamic URL update API, no liveness check, port allocation ambiguity, burst mode race condition, missing idle-time tracking, no degradation strategy. BLOCKED on Phase E.
-  - DS-7 (stack templates): 4 design gaps identified — no template schema, no selection mechanism, no migration path, no resource validation. BLOCKED on Phase E.
-  - Audit findings appended to `dynamic-stack-concurrency.md`, cross-referenced in `routing-and-optimization-index.md`.
+- **DS-6/DS-7 Design Audit + Gap Resolutions**:
+  - DS-6 (deterministic quarter scheduler): 6 design gaps identified and resolved — dynamic URL API (add/remove_instance), liveness heartbeat (10s, 3-state machine), quarter-fixed ports, 3-phase burst drain protocol, idle tracking (idle_since + 15s eviction), degradation via existing retry paths.
+  - DS-7 (stack templates): 4 design gaps identified and resolved — formal YAML template schema (StackTemplate dataclass), `--stack-profile` CLI selection, migration paths (restart without DS-6, diff-based with DS-6), resource validation with `--validate-only` flag.
+  - Implementation remains BLOCKED on Phase E. Design docs ready for immediate implementation when unblocked.
+  - Files: `dynamic-stack-concurrency.md`, `routing-and-optimization-index.md`.
+
+- **LangGraph Phase 3 — Per-Node Migration Infrastructure**:
+  - 7 per-node feature flags: `langgraph_ingest` through `langgraph_coder_escalation`. Env vars: `ORCHESTRATOR_LANGGRAPH_<NODE>`. All default False.
+  - `_run_via_langgraph()` dispatch helper in `nodes.py` — converts pydantic_graph ctx → LG state, calls LG node function, maps `next_node` back to PG return type (End, self-class, or escalation target).
+  - Per-node flag check added to all 7 node `run()` methods. `_NEXT_NODE_TO_PG` mapping for return type conversion.
+  - 48 new tests: 14 flag dispatch, 26 dual-run parity (success/self-loop/escalation/max-turns × 7 nodes), 5 helper tests, 1 cross-backend escalation, 2 mapping completeness.
+  - Zero regression: 44/44 Phase 1+2 tests, 146/149 existing graph tests (3 pre-existing).
+  - Flag-flip production validation tracked in Package D (bulk-inference-campaign.md).
+  - Files: `features.py`, `nodes.py`, `test_langgraph_phase3.py` (new).
 
 ## 2026-04-08
 

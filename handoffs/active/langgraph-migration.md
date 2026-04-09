@@ -249,9 +249,9 @@ No code changes. Record in this handoff for future API work.
 - **`APPEND_FIELDS`** constant with parity check against `OrchestratorState` `operator.add` annotations.
 - **44 tests total** (24 Phase 1 + 20 Phase 2): reducer delta correctness, full 50-field round-trip, 5 dual-run validation scenarios (success, self-loop, escalation, max-turns, budget), `_SKIP_TO_LG` coverage.
 
-### Phase 3: Node-by-Node Migration
+### Phase 3: Node-by-Node Migration — INFRASTRUCTURE COMPLETE (2026-04-09)
 
-**Entry criteria**: Phase 2 state definition validated; dual-state comparison tests passing.
+**Entry criteria**: Phase 2 state definition validated; dual-state comparison tests passing. ✓
 
 **Migration order** (simplest → most complex, based on transition count and escalation complexity):
 
@@ -271,6 +271,24 @@ No code changes. Record in this handoff for future API work.
 5. Once validated, flip flag to LangGraph backend as default
 
 **Critical**: `_execute_turn()` in `helpers.py` (2100 lines) is the shared core logic. It does NOT need to change — LangGraph node functions call it the same way pydantic_graph nodes do. The migration is at the graph framework level, not the node logic level.
+
+**Phase 3 Infrastructure — ✅ COMPLETE 2026-04-09**:
+
+Implementation of the per-node dispatch infrastructure. All 7 nodes can now be individually migrated to LangGraph via feature flags.
+
+- **7 per-node feature flags** added to `src/features.py`: `langgraph_ingest`, `langgraph_architect`, `langgraph_architect_coding`, `langgraph_worker`, `langgraph_frontdoor`, `langgraph_coder`, `langgraph_coder_escalation`. Env vars: `ORCHESTRATOR_LANGGRAPH_<NODE_NAME>`. All default to `False`.
+- **`_run_via_langgraph()` helper** added to `src/graph/nodes.py` — converts pydantic_graph `ctx` to LangGraph state dict, calls the LG node function, maps `next_node` back to pydantic_graph return type (End, self-class, or escalation target).
+- **Per-node dispatch** wired into each node's `run()` method — `if _get_features().langgraph_<node>: return await _run_via_langgraph(ctx, "<node>")`. Pydantic_graph remains the outer loop; individual node logic is swappable.
+- **`_NEXT_NODE_TO_PG` mapping** — `next_node` strings → pydantic_graph node classes, populated after class definitions.
+- **48 Phase 3 tests** in `tests/unit/test_langgraph_phase3.py`:
+  - 14 feature flag dispatch tests (flag on/off per node)
+  - 26 dual-run parity tests (success, self-loop, escalation, max-turns per node)
+  - 5 `_run_via_langgraph` helper tests (End return, self-loop, escalation, unknown node, state round-trip)
+  - 1 cross-backend escalation test (Worker LG → CoderEscalation PG)
+  - 2 mapping completeness tests
+- **Zero regression**: 44 Phase 1+2 tests pass, 146/149 existing graph tests pass (3 pre-existing failures unrelated to migration)
+
+**Next step**: Flip per-node flags to `True` one at a time (IngestNode first), validate with production shadow traffic, then proceed down the migration order.
 
 **Validation gate**: All 9 graph test files pass with LangGraph backend. Dual-run comparison shows identical state evolution for a representative task set.
 **Rollback**: Per-node feature flags revert to pydantic_graph backend. No node logic was changed.
