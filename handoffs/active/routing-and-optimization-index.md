@@ -147,6 +147,14 @@ Lower priority refinements.
 
 - [x] **AP-17: Structural pruning in StructuralLab** — ✅ 2026-04-07. `structural_prune` action type in `dispatch_action()`. `prune_block()` method on StructuralLab removes heading-delimited sections. Acceptance: safety gate passes AND instruction_token_ratio decreases. Revert on rejection. Added to controller prompt template.
 
+### P8b — Web Search Over-Reliance Fix (from Package B Omega audit)
+
+Package B Phase 4 found 7/10 suites where REPL mode hurts accuracy vs direct. Root cause: the model web-searches for answers instead of reasoning. `rules.md` actively encouraged this with "Use Python computation, web_search, or llm_call to VERIFY your answer."
+
+- [x] **WS-1: Fix `rules.md` tool selection guidance** — ✅ 2026-04-09. Added TOOL SELECTION PRIORITY hierarchy: compute first → reason from knowledge → web search ONLY for factual gaps. Removed web_search from the "verify your answer" instruction. Added explicit "do NOT web-search for math, code, science" constraint.
+- [ ] **WS-2: Re-run Omega measurement post-fix** — Compare direct vs REPL accuracy with updated prompts. Target: REPL ≥ direct on ≥5/10 suites (currently 2/10).
+- [ ] **WS-3: Consider cascading tool policy** — `tool_policy.py` supports per-task-type `deny` layers. Could deny `group:web` for math/coder suites at the policy level (belt-and-suspenders with prompt fix).
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
