@@ -34,11 +34,11 @@
 
 ### P0 — Reasoning Compression (actionable now)
 
-- [ ] Run TrimR evaluation on math/gpqa suites (requires model server) — `eval_trimr.py` (→ Package B, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
+- [x] Run TrimR evaluation on math/gpqa suites — ✅ 2026-04-09 (Package B). DeepSeek-R1-7B 4×48t. GPQA: thinking helps ~6pp. Math: thinking irrelevant (151 tok avg). TrimR valuable on hard tasks only.
 - [x] Collect shadow telemetry from `difficulty_signal.py` in production — ✅ 2026-04-06. 635 requests, Package A run.
-- [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. Thresholds recalibrated (0.3/0.6 → 0.15/0.35). Re-validate at new thresholds needed.
-- [ ] If validated: implement enforce mode (route easy→worker, hard→architect) (depends on Package B results)
-- [ ] Compute Omega metric per-suite to identify where reasoning is wasted (Action 6) (→ Package B)
+- [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-09 (Package B Phase 4). At 0.15/0.35: NO predictive spread — escalation rate flat across easy/medium/hard (62/61/62%). Signal does not differentiate routing needs at current thresholds.
+- [ ] If validated: implement enforce mode — **BLOCKED**: difficulty signal has no predictive power at current thresholds. Need semantic features or different approach before enforce.
+- [x] Compute Omega metric per-suite — ✅ 2026-04-09 (Package B Phase 4). **7/10 suites: tools HURT accuracy** (direct > REPL). Worst: agentic -54pp, coder -44pp, general -26pp. Only hotpotqa +12pp and gpqa +6pp benefit.
 
 ### P1 — Tool Output Compression
 

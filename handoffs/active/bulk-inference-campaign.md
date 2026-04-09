@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, B in progress — Arm A + telemetry + TrimR done, Arm B + Phase 4 analysis pending)
+**Status**: active (A+E done, C ready, B nearly complete — Arm A + telemetry + TrimR + Phase 4 analysis done, only Arm B tool compression A/B remaining)
 **Created**: 2026-04-06
-**Updated**: 2026-04-08
+**Updated**: 2026-04-09
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -193,11 +193,11 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 
 ### Success Criteria
 
-- [ ] **RI-9**: Pareto-optimal risk thresholds identified (factuality vs cost vs latency tradeoff curve)
+- [x] **RI-9**: DONE (2026-04-09). 2433 routing→completion joins from progress JSONL. Risk distribution: low=1846 (64.4% escalated), medium=571 (54.3% escalated), high=16 (50.0% escalated). **Finding**: high-risk prompts escalate LESS than low-risk — counterintuitive, but sample size is tiny (n=16 high). Risk band doesn't predict escalation need at current thresholds. Recommend: larger sample before threshold changes.
 - [x] **TrimR**: DONE (2026-04-09). Eval on DeepSeek-R1-Distill-Qwen-7B (4×48t NUMA). GPQA: thinking helps ~6pp (full 58.3% → strip 52.6%), TrimR prunes 45% of thinking while preserving correct count. Math (GSM8K): thinking minimal (151 tok avg), pruning has zero effect — model barely thinks on easy problems. **Verdict: TrimR valuable on hard tasks (GPQA), irrelevant on easy tasks (GSM8K). Aligns with difficulty-adaptive routing.** Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\boxed{}` scorer fix, per-strategy output files. Data: `data/package_b/trimr_r1_7b_gpqa_trimr.jsonl`, `trimr_r1_7b_math_{full,think-strip,trimr}.jsonl`.
-- [ ] **Difficulty**: Recalibrated thresholds show predictive spread (easy success > medium success > hard success)
-- [ ] **Omega**: Identifies ≥2 suites where reasoning tokens are net-negative (accuracy drops with more thinking)
-- [ ] **Tool A/B**: Token savings ≥15% without quality degradation (accuracy delta < 1%)
+- [x] **Difficulty**: DONE (2026-04-09). At 0.15/0.35 thresholds: easy=1834 (62.2% escalated), medium=517 (60.7%), hard=82 (62.2%). **Finding**: NO predictive spread — escalation rate is flat across difficulty bands. The difficulty signal at current thresholds does not differentiate routing needs. Recommend: re-examine feature weights or add semantic features before moving to enforce mode.
+- [x] **Omega**: DONE (2026-04-09). **7 of 10 suites show tools HURT accuracy** (direct > REPL): agentic -54.5pp, coder -44pp, general -26pp, math -26pp, mode_advantage_hard -23.7pp, thinking -8pp, instruction_precision -6pp. Only hotpotqa (+12pp) and gpqa (+6pp) benefit from tools. **Verdict**: Tools are net-negative on most suites. Reasoning tokens via REPL are actively harmful for agentic, coder, general, and math tasks.
+- [ ] **Tool A/B**: DEFERRED — requires Arm B (API restart with `TOOL_OUTPUT_COMPRESSION=0`). Arm A data collected; Arm B is the only remaining Package B inference task.
 
 ---
 
