@@ -2,6 +2,14 @@
 
 ## 2026-04-09
 
+- **Answer-Tag Stop Sequences (Reasoning Compression Action 16)**:
+  - Replaced `####` answer markers with `<answer></answer>` XML tags in all benchmark prompts (GSM8K, GAIA, CRUXEval, SimpleQA, HotpotQA, sentinel questions).
+  - Added `</answer>` to `direct_stage.py` stop sequences — generation halts immediately after answer, eliminating post-answer rumination loops.
+  - Scorers (`debug_scorer.py`) default to `<answer>` extraction with `####` legacy fallback for backward compatibility.
+  - Added `stop_sequences` field to `ChatRequest` for request-level stop sequence overrides.
+  - Plumbed `stop_sequences` through `seeding_orchestrator.py` call chain.
+  - Files: `dataset_adapters.py`, `direct_stage.py`, `debug_scorer.py`, `requests.py`, `seeding_orchestrator.py`, `sentinel_questions.yaml`.
+
 - **WS-3: Cascading Tool Policy for Web Denial (P8b)**:
   - Belt-and-suspenders enforcement for web search over-reliance fix. `NO_WEB_TASK_TYPES` constant denies `group:web` for math/coder/thinking/instruction_precision task types.
   - `tool_context` param threaded through `REPLEnvironment` → `_invoke_tool`/`_list_tools` → `ToolRegistry.invoke()`/`list_tools()`.

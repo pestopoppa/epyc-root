@@ -59,7 +59,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 - [x] Phase 2: Config tuning — ✅ 2026-04-05. Config parameter mapping documented in handoff. Effective vs no-op params identified.
 - [x] Design routing API — ✅ 2026-04-05. 3 new fields on `OpenAIChatRequest`: `x_max_escalation`, `x_force_model`, `x_disable_repl`. Wired in `openai_compat.py`. Slash command → API mapping documented.
 - [ ] Auth flow for multi-user deployment — deferred (single-user only for now)
-- [ ] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands
+- [x] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands — ✅ 2026-04-08. Three SKILL.md files in `scripts/hermes/skills/` (use/, escalation/, nocode/). Maps slash commands to `x_*` API override parameters.
 - [x] Streaming + override param validation — ✅ 2026-04-06 (Package E). SSE streaming works, `x_force_model`/`x_max_escalation`/`x_disable_repl` validated. Note: override params must be strings, not ints.
 
 ### P3 — Conversation Management (LOW value)
