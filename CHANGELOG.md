@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-04-09
+
+- **WS-3: Cascading Tool Policy for Web Denial (P8b)**:
+  - Belt-and-suspenders enforcement for web search over-reliance fix. `NO_WEB_TASK_TYPES` constant denies `group:web` for math/coder/thinking/instruction_precision task types.
+  - `tool_context` param threaded through `REPLEnvironment` → `_invoke_tool`/`_list_tools` → `ToolRegistry.invoke()`/`list_tools()`.
+  - All 4 REPL creation sites (`repl_executor.py` ×2, `stream_adapter.py`, `stages.py`) derive `no_web` from `routing.task_ir["task_type"]`.
+  - Feature flag `cascading_tool_policy` enabled by default (already prod-validated).
+  - 5 new tests (32 total, all passing).
+  - Files: `tool_policy.py`, `tool_registry.py`, `environment.py`, `context.py`, `repl_executor.py`, `stream_adapter.py`, `stages.py`, `features.py`.
+
+- **DS-6/DS-7 Design Audit**:
+  - DS-6 (deterministic quarter scheduler): 6 design gaps identified — no dynamic URL update API, no liveness check, port allocation ambiguity, burst mode race condition, missing idle-time tracking, no degradation strategy. BLOCKED on Phase E.
+  - DS-7 (stack templates): 4 design gaps identified — no template schema, no selection mechanism, no migration path, no resource validation. BLOCKED on Phase E.
+  - Audit findings appended to `dynamic-stack-concurrency.md`, cross-referenced in `routing-and-optimization-index.md`.
+
 ## 2026-04-08
 
 - **Research Intake 284-288: KV Cache Selection/Eviction Cluster**:
