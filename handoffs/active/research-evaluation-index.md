@@ -19,7 +19,7 @@
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 added) | HIGH | 2026-04-07 |
+| [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-14 done, 15 eval ready) | HIGH | 2026-04-09 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool output token reduction | Phase 2 native implemented (feature-flagged) | MEDIUM | 2026-04-05 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
@@ -100,10 +100,10 @@ See [memento-block-reasoning-compression.md](memento-block-reasoning-compression
 
 ### P0.5 — Brevity Prompt Upgrade (from intake-276 deep-dive)
 
-- [ ] **Action 12**: Replace "be concise" with explicit word limits in worker prompts (50w math, "letter + 1 sentence" MC, 10w yes/no) — zero-cost, highest-impact
-- [ ] **Action 13**: Model-tier-differentiated conciseness (aggressive numeric limits for architect >=32B, light for worker 30B-A3B)
-- [ ] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework
-- [ ] **Action 15**: Evaluate TALE dynamic budget estimation as difficulty signal alternative
+- [x] **Action 12**: Replace "be concise" with explicit word limits in worker prompts — ✅ 2026-04-09. Format-specific templates in worker_general.md + worker_math.md.
+- [x] **Action 13**: Model-tier-differentiated conciseness — ✅ 2026-04-09. Audit + thinking_reasoning suffix update.
+- [x] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework — ✅ 2026-04-07.
+- [ ] **Action 15**: Evaluate TALE dynamic budget estimation — eval script ready (eval_tale_budget.py), awaiting model servers.
 - [ ] Upstream linter + templates to root-archetype (companion handoff)
 
 ### Monitoring (no action unless triggered)

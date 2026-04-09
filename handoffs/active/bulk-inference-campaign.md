@@ -203,10 +203,10 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 
 ## Package C: Context Folding Eval Batch
 
-**Duration**: ~half day (~160 inference calls)
+**Duration**: ~half day (~200 inference calls)
 **Stack required**: Individual model servers (NOT full orchestrator)
 **Depends on**: None (independent of B)
-**Status**: READY — all eval scripts implemented (2026-04-07). Phase 2c already has live results. Phases 2a/2b need model servers only.
+**Status**: READY — all eval scripts implemented (2026-04-07/09). Phase 2c already has live results. Phases 2a/2b/TALE need model servers only.
 
 ### Tasks Resolved
 
@@ -215,6 +215,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 | CF Phase 2a | [context-folding-progressive.md](context-folding-progressive.md) | Summarizer quality across 3 model tiers (1.5B / 7B / 32B) |
 | CF Phase 2b | [context-folding-progressive.md](context-folding-progressive.md) | Free-zone compression threshold sweep (5 levels × 20 logs) |
 | CF Phase 2c | [context-folding-progressive.md](context-folding-progressive.md) | Helpfulness calibration — LLM Δ_k ground truth vs heuristic scores |
+| TALE budget eval | [research-evaluation-index](research-evaluation-index.md) P0.5, [reasoning-compression.md](reasoning-compression.md) Action 15 | TALE dynamic budget estimation: baseline vs static word limits (Action 12) vs self-estimated budget. Determines if TALE can replace regex difficulty_signal.py. |
 
 ### Models Required
 
@@ -264,11 +265,26 @@ python3 scripts/benchmark/eval_helpfulness_calibration.py \
   --output /mnt/raid0/llm/epyc-orchestrator/data/package_c/helpfulness_calibration.csv
 ```
 
+**TALE budget eval** — READY (script created 2026-04-09):
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+
+# Compares: baseline (no constraint) vs static word limits (Action 12) vs TALE self-estimated budget
+# Uses any single model server. Best run on worker_math (port 8080) for math suites,
+# worker_general for general suites.
+python3 scripts/benchmark/eval_tale_budget.py \
+  --suites math general \
+  --n-questions 20 \
+  --model-port 8080 \
+  --output /mnt/raid0/llm/epyc-orchestrator/data/package_c/tale_budget.jsonl
+```
+
 ### Prerequisites
 
 - [x] **BLOCKER 2a**: `eval_summarizer.py` — ✅ 2026-04-07. Created with 3-tier model support, dry-run mode, CSV output.
 - [x] **BLOCKER 2b**: `eval_compaction_sweep.py` — ✅ 2026-04-07. `evaluate_compaction()` implemented with model/judge port args.
 - [x] **BLOCKER 2c**: `eval_helpfulness_calibration.py` — ✅ 2026-04-07. `run_calibration()` implemented (pure heuristic, no model needed). Tested on 250 real traces: Spearman ρ=0.63-0.65, best config is overlap-heavy (0.1/0.5/0.3/0.1).
+- [x] **BLOCKER TALE**: `eval_tale_budget.py` — ✅ 2026-04-09. Three-condition comparison (baseline/static/TALE), OAA/PTI output, dry-run mode.
 - [x] Session trace files in `/mnt/raid0/llm/tmp/session_*.md` — **252 available** (need 20)
 - [ ] Model servers started individually via `orchestrator_stack.py start --include-warm <role>`
 - [x] Shared infrastructure: `eval_helpers.py` (trace parser, model API, judge helper, identifier extraction)
@@ -282,12 +298,14 @@ python3 scripts/benchmark/eval_helpfulness_calibration.py \
 | `data/package_c/summarizer_quality.csv` | Per-model-tier scores (faithfulness, compression, retention) |
 | `data/package_c/compaction_sweep.csv` | Quality vs compression ratio at 5 levels |
 | `data/package_c/helpfulness_calibration.csv` | Heuristic vs LLM-based Δ_k correlation |
+| `data/package_c/tale_budget.jsonl` | TALE budget eval: accuracy + OAA/PTI across 3 conditions |
 
 ### Success Criteria
 
 - [ ] **CF Phase 2a**: Clear quality ranking across tiers — 32B > 7B > 1.5B on faithfulness. Identify minimum-viable tier.
 - [ ] **CF Phase 2b**: Free-zone boundary identified. Expected: L1-L2 (20-40%) near-lossless, L3 (60%) is the knee.
 - [x] **CF Phase 2c**: Heuristic helpfulness scores correlate with ground truth — ✅ 2026-04-07. Spearman ρ=0.65 (threshold was >0.5). Best config: overlap-heavy (0.1/0.5/0.3/0.1). LLM-based Δ_k comparison deferred (heuristic ground truth sufficient).
+- [ ] **TALE budget**: TALE self-estimated budget outperforms static word limits on OAA metric. If yes → prototype integration with difficulty_signal.py. If no → static limits (Action 12) are sufficient, TALE deferred.
 
 **Post-Package-C**: Phase 2c scoring formula may be updated with ByteRover compound retention scoring (intake-267). Current 4-signal heuristic evaluated during Package C. If ρ > 0.5, ByteRover 6-signal weights (adding importance + maturity_tier) calibrated using Package C Δ_k ground truth. Does NOT block Package C execution or change its success criteria.
 
@@ -429,6 +447,75 @@ curl -N http://localhost:8000/v1/chat/completions \
 
 ---
 
+## Package F: llama.cpp v3 Smoke Tests
+
+**Duration**: ~30 min (4 model loads + feature checks)
+**Stack required**: No production stack — uses experimental binary at `/mnt/raid0/llm/llama.cpp-experimental/build/bin/`
+**Depends on**: v3 cherry-pick rebuild (DONE 2026-04-09)
+**Related**: [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md)
+
+### Tasks Resolved
+
+| Task ID | Source | Description |
+|---------|--------|-------------|
+| v3-smoke | [llama-cpp-v3-upstream-rebuild](llama-cpp-v3-upstream-rebuild.md) | All 4 production models load + generate at expected t/s |
+| v3-features | [llama-cpp-v3-upstream-rebuild](llama-cpp-v3-upstream-rebuild.md) | Feature-specific tests: moe-n-expert, lookup, paged attention, slot erase, server health |
+| v3-hadamard | [kv-cache-quantization](kv-cache-quantization.md) | Upstream Hadamard auto-rotation confirmed (`-ctk q4_0 -ctv f16` without `--kv-hadamard`) |
+| v3-ppl | [kv-cache-quantization](kv-cache-quantization.md) | PPL regression test: v3 `-ctk q4_0 -ctv f16` matches v2 measurements (+-0.02) |
+| v3-numa | [inference-acceleration-index](inference-acceleration-index.md) | NUMA throughput within 5% of v2 baseline |
+
+### Commands
+
+All commands use the experimental binary (not production):
+```bash
+cd /mnt/raid0/llm/llama.cpp-experimental
+
+# Model load + generate (each model)
+./build/bin/llama-cli -m <model_path> -n 64 -p "Hello" --no-cnv -t 48
+
+# Feature: moe-n-expert
+./build/bin/llama-cli -m <reap_path> -n 32 -p "Hello" --no-cnv --moe-n-expert 6 -t 96
+
+# Feature: paged attention (check RSS)
+./build/bin/llama-server -m <model> -t 48 -c 8192 --port 9999 --paged-attention
+
+# Feature: slot erase
+curl -X DELETE http://localhost:9999/slots/0
+
+# PPL regression
+./build/bin/llama-perplexity -m <model> -f <wiki_test> -ctk q4_0 -ctv f16 -fa
+```
+
+See full test matrix in [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) §Smoke Tests and §Feature-Specific Tests.
+
+### Results
+
+- [ ] 4 production models load + generate
+- [ ] moe-n-expert works on REAP-246B
+- [ ] Paged attention lowers RSS vs non-paged
+- [ ] Slot erase returns HTTP 200
+- [ ] Server health returns HTTP 200
+- [ ] NUMA throughput within 5% of v2
+- [ ] Upstream Hadamard auto-rotation confirmed
+- [ ] PPL matches v2 (+-0.02)
+
+### Post-Smoke-Test: Production Binary Swap
+
+Once all smoke tests pass, swap the production binary:
+```bash
+cd /mnt/raid0/llm/llama.cpp
+git checkout production-consolidated-v3
+cmake -B build -DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON
+cmake --build build -j96
+```
+
+Then update orchestrator config:
+- Remove `--kv-hadamard` from `orchestrator_stack.py:950`
+- Update branch references in `model_registry.yaml`
+- Update `verify_llama_cpp.sh` EXPECTED_BRANCH to `production-consolidated-v3`
+
+---
+
 ## Cross-Package Dependency Graph
 
 ```
@@ -443,22 +530,25 @@ curl -N http://localhost:8000/v1/chat/completions \
   ├── PACKAGE C ──────────── CF Eval Batch (~½ day, individual models) — READY
   │                            Scripts done, Phase 2c complete (ρ=0.65). 2a/2b need model servers.
   │
-  └── ✅ PACKAGE E ──────────── DONE 2026-04-06 (Hermes PASS, vision partial)
-                               2 bugs filed: OpenAI multipart content + VL analyzer flag
+  ├── ✅ PACKAGE E ──────────── DONE 2026-04-06 (Hermes PASS, vision fixed 2026-04-08)
+  │
+  └── PACKAGE F ──────────── v3 Smoke Tests (~30min, experimental binary only)
+                               Cherry-picks DONE 2026-04-09. Unblocks production binary swap.
 ```
 
 ## Execution Order
 
 | Order | Package | Duration | Why this order |
 |-------|---------|----------|----------------|
-| 1 | ~~**E**~~ | ~~1 hour~~ | ✅ DONE 2026-04-06. Hermes streaming PASS, vision partial (2 bugs filed). |
-| 2 | **B** | ~1 day | **NEXT** — all scripts ready. Needs full stack exclusive. Results feed D. |
-| 3 | **D** | Multi-day | Depends on B. Longest run. |
-| 4 | **C** | ~½ day | READY — scripts implemented 2026-04-07. Phase 2c done (heuristic). 2a/2b need individual model servers. |
+| 1 | ~~**E**~~ | ~~1 hour~~ | ✅ DONE 2026-04-06. Hermes streaming PASS, vision fixed 2026-04-08. |
+| 2 | **F** | ~30 min | **Can run anytime** — uses experimental binary, no production stack conflict. Unblocks v3 swap. |
+| 3 | **B** | ~1 day | All scripts ready. Needs full stack exclusive. Results feed D. |
+| 4 | **D** | Multi-day | Depends on B. Longest run. |
+| 5 | **C** | ~½ day | READY — scripts implemented 2026-04-07. Phase 2c done (heuristic). 2a/2b need individual model servers. |
 
-**Parallelization note**: E can run during any other package (uses separate ports 8086/8087). C uses individual model servers on a single NUMA quarter — can run during B/D downtime.
+**Parallelization note**: F can run anytime (experimental binary, loads models one-at-a-time). C uses individual model servers on a single NUMA quarter — can run during B/D downtime.
 
-**Recommended approach**: Run B → D (full stack). Run C during B/D downtime or after (individual models, ~half day). Phase 2c already complete (heuristic results in hand).
+**Recommended approach**: Run F first (quick, unblocks v3 swap). Then B → D (full stack). Run C during B/D downtime or after.
 
 ---
 
@@ -467,9 +557,10 @@ curl -N http://localhost:8000/v1/chat/completions \
 | Package | Data Streams |
 |---------|-------------|
 | B | Progress JSONL (difficulty + risk shadow), seeding results JSON (3-way scores), TrimR JSONL (reasoning traces), SLO report, anomaly report, tool compression delta |
-| C | Summarizer quality CSV, compaction sweep CSV, helpfulness calibration CSV, SFT pairs JSONL (if `compaction_training_data` flag on) |
+| C | Summarizer quality CSV, compaction sweep CSV, helpfulness calibration CSV, TALE budget JSONL, SFT pairs JSONL (if `compaction_training_data` flag on) |
 | D | Autopilot journal (TSV + JSONL), Pareto archive, canary telemetry (enforce vs shadow quality delta), quality monitor events, StructuralLab results |
 | E | Vision API response logs, streaming validation results |
+| F | Model load t/s, feature pass/fail, PPL measurements, NUMA throughput |
 
 ---
 
