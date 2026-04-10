@@ -302,10 +302,10 @@ python3 scripts/benchmark/eval_tale_budget.py \
 
 ### Success Criteria
 
-- [ ] **CF Phase 2a**: Clear quality ranking across tiers — 32B > 7B > 1.5B on faithfulness. Identify minimum-viable tier.
-- [ ] **CF Phase 2b**: Free-zone boundary identified. Expected: L1-L2 (20-40%) near-lossless, L3 (60%) is the knee.
+- [x] **CF Phase 2a**: DONE (2026-04-10). 1.5B: faith=2.55, retain=1.45; **30B-A3B: faith=3.0, retain=3.0** (perfect); 32B: errors (v3 spec decode bug, now fixed). **30B-A3B is the minimum viable summarizer.** 1.5B adequate faithfulness but poor retention.
+- [ ] **CF Phase 2b**: L1-L4 DONE (2026-04-10). Faithfulness stable (~2.9) across all levels. **L3 (60%) is the sweet spot**: 82% actual compression, 2.84 retention. L4 retention drops to 2.21. L1 underperforms target (1.7% vs 20%). L5 running.
 - [x] **CF Phase 2c**: Heuristic helpfulness scores correlate with ground truth — ✅ 2026-04-07. Spearman ρ=0.65 (threshold was >0.5). Best config: overlap-heavy (0.1/0.5/0.3/0.1). LLM-based Δ_k comparison deferred (heuristic ground truth sufficient).
-- [ ] **TALE budget**: TALE self-estimated budget outperforms static word limits on OAA metric. If yes → prototype integration with difficulty_signal.py. If no → static limits (Action 12) are sufficient, TALE deferred.
+- [ ] **TALE budget**: Running (2026-04-10). First attempt timed out on frontdoor (mlock contention). Restarted on port 8082.
 
 **Post-Package-C**: Phase 2c scoring formula may be updated with ByteRover compound retention scoring (intake-267). Current 4-signal heuristic evaluated during Package C. If ρ > 0.5, ByteRover 6-signal weights (adding importance + maturity_tier) calibrated using Package C Δ_k ground truth. Does NOT block Package C execution or change its success criteria.
 

@@ -47,6 +47,34 @@ Within `epyc-root`:
 - Governance validation: `scripts/validate/`
 - Architecture and design rationale: `docs/`
 
+## Incremental Persistence (Mandatory for Eval/Benchmark Scripts)
+
+Any script that runs inference (benchmarks, evals, seeding) **MUST** persist results incrementally:
+
+- Append each result to a JSONL/CSV checkpoint file immediately after scoring — not in a batch at the end.
+- The final "summary" output is a convenience aggregation of the checkpoint, not the primary data store.
+- A killed or crashed run must leave usable partial results on disk.
+- Add per-item progress logging (`log.info("[%d/%d] ...")`) so progress is visible in logs.
+
+**Anti-pattern** (never do this):
+```python
+results = []
+for item in items:
+    results.append(evaluate(item))  # lost if killed
+with open(output) as f:
+    json.dump(results, f)  # only written at the very end
+```
+
+**Required pattern**:
+```python
+with open(checkpoint, "a") as ckpt:
+    for i, item in enumerate(items):
+        result = evaluate(item)
+        ckpt.write(json.dumps(result) + "\n")
+        ckpt.flush()
+        log.info("[%d/%d] %s", i+1, len(items), item.id)
+```
+
 ## Verification Minimum
 
 Before finalizing:

@@ -1,6 +1,6 @@
 # Context-Folding: Progressive Session Compaction Upgrade
 
-**Status**: Phase 0 complete (2026-03-29), Phase 1 complete (2026-04-04), Phase 1+/2c/3a/3b code complete (2026-04-05), Phase 2a/2b/3c pending (need inference)
+**Status**: Phase 0 complete (2026-03-29), Phase 1 complete (2026-04-04), Phase 1+/2c/3a/3b code complete (2026-04-05), **Phase 2a DONE** (30B-A3B = minimum viable summarizer, 3.0/3.0), **Phase 2b L1-L4 DONE** (L3 sweet spot: 82% compression, 2.84/3 retention), L5 + Phase 3c pending
 **Created**: 2026-03-17
 **Categories**: context_management, session_compaction, rl_training_data
 **Priority**: HIGH
