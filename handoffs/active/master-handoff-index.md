@@ -25,7 +25,7 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | # | Priority | Item | Index / Handoff |
 |---|----------|------|----------------|
-| 0 | ~~HIGH~~ | ~~llama.cpp v3 upstream rebuild~~ ✅ 2026-04-09 (24 commits cherry-picked, build passes, unit tests pass) | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) |
+| 0 | ~~HIGH~~ | ~~llama.cpp v3~~ ✅ binary swapped 2026-04-10 (coder +101%, REAP +50%). Deferred: PPL, paged attn RSS, NUMA tests | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) |
 | 1 | HIGH | AR-3 relaunch (expand T0 sentinels, safety-hardened) | [routing-and-optimization-index](routing-and-optimization-index.md) P5 |
 | 2 | ~~HIGH~~ | ~~Context folding Phase 1~~ ✅ 2026-04-04 | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 1 |
 | 2a | ~~MED~~ | ~~CF Phase 1+/2c/3a/3b~~ ✅ 2026-04-05 (code complete, 4 feature flags, 32 tests). Phase 2c ByteRover enhancement designed (intake-267). | [routing-and-optimization-index](routing-and-optimization-index.md) CF |
@@ -47,7 +47,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + archived | KV quantization deployed, KV selection eval phase, **v3 upstream rebuild DONE** (smoke tests pending), monitoring |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + archived | KV quantization deployed, KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), monitoring, GPU acceleration path (stub — future) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 9 | tool-compression P2 done + P3a-b done (55% compressed), REPL turn efficiency S1-S2 done, eval datasets READY, reasoning active + Actions 12-16 (brevity), KB governance DONE + upstream, SEAL prep ready |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
@@ -67,6 +67,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active | HIGH | 2026-04-06 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE | MEDIUM | 2026-04-08 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (S1 feasibility) | HIGH | 2026-04-09 |
+| [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 
 ---
 
@@ -84,6 +85,7 @@ Changes in one domain often affect others. Key coupling points:
 | Pipeline (new models) | Routing (NUMA allocation) | Each pipeline model competes for RAM/quarters with production stack |
 | Bulk inference campaign (B-E) | All 5 domains | 14 tasks → 4 optimized runs; produces data unblocking routing, research, pipeline work |
 | Research (KB governance) | Root-archetype (KB linter) | KB linter + skill templates upstreamed to root-archetype; epyc-root deploys instance-specific version |
+| GPU hardware acquisition | Inference acceleration, Routing (NUMA allocation) | gpu-acceleration-path.md: CPU+GPU hybrid MoE changes expert routing, NUMA quarter allocation, and v3 build flags |
 
 ---
 

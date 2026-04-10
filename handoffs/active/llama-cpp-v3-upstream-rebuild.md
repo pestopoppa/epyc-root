@@ -1,12 +1,12 @@
 # llama.cpp Upstream Rebuild — production-consolidated-v3
 
-**Status**: CHERRY-PICKS COMPLETE — Smoke tests pending (requires inference window)
+**Status**: PRODUCTION — v3 binary swapped and stack running (2026-04-10). Deferred tests (PPL, paged attention RSS, NUMA) still pending.
 **Created**: 2026-04-08
-**Priority**: HIGH (blocks all future llama.cpp feature work)
+**Priority**: LOW (maintenance — deferred tests only)
 **Workstream**: WS2
-**Branch**: `production-consolidated-v3` (to be created from `origin/master` in `llama.cpp-experimental`)
-**Blocks**: Any new cherry-picks, feature branches, or upstream syncs
-**Blocked by**: Nothing — ready to execute
+**Branch**: `production-consolidated-v3` (live on `/mnt/raid0/llm/llama.cpp`)
+**Blocks**: Nothing — swap complete
+**Blocked by**: Nothing
 **Prior art**: [`handoffs/completed/llama-cpp-upstream-rebase.md`](../completed/llama-cpp-upstream-rebase.md) (v1→v2 rebase, 2026-03-03)
 
 ## Goal
@@ -385,7 +385,7 @@ If v3 fails validation:
 - [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`) — DEFERRED
 - [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements — DEFERRED
 - [x] Orchestrator config updated — ✅ 2026-04-10. `--kv-hadamard` removed from `orchestrator_stack.py:950` and `server_lifecycle.py:200`. `--lookup` kept (exists in v3 server). Slot erase endpoint unchanged (POST, not DELETE — smoke test was wrong). `verify_llama_cpp.sh` branch updated. Test updated (18/18 pass).
-- [ ] Production binary swap (checkout v3 branch in production llama.cpp, rebuild, restart stack)
+- [x] Production binary swap — ✅ 2026-04-10. v2 stashed, v3 checked out in `/mnt/raid0/llm/llama.cpp`, built with `-DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON`. 29 services healthy. Version 8754 (7057025df).
 - [ ] Branch pushed to `fork` remote
 - [ ] This handoff moved to `completed/`
 

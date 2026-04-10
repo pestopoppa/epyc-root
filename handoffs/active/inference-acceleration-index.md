@@ -18,10 +18,11 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **CHERRY-PICKS DONE** — Smoke tests pending | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Upstream Hadamard #21038, iSWA, server improvements | Run smoke tests (requires inference), then swap production binary |
+| [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
 | [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Research evaluation | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
+| [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **STUB** — activates on GPU acquisition | rocWMMA, hipBLASLt grouped GEMM, Stream-K, CPU+GPU hybrid MoE | All MoE production models | MI300X: 4011 tok/s Llama-70B (213% over H100) | Acquire GPU hardware; then test `-ot "exps=CPU"` hybrid on 30B-A3B |
 
 ### Archived (completed/)
 
@@ -99,6 +100,26 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 ### Memory Management
 - **Multi-model page cache optimization** — [`multi-model-page-cache.md`](multi-model-page-cache.md). ~650GB mmap'd models may cause page cache contention. 5 experiments: baseline residency, mlock for hot models, page-in verification, NUMA hard binding, cooldown tuning.
 
+### Architectural Insights — External Validation (2026-04-10, from GPU research intake-303–311)
+
+Cross-platform performance analysis from AMD GPU benchmarking confirms and extends our CPU findings:
+
+**Decode phase budget (measured on GPU, architecture-independent):**
+| Component | % of per-token time | Bound by | EPYC implication |
+|-----------|-------------------|----------|------------------|
+| Weight GEMMs | 85-92% (short ctx) | Memory bandwidth | Confirms NUMA 4-way is correct — decode is BW-limited, not compute-limited |
+| Attention | 7-12% (short ctx) | Memory bandwidth | Flash attention gains negligible at short context |
+| Attention | 25-35% (long ctx) | Compute | At 16K+ ctx, flash attention optimization matters — relevant to `ingest_long_context` |
+| Attention | >50% (very long, S >> d_model) | Compute | At very long sequences, attention dominates — KV cache compression (kv-cache-quantization) has throughput impact, not just memory |
+
+**External validation of EPYC strategies:**
+- **Multi-instance parallelism**: AMD's own MI300X benchmarking recommends "8× TP1 instances for small models" — identical principle to our NUMA 4-way (4×48t instances). Independent confirmation from production GPU deployments.
+- **NUMA balancing disabled**: AMD MI300X inference guide independently requires `disable-numa-balancing.sh` on host. Our `taskset` pinning + `--numa distribute` is the CPU equivalent.
+- **Batch size transition**: <64 tokens = memory-bound, >64 = compute-bound. Our n_batch/n_ubatch tuning operates in this regime. For decode (batch=1), we are firmly memory-bound — no amount of compute optimization helps.
+
+**New avenue — per-shape GEMM optimization (not yet explored on CPU):**
+TensileLite (intake-308) shows 1.6-2.6x gains from generating GEMM kernels tuned to specific matrix shapes (M=3 for single-token decode). The CPU analogy: llama.cpp's ggml CPU kernels use generic GEMM implementations. Per-model-shape tuning at the ggml level (via AMX/AVX-512 intrinsics) could yield similar gains. This is unexplored territory for CPU inference. See `gpu-acceleration-path.md` intake-308 notes.
+
 ### Deferred
 - **DFlash on f16 targets** — Could work with full-precision hidden states, but not practical on CPU.
 - **DFlash tree composition** — Blocked by DFlash viability on quantized models.
@@ -166,6 +187,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | CLOSED — not viable (0.56x) |
 | Nemotron Mamba2 eval | `completed/nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no action |
 | Page cache optimization | `completed/multi-model-page-cache.md` | RESOLVED — 361 GB footprint, mlock deployed |
+| **GPU acceleration (future)** | `gpu-acceleration-path.md` | STUB — rocWMMA FA, hipBLASLt grouped GEMM, CPU+GPU hybrid MoE (intake-303–311) |
 
 ## Production Model Stack — NUMA-Optimized (Updated 2026-03-29)
 
@@ -280,3 +302,66 @@ Every test the agent should run, across all handoffs. Ordered by priority.
   - **REAP-50% exists**: 0xSero/GLM-5-REAP-50pct-FP8 (381B, 128 experts). No GGUF, no benchmarks. Q4 est. ~230GB — borderline but blocked by missing DSA.
   - **GGUF sizes** (unsloth): Q4_K_M=456GB, Q3_K_M=360GB, Q2_K=276GB, UD-IQ2_XXS=241GB. All exceed our working memory budget for full model.
   - **Verdict: NOT ACTIONABLE for local deployment.** Three independent blockers: (1) size, (2) missing DSA in llama.cpp, (3) unknown REAP quality. Monitor for llama.cpp DSA indexer PR.
+
+## Research Intake Update — 2026-04-10
+
+### New Related Research
+- **[intake-303] "rocWMMA: C++ Header Library for AMD Matrix Multiply-Accumulate Operations"** (github.com/ROCm/rocWMMA)
+  - AMD's header-only library for mixed-precision MMA on CDNA/RDNA GPUs. API-compatible with CUDA WMMA. Supports FP16/BF16/INT8/INT4, 16x16x16 tiles.
+  - In llama.cpp: enables flash attention acceleration via `-DGGML_HIP_ROCWMMA_FATTN=ON`. Up to 2x prompt processing speedup. MI300X 8x achieves 4011 tok/s on Llama-70B (213% over H100).
+  - **Critical: RDNA3 performance cliff** — decode regresses 58% at 65K ctx. Root cause: decode path incorrectly forces WMMA where VEC/TILE ops are faster. Community fix exists (lhl/llama.cpp rocm-wmma-tune branch) with +96% prefill / +136% decode recovery. Fix NOT in mainline.
+  - **Key finding aligned with EPYC research**: WMMA should ONLY be used for prefill, NOT decode — mirrors our finding that decode is memory-bandwidth-bound, not compute-bound.
+  - **NOT DIRECTLY APPLICABLE**: EPYC stack is CPU-only (192-thread NUMA). v3 rebuild has no HIP build flags. Would only apply if GPU acceleration path is pursued.
+  - **If evaluating GPU path**: hipBLASLt grouped GEMM (`USE_HIPBLASLT_GROUPED_GEMM=1/2/3`) is the higher-impact llama.cpp optimization for MoE models. GEMM tuning yields 29% on 8B model.
+  - **GPU acceleration deep-dive** (9 entries, intake-303 through intake-311):
+
+### GPU Path Architecture — If/When a GPU is Added
+
+**Build configuration for HIP backend:**
+```
+cmake -DGGML_HIP=ON -DAMDGPU_TARGETS=gfx942 -DGGML_HIP_ROCWMMA_FATTN=ON
+```
+Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPHS` (HIP graph capture), `GGML_HIP_NO_VMM` (disable virtual memory).
+
+**Three-tier GPU optimization stack (priority order):**
+1. **hipBLASLt Grouped GEMM** [intake-305, intake-308] — Highest impact for MoE. Bundles different-sized matmuls into single kernel launch. 29% improvement on 8B, ~10x reduction in hipMemcpyAsync calls. `USE_HIPBLASLT_GROUPED_GEMM=1/2/3`. CDNA3 only. TensileLite tuning generates custom GEMM kernels per model shape: 1.6-2.6x for skinny decode matrices (M=3), 3.2x average for large matrices.
+2. **rocWMMA Flash Attention** [intake-303, intake-304, intake-306] — Enables `-DGGML_HIP_ROCWMMA_FATTN=ON`. ONLY use for prefill, not decode. Adaptive KQ stride (D≤128→stride 128), `__launch_bounds__` for occupancy, intelligent kernel selection. WMMA supports 16x16x16 tiles, FP16/BF16/INT8/INT4. wave32 preferred over wave64 (dual-issue). Known issues: gfx1201 + ROCm 6.4 broken, ROCm 7.2 template specialization conflicts.
+3. **Stream-K GEMM scheduling** [intake-309] — Balances workload across CUs when tile count uneven. Eliminates need for per-shape GEMM tuning. Integrated in rocWMMA since ROCm 6.4, expanded to MI350 in ROCm 7.0. Stream-K++ adds Bloom filter selection (95.8% configuration elimination, up to 43% speedup).
+
+**CPU+GPU Hybrid MoE strategy** [intake-310] — **HIGHEST RELEVANCE for EPYC:**
+- Expert offloading: `-ot "exps=CPU"` keeps attention + dense FFN on GPU, routes MoE experts to CPU
+- Our stack has massive CPU headroom (192 threads, 1.1TB RAM, 769GB free) — ideal for expert compute
+- GPU handles attention + shared expert (small, compute-bound) while CPU handles routed experts (large, sparsely activated)
+- Combines with existing NUMA 4-way: GPU accelerates attention path, NUMA instances handle expert compute
+- Batch sizing: `-b 4096 -ub 4096` (matches our existing tuning)
+- Flash attention: `-fa on` with rocWMMA for prefill acceleration
+- NUMA: `numactl --interleave=all --numa distribute` (we already do this)
+- For our Qwen3.5 MoE models: attention layers small relative to expert FFNs = ideal for GPU offload pattern
+
+**AITER kernel library** [intake-307] — AMD's optimized kernel repo. Key numbers on MI300X: MLA decode 17x, MHA prefill 14x, fused MoE 3x, block-scale GEMM 2x. DeepSeek V3: 6485→13704 tok/s. NOT integrated with llama.cpp (vLLM/SGLang only). But informs achievable performance ceiling. The 17x MLA decode boost is notable — suggests decode CAN be compute-accelerated with MLA architecture, contradicting the "decode is always memory-bound" assumption for standard MHA.
+
+**ROCm version roadmap:**
+- ROCm 6.4: Stream-K in rocWMMA, interleaved GEMM, TopK 3x, SDPA optimization
+- ROCm 7.0: FP4/FP6/FP8 in hipBLASLt, AITER launch, Stream-K expanded to MI350, Fragment Scheduler API in rocWMMA
+- ROCm 7.2: Latest release. Known rocWMMA template specialization bug (fixed in llama.cpp).
+
+**Key performance reference points (MI300X 8x):**
+| Model | Config | tok/s | vs H100 |
+|-------|--------|-------|---------|
+| DeepSeek-V3-671B Q4_K_M | pp4096, no FA | 1,650 | +76% |
+| Llama-3.1-70B Q4_K_M | pp4096, FA on | 4,011 | +213% |
+| Llama-2-7B Q4_0 | pp512, FA+rocWMMA | 11,946 | — |
+| DeepSeek V3 (AITER/vLLM) | end-to-end | 13,704 | — |
+
+**GPU hardware considerations for EPYC:**
+- CDNA (MI300X/MI325X): 192GB HBM3, MFMA INT8 acceleration, hipBLASLt grouped GEMM. Datacenter grade.
+- RDNA3 (RX 7900 XTX): Consumer, 24GB GDDR6, WMMA FP16 only, 512 FLOPS/clock/CU. Performance cliffs at long context.
+- RDNA4 (RX 9070 XT): 16GB, improved WMMA. ROCm 6.4 compilation issues (fixed).
+- MI350X/MI355X: ROCm 7.0+ native FP4, 256 CUs, 256MB Infinity Cache. Next-gen.
+
+**Critical architectural insight — decode phase breakdown:**
+- Weight GEMMs: 85-92% of per-token time (memory-bandwidth-bound)
+- Attention: 7-12% short/mid context, 25-35% long context (compute-bound at long seq)
+- At very long sequences (S ≫ model dim): attention exceeds 50% of MACs, transitions to compute-bound
+- This means: GPU most beneficial for prefill and long-context attention, not short-context decode
+- Our NUMA 4-way remains optimal for short-context decode; GPU would complement for prefill/long-context
