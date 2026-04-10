@@ -5,6 +5,7 @@
 **Updated**: 2026-04-05
 **Priority**: MEDIUM
 **Related**: kv-cache-quantization.md (Phase 3d TurboQuant validation)
+**Performance context**: At long sequences (16K+), attention rises from 7-12% to 25-35% of per-token compute and transitions from memory-bound to compute-bound (GPU research intake-304/306, architecture-independent finding). This means long-context eval should measure both quality AND throughput — degraded throughput at long context may indicate attention becoming the bottleneck rather than weight GEMMs. Flash attention (`-fa`) impact is negligible at short context but significant at 16K+.
 
 ## Purpose
 

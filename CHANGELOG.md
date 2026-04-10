@@ -2,6 +2,13 @@
 
 ## 2026-04-10
 
+- **ROCm/rocWMMA Research Intake + GPU Acceleration Path**:
+  - 9 new intake entries (intake-303–311): rocWMMA, WMMA on RDNA3, llama.cpp MI300X, RDNA3 fixes, AITER, hipBLASLt TensileLite, Stream-K++, CPU+GPU hybrid MoE offloading, MI300X best practices.
+  - Created `gpu-acceleration-path.md` stub handoff — full GPU path architecture, build config, 3-tier optimization stack (hipBLASLt grouped GEMM > rocWMMA FA > Stream-K), hardware decision matrix, CPU+GPU hybrid MoE expert offloading strategy.
+  - Cross-referenced into master-handoff-index, inference-acceleration-index, llama-cpp-v3-upstream-rebuild, kv-cache-quantization.
+  - Extracted CPU-relevant architectural insights: decode phase budget (85-92% weight GEMMs), attention compute-bound at 16K+, multi-instance parallelism externally validated, per-shape GEMM tuning avenue.
+  - Surfaced CPU findings into inference-acceleration-index (main body), kv-cache-quantization, long-context-eval-datasets.
+
 - **Answer-Tag Port to epyc-inference-research (Action 16 completion)**:
   - The `#### → <answer></answer>` migration from 2026-04-09 only landed in `epyc-orchestrator`. The research repo's benchmark scripts (used by 3-way routing eval) still instructed models to use `####` format — `</answer>` stop sequence never fired.
   - Ported all 7 adapter prompts + extract patterns in `dataset_adapters.py`: GSM8K, GAIA, CRUXEval (output+input), SimpleQA, HotpotQA.

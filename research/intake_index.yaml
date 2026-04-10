@@ -9272,3 +9272,326 @@
     mirrors AXI's minimal-default pattern. The less-is-more finding (quality improves
     with compression) validates our tool-output-compression hypothesis. Could inform
     Meta-Harness (intake-244) skill optimization.
+
+- id: intake-303
+  arxiv_id: null
+  url: https://github.com/ROCm/rocWMMA
+  source_type: repo
+  title: 'rocWMMA: C++ Header Library for AMD Matrix Multiply-Accumulate Operations'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  novelty: high
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: null
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Performance cliffs at long context on RDNA3: prefill -15%, decode -58% at 65K ctx before community fix'
+  - 'Compilation failures on gfx1201 (RX 9070 XT) with ROCm 6.4, and ROCm 7.2 on Ubuntu 24.04'
+  - 'Decode path incorrectly used WMMA where VEC/TILE ops were faster — architectural mismatch'
+  - 'Community optimizations remain in fork branch, not merged upstream — uncertain mainline path'
+  - 'wave64 mode disables dual-issue, negating theoretical throughput advantage'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - llama-cpp-v3-upstream-rebuild.md
+    - kv-cache-quantization.md
+  notes: >
+    rocWMMA is AMD's C++ header library for mixed-precision matrix multiply-accumulate
+    (MMA) on CDNA (gfx908/90a/942/950) and RDNA (gfx1100-1201) GPUs. API-compatible
+    with CUDA WMMA. Supports FP16/BF16/INT8/INT4 inputs, 16x16x16 tiles. In llama.cpp,
+    enables flash attention acceleration via -DGGML_HIP_ROCWMMA_FATTN=ON — up to 2x
+    prompt processing speedup. Latest release: v2.2.0 for ROCm 7.2.1 (2026-03-24).
+    Repository now deprecated in favor of ROCm/rocm-libraries monorepo. CRITICAL
+    CONTEXT: EPYC stack is currently CPU-only (192-thread NUMA, no GPU backend).
+    rocWMMA only relevant if GPU acceleration path is pursued. The llama.cpp v3
+    rebuild (intake cross-ref) does not include HIP build flags.
+
+- id: intake-304
+  arxiv_id: null
+  url: https://gpuopen.com/learn/wmma_on_rdna3/
+  source_type: blog
+  title: 'How to Accelerate AI Applications on RDNA 3 Using WMMA'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'WMMA only supports 16x16x16 tiles — larger matrices require manual chunking, limiting flexibility'
+  - 'Requires mixed row-major/column-major inputs (A=col-major, B/C/D=row-major) — layout constraint'
+  - 'wave64 mode disables dual-issue, taking same 32 cycles as wave32 despite 2x thread count'
+  - 'INT8 performance not dramatically higher than FP16 on RDNA3 (same per CU/clock)'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+  notes: >
+    AMD GPUOpen technical guide for WMMA intrinsics on RDNA3. Covers compiler
+    builtins (__builtin_amdgcn_wmma_*), data types (FP16/BF16/INT8/INT4), wave32
+    vs wave64 VGPR requirements (8 vs 4 per fragment). RX 7900 XTX achieves 512
+    FLOPS/clock/CU for FP16 (2x over RDNA2). rocWMMA provides portable C++ wrapper
+    over these intrinsics. Key insight: wave32 preferred for throughput due to
+    dual-issue support.
+
+- id: intake-305
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/ecosystems-and-partners/llama-cpp-oct2025/README.html
+  source_type: blog
+  title: 'Accelerating llama.cpp on AMD Instinct MI300X'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Benchmarks on MI300X 8x GPU — datacenter hardware, not consumer/workstation class'
+  - 'Comparison methodology may favor AMD (specific prompt sizes, flash attention on/off asymmetry)'
+  - 'No contradicting evidence found for raw throughput numbers — possible confirmation bias risk'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - llama-cpp-v3-upstream-rebuild.md
+  notes: >
+    AMD official blog (Dec 2025) benchmarking llama.cpp on MI300X 8x vs NVIDIA H100.
+    Key results: DeepSeek-V3-671B at 1650 tok/s (pp4096), Llama-3.1-70B at 4011 tok/s
+    with flash attention. Claims 76% (DeepSeek) and 213% (Llama-70B) throughput advantage
+    over H100. Introduces hipBLASLt grouped GEMM (USE_HIPBLASLT_GROUPED_GEMM=1/2/3) as
+    alternative to rocBLAS batched GEMM. GEMM tuning yields 29% improvement on 8B model.
+    Relevant to EPYC only if GPU path is pursued.
+
+- id: intake-306
+  arxiv_id: null
+  url: https://www.banandre.com/blog/amd-rdna3-faster-llamacpp-performance-rocm-optimizations
+  source_type: blog
+  title: 'AMD RDNA3 Users Finally Get Decent llama.cpp Performance — rocWMMA Optimization Fixes'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - kv_cache
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Optimizations exist only in community fork (lhl/llama.cpp rocm-wmma-tune branch), not mainline'
+  - 'ROCm maintainer developing replacement MMA kernel system — these fixes may be superseded'
+  - 'Benchmarks only on Llama 3.2 1B — unclear if gains hold for larger MoE/hybrid models'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - kv-cache-quantization.md
+  notes: >
+    Community analysis of rocWMMA performance cliff on RDNA3. Root cause: decode path
+    incorrectly forced WMMA where VEC/TILE ops were faster; FlashAttention LDS/block
+    residency not tuned for AMD. Four fixes applied: adaptive KQ stride (D≤128→stride 128),
+    __launch_bounds__ for 2+ blocks/SM, intelligent kernel selection (skip WMMA for decode),
+    crash prevention fallbacks. Results on Llama 3.2 1B: prefill 360→706 tok/s (+96%),
+    decode 27→65 tok/s (+136%) at 65K context. Critical finding: WMMA should ONLY be used
+    for prefill/prompt processing, NOT decode — mirrors EPYC's finding that decode is
+    memory-bandwidth-bound. Flash attention KV cache interaction relevant to kv-cache-quantization handoff.
+
+- id: intake-307
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/software-tools-optimization/aiter-ai-tensor-engine/README.html
+  source_type: blog
+  title: 'AITER: AI Tensor Engine for ROCm — Optimized Kernels for LLM Inference'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - moe_optimization
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Only tested on MI300X — no RDNA3/4 or consumer GPU support documented'
+  - 'No llama.cpp/ggml integration — vLLM and SGLang only'
+  - 'DeepSeek V3 specific optimizations may not generalize to other MoE architectures'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    intake:
+    - intake-303
+    - intake-305
+  notes: >
+    AMD's centralized AI kernel library. Built on Triton, Composable Kernel (CK), HIP,
+    and ASM. Key performance numbers on MI300X: block-scale GEMM 2x boost, fused MoE 3x,
+    MLA decode 17x, MHA prefill 14x. DeepSeek V3 end-to-end: 6485→13704 tok/s (2.1x).
+    Supports FP8/BF8/INT8/INT4 fused MoE, paged attention with FP8 KV cache. Critically,
+    NO llama.cpp integration exists — AITER targets vLLM/SGLang Python frameworks. However,
+    kernel designs (especially fused MoE and MLA decode) inform what's achievable if GPU
+    path is pursued. The 17x MLA decode boost suggests decode CAN be compute-accelerated
+    with architectural attention optimizations (MLA), contrasting with standard MHA where
+    decode is memory-bound. ROCm 7.0 adds MXFP4 MoE kernels via AITER.
+
+- id: intake-308
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/artificial-intelligence/hipblaslt-tensilelite-tuning/README.html
+  source_type: blog
+  title: 'hipBLASLt TensileLite GEMM Tuning — Custom Kernel Generation for AMD GPUs'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Tuning process significantly longer than selection-based tuning — may be impractical for many GEMM shapes'
+  - 'Only f16_r/f32_r configurations shown — unclear if quantized types (INT4/INT8) are supported'
+  - 'Results on MI300X only — transferability to other GPU architectures unknown'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    intake:
+    - intake-303
+    - intake-305
+  notes: >
+    TensileLite generates entirely new GEMM kernels rather than selecting from pools.
+    Three-step workflow: capture shapes via hipblaslt-bench, generate via tensile_config_generator.py,
+    merge into hipBLASLt library. Key results on MI300X: small matrices (M=3, LLM decode phase)
+    1.6-2.6x speedup; large matrices average 3.2x over baseline, 225% over baseline overall.
+    Skinny matrix optimization (M=3) directly relevant to single-token decode in llama.cpp.
+    Tuning parameters: WorkGroup dims, ThreadTile, MacroTile, LoopUnroll, DepthU, SplitU,
+    PrefetchGlobalRead, VectorWidth, MatrixInstruction (MFMA). Trade-off: unroll depth
+    improves coalescing but increases register pressure. For EPYC GPU path: TensileLite
+    tuning could generate kernels optimized for our specific model shapes and quant types.
+
+- id: intake-309
+  arxiv_id: '2408.11417'
+  url: https://arxiv.org/abs/2408.11417
+  source_type: paper
+  title: 'Stream-K++: Adaptive GPU GEMM Kernel Selection and Scheduling Using Bloom Filters'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Tested on MI250X only — not validated on CDNA3/MI300X or RDNA architectures'
+  - 'Up to 43% gains only in select scenarios; within 20% of optimal for 60-97.6% of sizes'
+  - 'No LLM-specific GEMM shape evaluation'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    intake:
+    - intake-303
+    - intake-308
+  notes: >
+    Enhances Stream-K GEMM scheduling from 3→7 policies. Bloom filter mechanism eliminates
+    95.8% of unsuitable configurations with 100% true-negative rate. Up to 43% gain in
+    select scenarios on MI250X via AMD Composable Kernel library. Stream-K itself is now
+    integrated into rocWMMA (ROCm 6.4+) and expanded to MI350 series in ROCm 7.0.
+    Relevance: Stream-K reduces need for per-shape GEMM tuning, which is valuable for
+    MoE models with diverse expert GEMM dimensions. Combined with hipBLASLt grouped GEMM,
+    could eliminate much of the tuning overhead for our MoE-heavy production stack.
+
+- id: intake-310
+  arxiv_id: null
+  url: https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide
+  source_type: blog
+  title: 'CPU+GPU Hybrid MoE Inference in llama.cpp — Expert Offloading Guide'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - moe_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-303
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Guide focuses on NVIDIA CUDA only — AMD ROCm -ot syntax untested/undocumented'
+  - 'ik_llama.cpp fork used for some optimizations — older codebase, may not merge'
+  - 'No NUMA-specific benchmarks for expert offloading — cross-socket penalties unknown'
+  - 'PCIe bandwidth limits make GPU offload worthwhile only above batch threshold (~32 tokens)'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - llama-cpp-v3-upstream-rebuild.md
+  notes: >
+    CRITICAL for EPYC GPU path. Expert offloading (-ot "exps=CPU") keeps attention + dense
+    FFN on GPU while routing MoE experts to CPU. This is THE hybrid strategy for our stack:
+    EPYC has massive CPU capacity (192 threads, 1.1TB RAM) that could handle expert compute
+    while a GPU accelerates attention + dense layers. Key details: -ot uses regex tensor
+    assignment, -ngl 999 offloads everything then -ot overrides specific tensors back to CPU.
+    Batch sizing critical: -b 4096 -ub 4096 (our default is already well-tuned for CPU).
+    NUMA considerations: numactl --interleave=all + --numa distribute for multi-socket.
+    Flash attention: -fa on. For our Qwen3.5/Qwen3 MoE models (30B-A3B, 35B-A3B, 122B-A10B,
+    246B REAP), attention layers are small relative to expert FFNs — ideal for GPU offload
+    of attention + shared expert while CPU handles routed experts. This could combine our
+    existing NUMA 4-way strategy with GPU acceleration of the compute-bound attention path.
+    hipBLASLt grouped GEMM (intake-305) would further accelerate the GPU-side MoE routing.
+  handoffs_updated:
+  - inference-acceleration-index.md
+
+- id: intake-311
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/artificial-intelligence/LLM_Inference/README.html
+  source_type: blog
+  title: 'Best Practices for Competitive Inference Optimization on AMD Instinct MI300X'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-305
+  ingested_date: '2026-04-10'
+  contradicting_evidence:
+  - 'Focused on vLLM, not llama.cpp — deployment patterns differ significantly'
+  - 'MI300X 192GB HBM advantage over H100 may not transfer to consumer/workstation GPUs'
+  - 'FP8 KV cache 2.1x boost assumes FP8 support in model — GGUF Q4_K_M is different quantization'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - kv-cache-quantization.md
+    intake:
+    - intake-305
+    - intake-307
+  notes: >
+    AMD's official inference optimization guide. Key principles that transfer to any GPU path:
+    1) Disable NUMA balancing on host (we already know this). 2) gpu_memory_utilization=0.9
+    (leave headroom for CUDA graphs). 3) Small models (≤30B) in TP1 mode, 8 instances —
+    mirrors our NUMA 4-way approach but on GPU. 4) Batch size transition: <64 = memory-bound,
+    >64 = compute-bound. 5) FP8 KV cache 2.1x throughput boost (relevant to our KV quant
+    work). 6) Monitor KV cache preemption — 99.4% usage triggers recomputation. 7) TP8 for
+    405B+ models. Critical insight: MI300X's 2.4x memory advantage over H100 eliminates
+    KV cache eviction — directly relevant since our Hadamard KV quant achieves similar
+    effect via compression on CPU. The TTFT/TPOT/TTLT metric framework matches our
+    existing benchmark methodology.

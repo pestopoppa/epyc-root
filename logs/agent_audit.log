@@ -2543,3 +2543,12 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-04-10T08:36:00+00:00","session":"ses_20260410_answer_tag_port","level":"INFO","cat":"TASK_END","msg":"Updated research debug_scorer.py defaults + legacy fallback","details":"_score_exact_match and _score_f1 default to <answer> extraction. #### fallback preserved. re.DOTALL added for f1."}
 {"ts":"2026-04-10T08:37:00+00:00","session":"ses_20260410_answer_tag_port","level":"INFO","cat":"TASK_END","msg":"Smoke tests passed: both <answer> and #### formats score correctly in exact_match and f1 modes"}
 {"ts":"2026-04-10T08:40:00+00:00","session":"ses_20260410_answer_tag_port","level":"INFO","cat":"SESSION_END","msg":"Answer-tag port complete. 2 files in epyc-inference-research, 4 files in epyc-root."}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"SESSION_START","msg":"ROCm/rocWMMA research intake + GPU acceleration path","details":"new_session=ses_20260410_214059_3341992"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_START","msg":"Research intake 9 entries","details":"Future GPU path"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_END","msg":"Research intake 9 entries","details":"outcome=success"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_START","msg":"GPU acceleration path stub","details":"Handoff created"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_END","msg":"GPU acceleration path stub","details":"outcome=success"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_START","msg":"Cross-ref consolidation 8 files","details":"Discoverability"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_END","msg":"Cross-ref consolidation 8 files","details":"outcome=success"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_START","msg":"CPU insights extracted","details":"Architecture-independent"}
+{"ts":"2026-04-10T21:40:59+00:00","session":"ses_20260410_214059_3341992","level":"INFO","cat":"TASK_END","msg":"CPU insights extracted","details":"outcome=success"}

@@ -3,6 +3,7 @@
 **Status**: ACTIVE — Hadamard Phase 1 cherry-picked to production (`b51c905`, 2026-03-28). TurboQuant/PolarQuant/QJL/hybrid buffer ABANDONED. See "Current Work — Resume Here" section below.
 **Production config**: `--kv-hadamard -ctk q4_0 -ctv f16` (pure-attention models) or `-ctk q4_0 -ctv q4_0` (hybrid SSM). Quality-neutral, zero overhead.
 **v3 upstream note**: `--kv-hadamard` is superseded by upstream PR #21038 (`744c0c731`, 2026-04-01) which auto-enables identical Walsh-Hadamard rotation when KV types are quantized. In `production-consolidated-v3`, remove `--kv-hadamard` from orchestrator config — rotation is automatic. See [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md).
+**GPU path note**: If GPU acceleration is pursued (see [`gpu-acceleration-path.md`](gpu-acceleration-path.md)), KV cache strategy may differ: FP8 KV cache on MI300X yields 2.1x throughput boost (intake-311); flash attention via rocWMMA accelerates prefill but not decode (intake-306). Current Hadamard+q4_0 strategy remains optimal for CPU path. GPU path would use `-DGGML_HIP_ROCWMMA_FATTN=ON` for prefill FA acceleration.
 **TurboQuant hybrid**: Split attention working. Gen speed ~5.2 t/s at 14.5K filled context (was 3.4 t/s, f16 baseline 7.7 t/s). Quality correct. Old K uses q4_0 (not turbo_q3 — PolarQuant dequant too lossy). **ARCHIVED** — q4_0+Hadamard matches quality with zero complexity.
 **Created**: 2026-03-24 (via research intake)
 **Updated**: 2026-03-28
@@ -61,6 +62,9 @@ All experimental code is on branch `hadamard-kv-smoothing` in `/mnt/raid0/llm/ll
 | q4_0/q4_0 | 15,098 | 561.1 | -1.3 GB (-8%) | **garbage** |
 
 **Critical finding**: q4_0/q4_0 degrades at full 32K context — produces garbage output. q8_0/q4_0 remains correct. The 9% wall time increase is the flash attention dequant overhead during prefill.
+
+**Attention cost at long context (from GPU research intake-304/306, architecture-independent):**
+At short context (≤4K), attention is 7-12% of per-token time — KV quantization saves memory only. At long context (16K+), attention rises to 25-35% and becomes compute-bound. At very long sequences (S >> d_model), attention exceeds 50% of total compute. This means KV cache compression has a **throughput impact** at long context, not just a memory impact — fewer KV bytes = faster attention matmuls. Our Hadamard+q4_0 strategy delivers both memory savings AND attention speedup at long context. The +9% wall time increase at 32K (q8_0/q4_0 above) likely reflects dequant overhead offsetting the attention speedup — worth re-measuring with v3's upstream Hadamard auto-rotation which may be more optimized.
 
 **Implication**: q4_0 K is NOT safe at extended contexts. Production coder config (q8_0/q4_0) is validated. For frontdoor Q35 (q4_0/q4_0), the hybrid architecture (75% SSM, 25% attention) may mask the degradation — needs separate testing.
 
