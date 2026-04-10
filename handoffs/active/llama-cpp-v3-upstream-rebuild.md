@@ -384,7 +384,8 @@ If v3 fails validation:
 - [ ] NUMA throughput validated — DEFERRED
 - [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`) — DEFERRED
 - [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements — DEFERRED
-- [ ] Orchestrator config updated (remove `--kv-hadamard`, remove `--lookup`, update slot erase, update baselines)
+- [x] Orchestrator config updated — ✅ 2026-04-10. `--kv-hadamard` removed from `orchestrator_stack.py:950` and `server_lifecycle.py:200`. `--lookup` kept (exists in v3 server). Slot erase endpoint unchanged (POST, not DELETE — smoke test was wrong). `verify_llama_cpp.sh` branch updated. Test updated (18/18 pass).
+- [ ] Production binary swap (checkout v3 branch in production llama.cpp, rebuild, restart stack)
 - [ ] Branch pushed to `fork` remote
 - [ ] This handoff moved to `completed/`
 

@@ -11,7 +11,7 @@ source "$SCRIPT_DIR/../lib/env.sh"
 
 # Configuration (derived from env.sh)
 LLAMA_CPP_DIR="${LLM_ROOT}/llama.cpp"
-EXPECTED_BRANCH="production-consolidated"
+EXPECTED_BRANCH="production-consolidated-v3"
 EXPERIMENTAL_DIR="${LLM_ROOT}/llama.cpp-experimental"
 
 # Colors

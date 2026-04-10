@@ -276,9 +276,9 @@ if $RUN_FEATURES; then
                 record_result "feature_server_completion" "FAIL" "HTTP ${COMP_CODE}"
             fi
 
-            # Slot erase
-            ERASE_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE \
-                "http://localhost:${SMOKE_PORT}/slots/0")
+            # Slot erase (POST with ?action=erase, not DELETE)
+            ERASE_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+                "http://localhost:${SMOKE_PORT}/slots/0?action=erase")
             if [[ "$ERASE_CODE" == "200" ]]; then
                 record_result "feature_slot_erase" "PASS" "HTTP 200"
             else
