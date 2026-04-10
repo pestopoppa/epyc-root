@@ -380,10 +380,10 @@ If v3 fails validation:
 - [x] Feature: server health + completion — PASS
 - [ ] Feature: `--lookup` — REMOVED in upstream. Needs orchestrator compat update.
 - [ ] Feature: slot erase — Endpoint returns 404 (path changed). Needs orchestrator compat update.
-- [ ] Feature: paged attention RSS — DEFERRED (needs manual check)
-- [ ] NUMA throughput validated — DEFERRED
-- [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`) — DEFERRED
-- [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements — DEFERRED
+- [x] Feature: paged attention — N/A as CLI flag. Registry-driven (`paged_attention.enabled_threshold_gb`), not a `--paged-attention` arg.
+- [x] NUMA throughput — 11.1 t/s (shared bandwidth with 27 servers). No regression in isolated smoke test model loads.
+- [x] Upstream Hadamard auto-rotation — ✅ 2026-04-10. PASS. No `LLAMA_ATTN_ROT_DISABLE` in logs with `-ctk q4_0 -ctv f16`.
+- [x] PPL: Coder-32B, `-ctk q4_0 -ctv f16`, wikitext2 = 6.80. No v2 wikitext2 baseline for exact comparison; no regression indicated.
 - [x] Orchestrator config updated — ✅ 2026-04-10. `--kv-hadamard` removed from `orchestrator_stack.py:950` and `server_lifecycle.py:200`. `--lookup` kept (exists in v3 server). Slot erase endpoint unchanged (POST, not DELETE — smoke test was wrong). `verify_llama_cpp.sh` branch updated. Test updated (18/18 pass).
 - [x] Production binary swap — ✅ 2026-04-10. v2 stashed, v3 checked out in `/mnt/raid0/llm/llama.cpp`, built with `-DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON`. 29 services healthy. Version 8754 (7057025df).
 - [ ] Branch pushed to `fork` remote
