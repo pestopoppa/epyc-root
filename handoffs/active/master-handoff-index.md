@@ -33,8 +33,8 @@ Highest-impact work across all domains. Each item points to where the details li
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) → Package D | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
 | 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
 | 4a | MED | Brevity prompt upgrade: explicit word limits (Action 12, zero-cost) | [research-evaluation-index](research-evaluation-index.md) P0.5 |
-| 5 | MED | TrimR deployment (reasoning compression Tier 1) → Package B | [research-evaluation-index](research-evaluation-index.md) P0 |
-| 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05 (7 handlers, feature-flagged, needs prod validation) | [research-evaluation-index](research-evaluation-index.md) P1 |
+| 5 | ~~MED~~ | ~~TrimR deployment~~ Package B ✅ 2026-04-10 (thinking +6pp GPQA, tool A/B +4pp, WS-3 validated) | [research-evaluation-index](research-evaluation-index.md) P0 |
+| 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05, A/B ✅ 2026-04-10 (+4pp REPL, suite-dependent) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
 | 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05 (MCP chat tools, 15 tests, feature-flagged) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |

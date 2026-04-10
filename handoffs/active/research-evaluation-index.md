@@ -49,7 +49,7 @@
 - [x] Phase 2 native compression module — ✅ 2026-04-05. `compress_tool_output.py` with 7 handlers (pytest, cargo test, git status/diff/log, ls, build). 27 tests.
 - [x] Orchestrator integration — ✅ 2026-04-05. Feature flag `tool_output_compression` (env `TOOL_OUTPUT_COMPRESSION`). Wired at `helpers.py:1497` before `_spill_if_truncated()`.
 - [ ] Enable flag in production and measure net savings on real autopilot sessions
-- [ ] A/B comparison: tool_output_compression on vs off (→ Package B)
+- [x] A/B comparison: tool_output_compression on vs off — ✅ 2026-04-10 (Package B). Controlled A'/B' rerun (5 suites × 20q, WS-3 fix active). **Compression +4pp REPL overall.** Suite-dependent: math +25pp (noise reduction), hotpotqa -25pp (retrieval context lost). No change to default (ON).
 - [x] P3a: Token audit of tool definitions — ✅ 2026-04-09. `token_audit.py` + report. 841 tokens, 4 duplicates, 29.8% instruction ratio.
 - [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Old preserved as `VERBOSE_ROOT_LM_TOOLS`. Ratio → 16.0%.
 - [ ] P3d: A/B test compressed vs original on seeding harness

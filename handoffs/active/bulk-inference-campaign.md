@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+E done, C ready, F ready + smoke script, B nearly complete — Arm A + telemetry + TrimR + Phase 4 done, Arm B RUNNING with web-search fix + tool-compression-OFF. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-12.)
+**Status**: active (A+B+E done, C ready, F ready + smoke script. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-12.)
 **Created**: 2026-04-06
-**Updated**: 2026-04-09
+**Updated**: 2026-04-10
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -197,7 +197,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 - [x] **TrimR**: DONE (2026-04-09). Eval on DeepSeek-R1-Distill-Qwen-7B (4×48t NUMA). GPQA: thinking helps ~6pp (full 58.3% → strip 52.6%), TrimR prunes 45% of thinking while preserving correct count. Math (GSM8K): thinking minimal (151 tok avg), pruning has zero effect — model barely thinks on easy problems. **Verdict: TrimR valuable on hard tasks (GPQA), irrelevant on easy tasks (GSM8K). Aligns with difficulty-adaptive routing.** Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\boxed{}` scorer fix, per-strategy output files. Data: `data/package_b/trimr_r1_7b_gpqa_trimr.jsonl`, `trimr_r1_7b_math_{full,think-strip,trimr}.jsonl`.
 - [x] **Difficulty**: DONE (2026-04-09). At 0.15/0.35 thresholds: easy=1834 (62.2% escalated), medium=517 (60.7%), hard=82 (62.2%). **Finding**: NO predictive spread — escalation rate is flat across difficulty bands. The difficulty signal at current thresholds does not differentiate routing needs. Recommend: re-examine feature weights or add semantic features before moving to enforce mode.
 - [x] **Omega**: DONE (2026-04-09). **7 of 10 suites show tools HURT accuracy** (direct > REPL): agentic -54.5pp, coder -44pp, general -26pp, math -26pp, mode_advantage_hard -23.7pp, thinking -8pp, instruction_precision -6pp. Only hotpotqa (+12pp) and gpqa (+6pp) benefit from tools. **Verdict**: Tools are net-negative on most suites. Reasoning tokens via REPL are actively harmful for agentic, coder, general, and math tasks.
-- [ ] **Tool A/B**: Arm B killed at 104/400 questions (2026-04-09). Checkpoint JSONL has full per-question results. **Key finding**: WS-3 was NOT firing — 100% web search in REPL mode. Root cause: `routing.py` hardcoded `task_type: "chat"`, so `NO_WEB_TASK_TYPES` never matched. Fixed with role→task_type derivation. **Arm A'** launched with `TOOL_OUTPUT_COMPRESSION=1` + WS-3 fix, 5 suites × 20q = 100 questions for controlled tool-compression-only comparison.
+- [x] **Tool A/B**: DONE (2026-04-10). Original Arm B killed at 104/400 (WS-3 bug: `routing.py` hardcoded `task_type="chat"`, 100% web search). Fixed with role→task_type derivation. Controlled rerun: A' (compression ON, 100q) vs B' (compression OFF, 99q), 5 suites × 20q, WS-3 fix active. **Finding**: Compression slightly net-positive (+4pp REPL overall). Suite-dependent: math +25pp (noise reduction), hotpotqa -25pp (retrieval context helps), coder/general/gpqa near-neutral. WS-3 fix validated (near-zero web calls both arms). No change to default (compression ON).
 
 ---
 
@@ -522,11 +522,10 @@ Then update orchestrator config:
 ```
 ✅ PACKAGE A ────────────── DONE (2026-04-06, 635 decisions, thresholds recalibrated)
   │
-  ├── PACKAGE B ──────────── Instrumented Seeding v2 (~1 day, full stack)
-  │     │                     RI-9 + TrimR + difficulty + Omega + tool A/B
+  ├── ✅ PACKAGE B ──────────── DONE (2026-04-10, tool compression +4pp, WS-3 fix validated)
   │     │
   │     └── PACKAGE D ─────── AR-3 + RI-10 Canary + CF-3c + DS-5 (multi-day, full stack)
-  │                            Depends on B for threshold decisions + sentinel expansion
+  │                            B done. Sentinels expanded 10→39. Baseline schema ready.
   │
   ├── PACKAGE C ──────────── CF Eval Batch (~½ day, individual models) — READY
   │                            Scripts done, Phase 2c complete (ρ=0.65). 2a/2b need model servers.
@@ -534,7 +533,7 @@ Then update orchestrator config:
   ├── ✅ PACKAGE E ──────────── DONE 2026-04-06 (Hermes PASS, vision fixed 2026-04-08)
   │
   └── PACKAGE F ──────────── v3 Smoke Tests (~30min, experimental binary only)
-                               Cherry-picks DONE 2026-04-09. Unblocks production binary swap.
+                               Cherry-picks DONE 2026-04-09. Smoke script ready. Unblocks v3 swap.
 ```
 
 ## Execution Order
@@ -542,9 +541,9 @@ Then update orchestrator config:
 | Order | Package | Duration | Why this order |
 |-------|---------|----------|----------------|
 | 1 | ~~**E**~~ | ~~1 hour~~ | ✅ DONE 2026-04-06. Hermes streaming PASS, vision fixed 2026-04-08. |
-| 2 | **F** | ~30 min | **Can run anytime** — uses experimental binary, no production stack conflict. Unblocks v3 swap. |
-| 3 | **B** | ~1 day | All scripts ready. Needs full stack exclusive. Results feed D. |
-| 4 | **D** | Multi-day | Depends on B. Longest run. |
+| 2 | ~~**B**~~ | ~~1 day~~ | ✅ DONE 2026-04-10. All phases complete. Tool A/B: compression +4pp REPL. WS-3 fix validated. |
+| 3 | **F** | ~30 min | **Can run anytime** — smoke test script ready. Unblocks v3 swap. |
+| 4 | **D** | Multi-day | B done, prerequisites met (sentinels expanded, baseline schema ready). |
 | 5 | **C** | ~½ day | READY — scripts implemented 2026-04-07. Phase 2c done (heuristic). 2a/2b need individual model servers. |
 
 **Parallelization note**: F can run anytime (experimental binary, loads models one-at-a-time). C uses individual model servers on a single NUMA quarter — can run during B/D downtime.
