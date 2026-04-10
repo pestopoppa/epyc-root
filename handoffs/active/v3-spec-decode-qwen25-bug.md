@@ -1,7 +1,8 @@
 # v3 Spec Decode Bug: Qwen2.5-Coder-32B + Draft Model
 
-**Status**: ACTIVE — coder_escalation non-functional with spec decode on v3
+**Status**: FIXED in experimental — tree speculation seq_id overflow when `kv_unified=false`
 **Created**: 2026-04-10
+**Fixed**: 2026-04-10
 **Priority**: HIGH (production regression — coder_escalation is the primary escalation path)
 **Categories**: llama.cpp, inference, bug
 **Depends on**: None
@@ -11,73 +12,69 @@
 
 ## Problem
 
-Speculative decoding with any draft model on Qwen2.5-Coder-32B-Instruct returns `HTTP 500: Invalid input batch` on **every prompt** (including single-word prompts). All other models work fine with spec decode on v3.
+Speculative decoding with any draft model on Qwen2.5-Coder-32B-Instruct returns `HTTP 500: Invalid input batch` on **every prompt** (including single-word prompts).
 
-## Reproduction
+## Root Cause
 
-```bash
-# Fails on v3 (production-consolidated-v3, version 8754, commit 7057025df):
-/mnt/raid0/llm/llama.cpp/build/bin/llama-server \
-  -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen2.5-Coder-32B-Instruct-GGUF/Qwen2.5-Coder-32B-Instruct-Q4_K_M.gguf \
-  -md /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen2.5-Coder-0.5B-GGUF/Qwen2.5-Coder-0.5B-Q4_K_M.gguf \
-  --draft-max 32 --port 9994 -np 1 -c 4096 -t 48 --flash-attn on --jinja
+**Tree speculation multi-path verification creates seq_ids that exceed `n_seq_max` when `kv_unified=false`.**
 
-curl http://localhost:9994/v1/chat/completions \
-  -d '{"model":"auto","messages":[{"role":"user","content":"Hi"}],"max_tokens":16}'
-# → 500 Invalid input batch
+Detailed trace:
+1. Default `p_split=0.1` enables tree speculation (`COMMON_SPECULATIVE_TYPE_TREE`)
+2. Tree speculation generates multiple draft paths (branching candidates)
+3. Multi-path target verification (`server-context.cpp` ~line 2299) adds alternative paths to the batch with seq_ids: `tree_seq_base + k` where `tree_seq_base = n_parallel + slot.id * 8`
+4. With `-np 1`, `tree_seq_base = 1`, so alternative paths get seq_ids 2, 3...
+5. But `kv_unified=false` (default) means `n_seq_max = n_parallel = 1`
+6. Batch validation rejects: `invalid seq_id[3][0] = 2 >= 1`
 
-# Works on v2 (production-consolidated-v2) with identical flags.
+The auto-detection at line 679 that bumps `n_seq_max` for tree speculation only fires when `kv_unified=true`, leaving the non-unified path unprotected.
+
+**Not Qwen2.5-specific**: The bug affects ALL architectures when `kv_unified=false` + draft model + default `p_split`. The original isolation tests for Qwen3/Qwen3.5 likely used `--kv-unified` or different spec decode configurations.
+
+Debug log evidence:
+```
+init: invalid seq_id[3][0] = 2 >= 1
+decode: failed to initialize batch
+llama_decode: failed to decode, ret = -1
 ```
 
-## Isolation Tests (2026-04-10)
+## Fix Applied (experimental)
 
-| Test | Result | Conclusion |
-|------|--------|-----------|
-| Coder-32B WITHOUT draft | WORKS | Not a model loading issue |
-| Coder-32B + Coder-0.5B draft | **FAILS** | Spec decode broken |
-| Coder-32B + Qwen3 0.75B draft | **FAILS** | Not draft-model-specific |
-| Coder-32B + draft, no KV quant | **FAILS** | Not KV quant interaction |
-| Coder-32B + draft, 10-word prompt | **FAILS** | Not prompt-length-dependent |
-| REAP-246B (Qwen3) + draft | WORKS | Qwen3 arch unaffected |
-| Qwen3.5-35B + draft | WORKS | Qwen3.5 arch unaffected |
-| Worker 30B-A3B + lookup | WORKS | Lookup decoding unaffected |
+**File**: `llama.cpp-experimental/tools/server/server-context.cpp` (load_model, ~line 675)
 
-**Root cause**: v3 upstream changes broke spec decode specifically for **Qwen2.5 architecture**. Qwen3.x and Qwen3.5 are fine.
+Auto-enable `kv_unified` when tree speculation is active (draft model + `p_split > 0`). Tree multi-path verification requires shared KV cache (`kv_unified=true`) and sufficient `n_seq_max` for alternative path seq_ids. Without `kv_unified`, `n_seq_max` partitions the context window, starving each tree path.
 
-## Likely Upstream Cause
+```cpp
+// Before (broken): only bumped n_seq_max if user manually passed --kv-unified
+if (p_split > 0 && has_dft && params_base.kv_unified) { ... }
 
-538 upstream commits between v2 and v3. Candidates:
-- Attention head dimension / GQA handling changes in spec decode validation
-- `ggml_set_rows` batch construction for non-matching architectures (main vs draft)
-- Server-side speculative decode batch assembly (`server.cpp` or `server-context.cpp`)
+// After (fixed): auto-enable kv_unified when tree speculation is configured
+if (p_split > 0 && has_dft) {
+    if (!params_base.kv_unified) {
+        params_base.kv_unified = true;  // tree paths need shared context
+    }
+    params_base.n_seq_max = 9 * n_parallel;  // 8 tree paths + 1 primary per slot
+}
+```
 
-The stashed fix on v2 (`kv-cache f32 cast fix for ggml_set_rows`) may be related — it addressed f16→f32 type mismatches in the KV cache copy path.
+Hybrid/recurrent models are still safe — the existing `has_recurrent` guard at the verification site (~line 2299) prevents tree multi-path from firing, so `kv_unified=true` has no negative effect.
 
-## Current Workaround
+## Verification
 
-Coder_escalation runs on v3 binary **without spec decode** (no `-md`, no `--draft-max`). Functional but slower (~7.4 t/s vs 10.8 t/s with spec decode on v2).
+| Test | Result |
+|------|--------|
+| Fixed binary, default p_split, NO --kv-unified | PASS — auto-enables unified, tree verification, 5/9 accepted |
+| Fixed binary, default p_split, explicit --kv-unified | PASS — tree verification, 5/9 accepted |
+| Fixed binary, multi-request stability | PASS — 3/3 requests, 73-100% acceptance |
+| Logs confirm auto-enable | `tree speculation: auto-enabling --kv-unified`, `n_seq_max=9` |
 
-`orchestrator_stack.py` has `_V2_ROLES` / `LLAMA_SERVER_V2` infrastructure for per-role binary override, but the v2 worktree build also showed the same error (possibly contaminated by another agent modifying the repo during build). A clean v2 rebuild is needed to verify.
+## Remaining Work
 
-## Additional Findings (2026-04-10)
-
-- **v2 worktree build also fails** — built from `/tmp/llama-v2-build` worktree, same "Invalid input batch". Likely contaminated (another agent session may have been modifying the production repo concurrently). The original v2 binary was overwritten during v3 swap and is unrecoverable.
-- **NOT the draft model** — fails with both Qwen2.5-Coder-0.5B-Q4_K_M and Qwen3-Coder-0.75B draft
-- **NOT KV quantization** — fails without `-ctk`/`-ctv` flags
-- **NOT prompt length** — fails on "Hi" (single token)
-- **Qwen2.5-Coder-32B WITHOUT draft works fine** on v3
-
-## Resume Here
-
-1. **Clean v2 build**: Clone fresh from `fork/production-consolidated-v2` into an isolated directory (NOT a worktree). Build and test spec decode with Coder-32B. This determines if the bug is v3-only or pre-existing.
-2. If v3-only: `git bisect` between v2 and v3 (24 commits) to find the breaking cherry-pick
-3. If also v2: check if the Qwen2.5-Coder-0.5B draft model GGUF was corrupted or replaced
-4. Run v3 server with `LLAMA_LOG_LEVEL=debug` to get batch construction diagnostics
-5. Check stashed `ggml_set_rows` f32 cast fix (stash@{0} in production repo)
+- [ ] **Port fix to production v3**: Apply one-line change to `/mnt/raid0/llm/llama.cpp` `production-consolidated-v3` and rebuild
+- [ ] **Remove v2 workaround**: Switch coder_escalation back to v3 binary in orchestrator_stack
+- [ ] **Stashed f32 cast fix**: `stash@{0}` in production repo (`kv-cache f32 cast fix for ggml_set_rows`) is a **separate issue** — f16→f32 type mismatch in KV cache copy. NOT the cause of this bug, but may be needed for quantized KV cache scenarios. Evaluate independently.
 
 ## Key Files
 
-- `/mnt/raid0/llm/llama.cpp/tools/server/server.cpp` — server-side spec decode orchestration
-- `/mnt/raid0/llm/llama.cpp/src/llama-graph.cpp` — graph construction (batch validation)
-- `/mnt/raid0/llm/llama.cpp/src/llama-kv-cache.cpp` — KV cache (stashed fix here)
-- `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py` — per-role binary path support (`_V2_ROLES`, `LLAMA_SERVER_V2`)
+- `/mnt/raid0/llm/llama.cpp-experimental/tools/server/server-context.cpp` — fix applied (line ~2299)
+- `/mnt/raid0/llm/llama.cpp/tools/server/server-context.cpp` — production file to port fix to
+- `/mnt/raid0/llm/epyc-orchestrator/scripts/server/orchestrator_stack.py` — per-role binary path (workaround to remove)

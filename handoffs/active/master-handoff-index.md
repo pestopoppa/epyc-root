@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-09
+**Updated**: 2026-04-10
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -68,7 +68,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE | MEDIUM | 2026-04-08 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (S1 feasibility) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
-| [v3-spec-decode-qwen25-bug.md](v3-spec-decode-qwen25-bug.md) | v3 bug: spec decode broken on Qwen2.5 | ACTIVE (coder running without draft) | HIGH | 2026-04-10 |
+| [v3-spec-decode-qwen25-bug.md](v3-spec-decode-qwen25-bug.md) | ~~v3 bug: spec decode broken~~ ✅ 2026-04-10 (tree spec auto-enables kv_unified) | FIXED | — | 2026-04-10 |
 
 ---
 
