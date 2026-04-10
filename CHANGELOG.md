@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-04-10
+
+- **Answer-Tag Port to epyc-inference-research (Action 16 completion)**:
+  - The `#### → <answer></answer>` migration from 2026-04-09 only landed in `epyc-orchestrator`. The research repo's benchmark scripts (used by 3-way routing eval) still instructed models to use `####` format — `</answer>` stop sequence never fired.
+  - Ported all 7 adapter prompts + extract patterns in `dataset_adapters.py`: GSM8K, GAIA, CRUXEval (output+input), SimpleQA, HotpotQA.
+  - Updated `debug_scorer.py` defaults (`_score_exact_match`, `_score_f1`) to `<answer>` with `####` legacy fallback.
+  - `_extract_gsm8k_answer` helper now tries `<answer>` first, falls back to `####`.
+  - Files: `epyc-inference-research/scripts/benchmark/dataset_adapters.py`, `epyc-inference-research/scripts/benchmark/debug_scorer.py`.
+
 ## 2026-04-09
 
 - **P6 REPL Turn Efficiency — S1a-c + S2a-b**:
