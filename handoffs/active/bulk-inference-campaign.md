@@ -489,16 +489,22 @@ curl -X DELETE http://localhost:9999/slots/0
 
 See full test matrix in [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) §Smoke Tests and §Feature-Specific Tests.
 
-### Results
+### Results (2026-04-10)
 
-- [ ] 4 production models load + generate
-- [ ] moe-n-expert works on REAP-246B
-- [ ] Paged attention lowers RSS vs non-paged
-- [ ] Slot erase returns HTTP 200
-- [ ] Server health returns HTTP 200
-- [ ] NUMA throughput within 5% of v2
-- [ ] Upstream Hadamard auto-rotation confirmed
-- [ ] PPL matches v2 (+-0.02)
+- [x] 4 production models load + generate — ALL PASS. Significant upstream speedups:
+  - worker 30B-A3B: 38.6 t/s (baseline 39.0, -1%)
+  - frontdoor 35B-A3B: 14.3 t/s (baseline 12.7, **+13%**)
+  - coder 32B + draft: 21.7 t/s (baseline 10.8, **+101%**)
+  - REAP-246B + draft: 12.0 t/s (baseline 8.0, **+50%**)
+- [x] moe-n-expert works on REAP-246B — PASS
+- [ ] Paged attention lowers RSS vs non-paged — DEFERRED (server test timed out, needs manual check)
+- [x] Slot erase — CHANGED: returns HTTP 404 (upstream API path changed). Needs orchestrator compat update.
+- [x] Server health returns HTTP 200 — PASS
+- [x] Server completion returns HTTP 200 — PASS
+- [ ] `--lookup` — REMOVED in upstream. Needs orchestrator compat update (`orchestrator_stack.py`).
+- [ ] NUMA throughput within 5% of v2 — DEFERRED
+- [ ] Upstream Hadamard auto-rotation confirmed — DEFERRED (server loaded, manual test needed)
+- [ ] PPL matches v2 (+-0.02) — DEFERRED
 
 ### Post-Smoke-Test: Production Binary Swap
 

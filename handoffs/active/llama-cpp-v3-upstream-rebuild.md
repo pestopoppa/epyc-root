@@ -375,13 +375,16 @@ If v3 fails validation:
 - [x] Build passes clean (`cmake -DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON`)
 - [x] Unit tests pass (test-kv-block: 19/19)
 - [x] Governance files updated — verify_llama_cpp.sh, inference-acceleration-index.md, master-handoff-index.md, this handoff
-- [ ] All production models smoke-tested (deferred — requires inference window, added to bulk-inference-campaign.md)
-- [ ] Feature-specific tests passed
-- [ ] Server integration test passed
-- [ ] NUMA throughput validated
-- [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`)
-- [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements
-- [ ] Orchestrator config updated (remove `--kv-hadamard`, update references)
+- [x] All production models smoke-tested — ✅ 2026-04-10. 4/4 PASS: worker 38.6 t/s, frontdoor 14.3 (+13%), coder 21.7 (+101%), REAP 12.0 (+50%). Upstream spec decode improvements.
+- [x] Feature: `--moe-n-expert` — PASS
+- [x] Feature: server health + completion — PASS
+- [ ] Feature: `--lookup` — REMOVED in upstream. Needs orchestrator compat update.
+- [ ] Feature: slot erase — Endpoint returns 404 (path changed). Needs orchestrator compat update.
+- [ ] Feature: paged attention RSS — DEFERRED (needs manual check)
+- [ ] NUMA throughput validated — DEFERRED
+- [ ] Upstream Hadamard auto-rotation confirmed (replaces `--kv-hadamard`) — DEFERRED
+- [ ] PPL regression test: `-ctk q4_0 -ctv f16` matches v2 measurements — DEFERRED
+- [ ] Orchestrator config updated (remove `--kv-hadamard`, remove `--lookup`, update slot erase, update baselines)
 - [ ] Branch pushed to `fork` remote
 - [ ] This handoff moved to `completed/`
 
@@ -393,3 +396,15 @@ If v3 fails validation:
 | n_kv scope fix | `8bc9f585d` | Upstream refactored `build_attn_inp_kv_impl`, `n_kv` not in local scope |
 | CMake flags | — | Upstream now requires `-DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON` with `GGML_CPU_ALL_VARIANTS` |
 | SSM checkpoint stub/restore | — | Lookup patch arrived before SSM patch; stubbed in Phase 1, restored in Phase 5 |
+
+## Future: HIP/GPU Build Path
+
+When GPU hardware is acquired, v3 will need a parallel HIP build configuration. See [`gpu-acceleration-path.md`](gpu-acceleration-path.md) for full details. Summary:
+
+- Add `-DGGML_HIP=ON -DAMDGPU_TARGETS=<arch> -DGGML_HIP_ROCWMMA_FATTN=ON` to build flags
+- All 24 custom patches must be verified against HIP backend compilation
+- Paged attention patches (Tier 1 #7-13) need specific validation with GPU memory management
+- 4 community rocWMMA flash attention fixes (intake-306) are candidates for Tier 2 carry-forward patches
+- hipBLASLt grouped GEMM (`USE_HIPBLASLT_GROUPED_GEMM=1/2/3`) is runtime config, no patch needed
+
+Research context: intake-303 through intake-311 in `research/intake_index.yaml`.

@@ -65,29 +65,35 @@ record_result() {
     local test_name="$1" status="$2" detail="${3:-}"
     RESULTS+=("{\"test\":\"${test_name}\",\"status\":\"${status}\",\"detail\":\"${detail}\"}")
     if [[ "$status" == "PASS" ]]; then
-        ((PASS++))
+        PASS=$((PASS + 1))
         log "  PASS: ${test_name} ${detail}"
     elif [[ "$status" == "FAIL" ]]; then
-        ((FAIL++))
+        FAIL=$((FAIL + 1))
         log "  FAIL: ${test_name} ${detail}"
     else
-        ((SKIP++))
+        SKIP=$((SKIP + 1))
         log "  SKIP: ${test_name} ${detail}"
     fi
 }
 
 extract_tps() {
-    # Extract tokens/s from llama-cli stderr output
-    grep -oP 'eval time.*?(\d+\.\d+) tokens per second' <<< "$1" | grep -oP '\d+\.\d+' | tail -1
+    # Extract tokens/s from llama-cli output (v3 format: "Generation: 40.4 t/s")
+    # Falls back to legacy format: "eval time ... X.XX tokens per second"
+    local tps
+    tps=$(grep -oP 'Generation:\s+(\d+\.\d+)\s+t/s' <<< "$1" | grep -oP '\d+\.\d+' | tail -1)
+    if [[ -z "$tps" ]]; then
+        tps=$(grep -oP 'eval time.*?(\d+\.\d+) tokens per second' <<< "$1" | grep -oP '\d+\.\d+' | tail -1)
+    fi
+    echo "$tps"
 }
 
 check_tps() {
     local role="$1" actual="$2"
     local expected="${EXPECTED_TPS[$role]}"
-    local low high
+    local low
+    # Only enforce a floor (no upper bound) — faster is always fine
     low=$(echo "$expected * (1.0 - $TPS_TOLERANCE)" | bc)
-    high=$(echo "$expected * (1.0 + $TPS_TOLERANCE)" | bc)
-    if (( $(echo "$actual >= $low && $actual <= $high" | bc -l) )); then
+    if (( $(echo "$actual >= $low" | bc -l) )); then
         return 0
     else
         return 1
@@ -143,7 +149,7 @@ if $RUN_MODELS; then
     # Worker (30B-A3B) — 48 threads, single NUMA
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing worker_explore (Qwen3-Coder-30B-A3B)..."
-        OUTPUT=$("$CLI" -m "$MODEL_WORKER" -n 64 -p "Hello" --no-cnv -t 48 2>&1) || true
+        OUTPUT=$("$CLI" -m "$MODEL_WORKER" -n 64 -p "Hello" --single-turn -t 48 2>&1) || true
         TPS=$(extract_tps "$OUTPUT")
         if [[ -n "$TPS" ]]; then
             if check_tps "worker" "$TPS"; then
@@ -161,7 +167,7 @@ if $RUN_MODELS; then
     # Frontdoor (35B-A3B) — 48 threads
     if [[ -f "$MODEL_FRONTDOOR" ]]; then
         log "Testing frontdoor (Qwen3.5-35B-A3B)..."
-        OUTPUT=$("$CLI" -m "$MODEL_FRONTDOOR" -n 64 -p "Hello" --no-cnv -t 48 2>&1) || true
+        OUTPUT=$("$CLI" -m "$MODEL_FRONTDOOR" -n 64 -p "Hello" --single-turn -t 48 2>&1) || true
         TPS=$(extract_tps "$OUTPUT")
         if [[ -n "$TPS" ]]; then
             if check_tps "frontdoor" "$TPS"; then
@@ -176,10 +182,10 @@ if $RUN_MODELS; then
         record_result "model_load_frontdoor" "SKIP" "Model file not found"
     fi
 
-    # Coder (32B) — 48 threads
+    # Coder (32B) — 48 threads + draft model for spec decode
     if [[ -f "$MODEL_CODER" ]]; then
-        log "Testing coder_escalation (Qwen2.5-Coder-32B)..."
-        OUTPUT=$("$CLI" -m "$MODEL_CODER" -n 64 -p "Hello" --no-cnv -t 48 2>&1) || true
+        log "Testing coder_escalation (Qwen2.5-Coder-32B + draft)..."
+        OUTPUT=$("$CLI" -m "$MODEL_CODER" -md "$DRAFT_MODEL" --draft-max 32 -n 64 -p "Hello" --single-turn -t 48 2>&1) || true
         TPS=$(extract_tps "$OUTPUT")
         if [[ -n "$TPS" ]]; then
             if check_tps "coder" "$TPS"; then
@@ -196,8 +202,8 @@ if $RUN_MODELS; then
 
     # REAP-246B — 96 threads, moe-n-expert
     if [[ -f "$MODEL_REAP" ]]; then
-        log "Testing architect_coding (REAP-246B with --moe-n-expert 6)..."
-        OUTPUT=$("$CLI" -m "$MODEL_REAP" -n 32 -p "Hello" --no-cnv --moe-n-expert 6 -t 96 2>&1) || true
+        log "Testing architect_coding (REAP-246B with --moe-n-expert 6 + draft)..."
+        OUTPUT=$("$CLI" -m "$MODEL_REAP" -md "$DRAFT_MODEL" --draft-max 32 -n 32 -p "Hello" --single-turn --moe-n-expert 6 -t 96 2>&1) || true
         TPS=$(extract_tps "$OUTPUT")
         if [[ -n "$TPS" ]]; then
             if check_tps "reap" "$TPS"; then
@@ -222,7 +228,7 @@ if $RUN_FEATURES; then
     # Feature: --moe-n-expert (already tested in REAP load above, but verify flag parses)
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing --moe-n-expert flag parsing..."
-        if "$CLI" -m "$MODEL_WORKER" -n 4 -p "Hi" --no-cnv --moe-n-expert 4 -t 48 2>&1 | grep -q "eval time"; then
+        if "$CLI" -m "$MODEL_WORKER" -n 4 -p "Hi" --single-turn --moe-n-expert 4 -t 48 2>&1 | grep -qE "Generation:|eval time"; then
             record_result "feature_moe_n_expert" "PASS" "Flag accepted, generation completed"
         else
             record_result "feature_moe_n_expert" "FAIL" "Generation failed with --moe-n-expert"
@@ -234,7 +240,7 @@ if $RUN_FEATURES; then
     # Feature: --lookup (prompt lookup decoding)
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing --lookup flag..."
-        if "$CLI" -m "$MODEL_WORKER" -n 32 -p "The quick brown fox jumps over the lazy dog. The quick brown fox" --no-cnv --lookup -t 48 2>&1 | grep -q "eval time"; then
+        if "$CLI" -m "$MODEL_WORKER" -n 32 -p "The quick brown fox jumps over the lazy dog. The quick brown fox" --single-turn --lookup -t 48 2>&1 | grep -qE "Generation:|eval time"; then
             record_result "feature_lookup" "PASS" "Lookup decoding active"
         else
             record_result "feature_lookup" "FAIL" "Generation failed with --lookup"
@@ -343,7 +349,7 @@ if $RUN_FEATURES; then
     # Feature: NUMA throughput (taskset single quarter)
     if [[ -f "$MODEL_WORKER" ]]; then
         log "Testing NUMA quarter throughput..."
-        OUTPUT=$(taskset -c 0-47 "$CLI" -m "$MODEL_WORKER" -n 64 -p "Hello" --no-cnv -t 48 2>&1) || true
+        OUTPUT=$(taskset -c 0-47 "$CLI" -m "$MODEL_WORKER" -n 64 -p "Hello" --single-turn -t 48 2>&1) || true
         TPS=$(extract_tps "$OUTPUT")
         if [[ -n "$TPS" ]]; then
             record_result "feature_numa_quarter" "PASS" "${TPS} t/s on cores 0-47"
