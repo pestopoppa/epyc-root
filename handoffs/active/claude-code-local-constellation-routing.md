@@ -1,10 +1,12 @@
 # Handoff: Claude Code Integration with Local LLM Constellation Routing/Delegation
 
 **Created**: 2026-02-13
-**Status**: Phase 0 COMPLETE (MCP chat tools)
-**Updated**: 2026-04-05
-**Priority**: HIGH
+**Status**: DEMOTED TO STUB — Phase 0 complete; Phases 1-3 superseded by Hermes outer shell (2026-04-11)
+**Updated**: 2026-04-11
+**Priority**: LOW (stub — only a thin MCP shim remains relevant)
 **Scope**: Integrate Claude Code UX/runtime entrypoints with this repo's local orchestration stack for optimized routing + delegation across multiple locally-hosted models.
+
+> **2026-04-11 audit note**: Hermes outer shell ([hermes-outer-shell.md](hermes-outer-shell.md)) is the primary frontend. It already uses `/v1/chat/completions` with routing override params (`x_force_model`, `x_max_escalation`, `x_disable_repl`). Phases 1-3 of this handoff (reliability hardening, route explainability, advanced delegation) are shared orchestrator infrastructure driven by Hermes, not Claude Code-specific. The only remaining value is a minimal MCP tool (`orchestrator_chat`) that forwards to the same OpenAI-compat endpoint — Pattern B from this document, a thin shim.
 
 ## Executive Summary
 

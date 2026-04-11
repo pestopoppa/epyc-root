@@ -36,7 +36,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 5 | ~~MED~~ | ~~TrimR deployment~~ Package B ✅ 2026-04-10 (thinking +6pp GPQA, tool A/B +4pp, WS-3 validated) | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05, A/B ✅ 2026-04-10 (+4pp REPL, suite-dependent) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
-| 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05 (MCP chat tools, 15 tests, feature-flagged) | [routing-and-optimization-index](routing-and-optimization-index.md) subsystem table |
+| 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05. Phases 1-3 **demoted to stub** 2026-04-11 — superseded by Hermes outer shell | [claude-code-local-constellation-routing.md](claude-code-local-constellation-routing.md) |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
 | 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills + validation pending) | [hermes-agent-index](hermes-agent-index.md) P2 |
 
@@ -47,9 +47,9 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + archived | KV quantization deployed, KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), monitoring, GPU acceleration path (stub — future) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), GPU acceleration path (stub — future) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 9 | tool-compression P2 done + P3a-b done (55% compressed), REPL turn efficiency S1-S2 done, eval datasets READY, reasoning active + Actions 12-16 (brevity), KB governance DONE + upstream, SEAL prep ready |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression near-complete, REPL turn efficiency S1-S2 done, eval datasets COMPLETED (moved), reasoning active, KB governance COMPLETED (moved), upstream in-progress |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
@@ -60,16 +60,13 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| ~~[02-nanbeige-3b-worker-eval.md](02-nanbeige-3b-worker-eval.md)~~ | Model candidate | ARCHIVED (superseded by 30B-A3B) | — | 2026-04-05 |
-| ~~[04-mirothinker-worker-eval.md](04-mirothinker-worker-eval.md)~~ | Model candidate | ARCHIVED (superseded by 30B-A3B) | — | 2026-04-05 |
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
-| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active | HIGH | 2026-04-06 |
-| [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE | MEDIUM | 2026-04-08 |
-| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (S1 feasibility) | HIGH | 2026-04-09 |
+| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D remaining, G indexed) | HIGH | 2026-04-11 |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (7 tasks, no compute needed) | MEDIUM | 2026-04-11 |
+| [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
+| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
-| [v3-spec-decode-qwen25-bug.md](v3-spec-decode-qwen25-bug.md) | ~~v3 bug: spec decode broken~~ ✅ 2026-04-10 (tree spec auto-enables kv_unified) | FIXED | — | 2026-04-10 |
-| ~~[v3-hybrid-ssm-regression.md](v3-hybrid-ssm-regression.md)~~ | ~~v3 bug: ALL hybrid SSM+MoE models produce empty/gibberish~~ ✅ 2026-04-11 (uninitialized `freeze_recurrent` bool) | FIXED | — | 2026-04-11 |
 
 ---
 

@@ -568,6 +568,33 @@ Then update orchestrator config:
 
 ---
 
+## Package G: Deferred Inference-Dependent Research Tasks
+
+**Duration**: Variable (opportunistic — run during Package D downtime or after D completes)
+**Stack required**: Individual model servers (like Package C)
+**Depends on**: Nothing — independent research evaluation
+**Status**: NOT STARTED — indexed here 2026-04-11 during handoff audit
+
+These tasks are scattered across active handoffs and require inference compute but are not time-critical. Consolidated here so they can be scheduled opportunistically.
+
+| # | Task | Source Handoff | Description | Models Needed | Effort |
+|---|------|---------------|-------------|--------------|--------|
+| G1 | Memento S2 feasibility | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Benchmark KV masking overhead on llama.cpp. Test if KV states from masked blocks preserve accuracy. | Any 8B+ model | ~4h |
+| G2 | TriAttention/Expected Attention S1 | [triattention-kv-selection.md](triattention-kv-selection.md) | Validate Q/K concentration hypothesis on production models. Run KVPress Expected Attention vs baseline on Qwen2.5-Coder-32B. | coder_escalation | ~4h |
+| G3 | TriAttention S2 stacking | [triattention-kv-selection.md](triattention-kv-selection.md) | Test KV selection + Hadamard q4_0 stacking. Quality cliff assessment under dual compression. | coder_escalation | ~4h |
+| G4 | FlowSteer activation steering | [reasoning-compression.md](reasoning-compression.md) Tier 2 | Test nonlinear activation steering for concise reasoning on 30B-A3B worker. | worker_explore | ~6h |
+| G5 | short-m@k voting baseline | [reasoning-compression.md](reasoning-compression.md) Tier 1 | Run k=3 parallel generations, majority vote. Measure accuracy vs single-shot on GPQA/math. | Any reasoning model | ~4h |
+| G6 | v3 clean NUMA throughput | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) | Isolated NUMA test (requires stopping production stack). Compare v3 vs v2 48t quarter throughput. | frontdoor or worker | ~1h |
+
+### Prioritization
+
+- **G1 + G5 together**: Memento KV savings + short-m@k voting is the most promising combo (2-3x KV reduction at zero accuracy cost per deep-dive findings). Run if any GPQA/math eval is already scheduled.
+- **G2 + G3 sequentially**: Only if G2 confirms Q/K concentration. Otherwise skip G3.
+- **G4**: Requires activation hook infrastructure — higher code investment. Defer unless FlowSteer library matures.
+- **G6**: Low priority — v3 smoke tests showed no regression. Only needed for formal baseline documentation.
+
+---
+
 ## Reporting
 
 After each Package completes:

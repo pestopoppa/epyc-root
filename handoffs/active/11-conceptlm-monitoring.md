@@ -1,6 +1,6 @@
 # ConceptLM Monitoring
 
-**Status**: ACTIVE (watch-only)
+**Status**: STALE (watch-only — no concept-level models available as of 2026-04-11)
 **Created**: 2026-03-03
 **Priority**: P3 — no action required, monitor for developments
 **Effort**: None (monitoring only)
