@@ -69,6 +69,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (S1 feasibility) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [v3-spec-decode-qwen25-bug.md](v3-spec-decode-qwen25-bug.md) | ~~v3 bug: spec decode broken~~ ✅ 2026-04-10 (tree spec auto-enables kv_unified) | FIXED | — | 2026-04-10 |
+| [v3-hybrid-ssm-regression.md](v3-hybrid-ssm-regression.md) | v3 bug: ALL hybrid SSM+MoE models produce empty/gibberish | ACTIVE | **CRITICAL** | 2026-04-11 |
 
 ---
 
