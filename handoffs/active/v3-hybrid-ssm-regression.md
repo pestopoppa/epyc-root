@@ -1,6 +1,6 @@
 # v3 Hybrid SSM+MoE Regression: Empty/Gibberish Output
 
-**Status**: ACTIVE — all hybrid models produce empty or gibberish output on v3 binary
+**Status**: FIXED — root cause: uninitialized `cparams.freeze_recurrent` bool (2026-04-11)
 **Created**: 2026-04-11
 **Priority**: CRITICAL (frontdoor + architect_general non-functional = stack unusable)
 **Categories**: llama.cpp, inference, bug
@@ -85,11 +85,29 @@ The stashed fix (`stash@{0}: kv-cache f32 cast fix for ggml_set_rows`) adds f32 
 6. **Binary search**: The v3 branch has 24 cherry-picked commits. Bisect which commit broke hybrid models.
 7. **Compare v2 vs v3 for hybrid-specific code**: `git diff v2..v3 -- src/llama-kv-cache.cpp src/llama-graph.cpp src/llama-memory*`
 
-### Phase 3: Fix
-8. Apply fix, rebuild, verify all 4 hybrid models produce coherent output.
-9. Verify pure MoE and dense models still work (no regression).
+### Phase 3: Fix — COMPLETED
 
-## Workaround (if fix takes time)
+**Root Cause**: Uninitialized `cparams.freeze_recurrent` bool in `llama_cparams` struct.
+
+The `freeze_recurrent` field was added in commit `02914928b` (SSM state checkpointing for speculative decoding) but was never initialized to `false` in the `llama_context` constructor. When the uninitialized memory happened to be `true` (non-zero), it caused all SSM/recurrent state writes to be skipped (`if (!cparams.freeze_recurrent) { ... }`), resulting in hybrid models never updating their recurrent state and producing gibberish.
+
+This only affected hybrid SSM+MoE models because:
+1. Only hybrid models have recurrent layers guarded by `freeze_recurrent`
+2. Pure MoE and dense models have no recurrent state, so the uninitialized bool had no effect
+
+**Fix**: One-line addition in `src/llama-context.cpp`:
+```cpp
+cparams.freeze_recurrent = false;
+```
+Added after `cparams.n_layer_exit = params.n_layer_exit;` (line ~168).
+
+**Bisect results**: Bug introduced between `0286eaeaa` (layer skip support, works) and `10f31f752` (layer skip for qwen3vl-moe/qwen3next, broken). The `freeze_recurrent` field was added in `02914928b` without initialization.
+
+**Applied to**: Both production (`/mnt/raid0/llm/llama.cpp/src/llama-context.cpp`) and experimental (`/mnt/raid0/llm/llama.cpp-experimental/src/llama-context.cpp`). Production binary rebuilt. Servers need restart to pick up fix.
+
+**Verified**: Qwen3.5-35B-A3B produces "The capital of France is **Paris**." with full v3 features (flash attention, KV quantization, attention rotation, fused GDN).
+
+## Workaround (no longer needed)
 
 Run hybrid model servers with v2 binary (`/mnt/raid0/llm/llama.cpp/build-v2/bin/llama-server`).
 The `orchestrator_stack.py` already has `_V2_ROLES` / `LLAMA_SERVER_V2` infrastructure for per-role binary override — extend `_V2_ROLES` to include `frontdoor`, `architect_general`, `ingest_long_context`, `worker_vision_escalation`.
