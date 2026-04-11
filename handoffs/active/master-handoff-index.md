@@ -63,7 +63,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running — AR-3 trial ~78, RI-10 canary to 2026-04-15) | HIGH | 2026-04-11 |
-| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (7 tasks, no compute needed) | MEDIUM | 2026-04-11 |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (3/7 done: LG Phase 3, compression monitoring, REPL S3a) | MEDIUM | 2026-04-11 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |

@@ -1,8 +1,8 @@
 # Tool Token Optimization — Output Compression + Definition Reduction
 
-**Status**: Phase 2 implemented (output compression); Phase 3a-b done (definition audit + compression); A/B done (+4pp REPL, suite-dependent)
+**Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-b done (definition audit + compression); A/B done (+4pp REPL, suite-dependent)
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-04-10
+**Updated**: 2026-04-11
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)

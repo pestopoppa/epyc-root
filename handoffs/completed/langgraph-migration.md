@@ -1,8 +1,8 @@
 # LangGraph Migration — Orchestration Graph
 
-**Status**: phase-2-complete
+**Status**: phase-3-complete
 **Created**: 2026-03-15
-**Updated**: 2026-04-05
+**Updated**: 2026-04-11 (Phase 3: all 7 per-node flags enabled, append-field delta bug fixed)
 **Source**: intake-146 (LangGraph), deep-dive `research/deep-dives/langgraph-ecosystem-comparison.md`
 
 ## Objective

@@ -1,6 +1,6 @@
 # REPL Turn Efficiency — Frecency Discovery + Combined Operations
 
-**Status**: in-progress (S1a-c done, S2a-b done, S4 pending)
+**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference)
 **Created**: 2026-04-09 (from research intake: intake-295, intake-301)
 **Priority**: MEDIUM
 **Categories**: agent_architecture

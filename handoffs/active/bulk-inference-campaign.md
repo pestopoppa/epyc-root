@@ -326,7 +326,7 @@ python3 scripts/benchmark/eval_tale_budget.py \
 | RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-15 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
 | CF Phase 3c | [context-folding-progressive.md](context-folding-progressive.md) | Quality monitor validation on real multi-turn sessions |
 | DS-5 | [routing-and-optimization-index](routing-and-optimization-index.md) P7 | Model exploration via StructuralLab species |
-| LG Phase 3 | [langgraph-migration.md](langgraph-migration.md) | Per-node flag flip + production validation. Infrastructure complete (7 flags, dispatch helper, 48 tests). Flip `ORCHESTRATOR_LANGGRAPH_INGEST=1` first, validate, then proceed down migration order. No inference needed — uses existing production traffic. |
+| ~~LG Phase 3~~ | ~~[langgraph-migration.md](langgraph-migration.md)~~ | ✅ DONE (2026-04-11). All 7 per-node flags enabled in `orchestrator_stack.py`. Fixed append-field delta bug in `_run_via_langgraph`. 72 LG tests + 4495 unit tests pass. |
 
 ### Config Changes (before launch)
 
