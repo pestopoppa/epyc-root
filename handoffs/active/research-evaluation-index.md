@@ -117,7 +117,7 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] **Action 12**: Replace "be concise" with explicit word limits in worker prompts — ✅ 2026-04-09. Format-specific templates in worker_general.md + worker_math.md.
 - [x] **Action 13**: Model-tier-differentiated conciseness — ✅ 2026-04-09. Audit + thinking_reasoning suffix update.
 - [x] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework — ✅ 2026-04-07.
-- [ ] **Action 15**: Evaluate TALE dynamic budget estimation — eval script ready (eval_tale_budget.py), awaiting model servers.
+- [x] **Action 15**: TALE eval — ✅ 2026-04-11 (Package C). Static limits (Action 12) outperform TALE on OAA (baseline 95%, static 75%, TALE 72.5%). TALE matches baseline on math but hurts general. **Decision: keep static limits, TALE deferred.**
 - [x] Upstream linter + templates to root-archetype — ✅ 2026-04-09. Generalized `lint_wiki.py` (dynamic root, configurable paths). 4 brevity templates in `_templates/prompts/`. Companion handoff: [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md).
 
 ### Monitoring (no action unless triggered)

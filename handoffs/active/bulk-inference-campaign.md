@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+E+F done, C ready, D ready. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-12. v3 binary live.)
+**Status**: active (A+B+C+E+F done, D remaining. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-12. v3 binary live + spec decode fixed.)
 **Created**: 2026-04-06
-**Updated**: 2026-04-10
+**Updated**: 2026-04-11
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -303,9 +303,9 @@ python3 scripts/benchmark/eval_tale_budget.py \
 ### Success Criteria
 
 - [x] **CF Phase 2a**: DONE (2026-04-10). 1.5B: faith=2.55, retain=1.45; **30B-A3B: faith=3.0, retain=3.0** (perfect); 32B: errors (v3 spec decode bug, now fixed). **30B-A3B is the minimum viable summarizer.** 1.5B adequate faithfulness but poor retention.
-- [ ] **CF Phase 2b**: L1-L4 DONE (2026-04-10). Faithfulness stable (~2.9) across all levels. **L3 (60%) is the sweet spot**: 82% actual compression, 2.84 retention. L4 retention drops to 2.21. L1 underperforms target (1.7% vs 20%). L5 running.
+- [x] **CF Phase 2b**: DONE (2026-04-11). L3 is the sweet spot: 82% actual compression, 2.84/3 retention. Faithfulness stable (~2.9) across L1-L4. L5 (95%) hits 89.6% compression but retention drops to 1.58. Free-zone boundary = L3.
 - [x] **CF Phase 2c**: Heuristic helpfulness scores correlate with ground truth — ✅ 2026-04-07. Spearman ρ=0.65 (threshold was >0.5). Best config: overlap-heavy (0.1/0.5/0.3/0.1). LLM-based Δ_k comparison deferred (heuristic ground truth sufficient).
-- [ ] **TALE budget**: Running (2026-04-10). First attempt timed out on frontdoor (mlock contention). Restarted on port 8082.
+- [x] **TALE budget**: DONE (2026-04-11). Static limits (Action 12) outperform TALE on OAA. Baseline 95% acc, static 75%, TALE 72.5%. TALE matches baseline on math (95%) but hurts general (50%). **Decision: keep static limits, TALE deferred.**
 
 **Post-Package-C**: Phase 2c scoring formula may be updated with ByteRover compound retention scoring (intake-267). Current 4-signal heuristic evaluated during Package C. If ρ > 0.5, ByteRover 6-signal weights (adding importance + maturity_tier) calibrated using Package C Δ_k ground truth. Does NOT block Package C execution or change its success criteria.
 
@@ -533,8 +533,7 @@ Then update orchestrator config:
   │     └── PACKAGE D ─────── AR-3 + RI-10 Canary + CF-3c + DS-5 (multi-day, full stack)
   │                            B done. Sentinels expanded 10→39. Baseline schema ready.
   │
-  ├── PACKAGE C ──────────── CF Eval Batch (~½ day, individual models) — READY
-  │                            Scripts done, Phase 2c complete (ρ=0.65). 2a/2b need model servers.
+  ├── ✅ PACKAGE C ──────────── DONE (2026-04-11, 30B summarizer, L3 sweet spot, TALE deferred)
   │
   ├── ✅ PACKAGE E ──────────── DONE 2026-04-06 (Hermes PASS, vision fixed 2026-04-08)
   │
@@ -549,7 +548,7 @@ Then update orchestrator config:
 | 2 | ~~**B**~~ | ~~1 day~~ | ✅ DONE 2026-04-10. All phases complete. Tool A/B: compression +4pp REPL. WS-3 fix validated. |
 | 3 | ~~**F**~~ | ~~30 min~~ | ✅ DONE 2026-04-10. 4/4 models PASS, Hadamard PASS, PPL 6.80. v3 binary swapped. |
 | 4 | **D** | Multi-day | B done, prerequisites met (sentinels expanded, baseline schema ready). |
-| 5 | **C** | ~½ day | READY — scripts implemented 2026-04-07. Phase 2c done (heuristic). 2a/2b need individual model servers. |
+| 5 | ~~**C**~~ | ~~½ day~~ | ✅ DONE 2026-04-11. 2a: 30B-A3B perfect summarizer. 2b: L3 sweet spot. 2c: ρ=0.65. TALE: static limits kept. |
 
 **Parallelization note**: F can run anytime (experimental binary, loads models one-at-a-time). C uses individual model servers on a single NUMA quarter — can run during B/D downtime.
 
