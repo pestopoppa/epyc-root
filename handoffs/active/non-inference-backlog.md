@@ -18,14 +18,14 @@
 
 | # | Task | Source Handoff | Target Repo | Description | Effort |
 |---|------|---------------|-------------|-------------|--------|
-| 1 | Brevity prompt upgrade (Action 12) | [reasoning-compression.md](reasoning-compression.md), [research-evaluation-index.md](research-evaluation-index.md) P0.5 | epyc-orchestrator | Explicit word limits in worker prompt templates (format-specific: MC, numeric, open-ended). Zero-cost, no inference needed. | ~1h |
+| ~~1~~ | ~~Brevity prompt upgrade (Action 12)~~ | ~~[reasoning-compression.md](reasoning-compression.md)~~ | ~~epyc-orchestrator~~ | ✅ DONE (Actions 12-15 complete, TALE eval done 2026-04-11). Static limits kept, TALE deferred. | — |
 
 ### P1 — Medium impact
 
 | # | Task | Source Handoff | Target Repo | Description | Effort |
 |---|------|---------------|-------------|-------------|--------|
-| 2 | REPL turn efficiency S4 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | epyc-orchestrator | Contextual suggestions implementation (feature-flagged, gate on Omega improvement) | ~4h |
-| 3 | Hermes outer shell skills + validation | [hermes-outer-shell.md](hermes-outer-shell.md) | epyc-root | Phase 2 remaining: skill registry + validation layer for Hermes frontend | ~4h |
+| 2 | REPL turn efficiency S3a→S4 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | epyc-orchestrator | S3a contextual suggestions prototype (feature-flagged, gate on Omega improvement) is the prerequisite for S4 A/B benchmark | ~4h |
+| 3 | Hermes outer shell Phase 2 completion | [hermes-outer-shell.md](hermes-outer-shell.md) | epyc-root | Phase 2 near-complete: skills done, streaming validated (Package E). Auth deferred. Remaining: E2E test of `x_disable_repl` + `x_max_escalation` with full graph (needs LG Phase 3 + inference). | ~2h |
 | 4 | Dynamic stack Phase E design | [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md) | epyc-orchestrator | Autoresearch exploration integration — design + code for autopilot stack assembly | ~4h |
 | 5 | Tool output compression monitoring | [tool-output-compression.md](tool-output-compression.md) | epyc-orchestrator | Production monitoring setup: dashboards for compression ratios, quality impact tracking | ~2h |
 | 6 | LangGraph Phase 3 flag flips | [bulk-inference-campaign.md](bulk-inference-campaign.md) Package D | epyc-orchestrator | Per-node ORCHESTRATOR_LANGGRAPH_* flag flip + production validation. No inference needed — uses existing production traffic. Start with INGEST. | ~2h |

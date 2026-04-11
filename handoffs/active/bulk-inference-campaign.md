@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+C+E+F done, D remaining. Sentinels expanded 10→39. RI-10 canary extended to 2026-04-15. v3 binary live + spec decode fixed.)
+**Status**: active (A+B+C+E+F done, D running — AR-3 at trial ~78, RI-10 canary extended to 2026-04-15. LG Phase 3 INGEST flag not yet flipped. v3 binary live + spec decode fixed.)
 **Created**: 2026-04-06
 **Updated**: 2026-04-11
 **Categories**: evaluation, inference, coordination
@@ -383,9 +383,9 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 
 ### Prerequisites
 
-- [ ] Package B results analyzed (risk thresholds finalized, difficulty signal validated)
+- [x] Package B results analyzed (risk thresholds finalized, difficulty signal validated, tool A/B complete)
 - [x] AR-3 sentinel pool expanded 10 → 39 questions (2026-04-09). Tier 0 (easy) retained + 29 harder (GPQA, olympiad, multi-hop, tool-use). `per_suite_quality` schema added to baseline.
-- [ ] `autopilot_baseline.yaml` updated with Package B metrics (per_suite_quality values pending)
+- [ ] `autopilot_baseline.yaml` updated with Package B metrics (per_suite_quality values still null — being populated by active autopilot run, trial ~78 as of 2026-04-11)
 
 ### Success Criteria
 

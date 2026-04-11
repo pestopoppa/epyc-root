@@ -32,13 +32,13 @@ Highest-impact work across all domains. Each item points to where the details li
 | 2b | MED | CF Phase 2a/2b eval + Phase 3c quality monitor (need inference) → Package C/D | [routing-and-optimization-index](routing-and-optimization-index.md) CF Phase 2 |
 | 3 | HIGH | RI-10–12 routing rollout (shadow → enforce) → Package D | [routing-and-optimization-index](routing-and-optimization-index.md) P6 |
 | 4 | ~~HIGH~~ | ~~B1/B2/B3/B5/B6/B7 conversation management~~ ✅ 2026-04-05 (6 modules, 99 tests, 4 feature flags) | [hermes-agent-index](hermes-agent-index.md) P0 |
-| 4a | MED | Brevity prompt upgrade: explicit word limits (Action 12, zero-cost) | [research-evaluation-index](research-evaluation-index.md) P0.5 |
+| 4a | ~~MED~~ | ~~Brevity prompt upgrade~~ ✅ Actions 12-15 done, TALE eval 2026-04-11 (static limits kept) | [research-evaluation-index](research-evaluation-index.md) P0.5 |
 | 5 | ~~MED~~ | ~~TrimR deployment~~ Package B ✅ 2026-04-10 (thinking +6pp GPQA, tool A/B +4pp, WS-3 validated) | [research-evaluation-index](research-evaluation-index.md) P0 |
 | 6 | ~~MED~~ | ~~Tool output compression~~ Phase 2 native ✅ 2026-04-05, A/B ✅ 2026-04-10 (+4pp REPL, suite-dependent) | [research-evaluation-index](research-evaluation-index.md) P1 |
 | 7 | MED | OpenDataLoader PDF integration | [pipeline-integration-index](pipeline-integration-index.md) P1 |
 | 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05. Phases 1-3 **demoted to stub** 2026-04-11 — superseded by Hermes outer shell | [claude-code-local-constellation-routing.md](claude-code-local-constellation-routing.md) |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
-| 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills + validation pending) | [hermes-agent-index](hermes-agent-index.md) P2 |
+| 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills done, streaming validated. Auth deferred.) | [hermes-agent-index](hermes-agent-index.md) P2 |
 
 ---
 
@@ -46,10 +46,10 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
-| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 active, P6-P9 pending |
+| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 running (trial ~78), P6 RI-10 canary active (to 2026-04-15), P7-P9 pending |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), GPU acceleration path (stub — future) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression near-complete, REPL turn efficiency S1-S2 done, eval datasets COMPLETED (moved), reasoning active, KB governance COMPLETED (moved), upstream in-progress |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a next), reasoning Actions 12-15 done, eval datasets COMPLETED (moved), KB governance COMPLETED (moved), upstream in-progress |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
@@ -62,7 +62,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 |---------|--------|--------|----------|-------------|
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
-| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D remaining, G indexed) | HIGH | 2026-04-11 |
+| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running — AR-3 trial ~78, RI-10 canary to 2026-04-15) | HIGH | 2026-04-11 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (7 tasks, no compute needed) | MEDIUM | 2026-04-11 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |

@@ -35,7 +35,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
-| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills + validation pending | LOW | 2026-04-05 |
+| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills done, streaming validated (Package E). Auth deferred. | LOW | 2026-04-08 |
 | [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
 | [open_source_orchestrator.md](open_source_orchestrator.md) | Future | stub (awaiting MemRL validation) | LOW | 2026-02-02 |
 
@@ -84,7 +84,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 ✅ P0.B5 (session analytics)    ──DONE (2026-04-05)──
 ✅ P1.B6 (multi-backend)        ──DONE (2026-04-05)──
 ✅ P1.B7 (injection scanning)   ──DONE (2026-04-05)──
-P2 (hermes outer shell)        ──depends on orchestrator stabilization──
+P2 (hermes outer shell)        ──Phase 2 near-complete (skills + streaming done, auth deferred)──
 ✅ P3.B3 (skill hub)            ──DONE (2026-04-05)──
 ✅ P3.B4 (memory curation)      ──DONE (2026-04-05)──
 P4 (open-source)               ──depends on MemRL validation──

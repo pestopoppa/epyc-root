@@ -84,7 +84,7 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 ## Active Work Streams
 
 ### Highest Impact — Deployed
-- **NUMA 4-way parallel** — DEPLOYED 2026-03-19, round-robin routing added 2026-03-24. taskset CPU pinning + `RoundRobinBackend` for multi-instance roles. **Remaining: benchmark 35B 4×48t with moe6+lookup.**
+- **NUMA 4-way parallel** — DEPLOYED 2026-03-19, round-robin routing added 2026-03-24. taskset CPU pinning + `RoundRobinBackend` for multi-instance roles. 35B benchmark: 12.7 t/s/inst moe6-only (~50.8 agg). v3 binary live 2026-04-10.
 - **draft_max optimization** — +17-21% via `--draft-max 32-48`. Already applied to model_registry.yaml.
 
 ### Validated & Complete
@@ -189,7 +189,9 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | Page cache optimization | `completed/multi-model-page-cache.md` | RESOLVED — 361 GB footprint, mlock deployed |
 | **GPU acceleration (future)** | `gpu-acceleration-path.md` | STUB — rocWMMA FA, hipBLASLt grouped GEMM, CPU+GPU hybrid MoE (intake-303–311) |
 
-## Production Model Stack — NUMA-Optimized (Updated 2026-03-29)
+## Production Model Stack — NUMA-Optimized (Updated 2026-03-29, v3 binary live 2026-04-10)
+
+> **Note**: v3 binary swap (2026-04-10) improved coder +101% and REAP +50% via spec decode gains. Per-instance t/s values below are pre-v3 measurements — actual production throughput is higher.
 
 | Role | Model | Size | NUMA Config | Per-inst t/s | Agg t/s | Accel |
 |------|-------|------|------------|-------------|---------|-------|

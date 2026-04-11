@@ -20,7 +20,7 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 run 2: 46 trials. Safety hardened + hybrid eval (T1 real gate). | Relaunch AR-3 |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 relaunched, trial ~78 (Package D active). Safety hardened + hybrid eval (T1 real gate). | Monitor AR-3 via daily reports |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover enhancement (intake-267, design ready) |
@@ -103,7 +103,7 @@ These unblock data-driven stack scheduling.
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
-- [ ] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). T0 sentinels saturated at q=3.0 — need larger eval pool before relaunch. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
+- [x] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). **Run 3 (Package D)**: Relaunched 2026-04-11 with expanded 39-sentinel pool. Trial ~78 as of 2026-04-11. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 ### P6 — Routing Intelligence Phase 6 (controlled rollout)
 
@@ -220,11 +220,11 @@ intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ with
   │     │                            CF Phase 1 validation + difficulty signal + RI-9 profiling + TrimR
   │     │                            Output: data/package_a/<timestamp>/
   │     │
-  │     ├── PACKAGE B (next) ─────── Instrumented Seeding v2 (~1d, full stack)
+  │     ├── ✅ PACKAGE B ────────── DONE (2026-04-10). TrimR +6pp, tool A/B +4pp, WS-3 validated, Omega measured.
   │     │     │                       RI-9 + TrimR + difficulty + Omega + tool A/B
   │     │     │
-  │     │     └── PACKAGE D ────────── AR-3 + RI-10 Canary + CF-3c + DS-5 (multi-day)
-  │     │                               Depends on B for threshold decisions + sentinel expansion
+  │     │     └── PACKAGE D (active) ── AR-3 trial ~78 + RI-10 Canary (to 2026-04-15) + CF-3c + DS-5
+  │     │                               AR-3 relaunched with 39 sentinels. LG Phase 3 INGEST flag not yet flipped.
   │     │
   │     ├── PACKAGE C ────────────── CF Eval Batch (~½d, individual models, independent)
   │     │                             CF Phase 2a/2b/2c
