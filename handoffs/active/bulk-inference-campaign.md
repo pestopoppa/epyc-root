@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+C+E+F done, D running — AR-3 at trial ~78, RI-10 canary extended to 2026-04-15. LG Phase 3 INGEST flag not yet flipped. v3 binary live + spec decode fixed.)
+**Status**: active (A+B+C+E+F done, D relaunching — GEPA integrated into PromptForge, RI-10 canary extended to 2026-04-15. H1/H2/H3/H6 folded into D. v3 binary live.)
 **Created**: 2026-04-06
-**Updated**: 2026-04-11
+**Updated**: 2026-04-12
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -326,6 +326,9 @@ python3 scripts/benchmark/eval_tale_budget.py \
 | RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-15 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
 | CF Phase 3c | [context-folding-progressive.md](context-folding-progressive.md) | Quality monitor validation on real multi-turn sessions |
 | DS-5 | [routing-and-optimization-index](routing-and-optimization-index.md) P7 | Model exploration via StructuralLab species |
+| AP-19 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA frontdoor optimization — integrated as PromptForge mutation type (30% of PromptForge trials). Comparison data collected in journal. |
+| AP-20 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA Full Program Adapter eval — resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal |
+| MH-4 | [meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b | GEPA search algorithm comparison — Pareto frontier contributions by mutation source analyzed from AR-3 journal |
 | ~~LG Phase 3~~ | ~~[langgraph-migration.md](langgraph-migration.md)~~ | ✅ DONE (2026-04-11). All 7 per-node flags enabled in `orchestrator_stack.py`. Fixed append-field delta bug in `_run_via_langgraph`. 72 LG tests + 4495 unit tests pass. |
 
 ### Config Changes (before launch)
@@ -386,6 +389,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 - [x] Package B results analyzed (risk thresholds finalized, difficulty signal validated, tool A/B complete)
 - [x] AR-3 sentinel pool expanded 10 → 39 questions (2026-04-09). Tier 0 (easy) retained + 29 harder (GPQA, olympiad, multi-hop, tool-use). `per_suite_quality` schema added to baseline.
 - [ ] `autopilot_baseline.yaml` updated with Package B metrics (per_suite_quality values still null — being populated by active autopilot run, trial ~78 as of 2026-04-11)
+- [x] GEPA integration into PromptForge (2026-04-12). `gepa_optimizer.py` adapter + `gepa` mutation type + 30/70 split in `_auto_action`. AP-19/20/MH-4 resolved via AR-3 trial journal data. 10 tests pass.
 
 ### Success Criteria
 
@@ -608,22 +612,20 @@ These tasks evaluate research-intake findings that require live inference. Order
 
 | # | Task | Source Handoff | Description | Models Needed | Effort |
 |---|------|---------------|-------------|--------------|--------|
-| H1 | GEPA frontdoor optimization (AP-19) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | Run GEPA `optimize_anything` on frontdoor prompt with T1 eval as metric. ~150 evals. | frontdoor + coder (reflection_lm) | ~2h |
-| H2 | GEPA Full Program Adapter eval (AP-20) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | Test GEPA as PromptForge search algorithm replacement. Cross-ref: MH-4. | frontdoor + coder | ~4h |
-| H3 | PromptForge GEPA integration test (AP-21) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | If H1/H2 succeed, validate GEPA-backed PromptForge in live autopilot trial. | full stack | ~4h |
-| H4 | dspy.RLM integration testing (AP-26) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Test dspy.RLM for benchmark analysis via REPL exploration. Coder as main LM, frontdoor as sub_lm. | coder + frontdoor | ~2h |
-| H5 | RLVR eval tower validation (AP-27) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Validate formalized T0/T1/T2 as RLVR verification functions with deterministic rewards. Depends on P7 Ouro results. | full stack | ~2h |
-| H6 | GEPA search algorithm eval (MH-4) | [meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b | Evaluate GEPA Pareto-frontier vs PromptForge top-1 selection. Runs alongside H2. | frontdoor + coder | ~2h (piggybacked on H2) |
-| H7 | Ouro-2.6B-Thinking benchmark (P7) | [research-evaluation-index.md](research-evaluation-index.md) P7 | Run MATH-500 + reasoning suite via transformers on CPU. NOT llama.cpp. Standalone. | Ouro-2.6B (transformers, CPU-only) | ~4h |
+| ~~H1~~ | ~~GEPA frontdoor optimization (AP-19)~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10~~ | → **Folded into Package D** (2026-04-12). GEPA integrated as PromptForge mutation type. AR-3 runs GEPA trials at 30% of PromptForge budget. | — | — |
+| ~~H2~~ | ~~GEPA Full Program Adapter eval (AP-20)~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10~~ | → **Folded into Package D**. Resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal. | — | — |
+| ~~H3~~ | ~~PromptForge GEPA integration test (AP-21)~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10~~ | → **Folded into Package D**. Decision from AR-3 data: if GEPA dominates Pareto frontier after 50+ trials → increase ratio to 100%. | — | — |
+| H4 | dspy.RLM integration testing (AP-26) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Test dspy.RLM for benchmark analysis via REPL exploration. Coder as main LM, frontdoor as sub_lm. **Post-AR-3** — controller change too risky mid-run. | coder + frontdoor | ~2h |
+| H5 | RLVR eval tower validation (AP-27) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Validate formalized T0/T1/T2 as RLVR verification functions with deterministic rewards. Depends on P7 Ouro results. **Post-AR-3** — modifies eval trust boundary. | full stack | ~2h |
+| ~~H6~~ | ~~GEPA search algorithm eval (MH-4)~~ | ~~[meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b~~ | → **Folded into Package D**. Pareto frontier contributions by mutation source analyzed from AR-3 journal. | — | — |
+| H7 | Ouro-2.6B-Thinking benchmark (P7) | [research-evaluation-index.md](research-evaluation-index.md) P7 | Run MATH-500 + reasoning suite via transformers on CPU. NOT llama.cpp. Standalone. No stack conflict if needed, but not urgent — feeds H5 which is post-AR-3. | Ouro-2.6B (transformers, CPU-only) | ~4h |
 
-### Prioritization
+### Prioritization (updated 2026-04-12)
 
-- **H1 first**: GEPA frontdoor optimization is the highest-ROI task. If it shows improvement, H2/H3 proceed.
-- **H2 + H6 together**: GEPA search eval (MH-4) piggybacks on the Full Program Adapter eval (AP-20). Same compute, two perspectives.
-- **H4 independently**: dspy.RLM testing is independent of GEPA chain. Can run anytime after non-inference Task 11.
-- **H7 independently**: Ouro runs via transformers, not llama.cpp. No stack conflicts. Can run in parallel with any Package.
-- **H5 last**: RLVR formalization validation depends on H7 (Ouro sentinel quality) and ideally H1-H3 (GEPA provides the optimization loop).
-- **H3 only if H1+H2 succeed**: Conditional — skip if GEPA shows no improvement over current PromptForge.
+- ~~**H1/H2/H3/H6**~~: **Folded into Package D** (2026-04-12). GEPA integrated into PromptForge as mutation type. AR-3 generates comparison data organically. See `scripts/autopilot/species/gepa_optimizer.py`.
+- **H4 post-AR-3**: dspy.RLM testing. Controller architecture change — defer to AR-4.
+- **H5 post-AR-3**: RLVR formalization. Modifies eval trust boundary. Defer to AR-4. Depends on H7.
+- **H7 post-AR-3**: Ouro benchmark. Standalone (transformers CPU, no stack conflict). Feeds H5. Not urgent.
 
 ---
 

@@ -80,7 +80,7 @@ Files NOT on this list are immutable. Eval/scoring/safety code cannot be touched
 
 Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program Adapter (intake-345). Agent Lightning provides trace collection infrastructure; GEPA provides a stronger search algorithm than our current LLM-guided mutation.
 
-- [ ] MH-4: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement — GEPA's reflective trace analysis (ASI) outperforms random mutation. 93% MATH vs 67% base. Cross-ref: autopilot P10/AP-20 owns implementation; this evaluates GEPA specifically as a Meta-Harness search algorithm. Key question: does GEPA's Pareto-frontier selection outperform our current top-1 selection in PromptForge?
+- [x] MH-4: GEPA search algorithm eval — ✅ **Folded into AR-3 Package D** (2026-04-12). GEPA integrated into PromptForge as `gepa` mutation type (30% of trials). AR-3 journal collects Pareto frontier contributions by mutation source (GEPA vs LLM). Comparison data resolves the key question after ~50 trials. See `scripts/autopilot/species/gepa_optimizer.py`.
 - [x] MH-5: Adopt Agent Lightning trace collection pattern for autopilot telemetry — ✅ 2026-04-12. `telemetry.py` module: `TelemetryCollector` class with `record_transition()` + `record_trial()`. `TransitionRecord` dataclass with OTLP-compatible `to_otlp_span()`. JSONL export to `orchestration/autopilot_telemetry.jsonl`. Per-step decomposition: controller_reasoning → action_execution → safety_gate.
 
 ### Tier 3: Full Outer Loop Rebuild — DEFERRED

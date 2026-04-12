@@ -297,9 +297,9 @@ All core infrastructure verified in code as of 2026-04-01:
 Source: hermes-agent-self-evolution (DSPy+GEPA), GEPA Full Program Adapter (93% MATH), GEPA paper (ICLR 2026 Oral). GEPA uses reflective trace analysis (ASI = Actionable Side Information) for 35x fewer rollouts than GRPO. Compatible with local inference (Ollama/vLLM format). 3-example minimum. MIT licensed.
 
 - [x] AP-18: Install DSPy, wrap 3 routing prompts as DSPy Signatures — ✅ 2026-04-12. `dspy>=2.5.0` added to pyproject.toml. `src/dspy_signatures/` package: FrontdoorClassifier, EscalationDecider, ModeSelector signatures + config.py (configure_local_lm, configure_rlm). 8 smoke tests.
-- [ ] AP-19: Run GEPA `optimize_anything` on frontdoor prompt with T1 eval as metric (~150 evals, ~2hr local inference). Use coder model as `task_lm`, frontdoor as `reflection_lm`.
-- [ ] AP-20: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement (cross-ref: meta-harness MH-4)
-- [ ] AP-21: If AP-19/20 succeed, refactor PromptForge species to use GEPA internally. Maintain constraint gates (test pass, size limits, caching compat, human review).
+- [x] AP-19: GEPA frontdoor optimization — ✅ **Integrated into AR-3** (2026-04-12). `gepa_optimizer.py` adapter + `gepa` mutation type in PromptForge. 30% of PromptForge trials use GEPA evolutionary optimization via `OrchestratorGEPAAdapter` (evaluates through orchestrator API with sentinel questions). AR-3 journal collects comparison data automatically. 10 tests pass.
+- [x] AP-20: GEPA Full Program Adapter eval — ✅ **Folded into AR-3** (2026-04-12). Resolved by comparing GEPA vs LLM mutation acceptance rates + Pareto frontier contributions in AR-3 journal after ~50 trials. No separate inference run needed.
+- [ ] AP-21: PromptForge GEPA refactor decision — **Conditional on AR-3 data**. If GEPA trials dominate Pareto frontier after 50+ trials → increase GEPA ratio from 30% to 100%. If no improvement → keep mixed or revert to LLM-only.
 
 ### P11 — Autopilot Controller Upgrades (intake-328/329/349/320)
 

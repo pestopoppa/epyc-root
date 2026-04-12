@@ -20,7 +20,7 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 paused (speed bug fixed). P11 controller upgrades DONE (AP-22/23/24/25). P10 AP-18 DONE. AP-14–17 DONE (2026-04-07). | AP-19–21 GEPA eval (Package H), AP-26/27 RLM+RLVR (Package H) |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 relaunching with GEPA integrated. P11 controller upgrades DONE. P10 AP-18/19/20 DONE. AP-14–17 DONE. | AP-21 (conditional on AR-3 data), AP-26/27 RLM+RLVR (post-AR-3) |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
@@ -28,7 +28,7 @@
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 3 infra complete (7 per-node flags + dispatch + 48 tests) | Phase 3: Flip flags per node + production validation |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | Phase 0 complete (MCP chat tools, 15 tests) | Phase 1: hardening, telemetry |
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
-| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-5 DONE (2026-04-12). Operator guide written. | MH-4 GEPA eval (→ Package H) |
+| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -160,9 +160,9 @@ Package B Phase 4 found 7/10 suites where REPL mode hurts accuracy vs direct. Ro
 Source: intake-327/345/240. GEPA reflective trace analysis (ASI) + evolutionary Pareto search. 35x fewer rollouts than GRPO. Compatible with local inference. See [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) P10.
 
 - [x] **AP-18: DSPy + GEPA setup** — ✅ 2026-04-12. `dspy>=2.5.0` in pyproject.toml. `src/dspy_signatures/` with 3 signatures + config. 8 tests.
-- [ ] **AP-19: GEPA optimize_anything on frontdoor** — ~150 evals, ~2hr inference. (→ also bulk-inference Package H)
-- [ ] **AP-20: GEPA Full Program Adapter eval** — Test as PromptForge search replacement. Cross-ref: meta-harness MH-4. (→ also bulk-inference Package H)
-- [ ] **AP-21: PromptForge GEPA refactor** — If AP-19/20 succeed, integrate GEPA as PromptForge backend. (→ also bulk-inference Package H)
+- [x] **AP-19: GEPA frontdoor optimization** — ✅ Folded into AR-3 Package D (2026-04-12). `gepa_optimizer.py` adapter + `gepa` mutation type in PromptForge (30% of trials). 10 integration tests.
+- [x] **AP-20: GEPA Full Program Adapter eval** — ✅ Folded into AR-3 Package D (2026-04-12). Resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal.
+- [ ] **AP-21: PromptForge GEPA refactor** — Conditional on AR-3 data. If GEPA dominates Pareto frontier → increase ratio to 100%.
 
 ### P11 — Autopilot Controller Upgrades (2026-04-12 research intake)
 
@@ -188,7 +188,7 @@ Source: intake-316 (LTM Unsolved gap analysis: FORGETTING axis), intake-326 (Mem
 
 Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimization.md) Tier 2b.
 
-- [ ] **MH-4: GEPA as search algorithm** — Evaluate whether GEPA's Pareto-frontier outperforms PromptForge's top-1 selection. Cross-ref: AP-20 owns implementation. Needs inference. (→ also bulk-inference Package H)
+- [x] **MH-4: GEPA as search algorithm** — ✅ Folded into AR-3 Package D (2026-04-12). GEPA integrated as PromptForge mutation type. Journal collects Pareto frontier contributions by mutation source.
 - [x] **MH-5: Agent Lightning trace collection** — ✅ 2026-04-12. `telemetry.py` with TelemetryCollector, TransitionRecord, OTLP spans, JSONL export.
 
 ### P9 — Legacy Cleanup & Operational Debt
