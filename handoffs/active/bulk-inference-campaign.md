@@ -597,6 +597,34 @@ These tasks are scattered across active handoffs and require inference compute b
 - **G6**: Low priority — v3 smoke tests showed no regression. Only needed for formal baseline documentation.
 - **G7 + G8 + G9 sequentially**: MiniMax M2.7 evaluation (intake-328/329). Requires 108GB+ RAM as standalone (no concurrent models). G7 first (throughput feasibility), G8 (tool-calling), G9 (quality comparison) only if G7 shows viable throughput. Note: model claims SWE-Pro 56.22% and GDPval-AA ELO 1495 (highest open-source). Self-evolution methodology already captured in autopilot P11.
 
+## Package H: Research-Driven Inference Tasks (2026-04-12 research intake)
+
+**Duration**: Variable (~12-16h total if sequential)
+**Stack required**: Standard orchestrator stack (frontdoor + coder) for most; Ouro needs transformers separately
+**Depends on**: Non-inference Tasks 10-11 (DSPy/GEPA install + dspy.RLM setup)
+**Status**: NOT STARTED — indexed 2026-04-12 from research intake deep-dives
+
+These tasks evaluate research-intake findings that require live inference. Ordered by dependency chain.
+
+| # | Task | Source Handoff | Description | Models Needed | Effort |
+|---|------|---------------|-------------|--------------|--------|
+| H1 | GEPA frontdoor optimization (AP-19) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | Run GEPA `optimize_anything` on frontdoor prompt with T1 eval as metric. ~150 evals. | frontdoor + coder (reflection_lm) | ~2h |
+| H2 | GEPA Full Program Adapter eval (AP-20) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | Test GEPA as PromptForge search algorithm replacement. Cross-ref: MH-4. | frontdoor + coder | ~4h |
+| H3 | PromptForge GEPA integration test (AP-21) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | If H1/H2 succeed, validate GEPA-backed PromptForge in live autopilot trial. | full stack | ~4h |
+| H4 | dspy.RLM integration testing (AP-26) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Test dspy.RLM for benchmark analysis via REPL exploration. Coder as main LM, frontdoor as sub_lm. | coder + frontdoor | ~2h |
+| H5 | RLVR eval tower validation (AP-27) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Validate formalized T0/T1/T2 as RLVR verification functions with deterministic rewards. Depends on P7 Ouro results. | full stack | ~2h |
+| H6 | GEPA search algorithm eval (MH-4) | [meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b | Evaluate GEPA Pareto-frontier vs PromptForge top-1 selection. Runs alongside H2. | frontdoor + coder | ~2h (piggybacked on H2) |
+| H7 | Ouro-2.6B-Thinking benchmark (P7) | [research-evaluation-index.md](research-evaluation-index.md) P7 | Run MATH-500 + reasoning suite via transformers on CPU. NOT llama.cpp. Standalone. | Ouro-2.6B (transformers, CPU-only) | ~4h |
+
+### Prioritization
+
+- **H1 first**: GEPA frontdoor optimization is the highest-ROI task. If it shows improvement, H2/H3 proceed.
+- **H2 + H6 together**: GEPA search eval (MH-4) piggybacks on the Full Program Adapter eval (AP-20). Same compute, two perspectives.
+- **H4 independently**: dspy.RLM testing is independent of GEPA chain. Can run anytime after non-inference Task 11.
+- **H7 independently**: Ouro runs via transformers, not llama.cpp. No stack conflicts. Can run in parallel with any Package.
+- **H5 last**: RLVR formalization validation depends on H7 (Ouro sentinel quality) and ideally H1-H3 (GEPA provides the optimization loop).
+- **H3 only if H1+H2 succeed**: Conditional — skip if GEPA shows no improvement over current PromptForge.
+
 ---
 
 ## Reporting

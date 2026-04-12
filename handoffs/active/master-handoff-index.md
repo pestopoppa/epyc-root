@@ -39,6 +39,11 @@ Highest-impact work across all domains. Each item points to where the details li
 | 8 | ~~MED~~ | ~~CC local integration~~ Phase 0 ✅ 2026-04-05. Phases 1-3 **demoted to stub** 2026-04-11 — superseded by Hermes outer shell | [claude-code-local-constellation-routing.md](claude-code-local-constellation-routing.md) |
 | 9 | LOW | Multimodal vision live validation | [pipeline-integration-index](pipeline-integration-index.md) P0 |
 | 10 | LOW | Hermes outer shell Phase 2 (routing API done, skills done, streaming validated. Auth deferred.) | [hermes-agent-index](hermes-agent-index.md) P2 |
+| 11 | MED | **GEPA PromptForge integration** (AP-18–21). DSPy setup (non-inference) → GEPA optimize_anything (~2hr) → Full Program Adapter → PromptForge refactor | [routing-and-optimization-index](routing-and-optimization-index.md) P10 |
+| 12 | MED | **Autopilot controller upgrades** (AP-22–27). Short-term memory + self-criticism (non-inference) → dspy.RLM setup → RLVR formalization | [routing-and-optimization-index](routing-and-optimization-index.md) P11 |
+| 13 | MED | **Context folding provenance** (CF-P1–P4). All non-inference: validity timestamps, supersession detection, metadata filtering, hybrid raw+derived | [routing-and-optimization-index](routing-and-optimization-index.md) P10b |
+| 14 | MED | **Ouro-2.6B-Thinking eval** (P7). Download + MATH-500 CPU benchmark + T0 sentinel candidate | [research-evaluation-index](research-evaluation-index.md) P7 |
+| 15 | LOW | **MiniMax M2.7 eval** (G7–G9). 108GB GGUF download + EPYC benchmark + quality comparison vs Qwen3 stack | [bulk-inference-campaign](bulk-inference-campaign.md) Package G |
 
 ---
 
@@ -46,10 +51,10 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
-| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 running (trial ~78), P6 RI-10 canary active (to 2026-04-15), P7-P9 pending |
+| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 running (trial ~78), P6 RI-10 canary, P7-P9 pending, **P10/P10b/P10c/P11 queued** (2026-04-12 intake) |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), GPU acceleration path (stub — future) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a next), reasoning Actions 12-15 done, eval datasets COMPLETED (moved), KB governance COMPLETED (moved), upstream in-progress |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen expanded to 4 mechanisms |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
@@ -62,8 +67,8 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 |---------|--------|--------|----------|-------------|
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | stub | LOW | 2026-04-05 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
-| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running — AR-3 trial ~78, RI-10 canary to 2026-04-15) | HIGH | 2026-04-11 |
-| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (3/7 done: LG Phase 3, compression monitoring, REPL S3a) | MEDIUM | 2026-04-11 |
+| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (5/7 original done, **+10 new tasks from research intake → 17 total**) | MEDIUM | 2026-04-12 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
