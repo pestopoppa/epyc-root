@@ -224,3 +224,44 @@ For entries with `verdict: new_opportunity` AND `relevance: high` that don't mat
 - DO create handoff stubs for new opportunities (Phase 4b).
 - Respect the 10-entry expansion cap per run.
 - Always run validation after persisting.
+
+## Verification Gates
+
+### Phase 0 — Session Resume Check
+- Evidence: Either `.research-session.json` does not exist (fresh start), OR session decision (resume/fresh) was explicitly stated.
+- Gate: Do not proceed to Phase 1 until session state is resolved.
+
+### Phase 1 — Fetch & Extract
+- Evidence per entry: (1) `source_type` determined from URL pattern, (2) duplicate check against `intake_index.yaml` by arxiv_id and URL, (3) WebFetch call made and content received, (4) at least 3 `key_claims` extracted from actual content.
+- Gate: Every URL must have a Phase 1 output block before Phase 2 begins.
+
+### Phase 2 — Cross-Reference
+- Evidence per entry: (1) `cross-reference-map.md` read and category mapping applied, (2) at least one directory searched per applicable type, (3) novelty/relevance/credibility each have explicit justification, (4) verdict assigned with reasoning.
+- Gate: All non-duplicate entries must complete cross-referencing before Phase 3.
+
+### Phase 3 — Literature Expansion
+- Evidence: (1) Expansion only for entries with `relevance >= medium`, (2) total new entries <= 10, (3) Tier 2b contradicting evidence search performed for qualifying entries, (4) expanded entries have `discovered_via` and `expanded_from` fields.
+- Gate: Expansion count verified <= 10 before Phase 4.
+
+### Phase 4 — Handoff Integration
+- Evidence: (1) Updated handoffs show `## Research Intake Update` section with today's date, (2) created stubs follow exact template, (3) `handoffs_updated` and `handoffs_created` fields populated.
+- Gate: Handoff files written and verifiable before Phase 5.
+
+### Phase 5 — Report & Persist
+- Evidence: (1) Report printed with all table columns populated, (2) entries appended to `intake_index.yaml` with sequential IDs, (3) `validate_intake.py` returns exit code 0, (4) `.research-session.json` cleaned up.
+- Gate: Do not declare complete until validation passes.
+
+## Anti-Rationalization
+
+| Excuse | Rebuttal |
+|--------|----------|
+| "This URL looks like a duplicate, I'll skip the index check" | The index check IS the dedup mechanism. Check `intake_index.yaml` by arxiv_id and URL — only assign `novelty: duplicate` after a confirmed match. |
+| "I'll score novelty from the title alone — the content is long" | Titles are marketing. Novelty requires reading key claims, techniques, and results from actual content. |
+| "Credibility scoring is optional for this entry" | Credibility is null only for repos/blogs without empirical claims. If a paper makes empirical claims, score it. |
+| "No need for Tier 2b contradicting evidence search — results seem solid" | Confirmation bias is exactly why Tier 2b exists. "Seems solid" is the judgment this step checks. |
+| "The expansion cap of 10 is a soft limit" | The cap prevents context explosion. For large batches, run a second session — don't blow the cap. |
+| "I'll skip cross-reference for this low-relevance entry" | Cross-referencing runs for all non-duplicate entries regardless of relevance. Low-relevance items may cross-reference handoffs unpredictably. |
+| "The validation script will catch any issues" | The validator catches schema violations, not semantic errors. Be precise at write time. |
+| "This entry doesn't need a session checkpoint" | Even single-URL runs should write `.research-session.json`. Crashes happen mid-Phase-4. |
+| "I'll skip creating a stub — the technique isn't proven enough" | The threshold is: verdict=new_opportunity AND relevance=high AND no existing handoff match. If conditions hold, create the stub. |
+| "I'll write the report from memory" | The report must reflect persisted data. Read back from `intake_index.yaml` after writing. |

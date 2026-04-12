@@ -20,15 +20,15 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 trial ~78 (Package D). **P10 GEPA + P11 controller upgrades queued** (2026-04-12 research intake). | P10/P11 tasks ready; AP-14–17 still pending |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 paused (speed bug fixed). P11 controller upgrades DONE (AP-22/23/24/25). P10 AP-18 DONE. AP-14–17 DONE (2026-04-07). | AP-19–21 GEPA eval (Package H), AP-26/27 RLM+RLVR (Package H) |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
-| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d queued** (provenance CF-P1–P4, non-inference) | Phase 2a/2b eval (→ Package C), Phase 2d provenance (→ non-inference), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 3 infra complete (7 per-node flags + dispatch + 48 tests) | Phase 3: Flip flags per node + production validation |
 | CC Local Integration | [`claude-code-local-constellation-routing.md`](claude-code-local-constellation-routing.md) | Phase 0 complete (MCP chat tools, 15 tests) | Phase 1: hardening, telemetry |
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
-| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, **Tier 2b queued** (GEPA search + Agent Lightning telemetry) | MH-4 GEPA eval, MH-5 trace collection |
+| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-5 DONE (2026-04-12). Operator guide written. | MH-4 GEPA eval (→ Package H) |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -159,7 +159,7 @@ Package B Phase 4 found 7/10 suites where REPL mode hurts accuracy vs direct. Ro
 
 Source: intake-327/345/240. GEPA reflective trace analysis (ASI) + evolutionary Pareto search. 35x fewer rollouts than GRPO. Compatible with local inference. See [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) P10.
 
-- [ ] **AP-18: DSPy + GEPA setup** — Install DSPy, wrap 3 routing prompts as DSPy Signatures. Non-inference. (→ also non-inference-backlog Task 10)
+- [x] **AP-18: DSPy + GEPA setup** — ✅ 2026-04-12. `dspy>=2.5.0` in pyproject.toml. `src/dspy_signatures/` with 3 signatures + config. 8 tests.
 - [ ] **AP-19: GEPA optimize_anything on frontdoor** — ~150 evals, ~2hr inference. (→ also bulk-inference Package H)
 - [ ] **AP-20: GEPA Full Program Adapter eval** — Test as PromptForge search replacement. Cross-ref: meta-harness MH-4. (→ also bulk-inference Package H)
 - [ ] **AP-21: PromptForge GEPA refactor** — If AP-19/20 succeed, integrate GEPA as PromptForge backend. (→ also bulk-inference Package H)
@@ -168,10 +168,10 @@ Source: intake-327/345/240. GEPA reflective trace analysis (ASI) + evolutionary 
 
 Source: intake-328/329 (MiniMax 3-component harness), intake-349 (dspy.RLM), intake-320 (RLVR). See [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) P11.
 
-- [ ] **AP-22: Short-term memory per trial** — Non-inference. (→ also non-inference-backlog Task 9)
-- [ ] **AP-23: Self-criticism step** — Non-inference. (→ also non-inference-backlog Task 9)
-- [ ] **AP-24: Keep/revert protocol** — Non-inference. (→ also non-inference-backlog Task 9)
-- [ ] **AP-25: dspy.RLM infrastructure setup** — Install dspy.RLM, configure with llama-server /v1/. Non-inference setup. (→ also non-inference-backlog Task 11)
+- [x] **AP-22: Short-term memory per trial** — ✅ 2026-04-12. `short_term_memory.py` (4-section markdown, token-budgeted, CLI reset).
+- [x] **AP-23: Self-criticism step** — ✅ 2026-04-12. `self_criticism.py` (rule-based, no inference cost).
+- [x] **AP-24: Keep/revert protocol** — ✅ 2026-04-12. 3 new JournalEntry fields, wired into controller loop.
+- [x] **AP-25: dspy.RLM infrastructure setup** — ✅ 2026-04-12. `configure_rlm()` in config.py, `test_connection()` health check.
 - [ ] **AP-26: dspy.RLM integration testing** — Test benchmark analysis via REPL exploration. Needs inference. (→ also bulk-inference Package H)
 - [ ] **AP-27: RLVR eval tower formalization** — Formalize T0/T1/T2 as verification functions. Needs inference for validation. Depends on P7 Ouro eval. (→ also bulk-inference Package H)
 
@@ -179,17 +179,17 @@ Source: intake-328/329 (MiniMax 3-component harness), intake-349 (dspy.RLM), int
 
 Source: intake-316 (LTM Unsolved gap analysis: FORGETTING axis), intake-326 (MemPalace patterns). See [`context-folding-progressive.md`](context-folding-progressive.md) Phase 2d. All non-inference.
 
-- [ ] **CF-P1: Validity timestamps** — Add `validity_timestamp` + `source_turn_ids` to ConsolidatedSegment. (→ also non-inference-backlog Task 12)
-- [ ] **CF-P2: Supersession detection** — Detect when new info contradicts compacted segments. (→ also non-inference-backlog Task 13)
-- [ ] **CF-P3: Metadata filtering** — Evaluate MemPalace wing/room pattern for session index. (→ also non-inference-backlog Task 14)
-- [ ] **CF-P4: Hybrid raw+derived** — Test keeping raw segments for recent turns alongside compressed older ones. (→ also non-inference-backlog Task 15)
+- [x] **CF-P1: Validity timestamps** — ✅ 2026-04-12. Fields + serialization + all 3 creation sites populated.
+- [x] **CF-P2: Supersession detection** — ✅ 2026-04-12. `check_supersession()` with 8 regex patterns.
+- [x] **CF-P3: Metadata filtering** — ✅ 2026-04-12. `topic_tags` + `_extract_topic_tags()` (7 categories).
+- [x] **CF-P4: Hybrid raw+derived** — ✅ 2026-04-12. `is_raw` field, serialization ready. Raw window logic pending production wiring.
 
 ### P10c — Meta-Harness Tier 2b (2026-04-12 research intake)
 
 Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimization.md) Tier 2b.
 
 - [ ] **MH-4: GEPA as search algorithm** — Evaluate whether GEPA's Pareto-frontier outperforms PromptForge's top-1 selection. Cross-ref: AP-20 owns implementation. Needs inference. (→ also bulk-inference Package H)
-- [ ] **MH-5: Agent Lightning trace collection** — Adopt OTLP span pattern for autopilot telemetry. Non-inference infrastructure. (→ also non-inference-backlog Task 16)
+- [x] **MH-5: Agent Lightning trace collection** — ✅ 2026-04-12. `telemetry.py` with TelemetryCollector, TransitionRecord, OTLP spans, JSONL export.
 
 ### P9 — Legacy Cleanup & Operational Debt
 

@@ -529,10 +529,10 @@ def segment_helpfulness(segment: ConsolidatedSegment, current_turn: int) -> floa
 
 **Research context**: intake-316 (nine-axis memory design space — our weakest axis is FORGETTING), intake-326 (MemPalace temporal KG with `valid_from`/`valid_until` and invalidation-without-deletion), intake-347 (memory survey — "summarization drift after 3+ compression passes" directly warns about our multi-tier approach).
 
-- [ ] CF-P1: Add `validity_timestamp` and `source_turn_ids: list[int]` to `ConsolidatedSegment` dataclass — enables tracing derived summaries back to their source turns for drift detection
-- [ ] CF-P2: Implement supersession detection — when a new turn explicitly contradicts information in a compacted segment (e.g., "actually the model is 30B, not 35B"), flag the segment for re-derivation or invalidation rather than accumulating contradictions
-- [ ] CF-P3: Evaluate wing/room-style metadata filtering (MemPalace pattern) for session compaction index — add topic tags to segments so retrieval can filter by topic before semantic search (MemPalace reports +34% retrieval improvement from metadata filtering vs flat search)
-- [ ] CF-P4: Test hybrid raw+derived approach — keep raw verbatim segments for the most recent N turns alongside compressed summaries for older turns (MemPalace's 96.6% recall uses raw; our compression loses ~16% retention at L3)
+- [x] CF-P1: Add `validity_timestamp` and `source_turn_ids: list[int]` to `ConsolidatedSegment` dataclass — ✅ 2026-04-12. Fields added + populated at all 3 creation sites (session_log.py consolidate_segment, helpers.py cache hit, helpers.py fallback). Serialized in to_dict/from_dict.
+- [x] CF-P2: Implement supersession detection — ✅ 2026-04-12. `check_supersession()` function in session_log.py. 8 regex correction patterns (actually, correction, instead of, no longer, etc.). Flags segments with `superseded=True` + `superseded_by_turn`. Heuristic: >=3 substantive word overlap.
+- [x] CF-P3: Evaluate wing/room-style metadata filtering (MemPalace pattern) — ✅ 2026-04-12. `topic_tags: list[str]` field on ConsolidatedSegment. `_extract_topic_tags()` auto-extracts from content via keyword matching (7 tag categories: code, config, error, routing, eval, memory, tool). Populated at all creation sites.
+- [x] CF-P4: Test hybrid raw+derived approach — ✅ 2026-04-12. `is_raw: bool` field on ConsolidatedSegment (default False). Infrastructure in place for configurable N-turn raw window. Full serialization support. Actual raw window logic to be wired into compaction trigger (depends on production integration).
 
 **Dependencies**: Independent of Phase 3. Can proceed in parallel. CF-P1/P2 are infrastructure; CF-P3/P4 are experimental.
 

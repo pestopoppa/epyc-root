@@ -88,6 +88,37 @@ memory:
   flush_min_turns: 6
 
 # =============================================================================
+# MemPalace MCP — Persistent Cross-Session Memory (Task H-8)
+# =============================================================================
+# MemPalace provides knowledge-graph-backed persistent memory via MCP protocol.
+# Local-first: ChromaDB (vectors) + SQLite (structured). MIT licensed.
+# 19 tools: palace CRUD, memory read/write/search, KG, navigation, agent diary.
+# 96.6% LongMemEval recall. Source: intake-326.
+#
+# Registration (Claude Code):
+#   claude mcp add mempalace -- python3 -m mempalace.mcp_server
+#
+# Setup script: scripts/hermes/mempalace_setup.sh
+# Data directory: ~/.mempalace/ (chroma + sqlite)
+#
+# Hermes integration: When Hermes connects through the orchestrator API,
+# MemPalace MCP tools are available as mcp__mempalace__* tools. This gives
+# Hermes persistent cross-session memory beyond its built-in flat-file system.
+#
+# Tool categories:
+#   Palace management  — palace_create, palace_list, palace_delete, palace_info
+#   Memory read/write  — palace_read, palace_write, palace_update, palace_delete_memory,
+#                         palace_search, palace_list_memories
+#   Knowledge graph    — kg_add_entity, kg_add_relation, kg_query, kg_visualize
+#   Navigation         — palace_navigate, palace_map
+#   Agent diary        — diary_write, diary_read, diary_search
+mempalace:
+  enabled: true
+  data_dir: "~/.mempalace"
+  transport: stdio
+  command: "python3 -m mempalace.mcp_server"
+
+# =============================================================================
 # Agent Behavior
 # =============================================================================
 agent:

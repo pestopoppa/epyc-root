@@ -1,6 +1,6 @@
 # REPL Turn Efficiency — Frecency Discovery + Combined Operations
 
-**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference)
+**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference, S5 analysis done 2026-04-12)
 **Created**: 2026-04-09 (from research intake: intake-295, intake-301)
 **Priority**: MEDIUM
 **Categories**: agent_architecture
@@ -92,7 +92,7 @@ After each tool output, append 2-3 likely next commands based on frecency data +
 
 ### Work items
 
-- [ ] S3a: Prototype contextual suggestions (behind feature flag `REPL_SUGGESTIONS`, default OFF)
+- [x] S3a: Prototype contextual suggestions (behind feature flag `REPL_SUGGESTIONS`, default OFF) — ✅ 2026-04-11. Implemented `suggestions.py` (`_SuggestionsMixin`, co-occurrence engine, 17 tests). Feature flag `REPL_SUGGESTIONS` (default OFF).
 
 ---
 
@@ -127,6 +127,48 @@ After each tool output, append 2-3 likely next commands based on frecency data +
 | [research-evaluation-index.md](research-evaluation-index.md) | Tracked under P6 |
 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | P11/AP-25: dspy.RLM integration — REPL patterns (metadata-first context, SUBMIT()) |
 
-## S5: dspy.RLM REPL Patterns (future, cross-ref autopilot P11)
+## S5: dspy.RLM REPL Patterns (cross-ref autopilot P11)
 
-Source: intake-331 (predict-rlm), intake-349 (dspy.RLM). The metadata-first exploration pattern and SUBMIT() termination mechanism could inform future REPL efficiency. `llm_query_batched()` with `asyncio.gather()` could replace sequential tool calls. Depends on autopilot P11/AP-25 results.
+(cross-reference analysis complete 2026-04-12, implementation proposals ready for prioritization)
+
+Source: intake-331 (predict-rlm), intake-349 (dspy.RLM). DSPy infrastructure installed in AP-18 (`src/dspy_signatures/`), RLM dual-LM config wired in AP-25 (`configure_rlm` — coder as main LM, frontdoor as sub_lm). AP-26 (RLM integration testing) still pending inference.
+
+### Pattern Mapping
+
+| dspy.RLM Pattern | Current REPL Feature | Gap |
+|---|---|---|
+| Metadata-first exploration (sub_lm scans workspace structure before main LM acts) | `_RoutingMixin._recall()` — MemRL episodic retrieval returns Q-value-ranked past tasks + `_route_advice()` for routing decisions | No workspace scan tool. Multi-turn `list_dir` chains waste turns because `_recall()` only searches episodic memory (past tasks), not the live file tree. Models must chain `list_dir` -> `peek` -> `list_dir` to orient, often 3-4 turns before productive work begins. |
+| SUBMIT() termination (explicit success signal with structured output) | `FINAL("answer")` signal (`context.py:169`) raises `FinalSignal` exception to halt REPL loop; enforces `min_exploration_calls` gate | No `STUCK("reason")` signal. When a model hits a dead end (wrong file, missing context, tool error), it either wastes turns retrying or emits a low-quality `FINAL`. The only escape hatch is `_escalate(reason)`, which requests a different model entirely — there is no lightweight "I need help with X" signal that stays within the current turn budget. |
+| `llm_query_batched()` + `asyncio.gather()` (concurrent LLM inference for independent sub-queries) | `parallel_dispatch.py` — `ThreadPoolExecutor` for concurrent read-only tool calls (AST-analyzed, max 4 workers); `llm_batch()` / `llm_batch_async()` in `LLMPrimitives` for multi-prompt inference | No concurrent LLM inference batching at the REPL tool level. `parallel_dispatch.py` parallelizes tool calls (peek, grep) but not LLM calls. `llm_batch()` exists in primitives but is not exposed as a REPL combined-op. Models that need multiple sub-queries (e.g., "summarize sections A, B, C") must call `llm_call()` sequentially or know to use `delegate(parallel=True)`, which has high overhead (full context injection per item). |
+
+### Improvement Proposals
+
+**Gap 1 — Workspace scan tool (`workspace_scan`)**
+
+Add a `_workspace_scan(query)` method to `_CombinedOpsMixin` that performs metadata-first exploration in a single turn: `list_dir` of project root + frecency-ranked file list + `code_search` hit summary. This mirrors dspy.RLM's sub_lm pre-scan where the cheap model gathers workspace structure before the main model commits to an action plan. The frontdoor model (already configured as `sub_lm` in `configure_rlm`) could power the scan via `dspy.context(lm=sub_lm)`, keeping main model context clean. Implementation: extend `_CombinedOpsMixin` with a new method that chains `list_dir(".")` + `FrecencyStore.top_k(10)` + `code_search(query, limit=5)` into a single TOON-encoded result. Estimated effort: 4-6 hours (method + tests + feature flag).
+
+**Gap 2 — `STUCK("reason")` signal**
+
+Add a `STUCK(reason, context={})` function alongside `FINAL()` in `context.py`. When called, it does NOT terminate the REPL loop. Instead it: (a) logs the stuck reason to `_exploration_log`, (b) queries `_recall()` for similar stuck situations and their resolutions, (c) returns a guidance block with suggested recovery actions (from co-occurrence data in `_SuggestionsMixin`), and (d) resets the turn counter partially so the model gets a few more attempts. This is lower-cost than `_escalate()` (which swaps models) and more structured than the model just retrying blindly. Implementation: add `_stuck()` to `_ContextMixin` in `context.py`, wire episodic recall for recovery patterns. Estimated effort: 6-8 hours (signal + recovery logic + tests + prompt update to teach models about STUCK).
+
+**Gap 3 — REPL-level `llm_batch` combined-op**
+
+Expose `llm_batch()` as a first-class REPL tool rather than requiring models to know about `LLMPrimitives` internals. Add `_batch_llm_query(prompts, role)` to `_CombinedOpsMixin` that wraps `llm_primitives.llm_batch()` with TOON encoding, exploration counting, and the same feature flag as other combined ops. For async contexts (future), bridge to `llm_batch_async()` with `asyncio.gather()` — the implementation already exists in `primitives.py:707` but is unreachable from the REPL sandbox. Estimated effort: 3-4 hours (thin wrapper + tests; the hard work is already done in `LLMPrimitives`).
+
+### Dependencies
+
+| Dependency | Status | Required For |
+|---|---|---|
+| AP-18: DSPy signatures installed (`src/dspy_signatures/`) | Done (2026-04-12) | All S5 proposals (DSPy import path) |
+| AP-25: `configure_rlm(main_lm, sub_lm)` | Done (2026-04-12) | Gap 1 (sub_lm for workspace scan) |
+| AP-26: RLM integration testing | Pending (needs inference) | Validating sub_lm scan quality |
+| S1a: `FrecencyStore` | Done (2026-04-09) | Gap 1 (frecency-ranked file list in scan) |
+| S3a: `_SuggestionsMixin` | Done (2026-04-11) | Gap 2 (co-occurrence data for recovery suggestions) |
+| S2b: `_CombinedOpsMixin` | Done (2026-04-09) | Gaps 1 and 3 (host mixin for new methods) |
+| S4: A/B benchmark | Pending | Measuring turn reduction from all S5 proposals |
+
+### Priority Ranking (impact per effort hour)
+
+1. **Gap 3 — `_batch_llm_query` combined-op** (HIGH impact / LOW effort). 3-4 hours. The underlying `llm_batch()` already works; this is purely a REPL exposure issue. Every multi-sub-query task (common in agentic/coder suites) benefits immediately. Unblocked now.
+2. **Gap 1 — `workspace_scan` tool** (HIGH impact / MEDIUM effort). 4-6 hours. Directly targets the 3-4 wasted orientation turns observed in file-exploration tasks. Blocked on AP-26 for sub_lm quality validation, but can be built with frecency-only fallback first.
+3. **Gap 2 — `STUCK("reason")` signal** (MEDIUM impact / MEDIUM-HIGH effort). 6-8 hours. Reduces wasted turns on dead-end paths, but the recovery logic (episodic recall for similar stuck situations) adds complexity. Should be built after Gap 1/3 prove the combined-op pattern works at the REPL level.

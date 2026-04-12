@@ -296,7 +296,7 @@ All core infrastructure verified in code as of 2026-04-01:
 
 Source: hermes-agent-self-evolution (DSPy+GEPA), GEPA Full Program Adapter (93% MATH), GEPA paper (ICLR 2026 Oral). GEPA uses reflective trace analysis (ASI = Actionable Side Information) for 35x fewer rollouts than GRPO. Compatible with local inference (Ollama/vLLM format). 3-example minimum. MIT licensed.
 
-- [ ] AP-18: Install DSPy, wrap 3 routing prompts (frontdoor classifier, mode_handler, escalation_decision) as DSPy Signatures
+- [x] AP-18: Install DSPy, wrap 3 routing prompts as DSPy Signatures — ✅ 2026-04-12. `dspy>=2.5.0` added to pyproject.toml. `src/dspy_signatures/` package: FrontdoorClassifier, EscalationDecider, ModeSelector signatures + config.py (configure_local_lm, configure_rlm). 8 smoke tests.
 - [ ] AP-19: Run GEPA `optimize_anything` on frontdoor prompt with T1 eval as metric (~150 evals, ~2hr local inference). Use coder model as `task_lm`, frontdoor as `reflection_lm`.
 - [ ] AP-20: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement (cross-ref: meta-harness MH-4)
 - [ ] AP-21: If AP-19/20 succeed, refactor PromptForge species to use GEPA internally. Maintain constraint gates (test pass, size limits, caching compat, human review).
@@ -305,10 +305,10 @@ Source: hermes-agent-self-evolution (DSPy+GEPA), GEPA Full Program Adapter (93% 
 
 Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds), dspy.RLM (WASM sandbox + sub_lm pattern), Unsloth RLVR (environment-first RL).
 
-- [ ] AP-22: Add `short_term_memory.md` per trial — controller writes trial results + context after each trial (MiniMax pattern: memory + self-feedback + optimization)
-- [ ] AP-23: Add explicit self-criticism step before next proposal — controller evaluates "what went wrong and why" before generating next candidate
-- [ ] AP-24: Formalize keep/revert protocol with structured forward-looking reasoning — document "optimization directions for next round" in journal
-- [ ] AP-25: Set up dspy.RLM with llama-server `/v1/` endpoint (coder model as main LM writing exploration code, frontdoor as cheap `sub_lm` for semantic queries). Test with benchmark result analysis first.
+- [x] AP-22: Add `short_term_memory.md` per trial — ✅ 2026-04-12. `ShortTermMemory` class in `short_term_memory.py` (load/update/clear/to_text). Persists as markdown with 4 sections (hypotheses, directions, failures, context). Token-budgeted (~120 lines). Injected into CONTROLLER_PROMPT_TEMPLATE. CLI: `autopilot.py reset-memory`.
+- [x] AP-23: Add explicit self-criticism step before next proposal — ✅ 2026-04-12. `self_criticism.py` with rule-based `generate_self_criticism()`. `SelfCriticism` dataclass (what_went_wrong, why, what_should_change, optimization_directions, keep/revert). Inserted between Evaluate and Record in controller loop. No inference cost.
+- [x] AP-24: Formalize keep/revert protocol with structured forward-looking reasoning — ✅ 2026-04-12. `keep_revert_decision` and `optimization_directions` fields on JournalEntry. Centralized in `generate_self_criticism()`. Directions feed into short-term memory accumulator.
+- [x] AP-25: Set up dspy.RLM with llama-server `/v1/` endpoint — ✅ 2026-04-12. `configure_rlm(main_lm_url, sub_lm_url)` in `src/dspy_signatures/config.py`. Coder as main LM, frontdoor as sub_lm. `test_connection()` health check. Integration testing deferred to AP-26 (needs inference).
 - [ ] AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
 - [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge)
 

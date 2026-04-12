@@ -2,7 +2,7 @@
 
 **Status**: active
 **Created**: 2026-03-15 (split from hermes-agent-index.md on 2026-03-20)
-**Updated**: 2026-04-04
+**Updated**: 2026-04-12
 **Source**: intake-117 (hermes-agent), intake-172/173 (OpenGauss fork)
 **Purpose**: Entry point for agents working on agent UX, conversation management, and external frontend integration.
 
@@ -69,8 +69,8 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 ### P2.5 — Research-Driven Improvements (from 2026-04-12 intake)
 
-- [ ] H-8: Prototype MemPalace MCP integration with Hermes outer shell — `claude mcp add mempalace -- python -m mempalace.mcp_server`. 19 tools (palace reads, writes, KG, navigation, agent diary). Local-first (ChromaDB+SQLite), MIT. Gives Hermes persistent cross-session memory with 96.6% LongMemEval recall. Source: intake-326.
-- [ ] H-9: Add anti-rationalization tables to agent governance skills — adopt pattern from intake-337 (addyosmani/agent-skills). Each SKILL.md gets a "Rationalizations" section with excuse|rebuttal table to prevent LLM shortcutting of quality gates. Priority skills: research-intake, agent-file-architecture. Also tracked in non-inference-backlog Task 8.
+- [x] H-8: Prototype MemPalace MCP integration with Hermes outer shell — `claude mcp add mempalace -- python -m mempalace.mcp_server`. 19 tools (palace reads, writes, KG, navigation, agent diary). Local-first (ChromaDB+SQLite), MIT. Gives Hermes persistent cross-session memory with 96.6% LongMemEval recall. Source: intake-326. -- Done 2026-04-12. Setup script at scripts/hermes/mempalace_setup.sh. MCP server config documented in hermes-config.yaml.
+- [x] H-9: Add anti-rationalization tables to agent governance skills — adopt pattern from intake-337 (addyosmani/agent-skills). Each SKILL.md gets a "Rationalizations" section with excuse|rebuttal table to prevent LLM shortcutting of quality gates. Priority skills: research-intake, agent-file-architecture. Also tracked in non-inference-backlog Task 8. — ✅ 2026-04-12. Verification gates + anti-rationalization tables added to research-intake and agent-file-architecture SKILL.md.
 
 ### P4 — Open-Source Orchestrator (future)
 
@@ -125,6 +125,7 @@ After completing any task:
 |----------|------|
 | Hermes Agent repo | `/mnt/raid0/llm/hermes-agent` |
 | Hermes setup scripts | `epyc-root/scripts/hermes/` |
+| MemPalace MCP setup | `epyc-root/scripts/hermes/mempalace_setup.sh` |
 | Orchestrator session log | `epyc-orchestrator/src/graph/session_log.py` |
 | Context compression (to create) | `epyc-orchestrator/src/context_compression.py` |
 | User modeling (to create) | `epyc-orchestrator/src/user_modeling/` |

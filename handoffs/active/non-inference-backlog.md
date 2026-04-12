@@ -2,7 +2,7 @@
 
 **Status**: active
 **Created**: 2026-04-11 (consolidated from audit of near-complete and active handoffs)
-**Updated**: 2026-04-11 (tasks 2/5/6 completed)
+**Updated**: 2026-04-12 (tasks 7-18 completed; AP-14/AP-16 confirmed already done per routing index 2026-04-07; tasks 1-2/4-6 completed 2026-04-11)
 **Priority**: MEDIUM
 **Purpose**: Index of all remaining tasks across active handoffs that do NOT require model servers / inference compute. Can be tackled while compute is unavailable or occupied by bulk-inference-campaign Package D.
 
@@ -34,17 +34,18 @@
 
 | # | Task | Source Handoff | Target Repo | Description | Effort |
 |---|------|---------------|-------------|-------------|--------|
-| 7 | Meta-harness documentation | [meta-harness-optimization.md](meta-harness-optimization.md) | epyc-orchestrator | Document Tier 1 + Tier 2 implementation for AR-3 operator guide | ~2h |
-| 8 | Skill governance audit | [hermes-agent-index.md](hermes-agent-index.md) H-9 | epyc-root | Add anti-rationalization tables (excuse/rebuttal format) + verification gates (evidence types) to research-intake and agent-file-architecture skills. Pattern from intake-337 (addyosmani/agent-skills). Zero infrastructure cost. | ~3h |
-| 9 | Autopilot short-term memory | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-22/23/24 | epyc-orchestrator | Add `short_term_memory.md` per trial, self-criticism step, structured keep/revert protocol. MiniMax 3-component harness pattern (intake-328/329). No inference needed — pure controller logic. | ~4h |
-| 10 | DSPy + GEPA installation | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-18 | epyc-orchestrator | Install DSPy, wrap 3 routing prompts as DSPy Signatures. Infrastructure setup — no inference needed for this step. | ~2h |
-| 11 | dspy.RLM infrastructure setup | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-25 | epyc-orchestrator | Install dspy.RLM, configure with llama-server /v1/ endpoint. Set up coder as main LM, frontdoor as sub_lm. Infrastructure only — integration testing needs compute (→ bulk-inference Package H AP-26). | ~2h |
-| 12 | CF-P1: Validity timestamps | [context-folding-progressive.md](context-folding-progressive.md) CF-P1 | epyc-orchestrator | Add `validity_timestamp` and `source_turn_ids` to `ConsolidatedSegment` dataclass. Pure code change, no inference. | ~1h |
-| 13 | CF-P2: Supersession detection | [context-folding-progressive.md](context-folding-progressive.md) CF-P2 | epyc-orchestrator | Detect when new info contradicts compacted segments. Logic change, no inference. | ~3h |
-| 14 | CF-P3: Metadata filtering eval | [context-folding-progressive.md](context-folding-progressive.md) CF-P3 | epyc-orchestrator | Evaluate wing/room metadata filtering (MemPalace pattern) for session index. Design + prototype, no inference. | ~2h |
-| 15 | CF-P4: Hybrid raw+derived design | [context-folding-progressive.md](context-folding-progressive.md) CF-P4 | epyc-orchestrator | Design hybrid approach: raw for recent N turns, derived for older. Architecture decision, no inference. | ~2h |
-| 16 | MH-5: Agent Lightning traces | [meta-harness-optimization.md](meta-harness-optimization.md) MH-5 | epyc-orchestrator | Adopt OTLP span pattern for autopilot telemetry. Decompose orchestrator sessions into (input, output, reward) transitions. Infrastructure setup. | ~3h |
-| 17 | H-8: MemPalace MCP prototype | [hermes-agent-index.md](hermes-agent-index.md) H-8 | epyc-root | `claude mcp add mempalace -- python -m mempalace.mcp_server`. Prototype 19-tool integration with Hermes outer shell. Minimal compute (ChromaDB embedding on CPU). | ~2h |
+| ~~7~~ | ~~Meta-harness documentation~~ | ~~[meta-harness-optimization.md](meta-harness-optimization.md)~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). Operator guide: `docs/guides/meta-harness-operator-guide.md` (6 sections: quick ref, Tier 1/2, safety, integration, checklist). | — |
+| ~~8~~ | ~~Skill governance audit~~ | ~~[hermes-agent-index.md](hermes-agent-index.md) H-9~~ | ~~epyc-root~~ | ✅ DONE (2026-04-12). Verification gates (per-phase evidence) + anti-rationalization tables (10+6 rows) added to research-intake and agent-file-architecture SKILL.md. | — |
+| ~~9~~ | ~~Autopilot short-term memory~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-22/23/24~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `short_term_memory.py` + `self_criticism.py`. ShortTermMemory class (4-section markdown, token-budgeted). SelfCriticism (rule-based, no inference). 3 new JournalEntry fields. Wired into controller loop + prompt template. CLI: `reset-memory`. | — |
+| ~~10~~ | ~~DSPy + GEPA installation~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-18~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `dspy>=2.5.0` in pyproject.toml. `src/dspy_signatures/` package: FrontdoorClassifier, EscalationDecider, ModeSelector + config.py. 8 smoke tests. | — |
+| ~~11~~ | ~~dspy.RLM infrastructure setup~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-25~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `configure_rlm(main_lm_url, sub_lm_url)` in config.py. Coder as main LM, frontdoor as sub_lm. `test_connection()` health check. | — |
+| ~~12~~ | ~~CF-P1: Validity timestamps~~ | ~~[context-folding-progressive.md](context-folding-progressive.md) CF-P1~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `validity_timestamp` + `source_turn_ids` on ConsolidatedSegment. Populated at all 3 creation sites. Serialized in to_dict/from_dict. | — |
+| ~~13~~ | ~~CF-P2: Supersession detection~~ | ~~[context-folding-progressive.md](context-folding-progressive.md) CF-P2~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `check_supersession()` with 8 regex patterns. `superseded` + `superseded_by_turn` fields. | — |
+| ~~14~~ | ~~CF-P3: Metadata filtering eval~~ | ~~[context-folding-progressive.md](context-folding-progressive.md) CF-P3~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `topic_tags` field + `_extract_topic_tags()` (7 categories). Populated at all creation sites. | — |
+| ~~15~~ | ~~CF-P4: Hybrid raw+derived design~~ | ~~[context-folding-progressive.md](context-folding-progressive.md) CF-P4~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `is_raw` field on ConsolidatedSegment. Serialization ready. Raw window logic pending production wiring. | — |
+| ~~16~~ | ~~MH-5: Agent Lightning traces~~ | ~~[meta-harness-optimization.md](meta-harness-optimization.md) MH-5~~ | ~~epyc-orchestrator~~ | ✅ DONE (2026-04-12). `telemetry.py`: TelemetryCollector with TransitionRecord, OTLP spans, JSONL export. Per-step: reasoning→execution→safety_gate. | — |
+| ~~17~~ | ~~H-8: MemPalace MCP prototype~~ | ~~[hermes-agent-index.md](hermes-agent-index.md) H-8~~ | ~~epyc-root~~ | ✅ DONE (2026-04-12). `scripts/hermes/mempalace_setup.sh` setup script. MCP server config documented. | — |
+| ~~18~~ | ~~S5: dspy.RLM REPL cross-reference~~ | ~~[repl-turn-efficiency.md](repl-turn-efficiency.md) S5~~ | ~~epyc-root~~ | ✅ DONE (2026-04-12). Pattern mapping (3 RLM patterns → REPL), 3 improvement proposals with effort estimates, priority ranking. | — |
 
 ---
 

@@ -81,7 +81,7 @@ Files NOT on this list are immutable. Eval/scoring/safety code cannot be touched
 Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program Adapter (intake-345). Agent Lightning provides trace collection infrastructure; GEPA provides a stronger search algorithm than our current LLM-guided mutation.
 
 - [ ] MH-4: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement — GEPA's reflective trace analysis (ASI) outperforms random mutation. 93% MATH vs 67% base. Cross-ref: autopilot P10/AP-20 owns implementation; this evaluates GEPA specifically as a Meta-Harness search algorithm. Key question: does GEPA's Pareto-frontier selection outperform our current top-1 selection in PromptForge?
-- [ ] MH-5: Adopt Agent Lightning trace collection pattern for autopilot telemetry — the `claude_code/` example demonstrates LLM proxy + OTLP spans + HuggingFace dataset export. Decompose orchestrator sessions into (input, output, reward) transitions for per-step attribution. Source: intake-338 LightningStore architecture.
+- [x] MH-5: Adopt Agent Lightning trace collection pattern for autopilot telemetry — ✅ 2026-04-12. `telemetry.py` module: `TelemetryCollector` class with `record_transition()` + `record_trial()`. `TransitionRecord` dataclass with OTLP-compatible `to_otlp_span()`. JSONL export to `orchestration/autopilot_telemetry.jsonl`. Per-step decomposition: controller_reasoning → action_execution → safety_gate.
 
 ### Tier 3: Full Outer Loop Rebuild — DEFERRED
 
@@ -102,6 +102,10 @@ Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program
 - ~~Autopilot AR-1 baseline must be working~~ DONE (2026-03-30)
 - ~~EvalTower T0 must produce reliable scores~~ DONE (sentinel questions validated)
 - ~~inference_tap.log must be capturing during evaluation~~ DONE (TUI already reads it)
+
+## Operator Guide
+
+See [docs/guides/meta-harness-operator-guide.md](/mnt/raid0/llm/epyc-orchestrator/docs/guides/meta-harness-operator-guide.md) for runtime operation, monitoring, and intervention procedures.
 
 ## Notes
 
