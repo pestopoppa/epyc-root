@@ -143,3 +143,14 @@ The llama-cpp-v3-upstream-rebuild currently builds CPU-only. Adding GPU support 
 This handoff activates when GPU hardware is acquired. Until then, all findings are preserved here for reference. The CPU+GPU hybrid MoE pattern (intake-310) is the most promising avenue — it leverages our existing NUMA infrastructure rather than replacing it.
 
 AITER kernel performance numbers (17x MLA decode, 14x MHA prefill, 3x fused MoE) represent achievable ceiling but require vLLM/SGLang, not llama.cpp. The llama.cpp path through rocWMMA + hipBLASLt is more modest but integrates with our existing stack.
+
+## Research Intake Update — 2026-04-12
+
+### New Related Research
+- **[intake-334] "MegaTrain: 100B+ Training on Single GPU"** (arxiv:2604.05091)
+  - CRITICAL: Works on consumer GPUs — RTX 3090 ($300-400 used): 35 TFLOPS at 7B, 30 at 14B (DeepSpeed OOMs).
+  - CPU-centric param storage + GPU transient compute. 1.84x over DeepSpeed ZeRO-3.
+  - EPYC path: With RTX 3090 + our 256GB+ RAM → local 14B model training. Most practical route to Doc-to-LoRA.
+  - Code: github.com/DLYuanGod/MegaTrain
+- **[intake-339] "Gemma 4 31B NVFP4 Turbo"** — Blackwell FP4, 68% memory reduction, +142% prefill. Requires RTX 5090+.
+- **[intake-332] "Ouro LoopLM"** — 2.6B matches 12B. Not llama.cpp compatible but could run via transformers on CPU.

@@ -76,6 +76,13 @@ Files NOT on this list are immutable. Eval/scoring/safety code cannot be touched
 5. Simplicity criterion (reject >20% size increase for <2% quality gain)
 6. Optuna epoch invalidation on accepted code mutations
 
+### Tier 2b: Upgraded Search and Telemetry (intake-338/345)
+
+Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program Adapter (intake-345). Agent Lightning provides trace collection infrastructure; GEPA provides a stronger search algorithm than our current LLM-guided mutation.
+
+- [ ] MH-4: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement — GEPA's reflective trace analysis (ASI) outperforms random mutation. 93% MATH vs 67% base. Cross-ref: autopilot P10/AP-20 owns implementation; this evaluates GEPA specifically as a Meta-Harness search algorithm. Key question: does GEPA's Pareto-frontier selection outperform our current top-1 selection in PromptForge?
+- [ ] MH-5: Adopt Agent Lightning trace collection pattern for autopilot telemetry — the `claude_code/` example demonstrates LLM proxy + OTLP spans + HuggingFace dataset export. Decompose orchestrator sessions into (input, output, reward) transitions for per-step attribution. Source: intake-338 LightningStore architecture.
+
 ### Tier 3: Full Outer Loop Rebuild — DEFERRED
 
 **What**: Build Meta-Harness-style filesystem of candidates + evaluation runner + agentic proposer.
@@ -124,3 +131,11 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: Context files REDUCE task success rates and increase inference cost by 20%+
   - Key technique: Empirical evaluation of AI-generated vs human-written agent context files on SWE-bench
   - Delta from current approach: Direct threat to PromptForge code mutations that add instructions. Our thin-map architecture may be optimal, but needs empirical validation. **Action**: add instruction token budget tracking to eval tower; consider "minimal context" ablation in PromptForge.
+- **[intake-338] "Agent Lightning"** (Microsoft Research) — Zero-code agent optimization
+  - Relevance: Framework-agnostic agent optimization with RL, prompt optimization, and SFT
+  - Key technique: LightningRL hierarchical credit assignment for per-request reward attribution
+  - Delta from current approach: Meta-Harness optimizes harness code via agentic search. Agent Lightning optimizes the underlying LLM behavior via RL. Complementary approaches — Meta-Harness changes the harness, Agent Lightning trains the model to use the harness better.
+- **[intake-345] "GEPA Full Program Adapter"** (DSPy)
+  - Relevance: 93% MATH (vs 67% base) by evolving entire program structure, not just prompts
+  - Key technique: GEPA evolving signatures, modules, control flow with as few as 3 examples
+  - Delta from current approach: Meta-Harness searches over harness code. GEPA Full Program Adapter could be the search algorithm — replacing or augmenting our current LLM-guided mutation with evolutionary Pareto-optimal search. The +26pp result suggests this is a significantly stronger optimizer.

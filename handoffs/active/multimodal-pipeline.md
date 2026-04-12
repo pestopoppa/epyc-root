@@ -277,3 +277,12 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
   - Blocker: No GGUF available yet (MLX only). Need llama.cpp conversion to evaluate on EPYC
 - **[intake-252] "Gemma 4 Official — DeepMind"** (deepmind.google)
   - Additional context: 26B-A4B is MoE (4B active) — comparable to our Qwen3.5-35B-A3B slot. FunctionGemma variant relevant to tool-use/agentic tasks
+
+## Research Intake Update — 2026-04-12
+
+### New Related Research
+- **[intake-317] "VoxCPM2: Tokenizer-Free Multilingual TTS"** (OpenBMB/VoxCPM)
+  - Relevance: Alternative TTS system — tokenizer-free diffusion autoregressive, 30 languages, Apache 2.0
+  - Key technique: Four-stage pipeline (LocEnc→TSLM→RALM→LocDiT), AudioVAE V2, MiniCPM-4 backbone
+  - RTF ~0.13 on RTX 4090, 48kHz studio quality, voice cloning + voice design from text descriptions
+  - Delta from current approach: Our Qwen3-TTS is blocked (outputs noise in llama.cpp). VoxCPM2 is tokenizer-free (avoids discrete token ceiling) but requires GPU (RTX 4090 for real-time). Blocked by same GPU constraint. Worth tracking for GPU upgrade path.

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-11
+**Updated**: 2026-04-12
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -85,6 +85,9 @@ Changes in one domain often affect others. Key coupling points:
 | Bulk inference campaign (B-E) | All 5 domains | 14 tasks → 4 optimized runs; produces data unblocking routing, research, pipeline work |
 | Research (KB governance) | Root-archetype (KB linter) | KB linter + skill templates upstreamed to root-archetype; epyc-root deploys instance-specific version |
 | GPU hardware acquisition | Inference acceleration, Routing (NUMA allocation) | gpu-acceleration-path.md: CPU+GPU hybrid MoE changes expert routing, NUMA quarter allocation, and v3 build flags |
+| Research (Ouro P7) | Routing (autopilot AP-27) | Ouro-2.6B-Thinking as sentinel verifier feeds autopilot T0 RLVR formalization |
+| Routing (autopilot P10 GEPA) | Routing (meta-harness MH-4) | Same technique, two perspectives: autopilot owns implementation, meta-harness evaluates as search algorithm |
+| Bulk inference (Package G) | Routing (stack config) | MiniMax M2.7 eval may introduce 229B-A10B model requiring standalone RAM allocation |
 
 ---
 

@@ -585,6 +585,9 @@ These tasks are scattered across active handoffs and require inference compute b
 | G4 | FlowSteer activation steering | [reasoning-compression.md](reasoning-compression.md) Tier 2 | Test nonlinear activation steering for concise reasoning on 30B-A3B worker. | worker_explore | ~6h |
 | G5 | short-m@k voting baseline | [reasoning-compression.md](reasoning-compression.md) Tier 1 | Run k=3 parallel generations, majority vote. Measure accuracy vs single-shot on GPQA/math. | Any reasoning model | ~4h |
 | G6 | v3 clean NUMA throughput | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) | Isolated NUMA test (requires stopping production stack). Compare v3 vs v2 48t quarter throughput. | frontdoor or worker | ~1h |
+| G7 | MiniMax M2.7 eval | Research intake (intake-328/329) | Download UD-IQ4_XS (108GB) from unsloth/MiniMax-M2.7-GGUF. Benchmark throughput + quality on EPYC. MoE 229B-A10B, 256 experts, 200K context. | Standalone (108GB+ RAM) | ~8h |
+| G8 | MiniMax tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
+| G9 | MiniMax quality comparison | Research intake (intake-328/329) | Run standard eval suite (MATH, coding, general). Compare vs Qwen3-30B-A3B worker + Qwen3-35B-A3B coder. Q4 quant has 22.8% more errors — test carefully. | Standalone | ~6h |
 
 ### Prioritization
 
@@ -592,6 +595,7 @@ These tasks are scattered across active handoffs and require inference compute b
 - **G2 + G3 sequentially**: Only if G2 confirms Q/K concentration. Otherwise skip G3.
 - **G4**: Requires activation hook infrastructure — higher code investment. Defer unless FlowSteer library matures.
 - **G6**: Low priority — v3 smoke tests showed no regression. Only needed for formal baseline documentation.
+- **G7 + G8 + G9 sequentially**: MiniMax M2.7 evaluation (intake-328/329). Requires 108GB+ RAM as standalone (no concurrent models). G7 first (throughput feasibility), G8 (tool-calling), G9 (quality comparison) only if G7 shows viable throughput. Note: model claims SWE-Pro 56.22% and GDPval-AA ELO 1495 (highest open-source). Self-evolution methodology already captured in autopilot P11.
 
 ---
 

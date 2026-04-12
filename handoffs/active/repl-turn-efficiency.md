@@ -125,3 +125,8 @@ After each tool output, append 2-3 likely next commands based on frecency data +
 | [routing-and-optimization-index.md](routing-and-optimization-index.md) | WS-2 Omega re-measurement validates turn efficiency gains |
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | ColGREP blocked; frecency is alternative temporal signal |
 | [research-evaluation-index.md](research-evaluation-index.md) | Tracked under P6 |
+| [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | P11/AP-25: dspy.RLM integration — REPL patterns (metadata-first context, SUBMIT()) |
+
+## S5: dspy.RLM REPL Patterns (future, cross-ref autopilot P11)
+
+Source: intake-331 (predict-rlm), intake-349 (dspy.RLM). The metadata-first exploration pattern and SUBMIT() termination mechanism could inform future REPL efficiency. `llm_query_batched()` with `asyncio.gather()` could replace sequential tool calls. Depends on autopilot P11/AP-25 results.

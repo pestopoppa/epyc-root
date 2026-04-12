@@ -292,9 +292,29 @@ All core infrastructure verified in code as of 2026-04-01:
    - Depends on AP-16 (need the metric to evaluate prune impact).
    - Source: intake-272 (context files hurt), intake-271 (failure-driven only)
 
+### P10 — GEPA PromptForge Integration (intake-327/345/240)
+
+Source: hermes-agent-self-evolution (DSPy+GEPA), GEPA Full Program Adapter (93% MATH), GEPA paper (ICLR 2026 Oral). GEPA uses reflective trace analysis (ASI = Actionable Side Information) for 35x fewer rollouts than GRPO. Compatible with local inference (Ollama/vLLM format). 3-example minimum. MIT licensed.
+
+- [ ] AP-18: Install DSPy, wrap 3 routing prompts (frontdoor classifier, mode_handler, escalation_decision) as DSPy Signatures
+- [ ] AP-19: Run GEPA `optimize_anything` on frontdoor prompt with T1 eval as metric (~150 evals, ~2hr local inference). Use coder model as `task_lm`, frontdoor as `reflection_lm`.
+- [ ] AP-20: Evaluate GEPA Full Program Adapter as PromptForge search algorithm replacement (cross-ref: meta-harness MH-4)
+- [ ] AP-21: If AP-19/20 succeed, refactor PromptForge species to use GEPA internally. Maintain constraint gates (test pass, size limits, caching compat, human review).
+
+### P11 — Autopilot Controller Upgrades (intake-328/329/349/320)
+
+Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds), dspy.RLM (WASM sandbox + sub_lm pattern), Unsloth RLVR (environment-first RL).
+
+- [ ] AP-22: Add `short_term_memory.md` per trial — controller writes trial results + context after each trial (MiniMax pattern: memory + self-feedback + optimization)
+- [ ] AP-23: Add explicit self-criticism step before next proposal — controller evaluates "what went wrong and why" before generating next candidate
+- [ ] AP-24: Formalize keep/revert protocol with structured forward-looking reasoning — document "optimization directions for next round" in journal
+- [ ] AP-25: Set up dspy.RLM with llama-server `/v1/` endpoint (coder model as main LM writing exploration code, frontdoor as cheap `sub_lm` for semantic queries). Test with benchmark result analysis first.
+- [ ] AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
+- [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge)
+
 ### DEFERRED (explicit reasons)
 
-2. **GEPA integration** (intake-240): Replace PromptForge heuristic mutations with principled evolutionary search (`dspy.GEPA`). Requires DSPy dependency + major refactor. Revisit after AR-3 shows PromptForge limitations.
+2. ~~**GEPA integration** (intake-240)~~: **PROMOTED to P10** (2026-04-12). Deep-dive confirmed GEPA works with local inference, 35x cheaper than GRPO, 3-example minimum. No longer needs to wait for AR-3 PromptForge limitations — GEPA is strictly better.
 3. **Hard-negative training data** (intake-176): Contrastive negatives for routing classifier. Only relevant when 500+ memories exist for retraining.
 4. ~~**Git worktree isolation for PromptForge**~~: ✅ 2026-04-05. Implemented `worktree_manager.py` with `WorktreeManager` + `ExperimentContext`. Auto-reject safety default prevents corruption incidents like AR-3 trial ~25.
 5. **Convention locking** (intake-150): Lock baseline parameters from species modification. Premature without more trials.
@@ -323,6 +343,12 @@ All core infrastructure verified in code as of 2026-04-01:
 | 272 | Evaluating AGENTS.md (ETH Zurich, 2602.11988) | Context files REDUCE success rates, +20% cost; help only when docs absent; thin-map not tested | AP-16, AP-17 |
 | 273 | Context Rot (Chroma) | Shuffled > structured for RETRIEVAL only; semantic similarity compounds degradation | Background — informs CF experiments |
 | 274 | The Complexity Trap (2508.21433) | Observation masking matches LLM summarization at 50% cost; hybrid 7-11% further | Validates two-layer compression architecture |
+| 312 | Mismanaged Geniuses Hypothesis (Zhang/Khattab) | Decomposition space design is the key variable; 4B RLM→100% MRCRv2 via composition | Theoretical foundation for P10/P11 |
+| 320 | Unsloth RL Environments | RLVR (verifiable rewards) maps 1:1 to eval tower; environment-first RL design | AP-27 |
+| 327 | Hermes Agent Self-Evolution (NousResearch) | GEPA reflective trace analysis + 6-stage optimization loop; $2-10/run via API | P10 (AP-18–21) |
+| 328/329 | MiniMax M2.7 Self-Evolution | 3-component harness (memory+feedback+optimization), 100+ autonomous rounds, 30% improvement | P11 (AP-22–24) |
+| 345 | GEPA Full Program Adapter | 93% MATH (vs 67% base); evolves signatures+modules+control flow; 35x fewer rollouts | P10 (AP-20) |
+| 349 | dspy.RLM Module | Metadata-first REPL exploration; sub_lm pattern; works with OpenAI-compatible /v1/ endpoint | P11 (AP-25–26) |
 
 ## Staleness Notes
 
@@ -356,3 +382,32 @@ All core infrastructure verified in code as of 2026-04-01:
 
 ### Deep-Dive Correction (2026-04-06)
 **Caveat on intake-265**: The "bug fixes > tuning" headline is misleading. The baseline was catastrophically broken (F1=0.117 vs SimpleMem SOTA 0.432) — a missing `response_format=json_object` caused 9x verbosity. The finding generalizes to "fixing broken systems beats tuning broken systems," not "structural always beats numeric." Our AutoPilot operates on a functioning system where NumericSwarm is in the right regime. **No species budget rebalancing needed from this paper alone.** However, two small improvements validated: (1) add structured deficiency classification to experiment_journal.py error handling, (2) ensure all species populate hypothesis/expected_mechanism journal fields. The 4 autoresearch suitability properties (scalar metrics, modular architecture, fast iteration, version-controlled modifications) are a useful checklist — our AutoPilot satisfies all 4.
+
+## Research Intake Update — 2026-04-12
+
+### New Related Research
+- **[intake-327] "Hermes Agent Self-Evolution"** (NousResearch) — DSPy+GEPA skill optimization
+  - Relevance: Directly applicable to PromptForge species — evolutionary optimization of skills/prompts without GPU
+  - Key technique: GEPA reflective evolutionary search with execution trace analysis
+  - Delta from current approach: Our PromptForge uses LLM-guided mutation. GEPA uses evolutionary + Pareto-optimal selection. Their $2-10 per run is API-based; adapting to local models eliminates cost. Guardrails (test validation + human review) are more conservative than our safety gates.
+- **[intake-338] "Agent Lightning"** (Microsoft Research) — Zero-code agent optimization
+  - Relevance: Three optimization modes (RL, prompt optimization, SFT) map to our species: RL→NumericSwarm, prompt→PromptForge
+  - Key technique: Framework-agnostic tracing + optimization. Zero code change adoption.
+  - Delta from current approach: Agent Lightning could optimize our orchestrator without modifying existing code. The trajectory-level aggregation addresses our per-question vs per-trajectory eval gap.
+- **[intake-344] "LightningRL: Hierarchical Credit Assignment"** (arxiv:2508.03680)
+  - Relevance: Solves autopilot evaluation granularity problem — attributes task success to specific orchestrator decisions
+  - Key technique: Per-LLM-request credit assignment + reward scoring, compatible with PPO/GRPO
+  - Delta from current approach: We evaluate at task-level (T0/T1/T2). LightningRL enables per-step attribution. Could dramatically improve PromptForge mutation signal quality.
+- **[intake-345] "GEPA Full Program Adapter: 93% MATH"** (DSPy tutorial)
+  - Relevance: Evolves entire program structure (not just prompts) — 93% vs 67% baseline on MATH
+  - Key technique: GEPA evolving DSPy signatures, modules, and control flow with as few as 3 examples
+  - Delta from current approach: PromptForge only mutates prompt templates. GEPA Full Program Adapter could evolve routing logic, tool definitions, and escalation pipeline. The +26pp improvement is transformative.
+
+### Deep-Dive Synthesis (2026-04-12)
+**Cross-cutting finding from 26-entry deep-dive**: Four converging research threads point to a major autopilot upgrade path:
+1. **GEPA** (intake-327/345): Reflective trace analysis + evolutionary Pareto search. 35x more efficient than GRPO. 3-example minimum. Compatible with our local inference (Ollama/vLLM format). **Priority #1 for PromptForge upgrade.**
+2. **dspy.RLM** (intake-349): Metadata-first context exploration via REPL sandbox. Sub-LM pattern maps to our coder+frontdoor stack. Directly addresses context window limitation for long autopilot runs. **Priority #2 for autopilot infrastructure.**
+3. **MiniMax M2.7 self-evolution** (intake-328/329): Three-component harness (short-term memory markdown + self-criticism + forward-looking optimization) over 100+ autonomous rounds. Pattern directly implementable in our controller. Add `short_term_memory.md` per trial, explicit self-feedback step before next proposal, and formalized keep/revert protocol.
+4. **Unsloth RLVR** (intake-320): Our eval tower IS an RLVR environment. Formalize T0/T1/T2 as verification functions, not just benchmarks. Design reward signals per tier. If cloud GPU becomes available, export environments for actual model RL training.
+
+**Architectural theme**: All entries converge on "context efficiency through structured indirection" — sandbox over prompt, REPL over context, reflection over gradient, retrieval over fullcontext. Validates our multi-model approach over single-model scaling.

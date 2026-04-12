@@ -48,3 +48,17 @@ This is a WATCH item, not an implementation item. Monitor for:
 1. Community reproduction of results
 2. Model releases using Multiscreen architecture
 3. llama.cpp PRs implementing screening mechanism
+
+## Expanded Attention Mechanism Cluster (2026-04-12 research intake)
+
+Three additional cross-head attention mechanisms identified during deep-dive. Together with Multiscreen, these form a 2025-2026 cluster of alternatives to standard MHA. All require pretraining — no retrofit possible.
+
+| Mechanism | Intake | FlashAttention | Key Benefit | EPYC Notes |
+|-----------|--------|----------------|-------------|------------|
+| **IHA** (Interleaved Head Attention) | intake-333 | YES (mixes before attention) | +112% RULER at 16K multi-key retrieval. MHA ⊂ IHA strictly. | **Priority watch** — FlashAttention-compat is key for our llama.cpp stack |
+| **MEA** (Explicit Multi-head Attention) | intake-342 | YES (HLC on K/V) | 50% KV cache reduction via virtual heads. GroupNorm critical. | KV compression directly useful for memory-constrained inference |
+| **KHA** (Knocking-Heads Attention) | intake-343 | YES (absorbed at inference) | **Zero inference overhead** (linear variant absorbed into projections). V-only interaction. | Prefer KHA-trained models when available — zero cost at inference |
+
+**Ranking for EPYC**: IHA (most expressive, FlashAttention-compat) > MEA (KV compression bonus) > KHA (zero inference cost, but lower expressivity) > Multiscreen (most radical, no implementations)
+
+**Monitor for**: GGUF implementations of models trained with any of these mechanisms. None currently available.

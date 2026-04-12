@@ -21,15 +21,16 @@
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 done, TALE eval complete — static limits kept) | HIGH | 2026-04-11 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, A/B done (+4pp REPL), Phase 3a-b done (55% def compression). P3d A/B pending. | MEDIUM | 2026-04-10 |
-| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanism | stub (WATCH) | LOW | 2026-04-04 |
+| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanisms | stub (WATCH) — expanded to 4 mechanisms (IHA, MEA, KHA, Multiscreen) | LOW | 2026-04-12 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | ~~[long-context-eval-datasets.md](long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
 | ~~[knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S3a contextual suggestions next, S4 A/B pending) | MEDIUM | 2026-04-09 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S3a next, S4 A/B pending, S5 dspy.RLM cross-ref) | MEDIUM | 2026-04-12 |
 | [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |
+| Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
 
 ---
 
@@ -99,6 +100,16 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged `REPL_FRECENCY`) — ✅ 2026-04-09. 7 wiring tests.
 - [x] S2a-b: Mine autopilot logs + implement combined ops — ✅ 2026-04-09. Finding: only web_search/search_wikipedia used (file tools never called). `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Flag: `REPL_COMBINED_OPS`. 18 tests.
 - [ ] S4: A/B benchmark turn count reduction on seeding harness
+
+### P7 — Ouro LoopLM Evaluation (from intake-332/341)
+
+Source: Ouro-2.6B-Thinking (ByteDance, Apache-2.0) achieves 90.85% MATH-500 and AIME24 pass@10 90% at only 2.6B params via looped architecture. RLTT post-training adds +14.4% MATH-500. Not llama.cpp compatible (looped arch), but runs via `transformers` on CPU at ~5-10 tok/s.
+
+- [ ] Download Ouro-2.6B-Thinking from HuggingFace (`ByteDance/Ouro-2.6B-Thinking`, Apache-2.0). Pin transformers==4.54.1 (KV cache bug in 4.56+).
+- [ ] Run MATH-500 benchmark via transformers on EPYC CPU. Verify claimed 90.85% accuracy. Measure actual throughput (expect ~5-10 tok/s at 2.6B params with 192 threads).
+- [ ] Evaluate as T0 sentinel verification candidate — can Ouro verify math/reasoning outputs from our larger models? (Cross-ref: autopilot AP-27 RLVR formalization)
+- [ ] Monitor for RLTT-trained checkpoint release (Princeton). If released, rerun MATH-500 comparison.
+- [ ] Monitor llama.cpp for LoopLM architecture support (would enable GGUF deployment).
 
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)
 

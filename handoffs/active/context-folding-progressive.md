@@ -523,6 +523,21 @@ def segment_helpfulness(segment: ConsolidatedSegment, current_turn: int) -> floa
 
 ---
 
+### Phase 2d — Provenance & Forgetting (intake-316/326)
+
+**Objective**: Address the FORGETTING gap identified in the LTM Unsolved deep-dive (intake-316). Our current approach is append-only (context lost when compacted) with no provenance tracking and no supersession detection. This phase adds validity tracking and contradiction-aware compaction to prevent derivation drift.
+
+**Research context**: intake-316 (nine-axis memory design space — our weakest axis is FORGETTING), intake-326 (MemPalace temporal KG with `valid_from`/`valid_until` and invalidation-without-deletion), intake-347 (memory survey — "summarization drift after 3+ compression passes" directly warns about our multi-tier approach).
+
+- [ ] CF-P1: Add `validity_timestamp` and `source_turn_ids: list[int]` to `ConsolidatedSegment` dataclass — enables tracing derived summaries back to their source turns for drift detection
+- [ ] CF-P2: Implement supersession detection — when a new turn explicitly contradicts information in a compacted segment (e.g., "actually the model is 30B, not 35B"), flag the segment for re-derivation or invalidation rather than accumulating contradictions
+- [ ] CF-P3: Evaluate wing/room-style metadata filtering (MemPalace pattern) for session compaction index — add topic tags to segments so retrieval can filter by topic before semantic search (MemPalace reports +34% retrieval improvement from metadata filtering vs flat search)
+- [ ] CF-P4: Test hybrid raw+derived approach — keep raw verbatim segments for the most recent N turns alongside compressed summaries for older turns (MemPalace's 96.6% recall uses raw; our compression loses ~16% retention at L3)
+
+**Dependencies**: Independent of Phase 3. Can proceed in parallel. CF-P1/P2 are infrastructure; CF-P3/P4 are experimental.
+
+---
+
 ## Phase 3 — Process Reward Telemetry & Role-Aware Compaction
 
 **Objective**: (a) Log FoldGRPO-analog process reward signals per turn, (b) compute position-weighted segment advantages at consolidation boundaries, (c) parameterize compaction aggressiveness by orchestrator role, and (d) implement intermittent reward scheduling informed by AgentOCR's findings. This is pure telemetry + policy configuration — no model training.
@@ -901,3 +916,23 @@ Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/meme
 ### Impact on Phase Roadmap
 - **Phase 2 (current)**: No change needed. OpenMementos validates our methodology.
 - **Phase 3**: Expanded scope: (1) FoldGRPO process rewards (existing), (2) Accordion-style Fold/Unfold learned toggle, (3) InftyThink+ efficiency reward for iteration budget control, (4) Investigate KV state retention for critical segments (inspired by Memento's dual stream)
+
+## Research Intake Update — 2026-04-12
+
+### New Related Research
+- **[intake-316] "Long-Term Memory for Conversational LLMs Remains Unsolved"** (Chrys Bader)
+  - Relevance: Nine-axis memory design space maps directly to our compaction decisions
+  - Key technique: Raw vs derived storage spectrum; provenance-tracked forgetting
+  - Delta from current approach: Our L1-L4 compression ladder is a derived approach. The essay highlights derivation drift as our key risk. Consider implementing provenance tracking so derived summaries can be traced back to source turns.
+- **[intake-326] "MemPalace: 96.6% LongMemEval Recall"** (MemPalace/mempalace)
+  - Relevance: Palace architecture (wings/rooms/drawers) achieves 96.6% recall by searching RAW text with hierarchical filtering
+  - Key technique: Semantic search on verbatim content + metadata filtering (34% retrieval boost vs flat search)
+  - Delta from current approach: We compress (derive) then search. MemPalace stores raw then searches. Their AAAK compression dialect is a hybrid — lossy abbreviation readable without decoders. Worth evaluating whether our Phase 2c (ByteRover hash-based dedup) could adopt a similar "abbreviate but keep searchable" pattern.
+- **[intake-347] "Memory for Autonomous LLM Agents" (arxiv:2603.07670)** — Survey
+  - Relevance: Academic survey confirming cross-session coherence and parametric-nonparametric balance as unsolved
+  - Delta from current approach: Validates our non-parametric approach (external memory) over parametric (weight-baking via Doc-to-LoRA)
+
+### Deep-Dive Findings (2026-04-12)
+- **intake-326 DOWNGRADED**: MemPalace 96.6% is ChromaDB vector search, NOT the palace architecture. GitHub issue #214 confirms benchmarks don't exercise the hierarchical system. Still useful: L0-L3 stack design and temporal KG with validity windows.
+- **intake-316 gap analysis**: Our weakest axis is FORGETTING (append-only, no provenance). Recommend: validity timestamps on compacted segments, supersession detection, hybrid raw+derived for recent vs old turns.
+- **intake-332 UPGRADE**: Ouro-2.6B-Thinking (MATH-500 90.85%, AIME24 pass@10 90%) could be a reasoning verifier. 2.6B runs on CPU via transformers. Not llama.cpp compatible (looped arch).

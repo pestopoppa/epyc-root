@@ -67,6 +67,11 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 - [x] **B3: Skill Hub Interop** — ✅ 2026-04-05. `src/skill_hub_interop.py` (SKILL.md parse/export, security scan). 13 tests.
 - [x] **B4: Memory Curation Nudges** — ✅ 2026-04-05. Frontdoor prompt updated to use `user_conclude()` for cross-session persistence.
 
+### P2.5 — Research-Driven Improvements (from 2026-04-12 intake)
+
+- [ ] H-8: Prototype MemPalace MCP integration with Hermes outer shell — `claude mcp add mempalace -- python -m mempalace.mcp_server`. 19 tools (palace reads, writes, KG, navigation, agent diary). Local-first (ChromaDB+SQLite), MIT. Gives Hermes persistent cross-session memory with 96.6% LongMemEval recall. Source: intake-326.
+- [ ] H-9: Add anti-rationalization tables to agent governance skills — adopt pattern from intake-337 (addyosmani/agent-skills). Each SKILL.md gets a "Rationalizations" section with excuse|rebuttal table to prevent LLM shortcutting of quality gates. Priority skills: research-intake, agent-file-architecture. Also tracked in non-inference-backlog Task 8.
+
 ### P4 — Open-Source Orchestrator (future)
 
 - [ ] Validate MemRL routing produces measurable quality improvement
@@ -141,6 +146,18 @@ After completing any task:
 | intake-173 | OpenGauss (repo) | Implementation details |
 | intake-254 | Goose | Lead/worker routing, tool-output summarization |
 | intake-255 | Clido | Per-session token budgeting, multi-provider profiles |
+
+## Research Intake Update — 2026-04-12
+
+### New Related Research
+- **[intake-327] "Hermes Agent Self-Evolution"** (NousResearch/hermes-agent-self-evolution)
+  - Relevance: Official Nous Research project for evolutionary improvement of Hermes Agent skills using DSPy+GEPA
+  - Key technique: Reflective evolutionary search optimizing skills, tool descriptions, and prompts ($2-10/run via API)
+  - Delta from current approach: Our Hermes integration focuses on cherry-picking patterns. This repo enables automated self-improvement of Hermes skills. MIT license. Multi-phase: skills (done), tools/prompts/code (planned).
+- **[intake-337] "Agent Skills"** (addyosmani/agent-skills)
+  - Relevance: Production engineering workflows (7 phases, 20 skills, anti-rationalization tables)
+  - Key technique: Process-not-prose skill design with evidence-based verification gates
+  - Delta from current approach: The anti-rationalization tables are a novel pattern — explicitly countering excuses for skipping quality gates. Worth reviewing for our skill/agent governance design.
 
 ## Deep Dives
 

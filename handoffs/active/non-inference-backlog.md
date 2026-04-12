@@ -35,6 +35,9 @@
 | # | Task | Source Handoff | Target Repo | Description | Effort |
 |---|------|---------------|-------------|-------------|--------|
 | 7 | Meta-harness documentation | [meta-harness-optimization.md](meta-harness-optimization.md) | epyc-orchestrator | Document Tier 1 + Tier 2 implementation for AR-3 operator guide | ~2h |
+| 8 | Skill governance audit | [hermes-agent-index.md](hermes-agent-index.md) H-9 | epyc-root | Add anti-rationalization tables (excuse/rebuttal format) + verification gates (evidence types) to research-intake and agent-file-architecture skills. Pattern from intake-337 (addyosmani/agent-skills). Zero infrastructure cost. | ~3h |
+| 9 | Autopilot short-term memory | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-22/23/24 | epyc-orchestrator | Add `short_term_memory.md` per trial, self-criticism step, structured keep/revert protocol. MiniMax 3-component harness pattern (intake-328/329). No inference needed — pure controller logic. | ~4h |
+| 10 | DSPy + GEPA installation | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) AP-18 | epyc-orchestrator | Install DSPy, wrap 3 routing prompts as DSPy Signatures. Infrastructure setup — no inference needed for this step. | ~2h |
 
 ---
 

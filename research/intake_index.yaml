@@ -9595,3 +9595,1938 @@
     KV cache eviction — directly relevant since our Hadamard KV quant achieves similar
     effect via compression on CPU. The TTFT/TPOT/TTLT metric framework matches our
     existing benchmark methodology.
+
+- id: intake-312
+  arxiv_id: null
+  url: https://alexzhang13.github.io/blog/2026/mgh/
+  source_type: blog
+  title: 'The Mismanaged Geniuses Hypothesis: AI Models Are Already Good Enough for the Next Leap'
+  authors:
+  - Alex Zhang
+  - Zhening (Zed) Li
+  - Omar Khattab
+  categories:
+  - agent_architecture
+  - autonomous_research
+  key_claims:
+  - Frontier LLMs are already super-human on hardest exams (IMO, IOI) — bottleneck is orchestration, not model power
+  - 'Mismanaged geniuses hypothesis: next leap comes from models managing themselves via native task decomposition'
+  - Current agent scaffolds are brittle because they rely on human-designed decomposition strategies
+  - 'RLMs (Recursive Language Models) enable fully recursive task decomposition via executable code with sub-calls'
+  - '4B-param RLM trained on 32k/1-needle achieves 100% on 1M/8-needle MRCRv2, beating Gemini 3 Pro (~27%) and Opus 4.6 (~76%)'
+  techniques:
+  - Mismanaged geniuses hypothesis
+  - Recursive Language Models (RLMs)
+  - Orchestrator-subagent decomposition
+  - Composition for OOD generalization
+  - Decomposition space design
+  reported_results:
+  - 'Qwen3-4B RLM: 0% → 100% on 1M-token 8-needle MRCRv2 after RL on simple 32k/1-needle variant'
+  - 'Outperforms Gemini 3 Pro (27%) and Opus 4.6 (76%) on same benchmark'
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'MRCRv2 is a needle-retrieval benchmark — recursive decomposition advantage may not transfer to reasoning-heavy tasks'
+  - 'The hypothesis assumes decomposition is in-distribution for manager models, but this is unproven for truly novel problems'
+  cross_references:
+    intake:
+    - intake-153 (Recursive Language Models, same lead author Alex Zhang)
+    - intake-240 (GEPA, co-author Khattab)
+    handoffs:
+    - context-folding-progressive.md
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    Essay by the RLM paper authors (intake-153) + DSPy creator Omar Khattab expanding their thesis.
+    The core claim is that orchestrating existing models (via recursive decomposition) is more
+    compute-efficient than scaling models larger. EPYC already implements ~80% of RLM architecture
+    (per context-folding-progressive.md). The 4B RLM result on MRCRv2 is striking — minimal RL
+    training on simple task bootstraps to perfect performance on the hard version. Key implication
+    for EPYC: our autopilot species approach (PromptForge, StructuralLab) aligns with this thesis.
+    The decomposition space design principle suggests we should expand what our orchestrator can
+    express (currently tool-calling + sub-agents; RLMs add loops, recursion, variables).
+    DEEP-DIVE 2026-04-12: URL discovered at alexzhang13.github.io/blog/2026/mgh/. MRCRv2 claim
+    VERIFIED — OpenAI's multi-round coreference resolution benchmark, 8-needle 1M-token variant.
+    Opus 4.6 scores 76% (confirmed by leaderboard), RLM Qwen3-4B achieves 100% after RL on
+    32k/1-needle (0% before training). Official RLM repo: github.com/alexzhang13/rlm. Ecosystem
+    now mature — DSPy dspy.RLM module (v3.1.2+), Google ADK re-implementation, multiple community
+    ports (Node.js, Python, R). The MGH framing has significant implications: (A) Our autopilot
+    species are EXACTLY the kind of "model management" the essay advocates. (B) The decomposition
+    space insight suggests PromptForge should evolve CONTROL FLOW (loops, recursion), not just
+    prompt text. (C) The 4B→100% result means even our 1.5B worker_fast could potentially solve
+    hard tasks with the right decomposition scaffold. UPGRADE relevance → high. Actionable:
+    evaluate dspy.RLM (intake-349) as decomposition scaffold for our orchestrator sub-agents.
+
+- id: intake-313
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'Building Reliable AI Systems: Stanford CS230 Practical LLM Engineering'
+  authors:
+  - Kian Katanforoosh
+  - Andrew Ng
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - rag_alternatives
+  key_claims:
+  - Exhaust prompting, chaining, and RAG before fine-tuning — fine-tuning risks overfitting and obsolescence
+  - RAG dramatically reduces hallucinations with verifiable citations via vector DB retrieval
+  - 'Agentic workflows combine prompts + memory (working + archival) + tools/APIs in multi-step processes'
+  - MCP simplifies scalable dynamic tool interactions for agent-to-tool negotiation
+  - Enterprises show 20-60% time savings combining agents with human oversight
+  techniques:
+  - Zero-shot/few-shot prompting
+  - Chain-of-thought
+  - Prompt chaining
+  - RAG with HyDE
+  - Multi-granularity chunking
+  - MCP (Model Context Protocol)
+  - LLM-as-judge evaluation
+  - Multi-agent coordination
+  reported_results:
+  - '20-60% time savings on credit-risk memos with agent + human oversight'
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+    - routing-intelligence.md
+    - context-folding-progressive.md
+  notes: >
+    Survey lecture — all techniques covered in existing handoffs. The prompting → RAG → agents
+    escalation ladder matches our architecture. MCP integration already tracked via hermes-agent-index.md.
+    No new techniques for EPYC. The 20-60% time savings number is useful for business case framing.
+
+- id: intake-314
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'Running Parallel Agents Interactively & Deterministically'
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - Interactive mode — ask main agent to spin up workers (e.g., Kimi CLI)
+  - Deterministic mode — Python/Bash loops for repeatable parallel execution
+  - Git worktrees as isolated backup sandboxes per agent
+  techniques:
+  - Parallel agent spawning
+  - Git worktree isolation
+  - Interactive vs deterministic orchestration
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    Informal tip confirming patterns already in use. Our autopilot species run in parallel
+    (NumericSwarm, PromptForge, StructuralLab). Claude Code native worktree isolation is
+    already available. The interactive vs deterministic distinction maps to our
+    autopilot (deterministic loop) vs ad-hoc agent spawning (interactive).
+
+- id: intake-315
+  arxiv_id: null
+  url: https://metauto.ai/neuralcomputer/
+  source_type: blog
+  title: 'Neural Computer: A New Machine Form Is Emerging (Meta AI)'
+  categories:
+  - multimodal
+  - autonomous_research
+  - agent_architecture
+  key_claims:
+  - Neural Computers (NCs) fuse program and hardware into one learned dynamical system
+  - Single learned runtime state handles computation, memory, and I/O simultaneously
+  - 'CLIGen dataset: 823,989 asciinema video streams (~1,100 hours) for terminal simulation'
+  - 'GUIWorld dataset: virtualized Ubuntu 22.04 with 7+ apps, 1,500+ hours of GUI interaction'
+  - Four conditions for Completely Neural Computer — Turing completeness, programmability, consistency, machine-native semantics
+  techniques:
+  - Neural Computers (learned dynamical systems)
+  - Latent video state as runtime state
+  - CLIGen terminal dataset
+  - GUIWorld GUI interaction dataset
+  - Action injection cross-attention
+  reported_results:
+  - Terminal rendering achieves visual fidelity for colors, cursors, and text
+  - Model 4 (internal action cross-attention) outperforms alternatives
+  - Supervised data significantly exceeds random data effectiveness
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Terminal simulation via video generation is orders of magnitude less efficient than actual terminal execution'
+  - 'No benchmark comparisons against conventional computer programs on equivalent tasks'
+  - 'Practical value unclear — why render a terminal as video when you can run the actual terminal?'
+  cross_references:
+    handoffs:
+    - multimodal-pipeline.md
+  notes: >
+    Fascinating research direction but out of scope for EPYC. The CLIGen dataset (asciinema-based)
+    could theoretically inform agent training, but training a model to simulate a terminal by
+    rendering frames is the opposite of our approach (we use actual terminal execution via REPL).
+    The CNC concept (neural network AS the computer) is a long-term research direction, not
+    immediately actionable. Filed for reference.
+
+- id: intake-316
+  arxiv_id: null
+  url: https://x.com/chrysb/status/2043020014035570784
+  source_type: blog
+  title: 'Long-Term Memory for Conversational LLMs Remains Unsolved'
+  authors:
+  - Chrys Bader
+  categories:
+  - memory_augmented
+  - knowledge_management
+  key_claims:
+  - Two fundamental paths — raw (lossless but inert) vs derived (compact but drifts) — neither works alone
+  - Nine-axis design space for memory systems (write triggers, storage backend, retrieval mode, curation, forgetting policy, etc.)
+  - 'Infinite context will NOT solve memory — cost scales linearly, quality degrades with window fill'
+  - 'Evaluation paradox: ground truth for long conversations exceeds any context window'
+  - 'Common failure modes: derivation drift, entity confusion, selective retrieval bias, stale context dominance'
+  techniques:
+  - Raw vs derived storage spectrum
+  - Nine-axis memory design space
+  - Always-injected / hook-driven / tool-driven retrieval modes
+  - Provenance-tracked forgetting
+  - Four-layer memory stacks
+  reported_results: []
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'MemPalace (intake-326) claims 96.6% recall on LongMemEval — partially contradicts the "unsolved" framing'
+  - 'The essay conflates "perfect memory" with "useful memory" — production systems do not need perfect recall'
+  cross_references:
+    intake:
+    - intake-135 (Cognee knowledge engine)
+    - intake-141 (Contextual Memory Virtualisation)
+    - intake-265 (Omni-SimpleMem)
+    - intake-267 (ByteRover)
+    - intake-326 (MemPalace)
+    handoffs:
+    - context-folding-progressive.md
+    - hermes-agent-index.md
+    - tool-output-compression.md
+  notes: >
+    Excellent design-space taxonomy. The nine-axis framework (write triggers, storage backend,
+    retrieval mode, curation, forgetting, timing) maps directly to our context-folding design
+    decisions. Our approach: derived storage (session_compaction), hook-driven retrieval (worker
+    index injection), harness curation (session_compaction trigger at 60%), append-only forgetting
+    (context is lost when compacted). The essay highlights our key weakness: derivation drift
+    from repeated summarization. Our L1-L4 compression ladder (Phase 2b) attempts to address this
+    with tiered compression levels. The raw vs derived tradeoff is exactly the tension in
+    Phase 2c (ByteRover enhancement) — adding hash-based dedup to preserve some raw segments.
+    Actionable insight: implement provenance tracking so we can trace derived summaries back
+    to their source turns and detect drift.
+    DEEP-DIVE 2026-04-12: Author confirmed as Chrys Bader (Twitter/X @chrysb), CTO/co-founder
+    of Dot (personal AI companion app). The nine-axis framework applied to our stack:
+    (1) Write triggers: we use heuristic (60% context fill), essay suggests LLM-as-curator
+    is terrible at predicting what matters later — validates our threshold-based approach.
+    (2) Storage: we use derived (session summaries), MemPalace uses raw verbatim (96.6%
+    recall), Mem0 uses derived ($249/mo, ~85%). Our derivation drift risk is real.
+    (3) Retrieval: we use hook-driven (worker index injection at session start). Essay warns
+    hook-driven is expensive and "makes the model perform memory rather than truly have it."
+    (4) Curation: harness-based (deterministic session_compaction trigger). Essay confirms
+    this is cheapest but sloppiest. (5) Forgetting: append-only (context lost when compacted).
+    Essay warns contradictions accumulate — we should implement supersession. (6) Timing:
+    synchronous (compaction runs in-conversation). Essay recommends async background for
+    expensive derivations — our worker_fast summarizer already does this. Key gap analysis:
+    our weakest axis is FORGETTING (append-only, no provenance, no contradiction detection).
+    MemPalace has temporal KG with validity windows (closer to ideal). Actionable: (1) Add
+    validity timestamps to session compaction segments. (2) Implement supersession detection
+    (when new info contradicts old compacted info). (3) Consider hybrid raw+derived approach
+    for Phase 2c: keep raw segments for recent turns, derive only older ones.
+
+- id: intake-317
+  arxiv_id: null
+  url: https://github.com/OpenBMB/VoxCPM
+  source_type: repo
+  title: 'VoxCPM2: Tokenizer-Free Multilingual TTS with Voice Design and Cloning'
+  authors:
+  - OpenBMB (Tsinghua)
+  categories:
+  - multimodal
+  key_claims:
+  - Tokenizer-free diffusion autoregressive TTS — no discrete audio tokenization needed
+  - 30-language multilingual synthesis with automatic prosody inference
+  - Voice Design — create novel voices from natural language descriptions alone
+  - Controllable voice cloning with style guidance (emotion, pace, expression)
+  - 'RTF as low as ~0.13 on RTX 4090, 48kHz studio-quality audio'
+  techniques:
+  - Tokenizer-free diffusion autoregressive modeling
+  - AudioVAE V2 latent space
+  - 'Four-stage pipeline: LocEnc → TSLM → RALM → LocDiT'
+  - MiniCPM-4 language model backbone
+  reported_results:
+  - 'RTF ~0.13 on RTX 4090'
+  - '48kHz studio-quality audio output'
+  - '30 languages supported'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Requires GPU (RTX 4090 for real-time) — our GT 1030 cannot run this'
+  - 'MiniCPM-4 backbone may not have llama.cpp support yet'
+  cross_references:
+    intake:
+    - intake-123 (Qwen3-TTS)
+    - intake-242 (Voxtral TTS)
+    handoffs:
+    - multimodal-pipeline.md
+  notes: >
+    Promising TTS alternative to our blocked Qwen3-TTS pipeline. Tokenizer-free approach
+    avoids the discrete token quality ceiling. Apache 2.0 license enables commercial use.
+    However, GPU requirement (RTX 4090 for real-time) blocks us — our GT 1030 is display-only.
+    Voice Design feature (create voices from text descriptions) is unique and compelling.
+    Worth tracking for when we add GPU capacity. The MiniCPM-4 backbone is from the same
+    OpenBMB team — may need custom llama.cpp support.
+
+- id: intake-318
+  arxiv_id: null
+  url: https://github.com/SuperagenticAI/agentnetes
+  source_type: repo
+  title: 'Agentnetes (a8s): Kubernetes-Inspired Self-Organizing AI Agent Orchestration'
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - Self-organizing specialist agent teams assembled from natural-language goals
+  - Parallel execution in isolated Docker/Vercel sandboxes per agent
+  - 'vRLM (Virtual Recursive Language Model Runtime) using RLM pattern from MIT CSAIL'
+  - Real-time SSE streaming for live agent activity visualization
+  - Two-tool MCP strategy (search + execute) with A2A Agent Card protocol
+  techniques:
+  - RLM pattern (context in sandboxes, not prompts)
+  - AutoResearch loop (code → test → measure → iterate)
+  - A2A Agent Card protocol
+  - Kubernetes-inspired fault tolerance
+  reported_results: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'New project with no published benchmarks comparing against baseline agent systems'
+  - 'Docker sandbox overhead may negate benefits for short tasks'
+  cross_references:
+    intake:
+    - intake-153 (RLMs)
+    - intake-248 (SiliconSwarm)
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - hermes-agent-index.md
+  notes: >
+    Interesting architectural parallel to our autopilot. Key differences: they use Docker
+    sandboxes (we use git worktrees), they use A2A protocol (we use Claude Code native
+    sub-agents), they implement vRLM (we implement RLM concepts via context-folding).
+    The "Kubernetes for agents" metaphor is apt — load balancing, fault tolerance, service
+    discovery all translate. TypeScript/Node.js, MIT licensed. Worth monitoring.
+    DEEP-DIVE 2026-04-12: vRLM Three-Phase model: (1) Plan — root "Tech Lead" (Gemini 2.5
+    Pro) explores repo via shell, dynamically invents specialist roles (fully emergent, no
+    hardcoded teams). (2) Execute — workers spawn concurrently in Docker/Firecracker with
+    repo at /workspace, Promise.allSettled() for fault tolerance. (3) Synthesize — root
+    aggregates worker summaries. TWO-TOOL MCP STRATEGY: every agent gets exactly search()
+    + execute(), achieving ~1000 token footprint. Context lives in sandbox filesystem, not
+    prompt. This is the key extractable pattern for EPYC — constraining sub-agent tool
+    surfaces to reduce prompt overhead. A2A Agent Cards: JSON with name/description/
+    capabilities/skills[] for inter-agent discovery. SSE typed events for monitoring.
+    Config: maxWorkers=6, maxStepsPerAgent=20. LIMITATIONS: Gemini API locked (no local
+    inference), no benchmarks, no persistent memory. ACTIONABLE: (1) Extract two-tool
+    pattern for our sub-agent dispatch — constrain each model's tool set. (2) Adopt SSE
+    event typing for autopilot monitoring. (3) The emergent role assignment validates
+    our project_autopilot_stack_assembly.md goal of dynamic stack assembly.
+
+- id: intake-319
+  arxiv_id: null
+  url: https://huggingface.co/Jiunsong/supergemma4-26b-uncensored-gguf-v2
+  source_type: repo
+  title: 'SuperGemma4-26B-Uncensored GGUF v2 — Community Fine-tune'
+  categories:
+  - quantization
+  - local_inference
+  key_claims:
+  - Less censored than stock Gemma 4 26B-A4B-it while maintaining usefulness
+  - Faster inference with improved MLX weights
+  - Neutral chat template prevents routing into coding/tool-call behavior
+  - Optimized for Apple Silicon local deployment
+  techniques:
+  - Q4_K_M GGUF quantization
+  - Neutral chat template
+  reported_results:
+  - 'Prompt speed: 222-705 tok/s on M4 Max (llama.cpp)'
+  - 'Generation speed: 89.4 tok/s on M4 Max'
+  - 'Quick bench: 95.8 vs 91.4 (stock)'
+  - 'MLX gen speed: 46.2 vs 42.5 tok/s (stock)'
+  - 'File size: 16.8 GB (Q4_K_M)'
+  novelty: low
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-256 (Gemma 4 MLX Collection)
+    - intake-257 (Gemma 4 Official)
+  notes: >
+    Community uncensored fine-tune of Gemma 4 26B-A4B (MoE). The 26B-A4B MoE is interesting
+    for local inference — only 4B active parameters. At 16.8 GB Q4_K_M, it fits our memory
+    constraints. The 89.4 tok/s gen speed on M4 Max suggests reasonable CPU performance.
+    Could be a candidate for worker_fast if uncensored behavior is acceptable. The neutral
+    chat template note is relevant — prevents the model from over-triggering tool calls.
+    DEEP-DIVE 2026-04-12: Architecture analysis — Gemma 4 26B-A4B is a Mixture-of-Experts
+    with 4B active parameters per token (from 26B total). Our Qwen3-30B-A3B has 3B active.
+    SuperGemma4 has 33% MORE active params than our current worker, but fits in 16.8GB Q4_K_M.
+    Our Qwen3-30B-A3B Q4_K_M is ~18GB — SuperGemma4 is SMALLER on disk. The "uncensored"
+    modification: safety refusals removed but general capabilities preserved. Quick bench 95.8
+    vs 91.4 stock = 4.8% improvement (likely from uncensored training allowing fuller responses).
+    CAUTION: "neutral chat template" deliberately prevents tool-call mode — this would BREAK
+    our orchestrator's function-calling pipeline. Our stack REQUIRES tool-call capability for
+    REPL, peek(), file_read_safe() etc. The stock Gemma 4 26B-A4B-it with proper chat template
+    would be the correct choice, not this uncensored variant. HOWEVER: M4 Max speeds (89.4
+    tok/s gen) are Apple Silicon — our AMD EPYC CPU performance would differ significantly.
+    Need actual benchmarking. VERDICT CHANGE: worth_investigating → worth_investigating (no
+    change, but with caveat: test stock Gemma 4 26B-A4B-it GGUF for tool-call reliability,
+    NOT this uncensored variant). Actionable: (1) Download official Gemma 4 26B-A4B-it GGUF
+    from Google and benchmark on our EPYC CPU. (2) Compare against Qwen3-30B-A3B on our
+    standard eval suite. (3) Do NOT use uncensored variant for production.
+
+- id: intake-320
+  arxiv_id: null
+  url: https://unsloth.ai/blog/rl-environments
+  source_type: blog
+  title: 'Unsloth Blog: RL Environments and How to Build Them'
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - RL is evolving from single-response optimization to trajectory shaping for agentic AI
+  - 'RLVR (RL from Verifiable Rewards) shifts from subjective scoring to explicit environmental checks'
+  - Environment preparation must precede model training to define success criteria
+  - RL outperforms SFT for complex tasks requiring exploration and multi-step reasoning
+  - Decoupling environments from training enables faster iteration
+  techniques:
+  - DPO (Direct Preference Optimization)
+  - GRPO (Group Relative Policy Optimization)
+  - RLVR (RL from Verifiable Rewards)
+  - State matching verification
+  - Agent orchestration loops
+  reported_results: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - 08-doc-to-lora-prototype.md
+    - context-folding-progressive.md
+  notes: >
+    Good overview of RL environment design. The RLVR concept (verifiable rewards via
+    environmental checks) maps directly to our autopilot eval tower (T0/T1/T2 with
+    deterministic scoring). GRPO is already referenced in context-folding-progressive.md
+    Phase 3 (FoldGRPO). The environment-first design principle validates our approach of
+    building eval infrastructure before optimizing prompts. NeMo Gym + NeMo RL could be
+    relevant if we pursue GPU-based RL training in the future.
+
+- id: intake-321
+  arxiv_id: null
+  url: https://github.com/forrestchang/andrej-karpathy-skills
+  source_type: repo
+  title: 'Karpathy-Inspired Claude Code Guidelines — CLAUDE.md Plugin'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - Four principles — Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution
+  - Addresses LLM coding pitfalls (wrong assumptions, overcomplication, unintended edits)
+  - Installable as Claude Code plugin or per-project markdown
+  - Test-first methodology with verification checkpoints
+  techniques:
+  - Explicit assumption-stating before implementation
+  - Minimum viable code approach
+  - Surgical editing confined to requested changes
+  - Multi-step planning with success criteria
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-268 (Karpathy LLM Wiki concept)
+    - intake-277 (Hermes Agent LLM Wiki Skill)
+  notes: >
+    Our CLAUDE.md already implements more sophisticated versions of these principles via
+    agent governance, hooks, and schema validation. The four principles are good hygiene
+    but nothing new for our setup. Filed for reference.
+
+- id: intake-322
+  arxiv_id: null
+  url: https://github.com/axolotl-ai-cloud/axolotl
+  source_type: repo
+  title: 'Axolotl: Unified LLM Fine-Tuning Framework'
+  categories:
+  - training_distillation
+  key_claims:
+  - Supports numerous LLM architectures with YAML-based configuration
+  - 'Training methods: full fine-tuning, LoRA, QLoRA, DPO, IPO, KTO, ORPO, GRPO, GDPO'
+  - Multimodal training for vision-language and audio models
+  - Flash Attention, Sequence Parallelism, multi-GPU support
+  techniques:
+  - LoRA, QLoRA, GPTQ
+  - DPO, GRPO, GDPO, ORPO
+  - Flash Attention
+  - Sequence Parallelism
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >
+    Established training framework. Not directly applicable — no training-capable GPUs
+    (AMD EPYC 9655 + GT 1030 display-only). Filed as reference for future cloud GPU
+    training if Doc-to-LoRA progresses to Phase B. Apache 2.0.
+
+- id: intake-323
+  arxiv_id: null
+  url: https://github.com/deepspeedai/DeepSpeed
+  source_type: repo
+  title: 'DeepSpeed: Deep Learning Optimization Library (Microsoft)'
+  categories:
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - ZeRO memory optimization for trillion-parameter model training
+  - 3D parallelism (tensor, pipeline, expert) plus sequence parallelism
+  - Multi-hardware support (NVIDIA, AMD, Intel, Huawei)
+  - Powered training of MT-530B and BLOOM
+  techniques:
+  - ZeRO Stages 1-3 and ZeRO-Infinity
+  - Tensor/pipeline/expert parallelism
+  - Offloading and gradient accumulation
+  - MoE training
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-112 (Megatron-LM)
+    - intake-334 (MegaTrain — claims 1.84x over DeepSpeed ZeRO-3)
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >
+    Industry standard distributed training library. Not applicable — no training GPUs.
+    Relevant as comparison baseline for MegaTrain (intake-334) which claims 1.84x throughput
+    over DeepSpeed ZeRO-3 with CPU offloading. Apache 2.0.
+
+- id: intake-324
+  arxiv_id: null
+  url: https://github.com/hiyouga/LlamaFactory
+  source_type: repo
+  title: 'LLaMA Factory: Unified Fine-Tuning for 100+ LLMs'
+  categories:
+  - training_distillation
+  key_claims:
+  - Zero-code CLI and Web UI for fine-tuning 100+ LLMs
+  - 'Methods: full-tuning, LoRA, QLoRA, OFT, QOFT, SFT, PPO, DPO, KTO, ORPO, SimPO'
+  - 'Quantization: 2-8 bit QLoRA via AQLM/AWQ/GPTQ/HQQ/EETQ'
+  - Multimodal (vision, audio, video)
+  - vLLM and SGLang integration
+  techniques:
+  - LoRA, QLoRA, OFT
+  - PPO, DPO, KTO, ORPO, SimPO
+  - Multi-bit quantized training
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >
+    Popular fine-tuning framework. Not applicable — no training GPUs. Apache 2.0.
+
+- id: intake-325
+  arxiv_id: null
+  url: https://github.com/unslothai/unsloth
+  source_type: repo
+  title: 'Unsloth: 2x Faster LLM Training with 70% Less VRAM'
+  categories:
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - '500+ models up to 2x faster with up to 70% less VRAM, no accuracy loss'
+  - '80% less VRAM for GRPO reinforcement learning'
+  - '12x faster MoE LLM training with 35% reduced VRAM'
+  - Custom Triton and mathematical kernels for efficiency
+  - Auto-create datasets from PDF, CSV, DOCX
+  techniques:
+  - Custom Triton kernels
+  - Padding-free architecture (3x faster, 30% less VRAM)
+  - GRPO, DPO, full fine-tuning, RL, pretraining, 4-bit/16-bit/FP8
+  reported_results:
+  - '2x faster training, 70% less VRAM'
+  - '80% less VRAM for GRPO'
+  - '12x faster MoE training'
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+  notes: >
+    Impressive VRAM reduction claims. Not directly applicable — no training GPUs.
+    The 80% VRAM reduction for GRPO is notable if we pursue context-folding Phase 3
+    FoldGRPO training. The MoE training speedup could be relevant for our MoE models.
+    Dual license: Apache 2.0 (core) + AGPL-3.0 (Studio UI).
+
+- id: intake-326
+  arxiv_id: null
+  url: https://github.com/MemPalace/mempalace
+  source_type: repo
+  title: 'MemPalace: Local AI Memory System with 96.6% LongMemEval Recall'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  key_claims:
+  - '96.6% LongMemEval R@5 — highest published result for zero-cost, offline memory'
+  - 'Palace architecture: wings (projects/people) → rooms (topics) → drawers (raw verbatim content)'
+  - '19 MCP tools — integrates with Claude, ChatGPT, Gemini, and local models'
+  - 'Temporal knowledge graph tracking entity relationships and validity windows in SQLite'
+  - 'AAAK compression dialect — lossy abbreviation readable by any LLM without decoders'
+  techniques:
+  - Palace hierarchical memory architecture (wings/rooms/drawers)
+  - Semantic search via ChromaDB on raw unsummarized text
+  - Metadata filtering by wing/room (34% retrieval improvement over flat search)
+  - 'Four-layer memory stack: identity (L0), critical facts (L1), room recall (L2), deep search (L3)'
+  - Temporal knowledge graph in SQLite
+  - AAAK compression dialect
+  reported_results:
+  - '96.6% R@5 on LongMemEval'
+  - '34% retrieval improvement from hierarchical filtering vs flat search'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'LongMemEval is retrieval-focused — does not test derivation quality or long-term coherence'
+  - '96.6% recall on raw text may not hold when memory grows beyond benchmark scale'
+  cross_references:
+    intake:
+    - intake-135 (Cognee knowledge engine)
+    - intake-267 (ByteRover hierarchical context)
+    - intake-316 (LTM Unsolved essay — MemPalace partially addresses the design space)
+    handoffs:
+    - context-folding-progressive.md
+    - hermes-agent-index.md
+    - tool-output-compression.md
+  notes: >
+    Strong memory system with published benchmark results. Key architectural insight: they
+    search RAW unsummarized text (avoiding derivation drift from intake-316) but organize it
+    hierarchically (avoiding the flat-search problem). This is a middle ground between raw
+    and derived that our context-folding should consider. The four-layer stack (L0 identity
+    → L3 deep search) parallels our L1-L4 compression ladder. The AAAK compression dialect
+    is novel — lossy abbreviation that any LLM can read without special decoders. The 19
+    MCP tools make it plug-and-play with Claude Code. MIT license. Worth deep-diving for
+    context-folding Phase 2c integration ideas.
+    DEEP-DIVE 2026-04-12: CRITICAL finding — GitHub issue #214 flags "benchmarks do not exercise
+    MemPalace — headline 96.6% is a ChromaDB score." The palace architecture (wings/rooms/drawers)
+    is NOT tested by LongMemEval. The 96.6% is ChromaDB vector search on raw text with metadata
+    filtering, not the palace hierarchy. The +34% retrieval boost from wing/room filtering is
+    their own internal measurement, not LongMemEval-validated. AAAK compression details: regex-based
+    entity abbreviation system (not reversible compression). AAAK overhead costs MORE than it saves
+    on short conversations — only amortizes at scale (hundreds of repeated entity mentions). 84.2%
+    AAAK vs 96.6% raw = 12.4pp regression, but 84.2% still beats Mem0 (~85%) and Zep (~82%) at
+    zero cost. Architecture: L0 (identity, ~170 tokens always injected) → L1 (critical facts from
+    temporal KG) → L2 (room-filtered ChromaDB search) → L3 (full deep search). Temporal KG uses
+    SQLite with validity windows per entity-relationship triple. 19 MCP tools enable direct Claude
+    Code integration. DOWNGRADE novelty: the 96.6% headline is misleading — it's standard ChromaDB
+    performance, not a palace architecture breakthrough. However, the hierarchical metadata filtering
+    (wings/rooms) IS genuinely useful for our context-folding — adding topic-based filtering to our
+    session compaction index could improve retrieval precision. The L0-L3 stack design is the real
+    contribution. Actionable: (1) Evaluate adding wing/room-style metadata tags to our session
+    compaction worker_explore index. (2) The temporal KG (entity + validity window) pattern could
+    inform our user modeling (hermes B1). (3) Test raw-storage approach for session segments
+    (keep some verbatim segments alongside compressed summaries) in Phase 2c.
+  handoffs_updated: []
+
+- id: intake-327
+  arxiv_id: null
+  url: https://github.com/NousResearch/hermes-agent-self-evolution
+  source_type: repo
+  title: 'Hermes Agent Self-Evolution: DSPy+GEPA Skill Optimization Without GPU'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  key_claims:
+  - 'Automated evolution of agent skills, tool descriptions, and system prompts via reflective evolutionary search'
+  - 'Low-cost optimization (~$2-10 per run) via API calls only — no GPU required'
+  - Built-in guardrails (test validation, size constraints, mandatory human review)
+  - Execution trace analysis for failure cause understanding beyond pass/fail
+  - 'Multi-phase targeting: skills (implemented), tools/prompts/code (planned)'
+  techniques:
+  - DSPy + GEPA (Genetic-Pareto Prompt Evolution)
+  - Reflective evolutionary search
+  - Execution trace analysis
+  - Constraint gates (test passage + semantic preservation)
+  - Darwinian Evolver (planned for code-level evolution)
+  reported_results:
+  - '$2-10 per optimization run'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Skills phase only — tools/prompts/code evolution still planned, not validated'
+  - '$2-10 per run assumes API access — our local-first stack would need adaptation'
+  cross_references:
+    intake:
+    - intake-240 (GEPA paper — same algorithm used here)
+    - intake-244 (Meta-Harness — same optimization target, different approach)
+    handoffs:
+    - hermes-agent-index.md
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    Directly applicable to our PromptForge species in autopilot. Key differences from
+    our approach: they use GEPA (evolutionary, Pareto-optimal), we use LLM-guided mutation.
+    Their execution trace analysis goes beyond our score-only feedback — aligns with
+    Meta-Harness finding (intake-244) that full traces provide +15 points. The $2-10 per
+    run is for API models; adapting to local models would eliminate cost but require our
+    inference stack. The guardrails (test validation + human review) are more conservative
+    than our autopilot safety gates. Nous Research backing adds credibility. MIT license.
+    Should explore integrating GEPA algorithm into our PromptForge species.
+    DEEP-DIVE 2026-04-12: 6-stage optimization loop (SELECT→BUILD EVAL→WRAP DSPy→RUN
+    OPTIMIZER→EVALUATE→DEPLOY via PR). GEPA reads EXECUTION TRACES to understand WHY
+    variants fail (not just that they fail) — this is "Actionable Side Information (ASI)",
+    the text-optimization analogue of gradients. 4 improvement tiers in risk order:
+    (1) skill files, (2) tool descriptions, (3) system prompts, (4) tool code. Phase 1
+    (skills) is implemented; 2-4 are planned. 5 mandatory constraint gates: 100% test
+    pass, size limits (skills ≤15KB, tools ≤500 chars, +20% max growth), caching
+    compatibility, semantic preservation, human review gate. Fitness = LLM-as-judge
+    (correctness + conciseness + procedure adherence) + cost/latency penalties.
+    CRITICAL for EPYC: GEPA's reflective trace analysis directly upgrades PromptForge.
+    Integration path: (1) Wrap EPYC prompt templates as DSPy signatures, (2) Collect
+    orchestrator session trajectories in ShareGPT format, (3) Run GEPA externally with
+    our benchmark suite as evaluator, (4) Gate on USACO/skill_transfer/web_research.
+    Cost: ~250-500 local inference calls per optimization run (~2-4 hrs on our stack).
+    The 3-example minimum means bootstrapping is feasible for any new target.
+    Darwinian Evolver is AGPL v3 — use GEPA (MIT) only. UPGRADE verdict →
+    new_opportunity. This is the #1 priority integration target per cross-cutting
+    analysis: directly upgrades PromptForge, no GPU needed, MIT licensed.
+  handoffs_updated: []
+
+- id: intake-328
+  arxiv_id: null
+  url: https://huggingface.co/MiniMaxAI/MiniMax-M2.7
+  source_type: repo
+  title: 'MiniMax-M2.7: 229B Parameter Self-Evolving Model'
+  categories:
+  - agent_architecture
+  - inference_serving
+  key_claims:
+  - '229B parameters, Modified-MIT license'
+  - 'Self-evolution: model autonomously updates memory, builds skills, improves via RL'
+  - '97% skill adherence rate across 40+ complex skills (each >2,000 tokens)'
+  - '24 quantized variants available'
+  - 'SWE-Pro 56.22%, VIBE-Pro 55.6%, Terminal Bench 2 57.0%, MLE Bench Lite 66.6%'
+  techniques:
+  - Self-evolution workflow (analyze failures → plan → modify → evaluate → compare → decide)
+  - Autonomous short-term memory and self-feedback loops
+  - Agent harness with persistent memory and cross-team collaboration
+  reported_results:
+  - 'SWE-Pro: 56.22% (matches GPT-5.3-Codex)'
+  - 'VIBE-Pro: 55.6% (near Opus 4.6)'
+  - 'Terminal Bench 2: 57.0%'
+  - 'GDPval-AA ELO: 1495 (highest open-source, surpasses GPT-5.3)'
+  - 'MLE Bench Lite: 66.6% (2nd to Opus-4.6 and GPT-5.4)'
+  - 'SWE Multilingual: 76.5%'
+  - 'Toolathon: 46.3%'
+  - 'MM Claw: 62.7% (97% skill compliance)'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - '229B model is far too large for local inference on our hardware'
+  - 'Self-evolution claims are vendor-reported without independent replication'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - autopilot-continuous-optimization.md
+  notes: >
+    229B model too large for local inference. However, the self-evolution workflow
+    (analyze → plan → modify → evaluate → compare → decide) is directly relevant to
+    our autopilot pattern. The 97% skill adherence across 40+ complex skills is impressive
+    and validates the structured-skills approach we use in hermes-agent. The Modified-MIT
+    license allows commercial use. The self-evolution training loop where the model
+    participates in its own improvement mirrors our PromptForge species. Worth studying
+    the self-evolution architecture for adoption patterns.
+    DEEP-DIVE 2026-04-12: CORRECTION — 229B is SPARSE MoE (10B active per token, 256
+    experts, top-k routing, RoPE + QK RMSNorm, 200K context). GGUF available via
+    unsloth/MiniMax-M2.7-GGUF — smallest usable: UD-IQ4_XS 108GB, Q4_K_M 140GB.
+    DEPLOYMENT REASSESSMENT: 108GB model + ~4GB KV cache (32K context) = ~112GB total.
+    Leaves ~140GB headroom on 256GB system — FEASIBLE as standalone heavyweight or
+    alongside a small frontdoor model only. 10B active params on 192 threads should
+    yield ~10-20 tok/s (comparable to our 30B-A3B). Worth benchmarking as high-quality
+    reasoning/coding model. The SWE-Pro 56.22% and GDPval-AA 1495 (highest open-source)
+    make it a serious contender. CAVEAT: UD-Q4_K_XL has 6.0pt accuracy drop + 22.8%
+    more errors vs original — MoE quant quality degrades faster than dense. Test
+    UD-IQ4_XS quality carefully. UPGRADE relevance medium→medium-high for deployment
+    (must benchmark). Self-evolution pattern details: the model
+    ran 100+ autonomous optimization rounds, achieving 30% scaffold performance improvement.
+    MLE Bench Lite: 9 gold, 5 silver, 1 bronze in best run on single A30 over 24 hours
+    per competition. The self-evolution loop (analyze failure trajectories → plan changes →
+    modify scaffold code → run evaluations → compare → keep/revert) is structurally identical
+    to our autopilot PromptForge species. Key diff: they evolve the harness CODE, we evolve
+    prompts. Their approach is closer to our StructuralLab species. Actionable: the
+    self-evolution workflow pattern is worth adopting for StructuralLab even though the
+    model itself is impractical. The 97% skill compliance number sets a benchmark target.
+
+- id: intake-329
+  arxiv_id: null
+  url: https://www.minimax.io/news/minimax-m27-en
+  source_type: blog
+  title: 'MiniMax M2.7 Announcement: Early Echoes of Self-Evolution'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  key_claims:
+  - First model deeply participating in its own evolution
+  - 'Handles 30-50% of research workflow autonomously'
+  - 'Production incident recovery reduced to under 3 minutes'
+  - Agent Teams with stable role identity for multi-agent collaboration
+  techniques:
+  - Self-evolution workflow
+  - Agent Teams
+  - Production self-monitoring and recovery
+  reported_results:
+  - '30-50% research workflow automation'
+  - 'Under 3 minutes incident recovery time'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-328 (MiniMax-M2.7 model card)
+    handoffs:
+    - autopilot-continuous-optimization.md
+  notes: >
+    Companion to intake-328. Key additional details: the 30-50% research workflow
+    automation claim and under-3-minute incident recovery. Their Agent Teams concept
+    (stable role identity) parallels our orchestrator stack roles (coder, planner, explorer).
+    The "early echoes of self-evolution" framing suggests this is a nascent capability,
+    not fully mature. Combined with intake-328 for a complete picture.
+    DEEP-DIVE 2026-04-12: The self-evolution loop specifics (from announcement): (1) Analyze
+    failure trajectories across eval runs, (2) Plan targeted code changes based on failure
+    patterns, (3) Modify scaffold/harness code, (4) Run evaluation battery, (5) Compare vs
+    baseline using statistical significance, (6) Decide keep or revert. This is structurally
+    IDENTICAL to our StructuralLab species workflow. Key difference: they run 100+ rounds
+    autonomously over sustained periods; our autopilot AR-3 has done ~78 trials. The "Research
+    Agent Harness" is a multi-department collaborative system — their equivalent of our
+    orchestrator stack but for research tasks. Agent Teams detail: each team has stable role
+    identity (architect, implementer, tester) with adversarial reasoning between roles. This
+    maps to our coder/planner/explorer roles but adds the adversarial element (roles challenge
+    each other). MLE Bench Lite methodology: single A30 GPU, 24 hours per competition, 9 gold
+    + 5 silver + 1 bronze in best run. The 30-50% workflow automation number: "handles the
+    mechanical parts of RL experimentation (dataset prep, hyperparameter search, result
+    analysis) while humans focus on hypothesis formation." Actionable: (1) Add adversarial
+    role interaction to our orchestrator — let planner challenge coder's approach.
+    (2) The 100+ round autonomous optimization is within reach for our AR-3 if we let it
+    run longer. (3) The Research Agent Harness pattern could inform a dedicated research
+    mode for our autopilot.
+
+- id: intake-330
+  arxiv_id: null
+  url: https://github.com/tirth8205/code-review-graph
+  source_type: repo
+  title: 'code-review-graph: AST-Based Code Review with 8.2x Token Reduction'
+  categories:
+  - tool_implementation
+  - knowledge_management
+  key_claims:
+  - 'Blast-radius analysis for functions, classes, and files affected by changes'
+  - 'Incremental updates in <2 seconds via git hooks'
+  - '8.2x average token reduction while maintaining 100% recall on impact analysis'
+  - '19 languages + Jupyter/Databricks notebooks via Tree-sitter'
+  - 'Interactive D3.js graph visualization, local SQLite storage'
+  techniques:
+  - AST parsing via Tree-sitter
+  - Graph-based dependency tracking (call-site + inheritance edges)
+  - SHA-256 hash-based change detection
+  - Leiden algorithm for code community clustering
+  - FTS5 hybrid keyword + vector similarity search
+  reported_results:
+  - '8.2x average token consumption reduction'
+  - '100% recall on impact analysis'
+  - '<2 second incremental updates'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake: []
+    handoffs: []
+  notes: >
+    GitNexus-like functionality with different approach. Key differences: code-review-graph
+    uses Tree-sitter AST parsing (our GitNexus uses static analysis), they claim 8.2x token
+    reduction (we haven't benchmarked GitNexus token savings), they support 19 languages (we
+    index our specific repos). The Leiden clustering for code community detection is interesting
+    — could complement our GitNexus clusters. The MCP integration means it could plug into
+    our Claude Code workflow alongside GitNexus. MIT license.
+    DEEP-DIVE 2026-04-12: 22 MCP tools + 5 prompt templates (review_changes,
+    architecture_map, debug_issue, onboard_developer, pre_merge_check). Recursive CTE
+    replaced NetworkX for blast-radius (perf fix). 572 tests, 50% min coverage gate.
+    Schema v6 (active dev, v2.2.3.1 had ~70% silent data loss bug from wiki collisions).
+    Search quality weak: MRR 0.35 (GitNexus query is better). Flow detection only 33%
+    recall (Python frameworks only — GitNexus has 300+ flows). HOWEVER: the efficiency
+    protocol is valuable — get_minimal_context first (~100 tokens), then targeted queries,
+    target ≤5 tool calls per task. The pre_merge_check prompt template is immediately
+    usable for our coder agent PR reviews. VERDICT: complement not replace GitNexus.
+    Run both as separate MCP servers. Use code-review-graph for token-optimized review
+    summaries and pre-merge checks. Use GitNexus for execution flow tracing and impact
+    risk classification. The _sanitize_name() and _validate_repo_root() security
+    patterns are worth adopting for our tools that accept path arguments.
+
+- id: intake-331
+  arxiv_id: null
+  url: https://github.com/Trampoline-AI/predict-rlm
+  source_type: repo
+  title: 'predict-rlm: Production RLM Implementation with DSPy'
+  categories:
+  - agent_architecture
+  key_claims:
+  - 'Production-ready Recursive Language Model implementation using DSPy signatures'
+  - Avoids context rot through programmatic REPL interactions instead of direct context manipulation
+  - Performance improvements track directly with underlying model enhancements
+  - Fully interpretable execution trajectories showing reasoning decomposition
+  - Multimodal support (images, documents, audio, video) with native async tool calling
+  techniques:
+  - Recursive Language Models
+  - DSPy signatures for structured sub-LM calls
+  - WASM sandbox for controlled execution
+  - Async concurrent sub-LM invocations
+  reported_results: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-153 (RLMs paper)
+    - intake-312 (Mismanaged Geniuses hypothesis)
+    handoffs:
+    - context-folding-progressive.md
+    - autopilot-continuous-optimization.md
+  notes: >
+    Another RLM implementation, this time using DSPy. Key architectural choice: REPL
+    interactions instead of context stuffing — directly mirrors our orchestrator's REPL-based
+    tool use. The WASM sandbox for execution isolation is interesting (vs our Docker/worktree
+    approach). Async concurrent sub-LM calls could inform our dynamic-stack concurrency work.
+    The multimodal support adds breadth. Worth reviewing for patterns applicable to our
+    orchestrator's sub-agent dispatch. Python, license not specified.
+    DEEP-DIVE 2026-04-12: Core class PredictRLM wraps DSPy Signature with WASM-sandboxed
+    REPL. Constructor: PredictRLM(signature, lm, sub_lm, max_iterations=20,
+    max_llm_calls=50, tools, interpreter). Execution: (1) LM gets context METADATA (type/
+    length/preview), (2) writes Python exploration code, (3) sandbox executes via Deno+
+    Pyodide, (4) LM can invoke llm_query()/llm_query_batched() for semantic sub-queries,
+    (5) SUBMIT() terminates with structured output. Key claim: "bitter lesson-proof" —
+    RLM performance scales with base model improvements. Stated: RLM(GPT-5-mini) > base
+    GPT-5. The sub_lm pattern (expensive explorer + cheap analyzer) maps to our coder+
+    frontdoor. Files: predict_rlm.py, interpreter.py, sandbox/, skills/, files.py.
+    Skills system: Skill(name, instructions, packages) — domain bundles with auto-install.
+    File mounting: inputs into sandbox, outputs sync back. LIMITATIONS: Deno dependency
+    (cache issues reported), not thread-safe with custom interpreter, 77 stars (small
+    project, abandonment risk), max 20 iterations default. EPYC integration: (1) The
+    metadata-first pattern addresses our context window limit — store benchmark data in
+    REPL state, LM explores programmatically. (2) llm_query_batched() with asyncio.gather()
+    could replace sequential tool calls in coding workflows. (3) SUBMIT() mechanism is
+    cleaner than our turn-based response parsing. (4) Validate EPYC's "~80% RLM" claim
+    against this implementation: check for REPL state persistence, metadata-first
+    context, batched sub-LM dispatch. UPGRADE verdict → worth_investigating (confirmed).
+
+- id: intake-332
+  arxiv_id: '2510.25741'
+  url: https://arxiv.org/abs/2510.25741
+  source_type: paper
+  title: 'Ouro: Scaling Latent Reasoning via Looped Language Models'
+  authors:
+  - Rui-Jie Zhu
+  - Zixuan Wang
+  - Yoshua Bengio
+  - Jason Eshraghian
+  - (30+ authors)
+  categories:
+  - context_extension
+  - inference_serving
+  key_claims:
+  - 'Looped Language Models (LoopLM) integrate reasoning into pre-training via iterative latent-space computation'
+  - 'Entropy-regularized depth allocation for adaptive compute per token'
+  - 'Smaller models (1.4B, 2.6B) match performance of 12B models across benchmarks'
+  - Enhanced knowledge manipulation beyond increased memorization
+  - Reasoning traces correlate more strongly with outputs than explicit CoT
+  techniques:
+  - Looped Language Models (LoopLM)
+  - Iterative latent-space computation
+  - Entropy-regularized depth allocation
+  - Ouro architecture
+  reported_results:
+  - '1.4B Ouro matches 12B baseline on reasoning benchmarks'
+  - '2.6B variant extends gains further'
+  - 'Trained on 7.7 trillion tokens'
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Latent reasoning requires architecture changes at pretraining time — cannot be applied to existing GGUF models'
+  - 'Small-matches-large claim is benchmark-dependent; may not hold on real-world tasks'
+  cross_references:
+    handoffs:
+    - yarn-context-extension-research.md
+    - reasoning-compression.md
+  notes: >
+    Significant paper (Bengio co-author). The key insight — iterative computation in
+    latent space during pretraining — is architecturally related to our reasoning compression
+    work. The 1.4B matching 12B claim is striking but requires pretraining from scratch,
+    which we can't do. However, if Ouro models become available as GGUFs, they'd be
+    extremely interesting for our worker_fast slot (small model, strong reasoning).
+    The entropy-regularized depth allocation is conceptually similar to our routing
+    intelligence (allocating more compute to harder queries). Worth monitoring for
+    GGUF availability.
+    DEEP-DIVE 2026-04-12: HuggingFace models FOUND — ByteDance/Ouro-{1.4B, 2.6B, 1.4B-Thinking,
+    2.6B-Thinking}, all Apache-2.0. Architecture: 24 layers shared across 4 recurrent steps,
+    hidden 2048, SwiGLU FFN, MHA with RoPE, sandwich RMSNorm, vocabulary 49152. Context: 4K
+    training (extendable to 64K) — SHORT context is a limitation. Adaptive exit via sigmoid gate
+    with CDF threshold. KV cache: last-step-only reuse retains 99.9% GSM8K accuracy with 4x
+    reduction. CRITICAL: llama.cpp compatibility DOUBTFUL — the looped architecture requires
+    parameter-shared recurrent computation which is NOT standard transformer inference. The
+    early exit gate needs custom code. transformers requires pinning to v4.54.1 (KV cache bug
+    in 4.56+). GGUF conversion would need special handling for the recurrence. HOWEVER: at
+    2.6B params, Ouro could run on CPU via transformers (not llama.cpp) at maybe 5-10 tok/s
+    on our EPYC. Ouro-2.6B-Thinking results: AIME24 pass@1 64.7%, pass@10 90.0%, MATH-500
+    90.85%, OlympiadBench 76.4%, BeyondAIME 39.0% — these are EXCEPTIONAL for 2.6B params.
+    Recurrent depth scaling: T=1→T=4 gains are dramatic (ARC-C 47.95%→66.38%, MMLU
+    51.55%→74.60%). Safety improves monotonically with recurrence depth (HEx-PHI 0.003).
+    Knowledge capacity: ~2 bits/param for both looped and non-looped (recurrence helps
+    manipulation, not storage). UPGRADE relevance medium→high. Actionable: (1) Test
+    Ouro-2.6B-Thinking via transformers on our EPYC CPU — even at 5 tok/s it could be
+    a math/reasoning specialist. (2) Monitor llama.cpp for LoopLM arch support.
+    (3) Consider as reasoning verifier for our autopilot eval tower.
+
+- id: intake-333
+  arxiv_id: '2602.21371'
+  url: https://arxiv.org/abs/2602.21371
+  source_type: paper
+  title: 'Interleaved Head Attention (IHA)'
+  authors:
+  - Sai Surya Duvvuri
+  - Manzil Zaheer
+  - (7 authors)
+  categories:
+  - hardware_optimization
+  - context_extension
+  key_claims:
+  - 'IHA enables cross-head communication during attention via learned linear combinations of Q/K/V'
+  - 'Parameter overhead O(H²P) where H=heads, P=pseudo-heads per head'
+  - 'Parameter efficiency: Θ(√k·n²) vs Θ(k·n²) for standard MHA on Polynomial task'
+  - 'Practical gains: 10-20% on multi-key retrieval (RULER), 5.8% on GSM8K, 2.8% on MATH-500'
+  techniques:
+  - Interleaved Head Attention (IHA)
+  - Pseudo-head construction via learned linear combinations
+  - Cross-head interaction with modest parameter overhead
+  reported_results:
+  - '10-20% improvement on RULER multi-key retrieval'
+  - '5.8% improvement on GSM8K'
+  - '2.8% improvement on MATH-500'
+  - 'Θ(√k·n²) parameter efficiency vs Θ(k·n²) standard MHA'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Requires architecture modification at training time — cannot retrofit to existing models'
+  - 'O(H²P) overhead may matter at large head counts (e.g., 128-head models)'
+  cross_references:
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - inference-acceleration-index.md
+  notes: >
+    Interesting attention mechanism from Google DeepMind (Manzil Zaheer). The cross-head
+    communication idea is compelling — standard MHA wastes capacity through head independence.
+    The RULER benchmark improvements (10-20%) are specifically on multi-key retrieval,
+    which relates to our long-context needs. However, like Ouro, this requires architecture
+    changes at pretraining. Relevant to our multiscreen-attention evaluation (alternative
+    attention mechanisms). Worth tracking for when models with IHA become available.
+    DEEP-DIVE 2026-04-12: Model trained at 2.4B params, 26 layers, 20 heads, hidden 2560,
+    head dim 128, 240B tokens, 8192 context. IHA constructs P pseudo-heads per head via learned
+    alpha matrices (R^HxHxP). Key advantage: mixes BEFORE attention computation, preserving
+    compatibility with FlashAttention and RoPE (unlike Talking-Heads which mixes at logit level).
+    Detailed results: RULER multi-key retrieval +27% at 4K, +32% at 8K, +112% at 16K. SFT
+    results: GSM8K Maj@16 54.2% (+5.8 over baseline 48.4%), MATH-500 Maj@16 18.4% (+2.8).
+    Average rank 1.4 across all tasks (best). Theoretical proof: MHA ⊂ IHA strictly — IHA
+    achieves nonlinearity on repeated-token subspace that MHA cannot. Parameter efficiency:
+    Θ(√k·n²) vs Θ(k·n²) for polynomial tasks. CRITICAL for EPYC: IHA requires pretraining.
+    No models with IHA are currently available in GGUF. The +112% at 16K multi-key retrieval
+    is dramatic — directly relevant to our long-context orchestrator sessions. The FlashAttention
+    compatibility is important (our llama.cpp uses FlashAttention). If IHA models appear in GGUF
+    format, they'd be strong candidates. Combined with intake-342 (Explicit MHA) and intake-343
+    (Knocking-Heads), forms a 2025-2026 cross-head attention cluster. IHA is the strongest
+    candidate due to FlashAttention compatibility. Actionable: monitor for IHA-pretrained
+    models; consider for multiscreen-attention evaluation handoff.
+
+- id: intake-334
+  arxiv_id: '2604.05091'
+  url: https://arxiv.org/abs/2604.05091
+  source_type: paper
+  title: 'MegaTrain: Full Precision Training of 100B+ Parameter LLMs on a Single GPU'
+  authors:
+  - Zhengqing Yuan
+  - Hanchi Sun
+  - Lichao Sun
+  - Yanfang Ye
+  categories:
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - Stores parameters and optimizer states in host memory (CPU), GPUs as transient compute engines
+  - Pipelined double-buffering overlaps prefetching, computation, and gradient offloading across CUDA streams
+  - Stateless layer templates replace autograd graphs with dynamic weight binding during streaming
+  - '1.84x throughput of DeepSpeed ZeRO-3 with CPU offloading for 14B models'
+  - 'Trains up to 120B parameters on single H200 with 1.5TB host memory'
+  techniques:
+  - CPU-centric parameter storage with GPU compute streaming
+  - Pipelined double-buffering
+  - Stateless layer templates
+  - Dynamic weight binding
+  reported_results:
+  - '120B model training on single H200 GPU + 1.5TB host memory'
+  - '1.84x throughput vs DeepSpeed ZeRO-3 (14B model)'
+  - '7B model with 512k context on single GH200'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Requires modern GPU (H200/GH200) — our GT 1030 cannot run this'
+  - 'CPU-to-GPU bandwidth is the fundamental bottleneck — PCIe4 x16 limits throughput'
+  - 'Full precision training on 1 GPU still much slower than distributed multi-GPU'
+  cross_references:
+    intake:
+    - intake-323 (DeepSpeed — MegaTrain beats it 1.84x)
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - gpu-acceleration-path.md
+  notes: >
+    The CPU-centric approach (host memory stores everything, GPU is transient compute)
+    is philosophically aligned with our CPU-heavy setup (192-thread EPYC + GT 1030).
+    However, MegaTrain still requires a real GPU for the compute steps — our GT 1030
+    is display-only with 2GB VRAM. The double-buffering and streaming patterns could
+    inform our CPU-side inference optimizations. The 1.5TB host memory requirement for
+    120B is notable — our system has sufficient RAM for large model hosting. If we add
+    a training-capable GPU, MegaTrain would be the natural choice for single-GPU training.
+    DEEP-DIVE 2026-04-12: Detailed results from paper: GH200 achieves 284 TFLOPS at 7B (constant
+    ~3.83GB GPU memory), scales to 227 TFLOPS at 180 layers (only 20% decrease). CRITICAL finding:
+    MegaTrain works on CONSUMER GPUs — RTX 3090 (24GB): 35 TFLOPS at 7B, 30 TFLOPS at 14B (where
+    DeepSpeed OOMs). RTX A6000 (48GB): 56 TFLOPS at 7B, 57 TFLOPS at 14B. A100 PCIe: 128 TFLOPS
+    at 7B (12.2x over ZeRO-3), 122 TFLOPS at 14B. The double-buffering ablation: removing it drops
+    266→183 TFLOPS (31% reduction), confirming it's the key innovation. Accuracy verified: 7B
+    MetaMathQA 88.99% matches ZeRO-3 88.93% exactly. Long context: 7B achieves 316 TFLOPS at
+    32K and 407 TFLOPS at 512K on GH200 (throughput INCREASES with context due to better GPU
+    utilization). Code: github.com/DLYuanGod/MegaTrain. UPGRADE relevance: if we add even an
+    RTX 3090 ($300-400 used), we could train 14B models locally on our EPYC (1.5TB RAM
+    available). This is the single most practical path to local LoRA training for our
+    Doc-to-LoRA handoff. Actionable: (1) Add MegaTrain to gpu-acceleration-path.md as the
+    recommended training framework if/when we add a GPU. (2) The CPU-side double-buffering
+    pattern could inform our llama.cpp inference (prefetch + compute overlap).
+
+- id: intake-335
+  arxiv_id: null
+  url: https://github.com/gepa-ai/gepa
+  source_type: repo
+  title: 'GEPA Implementation Repository'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: duplicate
+  relevance: medium
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-240 (GEPA paper, same repo already referenced in notes)
+  notes: >
+    Duplicate — the GEPA paper (intake-240) already references this GitHub repo in its
+    notes. ICLR 2026 Oral. Available as DSPy optimizer (dspy.GEPA) and in DeepEval.
+
+- id: intake-336
+  arxiv_id: null
+  url: https://metauto.ai/neuralcomputer/
+  source_type: blog
+  title: 'Neural Computer: A New Machine Form Is Emerging (MetaAuto/Meta AI Research Essay)'
+  categories:
+  - multimodal
+  - autonomous_research
+  key_claims:
+  - 'Completely Neural Computer (CNC) requires: Turing completeness, universal programmability, behavior consistency, machine-native semantics'
+  - Three experimental systems (CLIGen General, CLIGen Clean, GUIWorld)
+  - 'CLIGen: ~1,100 hours terminal data; GUIWorld: 1,500+ hours desktop interaction'
+  - Model 4 (internal action cross-attention) outperforms alternatives
+  techniques:
+  - Neural Computer architecture
+  - CLIGen terminal rendering
+  - GUIWorld desktop control
+  - Action injection cross-attention
+  reported_results:
+  - 'Terminal rendering achieves visual fidelity for colors, cursors, text'
+  - 'Supervised data significantly outperforms random data'
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-315 (Neural Computers inline summary — same topic)
+    handoffs:
+    - multimodal-pipeline.md
+  notes: >
+    Project page for the Neural Computer research. Overlaps significantly with
+    intake-315 (inline summary). Combined, these provide full coverage of the NC concept.
+    Out of scope for EPYC but filed for reference. The CNC conditions (Turing completeness,
+    programmability, consistency, machine-native) are useful taxonomic criteria.
+
+- id: intake-337
+  arxiv_id: null
+  url: https://github.com/addyosmani/agent-skills
+  source_type: repo
+  title: 'Agent Skills: Production Engineering Workflows for AI Coding Agents'
+  authors:
+  - Addy Osmani
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - '7 slash commands mapping to dev lifecycle phases (spec → plan → build → test → review → simplify → ship)'
+  - '20 structured skills encoding senior engineering practices'
+  - Anti-rationalization tables countering excuses to skip quality gates
+  - '3 specialist agent personas (code reviewer, test engineer, security auditor)'
+  - Verification through concrete evidence (tests, build output) not assumptions
+  techniques:
+  - Process-not-prose skill design
+  - Anti-rationalization tables
+  - Evidence-based verification gates
+  - Google engineering practices (test pyramids, Hyrum's Law, Chesterton's Fence)
+  reported_results: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-277 (Hermes Agent LLM Wiki Skill — skill architecture patterns)
+    handoffs:
+    - hermes-agent-index.md
+    - hermes-outer-shell.md
+  notes: >
+    Addy Osmani (Google Chrome team) brings production engineering rigor to agent skills.
+    Key takeaway: the anti-rationalization tables are a novel pattern we don't use — explicitly
+    countering common excuses for skipping quality gates. Our skill system uses structured
+    workflows but lacks this adversarial self-check. The 7-phase lifecycle (spec through ship)
+    is more comprehensive than our current skill set. The process-not-prose philosophy aligns
+    with our agent governance approach. MIT license. Worth reviewing for skill design patterns,
+    especially the anti-rationalization tables and evidence-based verification gates.
+    DEEP-DIVE 2026-04-12: Full inventory — 20 skills in 6-phase lifecycle (DEFINE→PLAN→
+    BUILD→VERIFY→REVIEW→SHIP) + 1 meta-skill. 7 slash commands: /spec, /plan, /build,
+    /test, /review, /code-simplify, /ship. Skills: idea-refine, spec-driven-development,
+    planning-and-task-breakdown, incremental-implementation, test-driven-development,
+    context-engineering, source-driven-development, frontend-ui-engineering, api-and-
+    interface-design, browser-testing-with-devtools, debugging-and-error-recovery,
+    code-review-and-quality, code-simplification, security-and-hardening, performance-
+    optimization, git-workflow-and-versioning, ci-cd-and-automation, deprecation-and-
+    migration, documentation-and-adrs, shipping-and-launch. Anti-rationalization tables:
+    each SKILL.md has "Rationalizations" section with excuse|rebuttal format. Evidence-
+    based gates: tests, build logs, runtime observations — never "seems right." Skill
+    file format: frontmatter (name, description) → Overview → When to Use → Process →
+    Rationalizations → Red Flags → Verification. GAP ANALYSIS vs our .claude/skills/:
+    We LACK: (1) anti-rationalization tables (agents skip validation), (2) explicit
+    verification gates with evidence types, (3) phase-based lifecycle activation,
+    (4) reviewer personas (code-reviewer, test-engineer, security-auditor). Content is
+    web-dev oriented (not applicable to inference). UPGRADE relevance medium→high for
+    SKILL DESIGN PATTERNS. Actionable: (1) Add anti-rationalization tables to research-
+    intake and agent-file-architecture skills. (2) Add verification gates with evidence
+    types to all skills. (3) Consider phase-based composition for benchmark/new-model
+    workflows.
+
+- id: intake-338
+  arxiv_id: null
+  url: https://github.com/microsoft/agent-lightning
+  source_type: repo
+  title: 'Agent Lightning: Zero-Code Agent Optimization Framework (Microsoft Research)'
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  key_claims:
+  - 'Optimize agents with zero code change across any framework (LangChain, AutoGen, CrewAI, etc.)'
+  - Selectively enhance individual agents within multi-agent systems
+  - 'Three optimization modes: RL, automatic prompt optimization, supervised fine-tuning'
+  - Trajectory-level aggregation for faster training
+  - Lightweight integration via helper functions or automatic tracing
+  techniques:
+  - Reinforcement learning for agent optimization
+  - Automatic prompt optimization
+  - Supervised fine-tuning
+  - Trajectory-level aggregation
+  - Framework-agnostic tracing
+  reported_results: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Framework-agnostic claim needs validation against our custom orchestrator'
+  - 'No published benchmark comparisons vs GEPA or Meta-Harness'
+  cross_references:
+    intake:
+    - intake-240 (GEPA — alternative prompt optimization approach)
+    - intake-244 (Meta-Harness — same optimization target)
+    - intake-327 (hermes-agent-self-evolution — uses GEPA)
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    Microsoft Research's take on agent optimization. The three modes (RL, prompt optimization,
+    SFT) map directly to our autopilot species: RL → NumericSwarm, prompt optimization →
+    PromptForge, SFT → future training. The zero-code-change claim means we could potentially
+    apply it to our orchestrator without modifying existing code. The trajectory-level
+    aggregation is interesting — our autopilot evaluates per-question, not per-trajectory.
+    Key advantage over GEPA: Agent Lightning supports RL and SFT in addition to prompt
+    optimization, giving more optimization axes. MIT license. Should explore alongside
+    hermes-agent-self-evolution (intake-327) for PromptForge enhancement.
+    DEEP-DIVE 2026-04-12: Training-Agent Disaggregation architecture: (1) Agent Runner
+    (CPUs) manages tasks + collects data, (2) Algorithm Component (GPUs) hosts LLMs +
+    runs RL, (3) LightningStore (OTLP spans) provides async communication. Instrumentation
+    via agl.emit_xxx() helpers captures prompts, outputs, tool calls, rewards. Key examples
+    in repo: calc_x/ (VERL+AutoGen), chartqa/ (LangGraph+vision), claude_code/ (SWE-bench
+    traces), spider/ (text-to-SQL RL), rag/ (MuSiQue). LightningRL: trajectory decomposition
+    into standalone (input, output, reward) transitions — avoids RoPE disruption from
+    concatenation-with-masking. Credit assignment: currently uniform (naive but works).
+    Trajectory-level aggregation: ~40% iteration time reduction (one GPU pass per trajectory
+    vs N per turn). CRITICAL LIMITATION: GPU training is core value. Our GT 1030 can't do
+    RL training. HOWEVER, extractable patterns: (1) The claude_code/ trace collection
+    (LLM proxy + OTLP spans + HF dataset export) is immediately useful for collecting
+    session data for offline analysis. (2) The (input, output, reward) decomposition
+    should be adopted for autopilot telemetry — each orchestrator turn becomes a scoreable
+    transition. (3) The LightningStore pattern (centralized SQLite + structured spans)
+    could unify our scattered autopilot state (YAML configs + progress files + benchmark
+    results). VERDICT: new_opportunity for CONCEPTS, not_applicable for direct RL use.
+  handoffs_updated: []
+
+- id: intake-339
+  arxiv_id: null
+  url: https://huggingface.co/LilaRest/gemma-4-31B-it-NVFP4-turbo
+  source_type: repo
+  title: 'Gemma 4 31B IT NVFP4 Turbo — Blackwell-Optimized FP4 Quantization'
+  categories:
+  - quantization
+  - hardware_optimization
+  - local_inference
+  key_claims:
+  - '68% smaller GPU memory (58.9 → 18.5 GiB) with 1-3% quality loss'
+  - '~2.5x faster than base model; 2x higher concurrent throughput than other 4-bit quants'
+  - 'RTN FP4 quantization with group_size=16, BF16 for embeddings/norms'
+  - 'Text-only (video/audio encoders stripped)'
+  - 'Requires Blackwell GPU (RTX 5090, RTX PRO 6000, B200/B100)'
+  techniques:
+  - NVFP4 quantization (RTN, group_size=16)
+  - BF16 preservation for embeddings and norms
+  - Vision/audio encoder stripping
+  - FP8 KV cache
+  reported_results:
+  - 'GPQA Diamond: 72.73% vs 75.71% base (-2.98%)'
+  - 'MMLU Pro: 83.93% vs 85.25% base (-1.32%)'
+  - 'Prefill: 15,359 tok/s vs 6,352 base (+142%)'
+  - 'Decode batched: 1,244 tok/s vs 494 base (+152%)'
+  - 'Concurrency: 6.22 req/s vs 2.47 base (+152%)'
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Requires Blackwell GPU (RTX 5090+) — we have GT 1030'
+  - 'NVFP4 is not supported in llama.cpp GGUF format'
+  cross_references:
+    intake:
+    - intake-256 (Gemma 4 MLX Collection)
+    - intake-257 (Gemma 4 Official)
+    handoffs:
+    - gpu-acceleration-path.md
+  notes: >
+    Impressive quantization results but requires Blackwell GPU which we don't have.
+    The NVFP4 format is not GGUF — requires vLLM >= 0.19 + CUDA 13.0. The +142% prefill
+    and +152% decode speedups with only 1-3% quality loss are noteworthy for the eventual
+    GPU upgrade path. Apache 2.0 license. Filed for gpu-acceleration-path reference.
+
+- id: intake-340
+  arxiv_id: null
+  url: https://github.com/Kohei-Wada/taskdog
+  source_type: repo
+  title: 'Taskdog: Task Management with Schedule Optimization'
+  categories:
+  - tool_implementation
+  key_claims:
+  - 'CLI/TUI/REST API interfaces for task management'
+  - '9 schedule optimization algorithms (greedy, genetic, monte carlo, etc.)'
+  - Time tracking with planned vs actual comparison and Gantt visualization
+  - Task dependencies with circular dependency detection
+  - MCP integration for AI agent access
+  techniques:
+  - Genetic algorithms for schedule optimization
+  - Monte Carlo scheduling
+  - FastAPI REST architecture
+  - SQLite local storage
+  - MCP integration
+  reported_results: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-12'
+  cross_references: {}
+  notes: >
+    Task management tool with optimization algorithms. Not directly relevant to inference
+    or agent architecture. The schedule optimization algorithms (genetic, monte carlo) are
+    conceptually similar to our autopilot species but applied to task scheduling rather
+    than model optimization. MCP integration is interesting but we have our own task
+    management via handoff workflow. MIT license. Filed for reference.
+
+# === Literature Expansion entries (2026-04-12) ===
+
+- id: intake-341
+  arxiv_id: null
+  url: https://pli.princeton.edu/events/2026/prioritize-process-not-just-outcome-rewarding-latent-thought-trajectories-improves
+  source_type: paper
+  title: 'RLTT: Reward Latent Thought Trajectories for Looped Language Models'
+  categories:
+  - context_extension
+  - training_distillation
+  key_claims:
+  - RL framework that rewards latent thought trajectories in Ouro/LoopLM models
+  - '+14.4% accuracy on MATH-500 for Ouro-2.6B-Thinking'
+  - '+16.6% on AIME24'
+  - '+10.0% on BeyondAIME'
+  techniques:
+  - Reward Latent Thought Trajectories (RLTT)
+  - RL training for looped architectures
+  reported_results:
+  - 'Ouro-2.6B-Thinking +14.4% on MATH-500'
+  - '+16.6% on AIME24'
+  - '+10.0% on BeyondAIME'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-332
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-332 (Ouro/LoopLM base paper)
+  notes: >
+    Significant RL improvement for looped models. Demonstrates that latent reasoning
+    in LoopLM can be further enhanced post-training. The +14.4% MATH-500 gain is
+    substantial. If Ouro GGUFs become available, RLTT-trained versions would be
+    the best candidates for our worker_fast slot. Princeton research.
+    DEEP-DIVE 2026-04-12: RLTT (Reward Latent Thought Trajectories) is from Princeton
+    Language and Intelligence. Approach: rewards the intermediate latent reasoning trajectory
+    (not just final output), training Ouro to improve HOW it thinks, not just WHAT it outputs.
+    Results on Ouro-2.6B-Thinking: +14.4% MATH-500, +16.6% AIME24, +10.0% BeyondAIME. These
+    are post-training gains ON TOP of already-impressive Ouro results. Combined with base
+    Ouro-2.6B-Thinking (MATH-500 90.85%), RLTT could push to ~100% MATH-500. This validates
+    a key principle: the latent reasoning in LoopLM is trainable and improvable post-hoc.
+    For EPYC: even without GGUF, RLTT-enhanced Ouro-2.6B could serve as a gold-standard
+    reasoning verifier in our eval tower. A transformers-based service running on a few
+    CPU cores (at 2.6B params) could verify math/reasoning outputs from our larger models.
+    Actionable: (1) Monitor for RLTT model weights release. (2) If released, benchmark
+    as reasoning verifier for autopilot T0 sentinel questions.
+
+- id: intake-342
+  arxiv_id: '2601.19611'
+  url: https://arxiv.org/abs/2601.19611
+  source_type: paper
+  title: 'Explicit Multi-head Attention for Inter-head Interaction in LLMs'
+  categories:
+  - hardware_optimization
+  - context_extension
+  key_claims:
+  - Alternative approach to cross-head communication in attention
+  - Explicit inter-head interaction mechanism
+  techniques:
+  - Explicit Multi-head Attention
+  - Inter-head interaction layers
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-333
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-333 (IHA — related cross-head attention approach)
+    handoffs:
+    - multiscreen-attention-evaluation.md
+  notes: >
+    Related to IHA (intake-333). Alternative approach to solving head independence
+    in MHA. Together with IHA and Knocking-Heads (intake-343), forms a cluster of
+    2025-2026 research on cross-head communication. Relevant to our multiscreen
+    attention evaluation which also explores alternative attention mechanisms.
+    DEEP-DIVE 2026-04-12: Head-level Linear Composition (HLC) module applies learnable
+    W_lc reweighting to K and V tensors across heads. CRITICAL finding: GroupNorm is
+    ESSENTIAL — without it, cross-head mixing degenerates into standard MHA during
+    training (explains why THA and DFA-without-GroupNorm showed limited gains). Unifies
+    DFA and THA as special cases. KV cache compression: with h'=h/2 component heads
+    reconstructed via HLC into h virtual heads = 50% KV cache reduction with only 3.59%
+    drop on Olympiad math. FlashAttention compatible (HLC applied BEFORE attention).
+    For EPYC: the KV cache compression insight (50% reduction via virtual heads) is
+    directly useful for memory-constrained inference. ACTIONABLE: watch for MEA-
+    pretrained model releases; the KV compression could apply to existing GQA models.
+
+- id: intake-343
+  arxiv_id: '2510.23052'
+  url: https://arxiv.org/abs/2510.23052
+  source_type: paper
+  title: 'Knocking-Heads Attention'
+  categories:
+  - hardware_optimization
+  - context_extension
+  key_claims:
+  - Cross-head mixing at attention logits/weights level
+  - Different from IHA which mixes before attention
+  techniques:
+  - Knocking-Heads Attention
+  - Attention weight-level head mixing
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-333
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-333 (IHA)
+    - intake-342 (Explicit Multi-head Attention)
+    handoffs:
+    - multiscreen-attention-evaluation.md
+  notes: >
+    Third approach to cross-head communication. IHA mixes before attention (compatible
+    with FlashAttention), Knocking-Heads mixes at logits/weights level (potentially
+    incompatible with FlashAttention). This distinction matters for our inference stack
+    which relies on Flash Attention for performance. Filed with the attention cluster.
+    DEEP-DIVE 2026-04-12: KHA-Linear: shared transformation T^Q, T^K, T^V applied to all
+    heads. At inference, CAN BE ABSORBED into projection matrices — ZERO overhead at
+    runtime. KHA-MLP (better variant): sigmoid-gated MLP on values only, shared across
+    heads. Diagonal initialization critical (random init causes high loss). <1% additional
+    FLOPs. Results (6.1B MoE, 1B active, 1T tokens): KHA-MLP on Values with GQA gives
+    -0.024 loss, +4.32 language, +3.9 code, +1.62 math. KEY FINDING: V projections
+    benefit most from cross-head interaction; Q and K are optional. Training stability
+    significantly improved (fewer loss spikes). For EPYC: KHA-Linear trained models
+    carry better attention quality at ZERO inference cost (absorbed). Prefer KHA-trained
+    models when available. The attention cluster ranking: IHA (most expressive,
+    FlashAttention-compatible) > MEA (KV compression bonus) > KHA (zero inference cost).
+
+- id: intake-344
+  arxiv_id: '2508.03680'
+  url: https://arxiv.org/abs/2508.03680
+  source_type: paper
+  title: 'Agent Lightning: Adding Reinforcement Learning to AI Agents Without Code Rewrites'
+  authors:
+  - Microsoft Research Asia — Shanghai
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  key_claims:
+  - LightningRL algorithm uses hierarchical credit assignment for multi-step agent tasks
+  - Credit assignment module determines per-request contribution to task outcome
+  - Compatible with any single-step RL algorithm (PPO, GRPO)
+  - Clean decoupling of agent logic from training logic via Lightning server/client
+  techniques:
+  - LightningRL hierarchical credit assignment
+  - PPO and GRPO for agent steps
+  - Lightning server/client architecture
+  - Framework-agnostic tracing
+  reported_results: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-338
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-338 (Agent Lightning repo)
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    The research paper behind Agent Lightning (intake-338). The key insight is
+    LightningRL's hierarchical credit assignment: after a multi-step task completes,
+    a module determines how much each LLM request contributed, then assigns per-step
+    rewards. This solves our autopilot's evaluation granularity problem — we currently
+    evaluate at task-level (T0/T1/T2) but can't attribute success to specific
+    orchestrator decisions. LightningRL + GRPO could enhance our PromptForge species.
+    DEEP-DIVE 2026-04-12: arxiv:2508.03680. RLTT policy gradient distributes credit
+    across ALL T_max loop iterations (vs GRPO which uses only t=T_max). MDP formulation:
+    state = agent snapshot, action = full LLM output sequence, transition = (input,
+    output, reward). Key innovation: trajectory decomposition into standalone transitions
+    (not concatenation-with-masking) — avoids RoPE positional disruption, task-specific
+    mask complexity, and excessively long sequences. Trajectory-level aggregation merges
+    rollout into single masked sample → ~40% iteration time reduction. Credit assignment:
+    currently UNIFORM (equal credit to all actions) — naive but works. Future: per-step
+    value functions. The claude_code/ example instruments SWE-bench with LightningStore
+    traces. Youtu-Agent (Tencent) validated at 128 GPUs with concurrency control and
+    hierarchical timeouts. For EPYC: (1) The trajectory decomposition provides the
+    theoretical framework for per-step autopilot attribution (even via prompt optimization
+    instead of RL). (2) The uniform credit assignment baseline tells us our autopilot's
+    task-level scoring is NOT the bottleneck — the decomposition structure matters more.
+
+- id: intake-345
+  arxiv_id: null
+  url: https://dspy.ai/tutorials/gepa_ai_program/
+  source_type: blog
+  title: 'GEPA Full Program Adapter: Evolving Entire DSPy Programs'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  key_claims:
+  - Evolves entire DSPy programs including signatures, modules, and control flow
+  - '93% accuracy on MATH benchmark vs 67% with basic ChainOfThought'
+  - Works with as few as 3 examples via execution trace analysis
+  - Outperforms TextGrad and expert-crafted prompts
+  techniques:
+  - GEPA Full Program Adapter
+  - Reflective evolutionary optimization
+  - Execution trace analysis for failure diagnosis
+  reported_results:
+  - '93% on MATH (vs 67% base ChainOfThought) — +26pp improvement'
+  - 'Outperforms TextGrad and expert-crafted prompts'
+  - 'Works with as few as 3 examples'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-327
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-240 (GEPA paper)
+    - intake-327 (hermes-agent-self-evolution)
+    - intake-338 (Agent Lightning)
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+  notes: >
+    Dramatic result — 93% vs 67% on MATH by evolving the full program structure, not
+    just prompts. This goes beyond our PromptForge (prompt-only mutation) to evolve
+    control flow and module composition. The 3-example minimum is remarkable efficiency.
+    This is the strongest case for adopting GEPA in our autopilot. Key question: can
+    we apply GEPA Full Program Adapter to evolve our orchestrator's routing logic
+    (currently human-designed) in addition to prompt templates?
+    DEEP-DIVE 2026-04-12: GEPA 5-step core loop: (1) SELECT candidates from Pareto
+    frontier, (2) EXECUTE on minibatch with full trace capture, (3) REFLECT via LLM
+    reading traces to diagnose failures (ASI = Actionable Side Information), (4) MUTATE
+    informed by ancestor lessons + diagnostic feedback, (5) ACCEPT if improved, update
+    Pareto front. Three operating modes: DefaultAdapter (prompt-only), DSPy Full Program
+    Adapter (evolves signatures + modules + control flow = 93% MATH), optimize_anything
+    (universal: code, configs, SVGs, scheduling policies). Production stats: 50+ deployments
+    across Shopify, Databricks, Dropbox, OpenAI, Google ADK. ARC-AGI: 32%→89% via
+    architecture discovery. 35x fewer rollouts than GRPO (100-500 vs 5,000-25,000+).
+    Databricks: 90x cheaper than Opus with open-source models. COMPATIBLE WITH LOCAL
+    INFERENCE — supports provider/model format including Ollama and vLLM. Can use our
+    coder model as task_lm and frontdoor as cheap reflection_lm. IMMEDIATE applications:
+    (1) optimize_anything for llama.cpp launch configs (thread counts, batch sizes) using
+    our benchmark suite. (2) Full Program Adapter for orchestrator routing pipeline.
+    (3) Prompt-only mode for PromptForge species upgrade. Low-hanging fruit: ~150 evals
+    with frontdoor model = ~2 hours local inference for routing prompt optimization.
+
+- id: intake-346
+  arxiv_id: null
+  url: https://mem0.ai/blog/state-of-ai-agent-memory-2026
+  source_type: blog
+  title: 'Mem0: State of AI Agent Memory 2026'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  key_claims:
+  - '$24M funded cloud memory platform, ~85% LongMemEval'
+  - LLM extraction decides what to remember (derived approach)
+  - Cloud-hosted with pricing ($249/mo)
+  techniques:
+  - LLM-based memory extraction
+  - Cloud-hosted memory service
+  reported_results:
+  - '~85% LongMemEval (vs MemPalace 96.6%)'
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-326
+  ingested_date: '2026-04-12'
+  contradicting_evidence:
+  - 'Cloud-only approach conflicts with our local-first constraint'
+  - '85% vs MemPalace 96.6% — derived approach underperforms raw approach'
+  cross_references:
+    intake:
+    - intake-326 (MemPalace — outperforms Mem0)
+    - intake-316 (LTM Unsolved — Mem0 exemplifies the derived storage tradeoff)
+  notes: >
+    Useful as comparison point for MemPalace. The 85% vs 96.6% gap illustrates the
+    raw-vs-derived tradeoff from intake-316: Mem0 uses LLM extraction (derived, lossy)
+    while MemPalace stores verbatim (raw, lossless). Cloud-only with $249/mo pricing
+    makes it not_applicable for our local stack, but the architecture comparison is
+    informative for our context-folding design decisions.
+    DEEP-DIVE 2026-04-12: Mem0 architecture: 5-component pipeline (extraction →
+    conflict detection → vector storage → Mem0g graph → reranking). Three memory types:
+    episodic (what happened), semantic (what is known), procedural (how to do things —
+    added v1.0.0). Async by default (writes don't block response). LOCOMO benchmarks:
+    full-context 72.9%, Mem0g graph 68.4%, Mem0 vector 66.9%, RAG 61.0%, OpenAI Memory
+    52.9%. Published ECAI 2025 (arxiv:2504.19413). Actor-aware memory (June 2025):
+    prevents one agent's inference becoming ground truth for another. Multi-scope:
+    user_id + agent_id + run_id + app_id. ACKNOWLEDGED FAILURE: staleness ("confidently
+    wrong rather than just outdated"), cross-session identity resolution unsolved.
+    FOR EPYC: (1) Three-type taxonomy (episodic/semantic/procedural) should reorganize
+    our MEMORY.md. (2) Actor-aware memory is critical for multi-model orchestrator —
+    coder model inferences ≠ ground truth for worker model. (3) Conflict detection
+    before write is missing from our handoff system. (4) Not deployable (cloud-only,
+    no local inference support). UPGRADE relevance medium→medium-high for PATTERNS.
+
+- id: intake-347
+  arxiv_id: '2603.07670'
+  url: https://arxiv.org/abs/2603.07670
+  source_type: paper
+  title: 'Memory for Autonomous LLM Agents: Mechanisms, Evaluation, and Emerging Frontiers'
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - agent_architecture
+  key_claims:
+  - Comprehensive survey of memory mechanisms for LLM agents
+  - Parametric vs non-parametric memory tradeoff analysis
+  - Application-level memory evaluation is still unsolved
+  - Task-agnostic memory controller remains unrealized
+  techniques:
+  - Survey of memory architectures
+  - Parametric-nonparametric memory taxonomy
+  reported_results: []
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-316
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-316 (LTM Unsolved essay)
+    - intake-326 (MemPalace)
+    handoffs:
+    - context-folding-progressive.md
+    - hermes-agent-index.md
+  notes: >
+    Academic survey complementing the Chrys Bader essay (intake-316). Confirms that
+    cross-session coherence, parametric-nonparametric balance, and application-level
+    evaluation are genuinely unsolved. The parametric-nonparametric framing is useful:
+    our context-folding is non-parametric (external memory), while Doc-to-LoRA
+    (intake handoff) is parametric (baking knowledge into weights). This survey
+    provides the academic foundation for our design decisions.
+    DEEP-DIVE 2026-04-12: Three-dimensional taxonomy: temporal scope (working/episodic/
+    semantic/procedural), representational substrate (context-resident/vector/structured/
+    executable/hybrid), control policy (heuristic/prompted/learned). Five mechanism
+    families: (1) context-resident compression (pathology: summarization drift after 3+
+    passes — directly relevant to our context-folding), (2) retrieval-augmented stores
+    (key issue: user input is poor retrieval query), (3) reflective self-improvement
+    (Reflexion 91% HumanEval; risk: self-reinforcing errors), (4) hierarchical virtual
+    context (MemGPT paging; achilles heel: paging wrong things), (5) policy-learned
+    management (AgeMem discovers preemptive summarization via RL). CRITICAL FINDING:
+    "Long context is NOT memory" — MemoryArena drops from 80%→45% with long-context-only.
+    Generative Agents degenerate within 48 simulated hours without reflection. Voyager
+    15.3x slower without skill library. Unsolved: continual consolidation (when do
+    episodes become semantic knowledge?), causally-grounded retrieval, trustworthy
+    reflection, learned forgetting, evaluation with cost. FOR EPYC: (1) MemGPT-style
+    three-tier pattern (working context / recall DB / archival store) should be evaluated
+    for orchestrator multi-session management. (2) The "summarization drift after 3+"
+    finding directly warns about our multi-tier compression. (3) Policy-learned memory
+    management (AgeMem) could be a future autopilot species target.
+
+- id: intake-348
+  arxiv_id: null
+  url: https://iclr.cc/virtual/2026/workshop/10000792
+  source_type: blog
+  title: 'ICLR 2026 Workshop: MemAgents — Memory for LLM-Based Agentic Systems'
+  categories:
+  - memory_augmented
+  - agent_architecture
+  key_claims:
+  - Dedicated ICLR 2026 workshop on memory for LLM agents
+  - Confirms memory as a tier-1 research problem in the community
+  techniques: []
+  reported_results: []
+  novelty: low
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-316
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-316 (LTM Unsolved)
+    - intake-347 (Memory survey)
+  notes: >
+    ICLR 2026 workshop confirms memory for agents is an active frontier. Worth
+    monitoring for workshop papers that may contain actionable techniques. The existence
+    of a dedicated workshop at a top venue validates our investment in context-folding
+    and conversation management infrastructure.
+    DEEP-DIVE 2026-04-12: Workshop date: April 27, 2026 (Rio de Janeiro, hybrid). 15
+    days away. Speakers: Zhuosheng Zhang (SJTU), Jeff Z. Pan (Edinburgh, knowledge
+    representation), Mengye Ren (NYU, meta-learning), Aditi Raghunathan (CMU, robustness),
+    Rahaf Aljundi (Toyota, continual learning), Volker Tresp (LMU, knowledge graphs +
+    neural networks). Core thesis: "Long-lived, safe, and useful agents require a
+    principled memory substrate." Three perspectives: memory architectures, systems &
+    evaluation, neuroscience-inspired memory. KEY SIGNALS: (1) Aljundi (continual learning)
+    and Ren (meta-learning) most relevant for our RL routing. (2) "Explicit vs in-weights
+    memory" topic = our Q-tables vs fine-tuned weights decision. (3) Complementary learning
+    systems framework (hippocampal fast + cortical slow) could inform our two-tier memory
+    (fast Q-table routing + slow MEMORY.md consolidation). ACTIONABLE: Set calendar
+    reminder April 28 to check OpenReview for accepted papers and workshop proceedings.
+
+- id: intake-349
+  arxiv_id: null
+  url: https://dspy.ai/api/modules/RLM/
+  source_type: blog
+  title: 'dspy.RLM: Official Recursive Language Model Module in DSPy'
+  categories:
+  - agent_architecture
+  key_claims:
+  - 'RLM integrated as first-class DSPy module (v3.1.2+)'
+  - Uses Pyodide WASM sandbox for secure Python execution via Deno
+  - LLM writes Python code to explore large contexts programmatically
+  - Sub-LM calls for semantic analysis within sandbox
+  techniques:
+  - dspy.RLM module
+  - Pyodide WASM sandbox
+  - Programmatic context exploration
+  reported_results: []
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-331
+  ingested_date: '2026-04-12'
+  cross_references:
+    intake:
+    - intake-153 (RLMs paper)
+    - intake-331 (predict-rlm)
+    - intake-312 (Mismanaged Geniuses)
+    handoffs:
+    - context-folding-progressive.md
+  notes: >
+    DSPy's official RLM implementation. Key architectural detail: uses WASM sandbox
+    (Pyodide + Deno) for code execution, not Docker. This is lighter weight than
+    Docker-based approaches (agentnetes intake-318) and potentially deployable in
+    our environment. The programmatic context exploration pattern (LLM writes code
+    to examine data) is exactly our REPL tool use approach. Worth evaluating as
+    a cleaner RLM implementation for our orchestrator.
+    DEEP-DIVE 2026-04-12: Full API: dspy.RLM(signature, max_iterations=20, max_llm_calls=50,
+    max_output_chars=10000, tools=None, sub_lm=None, interpreter=None). Execution model:
+    (1) LLM receives context METADATA (type, length, preview) — NOT full content, (2) LLM
+    writes Python exploration code, (3) Code runs in Deno+Pyodide WASM sandbox, (4) LLM
+    can invoke llm_query() for semantic analysis via sub_lm, (5) LLM calls SUBMIT() to
+    terminate. Sandbox tools: llm_query(prompt), llm_query_batched(prompts) with
+    asyncio.gather(), print(), SUBMIT(), plus standard library. The sub_lm pattern is
+    key: expensive explorer + cheap semantic analyzer. Our stack maps naturally: coder
+    model (30B-A3B) as main LM writing exploration code, frontdoor model as cheap sub_lm
+    for semantic queries. Custom tool injection: we could add query_registry(),
+    run_benchmark(), check_health(), get_model_stats() into the sandbox. Supports async:
+    await rlm.aforward(). Trajectory inspection via result.trajectory. CRITICAL FINDING:
+    works with any OpenAI-compatible API — our llama-server /v1/ endpoint qualifies.
+    The metadata-first pattern (LM sees type/length/preview, writes code to explore)
+    directly addresses our context window limitation. LIMITATIONS: Deno dependency
+    (users report cache issues), not thread-safe with custom interpreter, experimental
+    API. IMMEDIATE opportunity: set up dspy.RLM with our llama-server as backend, test
+    with benchmark result analysis as first use case. UPGRADE relevance → very high.
