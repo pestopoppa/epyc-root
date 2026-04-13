@@ -109,7 +109,7 @@ These unblock data-driven stack scheduling.
 
 Depends on Phase 4 A/B results.
 
-- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. Window extended to 2026-04-17 (was 2026-04-09) — n=16 high-risk samples insufficient for decision, need ≥50. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
+- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. Window extended to 2026-04-27 (was 2026-04-09) — n=16 high-risk samples insufficient for decision, need ≥50. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
 
 - [ ] **RI-11: Enforce expand** — Frontdoor 100% + worker_general, 7 days.
 
@@ -262,7 +262,7 @@ intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ with
   │     ├── ✅ PACKAGE B ────────── DONE (2026-04-10). TrimR +6pp, tool A/B +4pp, WS-3 validated, Omega measured.
   │     │     │                       RI-9 + TrimR + difficulty + Omega + tool A/B
   │     │     │
-  │     │     └── PACKAGE D (active) ── AR-3 trial ~78 + RI-10 Canary (to 2026-04-17) + CF-3c + DS-5
+  │     │     └── PACKAGE D (active) ── AR-3 trial ~78 + RI-10 Canary (to 2026-04-27) + CF-3c + DS-5
   │     │                               AR-3 relaunched with 39 sentinels. LG Phase 3 INGEST flag not yet flipped.
   │     │
   │     ├── PACKAGE C ────────────── CF Eval Batch (~½d, individual models, independent)
