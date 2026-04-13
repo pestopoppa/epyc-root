@@ -51,7 +51,7 @@ If this codebase is to support reliable future development, the first design pri
 Implemented tranches as of 2026-04-13:
 - Phase 0 started: `src/observability.py` added; `ServerStatus` extended with failure/degradation fields; backend health probes now classify failure cause.
 - Phase 0 continued: `src/config/validation.py` now records explicit registry bootstrap diagnostics for missing or malformed registry loads instead of silently collapsing all failures to an untraceable empty cache.
-- Phase 1 started: `InferenceResult` gained `partial`, `degraded`, `failure_stage`, and `failure_reason`; timeout/degraded results now populate them. The global `success` semantic flip is intentionally deferred pending full consumer audit.
+- Phase 1 complete: `InferenceResult` gained `partial`, `degraded`, `failure_stage`, and `failure_reason`; timeout/degraded results now populate them. The `success` semantic flip is DONE — `read_timeout_partial` now returns `success=False, partial=True` after a 15-consumer audit identified and updated all BREAK locations.
 - Phase 2 started: reward injection now tracks `submitted`, `acknowledged`, `failed`, and per-action failure reasons; benchmark callers preserve compatibility by deriving legacy `rewards_injected` from acknowledged deliveries.
 - Phase 3 started: health routes and benchmark preflight now record richer diagnostics. Benchmark boolean contracts remain intact on the critical fan-out paths.
 - Phase 3 continued: `scripts/benchmark/seeding_infra.py` preflight now records explicit `stage`, `failure_reason`, and `failure_detail` in `last_preflight`, preserving the existing boolean contracts while making API recovery and smoke-test failures diagnosable.
