@@ -70,6 +70,7 @@ Implemented tranches as of 2026-04-13:
 - Phase 5 continued: `src/graph/task_ir_helpers.py` now owns task IR processing helpers (file extraction, task seeding, context gathering, anti-pattern detection).
 - Phase 5 continued: `src/graph/decision_gates.py` now owns state-transition decision gates (escalation, retry, approval, timeout skip, end-result construction).
 - `graph/helpers.py` is now at `966` lines (down from `2413` original — 60% reduction) with 10 extracted modules total.
+- Phase 7 complete: `src/features.py` now uses a declarative `FeatureSpec` registry as single source of truth. Manual 5-way duplication (summary, production defaults, test defaults, env parsing) eliminated. 753 → 581 lines. 5 registry consistency tests added.
 
 Verification status:
 - Focused suites for the implemented tranches are green.

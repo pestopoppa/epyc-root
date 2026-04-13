@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-13
+**Updated**: 2026-04-13 (inference research session: AM P1, Memento S1, SEAL, EA scaffold)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -44,7 +44,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 13 | ~~MED~~ | ~~Context folding provenance~~ CF-P1–P4 ✅ 2026-04-12 (all 4 implemented) | [routing-and-optimization-index](routing-and-optimization-index.md) P10b |
 | 14 | MED | **Ouro-2.6B-Thinking eval** (P7). Download + MATH-500 CPU benchmark + T0 sentinel candidate | [research-evaluation-index](research-evaluation-index.md) P7 |
 | 15 | LOW | **MiniMax M2.7 eval** (G7–G9). 108GB GGUF download + EPYC benchmark + quality comparison vs Qwen3 stack | [bulk-inference-campaign](bulk-inference-campaign.md) Package G |
-| 16 | HIGH | **Orchestrator refactoring audit** — execution in progress: Phases 0-5 substantially complete. `graph/helpers.py` reduced 60% (2413→966 lines) via 10 extracted modules. Corpus retrieval diagnostic hardening done. Remaining: Phase 6 package reorg, Phase 7 feature flags, Phase 8 exception policy. | [orchestrator-refactoring-audit](orchestrator-refactoring-audit.md) |
+| 16 | HIGH | **Orchestrator refactoring audit** — Phases 0-5+7 complete. `graph/helpers.py` 60% reduced (10 modules), feature flags registry-driven, corpus/health/benchmark diagnostics hardened. Remaining: Phase 6 package reorg, Phase 8 exception policy. | [orchestrator-refactoring-audit](orchestrator-refactoring-audit.md) |
 
 ---
 
