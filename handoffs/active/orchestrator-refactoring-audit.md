@@ -1,6 +1,6 @@
 # Orchestrator Refactoring Audit
 
-**Status**: ACTIVE — execution in progress
+**Status**: COMPLETE — all 8 phases executed
 **Created**: 2026-04-13
 **Updated**: 2026-04-13
 **Priority**: CRITICAL
@@ -72,6 +72,7 @@ Implemented tranches as of 2026-04-13:
 - `graph/helpers.py` is now at `966` lines (down from `2413` original — 60% reduction) with 10 extracted modules total.
 - Phase 7 complete: `src/features.py` now uses a declarative `FeatureSpec` registry as single source of truth. Manual 5-way duplication (summary, production defaults, test defaults, env parsing) eliminated. 753 → 581 lines. 5 registry consistency tests added.
 - Phase 6 complete: 17 loose `src/` root modules reorganized into 4 new packages (`inference/`, `runtime/`, `orchestration/`, `registry/`) with backward-compatible shim modules at old paths. Zero import changes needed. 32 actual modules remain at root; `roles.py` (47 imports) and `features.py` (156 imports) intentionally kept at root. 205 focused tests passing.
+- Phase 8 complete: Audited 54 broad `except Exception` catches across 6 priority modules. 50 classified as justified (instrumentation guards, optional dependencies, external I/O). Fixed 4 actionable catches: 2 silent-pass token tracking blocks now log at debug, 3 type-conversion catches narrowed to specific exception types. 131 focused tests passing.
 
 Verification status:
 - Focused suites for the implemented tranches are green.
