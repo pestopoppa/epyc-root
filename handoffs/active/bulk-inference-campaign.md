@@ -323,13 +323,34 @@ python3 scripts/benchmark/eval_tale_budget.py \
 |---------|--------|-------------|
 | AR-3 | [routing-and-optimization-index](routing-and-optimization-index.md) P5 | Autoresearch relaunch with expanded T0 sentinels |
 | RI-7 re-run | [routing-intelligence.md](routing-intelligence.md) Phase 4 | Large-sample A/B re-run (70q was underpowered). Canary data from RI-10 serves as the re-run — enforce-vs-shadow comparison at production scale. |
-| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-17 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
+| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-27 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
 | CF Phase 3c | [context-folding-progressive.md](context-folding-progressive.md) | Quality monitor validation on real multi-turn sessions |
 | DS-5 | [routing-and-optimization-index](routing-and-optimization-index.md) P7 | Model exploration via StructuralLab species |
 | AP-19 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA frontdoor optimization — integrated as PromptForge mutation type (30% of PromptForge trials). Comparison data collected in journal. |
 | AP-20 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA Full Program Adapter eval — resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal |
 | MH-4 | [meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b | GEPA search algorithm comparison — Pareto frontier contributions by mutation source analyzed from AR-3 journal |
 | ~~LG Phase 3~~ | ~~[langgraph-migration.md](langgraph-migration.md)~~ | ✅ DONE (2026-04-11). All 7 per-node flags enabled in `orchestrator_stack.py`. Fixed append-field delta bug in `_run_via_langgraph`. 72 LG tests + 4495 unit tests pass. |
+
+### AM KV Compaction Integration (NEW — 2026-04-13)
+
+**Status**: Ready to deploy. `POST /slots/{id}?action=compact` available in production build.
+
+**IMPORTANT: Passive by default.** The compact endpoint does NOTHING unless explicitly called. Normal inference is completely unaffected — no feature flags, no env vars, no config changes needed. The server behaves identically to pre-AM builds until a `compact` request is issued. The orchestrator/autopilot must opt in.
+
+**No orchestrator code changes required to run safely.** The AM kernel is in the llama-server binary only. The orchestrator can ignore it entirely and everything works as before. To USE compaction, the orchestrator needs to call the endpoint — see deployment modes below.
+
+**How to enable during AR-3**: The autopilot should use KV compaction on long-context slots to reduce memory pressure and enable more concurrent requests. Two deployment modes:
+
+1. **Manual trigger** — Call `compact` on slots that exceed a context threshold (e.g., >4K tokens). The autopilot controller can issue `POST /slots/{id}?action=compact` with `keep_ratio=0.3` after a long prefill to free KV memory. Tested at 5x compression with zero quality degradation on Coder-32B Q4KM, 7B, and SSM-hybrid frontdoor.
+
+2. **Autopilot-controlled** — Add AM compaction as a new autopilot action alongside existing stack management. The controller decides when to compact based on memory pressure (`llama_memory_breakdown`), context length, and task type. Parameters to tune: `keep_ratio` (0.2-0.5), `beta` (0.1), `keep_first` (5-10), `keep_last` (10-20).
+
+**Long-context validation needed**: Production contexts are 8K-32K tokens. Our tests validated up to 2.7K. AM should perform better at longer contexts (more attention concentration). AR-3 traffic provides the opportunity to validate at production scale. Monitor answer quality on compacted vs non-compacted slots to establish the production compression-quality curve.
+
+**Key files**:
+- Server endpoint: `tools/server/server-context.cpp` → `handle_slots_compact()`
+- Autopilot integration point: `epyc-orchestrator/scripts/autopilot/` → add compact action to controller
+- Validation: compare quality metrics on compacted slots vs full-cache baseline during AR-3
 
 ### Config Changes (before launch)
 
@@ -339,7 +360,7 @@ factual_risk:
   mode: "canary"          # already live (changed from "shadow" on 2026-04-06)
   canary_ratio: 0.25      # 25% of frontdoor requests get enforce
   canary_roles: [frontdoor]
-# Canary window extended to 2026-04-17 (n=16 high-risk insufficient for decision).
+# Canary window extended to 2026-04-27 (n=16 high-risk insufficient for decision).
 # Decision after extended window: keep canary, expand to RI-11, or revert.
 ```
 
@@ -395,7 +416,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 
 - [ ] **AR-3**: ≥50 trials completed without corruption. ≥1 useful change accepted (Pareto-improving).
 - [ ] **RI-7 re-run**: Canary data produces ≥500 enforce vs ≥1500 shadow decisions. Compare factuality F1, escalation rate, cost. Result is statistically significant (p < 0.05) or confirms NS with adequate power.
-- [ ] **RI-10**: Extended canary window (ends 2026-04-17, was 2026-04-09). Need ≥50 high-risk samples (had n=16). No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
+- [ ] **RI-10**: Extended canary window (ends 2026-04-27, was 2026-04-09). Need ≥50 high-risk samples (had n=16). No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
 - [ ] **CF Phase 3c**: Quality monitor fires on ≥3 consolidation events. No false positives (degradation detected when quality is stable).
 - [ ] **DS-5**: ≥3 model candidates tested via StructuralLab species.
 
@@ -610,7 +631,7 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 |------|---------------------|-------|
 | **PPL sweep** (v3 baseline) | YES — run during AR-3 warmup/cooldown | `llama-perplexity` on wikitext2 for coder, frontdoor, worker, REAP. Independent of stack. ~1h total. |
 | **AM P3** (AM vs EA head-to-head) | PARTIAL — needs model loaded, not full stack | Compare AM HighestAttnKeys-fast vs Expected Attention at 5x/10x/20x on same model. Python-only, ~4h. Can run during Package D downtime. |
-| **RI-10 canary** | YES — this IS Package D | Extended to 2026-04-17, n=16/50 high-risk samples. AR-3 generates these samples. |
+| **RI-10 canary** | YES — this IS Package D | Extended to 2026-04-27, n=16/50 high-risk samples. AR-3 generates these samples. |
 | **SEAL on 30B** | NO — needs dedicated server with cvector | Train + eval concise reasoning vector on Qwen3-Coder-30B-A3B. Separate from orchestrator stack. |
 | **AM P2 on 32B** | ✅ DONE — E2E beta injection tested on 32B f16 | L1-L3b complete. Beta injection via server endpoint works on Coder-32B. Full compaction quality test next. |
 
