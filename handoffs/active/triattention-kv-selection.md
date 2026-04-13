@@ -1,8 +1,8 @@
 # KV Cache Selection/Eviction (TriAttention / Expected Attention)
 
-**Status**: ACTIVE — Research evaluation phase. No code written; benchmarking KVPress + validating Q/K concentration.
+**Status**: ACTIVE — Benchmark scaffold ready. KVPress cloned, eval harness written. Awaiting model server for live evaluation.
 **Created**: 2026-04-08 (via research intake)
-**Updated**: 2026-04-08
+**Updated**: 2026-04-13
 **Priority**: MEDIUM
 **Categories**: kv_cache, inference_serving, memory_bandwidth
 
@@ -16,9 +16,16 @@ Research intake processed 3 papers (intake-284 TriAttention, intake-287 LongFlow
 - **LongFlow** downgraded (topic-switch failure mode impacts our orchestrator pipeline)
 - **TriAttention** remains high-relevance secondary candidate (strongest decode-phase results but no quantization discussion, vLLM-only)
 
+### What's Done (2026-04-13)
+
+- KVPress repo cloned to `data/external/kvpress` (NVIDIA, Apache 2.0)
+- Expected Attention scorer reviewed: Gaussian statistical model of future queries + averaged RoPE rotation. Flash-compatible, GQA-aware, per-head adaptive.
+- Benchmark scaffold written at `scripts/benchmark/eval_expected_attention.py`: RULER NIAH tasks (synthetic needle retrieval at 4K/8K/16K), LongBench-v2 QA (502 samples). Dry-run validated.
+- Awaiting model server (Qwen2.5-7B-Instruct) to run S1 gate evaluation.
+
 ### State
 
-**Evaluation gate** — determining whether KV selection is worth pursuing alongside our deployed quantization (`--kv-hadamard -ctk q4_0 -ctv f16`). No code written, no benchmarks run. S1/S2 below are the decision points.
+**Evaluation gate** — scaffold ready, awaiting model server. S1/S2 below are the decision points.
 
 ## Objective
 
@@ -46,7 +53,7 @@ See `kv-cache-quantization.md` → Why This Matters for EPYC for full hardware s
 
 | Stage | Task | Priority | Status | Decision Gate |
 |-------|------|----------|--------|---------------|
-| S1 | KVPress evaluation: benchmark Expected Attention on Qwen2.5-7B at 50%/25% compression. Measure RULER score, PPL, latency. Compare against SnapKV baseline. | HIGH | NOT STARTED | >= 90% RULER at 50% compression |
+| S1 | KVPress evaluation: benchmark Expected Attention on Qwen2.5-7B at 50%/25% compression. Measure RULER score, PPL, latency. Compare against SnapKV baseline. | HIGH | SCAFFOLD READY (2026-04-13) | >= 90% RULER at 50% compression |
 | S2 | Q/K concentration validation: run TriAttention calibration on Qwen2.5-7B. Verify pre-RoPE clustering (expect R >= 0.95). | HIGH | NOT STARTED | R >= 0.95 (pre-RoPE clustering confirmed) |
 | S3 | Selection + quantization stacking: best scorer from S1/S2 combined with `--kv-hadamard -ctk q4_0 -ctv f16`. Measure quality under dual compression. | HIGH | BLOCKED on S1/S2 | Quality-neutral at >= 4x combined compression |
 | S4 | llama.cpp portability: assess Expected Attention Gaussian scoring for C++ port. Document changes needed to llama.cpp KV cache infrastructure. | MEDIUM | BLOCKED on S1 | Feasible C++ port path identified |

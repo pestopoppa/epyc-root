@@ -51,6 +51,7 @@ If this codebase is to support reliable future development, the first design pri
 Implemented tranches as of 2026-04-13:
 - Phase 0 started: `src/observability.py` added; `ServerStatus` extended with failure/degradation fields; backend health probes now classify failure cause.
 - Phase 0 continued: `src/config/validation.py` now records explicit registry bootstrap diagnostics for missing or malformed registry loads instead of silently collapsing all failures to an untraceable empty cache.
+- Test-suite remediation started: default pytest entrypoint no longer depends on absent `xdist`/`timeout` plugins, coverage now includes `scripts/benchmark` and `scripts/lib`, and consumer-level tests were added for reward delivery propagation through the active benchmark and autopilot seeding paths.
 - Phase 1 complete: `InferenceResult` gained `partial`, `degraded`, `failure_stage`, and `failure_reason`; timeout/degraded results now populate them. The `success` semantic flip is DONE — `read_timeout_partial` now returns `success=False, partial=True` after a 15-consumer audit identified and updated all BREAK locations.
 - Phase 2 started: reward injection now tracks `submitted`, `acknowledged`, `failed`, and per-action failure reasons; benchmark callers preserve compatibility by deriving legacy `rewards_injected` from acknowledged deliveries.
 - Phase 3 started: health routes and benchmark preflight now record richer diagnostics. Benchmark boolean contracts remain intact on the critical fan-out paths.
@@ -77,11 +78,42 @@ Implemented tranches as of 2026-04-13:
 Verification status:
 - Focused suites for the implemented tranches are green.
 - Most recent combined targeted verification run: `88 passed` (reasoning alarm + classifier + corpus + seeding infra + config validation + benchmark executor suites).
+- Coverage audit update: targeted orchestration/benchmark sanity slice now verifies `389 passed` under an isolated `uv` runner with `pytest`, `pytest-cov`, and `pytest-asyncio`.
+- Coverage audit finding: repo-wide coverage on that slice is still only `22%`, so overall coverage is not sufficient.
+- Coverage audit finding: the refactored surfaces themselves are materially better at `59%` combined coverage, but notable gaps remain in `src/graph/session_summary.py` (`22%`), `src/graph/observability.py` (`42%`), `scripts/lib/executor.py` (`42%`), `scripts/benchmark/seeding_infra.py` (`34%`), and `src/graph/helpers.py` residual glue (`56%`).
+- Coverage audit finding: deprecated [src/gradio_ui.py] is untested and still only surfaces coarse `/health` status fields, ignoring richer `backend_probes` and failure-cause details from the health payload. Treat as low-priority unless that UI is still operator-facing.
+- Coverage remediation update: added direct tests for `src/graph/session_summary.py`, `src/graph/observability.py`, additional benchmark preflight helper branches, and additional benchmark executor non-happy paths.
+- Coverage remediation verification: `406 passed` on the post-remediation audited orchestration/benchmark slice.
+- Coverage remediation result: repo-wide audited slice improved from `22%` to `23%`, and the previously weakest targeted surfaces improved as follows:
+  - `src/graph/session_summary.py`: `22%` → `84%`
+  - `src/graph/observability.py`: `42%` → `66%`
+  - `scripts/lib/executor.py`: `42%` → `48%`
+  - `scripts/benchmark/seeding_infra.py`: `34%` → `37%`
+- Coverage remediation pass 2 update: added deeper benchmark execution/preflight branch suites at `tests/unit/test_seeding_infra_branching.py` and `tests/unit/test_benchmark_executor_branching.py` (test-only changes, no production edits on high-risk preflight symbols).
+- Coverage remediation pass 2 verification: `56 passed` on the focused benchmark/preflight slice (`test_seeding_infra*` + `test_benchmark_executor*`).
+- Coverage remediation pass 2 result: targeted benchmark surfaces advanced to `scripts/benchmark/seeding_infra.py` `75%` (from `37%` after pass 1) and `scripts/lib/executor.py` `88%` (from `48%` after pass 1).
+- Coverage remediation pass 3 update: closed the remaining `_wait_for_workers_ready` subprocess/CPU-loop blind spot with additional branch tests in `tests/unit/test_seeding_infra_branching.py` (no production changes due CRITICAL preflight fan-out).
+- Coverage remediation pass 3 verification: `63 passed` on the focused benchmark/preflight slice.
+- Coverage remediation pass 3 result: `scripts/benchmark/seeding_infra.py` improved from `75%` to `97%`; `_wait_for_workers_ready` is no longer a notable gap.
+- Coverage remediation pass 4 update: closed residual non-worker-loop branches in `tests/unit/test_seeding_infra_branching.py` (idle-wait elapsed/shutdown behavior, API-launch early process-exit branch, and preflight restart successful-kill sleep branch).
+- Coverage remediation pass 4 verification: `67 passed` on the focused benchmark/preflight slice.
+- Coverage remediation pass 4 result: `scripts/benchmark/seeding_infra.py` is now `100%` in the targeted benchmark/preflight suite; `scripts/lib/executor.py` remains `88%`.
+- Coverage remediation pass 5 update: added new runtime-script suites `tests/unit/test_script_lib_registry.py` and `tests/unit/test_script_lib_output_parser.py` to close major untouched coverage gaps outside preflight/executor.
+- Coverage remediation pass 5 verification: `82 passed` on the focused benchmark/runtime slice (`seeding_infra*`, `benchmark_executor*`, `script_lib_registry`, `script_lib_output_parser`).
+- Coverage remediation pass 5 result: `scripts/lib/registry.py` improved from `19%` to `87%`, and `scripts/lib/output_parser.py` improved from `0%` to `94%` while `scripts/benchmark/seeding_infra.py` held at `100%` and `scripts/lib/executor.py` held at `88%`.
+- Coverage remediation pass 6 update: added `tests/unit/test_script_lib_onboard.py` to characterize onboarding detection, health-check, role/entry generation, and orchestration branches.
+- Coverage remediation pass 6 verification: `10 passed` on the onboard-focused suite.
+- Coverage remediation pass 6 result: `scripts/lib/onboard.py` improved from `0%` to `83%` in the dedicated runtime-script pass.
+- Remaining coverage truth: overall repo coverage is still not sufficient, and the benchmark surfaces remain the main unresolved blind spot.
 - Most recent graph-focused verification run after all 10 helper extractions: `46 passed` (reasoning-length alarm + difficulty signal classifiers).
 - Most recent corpus retrieval verification run after diagnostic hardening: `33 passed` (28 existing + 5 new diagnostic tests).
 - Most recent benchmark-executor verification run after the additive result-contract hardening: `3 passed` direct executor tests and `430 passed` on the touched regression suite.
 - Most recent benchmark preflight verification run after stage/failure metadata hardening: `4 passed` direct infra tests and `435 passed` on the touched regression suite.
 - Most recent config bootstrap diagnostics verification run after registry-fallback hardening: `2 passed` direct config tests and `437 passed` on the touched regression suite.
+- Most recent test-remediation verification run under the default repo pytest entrypoint: `15 passed` for the new focused suites and `121 passed` for the broader touched benchmark/inference/config slice.
+- Most recent uncommitted-worktree review verification run after fixing two broken tests in the parallel agent branch: `264 passed` across architect delegation, code search, config, pipeline routing, inference mixin, and failure-analysis suites.
+- Residual worktree warning cleanup complete: the unawaited coroutine in `tests/unit/test_inference_mixin.py` `TestWorkerPoolBatch` was removed; the reviewed slice now runs clean at `264 passed`.
+- Worker-pool deprecation cleanup complete: `src/llm_primitives/inference.py` now uses `asyncio.get_running_loop()` with fallback instead of deprecated `get_event_loop()` probing in `_worker_pool_batch()`, and the reviewed slice continues to pass clean at `264 passed`.
 
 ## What Is Actually Wrong
 

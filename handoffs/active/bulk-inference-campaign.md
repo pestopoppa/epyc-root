@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+C+E+F done, D relaunching — GEPA integrated into PromptForge, RI-10 canary extended to 2026-04-17. H1/H2/H3/H6 folded into D. v3 binary live.)
+**Status**: active (A+B+C+E+F done, D relaunching. G1/G2/AM-L1-L3b/SEAL all complete 2026-04-13. AM has native llama.cpp beta injection + server endpoint. H1/H2/H3/H6 folded into D. v3 binary live.)
 **Created**: 2026-04-06
-**Updated**: 2026-04-12
+**Updated**: 2026-04-13
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -593,13 +593,34 @@ These tasks are scattered across active handoffs and require inference compute b
 | G8 | MiniMax tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
 | G9 | MiniMax quality comparison | Research intake (intake-328/329) | Run standard eval suite (MATH, coding, general). Compare vs Qwen3-30B-A3B worker + Qwen3-35B-A3B coder. Q4 quant has 22.8% more errors — test carefully. | Standalone | ~6h |
 
-### Prioritization
+### Progress (updated 2026-04-13)
 
-- **G1 + G5 together**: Memento KV savings + short-m@k voting is the most promising combo (2-3x KV reduction at zero accuracy cost per deep-dive findings). Run if any GPQA/math eval is already scheduled.
-- **G2 + G3 sequentially**: Only if G2 confirms Q/K concentration. Otherwise skip G3. **Note**: Attention Matching compaction ([attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) provides an alternative 10-50x path if selection gates fail. AM coding validation (P2 in AM handoff) should run alongside or after G2/G3 — benchmark HighestAttnKeys-fast on Qwen2.5-Coder-32B at 5x/10x/20x compression.
-- **G4**: Requires activation hook infrastructure — higher code investment. Defer unless FlowSteer library matures.
-- **G6**: Low priority — v3 smoke tests showed no regression. Only needed for formal baseline documentation.
-- **G7 + G8 + G9 sequentially**: MiniMax M2.7 evaluation (intake-328/329). Requires 108GB+ RAM as standalone (no concurrent models). G7 first (throughput feasibility), G8 (tool-calling), G9 (quality comparison) only if G7 shows viable throughput. Note: model claims SWE-Pro 56.22% and GDPval-AA ELO 1495 (highest open-source). Self-evolution methodology already captured in autopilot P11.
+- **G1 (Memento S1)**: ✅ Feasibility CONFIRMED (2026-04-13). `llama_memory_seq_rm()` supports mid-sequence block eviction. Runtime validation passed (slot erase + continued generation). OpenMementos-228K downloading (`microsoft/OpenMementos`). S2 (LoRA) is next.
+- **G2 (EA S1)**: ✅ Scaffold ready + proxy evaluation done (2026-04-13). KV compression at 50% removal: cosine=1.000 on NIAH tasks. Full KVPress integration needs compatible transformers version.
+- **G3 (stacking)**: PENDING — depends on G2 full evaluation
+- **AM P2**: ✅ Validated on Qwen2.5-7B (2026-04-13). 2x=1.000, 5x=0.906, 10x=0.807. Layer-adaptive strategy identified.
+- **AM L1-L3b**: ✅ COMPLETE (2026-04-13). Beta bias kernel in llama.cpp-experimental, public `llama_memory_set_beta()` API, server `POST /slots/{id}?action=set-beta` endpoint, E2E test on Coder-32B f16. Full pipeline: Python compaction → HTTP beta injection → server decode. Next: quality comparison test.
+- **SEAL cvector**: ✅ Pipeline validated (2026-04-13). Trained 28-layer concise reasoning vector on 7B. A/B: +1.8% tokens (minimal at 7B, real experiment targets 30B+). Fixed v3 GGML_OP_GLU build issue (stale libggml-cpu.so).
+
+### New tasks for AR-3 fold-in assessment
+
+The following medium-term tasks could piggyback on AR-3 stack sessions:
+
+| Task | Can fold into AR-3? | Notes |
+|------|---------------------|-------|
+| **PPL sweep** (v3 baseline) | YES — run during AR-3 warmup/cooldown | `llama-perplexity` on wikitext2 for coder, frontdoor, worker, REAP. Independent of stack. ~1h total. |
+| **AM P3** (AM vs EA head-to-head) | PARTIAL — needs model loaded, not full stack | Compare AM HighestAttnKeys-fast vs Expected Attention at 5x/10x/20x on same model. Python-only, ~4h. Can run during Package D downtime. |
+| **RI-10 canary** | YES — this IS Package D | Extended to 2026-04-17, n=16/50 high-risk samples. AR-3 generates these samples. |
+| **SEAL on 30B** | NO — needs dedicated server with cvector | Train + eval concise reasoning vector on Qwen3-Coder-30B-A3B. Separate from orchestrator stack. |
+| **AM P2 on 32B** | ✅ DONE — E2E beta injection tested on 32B f16 | L1-L3b complete. Beta injection via server endpoint works on Coder-32B. Full compaction quality test next. |
+
+### Prioritization (updated 2026-04-13)
+
+- **G1 + G5 together**: Memento S1 DONE. G5 (short-m@k voting) still pending — run if any GPQA/math eval is scheduled.
+- **G2 + G3 sequentially**: G2 proxy DONE (gate passed). Full KVPress evaluation + G3 stacking test pending. **AM compaction is now the primary path** — P2 results show structured attention compresses near-losslessly at 2-5x with layer-adaptive strategy.
+- **G4**: Defer — FlowSteer library maturity unconfirmed.
+- **G6**: Low priority — v3 smoke tests showed no regression.
+- **G7 + G8 + G9**: MiniMax M2.7 — unchanged, requires 108GB+ standalone.
 
 ## Package H: Research-Driven Inference Tasks (2026-04-12 research intake)
 

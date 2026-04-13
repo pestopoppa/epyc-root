@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-13 (inference research session: AM P1, Memento S1, SEAL, EA scaffold)
+**Updated**: 2026-04-13 (AM L1-L3b complete, SEAL -28% tokens validated, PPL sweep, Memento S2 design, orchestrator coverage pass 6)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -44,7 +44,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 13 | ~~MED~~ | ~~Context folding provenance~~ CF-P1–P4 ✅ 2026-04-12 (all 4 implemented) | [routing-and-optimization-index](routing-and-optimization-index.md) P10b |
 | 14 | MED | **Ouro-2.6B-Thinking eval** (P7). Download + MATH-500 CPU benchmark + T0 sentinel candidate | [research-evaluation-index](research-evaluation-index.md) P7 |
 | 15 | LOW | **MiniMax M2.7 eval** (G7–G9). 108GB GGUF download + EPYC benchmark + quality comparison vs Qwen3 stack | [bulk-inference-campaign](bulk-inference-campaign.md) Package G |
-| 16 | ~~HIGH~~ | ~~Orchestrator refactoring audit~~ ✅ All 8 phases complete. `graph/helpers.py` 60% reduced (10 modules), feature flags registry-driven, 4 new packages, corpus/health/benchmark diagnostics hardened, exception policy audited. | [orchestrator-refactoring-audit](orchestrator-refactoring-audit.md) |
+| 16 | ~~HIGH~~ | ~~Orchestrator refactoring audit~~ ✅ 2026-04-13 All 8 phases complete + InferenceResult success flip + TOON encoder + test suite 4893/0/7. Moved to completed/. | [orchestrator-refactoring-audit](../completed/orchestrator-refactoring-audit.md) |
 
 ---
 
@@ -74,7 +74,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (deep-dive done, P1-P4 + L1-L4 planned) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
-| [orchestrator-refactoring-audit.md](orchestrator-refactoring-audit.md) | Code quality, observability | ACTIVE (Phases 0-5 substantially complete; 10 `graph/helpers.py` modules extracted (60% reduction), corpus retrieval diagnostics, benchmark/config/health truthfulness improved, 88 focused tests green) | HIGH | 2026-04-13 |
+| [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
 
 ---
 

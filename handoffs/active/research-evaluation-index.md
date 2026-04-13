@@ -57,7 +57,15 @@
 
 ### P2 — Reasoning Compression (deferred)
 
-- [ ] Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment). Prep scripts READY: `epyc-inference-research/scripts/seal/generate_pairs.py` (80 problems), `eval_cvectors.py` (scaling sweep). Experiment doc: `docs/experiments/seal-concise-reasoning.md`.
+- [x] Generate SEAL control vectors — ✅ 2026-04-13. Multi-role regression test:
+  - **Worker 30B-A3B Q4KM**: 7/7→7/7 correct, **-7.5% tokens**, NO regression
+  - **Coder 32B Q4KM**: 7/7→7/7 correct, +2.2% tokens (neutral), NO regression
+  - **Accuracy check (30B)**: cvector 5/5 vs baseline 4/5 — accuracy *improved*
+  - Scale sweep (30B): 0.3=-10.3%, 0.5=-28.4%, 0.7=-28.5% (saturates at 0.5)
+  - Frontdoor 35B SSM: BLOCKED — heterogeneous block architecture (SSM/attention alternating), loader expects uniform. Needs llama.cpp model arch fix.
+  - REAP 246B: deferred (139GB cvector training too slow for this session)
+  - Cvectors: `models/qwen3-coder-30b-seal-concise.gguf`, `models/qwen2.5-coder-32b-q4km-seal-concise.gguf`, `models/qwen2.5-7b-seal-concise.gguf`
+  - **Production deployment**: CONDITIONAL — gains are task-type-dependent, not blanket. Worker reasoning tasks see -12% to -18% per problem, but code/concise tasks see 0%. Deploy via `orchestrator_stack.py --control-vector-scaled` gated by routing classifier `task_type == reasoning/math`. Coder role shows +2.2% (neutral). Implementation deferred until experimental kernel merges to production.
 - [ ] Summarizer quality assessment — `eval_summarizer.py` READY (created 2026-04-07), needs model servers to run (→ Package C)
 - [ ] Free-zone compression threshold sweep — `eval_compaction_sweep.py` READY (implemented 2026-04-07), needs model servers to run (→ Package C)
 - [x] Helpfulness scoring calibration — ✅ 2026-04-07. `run_calibration()` implemented (pure heuristic). Tested on 250 traces: Spearman ρ=0.63-0.65, overlap-heavy config best (separation=0.37, NDCG=0.998). Package C LLM-based Δ_k eval still pending.
@@ -66,7 +74,7 @@
 
 See [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md). Deep-dive: `research/deep-dives/memento-iterative-reasoning-cluster.md`.
 
-- [ ] S1: llama.cpp block masking feasibility — evaluate `llama_kv_self_seq_rm()` as block eviction primitive. Depends on v3 upstream KV API maturity.
+- [x] S1: llama.cpp block masking feasibility — ✅ 2026-04-13. **FEASIBLE**: `llama_memory_seq_rm()` (corrected API name) supports mid-sequence range eviction, position gaps preserved (correct for Memento dual-info-stream). Test skeleton at `llama.cpp-experimental/tests/test-memento-block-masking.cpp`. Paged attention block tracking has a gap for partial removal (metadata leak, non-blocking). Runtime validation awaiting model server.
 - [ ] S2: LoRA SFT on Qwen3-32B using OpenMementos-228K. Two-stage (format + compression learning). Blocked on S1.
 - [ ] S3: Deployment integration — block masking + Fold/Unfold toggle + m@k voting + Hadamard q4_0 stacking. Blocked on S1+S2.
 

@@ -20,8 +20,8 @@ Every agent working on inference acceleration MUST follow these protocols:
 |---------|--------|-----------|--------------|-----------|-------------|
 | [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10), hybrid SSM fix (2026-04-11) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
-| [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Research evaluation | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark |
-| [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — Deep-dive complete, impl planning | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 10x compression (narrative), coding TBD | P1: Port HighestAttnKeys-fast prototype |
+| [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Scaffold ready | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark scaffold ready (2026-04-13), awaiting model server |
+| [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — P1 complete | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 10x compression (narrative), coding TBD | P1 ✅ HighestAttnKeys-fast ported + validated (2026-04-13). P2: needs model server |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 | [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **STUB** — activates on GPU acquisition | rocWMMA, hipBLASLt grouped GEMM, Stream-K, CPU+GPU hybrid MoE | All MoE production models | MI300X: 4011 tok/s Llama-70B (213% over H100) | Acquire GPU hardware; then test `-ot "exps=CPU"` hybrid on 30B-A3B |
 
@@ -95,13 +95,13 @@ Four orthogonal layers, each operating on a different dimension of KV memory:
 | Layer | Method | Compression | Status | Handoff |
 |-------|--------|-------------|--------|---------|
 | **Quantization** | Hadamard + q4_0 | 2-4x | **DEPLOYED** (`b51c905`) | `kv-cache-quantization.md` |
-| **Compaction** | Attention Matching | 10x | Planning (P1-P4 + L1-L4) | `attention-matching-kv-compaction.md` |
-| **Selection** | TriAttention / Expected Attention | 2-10x | Evaluating (S1/S2 gates) | `triattention-kv-selection.md` |
-| **Block masking** | Memento | 2-3x | Research (S1 feasibility gate) | `memento-block-reasoning-compression.md` |
+| **Compaction** | Attention Matching | 2-5x validated | P1 ✅, P2 on 7B ✅, **L1-L3b COMPLETE** (beta kernel + API + server endpoint + E2E on 32B). Pipeline ready for full compaction test. | `attention-matching-kv-compaction.md` |
+| **Selection** | TriAttention / Expected Attention | 2-10x | S1 scaffold ready, proxy eval cosine=1.000 at 50% (2026-04-13) | `triattention-kv-selection.md` |
+| **Block masking** | Memento | 2-3x | S1 feasibility CONFIRMED + runtime validated (2026-04-13). OpenMementos downloaded. | `memento-block-reasoning-compression.md` |
 
-Combined theoretical ceiling: **120x** (quant 4x × compaction 10x × masking 3x). Conservative: **40x** (quant × compaction alone). Note: compaction subsumes selection at 20x+ — no benefit stacking both.
+Combined realistic ceiling: **24-60x** (quant 4x × compaction 2-5x × masking 3x). Note: AM compaction achieves 2x universally lossless, 5x at 0.91 cosine. 10x only viable on early layers or long contexts. Compaction subsumes selection at 20x+ — no benefit stacking both.
 
-At 256K context, Qwen2.5-Coder-32B KV at f16 = 64 GB. With quad-stack: **~530 MB**. Even conservative 40x: **~1.6 GB** — enables multiple concurrent slots.
+At 256K context, Qwen2.5-Coder-32B KV at f16 = 64 GB. With 2x AM + 4x quant: **~8 GB**. With full 5x AM + quant + masking: **~1.1 GB**. Even conservative 8x (2x AM × 4x quant): enables 8 concurrent slots vs 1 today.
 
 **Cross-instance KV sharing** (KVCOMM, intake-352): Eliminates redundant prefill across homogeneous worker pools (4×48t coder instances sharing codebase context). Planned as Phase F in `dynamic-stack-concurrency.md`. Compounds with AM compaction.
 

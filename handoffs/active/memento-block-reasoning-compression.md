@@ -53,23 +53,63 @@ Investigate Memento-style block reasoning compression for EPYC stack — trainin
 
 ## Implementation Path
 
-### S1: llama.cpp Block Masking Feasibility (prerequisite)
+### S1: llama.cpp Block Masking Feasibility (prerequisite) — FEASIBILITY CONFIRMED (2026-04-13)
 
-Evaluate whether `llama_kv_self_seq_rm()` in v3 upstream can serve as block eviction primitive:
-1. Inject special tokens (`<|block_start|>`, `<|block_end|>`, `<|summary_start|>`, `<|summary_end|>`) into generation
-2. After `<|summary_end|>`: call `llama_kv_self_seq_rm()` for the token range of the preceding block
-3. Verify attention correctness — future tokens should not attend to evicted positions
+**API correction**: The handoff originally referenced `llama_kv_self_seq_rm()` — this does NOT exist. The correct API is:
+- **Public**: `llama_memory_seq_rm(llama_memory_t mem, llama_seq_id seq_id, llama_pos p0, llama_pos p1)` at `include/llama.h:733`
+- **C++ virtual**: `llama_memory_i::seq_rm()` at `src/llama-memory.h:103`
+- **Concrete**: `llama_kv_cache::seq_rm()` at `src/llama-kv-cache.cpp:388`
+
+**Feasibility assessment**: YES — `llama_memory_seq_rm()` can serve as the Memento block eviction primitive.
+
+**Call chain**: `llama_memory_seq_rm()` → `mem->seq_rm()` (virtual dispatch) → `llama_kv_cache::seq_rm()` → iterates `v_cells[stream]`, checks `cells.pos_in(i, p0, p1)`, calls `cells.seq_rm(i, seq_id)` → clears seq bit, if no sequences remain: frees cell (`pos[i] = -1`, removed from `used` set)
+
+**Key findings**:
+1. **Mid-sequence removal**: Fully supported. Any contiguous position range [p0, p1) can be removed. Always succeeds (returns true).
+2. **Position gap**: After removal, remaining cells keep original positions. No automatic shifting. This is CORRECT for Memento — the dual information stream requires preserving original RoPE phases.
+3. **Cell freeing**: Freed cells are immediately reusable by `find_slot()`. Data buffers are pre-allocated/static (not freed), so benefit is effective context extension, not peak memory reduction.
+4. **ISWA**: Transparent — `llama_kv_cache_iswa::seq_rm()` delegates to both base and SWA caches.
+5. **Block tracking gap**: Partial sequence removal does NOT deallocate paged attention blocks. This is a metadata leak (blocks logically empty but still allocated). Only matters if paged attention is enabled.
+
+**DO NOT close the position gap with `seq_add`**: The KV states after the evicted block carry implicit information from attending to the reasoning block during their original computation. Shifting RoPE positions would corrupt this encoding.
+
+**Test skeleton**: Written at `tests/test-memento-block-masking.cpp` in llama.cpp-experimental. 5 test functions: basic eviction, gap semantics, post-eviction generation, multi-block iterative eviction, memory usage check. Compiles against current headers; requires `--model <path>` at runtime.
+
+**Next**: S1 runtime validation (requires model server) — run the test skeleton with a loaded model to verify attention correctness after mid-sequence eviction.
 
 **Builds on**: Our hybrid-precision buffer work (split attention, eviction from recent→old in `kv-cache-quantization.md`). Block masking is architecturally simpler — straight eviction, no demotion/requantization.
 
-**Critical dependency**: llama.cpp v3 upstream KV eviction API maturity (tracked in `llama-cpp-v3-upstream-rebuild.md`)
+### S2: Model Fine-Tuning (requires S1 success) — DESIGN COMPLETE (2026-04-13)
 
-### S2: Model Fine-Tuning (requires S1 success)
+**Dataset**: OpenMementos-228K downloaded at `/mnt/raid0/llm/data/openmementos/` (228,557 examples, 4.7 GB). Default config (20 shards) has training-ready block/summary formatted responses. Full config (39 shards, 9.2 GB) includes intermediate pipeline outputs (sentences, block boundaries, block summaries).
 
-1. Download OpenMementos-228K (MIT, HuggingFace)
-2. LoRA SFT on Qwen3-32B (our architect) — small compute footprint
-3. Two-stage: Stage 1 full attention (format learning), Stage 2 memento attention (compression learning)
-4. Validate on MATH-500/GPQA-D (our production benchmark suites)
+**Dataset stats**: ~9 blocks/response median, ~12K response tokens mean, 54% math / 27% science / 19% code. Special tokens: `<|block_start|>`, `<|block_end|>`, `<|summary_start|>`, `<|summary_end|>` — all balanced, 100% have `<think>` wrapper + answer section.
+
+**Training script**: `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/memento_sft.py` — dry-run validated.
+
+**Two-stage LoRA design**:
+1. **Stage 1 (full attention, format learning)**: Standard causal attention. Model learns to generate block/summary token structure. 2 epochs, lr=2e-4, seq_len=4096.
+2. **Stage 2 (memento attention, compression learning)**: Custom 2D attention mask that blocks future tokens from attending to completed block content (only summaries persist). Teaches the model that block content is transient. 1 epoch, lr=5e-5, seq_len=4096. The memento mask removes ~59% of causal attention positions.
+
+**LoRA config**: rank=16, alpha=32, dropout=0.05, targets=[q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj]. ~393K trainable params for 1.7B model (0.02% of base).
+
+**Model ladder** (CPU-feasible validation path):
+| Model | BF16 Mem | LoRA Params | Est. Time/Epoch | Feasible? |
+|-------|----------|-------------|-----------------|-----------|
+| Qwen3-0.6B | 1.2 GB | 197K | ~19h | Yes (smoke test) |
+| Qwen3-1.7B | 3.4 GB | 393K | ~54h | Yes (validation target) |
+| Qwen3-8B | 16 GB | 786K | ~11 days | Marginal |
+| Qwen3-32B | 64 GB | 983K | ~42 days | No — requires GPU QLoRA |
+
+**Blockers**: `peft`, `trl` packages not installed (pip install). 32B requires GPU — CPU training is infeasible at production scale. Recommend: validate on 1.7B (CPU), then rent GPU time for 32B QLoRA.
+
+**GGUF conversion path**: Trained LoRA adapter converts to GGUF via `llama.cpp/convert_lora_to_gguf.py`, loadable at inference with `llama-server --lora adapter.gguf`.
+
+**Validation plan**:
+1. MATH-500 accuracy (memento vs base)
+2. Format compliance (block/summary token pairing)
+3. Compression ratio (block tokens vs memento tokens)
+4. Integrate with S1 block masking for end-to-end KV savings test
 
 ### S3: Deployment Integration (requires S1 + S2)
 
@@ -80,7 +120,7 @@ Evaluate whether `llama_kv_self_seq_rm()` in v3 upstream can serve as block evic
 
 ## Open Questions
 
-- Can block masking be implemented in llama.cpp via existing `llama_kv_self_seq_rm()`?
+- ~~Can block masking be implemented in llama.cpp via existing `llama_memory_seq_rm()`?~~ **YES** — confirmed 2026-04-13, mid-sequence removal works, position gap semantics are correct for Memento
 - Does Memento compose with speculative decoding? Block masking changes attention patterns and KV cache layout.
 - Is SFT on OpenMementos sufficient for GGUF-quantized models, or does quantization degrade memento quality?
 - How does the 7K block length cap interact with our difficulty-band token budgets?

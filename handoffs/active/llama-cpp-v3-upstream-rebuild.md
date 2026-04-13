@@ -1,6 +1,6 @@
 # llama.cpp Upstream Rebuild — production-consolidated-v3
 
-**Status**: PRODUCTION — v3 binary swapped and stack running (2026-04-10). Deferred tests (PPL, paged attention RSS, NUMA) still pending.
+**Status**: PRODUCTION — v3 binary swapped and stack running (2026-04-10). PPL sweep done 2026-04-13. Paged attention RSS and NUMA tests still pending.
 **Created**: 2026-04-08
 **Priority**: LOW (maintenance — deferred tests only)
 **Workstream**: WS2
@@ -384,6 +384,7 @@ If v3 fails validation:
 - [x] NUMA throughput — 11.1 t/s (shared bandwidth with 27 servers). No regression in isolated smoke test model loads.
 - [x] Upstream Hadamard auto-rotation — ✅ 2026-04-10. PASS. No `LLAMA_ATTN_ROT_DISABLE` in logs with `-ctk q4_0 -ctv f16`.
 - [x] PPL: Coder-32B, `-ctk q4_0 -ctv f16`, wikitext2 = 6.80. No v2 wikitext2 baseline for exact comparison; no regression indicated.
+- [x] PPL sweep (2026-04-13): Coder-32B f16 = 6.18 (484 tok/s), Worker 30B-A3B Q4KM = 9.14 (2196 tok/s), REAP-246B Q4KM = 9.62 (249 tok/s). Frontdoor 35B-A3B BLOCKED (SSM tensor missing in llama-perplexity — needs server-based eval).
 - [x] Orchestrator config updated — ✅ 2026-04-10. `--kv-hadamard` removed from `orchestrator_stack.py:950` and `server_lifecycle.py:200`. `--lookup` kept (exists in v3 server). Slot erase endpoint unchanged (POST, not DELETE — smoke test was wrong). `verify_llama_cpp.sh` branch updated. Test updated (18/18 pass).
 - [x] Production binary swap — ✅ 2026-04-10. v2 stashed, v3 checked out in `/mnt/raid0/llm/llama.cpp`, built with `-DGGML_CPU_ALL_VARIANTS=ON -DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON -DLLAMA_CURL=ON`. 29 services healthy. Version 8754 (7057025df).
 - [ ] Branch pushed to `fork` remote
@@ -397,6 +398,7 @@ If v3 fails validation:
 | n_kv scope fix | `8bc9f585d` | Upstream refactored `build_attn_inp_kv_impl`, `n_kv` not in local scope |
 | CMake flags | — | Upstream now requires `-DGGML_BACKEND_DL=ON -DBUILD_SHARED_LIBS=ON` with `GGML_CPU_ALL_VARIANTS` |
 | SSM checkpoint stub/restore | — | Lookup patch arrived before SSM patch; stubbed in Phase 1, restored in Phase 5 |
+| Stale `libggml-cpu.so.0` (2026-04-13) | — | With `GGML_CPU_ALL_VARIANTS=ON`, cmake builds variant libs (zen4, x64, etc.) but NOT the base `libggml-cpu.so`. A pre-variants build left a stale base that was loaded first, missing `GGML_OP_GLU` (op 96). Fix: moved stale base out of linker path; link tools against `libggml-cpu-zen4` directly. |
 
 ## Future: HIP/GPU Build Path
 
