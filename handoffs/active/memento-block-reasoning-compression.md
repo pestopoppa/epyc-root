@@ -39,11 +39,12 @@ Investigate Memento-style block reasoning compression for EPYC stack — trainin
 - Our production 32B architect would see minimal accuracy loss
 - MATH-500 is near-lossless (<1pp gap) across all scales
 
-### Composability — Triple-Stack KV Compression
-- **Block masking (Memento)**: 2-3x — removes entire reasoning blocks
-- **KV quantization (Hadamard+q4_0)**: 2x — compresses each surviving KV entry (deployed, `b51c905`)
-- **KV selection (TriAttention/Expected Attention)**: 2-10x — keeps only important tokens (evaluating, triattention-kv-selection.md)
-- Theoretical combined: 8-60x. Conservative estimate: 4x even without selection.
+### Composability — Quad-Stack KV Compression
+- **Block masking (Memento)**: 2-3x — removes entire reasoning blocks (WHICH semantic blocks survive)
+- **KV quantization (Hadamard+q4_0)**: 2-4x — compresses each surviving KV entry (deployed, `b51c905`) (HOW tokens stored)
+- **KV compaction (Attention Matching)**: 10x — constructs compact latent KV entries with fitted biases/values (planning, [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) (HOW MANY entries exist)
+- **KV selection (TriAttention/Expected Attention)**: 2-10x — keeps only important tokens (evaluating, triattention-kv-selection.md). Note: AM compaction subsumes selection at 20x+; redundant to stack both.
+- Theoretical combined (quant × compaction × masking): **up to 120x**. Conservative: **40x** (quant × compaction alone, no selection or masking needed). Quality cliff under multi-layer compression is the key unknown — each pair tested independently.
 
 ### Serving Throughput
 - Memento vLLM: 4,290 vs 2,447 tok/s at full concurrency (1.75x), B200 GPU

@@ -1,6 +1,6 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+C+E+F done, D relaunching — GEPA integrated into PromptForge, RI-10 canary extended to 2026-04-15. H1/H2/H3/H6 folded into D. v3 binary live.)
+**Status**: active (A+B+C+E+F done, D relaunching — GEPA integrated into PromptForge, RI-10 canary extended to 2026-04-17. H1/H2/H3/H6 folded into D. v3 binary live.)
 **Created**: 2026-04-06
 **Updated**: 2026-04-12
 **Categories**: evaluation, inference, coordination
@@ -323,7 +323,7 @@ python3 scripts/benchmark/eval_tale_budget.py \
 |---------|--------|-------------|
 | AR-3 | [routing-and-optimization-index](routing-and-optimization-index.md) P5 | Autoresearch relaunch with expanded T0 sentinels |
 | RI-7 re-run | [routing-intelligence.md](routing-intelligence.md) Phase 4 | Large-sample A/B re-run (70q was underpowered). Canary data from RI-10 serves as the re-run — enforce-vs-shadow comparison at production scale. |
-| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-15 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
+| RI-10 | [routing-and-optimization-index](routing-and-optimization-index.md) P6 | 🔄 Canary live since 2026-04-06 (25% enforce on frontdoor). Window extended to 2026-04-17 (was 2026-04-09) — n=16 high-risk too small for decision. Package D extends monitoring via AR-3 traffic. |
 | CF Phase 3c | [context-folding-progressive.md](context-folding-progressive.md) | Quality monitor validation on real multi-turn sessions |
 | DS-5 | [routing-and-optimization-index](routing-and-optimization-index.md) P7 | Model exploration via StructuralLab species |
 | AP-19 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA frontdoor optimization — integrated as PromptForge mutation type (30% of PromptForge trials). Comparison data collected in journal. |
@@ -339,7 +339,7 @@ factual_risk:
   mode: "canary"          # already live (changed from "shadow" on 2026-04-06)
   canary_ratio: 0.25      # 25% of frontdoor requests get enforce
   canary_roles: [frontdoor]
-# Canary window extended to 2026-04-15 (n=16 high-risk insufficient for decision).
+# Canary window extended to 2026-04-17 (n=16 high-risk insufficient for decision).
 # Decision after extended window: keep canary, expand to RI-11, or revert.
 ```
 
@@ -395,7 +395,7 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 
 - [ ] **AR-3**: ≥50 trials completed without corruption. ≥1 useful change accepted (Pareto-improving).
 - [ ] **RI-7 re-run**: Canary data produces ≥500 enforce vs ≥1500 shadow decisions. Compare factuality F1, escalation rate, cost. Result is statistically significant (p < 0.05) or confirms NS with adequate power.
-- [ ] **RI-10**: Extended canary window (ends 2026-04-15, was 2026-04-09). Need ≥50 high-risk samples (had n=16). No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
+- [ ] **RI-10**: Extended canary window (ends 2026-04-17, was 2026-04-09). Need ≥50 high-risk samples (had n=16). No latency regression (p95 within 10% of shadow baseline). No accuracy drop on frontdoor. Decision: proceed to RI-11 (expand) or revert to shadow.
 - [ ] **CF Phase 3c**: Quality monitor fires on ≥3 consolidation events. No false positives (degradation detected when quality is stable).
 - [ ] **DS-5**: ≥3 model candidates tested via StructuralLab species.
 
@@ -596,7 +596,7 @@ These tasks are scattered across active handoffs and require inference compute b
 ### Prioritization
 
 - **G1 + G5 together**: Memento KV savings + short-m@k voting is the most promising combo (2-3x KV reduction at zero accuracy cost per deep-dive findings). Run if any GPQA/math eval is already scheduled.
-- **G2 + G3 sequentially**: Only if G2 confirms Q/K concentration. Otherwise skip G3.
+- **G2 + G3 sequentially**: Only if G2 confirms Q/K concentration. Otherwise skip G3. **Note**: Attention Matching compaction ([attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) provides an alternative 10-50x path if selection gates fail. AM coding validation (P2 in AM handoff) should run alongside or after G2/G3 — benchmark HighestAttnKeys-fast on Qwen2.5-Coder-32B at 5x/10x/20x compression.
 - **G4**: Requires activation hook infrastructure — higher code investment. Defer unless FlowSteer library matures.
 - **G6**: Low priority — v3 smoke tests showed no regression. Only needed for formal baseline documentation.
 - **G7 + G8 + G9 sequentially**: MiniMax M2.7 evaluation (intake-328/329). Requires 108GB+ RAM as standalone (no concurrent models). G7 first (throughput feasibility), G8 (tool-calling), G9 (quality comparison) only if G7 shows viable throughput. Note: model claims SWE-Pro 56.22% and GDPval-AA ELO 1495 (highest open-source). Self-evolution methodology already captured in autopilot P11.

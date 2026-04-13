@@ -293,3 +293,11 @@ A cluster of 4 closely related papers/repos on training models to self-compress 
 - **Tier 3 taxonomy expanded**: Memento/InftyThink/Accordion form a new sub-family alongside OPSDC (self-distillation) and CoLaR (latent compression). All require training but offer fundamentally different compression vs. inference-only approaches.
 - **Context-folding synergy**: OpenMementos' data pipeline (boundary scoring + iterative refinement) validates our Phase 2 approach and could provide training data for Phase 3 RL.
 - **KV cache composition**: Memento block masking + Hadamard+q4_0 quantization = multiplicative KV savings. Worth investigating once llama.cpp block masking is feasible.
+
+## Research Intake Update — 2026-04-13
+
+### New Related Research
+- **[intake-350] "Latent Briefing: KV Cache Compaction for Multi-Agent Systems"** (github:CuriousCaliBoi/latent-briefing)
+  - Relevance: Complements CoLaR (intake-134) as another latent-space approach to reducing inter-agent token overhead. While CoLaR bypasses KV cache via latent reasoning compression, Latent Briefing operates directly on KV cache — compacting an orchestrator's trajectory cache before injecting into a worker agent. Both target the same goal (reduce cost of multi-step reasoning chains) from different abstraction layers.
+  - Key technique: Attention-score-driven MAD thresholding + PGD reweighting for cross-model KV transfer
+  - Delta from current approach: KV-level technique, not reasoning-level. More relevant to triattention-kv-selection.md handoff. Cross-reference only.

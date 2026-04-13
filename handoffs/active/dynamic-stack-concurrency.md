@@ -6,7 +6,7 @@
 **Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config)
+**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction)
 
 ---
 
@@ -808,9 +808,79 @@ def validate_template(template: StackTemplate, registry: ModelRegistry) -> list[
 
 Routing intelligence determines *which model* for each task (quality decision). Stack assembly determines *how that model is provisioned* (capacity decision). The pre-warm strategy makes these fully orthogonal — routing doesn't need to know about NUMA topology, and the concurrency-aware router handles instance selection transparently.
 
+## Phase F: Cross-Instance KV Cache Sharing (KVCOMM)
+
+**Status**: PLANNED — blocked on AM compaction validation (attention-matching P2 gate)
+**Research basis**: intake-352 (KVCOMM, NeurIPS'25, arxiv:2510.12872)
+**Created**: 2026-04-13
+
+### Problem
+
+When the orchestrator delegates to 3+ coder-32B instances (same model, same quant, different tasks) against the same codebase, each instance independently prefills the shared context (10K-50K tokens). With 4×48t NUMA quarters, this means 3-4 redundant prefills of identical code context — each taking seconds to minutes depending on length.
+
+### Solution
+
+KVCOMM anchor-based offset estimation. First coder instance prefills shared context normally. Subsequent instances reuse the first instance's KV cache by estimating and applying the offset caused by different system prompts (role-specific instructions).
+
+**Paper results**: 70%+ reuse rate, 7.8x TTFT speedup (5-agent, 1K tokens, H100 GPU).
+
+### Concrete Example
+
+```
+frontdoor → architect → plan (text)
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+    coder-32B (Q0A)  coder-32B (Q0B)  coder-32B (Q1A)
+    "implement auth"  "implement API"   "implement tests"
+
+    ← ALL share 50K-token codebase context →
+```
+
+Without KVCOMM: 3 × 50K-token prefills = 150K prefill tokens
+With KVCOMM: ~65K effective prefill (1.3x vs 3x)
+
+### Compounds with AM Compaction
+
+AM compresses 50K codebase → 5K compact KV entries (10x). KVCOMM then shares those 5K entries across workers without redundant prefill. AM reduces size, KVCOMM eliminates redundant computation — complementary.
+
+### Integration Point
+
+`ConcurrencyAwareBackend` gains an anchor pool. Routing becomes cache-aware:
+- Track which instances have prefilled which contexts (via anchor fingerprints)
+- Route to instance with best anchor match, not just round-robin
+- Fall back to full prefill + anchor creation when no match exists
+
+### Prerequisites
+
+1. AM compaction validated on coding contexts (attention-matching-kv-compaction.md P2 gate)
+2. q4_0 offset estimation feasibility tested (novel — paper assumes f16; our KV is q4_0 after Hadamard. Offsets are small (~50% have |offset| < 0.1), may be lost in quantization noise)
+3. Cross-NUMA IPC design for anchor pool (shared memory region vs explicit copy across Infinity Fabric)
+
+### Work Items
+
+| Task | Description | Effort | Blocked By |
+|------|-------------|--------|-----------|
+| F1 | Prototype offset estimation on q4_0 quantized KV | HIGH | AM compaction P2 |
+| F2 | Anchor pool design for cross-NUMA sharing | MEDIUM | F1 |
+| F3 | ConcurrencyAwareBackend → cache-aware routing | MEDIUM | F2 |
+| F4 | Metrics: prefill_speedup_coder_pool in eval tower | LOW | F3 |
+
+### Decision Gate
+
+IF q4_0 offset estimation preserves >95% quality on shared codebase tasks THEN proceed to F2-F4. ELSE defer until f16 KV becomes practical (e.g., after GPU acquisition).
+
+### Cross-References
+
+- [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) — AM compaction compounds with KVCOMM
+- [kv-cache-quantization.md](kv-cache-quantization.md) — q4_0 interaction is the key open question
+- `research/deep-dives/kv-compaction-attention-matching-cluster.md` — full deep-dive analysis
+- `research/intake_index.yaml` intake-352 — KVCOMM paper details
+
 ## See Also
 
 - [`routing-and-optimization-index.md`](routing-and-optimization-index.md) — umbrella index
 - [`routing-intelligence.md`](routing-intelligence.md) — role selection, factual risk
 - [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) — autoresearch framework
+- [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — KV compaction (compounds with Phase F)
 - `src/backends/round_robin.py` — runtime instance routing (supports dynamic backend list)

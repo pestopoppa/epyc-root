@@ -68,7 +68,7 @@ S1 and S2 can run **in parallel**. S3 depends on S1/S2 results. S4 depends on S1
 - **Gate 1 (after S1)**: IF Expected Attention >= 90% RULER at 50% compression on Qwen2.5-7B THEN proceed to S3 stacking test. ELSE evaluate TriAttention via S2 before concluding.
 - **Gate 2 (after S2)**: IF Q/K concentration validates (R >= 0.95) THEN TriAttention remains a candidate. ELSE drop TriAttention, rely solely on Expected Attention.
 - **Gate 3 (after S3)**: IF selection + quantization stacking is quality-neutral at >= 4x combined compression THEN promote to implementation phase. ELSE **CONCLUDE** — KV quantization alone sufficient.
-- **Overall**: IF S1 AND S2 both fail gates THEN **CONCLUDE as NOT VIABLE**.
+- **Overall**: IF S1 AND S2 both fail gates THEN **CONCLUDE as NOT VIABLE** for token selection. However, Attention Matching compaction ([attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) provides 10-50x compression via latent-space construction rather than token selection. AM outperforms all selection baselines at 20x+; at 5-10x the gap narrows. AM is a viable replacement path, not just a complement — evaluate AM independently of S1/S2 outcomes.
 
 ## Composability: Triple-Stack KV Compression (intake-289, 2026-04-09)
 
@@ -108,6 +108,26 @@ See `research/deep-dives/triattention-kv-selection-cluster.md` for full analysis
 | `research/deep-dives/triattention-kv-selection-cluster.md` | Full cluster analysis (5 papers, 267 lines) |
 | `handoffs/active/kv-cache-quantization.md` | Parent quantization handoff (Hadamard Phase 1 deployed) |
 | `research/intake_index.yaml` (intake-284, 287, 288) | Source intake entries with full metadata |
+
+## Research Intake Update — 2026-04-13
+
+### New Related Research
+- **[intake-350] "Latent Briefing: KV Cache Compaction for Multi-Agent Systems"** (github:CuriousCaliBoi/latent-briefing)
+  - Relevance: Implements attention-score-driven KV compaction with MAD thresholding + PGD reweighting for cross-model agent transfer (Claude orchestrator → Qwen3-14B worker). Uses same RMS attention scoring family as TriAttention/Expected Attention for position selection, but adds learned per-position β weights and Ridge regression value correction.
+  - Key technique: AMCompactor — three-stage pipeline: RMS scoring → MAD threshold selection → PGD β + Ridge C2
+  - Reported results: No published benchmarks in repo. VentureBeat coverage claims 42-57% worker token reduction, 21-31% total token reduction, +3pp accuracy at optimal thresholds.
+  - Delta from current approach: This is KV *compaction* (construct new compact representations), not selection (keep/evict original tokens). Orthogonal paradigm to TriAttention/Expected Attention. Targets GPU (DGX Spark), not CPU.
+
+- **[intake-351] "Fast KV Compaction via Attention Matching"** (arxiv:2602.16284)
+  - Relevance: Formalizes KV compaction as attention matching with closed-form solutions. 50x compression on QuALITY benchmark, Pareto-dominant over all token-selection baselines (H2O, SnapKV, PyramidKV, KVzip). **This is the academic formalization of the compaction paradigm that Latent Briefing implements.**
+  - Key technique: Attention Matching — NNLS for bias β, OLS for values, OMP or RMS-heuristic for key selection
+  - Reported results: 50x compression, ~71% QuALITY accuracy, 100-200x faster than Cartridges
+  - Delta from current approach: Token selection (this handoff) keeps original KV entries. Compaction constructs *new* compact KV representations in latent space. AM outperforms all selection baselines at high compression (20-100x). See new handoff: [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md).
+  - **llama.cpp status**: Issue #20037 open — blocked on ggml pseudoinverse support. Reference implementation: github.com/adamzweiger/compaction
+
+- **[intake-352] "KVCOMM: Online Cross-context KV-cache Communication"** (arxiv:2510.12872)
+  - Relevance: Training-free multi-agent KV cache reuse across agents with diverging prefixes. 70%+ reuse rate, 7.8x prefill speedup. NeurIPS'25.
+  - Delta from current approach: Addresses multi-agent KV sharing (relevant to orchestrator stack), not KV compression.
 
 ## References
 

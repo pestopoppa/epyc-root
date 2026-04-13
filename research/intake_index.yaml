@@ -11530,3 +11530,238 @@
     (users report cache issues), not thread-safe with custom interpreter, experimental
     API. IMMEDIATE opportunity: set up dspy.RLM with our llama-server as backend, test
     with benchmark result analysis as first use case. UPGRADE relevance → very high.
+- id: intake-350
+  arxiv_id: null
+  url: https://github.com/CuriousCaliBoi/latent-briefing
+  source_type: repo
+  title: 'Latent Briefing: KV Cache Compaction for Multi-Agent Systems (DGX Spark GB10)'
+  categories:
+  - kv_cache_optimization
+  - agent_architecture
+  - inference_serving
+  key_claims:
+  - Compresses orchestrator KV cache before injecting into worker agent via attention-score-driven MAD thresholding + PGD reweighting
+  - Cross-model transfer pipeline from Claude orchestrator to Qwen3-14B worker
+  - Three-stage compaction: RMS attention scoring, MAD threshold selection, per-position beta-PGD + Ridge regression C2
+  - Targets DGX Spark GB10 unified memory architecture (273 GB/s bandwidth-bound, not FLOP-bound)
+  - VentureBeat coverage claims 42-57% worker token reduction, 21-31% total token reduction, +3pp accuracy at optimal thresholds
+  techniques:
+  - AMCompactor
+  - MAD-threshold selection
+  - PGD beta optimization
+  - Ridge regression value correction (C2)
+  - GQA-aware attention scoring
+  reported_results:
+  - '42-57% worker token reduction (VentureBeat, unverified in repo)'
+  - '21-31% total token reduction (VentureBeat, unverified in repo)'
+  - '+3pp accuracy improvement at optimal thresholds (VentureBeat, unverified in repo)'
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-04-13'
+  handoffs_updated:
+  - triattention-kv-selection.md
+  - reasoning-compression.md
+  handoffs_created:
+  - attention-matching-kv-compaction.md
+  contradicting_evidence:
+  - 'DEEP-DIVE 2026-04-13: PGD beta optimization is a no-op — optimizes against kept-only logits (not full-cache), beta converges to ~1.0'
+  - 'DEEP-DIVE 2026-04-13: Ridge C2 correction is a no-op — V_full parameter accepted but ignored, self-reconstruction with lambda=1e-4 ≈ identity'
+  - 'DEEP-DIVE 2026-04-13: Cross-model KV transfer claim is misleading — Claude produces TEXT only, Qwen3 encodes it via normal forward pass and compacts its OWN KV cache'
+  cross_references:
+    handoffs:
+    - triattention-kv-selection.md
+    - reasoning-compression.md
+    - attention-matching-kv-compaction.md
+    intake:
+    - intake-351 (Attention Matching - academic formalization of same approach)
+    - intake-284 (TriAttention - same scoring family)
+    - intake-288 (Expected Attention - same scoring family)
+    - intake-134 (CoLaR - alternative latent compression approach)
+  notes: >
+    Core algorithm closely parallels Attention Matching paper (2602.16284). Novel
+    contribution is the cross-model multi-agent framing (orchestrator trajectory
+    compressed and injected into different worker model). 0 stars, 1 commit, no
+    peer review. Benchmark framework (LongBench v2) exists but no published
+    results in repo. The DGX Spark GB10 targeting is niche (ARM desktop GPU, not
+    production server). Key limitation: requires forward-passing orchestrator
+    trajectory through worker model first to generate full KV cache for scoring,
+    which may negate latency savings for short contexts.
+    DEEP-DIVE 2026-04-13: Source code audit reveals PGD beta and Ridge C2
+    correction steps are effectively no-ops (wrong optimization target, V_full
+    ignored). Cross-model claim is misleading — Claude produces text only,
+    Qwen3 compacts its own KV cache. The repo is just attention-score MAD
+    thresholding with broken corrections. Do NOT use as implementation reference.
+    Use Attention Matching paper (intake-351) + adamzweiger/compaction instead.
+- id: intake-351
+  arxiv_id: '2602.16284'
+  url: https://arxiv.org/abs/2602.16284
+  source_type: paper
+  title: 'Fast KV Compaction via Attention Matching'
+  authors:
+  - Adam Zweiger
+  - Xinghong Fu
+  - Han Guo
+  - Yoon Kim
+  categories:
+  - kv_cache_optimization
+  - inference_serving
+  key_claims:
+  - Formalizes KV compaction as attention matching with decomposition into subproblems admitting closed-form solutions
+  - Up to 50x compression on QuALITY benchmark (~71% accuracy) in seconds
+  - 100-200x faster compaction than Cartridges while matching quality
+  - Forms Pareto frontier over all prior token-selection baselines (H2O, SnapKV, PyramidKV, KVzip)
+  - Hybrid summarize + AM-OMP achieves ~200x total compaction
+  techniques:
+  - Attention Matching
+  - Orthogonal Matching Pursuit (OMP) key selection
+  - NNLS bias fitting (closed-form)
+  - OLS value fitting (closed-form)
+  - Highest Attention Keys heuristic (fast variant)
+  reported_results:
+  - '50x compression on QuALITY benchmark (~71% accuracy vs full context)'
+  - '100-200x faster compaction than Cartridges'
+  - 'Pareto-dominant over H2O, SnapKV, PyramidKV, KVzip at 20-100x compression'
+  - 'Highest Attention heuristic: 3 seconds for 60k tokens (Gemma-3-12B, H200)'
+  - 'OMP: 565 seconds for 60k tokens; OMP-fast (k=4): 104 seconds'
+  - 'Hybrid summarize + AM-OMP: ~200x total compaction'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: search
+  expanded_from: intake-350
+  ingested_date: '2026-04-13'
+  contradicting_evidence:
+  - 'OMP variant requires several minutes per compaction (not real-time for interactive serving)'
+  - 'Flash Attention incompatibility: requires materializing full attention matrix for reference query extraction'
+  - 'Information-dense content (LongHealth medical records) degrades faster than narrative content at same compression ratios'
+  - 'llama.cpp decode-side change needed: per-token attention bias (score += beta[j]). Compaction itself can be Python preprocessing, NOT blocked on ggml.'
+  - 'No contradicting evidence on core quality claims found — possible confirmation bias risk'
+  cross_references:
+    handoffs:
+    - triattention-kv-selection.md
+    - attention-matching-kv-compaction.md
+    intake:
+    - intake-350 (Latent Briefing - implementation of similar approach)
+    - intake-284 (TriAttention - token-selection baseline compared)
+    - intake-288 (Expected Attention - token-selection baseline compared)
+  notes: >
+    This is the academic formalization of the KV compaction paradigm. The key
+    insight: decomposing attention matching into NNLS (bias) + OLS (values)
+    yields closed-form solutions that are 100-200x faster than end-to-end
+    gradient methods (Cartridges) while matching quality. The Highest Attention
+    Keys heuristic (3 seconds for 60k tokens) is fast enough for batch
+    processing. Qwen3-4B already evaluated. Reference implementation:
+    github.com/adamzweiger/compaction. llama.cpp community interest via
+    issue #20037 (community wants full ggml implementation; we can do Python
+    compaction + C++ decode-side bias instead). model-ai.org llama.cpp fork
+    claims +63% decode speed with KV compaction.
+    DEEP-DIVE 2026-04-13: At 10x compression, HighestAttnKeys matches full
+    context on narrative QA — sweet spot for us. Coding benchmarks untested
+    (TODO in reference repo). Online compaction preserves reasoning (AIME
+    2048-physical=8192-effective at 13/30). Expected Attention (S1 candidate)
+    is outperformed at 20x+ but gap narrows at 5-10x. Implementation path:
+    (1) Python preprocessing with scipy/numpy for NNLS+OLS, (2) llama.cpp
+    attention kernel bias addition (one-line: score[j]+=beta[j]),
+    (3) KV metadata for logical vs physical length (RoPE positions).
+    Full ggml implementation desirable long-term for online compaction
+    without Python preprocessing step.
+- id: intake-352
+  arxiv_id: '2510.12872'
+  url: https://arxiv.org/abs/2510.12872
+  source_type: paper
+  title: 'KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems'
+  categories:
+  - kv_cache_optimization
+  - agent_architecture
+  - inference_serving
+  key_claims:
+  - Training-free KV cache reuse across agents with diverging prefix contexts
+  - Anchor-based online estimation and correction of KV cache offset variance
+  - 70%+ reuse rate across RAG, math reasoning, and collaborative coding workloads
+  - 7.8x prefill speedup in 5-agent 1K-token setting (430ms to 55ms TTFT)
+  - NeurIPS 2025 accepted
+  techniques:
+  - KVCOMM anchor-based offset estimation
+  - Online KV cache adaptation
+  - Cross-context cache communication
+  reported_results:
+  - '70%+ KV cache reuse rate across multi-agent workloads'
+  - '7.8x prefill speedup (430ms to 55ms TTFT) in 5-agent setting'
+  - 'Quality-neutral on standard tasks but NOT on hard reasoning (AIME: 8-11pp drop)'
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-350
+  ingested_date: '2026-04-13'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - triattention-kv-selection.md
+    intake:
+    - intake-350 (Latent Briefing - multi-agent KV cache approach)
+    - intake-353 (LRAgent - multi-agent KV sharing)
+  notes: >
+    NeurIPS'25 paper addressing the multi-agent KV cache sharing problem.
+    The key insight: KV caches for shared content under different prefixes
+    differ by a learnable offset, which can be estimated online via cached
+    anchor examples. GitHub implementation available (github.com/HankYe/KVCOMM).
+    Assumes same model across agents (not cross-model like Latent Briefing).
+    Directly relevant to our orchestrator stack if we consolidate to single
+    model family. The 7.8x TTFT speedup is compelling for agentic workloads.
+    DEEP-DIVE 2026-04-13: Not applicable to full heterogeneous stack (Claude+
+    Qwen3 at mixed quants). BUT applicable to homogeneous worker pools within
+    the orchestrator: when frontdoor delegates to 3+ parallel coder-32B
+    instances (same model, same quant, different tasks), all sharing the same
+    codebase context (10K-50K tokens), KVCOMM eliminates redundant prefill
+    across the worker pool. Compounds with AM compaction (AM reduces KV size,
+    KVCOMM shares it). Open issues: (1) offset estimation with q4_0 quantized
+    KV untested — offsets are small (~50% have |offset|<0.1), may be lost in
+    quantization noise, (2) cross-NUMA IPC for anchor pool, (3) AIME shows
+    8-11pp accuracy drop on hard reasoning. Upgraded to worth_investigating.
+- id: intake-353
+  url: https://arxiv.org/abs/2602.01053
+  arxiv_id: '2602.01053'
+  source_type: paper
+  title: 'LRAgent: Efficient KV Cache Sharing for Multi-LoRA LLM Agents'
+  authors:
+  - Hyesung Jeon
+  - Hyeongju Ha
+  - Jae-Joon Kim
+  categories:
+  - kv_cache_optimization
+  - agent_architecture
+  key_claims:
+  - Decomposes KV cache into shared base component (pretrained) + adapter-dependent component (LoRA)
+  - Flash-LoRA-Attention kernel avoids materializing low-rank cache to full dimension
+  - Throughput and TTFT near fully-shared caching while preserving non-shared accuracy
+  techniques:
+  - Flash-LoRA-Attention kernel
+  - Shared/adapter KV cache decomposition
+  reported_results:
+  - 'Throughput near fully-shared caching baseline'
+  - 'TTFT latency near fully-shared caching baseline'
+  - 'Accuracy near non-shared (individual) caching baseline'
+  novelty: medium
+  relevance: low
+  credibility_score: 1
+  verdict: not_applicable
+  discovered_via: search
+  expanded_from: intake-350
+  ingested_date: '2026-04-13'
+  contradicting_evidence: null
+  cross_references:
+    intake:
+    - intake-350 (Latent Briefing - multi-agent KV cache approach)
+    - intake-352 (KVCOMM - multi-agent KV sharing)
+  notes: >
+    Interesting decomposition concept (shared base + adapter delta for KV cache)
+    but not applicable to our stack — we don't use LoRA adapters. The
+    Flash-LoRA-Attention kernel concept (avoid materializing full-rank cache)
+    could inspire efficient partial-cache operations, but the specific LoRA
+    targeting makes this a dead end for EPYC.

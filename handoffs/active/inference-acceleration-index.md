@@ -21,6 +21,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10), hybrid SSM fix (2026-04-11) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
 | [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Research evaluation | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark |
+| [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — Deep-dive complete, impl planning | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 10x compression (narrative), coding TBD | P1: Port HighestAttnKeys-fast prototype |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 | [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **STUB** — activates on GPU acquisition | rocWMMA, hipBLASLt grouped GEMM, Stream-K, CPU+GPU hybrid MoE | All MoE production models | MI300X: 4011 tok/s Llama-70B (213% over H100) | Acquire GPU hardware; then test `-ot "exps=CPU"` hybrid on 30B-A3B |
 
@@ -86,6 +87,23 @@ Config-only change: `taskset -c <cpu_list>` + round-robin routing in orchestrato
 ### Highest Impact — Deployed
 - **NUMA 4-way parallel** — DEPLOYED 2026-03-19, round-robin routing added 2026-03-24. taskset CPU pinning + `RoundRobinBackend` for multi-instance roles. 35B benchmark: 12.7 t/s/inst moe6-only (~50.8 agg). v3 binary live 2026-04-10.
 - **draft_max optimization** — +17-21% via `--draft-max 32-48`. Already applied to model_registry.yaml.
+
+### KV Compression Stack (2026-04-13)
+
+Four orthogonal layers, each operating on a different dimension of KV memory:
+
+| Layer | Method | Compression | Status | Handoff |
+|-------|--------|-------------|--------|---------|
+| **Quantization** | Hadamard + q4_0 | 2-4x | **DEPLOYED** (`b51c905`) | `kv-cache-quantization.md` |
+| **Compaction** | Attention Matching | 10x | Planning (P1-P4 + L1-L4) | `attention-matching-kv-compaction.md` |
+| **Selection** | TriAttention / Expected Attention | 2-10x | Evaluating (S1/S2 gates) | `triattention-kv-selection.md` |
+| **Block masking** | Memento | 2-3x | Research (S1 feasibility gate) | `memento-block-reasoning-compression.md` |
+
+Combined theoretical ceiling: **120x** (quant 4x × compaction 10x × masking 3x). Conservative: **40x** (quant × compaction alone). Note: compaction subsumes selection at 20x+ — no benefit stacking both.
+
+At 256K context, Qwen2.5-Coder-32B KV at f16 = 64 GB. With quad-stack: **~530 MB**. Even conservative 40x: **~1.6 GB** — enables multiple concurrent slots.
+
+**Cross-instance KV sharing** (KVCOMM, intake-352): Eliminates redundant prefill across homogeneous worker pools (4×48t coder instances sharing codebase context). Planned as Phase F in `dynamic-stack-concurrency.md`. Compounds with AM compaction.
 
 ### Validated & Complete
 - **Tree speculation (dense f16)** — +12.2% on Qwen2.5-Coder-32B f16 with dm=32 ps=0.05. At 48 threads per NUMA instance, tree ≈ linear (overhead negated).
@@ -181,6 +199,9 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | **NUMA multi-instance** | `completed/numa-orchestrator-deployment.md` | DEPLOYED — all roles multi-instance |
 | **REAP expert pruning** | `completed/reap-moe-expert-pruning.md` | DEPLOYED — 246B replaces 480B |
 | **KV cache quantization** | `kv-cache-quantization.md` | ACTIVE — Hadamard deployed, monitoring TurboQuant |
+| **KV cache compaction** | `attention-matching-kv-compaction.md` | ACTIVE — Python prototype + llama.cpp attention bias support planned |
+| **KV cache selection** | `triattention-kv-selection.md` | ACTIVE — Expected Attention (S1) + TriAttention (S2) evaluation |
+| **Cross-instance KV sharing** | `dynamic-stack-concurrency.md` (Phase F) | PLANNED — KVCOMM for homogeneous worker pools (intake-352) |
 | Tree speculation | `completed/tree-speculation-numa-drafting.md` | COMPLETE — tree ≈ linear at 48t |
 | DFlash block diffusion | `completed/dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
 | SSM/hybrid acceleration | `completed/ssm-hybrid-acceleration.md` | COMPREHENSIVE — NUMA is the answer |

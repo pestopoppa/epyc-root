@@ -44,7 +44,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 13 | ~~MED~~ | ~~Context folding provenance~~ CF-P1–P4 ✅ 2026-04-12 (all 4 implemented) | [routing-and-optimization-index](routing-and-optimization-index.md) P10b |
 | 14 | MED | **Ouro-2.6B-Thinking eval** (P7). Download + MATH-500 CPU benchmark + T0 sentinel candidate | [research-evaluation-index](research-evaluation-index.md) P7 |
 | 15 | LOW | **MiniMax M2.7 eval** (G7–G9). 108GB GGUF download + EPYC benchmark + quality comparison vs Qwen3 stack | [bulk-inference-campaign](bulk-inference-campaign.md) Package G |
-| 16 | HIGH | **Orchestrator refactoring audit** — 15-phase plan: silent failures (437 handlers), god module decomposition, benchmark data integrity, observability. Plan complete, execution not started. | [orchestrator-refactoring-audit](orchestrator-refactoring-audit.md) |
+| 16 | HIGH | **Orchestrator refactoring audit** — execution in progress: observability foundation now includes config-registry bootstrap diagnostics, plus inference/health truthfulness, benchmark executor and preflight diagnostics hardening, reward delivery accounting, KV migration state hardening, and `graph/helpers.py` subsystem extractions now including budgets/token-cap helpers behind compatibility shims. | [orchestrator-refactoring-audit](orchestrator-refactoring-audit.md) |
 
 ---
 
@@ -71,9 +71,10 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (5/7 original done, **+10 new tasks from research intake → 17 total**) | MEDIUM | 2026-04-12 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
+| [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (deep-dive done, P1-P4 + L1-L4 planned) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
-| [orchestrator-refactoring-audit.md](orchestrator-refactoring-audit.md) | Code quality, observability | ACTIVE (plan complete, 15 phases, execution pending) | HIGH | 2026-04-13 |
+| [orchestrator-refactoring-audit.md](orchestrator-refactoring-audit.md) | Code quality, observability | ACTIVE (execution in progress: Phases 0-5 started, compatibility-first rollout; 7 `graph/helpers.py` helper clusters extracted including budgets, benchmark executor/preflight and config-registry truthfulness improved, graph suite green) | HIGH | 2026-04-13 |
 
 ---
 
