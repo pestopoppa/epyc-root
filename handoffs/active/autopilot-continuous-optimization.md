@@ -1,8 +1,8 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: AR-3 run 2 completed (44 trials, 6 frontier, 1 useful change). Safety hardened after file corruption incident. Ready for relaunch.
+**Status**: AR-3 run 2 completed (44 trials, 6 frontier, 1 useful change). Safety hardened after file corruption incident. Think-block loop fix applied (2026-04-14). Ready for relaunch.
 **Created**: 2026-03-08
-**Updated**: 2026-04-06
+**Updated**: 2026-04-14
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 ## Architecture
@@ -350,6 +350,16 @@ Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds)
 | 345 | GEPA Full Program Adapter | 93% MATH (vs 67% base); evolves signatures+modules+control flow; 35x fewer rollouts | P10 (AP-20) |
 | 349 | dspy.RLM Module | Metadata-first REPL exploration; sub_lm pattern; works with OpenAI-compatible /v1/ endpoint | P11 (AP-25–26) |
 
+## Known Issues — Architect Think-Block Loop (2026-04-14)
+
+Qwen3.5-122B-A10B on `architect_general` enters degenerate `<think>` block loops during routing decisions. Model closes a think block, emits partial answer, then re-opens `<think>` repeatedly — burning the full 512-token budget per attempt.
+
+**Root cause**: `repeat_penalty=1.1` + `temperature=0.1` = near-greedy sampling with insufficient repetition penalty. Model locks into `<think>` re-entry as highest-probability local pattern.
+
+**Fix applied**: `_architect_early_stop()` in `chat_delegation.py` now detects think-block re-entry via `</think>.*<think>` regex in the streaming callback. Kills generation when second `<think>` opens — the answer is already in the buffer between blocks.
+
+**Deferred tuning**: Raising `repeat_penalty` to 1.3+ and `temperature` to 0.3+ for architect role would reduce loop probability at the source. Not applied yet to keep fix minimal.
+
 ## Staleness Notes
 
 - `optuna_orchestrator.py`: TPE/cluster patterns reusable; parameter ranges stale (predate current config/models.py)
@@ -411,3 +421,27 @@ Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds)
 4. **Unsloth RLVR** (intake-320): Our eval tower IS an RLVR environment. Formalize T0/T1/T2 as verification functions, not just benchmarks. Design reward signals per tier. If cloud GPU becomes available, export environments for actual model RL training.
 
 **Architectural theme**: All entries converge on "context efficiency through structured indirection" — sandbox over prompt, REPL over context, reflection over gradient, retrieval over fullcontext. Validates our multi-model approach over single-model scaling.
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-363] "LLM-as-a-Verifier"** (github.com/llm-as-a-verifier)
+  - Relevance: General-purpose verification framework using logprob-based scoring with criteria decomposition — directly relevant to AP-27 eval tower formalization as an alternative to LLM-as-a-Judge
+  - Key technique: R(t,τ) = (1/CK) Σ p_θ(v_g|t,c,τ)·φ(v_g) — multi-criteria, repeated verification, granularity scaling
+  - Reported results: Terminal-Bench 2: 86.4% (from 81.8%), SWE-Bench Verified: 77.8% (from 76.1%)
+  - Delta from current approach: AP-27 specifies "state matching, not LLM-as-judge" for verification functions. LLM-as-a-Verifier offers a middle ground — uses LLM logprobs but for structured verification rather than open-ended judgment. Gemini API dependency is a blocker for local deployment.
+- **[intake-371] "ThinkPRM: Process Reward Models That Think"** (arxiv:2504.16828)
+  - Relevance: Generative PRM that verifies solution steps via verification chain-of-thought — applicable to eval tower step-level attribution
+  - Key technique: Fine-tunes long-CoT models as verbalized step-wise reward models; achieves PRM800K parity with only 1% of labels
+  - Reported results: 8% better OOD on GPQA-Diamond, 4.5% on LiveCodeBench vs discriminative PRMs
+  - Delta from current approach: Our T0/T1/T2 tiers are outcome-level. ThinkPRM enables per-step process reward attribution within evaluation, complementing LightningRL (intake-344) per-step credit assignment.
+- **[intake-370] "Aletheia: RLVR for Code Verifiers"** (arxiv:2601.12186)
+  - Relevance: Systematic ablation of RLVR training recipes across model scales — directly informs AP-27 verification function design
+  - Key technique: Scale-dependent optimization recipes — small verifiers need on-policy training; large need negative samples + thinking traces
+  - Reported results: Compute-optimal roadmap for practitioner deployment
+  - Delta from current approach: Our eval tower targets are fixed tiers. Aletheia shows that the training recipe matters more than architecture at small scales — relevant if we export environments for RL training per intake-320.
+- **[intake-368] "SWE-RM: Execution-Free Feedback for SWE Agents"** (arxiv:2512.21919)
+  - Relevance: MoE reward model (30B total, 3B active) providing execution-free feedback — relevant to eval tower reward signal design
+  - Key technique: MoE architecture with controlled data composition experiments; classification accuracy and calibration critical for RL
+  - Reported results: Qwen3-Coder-Flash 51.6%→62.0%, Qwen3-Coder-Max 67.0%→74.6% on SWE-Bench Verified
+  - Delta from current approach: SWE-RM shows TTS performance doesn't guarantee RL effectiveness — our eval tower must separately validate classification accuracy and calibration, not just pass rates.
