@@ -36,7 +36,7 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - MemRL FAISS retrieval: 0.5ms at 5K memories, 2ms at 500K, 3ms at 1M. 35x-1000x speedup over NumPy baseline [Ch.07 MemRL]
 - The routing classifier provides fast first-pass routing, falling back to full HybridRouter retrieval when confidence < 0.6 [colbert-zero-research-integration.md]
 - Cosine similarity > 0.85 used for deduplication in both SkillBank skill storage and episodic memory [Ch.15, Ch.07]
-- SearXNG (intake-359/360) evaluated as DDG HTML scraping replacement: self-hosted JSON API aggregating 250+ engines. Docker ~183MB + Granian ASGI. JSON response provides multi-engine provenance (`engines[]`, `positions[]`, `score`). Limiter API_MAX=4/hr MUST be disabled for backend use. Google engine unreliable (TLS fingerprint blocking). Per-engine weight/timeout/retry tuning available. `unresponsive_engines[]` provides upstream failure monitoring [searxng-search-backend.md]
+- SearXNG (intake-359/360) **implemented and tested** as DDG HTML scraping replacement: `_search_searxng()` in `search.py` calls self-hosted JSON API on port 8090. Docker ~183MB + Granian ASGI. Default-on via `ORCHESTRATOR_SEARXNG_DEFAULT=1`, DDG fallback automatic. JSON response provides multi-engine provenance (`engines[]`, `positions[]`, `score`). Test results: 650-910ms latency, 3-engine consensus score ~9.9, 2-engine ~3.3, single <1. Google inactive (TLS fingerprint blocking). Engine tuning: DDG 1.2, Brave 1.1, Wikipedia 1.0, Qwant 0.9. `unresponsive_engines[]` + `search_backend` field wired into S1 relevance telemetry for AR-3 Phase 6b analysis [searxng-search-backend.md]
 - mcp-searxng (intake-361, 635 stars, MIT) provides MCP bridge for SearXNG with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions [searxng-search-backend.md]
 
 ## Actionable for EPYC
@@ -47,7 +47,7 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - **ONNX Runtime replaces PyLate**: The existing GTE-ModernColBERT-v1 on disk (`model_int8.onnx`, 144MB) with `onnxruntime==1.24.4` provides identical encoding capability without PyTorch dependency. ColBERT-Zero download deferred unless accuracy issues arise in S6 A/B testing.
 - **qmd hybrid search evaluation**: intake-270 marked adopt_component -- evaluate for markdown knowledge base search in the project wiki or handoff system.
 - **MemPalace patterns**: intake-326 achieves 96.6% recall on LongMemEval. Investigate architecture patterns that could improve MemRL episodic retrieval quality.
-- **SearXNG search backend (SX-1–SX-6, R&O P12)**: Deploy SearXNG Docker container on port 8090 with `limiter: false` and `search.formats: [html, json]`. Replace 112-line `_search_duckduckgo()` regex parser with ~15-line JSON API call. Tune engine weights (favor DDG/Brave/Wikipedia/Qwant, disable Google). Wire `unresponsive_engines[]` telemetry. Load test under EPYC query volume. Composes with ColBERT reranker S5.
+- **SearXNG search backend (SX-1–4 done, SX-5/6 AR-3-gated, R&O P12)**: Container deployed on port 8090, `_search_searxng()` implemented, engine weights tuned, telemetry wired. Default-on. SX-5 (load test) and SX-6 (swap confirmation) folded into AR-3 Package D Phase 6b — post-AR-3 analysis compares engine failure rate, irrelevant page rate delta, and latency overhead vs DDG baseline.
 
 ## Open Questions
 
