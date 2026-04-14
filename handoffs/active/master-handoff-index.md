@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E)
+**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -75,7 +75,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, plus broader targeted coverage now validated for `seeding_checkpoint` `100%`, `seeding_scoring` `100%`, `seeding_types` `100%`, `seeding_eval` `100%`, `seeding_rewards` `93%`, `seeding_legacy` `92%`, `seeding_tui` `85%` (not yet gate-enforced) | MEDIUM | 2026-04-14 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, plus broader targeted coverage now validated for `seeding_checkpoint` `100%`, `seeding_scoring` `100%`, `seeding_types` `100%`, `seeding_eval` `100%`, `seeding_rewards` `100%`, `seeding_legacy` `92%`, `seeding_tui` `85%` (not yet gate-enforced) | MEDIUM | 2026-04-14 |
 
 ---
 

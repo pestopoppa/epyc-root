@@ -493,3 +493,32 @@ Verification:
 
 Result:
 - `seeding_eval.py` is now fully covered with test-only changes; residual notable benchmark gaps in this seeding-focused slice are now primarily `seeding_tui` (`85%`), `seeding_legacy` (`92%`), and `seeding_rewards` (`93%`).
+
+### Broader Benchmark Tranche F (2026-04-14)
+
+Closed the remaining `seeding_rewards.py` coverage gaps.
+
+Risk workflow:
+- GitNexus status confirmed up-to-date.
+- Impact checks were HIGH on:
+  - `extract_web_research_telemetry`
+  - `compute_web_research_rewards`
+  - `compute_scratchpad_rewards`
+- Kept tranche test-only to avoid touching high-fanout reward logic.
+
+Test additions:
+- Expanded `tests/unit/test_seeding_rewards.py` with 6 additional branch-focused cases.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_rewards.py` → `16 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_seeding_rewards.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_rewards.py`: `93% -> 100%`
+- Combined seeding characterization suite:
+  - `python3 -m pytest -q tests/unit/test_seeding_*.py tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0` → `141 passed`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` (all enforced files still `100%`).
+
+Result:
+- Seeding control-plane coverage is now `100%` for `seeding_checkpoint`, `seeding_eval`, `seeding_infra`, `seeding_injection`, `seeding_orchestrator`, `seeding_rewards`, `seeding_scoring`, and `seeding_types`.
+- Remaining notable gaps in this focused tranche set are now `seeding_legacy` (`92%`) and `seeding_tui` (`85%`).
