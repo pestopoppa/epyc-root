@@ -41,7 +41,7 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 
 - **Failed outputs are consistently longer than successful ones**: SEER confirms across 7B, 14B, and 32B scales. On HumanEval/129 with DeepSeek-Qwen-7B, failed cases had median 9,489 tokens versus 8,296 for successes. Length is a negative quality signal, motivating reasoning length alarms. [reasoning-compression-s3cot-adaptive.md](../research/deep-dives/reasoning-compression-s3cot-adaptive.md)
 
-- **Easy problems tolerate aggressive compression; hard problems resist it**: OPSDC achieves 56-59% compression on easy problems with accuracy parity or improvement. Hard problems tolerate only 35% compression with 3.4-5.4pp accuracy drops on AIME-class tasks. This validates difficulty-adaptive budgets. [intake-110]
+- **Easy problems tolerate aggressive compression; hard problems resist it**: OPSDC achieves 56-59% compression on easy problems with accuracy parity or improvement. Hard problems tolerate only 35% compression with 3.4-5.4pp accuracy drops on AIME-class tasks. This validates difficulty-adaptive budgets. [intake-110](https://arxiv.org/abs/2603.05433)
 
 - **SimPO with FCS+Reflection achieves 37-48% token reduction**: Across difficulty levels, accuracy is preserved (only -0.2% on MATH500). For fine-tuning scenarios, this is the empirically validated recipe: shortest correct response as positive, longest correct response as negative. [overthinking-info-bottleneck.md](../research/deep-dives/overthinking-info-bottleneck.md)
 
@@ -51,7 +51,7 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 
 - **Tools/REPL hurt accuracy on 7/10 suites**: Omega metric evaluation found agentic tasks -54.5pp, coder -44pp, general -26pp, math -26pp when using tools versus direct generation. Only hotpotqa (+12pp) and gpqa (+6pp) benefit. The implication is that default routing should prefer direct mode, with tool use as an opt-in for known-beneficial task types. [reasoning-compression handoff]
 
-- **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110]
+- **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110](https://arxiv.org/abs/2603.05433)
 
 - **Explicit word limits outperform vague conciseness**: intake-276 deep-dive revealed that "be concise" prompts are the weakest tested form. Explicit numeric limits (e.g., "answer in under 15 words for factual questions") based on CCoT's 30-60 word sweet spot significantly outperform open-ended brevity instructions. Worker prompts have been upgraded accordingly. [reasoning-compression handoff]
 
@@ -113,13 +113,13 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 - [CoLaR Latent Compression](../research/deep-dives/colar-latent-compression.md) -- Latent compression trade-offs, not-actionable assessment
 - [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- OPSDC analysis, 3-tier approach taxonomy, TrimR/Omega evaluation results, all action items
 - [Autopilot Continuous Optimization handoff](../handoffs/active/autopilot-continuous-optimization.md) -- 4D Pareto archive, species-based optimization, GEPA integration, safety gates
-- [intake-110] OPSDC -- 57-59% compression with accuracy gains; difficulty adaptation is emergent; length-ratio routing signal
-- [intake-125] S3-CoT -- Self-sampled activation steering; progressive curriculum; VL-D in residual stream
-- [intake-126] FlowSteer -- Nonlinear activation steering; SEAL linear baseline; +6% accuracy at 14.5% reduction
-- [intake-127] TrimR -- Verifier-based inference-time pruning; valuable on hard tasks, irrelevant on easy
-- [intake-128] SEER -- Best-of-N + MAD filtering; N=3 saturation; 73-97% loop elimination
-- [intake-129] short-m@k -- Parallel generation with early stopping; 34.5% more accurate than longest chains
-- [intake-130] Overthinking analysis -- 50-70% token waste; inverse difficulty allocation; distinctness ratio decay
-- [intake-133] CIB theory -- Formal unification of budget forcing; Pareto-dominant compression; semantic token cost
-- [intake-134] CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
-- [intake-276] Brevity constraints -- Explicit word limits outperform vague conciseness instructions
+- [intake-110](https://arxiv.org/abs/2603.05433) OPSDC -- 57-59% compression with accuracy gains; difficulty adaptation is emergent; length-ratio routing signal
+- [intake-125](https://arxiv.org/abs/2602.01982) S3-CoT -- Self-sampled activation steering; progressive curriculum; VL-D in residual stream
+- [intake-126](https://arxiv.org/abs/2602.05539) FlowSteer -- Nonlinear activation steering; SEAL linear baseline; +6% accuracy at 14.5% reduction
+- [intake-127](https://arxiv.org/abs/2505.17155) TrimR -- Verifier-based inference-time pruning; valuable on hard tasks, irrelevant on easy
+- [intake-128](https://arxiv.org/abs/2509.14093) SEER -- Best-of-N + MAD filtering; N=3 saturation; 73-97% loop elimination
+- [intake-129](https://arxiv.org/abs/2505.17813) short-m@k -- Parallel generation with early stopping; 34.5% more accurate than longest chains
+- [intake-130](https://arxiv.org/abs/2412.21187) Overthinking analysis -- 50-70% token waste; inverse difficulty allocation; distinctness ratio decay
+- [intake-133](https://arxiv.org/abs/2603.08462) CIB theory -- Formal unification of budget forcing; Pareto-dominant compression; semantic token cost
+- [intake-134](https://arxiv.org/abs/2505.16552) CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
+- [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions

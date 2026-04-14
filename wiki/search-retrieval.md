@@ -61,6 +61,6 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 - [ColBERT reranker handoff](/workspace/handoffs/active/colbert-reranker-web-research.md) -- Reason-ModernColBERT proposal, validation criteria, work items
 - [Ch.07 MemRL System](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/07-memrl-system.md) -- Episodic memory architecture, FAISS backend, two-phase retrieval
 - [NextPLAID handoff](/workspace/handoffs/archived/nextplaid-code-retrieval.md) -- NextPLAID multi-vector code and document retrieval architecture
-- [intake-174] Reason-ModernColBERT -- Late-interaction retriever for reasoning tasks
-- [intake-270] tobi/qmd -- Local hybrid search engine for markdown knowledge bases
-- [intake-326] MemPalace -- 96.6% LongMemEval recall local memory system
+- [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT) Reason-ModernColBERT -- Late-interaction retriever for reasoning tasks
+- [intake-270](https://github.com/tobi/qmd) tobi/qmd -- Local hybrid search engine for markdown knowledge bases
+- [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval recall local memory system

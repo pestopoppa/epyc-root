@@ -53,13 +53,13 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 
 - **TurboQuant achieves 6x+ KV memory reduction to 3-4 bits**: Combining PolarQuant (polar coordinate compression) and QJL (1-bit Johnson-Lindenstrauss transform) for data-oblivious KV quantization. 8x attention speedup on H100, perfect needle-in-haystack accuracy. At 1M context, KV cache dominates RAM; this level of compression would make YaRN extension to 1M practical on our hardware. [intake-191, intake-192, intake-193]
 
-- **Context rot compounds at extended lengths**: intake-273 (Chroma research) confirms performance degrades non-linearly with input length. Distractors (topically related but incorrect content) amplify degradation. This means that naively extending context with YaRN without also improving the model's ability to attend selectively is counterproductive for certain task types. Sparse attention or selective retrieval becomes more important as context grows. [intake-273]
+- **Context rot compounds at extended lengths**: intake-273 (Chroma research) confirms performance degrades non-linearly with input length. Distractors (topically related but incorrect content) amplify degradation. This means that naively extending context with YaRN without also improving the model's ability to attend selectively is counterproductive for certain task types. Sparse attention or selective retrieval becomes more important as context grows. [intake-273](https://research.trychroma.com/context-rot)
 
 ### Recursive and Infinite-Horizon Approaches
 
-- **Recursive Language Models (intake-153) provide the theoretical foundation**: The EPYC orchestrator implements approximately 80% of the RLM architecture -- multi-model delegation, context management through summarization, tool-augmented generation. The remaining 20% (learned compaction policies, process rewards for compression quality) maps to the context-folding Phase 3 roadmap. [intake-153]
+- **Recursive Language Models (intake-153) provide the theoretical foundation**: The EPYC orchestrator implements approximately 80% of the RLM architecture -- multi-model delegation, context management through summarization, tool-augmented generation. The remaining 20% (learned compaction policies, process rewards for compression quality) maps to the context-folding Phase 3 roadmap. [intake-153](https://arxiv.org/abs/2512.24601)
 
-- **RTK achieves 60-90% token reduction across 100+ commands**: A practical tool-level approach to context extension -- by compressing tool outputs before they enter context, the effective context window is extended by 60-90% for tool-heavy sessions without any model-level changes. Security concerns (shell injection, telemetry, CI trust bypass) preclude direct adoption, but the compression strategies inform our native Phase 2 implementation. [intake-259]
+- **RTK achieves 60-90% token reduction across 100+ commands**: A practical tool-level approach to context extension -- by compressing tool outputs before they enter context, the effective context window is extended by 60-90% for tool-heavy sessions without any model-level changes. Security concerns (shell injection, telemetry, CI trust bypass) preclude direct adoption, but the compression strategies inform our native Phase 2 implementation. [intake-259](https://github.com/rtk-ai/rtk)
 
 ## Actionable for EPYC
 
@@ -113,18 +113,18 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - [Context-Folding / FoldGRPO](../research/deep-dives/context-folding-foldgrpo.md) -- 32K beats 327K finding demonstrates that compression can outperform raw extension
 - [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md) -- YaRN CLI flags, model support, open research questions
 - [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- Block masking feasibility in llama.cpp, SFT training design, composability analysis
-- [intake-153] Recursive Language Models -- Theoretical foundation; EPYC implements ~80% of RLM architecture
-- [intake-154] Context-Folding -- Branch/fold call stack; sub-linear context growth
-- [intake-155] AgentFold -- Two-level proactive folding; 92% context reduction; sub-linear growth
-- [intake-156] MemAgent -- 437x extrapolation; O(N) complexity; RL-trained memory policy
-- [intake-157] ReSum -- Periodic summarization; diminishing returns at 128K; summarizer quality threshold
-- [intake-191] TurboQuant -- 6x+ KV compression via PolarQuant + QJL; makes 1M context practical
-- [intake-192] PolarQuant -- 4.2x KV compression via polar coordinate transformation
-- [intake-193] QJL -- 5x KV reduction to 3 bits; zero overhead; AAAI 2025
-- [intake-259] RTK -- 60-90% tool output compression; security concerns preclude direct adoption
-- [intake-273] Context Rot -- Performance degrades with input length; validates selective attention at long context
-- [intake-274] The Complexity Trap -- Observation masking matches LLM summarization; validates compression over extension for tool outputs
-- [intake-289] Memento -- Block-level KV masking; dual information stream; 2-3x peak KV reduction
-- [intake-292] InftyThink -- Iterative reasoning with periodic summarization; ICLR 2026
-- [intake-293] InftyThink+ -- RL-enhanced iterative reasoning; +21pp AIME24; efficiency reward
-- [intake-294] Accordion-Thinking -- Fold/Unfold runtime toggle; 3x throughput; accuracy gap vanishes with RL
+- [intake-153](https://arxiv.org/abs/2512.24601) Recursive Language Models -- Theoretical foundation; EPYC implements ~80% of RLM architecture
+- [intake-154](https://arxiv.org/abs/2510.11967) Context-Folding -- Branch/fold call stack; sub-linear context growth
+- [intake-155](https://arxiv.org/abs/2510.24699) AgentFold -- Two-level proactive folding; 92% context reduction; sub-linear growth
+- [intake-156](https://arxiv.org/abs/2507.02259) MemAgent -- 437x extrapolation; O(N) complexity; RL-trained memory policy
+- [intake-157](https://arxiv.org/abs/2509.13313) ReSum -- Periodic summarization; diminishing returns at 128K; summarizer quality threshold
+- [intake-191](https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/) TurboQuant -- 6x+ KV compression via PolarQuant + QJL; makes 1M context practical
+- [intake-192](https://arxiv.org/abs/2502.02617) PolarQuant -- 4.2x KV compression via polar coordinate transformation
+- [intake-193](https://arxiv.org/abs/2406.03482) QJL -- 5x KV reduction to 3 bits; zero overhead; AAAI 2025
+- [intake-259](https://github.com/rtk-ai/rtk) RTK -- 60-90% tool output compression; security concerns preclude direct adoption
+- [intake-273](https://research.trychroma.com/context-rot) Context Rot -- Performance degrades with input length; validates selective attention at long context
+- [intake-274](https://arxiv.org/abs/2508.21433) The Complexity Trap -- Observation masking matches LLM summarization; validates compression over extension for tool outputs
+- [intake-289](https://github.com/microsoft/memento) Memento -- Block-level KV masking; dual information stream; 2-3x peak KV reduction
+- [intake-292](https://arxiv.org/abs/2503.06692) InftyThink -- Iterative reasoning with periodic summarization; ICLR 2026
+- [intake-293](https://arxiv.org/abs/2602.06960) InftyThink+ -- RL-enhanced iterative reasoning; +21pp AIME24; efficiency reward
+- [intake-294](https://arxiv.org/abs/2602.03249) Accordion-Thinking -- Fold/Unfold runtime toggle; 3x throughput; accuracy gap vanishes with RL

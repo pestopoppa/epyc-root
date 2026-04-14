@@ -105,12 +105,12 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 - [Memento Deep-Dive](../research/deep-dives/memento-iterative-reasoning-cluster.md) -- KV quantization + block masking + selection triple-stack ceiling, LoRA-to-GGUF conversion
 - [Leanstral Analysis](../research/deep-dives/leanstral-architecture-analysis.md) -- GGUF availability (Q4_K_M approximately 68 GB), community converters
 - [v3 Rebuild Handoff](../handoffs/active/llama-cpp-v3-upstream-rebuild.md) -- PR #21038 auto-Hadamard
-- [intake-191] TurboQuant -- Extreme KV cache compression (abandoned)
-- [intake-192] PolarQuant -- Polar transformation KV quantization (abandoned)
-- [intake-193] QJL -- 1-bit JL transform for KV cache (evaluated, abandoned)
-- [intake-194] llama-cpp-turboquant-cuda -- CUDA TurboQuant fork (GPU-only, not applicable)
-- [intake-195] TurboQuant llama.cpp discussion -- Community discussion on KV compression
-- [intake-246] llama.cpp-tq3 -- TQ3_1S weight quantization (monitor only)
-- [intake-187] bartowski GGUF quants -- 26 variants of REAP-25B
-- [intake-182] AutoRound/SignRound -- Not applicable for llama.cpp/GGUF stack
-- [intake-165] BitNet b1.58 -- Ternary quantization, worth investigating for future architectures
+- [intake-191](https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/) TurboQuant -- Extreme KV cache compression (abandoned)
+- [intake-192](https://arxiv.org/abs/2502.02617) PolarQuant -- Polar transformation KV quantization (abandoned)
+- [intake-193](https://arxiv.org/abs/2406.03482) QJL -- 1-bit JL transform for KV cache (evaluated, abandoned)
+- [intake-194](https://github.com/spiritbuun/llama-cpp-turboquant-cuda) llama-cpp-turboquant-cuda -- CUDA TurboQuant fork (GPU-only, not applicable)
+- [intake-195](https://github.com/ggml-org/llama.cpp/discussions/20969) TurboQuant llama.cpp discussion -- Community discussion on KV compression
+- [intake-246](https://github.com/turbo-tan/llama.cpp-tq3) llama.cpp-tq3 -- TQ3_1S weight quantization (monitor only)
+- [intake-187](https://huggingface.co/bartowski/cerebras_Qwen3-Coder-REAP-25B-A3B-GGUF) bartowski GGUF quants -- 26 variants of REAP-25B
+- [intake-182](https://arxiv.org/abs/2309.05516) AutoRound/SignRound -- Not applicable for llama.cpp/GGUF stack
+- [intake-165](https://arxiv.org/abs/2504.12285) BitNet b1.58 -- Ternary quantization, worth investigating for future architectures

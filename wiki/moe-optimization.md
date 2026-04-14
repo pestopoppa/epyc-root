@@ -73,11 +73,11 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 
 ### MoE Serving and Offloading Research
 
-- **Flash-MoE (intake-166)**: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro -- relevant as reference for memory-efficient MoE serving on consumer hardware. The architecture insights about expert caching may inform our NUMA expert placement strategy. [intake-166]
+- **Flash-MoE (intake-166)**: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro -- relevant as reference for memory-efficient MoE serving on consumer hardware. The architecture insights about expert caching may inform our NUMA expert placement strategy. [intake-166](https://github.com/danveloper/flash-moe)
 
-- **FlashMoE SSD offloading (intake-167)**: ML-based cache replacement for SSD-offloaded experts. Not directly applicable (our models fit in RAM) but relevant if we need to run models exceeding 768 GB. Cache replacement strategies for hot/cold experts could inform NUMA-aware expert placement. [intake-167]
+- **FlashMoE SSD offloading (intake-167)**: ML-based cache replacement for SSD-offloaded experts. Not directly applicable (our models fit in RAM) but relevant if we need to run models exceeding 768 GB. Cache replacement strategies for hot/cold experts could inform NUMA-aware expert placement. [intake-167](https://arxiv.org/abs/2601.17063)
 
-- **SpecMoEOff (intake-168)**: Hides offloading latency by overlapping expert loading with speculative decoding. Interesting architecture but not applicable -- our models are fully RAM-resident. The principle of overlapping expert loading with drafting could be relevant for future ultra-large models. [intake-168]
+- **SpecMoEOff (intake-168)**: Hides offloading latency by overlapping expert loading with speculative decoding. Interesting architecture but not applicable -- our models are fully RAM-resident. The principle of overlapping expert loading with drafting could be relevant for future ultra-large models. [intake-168](https://arxiv.org/abs/2508.21706)
 
 ## Actionable for EPYC
 
@@ -119,17 +119,17 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 - [GPU Acceleration Handoff](../handoffs/active/gpu-acceleration-path.md) -- Grouped GEMM for MoE on GPU (Stream-K, rocWMMA) for future GPU acceleration path
 - [Lean Proving Pipeline Handoff](../handoffs/active/lean-proving-pipeline.md) -- Leanstral deployment context and Lean 4 integration
 - [Inference Acceleration Index](../handoffs/active/inference-acceleration-index.md) -- REAP in context of broader inference optimization landscape
-- [intake-181] REAP paper (arXiv:2510.13999, ICLR 2026) -- Core algorithm, pruning vs merging theorem
-- [intake-183] 0xSero GitHub -- 196 repos, community REAP practitioner, systematic sweeps
-- [intake-184] 0xSero HuggingFace -- 28 REAP/AutoRound models, 216 followers
-- [intake-185] CerebrasResearch/reap repository -- Apache 2.0, CLI for all Qwen3 MoE models
-- [intake-186] Cerebras pre-pruned Qwen3-Coder-REAP-25B-A3B -- 128 to 103 experts
-- [intake-187] bartowski GGUF quants -- 26 variants including Q4_K_M at 15.19 GB
-- [intake-188] EvoESAP (arXiv:2603.06003) -- Non-uniform pruning, helps ERNIE not Qwen3
-- [intake-189] Router Knowledge Distillation (arXiv:2603.02217) -- Lightweight router re-training
-- [intake-190] MoNE (arXiv:2507.00390, ICLR 2026) -- Novice expert replacement
-- [intake-235] Leanstral 119B (Mistral AI, Apache 2.0) -- MoE+MLA for Lean 4 proofs
-- [intake-152] Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration
-- [intake-166] Flash-MoE -- Pure C/Metal inference for MoE on consumer hardware
-- [intake-167] FlashMoE SSD offloading -- ML-based expert cache replacement
-- [intake-168] SpecMoEOff -- Overlapping expert loading with speculation
+- [intake-181](https://arxiv.org/abs/2510.13999) REAP paper (arXiv:2510.13999, ICLR 2026) -- Core algorithm, pruning vs merging theorem
+- [intake-183](https://github.com/0xsero) 0xSero GitHub -- 196 repos, community REAP practitioner, systematic sweeps
+- [intake-184](https://huggingface.co/0xSero) 0xSero HuggingFace -- 28 REAP/AutoRound models, 216 followers
+- [intake-185](https://github.com/CerebrasResearch/reap) CerebrasResearch/reap repository -- Apache 2.0, CLI for all Qwen3 MoE models
+- [intake-186](https://huggingface.co/cerebras/Qwen3-Coder-REAP-25B-A3B) Cerebras pre-pruned Qwen3-Coder-REAP-25B-A3B -- 128 to 103 experts
+- [intake-187](https://huggingface.co/bartowski/cerebras_Qwen3-Coder-REAP-25B-A3B-GGUF) bartowski GGUF quants -- 26 variants including Q4_K_M at 15.19 GB
+- [intake-188](https://arxiv.org/abs/2603.06003) EvoESAP (arXiv:2603.06003) -- Non-uniform pruning, helps ERNIE not Qwen3
+- [intake-189](https://arxiv.org/abs/2603.02217) Router Knowledge Distillation (arXiv:2603.02217) -- Lightweight router re-training
+- [intake-190](https://arxiv.org/abs/2507.00390) MoNE (arXiv:2507.00390, ICLR 2026) -- Novice expert replacement
+- [intake-235](https://mistral.ai/news/leanstral) Leanstral 119B (Mistral AI, Apache 2.0) -- MoE+MLA for Lean 4 proofs
+- [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration
+- [intake-166](https://github.com/danveloper/flash-moe) Flash-MoE -- Pure C/Metal inference for MoE on consumer hardware
+- [intake-167](https://arxiv.org/abs/2601.17063) FlashMoE SSD offloading -- ML-based expert cache replacement
+- [intake-168](https://arxiv.org/abs/2508.21706) SpecMoEOff -- Overlapping expert loading with speculation

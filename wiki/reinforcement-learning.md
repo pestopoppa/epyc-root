@@ -26,9 +26,9 @@ AReaL (intake-111) was thoroughly evaluated and ruled out. It solves distributed
 - Goedel-Code-Prover uses hybrid RL: GRPO with auxiliary SFT loss (lambda=0.08) to prevent regression during proof search training [goedel-code-prover-analysis.md]
 - Conformal risk gate operates on output-side uncertainty; two input-side classifiers (factual risk, difficulty signal) complement it with pre-routing assessment [Ch.16 Calibration]
 - Budget controls inspired by Fast-RLM: worker_call_budget=30, task_token_budget=200K, checked before each `_execute_turn()` across all 7 graph node types [Ch.16 Calibration]
-- Nemotron-Cascade 2 introduces cascade RL training specifically for small models with multi-domain distillation -- directly relevant to EPYC's 2B-35B model range [intake-238]
-- Agent Lightning (intake-344) claims RL can be added to AI agents without code changes -- worth investigating for orchestrator integration [intake-344]
-- RL Latent Thought Trajectories (intake-341) proposes reward-shaping for looped language models -- potentially relevant to reasoning compression [intake-341]
+- Nemotron-Cascade 2 introduces cascade RL training specifically for small models with multi-domain distillation -- directly relevant to EPYC's 2B-35B model range [intake-238](https://arxiv.org/abs/2603.19220)
+- Agent Lightning (intake-344) claims RL can be added to AI agents without code changes -- worth investigating for orchestrator integration [intake-344](https://arxiv.org/abs/2508.03680)
+- RL Latent Thought Trajectories (intake-341) proposes reward-shaping for looped language models -- potentially relevant to reasoning compression [intake-341](https://pli.princeton.edu/events/2026/prioritize-process-not-just-outcome-rewarding-latent-thought-trajectories-improves)
 
 ## Actionable for EPYC
 

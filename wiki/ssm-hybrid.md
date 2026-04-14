@@ -65,6 +65,6 @@ The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production
 - [SEAL concise reasoning experiment](/mnt/raid0/llm/epyc-inference-research/docs/experiments/seal-concise-reasoning.md) -- Control vector catastrophic failure on Gated Delta Net
 - [Multiscreen attention evaluation](/workspace/handoffs/active/multiscreen-attention-evaluation.md) -- Sub-quadratic attention alternative, watch item status, expanded mechanism cluster
 - [Qwen3.5 frontdoor benchmark](/workspace/handoffs/completed/qwen35-frontdoor-benchmark.md) -- Production benchmark results, spec-decode bust confirmation, MoE lookup acceleration
-- [intake-152] Qwen3.5 serving recipe -- Configuration tips for hybrid MoE + Delta Net
+- [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Configuration tips for hybrid MoE + Delta Net
 - [intake-237/238] Nemotron-Cascade 2 -- Mamba2 vs Delta Net benchmarks, cascade RL
-- [intake-256] Screening Is Enough -- Multiscreen architecture replacing softmax attention
+- [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention

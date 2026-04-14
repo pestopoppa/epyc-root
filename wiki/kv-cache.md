@@ -121,17 +121,17 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 - [Memento Handoff](../handoffs/active/memento-block-reasoning-compression.md) -- Block masking feasibility confirmed, llama.cpp API mapping, LoRA training design, OpenMementos downloaded
 - [KV Cache Quantization Handoff](../handoffs/completed/kv-cache-quantization.md) -- Hadamard Phase 1 deployed, hybrid buffer archived, TurboQuant/PolarQuant/QJL abandoned, split attention working but unnecessary
 - [TQ3 Monitor Handoff](../handoffs/active/tq3-quantization-evaluation.md) -- TQ3_1S on monitor-only, PR #21038 Hadamard auto-rotation, PR #21089 CPU TurboQuant KV cache
-- [intake-191] TurboQuant -- Extreme KV cache compression (3-4 bit with Hadamard)
-- [intake-192] PolarQuant -- Polar transformation for KV quantization
-- [intake-193] QJL -- 1-bit quantized JL transform for KV cache, zero overhead claim
-- [intake-256] Multiscreen Attention -- Screening architecture replacing softmax attention
-- [intake-284] TriAttention paper -- Trigonometric KV scoring, Song Han lab
-- [intake-287] LongFlow -- Attention-weighted value norm scoring (downgraded)
-- [intake-288] Expected Attention paper -- Gaussian MGF scoring, KVPress library
-- [intake-289] Memento paper -- Dual KV stream, block masking, Microsoft Research
-- [intake-292] InftyThink (ICLR 2026) -- Iterative reasoning compression
-- [intake-293] InftyThink+ -- RL-learned adaptive compression
-- [intake-294] Accordion-Thinking -- Fold/unfold runtime toggle
-- [intake-350] Latent Briefing -- Broken (PGD no-op, Ridge no-op, do NOT use)
-- [intake-351] Attention Matching paper (2602.16284) -- Closed-form KV compaction, MIT
-- [intake-352] KVCOMM (NeurIPS'25) -- Cross-context KV sharing for homogeneous pools
+- [intake-191](https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/) TurboQuant -- Extreme KV cache compression (3-4 bit with Hadamard)
+- [intake-192](https://arxiv.org/abs/2502.02617) PolarQuant -- Polar transformation for KV quantization
+- [intake-193](https://arxiv.org/abs/2406.03482) QJL -- 1-bit quantized JL transform for KV cache, zero overhead claim
+- [intake-256](https://arxiv.org/abs/2604.01178) Multiscreen Attention -- Screening architecture replacing softmax attention
+- [intake-284](https://arxiv.org/abs/2604.04921) TriAttention paper -- Trigonometric KV scoring, Song Han lab
+- [intake-287](https://arxiv.org/abs/2603.11504) LongFlow -- Attention-weighted value norm scoring (downgraded)
+- [intake-288](https://arxiv.org/abs/2510.00636) Expected Attention paper -- Gaussian MGF scoring, KVPress library
+- [intake-289](https://github.com/microsoft/memento) Memento paper -- Dual KV stream, block masking, Microsoft Research
+- [intake-292](https://arxiv.org/abs/2503.06692) InftyThink (ICLR 2026) -- Iterative reasoning compression
+- [intake-293](https://arxiv.org/abs/2602.06960) InftyThink+ -- RL-learned adaptive compression
+- [intake-294](https://arxiv.org/abs/2602.03249) Accordion-Thinking -- Fold/unfold runtime toggle
+- [intake-350](https://github.com/CuriousCaliBoi/latent-briefing) Latent Briefing -- Broken (PGD no-op, Ridge no-op, do NOT use)
+- [intake-351](https://arxiv.org/abs/2602.16284) Attention Matching paper (2602.16284) -- Closed-form KV compaction, MIT
+- [intake-352](https://arxiv.org/abs/2510.12872) KVCOMM (NeurIPS'25) -- Cross-context KV sharing for homogeneous pools

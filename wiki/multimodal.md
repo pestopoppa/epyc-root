@@ -66,4 +66,4 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - [Vision pipeline handoff](/workspace/handoffs/archived/vision-pipeline.md) -- Historical vision implementation details
 - [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- Structured context for VL models (Phase 2)
 - [intake-251/252] Gemma 4 -- Any-to-Any multimodal models, pending GGUF
-- [intake-317] VoxCPM2 -- Tokenizer-free TTS alternative, GPU-dependent
+- [intake-317](https://github.com/OpenBMB/VoxCPM) VoxCPM2 -- Tokenizer-free TTS alternative, GPU-dependent

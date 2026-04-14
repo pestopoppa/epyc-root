@@ -58,5 +58,5 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 - [Goedel-Code-Prover analysis](/workspace/research/deep-dives/goedel-code-prover-analysis.md) -- Architecture, training pipeline, decomposition scoring, deployment estimates
 - [Leanstral architecture analysis](/workspace/research/deep-dives/leanstral-architecture-analysis.md) -- MoE + MLA architecture, REAP pruning analysis, EPYC deployment estimates
 - [Lean proving pipeline handoff](/workspace/handoffs/active/lean-proving-pipeline.md) -- Two-tier architecture design, work items S1-S5, infrastructure requirements
-- [intake-233] Goedel-Code-Prover intake entry -- Initial evaluation and verdict
-- [intake-235] Leanstral intake entry -- Initial evaluation and verdict
+- [intake-233](https://arxiv.org/abs/2603.19329) Goedel-Code-Prover intake entry -- Initial evaluation and verdict
+- [intake-235](https://mistral.ai/news/leanstral) Leanstral intake entry -- Initial evaluation and verdict

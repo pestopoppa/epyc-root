@@ -54,5 +54,5 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 
 - [OpenDataLoader deep dive](/workspace/research/deep-dives/opendataloader-pdf-pipeline-integration.md) -- XY-Cut++ algorithm, benchmark results, four integration strategies, technical considerations
 - [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/opendataloader-pipeline-integration.md) -- Three-phase plan, work items, benchmark suite integration
-- [intake-161] OpenDataLoader PDF -- Initial intake evaluation
+- [intake-161](https://github.com/opendataloader-project/opendataloader-pdf) OpenDataLoader PDF -- Initial intake evaluation
 - [arXiv:2504.10258] XY-Cut++ paper -- Algorithm details, DocBench-100 results

@@ -57,9 +57,9 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 
 - **Personas do not improve factual performance**: Testing 162 roles across 2,410 factual questions shows no improvement from system-prompt personas. Role-playing degrades performance in 7/12 datasets for Llama3. The Jekyll and Hyde framework (ensembling role-playing and neutral prompts) partially mitigates degradation but does not improve over neutral baseline. [intake-225, intake-226]
 
-- **GEPA outperforms GRPO by 6% average with 35x fewer rollouts**: Genetic-Pareto prompt evolution with natural language reflection (Actionable Side Information). Outperforms MIPROv2 by over 10%. Directly relevant to autopilot PromptForge species and now integrated at 30% of PromptForge trials. Compatible with local inference (Ollama/vLLM format). 3-example minimum. [intake-240]
+- **GEPA outperforms GRPO by 6% average with 35x fewer rollouts**: Genetic-Pareto prompt evolution with natural language reflection (Actionable Side Information). Outperforms MIPROv2 by over 10%. Directly relevant to autopilot PromptForge species and now integrated at 30% of PromptForge trials. Compatible with local inference (Ollama/vLLM format). 3-example minimum. [intake-240](https://arxiv.org/abs/2507.19457)
 
-- **Gradient-based prompt optimization reduces sycophancy from 79.24% to 49.90%**: RESGA and SAEGA align prompts with persona directions via mechanistic interpretability. Requires access to model internals for gradient computation -- incompatible with GGUF serving. Research-grade only. [intake-214]
+- **Gradient-based prompt optimization reduces sycophancy from 79.24% to 49.90%**: RESGA and SAEGA align prompts with persona directions via mechanistic interpretability. Requires access to model internals for gradient computation -- incompatible with GGUF serving. Research-grade only. [intake-214](https://arxiv.org/abs/2601.02896)
 
 ## Actionable for EPYC
 
@@ -104,14 +104,14 @@ For EPYC specifically, these findings validate a clear strategy: continue using 
 - [FlowSteer Concise Reasoning](../research/deep-dives/flowsteer-concise-reasoning.md) -- Nonlinear activation steering via flow matching; SEAL linear baseline; llama.cpp `--control-vector` compatibility; Qwen3.5 `build_cvec()` blocker; intervention layer selection
 - [Reasoning Recall + CoT Controllability](../research/deep-dives/reasoning-recall-cot-controllability.md) -- Computational buffer (21-27% from dummy tokens); factual priming mechanism; hallucination cascade (41.4% vs 26.4%); Omega metric; controllability spectrum (0.1-15.4%); suppression vs stylistic cost gap
 - [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- Conciseness prompt upgrades to explicit word limits; GEPA integration; TrimR evaluation; SEAL control vector prep
-- [intake-196] EmotionPrompt -- Emotional stimuli for LLMs (not applicable to our task types)
-- [intake-197] NegativePrompt -- Negative emotional stimuli (not applicable)
-- [intake-200] Pragmatic Influence -- Hierarchical framing shifts behavior; no clear production application
-- [intake-201] POSIX -- Prompt sensitivity index measurement framework
-- [intake-205] StressPrompt -- Inverted-U performance under stress conditions (not applicable)
-- [intake-209] Story of Thought -- Narrative structures show gains on GPQA/JEEBench, limited applicability
-- [intake-214] RESGA/SAEGA -- Gradient-based prompt optimization via mechanistic interpretability; incompatible with GGUF
-- [intake-224] Emotional Stimuli Types -- Further emotional prompting evaluation (not applicable)
-- [intake-225] Personas Do Not Help -- 162 roles, no improvement on factual questions
-- [intake-226] Persona Double-Edged Sword -- Role-playing degrades 7/12 datasets for Llama3
-- [intake-240] GEPA -- Genetic-Pareto prompt evolution, 35x fewer rollouts, outperforms MIPROv2 by 10%+
+- [intake-196](https://arxiv.org/abs/2307.11760) EmotionPrompt -- Emotional stimuli for LLMs (not applicable to our task types)
+- [intake-197](https://arxiv.org/abs/2405.02814) NegativePrompt -- Negative emotional stimuli (not applicable)
+- [intake-200](https://arxiv.org/abs/2602.21223) Pragmatic Influence -- Hierarchical framing shifts behavior; no clear production application
+- [intake-201](https://arxiv.org/abs/2410.02185) POSIX -- Prompt sensitivity index measurement framework
+- [intake-205](https://arxiv.org/abs/2409.17167) StressPrompt -- Inverted-U performance under stress conditions (not applicable)
+- [intake-209](https://arxiv.org/abs/2410.19221) Story of Thought -- Narrative structures show gains on GPQA/JEEBench, limited applicability
+- [intake-214](https://arxiv.org/abs/2601.02896) RESGA/SAEGA -- Gradient-based prompt optimization via mechanistic interpretability; incompatible with GGUF
+- [intake-224](https://openreview.net/forum?id=Luq7xtaYeD) Emotional Stimuli Types -- Further emotional prompting evaluation (not applicable)
+- [intake-225](https://arxiv.org/abs/2311.10054) Personas Do Not Help -- 162 roles, no improvement on factual questions
+- [intake-226](https://arxiv.org/abs/2408.08631) Persona Double-Edged Sword -- Role-playing degrades 7/12 datasets for Llama3
+- [intake-240](https://arxiv.org/abs/2507.19457) GEPA -- Genetic-Pareto prompt evolution, 35x fewer rollouts, outperforms MIPROv2 by 10%+

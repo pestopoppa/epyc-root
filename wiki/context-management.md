@@ -37,7 +37,7 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 
 - **20-86% of session tokens are mechanical overhead**: CMV's analysis of 76 Claude Code sessions shows tool-heavy sessions (those with 15%+ tool result bytes) average 39% reduction from structural trimming alone, with peaks at 86%. The key insight: raw tool outputs are consumed once by the model and synthesized into assistant responses. Keeping both the raw output and the synthesis is redundant -- CMV keeps the synthesis and stubs the raw output. [cmv-structural-trimming-repl.md](../research/deep-dives/cmv-structural-trimming-repl.md)
 
-- **Simple observation masking matches LLM summarization**: intake-274 (The Complexity Trap, arXiv:2508.21433) finds that stripping older tool outputs achieves the same performance as expensive LLM-based summarization for agent context management, at 50% of the cost. The hybrid approach (masking plus summarization) yields only 7-11% further gains. This directly validates our pattern-based tool output compression architecture. [intake-274]
+- **Simple observation masking matches LLM summarization**: intake-274 (The Complexity Trap, arXiv:2508.21433) finds that stripping older tool outputs achieves the same performance as expensive LLM-based summarization for agent context management, at 50% of the cost. The hybrid approach (masking plus summarization) yields only 7-11% further gains. This directly validates our pattern-based tool output compression architecture. [intake-274](https://arxiv.org/abs/2508.21433)
 
 - **Tool output compression achieves 60-90% per command type**: Our Phase 2 native compression module implements 7 command-specific handlers (pytest, cargo test, git status/diff/log, ls, build compilers), each applying domain-appropriate strategies -- failure-focus for test runners, stats extraction for git status, error-focus for compilers. This layers upstream of the existing spill-and-truncate mechanisms for multiplicative benefit. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
 
@@ -55,7 +55,7 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 
 - **KV-retaining approaches are fundamentally superior to text compression**: Memento's ablation shows recomputing KV states without block context drops AIME24 accuracy from 66.1% to 50.8% -- a 15.3pp gap from identical summary text. Probing confirms the mechanism: information from masked blocks propagates through memento KV chains at 23-27% recovery rate, concentrating in deeper layers. This is architectural (confirmed on toy transformers), not learned. Text-level compression has a ceiling that KV masking does not. [memento-iterative-reasoning-cluster.md](../research/deep-dives/memento-iterative-reasoning-cluster.md)
 
-- **Context rot degrades performance non-linearly with length**: intake-273 (Chroma research) confirms LLMs do not process context uniformly. Performance degrades as input length increases, with distractors (topically related but incorrect content) amplifying degradation more than random content. Semantic similarity between question and context modulates the effect -- high-similarity distractors are worst. This validates aggressive pruning of stale but topically related context. [intake-273]
+- **Context rot degrades performance non-linearly with length**: intake-273 (Chroma research) confirms LLMs do not process context uniformly. Performance degrades as input length increases, with distractors (topically related but incorrect content) amplifying degradation more than random content. Semantic similarity between question and context modulates the effect -- high-similarity distractors are worst. This validates aggressive pruning of stale but topically related context. [intake-273](https://research.trychroma.com/context-rot)
 
 ## Actionable for EPYC
 
@@ -111,11 +111,11 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [AgentFold Proactive Context](../research/deep-dives/agentfold-proactive-context.md) -- Two-level condensation architecture, 92% context reduction, sub-linear growth, information survival analysis
 - [CMV Structural Trimming](../research/deep-dives/cmv-structural-trimming-repl.md) -- Three-pass trimming algorithm, synthesis-over-raw principle, gap analysis vs EPYC 5-layer stack
 - [Memento Iterative Reasoning Cluster](../research/deep-dives/memento-iterative-reasoning-cluster.md) -- Dual information stream, 15pp KV vs text ceiling, block masking feasibility, quad-stack KV compression
-- [intake-273] Context Rot (Chroma) -- Performance degradation with input length; semantic similarity modulates distractor impact
-- [intake-274] The Complexity Trap (arXiv:2508.21433) -- Observation masking matches LLM summarization at 50% cost; validates tool output compression
-- [intake-259] RTK Rust Token Killer -- 60-90% token reduction across 100+ commands; security concerns preclude direct adoption
-- [intake-301] AXI Agent Experience Interface -- TOON format achieves ~40% token savings; progressive disclosure mirrors truncation+peek architecture
-- [intake-302] SkillReducer -- 48% tool description compression via adversarial delta debugging; complements output compression
+- [intake-273](https://research.trychroma.com/context-rot) Context Rot (Chroma) -- Performance degradation with input length; semantic similarity modulates distractor impact
+- [intake-274](https://arxiv.org/abs/2508.21433) The Complexity Trap (arXiv:2508.21433) -- Observation masking matches LLM summarization at 50% cost; validates tool output compression
+- [intake-259](https://github.com/rtk-ai/rtk) RTK Rust Token Killer -- 60-90% token reduction across 100+ commands; security concerns preclude direct adoption
+- [intake-301](https://axi.md/) AXI Agent Experience Interface -- TOON format achieves ~40% token savings; progressive disclosure mirrors truncation+peek architecture
+- [intake-302](https://arxiv.org/abs/2603.29919) SkillReducer -- 48% tool description compression via adversarial delta debugging; complements output compression
 - [context-folding-progressive handoff](../handoffs/active/context-folding-progressive.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
 - [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done
 - [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- llama.cpp block masking feasibility confirmed, SFT training design complete

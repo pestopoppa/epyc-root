@@ -78,9 +78,9 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - [GitNexus orchestrator integration](../research/deep-dives/gitnexus-orchestrator-integration.md) -- 5 integration options ranked by ROI, context injection > tool calling insight, re-indexing strategy, KuzuDB direct query path
 - [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression (60-90% savings), feature-flagged, layered before spill mechanism
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- frecency file discovery, combined operations, contextual suggestions for REPL efficiency
-- [intake-269] nvk/llm-wiki -- Claude Code plugin for LLM-compiled knowledge bases (adopt_patterns, high relevance)
-- [intake-277] Hermes Agent PR#5100 LLM Wiki Skill -- Karpathy pattern for structured knowledge compilation (already_integrated)
-- [intake-321] Karpathy-Inspired Claude Code Guidelines -- CLAUDE.md plugin pattern (already_integrated)
-- [intake-330] code-review-graph -- AST-based code review with 8.2x token reduction over full-file review (worth_investigating)
-- [intake-337] Agent Skills -- production engineering workflows for AI coding agents (worth_investigating)
-- [intake-340] Taskdog -- task management with schedule optimization (not_applicable)
+- [intake-269](https://github.com/nvk/llm-wiki) nvk/llm-wiki -- Claude Code plugin for LLM-compiled knowledge bases (adopt_patterns, high relevance)
+- [intake-277](https://github.com/NousResearch/hermes-agent/pull/5100) Hermes Agent PR#5100 LLM Wiki Skill -- Karpathy pattern for structured knowledge compilation (already_integrated)
+- [intake-321](https://github.com/forrestchang/andrej-karpathy-skills) Karpathy-Inspired Claude Code Guidelines -- CLAUDE.md plugin pattern (already_integrated)
+- [intake-330](https://github.com/tirth8205/code-review-graph) code-review-graph -- AST-based code review with 8.2x token reduction over full-file review (worth_investigating)
+- [intake-337](https://github.com/addyosmani/agent-skills) Agent Skills -- production engineering workflows for AI coding agents (worth_investigating)
+- [intake-340](https://github.com/Kohei-Wada/taskdog) Taskdog -- task management with schedule optimization (not_applicable)

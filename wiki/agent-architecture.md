@@ -33,11 +33,11 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **REPL tool invocations hurt accuracy on 7/10 evaluation suites** (the "Omega problem"). Direct mode outperforms REPL on agentic (-54pp), coder (-44pp), and general (-26pp) suites. Only hotpotqa (+12pp) and gpqa (+6pp) benefit from tool use. This motivates both prompt-side fixes (tighter tool-use policy) and structural fixes (frecency discovery, combined operations, contextual suggestions) to make each tool invocation more valuable. [repl-turn-efficiency.md handoff]
 
-- **CoT reasoning expands factual recall but introduces hallucination risks.** Two mechanisms drive recall improvement: computational buffer (extra forward passes) and factual priming (semantic associations). However, generative self-retrieval creates fabricated intermediate facts that propagate through the reasoning chain. This informs the factual-risk scorer design: high-risk factual queries should route to larger models with better parametric knowledge. [intake-103]
+- **CoT reasoning expands factual recall but introduces hallucination risks.** Two mechanisms drive recall improvement: computational buffer (extra forward passes) and factual priming (semantic associations). However, generative self-retrieval creates fabricated intermediate facts that propagate through the reasoning chain. This informs the factual-risk scorer design: high-risk factual queries should route to larger models with better parametric knowledge. [intake-103](https://arxiv.org/abs/2603.09906)
 
-- **Agentic Critical Training (ACT) shows RL-based self-reflection outperforms imitation by +5.07 points** and transfers across model sizes (4B trained with 8B trajectories reaches 92.14% on ALFWorld). ACT also improves general reasoning (MATH-500 87.73%) without reasoning-specific training data. This validates the autopilot's approach of using GRPO-based training for routing model improvement. [intake-106]
+- **Agentic Critical Training (ACT) shows RL-based self-reflection outperforms imitation by +5.07 points** and transfers across model sizes (4B trained with 8B trajectories reaches 92.14% on ALFWorld). ACT also improves general reasoning (MATH-500 87.73%) without reasoning-specific training data. This validates the autopilot's approach of using GRPO-based training for routing model improvement. [intake-106](https://arxiv.org/abs/2603.08706)
 
-- **Agent context files can hurt performance.** ETH Zurich research (intake-272) found context files reduce task success rates and increase inference cost by 20%+. The thin-map architecture used by EPYC's agent files may be near-optimal, but requires empirical validation via instruction token budget tracking (AP-16). [intake-272]
+- **Agent context files can hurt performance.** ETH Zurich research (intake-272) found context files reduce task success rates and increase inference cost by 20%+. The thin-map architecture used by EPYC's agent files may be near-optimal, but requires empirical validation via instruction token budget tracking (AP-16). [intake-272](https://arxiv.org/abs/2602.11988)
 
 - **Harness engineering, not model capability, is the primary performance differentiator.** The "Skill Issue" practitioner study (intake-271) showed ~28 rank positions on TerminalBench-2 from harness changes alone on the same Opus model. The "Mismanaged Geniuses" hypothesis (intake-312) extends this: frontier LLMs are already superhuman on hardest exams (IMO, IOI), and the bottleneck is orchestration, not model power. A 4B RLM achieved 100% on MRCRv2 via composition. [intake-271, intake-312]
 
@@ -83,19 +83,19 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- cost governance model (3-tier enforcement), ticket system with atomic checkout, shared knowledge accumulation, request depth tracking, heartbeat-driven invocation
 - [LangGraph ecosystem comparison](../research/deep-dives/langgraph-ecosystem-comparison.md) -- checkpoint granularity gap, subgraph composition need, interrupt() flexibility, state immutability + reducers, domain advantages assessment (EPYC leads in 7 categories)
 - [OpenGauss architecture analysis](../research/deep-dives/opengauss-architecture-analysis.md) -- tool-pair sanitization, protected-zone context compression, multi-backend abstraction, ACP server, prompt injection scanning, session analytics, trajectory export
-- [intake-103] Thinking to Recall -- CoT reasoning expands factual recall via computational buffer and factual priming; hallucination risk from generative self-retrieval
-- [intake-105] PostTrainBench -- agents can surpass official baselines in targeted scenarios (BFCL 89% vs 67%) but substantially underperform on general post-training (23.2% vs 51.1%)
-- [intake-106] Agentic Critical Training -- GRPO-based self-reflection for quality-aware agents; transfers across model sizes
-- [intake-115] Paperclip -- org-chart multi-agent orchestration with cost governance (~23k GitHub stars)
-- [intake-117] Hermes Agent -- self-improving agent with learning loop, FTS5+LLM summarization memory; validates outer-shell architecture
-- [intake-120] Reasoning Models Struggle to Control CoT -- 0.1-15.4% controllability, lower controllability correlates with higher monitorability
-- [intake-125] S3-CoT -- self-sampled succinct reasoning via activation steering, no teacher model
-- [intake-126] FlowSteer -- nonlinear activation steering for concise reasoning with input-dependent per-request budget
-- [intake-131] AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% improvement on MATH-500
-- [intake-133] Reasoning as Compression -- information bottleneck view of budget forcing; theoretical grounding for think-harder ROI
-- [intake-271] Skill Issue -- harness engineering drives ~28 rank positions on TerminalBench-2
-- [intake-272] Evaluating AGENTS.md -- context files reduce success rates +20% cost; thin-map may be optimal
-- [intake-312] Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
+- [intake-103](https://arxiv.org/abs/2603.09906) Thinking to Recall -- CoT reasoning expands factual recall via computational buffer and factual priming; hallucination risk from generative self-retrieval
+- [intake-105](https://arxiv.org/abs/2603.08640) PostTrainBench -- agents can surpass official baselines in targeted scenarios (BFCL 89% vs 67%) but substantially underperform on general post-training (23.2% vs 51.1%)
+- [intake-106](https://arxiv.org/abs/2603.08706) Agentic Critical Training -- GRPO-based self-reflection for quality-aware agents; transfers across model sizes
+- [intake-115](https://github.com/paperclipai/paperclip) Paperclip -- org-chart multi-agent orchestration with cost governance (~23k GitHub stars)
+- [intake-117](https://github.com/NousResearch/hermes-agent) Hermes Agent -- self-improving agent with learning loop, FTS5+LLM summarization memory; validates outer-shell architecture
+- [intake-120](https://openai.com/index/reasoning-models-chain-of-thought-controllability/) Reasoning Models Struggle to Control CoT -- 0.1-15.4% controllability, lower controllability correlates with higher monitorability
+- [intake-125](https://arxiv.org/abs/2602.01982) S3-CoT -- self-sampled succinct reasoning via activation steering, no teacher model
+- [intake-126](https://arxiv.org/abs/2602.05539) FlowSteer -- nonlinear activation steering for concise reasoning with input-dependent per-request budget
+- [intake-131](https://arxiv.org/abs/2503.18102) AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% improvement on MATH-500
+- [intake-133](https://arxiv.org/abs/2603.08462) Reasoning as Compression -- information bottleneck view of budget forcing; theoretical grounding for think-harder ROI
+- [intake-271](https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents) Skill Issue -- harness engineering drives ~28 rank positions on TerminalBench-2
+- [intake-272](https://arxiv.org/abs/2602.11988) Evaluating AGENTS.md -- context files reduce success rates +20% cost; thin-map may be optimal
+- [intake-312](https://alexzhang13.github.io/blog/2026/mgh/) Mismanaged Geniuses Hypothesis -- orchestration, not model power, is the bottleneck; 4B RLM achieves 100% MRCRv2
 - [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md) -- execution trace feedback (+15pts), code mutation search space, GEPA integration
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
 - [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression, 60-90% token reduction per tool output

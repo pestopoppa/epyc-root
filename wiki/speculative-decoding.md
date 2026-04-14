@@ -77,8 +77,8 @@ The current state of the art for our stack is not speculative decoding at all --
 - [HSD Hierarchical Self-Speculation Handoff](../handoffs/completed/hsd-hierarchical-self-speculation.md) -- External draft +55% on dense 32B, HSD branch resampling +0.8%, freeze-recurrent auto-enable, self-spec not viable
 - [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- 246B deployed, REAP-25B dm=24 at 39.62 t/s, pure MoE enables speculation
 - [Inference Acceleration Index](../handoffs/active/inference-acceleration-index.md) -- Master coordination for all inference optimization work
-- [intake-016] arXiv:2211.17192 -- Foundational speculative decoding (Leviathan et al.)
-- [intake-129] short-m@k paper -- Parallel reasoning, length-accuracy correlation, difficulty-stratified analysis
-- [intake-152] Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration tips for non-speculation optimization
-- [intake-158] DFlash paper (arxiv:2602.06036) -- Block diffusion speculation, O(1) draft cost, tau=6.49
-- [intake-159] DART paper (arxiv:2601.19278) -- N-gram-pruned parallel drafting, single-layer drafter, Dolma trie
+- [intake-016](https://arxiv.org/abs/2211.17192) arXiv:2211.17192 -- Foundational speculative decoding (Leviathan et al.)
+- [intake-129](https://arxiv.org/abs/2505.17813) short-m@k paper -- Parallel reasoning, length-accuracy correlation, difficulty-stratified analysis
+- [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration tips for non-speculation optimization
+- [intake-158](https://arxiv.org/abs/2602.06036) DFlash paper (arxiv:2602.06036) -- Block diffusion speculation, O(1) draft cost, tau=6.49
+- [intake-159](https://arxiv.org/abs/2601.19278) DART paper (arxiv:2601.19278) -- N-gram-pruned parallel drafting, single-layer drafter, Dolma trie

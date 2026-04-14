@@ -33,7 +33,7 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 
 - **Foundational routing research (intake-012 through intake-095) is already integrated.** 12 papers on mixture-of-experts routing, speculative decoding, and learned routing informed the original MemRL design. No new adoption needed from these entries. [intake entries]
 
-- **Late-interaction retrieval could improve classification quality.** Reason-ModernColBERT (intake-174) uses a 150M-parameter ColBERT model with MaxSim late-interaction scoring that outperforms 7B+ dense retrievers on reasoning benchmarks. The CachedContrastive training loss is efficient. This architecture could replace the current dense embedding model in the classification retriever with better semantic matching on reasoning-intensive routing decisions. [intake-174]
+- **Late-interaction retrieval could improve classification quality.** Reason-ModernColBERT (intake-174) uses a 150M-parameter ColBERT model with MaxSim late-interaction scoring that outperforms 7B+ dense retrievers on reasoning benchmarks. The CachedContrastive training loss is efficient. This architecture could replace the current dense embedding model in the classification retriever with better semantic matching on reasoning-intensive routing decisions. [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT)
 
 - **OPSDC's difficulty adaptation is a zero-cost routing signal.** The reasoning compression research (intake-110) shows that comparing output length with vs without a conciseness prompt produces a difficulty ratio: large ratio = easy problem (route to fast model), small ratio = hard problem (escalate). This KL divergence between concise-prompted and base model is available without any additional training. [reasoning-compression.md handoff]
 
@@ -82,4 +82,4 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- comparison of routing approaches (task-centric vs learned vs peer-to-peer)
 - [reasoning-compression.md](../handoffs/active/reasoning-compression.md) -- OPSDC difficulty adaptation as zero-cost routing signal
 - [intake-012 through intake-095] Foundational routing papers -- mixture-of-experts, speculative decoding, learned routing (all `already_integrated`)
-- [intake-174] Reason-ModernColBERT -- 150M late-interaction retriever, +7.3 NDCG@10 over dense retrieval on reasoning benchmarks (worth_investigating)
+- [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT) Reason-ModernColBERT -- 150M late-interaction retriever, +7.3 NDCG@10 over dense retrieval on reasoning benchmarks (worth_investigating)
