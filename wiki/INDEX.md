@@ -4,7 +4,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 **Last compiled**: 2026-04-14
 **Articles**: 24 compiled, 6 stub categories
-**Total sources**: 231 documents across 6 source types
+**Total sources**: 235 documents across 6 source types
 
 ---
 
@@ -14,7 +14,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Speculative Decoding](speculative-decoding.md) | 26 | Verification wall on hybrid SSM models kills all draft-verify approaches; NUMA parallelism is the dominant lever |
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
-| [KV Cache](kv-cache.md) | 33 | Attention Matching achieves 50x compression; Memento proves KV states carry information beyond text summaries |
+| [KV Cache](kv-cache.md) | 34 | Attention Matching achieves 50x compression; autopilot slot_compact integration complete with slot memory visibility |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
 | [Hardware Optimization](hardware-optimization.md) | 19 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; DGX Spark ($4,699) is primary GPU path |
 
@@ -23,15 +23,15 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Inference Serving](inference-serving.md) | 15 | Production stack: 4-tier agent hierarchy, NUMA-pinned instances, ~515 GB deployed footprint |
-| [Local Inference](local-inference.md) | 14 | Custom llama.cpp fork (23 patches), GGUF-native pipeline, 12 acceleration techniques catalogued |
+| [Local Inference](local-inference.md) | 15 | Custom llama.cpp fork (23+ patches incl. Diff Attn V2), GGUF-native pipeline, 12 acceleration techniques catalogued |
 
 ## Routing & Evaluation
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 20 | 50-70% of reasoning tokens are redundant; CIB theory proves flat caps suboptimal; difficulty-adaptive budgets |
+| [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
 | [Routing Intelligence](routing-intelligence.md) | 17 | MemRL with 2,714 episodic memories, FAISS 35x speedup, species budget rebalancing |
-| [Benchmark Methodology](benchmark-methodology.md) | 23 | 1,290-measurement sweep overturned prior assumptions; registry values were 2.3-3.6x inflated |
+| [Benchmark Methodology](benchmark-methodology.md) | 26 | All 10 seeding modules at 100% coverage; 61 integration tests; 1,290-measurement sweep overturned prior assumptions |
 
 ## Agent & Architecture
 
@@ -68,8 +68,8 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Search & Retrieval](search-retrieval.md) | 15 | ColBERT-Zero primary reranker (55.43 BEIR); late-interaction confirmed as correct architecture for CPU snippet reranking |
-| [Tool Implementation](tool-implementation.md) | 10 | GitNexus: context injection into prompts outperforms giving tools to call |
+| [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 gated on post-AR-3 analysis |
+| [Tool Implementation](tool-implementation.md) | 12 | GitNexus: context injection outperforms tools; "real REPL, mock LLM" integration test pattern; risk-weighted coverage methodology |
 
 ## Research & Analysis
 

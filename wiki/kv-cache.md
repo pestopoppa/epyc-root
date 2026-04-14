@@ -2,8 +2,8 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 33 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 23 intake entries)
+**Last compiled**: 2026-04-14
+**Sources**: 34 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 23 intake entries, 1 progress log)
 
 ## Summary
 
@@ -80,6 +80,8 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 - **Deployed**: Hadamard+q4_0 KV quantization (2-4x, production since `b51c905`, auto-enabled in v3 upstream via PR #21038)
 
 - **Merged to production branch**: Attention Matching L1-L4+L4b -- native ggml NNLS+OLS, K-norm importance scoring, server endpoints (`set-beta`, `seq-rm`, `compact`), SSM-hybrid support. Three production commits on `production-consolidated-v3`
+
+- **Autopilot integration complete (2026-04-14)**: `slot_compact` action dispatch wired into autopilot controller (`autopilot.py:812-849`). Controller can issue compaction commands to production slots, logs pre/post token counts, measures quality via `hybrid_eval()`. Slot memory visibility added: `_query_slot_memory()` queries `/slots` on primary production ports (8070-8084) each trial, showing per-slot context size in the controller prompt. Guideline: compact when any slot exceeds 4000 cached tokens. Validated parameters: keep_ratio=0.3, beta=0.5. Long-context validation (8K-32K production contexts) deferred to AR-3 -- current tests validated up to 2.7K tokens. [bulk-inference-campaign.md Package D]
 
 - **Next validation steps**: P2 Coder-32B coding benchmarks (validates production deployment at scale), P3 comparison vs Expected Attention at 5x/10x/20x (determines whether selection or compaction is primary path at each ratio), P4 AM + Hadamard q4_0 stacking quality test (validates dual compression)
 

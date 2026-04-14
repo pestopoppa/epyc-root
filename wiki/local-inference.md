@@ -2,8 +2,8 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 14 documents
+**Last compiled**: 2026-04-14
+**Sources**: 15 documents
 
 ## Summary
 
@@ -17,7 +17,8 @@ Speculative decoding is the primary acceleration method. The production stack us
 
 ## Key Findings
 
-- **llama.cpp custom fork carries 23 production-critical patches**: MoE expert override (#1), SWA slot reuse (#5-6), CPU paged attention (#7-10), server slot management (#14-15), prompt lookup (#19), tree speculation (#22), HSD+freeze-recurrent (#20), and SSM checkpointing (#16). The v2-to-v3 rebuild absorbed 517 upstream commits while preserving all patches. [llama-cpp-v3-upstream-rebuild.md]
+- **llama.cpp custom fork carries 23+ production-critical patches**: MoE expert override (#1), SWA slot reuse (#5-6), CPU paged attention (#7-10), server slot management (#14-15), prompt lookup (#19), tree speculation (#22), HSD+freeze-recurrent (#20), SSM checkpointing (#16), and Differential Transformer V2 architecture support (2026-04-14). The v2-to-v3 rebuild absorbed 517 upstream commits while preserving all patches. [llama-cpp-v3-upstream-rebuild.md, progress/2026-04-14 session 22]
+- **Differential Transformer V2 implemented in llama.cpp** (2026-04-14): Full architecture support added across 9 files (155 LOC core graph builder in `src/models/diff-transformer.cpp`). Algorithm: Q doubled to 2h heads, K/V unchanged, single FlashAttention, split even/odd heads, `output = attn_even - sigmoid(W_lambda @ hidden) * attn_odd`. KV cache unaffected. Uses zero new ggml ops. Regression tests passed on all production models (Qwen3.5-35B hybrid SSM, Qwen3-Coder-30B MoE, Qwen2.5-Coder-32B dense). Synthetic test model loads and runs. Accuracy testing blocked on Microsoft releasing pretrained weights. Commits: `llama.cpp-experimental` `3b5514d46`, `llama.cpp` (production) `8bd57177f`. [progress/2026-04-14 session 22]
 - **4 patches were dropped in the v3 rebuild**: MTP-1/MoE self-draft mega-commit (all techniques NOT VIABLE), Hadamard KV smoothing (superseded by upstream auto-enabling), enable_thinking Jinja fix (superseded by upstream refactor), and a merge commit. [llama-cpp-v3-upstream-rebuild.md]
 - **Q4_K_M is the standard quantization**: Validated across coder (Q4KM 74% = f16 74%, 1.7x faster, 3.5x less RAM), hybrid models (recurrent state update is constant cost, Q8 costs 17-39% speed for marginal quality), and all production roles. The quality ceiling is the model itself, not the quantization. [numa-orchestrator-deployment.md]
 - **Draft model selection is critical**: Qwen2.5-Coder-0.5B at 185 t/s generates 4x faster than Qwen3.5-0.8B at 44 t/s, despite similar parameter counts. The Qwen3.5 architecture (752M actual params) has higher per-token overhead. Best production pair: Qwen2.5-7B-f16 + Qwen2.5-Coder-0.5B (42 t/s, 91% acceptance). [specexec-verification-profile.md]
@@ -68,4 +69,5 @@ Speculative decoding is the primary acceleration method. The production stack us
 - [HiSpec External Draft Benchmark](/mnt/raid0/llm/epyc-inference-research/docs/experiments/hispec-external-draft-benchmark.md) -- Double-buffer optimization, freeze-recurrent validation
 - [Chapter 01: Hardware System](/workspace/docs/infrastructure/01-hardware-system.md) -- Baseline performance, runtime optimizations
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Worker swap, registry corrections, sweep-verified params
+- [Progress 2026-04-14 Session 22](/workspace/progress/2026-04/2026-04-14.md) -- Differential Transformer V2 implementation (9 files, 155 LOC core), zero new ggml ops, regression-safe on all production models, blocked on pretrained weights
 - Intake entries: 5 results including CPU+GPU hybrid MoE inference guide (intake-310, high relevance), rocWMMA (intake-303), and community model evaluations

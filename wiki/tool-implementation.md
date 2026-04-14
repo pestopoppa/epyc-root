@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 10 documents (2 deep-dives, 6 intake entries, 2 handoffs)
+**Last compiled**: 2026-04-14
+**Sources**: 12 documents (2 deep-dives, 6 intake entries, 4 handoffs)
 
 ## Summary
 
@@ -34,6 +34,10 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - **Tool output compression provides 60-90% token reduction per tool invocation.** Seven command handlers (pytest, cargo test, git status, git diff, git log, ls, build compilers) compress outputs before they enter the context window, layering before the existing `_spill_if_truncated()` mechanism. Feature-flagged as `tool_output_compression`. [tool-output-compression.md handoff]
 
 - **Production agent skills require structured engineering workflows.** Intake-337 documents patterns for building agent skills in production: hypothesis-driven development, incremental deployment, structured testing, and version-controlled skill definitions. This aligns with the project's existing `.claude/skills/` and `agents/` architecture.
+
+- **Integration test infrastructure for graph execution uses "real REPL, mock LLM" pattern.** 61 integration tests (2026-04-13) cover graph execution loop, node-level paths, observability, and API endpoints using a `GraphRunContext` factory fixture that assembles real `REPLEnvironment` (executing actual Python) with `MockLLMPrimitives` returning canned responses. `StubFailureGraph` and `StubHypothesisGraph` are real in-memory implementations (not `MagicMock`) to exercise the full protocol surface. Key design lesson: mock LLM responses must be wrapped in markdown code blocks to prevent `auto_wrap_final` or prose rescue from converting them to FINAL answers. This pattern enables testing the full orchestration loop independently of inference servers. [integration-test-coverage.md]
+
+- **Risk-weighted coverage classification drives test prioritization.** The 100%-feasibility audit (2026-04-14) classified uncovered branches as must-test (recovery paths, parsing fallbacks, context-size selection) vs acceptable-gap (import fallbacks, portability branches). Staged floor raises follow test tranches rather than forcing blanket 100%. This methodology achieved 100% on all 10 seeding benchmark modules and all 7 enforced orchestrator slice files through 12 targeted tranches (A-L) with zero runtime behavior modifications. [integration-test-coverage.md, progress/2026-04-14]
 
 ## Actionable for EPYC
 
@@ -84,3 +88,5 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - [intake-330](https://github.com/tirth8205/code-review-graph) code-review-graph -- AST-based code review with 8.2x token reduction over full-file review (worth_investigating)
 - [intake-337](https://github.com/addyosmani/agent-skills) Agent Skills -- production engineering workflows for AI coding agents (worth_investigating)
 - [intake-340](https://github.com/Kohei-Wada/taskdog) Taskdog -- task management with schedule optimization (not_applicable)
+- [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- 61 integration tests with real REPL + mock LLM pattern, GraphRunContext factory, risk-weighted coverage classification
+- [Progress 2026-04-14](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L (sessions 2-20), 100%-feasibility audit methodology, seeding control-plane characterization
