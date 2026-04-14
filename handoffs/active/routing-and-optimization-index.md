@@ -29,6 +29,7 @@
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
 | Retrain Routing Models | [`retrain-routing-models.md`](../blocked/retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
+| Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | stub (deployment plan + SX-1–SX-6 work items) | SX-1 Docker deployment (no data gate, independent) |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -191,6 +192,17 @@ Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimi
 - [x] **MH-4: GEPA as search algorithm** — ✅ Folded into AR-3 Package D (2026-04-12). GEPA integrated as PromptForge mutation type. Journal collects Pareto frontier contributions by mutation source.
 - [x] **MH-5: Agent Lightning trace collection** — ✅ 2026-04-12. `telemetry.py` with TelemetryCollector, TransitionRecord, OTLP spans, JSONL export.
 
+### P12 — SearXNG Search Backend (2026-04-14 research intake)
+
+Source: intake-359/360/361. Replaces DDG HTML scraping + Brave fallback in `search.py` (lines 31-142) with self-hosted SearXNG JSON API. Independent workstream — no data gate, no inference dependency. Composes with ColBERT reranker S5 (richer snippets with `engines[]`/`score` metadata). See [`searxng-search-backend.md`](searxng-search-backend.md).
+
+- [ ] **SX-1: Docker container deployment** — Deploy SearXNG image (~183MB) on port 8090 via `orchestrator_stack.py` DOCKER_SERVICES. Config: `limiter: false` (API_MAX=4/hr blocks programmatic use), `search.formats: [html, json]`, Granian ASGI (not uWSGI). Valkey sidecar NOT needed.
+- [ ] **SX-2: `_search_searxng()` implementation** — ~15 lines in `search.py` replacing 112-line `_search_duckduckgo()`. Return `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper unchanged.
+- [ ] **SX-3: Engine tuning** — Per-engine weight, timeout (3.0s), `retry_on_http_error: [429]`. Disable Google engine explicitly (TLS fingerprint blocking, issue #2515). Favor DDG/Brave/Wikipedia/Qwant.
+- [ ] **SX-4: `unresponsive_engines[]` telemetry** — Wire JSON response `unresponsive_engines[]` into orchestrator monitoring (same telemetry path as DS-1 queue depth). Alert on >50% engine failure rate.
+- [ ] **SX-5: Load test** — 50-200 queries/session against DDG/Brave/Wikipedia/Qwant to validate reliability under EPYC's single-user query volume. Measure latency, engine failure rate, result quality.
+- [ ] **SX-6: Swap default** — Replace `_search_duckduckgo` with `_search_searxng` as primary backend in `web_search()`. Keep DDG HTML as fallback if SearXNG container is down.
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
@@ -238,6 +250,9 @@ intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ with
 
 ### 10. GEPA ↔ Multiple Subsystems
 `autopilot-continuous-optimization.md` P10 (GEPA PromptForge Integration) and `meta-harness-optimization.md` Tier 2b/MH-4 (GEPA as search algorithm) evaluate the same technique from two perspectives. Autopilot owns implementation (AP-18–21: DSPy signature wrapping, optimize_anything, Full Program Adapter). Meta-harness evaluates whether GEPA's Pareto-frontier selection outperforms our current top-1 selection as a search algorithm. Results from either inform the other. Source: 2026-04-12 research intake (intake-327/345/240).
+
+### 11. SearXNG Backend ↔ Web Search Pipeline (P8b)
+`searxng-search-backend.md` replaces the DDG/Brave scraping layer that P8b's WS-1/WS-2/WS-3 fixes operate on. SearXNG is orthogonal to prompt-level over-reliance fixes but changes the search result quality and metadata available to the pipeline. When SearXNG is deployed: (a) WS-2 Omega re-measurement should use SearXNG results, not DDG HTML, (b) `unresponsive_engines[]` telemetry feeds the same monitoring pipeline as DS-1 queue depth. Source: 2026-04-14 research intake (intake-359/360/361).
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_explore`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
@@ -316,6 +331,7 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 | [`reasoning-compression.md`](reasoning-compression.md) | research-evaluation | TrimR/difficulty_signal shares scorer infra with factual-risk routing |
 | [`bulk-inference-campaign.md`](bulk-inference-campaign.md) | this index | Packages B-E consolidate 14 inference tasks; B feeds RI-9/TrimR, D feeds AR-3/RI-10/DS-5 |
 | ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | archived | Follow-on tasks extracted to P9. |
+| [`searxng-search-backend.md`](searxng-search-backend.md) | standalone | Web search backend replacement; affects P8b search pipeline and ColBERT reranker input |
 
 ---
 

@@ -256,3 +256,6 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 
 ### 2026-03-20
 - **[intake-172/173] OpenGauss**: Production fork validates that hermes-agent can be specialized for a vertical domain while keeping the core conversation loop intact. Their multi-backend abstraction pattern shows how to cleanly add our orchestrator as a backend target.
+
+### 2026-04-14
+- **[intake-361] mcp-searxng**: MCP Server for SearXNG (635 stars, MIT, TypeScript). Exposes `searxng_web_search` and `web_url_read` tools via Model Context Protocol. When SearXNG is deployed locally (see [`searxng-search-backend.md`](/workspace/handoffs/active/searxng-search-backend.md), R&O P12), mcp-searxng could replace the cloud-dependent `web_search` tool (line 121, currently Firecrawl/Tavily, disabled) with a local, privacy-respecting alternative. Future opportunity — lower priority than orchestrator backend integration (P12 SX-1–SX-6).

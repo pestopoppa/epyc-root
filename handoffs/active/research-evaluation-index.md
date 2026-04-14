@@ -108,6 +108,7 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] S1a: Implement `file_recency.py` frecency module — ✅ 2026-04-09. `FrecencyStore` class, SQLite, 10 tests.
 - [x] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged `REPL_FRECENCY`) — ✅ 2026-04-09. 7 wiring tests.
 - [x] S2a-b: Mine autopilot logs + implement combined ops — ✅ 2026-04-09. Finding: only web_search/search_wikipedia used (file tools never called). `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Flag: `REPL_COMBINED_OPS`. 18 tests.
+- **Note**: `batch_web_search` in `_CombinedOpsMixin` calls `web_search()` directly. When SearXNG backend is deployed (see [`searxng-search-backend.md`](/workspace/handoffs/active/searxng-search-backend.md), R&O P12), `batch_web_search` inherits SearXNG JSON API automatically — no code change needed in combined_ops.
 - [ ] S4: A/B benchmark turn count reduction on seeding harness
 
 ### P7 — Ouro LoopLM Evaluation (from intake-332/341)

@@ -137,7 +137,7 @@ grep "web_research relevance summary" /path/to/orchestrator.log | tail -20
   - **Note**: 180ms is well above the original <10ms target, but that target assumed pre-encoded embeddings. The 180ms includes full ONNX encoding through 150M params. Acceptable because each irrelevant page saved = 45s of synthesis. ROI: ~750x.
   - **Ranking quality**: Perfect separation on test data — all 5 relevant snippets ranked top 5, all 5 irrelevant ranked bottom 5. Score spread: relevant 0.93-0.96, irrelevant 0.91-0.92.
 
-- [ ] **S5: Implement reranker** — Add reranking to `research.py`, gated behind `web_research_rerank` flag. When flag is ON: increase `max_results` from 5 to 8-10, encode DDG snippets via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. Lazy model loading on first call. **Prerequisite**: post-AR-3 analysis confirms >20% irrelevant page rate.
+- [ ] **S5: Implement reranker** — Add reranking to `research.py`, gated behind `web_research_rerank` flag. When flag is ON: increase `max_results` from 5 to 8-10, encode search snippets (from SearXNG JSON API when deployed per [`searxng-search-backend.md`](searxng-search-backend.md), else DDG HTML) via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. When using SearXNG, `engines[]`/`score` metadata available for multi-engine confidence weighting. Lazy model loading on first call. **Prerequisite**: post-AR-3 analysis confirms >20% irrelevant page rate.
   - File: `epyc-orchestrator/src/tools/web/research.py` (modify `_web_research_impl`)
   - Encoding module: new `src/tools/web/colbert_reranker.py` (ONNX session, tokenizer, MaxSim)
   - Effort: ~2h, depends on S3/S4 (done) and AR-3 go/no-go
@@ -222,3 +222,18 @@ Rivera & Menolascina, "ModernBERT + ColBERT: Enhancing biomedical RAG," arXiv:25
 - [ModernBERT+ColBERT biomedical RAG](https://arxiv.org/abs/2510.04757) — Oct 2025
 - [Jina-ColBERT-v2 paper](https://arxiv.org/abs/2408.16672) — multilingual late-interaction
 - [RAGatouille](https://github.com/AnswerDotAI/RAGatouille) — ColBERT wrapper for LangChain/LlamaIndex
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-359] "SearXNG: Privacy-respecting metasearch engine"** (github:searxng/searxng)
+  - Relevance: SearXNG could replace the DDG HTML scraping + Brave fallback in `search.py` with a self-hosted JSON API aggregating 250+ engines. Eliminates bot detection / rate limiting issues at the scraping layer. JSON response includes `engines[]`, `positions[]`, and `score` fields providing richer signal than bare HTML parsing.
+  - Key technique: Self-hosted metasearch with JSON API (`GET /search?q=...&format=json`). Cross-engine result merging with score boosting. Per-engine timeout/weight/retry/proxy config.
+  - Reported results: 28.3k GitHub stars, Docker ~183MB, ~70 public instances.
+  - Delta from current approach: Replaces 112 lines of fragile regex HTML parsing with ~15-line JSON API call. SearXNG handles URL-level dedup across engines (same URL merged with provenance tracking); existing `_dedup_pages()` handles paragraph-level dedup post-fetch. Caveats: Google blocks SearXNG via TLS fingerprinting; limiter API_MAX=4/hr must be disabled; JSON format not enabled by default.
+  - **Handoff created**: [`searxng-search-backend.md`](searxng-search-backend.md) — full deployment plan + implementation sketch.
+- **[intake-360] "SearXNG Documentation"** (docs.searxng.org)
+  - Relevance: API reference for SearXNG integration — documents endpoints, parameters, JSON response structure, engine configuration, and deployment.
+  - Key detail: `engines=` API param allows per-request engine selection — could route different query types to different engine sets.
+- **[intake-361] "mcp-searxng: MCP Server for SearXNG"** (github:ihor-sokoliuk/mcp-searxng)
+  - Relevance: 635-star MCP bridge with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions (separate from orchestrator backend).

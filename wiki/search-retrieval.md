@@ -3,7 +3,7 @@
 **Category**: `search_retrieval`
 **Confidence**: verified
 **Last compiled**: 2026-04-14
-**Sources**: 16 documents
+**Sources**: 19 documents
 
 ## Summary
 
@@ -21,6 +21,8 @@ A comprehensive literature survey (2026-04-14) confirmed the architecture decisi
 
 A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd) was marked as adopt_component with high relevance. MemPalace (intake-326, 96.6% LongMemEval recall) and LLM Wiki (intake-268, persistent LLM-compiled knowledge bases) were also flagged as relevant patterns.
 
+A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3k GitHub stars, AGPL-3.0) as a replacement for the current DDG HTML scraping + Brave fallback in `search.py`. The current `_search_duckduckgo()` function is 112 lines of fragile regex HTML parsing using subprocess curl, subject to bot detection and layout changes. SearXNG provides a self-hosted JSON API (`GET /search?q=...&format=json`) aggregating 250+ search engines with structured results including multi-engine provenance (`engines[]`, `positions[]`, `score` fields). Result merging is built-in -- when multiple engines return the same URL, they're merged with boosted score. The deployment is a Docker container (~183MB) with Granian ASGI server and optional Valkey sidecar for rate limiting. Critical caveats: (1) the limiter's API_MAX=4 requests/hour for JSON format blocks all programmatic use -- must be disabled for backend use, (2) bot detection blocks python-requests/curl user-agents when limiter is enabled, (3) JSON format is NOT enabled by default -- requires adding `json` to `search.formats` in settings.yml, (4) Google actively blocks SearXNG via TLS/HTTP2 fingerprinting, making it unreliable as an engine. Per-engine configuration supports weight multipliers, timeouts, retry policies, and proxy chains, allowing fine-tuning of individual engines. The `unresponsive_engines[]` field in JSON responses reports which engines failed per query, providing a monitoring signal without checking container logs. The SearXNG backend composes naturally with the ColBERT reranker S5: SearXNG returns top-N snippets via JSON, ColBERT reranks by MaxSim, top-3 get fetched and synthesized. An MCP server for SearXNG (intake-361, mcp-searxng, 635 stars, MIT) provides an alternative integration path for Claude Code sessions. Work items SX-1 through SX-6 are tracked in routing-and-optimization-index P12.
+
 ## Key Findings
 
 - Two distinct retrieval systems: ColBERT 128-dim multi-vector (codebase/docs) vs BGE-large 1024-dim single-vector (MemRL routing memory). Complementary, not competing [Ch.07 MemRL]
@@ -34,6 +36,8 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 - MemRL FAISS retrieval: 0.5ms at 5K memories, 2ms at 500K, 3ms at 1M. 35x-1000x speedup over NumPy baseline [Ch.07 MemRL]
 - The routing classifier provides fast first-pass routing, falling back to full HybridRouter retrieval when confidence < 0.6 [colbert-zero-research-integration.md]
 - Cosine similarity > 0.85 used for deduplication in both SkillBank skill storage and episodic memory [Ch.15, Ch.07]
+- SearXNG (intake-359/360) evaluated as DDG HTML scraping replacement: self-hosted JSON API aggregating 250+ engines. Docker ~183MB + Granian ASGI. JSON response provides multi-engine provenance (`engines[]`, `positions[]`, `score`). Limiter API_MAX=4/hr MUST be disabled for backend use. Google engine unreliable (TLS fingerprint blocking). Per-engine weight/timeout/retry tuning available. `unresponsive_engines[]` provides upstream failure monitoring [searxng-search-backend.md]
+- mcp-searxng (intake-361, 635 stars, MIT) provides MCP bridge for SearXNG with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions [searxng-search-backend.md]
 
 ## Actionable for EPYC
 
@@ -43,6 +47,7 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 - **ONNX Runtime replaces PyLate**: The existing GTE-ModernColBERT-v1 on disk (`model_int8.onnx`, 144MB) with `onnxruntime==1.24.4` provides identical encoding capability without PyTorch dependency. ColBERT-Zero download deferred unless accuracy issues arise in S6 A/B testing.
 - **qmd hybrid search evaluation**: intake-270 marked adopt_component -- evaluate for markdown knowledge base search in the project wiki or handoff system.
 - **MemPalace patterns**: intake-326 achieves 96.6% recall on LongMemEval. Investigate architecture patterns that could improve MemRL episodic retrieval quality.
+- **SearXNG search backend (SX-1–SX-6, R&O P12)**: Deploy SearXNG Docker container on port 8090 with `limiter: false` and `search.formats: [html, json]`. Replace 112-line `_search_duckduckgo()` regex parser with ~15-line JSON API call. Tune engine weights (favor DDG/Brave/Wikipedia/Qwant, disable Google). Wire `unresponsive_engines[]` telemetry. Load test under EPYC query volume. Composes with ColBERT reranker S5.
 
 ## Open Questions
 
@@ -69,3 +74,8 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 - [intake-270](https://github.com/tobi/qmd) tobi/qmd -- Local hybrid search engine for markdown knowledge bases
 - [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval recall local memory system
 - [Progress 2026-04-14 Session 9](/workspace/progress/2026-04/2026-04-14.md) -- ColBERT reranker S1/S2 implementation, PyLate elimination, ONNX Runtime adoption, S4 latency benchmark results, telemetry pipeline wiring
+- [SearXNG search backend handoff](/workspace/handoffs/active/searxng-search-backend.md) -- SearXNG JSON API replacement for DDG HTML scraping, work items SX-1–SX-6, tracked in R&O P12
+- [intake-359](https://github.com/searxng/searxng) SearXNG -- Self-hosted metasearch aggregator (28.3k stars, AGPL-3.0, JSON API)
+- [intake-360](https://docs.searxng.org/) SearXNG Documentation -- API reference, engine config, deployment architecture
+- [intake-361](https://github.com/ihor-sokoliuk/mcp-searxng) mcp-searxng -- MCP Server for SearXNG (635 stars, MIT, TypeScript)
+- [Progress 2026-04-14 Session 10](/workspace/progress/2026-04/2026-04-14.md) -- SearXNG research intake, deep-dive (6 findings), handoff integration across 6 files

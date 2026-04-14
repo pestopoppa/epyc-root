@@ -12111,3 +12111,231 @@
     (10 stars, 1 fork) using OpenRouter/OpenAI APIs — no local inference, no
     llama.cpp integration. Tech stack: Python + FastAPI backend, Next.js frontend.
     No novel techniques or results beyond what's already tracked.
+
+- id: intake-359
+  arxiv_id: null
+  url: https://github.com/searxng/searxng
+  source_type: repo
+  title: 'SearXNG: Privacy-respecting metasearch engine'
+  authors: []
+  categories:
+  - search_retrieval
+  - tool_implementation
+  key_claims:
+  - 'Aggregates results from 250+ search services without tracking or profiling users'
+  - 'JSON API returns merged/deduped results with multi-engine provenance (engines[], positions[], score fields)'
+  - 'Modular engine system with 5 processor types: online, offline, url_search, currency, dictionary'
+  - 'Engine-specific suspension timers auto-handle upstream failures (CAPTCHA: 3600s, Cloudflare: 1296000s, rate limit: 3600s)'
+  - 'Self-hostable via Docker (~183MB image) with optional Valkey sidecar for rate limiting'
+  techniques:
+  - Metasearch aggregation with cross-engine result merging and score boosting
+  - Engine abstraction with per-engine timeout, weight, retry, proxy configuration
+  - Built-in result deduplication across engines (same URL merged, provenance preserved)
+  - Rate limiting via server.limiter + Valkey (but API_MAX=4/hr when enabled — must disable for backend use)
+  - Engine-specific suspension timers for CAPTCHA, rate limit, access denied errors
+  reported_results:
+  - '28.3k GitHub stars, 2.8k forks as of 2026-04-14'
+  - '~70 public instances monitored at uptime.searxng.org'
+  - 'Docker image ~183MB, Valkey sidecar only needed if limiter enabled'
+  - 'No performance benchmarks published'
+  references: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'Google actively blocks SearXNG via TLS/HTTP2 fingerprinting (github issue #2515). New installations blocked after ~5 searches.'
+  - 'DDG, Qwant, StartPage also have blocking/CAPTCHA issues on SearXNG instances.'
+  - 'Single-user self-hosted instances more easily fingerprinted by upstream engines.'
+  - 'JSON output NOT enabled by default — must add json to search.formats in settings.yml or get 403.'
+  - 'Limiter API_MAX=4 requests/hour for JSON format when limiter enabled — must disable limiter or whitelist IP for backend use.'
+  - 'Limiter bot detection blocks curl, python-requests, Go-http-client user-agents by regex when enabled.'
+  - 'Fixed ~20 results per page; no API-level max_results parameter.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created:
+  - searxng-search-backend.md
+  notes: >
+    DEEP-DIVE 2026-04-14: SearXNG is a direct replacement for the brittle DDG
+    HTML scraping + Brave fallback in search.py (lines 31-142). Current pipeline:
+    curl fetches DDG/Brave HTML → regex parses result__a/snippet classes → 2s
+    hardcoded rate limit → fragile against layout changes and bot detection.
+    SearXNG replacement: GET /search?q=...&format=json returns structured JSON
+    with url, title, content (snippet), engine, engines[] (multi-engine provenance),
+    positions[], score. Result merging is built-in — when multiple engines return
+    the same URL, they're merged with boosted score. This is richer than what
+    _search_duckduckgo() provides.
+
+    DEPLOYMENT: Docker ~183MB image + optional Valkey sidecar. Fits the existing
+    orchestrator_stack.py Docker management pattern (DOCKER_SERVICES list, ports
+    8088/8089 for NextPLAID). SearXNG would take a new port (e.g., 8090). Config
+    via mounted settings.yml with use_default_settings: true, search.formats: [html, json],
+    server.limiter: false (CRITICAL — limiter API_MAX=4/hr blocks programmatic use).
+
+    CRITICAL CAVEATS: (1) Google blocks SearXNG via TLS fingerprinting — expect
+    Google engine to be unreliable. Mitigation: rely on DDG/Brave/Wikipedia/Qwant
+    as primary engines. (2) Limiter MUST be disabled for backend use — API_MAX=4/hr
+    is a hard blocker, plus bot detection blocks python-requests user-agent.
+    (3) JSON format must be explicitly enabled in settings.yml. (4) No max_results
+    API parameter — fixed ~20 per page, client-side truncation needed.
+
+    PIPELINE COMPOSITION: SearXNG → ColBERT reranker (S5) is a natural fit.
+    SearXNG returns top-N snippets with scores via JSON, ColBERT reranks by
+    MaxSim on snippet text, top-3 get fetched and synthesized. The engines[]
+    and score fields provide additional signal for ranking confidence. The existing
+    _dedup_pages() in research.py handles paragraph-level dedup post-fetch;
+    SearXNG handles URL-level dedup pre-fetch.
+
+    COMPARISON TO CURRENT APPROACH: Current _search_duckduckgo() is 112 lines
+    of fragile HTML parsing with 2 engine-specific regex parsers (DDG, Brave).
+    SearXNG replacement would be ~15 lines: requests.get() + json parsing. The
+    web_search() function signature (query, max_results, domain_filter) maps
+    directly to SearXNG's API params (q, engines, categories). Domain filter
+    maps to q parameter with site: prefix (already done in current code).
+
+    LICENSE: AGPL-3.0 — no issue for self-hosted internal tool use (no distribution).
+    Python 80.5%, 9340+ commits, very actively maintained (latest docs: 2026.4.13).
+
+- id: intake-360
+  arxiv_id: null
+  url: https://docs.searxng.org/
+  source_type: blog
+  title: 'SearXNG Documentation'
+  authors: []
+  categories:
+  - search_retrieval
+  - tool_implementation
+  key_claims:
+  - 'Search API: GET/POST on /search with format=json/csv/rss; params q, categories, engines, language, time_range, pageno, safesearch'
+  - 'JSON response: {query, number_of_results, results[], answers[], corrections[], infoboxes[], suggestions[], unresponsive_engines[]}'
+  - 'Result item fields: url, title, content, engine, engines[], positions[], score, category, publishedDate'
+  - 'Engine config: per-engine timeout, weight, retry_on_http_error, proxy, api_key, disabled/inactive toggle'
+  - 'Deployment: Granian ASGI server (replaced uWSGI), Docker ~183MB, optional Valkey for limiter/state'
+  techniques:
+  - REST API with JSON/CSV/RSS output formats
+  - Cross-engine result merging with score boosting and multi-engine provenance tracking
+  - Engine-specific error suspension with configurable timers
+  - Autocomplete aggregation from 16+ providers
+  - Per-engine network config (proxy, HTTP/2, address family, connection pooling)
+  reported_results:
+  - 'No performance benchmarks in documentation'
+  references: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-359
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created:
+  - searxng-search-backend.md
+  notes: >
+    DEEP-DIVE 2026-04-14: Companion docs for intake-359. Critical API reference
+    for implementing the SearXNG backend.
+
+    JSON RESPONSE STRUCTURE (key for _search_searxng() implementation):
+    results[].url, .title, .content (=snippet), .engine (first match),
+    .engines[] (all engines returning this URL), .positions[] (rank per engine),
+    .score (merged relevance score). Also: answers[] (direct answers like
+    calculator), suggestions[] (query suggestions), unresponsive_engines[]
+    (failed engines with error messages — useful for monitoring).
+
+    ENGINE CONFIGURATION: Each engine supports: timeout (override global),
+    weight (result scoring multiplier), disabled (user-toggleable) vs inactive
+    (completely removed), retry_on_http_error (bool or specific codes like [403, 429]),
+    per-engine proxy config, api_key for premium engines. The engines= API param
+    allows per-request engine selection — could be used to route different query
+    types to different engine sets.
+
+    MINIMAL SETTINGS.YML FOR LOCAL BACKEND:
+    use_default_settings: true; server.limiter: false; server.bind_address: 127.0.0.1;
+    search.formats: [html, json]; outgoing.request_timeout: 3.0.
+    This gives full JSON API on localhost with all default engines enabled.
+
+    DEPLOYMENT NOTE: Docs say Granian ASGI server has replaced uWSGI (the initial
+    intake incorrectly stated uWSGI workers). This is a recent change. The reference
+    architecture diagram still shows uWSGI but implementation uses Granian.
+
+    AUTOCOMPLETE: 16+ providers (Google, Bing, DDG, Wikipedia, Qwant, mwmbl,
+    Startpage, Swisscows). Could enhance the orchestrator's query suggestion
+    pipeline if exposed. Currently unused in EPYC.
+
+- id: intake-361
+  arxiv_id: null
+  url: https://github.com/ihor-sokoliuk/mcp-searxng
+  source_type: repo
+  title: 'mcp-searxng: MCP Server for SearXNG'
+  authors:
+  - Ihor Sokoliuk
+  categories:
+  - search_retrieval
+  - tool_implementation
+  key_claims:
+  - 'MCP bridge exposing searxng_web_search and web_url_read tools to AI agents'
+  - 'TTL-based intelligent caching reduces redundant SearXNG requests'
+  - 'URL content extraction with markdown conversion, section filtering, heading extraction'
+  - 'Supports STDIO and HTTP transport modes for MCP communication'
+  - '635 stars, 104 forks, MIT license, TypeScript, actively maintained (v1.0.3 released 2026-04-05)'
+  techniques:
+  - Model Context Protocol (MCP) server implementation
+  - SearXNG JSON API bridge with TTL caching
+  - URL content extraction with markdown conversion
+  - STDIO and HTTP transport modes
+  reported_results:
+  - '635 GitHub stars, 104 forks as of 2026-04-14'
+  - 'No performance benchmarks published'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-359
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-359
+    - intake-360
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    MCP bridge for SearXNG with 635 stars — the most popular SearXNG MCP server.
+    Two tools: searxng_web_search (query + filters) and web_url_read (URL content
+    extraction with section filtering, paragraph ranges, heading extraction —
+    converts to clean markdown). MIT license, TypeScript/Node.js.
+
+    RELEVANCE TO EPYC: Two distinct integration paths exist:
+    (1) Orchestrator backend: search.py calls SearXNG JSON API directly (Python,
+    no MCP needed). This is the primary path per searxng-search-backend.md.
+    (2) Claude Code sessions: mcp-searxng provides web search during research/
+    intake sessions via MCP. The web_url_read tool with section filtering is
+    particularly interesting — could replace ad-hoc page fetching in WebFetch.
+    Path (2) is lower priority but worth tracking for developer experience.
+
+    The TTL caching pattern is relevant — if SearXNG is deployed locally, caching
+    at the MCP layer is redundant (SearXNG has its own caching). But if using a
+    public instance, the MCP cache prevents redundant upstream queries.
