@@ -567,6 +567,34 @@ After AR-3 completes (≥50 trials), run this checklist to extract all folded-in
   ```
   See [colbert-reranker-web-research.md](colbert-reranker-web-research.md) § Post-AR-3 Analysis.
 
+#### Phase 6b: SearXNG Backend Validation (if SEARXNG_DEFAULT=1 during AR-3)
+
+- [ ] **SearXNG engine failure rate**
+  ```bash
+  grep "searxng unresponsive_engines" logs/*.log | wc -l
+  # Count total queries with unresponsive engines.
+  # >50% of queries with failures → SX-3 engine tuning needed.
+  # <10% → engine set is reliable under load.
+  ```
+
+- [ ] **SearXNG vs DDG result quality**
+  ```bash
+  # Compare S1 irrelevant page rate with SearXNG vs without:
+  grep "web_research relevance summary" logs/*.log
+  # Look for backend=searxng vs backend=duckduckgo (logged in web_search() return).
+  # If SearXNG irrelevant_rate > DDG irrelevant_rate: investigate engine tuning.
+  # If SearXNG irrelevant_rate <= DDG: SX-6 swap confirmed.
+  ```
+
+- [ ] **SearXNG latency overhead**
+  ```bash
+  grep "elapsed_ms.*backend" logs/*.log
+  # Compare SearXNG query latency vs DDG scraping latency.
+  # SearXNG should be comparable or faster (JSON vs HTML parsing).
+  ```
+
+  See [`searxng-search-backend.md`](searxng-search-backend.md) SX-5/SX-6.
+
 #### Phase 7: AM KV Compaction (if enabled during AR-3)
 
 - [ ] **Compaction usage during AR-3** (only if autopilot issued compact requests)
@@ -586,6 +614,8 @@ After completing all phases, fill in this table:
 | AR-3 health | Useful changes accepted | ≥1 | ___ | pass/fail |
 | AP-21 GEPA | GEPA acceptance% vs LLM | +10pp | ___% vs ___% | increase to 100% / keep 30-70 |
 | MH-4 GEPA code | GEPA frontier share | >50% | ___% | adopt / keep LLM |
+| SX-6 SearXNG swap | Engine failure rate | <10% queries affected | ___% | lock in SX-6 / revert to DDG |
+| SX-6 SearXNG swap | Irrelevant page rate delta | ≤DDG baseline | ___% vs ___% | confirm / iterate SX-3 |
 | RI-10 canary | High-risk samples | ≥50 | ___ | sufficient / extend window |
 | RI-10 canary | Factuality F1 delta | p<0.05 | p=___ | RI-11 expand / revert shadow |
 | CF Phase 3c | Quality monitor events | ≥3 | ___ | enable / defer |
@@ -809,6 +839,7 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 | **SEAL on 30B** | NO — needs dedicated server with cvector | Train + eval concise reasoning vector on Qwen3-Coder-30B-A3B. Separate from orchestrator stack. |
 | **AM P2 on 32B** | ✅ DONE — E2E beta injection tested on 32B f16 | L1-L3b complete. Beta injection via server endpoint works on Coder-32B. Full compaction quality test next. |
 | **ColBERT reranker S1 data** | YES — passive (already instrumented) | S1 relevance logging in `_web_research_impl()` fires on every web_research call. AR-3's 50-question `web_research` sentinel suite generates the data. After AR-3, grep logs for `web_research relevance summary` to measure irrelevant page rate. If >20%, proceed to S3 (model download). See [colbert-reranker-web-research.md](colbert-reranker-web-research.md). |
+| **SearXNG backend validation (SX-5/SX-6)** | YES — activate via feature flag | SX-1/2/3/4 implemented (Docker service, `_search_searxng()`, settings.yml, telemetry). Activate `ORCHESTRATOR_SEARXNG_DEFAULT=1` during AR-3 warmup trial. The web_research sentinel suite (50q) validates SearXNG search quality under real query patterns. Telemetry: `searxng unresponsive_engines` logs engine failures; S1 relevance instrumentation measures page quality. If no regression on first warmup trial, lock in SX-6 swap. If regression, disable flag and iterate on SX-3 engine tuning. Post-AR-3: analyze engine failure rates + result quality delta vs DDG baseline. See [`searxng-search-backend.md`](searxng-search-backend.md) P12. |
 
 ### Prioritization (updated 2026-04-13)
 

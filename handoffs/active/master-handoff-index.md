@@ -67,7 +67,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | S1-S4 done (ONNX Runtime, 180ms, PyLate eliminated), S5 gated on AR-3 data | MEDIUM | 2026-04-14 |
-| [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | stub (deployment plan + work items SX-1 through SX-6, tracked in R&O P12) | MEDIUM | 2026-04-14 |
+| [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | **COMPLETE** (18/18 tasks done) | ~~MEDIUM~~ | 2026-04-12 |

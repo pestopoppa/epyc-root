@@ -29,7 +29,7 @@
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
 | Retrain Routing Models | [`retrain-routing-models.md`](../blocked/retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
-| Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | stub (deployment plan + SX-1–SX-6 work items) | SX-1 Docker deployment (no data gate, independent) |
+| Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done, SX-5/6 folded into AR-3 Package D | SX-5 load test + SX-6 swap gated on AR-3 warmup |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -196,12 +196,12 @@ Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimi
 
 Source: intake-359/360/361. Replaces DDG HTML scraping + Brave fallback in `search.py` (lines 31-142) with self-hosted SearXNG JSON API. Independent workstream — no data gate, no inference dependency. Composes with ColBERT reranker S5 (richer snippets with `engines[]`/`score` metadata). See [`searxng-search-backend.md`](searxng-search-backend.md).
 
-- [ ] **SX-1: Docker container deployment** — Deploy SearXNG image (~183MB) on port 8090 via `orchestrator_stack.py` DOCKER_SERVICES. Config: `limiter: false` (API_MAX=4/hr blocks programmatic use), `search.formats: [html, json]`, Granian ASGI (not uWSGI). Valkey sidecar NOT needed.
-- [ ] **SX-2: `_search_searxng()` implementation** — ~15 lines in `search.py` replacing 112-line `_search_duckduckgo()`. Return `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper unchanged.
-- [ ] **SX-3: Engine tuning** — Per-engine weight, timeout (3.0s), `retry_on_http_error: [429]`. Disable Google engine explicitly (TLS fingerprint blocking, issue #2515). Favor DDG/Brave/Wikipedia/Qwant.
-- [ ] **SX-4: `unresponsive_engines[]` telemetry** — Wire JSON response `unresponsive_engines[]` into orchestrator monitoring (same telemetry path as DS-1 queue depth). Alert on >50% engine failure rate.
-- [ ] **SX-5: Load test** — 50-200 queries/session against DDG/Brave/Wikipedia/Qwant to validate reliability under EPYC's single-user query volume. Measure latency, engine failure rate, result quality.
-- [ ] **SX-6: Swap default** — Replace `_search_duckduckgo` with `_search_searxng` as primary backend in `web_search()`. Keep DDG HTML as fallback if SearXNG container is down.
+- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14. SearXNG in `DOCKER_SERVICES` (port 8090). Config: `config/searxng/settings.yml`.
+- [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. JSON API backend in `search.py` with DDG fallback.
+- [x] **SX-3: Engine tuning** — ✅ 2026-04-14. Google inactive, DDG/Brave/Wikipedia/Qwant weighted, per-engine timeout 3.0s.
+- [x] **SX-4: `unresponsive_engines[]` telemetry** — ✅ 2026-04-14. Logged on every call with failures.
+- [ ] **SX-5: Load test** — Folded into AR-3 Package D Phase 6b. Web_research sentinel suite (50q) validates under real query patterns.
+- [ ] **SX-6: Swap default** — Feature flag `ORCHESTRATOR_SEARXNG_DEFAULT=1` ready. Gated on AR-3 warmup trial. See bulk-inference-campaign.md Phase 6b.
 
 ### P9 — Legacy Cleanup & Operational Debt
 

@@ -147,12 +147,12 @@ Wire `unresponsive_engines[]` from JSON response into orchestrator telemetry (fi
 
 Mirrors P12 in [`routing-and-optimization-index.md`](routing-and-optimization-index.md). Both locations must stay in sync.
 
-- [ ] **SX-1: Docker container deployment** — Deploy SearXNG image (~183MB) on port 8090 via `orchestrator_stack.py` DOCKER_SERVICES. Config: `limiter: false`, `search.formats: [html, json]`, Granian ASGI (not uWSGI). Valkey sidecar NOT needed.
-- [ ] **SX-2: `_search_searxng()` implementation** — ~15 lines in `search.py` replacing 112-line `_search_duckduckgo()`. Return `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper unchanged.
-- [ ] **SX-3: Engine tuning** — Per-engine weight, timeout (3.0s), `retry_on_http_error: [429]`. Disable Google engine explicitly (TLS fingerprint blocking, issue #2515). Favor DDG/Brave/Wikipedia/Qwant.
-- [ ] **SX-4: `unresponsive_engines[]` telemetry** — Wire JSON response `unresponsive_engines[]` into orchestrator monitoring (same telemetry path as DS-1 queue depth). Alert on >50% engine failure rate.
-- [ ] **SX-5: Load test** — 50-200 queries/session against DDG/Brave/Wikipedia/Qwant to validate reliability under EPYC's single-user query volume. Measure latency, engine failure rate, result quality.
-- [ ] **SX-6: Swap default** — Replace `_search_duckduckgo` with `_search_searxng` as primary backend in `web_search()`. Keep DDG HTML as fallback if SearXNG container is down.
+- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14. SearXNG added to `DOCKER_SERVICES` in `orchestrator_stack.py` (port 8090, ~183MB). Config: `config/searxng/settings.yml` with `limiter: false`, `search.formats: [html, json]`, Granian ASGI. Valkey sidecar NOT needed. Docker not available on current machine — will activate when stack runs.
+- [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. Added to `search.py`. Returns `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper tries SearXNG first when flag enabled, falls back to DDG on failure.
+- [x] **SX-3: Engine tuning** — ✅ 2026-04-14. `config/searxng/settings.yml`: Google `inactive: true`, DDG weight 1.2, Brave 1.1, Wikipedia 1.0, Qwant 0.9. Per-engine timeout 3.0s, Qwant `retry_on_http_error: true`.
+- [x] **SX-4: `unresponsive_engines[]` telemetry** — ✅ 2026-04-14. `_search_searxng()` logs `searxng unresponsive_engines: ...` on every call with failures. Folded into AR-3 Package D Phase 6b for production validation.
+- [ ] **SX-5: Load test** — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engine failure rates + latency via Phase 6b checks.
+- [ ] **SX-6: Swap default** — Feature flag `ORCHESTRATOR_SEARXNG_DEFAULT=1` implemented. Gated on AR-3 warmup trial quality data. Post-AR-3: confirm no regression → lock in swap. See bulk-inference-campaign.md Phase 6b.
 
 ## Dependencies
 
