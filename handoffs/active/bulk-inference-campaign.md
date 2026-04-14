@@ -334,23 +334,23 @@ python3 scripts/benchmark/eval_tale_budget.py \
 
 ### AM KV Compaction Integration (NEW — 2026-04-13)
 
-**Status**: Ready to deploy. `POST /slots/{id}?action=compact` available in production build.
+**Status**: ✅ Autopilot integration COMPLETE (2026-04-14). `slot_compact` action wired into controller + slot memory visibility added. Ready for AR-3.
 
-**IMPORTANT: Passive by default.** The compact endpoint does NOTHING unless explicitly called. Normal inference is completely unaffected — no feature flags, no env vars, no config changes needed. The server behaves identically to pre-AM builds until a `compact` request is issued. The orchestrator/autopilot must opt in.
+**IMPORTANT: Passive by default.** The compact endpoint does NOTHING unless explicitly called. Normal inference is completely unaffected — no feature flags, no env vars, no config changes needed. The server behaves identically to pre-AM builds until a `compact` request is issued.
 
-**No orchestrator code changes required to run safely.** The AM kernel is in the llama-server binary only. The orchestrator can ignore it entirely and everything works as before. To USE compaction, the orchestrator needs to call the endpoint — see deployment modes below.
-
-**How to enable during AR-3**: The autopilot should use KV compaction on long-context slots to reduce memory pressure and enable more concurrent requests. Two deployment modes:
-
-1. **Manual trigger** — Call `compact` on slots that exceed a context threshold (e.g., >4K tokens). The autopilot controller can issue `POST /slots/{id}?action=compact` with `keep_ratio=0.3` after a long prefill to free KV memory. Tested at 5x compression with zero quality degradation on Coder-32B Q4KM, 7B, and SSM-hybrid frontdoor.
-
-2. **Autopilot-controlled** — Add AM compaction as a new autopilot action alongside existing stack management. The controller decides when to compact based on memory pressure (`llama_memory_breakdown`), context length, and task type. Parameters to tune: `keep_ratio` (0.2-0.5), `beta` (0.1), `keep_first` (5-10), `keep_last` (10-20).
+**Autopilot integration (2026-04-14)**:
+1. **`slot_compact` action dispatch** — `autopilot.py:812-849`. Controller can issue `{"type": "slot_compact", "port": 8080, "keep_ratio": 0.3, ...}`. Calls `POST /slots/{id}?action=compact`, logs pre/post token counts, measures quality via `hybrid_eval()`.
+2. **Slot memory visibility** — `_query_slot_memory()` queries `/slots` on primary production ports (8070-8084) every trial. Shows per-slot context size + state in controller prompt. Controller can now make informed compaction decisions.
+3. **Action guideline** — Controller prompt guideline #7: "If any slot shows >4000 tokens cached, consider slot_compact."
+4. **Strategy guidance** — `program.md` Tier 4.5 section documents validated parameters (keep_ratio=0.3, beta=0.5), target ports, constraints (only compact idle slots), and operational context.
 
 **Long-context validation needed**: Production contexts are 8K-32K tokens. Our tests validated up to 2.7K. AM should perform better at longer contexts (more attention concentration). AR-3 traffic provides the opportunity to validate at production scale. Monitor answer quality on compacted vs non-compacted slots to establish the production compression-quality curve.
 
 **Key files**:
 - Server endpoint: `tools/server/server-context.cpp` → `handle_slots_compact()`
-- Autopilot integration point: `epyc-orchestrator/scripts/autopilot/` → add compact action to controller
+- Autopilot dispatch: `epyc-orchestrator/scripts/autopilot/autopilot.py:812-849` → `slot_compact` handler
+- Slot visibility: `epyc-orchestrator/scripts/autopilot/autopilot.py:_query_slot_memory()` → queries `/slots` on production ports
+- Strategy: `epyc-orchestrator/scripts/autopilot/program.md` → Tier 4.5 KV Compaction section
 - Validation: compare quality metrics on compacted slots vs full-cache baseline during AR-3
 
 ### Config Changes (before launch)

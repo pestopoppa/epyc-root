@@ -522,3 +522,189 @@ Verification:
 Result:
 - Seeding control-plane coverage is now `100%` for `seeding_checkpoint`, `seeding_eval`, `seeding_infra`, `seeding_injection`, `seeding_orchestrator`, `seeding_rewards`, `seeding_scoring`, and `seeding_types`.
 - Remaining notable gaps in this focused tranche set are now `seeding_legacy` (`92%`) and `seeding_tui` (`85%`).
+
+### Broader Benchmark Tranche G (2026-04-14)
+
+Closed remaining legacy-surface gaps in `seeding_legacy.py`.
+
+Risk workflow:
+- GitNexus status confirmed current.
+- Impact warning:
+  - `evaluate_question`: `HIGH`
+- Kept tranche test-only.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_legacy.py` → `18 passed`
+- `python3 -m pytest -q tests/unit/test_seeding_legacy.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_legacy.py`: `92% -> 100%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` → `148 passed`.
+
+### Broader Benchmark Tranche H (2026-04-14)
+
+Closed remaining TUI lifecycle/error-path gaps in `seeding_tui.py`.
+
+Risk workflow:
+- TUI symbols are high fanout across benchmark/autopilot frontends.
+- Kept tranche test-only.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_tui.py` → `23 passed`
+- `python3 -m pytest -q tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_tui.py`: `85% -> 100%`
+- Combined seeding characterization suite:
+  - `python3 -m pytest -q tests/unit/test_seeding_*.py tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0` → `157 passed`
+  - Seeding module set now all `100%`:
+    - `seeding_checkpoint`, `seeding_eval`, `seeding_infra`, `seeding_injection`,
+      `seeding_legacy`, `seeding_orchestrator`, `seeding_rewards`,
+      `seeding_scoring`, `seeding_tui`, `seeding_types`.
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` (all enforced files `100%`).
+
+Result:
+- The seeding-focused benchmark tranche is now fully closed at `100%` per-module targeted coverage, while maintaining zero runtime changes in these closure tranches.
+
+### Broader Benchmark Tranche I (2026-04-14)
+
+Closed diagnostics formatter coverage for `eval_log_format.py`.
+
+Risk workflow:
+- Pure-formatting module (no runtime side effects).
+- Kept tranche test-only.
+
+Test additions:
+- `tests/unit/test_eval_log_format.py` (10 tests)
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_eval_log_format.py` → `10 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_eval_log_format.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/eval_log_format.py`: `11% -> 100%`
+- Combined benchmark characterization run:
+  - `python3 -m pytest -q tests/unit/test_eval_log_format.py tests/unit/test_seeding_*.py tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0` → `167 passed`
+  - In that run, `eval_log_format` + the full seeding tranche module set are all `100%`.
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` (all enforced files `100%`).
+
+Result:
+- Core seeding control-plane + diagnostics formatter surface is now fully characterized at `100%` in the targeted benchmark slice.
+- Remaining notable benchmark-runtime gaps are now concentrated in larger untouched scripts like:
+  - `seed_specialist_routing.py` (`13%`)
+  - `seed_specialist_routing_v2.py` (`0%`)
+
+### Broader Benchmark Tranche J (2026-04-14)
+
+Expanded specialist-routing control-plane characterization for both routing scripts.
+
+Risk workflow:
+- `gitnexus` CLI check was attempted but failed in this environment (`npx gitnexus status` npm/node target crash).
+- Per AGENTS guardrail intent, performed manual impact scan on `run_batch_3way`/`main` call sites before edits.
+- Kept tranche strictly test-only due high fanout of routing control code.
+
+Test additions:
+- `tests/unit/test_seed_specialist_routing_main_and_retry.py` (12 tests)
+
+Coverage-expanded seams:
+- `main()` branch matrix for both scripts:
+  - stats mode
+  - rebuild-pool mode
+  - 3-way one-shot dispatcher path
+  - legacy one-shot JSON output path
+- `seed_specialist_routing.py` v1-only `--question-ids`:
+  - missing-file `SystemExit(1)`
+  - successful lookup + forced `dry_run=True` + override propagation
+- `run_batch_3way` debugger retry flow for both scripts:
+  - verify/generalize/regress assembly
+  - retry metadata tagging
+  - diagnostics append + debugger flush lifecycle
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seed_specialist_routing_main_and_retry.py` → `12 passed`
+- Focused coverage read:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `33% -> 63%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `0% -> 43%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files at `100%`.
+
+Result:
+- Specialist routing benchmark surfaces now have substantially broader control-plane characterization without runtime edits.
+- Highest-value remaining gaps are concentrated in:
+  - continuous-mode loops/backoff branches,
+  - debug-replay/evolution post-batch hooks,
+  - remaining legacy-mode continuous branches.
+
+### Broader Benchmark Tranche K (2026-04-14)
+
+Deepened specialist-routing branch characterization across both script variants.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable (npm/node target null crash).
+- Manual impact scan confirmed edits stay in test-only surfaces exercising benchmark control entrypoints.
+
+Test additions:
+- Expanded `tests/unit/test_seed_specialist_routing_main_and_retry.py` (+20 tests over tranche-J baseline).
+- Added `tests/unit/test_seed_specialist_routing_v2_helpers.py` (4 tests).
+
+Coverage-expanded seams:
+- `main()` control branches:
+  - preflight failure exits
+  - explicit `resume` session propagation
+  - debug-without-`--3way` warning path
+  - 3-way continuous loop single-batch stop path
+  - legacy continuous loop single-batch stop path
+- v1 `--question-ids` error branches:
+  - invalid JSON shape
+  - empty lookup result
+- `run_batch_3way` branches:
+  - infra recovery + backoff sleep
+  - progress callback forwarding
+  - outcome-tracker recording
+  - debugger-exception non-fatal fallback
+- v2 helper seams:
+  - signal handlers, loader paths, pool fallback/interleave, summary rendering, profile/retrieval config helpers
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seed_specialist_routing_main_and_retry.py tests/unit/test_seed_specialist_routing_v2_helpers.py` → `32 passed`
+- Focused routing coverage run:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `63% -> 73%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `43% -> 70%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files at `100%`.
+
+Result:
+- Both specialist routing variants now have materially stronger control-plane characterization.
+- Remaining gaps are concentrated in higher-complexity replay/evolution/continuous-loop edge branches.
+
+### Broader Benchmark Tranche L (2026-04-14)
+
+Closed additional replay/evolve/helper error-path branches in specialist-routing scripts.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable; manual impact checks performed before edits.
+- Tranche stayed test-only.
+
+Test additions:
+- `tests/unit/test_seed_specialist_routing_main_and_retry.py` (additional replay/evolve branch tests)
+- `tests/unit/test_seed_specialist_routing_v2_helpers.py` (loader import-error path test)
+
+Coverage-expanded seams:
+- `main()` replay/debug path with stubbed replay modules and metrics emission.
+- `main()` evolve initialization failure and error-path assertions.
+- v2 loader import-error branches for adapter/yaml.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seed_specialist_routing_main_and_retry.py tests/unit/test_seed_specialist_routing_v2_helpers.py` → `37 passed`
+- Focused routing coverage run:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `73% -> 78%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `70% -> 76%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files at `100%`.
+
+Notes:
+- Combined focused coverage run emitted non-failing `ResourceWarning` entries for unclosed sqlite handles in mocked replay/evolve paths; this is a warning-hygiene cleanup candidate, not a functional test failure.
+
+Result:
+- Specialist routing characterization now covers most high-value control branches without runtime edits.

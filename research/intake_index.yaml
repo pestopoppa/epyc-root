@@ -12005,3 +12005,109 @@
     Monitor for: (a) pretrained log-linear Gated DeltaNet models, (b)
     NVlabs/GatedDeltaNet repo for upstream adoption, (c) llama.cpp community
     PRs for log-linear layer support.
+- id: intake-357
+  url: https://arxiv.org/abs/2604.05018
+  arxiv_id: '2604.05018'
+  source_type: paper
+  title: 'PaperOrchestra: A Multi-Agent Framework for Automated AI Research Paper Writing'
+  authors:
+  - Yiwen Song
+  - Yale Song
+  - Tomas Pfister
+  - Jinsung Yoon
+  categories:
+  - agent_architecture
+  - autonomous_research
+  key_claims:
+  - Multi-agent framework with 5 specialized agents (outline, plotting, literature review, section writing, content refinement) for end-to-end paper writing
+  - PaperWritingBench — first standardized benchmark of reverse-engineered raw materials from 200 top-tier AI conference papers (CVPR 2025, ICLR 2025)
+  - 50-68% absolute win rate margin in literature review quality vs autonomous baselines
+  - 14-38% win rate margin in overall manuscript quality vs AI Scientist-v2 and single-agent baseline
+  - API-grounded citations through Semantic Scholar validation with iterative self-reflection refinement
+  techniques:
+  - Multi-agent task decomposition (5 specialized agents)
+  - API-grounded citation verification via Semantic Scholar
+  - Iterative self-reflection (simulated peer-review)
+  - Parallel agent execution across decoupled workflows
+  - Structured LaTeX output with venue-specific templates
+  reported_results:
+  - '50-68% absolute win rate margin in literature review quality'
+  - '14-38% win rate margin in overall manuscript quality'
+  - '~39.6 minutes per paper, ~60-70 LLM API calls'
+  - 'Evaluated by 11 AI researchers in side-by-side human evaluation'
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Google Research paper (cs.AI, cs.LG, cs.MA). Multi-agent paper writing is a
+    novel application domain but has zero overlap with EPYC's inference
+    optimization focus. The "multi-agent" keyword matches across the codebase are
+    all superficial — EPYC's multi-agent work is inference orchestration (routing,
+    KV cache, spec decoding), not academic content generation. Credibility: 2
+    (Medium) — recent preprint (+1), Google Research authors (+1), no peer review
+    yet, no independent corroboration. The 5-agent architecture (outline, plotting,
+    literature review, section writing, refinement) with Semantic Scholar
+    API-grounded citations is well-engineered but domain-irrelevant.
+- id: intake-358
+  url: https://github.com/pratos/sanjaya
+  arxiv_id: null
+  source_type: repo
+  title: 'Sanjaya: Evidence-First RLM Agent Library'
+  authors: null
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - Python library for building evidence-first RLM (Recursive Language Model) agents with sandboxed REPL execution
+  - Multi-modal analysis — video (frame extraction, subtitles), documents (PDF, EPUB, PPTX), images (multiple formats)
+  - Auto-registers relevant toolkits based on input type
+  - Returns structured Answer objects with supporting evidence and token metrics
+  - Custom tool development via decorator-based Toolkit framework
+  techniques:
+  - RLM (Recursive Language Model) inference pattern
+  - Evidence-first reasoning with grounded answers
+  - Sandboxed Python REPL code execution loops
+  - Auto-toolkit registration by input modality
+  reported_results:
+  - '10 stars, 1 fork on GitHub as of 2026-04-14'
+  - 'No benchmarks or performance metrics reported'
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: already_integrated
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-153
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Another RLM implementation in a saturated space. The intake index already
+    tracks the foundational RLM paper (intake-153, arXiv:2512.24601), predict-rlm
+    (DSPy-based, ~intake-10568 range), dspy.RLM official module (~intake-11501
+    range), vRLM (MIT CSAIL), and the original alexzhang13/rlm repo. EPYC
+    implements ~80% of RLM patterns via context-folding-progressive.md. Sanjaya's
+    differentiator is multi-modal toolkit auto-registration (video/doc/image), but
+    this is an application-layer concern, not an inference optimization. Small repo
+    (10 stars, 1 fork) using OpenRouter/OpenAI APIs — no local inference, no
+    llama.cpp integration. Tech stack: Python + FastAPI backend, Next.js frontend.
+    No novel techniques or results beyond what's already tracked.
