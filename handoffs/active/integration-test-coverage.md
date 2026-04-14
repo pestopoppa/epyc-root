@@ -411,3 +411,85 @@ Verification:
 
 Note:
 - `seeding_eval` and `seeding_rewards` gains are currently targeted/validated but not yet part of the enforced `coverage-orchestrator-slice` threshold list.
+
+### Broader Benchmark Tranche C (2026-04-14)
+
+Extended characterization to legacy comparative-path control logic.
+
+Risk workflow:
+- GitNexus status confirmed up-to-date before changes.
+- Impact checks:
+  - `evaluate_question`: `HIGH`
+  - `_build_role_mode_combos`: `HIGH`
+  - `run_batch`: `LOW`
+- Strategy remained test-only due fanout on legacy entrypoints.
+
+Test additions:
+- `tests/unit/test_seeding_legacy.py`
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_legacy.py` → `12 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_seeding_legacy.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_legacy.py`: `0% -> 92%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` unchanged at `148 passed` with all 7 enforced files still `100%`.
+
+Result:
+- Legacy seeding fallback behavior is now substantially regression-characterized without runtime edits.
+
+### Broader Benchmark Tranche D (2026-04-14)
+
+Extended characterization to the seeding TUI diagnostics surface.
+
+Risk workflow:
+- GitNexus status confirmed up-to-date.
+- Impact checks:
+  - `SeedingTUI`: `HIGH`
+  - `TapTailer`: `MEDIUM`
+  - `_style_stream_lines`: `LOW`
+  - `_latex_to_unicode`: `LOW`
+- Because this path is shared by benchmark/autopilot frontends, kept tranche strictly test-only.
+
+Test additions:
+- `tests/unit/test_seeding_tui.py` (13 tests)
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_tui.py` → `13 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_tui.py`: `0% -> 85%`
+- Combined seeding characterization suite:
+  - `python3 -m pytest -q tests/unit/test_seeding_*.py tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0` → `131 passed`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` (all enforced files `100%`).
+
+Result:
+- TUI observability path is no longer uncovered; key display/sanitization/tailer lifecycle branches are now tested.
+
+### Broader Benchmark Tranche E (2026-04-14)
+
+Closed the remaining uncovered branches in `seeding_eval.py`.
+
+Risk workflow:
+- GitNexus index confirmed current before edits.
+- Impact checks:
+  - `_eval_single_config`: `CRITICAL`
+  - `evaluate_question_3way`: `CRITICAL`
+- Strategy remained test-only due fanout into benchmark `main` + autopilot dispatch paths.
+
+Test additions:
+- Expanded `tests/unit/test_seeding_eval.py` (5 additional branch-focused tests)
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_eval.py` → `12 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_seeding_eval.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_eval.py`: `80% -> 100%`
+- Combined seeding characterization suite:
+  - `python3 -m pytest -q tests/unit/test_seeding_*.py tests/unit/test_seeding_tui.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0` → `137 passed`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` (all enforced files `100%`).
+
+Result:
+- `seeding_eval.py` is now fully covered with test-only changes; residual notable benchmark gaps in this seeding-focused slice are now primarily `seeding_tui` (`85%`), `seeding_legacy` (`92%`), and `seeding_rewards` (`93%`).

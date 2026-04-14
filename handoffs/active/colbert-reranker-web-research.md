@@ -84,13 +84,33 @@ DDG/Brave search (5 results)
 
 **Future extension**: If reranker proves valuable, expose a `rerank_snippets(query, snippets)` utility function that `combined_ops.py` could also call.
 
+## Post-AR-3 Analysis
+
+After AR-3 completes (or accumulates sufficient web_research trials), run the analysis script to extract the go/no-go decision:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/analyze_web_research_baseline.py /mnt/raid0/llm/epyc-inference-research/benchmarks/results/eval
+```
+
+The script reports:
+- Total pages synthesized across all web_research calls
+- Pages classified irrelevant (count + percentage)
+- **Go/no-go recommendation**: `>20%` → proceed to S3, `10-20%` → marginal, `<10%` → skip
+
+If checkpoint data is insufficient (few web_research calls), also grep orchestrator logs as a backup:
+
+```bash
+grep "web_research relevance summary" /path/to/orchestrator.log | tail -20
+```
+
 ## Work Items
 
 - [x] **S1: Instrument relevance logging** ✅ 2026-04-14 — Added `_is_irrelevant_synthesis()` heuristic + per-page/summary logging to `_web_research_impl()`. Returns `pages_irrelevant` + `irrelevant_rate` in response dict. 5 tests added. **Data collection folded into AR-3 Package D** — AR-3 includes a `web_research` sentinel suite (50 questions) that will trigger this instrumentation automatically during autopilot runs.
   - File: `epyc-orchestrator/src/tools/web/research.py` (lines 44-69: detection, lines 376-400: instrumentation)
   - Tests: `epyc-orchestrator/tests/unit/test_web_research_dedup.py` (TestIrrelevantSynthesisDetection, 5 cases)
 
-- [x] **S2: Register feature flag** ✅ 2026-04-14 — Added to `src/features.py` FeatureSpec registry + Features dataclass. Registry consistency test passes.
+- [x] **S2: Register feature flag** ✅ 2026-04-14 — Added to `src/features.py` FeatureSpec registry + Features dataclass. Registry consistency test passes. Telemetry pipeline wired: `pages_irrelevant` + `irrelevant_rate` captured in `repl_executor.py`, `chat_delegation.py`, `WebResearchTelemetry`, and `analyze_web_research_baseline.py`.
   ```python
   FeatureSpec("web_research_rerank", False, False, "WEB_RESEARCH_RERANK",
               "ColBERT snippet reranking in web_research pipeline")
@@ -99,7 +119,7 @@ DDG/Brave search (5 results)
   - File: `epyc-orchestrator/src/features.py`
   - Effort: ~15min
 
-- [ ] **S3: Download model + PyLate setup** — Download ColBERT-Zero (or mxbai-edge-colbert 17M if license issue). Verify PyLate can load and encode snippets. **Prerequisite**: S1 confirms >20% irrelevant page rate. **Prerequisite**: verify ColBERT-Zero license from HuggingFace model card.
+- [ ] **S3: Download model + PyLate setup** — Download ColBERT-Zero (or mxbai-edge-colbert 17M if license issue). Verify PyLate can load and encode snippets. **Prerequisite**: post-AR-3 analysis confirms >20% irrelevant page rate (see "Post-AR-3 Analysis" above). **Prerequisite**: verify ColBERT-Zero license from HuggingFace model card.
   - Model path: `/mnt/raid0/llm/models/colbert-zero/` (or `mxbai-edge-colbert-17m/`)
   - Effort: ~1h
 

@@ -421,6 +421,179 @@ python3 scripts/server/chain_anomaly_detector.py --date $(date +%Y-%m-%d) --json
 - [ ] **CF Phase 3c**: Quality monitor fires on ≥3 consolidation events. No false positives (degradation detected when quality is stable).
 - [ ] **DS-5**: ≥3 model candidates tested via StructuralLab species.
 
+### Post-AR-3 Analysis Index
+
+After AR-3 completes (≥50 trials), run this checklist to extract all folded-in results. Each item lists the analysis command, where the data lives, and the decision it gates.
+
+**Data locations** (all paths relative to `/mnt/raid0/llm/epyc-orchestrator`):
+- Autopilot journal: `orchestration/autopilot_journal.jsonl` (+ `.tsv` human-readable)
+- Autopilot state: `orchestration/autopilot_state.json` (Pareto archive, consecutive_failures)
+- Seeding checkpoints: `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/eval/*.jsonl`
+- Orchestrator logs: stdout/stderr from `autopilot.py` process
+
+#### Phase 1: Autopilot Health (run first)
+
+- [ ] **Trial count + corruption check**
+  ```bash
+  wc -l orchestration/autopilot_journal.jsonl
+  # Expect ≥50 lines. Check for JSON parse errors:
+  python3 -c "import json; [json.loads(l) for l in open('orchestration/autopilot_journal.jsonl')]" 2>&1 | tail -3
+  ```
+  Gate: ≥50 trials, zero corruption → AR-3 success criterion met.
+
+- [ ] **Autopilot report** (generates plots + narrative)
+  ```bash
+  python3 scripts/autopilot/autopilot.py report
+  # Outputs: autopilot_plots/ (hypervolume, quality trend, species contributions, failure breakdown)
+  ```
+
+- [ ] **Safety gate audit** — verify no accepted trial after 3+ consecutive failures
+  ```bash
+  python3 -c "
+  import json
+  for l in open('orchestration/autopilot_journal.jsonl'):
+      t = json.loads(l)
+      if t.get('accepted') and t.get('consecutive_failures', 0) >= 3:
+          print(f'WARNING: trial {t[\"trial_id\"]} accepted after {t[\"consecutive_failures\"]} failures')
+  " 
+  ```
+
+#### Phase 2: GEPA vs LLM Analysis (gates AP-21)
+
+- [ ] **Mutation acceptance rates by type**
+  ```bash
+  python3 -c "
+  import json
+  from collections import Counter
+  total, accepted = Counter(), Counter()
+  for l in open('orchestration/autopilot_journal.jsonl'):
+      t = json.loads(l)
+      mt = t.get('mutation_type', 'unknown')
+      total[mt] += 1
+      if t.get('accepted'): accepted[mt] += 1
+  for mt in sorted(total):
+      rate = 100 * accepted[mt] / total[mt] if total[mt] else 0
+      print(f'{mt}: {accepted[mt]}/{total[mt]} ({rate:.1f}%)')
+  "
+  ```
+  Decision: If GEPA acceptance% > LLM by ≥10pp AND ≥3 GEPA trials on Pareto frontier → increase GEPA ratio to 100% (AP-21). Else keep 30/70.
+
+- [ ] **Pareto frontier contributions by mutation source**
+  ```bash
+  python3 -c "
+  import json
+  state = json.load(open('orchestration/autopilot_state.json'))
+  archive = state.get('pareto_archive', [])
+  from collections import Counter
+  sources = Counter(e.get('mutation_type', 'unknown') for e in archive)
+  print(f'Pareto archive: {len(archive)} entries')
+  for mt, n in sources.most_common():
+      print(f'  {mt}: {n} ({100*n/len(archive):.0f}%)')
+  "
+  ```
+  Same decision as above — also gates MH-4 (GEPA as search algorithm).
+
+#### Phase 3: Routing Intelligence (gates RI-10 → RI-11)
+
+- [ ] **Canary sample counts** — factual risk band distribution in seeding results
+  ```bash
+  python3 -c "
+  import json, glob
+  high, total = 0, 0
+  for f in glob.glob('/mnt/raid0/llm/epyc-inference-research/benchmarks/results/eval/*.jsonl'):
+      for l in open(f):
+          try:
+              e = json.loads(l)
+              meta = e.get('metadata', {})
+              band = meta.get('factual_risk_band', '')
+              if band: total += 1
+              if band == 'high': high += 1
+          except: pass
+  print(f'Total risk-scored: {total}, High-risk: {high} (need ≥50)')
+  "
+  ```
+  Gate: ≥50 high-risk samples → sufficient for statistical test. If <50, extend canary window.
+
+- [ ] **Enforce vs shadow factuality comparison** — extract from seeding checkpoint metadata
+  ```bash
+  # Factual risk scores are in ChatResponse.factual_risk_score/band, persisted to checkpoint metadata.
+  # Compare pass rates for enforce-arm vs shadow-arm questions.
+  # If p<0.05 factuality improvement + no latency regression → proceed to RI-11 (expand to 100%).
+  # Else revert to shadow.
+  ```
+
+#### Phase 4: Context Folding (gates CF Phase 3c)
+
+- [ ] **Quality monitor events**
+  ```bash
+  grep "COMPACTION_QUALITY_MONITOR\|compaction_quality" logs/agent_audit.log | wc -l
+  # Need ≥3 events. Check for false positives:
+  grep "COMPACTION_QUALITY_MONITOR" logs/agent_audit.log
+  ```
+  Gate: ≥3 events, <10% false positive rate → Phase 3c production-ready. Enable `role_aware_compaction` for AR-4.
+
+- [ ] **SFT pair collection** (passive during AR-3)
+  ```bash
+  find /mnt/raid0/llm/tmp -name "compaction_sft_*.jsonl" 2>/dev/null | xargs wc -l 2>/dev/null
+  # Target: ≥100 pairs for future Phase 2d fine-tuning
+  ```
+
+#### Phase 5: Dynamic Stack (gates DS-5 → DS-6)
+
+- [ ] **StructuralLab model candidates tested**
+  ```bash
+  python3 -c "
+  import json
+  trials = []
+  for l in open('orchestration/autopilot_journal.jsonl'):
+      t = json.loads(l)
+      if t.get('species') == 'structural_lab':
+          trials.append(t)
+  print(f'StructuralLab trials: {len(trials)}')
+  for t in trials:
+      print(f'  trial {t.get(\"trial_id\")}: action={t.get(\"action_type\")}, q={t.get(\"quality\",0):.2f}, accepted={t.get(\"accepted\")}')
+  "
+  ```
+  Gate: ≥3 candidates tested. If any beats baseline on Pareto → recommend for DS-6 stack template.
+
+#### Phase 6: ColBERT Reranker (gates S3 download)
+
+- [ ] **Web research irrelevant page rate**
+  ```bash
+  cd /mnt/raid0/llm/epyc-inference-research
+  python3 scripts/benchmark/analyze_web_research_baseline.py benchmarks/results/eval
+  # Look for "Relevance Analysis" section.
+  # >20% → proceed to S3. 10-20% → marginal. <10% → skip.
+  ```
+  See [colbert-reranker-web-research.md](colbert-reranker-web-research.md) § Post-AR-3 Analysis.
+
+#### Phase 7: AM KV Compaction (if enabled during AR-3)
+
+- [ ] **Compaction usage during AR-3** (only if autopilot issued compact requests)
+  ```bash
+  grep "compact\|compaction" logs/agent_audit.log | head -20
+  # If no compaction was triggered, this is expected (passive-by-default).
+  # If triggered: check quality metrics on compacted slots vs full-cache baseline.
+  ```
+
+#### Decision Summary Template
+
+After completing all phases, fill in this table:
+
+| Task | Metric | Threshold | Observed | Decision |
+|------|--------|-----------|----------|----------|
+| AR-3 health | Trials completed | ≥50 | ___ | pass/fail |
+| AR-3 health | Useful changes accepted | ≥1 | ___ | pass/fail |
+| AP-21 GEPA | GEPA acceptance% vs LLM | +10pp | ___% vs ___% | increase to 100% / keep 30-70 |
+| MH-4 GEPA code | GEPA frontier share | >50% | ___% | adopt / keep LLM |
+| RI-10 canary | High-risk samples | ≥50 | ___ | sufficient / extend window |
+| RI-10 canary | Factuality F1 delta | p<0.05 | p=___ | RI-11 expand / revert shadow |
+| CF Phase 3c | Quality monitor events | ≥3 | ___ | enable / defer |
+| CF Phase 3c | False positive rate | <10% | ___% | pass / investigate |
+| DS-5 models | Candidates tested | ≥3 | ___ | DS-6 ready / continue |
+| ColBERT S1 | Irrelevant page rate | >20% | ___% | proceed S3 / deprioritize |
+| AM compaction | Compaction quality | No degradation | ___ | production / defer |
+
 ---
 
 ## Package E: Vision + Hermes Validation

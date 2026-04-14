@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B)
+**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -53,9 +53,9 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 relaunching with GEPA, P6 RI-10 canary, P7-P9 pending, **P10 AP-19/20+MH-4 folded into AR-3** (2026-04-12), P10b/P11 non-inference DONE. Remaining: AP-21 (conditional), AP-26/27 (post-AR-3) |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 2 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (stub — future) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (stub), **Log-Linear GDN readiness** (stub — monitoring) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen expanded to 4 mechanisms |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
@@ -75,7 +75,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, plus broader targeted coverage now validated for `seeding_checkpoint` `100%`, `seeding_scoring` `100%`, `seeding_types` `100%`, `seeding_eval` `80%`, `seeding_rewards` `93%` (not yet gate-enforced) | MEDIUM | 2026-04-14 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, plus broader targeted coverage now validated for `seeding_checkpoint` `100%`, `seeding_scoring` `100%`, `seeding_types` `100%`, `seeding_eval` `100%`, `seeding_rewards` `93%`, `seeding_legacy` `92%`, `seeding_tui` `85%` (not yet gate-enforced) | MEDIUM | 2026-04-14 |
 
 ---
 
