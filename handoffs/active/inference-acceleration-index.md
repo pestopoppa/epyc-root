@@ -21,7 +21,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10), hybrid SSM fix (2026-04-11) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
 | [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Scaffold ready | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark scaffold ready (2026-04-13), awaiting model server |
-| [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — P1 complete | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 10x compression (narrative), coding TBD | P1 ✅ HighestAttnKeys-fast ported + validated (2026-04-13). P2: needs model server |
+| [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — L1-L4+L4b merged to production | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 5x compression (zero degradation, validated on 3 models) | L1-L4 ✅ native ggml NNLS+OLS on `production-consolidated-v3`. L4b K-norm scoring. P2 Coder-32B coding benchmarks: needs model server |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 | [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **STUB** — activates on GPU acquisition | rocWMMA, hipBLASLt grouped GEMM, Stream-K, CPU+GPU hybrid MoE | All MoE production models | MI300X: 4011 tok/s Llama-70B (213% over H100) | Acquire GPU hardware; then test `-ot "exps=CPU"` hybrid on 30B-A3B |
 
@@ -95,7 +95,7 @@ Four orthogonal layers, each operating on a different dimension of KV memory:
 | Layer | Method | Compression | Status | Handoff |
 |-------|--------|-------------|--------|---------|
 | **Quantization** | Hadamard + q4_0 | 2-4x | **DEPLOYED** (`b51c905`) | `kv-cache-quantization.md` |
-| **Compaction** | Attention Matching | 2-5x validated | P1 ✅, P2 on 7B ✅, **L1-L3b COMPLETE** (beta kernel + API + server endpoint + E2E on 32B). Pipeline ready for full compaction test. | `attention-matching-kv-compaction.md` |
+| **Compaction** | Attention Matching | 2-5x validated | P1 ✅, P2 on 7B ✅, **L1-L4+L4b MERGED** to `production-consolidated-v3` (`81c9ad1ec`, `7784b3d9c`). Native ggml NNLS+OLS + K-norm scoring. 5x zero-degradation on 3 models. Remaining: P2 Coder-32B coding benchmarks. | `attention-matching-kv-compaction.md` |
 | **Selection** | TriAttention / Expected Attention | 2-10x | S1 scaffold ready, proxy eval cosine=1.000 at 50% (2026-04-13) | `triattention-kv-selection.md` |
 | **Block masking** | Memento | 2-3x | S1 feasibility CONFIRMED + runtime validated (2026-04-13). OpenMementos downloaded. | `memento-block-reasoning-compression.md` |
 
@@ -199,7 +199,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | **NUMA multi-instance** | `completed/numa-orchestrator-deployment.md` | DEPLOYED — all roles multi-instance |
 | **REAP expert pruning** | `completed/reap-moe-expert-pruning.md` | DEPLOYED — 246B replaces 480B |
 | **KV cache quantization** | `kv-cache-quantization.md` | ACTIVE — Hadamard deployed, monitoring TurboQuant |
-| **KV cache compaction** | `attention-matching-kv-compaction.md` | ACTIVE — Python prototype + llama.cpp attention bias support planned |
+| **KV cache compaction** | `attention-matching-kv-compaction.md` | ACTIVE — L1-L4+L4b merged to production, native ggml compaction. P2 coding benchmarks pending |
 | **KV cache selection** | `triattention-kv-selection.md` | ACTIVE — Expected Attention (S1) + TriAttention (S2) evaluation |
 | **Cross-instance KV sharing** | `dynamic-stack-concurrency.md` (Phase F) | PLANNED — KVCOMM for homogeneous worker pools (intake-352) |
 | Tree speculation | `completed/tree-speculation-numa-drafting.md` | COMPLETE — tree ≈ linear at 48t |

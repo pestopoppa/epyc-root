@@ -710,3 +710,37 @@ The right refactor is therefore:
 - third, decompose the modules that currently hide those truths
 
 That sequencing will improve reliability faster than a purely cosmetic modularity pass, and it will make every later refactor materially safer.
+
+## Post-Completion Coverage Contract (2026-04-13, Pass 7)
+
+Follow-up remediation was completed after the original 8-phase refactor closeout to harden benchmark/runtime script coverage without changing production runtime behavior.
+
+Completed in this pass:
+- Added consumer/error-path suites for benchmark seeding control plane:
+  - `tests/unit/test_seeding_injection_additional.py`
+  - `tests/unit/test_seeding_orchestrator.py`
+- Added onboarding runtime script characterization:
+  - `tests/unit/test_script_lib_onboard.py`
+- Added a dedicated focused coverage gate:
+  - `make coverage-orchestrator-slice`
+  - parser: `scripts/analysis/check_orchestrator_slice_coverage.py`
+
+Focused gate baseline (2026-04-13):
+- Verification command: `make coverage-orchestrator-slice`
+- Result: `106 passed`
+- Per-file enforced floors (all passing):
+  - `scripts/benchmark/seeding_infra.py`: `100.00%` (floor `95%`)
+  - `scripts/lib/executor.py`: `88.04%` (floor `85%`)
+  - `scripts/lib/registry.py`: `86.88%` (floor `85%`)
+  - `scripts/lib/output_parser.py`: `93.58%` (floor `90%`)
+  - `scripts/lib/onboard.py`: `83.08%` (floor `80%`)
+  - `scripts/benchmark/seeding_injection.py`: `98.94%` (floor `95%`)
+  - `scripts/benchmark/seeding_orchestrator.py`: `80.49%` (floor `80%`)
+
+Risk posture in this pass:
+- Runtime logic intentionally unchanged.
+- Changes are test + gate infrastructure only, because these modules have high fan-out and behavior should move only when characterization exposes a concrete defect.
+
+Residual truth:
+- This closes the focused slice contract.
+- Repo-wide script coverage outside this slice remains broad and uneven; that should be treated as a separate campaign.

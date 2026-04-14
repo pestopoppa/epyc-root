@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Wiki compilation pipeline + 24 compiled articles from 219 sources)
+**Updated**: 2026-04-14 (Wiki compilation pipeline + focused orchestrator coverage 100%-feasibility audit)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -75,7 +75,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused benchmark/runtime slice now has enforced per-file gate (`coverage-orchestrator-slice`) with all seven target modules passing floors | MEDIUM | 2026-04-13 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate is stable and now has a 100%-feasibility audit with must-test vs acceptable-gap classification | MEDIUM | 2026-04-14 |
 
 ---
 
