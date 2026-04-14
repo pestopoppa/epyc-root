@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L)
+**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -71,12 +71,12 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | **COMPLETE** (18/18 tasks done) | ~~MEDIUM~~ | 2026-04-12 |
-| [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
+| [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache compression (EA) | **DEPLOYED** — EA scorer in production kernel + server endpoint + autopilot. S4/S5/S6/S7 done. Next: S8 autopilot exploration → S9 orchestrator auto-trigger | HIGH | 2026-04-14 |
 | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (L1-L4+L4b merged to production-consolidated-v3. P2 coding benchmarks pending) | MEDIUM | 2026-04-13 |
-| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
+| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE — S1 runtime PASSED (5/5, 2026-04-14). S2 LoRA training unblocked. | HIGH | 2026-04-14 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, broader targeted coverage validated at `100%` for `eval_log_format` + seeding tranche modules, and specialist routing control-plane coverage advanced to `seed_specialist_routing=78%` and `seed_specialist_routing_v2=76%` (targeted characterization, not yet enforced gate) | MEDIUM | 2026-04-14 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, broader targeted coverage validated at `100%` for `eval_log_format` + seeding tranche modules, and specialist routing control-plane coverage advanced to `seed_specialist_routing=85%` and `seed_specialist_routing_v2=84%` (targeted characterization, not yet enforced gate) | MEDIUM | 2026-04-14 |
 
 ---
 
