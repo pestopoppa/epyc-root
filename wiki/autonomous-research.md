@@ -1,0 +1,98 @@
+# Autonomous Research
+
+**Category**: `autonomous_research`
+**Confidence**: verified
+**Last compiled**: 2026-04-13
+**Sources**: 19 documents (1 deep-dive, 15 intake entries, 3 handoffs)
+
+## Summary
+
+Autonomous research in the EPYC context refers to systems that can propose, execute, evaluate, and learn from optimization experiments without human intervention. The project's AutoPilot is a continuous optimization loop with 4 optimizer species (Seeder for 3-way eval and Q-value training, NumericSwarm for Optuna NSGA-II parameter search, PromptForge for LLM-guided prompt mutation, StructuralLab for flag and routing model lifecycle experiments), a tiered evaluation tower (T0: 10 questions in 30s, T1: 100 questions in 5m, T2: 500+ questions in 30m), a 4D Pareto archive (quality x speed x -cost x reliability), safety gates with quality floor and per-suite regression guards, and an Evolution Manager species for knowledge distillation into a FAISS+SQLite strategy store.
+
+The central insight synthesized across all research sources is that **knowledge distillation must be a separate, explicit step after every optimization trial -- not just metric recording**. EvoScientist (intake-108) provides the strongest evidence: its three-agent pipeline (Researcher, Engineer, Evolution Manager) with two persistent memory modules achieves +10.17 percentage points in code execution success rates through strategy distillation alone, and removing all evolution channels causes -45.83 average gap. The Evolution Manager's three channels -- Idea Direction Evolution (what abstract principle led to success), Idea Validation Evolution (why ideas failed with LLM-analyzed reasons), and Experiment Strategy Evolution (generalizable strategies from code search trajectories) -- address the specific gap identified in the EPYC AutoPilot: species were effective optimizers but memoryless beyond the Pareto archive and Optuna's internal state. This has been addressed by implementing an Evolution Manager species that runs every 5 trials, distilling knowledge via LLM summarization into a retrievable strategy store.
+
+A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented iteration dramatically improves convergence. Removing access to prior research causes performance to plateau at 73.4-73.8% on MATH-500, while with N=5 paper retrieval it continues improving to 78.2%. Multi-lab parallel research (3 labs) reaches the same milestone in 7 papers instead of 23, trading 3x cost for proportionally faster wall-clock discovery. The EPYC AutoPilot implemented this via strategy store retrieval and cross-species fertilization, closing the "passive journal" gap where the experiment journal was comprehensive but never queried by species during proposal generation.
+
+A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
+
+## Key Findings
+
+- **The Evolution Manager pattern addresses the largest gap in automated optimization.** EvoScientist's ablation study quantifies the value: without Idea Direction Evolution -22.50 average gap (novelty and feasibility hurt most), without Idea Validation Evolution -20.00 (feasibility disproportionately harmed), without all evolution -45.83. Strategy distillation alone (ESE) yields +10.17pp code execution success rate (34.39% to 44.56%). The core insight: raw trial metrics do not capture why things worked or failed. The Evolution Manager observes trial histories and distills abstract, generalizable strategies before storage -- it never executes experiments or generates ideas, only observes and distills. [evoscientist-multi-agent-evolution.md](../research/deep-dives/evoscientist-multi-agent-evolution.md)
+
+- **Retrieval-augmented iteration dramatically improves convergence.** AgentRxiv's protocol is simple: embed current goal, cosine similarity against accumulated findings, return top-N, inject into proposal context. The difference is material: performance plateaus without retrieval and continues improving with it. The quality gate is critical -- AgentRxiv's biggest weakness (hallucinated papers polluting the knowledge base) is already addressed in the EPYC architecture by the safety gate that prevents bad results from entering the archive. [agent-architectures-paperclip-agentrxiv.md](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md)
+
+- **GEPA evolutionary optimization is 35x more efficient than GRPO for prompt evolution.** GEPA (Genetic-Pareto Prompt Evolution) uses reflective trace analysis with Actionable Side Information (ASI) to guide mutations. It works with as few as 3 examples, is compatible with local inference (Ollama/vLLM format), and costs ~$2-10 per optimization run. Integrated into PromptForge at 30% of trials as a `gepa` mutation type. AR-3 journal will collect comparison data to determine optimal GEPA-to-LLM mutation ratio. [intake-327, intake-335, intake-345]
+
+- **Self-criticism loops and short-term memory improve autonomous optimization quality.** MiniMax M2.7's 3-component harness (short-term memory markdown, explicit self-criticism, forward-looking optimization) over 100+ autonomous rounds showed 30% improvement. The EPYC AutoPilot adopted this with a `ShortTermMemory` class (markdown persistence) and rule-based `generate_self_criticism()` function in the controller. [intake-328, intake-329]
+
+- **Bug fixes vastly outperform hyperparameter tuning on broken baselines.** Omni-SimpleMem (intake-265) showed +175% improvement from bug fixes versus all hyperparameter tuning combined. This generalizes to "fixing broken systems beats tuning broken systems." The actionable takeaway for the functioning EPYC AutoPilot is structured deficiency classification (AP-14): auto-populate `deficiency_category` from SafetyGate violation type to enable pattern detection in PromptForge. [intake-265]
+
+- **The eval tower IS an RLVR environment.** Unsloth's Reinforcement Learning with Verifiable Rewards framework maps 1:1 to the T0/T1/T2 evaluation tiers. Formalizing these as verification functions with deterministic reward signals per tier (not just benchmarks) enables actual model RL training if cloud GPU becomes available. The eval_tower already provides the environment interface; the missing piece is the reward function formalization. [intake-320]
+
+- **The "Mismanaged Geniuses" hypothesis validates compositional optimization.** Frontier LLMs are already superhuman on the hardest exams (IMO, IOI). The key variable is decomposition space design, not model capability -- a 4B RLM achieved 100% on MRCRv2 via composition. This provides theoretical foundation for the autopilot's approach of optimizing orchestration intelligence rather than scaling model size. The bottleneck is how you manage the model, not the model itself. [intake-312]
+
+- **Agent Lightning provides framework-agnostic agent optimization with hierarchical credit assignment.** Three optimization modes (RL, prompt optimization, SFT) map to existing species. Its trajectory-level aggregation addresses the per-question vs per-trajectory eval gap. LightningRL's hierarchical credit assignment enables per-request reward attribution, dramatically improving PromptForge mutation signal quality compared to aggregate suite-level metrics. [intake-338]
+
+- **Multi-agent collective intelligence achieves superlinear speedup on some tasks.** SiliconSwarm (intake-248) ran 6 autonomous agents on 6 Macs collaboratively optimizing ANE inference, achieving 6.31x faster than Apple CoreML via a 9-step optimization loop and shared memory. The pattern (query swarm, edit, build, verify, benchmark, publish) maps to parallel autopilot instances sharing an experiment journal. [intake-248]
+
+- **AutoResearch suitability requires four properties.** Scalar metrics, modular architecture, fast iteration cycles, and version-controlled modifications. The EPYC AutoPilot satisfies all four, confirming it is in the right structural class for autonomous optimization. The single-file modification constraint from AutoResearch (intake-148) and the program.md strategy separation from PraxLab (intake-149) both validate existing autopilot design patterns. [intake-148, intake-149]
+
+- **Execution trace feedback provides +15 points over score-only feedback.** The Meta-Harness ablation (intake-244) shows: scores only 34.6% median accuracy, scores + text summaries 34.9%, full filesystem access to traces 50.0%. This is implemented as Tier 1 in the autopilot via inference_tap.log trace injection into PromptForge's failure context. [meta-harness-optimization.md handoff]
+
+## Actionable for EPYC
+
+### High Priority (next compute session)
+1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval). State at trial_counter=46. Hybrid eval (T0 fast-reject + T1 real gate) gives honest signal per trial.
+2. **AP-21: GEPA vs LLM mutation decision** -- after 50+ AR-3 trials, compare GEPA vs LLM mutation acceptance rates and Pareto frontier contributions. If GEPA dominates, increase ratio from 30% to 100%.
+3. **AP-14: Structured deficiency classification** -- add `deficiency_category` enum to JournalEntry. Auto-populate from SafetyGate violation type. Enables pattern detection (Omni-SimpleMem finding: structured defect classification is prerequisite for targeted fixes).
+
+### Medium Priority
+4. **AP-15: Species field verification audit** -- verify all 5 species (including Evolution Manager) populate `hypothesis` + `expected_mechanism` during AR-3. Missing fields reduce strategy distillation quality.
+5. **AP-16: Instruction token budget tracking** -- count tokens in all loaded .md templates using LlamaTokenizer. Alert if instruction ratio > 20% of context window. Prerequisite for AP-17 structural pruning.
+6. **AP-26: Test dspy.RLM for autopilot tasks** -- long-horizon benchmark analysis where metadata-first context exploration avoids context window limits.
+7. **AP-27: Formalize eval tower tiers as RLVR verification functions** with deterministic reward signals per tier. Foundation for future model RL training.
+
+### Lower Priority
+8. **AP-17: Structural pruning in StructuralLab** -- new `structural_prune` action type for block-level deletions from .md prompt files. Depends on AP-16 providing the baseline token budget data.
+9. **Parallel autopilot instances** -- run 2-3 instances with different species configurations sharing a common experiment journal. AgentRxiv shows 3x cost but proportionally faster wall-clock discovery. Requires journal locking or append-only protocol.
+10. **Heartbeat-driven invocation** -- convert autopilot from continuous loop to schedule-driven invocation with accumulated context (Paperclip pattern). More resource-efficient for overnight runs but less responsive.
+
+### Blocked
+11. **AP-21** blocked on AR-3 trial data (need 50+ trials with GEPA mixture).
+12. **Hard-negative training data** (intake-176) blocked on 500+ MemRL memories for routing classifier retraining.
+
+## Open Questions
+
+- What is the optimal GEPA-to-LLM mutation ratio? Initial setting is 30% GEPA. AR-3 data will resolve this empirically.
+- Can GEPA Full Program Adapter evolve routing logic, tool definitions, and escalation pipeline (not just prompts)? The +26pp MATH improvement (93% vs 67% baseline) suggests transformative potential, but the EPYC orchestrator's complexity far exceeds a single DSPy program.
+- Should the autopilot controller use persistent short-term memory across AR-3 sessions, or reset between sessions? Current implementation persists as markdown.
+- What is the right trial cadence for the Evolution Manager species? Currently every 5 trials. Too frequent wastes compute on distillation; too infrequent loses temporal locality of insights.
+- How should parallel autopilot instances share the experiment journal without write conflicts? Append-only protocol (simpler, eventual consistency) vs explicit file locking (stronger guarantees, deadlock risk).
+- Is the Meta-Harness finding (+15pts from traces) reproducible with a 32B local model doing diagnostic reasoning, or does it require Opus-class capability? The original paper tested only Opus.
+
+## Related Categories
+
+- [Agent Architecture](agent-architecture.md) -- the autopilot optimizes the orchestrator's agent configuration
+- [Routing Intelligence](routing-intelligence.md) -- Seeder species generates 3-way eval data that trains routing classifiers
+- [Memory Augmented](memory-augmented.md) -- strategy store and episodic memory are the autopilot's learning infrastructure
+- [Tool Implementation](tool-implementation.md) -- GEPA and code mutation use tool infrastructure for experiments
+
+## Source References
+
+- [EvoScientist deep dive](../research/deep-dives/evoscientist-multi-agent-evolution.md) -- three-agent pipeline, Evolution Manager with IDE/IVE/ESE channels, knowledge distillation ablation evidence (-45.83 gap without evolution, +10.17pp from ESE alone)
+- [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- shared knowledge accumulation protocol, retrieval-augmented iteration results (plateau without retrieval, continued improvement with N=5), multi-lab parallel 3x cost tradeoff
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- primary handoff tracking all autopilot infrastructure, 4+1 species, safety gates, GEPA integration, self-criticism, strategy store
+- [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md) -- execution trace feedback (+15pts ablation), code mutation search space with allowlist + ast.parse safety, GEPA as search algorithm
+- [reasoning-compression.md](../handoffs/active/reasoning-compression.md) -- OPSDC difficulty adaptation as potential autopilot routing signal
+- [intake-108] EvoScientist -- Evolution Manager, knowledge distillation, three agent pipeline (new_opportunity, high relevance)
+- [intake-131] AgentRxiv -- collaborative autonomous research, shared preprint server, 13.7% MATH-500 improvement (worth_investigating)
+- [intake-132] ResearchBench -- LLM scientific discovery benchmark, inspiration retrieval task decomposition (worth_investigating)
+- [intake-148] AutoResearch -- single-GPU autonomous ML experiments, single-file modification constraint (worth_investigating)
+- [intake-149] PraxLab -- program.md strategy separation, SQLite experiment memory (worth_investigating)
+- [intake-248] SiliconSwarm@Ensue -- 6-agent collective intelligence, 6.31x CoreML speedup, 9-step optimization loop (new_opportunity, high relevance)
+- [intake-265] Omni-SimpleMem -- autoresearch-guided discovery, bug fixes > tuning (+175%), 23-stage pipeline (worth_investigating)
+- [intake-312] Mismanaged Geniuses Hypothesis -- orchestration over model power, 4B RLM achieves 100% MRCRv2 (worth_investigating, high relevance)
+- [intake-327] Hermes Agent Self-Evolution -- DSPy+GEPA skill optimization, ~$2-10 per run, no GPU required (new_opportunity, high relevance)
+- [intake-329] MiniMax M2.7 -- 3-component self-evolution harness, 30% improvement over 100+ rounds (worth_investigating)
+- [intake-335] GEPA Implementation Repository (already_integrated)
+- [intake-338] Agent Lightning -- zero-code agent optimization, RL+prompt+SFT modes, hierarchical credit assignment (new_opportunity, high relevance)

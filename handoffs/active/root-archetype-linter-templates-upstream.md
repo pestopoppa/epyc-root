@@ -30,6 +30,14 @@ Upstream proven governance patterns from epyc-root to root-archetype for use by 
 ### 3. wiki.yaml.template (PREVIOUSLY DONE)
 - Already exists at `_templates/wiki.yaml.template`
 
+### 4. Wiki Compile Operation (DONE — 2026-04-14)
+- Imported root-archetype's compile pipeline concept into epyc-root
+- Created `compile_sources.py` (265 lines) adapted for epyc-root's flat directory layout
+- Added Operation 3 (Compile) to `project-wiki` SKILL.md
+- Added `compile:` section to `wiki.yaml`
+- Compiled 24 wiki articles (327KB) from 219 sources
+- Note: epyc-root version differs from root-archetype (flat dirs vs per-user dirs) — not a direct upstream candidate, but validates the pipeline design
+
 ## Remaining Work
 - [ ] Test generalized linter against root-archetype's own wiki structure
 - [ ] Update init-project.sh to copy brevity templates during project scaffold

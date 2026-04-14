@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-13 (AM L1-L3b complete, SEAL -28% tokens validated, PPL sweep, Memento S2 design, orchestrator coverage pass 6)
+**Updated**: 2026-04-14 (Wiki compilation pipeline + 24 compiled articles from 219 sources)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -53,7 +53,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 relaunching with GEPA, P6 RI-10 canary, P7-P9 pending, **P10 AP-19/20+MH-4 folded into AR-3** (2026-04-12), P10b/P11 non-inference DONE. Remaining: AP-21 (conditional), AP-26/27 (post-AR-3) |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), GPU acceleration path (stub — future) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, **v3 PRODUCTION** (binary swapped 2026-04-10), GPU acceleration path (stub — future) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 7 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen expanded to 4 mechanisms |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
@@ -71,11 +71,11 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | active (5/7 original done, **+10 new tasks from research intake → 17 total**) | MEDIUM | 2026-04-12 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache selection/eviction | ACTIVE (inference tasks → bulk-inference G2/G3) | MEDIUM | 2026-04-08 |
-| [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (deep-dive done, P1-P4 + L1-L4 planned) | MEDIUM | 2026-04-13 |
+| [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (L1-L4+L4b merged to production-consolidated-v3. P2 coding benchmarks pending) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE (inference tasks → bulk-inference G1) | HIGH | 2026-04-09 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — unit coverage at 88% on extracted modules; remaining gaps need GraphRunContext/REPL/backend fixtures | MEDIUM | 2026-04-13 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused benchmark/runtime slice now has enforced per-file gate (`coverage-orchestrator-slice`) with all seven target modules passing floors | MEDIUM | 2026-04-13 |
 
 ---
 
@@ -93,6 +93,7 @@ Changes in one domain often affect others. Key coupling points:
 | Pipeline (new models) | Routing (NUMA allocation) | Each pipeline model competes for RAM/quarters with production stack |
 | Bulk inference campaign (B-E) | All 5 domains | 14 tasks → 4 optimized runs; produces data unblocking routing, research, pipeline work |
 | Research (KB governance) | Root-archetype (KB linter) | KB linter + skill templates upstreamed to root-archetype; epyc-root deploys instance-specific version |
+| Wiki compilation (24 articles) | All domains | Compiled wiki in `wiki/` synthesizes all research + handoff findings; update articles after new `/research-intake` runs |
 | GPU hardware acquisition | Inference acceleration, Routing (NUMA allocation) | gpu-acceleration-path.md: CPU+GPU hybrid MoE changes expert routing, NUMA quarter allocation, and v3 build flags |
 | Research (Ouro P7) | Routing (autopilot AP-27) | Ouro-2.6B-Thinking as sentinel verifier feeds autopilot T0 RLVR formalization |
 | Routing (autopilot P10 GEPA) | Routing (meta-harness MH-4) | Same technique, two perspectives: autopilot owns implementation, meta-harness evaluates as search algorithm |

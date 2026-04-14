@@ -113,9 +113,110 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "{query}"
 
 Returns JSON with matching intake entries, handoffs, and deep-dives.
 
+### Operation 3 — Compile
+
+Synthesize knowledge fragments into topic-organized wiki articles.
+
+Invoke with: "compile the wiki" / "update the wiki" / "synthesize knowledge"
+
+#### Step 1: Generate Source Manifest
+
+Run the manifest scanner to identify compilable sources:
+
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py
+```
+
+For a full recompilation (ignore last compile timestamp):
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py --full
+```
+
+Review the `total_new` count. If 0, no compilation needed — inform the user and stop.
+
+#### Step 2: Read and Analyze Sources
+
+Read sources from the manifest. Prioritize by information density:
+1. **Research deep-dives** (`research/deep-dives/`) — richest structured analyses
+2. **Active handoffs** (`handoffs/active/`) — embedded findings and decisions
+3. **Completed handoffs** (`handoffs/completed/`) — validated conclusions
+4. **Progress logs** (`progress/`) — session-level observations
+5. **Docs** (`docs/`) — operational context
+
+Also load `research/intake_index.yaml` entries for the relevant categories — these provide paper metadata, verdicts, and credibility scores that inform the wiki articles.
+
+For each source, extract:
+- Key findings, decisions, and their rationale
+- Patterns discovered or conventions established
+- Open questions or unresolved tensions
+- Cross-references to other categories or work items
+
+#### Step 3: Cluster by Taxonomy Category
+
+Map each finding to one or more categories from `wiki/SCHEMA.md`. Use the aliases section to normalize informal category names to canonical keys.
+
+Categories with 3+ substantive sources get a full compiled article. Categories with fewer sources get stub entries in `wiki/INDEX.md` pointing to their raw sources.
+
+#### Step 4: Synthesize Wiki Pages
+
+For each category cluster, create or update `wiki/<category-key>.md`:
+
+```markdown
+# <Category Label>
+
+**Category**: `<key>` from wiki/SCHEMA.md
+**Confidence**: <verified|inferred|external>
+**Last compiled**: YYYY-MM-DD
+**Sources**: N documents
+
+## Summary
+
+<2-4 paragraph synthesis across all sources in this category>
+
+## Key Findings
+
+- <finding with [source citation](../path/to/source.md)>
+- <finding referencing [intake-NNN] paper title>
+
+## Open Questions
+
+- <unresolved question from handoffs or research>
+
+## Related Categories
+
+- [Related Category](related-category.md) — <relationship>
+
+## Source References
+
+- [deep-dive title](../research/deep-dives/file.md) — <what it contributed>
+- [handoff title](../handoffs/active/file.md) — <relevant finding>
+- [intake-NNN] paper title — <key claim, credibility score>
+```
+
+Filename convention: `wiki/<category-key>.md` (e.g., `wiki/speculative-decoding.md`)
+
+If a wiki page already exists for that category, merge new findings and update the "Last compiled" date. Never delete existing content without cause.
+
+#### Step 5: Update Compile Timestamp
+
+After successful compilation:
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py --touch
+```
+
+#### Compilation Principles
+
+- **Synthesize, don't copy.** Wiki pages distill knowledge across sources; they are not duplicates.
+- **Cite sources.** Every claim traces to a source via the Source References section.
+- **Cross-reference.** Link related wiki pages to each other via the Related Categories section.
+- **Confidence levels.** Use `verified` for tested/measured findings, `inferred` for analysis, `external` for third-party claims.
+- **Incremental.** Only process sources newer than `.last_compile` unless doing a full recompile.
+- **Preserve existing.** Update wiki pages in place; merge new findings into existing structure.
+
 ## Boundaries
 
 - The lint operation only reports issues — it does NOT auto-fix them.
 - The query operation synthesizes from existing KB content — it does NOT fetch new external information.
+- The compile operation reads all source streams but writes only to `wiki/`.
 - For ingesting new material, use the research-intake skill.
 - Scaling thresholds in `wiki.yaml` are advisory — the skill warns but does not enforce them.

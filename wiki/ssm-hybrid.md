@@ -1,0 +1,70 @@
+# SSM Hybrid Architectures
+
+**Category**: `ssm_hybrid`
+**Confidence**: verified
+**Last compiled**: 2026-04-13
+**Sources**: 7 documents
+
+## Summary
+
+Hybrid State Space Model (SSM) architectures -- specifically Qwen3.5's combination of Delta Net recurrent layers with standard attention layers -- present fundamental challenges for the EPYC inference stack. The core problem is that recurrent layers process tokens sequentially regardless of batch size, which destroys the efficiency of multi-token speculation, tree search, and any technique that relies on parallel token verification. This single architectural constraint has blocked every speculative decoding approach tested and forced the abandonment of MTP-1 speculation despite achieving 78.5% draft acceptance rate.
+
+Qwen3.5-35B-A3B uses 75% Delta Net recurrent layers and 25% standard attention layers. The MTP-1 speculation handoff (now closed) documents exhaustive testing: the draft acceptance rate was excellent (78.5% exact match, 97.7% top-5) and the MTP-only eval cost was minimal (~10ms, 5% of full decode). However, 2-token verification batches cost 3-4x a single decode (560-816ms vs ~220ms) because recurrent layers cannot parallelize across batch tokens. Net speculation throughput was 0.56x baseline -- a 44% slowdown. Every other speculation approach was also ruled out: tree speculation (Approaches 0, A, C) failed on recurrent state costs, MoE self-draft failed on low acceptance, and attention-only draft produced incoherent output.
+
+The only remaining theoretical option is Approach B (linearized Delta Net approximation) at ~40% viability, which is approximate and has been deferred. DFlash (intake-158, block diffusion drafting) validates that Qwen3.5-35B-A3B cooperates well with speculative decoding but requires SGLang/vLLM (GPU-only, no llama.cpp/GGUF).
+
+SEAL control vectors are also incompatible with SSM-hybrid architectures. The SEAL concise reasoning experiment found that applying control vectors to Qwen3.5-35B-A3B (Gated Delta Net) causes catastrophic generation collapse to 1 token, while the same technique works normally on MoE (Qwen3-Coder-30B-A3B) and dense (Qwen2.5-Coder-32B) architectures. This means inference-time activation steering is not viable for SSM-hybrid models.
+
+Nemotron-Cascade 2 (intake-237/238) provides direct benchmarking data: Mamba2 (in Nemotron) vs Delta Net (in Qwen3.5) on RTX 3090, with cascade RL training for small models. This is relevant for understanding the SSM landscape but the GPU-specific benchmarks do not transfer to CPU inference. The Qwen3.5 serving recipe (intake-152) provides configuration tips for hybrid MoE + Delta Net models but the tips are primarily GPU-oriented (vLLM, SGLang).
+
+The Multiscreen architecture (intake-256) represents a potential future alternative -- it replaces softmax attention with absolute query-key screening, achieving sub-quadratic complexity while preserving the attention paradigm. Unlike Delta Net, Multiscreen would theoretically be compatible with existing KV cache and speculation infrastructure. However, no pretrained Multiscreen models exist and no llama.cpp implementation is available. Three additional cross-head attention mechanisms (IHA, MEA, KHA) from the 2026-04-12 research intake also offer alternatives, all requiring pretraining with no retrofit possible.
+
+The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production characteristics: Q4_K_M baseline at 83% quality with 13.8 t/s average, with MoE6 lookup achieving 19.6 t/s. Spec decode was "a bust" for 35B due to SSM checkpoint overhead, and abliteration variants (Q4KS, Q5KS) showed degenerate looping behavior.
+
+## Key Findings
+
+- 75% of Qwen3.5-35B-A3B layers are Delta Net recurrent -- these process tokens SEQUENTIALLY regardless of batch size [mtp-speculative-decoding.md]
+- MTP-1 speculation achieved 78.5% acceptance rate but 0.56x net throughput due to 3-4x verification batch cost [mtp-speculative-decoding.md]
+- ALL speculation approaches exhausted for hybrid recurrent models: tree (0/A/C), MoE self-draft, attention-only draft, MTP-1 [mtp-speculative-decoding.md]
+- SEAL control vectors cause CATASTROPHIC generation collapse (1 token output) on SSM-hybrid architectures [seal-concise-reasoning experiment]
+- MTP layer itself uses full attention (gated Q, 16 heads), NOT Delta Net. It is 0.84B params (2.3% of total). Correctly marked non-recurrent in llama.cpp [mtp-speculative-decoding.md]
+- Linearized Delta Net approximation (Approach B) is the only unexplored option at ~40% viability -- deferred as approximate [mtp-speculative-decoding.md]
+- DFlash validates Qwen3.5-35B-A3B as a good spec-decode target on GPU (2.4-2.8x speedup on B200) but requires SGLang/vLLM [mtp-speculative-decoding.md]
+- Qwen3.5-35B-A3B frontdoor: Q4_K_M baseline 83% quality, 13.8 t/s. Spec decode is a bust. MoE6 lookup best acceleration at 19.6 t/s [qwen35-frontdoor-benchmark.md]
+- Multiscreen architecture preserves attention paradigm with sub-quadratic complexity -- theoretically compatible with KV cache and speculation, but no implementations exist [multiscreen-attention-evaluation.md]
+- IHA (Interleaved Head Attention) is the highest-priority watch item: FlashAttention-compatible, +112% RULER at 16K multi-key retrieval [multiscreen-attention-evaluation.md]
+
+## Actionable for EPYC
+
+- **Accept that speculation is dead for Qwen3.5 hybrid models on CPU**: Do NOT invest further effort in speculation approaches. All viable paths have been exhausted with 0.56x or worse throughput.
+- **Use lookup-based acceleration instead**: MoE6 lookup achieves 19.6 t/s vs 13.8 t/s baseline (+42%). This is the best acceleration available for Qwen3.5 on CPU.
+- **Do NOT apply SEAL control vectors to SSM-hybrid models**: Catastrophic failure confirmed. Only apply to MoE (works: -7.5% tokens) and dense (neutral) architectures.
+- **MTP-1 IS viable on dense attention-only models**: The 78.5% acceptance rate and ~5% MTP overhead would yield ~1.7x throughput on Llama, Mistral, standard Qwen2.5 architectures. Reuse the implementation for non-hybrid models.
+- **Monitor Multiscreen and IHA**: Both could provide sub-quadratic attention that is compatible with speculation. Watch for pretrained models and llama.cpp implementations.
+- **If GPU serving is added**: DFlash becomes viable for Qwen3.5-35B-A3B (2.4-2.8x speedup reported on B200). Keep the MTP GGUF files for potential GPU use.
+- **Consider dense model alternatives**: Qwen3.5-27B Q6K (dense, 2.54 avg quality, 9.4 t/s base, 13.1 t/s with spec k4) may offer better total throughput when speculation works.
+
+## Open Questions
+
+- Would a linearized Delta Net approximation (Approach B, ~40% viability) provide any practical speedup, or is the quality degradation from approximation too high?
+- Will future Qwen model generations reduce the ratio of recurrent layers to make speculation viable?
+- Can the Multiscreen architecture be retrofitted to existing model weights, or does it require pretraining from scratch?
+- How does Nemotron-Cascade 2's Mamba2 compare to Qwen3.5's Delta Net on CPU inference specifically?
+- Would REAP expert pruning on Qwen3.5 (removing routed experts to reduce model size) interact with Delta Net layer behavior?
+
+## Related Categories
+
+- [Speculative Decoding](speculative-decoding.md) -- MTP-1 failure is the primary consequence of SSM-hybrid architecture
+- [KV Cache](kv-cache.md) -- Delta Net uses recurrent state instead of KV cache for its layers; Multiscreen would change KV dynamics
+- [MoE Optimization](moe-optimization.md) -- Qwen3.5 is simultaneously MoE and SSM-hybrid; MoE acceleration (lookup) is the viable path
+- [Training & Distillation](training-distillation.md) -- SEAL control vector incompatibility limits distillation options for hybrid models
+
+## Source References
+
+- [MTP speculative decoding handoff](/workspace/handoffs/completed/mtp-speculative-decoding.md) -- Complete history of all speculation approaches tested, timing results, root cause analysis, bug fixes
+- [SEAL concise reasoning experiment](/mnt/raid0/llm/epyc-inference-research/docs/experiments/seal-concise-reasoning.md) -- Control vector catastrophic failure on Gated Delta Net
+- [Multiscreen attention evaluation](/workspace/handoffs/active/multiscreen-attention-evaluation.md) -- Sub-quadratic attention alternative, watch item status, expanded mechanism cluster
+- [Qwen3.5 frontdoor benchmark](/workspace/handoffs/completed/qwen35-frontdoor-benchmark.md) -- Production benchmark results, spec-decode bust confirmation, MoE lookup acceleration
+- [intake-152] Qwen3.5 serving recipe -- Configuration tips for hybrid MoE + Delta Net
+- [intake-237/238] Nemotron-Cascade 2 -- Mamba2 vs Delta Net benchmarks, cascade RL
+- [intake-256] Screening Is Enough -- Multiscreen architecture replacing softmax attention

@@ -1,0 +1,84 @@
+# Speculative Decoding
+
+**Category**: `speculative_decoding`
+**Confidence**: verified
+**Last compiled**: 2026-04-13
+**Sources**: 26 documents (2 deep-dives, 4 completed handoffs, 2 active handoffs, 18 intake entries)
+
+## Summary
+
+Speculative decoding accelerates autoregressive inference by drafting multiple candidate tokens cheaply, then verifying them against the target model in a single batch. The fundamental promise is that verification of N tokens can be cheaper than N sequential decodes -- but on our EPYC 9655 CPU stack, this promise is architecture-dependent: it holds for dense and pure MoE models but breaks catastrophically on hybrid recurrent architectures.
+
+Our production experience spans the full spectrum. Tree speculation on Qwen2.5-Coder-32B (dense, f16) yields +15.8% throughput. External drafting with a 0.75B Qwen3-Coder model gives +55% on dense 32B targets. But every speculative approach tested on Qwen3.5 hybrid models -- MTP-1, tree speculation (Approaches 0, A, C), and DFlash -- results in net-negative throughput (-53% to -66%). The root cause is that 75% of layers in Qwen3.5 are Delta Net recurrent layers that process tokens sequentially regardless of batch size, making multi-token verification O(N) instead of O(1). This "verification wall" is the single most important finding in our speculative decoding research, and it applies equally to all draft-verify paradigms: autoregressive, tree, and block diffusion.
+
+The frontier technique is DFlash (block diffusion speculation), which drafts 16 tokens in a single O(1) forward pass through a 0.5B drafter -- a genuine architectural advance over the linear O(N) cost of EAGLE-style autoregressive drafting. On GPU, DFlash achieves 6.49 accepted tokens per round on Qwen3-8B (greedy). However, our 21-commit llama.cpp C++ port (forward pass verified bit-exact against HuggingFace) demonstrated that DFlash is not viable on Q4_K_M quantized models: per-token acceptance drops to 27%, yielding only 1.4% block acceptance. The quantization noise in hidden state extraction degrades the conditioning signal beyond recovery. The autoregressive drafter wins decisively (36.5 vs 13.0 t/s). A complementary technique, DART, uses a single-layer drafter with a 100GB n-gram trie from the Dolma corpus to prune draft trees, boosting acceptance by +0.5-0.7 tokens -- feasible on our 768GB+ RAM but with lower base acceptance (3.67-3.76 vs DFlash's 6.49).
+
+A separate line of research addresses reasoning efficiency without touching the draft-verify loop. The short-m@k paper demonstrates that shorter reasoning chains are up to 34.5% more accurate than longer ones within the same question, because correct reasoning proceeds efficiently while incorrect reasoning wanders (95-188 backtracks for correct vs 269-352 for incorrect). This yields a zero-cost "length alarm" heuristic: when a `<think>` block exceeds 1.5x the difficulty band budget, cancel and re-generate with a fresh seed. The full parallel approach (k concurrent streams, take the first m to finish) requires multi-slot infrastructure we currently lack, but the heuristic alone integrates cleanly with our existing difficulty-band system at near-zero implementation cost.
+
+The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
+
+## Key Findings
+
+- **Verification wall on hybrid recurrent models**: Multi-token verification on Qwen3.5 (75% Delta Net layers) costs approximately N times single-token decode. MTP-1 measured 0.56x throughput at batch-size 2. Tree speculation measured -53% to -66% across three implementation approaches (frozen multi-path, per-path sequential replay, checkpoint/clone-cell). DFlash projected approximately 0.3x (16 tokens at approximately 16x cost). The root cause is architectural: recurrent layers process tokens sequentially regardless of batch size, while GPU parallel scan hides this cost. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [Tree speculation handoff](../handoffs/completed/tree-speculation-numa-drafting.md)
+
+- **DFlash O(1) drafting is real but quantization kills acceptance**: DFlash generates 16 tokens in one forward pass via a 0.5B drafter conditioned on hidden states from 5 uniformly-sampled target layers. The drafter's cost is constant regardless of draft length -- fundamentally different from EAGLE-3's O(N) autoregressive cost. On GPU (f16), acceptance is 6.49 tokens per round. On our Q4_K_M stack, acceptance drops to 27% per token because quantized hidden states corrupt the conditioning signal. The DFlash handoff concluded after 21 commits with verified-correct C++ forward pass: not viable on Q4_K_M, autoregressive wins 36.5 vs 13.0 t/s. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [DFlash handoff](../handoffs/completed/dflash-block-diffusion-speculation.md)
+
+- **DFlash + tree speculation is composable and multiplicative**: DFlash's parallel logits at all 16 positions can build a tree (take top-k at each position) at O(1) cost -- the same as linear. In standard tree speculation, building the tree requires N sequential draft passes. Projected impact on large architect models: 2-4x base DFlash times 1.15 tree bonus equals 2.3-4.6x. The tree bonus is largest for the architect models (235B, 480B) where verification headroom is greatest. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **DART trades drafter quality for speed + n-gram diversity**: DART uses a single transformer decoder layer (approximately 0.1B params, 3.5ms draft latency including n-gram lookup) conditioned on 3 target layers. Base acceptance is 3.67-3.76, lower than DFlash's 6.49, but the 100GB Dolma 3-gram trie boosts acceptance +0.5-0.7 via tree pruning. The trie is feasible on our 768GB+ system but represents a significant memory commitment for modest acceptance gains. DART's published training recipe is valuable reference for when DFlash publishes theirs. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **Tree speculation is structurally sound but overhead-limited on CPU**: The tree construction and verification infrastructure was implemented across 8 phases. On 32B f16 targets, tree gives +15.8% (5.01 to 5.80 t/s). On Q4_K_M, tree equals or underperforms linear because Q4_K_M verification is 4-5x at N=64 (not near-free like f16 at 1.69x). NUMA 4-way delivers much larger gains (6-7x aggregate). [Tree speculation handoff](../handoffs/completed/tree-speculation-numa-drafting.md)
+
+- **draft_max tuning gives free throughput**: Increasing `--draft-max` from 16 to 24-48 yields +17-21% across all production models with zero code changes. REAP-25B optimal is dm=24 linear (39.62 t/s). This was the single highest-ROI speculative optimization. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
+
+- **Shorter reasoning chains are more accurate (short-m@k)**: Within any given question, shorter reasoning chains are up to 34.5% more accurate (LN-Super-49B) and use 42-54% fewer tokens. Correct reasoning is concise; incorrect reasoning wanders with compounding per-token error. Deployable without parallelism: short-1@k (take single shortest) gives equal accuracy with 40% fewer thinking tokens and approximately 50% less wall-time. Finetuning on short chains yields +2.8% accuracy and -5.8% tokens. [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
+
+- **Length alarm integrates with difficulty bands**: Easy problems benefit most from length-based filtering (wrong/right token ratio 2x vs 1.3x for hard). Our band-adaptive budgets (easy=1,500, medium=3,500, hard=7,000) are well-calibrated. The addition: if generation exceeds 1.5x band budget, treat as failure signal and re-generate. Three-layer stack: conciseness prompting (shifts distribution left) + band budgets (caps right tail) + length alarm (actively selects shorter chains). [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
+
+- **NUMA parallelism could reopen hybrid speculation**: If 4 concurrent single-token decodes on separate NUMA nodes achieve >2.5x aggregate throughput, NUMA-parallel verification (N nodes times 1 token each, parallel) could break the sequential recurrent bottleneck. Each node needs its own model copy (approximately 20GB Q4_K_M). The project's existing concurrent execution tests showed aggregate throughput gains. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+
+- **REAP-pruned models are speculation-compatible**: REAP-25B is pure MoE (`qwen3moe` arch), so all speculation approaches work. Optimal config: dm=24 linear at 39.62 t/s (101% of base 30B with dm=8). Tree hurts (30.83 t/s, 79%). Lookup is safe but doesn't help on short prompts (37.91 t/s). If the frontdoor shifts from hybrid Qwen3.5 to REAP-25B, speculation becomes viable for the highest-volume role. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
+
+## Actionable for EPYC
+
+- **Deployed and validated**: NUMA 4-way parallel (6.7x frontdoor), draft_max 32-48 (+17-21%), external drafting with 0.75B Qwen3-Coder (+55% on dense targets), auto freeze-recurrent for hybrid speculation, REAP-25B with dm=24 (39.62 t/s)
+
+- **Implement now**: Reasoning length alarm (Phase 0 of short-m@k). Approximately 80 lines in `src/graph/helpers.py`, integrates with existing `difficulty_signal.py` bands and `detect_think_block_loop()`. Zero infrastructure cost. Expected to improve accuracy on easy problems where the wrong/right token ratio is highest (2x). Estimated effort: 1 day
+
+- **Worth investigating**: NUMA-parallel verification benchmark (2-3 day effort to determine if NUMA isolation can break the hybrid verification wall -- if aggregate/N > 0.6x individual, project DFlash viability with tau=6.49 and N-parallel verification). DFlash tree composition on f16 dense targets (multiplicative benefits for architect models). Sequential short-1@k for math/reasoning tasks (Phase 1, k=2-3 generations keep shortest, 2 days, gated behind feature flag)
+
+- **Blocked/concluded**: DFlash on Q4_K_M (concluded: 27% per-token acceptance, AR wins 36.5 vs 13.0 t/s). All tree/MTP approaches on hybrid models (concluded: -53% to -66%). Full short-m@k parallel generation (requires multi-slot infrastructure on architect models that we lack). DFlash training recipe not yet published
+
+- **Priority**: Low-to-medium. NUMA parallelism and KV cache optimization deliver much larger gains than further speculative decoding work. The primary acceleration frontiers are now KV compression (theoretical 24-120x ceiling with quad-stack) and Attention Matching compaction (5x validated, merged to production). Speculative decoding optimizations are incremental on top of these
+
+## Open Questions
+
+- Can NUMA-isolated concurrent verification break the sequential recurrent bottleneck on Qwen3.5? If 4 NUMA nodes give >2.5x aggregate throughput, DFlash becomes interesting again on hybrid models
+- What is DFlash's acceptance rate on f16 hidden states (no quantization noise)? The Q4_K_M failure may be specific to quantized conditioning -- f16 testing was not attempted before the handoff concluded
+- Can DFlash + tree composition achieve the projected 2.3-4.6x on architect models (235B, 480B)? These are the highest-value targets due to slow baseline decode (300-800ms per token)
+- Will DFlash publish training recipes enabling custom drafter training for our models? DART's published recipe is the interim reference
+- Does the length alarm heuristic (Phase 0 short-m@k) interact with speculative decoding? Shorter reasoning chains may improve draft acceptance by reducing distribution shift over long sequences
+- Can Qwen3.5 hybrid serving benefit from the Qwen3.5 serving recipe (intake-152) for MoE+Delta Net configuration tips? The recipe may offer incremental non-speculation gains
+- Does REAP-25B's speculation compatibility compound with NUMA 4-way (4x15GB instances = 60GB, well within quarter-machine budget)?
+
+## Related Categories
+
+- [KV Cache Optimization](kv-cache.md) -- KV cache size determines context capacity; speculative decoding increases KV pressure (more tokens verified per round). KV compression enables larger speculation budgets and longer effective contexts
+- [MoE Optimization](moe-optimization.md) -- REAP-pruned models change speculation viability fundamentally: pure MoE is spec-compatible, hybrid is not. REAP-25B at 15GB fits trivially in quarter-machine for NUMA
+- [Quantization](quantization.md) -- Q4_K_M quantization degrades DFlash hidden state conditioning (27% vs 6.49 acceptance). KV quantization (Hadamard+q4_0) interacts with verification batch size. Weight quantization determines verification cost profile (f16: 1.69x at N=64, Q4_K_M: 4-5x)
+
+## Source References
+
+- [DFlash & DART Deep-Dive](../research/deep-dives/dflash-dart-diffusion-speculation.md) -- O(1) block diffusion drafting, DART n-gram pruning, portability assessment (13-20 day implementation), verification wall analysis, DFlash+tree composability, NUMA-parallel reopener
+- [short-m@k Deep-Dive](../research/deep-dives/short-mk-parallel-reasoning.md) -- Shorter chains more accurate (+34.5%), length as failure signal, difficulty-stratified data, Phase 0-3 implementation path, cost analysis for single-server architecture
+- [DFlash Handoff](../handoffs/completed/dflash-block-diffusion-speculation.md) -- 21-commit C++ implementation, forward pass verified correct, Q4_K_M 27% acceptance, concluded not viable on quantized models (36.5 vs 13.0 t/s)
+- [MTP-1 Handoff](../handoffs/completed/mtp-speculative-decoding.md) -- Model-native MTP head, 0.56x on hybrid at batch-size 2, verification cost scales linearly with recurrent layers, CLOSED
+- [Tree Speculation Handoff](../handoffs/completed/tree-speculation-numa-drafting.md) -- 8 phases across 12 days, +15.8% on f16 dense, NUMA 4-way discovery (6-7x), 3 hybrid approaches all net-negative, Phase 8B deferred (40% viability)
+- [HSD Hierarchical Self-Speculation Handoff](../handoffs/completed/hsd-hierarchical-self-speculation.md) -- External draft +55% on dense 32B, HSD branch resampling +0.8%, freeze-recurrent auto-enable, self-spec not viable
+- [REAP Handoff](../handoffs/completed/reap-moe-expert-pruning.md) -- 246B deployed, REAP-25B dm=24 at 39.62 t/s, pure MoE enables speculation
+- [Inference Acceleration Index](../handoffs/active/inference-acceleration-index.md) -- Master coordination for all inference optimization work
+- [intake-016] arXiv:2211.17192 -- Foundational speculative decoding (Leviathan et al.)
+- [intake-129] short-m@k paper -- Parallel reasoning, length-accuracy correlation, difficulty-stratified analysis
+- [intake-152] Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration tips for non-speculation optimization
+- [intake-158] DFlash paper (arxiv:2602.06036) -- Block diffusion speculation, O(1) draft cost, tau=6.49
+- [intake-159] DART paper (arxiv:2601.19278) -- N-gram-pruned parallel drafting, single-layer drafter, Dolma trie

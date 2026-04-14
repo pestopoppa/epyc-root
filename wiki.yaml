@@ -48,6 +48,20 @@ lint:
     - unactioned_intake
     - missing_cross_refs
 
+# Compile configuration (consumed by project-wiki skill compile operation)
+compile:
+  output_dir: "wiki"
+  last_compile: "wiki/.last_compile"
+  skip_filenames: ["INDEX.md", "README.md", "master-handoff-index.md", "SCHEMA.md"]
+  skip_patterns: ["*-index.md"]
+  source_dirs:
+    - { path: "handoffs/active", type: "handoff-active", recurse: false }
+    - { path: "handoffs/completed", type: "handoff-completed", recurse: false }
+    - { path: "handoffs/blocked", type: "handoff-blocked", recurse: false }
+    - { path: "research/deep-dives", type: "research", recurse: false }
+    - { path: "progress", type: "progress", recurse: true }
+    - { path: "docs", type: "docs", recurse: true }
+
 # Ingest pipeline flags (consumed by research-intake skill)
 ingest:
   credibility_scoring: true

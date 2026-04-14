@@ -1,0 +1,121 @@
+# Context Management
+
+**Category**: `context_management`
+**Confidence**: verified
+**Last compiled**: 2026-04-13
+**Sources**: 17 documents (6 deep-dives, 3 active handoffs, 8 intake entries)
+
+## Summary
+
+Context management is the most research-dense area in the EPYC knowledge base, driven by a fundamental constraint: CPU inference on the EPYC 9655 makes every context token expensive. Prefill cost scales linearly with sequence length, KV cache pressure limits effective concurrency, and the multi-turn REPL sessions at the core of the orchestrator grow context unboundedly unless actively managed. This is not a theoretical concern -- it determines whether a 15-turn debugging session completes in 3 minutes or 20.
+
+Six independent research papers, spanning four institutions and three continents, converge on a shared empirical finding: agent trajectories are 80-92% redundant. The redundancy breaks into three categories: mechanical overhead (tool outputs, formatting, metadata -- 20-86% of session tokens per CMV analysis), stale observations (superseded by later tool calls, validated by "The Complexity Trap" showing observation masking matches LLM summarization), and verbose reasoning chains (less than 10% of reasoning tokens carry meaningful information per SEER's compression analysis). The research validates aggressive compression with one critical caveat: compression quality matters far more than compression aggressiveness. ReSum's central finding is that an untrained 30B model produces summaries that are *worse* than keeping raw history, while a specialized 3B-active SFT model matches 671B general-purpose models. Quality gates are mandatory.
+
+The research landscape is converging on a spectrum from text-level to KV-level compression. On the text side, AgentFold demonstrates 92% context reduction via proactive two-level folding (granular per-turn blocks plus deep consolidation at boundaries). Context-Folding's FoldGRPO proves that structured compression within a 32K window outperforms uncompressed ReAct at 327K by 8 percentage points -- empirical proof that more context is not always better. On the KV side, Memento's dual information stream reveals that KV cache states carry implicit information beyond what summary text captures, creating a fundamental ~15pp accuracy ceiling for text-only approaches on hard reasoning tasks. Between these extremes sit latent compression methods like CoLaR (2-5x chain reduction by replacing token sequences with continuous embeddings) and iterative reasoning approaches like InftyThink and Accordion-Thinking (sawtooth memory patterns with periodic summarization).
+
+The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
+
+## Key Findings
+
+### Compression Architecture
+
+- **92% context reduction achievable**: AgentFold demonstrates proactive two-level folding (granular per-turn plus deep at boundaries) keeping context at ~7,000 tokens at turn 100 versus ~91,000 for ReAct baseline, with sub-linear growth that sometimes decreases as dead-end branches are pruned. A 30B-A3B model matches proprietary o3 on WideSearch (62.1% vs 60.0%). [agentfold-proactive-context.md](../research/deep-dives/agentfold-proactive-context.md)
+
+- **32K beats 327K with structural compression**: Context-Folding's FoldGRPO, trained on Seed-OSS-36B, proves that call-stack-style folding within 32K outperforms uncompressed ReAct at 327K by +8pp on BrowseComp+. The key mechanisms are learned branch/fold operations where the model decides when to spawn sub-trajectories and when to collapse them. Training increases tool calls from 12.9 to 19.2 per task -- the model explores more within less context. [context-folding-foldgrpo.md](../research/deep-dives/context-folding-foldgrpo.md)
+
+- **Two compression levels serve different functions**: AgentFold's granular condensation (fold only latest interaction into fine-grained summary) preserves maximum resolution and accumulates without re-processing. Deep consolidation (fuse multiple summary blocks into single coarse summary) prevents linear context growth. The combination yields sub-linear growth because only deep consolidation is lossy -- granular blocks are exempt from re-processing, avoiding the information survival decay (36.6% at step 100 under full re-summarization). [agentfold-proactive-context.md](../research/deep-dives/agentfold-proactive-context.md)
+
+### Compaction Timing and Quality
+
+- **Compaction timing is critical -- not too early, not too late**: ReSum confirms that at 64K context, summarization yields +5 P@1 on BrowseComp-zh. At 128K, the benefit drops to +0.9 because the raw history is mostly usable at that window size. The production implication: compaction should trigger at 70-80% of the context window, not on a fixed turn count. Our trigger was raised from 60% to 75% based on this finding. [resum-context-summarization.md](../research/deep-dives/resum-context-summarization.md)
+
+- **Summarizer quality is the single most important variable**: ReSum shows an untrained Qwen3-30B (3B active params) achieves 6.9% on BrowseComp-zh -- *worse* than no summarization at 8.2%. A specialized SFT-trained 3B-active model (ReSumTool-30B) matches DeepSeek-R1-671B (13.7% vs 13.0%). Quality dominates scale by an order of magnitude. Our Phase 2a evaluation confirmed 30B-A3B as minimum viable summarizer (3.0/3.0 retention score), with L3 compression as the sweet spot: 82% compression at 2.84/3 retention. [resum-context-summarization.md](../research/deep-dives/resum-context-summarization.md)
+
+- **MEM1's constant-window approach destroys structured reasoning**: ReSum's comparison shows MEM1 (training-free fixed-window consolidation) drops GAIA accuracy by 11.7 P@1 -- too aggressive for tasks requiring structured reasoning chains. ReSum's full-context-reset approach preserves structured reasoning at the cost of ~2x token overhead from re-searching known information. [resum-context-summarization.md](../research/deep-dives/resum-context-summarization.md)
+
+### Mechanical Bloat and Structural Trimming
+
+- **20-86% of session tokens are mechanical overhead**: CMV's analysis of 76 Claude Code sessions shows tool-heavy sessions (those with 15%+ tool result bytes) average 39% reduction from structural trimming alone, with peaks at 86%. The key insight: raw tool outputs are consumed once by the model and synthesized into assistant responses. Keeping both the raw output and the synthesis is redundant -- CMV keeps the synthesis and stubs the raw output. [cmv-structural-trimming-repl.md](../research/deep-dives/cmv-structural-trimming-repl.md)
+
+- **Simple observation masking matches LLM summarization**: intake-274 (The Complexity Trap, arXiv:2508.21433) finds that stripping older tool outputs achieves the same performance as expensive LLM-based summarization for agent context management, at 50% of the cost. The hybrid approach (masking plus summarization) yields only 7-11% further gains. This directly validates our pattern-based tool output compression architecture. [intake-274]
+
+- **Tool output compression achieves 60-90% per command type**: Our Phase 2 native compression module implements 7 command-specific handlers (pytest, cargo test, git status/diff/log, ls, build compilers), each applying domain-appropriate strategies -- failure-focus for test runners, stats extraction for git status, error-focus for compilers. This layers upstream of the existing spill-and-truncate mechanisms for multiplicative benefit. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+
+### Reasoning Chain Compression
+
+- **Reasoning chains are 90%+ filler**: SEER's GPT-4o compression analysis reveals most CoT content is padding. DeepSeek-Qwen-7B retains only 5.71% of tokens as meaningful reasoning. QwQ-32B retains 9.36%. gpt-oss-20b retains 31.11% -- models with lower filler ratios are also the most accurate. Failed outputs are consistently ~1,193 tokens longer than successful ones across 7B, 14B, and 32B scales. [reasoning-compression-s3cot-adaptive.md](../research/deep-dives/reasoning-compression-s3cot-adaptive.md)
+
+- **SEER's MAD-based filtering doubles naive compression**: Best-of-N sampling (N=3, which saturates -- marginal returns beyond 3 are negligible) combined with Median Absolute Deviation outlier filtering achieves 39.8% compression versus 18.2% for naive BoN, while matching or exceeding accuracy. The MAD approach is more robust than mean/stddev because it handles skewed length distributions. Loop elimination is dramatic: 73-97% of n-gram repetition loops removed. [reasoning-compression-s3cot-adaptive.md](../research/deep-dives/reasoning-compression-s3cot-adaptive.md)
+
+- **S3-CoT discovers a latent "length direction" in activations**: A Variable-Length Direction (VL-D) emerges in the residual stream around layer 8-14 (model-dependent). Steering this direction with moderate alpha values produces shorter reasoning traces suitable for self-distillation training data. Combined with progressive compression curriculum, Qwen2.5-7B achieves 37% token reduction on GSM8K with +1.3pp accuracy. The approach is architecturally incompatible with quantized GGUF serving and Qwen3.5 hybrid SSM. [reasoning-compression-s3cot-adaptive.md](../research/deep-dives/reasoning-compression-s3cot-adaptive.md)
+
+### Latent and KV-Level Compression
+
+- **CoLaR compresses reasoning 2-5x via continuous embeddings**: At compression factor c=2, reasoning chains shrink 53.3% with only 4.8% accuracy drop on grade-school math. The 1/sqrt(c) scaling (not mean pooling) for embedding compression is critical -- it preserves activation variance, outperforming mean pooling by 2-3%. However, latent generation is fundamentally incompatible with speculative decoding (no rejection sampling in continuous space), only tested at 1B-1.5B scale, and requires ~1,200 LOC of llama.cpp C++ changes with no pre-trained GGUF models available. [colar-latent-compression.md](../research/deep-dives/colar-latent-compression.md)
+
+- **KV-retaining approaches are fundamentally superior to text compression**: Memento's ablation shows recomputing KV states without block context drops AIME24 accuracy from 66.1% to 50.8% -- a 15.3pp gap from identical summary text. Probing confirms the mechanism: information from masked blocks propagates through memento KV chains at 23-27% recovery rate, concentrating in deeper layers. This is architectural (confirmed on toy transformers), not learned. Text-level compression has a ceiling that KV masking does not. [memento-iterative-reasoning-cluster.md](../research/deep-dives/memento-iterative-reasoning-cluster.md)
+
+- **Context rot degrades performance non-linearly with length**: intake-273 (Chroma research) confirms LLMs do not process context uniformly. Performance degrades as input length increases, with distractors (topically related but incorrect content) amplifying degradation more than random content. Semantic similarity between question and context modulates the effect -- high-similarity distractors are worst. This validates aggressive pruning of stale but topically related context. [intake-273]
+
+## Actionable for EPYC
+
+### Implemented (Production)
+
+- **5-layer context management stack**: (1) Hard preview limits at 1500/500 chars for output/error, (2) stale tool output clearing keeping 2 most recent blocks, (3) session log summarization every 2 turns via worker model, (4) context externalization at 75% threshold writing full context to disk with structured index, (5) solution file persistence to external storage with peek-on-demand.
+- **Output spill with retrieval pointers**: `_spill_if_truncated()` writes full content to `/mnt/raid0/llm/tmp/` and appends `peek()` instruction when output exceeds preview limits. Gives the model agency to retrieve full output on demand. Feature-flagged, 9 tests.
+- **Tool output compression**: 7 command-specific handlers achieving 60-90% reduction. Layers upstream of spill-and-truncate for multiplicative benefit. Feature-flagged `tool_output_compression`.
+- **Tool definition compression**: 55% reduction in `DEFAULT_ROOT_LM_TOOLS` (647 to 290 words), instruction token ratio from 29.8% to 16.0%. Removed duplicates, merged related tools, flattened verbose sections.
+- **Compaction trigger raised to 75%**: Configurable via `ORCHESTRATOR_SESSION_COMPACTION_TRIGGER_RATIO`. Validated by ReSum (compaction at 70-80% is optimal) and AgentFold (delay preserves critical context).
+- **N-gram loop detection**: `detect_think_block_loop()` in `quality_detector.py` catches repetition loops within reasoning traces. SEER parameters inform threshold calibration.
+
+### In Progress
+
+- **Two-level condensation** (Phase 1 complete): Granular per-turn blocks accumulate without re-summarization (deterministic formatting from structured turn data, no LLM call). Deep consolidation fires at escalation boundaries, sub-task completion, or when 15+ blocks accumulate, using 7B model for a single bounded-window LLM call. Feature-flagged `two_level_condensation`. Replaces the previous every-2-turn full re-summarization.
+- **Compression quality evaluation** (Phase 2a/2b done): 30B-A3B validated as minimum viable summarizer (3.0/3.0 retention). 5-level compression ladder tested: L3 is the sweet spot at 82% compression with 2.84/3 retention. L5 and Phase 3c (process reward signals) pending.
+- **Segment retention scoring**: ConsolidatedSegment with access_count, importance_score (accumulates +3 per access, +5 per update, decays at 0.995 per turn delta), and maturity tiers (draft at creation, validated at score 65+, core at 85+, demotion below 35/60).
+- **Memento KV block masking feasibility**: Confirmed 2026-04-13 that `llama_memory_seq_rm()` can serve as the block eviction primitive in llama.cpp. Mid-sequence removal works; position gap semantics are correct (RoPE phases preserved). Training script for OpenMementos-228K ready with two-stage LoRA design. Blocked on model fine-tuning compute.
+
+### Planned
+
+- **Error trace intelligence** (P2): Parse Python tracebacks to extract line number and exception type before truncation. The last frame plus exception line is almost always the actionable information. ~40 lines.
+- **Structured tool result stubs**: When clearing stale tool outputs, preserve metadata (tool name, key arguments, approximate size) instead of bare `[Tool result cleared]`. ~15 lines.
+- **Process reward signals** (Phase 3): FoldGRPO-style penalties for unfolded tokens, out-of-scope branching, and tool call failures. Position-weighted advantage broadcasting from ReSum. Requires RL infrastructure not yet in production.
+
+### Not Actionable
+
+- **CoLaR latent reasoning compression**: Requires model training, tested only at 1B-1.5B scale, incompatible with speculative decoding, no GGUF ecosystem. Revisit when providers release CoLaR-trained variants of 7B+ models.
+- **S3-CoT activation steering via llama.cpp**: VL-D extraction requires full-precision activations; quantization transfer is unvalidated. Incompatible with Qwen3.5 hybrid SSM architecture (Mamba2 blocks lack standard residual streams). ~2-3 weeks C++ work.
+- **Context-Folding FoldGRPO training**: Requires verl framework, vLLM rollout infrastructure, and GPT-5-nano as out-of-scope judge. Research-grade approach we can approximate via SFT on simpler fold triggers.
+
+## Open Questions
+
+- Does the ~15pp accuracy ceiling from text-only compression (vs. KV-retaining Memento) apply to non-reasoning workloads (code generation, general QA), or is it specific to competition math where reasoning chains carry dense information?
+- What is the quality threshold for our 7B `worker_explore` as a session summarizer? ReSum shows even 30B untrained models fail. Can prompt engineering compensate, or is SFT specialization mandatory?
+- How does segment retention scoring interact with observation masking? intake-274 suggests masking old observations is equivalent to high recency weight -- should we collapse these into a single mechanism?
+- Bullet-list vs. narrative consolidation format: intake-273 (context rot) finds shuffled content outperforms structured content for retrieval tasks, but this may reverse for reasoning. A/B test needed.
+- What is the break-even point for multi-layer compression stacking (KV quantization + block masking + compaction)? Each pair tested independently; quality cliff under triple stacking is the key unknown. Theoretical combined: up to 120x; conservative estimate: 40x.
+- Can AgentFold's two-level approach be replicated with prompt engineering alone (no SFT), or does the model need fine-tuning to reliably produce structured folding directives?
+
+## Related Categories
+
+- [Context Extension](context-extension.md) -- Fundamental methods (RoPE scaling, YaRN, sparse attention) that determine the raw context budget within which management techniques operate
+- [Cost-Aware Routing](cost-aware-routing.md) -- Routing decisions determine which models handle compression and how much context each tier receives; difficulty bands modulate compression aggressiveness
+- [LLM Prompting](llm-prompting.md) -- Conciseness prompting is a zero-cost context reduction technique; CoT controllability research bounds its effectiveness on RL-trained reasoning models
+
+## Source References
+
+- [Reasoning Chain Compression (S3-CoT + SEER)](../research/deep-dives/reasoning-compression-s3cot-adaptive.md) -- VL-D activation steering, SEER MAD-based filtering, n-gram loop detection, progressive compression curriculum
+- [Context-Folding / FoldGRPO](../research/deep-dives/context-folding-foldgrpo.md) -- Branch/fold call-stack architecture, 32K beats 327K finding, process reward signals for folding quality
+- [ReSum Context Summarization](../research/deep-dives/resum-context-summarization.md) -- Compaction timing (70-80% trigger), summarizer quality threshold, diminishing returns at 128K, MEM1 failure mode
+- [CoLaR Latent Compression](../research/deep-dives/colar-latent-compression.md) -- Latent reasoning embeddings, 1/sqrt(c) scaling, KV cache implications, llama.cpp ~1200 LOC estimate
+- [AgentFold Proactive Context](../research/deep-dives/agentfold-proactive-context.md) -- Two-level condensation architecture, 92% context reduction, sub-linear growth, information survival analysis
+- [CMV Structural Trimming](../research/deep-dives/cmv-structural-trimming-repl.md) -- Three-pass trimming algorithm, synthesis-over-raw principle, gap analysis vs EPYC 5-layer stack
+- [Memento Iterative Reasoning Cluster](../research/deep-dives/memento-iterative-reasoning-cluster.md) -- Dual information stream, 15pp KV vs text ceiling, block masking feasibility, quad-stack KV compression
+- [intake-273] Context Rot (Chroma) -- Performance degradation with input length; semantic similarity modulates distractor impact
+- [intake-274] The Complexity Trap (arXiv:2508.21433) -- Observation masking matches LLM summarization at 50% cost; validates tool output compression
+- [intake-259] RTK Rust Token Killer -- 60-90% token reduction across 100+ commands; security concerns preclude direct adoption
+- [intake-301] AXI Agent Experience Interface -- TOON format achieves ~40% token savings; progressive disclosure mirrors truncation+peek architecture
+- [intake-302] SkillReducer -- 48% tool description compression via adversarial delta debugging; complements output compression
+- [context-folding-progressive handoff](../handoffs/active/context-folding-progressive.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
+- [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done
+- [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- llama.cpp block masking feasibility confirmed, SFT training design complete
