@@ -46,9 +46,9 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 
 ## Open Questions
 
-- What is the actual page contribution rate in current web_research sessions? (Needed to justify ColBERT reranker)
+- What is the actual page contribution rate in current web_research sessions? (S1 instrumentation now live; AR-3 Package D will generate this data automatically via 50 web_research sentinel questions)
 - Can the MemRL distillation classifier match HybridRouter quality on high-confidence decisions in production?
-- Would ColBERT-Zero's general retrieval quality improve web_research synthesis measurably over DDG's keyword ranking?
+- Would ColBERT-Zero's general retrieval quality improve web_research synthesis measurably over DDG's keyword ranking? (GTE-ModernColBERT-v1 showed perfect separation on test data; real-world validation in S6 A/B test)
 - Is the 50ms GTE-ModernColBERT latency acceptable under high-concurrency scenarios?
 - Should the routing classifier's confidence threshold (0.6) be tuned via the conformal calibration system?
 
@@ -68,3 +68,4 @@ A local hybrid search engine for markdown knowledge bases (intake-270, tobi/qmd)
 - [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT) Reason-ModernColBERT -- Late-interaction retriever (eliminated: CC-BY-NC-4.0 license; replaced by ColBERT-Zero)
 - [intake-270](https://github.com/tobi/qmd) tobi/qmd -- Local hybrid search engine for markdown knowledge bases
 - [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval recall local memory system
+- [Progress 2026-04-14 Session 9](/workspace/progress/2026-04/2026-04-14.md) -- ColBERT reranker S1/S2 implementation, PyLate elimination, ONNX Runtime adoption, S4 latency benchmark results, telemetry pipeline wiring

@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 20 documents (1 deep-dive, 3 active handoffs, 16 intake entries)
+**Last compiled**: 2026-04-14
+**Sources**: 21 documents (1 deep-dive, 4 active handoffs, 16 intake entries)
 
 ## Summary
 
@@ -51,6 +51,10 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 
 - **Tools/REPL hurt accuracy on 7/10 suites**: Omega metric evaluation found agentic tasks -54.5pp, coder -44pp, general -26pp, math -26pp when using tools versus direct generation. Only hotpotqa (+12pp) and gpqa (+6pp) benefit. The implication is that default routing should prefer direct mode, with tool use as an opt-in for known-beneficial task types. [reasoning-compression handoff]
 
+- **Tool output compression is slightly net-positive (+4pp REPL overall)**: Controlled A/B test (100q ON vs 99q OFF, 5 suites, WS-3 bug fixed) showed compression helps math (+25pp, noise reduction) but hurts hotpotqa (-25pp, retrieval context lost). Coder/general/gpqa near-neutral. Default kept ON. The test also exposed a routing bug (WS-3): `routing.py` hardcoded `task_type="chat"` causing 100% web search in Arm B -- fixed with role-to-task_type derivation. [bulk-inference-campaign.md]
+
+- **Risk signal does not predict escalation need**: Package B risk distribution analysis (2,433 decisions) found low-risk prompts escalate MORE (64.4%) than high-risk prompts (50.0%), counterintuitively. However, the high-risk sample was tiny (n=16), too small for reliable conclusions. The RI-10 canary window has been extended to 2026-04-27 to accumulate at least 50 high-risk samples. [bulk-inference-campaign.md]
+
 - **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110](https://arxiv.org/abs/2603.05433)
 
 - **Explicit word limits outperform vague conciseness**: intake-276 deep-dive revealed that "be concise" prompts are the weakest tested form. Explicit numeric limits (e.g., "answer in under 15 words for factual questions") based on CCoT's 30-60 word sweet spot significantly outperform open-ended brevity instructions. Worker prompts have been upgraded accordingly. [reasoning-compression handoff]
@@ -70,7 +74,7 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 
 ### In Progress
 
-- **Difficulty signal validation at new thresholds**: Original 0.3/0.6 thresholds yielded 92% easy / 0% hard -- useless. Recalibrated to 0.15/0.35 for ~40/40/20 split. Medium prompts take 29% longer (p50 36s vs 25s), confirming signal has predictive value. Full re-validation pending before enforce mode activation.
+- **Difficulty signal validation at new thresholds (FAILING)**: Original 0.3/0.6 thresholds yielded 92% easy / 0% hard -- useless. Recalibrated to 0.15/0.35 for ~40/40/20 split. However, Package B large-sample validation (2,433 routing decisions, 2026-04-09) showed NO predictive spread: escalation rates are flat at 62.2%/60.7%/62.2% across easy/medium/hard bands. The difficulty signal at current thresholds does not differentiate routing needs. Recommendation: re-examine feature weights or add semantic features before moving to enforce mode. [bulk-inference-campaign.md]
 - **SEAL control vector generation for Qwen3-32B**: Contrastive pair generator (80 problems) and evaluation script (scaling sweep at 0.3/0.5/0.7) prepared. Awaiting model servers. Works via existing `--control-vector` flag in llama.cpp on dense models. Blocked on Qwen3.5 hybrid SSM (no `build_cvec()` in `qwen35.cpp`).
 - **Autopilot GEPA integration**: GEPA evolutionary prompt optimization now runs 30% of PromptForge trials via `OrchestratorGEPAAdapter`. 35x fewer rollouts than GRPO. Comparing acceptance rates against LLM mutation in AR-3 journal.
 
@@ -91,7 +95,7 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 
 ## Open Questions
 
-- What are the recalibrated difficulty thresholds' predictive power? The 0.15/0.35 split needs validation against benchmark accuracy before enforce mode can be activated.
+- What are the recalibrated difficulty thresholds' predictive power? Package B validation (2,433 decisions) shows zero predictive spread -- escalation rate is flat across all three bands. The 7-feature regex classifier may lack sufficient signal. Options: (a) add semantic features (embedding-based difficulty), (b) use OPSDC length-ratio signal, (c) accept that difficulty is not reliably predictable from prompt alone and use runtime feedback instead.
 - Does the Omega finding (tools hurt on 7/10 suites) replicate with the current orchestrator version? Specific model and tool configurations may have improved since evaluation.
 - Can OPSDC's length-ratio difficulty signal be used at runtime, or is it too expensive (requires generating two responses)?
 - How does TrimR interact with speculative decoding acceptance rates? Pruning reasoning tokens changes the distribution, which may affect draft model alignment.
@@ -123,3 +127,4 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 - [intake-133](https://arxiv.org/abs/2603.08462) CIB theory -- Formal unification of budget forcing; Pareto-dominant compression; semantic token cost
 - [intake-134](https://arxiv.org/abs/2505.16552) CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
+- [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed
