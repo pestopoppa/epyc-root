@@ -1,11 +1,11 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: ready for implementation
+**Status**: S1–S4 complete; S5 gated on AR-3 web_research data (go/no-go analysis)
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-04-14 (finalized: architecture resolved, model selected, work items sequenced)
 **Priority**: MEDIUM
 **Effort**: Medium
-**Depends on**: None (independent workstream, no inference slot competition)
+**Depends on**: AR-3 autopilot data — S5 requires the post-AR-3 irrelevant-page analysis to confirm >20% waste rate before implementation proceeds. No infrastructure dependency; this is a data gate. See "Post-AR-3 Analysis" section below for the go/no-go script and thresholds.
 
 ## Objective
 

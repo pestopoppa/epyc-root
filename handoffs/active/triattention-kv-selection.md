@@ -53,13 +53,22 @@ See `kv-cache-quantization.md` → Why This Matters for EPYC for full hardware s
 
 | Stage | Task | Priority | Status | Decision Gate |
 |-------|------|----------|--------|---------------|
-| S1 | KVPress evaluation: benchmark Expected Attention on Qwen2.5-7B at 50%/25% compression. Measure RULER score, PPL, latency. Compare against SnapKV baseline. | HIGH | SCAFFOLD READY (2026-04-13) | >= 90% RULER at 50% compression |
+| S1 | KVPress evaluation: benchmark Expected Attention on Qwen2.5-7B at 50%/25% compression. Measure RULER score, PPL, latency. Compare against SnapKV baseline. | HIGH | **BLOCKED** — HF CPU infeasible (see note). Replan as S4-first. | >= 90% RULER at 50% compression |
 | S2 | Q/K concentration validation: run TriAttention calibration on Qwen2.5-7B. Verify pre-RoPE clustering (expect R >= 0.95). | HIGH | NOT STARTED | R >= 0.95 (pre-RoPE clustering confirmed) |
 | S3 | Selection + quantization stacking: best scorer from S1/S2 combined with `--kv-hadamard -ctk q4_0 -ctv f16`. Measure quality under dual compression. | HIGH | BLOCKED on S1/S2 | Quality-neutral at >= 4x combined compression |
-| S4 | llama.cpp portability: assess Expected Attention Gaussian scoring for C++ port. Document changes needed to llama.cpp KV cache infrastructure. | MEDIUM | BLOCKED on S1 | Feasible C++ port path identified |
+| S4 | llama.cpp port: implement Expected Attention Gaussian scoring in ggml. Use `llama_memory_seq_rm()` for eviction (validated by Memento S1, 2026-04-14). | **HIGH** (promoted) | UNBLOCKED — algorithm spec reviewed, eviction primitive validated | Scorer runs in llama.cpp, eval via llama-server |
 | -- | LongFlow monitoring: track for topic-switch weakness fix in paper revisions. | LOW | WATCHING | -- |
 
-S1 and S2 can run **in parallel**. S3 depends on S1/S2 results. S4 depends on S1. If both S1 and S2 fail their gates, **CONCLUDE** this handoff — quantization alone is sufficient.
+**S1 HF CPU infeasibility note (2026-04-14)**: KVPress runs through HuggingFace transformers, not llama.cpp. On our EPYC CPU, even a 0.5B model at 4K-16K context took >5 min per sample with no results. The 7B model consumed 65GB and was projected at hours per sample. Root cause: HF Python inference has no ggml kernel optimizations — ~100x slower than llama.cpp on identical hardware. **New plan**: promote S4 (llama.cpp C++ port) to first priority. The Expected Attention scorer is a per-layer scoring function (mean/cov of pre-RoPE queries + Gaussian future prediction + V-norm weighting), not an architecture change. Eviction uses `llama_memory_seq_rm()` which Memento S1 validated (5/5 tests, 2026-04-14). Once the scorer runs in llama.cpp, S1's RULER benchmark can execute at production speed (88+ t/s on 7B).
+
+S4 is now the **critical path**. S1/S2 evaluation runs through the llama.cpp scorer once S4 is implemented. S3 depends on S1/S2 results. If both S1 and S2 fail their gates, **CONCLUDE** this handoff — quantization alone is sufficient.
+
+**Expected Attention algorithm (for S4 port)**:
+1. After prefill, extract pre-RoPE Q statistics: `mu = mean(Q_preRoPE)`, `cov = (Q-mu)^T(Q-mu)/n` per head
+2. Compute averaged RoPE rotation matrix R over `[q_len, q_len+512)` future positions
+3. Apply: `mu = mu @ R^T`, `cov = R @ cov @ R^T`
+4. Score each KV entry: `score = K @ mu^T / sqrt(d) + 0.5 * K @ cov @ K^T / d`, then softmax, then `*= ||V||_2`
+5. Protect sink tokens (first 4), evict lowest-scoring via `llama_memory_seq_rm()`
 
 ## Risk Register
 

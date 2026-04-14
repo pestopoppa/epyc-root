@@ -1,8 +1,8 @@
 # Memento: Block-Level Reasoning Compression with KV Cache Masking
 
-**Status**: active — research evaluation + llama.cpp feasibility assessment
+**Status**: active — S1 runtime PASSED (2026-04-14), S2 LoRA training unblocked
 **Created**: 2026-04-08 (via research intake)
-**Updated**: 2026-04-09 (deep-dive completed)
+**Updated**: 2026-04-14 (S1 runtime validation: 5/5 tests passed on Qwen3-1.7B)
 **Categories**: kv_cache, training_distillation, context_extension, inference_serving
 **Deep-dive**: `research/deep-dives/memento-iterative-reasoning-cluster.md`
 
@@ -75,7 +75,19 @@ Investigate Memento-style block reasoning compression for EPYC stack — trainin
 
 **Test skeleton**: Written at `tests/test-memento-block-masking.cpp` in llama.cpp-experimental. 5 test functions: basic eviction, gap semantics, post-eviction generation, multi-block iterative eviction, memory usage check. Compiles against current headers; requires `--model <path>` at runtime.
 
-**Next**: S1 runtime validation (requires model server) — run the test skeleton with a loaded model to verify attention correctness after mid-sequence eviction.
+**S1 Runtime Validation — PASSED (2026-04-14)**:
+
+Ran all 5 tests against Qwen3-1.7B-Q8_0 (`llama.cpp-experimental/build-diff-test`). Results:
+
+| Test | Result | Key observation |
+|------|--------|----------------|
+| Basic block eviction | PASS | `seq_rm([15,46))` correctly creates position gap, pos_min=0, pos_max=61 preserved |
+| Position gap semantics | PASS | Removing [30,70) leaves positions 0-29 and 70-99 intact, no auto-shift |
+| Generation after eviction | PASS | `llama_decode()` succeeds at positions after the gap — no attention corruption |
+| Multi-block iterative eviction | PASS | 3 sequential block→evict cycles, 4x compression (200→50 KV entries) |
+| Memory usage | PASS | Freed cells available for reuse |
+
+**S1 COMPLETE** — block masking primitive is validated end-to-end. S2 (LoRA training) is now unblocked.
 
 **Builds on**: Our hybrid-precision buffer work (split attention, eviction from recent→old in `kv-cache-quantization.md`). Block masking is architecturally simpler — straight eviction, no demotion/requantization.
 

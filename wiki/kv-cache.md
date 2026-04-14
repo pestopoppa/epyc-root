@@ -85,13 +85,13 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 
 - **Next validation steps**: P2 Coder-32B coding benchmarks (validates production deployment at scale), P3 comparison vs Expected Attention at 5x/10x/20x (determines whether selection or compaction is primary path at each ratio), P4 AM + Hadamard q4_0 stacking quality test (validates dual compression)
 
-- **Scaffold ready, awaiting model server**: KVPress Expected Attention evaluation on Qwen2.5-7B. S1 gate: >=90% RULER at 50% compression. S2: TriAttention Q/K concentration validation (expect R>=0.95). S3: selection+quantization stacking quality test
+- **KVPress HF path infeasible on CPU; replanned as llama.cpp-first (2026-04-14)**: KVPress runs through HuggingFace transformers, not llama.cpp. On EPYC CPU, even 0.5B at 4K-16K context took >5 min/sample with no results; 7B consumed 65GB and projected hours/sample (~100x slower than llama.cpp on identical hardware). S4 (Expected Attention C++ port to ggml) promoted to critical path. The scorer is a per-layer function (mean/cov of pre-RoPE queries + Gaussian future prediction + V-norm weighting), not an architecture change. Eviction uses `llama_memory_seq_rm()` validated by Memento S1 (5/5 tests, 2026-04-14). Once the scorer runs in llama.cpp, S1's RULER benchmark can execute at production speed. S2 (TriAttention Q/K concentration) and S3 (selection+quantization stacking) depend on S4 completion
 
-- **Feasibility confirmed, awaiting infrastructure**: Memento block masking via `llama_memory_seq_rm()`. OpenMementos dataset downloaded. LoRA training design complete. CPU-feasible validation on 1.7B; production 32B requires GPU QLoRA
+- **Memento S1 runtime validation PASSED (2026-04-14)**: Block masking primitive validated end-to-end on Qwen3-1.7B-Q8_0. 5/5 tests passed: basic block eviction, position gap semantics, generation after eviction (no attention corruption), multi-block iterative eviction (4x compression, 200->50 KV entries), and memory reuse. S2 LoRA training now unblocked. OpenMementos dataset downloaded, training design complete. CPU-feasible validation on 1.7B; production 32B requires GPU QLoRA
 
 - **Priority ranking**:
   1. HIGH: Complete AM P2 benchmarks on Coder-32B (validates production deployment for highest-value model)
-  2. HIGH: Run KVPress S1/S2/S3 evaluation gates (determines selection method and stacking viability)
+  2. HIGH: Implement Expected Attention scorer in llama.cpp (S4 — critical path; HF CPU path infeasible, enables S1/S2/S3 eval at production speed)
   3. MEDIUM: AM P4 dual compression test (AM + Hadamard q4_0 stacking -- validates the 8-40x combined promise)
   4. MEDIUM: Prototype llama.cpp block masking for Memento (builds on ISWA work and existing `llama_memory_seq_rm()`)
   5. LOW: KVCOMM for parallel worker pools (Phase F in dynamic-stack-concurrency, only relevant when running 3+ same-model instances)
