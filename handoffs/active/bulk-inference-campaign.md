@@ -330,6 +330,7 @@ python3 scripts/benchmark/eval_tale_budget.py \
 | AP-20 | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10 | GEPA Full Program Adapter eval — resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal |
 | MH-4 | [meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b | GEPA search algorithm comparison — Pareto frontier contributions by mutation source analyzed from AR-3 journal |
 | ~~LG Phase 3~~ | ~~[langgraph-migration.md](langgraph-migration.md)~~ | ✅ DONE (2026-04-11). All 7 per-node flags enabled in `orchestrator_stack.py`. Fixed append-field delta bug in `_run_via_langgraph`. 72 LG tests + 4495 unit tests pass. |
+| ColBERT S1 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | Passive data collection — S1 relevance instrumentation fires on all web_research calls. AR-3's web_research sentinel suite (50q) generates irrelevant-page-rate metrics. Post-AR-3: grep for `web_research relevance summary` to decide S3 go/no-go (>20% threshold). |
 
 ### AM KV Compaction Integration (NEW — 2026-04-13)
 
@@ -478,14 +479,14 @@ curl -N http://localhost:8000/v1/chat/completions \
 **Duration**: ~30 min (4 model loads + feature checks)
 **Stack required**: No production stack — uses experimental binary at `/mnt/raid0/llm/llama.cpp-experimental/build/bin/`
 **Depends on**: v3 cherry-pick rebuild (DONE 2026-04-09)
-**Related**: [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md)
+**Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md)
 
 ### Tasks Resolved
 
 | Task ID | Source | Description |
 |---------|--------|-------------|
-| v3-smoke | [llama-cpp-v3-upstream-rebuild](llama-cpp-v3-upstream-rebuild.md) | All 4 production models load + generate at expected t/s |
-| v3-features | [llama-cpp-v3-upstream-rebuild](llama-cpp-v3-upstream-rebuild.md) | Feature-specific tests: moe-n-expert, lookup, paged attention, slot erase, server health |
+| v3-smoke | [llama-cpp-v3-upstream-rebuild](../completed/llama-cpp-v3-upstream-rebuild.md) | All 4 production models load + generate at expected t/s |
+| v3-features | [llama-cpp-v3-upstream-rebuild](../completed/llama-cpp-v3-upstream-rebuild.md) | Feature-specific tests: moe-n-expert, lookup, paged attention, slot erase, server health |
 | v3-hadamard | [kv-cache-quantization](kv-cache-quantization.md) | Upstream Hadamard auto-rotation confirmed (`-ctk q4_0 -ctv f16` without `--kv-hadamard`) |
 | v3-ppl | [kv-cache-quantization](kv-cache-quantization.md) | PPL regression test: v3 `-ctk q4_0 -ctv f16` matches v2 measurements (+-0.02) |
 | v3-numa | [inference-acceleration-index](inference-acceleration-index.md) | NUMA throughput within 5% of v2 baseline |
@@ -512,7 +513,7 @@ curl -X DELETE http://localhost:9999/slots/0
 ./build/bin/llama-perplexity -m <model> -f <wiki_test> -ctk q4_0 -ctv f16 -fa
 ```
 
-See full test matrix in [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) §Smoke Tests and §Feature-Specific Tests.
+See full test matrix in [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) §Smoke Tests and §Feature-Specific Tests.
 
 ### Results (2026-04-10)
 
@@ -609,7 +610,7 @@ These tasks are scattered across active handoffs and require inference compute b
 | G3 | TriAttention S2 stacking | [triattention-kv-selection.md](triattention-kv-selection.md) | Test KV selection + Hadamard q4_0 stacking. Quality cliff assessment under dual compression. | coder_escalation | ~4h |
 | G4 | FlowSteer activation steering | [reasoning-compression.md](reasoning-compression.md) Tier 2 | Test nonlinear activation steering for concise reasoning on 30B-A3B worker. | worker_explore | ~6h |
 | G5 | short-m@k voting baseline | [reasoning-compression.md](reasoning-compression.md) Tier 1 | Run k=3 parallel generations, majority vote. Measure accuracy vs single-shot on GPQA/math. | Any reasoning model | ~4h |
-| G6 | v3 clean NUMA throughput | [llama-cpp-v3-upstream-rebuild.md](llama-cpp-v3-upstream-rebuild.md) | Isolated NUMA test (requires stopping production stack). Compare v3 vs v2 48t quarter throughput. | frontdoor or worker | ~1h |
+| G6 | v3 clean NUMA throughput | [llama-cpp-v3-upstream-rebuild.md](../completed/llama-cpp-v3-upstream-rebuild.md) | Isolated NUMA test (requires stopping production stack). Compare v3 vs v2 48t quarter throughput. | frontdoor or worker | ~1h |
 | G7 | MiniMax M2.7 eval | Research intake (intake-328/329) | Download UD-IQ4_XS (108GB) from unsloth/MiniMax-M2.7-GGUF. Benchmark throughput + quality on EPYC. MoE 229B-A10B, 256 experts, 200K context. | Standalone (108GB+ RAM) | ~8h |
 | G8 | MiniMax tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
 | G9 | MiniMax quality comparison | Research intake (intake-328/329) | Run standard eval suite (MATH, coding, general). Compare vs Qwen3-30B-A3B worker + Qwen3-35B-A3B coder. Q4 quant has 22.8% more errors — test carefully. | Standalone | ~6h |
@@ -634,6 +635,7 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 | **RI-10 canary** | YES — this IS Package D | Extended to 2026-04-27, n=16/50 high-risk samples. AR-3 generates these samples. |
 | **SEAL on 30B** | NO — needs dedicated server with cvector | Train + eval concise reasoning vector on Qwen3-Coder-30B-A3B. Separate from orchestrator stack. |
 | **AM P2 on 32B** | ✅ DONE — E2E beta injection tested on 32B f16 | L1-L3b complete. Beta injection via server endpoint works on Coder-32B. Full compaction quality test next. |
+| **ColBERT reranker S1 data** | YES — passive (already instrumented) | S1 relevance logging in `_web_research_impl()` fires on every web_research call. AR-3's 50-question `web_research` sentinel suite generates the data. After AR-3, grep logs for `web_research relevance summary` to measure irrelevant page rate. If >20%, proceed to S3 (model download). See [colbert-reranker-web-research.md](colbert-reranker-web-research.md). |
 
 ### Prioritization (updated 2026-04-13)
 

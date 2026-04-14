@@ -4901,7 +4901,7 @@
   novelty: high
   relevance: high
   verdict: new_opportunity
-  discovered_via: user
+  discovered_via: input
   ingested_date: '2026-03-24'
   cross_references:
     chapters:
@@ -5010,6 +5010,7 @@
     portable to CPU with AVX-512.
 - id: intake-194
   url: https://github.com/spiritbuun/llama-cpp-turboquant-cuda
+  arxiv_id: null
   source_type: repo
   title: 'llama-cpp-turboquant-cuda: CUDA TurboQuant Fork of llama.cpp'
   authors:
@@ -5033,7 +5034,7 @@
   novelty: medium
   relevance: high
   verdict: new_opportunity
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references:
     handoffs:
@@ -5050,6 +5051,7 @@
 
 - id: intake-195
   url: https://github.com/ggml-org/llama.cpp/discussions/20969
+  arxiv_id: null
   source_type: blog
   title: 'TurboQuant - Extreme KV Cache Quantization (llama.cpp discussion)'
   categories:
@@ -5099,7 +5101,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: LLM emotional prompting. No relevance to inference optimization.
@@ -5125,7 +5127,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: IJCAI 2024. Negative emotional prompting. No relevance to inference optimization.
@@ -5153,7 +5155,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: Mechanistic interpretability of emotions. No relevance to inference optimization.
@@ -5181,7 +5183,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5208,7 +5210,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5234,7 +5236,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5262,7 +5264,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5288,7 +5290,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5312,7 +5314,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5336,7 +5338,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5360,22 +5362,24 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
 - id: intake-207
   url: https://openreview.net/forum?id=vSbV01bdvf
+  arxiv_id: null
   source_type: paper
   title: 'Unknown (OpenReview 403 — fetch failed)'
   categories:
-  - unknown
-  novelty: unknown
-  relevance: unknown
-  verdict: unknown
-  discovered_via: direct
+  - ssm_hybrid
+  novelty: low
+  relevance: none
+  verdict: not_applicable
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
+  notes: OpenReview returned 403. Could not fetch paper details. Fields set to defaults.
   notes: OpenReview returned 403. Could not fetch paper details.
 
 - id: intake-208
@@ -5398,7 +5402,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5422,7 +5426,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5446,7 +5450,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5469,7 +5473,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5493,7 +5497,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5517,7 +5521,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: Despite "inference" in title, this is about behavioral steering, not inference optimization.
@@ -5543,7 +5547,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5568,7 +5572,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5591,7 +5595,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5616,7 +5620,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: ICLR 2026. Interesting for interpretability but not inference optimization.
@@ -5640,7 +5644,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: NeurIPS 2025 Oral. SAE interpretability, not inference optimization.
@@ -5665,7 +5669,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5689,7 +5693,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5715,7 +5719,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5741,7 +5745,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5764,12 +5768,13 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
 - id: intake-224
   url: https://openreview.net/forum?id=Luq7xtaYeD
+  arxiv_id: null
   source_type: paper
   title: 'Investigating the Effects of Emotional Stimuli Type and Intensity on LLM Behavior'
   categories:
@@ -5783,7 +5788,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5807,7 +5812,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5832,7 +5837,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5856,7 +5861,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5879,13 +5884,14 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: EMNLP 2025 Findings. Cognitive appraisal modeling.
 
 - id: intake-229
   url: https://ceur-ws.org/Vol-4084/
+  arxiv_id: null
   source_type: blog
   title: 'HyperAgents 2025: Second International Workshop on Hypermedia Multi-Agent Systems'
   categories:
@@ -5902,13 +5908,14 @@
   novelty: low
   relevance: low
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: ECAI 2025 workshop. MCP mention is tangential to agent infrastructure.
 
 - id: intake-230
   url: https://docs.arcprize.org/
+  arxiv_id: null
   source_type: blog
   title: 'ARC-AGI-3: Interactive Reasoning Benchmark'
   categories:
@@ -5924,13 +5931,14 @@
   novelty: low
   relevance: low
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: Agent reasoning benchmark. Not directly relevant to inference optimization.
 
 - id: intake-231
   url: https://arc-agi-swarm.vercel.app/
+  arxiv_id: null
   source_type: blog
   title: 'ARC-AGI-3 Swarm: Collaborative AI Agent Competition Platform'
   categories:
@@ -5945,7 +5953,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
 
@@ -5974,7 +5982,7 @@
   novelty: low
   relevance: none
   verdict: not_applicable
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references: {}
   notes: Financial domain RAG. Not relevant to inference optimization.
@@ -6020,7 +6028,7 @@
   novelty: medium
   relevance: high
   verdict: new_opportunity
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references:
     handoffs:
@@ -6071,6 +6079,7 @@
 
 - id: intake-235
   url: https://mistral.ai/news/leanstral
+  arxiv_id: null
   source_type: blog
   title: 'Leanstral: Open-Source Foundation for Trustworthy Vibe-Coding'
   authors:
@@ -6163,7 +6172,9 @@
     should consider testing this if we ever want REAP on the hybrid frontdoor.
 
 - id: intake-237
-  source_type: field_report
+  url: null
+  source_type: blog
+  arxiv_id: null
   title: 'Nemotron-Cascade 2 vs Qwen3.5-35B-A3B: Mamba2 vs Delta Net RTX 3090 Benchmark'
   reported_by: colleague
   categories:
@@ -6190,7 +6201,7 @@
   novelty: high
   relevance: high
   verdict: new_opportunity
-  discovered_via: field_report
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references:
     handoffs:
@@ -6251,7 +6262,9 @@
     262K context window. License: NVIDIA Open Model License.
 
 - id: intake-239
-  source_type: field_report
+  url: null
+  source_type: blog
+  arxiv_id: null
   title: 'Small Model Deployment Learnings: Qwen3.5-4B, Outlines, LoRA, RL Thresholds'
   reported_by: colleague
   categories:
@@ -6276,7 +6289,7 @@
   novelty: medium
   relevance: medium
   verdict: worth_investigating
-  discovered_via: field_report
+  discovered_via: input
   ingested_date: '2026-03-28'
   cross_references:
     intake:
@@ -7637,6 +7650,7 @@
 
 - id: intake-271
   url: https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents
+  arxiv_id: null
   source_type: blog
   title: 'Skill Issue: Harness Engineering for Coding Agents'
   authors:
@@ -7743,6 +7757,7 @@
 
 - id: intake-273
   url: https://research.trychroma.com/context-rot
+  arxiv_id: null
   source_type: blog
   title: 'Context Rot: How Increasing Input Tokens Impacts LLM Performance'
   authors:
@@ -8694,7 +8709,7 @@
   relevance: high
   credibility_score: 5
   verdict: new_opportunity
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-04-08'
   contradicting_evidence:
   - "KV cache compression harms arithmetic reasoning 1-40% (arxiv:2512.12008) — Memento's own results confirm 2-7pp loss on competition math"
@@ -8738,7 +8753,7 @@
 - id: intake-290
   arxiv_id: null
   url: https://huggingface.co/datasets/microsoft/OpenMementos
-  source_type: dataset
+  source_type: repo
   title: "OpenMementos-228K: Segmented Reasoning Traces with Block Summaries"
   authors:
   - Vasilis Kontonis
@@ -8771,7 +8786,7 @@
   relevance: high
   credibility_score: null
   verdict: new_opportunity
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-04-08'
   contradicting_evidence: null
   cross_references:
@@ -8809,7 +8824,7 @@
   relevance: medium
   credibility_score: null
   verdict: worth_investigating
-  discovered_via: direct
+  discovered_via: input
   ingested_date: '2026-04-08'
   contradicting_evidence: null
   cross_references:
@@ -8987,6 +9002,7 @@
 
 - id: intake-295
   url: https://github.com/dmtrKovalenko/fff.nvim
+  arxiv_id: null
   source_type: repo
   title: 'FFF.nvim: Frecency-Based Fuzzy File Finder for AI Agents'
   authors:
@@ -9031,6 +9047,7 @@
 
 - id: intake-296
   url: https://huggingface.co/collections/z-lab/dflash
+  arxiv_id: null
   source_type: repo
   title: 'DFlash HuggingFace Model Collection'
   categories:
@@ -9047,6 +9064,7 @@
 
 - id: intake-297
   url: https://github.com/z-lab/dflash
+  arxiv_id: null
   source_type: repo
   title: 'DFlash GitHub Repository'
   categories:
@@ -9063,6 +9081,7 @@
 
 - id: intake-298
   url: https://z-lab.ai/projects/dflash/
+  arxiv_id: null
   source_type: blog
   title: 'DFlash Project Page — Block Diffusion for Flash Speculative Decoding'
   categories:
@@ -9084,6 +9103,7 @@
 
 - id: intake-299
   url: https://kuri.trilok.ai/
+  arxiv_id: null
   source_type: repo
   title: 'Kuri: Lightweight Browser Automation for AI Agents (Zig)'
   authors:
@@ -9127,6 +9147,7 @@
 
 - id: intake-300
   url: https://github.com/SawyerHood/dev-browser
+  arxiv_id: null
   source_type: repo
   title: 'Dev-Browser: Sandboxed Browser Automation for AI Agents'
   authors:
@@ -9165,6 +9186,7 @@
 
 - id: intake-301
   url: https://axi.md/
+  arxiv_id: null
   source_type: blog
   title: 'AXI: Agent eXperience Interface — 10 Principles for Agent-Ergonomic CLI Design'
   authors:
@@ -11765,3 +11787,221 @@
     Flash-LoRA-Attention kernel concept (avoid materializing full-rank cache)
     could inspire efficient partial-cache operations, but the specific LoRA
     targeting makes this a dead end for EPYC.
+- id: intake-354
+  url: https://arxiv.org/abs/2602.24281
+  arxiv_id: '2602.24281'
+  source_type: paper
+  title: 'Memory Caching: RNNs with Growing Memory'
+  authors:
+  - Ali Behrouz
+  - Zeman Li
+  - Yuan Deng
+  - Peilin Zhong
+  - Meisam Razaviyayn
+  - Vahab Mirrokni
+  categories:
+  - ssm_hybrid
+  - context_extension
+  - memory_augmented
+  key_claims:
+  - Memory Caching enables RNN memory to scale with sequence length through checkpointing, bridging fixed-memory RNNs (O(L)) and quadratic Transformers (O(L²))
+  - Achieves tunable O(NL) complexity where N is the number of segments, interpolating between efficiency and performance
+  - Universal applicability — MC framework applies to any recurrent architecture (Linear Attention, Titans, DLA, SWLA) without architectural changes
+  - Gated Residual Memory (GRM) is best variant — input-dependent gating over cached segment checkpoints via context similarity
+  - Sparse Selective Caching (SSC) offers MoE-style top-k checkpoint retrieval for best throughput/recall tradeoff
+  techniques:
+  - Residual Memory (RM) — simple summation of online and cached memories
+  - Gated Residual Memory (GRM) — input-dependent gating with context-aware gate
+  - Memory Soup — interpolation of cached memory parameters
+  - Sparse Selective Caching (SSC) — MoE-style router selecting top-k cached memories
+  - Constant-size and logarithmic segmentation strategies
+  reported_results:
+  - 'Titans + GRM: 19.14 Wiki ppl (vs 20.04 baseline), 0.90 ppl improvement at 760M/30B'
+  - 'Titans + GRM: 15.37 Wiki ppl at 1.3B/100B (vs 15.60 baseline)'
+  - 'DLA + GRM: 82.4% S-NIAH-1 at 16K (vs 44.0% baseline, +38.4pp)'
+  - 'Titans + GRM: 88.2% S-NIAH-2 at 16K (vs 75.4% baseline, +12.8pp)'
+  - 'SWDE retrieval: 50.1% with GRM (vs 29.7% baseline, +20.4pp)'
+  - 'TriviaQA LongBench: 49.7% with GRM (vs 26.2% baseline, +23.5pp)'
+  - 'Downstream average at 1.3B: 58.33% with GRM (vs 56.82% baseline, +1.51pp)'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'Reviewer critique: "early-stage exploration rather than a definitive solution; deeper analysis and broader comparisons would strengthen the contribution"'
+  - 'Paper itself acknowledges Transformers still achieve best accuracy on recall tasks — MC closes gap but does not match'
+  - 'No open-source implementation found'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - llama-cpp-v3-upstream-rebuild.md
+    - mtp-speculative-decoding.md
+    experiments:
+    - self-speculation-benchmark.md
+    - seal-control-vector-results.md
+    intake_entries:
+    - intake-141
+    - intake-333
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  notes: >
+    DEEP DIVE 2026-04-14: The initial analysis overweighted state checkpoint
+    size (2GB) as the speculation bottleneck. Actual profiling shows state copy
+    is ~5% of round-trip cost (50-100ms). The real killer is sequential
+    verification through 30 Delta Net layers at ~220ms/token — O(N) scaling
+    that makes all draft-verify approaches net-negative on Qwen3.5 hybrids
+    (self-spec: -44%, external drafter: -33%). MC's segmented caching would
+    save ~25-50ms against a ~1320ms verification cost for 6 tokens — marginal.
+    MC's actual value is as architectural context: it maps the growing-memory
+    RNN design space (O(L) fixed → O(NL) segmented → O(L²) full attention)
+    and demonstrates that GRM/SSC can recover recall quality without quadratic
+    cost. This is relevant if future models adopt MC-style architectures where
+    the state set is explicitly designed for selective retrieval. For current
+    Qwen3.5 inference, MC offers no practical optimization path — the
+    bottleneck is verification latency, not state size. See also intake-356
+    (Log-Linear Attention) which addresses the same design space with O(log L)
+    state growth.
+- id: intake-355
+  url: https://github.com/lightonai/next-plaid
+  arxiv_id: null
+  source_type: repo
+  title: 'NextPlaid & ColGREP: Multi-Vector Search Engine with Semantic Code Search'
+  authors: null
+  categories:
+  - search_retrieval
+  - tool_implementation
+  key_claims:
+  - NextPlaid is a multi-vector search engine using ColBERT-style late-interaction with MaxSim scoring
+  - ColGREP adds semantic code search combining regex filtering with semantic ranking via tree-sitter parsed code units
+  - Fully local operation — single Rust binary, no server dependencies, code never leaves machine
+  - Low RAM footprint via memory-mapped indices and product quantization (2-bit or 4-bit compression)
+  - Native integrations with Claude Code, OpenCode, and Codex agents
+  - ~300 multi-vector embeddings per code unit at dimension 128
+  techniques:
+  - ColBERT-style multi-vector late-interaction
+  - MaxSim scoring
+  - Product quantization (2-bit/4-bit)
+  - Memory-mapped indexing
+  - Tree-sitter code parsing
+  - ONNX Runtime model inference
+  reported_results:
+  - 'arguana MAP: 0.2457 (GPU 13.6 QPS, CPU 17.4 QPS)'
+  - 'fiqa MAP: 0.3871 (GPU 18.2 QPS, CPU 17.6 QPS)'
+  - 'quora MAP: 0.8170 (GPU 20.9 QPS, CPU 17.7 QPS)'
+  - 'Indexing throughput: 41.3-105.5 docs/sec'
+  - 'v1.2.0 released 2026-04-10, 361 stars, 41 forks'
+  novelty: low
+  relevance: high
+  credibility_score: null
+  verdict: already_integrated
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    handoffs:
+    - colbert-reranker-web-research.md
+    - repl-turn-efficiency.md
+    - routing-intelligence.md
+    - colbert-zero-research-integration.md
+    - validation-sweep-live-models.md
+    intake_entries:
+    - intake-099
+    - intake-174
+    - intake-175
+  handoffs_updated:
+  - repl-turn-efficiency.md
+  handoffs_created: []
+  notes: >
+    NextPlaid is already deployed as the core multi-vector retrieval engine on
+    ports 8088 (LateOn-Code) and 8089 (GTE-ModernColBERT-v1). ColGREP CLI
+    remains blocked on upstream ONNX panic. v1.2.0 (2026-04-10) adds native
+    Claude Code integration — check if this resolves the ONNX blocker. The
+    repo itself is well-known to us; this intake entry primarily serves as a
+    reference pointer for the canonical upstream source.
+- id: intake-356
+  url: https://arxiv.org/abs/2506.04761
+  arxiv_id: '2506.04761'
+  source_type: paper
+  title: 'Log-Linear Attention'
+  authors:
+  - Han Guo
+  - Songlin Yang
+  - Tarushii Goel
+  - Eric P. Xing
+  - Tri Dao
+  - Yoon Kim
+  categories:
+  - ssm_hybrid
+  - context_extension
+  key_claims:
+  - Log-linear attention replaces fixed-size hidden state with logarithmically growing set of hidden states, achieving O(L log L) complexity
+  - General framework applicable on top of existing linear attention variants — demonstrated on Mamba-2 and Gated DeltaNet
+  - Log-Linear Gated DeltaNet outperforms standard Gated DeltaNet in perplexity and all but one reasoning benchmark
+  - Log-Linear Gated DeltaNet outperforms layer-matched Transformer across all metrics
+  - Minimal parameter overhead — less than 0.4% for Gated DeltaNet (796M vs 793M)
+  techniques:
+  - Logarithmically growing hidden state set
+  - Matmul-rich parallel form for log-linear complexity
+  - Applied to Mamba-2 and Gated DeltaNet architectures
+  reported_results:
+  - 'Log-Linear Gated DeltaNet outperforms standard Gated DeltaNet in perplexity and reasoning benchmarks'
+  - 'Outperforms layer-matched Transformer across all metrics'
+  - 'Parameter overhead <0.4% for Gated DeltaNet (796M vs 793M)'
+  - 'Parameter overhead <3% for Mamba-2 (825M vs 802M)'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-354
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - routing-intelligence.md
+    experiments:
+    - seal-control-vector-results.md
+    - self-speculation-benchmark.md
+    intake_entries:
+    - intake-354
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created:
+  - log-linear-gated-deltanet-readiness.md
+  notes: >
+    DEEP DIVE 2026-04-14: Upgraded relevance medium → high. 75% of production
+    stack (Qwen3.5-35B-A3B: 30/40 layers) is Gated DeltaNet. Published at
+    ICLR 2026 by the DeltaNet creator (Songlin Yang) and FlashAttention
+    creator (Tri Dao). Log-linear attention addresses the fundamental
+    fixed-memory limitation by growing hidden state set logarithmically.
+
+    Inference impact analysis for EPYC: (1) State size reduction — current
+    Qwen3.5 recurrent state is ~2GB at full context. O(log L) state growth
+    would reduce to ~200-500MB, a 4-10x reduction. While state copy is only
+    ~5% of speculation round-trip cost (verification at 220ms/token dominates),
+    the smaller state enables a sequential replay approach: replay N draft
+    tokens through O(log L) state instead of O(L) state, reducing per-token
+    replay cost. (2) Long-context scaling — at 262K native context, O(log L)
+    state grows by ~18x vs linear growth, making 1M+ context feasible on same
+    hardware. (3) CPU affinity — matmul-rich parallel form maps to existing
+    ggml infrastructure; no GPU-centric sparse kernels needed (unlike
+    NSA/MoBA). (4) llama.cpp implementation — would require new model variant
+    class in src/models/, new ggml operators for log-linear state update, and
+    GGUF metadata extensions. Estimated 2-3 week implementation effort once
+    reference models exist.
+
+    Reference implementation: github.com/HanGuo97/log-linear-attention
+    (278 stars, Python/Triton, training-only, no pretrained checkpoints).
+    Monitor for: (a) pretrained log-linear Gated DeltaNet models, (b)
+    NVlabs/GatedDeltaNet repo for upstream adoption, (c) llama.cpp community
+    PRs for log-linear layer support.

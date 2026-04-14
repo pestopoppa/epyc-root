@@ -7,7 +7,7 @@
 **Purpose**: Index of all remaining tasks across active handoffs that do NOT require model servers / inference compute. Can be tackled while compute is unavailable or occupied by bulk-inference-campaign Package D.
 
 > **Notes**:
-> - Claude Code integration Phase 1 removed (2026-04-11) — superseded by Hermes outer shell. See [claude-code-local-constellation-routing.md](claude-code-local-constellation-routing.md).
+> - Claude Code integration Phase 1 removed (2026-04-11) — superseded by Hermes outer shell. See [claude-code-local-constellation-routing.md](../archived/claude-code-local-constellation-routing.md).
 > - Root-archetype upstream tasks (linter testing, init-project.sh, README) removed — those are root-archetype repo work, not epyc-root. Tracked in [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md).
 
 ---

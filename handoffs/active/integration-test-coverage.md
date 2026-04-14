@@ -228,3 +228,186 @@ GitNexus was checked before considering symbol edits, but local re-index failed 
 - `npx gitnexus analyze` failed with npm packaging error (`Cannot destructure property 'package' of 'node.target' as it is null`).
 
 Given that blocker, this pass was kept read-only on runtime code and focused on classification + planning.
+
+### Incremental Must-Test Tranche (2026-04-14)
+
+Executed next must-test items from the matrix with test-only changes:
+- Added flat embedding shape coverage for `_precompute_embedding()` in `tests/unit/test_seeding_injection_additional.py`.
+- Added non-standard eval-line fallback coverage for `parse_timing()` in `tests/unit/test_script_lib_output_parser.py`.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_injection_additional.py tests/unit/test_script_lib_output_parser.py` → `16 passed`
+- `make coverage-orchestrator-slice` → `108 passed`
+
+Coverage deltas in gated files:
+- `scripts/benchmark/seeding_injection.py`: `98.94%` → `100.00%`
+- `scripts/lib/output_parser.py`: `93.58%` → `99.08%` (only line 107 remains)
+
+GitNexus status:
+- Re-index succeeded after environment stabilization using:
+  - `npx -y gitnexus@1.6.1 analyze --skip-agents-md --no-stats -v`
+- Repo now reports `Status: ✅ up-to-date`.
+
+### Incremental Must-Test Tranche 2 (2026-04-14)
+
+Executed next control-plane tranche:
+- Runtime micro-fix in `scripts/lib/output_parser.py` `parse_response()`:
+  - moved `common_perf_print` end-of-response check before generic skip filtering so the branch is semantically live.
+  - impact warning was HIGH for `parse_response`; edit kept minimal and parser-intent preserving.
+- Added targeted tests for benchmark control-plane and executor branch surfaces:
+  - `tests/unit/test_seeding_orchestrator.py`
+  - `tests/unit/test_benchmark_executor_branching.py`
+  - `tests/unit/test_benchmark_executor_additional.py`
+- Raised enforced floors in `scripts/analysis/check_orchestrator_slice_coverage.py`:
+  - `seeding_injection`: `95 -> 100`
+  - `output_parser`: `90 -> 99`
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_script_lib_output_parser.py tests/unit/test_seeding_injection_additional.py tests/unit/test_seeding_orchestrator.py tests/unit/test_benchmark_executor_branching.py tests/unit/test_benchmark_executor_additional.py` → `55 passed`
+- `make coverage-orchestrator-slice` → `120 passed`
+
+Coverage deltas in gated files:
+- `scripts/lib/output_parser.py`: `99.08%` → `100.00%`
+- `scripts/lib/executor.py`: `88.04%` → `95.43%`
+- `scripts/benchmark/seeding_orchestrator.py`: `80.49%` → `92.68%`
+- `scripts/benchmark/seeding_injection.py`: held at `100.00%`
+
+Residual notable gaps (focused slice):
+- `scripts/lib/onboard.py`: `83.08%` (branch-heavy family/role mapping and import-fallback paths)
+- `scripts/lib/registry.py`: `86.88%` (family mapping variants and defensive returns)
+
+### Incremental Must-Test Tranche 3 (2026-04-14)
+
+Executed focused `onboard` + `registry` closure tranche with mostly test-only changes:
+- Added extensive branch coverage in:
+  - `tests/unit/test_script_lib_registry.py`
+  - `tests/unit/test_script_lib_onboard.py`
+- Kept runtime behavior unchanged for `onboard`/`registry`.
+- Tightened per-file gate floors in `scripts/analysis/check_orchestrator_slice_coverage.py`:
+  - `executor` `85 -> 90`
+  - `registry` `85 -> 95`
+  - `onboard` `80 -> 95`
+  - `seeding_orchestrator` `80 -> 90`
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_script_lib_registry.py tests/unit/test_script_lib_onboard.py` → `27 passed`
+- `make coverage-orchestrator-slice` → `130 passed`
+
+Coverage deltas in gated files:
+- `scripts/lib/registry.py`: `86.88%` → `100.00%`
+- `scripts/lib/onboard.py`: `83.08%` → `98.19%`
+- `scripts/lib/executor.py`: held `95.43%`
+- `scripts/benchmark/seeding_orchestrator.py`: held `92.68%`
+- `scripts/lib/output_parser.py`: held `100.00%`
+- `scripts/benchmark/seeding_injection.py`: held `100.00%`
+- `scripts/benchmark/seeding_infra.py`: held `100.00%`
+
+Residual misses in focused slice are now narrow:
+- `scripts/lib/onboard.py`: `34-37` (import fallback path), `169`, `178` (specific family variants)
+- `scripts/lib/executor.py`: mostly portability/diagnostic branches and fallback loader paths.
+
+Tranche-3 follow-up (same day):
+- Added two additional `detect_family()` branch assertions (DeepSeek-R1-Distill-Qwen, Llama-3.2).
+- `scripts/lib/onboard.py` improved further from `98.19%` to `98.79%`.
+- Remaining onboard misses are now only import fallback lines `34-37`.
+
+### Incremental Must-Test Tranche 4 (2026-04-14)
+
+Executed final focused closure tranche for remaining `executor`, `seeding_orchestrator`, and onboard import-fallback lines.
+
+Risk workflow:
+- Re-indexed GitNexus and confirmed current index.
+- Re-ran impact before edits:
+  - `_erase_slots`: `CRITICAL`
+  - `_force_erase_and_verify`: `CRITICAL`
+  - `_call_orchestrator_with_slot_poll`: `HIGH`
+- Because of blast radius, kept this tranche test-only on those symbols.
+
+Test additions:
+- `tests/unit/test_seeding_orchestrator.py`
+  - covered remaining slot erase strategy fallback/exception branches, force-erase short-circuit and probe exception, non-200/exception probes, progress-none continue path, progress logging + heartbeat path, and direct `_run` call path.
+- `tests/unit/test_benchmark_executor_additional.py`
+  - covered import fallback load path, `_read_registry_timeout` runtime-default map branch, `validate_binaries` missing-binary raise path, HTTP session creation, explicit/default context selection in `start()`, `wait_ready()` timeout/default/diagnostic branches, `is_running()`, and dense model size fallback branch.
+- `tests/unit/test_script_lib_onboard.py`
+  - covered standalone import fallback path for lines `34-37`.
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_orchestrator.py tests/unit/test_benchmark_executor_additional.py` → `44 passed`
+- `python3 -m pytest -q tests/unit/test_script_lib_onboard.py` → `15 passed`
+- `make coverage-orchestrator-slice` → `148 passed`
+
+Focused gate final state:
+- `scripts/benchmark/seeding_infra.py`: `100.00%`
+- `scripts/benchmark/seeding_injection.py`: `100.00%`
+- `scripts/lib/output_parser.py`: `100.00%`
+- `scripts/lib/registry.py`: `100.00%`
+- `scripts/lib/executor.py`: `100.00%`
+- `scripts/benchmark/seeding_orchestrator.py`: `100.00%`
+- `scripts/lib/onboard.py`: `100.00%`
+
+Result:
+- All seven orchestrator-slice gate files are now fully covered (`100%`) with no additional runtime behavior edits in this tranche.
+
+### Broader Benchmark Tranche A (2026-04-14)
+
+Post-slice expansion to high-signal benchmark support modules not currently enforced by the 7-file orchestrator-slice gate.
+
+Risk workflow:
+- Re-indexed GitNexus first.
+- Impact checks before runtime consideration:
+  - `checkpoint_result`: `HIGH`
+  - `load_checkpoint`: `HIGH`
+  - `_adaptive_timeout_s`: `CRITICAL`
+- Kept this tranche strictly test-only (no runtime symbol changes).
+
+Test additions:
+- `tests/unit/test_seeding_scoring.py`
+- `tests/unit/test_seeding_checkpoint.py`
+- `tests/unit/test_seeding_types_state.py`
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_scoring.py tests/unit/test_seeding_checkpoint.py tests/unit/test_seeding_types_state.py` → `17 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q ... --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_scoring.py`: `0% -> 100%`
+  - `scripts/benchmark/seeding_checkpoint.py`: `0% -> 100%`
+  - `scripts/benchmark/seeding_types.py`: `92% -> 100%`
+- Existing enforced gate remains stable:
+  - `make coverage-orchestrator-slice` → `148 passed`, all 7 gated files still at `100%`.
+
+Note:
+- These new module gains are validated but not yet included in `coverage-orchestrator-slice` threshold enforcement.
+
+### Broader Benchmark Tranche B (2026-04-14)
+
+Extended coverage characterization to benchmark eval/reward logic.
+
+Risk workflow:
+- GitNexus index confirmed up-to-date before work.
+- Impact checks (high fanout):
+  - `_eval_single_config`: `CRITICAL`
+  - `evaluate_question_3way`: `CRITICAL`
+  - `_compute_3way_metadata`: `CRITICAL`
+  - `detect_escalation_chains`: `CRITICAL`
+  - `extract_web_research_telemetry`: `HIGH`
+  - `compute_web_research_rewards`: `HIGH`
+  - `compute_scratchpad_rewards`: `HIGH`
+- Kept tranche test-only due blast radius.
+
+Test additions:
+- `tests/unit/test_seeding_rewards.py`
+- `tests/unit/test_seeding_eval.py`
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seeding_rewards.py tests/unit/test_seeding_eval.py` → `18 passed`
+- Combined broader benchmark tranche suites:
+  - `python3 -m pytest -q tests/unit/test_seeding_scoring.py tests/unit/test_seeding_checkpoint.py tests/unit/test_seeding_types_state.py tests/unit/test_seeding_rewards.py tests/unit/test_seeding_eval.py` → `35 passed`
+- Targeted coverage run:
+  - `python3 -m pytest -q tests/unit/test_seeding_rewards.py tests/unit/test_seeding_eval.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seeding_eval.py`: `0% -> 80%`
+  - `scripts/benchmark/seeding_rewards.py`: `0% -> 93%`
+- Existing enforced 7-file gate remains stable:
+  - `make coverage-orchestrator-slice` → `148 passed` (all enforced files remain `100%`).
+
+Note:
+- `seeding_eval` and `seeding_rewards` gains are currently targeted/validated but not yet part of the enforced `coverage-orchestrator-slice` threshold list.

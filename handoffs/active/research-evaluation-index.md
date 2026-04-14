@@ -21,11 +21,12 @@
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 done, TALE eval complete — static limits kept) | HIGH | 2026-04-11 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, A/B done (+4pp REPL), Phase 3a-b done (55% def compression). P3d A/B pending. | MEDIUM | 2026-04-10 |
-| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Novel attention mechanisms | stub (WATCH) — expanded to 4 mechanisms (IHA, MEA, KHA, Multiscreen) | LOW | 2026-04-12 |
+| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Sub-quadratic attention survey | active (literature survey complete, priority ranking established) | LOW | 2026-04-14 |
+| [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Log-Linear GDN readiness | stub (MONITORING) — blocked on pretrained models | HIGH | 2026-04-14 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | ~~[long-context-eval-datasets.md](long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
-| [11-conceptlm-monitoring.md](11-conceptlm-monitoring.md) | Concept-level LM monitoring | monitoring (watch-only) | LOW | 2026-03-03 |
+| ~~[11-conceptlm-monitoring.md](../archived/11-conceptlm-monitoring.md)~~ | Concept-level LM monitoring | ARCHIVED (stale, no models available) | — | 2026-03-03 |
 | ~~[knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S3a next, S4 A/B pending, S5 dspy.RLM cross-ref) | MEDIUM | 2026-04-12 |
@@ -142,8 +143,9 @@ Source: Ouro-2.6B-Thinking (ByteDance, Apache-2.0) achieves 90.85% MATH-500 and 
 ### Monitoring (no action unless triggered)
 
 - [ ] **TQ3**: Watch PR #21038 for merge, evaluate PR #21089 when merged, read ChunkKV paper
-- [ ] **ConceptLM**: Quarterly check for open-weight concept-level models or framework support
+- ~~**ConceptLM**: Quarterly check for open-weight concept-level models or framework support~~ (archived)
 - [ ] **Multiscreen**: Monitor for community reproduction, model releases, or llama.cpp PRs
+- [ ] **Log-Linear GDN**: Watch github.com/HanGuo97/log-linear-attention and NVlabs/GatedDeltaNet for pretrained model releases. Activates [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
 
 ---
 

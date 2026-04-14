@@ -172,3 +172,12 @@ Expose `llm_batch()` as a first-class REPL tool rather than requiring models to 
 1. **Gap 3 — `_batch_llm_query` combined-op** (HIGH impact / LOW effort). 3-4 hours. The underlying `llm_batch()` already works; this is purely a REPL exposure issue. Every multi-sub-query task (common in agentic/coder suites) benefits immediately. Unblocked now.
 2. **Gap 1 — `workspace_scan` tool** (HIGH impact / MEDIUM effort). 4-6 hours. Directly targets the 3-4 wasted orientation turns observed in file-exploration tasks. Blocked on AP-26 for sub_lm quality validation, but can be built with frecency-only fallback first.
 3. **Gap 2 — `STUCK("reason")` signal** (MEDIUM impact / MEDIUM-HIGH effort). 6-8 hours. Reduces wasted turns on dead-end paths, but the recovery logic (episodic recall for similar stuck situations) adds complexity. Should be built after Gap 1/3 prove the combined-op pattern works at the REPL level.
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-355] NextPlaid/ColGREP** (github:lightonai/next-plaid)
+  - Relevance: NextPlaid is the deployed multi-vector search engine backing code_search() and docs retrieval (ports 8088/8089). ColGREP adds semantic code search for terminal/agents. v1.2.0 released 2026-04-10.
+  - Key update: ColGREP now offers native Claude Code integration. Combines regex filtering with semantic ranking via ColBERT-style multi-vector embeddings (~300 embeddings per code unit, MaxSim scoring). Fully local, single Rust binary.
+  - Status: Already integrated (GTE-ModernColBERT-v1 swap completed per colbert-zero-research-integration). ColGREP CLI still blocked on upstream ONNX panic per existing notes. Frecency fallback remains active.
+  - Action: Monitor v1.2.0 for ONNX panic fix that would unblock ColGREP CLI bridge

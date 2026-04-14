@@ -28,11 +28,29 @@ Update all documentation artifacts to reflect work completed in this session, co
 - Update child repo documentation (`epyc-orchestrator`, `epyc-inference-research`, `epyc-llama`) if code-level docs need to reflect changes made this session
 - Update model registry, config files, or reference docs if applicable
 
-### 5. Agent Log
+### 5. Wiki Compilation
+
+Compile any loose knowledge into the project wiki so findings don't stay buried in handoffs and progress logs.
+
+1. Run the source manifest scanner:
+   ```
+   python3 .claude/skills/project-wiki/scripts/compile_sources.py
+   ```
+2. If `total_new` is 0, skip to the next step — the wiki is up to date.
+3. If there are new sources, follow the **Compile** operation in the `project-wiki` skill (SKILL.md Operation 3):
+   - Read and cluster new sources by taxonomy category
+   - Create or update `wiki/<category-key>.md` pages with synthesized findings and source citations
+   - After compilation, update the timestamp:
+     ```
+     python3 .claude/skills/project-wiki/scripts/compile_sources.py --touch
+     ```
+4. Keep compilation incremental — only process sources newer than `.last_compile`.
+
+### 6. Agent Log
 
 If agent logging was active, ensure `agent_task_end` was called for all open tasks.
 
-### 6. Commit and Report
+### 7. Commit and Report
 
 - Commit documentation updates in each affected repo separately (root, orchestrator, research, etc.)
 - Use descriptive commit messages summarizing what the session accomplished

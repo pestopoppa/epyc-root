@@ -1,16 +1,51 @@
 # GPU Acceleration Path — CPU+GPU Hybrid Inference
 
-**Status**: stub
+**Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)
 **Created**: 2026-04-10 (via research intake deep-dive)
+**Updated**: 2026-04-14 (full survey: consumer GPU benchmarks, hybrid MoE offloading, KV split strategies)
 **Categories**: hardware_optimization, inference_serving, moe_optimization
 **Priority**: LOW (activates when GPU hardware is acquired)
 **Workstream**: Future
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](kv-cache-quantization.md) (GPU KV strategy)
+**Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](kv-cache-quantization.md) (GPU KV strategy)
 
 ## Objective
 
 Evaluate and implement GPU acceleration for the EPYC inference stack, focusing on CPU+GPU hybrid MoE inference where GPU handles attention + dense FFN while CPU handles routed experts via the existing NUMA 4-way infrastructure.
+
+## DGX Spark Target (2026)
+
+### Hardware: NVIDIA GB10 Grace Blackwell Superchip
+
+| Spec | Value |
+|------|-------|
+| Architecture | Grace (ARM) + Blackwell GPU on single SoC, 3nm |
+| Unified Memory | 128GB LPDDR5X (CPU+GPU coherent, single pool) |
+| Memory Bandwidth | 273 GB/s (LPDDR5X 8533, 16-channel) |
+| NVLink-C2C | 600 GB/s bidirectional (CPU-GPU interconnect) |
+| Tensor Cores | 5th-gen (FP4/FP8/FP16 native) |
+| AI Performance | 1 PFLOP FP4 (w/ sparsity), ~31 TFLOPS FP32 |
+| CPU | 20 ARM cores (10x Cortex-X925 + 10x Cortex-A725) |
+| TDP | 140W (desktop form factor) |
+| Price | $4,699 (Founders Edition, available now) |
+| Models supported | Up to 200B parameters |
+
+### Why This Changes Everything for MoE Inference
+
+The unified memory architecture eliminates the CPU-to-GPU PCIe bottleneck that dominates the entire existing survey below. On discrete GPU systems, expert weights must transfer across PCIe (~64 GB/s) during hybrid MoE inference. On DGX Spark, all 128GB is a single coherent pool accessible by both CPU and GPU at full bandwidth -- expert weights are simply *there*, no transfer needed.
+
+**Benchmark results (llama.cpp / vLLM on DGX Spark):**
+- MoE models: ~70 t/s decode from a single chip (Gemma 26B MoE: 69.9 t/s)
+- llama.cpp MoE optimizations: 35% uplift on DGX Spark (CES 2026 software update)
+- vLLM: GPT-OSS-120B at 58.8 t/s (MXFP4, single node); Llama 3.1 8B FP4 at 924 t/s prefill
+- Qwen3-Coder-30B Q4: 20-25 t/s at 16k context, 15-17 t/s at 32k context
+- Two DGX Sparks linkable via NVLink for 256GB unified pool (Qwen3 235B: 23.4k t/s prefill)
+
+**Comparison with EPYC 9655 CPU-only:** DGX Spark memory bandwidth (273 GB/s) is comparable to our DDR5 (~300 GB/s), but the Blackwell GPU adds massive compute throughput for attention and prefill that CPU lacks. On GPT-OSS-120B, an EPYC 7702 scored ~15.7 t/s vs Spark's ~11.7 t/s at launch, but post-CES 2026 software updates delivered up to 2.5x improvement. The real advantage is architectural: no PCIe bottleneck means MoE expert routing is a memory access, not a data transfer.
+
+**Caveats:** ARM CPU (20 cores) is far weaker than EPYC 9655 (192 threads) for expert compute. Memory bandwidth is slightly lower than our EPYC DDR5 setup. FP4 scaling underperforms theoretical expectations (FP8-to-FP4 yields ~1.3-1.5x, not 2x). Not a drop-in replacement for the NUMA 4-way architecture -- it's a fundamentally different inference paradigm.
+
+**Verdict:** At $4,699, DGX Spark is the most cost-effective path to GPU-accelerated MoE inference. It obsoletes the hybrid CPU+GPU offloading architecture (the entire `-ot "exps=CPU"` paradigm) by making expert offloading unnecessary. Primary path for models up to ~70B; pair two units for 200B+.
 
 ## Research Context
 
@@ -154,3 +189,72 @@ AITER kernel performance numbers (17x MLA decode, 14x MHA prefill, 3x fused MoE)
   - Code: github.com/DLYuanGod/MegaTrain
 - **[intake-339] "Gemma 4 31B NVFP4 Turbo"** — Blackwell FP4, 68% memory reduction, +142% prefill. Requires RTX 5090+.
 - **[intake-332] "Ouro LoopLM"** — 2.6B matches 12B. Not llama.cpp compatible but could run via transformers on CPU.
+
+## Literature Survey — 2026-04-14
+
+### 1. CPU+GPU Hybrid MoE Expert Offloading
+
+| Resource | Date | Verdict |
+|----------|------|---------|
+| [Doctor-Shotgun MoE Offload Guide](https://huggingface.co/blog/Doctor-Shotgun/llamacpp-moe-offload-guide) (intake-310) | 2025 | **directly_applicable** |
+| [Doctor-Shotgun extended gist](https://gist.github.com/DocShotgun/a02a4c0c0a57e43ff4f038b46ca66ae0) | 2025 | **directly_applicable** |
+| [Understanding MoE Offloading (DEV Community)](https://dev.to/someoddcodeguy/understanding-moe-offloading-5co6) | 2026 | **directly_applicable** |
+| [Two-tier GPU+RAM expert cache proposal (llama.cpp #20757)](https://github.com/ggml-org/llama.cpp/issues/20757) | 2026 | **worth_investigating** |
+| [David Sanftenberg: Qwen-235B partial offload guide](https://medium.com/@david.sanftenberg/gpu-poor-how-to-configure-offloading-for-the-qwen-3-235b-a22b-moe-model-using-llama-cpp-13dc15287bed) | 2025 | **directly_applicable** |
+
+**Key findings**: The `-ot "exps=CPU"` syntax and `--n-cpu-moe N` flag are production-ready in llama.cpp. The guide uses CUDA syntax (`CUDA0`) exclusively -- AMD/ROCm compatibility is **unconfirmed** (replace `CUDA0` with `HIP0` in theory, but no published test). PCIe latency is the bottleneck, not CPU compute speed. The two-tier expert cache proposal (LRU hot experts pinned in VRAM, cold experts in CPU RAM) shows 12-14 t/s vs 0.5-1 t/s pure CPU offload in proof-of-concept -- this is the most impactful pending feature for our use case. Still a feature request, not merged.
+
+### 2. AMD GPU Inference Performance
+
+| Resource | Date | Verdict |
+|----------|------|---------|
+| [RX 7900 XTX llama-bench ROCm results](https://github.com/1337hero/rx7900xtx-llama-bench-rocm) | 2025-2026 | **directly_applicable** |
+| [AITER: AI Tensor Engine for ROCm (AMD blog)](https://rocm.blogs.amd.com/software-tools-optimization/aiter-ai-tensor-engine/README.html) | 2025 | **monitor_only** (MI300X/vLLM only) |
+| [AITER MLA decode on MI300X (AMD blog)](https://rocm.blogs.amd.com/software-tools-optimization/aiter-mla/README.html) | 2025 | **monitor_only** |
+| [hipBLASLt TensileLite tuning (AMD blog)](https://rocm.blogs.amd.com/artificial-intelligence/hipblaslt-tensilelite-tuning/README.html) | 2025 | **worth_investigating** |
+| [llama.cpp ROCm HIP discussion #15021](https://github.com/ggml-org/llama.cpp/discussions/15021) | ongoing | **directly_applicable** |
+| [Accelerating llama.cpp on MI300X (AMD blog)](https://rocm.blogs.amd.com/ecosystems-and-partners/llama-cpp-oct2025/README.html) | 2025 | **worth_investigating** |
+
+**Key findings**: RX 7900 XTX benchmarks (ROCm 7.1.1, gfx1100): 7B Q4_0 at **127-139 t/s decode** (FA on), **3.8k t/s prefill**; 70B Q4_K_M dual-GPU at **13.4 t/s decode**, **341 t/s prefill**. AITER numbers (17x MLA decode, 3x fused MoE) are MI300X + vLLM only, not llama.cpp -- ceiling reference only. hipBLASLt TensileLite tuning shows 1.6-2.6x decode speedup on MI300X for small GEMM shapes relevant to single-token decode. Grouped GEMM for MoE yields 29% improvement (CDNA3+ only).
+
+### 3. llama.cpp GPU Offloading State
+
+| Resource | Date | Verdict |
+|----------|------|---------|
+| [llama.cpp n_gpu_layers guide (2026)](https://bmdpat.com/blog/llama-cpp-n-gpu-layers-explained-2026) | 2026 | **directly_applicable** |
+| [Automation for GPU layers + tensor overrides (discussion #18049)](https://github.com/ggml-org/llama.cpp/discussions/18049) | 2026 | **worth_investigating** |
+| [Running Llama 4 on consumer GPUs (Botmonster)](https://botmonster.com/posts/how-to-run-llama-4-on-consumer-gpus-2026/) | 2026 | **worth_investigating** |
+
+**Key findings**: `-ngl N` (GPU layer offloading) and `-ot` (tensor overrides) are mature. The split-mode graph scheduler improves prompt processing with partial offload. MoE expert offloading via `--n-cpu-moe` counts from the highest layer down. Multi-GPU via tensor split (`-ts`) works but MoE + multi-GPU has reported bugs (#15263, #15136 -- uneven CPU-MoE distribution). ROCm HIP build is functional but reports of performance regressions on Qwen3.5 models vs Vulkan backend, and RDNA4 GPU idle-state bugs.
+
+### 4. Consumer GPU Options
+
+| GPU | VRAM | Est. Price | ROCm Status | llama.cpp Decode (7B Q4) | Verdict |
+|-----|------|-----------|-------------|--------------------------|---------|
+| RX 7900 XTX | 24GB GDDR6X | ~$750-900 | **Stable** (ROCm 7+, gfx1100) | ~130 t/s | **directly_applicable** |
+| RX 9070 XT | 16GB GDDR6 | ~$550 | **Experimental** (gfx1201, bugs: idle-state, mmproj) | untested | **monitor_only** |
+| MI100 | 32GB HBM2 | ~$300-500 used | Supported (older arch) | ~80-100 t/s est. | **worth_investigating** |
+| RTX 3090 | 24GB GDDR6X | ~$350-450 used | N/A (CUDA) | ~140 t/s | **worth_investigating** (MegaTrain) |
+
+**Key findings**: RX 7900 XTX is the best AMD consumer option -- 24GB VRAM, stable ROCm, ~85-90% of RTX 4090 throughput. RX 9070 XT has RDNA4 native FP8 WMMA (promising) but ROCm bugs remain (GPU stuck at 100% after inference). MI100 is mostly phased out of used market. For our hybrid MoE use case, 24GB VRAM holds attention + shared expert for models up to ~30B-A3B; larger models need MI300X-class VRAM.
+
+### 5. KV Cache CPU/GPU Split
+
+| Resource | Date | Verdict |
+|----------|------|---------|
+| [NVIDIA KV cache offload blog](https://developer.nvidia.com/blog/accelerate-large-scale-llm-inference-and-kv-cache-offload-with-cpu-gpu-memory-sharing/) | 2025 | **worth_investigating** |
+| [TurboQuant extreme KV cache quantization (discussion #20969)](https://github.com/ggml-org/llama.cpp/discussions/20969) | 2026 | **worth_investigating** |
+| [Context kills VRAM (Medium)](https://medium.com/@lyx_62906/context-kills-vram-how-to-run-llms-on-consumer-gpus-a785e8035632) | 2025 | **monitor_only** |
+
+**Key findings**: KV cache for 128k context on a 70B model consumes ~40GB alone. For our hybrid approach, keeping KV cache in GPU VRAM alongside attention weights is ideal but VRAM-limited. Quantizing KV to Q8 halves the footprint. Our 1.13TB RAM is the fallback -- CPU-side KV is viable with PCIe 5.0 bandwidth (~64 GB/s bidirectional). TurboQuant (extreme KV quantization) could compress KV cache enough to fit long contexts in 24GB VRAM alongside model weights.
+
+### Summary Assessment
+
+**Primary path: NVIDIA DGX Spark ($4,699)**
+DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes every other option in this survey a compromise. At ~70 t/s decode on MoE models, with 128GB unified memory and active software optimization from NVIDIA, it is the most practical GPU acceleration path. For models exceeding 128GB (our 122B-A10B, 246B REAP), two units link via NVLink for 256GB. The ARM CPU is weaker than EPYC for raw expert compute, but expert compute is no longer separated from GPU compute -- the entire model lives in one memory space.
+
+**Secondary paths (retained as fallback/reference):**
+1. **Near-term** (no GPU): Current CPU-only NUMA 4-way remains competitive for short-context MoE decode (memory-bandwidth-bound, GPU gains marginal)
+2. **Budget AMD GPU** ($750-900): RX 7900 XTX for hybrid MoE offload -- attention+dense on GPU (~130 t/s on small models), experts on CPU via NUMA. Requires confirming `-ot` works with HIP backend. Less attractive now that DGX Spark costs only ~5x more while eliminating the PCIe bottleneck entirely.
+3. **Datacenter AMD** (MI300X/MI325X): Still the ceiling for raw throughput (5.3 TB/s HBM3, hipBLASLt grouped GEMM). Only relevant if workload scales beyond what two DGX Sparks can handle.
+4. **Open investigation**: Two-tier expert cache (#20757) remains valuable for discrete GPU setups but is irrelevant on unified memory architectures like DGX Spark.

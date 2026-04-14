@@ -18,12 +18,13 @@ Every agent working on inference acceleration MUST follow these protocols:
 
 | Handoff | Status | Techniques | Target Models | Best Gain | Next Action |
 |---------|--------|-----------|--------------|-----------|-------------|
-| [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10), hybrid SSM fix (2026-04-11) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
+| [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) | **PRODUCTION** — v3 binary live (2026-04-10), hybrid SSM fix (2026-04-11) | Upstream rebase (538 commits), 24 patches cherry-picked | All production | Coder +101%, REAP +50% (spec decode gains) | Deferred: PPL regression, paged attention RSS, NUMA throughput tests |
 | [`kv-cache-quantization.md`](kv-cache-quantization.md) | **ACTIVE** — Hadamard deployed | KV quant, Hadamard smoothing | All production | q4_0 K/f16 V, PPL +0.017 | Monitor upstream TurboQuant #20977. **Note:** `--kv-hadamard` superseded by upstream #21038 in v3 — auto-enables. |
 | [`triattention-kv-selection.md`](triattention-kv-selection.md) | **ACTIVE** — Scaffold ready | KV selection/eviction (trig + Gaussian scoring) | Qwen2.5-7B (eval) | 10.7x token reduction (theoretical) | S1: KVPress benchmark scaffold ready (2026-04-13), awaiting model server |
 | [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) | **ACTIVE** — L1-L4+L4b merged to production | KV compaction (Attention Matching, latent-space) | Qwen2.5-Coder-32B (target) | 5x compression (zero degradation, validated on 3 models) | L1-L4 ✅ native ggml NNLS+OLS on `production-consolidated-v3`. L4b K-norm scoring. P2 Coder-32B coding benchmarks: needs model server |
 | [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) | **STUB** | HC model eval, A/B formalize→solve | Formalizer (Qwen3-8B) | TBD | Download HC GGUF, remove stale spec decode ban |
 | [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **STUB** — activates on GPU acquisition | rocWMMA, hipBLASLt grouped GEMM, Stream-K, CPU+GPU hybrid MoE | All MoE production models | MI300X: 4011 tok/s Llama-70B (213% over H100) | Acquire GPU hardware; then test `-ot "exps=CPU"` hybrid on 30B-A3B |
+| [`log-linear-gated-deltanet-readiness.md`](log-linear-gated-deltanet-readiness.md) | **STUB** — activates on pretrained model availability | Log-linear O(log L) state for Gated DeltaNet | Qwen3.5/Qwen4 hybrids | 4-10x state reduction, 1M+ context | Monitor github.com/HanGuo97/log-linear-attention |
 
 ### Archived (completed/)
 
@@ -146,7 +147,7 @@ TensileLite (intake-308) shows 1.6-2.6x gains from generating GEMM kernels tuned
 
 All inference optimization work in llama.cpp MUST follow these rules:
 
-1. **Branch discipline**: Work ONLY on dedicated feature branches off `production-consolidated-v3` (rebuild completed 2026-04-09 — see [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md))
+1. **Branch discipline**: Work ONLY on dedicated feature branches off `production-consolidated-v3` (rebuild completed 2026-04-09 — see [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md))
    - DFlash: `feature/dflash-speculation` branch
    - Worktree at `/mnt/raid0/llm/llama.cpp-dflash`
 2. **Never modify `production-consolidated-v3` directly** — it is the production baseline

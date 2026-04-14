@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 18 documents
+**Last compiled**: 2026-04-14
+**Sources**: 19 documents
 
 ## Summary
 
@@ -48,7 +48,10 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - Transparent Huge Pages (THP) are enabled (`echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled`) but their impact has not been isolated in benchmarks.
 - CPU paged attention (production-consolidated-v3, patch #7-10) is deployed but RSS impact under NUMA 4-way has not been validated.
 - The OMP_NUM_THREADS=1 devcontainer bug (all DFlash server benchmarks invalid due to single-thread OpenMP) suggests environment variable validation should be added to benchmark scripts.
-- GPU acceleration path exists as a stub handoff but no GPU hardware is present. CPU+GPU hybrid MoE inference via expert offloading (intake-310) is a potential future direction.
+- GPU acceleration path researched (2026-04-14): NVIDIA DGX Spark ($4,699, 128GB unified memory, 273 GB/s, Blackwell GPU) is the primary path. Unified memory eliminates PCIe bottleneck -- expert weights are directly accessible by both CPU and GPU, making `-ot "exps=CPU"` offloading unnecessary. ~70 t/s decode on MoE models from a single chip. Two units linkable via NVLink for 256GB.
+- Consumer AMD GPU: RX 7900 XTX ($750-900, 24GB, ROCm stable, ~130 t/s decode 7B Q4) is the best budget option for hybrid MoE offloading. ROCm HIP compatibility with `-ot` tensor overrides is **unconfirmed**.
+- CPU+GPU hybrid MoE expert offloading (`-ot "exps=CPU"`, `--n-cpu-moe N`) is production-ready in llama.cpp. PCIe latency is the bottleneck, not CPU compute speed. Two-tier expert cache proposal (#20757) shows 12-14 t/s vs 0.5-1 t/s pure CPU offload -- most impactful pending feature for discrete GPU setups.
+- For short-context single-token decode, NUMA 4-way CPU may remain competitive with GPU since decode is memory-bandwidth-bound. GPU most beneficial for prefill (always compute-bound) and long-context decode (attention becomes compute-bound at >50% of per-token time).
 
 ## Related Categories
 
@@ -69,4 +72,5 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - [SpecExec Verification Profile](/mnt/raid0/llm/epyc-inference-research/docs/experiments/specexec-verification-profile.md) -- Verification latency curves, NUMA impact on verification, draft model costs
 - [Progress 2026-03-18](/workspace/progress/2026-03/2026-03-18.md) -- NUMA parallel decode S2 benchmark, production model sweep, T5/T6 tree+NUMA
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Comprehensive spec param sweep (1,290 measurements), corrected registry values
+- [GPU Acceleration Path](/workspace/handoffs/active/gpu-acceleration-path.md) -- DGX Spark analysis, consumer GPU benchmarks, hybrid MoE offloading survey, KV cache split strategies
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes

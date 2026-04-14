@@ -36,7 +36,16 @@ _RESEARCH_ROOT_DEFAULT = "/mnt/raid0/llm/epyc-inference-research"
 
 
 def _expand_path(p: str) -> Path:
-    """Expand ${ENV_VAR:-default} patterns and return a Path."""
+    """Expand ${ENV_VAR:-default} patterns and return a Path.
+
+    os.path.expandvars does not handle the bash ${VAR:-default} syntax,
+    so we pre-process those patterns before calling expandvars.
+    """
+    def _replace_with_default(match: re.Match) -> str:
+        var, default = match.group(1), match.group(2)
+        return os.environ.get(var, default)
+
+    p = re.sub(r'\$\{(\w+):-([^}]*)\}', _replace_with_default, p)
     return Path(os.path.expandvars(p))
 
 

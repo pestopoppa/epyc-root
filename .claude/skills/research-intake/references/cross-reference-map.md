@@ -67,7 +67,7 @@ Maps taxonomy categories to specific files and search terms for cross-referencin
 
 ### ssm_hybrid
 - **Chapters**: (none)
-- **Handoffs**: `multiscreen-attention-evaluation.md` (screening as alternative to softmax/Delta Net)
+- **Handoffs**: `multiscreen-attention-evaluation.md` (sub-quadratic attention survey), `log-linear-gated-deltanet-readiness.md` (Log-Linear GDN readiness tracker)
 - **Search terms**: Mamba, state space model, SSM, hybrid architecture, linear attention, Jamba, Delta Net, Multiscreen, screening mechanism, absolute relevance
 
 ### multimodal

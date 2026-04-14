@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-04-13
+**Last compiled**: 2026-04-14
 **Articles**: 24 compiled, 6 stub categories
-**Total sources**: 219 documents across 6 source types
+**Total sources**: 231 documents across 6 source types
 
 ---
 
@@ -16,7 +16,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 33 | Attention Matching achieves 50x compression; Memento proves KV states carry information beyond text summaries |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 18 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; Q4_K_M is optimal for hybrid models |
+| [Hardware Optimization](hardware-optimization.md) | 19 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; DGX Spark ($4,699) is primary GPU path |
 
 ## Serving & Systems
 
@@ -47,7 +47,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Context Management](context-management.md) | 17 | 80-92% of agent context is redundant; 6 papers converge; 32K with folding beats 327K uncompressed |
 | [Context Extension](context-extension.md) | 19 | MemAgent achieves 437x extrapolation; Memento reveals 15pp KV-vs-text ceiling; YaRN is the production path for 256K-1M |
-| [SSM & Hybrid Architectures](ssm-hybrid.md) | 7 | 75% Delta Net recurrent layers destroy all speculation; lookup MoE acceleration (+42%) is the only viable path |
+| [SSM & Hybrid Architectures](ssm-hybrid.md) | 9 | Verification latency (220ms/tok, 90% of cost) is the real speculation killer; Log-Linear GDN (ICLR 2026) could unblock via 4-10x state reduction |
 
 ## Training & Distillation
 
@@ -68,7 +68,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Search & Retrieval](search-retrieval.md) | 14 | ColBERT reranking integration; BM25+semantic hybrid pattern |
+| [Search & Retrieval](search-retrieval.md) | 15 | ColBERT-Zero primary reranker (55.43 BEIR); late-interaction confirmed as correct architecture for CPU snippet reranking |
 | [Tool Implementation](tool-implementation.md) | 10 | GitNexus: context injection into prompts outperforms giving tools to call |
 
 ## Research & Analysis
