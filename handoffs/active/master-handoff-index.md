@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M)
+**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M/N)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -76,7 +76,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE — S1 runtime PASSED (5/5, 2026-04-14). S2 LoRA training unblocked. | HIGH | 2026-04-14 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, broader targeted coverage validated at `100%` for `eval_log_format` + seeding tranche modules, and specialist routing control-plane coverage advanced to `seed_specialist_routing=85%` and `seed_specialist_routing_v2=84%` (targeted characterization, not yet enforced gate) | MEDIUM | 2026-04-14 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, broader targeted coverage validated at `100%` for `eval_log_format` + seeding tranche modules, and specialist routing control-plane coverage advanced to `seed_specialist_routing=93%` and `seed_specialist_routing_v2=92%` (targeted characterization, not yet enforced gate) | MEDIUM | 2026-04-14 |
 
 ---
 
