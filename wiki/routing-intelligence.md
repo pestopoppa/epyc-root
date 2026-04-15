@@ -3,7 +3,7 @@
 **Category**: `routing_intelligence`
 **Confidence**: verified
 **Last compiled**: 2026-04-15
-**Sources**: 18 documents (0 dedicated deep-dives, 14 intake entries, 2 handoffs, 2 cross-referenced deep-dives)
+**Sources**: 19 documents (0 dedicated deep-dives, 14 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -28,6 +28,8 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **Nine production routing subsystems must coordinate without conflicting.** The integration map documents how each subsystem interacts: the difficulty signal gates cheap-first, the MLP classifier handles role selection, the GAT router uses graph-based features, the BindingRouter handles forced assignments, the FailureGraph vetoes known-bad routes, conformal prediction gates output uncertainty, think-harder regulates escalation compute, cost-aware Q-scoring adjusts for NUMA load, the plan review gate validates generated plans, and the SkillAugmentedRouter adjusts for tool availability. No unified priority scheme exists for the full stack when all are enabled simultaneously. [routing-intelligence.md handoff, Integration Map]
 
 - **The difficulty signal classifier is the first routing gate.** Located in `difficulty_signal.py`, it produces a difficulty score and band that determine whether a request can be handled by a cheap model (worker) or needs escalation. When difficulty > 0.7, the system routes to higher-capability models. This feeds directly into the cheap-first policy in `_try_cheap_first()`, which is the primary cost-saving mechanism. [Cross-reference from langgraph-ecosystem comparison]
+
+- **MLP distillation from episodic memory achieves 92% routing accuracy.** The existing `RoutingClassifier` (2-layer numpy MLP, ~140K params) was retrained on 157,520 re-embedded episodic memories with normalized action labels (4 classes: frontdoor 45.9%, architect_general 26.5%, architect_coding 23.3%, worker_explore 4.2%). Per-class confidence thresholds calibrated to 90% precision enable selective fast-path routing (<1ms) with fallback to KNN retrieval (10-50ms) on low confidence. The MLP is a read-only consumer of episodic memory — no impact on autopilot or Q-scorer data flows. Key design insight: episodic memory shifts from runtime query target to write-only experience replay buffer for periodic MLP retraining. Feature flag `ORCHESTRATOR_ROUTING_CLASSIFIER` (default OFF). Phase 2 plans a hidden-state probe on the frontdoor model's attention layers (SSM hybrid requires probing attention layers only, mean-pooling across token positions). [learned-routing-controller.md handoff, Phase 1]
 
 - **Species budget rebalancing dynamically adjusts optimization effort across routing dimensions.** The MetaOptimizer in the autopilot tracks stagnation per species and reallocates trial budgets. With GEPA integration, 30% of PromptForge trials now use evolutionary Pareto-optimal search for prompt mutations, including routing prompt templates. [autopilot-continuous-optimization.md handoff]
 
@@ -84,4 +86,5 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - [Paperclip & AgentRxiv deep dive](../research/deep-dives/agent-architectures-paperclip-agentrxiv.md) -- comparison of routing approaches (task-centric vs learned vs peer-to-peer)
 - [reasoning-compression.md](../handoffs/active/reasoning-compression.md) -- OPSDC difficulty adaptation as zero-cost routing signal
 - [intake-012 through intake-095] Foundational routing papers -- mixture-of-experts, speculative decoding, learned routing (all `already_integrated`)
+- [learned-routing-controller.md](../handoffs/active/learned-routing-controller.md) -- MLP distillation from episodic memory, 92% val accuracy, per-class thresholds, phased roadmap (BGE MLP → logit probe → hidden-state probe → BGE elimination)
 - [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT) Reason-ModernColBERT -- 150M late-interaction retriever, +7.3 NDCG@10 over dense retrieval on reasoning benchmarks (worth_investigating)
