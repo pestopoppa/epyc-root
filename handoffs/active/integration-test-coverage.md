@@ -708,3 +708,348 @@ Notes:
 
 Result:
 - Specialist routing characterization now covers most high-value control branches without runtime edits.
+
+### Broader Benchmark Tranche M (2026-04-14)
+
+Expanded specialist-routing edge-branch characterization in `main()` and `run_batch_3way()`.
+
+Risk workflow:
+- `gitnexus` CLI still unavailable in-shell; manual impact checks were used.
+- Tranche remained test-only.
+
+Test additions:
+- Expanded `tests/unit/test_seed_specialist_routing_main_and_retry.py` (+15 tests over tranche-L baseline).
+
+Coverage-expanded seams:
+- `main()`:
+  - debug auto-enable (`--debug-auto-commit`)
+  - TUI context and progress callback forwarding
+  - three-way continuous health recovery success/failure branches
+  - three-way continuous batch-exception branch
+  - v1 `question_ids` dict payload branch (`all_question_ids`)
+  - legacy one-shot with non-empty result + auto output path
+  - legacy continuous health/backoff + `HealthCheckError` branch
+- `run_batch_3way()`:
+  - early shutdown break before first question execution
+  - retry-health poll wait path
+  - retry-loop shutdown break path
+- `print_3way_summary()`:
+  - `tools_hurt` and `tools_neutral` branches
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seed_specialist_routing_main_and_retry.py` → `51 passed`
+- Focused routing coverage run:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `78% -> 85%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `76% -> 84%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files `100%`.
+
+Notes:
+- Non-failing `ResourceWarning` entries for unclosed sqlite handles still appear in replay/evolve-oriented test runs; tracked as warning-hygiene debt.
+
+Result:
+- Specialist routing coverage advanced to mid-80% for both script variants without runtime edits.
+
+### Broader Benchmark Tranche N (2026-04-14)
+
+Closed additional periodic-hook and helper fallback branches in specialist-routing scripts.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable; manual impact checks used.
+- Kept tranche test-only.
+
+Test additions:
+- Expanded:
+  - `tests/unit/test_seed_specialist_routing_helpers.py`
+  - `tests/unit/test_seed_specialist_routing_v2_helpers.py`
+  - `tests/unit/test_seed_specialist_routing_main_and_retry.py`
+
+Coverage-expanded seams:
+- Helper fallback branches:
+  - adapter suite present with `get_adapter=None`
+  - YAML empty-question payload
+  - pool loaded but no sampled results, fallback to YAML loader
+- Main/control branches:
+  - periodic continuous hook execution at batch 10
+  - periodic replay hook path
+  - periodic evolve hook path
+
+Verification:
+- `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seed_specialist_routing_main_and_retry.py` → `68 passed`
+- Focused routing coverage run:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `85% -> 93%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `84% -> 92%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files `100%`.
+
+Notes:
+- Replay/evolve test paths still emit non-failing `ResourceWarning` entries for unclosed sqlite handles; tracked separately as warning-hygiene debt.
+
+Result:
+- Specialist routing variants now have low-90% targeted characterization coverage with no runtime changes.
+
+### Broader Benchmark Tranche O (2026-04-14)
+
+Closed the final remaining specialist-routing branches to full targeted coverage.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable; manual impact checks used.
+- Maintained test-only strategy.
+
+Test additions:
+- Expanded:
+  - `tests/unit/test_seed_specialist_routing_main_and_retry.py`
+  - `tests/unit/test_seed_specialist_routing_v2_helpers.py`
+
+Coverage-expanded seams:
+- replay/evolution no-trajectory and exception branches
+- replay import-error fallback branch
+- skill-metrics replay + redistillation report branch
+- evolve-without-skills-db branch
+- continuous unrecoverable/recovery and wait-loop edge branches
+- `run_batch_3way` recovery-success path
+- v2 YAML missing-file path
+
+Verification:
+- Focused routing coverage run:
+  - `python3 -m pytest -q tests/unit/test_seed_specialist_routing_helpers.py tests/unit/test_seed_specialist_routing_v2_helpers.py tests/unit/test_seeding_consumers.py tests/unit/test_seed_specialist_routing_main_and_retry.py --cov=scripts/benchmark --cov-report=term-missing --cov-fail-under=0`
+  - `scripts/benchmark/seed_specialist_routing.py`: `100%`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`: `100%`
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files `100%`.
+
+Notes:
+- Non-failing warnings remain in focused runs (`ResourceWarning` sqlite lifecycle; `DeprecationWarning` for `datetime.utcnow` usage).
+
+Result:
+- Specialist routing benchmark control-plane surfaces are now fully characterized at `100%` in the targeted slice, without runtime edits.
+
+### Broader Benchmark Tranche P (2026-04-14)
+
+Warning-hygiene closure for focused specialist-routing runs.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable; manual impact checks used.
+- Runtime edits constrained to timestamp serialization paths only.
+
+Changes:
+- Runtime warning remediation:
+  - `scripts/benchmark/seed_specialist_routing.py`
+  - `scripts/benchmark/seed_specialist_routing_v2.py`
+  - Replaced deprecated `datetime.utcnow()` with `datetime.now(timezone.utc)` in legacy one-shot output timestamp paths.
+- Test warning remediation:
+  - `tests/unit/test_seed_specialist_routing_main_and_retry.py`
+  - Hardened orchestration module-tree stubbing and sqlite connection tracking/cleanup in periodic hook tests.
+
+Verification:
+- Focused routing run (same 4-file suite as tranche O):
+  - `91 passed`
+  - `seed_specialist_routing.py`: `100%`
+  - `seed_specialist_routing_v2.py`: `100%`
+  - Prior sqlite/datetime warning noise no longer appears in this run.
+- Regression safety:
+  - `make coverage-orchestrator-slice` remained `148 passed` with all enforced files `100%`.
+
+Residual warning posture:
+- Remaining warning in these runs is environment-level low-memory user warning from `tests/conftest.py`, not routing-script behavior.
+
+### Broader Benchmark Tranche Q (2026-04-14)
+
+Focused warning-regression gate added and validated for the orchestration slice.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable (`npx gitnexus status` fails with `node.target` null error); manual impact checks used.
+- Runtime behavior unchanged; scope limited to test invocation policy.
+
+Changes:
+- `Makefile`:
+  - Added `warnings-orchestrator-slice` target.
+  - Target executes the focused orchestrator slice tests with:
+    - `-W error::ResourceWarning`
+    - `-W error::DeprecationWarning`
+    - `-W error::PendingDeprecationWarning`
+  - Added help text and `.PHONY` registration for the new gate.
+
+Verification:
+- `make warnings-orchestrator-slice`:
+  - `237 passed`
+  - No `sqlite` `ResourceWarning` and no `datetime.utcnow` deprecation warnings in covered slice.
+- Existing regression gate unchanged:
+  - `make coverage-orchestrator-slice` remains green.
+
+Residual warning posture:
+- Remaining warning output is environment-level low-memory user warning from `tests/conftest.py`.
+
+### Broader Benchmark Tranche R (2026-04-14)
+
+Gap-closure tranche for residual stability + contract enforcement.
+
+Risk workflow:
+- `gitnexus` CLI remained unavailable (`node.target` null error); manual impact checks used.
+- Runtime behavior unchanged; changes limited to tests and gate contracts.
+
+Changes:
+- Legacy test flake hardening:
+  - `tests/unit/test_seeding_legacy.py`
+  - Added `autouse` shutdown-state reset fixture to isolate cross-module global state.
+- Legacy deprecation assertions:
+  - Updated 5 legacy `run_batch()` tests to assert expected deprecation via `pytest.deprecated_call(...)`.
+  - Enables strict warning-error runs without broad warning ignores.
+- Coverage gate expansion:
+  - `Makefile` `coverage-orchestrator-slice` now includes specialist-routing test files.
+  - `scripts/analysis/check_orchestrator_slice_coverage.py` now enforces:
+    - `seed_specialist_routing.py` = `100%`
+    - `seed_specialist_routing_v2.py` = `100%`
+- Warning gate tightening:
+  - `Makefile` `warnings-orchestrator-slice` now includes `tests/unit/test_seeding_legacy.py`.
+  - Kept strict `-W error` policy for `ResourceWarning`, `DeprecationWarning`, and `PendingDeprecationWarning` (no blanket ignore).
+
+Verification:
+- Previously failing mixed slice:
+  - `python3 -m pytest ... test_seed_specialist_routing* + test_seeding_* + test_eval_log_format.py` → `182 passed`
+- Coverage gate:
+  - `make coverage-orchestrator-slice` → `237 passed`
+  - Specialist floors enforced and satisfied at `100%` for both routing variants.
+- Warning gate:
+  - `make warnings-orchestrator-slice` → `255 passed`
+  - Strict warning policy holds with legacy tests included.
+
+Residual warning posture:
+- Remaining warning output in these runs is the environment-level low-memory user warning from `tests/conftest.py`.
+
+### Broader Benchmark Tranche S (2026-04-14)
+
+GitNexus execution-path recovery for required impact workflow.
+
+Problem:
+- Direct `npx gitnexus ...` invocation remained broken in this environment (`npm`/Arborist `node.target` null error), forcing manual impact fallback.
+
+Resolution:
+- Switched operational path to `pnpm dlx` with explicit build allowlist:
+  - `--allow-build=@ladybugdb/core`
+  - `--allow-build=onnxruntime-node`
+  - `--allow-build=sharp`
+- Re-ran GitNexus health checks and re-index where stale.
+
+Verification:
+- `/workspace`:
+  - `pnpm dlx ... gitnexus analyze` succeeded.
+  - `pnpm dlx ... gitnexus status` = `✅ up-to-date`.
+- `/mnt/raid0/llm/epyc-orchestrator`:
+  - `pnpm dlx ... gitnexus status` = `✅ up-to-date`.
+
+Operational contract update:
+- Use `pnpm dlx ... gitnexus <cmd>` as the active command path in this environment.
+- `npx gitnexus <cmd>` remains non-functional until npm-path remediation is completed.
+
+### Broader Benchmark Tranche T (2026-04-14)
+
+Native `npx` GitNexus path recovered and validated after host remediation.
+
+Changes:
+- Re-tested direct execution:
+  - `npx --yes gitnexus@1.6.1 status`
+- Re-indexed via direct path:
+  - `npx --yes gitnexus@1.6.1 analyze`
+- Confirmed status:
+  - `npx --yes gitnexus@1.6.1 status` reports `✅ up-to-date` on `epyc-orchestrator`.
+
+Operational contract update:
+- Primary path restored: `npx --yes gitnexus@1.6.1 <cmd>`.
+- `pnpm dlx` remains an acceptable fallback if npm regressions recur.
+
+### Broader Benchmark Tranche U (2026-04-14)
+
+Integration cleanup tranche: fixed deterministic regression and removed residual integration warning noise.
+
+Risk workflow:
+- GitNexus restored via native `npx`.
+- Impact check run on edited symbol:
+  - `TestCachingErrorHandling.test_backend_error_propagates` → `LOW` risk (0 upstream dependents).
+
+Changes:
+- `tests/integration/test_cache_integration.py`
+  - Fixed `test_backend_error_propagates` mock-shape mismatch with current inference transport selection.
+  - Backend mock now supports both `infer` and `infer_stream_text` and returns concrete `InferenceResult` for both.
+- `tests/integration/test_chat_pipeline.py`
+  - Added narrow module-level warning filters for three known third-party SWIG deprecation messages:
+    - `SwigPyPacked`, `SwigPyObject`, `swigvarlink`.
+
+Verification:
+- Targeted failing test:
+  - `python3 -m pytest -q tests/integration/test_cache_integration.py::TestCachingErrorHandling::test_backend_error_propagates` → pass.
+- Full integration suite:
+  - `python3 -m pytest -q tests/integration -ra` → `372 passed, 12 skipped`.
+  - warning summary is clean.
+
+Residual posture:
+- Integration suite is currently green and warning-clean for local/default run mode.
+
+### Broader Benchmark Tranche V (2026-04-14)
+
+Integration-sanity warning hardening completed with deterministic resource lifecycle cleanup.
+
+Risk workflow:
+- Native `npx` GitNexus path used.
+- Impact checks run before runtime symbol edits:
+  - `SQLiteSessionStore._get_connection` → `HIGH`
+  - `EpisodicStore` class surface → `CRITICAL`
+  - `ParallelEmbedderClient.embed_sync` → `CRITICAL`
+- Scope kept minimal to cleanup semantics (no behavior redesign).
+
+Changes:
+- Runtime cleanup fixes:
+  - `src/session/sqlite_store.py`
+    - Added `_ClosingSQLiteConnection`.
+    - `_init_db()` and `_get_connection()` now close sqlite connections deterministically.
+  - `orchestration/repl_memory/episodic_store.py`
+    - Added `_ClosingSQLiteConnection`.
+    - All sqlite call sites now use connection factory with guaranteed close.
+  - `orchestration/repl_memory/parallel_embedder.py`
+    - Added `_embed_and_close`, `_embed_batch_and_close`, `_health_check_and_close`.
+    - Sync wrappers now always close async HTTP resources before loop exit.
+    - `close_sync()` now waits on async close future in loop-active branch.
+- Integration test lifecycle hardening:
+  - `TestClient` usage converted to context-managed/yielded style in:
+    - `test_chat_pipeline.py`, `test_di_overrides.py`, `test_api_endpoints.py`,
+      `test_openai_compat.py`, `test_real_pipeline.py`, `test_document_pipeline.py`.
+  - Module-scoped deterministic client fixtures added for:
+    - `test_sessions_route.py`, `test_documents_route.py`.
+- Residual teardown warning containment (third-party/plugin noise):
+  - Narrow module-level `pytest.mark.filterwarnings(...)` entries added to:
+    - `test_chat_pipeline.py`
+    - `test_di_overrides.py`
+- Gate enforcement:
+  - `Makefile` `integration-sanity` now includes `-W error::pytest.PytestUnraisableExceptionWarning`.
+
+Verification:
+- Strict integration run:
+  - `372 passed, 12 skipped` with runtime/resource/deprecation warnings as errors.
+- Gate run:
+  - `make integration-sanity` → `372 passed, 12 skipped` and passes with unraisable warnings elevated to errors.
+- Targeted runtime tests:
+  - `tests/unit/test_sqlite_store_extended.py`
+  - `tests/unit/test_episodic_store.py`
+  - `tests/test_parallel_embedder.py`
+  - Result: `58 passed`.
+
+Residual posture:
+- Integration sanity gate is now strict and green.
+- No remaining warning summary noise in `integration-sanity` path.
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-369] "Terminal-Bench 2.0"** (arxiv:2601.11868)
+  - Relevance: 4 directly applicable tasks (llm-inference-batching-scheduler, llm-spec-decoding, oom, kv-store-grpc) parallel our llama.cpp server testing and routing infrastructure
+  - Key patterns:
+    1. **Outcome-driven verification** — tests verify FINAL STATE of container, not intermediate commands. Current integration tests mock LLM calls and check return values. We should add outcome-driven tests that start real servers, run operations, and verify end state.
+    2. **Container-per-test isolation** — Docker per task with pinned dependencies. No shared state between tests. Currently no Docker integration tests exist in our suite.
+    3. **Three-property test design**: Specificity (accept ALL correct end states), Solvability (oracle solution exists), Integrity (can't cheat by shortcuts). Our eval tower should formalize these for T0/T1/T2.
+    4. **Reward file mechanism** — `reward.json` with graded metrics instead of binary pass/fail. Applicable to T1/T2 eval tiers that need partial credit.
+    5. **Structured task.yaml metadata** — difficulty, timeout budget, category tags, expected duration. Could inform a test registry for our integration test suite.
+  - 8-category failure taxonomy: Disobey Task Specification, Step Repetition, Context Loss, Premature Termination, and 4 others — maps to orchestrator failure modes
+  - Delta from current approach: Our tests use `StubFailureGraph`, `StubHypothesisGraph`, mock LLM primitives. Terminal-Bench methodology would add real-server outcome testing. Container-per-test is the biggest infrastructure gap.
+  - Recommendation: Adopt outcome-driven verification pattern for new llama-server integration tests. Container-per-test infrastructure deferred until measured need (current mock-based tests provide fast CI). Adopt task.yaml metadata for test classification.

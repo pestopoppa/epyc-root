@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M/N)
+**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S/T/U/V)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -45,6 +45,8 @@ Highest-impact work across all domains. Each item points to where the details li
 | 14 | MED | **Ouro-2.6B-Thinking eval** (P7). Download + MATH-500 CPU benchmark + T0 sentinel candidate | [research-evaluation-index](research-evaluation-index.md) P7 |
 | 15 | LOW | **MiniMax M2.7 eval** (G7–G9). 108GB GGUF download + EPYC benchmark + quality comparison vs Qwen3 stack | [bulk-inference-campaign](bulk-inference-campaign.md) Package G |
 | 16 | ~~HIGH~~ | ~~Orchestrator refactoring audit~~ ✅ 2026-04-13 All 8 phases complete + InferenceResult success flip + TOON encoder + test suite 4893/0/7. Moved to completed/. | [orchestrator-refactoring-audit](../completed/orchestrator-refactoring-audit.md) |
+| 17 | HIGH | **Decision-aware Q-scorer routing** (P13). Zero predictive spread diagnosed in Package B. 4-phase experiment: regret analysis → contrastive → SPO+ → bilinear. | [routing-and-optimization-index](routing-and-optimization-index.md) P13 |
+| 18 | MED | **Eval tower verification framework** (P8). ECE/AUC calibration + ThinkPRM process verification + Scoring Verifiers benchmarks. Enables AP-27 RLVR. | [research-evaluation-index](research-evaluation-index.md) P8 |
 
 ---
 
@@ -69,14 +71,16 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | S1-S4 done (ONNX Runtime, 180ms, PyLate eliminated), S5 gated on AR-3 data | MEDIUM | 2026-04-14 |
 | [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
-| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research**) | HIGH | 2026-04-12 |
+| [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research, I +3 DAR/ThinkPRM**) | HIGH | 2026-04-15 |
 | [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code tasks | **COMPLETE** (18/18 tasks done) | ~~MEDIUM~~ | 2026-04-12 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache compression (EA) | **DEPLOYED** — EA scorer in production kernel + server endpoint + autopilot. S4/S5/S6/S7 done. Next: S8 autopilot exploration → S9 orchestrator auto-trigger | HIGH | 2026-04-14 |
 | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (L1-L4+L4b merged to production-consolidated-v3. P2 coding benchmarks pending) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE — S1 runtime PASSED (5/5, 2026-04-14). S2 LoRA training unblocked. | HIGH | 2026-04-14 |
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | stub (activates on GPU acquisition) | LOW | 2026-04-10 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
-| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate at `148 passed` with all seven gated files at `100%`, broader targeted coverage validated at `100%` for `eval_log_format` + seeding tranche modules, and specialist routing control-plane coverage advanced to `seed_specialist_routing=93%` and `seed_specialist_routing_v2=92%` (targeted characterization, not yet enforced gate) | MEDIUM | 2026-04-14 |
+| [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate enforces specialist routing floors (`237 passed`, `seed_specialist_routing*` at `100%` floors), strict warning gate includes legacy tests (`255 passed`), and `integration-sanity` is now fully strict (includes `PytestUnraisableExceptionWarning` as error) and green (`372 passed, 12 skipped`) after sqlite/embedder lifecycle cleanup + integration client teardown hardening. GitNexus native `npx` path remains restored/reindexed (`status: ✅ up-to-date`). | MEDIUM | 2026-04-14 |
+| [decision-aware-routing.md](decision-aware-routing.md) | Q-scorer decision-aware learning | NEW — 4-phase experiment (regret analysis → contrastive → SPO+ → bilinear) | HIGH | 2026-04-14 |
+| [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification | MEDIUM | 2026-04-14 |
 
 ---
 
@@ -100,6 +104,8 @@ Changes in one domain often affect others. Key coupling points:
 | Routing (autopilot P10 GEPA) | Routing (meta-harness MH-4) | Same technique, two perspectives: autopilot owns implementation, meta-harness evaluates as search algorithm |
 | Bulk inference (Package G) | Routing (stack config) | MiniMax M2.7 eval may introduce 229B-A10B model requiring standalone RAM allocation |
 | SearXNG backend (search infra) | ColBERT reranker (richer snippets), Routing P8b (search pipeline) | SearXNG JSON API replaces DDG HTML scraping; engines[]/score metadata enhances ColBERT confidence; unresponsive_engines[] feeds monitoring |
+| Decision-aware routing (R&O P13) | Routing (difficulty signal), Research (AP-27 RLVR) | Resolves zero-predictive-spread in difficulty_signal.py; new reward signal needs eval tower verification |
+| Eval tower verification (RE P8) | Routing (AP-27 RLVR), Research (Ouro P7) | Provides calibration infrastructure (ECE/AUC) for RLVR formalization; Ouro as sentinel candidate |
 
 ---
 

@@ -30,6 +30,7 @@
 | Retrain Routing Models | [`retrain-routing-models.md`](../blocked/retrain-routing-models.md) | BLOCKED | Accumulate ~500+ routing memories via seeding |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
 | Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done, SX-5/6 folded into AR-3 Package D | SX-5 load test + SX-6 swap gated on AR-3 warmup |
+| Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -203,6 +204,16 @@ Source: intake-359/360/361. Replaces DDG HTML scraping + Brave fallback in `sear
 - [ ] **SX-5: Load test** — Folded into AR-3 Package D Phase 6b. Web_research sentinel suite (50q) validates under real query patterns.
 - [ ] **SX-6: Swap default** — Feature flag `ORCHESTRATOR_SEARXNG_DEFAULT=1` ready. Gated on AR-3 warmup trial. See bulk-inference-campaign.md Phase 6b.
 
+### P13 — Decision-Aware Q-Scorer Routing (2026-04-14 deep-dive research)
+
+Source: intake-366 deep-dive. Diagnosed pathology: difficulty signal has zero predictive spread (P0 validation). Current Q-scorer uses predict-then-optimize (TD-learn Q-values, argmax). Decision-aware learning aligns training with routing DECISIONS. Our N=3-5 routing is trivially tractable — SPO+ is convex with closed-form gradients, no RL infrastructure needed. See [`decision-aware-routing.md`](decision-aware-routing.md).
+
+- [ ] **DAR-1: Offline regret analysis** — Replay logged decisions, compute regret = Q(best) - Q(chosen). Success criterion: avg regret > 0.05 across 200+ decisions. No code changes.
+- [ ] **DAR-2: Contrastive Q-score update** — ~50 lines in `q_scorer.py`. Pairwise ranking loss: gradient zero when decision correct. Modify `_compute_reward()` L318-430 + `update_q_value()` at `episodic_store.py` L439-511.
+- [ ] **DAR-3: SPO+ with exploration** — ~100 lines. Convex surrogate loss + 10% epsilon-greedy exploration in `retriever.py` L225-368 for counterfactual data.
+- [ ] **DAR-4: Model-feature-conditioned Q** — ~200 lines. Bilinear scorer replacing per-action Q-tables. Zero cold-start for new models. New `bilinear_scorer.py` module.
+- **Future routing signal (2026-04-15 deep-dive)**: intake-378 identifies branching density (Propose step ratio) as a runtime quality signal. High branching = unproductive exploration. 21pp generalization gap on Llama3.1-8B from reasoning pattern quality alone. Could feed DAR-4 bilinear scorer as a prompt/output feature: branch-heavy outputs warrant stronger models. Implementation: `quality_detector.py` branching density (see `routing-intelligence.md`). Cross-ref: `research/deep-dives/sft-generalization-reasoning-patterns.md`.
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.
@@ -253,6 +264,12 @@ intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ with
 
 ### 11. SearXNG Backend ↔ Web Search Pipeline (P8b)
 `searxng-search-backend.md` replaces the DDG/Brave scraping layer that P8b's WS-1/WS-2/WS-3 fixes operate on. SearXNG is orthogonal to prompt-level over-reliance fixes but changes the search result quality and metadata available to the pipeline. When SearXNG is deployed: (a) WS-2 Omega re-measurement should use SearXNG results, not DDG HTML, (b) `unresponsive_engines[]` telemetry feeds the same monitoring pipeline as DS-1 queue depth. Source: 2026-04-14 research intake (intake-359/360/361).
+
+### 12. Decision-Aware Routing ↔ Difficulty Signal ↔ AP-27
+`decision-aware-routing.md` P13 addresses the zero-predictive-spread pathology diagnosed in Package B Phase 4 (research-eval P0). If contrastive Q-scoring (DAR-2) resolves the flat-band problem, `difficulty_signal.py` may become useful as a routing feature again. DAR-4 (model-feature-conditioned Q) interacts with AP-27 (RLVR eval tower) because the verification framework must evaluate the new routing reward signal. Source: 2026-04-14 deep-dive research (intake-366).
+
+### 13. Math-Verify Ground Truth ↔ Decision-Aware Routing
+intake-377 (2026-04-15 deep-dive) shows exact-match scoring underestimates math model capability by ~66% (Math-Verify accuracy 0.1328 vs lm-eval-harness 0.0802). DAR-3/DAR-4 reward signals in `decision-aware-routing.md` derive from eval tower scoring. If Q-scorer trains on exact-match rewards that systematically undercount correct math answers, Q-values will be biased toward models producing parseable outputs, not correct ones. Math-Verify must be adopted in the scoring pipeline before DAR-3 SPO+ training begins. See `eval-tower-verification.md` Research Intake Update 2026-04-15 for integration caveats (NOT symmetric, NOT thread-safe). Deep dive: `research/deep-dives/math-verify-integration-analysis.md`.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_explore`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
@@ -332,6 +349,7 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 | [`bulk-inference-campaign.md`](bulk-inference-campaign.md) | this index | Packages B-E consolidate 14 inference tasks; B feeds RI-9/TrimR, D feeds AR-3/RI-10/DS-5 |
 | ~~[`rlm-orchestrator-roadmap.md`](../completed/rlm-orchestrator-roadmap.md)~~ | archived | Follow-on tasks extracted to P9. |
 | [`searxng-search-backend.md`](searxng-search-backend.md) | standalone | Web search backend replacement; affects P8b search pipeline and ColBERT reranker input |
+| [`decision-aware-routing.md`](decision-aware-routing.md) | this index (P13) | Decision-aware Q-scorer: contrastive + SPO+ + bilinear model-feature scoring |
 
 ---
 

@@ -32,6 +32,7 @@
 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S3a next, S4 A/B pending, S5 dspy.RLM cross-ref) | MEDIUM | 2026-04-12 |
 | [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |
 | Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
+| [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + process verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification, Scoring Verifiers benchmarks | MEDIUM | 2026-04-14 |
 
 ---
 
@@ -121,6 +122,20 @@ Source: Ouro-2.6B-Thinking (ByteDance, Apache-2.0) achieves 90.85% MATH-500 and 
 - [ ] Monitor for RLTT-trained checkpoint release (Princeton). If released, rerun MATH-500 comparison.
 - [ ] Monitor llama.cpp for LoopLM architecture support (would enable GGUF deployment).
 
+### P8 — Eval Tower Verification Framework (2026-04-14 deep-dive research)
+
+Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scoring Verifiers), intake-368 (SWE-RM), intake-370 (Aletheia), intake-371 (ThinkPRM). Provides calibration and process verification infrastructure for AP-27 RLVR formalization. See [`eval-tower-verification.md`](eval-tower-verification.md).
+
+- [ ] **EV-0** (new, 2026-04-15): Audit eval datasets for question quality using MathQ-Verify (intake-379) stages 1-4. Skip stage 5 (completeness hurts F1 +0.57pp). Flawed questions waste budget AND inflate reasoning tokens (arxiv:2504.06514). Zero-code data cleaning step.
+- [x] **EV-1**: Add `logprob_confidence` to `QuestionResult` — ✅ 2026-04-15. Binary confidence proxy (`float(correct)`); real logprob values pending infrastructure passthrough.
+- [x] **EV-2**: Implement ECE + AUC in `_aggregate()` — ✅ 2026-04-15. 10-bin ECE, sklearn AUC with degenerate fallback, calibration violation count. Trivially 0 with binary proxy; meaningful once continuous confidence lands.
+- [ ] **EV-3**: Download Scoring Verifiers benchmarks from HuggingFace `nvidia/Scoring-Verifiers`, create adapter (~50 lines)
+- [ ] **EV-4**: Run calibration baseline on Scoring Verifiers benchmarks (needs inference)
+- [ ] **EV-5**: Deploy ThinkPRM-1.5B-Q4KM for T2 process verification (~100 lines, needs model download)
+- [x] **EV-6**: Cross-family verification constraint enforcement — ✅ 2026-04-15. `VERIFICATION_FAMILIES` dict + `check_cross_family()` in `eval_tower.py`. Supports Qwen/Llama/DeepSeek/Ouro/Mistral/Gemma. Permissive default (unknown families pass).
+- [ ] **EV-7**: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7)
+- **Math-Verify integration note** (intake-377, 2026-04-15): `score_answer_deterministic()` underestimates math capability by ~66%. EV-4 calibration baseline and S4 formalizer eval should use Math-Verify for answer comparison. See `eval-tower-verification.md` 2026-04-15 update for caveats (NOT symmetric, NOT thread-safe). Deep dive: `research/deep-dives/math-verify-integration-analysis.md`.
+
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)
 
 - [x] **Phase 5a**: Create `wiki.yaml` config, fix hardcoded paths, create `wiki/SCHEMA.md` living taxonomy — ✅ 2026-04-07
@@ -161,6 +176,8 @@ P3 (long-context datasets)        ──independent──
 P4 (YaRN extension)               ──depends on P3 (datasets)──
 P5 (harness engineering experiments)  ──depends on P3 (datasets) + Package B/C results──
 P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopilot log data; S4 depends on seeding harness──
+P7 (Ouro LoopLM eval)               ──independent (download + benchmark)──
+P8 (eval tower verification)         ──EV-1/2/6 DONE (2026-04-15); EV-0/3 independent; EV-4/5 need inference; EV-7 depends on all + P7──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
 Multiscreen monitoring            ──depends on external adoption──
@@ -183,6 +200,8 @@ Multiscreen monitoring            ──depends on external adoption──
 7. **Knowledge base governance ↔ root-archetype**: The KB linter and skill template patterns from P2.5 are being upstreamed to root-archetype via a companion handoff (`/mnt/raid0/llm/root-archetype/handoffs/active/knowledge-base-linter.md`). Epyc-root deploys the linter first as an instance-specific validator, then the generalized version goes to root-archetype. The credibility scoring and anti-confirmation-bias changes are research-intake skill edits that may also be templated in root-archetype's skill scaffold.
 
 8. **Tool output compression ↔ Complexity Trap validation**: intake-274 ("The Complexity Trap") validates our two-layer architecture — pattern-based tool compression upstream, LLM conversation summarization downstream. The hybrid finding (7-11% further cost reduction) confirms this design is near-optimal. Package B tool compression A/B will be the first empirical confirmation on our stack. This also informs context-folding: observation masking (stripping old tool outputs) is equivalent to high recency weight in `segment_helpfulness()`.
+
+10. **Eval tower verification ↔ AP-27 ↔ Ouro P7**: `eval-tower-verification.md` (P8) provides calibration and process verification infrastructure that AP-27 (RLVR formalization) requires. Ouro P7 (Ouro-2.6B-Thinking eval) feeds into EV-7 as a T0 sentinel verifier candidate. ThinkPRM deployment (EV-5) adds cross-family verification distinct from the Ouro sentinel role. Decision-aware routing (R&O P13) changes the reward signal that the eval tower evaluates — calibration metrics (ECE, AUC) must validate the new signal. Source: 2026-04-14 deep-dive (intake-363/367/368/370/371).
 
 9. **REPL turn efficiency ↔ Omega problem**: Turn reduction (P6) and WS-1/WS-3 prompt fixes address the same root cause — tools hurt accuracy on 7/10 suites — from different angles. P6 reduces wasted tool calls structurally (frecency, combined ops); WS-1/WS-3 tighten tool-use policy in prompts. Both should be measured together in WS-2 Omega re-run. Risk: contextual suggestions (S3) may worsen the problem if they encourage more tool use.
 

@@ -12339,3 +12339,1193 @@
     The TTL caching pattern is relevant — if SearXNG is deployed locally, caching
     at the MCP layer is redundant (SearXNG has its own caching). But if using a
     public instance, the MCP cache prevents redundant upstream queries.
+
+- id: intake-362
+  arxiv_id: null
+  url: https://llm-as-a-verifier.notion.site/
+  source_type: blog
+  title: 'LLM-as-a-Verifier: Project Page'
+  authors: []
+  categories:
+  - benchmark_methodology
+  - reinforcement_learning
+  - cost_aware_routing
+  key_claims:
+  - 'General-purpose verification framework with fine-grained feedback via scoring granularity, repeated verification, and criteria decomposition'
+  - 'Functions as trajectory reward model for test-time scaling'
+  - 'Achieves 86.4% on Terminal-Bench 2 and 77.8% on SWE-Bench Verified'
+  - 'Uses logprob-based scoring from language model distributions'
+  - 'Round-robin tournament selection among trajectory candidates'
+  techniques:
+  - Logprob-based trajectory verification
+  - Criteria decomposition
+  - Repeated verification with granularity scaling
+  - Round-robin tournament selection
+  reported_results:
+  - 'Terminal-Bench 2: 86.4% (baseline Forge Pass@1: 81.8%)'
+  - 'SWE-Bench Verified: 77.8% (baseline: 76.1%)'
+  references: []
+  novelty: high
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'LLM-as-a-Judge paradigm susceptible to positional, verbosity, and self-enhancement biases'
+  - 'Confirmation bias documented in LLM verification: 16-93pp detection degradation under bug-free framing (including Gemini models)'
+  - 'Logprob reliability issues: at k=20 API limit, ~20% of tokens lose >1% probability mass'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-363
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Notion project page for LLM-as-a-Verifier framework. Page content not
+    directly fetchable (Notion JS rendering). Information derived from
+    associated GitHub repo (intake-363) and web search. The project page and
+    repo together describe a logprob-based verification framework that
+    generalizes LLM-as-a-Judge by using multi-criteria, repeated verification
+    with granularity scaling.
+
+    RELEVANCE TO EPYC: Tangentially related to AP-27 eval tower formalization.
+    The methodology (logprob scoring, criteria decomposition) could inform
+    how we design verification functions for T0/T1/T2 tiers. However, the
+    Gemini API dependency makes direct adoption infeasible for local inference.
+    The key insight is that structured verification with probability-based
+    scoring outperforms single-pass LLM judgment.
+
+- id: intake-363
+  arxiv_id: null
+  url: https://github.com/llm-as-a-verifier/llm-as-a-verifier
+  source_type: repo
+  title: 'LLM-as-a-Verifier: A General-Purpose Verification Framework'
+  authors: []
+  categories:
+  - benchmark_methodology
+  - reinforcement_learning
+  - cost_aware_routing
+  - benchmark_methodology
+  key_claims:
+  - 'Approximates trajectory reward via R(t,tau) = (1/CK) sum p_theta(v_g|t,c,tau) phi(v_g) across C criteria, K verifications, G granularity levels'
+  - 'Beats baseline Pass@1 on Terminal-Bench 2: 86.4% vs 81.8% (+4.6pp)'
+  - 'Beats baseline on SWE-Bench Verified: 77.8% vs 76.1% (+1.7pp)'
+  - 'Uses Gemini API with Vertex AI logprob extraction for scoring'
+  - 'Default parameters: --granularity 20 --n-verifications 4 --criteria 3'
+  techniques:
+  - Logprob-based multi-criteria verification
+  - Granularity scaling (discrete score tokens)
+  - Repeated verification (K rounds)
+  - Criteria decomposition (C dimensions)
+  - Round-robin tournament pairwise comparison
+  reported_results:
+  - 'Terminal-Bench 2: 86.4% (76.9/89 tasks, Forge+GPT-5.4 trajectories)'
+  - 'SWE-Bench Verified: 77.8% (389/500 instances, Claude Opus+Gemini trajectories)'
+  - 'Baselines: Forge 81.8% Pass@1, Claude/Gemini 75.6-76.8% Pass@1'
+  references:
+  - 'Terminal-Bench 2 leaderboard: huggingface.co/datasets/harborframework/terminal-bench-2-leaderboard'
+  - 'SWE-bench experiments: github.com/swe-bench/experiments'
+  novelty: high
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'LLM-as-a-Judge paradigm susceptible to positional, verbosity, and self-enhancement biases'
+  - 'Confirmation bias documented in LLM verification: 16-93pp detection degradation under bug-free framing'
+  - 'Logprob reliability at API limits: ~20% of tokens lose >1% probability mass, affecting entropy/perplexity estimates'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-362
+    - intake-367
+    - intake-368
+    - intake-371
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  notes: >
+    Python repo (100 stars, 4 forks) implementing logprob-based trajectory
+    verification. Dependencies: google-genai, tqdm, Vertex AI API key.
+    Data includes 5 Terminal-Bench trajectories and 3 SWE-bench runs.
+
+    RELEVANCE TO EPYC: The core formula R(t,tau) provides a concrete
+    implementation of multi-criteria verification that goes beyond binary
+    pass/fail. The granularity parameter (G=20 default) and repeated
+    verification (K=4) show that verification reliability improves with
+    both scoring resolution and repetition. This validates AP-27's
+    direction of formalizing eval tower tiers as verification functions.
+
+    Key limitation: Gemini API dependency. Would need to adapt for local
+    models (e.g., using llama.cpp logprob extraction). The approach is
+    model-agnostic in principle but the implementation is Gemini-specific.
+    100 stars suggests early traction but not yet widely validated.
+
+- id: intake-364
+  arxiv_id: null
+  url: https://github.com/firecrawl
+  source_type: repo
+  title: 'Firecrawl: Web Data API for AI'
+  authors: []
+  categories:
+  - tool_implementation
+  - search_retrieval
+  - tool_implementation
+  key_claims:
+  - '108K+ GitHub stars on main repo — most popular AI web scraping tool'
+  - 'Converts websites to LLM-ready markdown or structured data'
+  - 'MCP server (6K+ stars) for Claude, Cursor integration'
+  - 'CLI agent skill for autonomous web scraping (Claude Code, Codex, Gemini CLI compatible)'
+  - 'Ecosystem includes PDF inspector (Rust), docs, plugins'
+  techniques:
+  - HTML to LLM-ready markdown conversion
+  - Website crawling and URL mapping
+  - MCP server integration
+  - JavaScript rendering and dynamic content handling
+  reported_results:
+  - '108K+ GitHub stars, 7K+ forks'
+  - 'MCP server: 6K+ stars'
+  - 'CLI: 284+ stars'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    - hermes-outer-shell.md
+    experiments: []
+    intake_entries:
+    - intake-365
+    - intake-372
+    - intake-359
+  handoffs_updated:
+  - searxng-search-backend.md
+  handoffs_created: []
+  notes: >
+    Firecrawl GitHub organization — web data API ecosystem for AI.
+    Main repo (TypeScript, AGPL-3.0) is the flagship scraping tool.
+    MCP server enables Claude Code integration. Already listed as a
+    disabled cloud tool in hermes-outer-shell.md.
+
+    RELEVANCE TO EPYC: Complementary to SearXNG (search aggregation).
+    Firecrawl handles deep page scraping while SearXNG handles search.
+    MCP server could enhance research intake pipeline for JS-heavy pages.
+    However, AGPL-3.0 license and cloud-first design conflict with our
+    self-hosted infrastructure philosophy. Crawl4AI (intake-372) is
+    the self-hosted alternative worth evaluating first.
+
+- id: intake-365
+  arxiv_id: null
+  url: https://www.firecrawl.dev/
+  source_type: blog
+  title: 'Firecrawl: The API to Search, Scrape, and Interact with the Web at Scale'
+  authors: []
+  categories:
+  - tool_implementation
+  - search_retrieval
+  key_claims:
+  - 'P95 latency of 3.4 seconds across millions of pages'
+  - '96% web coverage including JavaScript-heavy pages'
+  - 'New Interact feature: click, type, scroll before extraction'
+  - 'SOC II Type 2 compliant, 80K+ companies, Y Combinator backed'
+  - 'Python/Node SDKs, MCP compatible, CLI tool'
+  techniques:
+  - Intelligent wait mechanisms for dynamic content
+  - Rotating proxy orchestration
+  - LLM-ready output (markdown, JSON, screenshots)
+  - MCP protocol support
+  reported_results:
+  - 'P95 latency: 3.4s'
+  - 'Web coverage: 96%'
+  - '80K+ companies, 90+ contributors'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'Self-hosted version lacks cloud parity: /agent and /browser endpoints not supported'
+  - 'Credit pricing unpredictable: JSON mode +4 credits, stealth mode +4, can reach 9 credits/page'
+  - 'Resource exhaustion on self-hosted VPS: workers stop accepting tasks after load spikes'
+  - 'Crawl results expire after 24 hours via API'
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    - hermes-outer-shell.md
+    experiments: []
+    intake_entries:
+    - intake-364
+    - intake-372
+  handoffs_updated:
+  - searxng-search-backend.md
+  handoffs_created: []
+  notes: >
+    Firecrawl product page with detailed feature/pricing breakdown.
+    Free tier: 500 credits. Paid plans from $83/mo (100K credits).
+    Extract feature has separate token-based subscription ($89/mo).
+
+    RELEVANCE TO EPYC: The Interact feature (click/type/scroll before
+    extraction) is novel and could handle complex pages that simple
+    fetching misses. However, the self-hosted limitations are significant:
+    no /agent, no /browser, no Fire-engine anti-bot capabilities.
+    For our self-hosted infrastructure, Crawl4AI (intake-372) is more
+    aligned. Firecrawl Cloud could be useful for one-off research intake
+    sessions where JS rendering is critical.
+
+- id: intake-366
+  arxiv_id: '2604.11507'
+  url: https://arxiv.org/abs/2604.11507
+  source_type: paper
+  title: 'Deep Learning for Sequential Decision Making under Uncertainty: Foundations, Frameworks, and Frontiers'
+  authors:
+  - I. Esra Buyuktahtakin
+  categories:
+  - cost_aware_routing
+  - reinforcement_learning
+  - routing_intelligence
+  - benchmark_methodology
+  key_claims:
+  - 'Deep learning complements optimization rather than replacing it for sequential decision-making under uncertainty'
+  - 'PredOpt achieves 99% prediction accuracy with 0.04-0.11% optimality gap in 4.6s (vs CPLEX 25,085s)'
+  - 'ScenPredOpt: 6s vs Gurobi 4016s with 1.14% gap on 8-item MSMK; handles 512 scenarios in 69s (Gurobi timeout 7200s)'
+  - 'Three integration paradigms: predict-then-optimize, decision-aware learning, learning-to-optimize'
+  - 'Non-anticipative learning (NEDA) enforces temporal information constraints via hidden state averaging'
+  techniques:
+  - LSTM-based sequential decision learning
+  - PredOpt expandable learning-optimization architecture
+  - Non-anticipative learning (NEDA/ScenPredOpt)
+  - Decision-aware loss alignment
+  - Learning-to-optimize (L2O)
+  reported_results:
+  - 'MCLSP T=150: 99% accuracy, 0.04-0.11% gap, 4.6s (CPLEX: 25,085s)'
+  - 'MSMK 8-item: 6s (Gurobi: 4016s), 1.14% gap, 91% accuracy'
+  - 'MSMK 10-item: 21s (Gurobi: 5604s), 1.01% gap, 93.73% accuracy'
+  - 'MSMK 512 scenarios: 69s (Gurobi timeout at 7200s)'
+  references:
+  - 'arxiv:1611.09940'
+  - 'Donti et al. task-based learning'
+  - 'Elmachtoub & Grigas SPO+ loss'
+  - 'Vaswani et al. Attention is All You Need'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'Predict-then-optimize suffers fundamental misalignment: prediction error != decision error'
+  - 'Decision-focused learning requires differentiating through optimization which is intractable for integer variables'
+  - 'Runtime and scalability are central obstacles: methods require frequent expensive optimizer calls'
+  - 'Generalization across problem scales remains unresolved — PredOpt trained on small instances may not transfer'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-intelligence.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Survey/tutorial paper from Virginia Tech. Consolidates five neural
+    architectures (FNN, GNN, LSTM, Transformer, hybrid) and three
+    learning-optimization paradigms for sequential decision-making under
+    uncertainty. PredOpt and NEDA are the author's own contributions.
+
+    RELEVANCE TO EPYC: The predict-then-optimize vs decision-aware
+    learning distinction maps directly to our routing problem. Current
+    Q-scorer uses predict-then-optimize (predict quality scores, then
+    select model). Decision-aware learning (minimize decision regret,
+    not prediction error) could improve routing — aligning with xRouter
+    approach in Chapter 08. PredOpt's expandable architecture (train on
+    small, apply to large) could inform scaling routing across model counts.
+
+    Key limitation: This is primarily a survey — most cited techniques
+    predate 2026. The PredOpt and NEDA frameworks are specific to
+    multi-stage stochastic programming, not directly to LLM routing.
+    The conceptual mapping is valuable but implementation would require
+    significant adaptation.
+
+- id: intake-367
+  arxiv_id: '2502.13820'
+  url: https://arxiv.org/abs/2502.13820
+  source_type: paper
+  title: 'Scoring Verifiers: Evaluating Synthetic Verification for Code and Reasoning'
+  authors:
+  - Aleksander Ficek
+  - Somshubra Majumdar
+  - Vahid Noroozi
+  - Boris Ginsburg
+  categories:
+  - benchmark_methodology
+  - benchmark_methodology
+  - reinforcement_learning
+  key_claims:
+  - 'Reasoning significantly improves test case generation quality for verification'
+  - 'Scaling test case quantity enhances verification accuracy'
+  - 'Synthetic verification effective for both code and reasoning via reinforcement learning'
+  - 'Four new benchmarks released: HE-R, HE-R+, MBPP-R, MBPP-R+'
+  - 'Different LLM architectures (standard, reasoning, reward-based) yield varying verification results'
+  techniques:
+  - Benchmark transformation for verifier evaluation
+  - Test case generation with reasoning-enhanced LLMs
+  - Reward modeling for solution scoring
+  - Multi-metric evaluation framework
+  reported_results:
+  - 'Reasoning-augmented approaches outperform baselines in test generation'
+  - 'Verification accuracy improves with increased test case counts'
+  - 'Venue: COLM 2025'
+  references: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-363
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-363
+    - intake-370
+    - intake-371
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    NVIDIA Research paper (COLM 2025) providing benchmarks and methodology
+    for evaluating synthetic code verifiers. Releases HE-R, HE-R+, MBPP-R,
+    MBPP-R+ benchmarks that transform existing coding benchmarks into
+    verifier evaluation datasets.
+
+    RELEVANCE TO EPYC: The benchmark transformation methodology could
+    inform how we convert our eval tower tiers into verifier evaluation
+    datasets. The finding that reasoning-enhanced verification outperforms
+    standard approaches supports the ThinkPRM direction (intake-371).
+
+- id: intake-368
+  arxiv_id: '2512.21919'
+  url: https://arxiv.org/abs/2512.21919
+  source_type: paper
+  title: 'SWE-RM: Execution-Free Feedback for Software Engineering Agents'
+  authors:
+  - KaShun Shum
+  - Binyuan Hui
+  - Jiawei Chen
+  - Lei Zhang
+  - Jiaxi Yang
+  - Yuzhen Huang
+  - Junyang Lin
+  - Junxian He
+  categories:
+  - reinforcement_learning
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - 'Execution-free reward models provide more fine-grained signals than unit test feedback'
+  - 'TTS performance does not guarantee RL effectiveness — classification accuracy and calibration critical'
+  - 'MoE architecture (30B total, 3B active) improves generalization across training paradigms'
+  - 'Qwen3-Coder-Flash: 51.6% to 62.0% on SWE-Bench Verified (+10.4pp)'
+  - 'Qwen3-Coder-Max: 67.0% to 74.6% on SWE-Bench Verified (+7.6pp)'
+  techniques:
+  - Mixture-of-experts reward model architecture
+  - Controlled data composition experiments
+  - Classification accuracy and calibration optimization
+  - Policy mixture training methodology
+  reported_results:
+  - 'Qwen3-Coder-Flash: 51.6% -> 62.0% SWE-Bench Verified'
+  - 'Qwen3-Coder-Max: 67.0% -> 74.6% SWE-Bench Verified'
+  - 'SOTA among open-source models'
+  references: []
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-363
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-363
+    - intake-367
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  notes: >
+    Alibaba/Qwen team paper. Key insight: TTS (test-time scaling)
+    performance is necessary but not sufficient for RL effectiveness.
+    Classification accuracy and calibration must be separately validated.
+    MoE architecture with 30B total / 3B active achieves SOTA among
+    open-source models on SWE-Bench Verified.
+
+    RELEVANCE TO EPYC: The finding that TTS != RL effectiveness is
+    directly relevant to AP-27. Our eval tower must separately validate
+    classification accuracy and calibration, not just pass rates.
+    The MoE architecture pattern (large total, small active) mirrors
+    our multi-model routing philosophy.
+
+- id: intake-369
+  arxiv_id: '2601.11868'
+  url: https://arxiv.org/abs/2601.11868
+  source_type: paper
+  title: 'Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces'
+  authors:
+  - Mike A. Merrill
+  - Alexander G. Shaw
+  - Nicholas Carlini
+  categories:
+  - benchmark_methodology
+  - benchmark_methodology
+  key_claims:
+  - '89 tasks in containerized terminal environments with human-authored solutions'
+  - 'Frontier models and agents score less than 65% on the benchmark'
+  - 'Tasks require extensive domain knowledge and long chains of interdependent actions'
+  - 'Current benchmarks fail to adequately measure real-world problem-solving capability'
+  - '85+ collaborators contributing tasks and evaluation'
+  techniques:
+  - Containerized task environments
+  - Human-authored reference solutions
+  - Comprehensive test suites for verification
+  - Real-workflow-inspired task design
+  reported_results:
+  - 'Frontier LLMs: <65% resolution rate'
+  - 'Claude Mythos Preview: 82% (leaderboard leader as of 2026)'
+  - 'GPT-5.3 Codex: 77.3%'
+  - 'GPT-5.4: 75.1%'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-363
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - integration-test-coverage.md
+    experiments: []
+    intake_entries:
+    - intake-363
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Benchmark definition paper for Terminal-Bench 2.0. 241 total tasks
+    (89 curated), containerized Docker environments, human-authored
+    solutions, pytest-based verification of final container state.
+
+    DEEP DIVE (2026-04-14): Reclassified from not_applicable. Several
+    directly relevant tasks: llm-inference-batching-scheduler (routing),
+    llm-spec-decoding (acceptance rate verification), oom (model caching
+    under memory constraints), kv-store-grpc (server lifecycle).
+
+    METHODOLOGY VALUE: (1) Outcome-driven verification — tests verify
+    FINAL STATE not intermediate commands. (2) Three-property test
+    design: Specificity, Solvability, Integrity. (3) Container-per-task
+    isolation with structured task.yaml metadata. (4) Reward file
+    mechanism for graded scoring (reward.json vs binary pass/fail).
+    (5) 8-category failure taxonomy applicable to orchestrator failures.
+
+    These patterns should inform integration-test-coverage.md improvements.
+
+    RELEVANCE TO EPYC: Terminal-Bench evaluates agent capabilities
+    in terminal environments. Not directly applicable to inference
+    optimization or orchestrator work. Included as reference context
+    for LLM-as-a-Verifier results.
+
+- id: intake-370
+  arxiv_id: '2601.12186'
+  url: https://arxiv.org/abs/2601.12186
+  source_type: paper
+  title: 'Aletheia: What Makes RLVR For Code Verifiers Tick?'
+  authors:
+  - Vatsal Venkatkrishna
+  - Indraneil Paul
+  - Iryna Gurevych
+  categories:
+  - benchmark_methodology
+  - reinforcement_learning
+  - benchmark_methodology
+  key_claims:
+  - 'Training recipes that work vary significantly by model scale'
+  - 'Small verifiers benefit most from on-policy training as dominant factor'
+  - 'Thinking traces become increasingly critical for larger models'
+  - 'Larger verifiers require negative samples for training stability'
+  - 'Increasing inference-time compute cannot compensate for missing core RLVR elements'
+  techniques:
+  - Systematic ablation of RLVR drivers (thinking traces, negative samples, on-policy training)
+  - Execution-grounded testbed design
+  - Scale-dependent optimization analysis
+  - Cost-performance trade-off evaluation
+  reported_results:
+  - 'Compute-optimal roadmap for practitioner deployment'
+  - 'Smaller verifiers can effectively supervise larger code generation models'
+  - 'Scale-specific training strategies reduce training overhead'
+  references: []
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-363
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-363
+    - intake-367
+    - intake-371
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  notes: >
+    TU Darmstadt paper providing systematic ablation study of what makes
+    RLVR work for code verifiers at different scales. Key practical
+    finding: small models need on-policy training above all else; large
+    models need thinking traces + negative samples.
+
+    RELEVANCE TO EPYC: Directly informs AP-27 if we export eval tower
+    environments for RL training (per intake-320 Unsloth RLVR). The
+    scale-dependent recipe is critical: if training small verifiers
+    (which is our likely path given local compute), on-policy training
+    is the dominant factor. The finding that small verifiers can
+    supervise larger generators validates our multi-tier architecture.
+
+- id: intake-371
+  arxiv_id: '2504.16828'
+  url: https://arxiv.org/abs/2504.16828
+  source_type: paper
+  title: 'ThinkPRM: Process Reward Models That Think'
+  authors:
+  - Muhammad Khalifa
+  - Rishabh Agarwal
+  - Lajanugen Logeswaran
+  - Jaekyeom Kim
+  - Hao Peng
+  - Moontae Lee
+  - Honglak Lee
+  - Lu Wang
+  categories:
+  - reinforcement_learning
+  - benchmark_methodology
+  - cost_aware_routing
+  key_claims:
+  - 'Achieves PRM800K parity using only 1% of process labels'
+  - 'Outperforms LLM-as-a-Judge verifiers across ProcessBench, MATH-500, and AIME 24'
+  - '8% better out-of-domain generalization on GPQA-Diamond vs discriminative PRMs'
+  - '4.5% improvement on LiveCodeBench vs discriminative baselines'
+  - 'Scales verification compute more efficiently than LLM-as-a-Judge under equivalent token budgets'
+  techniques:
+  - Generative process reward modeling via verification chain-of-thought
+  - Fine-tuning long-CoT models as verbalized step-wise reward models
+  - Leveraging inherent reasoning for verification instead of discriminative classification
+  reported_results:
+  - 'ProcessBench, MATH-500, AIME 24: superior best-of-N selection'
+  - 'GPQA-Diamond: +8% vs full PRM800K-trained discriminative models'
+  - 'LiveCodeBench: +4.5% vs discriminative baselines'
+  - 'ProcessBench: +7.2% vs LLM-as-a-Judge at equivalent token budget'
+  references: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-363
+  ingested_date: '2026-04-14'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-363
+    - intake-367
+    - intake-370
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  notes: >
+    Google DeepMind / UMich paper. ThinkPRM uses generative verification
+    chain-of-thought instead of discriminative classification for process
+    reward modeling. Achieves strong results with only 1% of PRM800K labels.
+
+    RELEVANCE TO EPYC: The generative verification approach could inform
+    eval tower step-level attribution. Key insight: verification reasoning
+    (generating explanations of why each step is correct/incorrect) is
+    more data-efficient than training discriminative classifiers. Combined
+    with LightningRL per-step credit assignment (intake-344), this could
+    enable fine-grained autopilot evaluation. The 1% label efficiency is
+    important for our local compute constraints.
+
+- id: intake-372
+  arxiv_id: null
+  url: https://github.com/unclecode/crawl4ai
+  source_type: repo
+  title: 'Crawl4AI: Open-Source LLM-Friendly Web Crawler'
+  authors:
+  - UncleCode (community project)
+  categories:
+  - tool_implementation
+  - search_retrieval
+  key_claims:
+  - '51K+ GitHub stars — most-starred open-source web crawler'
+  - 'Fully self-hosted, no API keys required, Apache-2.0 license'
+  - 'Local LLM integration via Ollama (Llama 3, Mistral) for extraction'
+  - 'BM25 content filtering, cosine similarity matching, multiple chunking strategies'
+  - 'Async Playwright with managed browser pool (permanent/hot/cold tiers)'
+  techniques:
+  - Async Playwright-based browser automation
+  - BM25 content filtering for relevance
+  - LLM-driven extraction with local model support
+  - Browser pool management (3-tier system)
+  - Docker deployment with FastAPI server
+  reported_results:
+  - '51K+ GitHub stars, Apache-2.0 license'
+  - 'No performance benchmarks published'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-364
+  ingested_date: '2026-04-14'
+  contradicting_evidence:
+  - 'Recent PyPI supply chain compromise required replacing litellm dependency (v0.8.6)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    experiments: []
+    intake_entries:
+    - intake-364
+    - intake-365
+    - intake-359
+  handoffs_updated:
+  - searxng-search-backend.md
+  handoffs_created: []
+  notes: >
+    Community-driven open-source web crawler (Apache-2.0) with local
+    LLM integration. Python/Playwright based. Docker-deployable.
+
+    RELEVANCE TO EPYC: The most viable self-hosted alternative to
+    Firecrawl for our infrastructure. Key advantages over Firecrawl:
+    Apache-2.0 (no AGPL concerns), no API keys needed, local LLM
+    extraction via Ollama. Could complement SearXNG in the research
+    intake pipeline: SearXNG finds URLs, Crawl4AI extracts content
+    from JS-heavy pages that WebFetch can't handle. BM25 content
+    filtering is useful for extracting relevant sections from long
+    pages. Docker deployment aligns with our container strategy.
+
+    Worth evaluating for ColBERT reranker fetch step
+    (colbert-reranker-web-research.md S5) where page content quality
+    matters. The supply chain incident (litellm compromise) is a
+    yellow flag — monitor dependency health.
+
+- id: intake-373
+  url: https://huggingface.co/collections/jasonrqh/rethink-sft-generalization
+  source_type: blog
+  arxiv_id: null
+  title: 'Rethink SFT Generalization — HuggingFace Collection'
+  authors:
+  - Qihan Ren (jasonrqh)
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'Companion collection for arXiv:2604.06628 with 5+ datasets, 38+ fine-tuned models, and systematic hyperparameter sweeps'
+  - 'Covers Qwen3 (1.7B-14B), Qwen2.5 (1.5B-14B), InternLM2.5-20B across Math-CoT, Math-NoCoT, Countdown-CoT, DeepSeek-R1, NuminaMath datasets'
+  - 'Includes 44k-sample variant with per-token logprobs and entropy annotations'
+  - 'Training configurations span learning rates 1e-5 to 1e-4, epochs 1-16, batch sizes 32-256, with constant LR variants'
+  techniques:
+  - Supervised fine-tuning with long chain-of-thought supervision
+  - Systematic hyperparameter grid search across model families
+  - CoT vs NoCoT controlled comparison
+  reported_results:
+  - 'No aggregate metrics in collection metadata — results in individual model cards and paper'
+  references:
+  - '2604.06628'
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - mathsmith-hc-formalizer-eval.md
+    experiments: []
+    intake_entries:
+    - intake-374
+    - intake-375
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Meta-resource bundling paper, datasets, and models for the
+    "Rethinking Generalization in Reasoning SFT" study. Primarily
+    useful as a navigation point to the individual artifacts.
+
+    RELEVANCE TO EPYC: The model collection provides a systematic
+    study of how SFT hyperparameters interact with model capability
+    across scales. The 44k variant with logprobs/entropy annotations
+    could be useful for future reasoning compression research if we
+    need training data with per-token confidence scores. Low direct
+    actionability since we don't train models, but the experimental
+    methodology is informative for our evaluation design.
+
+- id: intake-374
+  url: https://arxiv.org/abs/2604.06628
+  source_type: paper
+  arxiv_id: '2604.06628'
+  title: 'Rethinking Generalization in Reasoning SFT: A Conditional Analysis on Optimization, Data, and Model Capability'
+  authors:
+  - Qihan Ren
+  - Peng Wang
+  - Ruikun Cai
+  - Shuai Shao
+  - Dadi Guo
+  - Yuejin Xie
+  - Yafu Li
+  - Quanshi Zhang
+  - Xia Hu
+  - Jing Shao
+  - Dongrui Liu
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'Challenges "SFT memorizes, RL generalizes" assumption — cross-domain generalization depends on optimization dynamics, data quality, and model capability'
+  - 'Cross-domain performance follows dip-and-recovery trajectory during training — reported failures often reflect incomplete training'
+  - 'Verified long-CoT supervision yields +8-12% improvement over No-CoT on test domains'
+  - 'Repeated exposure outperforms coverage: repeating 2.5k samples 8x beats one-pass 20k under fixed 640-step budget'
+  - 'Generalization is asymmetric: reasoning improves while safety degrades with long-CoT SFT'
+  techniques:
+  - Conditional analysis of SFT generalization (optimization x data x capability)
+  - Dip-and-recovery optimization dynamics analysis
+  - Cross-domain transfer evaluation with controlled data sources
+  - FSDP-based SFT training with systematic hyperparameter sweeps
+  reported_results:
+  - '14B models show 15-20% better generalization than 1.7B on reasoning tasks'
+  - 'Dip-and-recovery: cross-domain performance initially drops then recovers with extended training'
+  - 'Data structure matters: verified long-CoT yields +8-12% improvement over No-CoT'
+  - 'Repeated data exposure > single-pass coverage under fixed compute budget'
+  references:
+  - '2604.01702'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence:
+  - 'arxiv:2604.01702 shows lower training loss does not guarantee better generalization — reasoning pattern structure (convergent vs divergent branching) matters more than training dynamics'
+  - 'arxiv:2411.15382 (NAACL 2025) shows CoT faithfulness degrades 13-18pp after QLoRA fine-tuning — models can learn to ignore their own intermediate reasoning'
+  - 'The dip-and-recovery claim is new and not yet independently replicated'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - mathsmith-hc-formalizer-eval.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-373
+    - intake-375
+    - intake-378
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: >
+    Challenges prevailing wisdom about SFT vs RL for reasoning
+    generalization. Strongest finding: generalization is conditional,
+    not absent. Repeated exposure > coverage is a practical training
+    recipe. Safety degradation finding is concerning for production.
+
+    RELEVANCE TO EPYC: We don't train models, but this paper
+    informs our understanding of why different models generalize
+    differently — relevant for model selection and routing decisions.
+    The CoT quality findings reinforce our reasoning-compression
+    handoff's emphasis on verified, high-quality reasoning traces.
+    The safety degradation finding is a red flag for any future
+    fine-tuning work (Doc-to-LoRA, etc). Code repo:
+    github.com/Nebularaid2000/rethink_sft_generalization
+
+- id: intake-375
+  url: https://huggingface.co/datasets/jasonrqh/Math-CoT-20k
+  source_type: blog
+  arxiv_id: null
+  title: 'Math-CoT-20k: Verified Long-CoT Math Reasoning Dataset'
+  authors:
+  - Qihan Ren (jasonrqh)
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - '20,480 verified long-CoT math reasoning samples from olympiads, competitions, and forums'
+  - 'Responses range 1,420-69,700 characters with advantage scoring for quality assessment'
+  - 'Dip-and-recovery pattern: cross-domain performance initially dips but recovers with extended training'
+  - 'Repeated exposure > coverage: repeating 2.5k samples 8x outperforms one-pass 20k under fixed 640-step budget'
+  techniques:
+  - Verified long chain-of-thought data curation
+  - Multi-source math problem aggregation (olympiads, competitions, forums)
+  - Advantage scoring for solution quality
+  reported_results:
+  - 'Verified long-CoT yields +8-12% improvement over No-CoT on test domains'
+  - 'Capability scaling: 14B models show 15-20% better generalization than 1.7B'
+  references:
+  - '2604.06628'
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - mathsmith-hc-formalizer-eval.md
+    experiments: []
+    intake_entries:
+    - intake-373
+    - intake-374
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Companion dataset for the Rethinking SFT Generalization paper.
+    20k verified long-CoT math samples with quality scores.
+
+    RELEVANCE TO EPYC: We don't train models and already have math
+    evaluation datasets. Dataset format and curation methodology are
+    informative but not directly actionable. The advantage scoring
+    field could be interesting for future data quality research.
+
+- id: intake-376
+  url: https://huggingface.co/datasets/open-r1/OpenR1-Math-220k
+  source_type: blog
+  arxiv_id: null
+  title: 'OpenR1-Math-220k: Large-Scale Math Reasoning Dataset with DeepSeek R1 Traces'
+  authors:
+  - Open R1 (HuggingFace community)
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - '220k+ math problems with 2-4 DeepSeek R1 reasoning traces per problem, verified via Math-Verify'
+  - 'Generated at 25 solutions/hour per H100, 300k solutions/day on 512 H100s using SGLang'
+  - '568+ models trained on this dataset — de facto standard for math reasoning distillation'
+  - '75% of problems solved in under 8k tokens; remaining require full 16k token budget'
+  techniques:
+  - DeepSeek R1 reasoning trace generation at scale via SGLang
+  - Math-Verify + Llama-3.3-70B-Instruct hybrid verification
+  - Multi-solution generation enabling rejection sampling and DPO
+  reported_results:
+  - '568+ models trained on this dataset'
+  - '14,009 downloads/month'
+  - 'Default 94k subset yields best SFT performance'
+  references: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-373
+    - intake-377
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Large-scale math reasoning dataset from HuggingFace Open R1
+    initiative. Already referenced in existing intake entries.
+
+    RELEVANCE TO EPYC: We don't train models. Dataset is well-known
+    in the community. Interesting that 75% of problems solve in
+    under 8k tokens — this supports reasoning compression research
+    showing that most reasoning is unnecessarily verbose. The
+    Math-Verify verification methodology is more relevant than the
+    dataset itself.
+
+- id: intake-377
+  url: https://github.com/huggingface/Math-Verify
+  source_type: repo
+  arxiv_id: null
+  title: 'Math-Verify: Robust Mathematical Expression Evaluation for LLM Outputs'
+  authors:
+  - Hugging Face
+  categories:
+  - benchmark_methodology
+  key_claims:
+  - 'Three-step grading: answer extraction (regex priority), ANTLR4 parsing to SymPy, multi-strategy comparison'
+  - 'Addresses underestimation of model performance by up to 40 points through superior parsing'
+  - 'Supports LaTeX, set theory, Unicode, matrices, percentages, units, and relation evaluation'
+  - 'Format-agnostic answer retrieval with best-effort extraction approach'
+  techniques:
+  - ANTLR4 grammar-based LaTeX to SymPy conversion
+  - Multi-strategy comparison (string, symbolic, numeric precision, special cases)
+  - Priority-ordered regex extraction (concrete to abstract)
+  - Matrix equivalence validation and relation evaluation with flip support
+  reported_results:
+  - 'Highest accuracy on MATH dataset: 0.1328 vs lm-eval-harness (0.0802) and Qwen (0.1288)'
+  - '1.1k GitHub stars, 53 forks, 80 commits, 10 releases (latest v0.8.0)'
+  - 'Supports MATH-Hard, MATH-500, GSM8K, AMC23, AIME24 evaluation'
+  references: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence:
+  - 'Math-Verify only checks answer correctness, not question validity — MathQ-Verify (arxiv:2505.13903) shows flawed questions cause evaluation noise'
+  - 'Process Reward Models for step-level verification perform only slightly better than random guessing (multiple 2025 studies)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - eval-tower-verification.md
+    - mathsmith-hc-formalizer-eval.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries:
+    - intake-376
+    - intake-379
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  notes: >
+    Apache-2.0 Python library for robust mathematical answer
+    evaluation. Mature project (v0.8.0, 1.1k stars).
+
+    RELEVANCE TO EPYC: HIGH — directly applicable to eval tower
+    verification (eval-tower-verification.md). Current
+    score_answer_deterministic() in safety_gate.py uses binary
+    exact-match scoring. Math-Verify would replace this with robust
+    expression comparison supporting LaTeX, symbolic equivalence,
+    numeric precision, matrices, and sets.
+
+    CRITICAL INTEGRATION CAVEATS (from deep dive):
+    (1) verify() is NOT symmetric — gold must be first arg, pred
+    second. Assignment simplification and equation-interval
+    conversion behave differently by argument order.
+    (2) NOT thread-safe — uses signal.alarm() for timeout. If
+    eval_tower.py uses ThreadPoolExecutor, must either switch to
+    multiprocessing, set timeout_seconds=None with external
+    timeout management, or wrap in subprocess.
+    (3) Open interval ambiguity: "(1,2)" converts to Tuple(1,2)
+    for open intervals — could false-positive if answer is a
+    coordinate pair. Monitor for this edge case.
+    (4) Percentage handling is smart: "9%" == "0.09" == "9/100".
+    (5) List matching uses "any match wins" — verify([a,b], [c])
+    returns True if c matches either a or b.
+
+    Integration path: pip install math-verify, replace exact-match
+    in eval_tower.py _eval_question(). ANTLR4 runtime required
+    (4.13.2, 4.11.0, or 4.9.3). Self-hosted, Apache-2.0.
+
+    Accuracy impact: Math-Verify scores 0.1328 vs lm-eval-harness
+    0.0802 on MATH — current exact-match likely underestimates
+    model capability by ~66% on math questions. This could affect
+    routing decisions.
+
+    Deep dive: research/deep-dives/math-verify-integration-analysis.md
+
+- id: intake-378
+  url: https://arxiv.org/abs/2604.01702
+  source_type: paper
+  arxiv_id: '2604.01702'
+  title: 'On the Role of Reasoning Patterns in the Generalization Discrepancy of Long Chain-of-Thought Supervised Fine-Tuning'
+  authors:
+  - Zhaoyi Li
+  - Xiangyu Xi
+  - Zhengyu Chen
+  - Wei Wang
+  - Gangwei Jiang
+  - Ranran Shen
+  - Linqi Song
+  - Ying Wei
+  - Defu Lian
+  categories:
+  - training_distillation
+  key_claims:
+  - 'Lower training loss does not guarantee better generalization — reasoning pattern structure matters more'
+  - 'DeepSeek-R1 produces divergent, branch-heavy exploration patterns causing worse generalization despite lower training loss'
+  - 'gpt-oss-120b exhibits convergent, deductive reasoning trajectories that transfer better'
+  - 'Filtering branch-heavy trajectories improves AIME25 by 5.1%, BeyondAIME by 5.5%, average 3.6% across 5 benchmarks'
+  techniques:
+  - Trajectory filtering for removing frequently branching reasoning patterns
+  - Convergent vs divergent reasoning pattern taxonomy
+  - Token-level SFT loss analysis
+  - Step-level reasoning behavior evaluation
+  reported_results:
+  - 'AIME25: up to 5.1% improvement from trajectory filtering'
+  - 'BeyondAIME: up to 5.5% improvement'
+  - 'Average across 5 benchmarks: 3.6% improvement'
+  references:
+  - '2604.06628'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-374
+  ingested_date: '2026-04-15'
+  contradicting_evidence:
+  - 'No contradicting evidence found — possible confirmation bias risk. The convergent vs divergent pattern analysis is novel and not yet independently replicated.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-374
+    - intake-376
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: >
+    Important nuance to the SFT generalization debate. While
+    intake-374 argues SFT CAN generalize under the right conditions,
+    this paper shows the reasoning PATTERN STRUCTURE of training
+    data is a critical (previously overlooked) factor.
+
+    RELEVANCE TO EPYC: UPGRADED to high relevance after deep dive.
+    Three actionable findings:
+
+    (1) Quantitative branching metrics (33.3% vs 22.5% Propose
+    steps, 0.53 vs 0.34 Propose->Propose transition) give us
+    concrete tools for evaluating reasoning trace quality at
+    inference time. High branching density = model exploring
+    unproductively = candidate for truncation or escalation.
+
+    (2) Random step deletion experiment validates Tier 1 reasoning
+    compression: removing 10% of DeepSeek-R1 steps causes no
+    degradation (sometimes improves). Branch-heavy reasoning IS
+    redundant and safe to prune.
+
+    (3) Llama3.1-8B shows 21pp gap between R1 and gpt-oss data —
+    model architecture interacts strongly with training data
+    quality. Some architectures are more susceptible to learning
+    surface branching patterns.
+
+    The "dilution effect" is a key insight: DeepSeek-R1's lower SFT
+    loss comes from trivial routine tokens dragging down the average,
+    not from better reasoning learning. Low loss is a MISLEADING
+    quality signal.
+
+    Deep dive: research/deep-dives/sft-generalization-reasoning-patterns.md
+
+- id: intake-379
+  url: https://arxiv.org/abs/2505.13903
+  source_type: paper
+  arxiv_id: '2505.13903'
+  title: "Let's Verify Math Questions Step by Step"
+  authors:
+  - Chengyu Shen
+  - Zhen Hao Wong
+  - Runming He
+  - Hao Liang
+  - Meiyi Qiang
+  - Zimo Meng
+  - Zhengyang Zhao
+  - Bohan Zeng
+  - Zhengzhou Zhu
+  - Bin Cui
+  - Wentao Zhang
+  categories:
+  - benchmark_methodology
+  key_claims:
+  - 'Existing math evaluators neglect question correctness — flawed questions waste compute and produce misleading results'
+  - 'ValiMath benchmark: 2,147 annotated math questions with granular quality labels'
+  - 'MathQ-Verify pipeline parses questions into atomic assumptions and conclusions for semantic consistency checks'
+  - 'Improves F1 score by up to 25 percentage points over direct verification baselines'
+  techniques:
+  - Fine-grained semantic parsing of mathematical questions into atomic components
+  - Consistency checking across atomic assumptions and conclusions
+  - ValiMath benchmark for question quality evaluation
+  reported_results:
+  - 'State-of-the-art on question quality detection benchmarks'
+  - '+25pp F1 improvement over direct verification baselines'
+  references: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: search
+  expanded_from: intake-377
+  ingested_date: '2026-04-15'
+  contradicting_evidence:
+  - 'No contradicting evidence found — possible confirmation bias risk. Question quality verification is an emerging area with limited prior work to validate against.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-377
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created: []
+  notes: >
+    Complementary to Math-Verify (intake-377). While Math-Verify
+    verifies answer correctness, MathQ-Verify verifies question
+    correctness — both are needed for robust evaluation.
+
+    RELEVANCE TO EPYC: Medium — our eval tower currently uses
+    curated question pools where question quality is assumed. If we
+    expand to larger or auto-generated question pools (e.g., from
+    MathSmith), question quality verification becomes important.
+    Could integrate with eval_tower.py dataset_adapters.py to filter
+    flawed questions before evaluation. Lower priority than
+    Math-Verify integration (intake-377).

@@ -864,7 +864,7 @@ These tasks evaluate research-intake findings that require live inference. Order
 | ~~H2~~ | ~~GEPA Full Program Adapter eval (AP-20)~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10~~ | → **Folded into Package D**. Resolved by comparing GEPA vs LLM mutation acceptance rates in AR-3 journal. | — | — |
 | ~~H3~~ | ~~PromptForge GEPA integration test (AP-21)~~ | ~~[autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P10~~ | → **Folded into Package D**. Decision from AR-3 data: if GEPA dominates Pareto frontier after 50+ trials → increase ratio to 100%. | — | — |
 | H4 | dspy.RLM integration testing (AP-26) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Test dspy.RLM for benchmark analysis via REPL exploration. Coder as main LM, frontdoor as sub_lm. **Post-AR-3** — controller change too risky mid-run. | coder + frontdoor | ~2h |
-| H5 | RLVR eval tower validation (AP-27) | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Validate formalized T0/T1/T2 as RLVR verification functions with deterministic rewards. Depends on P7 Ouro results. **Post-AR-3** — modifies eval trust boundary. | full stack | ~2h |
+| H5 | RLVR eval tower validation (AP-27) + calibration baseline (EV-4) | [eval-tower-verification.md](eval-tower-verification.md) EV-4 + [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) P11 | Run eval tower on Scoring Verifiers HE-R+ to establish ECE/AUC baseline (EV-4), then validate T0/T1/T2 as RLVR verification functions. **Depends on**: EV-1+EV-2+EV-3 (non-inference prep, now complete) + P7 Ouro results. **Post-AR-3** — modifies eval trust boundary. | full stack | ~4h |
 | ~~H6~~ | ~~GEPA search algorithm eval (MH-4)~~ | ~~[meta-harness-optimization.md](meta-harness-optimization.md) Tier 2b~~ | → **Folded into Package D**. Pareto frontier contributions by mutation source analyzed from AR-3 journal. | — | — |
 | H7 | Ouro-2.6B-Thinking benchmark (P7) | [research-evaluation-index.md](research-evaluation-index.md) P7 | Run MATH-500 + reasoning suite via transformers on CPU. NOT llama.cpp. Standalone. No stack conflict if needed, but not urgent — feeds H5 which is post-AR-3. | Ouro-2.6B (transformers, CPU-only) | ~4h |
 
@@ -872,8 +872,39 @@ These tasks evaluate research-intake findings that require live inference. Order
 
 - ~~**H1/H2/H3/H6**~~: **Folded into Package D** (2026-04-12). GEPA integrated into PromptForge as mutation type. AR-3 generates comparison data organically. See `scripts/autopilot/species/gepa_optimizer.py`.
 - **H4 post-AR-3**: dspy.RLM testing. Controller architecture change — defer to AR-4.
-- **H5 post-AR-3**: RLVR formalization. Modifies eval trust boundary. Defer to AR-4. Depends on H7.
+- **H5 post-AR-3**: RLVR formalization + EV-4 calibration baseline. Non-inference prep (EV-1/2/3/6) now complete — ready for inference run. Defer to AR-4. Depends on H7.
 - **H7 post-AR-3**: Ouro benchmark. Standalone (transformers CPU, no stack conflict). Feeds H5. Not urgent.
+
+---
+
+## Package I: Decision-Aware Routing Validation (post-AR-3)
+
+**Duration**: ~2 days (DAR-3 exploration needs sustained traffic for counterfactual data)
+**Stack required**: Full orchestrator stack
+**Depends on**: DAR-1 regret analysis (DONE — 96% uniform Q, see scripts/analysis/dar1_regret_analysis.py) + DAR-2 code landing + Package H completion
+**Status**: NOT STARTED — indexed 2026-04-15 from research deep-dive
+
+These tasks modify routing behavior and need isolated measurement. Running exploration routing during Package H's research eval would contaminate both.
+
+| # | Task | Source Handoff | Description | Models Needed | Effort |
+|---|------|---------------|-------------|--------------|--------|
+| I1 | DAR-3 SPO+ exploration | [decision-aware-routing.md](decision-aware-routing.md) DAR-3 | 10% epsilon-greedy exploration routing for counterfactual data collection. Convex SPO+ loss replaces TD update. | full stack | ~3-4 sessions |
+| I2 | DAR-4 bilinear scorer A/B | [decision-aware-routing.md](decision-aware-routing.md) DAR-4 | Model-feature-conditioned Q vs current per-action Q-tables. Zero cold-start for new models. | full stack | ~2 sessions |
+| I3 | EV-5 ThinkPRM-1.5B T2 | [eval-tower-verification.md](eval-tower-verification.md) EV-5 | Deploy ThinkPRM-1.5B-Q4KM for T2 process verification on uncertain questions. Cross-family constraint enforced. | ThinkPRM + eval stack | ~4h |
+
+### Prioritization
+
+- **I1 (DAR-3)**: Highest priority — generates counterfactual data needed for decision-aware training. Must run with sustained traffic.
+- **I2 (DAR-4)**: Can run after I1 data collection. A/B comparison: bilinear scorer vs current Q-scorer on same traffic.
+- **I3 (EV-5)**: Independent of I1/I2. Deploy ThinkPRM-1.5B, run T2 verification pass. Validate cross-family constraint (EV-6, already in code).
+
+### DAR-1 Preliminary Results (2026-04-15)
+
+Initial regret analysis on 7,211 routing decisions (Apr 10-14):
+- 96% uniform Q-values — Q-scorer has barely learned preferences
+- Selection score spread is non-trivial (median 0.107) — comes from cost/similarity, not Q-values
+- 25% trivial spread (<0.01)
+- Implication: DAR-2 contrastive training needs more routing memories. Consider seeding-driven memory accumulation before Package I.
 
 ---
 

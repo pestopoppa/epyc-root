@@ -163,3 +163,19 @@ Mirrors P12 in [`routing-and-optimization-index.md`](routing-and-optimization-in
 ## Notes
 
 AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution). Python 80.5%, 9340+ commits, actively maintained (docs version 2026.4.13). LiteLLM has first-class SearXNG integration as reference pattern. Docker image from DockerHub or GHCR.
+
+## Research Intake Update — 2026-04-14
+
+### New Related Research
+- **[intake-364/365] "Firecrawl: Web Data API for AI"** (firecrawl.dev / github.com/firecrawl)
+  - Relevance: Web scraping/crawling API (108K+ GitHub stars) that converts websites to LLM-ready markdown — complementary to SearXNG which handles search but not deep scraping
+  - Key technique: Scrape, crawl, map, interact (click/type/scroll) APIs; P95 latency 3.4s; 96% web coverage; MCP server for Claude Code
+  - Delta from SearXNG: SearXNG = search aggregation (250+ engines → JSON). Firecrawl = deep page scraping (HTML → markdown/JSON). Different roles — SearXNG finds URLs, Firecrawl extracts their content. Currently used as disabled cloud tool in hermes-outer-shell.
+  - Caveats: AGPL-3.0 license. Self-hosted version lacks cloud parity (/agent, /browser not supported). Credit-based pricing on cloud (unpredictable with JSON mode +4 credits, stealth +4 credits per page).
+- **[intake-372] "Crawl4AI: Open-Source Web Crawler for LLMs"** (github.com/unclecode/crawl4ai)
+  - Relevance: Fully self-hosted Firecrawl alternative (51K+ stars, Apache-2.0). Local LLM integration via Ollama. No API keys required.
+  - Key technique: Async Playwright-based crawler; BM25 content filtering; LLM extraction with local models (Llama 3, Mistral); browser pool management
+  - Delta from SearXNG: Same relationship as Firecrawl — page content extraction, not search. But self-hosted and free, matching our infrastructure philosophy.
+  - Integration path: If research intake pipeline needs page scraping beyond WebFetch (e.g., for JS-heavy pages, PDFs), Crawl4AI could be deployed alongside SearXNG. Docker deployment available. Worth evaluating for ColBERT reranker fetch step (colbert-reranker-web-research.md S5).
+
+**Policy note (2026-04-14)**: Given open-source-only infrastructure preference, Crawl4AI (intake-372, Apache-2.0) is the preferred evaluation target for deep page scraping. Firecrawl (intake-364/365) evaluation deferred — cloud-first SaaS model conflicts with self-hosted philosophy. Evaluate Crawl4AI after AR-3 when web_research sentinel data quantifies JS-heavy fetch failure rates. If WebFetch suffices for >90% of pages, neither tool is needed short-term.
