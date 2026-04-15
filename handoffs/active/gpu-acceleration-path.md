@@ -2,8 +2,8 @@
 
 **Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)
 **Created**: 2026-04-10 (via research intake deep-dive)
-**Updated**: 2026-04-14 (full survey: consumer GPU benchmarks, hybrid MoE offloading, KV split strategies)
-**Categories**: hardware_optimization, inference_serving, moe_optimization
+**Updated**: 2026-04-15 (added vLLM DDTree+Dflash speculation plan — community benchmark 91 tok/s on GB10)
+**Categories**: hardware_optimization, inference_serving, moe_optimization, speculative_decoding
 **Priority**: LOW (activates when GPU hardware is acquired)
 **Workstream**: Future
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -46,6 +46,31 @@ The unified memory architecture eliminates the CPU-to-GPU PCIe bottleneck that d
 **Caveats:** ARM CPU (20 cores) is far weaker than EPYC 9655 (192 threads) for expert compute. Memory bandwidth is slightly lower than our EPYC DDR5 setup. FP4 scaling underperforms theoretical expectations (FP8-to-FP4 yields ~1.3-1.5x, not 2x). Not a drop-in replacement for the NUMA 4-way architecture -- it's a fundamentally different inference paradigm.
 
 **Verdict:** At $4,699, DGX Spark is the most cost-effective path to GPU-accelerated MoE inference. It obsoletes the hybrid CPU+GPU offloading architecture (the entire `-ot "exps=CPU"` paradigm) by making expert offloading unnecessary. Primary path for models up to ~70B; pair two units for 200B+.
+
+### vLLM + Speculative Decoding on DGX Spark (Future Work)
+
+Speculative decoding on Qwen3.5 hybrids is **dead on CPU** (exhaustively tested — see [DFlash handoff](../completed/dflash-block-diffusion-speculation.md), [tree speculation handoff](../completed/tree-speculation-numa-drafting.md), [MTP-1 handoff](../completed/mtp-speculative-decoding.md)). The root cause is Delta Net's sequential recurrence: verifying N draft tokens costs N× single-decode, not ~1× like on pure attention models. But on **GPU, the recurrent state uses parallel scan** — the verification bottleneck disappears, and speculation becomes viable again.
+
+**Community benchmark to reproduce** (2026-04-15):
+- Setup: DDTree + Dflash, vLLM, Qwen3.5-27B AWQ, GB10
+- Result: **91.08 tok/s accepted**, 94.48 tok/s drafted, 96.4% acceptance rate
+- DDTree = tree-based multi-candidate verification strategy
+- Dflash = block diffusion drafting (no separate draft model — generates candidate token blocks via iterative denoising, conditioned on target model hidden states)
+
+**Our research validates this direction:**
+- DFlash paper reports τ=6.49 accepted tokens per round on Qwen3.5-35B-A3B (GPU) — [intake-158](https://arxiv.org/abs/2602.06036)
+- GPU works because parallel scan handles recurrent state, unlike CPU where each token traverses 30+ Delta Net layers sequentially — [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+- Our C++ DFlash implementation verified forward pass correctness (hidden states match HF to <0.01) — the problem was never the algorithm, it was CPU sequential verification cost
+
+**Reproduction plan (activates when Spark is acquired):**
+1. Install vLLM on DGX Spark (requires CUDA 13.0+ / Blackwell support)
+2. Obtain Qwen3.5-27B AWQ (check HF for AWQ quant availability)
+3. Configure DDTree + Dflash speculation in vLLM (check vLLM version requirements — may need nightly for Blackwell + Dflash support)
+4. Benchmark: match/exceed 91 tok/s accepted throughput
+5. Compare against llama.cpp baseline on same hardware (no speculation) to measure actual speedup
+6. If viable, evaluate for Qwen3.5-35B-A3B and larger models
+
+**Key difference from our CPU experiments:** This is vLLM-native, not llama.cpp. The entire speculation pipeline (diffusion drafting, tree verification, KV cache management) is GPU-optimized. Our llama.cpp DFlash port was fighting the wrong battle — GPU is the natural habitat for block diffusion speculation.
 
 ## Research Context
 
@@ -164,6 +189,10 @@ export USE_HIPBLASLT_GROUPED_GEMM=1  # Grouped GEMM for MoE
 - What's the minimum GPU VRAM to hold attention + shared expert for our largest model (246B REAP)?
 - Does hipBLASLt grouped GEMM compose with expert offloading, or are they mutually exclusive paths?
 - Can we implement our own WMMA flash attention fixes if upstream doesn't merge the community patches?
+- Which vLLM version first supports DDTree + Dflash speculation on Blackwell? Is it mainline or nightly-only?
+- Does the 91 tok/s community benchmark hold under real workloads (multi-turn, long context), or only synthetic single-prompt?
+- Can Dflash block diffusion compose with AWQ quantization without acceptance rate degradation? (Our CPU experiments showed Q4_K_M killed DFlash acceptance — 27% per-token — but AWQ is a different quantization method and runs on GPU)
+- Is there a published Dflash drafter for Qwen3.5-27B specifically, or does the Qwen3.5-35B-A3B drafter transfer? (Our DFlash inventory only has Qwen3-Coder-30B-A3B drafter)
 
 ## Prerequisite: v3 Rebuild HIP Support
 
@@ -178,6 +207,8 @@ The llama-cpp-v3-upstream-rebuild currently builds CPU-only. Adding GPU support 
 This handoff activates when GPU hardware is acquired. Until then, all findings are preserved here for reference. The CPU+GPU hybrid MoE pattern (intake-310) is the most promising avenue — it leverages our existing NUMA infrastructure rather than replacing it.
 
 AITER kernel performance numbers (17x MLA decode, 14x MHA prefill, 3x fused MoE) represent achievable ceiling but require vLLM/SGLang, not llama.cpp. The llama.cpp path through rocWMMA + hipBLASLt is more modest but integrates with our existing stack.
+
+**vLLM speculation is the highest-priority experiment when Spark arrives.** The community DDTree+Dflash benchmark (91 tok/s on Qwen3.5-27B AWQ) reopens the speculation story that is conclusively dead on CPU. This should be the first thing tested after basic llama.cpp inference is verified on the hardware. Cross-reference: [speculative-decoding wiki](../../wiki/speculative-decoding.md), [DFlash deep-dive](../../research/deep-dives/dflash-dart-diffusion-speculation.md).
 
 ## Research Intake Update — 2026-04-12
 

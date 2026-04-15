@@ -210,7 +210,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | MTP-1 speculation | `completed/mtp-speculative-decoding.md` | CLOSED — not viable (0.56x) |
 | Nemotron Mamba2 eval | `completed/nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no action |
 | Page cache optimization | `completed/multi-model-page-cache.md` | RESOLVED — 361 GB footprint, mlock deployed |
-| **GPU acceleration (future)** | `gpu-acceleration-path.md` | STUB — rocWMMA FA, hipBLASLt grouped GEMM, CPU+GPU hybrid MoE (intake-303–311) |
+| **GPU acceleration (future)** | `gpu-acceleration-path.md` | RESEARCHED — DGX Spark target, vLLM DDTree+Dflash speculation plan added (community 91 t/s on Qwen3.5-27B AWQ). Activates on hardware acquisition. |
 
 ## Production Model Stack — NUMA-Optimized (Updated 2026-03-29, v3 binary live 2026-04-10)
 

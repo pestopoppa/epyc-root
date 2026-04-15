@@ -47,9 +47,11 @@ The current state of the art for our stack is not speculative decoding at all --
 
 - **Worth investigating**: NUMA-parallel verification benchmark (2-3 day effort to determine if NUMA isolation can break the hybrid verification wall -- if aggregate/N > 0.6x individual, project DFlash viability with tau=6.49 and N-parallel verification). DFlash tree composition on f16 dense targets (multiplicative benefits for architect models). Sequential short-1@k for math/reasoning tasks (Phase 1, k=2-3 generations keep shortest, 2 days, gated behind feature flag)
 
-- **Blocked/concluded**: DFlash on Q4_K_M (concluded: 27% per-token acceptance, AR wins 36.5 vs 13.0 t/s). All tree/MTP approaches on hybrid models (concluded: -53% to -66%). Full short-m@k parallel generation (requires multi-slot infrastructure on architect models that we lack). DFlash training recipe not yet published
+- **Blocked/concluded (CPU)**: DFlash on Q4_K_M (concluded: 27% per-token acceptance, AR wins 36.5 vs 13.0 t/s). All tree/MTP approaches on hybrid models (concluded: -53% to -66%). Full short-m@k parallel generation (requires multi-slot infrastructure on architect models that we lack). DFlash training recipe not yet published
 
-- **Priority**: Low-to-medium. NUMA parallelism and KV cache optimization deliver much larger gains than further speculative decoding work. The primary acceleration frontiers are now KV compression (theoretical 24-120x ceiling with quad-stack) and Attention Matching compaction (5x validated, merged to production). Speculative decoding optimizations are incremental on top of these
+- **GPU reopener — vLLM DDTree+Dflash** (2026-04-15): Community benchmark reports **91 tok/s accepted** on Qwen3.5-27B AWQ with DDTree (tree verification) + Dflash (block diffusion drafting) on DGX Spark GB10, 96.4% acceptance rate. GPU parallel scan handles the Delta Net recurrent state that kills CPU speculation. DFlash paper reports τ=6.49 on Qwen3.5-35B-A3B (GPU). This is vLLM-native, not llama.cpp — the entire pipeline (diffusion drafting, tree verification, KV management) is GPU-optimized. Reproduction plan in [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), blocked on DGX Spark acquisition.
+
+- **Priority**: Low-to-medium on CPU (concluded). Potentially HIGH on GPU if DGX Spark is acquired — the 91 t/s community benchmark would make Dflash speculation the single most impactful GPU optimization. NUMA parallelism and KV cache optimization remain the primary CPU acceleration frontiers.
 
 ## Open Questions
 
