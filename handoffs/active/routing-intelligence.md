@@ -550,3 +550,13 @@ High branching density at inference time = the model is diverging rather than co
 **Why deferred**: Same as entropy signal — prompt-level features haven't been validated in shadow mode yet. Adding generation-time signals before prompt-level validation makes attribution harder. Branching density requires post-hoc analysis of completed reasoning traces, not real-time streaming detection (unlike entropy which can be measured incrementally).
 
 **Trigger to activate**: If difficulty signal shadow mode shows weak correlation with benchmark accuracy AND branching density in Package B data shows strong correlation with answer correctness.
+
+## Research Intake Update — 2026-04-15
+
+### New Related Research
+- **[intake-381] "Artificial Analysis — AA-Omniscience Benchmark"** (arxiv:2511.13029)
+  - Relevance: AA-Omniscience is a 6,000-question hallucination benchmark (600 public, Apache 2.0) that penalizes guessing and rewards abstention — directly applicable as a calibration dataset for factual-risk scorer Phase 4 A/B testing
+  - Key technique: Hybrid scoring (50% accuracy + 50% inverse hallucination rate) with 4-class LLM-as-judge grading (CORRECT, INCORRECT, PARTIAL_ANSWER, NOT_ATTEMPTED)
+  - Reported results: 600 expert-level questions across 6 domains/42 topics; automated grading via Gemini 2.5 Flash with regex+semantic extraction
+  - Delta from current approach: Phase 3 factual_risk.py scores input-side risk with regex features but has no ground-truth calibration dataset (noted as gap in Phase 4 exit criteria). AA-Omniscience provides exactly this — run local models against it to get per-model hallucination baselines. The "reward abstention" philosophy matches our risk-aware routing: models that refuse uncertain answers should be scored higher, not penalized.
+  - Dataset: `ArtificialAnalysis/AA-Omniscience-Public` on HuggingFace (Apache 2.0)

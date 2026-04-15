@@ -13529,3 +13529,281 @@
     Could integrate with eval_tower.py dataset_adapters.py to filter
     flawed questions before evaluation. Lower priority than
     Math-Verify integration (intake-377).
+
+- id: intake-380
+  url: https://huggingface.co/kernels
+  source_type: repo
+  arxiv_id: null
+  title: 'HuggingFace Kernel Hub — Pre-compiled GPU Kernel Distribution for PyTorch'
+  authors:
+  - Hugging Face
+  categories:
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - 'Centralized registry of pre-compiled GPU compute kernels (CUDA, Triton) loadable via single Python call — no compilation required'
+  - 'Pre-compiled binaries matched to Python/PyTorch/CUDA version matrix; load time ~2.5 seconds vs hours of compilation'
+  - 'RMSNorm Triton kernels achieve up to 2.47x speedup over PyTorch defaults on H100 (long sequences) and 1.97x on L4 (large batches)'
+  - 'kernel-builder uses Nix for reproducible multi-architecture builds across PyTorch 2.6-2.8+, CUDA 11.8-12.8, cxx11/cxx98 ABIs'
+  - 'Integrated into HF Transformers and Text Generation Inference (TGI); community library of 62+ kernels including flash-attn, MoE, quantization'
+  techniques:
+  - Hub-based kernel distribution with automatic environment detection (Python/PyTorch/CUDA/architecture matching)
+  - Nix-based reproducible build system (kernel-builder) for multi-target compilation
+  - PyTorch operator registration via TORCH_LIBRARY_EXPAND for torch.compile compatibility
+  - Decorator-based module replacement (@use_kernel_forward_from_hub) for drop-in optimization
+  - Lockfile-based version pinning (kernels.lock) for reproducible deployments
+  reported_results:
+  - 'RMSNorm Triton kernel: 1.97x speedup at batch 4096 on L4 GPU, 2.47x on H100 at long sequences'
+  - 'Kernel load time ~2.5 seconds (pre-compiled binary download) vs hours of source compilation'
+  - '62+ community kernels: flash-attn2/3, activation, layer-norm, MoE (sonic-moe, scattermoe), quantization (bitsandbytes), rotary'
+  - 'Supports NVIDIA (H100, A100, T4, L40s, V100, B200, RTX 4090), AMD MI300, Apple Silicon (M3/M4)'
+  references: []
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    HuggingFace Kernel Hub is a pre-compiled GPU kernel distribution
+    platform for the PyTorch ecosystem. It solves the "compilation
+    hell" problem — loading optimized CUDA/Triton kernels (flash
+    attention, MoE routing, quantization, normalization) via a single
+    get_kernel() call with automatic environment matching.
+
+    NOT APPLICABLE TO EPYC: Our inference stack is llama.cpp (C/C++),
+    not PyTorch. llama.cpp has its own CUDA kernels built into the
+    binary. HF Kernels cannot be consumed by llama.cpp. The build
+    system concept (Nix-based multi-target compilation) is
+    architecturally interesting but our fork uses CMake directly.
+
+- id: intake-381
+  url: https://artificialanalysis.ai/
+  source_type: blog
+  arxiv_id: null
+  title: 'Artificial Analysis — Independent AI Model & Provider Benchmarking Platform'
+  authors:
+  - Artificial Analysis
+  categories:
+  - benchmark_methodology
+  - routing_intelligence
+  key_claims:
+  - 'AA-Omniscience: 6,000-question hallucination benchmark (600 public, Apache 2.0) across 6 domains/42 topics — penalizes guessing, rewards abstention'
+  - 'Intelligence Index v4.0 composite of 10 public benchmarks (GDPval-AA, τ²-Bench, Terminal-Bench Hard, SciCode, GPQA Diamond, HLE, CritPt, IFBench, AA-LCR, AA-Omniscience) — 9 of 10 datasets publicly available'
+  - 'Hybrid scoring methodology: 50% accuracy + 50% inverse hallucination rate for knowledge reliability'
+  - 'Multi-stage answer extraction regex with fallback patterns reduces strict formatting bias in automated grading'
+  - 'Pass@1 across k repeats (3-5) with frozen ELO anchoring for benchmark stability'
+  techniques:
+  - Hallucination-penalizing scoring (AA-Omniscience Index, -100 to 100, rewards abstention over guessing)
+  - Hybrid scoring (50% accuracy + 50% non-hallucination rate) for knowledge calibration
+  - Multi-stage regex answer extraction with LaTeX/natural language fallbacks
+  - Bradley-Terry pairwise ELO modeling with bootstrap confidence intervals (GDPval-AA)
+  - Pass@1 aggregation across repeats with frozen ELO anchoring
+  - LLM-as-judge grading with 4-class output (CORRECT, INCORRECT, PARTIAL_ANSWER, NOT_ATTEMPTED)
+  reported_results:
+  - 'AA-Omniscience: 600 public questions (of 6,000), Apache 2.0, HuggingFace dataset available'
+  - '9 of 10 Intelligence Index component datasets are publicly available'
+  - 'Intelligence Index 95% CI < ±1% based on 10+ repeats per model per eval'
+  - '475+ models tracked with cross-provider normalized speed/cost comparisons'
+  references:
+  - '2511.13029'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - routing-intelligence.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - routing-intelligence.md
+  - bulk-inference-campaign.md
+  handoffs_created: []
+  notes: >
+    REVISED ASSESSMENT: The platform itself benchmarks cloud APIs
+    (not directly applicable), but its open-source artifacts and
+    methodology are leverageable:
+
+    1. AA-OMNISCIENCE DATASET (Apache 2.0, HuggingFace): 600 public
+    questions testing hallucination across 6 domains/42 topics.
+    Scoring penalizes incorrect guesses and rewards abstention —
+    directly maps to our factual_risk.py scorer in routing-intelligence.
+    Could serve as ground-truth calibration dataset for Phase 4
+    (A/B testing factual-risk enforce mode). Paper: arxiv:2511.13029.
+
+    2. SCORING METHODOLOGY: Hybrid scoring (50% accuracy + 50%
+    inverse hallucination) is a concrete formula for knowledge
+    calibration. Multi-stage regex extraction with fallbacks reduces
+    grading bias. Both adaptable to our seeding harness.
+
+    3. COMPONENT BENCHMARKS: 9 of 10 Intelligence Index components
+    are publicly available. GPQA Diamond (198 science Qs, 5 repeats)
+    and SciCode (288 code gen Qs) could supplement our benchmark
+    suite for local model quality evaluation.
+
+    ACTIONABLE: Download AA-Omniscience-Public dataset and evaluate
+    local models (architect_general 122B, worker_general 30B-A3B)
+    to get per-model hallucination baselines for factual-risk
+    calibration (routing-intelligence Phase 4 prerequisite).
+
+- id: intake-382
+  url: https://github.com/PavanMudigonda/zero-to-ai/blob/main/29-ai-hardware-llm-validation/README.md
+  source_type: repo
+  arxiv_id: null
+  title: 'AI Hardware & LLM Validation — End-to-End GPU Validation Guide'
+  authors:
+  - Pavan Mudigonda
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  key_claims:
+  - 'End-to-end validation stack from bare-metal hardware bring-up through datacenter-scale deployment across power, thermals, memory, and stability domains'
+  - 'Multi-framework validation approach (PyTorch, TensorFlow, ONNX Runtime) against diverse hardware backends rather than NVIDIA-only assumptions'
+  - 'Distributed training validation using NCCL/RCCL with focus on correctness, scaling efficiency, and communication bottleneck detection'
+  - 'Kernel correctness testing for compute kernels (GEMM, convolution, attention, softmax, LayerNorm) accounting for FP non-associativity'
+  - 'Connects internal validation to external standards including AA-SLT, AA-AgentPerf, MLPerf, and LMSys Arena with TTFT/TTFAT metrics'
+  techniques:
+  - GPU stress testing with nvidia-smi, rocm-smi, stress-ng, memtester
+  - Multi-framework ML operator validation (GEMM, attention, softmax correctness)
+  - NCCL/RCCL distributed training validation for multi-GPU/multi-node
+  - AA-SLT throughput plateau detection under uniform workload
+  - AA-AgentPerf real agent trajectory testing with P25 output speed
+  - TTFT vs TTFAT distinction for reasoning model benchmarking
+  reported_results: []
+  references: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-15'
+  contradicting_evidence: null
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    experiments:
+    - specexec-verification-profile.md
+    intake_entries:
+    - intake-381
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Educational guide compiling known GPU hardware validation practices
+    for AI/ML workloads. Covers bare-metal bring-up, GPU stress testing,
+    multi-framework operator correctness, distributed training validation,
+    and alignment to industry benchmarks (MLPerf, AA-SLT, AA-AgentPerf).
+
+    NOT APPLICABLE TO EPYC: Our inference stack is CPU-centric (AMD EPYC
+    9655 with llama.cpp), not GPU datacenter validation. We don't use
+    PyTorch/TensorFlow, NCCL/RCCL, or distributed training. The benchmark
+    methodology concepts (TTFT/TTFAT distinction, AA-AgentPerf's real
+    agent trajectory approach) are tangentially interesting but the guide
+    merely references them — it doesn't introduce them.
+
+    NOTABLE REFERENCES: AA-AgentPerf (Artificial Analysis) uses real
+    coding agent trajectories with 200+ turns and 100K+ token sequences,
+    measuring P25 output speed — conceptually relevant to our orchestrator
+    benchmarking but designed for API provider evaluation, not local
+    inference. See also intake-381 (Artificial Analysis platform entry).
+- id: intake-383
+  url: https://arxiv.org/abs/2511.13029
+  source_type: paper
+  arxiv_id: '2511.13029'
+  title: 'AA-Omniscience: Evaluating Cross-Domain Knowledge Reliability in Large Language Models'
+  authors:
+  - Declan Jackson
+  - William Keating
+  - George Cameron
+  - Micah Hill-Smith
+  categories:
+  - benchmark_methodology
+  - routing_intelligence
+  key_claims:
+  - 'Omniscience Index (-100 to 100) jointly measures factual recall while penalizing hallucinations and rewarding abstention — only 3 of 36 models scored above zero'
+  - '6,000 questions across 6 domains/42 economically relevant topics with 600 public (Apache 2.0) on HuggingFace'
+  - 'Performance leadership varies by domain between labs — no single model dominates, suggesting domain-specific routing is optimal'
+  - 'General capability (Intelligence Index) is decorrelated from knowledge reliability (Omniscience) — scale alone does not guarantee calibration'
+  - 'Harsh penalty for guessing means a model refusing all questions scores 0, placing it 4th/36 — validates abstention-rewarding design'
+  techniques:
+  - Omniscience Index bounded scoring (-100 to 100) penalizing incorrect answers, rewarding abstention
+  - LLM-based question generation agent for scalable benchmark creation with quality filtering
+  - 4-class LLM-as-judge grading (CORRECT, INCORRECT, PARTIAL_ANSWER, NOT_ATTEMPTED) via Gemini 2.5 Flash
+  - Domain-stratified evaluation across 42 economically relevant topics
+  reported_results:
+  - 'Claude 4.1 Opus scored highest at 4.8; only 3 models above zero'
+  - 'Highest model refusal rate was 58% (still above-zero performance due to penalty avoidance)'
+  - 'Domain-level performance unreliable on 600-question public subset (too small per domain)'
+  - 'Intelligence Index decorrelated from Omniscience Index — general capability ≠ knowledge reliability'
+  references: []
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-381
+  ingested_date: '2026-04-15'
+  contradicting_evidence:
+  - 'Harsh penalty for wrong answers means refusing all questions yields score 0 (4th/36) — metric may incentivize excessive refusal in future model training'
+  - 'Public subset (600 questions) too small for reliable domain-level evaluation — per-topic results not statistically significant'
+  - 'General capability decorrelated from Omniscience — benchmark may be measuring a niche axis not predictive of downstream task performance'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - routing-intelligence.md
+    - bulk-inference-campaign.md
+    experiments: []
+    intake_entries:
+    - intake-381
+  handoffs_updated:
+  - routing-intelligence.md
+  - bulk-inference-campaign.md
+  handoffs_created: []
+  notes: >
+    HIGH-VALUE for EPYC routing intelligence: This paper provides
+    exactly what routing-intelligence Phase 4 needs — a ground-truth
+    calibration dataset for factual-risk scoring.
+
+    IMMEDIATE ACTION: Download AA-Omniscience-Public (600 Qs, Apache 2.0)
+    and run local models through it:
+    - architect_general (Qwen3-235B-A22B): expect above-zero score
+    - worker_general (Qwen3-30B-A3B): expect below-zero, high hallucination
+    - frontdoor (Qwen3-32B): compare against worker for routing decisions
+
+    Per-model hallucination rates per domain would directly inform
+    the factual_risk.py per-role capability tiers (currently set by
+    parameter count heuristic, not measured).
+
+    KEY FINDING: Intelligence Index decorrelated from Omniscience —
+    validates our approach of separate quality signals (q-scorer for
+    task quality vs factual-risk for hallucination). A model can be
+    "good at tasks" but unreliable on factual claims.
+
+    LIMITATION: 600 public questions may be too few for per-domain
+    calibration. Consider augmenting with SimpleQA failures from
+    seeding logs (already identified as source candidate in
+    routing-intelligence Phase 4 notes).

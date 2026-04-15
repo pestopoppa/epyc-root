@@ -848,6 +848,34 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 - **G4**: Defer — FlowSteer library maturity unconfirmed.
 - **G6**: Low priority — v3 smoke tests showed no regression.
 - **G7 + G8 + G9**: MiniMax M2.7 — unchanged, requires 108GB+ standalone.
+- **G10 + G11 + G12**: AA-Omniscience hallucination calibration — can run per-model sequentially, ~6h total.
+
+### G10-G12: AA-Omniscience Factual-Risk Calibration (2026-04-15 research intake)
+
+**Source**: intake-381/intake-383 ([arxiv:2511.13029](https://arxiv.org/abs/2511.13029)), [routing-intelligence.md](routing-intelligence.md) Phase 4 calibration gap
+**Dataset**: `ArtificialAnalysis/AA-Omniscience-Public` (600 Qs, Apache 2.0, already in HuggingFace cache)
+**Goal**: Replace heuristic capability tiers in `factual_risk.py` (`_DEFAULT_ROLE_TIERS`: tier_1=0.6, tier_2=0.8, tier_3=1.0) with measured per-model hallucination rates
+
+Scoring methodology (from paper): Omniscience Index = 50% accuracy + 50% (1 - hallucination_rate), where hallucination_rate = incorrect / (incorrect + partial + not_attempted). Answers graded as CORRECT/INCORRECT/PARTIAL_ANSWER/NOT_ATTEMPTED. Models prompted to say "I don't know" rather than guess.
+
+| # | Task | Description | Models Needed | Effort |
+|---|------|-------------|--------------|--------|
+| G10 | AA-Omniscience: architect_general | Run 600 Qs through Qwen3-235B-A22B. Record per-domain accuracy + hallucination rate. Expect above-zero Omniscience Index. | architect_general (solo) | ~2h |
+| G11 | AA-Omniscience: frontdoor + worker | Run 600 Qs through Qwen3-32B (frontdoor) and Qwen3-30B-A3B (worker). Compare hallucination rates to establish tier separation. | frontdoor, worker_general (sequential) | ~3h |
+| G12 | Calibrate capability tiers | Use G10+G11 hallucination rates to compute empirical tier multipliers. Update `_DEFAULT_ROLE_TIERS` in `src/classifiers/factual_risk.py`. Augment with SimpleQA failures from seeding logs (`data/package_a/`, `data/package_b/`) for larger calibration set. | No inference — analysis only | ~1h |
+
+**Implementation notes**:
+- Prompt template from paper: `"You are answering questions about {domain}, and in particular {topic}. You will be given a question, answer with JUST the answer (no explanation). If you do not know the answer, or you need more context or tools to answer the question, be clear about this - it is better that you say this than get the wrong answer."`
+- Grading: LLM-as-judge with 4-class output, or regex for exact-match answers (many are short factual: dates, names, section numbers)
+- Results persist to `data/package_g/omniscience/` per model — incremental (one row per question)
+- Key output: `{model}_{domain}_hallucination_rate.json` → feeds tier recalibration
+- SimpleQA augmentation: grep seeding logs for `simpleqa` suite with `passed=False`, extract prompt+answer pairs, cross-reference with AA-Omniscience domains for combined calibration
+
+**Exit criteria**:
+- Per-model hallucination rate per domain computed
+- Empirical tier multipliers differ from heuristic by >5% (otherwise heuristic was adequate)
+- `factual_risk.py` `_DEFAULT_ROLE_TIERS` updated with measured values
+- routing-intelligence.md Phase 4 calibration gap closed
 
 ## Package H: Research-Driven Inference Tasks (2026-04-12 research intake)
 
