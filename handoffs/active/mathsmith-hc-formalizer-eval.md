@@ -65,6 +65,8 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - [ ] Solver candidates: Qwen2.5-Math-7B, Qwen3-8B, current production worker
 - [ ] Measure: accuracy delta, latency overhead, total pipeline time
 - [ ] Key question: does formalization help more on harder problems (AIME > OlympiadBench > MATH-500)?
+- [ ] Measure total pipeline token cost: (formalizer tokens + solver tokens) vs (baseline solver tokens). Report per-problem breakdown — formalizer overhead is fixed (~300-500 tok) but solver savings should scale with problem ambiguity. Net cost reduction at equal-or-better accuracy validates the cost-reduction hypothesis (arxiv:2504.06514)
+- [ ] Use Math-Verify (intake-377) for answer comparison instead of exact-match — 66% more accurate on math expressions. See eval-tower-verification.md for caveats (NOT symmetric, NOT thread-safe)
 
 ### S5: Update proposal document
 - [ ] Rewrite `MATHSMITH_CANONICALIZER_PROPOSAL.md` to reflect current deployment, HC results, and A/B findings
@@ -76,6 +78,7 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - Is 8B the right size for formalizer, or would 14B/32B HC produce meaningfully better formalizations worth the speed cost?
 - Should formalization be selective (only on hard/ambiguous problems) or always-on?
 - Can the weakness-focused self-improvement loop be applied to our own problem distributions?
+- Does formalization reduce total pipeline token cost (formalizer + solver) compared to baseline solver-only, at equal or better accuracy? (arxiv:2504.06514 predicts yes — missing premises drive solver overthinking, and formalizer overhead may be recovered via reduced solver token count.)
 
 ## Notes
 
@@ -92,3 +95,28 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
   - Key technique: Hierarchical proof search with recursive lemma decomposition + decomposition score combining constructive justification and structural effectiveness
   - Reported results: 62.0% prove success on 427 tasks (2.6x over strongest baseline), beats GPT-5.3-Codex (18.5%)
   - Delta from current approach: Goedel trains for code verification proofs (specs→proofs), MathSmith trains for problem formalization (NL→formal). Same model family, different downstream task. Their GRPO + online Lean verification reward signal is analogous to HC's consistency reward but applied to proof correctness rather than answer consistency.
+
+## Research Intake Update — 2026-04-15
+
+### Formalizer-Overthinking Connection (PRIORITY ELEVATION)
+
+arxiv:2504.06514 ("Missing premise exacerbates overthinking in reasoning models"), surfaced via intake-379 (MathQ-Verify), validates the formalizer's value proposition beyond accuracy:
+
+**Mechanism**: Missing or ambiguous premises cause models to explore multiple interpretations, generating excessive reasoning tokens (overthinking). The formalizer pre-fills missing structure via `[FORMAL SPECIFICATION]` blocks — variables, constraints, edge cases — causing the solver to converge on the correct interpretation with fewer tokens.
+
+**This reframes the formalizer from "accuracy tool" to "accuracy + cost-reduction tool."**
+
+The key metric for S4 is **total pipeline cost** (formalizer generation + solver generation) vs **solver-only baseline**, at equal or better accuracy. Formalizer overhead (~300-500 tok from MathSmith-8B at 14.2 t/s Q4_K_M) must be offset by solver token savings. The overthinking theory predicts savings scale with problem ambiguity — expect largest gains on ambiguous/under-specified problems.
+
+**Theoretical grounding**: Conditional Information Bottleneck (`research/deep-dives/overthinking-info-bottleneck.md`). The formalizer raises I(Z; Y | X) — adding conditioning information that makes the solver's compressed representation more informative about the answer, reducing optimal reasoning length (Proposition 4.1). The HC variant's consistency reward (GRPO) further strengthens this: more consistent formalizations → even less solver exploration needed.
+
+**S4 priority elevated**: S4 now tests two hypotheses (accuracy improvement AND net cost reduction), not just one.
+
+### Math-Verify for S4 Answer Validation
+- **[intake-377] Math-Verify** (`github:huggingface/Math-Verify`): Use `math_verify.verify(gold, pred)` for answer scoring in S4 benchmarks (AIME, OlympiadBench, MATH-500). Current exact-match underestimates capability by ~66% on math expressions.
+- Caveats: NOT symmetric (gold must be first arg), NOT thread-safe (`signal.alarm()`), open interval ambiguity `(1,2)` → `Tuple(1,2)`
+- Cross-ref: `eval-tower-verification.md` Research Intake Update 2026-04-15 for full integration analysis
+
+### Question Quality Filtering
+- **[intake-379] MathQ-Verify**: If applying question quality filtering to S4 test suite, use stages 1-4 only — stage 5 (completeness) hurts F1 by +0.57pp (ablation finding)
+- Missing premises in eval questions also waste compute — flawed questions trigger solver overthinking, inflating per-question cost and degrading signal quality

@@ -520,3 +520,33 @@ See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimiza
 **Trigger to activate**: Shadow mode data shows prompt-level difficulty bands have weak correlation with actual benchmark accuracy (e.g., "easy" band has >20% failure rate). At that point, generation-time entropy becomes the logical next signal source.
 
 **Cross-reference**: `reasoning-compression.md` (Think Anywhere intake update), intake-258.
+
+### Branching Density as Category C Quality Signal (2026-04-15 deep-dive)
+
+**Source**: intake-378 deep-dive (`research/deep-dives/sft-generalization-reasoning-patterns.md`)
+
+**Finding**: Reasoning pattern structure determines output quality. Quantitative metrics from arxiv:2604.01702:
+- **Propose (branching) steps**: DeepSeek-R1 = 33.3% vs gpt-oss-120b = 22.5%
+- **Propose→Propose transition probability**: R1 = 0.53 vs gpt-oss = 0.34
+- **Impact**: Llama3.1-8B shows 21pp generalization gap (29.5% vs 50.5%) from same problems, same budget, different reasoning traces
+
+High branching density at inference time = the model is diverging rather than converging on a solution. This is a runtime quality signal: outputs with excessive branching are less likely to reach the correct answer.
+
+**Proposed signal**: `detect_branching_density(think_block: str) -> float` in `quality_detector.py`.
+1. Scan for branching keywords in the thinking/reasoning output: "Perhaps", "Another approach", "Alternatively", "Let me try", "Wait, let me reconsider"
+2. Compute proportion of branching tokens among total reasoning steps
+3. Return branching density as a float [0, 1]
+
+**Routing action**: Branching density > 0.30 on an active generation could:
+- Trigger truncation via existing reasoning length alarm (Action 9 in `reasoning-compression.md`)
+- Trigger escalation to a stronger model (higher-capability models produce more convergent, deductive reasoning)
+- Inform the Q-scorer: branching density as a negative reward signal (model worked harder for same result)
+
+**Interaction with existing signals**:
+- Complements `factual_risk.py` (input-side) — branching density is output-side quality
+- Complements `difficulty_signal.py` (prompt-level) — branching density is generation-level
+- Complements entropy-based difficulty (Think Anywhere, above) — both measure uncertainty during generation, but branching density is structurally interpretable (not just statistical)
+
+**Why deferred**: Same as entropy signal — prompt-level features haven't been validated in shadow mode yet. Adding generation-time signals before prompt-level validation makes attribution harder. Branching density requires post-hoc analysis of completed reasoning traces, not real-time streaming detection (unlike entropy which can be measured incrementally).
+
+**Trigger to activate**: If difficulty signal shadow mode shows weak correlation with benchmark accuracy AND branching density in Package B data shows strong correlation with answer correctness.

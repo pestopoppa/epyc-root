@@ -301,3 +301,48 @@ A cluster of 4 closely related papers/repos on training models to self-compress 
   - Relevance: Complements CoLaR (intake-134) as another latent-space approach to reducing inter-agent token overhead. While CoLaR bypasses KV cache via latent reasoning compression, Latent Briefing operates directly on KV cache — compacting an orchestrator's trajectory cache before injecting into a worker agent. Both target the same goal (reduce cost of multi-step reasoning chains) from different abstraction layers.
   - Key technique: Attention-score-driven MAD thresholding + PGD reweighting for cross-model KV transfer
   - Delta from current approach: KV-level technique, not reasoning-level. More relevant to triattention-kv-selection.md handoff. Cross-reference only.
+
+## Research Intake Update — 2026-04-15
+
+### New Related Research
+- **[intake-374] "Rethinking Generalization in Reasoning SFT"** (arxiv:2604.06628)
+  - Relevance: Directly informs CoT data quality requirements for reasoning compression. Verified long-CoT traces yield consistent cross-domain gains (+8-12% over No-CoT). "Repeated exposure > coverage" — repeating 2.5k samples 8x outperforms one-pass 20k under fixed 640-step budget. Safety degrades as reasoning improves — asymmetric generalization.
+  - Key technique: Conditional analysis of SFT generalization across optimization dynamics, data quality, and model capability
+  - Reported results: 14B models show 15-20% better generalization than 1.7B; dip-and-recovery trajectory in cross-domain performance during training
+  - Delta from current approach: Our Tier 3 approaches (OPSDC, CoLaR) assume SFT generalizes. This paper shows generalization is conditional on data quality and model capability — weaker models may only imitate surface patterns. Relevant for selecting compression training data and evaluating which models benefit from reasoning compression SFT.
+
+- **[intake-378] "On the Role of Reasoning Patterns in the Generalization Discrepancy of Long CoT SFT"** (arxiv:2604.01702) — **UPGRADED to high relevance / new_opportunity after deep dive**
+  - Relevance: Contradicts naive "more CoT = better" assumption. DeepSeek-R1's divergent, branch-heavy exploration patterns cause WORSE generalization despite lower training loss. Filtering branch-heavy trajectories improves AIME25 by 5.1%, BeyondAIME by 5.5%.
+  - Key technique: Trajectory filtering to remove frequently branching reasoning patterns
+  - **Deep dive quantitative findings**:
+    - Propose steps: R1=33.3% vs gpt-oss=22.5%; Propose→Propose transition: R1=0.53 vs gpt-oss=0.34
+    - Llama3.1-8B: 21pp average gap (29.5% vs 50.5%) from same problem set, same budget, different reasoning traces
+    - "Dilution effect": R1's lower SFT loss comes from trivial routine tokens, not better reasoning learning. Low loss is a MISLEADING quality signal.
+    - Random 10% step deletion: gpt-oss data degrades significantly (tight dependency); R1 data is unaffected or improves (redundancy confirmed)
+    - Filtering by branching keywords ≠ filtering by length — limited overlap between the two filters
+  - Delta from current approach: Three actionable implications for our Tier 1 approaches:
+    - (1) The random step deletion experiment directly validates TrimR/short-m@k — branch-heavy reasoning IS safe to prune at inference time
+    - (2) Branching density (Propose step %) could serve as a runtime quality signal for routing: high branching = unproductive exploration → truncate or escalate
+    - (3) If we use R1-distilled data (OpenR1-Math-220k) for any future training, must filter by branching density first
+  - **Deep dive**: `research/deep-dives/sft-generalization-reasoning-patterns.md`
+
+- **[intake-374 supplement] "Data Repetition Beats Data Scaling in Long-CoT SFT"** (arxiv:2602.11149, not yet in index)
+  - Independent confirmation: 128 epochs on 400 samples beats 1 epoch on 51,200 samples by 12-26pp on AIME'24/25 (Kopiczko et al., Qualcomm). Token accuracy serves as saturation indicator. No increased catastrophic forgetting.
+
+### Training Data Strategy (intake-374/378/2602.11149 synthesis)
+
+For any future Tier 3 training (OPSDC, CoLaR, SEAL SFT, RLVR):
+
+1. **Depth > breadth**: 128 epochs on 400 curated samples beats 1 epoch on 51.2k by 12-26pp (arxiv:2602.11149, confirmed by intake-374's "2.5k × 8 > 20k × 1" finding). Don't scale data beyond saturation.
+2. **Filter by branching density**: Use intake-378 Proxy 2 (branching keyword proportion) to remove divergent, branch-heavy traces before training. DeepSeek-R1 traces produce 21pp worse generalization than convergent traces on Llama3.1-8B — even with identical problems and budget.
+3. **Token accuracy = saturation indicator**: Stop adding epochs when token accuracy plateaus. Beyond saturation, additional epochs waste compute without generalization gains.
+4. **Safety evaluation mandatory**: Reasoning SFT asymmetrically improves reasoning while degrading safety (intake-374). Any future fine-tuning must include safety benchmarks alongside capability measurement.
+
+### Formalizer Complements Compression (cross-reference)
+
+The formalizer pipeline (`mathsmith-hc-formalizer-eval.md`, `src/formalizer.py`) reduces overthinking at the source — complementary to, not competing with, Tier 1-3 compression:
+
+- **Formalizer** reduces INPUT ambiguity: fills in missing premises, clarifies constraints → solver doesn't waste tokens exploring alternative interpretations
+- **Compression** reduces OUTPUT tokens: prunes redundant reasoning after generation (Tier 1), steers toward conciseness (Tier 2), or trains for shorter traces (Tier 3)
+
+Theoretical link: CIB (Conditional Information Bottleneck, `research/deep-dives/overthinking-info-bottleneck.md`) shows formalizer raises I(Z; Y | X), which Proposition 4.1 proves reduces optimal reasoning length. The S4 A/B test in the formalizer handoff should measure total pipeline token cost (formalizer + solver) vs solver-only baseline, at equal or better accuracy — providing empirical validation. Source: user insight connecting arxiv:2504.06514 (missing premises → overthinking) to formalizer value proposition.
