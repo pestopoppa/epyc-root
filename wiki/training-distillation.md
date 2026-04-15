@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 18 documents
+**Last compiled**: 2026-04-15
+**Sources**: 21 documents
 
 ## Summary
 
@@ -17,6 +17,10 @@ The SkillBank system (Ch.15) operationalizes distillation in production. Three t
 
 SEAL control vectors for concise reasoning (seal-concise-reasoning experiment) showed mixed results: MoE models responded well (-7.5% tokens, no accuracy loss), dense models were neutral, and SSM-hybrid models (Qwen3.5-35B-A3B) suffered catastrophic failure (generation collapsed to 1 token). The experiment was parked in favor of AM KV compaction which delivers 5x compression at zero degradation.
 
+A critical finding from SFT generalization research (intake-374, intake-378) is that **reasoning pattern structure determines SFT generalization quality more than quantity, loss, or data diversity**. DeepSeek-R1's divergent, branch-heavy traces produce 21pp worse generalization than gpt-oss-120b's convergent, deductive traces on Llama3.1-8B -- despite lower training loss. The "dilution effect" means low SFT loss is a misleading quality signal: R1's lower loss comes from trivially learned routine tokens, not better reasoning. Filtering branch-heavy trajectories by branching keyword proportion (Proxy 2) yields +3.6pp average improvement at zero cost. Independently, repeated exposure dominates coverage: 128 epochs on 400 samples beats 1 epoch on 51,200 by 12-26pp on AIME'24/25 (confirmed across two independent studies).
+
+Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
+
 ## Key Findings
 
 - Agents can beat official model instruction tuning on narrow tasks like function calling (+22pp on BFCL) but achieve only 23% vs 51% on general post-training benchmarks [agent-training-posttrainbench-act.md]
@@ -28,6 +32,13 @@ SEAL control vectors for concise reasoning (seal-concise-reasoning experiment) s
 - OPSDC self-distillation shows reasoning can be actively harmful: removing ~2,750 tokens predicts 28%+ relative accuracy improvement under independent error model [reasoning-compression.md]
 - SEAL control vectors are incompatible with SSM-hybrid architectures (Gated Delta Net collapses generation to 1 token) [seal-concise-reasoning experiment]
 - The SkillBank FailureBridge exports high-quality mitigations (success_rate >= 0.7, >= 3 attempts) from the Kuzu FailureGraph as failure_lesson skills [Ch.15 SkillBank]
+- **SFT generalization depends on reasoning pattern structure**: DeepSeek-R1 traces (33.3% Propose steps, 0.53 Propose-to-Propose transition) produce 21pp worse generalization than gpt-oss-120b traces (22.5% Propose, 0.34 transition) on Llama3.1-8B despite lower training loss [sft-generalization-reasoning-patterns.md]
+- **Low SFT loss is a misleading quality signal**: R1's lower overall loss comes from trivially learned routine tokens ("dilution effect"), not better reasoning on hard transitions where loss is comparable [sft-generalization-reasoning-patterns.md]
+- **Trajectory filtering by branching density is a zero-cost fix**: Removing branch-heavy trajectories from R1 data improves AIME24 by +3.2pp and BeyondAIME by +5.5pp on Qwen2.5-7B. Filtering by branching keywords has limited overlap with filtering by length [sft-generalization-reasoning-patterns.md]
+- **Repeated exposure dominates coverage**: 2.5k samples x 8 epochs outperforms 20k x 1 under fixed 640-step budget; independently confirmed: 128 epochs on 400 samples beats 1 epoch on 51.2k by 12-26pp (arxiv:2602.11149) [sft-generalization-reasoning-patterns.md]
+- **Safety degrades asymmetrically with reasoning SFT**: Reasoning improves while safety degrades with long-CoT SFT -- any future fine-tuning must include safety benchmarks [sft-generalization-reasoning-patterns.md]
+- **Aletheia RLVR training is scale-dependent**: 1.5B needs on-policy GRPO + negative samples, skip thinking traces. 14B needs thinking traces + negative samples for stability. DPO is catastrophic at 1.5B (-23.4%) but viable at 14B [eval-tower-verification.md]
+- **TTS accuracy does not predict RL training effectiveness**: SWE-RM (intake-368) showed two verifiers with identical accuracy produce completely different RL outcomes (AUC 0.805 smooth vs AUC 0.710 collapse). ECE + AUC are critical missing eval metrics [eval-tower-verification.md]
 
 ## Actionable for EPYC
 
@@ -37,6 +48,9 @@ SEAL control vectors for concise reasoning (seal-concise-reasoning experiment) s
 - **OPSDC difficulty signal**: KL divergence between concise-prompted and base output is itself a difficulty routing signal -- large divergence = easy problem, small = hard. Implementable at zero training cost.
 - **Memento block-level reasoning compression**: 2-3x KV cache savings composing with existing Hadamard quantization. llama.cpp feasibility confirmed (2026-04-13). Blocked on training data (OpenMementos-228K available, MIT).
 - **SEAL control vectors**: Viable only for MoE and dense models. Do NOT apply to SSM-hybrid architectures.
+- **Trajectory filtering for any future training data**: If using OpenR1-Math-220k or DeepSeek-R1 distilled data, MUST filter by branching density (Proxy 2: branching keyword proportion) before training. Unfiltered R1 traces produce 21pp worse generalization on Llama3.1-8B. Zero training cost -- preprocessing only.
+- **Depth over breadth for SFT**: When training reasoning adapters, use repeated exposure (128 epochs on curated subset) rather than large single-pass datasets. Token accuracy serves as the saturation indicator. Safety evaluation mandatory alongside capability evaluation.
+- **Aletheia 1.5B for CPU verification inference**: Pre-trained ThinkPRM-1.5B or Aletheia-1.5B models can be downloaded and quantized today for T2 eval tower process verification. Training recipe (on-policy GRPO, binary rewards, 2:1 pos/neg ratio, temperature 1.0, no thinking traces at 1.5B) deferred to DGX Spark.
 
 ## Open Questions
 
@@ -45,6 +59,9 @@ SEAL control vectors for concise reasoning (seal-concise-reasoning experiment) s
 - What is the interaction between reasoning compression and speculative decoding acceptance rates?
 - Can OPSDC's self-distillation be applied to Qwen models with LoRA (paper only tested full fine-tuning)?
 - What is the quality cliff when stacking Memento block masking with Hadamard KV quantization and AM compaction?
+- Does the 21pp architecture-dependent gap (Llama3.1-8B vs Qwen2.5-7B at 5.1pp) generalize beyond math to code and agentic tasks?
+- Can branching density (Propose step %) serve as a runtime quality signal for routing decisions, not just training data filtering?
+- At what model scale does DPO become viable for RLVR verification training (Aletheia shows -23.4% at 1.5B, viable at 14B)?
 
 ## Related Categories
 
@@ -60,4 +77,6 @@ SEAL control vectors for concise reasoning (seal-concise-reasoning experiment) s
 - [SEAL Concise Reasoning experiment](/mnt/raid0/llm/epyc-inference-research/docs/experiments/seal-concise-reasoning.md) -- Control vector results across MoE/dense/SSM architectures
 - [Reasoning Compression handoff](/workspace/handoffs/active/reasoning-compression.md) -- OPSDC analysis, TrimR evaluation framework, difficulty-adaptive routing signal
 - [Memento handoff](/workspace/handoffs/active/memento-block-reasoning-compression.md) -- Block-level KV compression, dual information stream discovery, composability analysis
+- [SFT Generalization & Reasoning Patterns deep dive](/workspace/research/deep-dives/sft-generalization-reasoning-patterns.md) -- Branching density taxonomy, dilution effect, trajectory filtering, repeated exposure findings (intake-373/374/378)
+- [Eval Tower Verification handoff](/workspace/handoffs/active/eval-tower-verification.md) -- Aletheia scale-dependent RLVR recipes, SWE-RM TTS vs RL effectiveness, ECE/AUC metrics, ThinkPRM deployment plan
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Skill effectiveness scoring integration with confidence calibration

@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-04-14
-**Sources**: 21 documents (1 deep-dive, 4 active handoffs, 16 intake entries)
+**Last compiled**: 2026-04-15
+**Sources**: 23 documents (1 deep-dive, 6 active handoffs, 16 intake entries)
 
 ## Summary
 
@@ -103,6 +103,57 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 - Is the ~5pp accuracy drop on AIME-class problems under any compression method an irreducible cost of the task structure, or can per-problem adaptive budgets (finer than per-band) recover it?
 - Should the autopilot shift budget allocation from NumericSwarm to PromptForge/StructuralLab based on the finding (intake-265) that architectural changes outperform parameter tuning on broken baselines?
 
+## Decision-Aware Routing
+
+The predict-then-optimize architecture of the Q-scorer has been identified as a fundamental pathology in cost-aware routing. The Q-scorer learns Q-values per model independently via TD update (`Q_new = Q_old + alpha * (reward - Q_old)`), then selects models by argmax over `selection_score = Q_value - cost_lambda * (expected_cost / cold_cost)`. This architecture separates prediction from the routing decision -- the gradient is unaware of whether a Q-value change would actually flip the routing choice.
+
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md)
+
+### DAR-1: 96% Uniform Q-Values
+
+Offline regret analysis (DAR-1, 2026-04-15) over 7,211 routing decisions confirmed the predict-then-optimize pathology empirically:
+
+- **96% of Q-values are uniform** (spread < 0.001) -- the Q-scorer has barely learned model preferences after thousands of decisions.
+- Selection score spread is non-trivial (median 0.107) but comes entirely from cost and similarity terms, not from learned Q-values.
+- 25% of decisions have trivial spread (< 0.01); 75% have meaningful differentiation only via cost terms.
+- 3,355 learned decisions vs 3,856 rules/classifier decisions.
+
+The implication is stark: Q-values are decorative, not decision-driving. Cost and similarity dominate all routing choices. This explains the zero predictive spread in the difficulty signal (Package B, n=2,433) -- the upstream Q-values feeding the routing pipeline carry almost no learned signal.
+
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-1
+
+### SPO+ Formulation
+
+Decision-aware learning aligns training with the routing DECISION rather than prediction accuracy. The SPO+ (Smart Predict-then-Optimize) loss provides a convex surrogate with closed-form gradients:
+
+```
+L_SPO+ = sum(max(0, 2*c_hat[j] - c_true[j])) - c_hat[i*] + c_true[i*]
+```
+
+where `c_hat` = predicted costs, `c_true` = true costs, `i*` = true optimal model. The gradient is zero when the routing decision is already correct -- learning signal only flows when the prediction would lead to a wrong decision. Because the EPYC action space is trivially small (N=3-5 models), the intractability concerns from the operations research literature (differentiating through LP/MIP solvers) do not apply. SPO+ and contrastive losses are cheaper than the current TD updates.
+
+DAR-3 (planned) will implement SPO+ with 10% epsilon-greedy exploration routing to accumulate the counterfactual data needed for decision-aware training.
+
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-3
+
+### Contrastive Q-Score
+
+DAR-2 (implemented, 2026-04-15) adds a contrastive adjustment to the Q-scorer reward signal. The `_compute_contrastive_adjustment()` method in `q_scorer.py` retrieves top-10 similar routing memories, compares the selected model's Q-value against alternatives with learned Q-values, and computes a bounded adjustment (max +/-0.1, margin=0.05) that sharpens the decision boundary between models. The adjustment is zero when ranking is already correct with sufficient margin. It skips the 96% of memories at default Q=0.5 (unlearned) and only fires when alternatives have real learned Q-values. Gated by `CONTRASTIVE_Q_UPDATES` feature flag (ON by default).
+
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-2
+
+### Bilinear Model-Feature Scorer (Zero Cold-Start)
+
+DAR-4 (planned) replaces per-action Q-value tables with a bilinear scorer: `Q(prompt, model) = sigmoid(v_model^T W v_prompt + b)`. Model features are already available in `ScoringConfig` (baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits). When a new model joins the fleet, its features are known from specs -- no routing history is needed for cold-start. This eliminates the current bootstrapping problem where new models receive default Q=0.5 until enough traffic accumulates.
+
+> Source: [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) DAR-4
+
+### Validation Campaign
+
+Package I in the bulk inference campaign consolidates the decision-aware routing validation tasks: I1 (DAR-3 SPO+ exploration with sustained traffic for counterfactual data), I2 (DAR-4 bilinear scorer A/B test against per-action Q-tables), and I3 (EV-5 ThinkPRM-1.5B for T2 process verification). I1 is highest priority as it generates the counterfactual data needed for all downstream decision-aware training.
+
+> Source: [bulk-inference-campaign.md](/workspace/handoffs/active/bulk-inference-campaign.md) Package I
+
 ## Related Categories
 
 - [Context Management](context-management.md) -- Compression techniques reduce context pressure, which is the primary cost driver; tool output compression is a routing-adjacent optimization
@@ -127,4 +178,5 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 - [intake-133](https://arxiv.org/abs/2603.08462) CIB theory -- Formal unification of budget forcing; Pareto-dominant compression; semantic token cost
 - [intake-134](https://arxiv.org/abs/2505.16552) CoLaR -- Latent reasoning embeddings; 2-5x chain reduction; speculative decoding incompatibility
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
-- [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed
+- [Decision-Aware Routing](/workspace/handoffs/active/decision-aware-routing.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
+- [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation

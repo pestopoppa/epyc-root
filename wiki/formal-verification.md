@@ -2,8 +2,8 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 5 documents
+**Last compiled**: 2026-04-15
+**Sources**: 6 documents
 
 ## Summary
 
@@ -41,11 +41,18 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 
 ## Open Questions
 
+- Does the formalizer-as-cost-reduction hypothesis (arxiv:2504.06514) generalize beyond math to code verification domains?
 - Does Leanstral's planning output format align with Goedel-CP's input expectations, or is significant adapter work needed?
 - Can lean-ray-server and lean-lsp-mcp coexist, or do they need separate Lean toolchain instances?
 - What is the minimum viable concurrency for Goedel-CP's pipeline before wall-clock becomes impractical (target: <6 hours per problem)?
 - Is FormalQualBench (23 math theorems) the right eval for code verification, or should Verina subset be used?
 - How do REAP-pruned Leanstral quality metrics compare to full model on Lean 4 specifically?
+
+## Formalizer as Cost-Reduction Tool
+
+- **Formalizer reduces total pipeline cost, not just accuracy**: arxiv:2504.06514 ("Missing premise exacerbates overthinking in reasoning models") shows that missing or ambiguous premises cause solvers to explore multiple interpretations, generating excessive reasoning tokens. The MathSmith formalizer pre-fills missing structure via `[FORMAL SPECIFICATION]` blocks, causing the solver to converge with fewer tokens. The Conditional Information Bottleneck (Proposition 4.1) provides theoretical backing: formalization raises I(Z; Y | X), reducing optimal reasoning length. The HC variant's GRPO consistency reward further strengthens this effect. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
+- **Math-Verify for benchmark answer validation**: intake-377 (HuggingFace Math-Verify) provides robust mathematical expression comparison with LaTeX parsing, symbolic simplification, and matrix equivalence. Current exact-match scoring underestimates model capability by ~66% on math expressions. Integration caveats: `verify(gold, pred)` is NOT symmetric, NOT thread-safe (`signal.alarm()`), and open intervals `(1,2)` convert to `Tuple(1,2)`. Applicable to MathSmith S4 A/B benchmark and Goedel-CP evaluation. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
+- **Question quality filtering for eval**: intake-379 (MathQ-Verify) provides a 5-stage pipeline for validating question quality. Flawed questions with missing premises also waste compute by triggering solver overthinking. Stage 5 (completeness) hurts F1 by +0.57pp -- deploy stages 1-4 only. [mathsmith-hc-formalizer-eval.md](../handoffs/active/mathsmith-hc-formalizer-eval.md)
 
 ## Related Categories
 
@@ -60,3 +67,4 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 - [Lean proving pipeline handoff](/workspace/handoffs/active/lean-proving-pipeline.md) -- Two-tier architecture design, work items S1-S5, infrastructure requirements
 - [intake-233](https://arxiv.org/abs/2603.19329) Goedel-Code-Prover intake entry -- Initial evaluation and verdict
 - [intake-235](https://mistral.ai/news/leanstral) Leanstral intake entry -- Initial evaluation and verdict
+- [MathSmith HC formalizer eval handoff](/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md) -- Formalizer-overthinking connection (arxiv:2504.06514), Math-Verify integration (intake-377), MathQ-Verify question quality (intake-379)

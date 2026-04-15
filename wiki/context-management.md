@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 17 documents (6 deep-dives, 3 active handoffs, 8 intake entries)
+**Last compiled**: 2026-04-15
+**Sources**: 18 documents (6 deep-dives, 3 active handoffs, 9 intake entries)
 
 ## Summary
 
@@ -75,6 +75,11 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - **Segment retention scoring**: ConsolidatedSegment with access_count, importance_score (accumulates +3 per access, +5 per update, decays at 0.995 per turn delta), and maturity tiers (draft at creation, validated at score 65+, core at 85+, demotion below 35/60).
 - **Memento KV block masking feasibility**: Confirmed 2026-04-13 that `llama_memory_seq_rm()` can serve as the block eviction primitive in llama.cpp. Mid-sequence removal works; position gap semantics are correct (RoPE phases preserved). Training script for OpenMementos-228K ready with two-stage LoRA design. Blocked on model fine-tuning compute.
 
+### SEAL Control Vector Multi-Role Results
+
+- **SEAL control vectors validated for MoE and dense models, blocked on SSM-hybrid**: Multi-role regression test (2026-04-13) trained a conciseness control vector on Coder-32B Q4_K_M (production quant). Worker 30B-A3B Q4KM: -7.5% tokens with NO accuracy regression (7/7 preserved). Coder 32B Q4KM: +2.2% tokens (neutral), NO regression. Frontdoor 35B SSM-hybrid: BLOCKED -- heterogeneous block architecture (alternating SSM/attention blocks, loader expects uniform). REAP 246B: deferred (too slow for cvector training). The experiment was parked in favor of AM KV compaction which delivers 5x compression at zero degradation on factual/science prompts. [reasoning-compression.md](../handoffs/active/reasoning-compression.md)
+- **Branching density as compression quality signal**: intake-378 identifies Propose step ratio as a quantitative metric for evaluating which reasoning traces to compress vs keep. Convergent traces (deduction-heavy, 74.6% Deduce steps) should be preserved; divergent branches (33.3% Propose steps in R1 traces) are safe to prune. Random 10% step deletion from R1 data causes minimal/no degradation, directly validating TrimR and inference-time reasoning pruning. [reasoning-compression.md](../handoffs/active/reasoning-compression.md)
+
 ### Planned
 
 - **Error trace intelligence** (P2): Parse Python tracebacks to extract line number and exception type before truncation. The last frame plus exception line is almost always the actionable information. ~40 lines.
@@ -119,3 +124,4 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [context-folding-progressive handoff](../handoffs/active/context-folding-progressive.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
 - [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done
 - [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- llama.cpp block masking feasibility confirmed, SFT training design complete
+- [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- SEAL multi-role regression results, branching density metrics from intake-378, training data strategy synthesis

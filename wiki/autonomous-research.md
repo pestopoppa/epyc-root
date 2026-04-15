@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 19 documents (1 deep-dive, 15 intake entries, 3 handoffs)
+**Last compiled**: 2026-04-15
+**Sources**: 22 documents (1 deep-dive, 15 intake entries, 6 handoffs)
 
 ## Summary
 
@@ -39,12 +39,21 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 
 - **Execution trace feedback provides +15 points over score-only feedback.** The Meta-Harness ablation (intake-244) shows: scores only 34.6% median accuracy, scores + text summaries 34.9%, full filesystem access to traces 50.0%. This is implemented as Tier 1 in the autopilot via inference_tap.log trace injection into PromptForge's failure context. [meta-harness-optimization.md handoff]
 
+- **DAR-1 reveals 96% uniform Q-values -- Q-scorer has barely learned preferences.** Regret analysis on 7,211 routing decisions (Apr 10-14) shows Q-value spread is <0.001 for 96% of decisions. Selection score spread is non-trivial (median 0.107) but comes entirely from cost/similarity features, not Q-values. 3,355 learned vs 3,856 rules/classifier decisions. The implication: contrastive Q-updates (DAR-2) are essential to accelerate Q-learning from sparse signal. [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md)
+
+- **Contrastive Q-score approach addresses uniform Q-value pathology.** DAR-2 adds `_compute_contrastive_adjustment()` to `q_scorer.py` -- an additive contrastive term capped at +/-0.1 that sharpens decision boundaries. Feature-flagged `CONTRASTIVE_Q_UPDATES` (ON by default). Every new routing decision gets decision-boundary sharpening, accelerating Q-learning from the near-zero signal discovered by DAR-1. [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md)
+
+- **Package I created for post-AR-3 decision-aware routing validation.** Three tasks: I1 (DAR-3 SPO+ exploration -- 10% epsilon-greedy for counterfactual data), I2 (DAR-4 bilinear scorer A/B -- model-feature-conditioned Q vs per-action Q-tables), I3 (EV-5 ThinkPRM-1.5B T2 process verification). Package I requires isolated measurement because routing behavior modifications would contaminate other eval runs. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
+
+- **Eval tower verification framework advancing (EV-1/2/6 code complete).** EV-1 adds `confidence` field to QuestionResult. EV-2 adds ECE/AUC computation in `_aggregate()`. EV-6 adds cross-family verification constraint (`VERIFICATION_FAMILIES` dict + `check_cross_family()`). ECE/AUC metrics auto-accumulate in journal on AR-3 restart. EV-3 (Scoring Verifiers benchmark download), EV-4 (calibration baseline), and EV-5 (ThinkPRM-1.5B deployment) remain pending. AP-27 now points to eval-tower-verification.md as its implementation plan. [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md)
+
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
-1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval). State at trial_counter=46. Hybrid eval (T0 fast-reject + T1 real gate) gives honest signal per trial.
+1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval, DAR-2 contrastive Q-updates ON by default, ECE/AUC auto-accumulation). State at trial_counter=46. Hybrid eval (T0 fast-reject + T1 real gate) gives honest signal per trial.
 2. **AP-21: GEPA vs LLM mutation decision** -- after 50+ AR-3 trials, compare GEPA vs LLM mutation acceptance rates and Pareto frontier contributions. If GEPA dominates, increase ratio from 30% to 100%.
 3. **AP-14: Structured deficiency classification** -- add `deficiency_category` enum to JournalEntry. Auto-populate from SafetyGate violation type. Enables pattern detection (Omni-SimpleMem finding: structured defect classification is prerequisite for targeted fixes).
+4. **Package I (post-AR-3)** -- Decision-aware routing validation: DAR-3 SPO+ exploration (counterfactual data), DAR-4 bilinear scorer A/B, EV-5 ThinkPRM-1.5B T2 verification. Must run isolated from other eval.
 
 ### Medium Priority
 4. **AP-15: Species field verification audit** -- verify all 5 species (including Evolution Manager) populate `hypothesis` + `expected_mechanism` during AR-3. Missing fields reduce strategy distillation quality.
@@ -60,9 +69,11 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ### Blocked
 11. **AP-21** blocked on AR-3 trial data (need 50+ trials with GEPA mixture).
 12. **Hard-negative training data** (intake-176) blocked on 500+ MemRL memories for routing classifier retraining.
+13. **EV-7 (AP-27 RLVR integration)** blocked on EV-1-4 completion + Ouro P7 results. EV-1/2/6 code complete; EV-3/4/5 need inference.
 
 ## Open Questions
 
+- DAR-1 shows 96% uniform Q-values after 7,211 decisions -- how many additional routing decisions (with DAR-2 contrastive updates active) are needed before Q-values become discriminative?
 - What is the optimal GEPA-to-LLM mutation ratio? Initial setting is 30% GEPA. AR-3 data will resolve this empirically.
 - Can GEPA Full Program Adapter evolve routing logic, tool definitions, and escalation pipeline (not just prompts)? The +26pp MATH improvement (93% vs 67% baseline) suggests transformative potential, but the EPYC orchestrator's complexity far exceeds a single DSPy program.
 - Should the autopilot controller use persistent short-term memory across AR-3 sessions, or reset between sessions? Current implementation persists as markdown.
@@ -96,3 +107,6 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [intake-329](https://www.minimax.io/news/minimax-m27-en) MiniMax M2.7 -- 3-component self-evolution harness, 30% improvement over 100+ rounds (worth_investigating)
 - [intake-335](https://github.com/gepa-ai/gepa) GEPA Implementation Repository (already_integrated)
 - [intake-338](https://github.com/microsoft/agent-lightning) Agent Lightning -- zero-code agent optimization, RL+prompt+SFT modes, hierarchical credit assignment (new_opportunity, high relevance)
+- [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md) -- AP-27 implementation plan (EV-1-7), ECE/AUC metrics, Aletheia RLVR recipes, ThinkPRM deployment, cross-family verification
+- [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md) -- Package I for post-AR-3 decision-aware routing validation (DAR-3/4 + EV-5)
+- [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md) -- DAR-1 regret analysis results (96% uniform Q-values), DAR-2 contrastive Q-score implementation, AR-3 restart prep

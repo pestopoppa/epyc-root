@@ -38,6 +38,8 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - Cosine similarity > 0.85 used for deduplication in both SkillBank skill storage and episodic memory [Ch.15, Ch.07]
 - SearXNG (intake-359/360) **implemented and tested** as DDG HTML scraping replacement: `_search_searxng()` in `search.py` calls self-hosted JSON API on port 8090. Docker ~183MB + Granian ASGI. Default-on via `ORCHESTRATOR_SEARXNG_DEFAULT=1`, DDG fallback automatic. JSON response provides multi-engine provenance (`engines[]`, `positions[]`, `score`). Test results: 650-910ms latency, 3-engine consensus score ~9.9, 2-engine ~3.3, single <1. Google inactive (TLS fingerprint blocking). Engine tuning: DDG 1.2, Brave 1.1, Wikipedia 1.0, Qwant 0.9. `unresponsive_engines[]` + `search_backend` field wired into S1 relevance telemetry for AR-3 Phase 6b analysis [searxng-search-backend.md]
 - mcp-searxng (intake-361, 635 stars, MIT) provides MCP bridge for SearXNG with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions [searxng-search-backend.md]
+- Crawl4AI (intake-372, 51K+ stars, Apache-2.0) is the preferred deep page scraping tool under the open-source-only policy. Async Playwright-based, local LLM extraction via Ollama, Docker deployment, no API keys. Complements SearXNG (search aggregation) with page content extraction for JS-heavy pages and PDFs. Evaluation gated on post-AR-3 WebFetch failure rate data [searxng-search-backend.md]
+- Firecrawl (intake-364/365, 108K+ stars, AGPL-3.0) evaluation deferred: cloud-first SaaS model conflicts with self-hosted infrastructure philosophy. Self-hosted version lacks cloud parity. Credit-based pricing unpredictable [searxng-search-backend.md]
 
 ## Actionable for EPYC
 
@@ -48,6 +50,19 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - **qmd hybrid search evaluation**: intake-270 marked adopt_component -- evaluate for markdown knowledge base search in the project wiki or handoff system.
 - **MemPalace patterns**: intake-326 achieves 96.6% recall on LongMemEval. Investigate architecture patterns that could improve MemRL episodic retrieval quality.
 - **SearXNG search backend (SX-1–4 done, SX-5/6 AR-3-gated, R&O P12)**: Container deployed on port 8090, `_search_searxng()` implemented, engine weights tuned, telemetry wired. Default-on. SX-5 (load test) and SX-6 (swap confirmation) folded into AR-3 Package D Phase 6b — post-AR-3 analysis compares engine failure rate, irrelevant page rate delta, and latency overhead vs DDG baseline.
+- **Crawl4AI evaluation (post-AR-3, gated on WebFetch failure data)**: If web_research sentinel data shows significant JS-heavy fetch failures (>10%), deploy Crawl4AI Docker container alongside SearXNG for page content extraction. Apache-2.0 license, no API keys, local LLM extraction. Evaluate for ColBERT reranker fetch step (S5) where current WebFetch may fail on dynamic pages.
+
+## Crawl4AI and Open-Source-Only Policy
+
+Research intake evaluated two page-scraping tools complementary to SearXNG (which handles search aggregation, not deep page content extraction): Firecrawl (intake-364/365, 108K+ stars) and Crawl4AI (intake-372, 51K+ stars).
+
+**Crawl4AI** (Apache-2.0) is a fully self-hosted, async Playwright-based web crawler designed for LLM consumption. Key capabilities: BM25 content filtering, LLM extraction with local models (Llama 3, Mistral via Ollama), browser pool management, and Docker deployment. No API keys required. It fills the same role as Firecrawl (converting web pages to LLM-ready markdown/JSON) but is fully local and free, matching the project's infrastructure philosophy. The integration path for EPYC is alongside SearXNG: SearXNG finds URLs via search aggregation, Crawl4AI could extract content from JS-heavy pages or PDFs that the current WebFetch tool cannot handle. It is also worth evaluating for the ColBERT reranker fetch step (S5).
+
+**Firecrawl** (AGPL-3.0) was evaluated but deprioritized. While it has strong capabilities (scrape/crawl/map/interact APIs, P95 latency 3.4s, 96% web coverage, MCP server), its cloud-first SaaS model conflicts with the self-hosted philosophy. The self-hosted version lacks cloud parity (/agent, /browser not supported), and credit-based pricing is unpredictable (+4 credits for JSON mode, +4 for stealth per page).
+
+**Policy decision (2026-04-14)**: Given the open-source-only infrastructure preference, Crawl4AI is the preferred evaluation target for deep page scraping. Firecrawl evaluation is deferred. Crawl4AI evaluation is gated on post-AR-3 data: if WebFetch succeeds on >90% of pages in web_research sentinel data, neither tool is needed short-term. If JS-heavy fetch failure rates are significant, Crawl4AI deployment should proceed.
+
+> Source: [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-364/365/372, Crawl4AI vs Firecrawl, open-source-only policy decision
 
 ## Open Questions
 
@@ -56,6 +71,7 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - Would ColBERT-Zero's general retrieval quality improve web_research synthesis measurably over DDG's keyword ranking? (GTE-ModernColBERT-v1 showed perfect separation on test data; real-world validation in S6 A/B test)
 - Is the 50ms GTE-ModernColBERT latency acceptable under high-concurrency scenarios?
 - Should the routing classifier's confidence threshold (0.6) be tuned via the conformal calibration system?
+- What is the JS-heavy page failure rate in web_research sentinel data? This determines whether Crawl4AI deployment is needed or if WebFetch suffices for >90% of pages.
 
 ## Related Categories
 
@@ -79,3 +95,5 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - [intake-360](https://docs.searxng.org/) SearXNG Documentation -- API reference, engine config, deployment architecture
 - [intake-361](https://github.com/ihor-sokoliuk/mcp-searxng) mcp-searxng -- MCP Server for SearXNG (635 stars, MIT, TypeScript)
 - [Progress 2026-04-14 Session 10](/workspace/progress/2026-04/2026-04-14.md) -- SearXNG research intake, deep-dive (6 findings), handoff integration across 6 files
+- [intake-372](https://github.com/unclecode/crawl4ai) Crawl4AI -- Self-hosted async web crawler for LLMs (51K+ stars, Apache-2.0, Playwright-based, Docker deployment)
+- [intake-364](https://firecrawl.dev) Firecrawl -- Web data API for AI (108K+ stars, AGPL-3.0, cloud-first SaaS -- evaluation deferred)

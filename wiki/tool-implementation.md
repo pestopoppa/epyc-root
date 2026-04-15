@@ -39,6 +39,8 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 
 - **Risk-weighted coverage classification drives test prioritization.** The 100%-feasibility audit (2026-04-14) classified uncovered branches as must-test (recovery paths, parsing fallbacks, context-size selection) vs acceptable-gap (import fallbacks, portability branches). Staged floor raises follow test tranches rather than forcing blanket 100%. This methodology achieved 100% on all 10 seeding benchmark modules and all 7 enforced orchestrator slice files through 12 targeted tranches (A-L) with zero runtime behavior modifications. [integration-test-coverage.md, progress/2026-04-14]
 
+- **Crawl4AI provides self-hosted deep page scraping for LLM consumption.** Async Playwright-based crawler (51K+ stars, Apache-2.0) with BM25 content filtering, local LLM extraction via Ollama, browser pool management, and Docker deployment. Selected over Firecrawl (108K+ stars) due to open-source-only infrastructure policy -- Firecrawl's cloud-first SaaS model and credit-based pricing conflict with self-hosted philosophy. Complements SearXNG (search aggregation) by handling JS-heavy pages and complex PDFs that WebFetch cannot process. Evaluation gated on post-AR-3 WebFetch failure rate data. [searxng-search-backend.md]
+
 ## Actionable for EPYC
 
 ### High Priority (immediate value)
@@ -55,11 +57,26 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 7. **KuzuDB direct Python queries** (Option 5) -- eliminate Node.js subprocess overhead with native Python bindings to the GitNexus-built graph. ~200 lines, sub-millisecond queries. Pursue if subprocess latency (~50-500ms) becomes a bottleneck.
 8. **Cross-repo graph** -- index all 4 EPYC repos into one graph to capture cross-repo dependencies (orchestrator -> llama.cpp binary paths, research -> orchestrator registry references).
 9. **Re-indexing automation** -- add GitNexus re-indexing to `session_init.sh` with a HEAD sha staleness check. Current indexes go stale as code changes. Incremental re-indexing takes 2-5s.
+10. **Crawl4AI deployment (post-AR-3, gated on WebFetch failure data)** -- if web_research sentinel data shows significant JS-heavy page fetch failures, deploy Crawl4AI Docker container alongside SearXNG. Apache-2.0, no API keys, local LLM extraction via Ollama. Evaluate as fetch backend for ColBERT reranker S5 pipeline.
 
 ### Known Issues
 - `gitnexus impact` has a known segfault (exit 139) on some queries due to a KuzuDB native binding issue. `gitnexus context` is reliable. All calls must be wrapped in try/except with timeout.
 - GitNexus license is PolyForm Noncommercial 1.0.0 -- fine for personal/research use, not for commercial distribution. If licensing becomes a constraint, the core patterns (tree-sitter + leidenalg + kuzu, all with Python bindings) can be reimplemented in ~500-800 lines.
 - Disk usage: ~50MB per indexed repo (KuzuDB + HNSW index). All 4 repos total ~200MB.
+
+## Crawl4AI — Self-Hosted Web Crawler for LLMs
+
+Crawl4AI (intake-372, 51K+ GitHub stars, Apache-2.0) is a self-hosted async web crawler designed for LLM consumption. It fills the deep page scraping role that WebFetch cannot handle for JS-heavy pages and complex PDFs, complementing SearXNG which handles search aggregation.
+
+Key capabilities: async Playwright-based crawling with browser pool management, BM25 content filtering for relevance, LLM extraction with local models (Llama 3, Mistral via Ollama integration), HTML-to-markdown conversion for LLM-ready output, and Docker deployment with no API keys required.
+
+**Integration path**: Deploy as a Docker container alongside SearXNG. In the web_research pipeline, SearXNG finds URLs via search aggregation, Crawl4AI extracts page content for JS-heavy or dynamic pages where the current `WebFetch` tool fails. Also a candidate for the ColBERT reranker fetch step (colbert-reranker-web-research.md S5) where fetched pages need reliable content extraction.
+
+**MCP integration**: Crawl4AI can be exposed as an MCP tool for Claude Code sessions, following the same pattern as the mcp-searxng bridge (intake-361). This provides an alternative to direct Python integration for agent workflows that need deep page scraping.
+
+**Policy context**: Selected over Firecrawl (intake-364/365, 108K+ stars) due to the open-source-only infrastructure preference. Firecrawl's cloud-first SaaS model, credit-based pricing, and reduced self-hosted feature parity conflict with the project's self-hosted philosophy. Crawl4AI evaluation is gated on post-AR-3 web_research sentinel data: if WebFetch succeeds on >90% of pages, neither tool is needed short-term.
+
+> Source: [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-364/365/372, Crawl4AI Docker deployment, MCP integration, open-source-only policy
 
 ## Open Questions
 
@@ -68,6 +85,7 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - How should GitNexus context interact with the existing `gathered_context` in `_execute_turn()`? Additive injection (simplest) vs competitive replacement of grep-based gathering (more efficient but riskier).
 - Can the Leiden cluster skill files replace manual agent role descriptions, or are they too granular for routing decisions?
 - How does tool output compression interact with the Omega problem? If compressed tool outputs are more information-dense, they may improve REPL-mode accuracy on suites where tools currently hurt.
+- What is the JS-heavy page failure rate with WebFetch in production web_research sessions? This determines whether Crawl4AI deployment priority should be elevated.
 
 ## Related Categories
 
@@ -75,6 +93,7 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - [Routing Intelligence](routing-intelligence.md) -- tool availability (e.g., web_search) can attenuate factual-risk scores in routing decisions
 - [Memory Augmented](memory-augmented.md) -- hybrid search pattern (BM25 + semantic + RRF) applicable to episodic memory retrieval
 - [Context Management](context-management.md) -- tool output compression is an upstream compression layer complementary to session-level context folding
+- [Search & Retrieval](search-retrieval.md) -- Crawl4AI complements SearXNG search aggregation with deep page content extraction
 
 ## Source References
 
@@ -90,3 +109,4 @@ The broader tool ecosystem includes the LLM-Wiki pattern (intake-269, intake-277
 - [intake-340](https://github.com/Kohei-Wada/taskdog) Taskdog -- task management with schedule optimization (not_applicable)
 - [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- 61 integration tests with real REPL + mock LLM pattern, GraphRunContext factory, risk-weighted coverage classification
 - [Progress 2026-04-14](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L (sessions 2-20), 100%-feasibility audit methodology, seeding control-plane characterization
+- [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-372 Crawl4AI (self-hosted web crawler, Apache-2.0, Docker deployment, MCP integration path), intake-364/365 Firecrawl (deferred: cloud-first SaaS)

@@ -33,6 +33,9 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - The benchmark/seeding control-plane test infrastructure has achieved 100% coverage on all 10 seeding modules (`seeding_checkpoint`, `seeding_eval`, `seeding_infra`, `seeding_injection`, `seeding_legacy`, `seeding_orchestrator`, `seeding_rewards`, `seeding_scoring`, `seeding_tui`, `seeding_types`) plus `eval_log_format` via 167+ characterization tests (tranches A-I, 2026-04-14). All original 7 enforced orchestrator slice files also hold at 100%. Coverage was achieved test-only (no runtime behavior modifications) despite CRITICAL blast radius on key symbols like `_eval_single_config`, `evaluate_question_3way`, and `_precompute_embedding`. [integration-test-coverage.md, progress/2026-04-14 sessions 7-17]
 - Specialist routing entrypoints (`seed_specialist_routing.py`, `seed_specialist_routing_v2.py`) advanced to 78%/76% coverage through tranches J-L, characterizing main() branches, debug-replay paths, evolve initialization failures, continuous-mode loops, preflight/resume handling, and v2 helper surfaces. Remaining gaps are concentrated in high-complexity replay/evolution hooks. [progress/2026-04-14 sessions 18-20]
 - Integration test infrastructure (61 tests, 2026-04-13) uses a real `REPLEnvironment` with mock LLM primitives (`MockLLMPrimitives`), real in-memory `StubFailureGraph`/`StubHypothesisGraph` implementations (not MagicMock), and FastAPI `TestClient` with dependency overrides. This design principle -- "REPL is real, only LLM calls are mocked" -- allows testing the full graph execution loop while remaining independent of inference servers. [integration-test-coverage.md]
+- Scoring Verifiers 4-metric protocol (Top-1, Bottom-1, Spearman rho, MAE) establishes that accuracy alone is insufficient for verifier evaluation: SWE-RM showed identical-accuracy verifiers producing opposite RL outcomes (AUC 0.805 smooth vs 0.710 collapse). Reasoning models dominate verification by 5-9pp. Self-evaluation bias degrades Top-1 by 10-15pp. [eval-tower-verification.md]
+- Terminal-Bench 2.0 introduces outcome-driven verification (test final container state, not intermediate commands), container-per-test isolation, and three-property test design (specificity, solvability, integrity). The reward file mechanism (`reward.json` with graded metrics) is applicable to T1/T2 eval tiers needing partial credit. [integration-test-coverage.md]
+- Math-Verify symbolic comparison fixes a 66% underestimation in math scoring: accuracy 0.1328 vs lm-eval-harness 0.0802 on MATH dataset. Three-step cascading comparison (string, numeric, symbolic) handles LaTeX, equivalent expressions, set notation, and percentages. Critical caveat: NOT thread-safe (`signal.alarm()`). [math-verify-integration-analysis.md]
 
 ## Actionable for EPYC
 
@@ -41,7 +44,48 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - The mode-advantage suite provides strong MemRL routing signal by shifting the reward distribution from ~5% specialist-wins to ~25-35%, enabling the router to learn when to route rather than just that routing has a cost.
 - All benchmark throughput values MUST be verified by sweep at deployment thread counts, not extrapolated from different configurations. The 2026-03-21 sweep corrected 3.6x inflated coder throughput that was biasing Q-scorer routing decisions.
 - The test coverage strategy for benchmark control-plane code uses risk-weighted classification: must-test branches (recovery paths, failure control-plane, parsing fallbacks) are prioritized over acceptable-gap branches (import fallbacks, portability paths, environment-specific branches). Gate floors are raised incrementally only after corresponding test tranches land, not by forcing brittle branch-chasing. At least one dead code path was identified and fixed through this process (`output_parser.py` `common_perf_print` break shadowed by earlier skip pattern).
+- Math-Verify integration (Apache-2.0, pip install + ~10-line change) should replace binary exact-match in `score_answer_deterministic()` for math suites. The 66% underestimation directly affects routing decisions. Thread safety workaround required if `_eval_question()` uses threading.
+- The Scoring Verifiers 4-metric protocol (Top-1, Bottom-1, Spearman rho, MAE) should be adopted as the standard for evaluating any new verifier before it enters the RLVR pipeline. ECE and AUC tracking (EV-2, implemented) provide the calibration infrastructure.
+- Terminal-Bench's outcome-driven verification pattern should be adopted for new llama-server integration tests. Container-per-test infrastructure deferred until measured need. The task.yaml metadata pattern is worth adopting for test classification across the integration test suite.
 - Future work: dynamic lambda by task priority (interactive=higher lambda, batch=lower), multi-objective Pareto frontier maintenance, token-level cost accounting (prompt vs completion), and cache-aware cost reduction with RadixAttention.
+
+## Scoring Verifiers Evaluation Protocol
+
+The Scoring Verifiers framework (COLM 2025, NVIDIA Research) establishes a 4-metric evaluation standard for verifier quality that goes beyond simple accuracy. Accuracy alone is insufficient: SWE-RM demonstrated empirically that two verifiers with identical accuracy can produce completely different RL training outcomes (AUC 0.805 smooth training vs AUC 0.710 training collapse).
+
+The four metrics are: **Top-1 Accuracy** (can the verifier identify the best solution), **Bottom-1 Accuracy** (can it identify the worst solution), **Spearman rho** (rank correlation between predicted and ground truth ordering), and **MAE** (score accuracy vs actual pass rate). Together these capture selection quality, rejection quality, full ordering quality, and calibration accuracy.
+
+Key results: reasoning models dominate verification by 5-9 percentage points (o3-mini 88.2% Top-1 vs Qwen2.5-Coder-32B 79.1%). Distilled reasoning provides almost no benefit (78.2%) -- full reasoning is required. Test case scaling curves show standard models plateau at 15-20 test cases while reasoning models keep improving past 25; the sweet spot is 15 tests with a reasoning verifier. A critical methodological finding: never show the candidate solution to the test generator, as this causes 10-15pp Top-1 degradation from self-evaluation bias. Quantile selection (5 quality-stratified solutions per problem at 0%, 25%, 50%, 75%, 100% pass rates) is the recommended evaluation methodology.
+
+Benchmark datasets are available at HuggingFace `nvidia/Scoring-Verifiers`: HE-R (164 problems, ~9.6 tests/problem), HE-R+ (164, ~764 tests/problem), MBPP-R (978, ~3.0 tests/problem), and MBPP-R+ (378, ~108.5 tests/problem).
+
+> Source: [Eval Tower Verification](/workspace/handoffs/active/eval-tower-verification.md) -- intake-367/368, 4-metric protocol, reasoning model dominance, SWE-RM calibration gap
+
+## Terminal-Bench Test Methodology Patterns
+
+Terminal-Bench 2.0 (arxiv:2601.11868) provides five patterns directly applicable to the eval and integration test infrastructure:
+
+1. **Outcome-driven verification** -- tests verify the FINAL STATE of a container, not intermediate commands. This contrasts with the current integration test approach (mock LLM calls, check return values) and recommends adding tests that start real servers, run operations, and verify end state.
+2. **Container-per-test isolation** -- Docker per task with pinned dependencies and no shared state between tests. This is the biggest infrastructure gap relative to the current mock-based test suite.
+3. **Three-property test design** -- Specificity (accept ALL correct end states), Solvability (oracle solution exists), Integrity (cannot cheat by shortcuts). These properties should be formalized for T0/T1/T2 eval tiers.
+4. **Reward file mechanism** -- `reward.json` with graded metrics instead of binary pass/fail. Applicable to T1/T2 eval tiers that need partial credit scoring.
+5. **Structured task.yaml metadata** -- difficulty, timeout budget, category tags, expected duration. Could inform a test registry for the integration test suite.
+
+Terminal-Bench also defines an 8-category failure taxonomy (Disobey Task Specification, Step Repetition, Context Loss, Premature Termination, and 4 others) that maps to orchestrator failure modes. The recommendation is to adopt outcome-driven verification for new llama-server integration tests, defer container-per-test infrastructure until measured need (current mock-based tests provide fast CI), and adopt task.yaml metadata for test classification.
+
+> Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
+
+## Math-Verify Integration for Math Benchmarks
+
+Math-Verify (HuggingFace, Apache-2.0) provides robust symbolic math comparison that addresses a critical scoring gap: current binary exact-match scoring underestimates model capability by approximately 66% on math questions (Math-Verify accuracy 0.1328 vs lm-eval-harness 0.0802 on MATH dataset). This underestimation affects routing decisions and model selection.
+
+The library implements a three-step cascading comparison: string match, then numeric comparison, then symbolic simplification with specialized handlers for relations, sets/intervals, matrices, and symbols. It correctly handles LaTeX-formatted answers vs plain text, equivalent expressions ("2x+1" vs "1+2x"), numeric precision ("0.333" vs "1/3"), set notation ("{1,2,3}" vs "{3,2,1}"), and percentage equivalence ("9%" = "0.09" = "9/100").
+
+Critical integration caveats: (1) `verify(gold, pred)` is NOT symmetric -- gold answer must always be the first argument, (2) NOT thread-safe due to `signal.alarm()` usage -- if `_eval_question()` uses `ThreadPoolExecutor`, must switch to multiprocessing or set `timeout_seconds=None` with external timeout, (3) open interval "(1,2)" converts to `Tuple(1,2)` which could false-positive for coordinate pairs, (4) dependency on ANTLR4 runtime. Integration is low effort (pip install + ~10-line change in `score_answer_deterministic()`) with a fallback to exact match if Math-Verify fails.
+
+A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality rather than answer quality via a 5-stage pipeline. Ablation shows Stage 5 (completeness) actually hurts F1 by +0.57pp -- deploy stages 1-4 only. A referenced finding (arxiv:2504.06514) shows that questions with missing premises cause models to generate MORE reasoning tokens, meaning filtering flawed questions also reduces inference cost.
+
+> Source: [Math-Verify Integration Analysis](/workspace/research/deep-dives/math-verify-integration-analysis.md) -- intake-377/379, symbolic comparison, 66% underestimation fix, thread safety caveats
 
 ## Open Questions
 
@@ -51,6 +95,8 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - Optuna threshold optimization for separated Q-values and cost metrics is designed but not yet implemented.
 - Remaining integration test gaps (real LLM output parsing, think-harder config with actual CoT injection, budget controls with realistic token counts, streaming chat) require a running inference stack. Should these be maintained as a separate `@pytest.mark.integration_live` tier?
 - The post-AR-3 analysis index defines 7 phases with 11 go/no-go metrics. Can this checklist-driven analysis pattern be generalized to future multi-day inference campaigns?
+- What is the actual impact of Math-Verify's 66% underestimation correction on routing decisions? Do models currently penalized on math suites recover meaningfully when scored with symbolic comparison?
+- Should Terminal-Bench's container-per-test pattern be adopted for llama-server integration tests, or does the current mock-based approach provide sufficient coverage?
 
 ## Related Categories
 
@@ -73,4 +119,6 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- 61 integration tests (graph execution, node-level, observability, API endpoints), mock LLM + real REPL design pattern, `GraphRunContext` factory fixture
 - [Progress 2026-04-14 Sessions 7-20](/workspace/progress/2026-04/2026-04-14.md) -- Coverage tranches A-L bringing all 10 seeding modules + eval_log_format to 100%, specialist routing to 78%/76%, enforced slice held at 100%
 - [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Packages B-E results (RI-9, TrimR, difficulty, Omega, tool A/B, CF 2a-2c, TALE), post-AR-3 analysis framework
+- [Eval Tower Verification](/workspace/handoffs/active/eval-tower-verification.md) -- Scoring Verifiers 4-metric protocol, reasoning model dominance, SWE-RM calibration gap, ThinkPRM process verification, cross-family verification constraint
+- [Math-Verify Integration Analysis](/workspace/research/deep-dives/math-verify-integration-analysis.md) -- intake-377/379, symbolic math comparison, 66% underestimation fix, ANTLR4 parsing, thread safety caveats
 - [Intake entries: 15 papers](/workspace/.claude/skills/project-wiki/data/) -- ARC, MMLU, GSM8K, HumanEval, MBPP, IFEval, BFCL, SpecExec, PhysReason, and others (all verdict: already_integrated)
