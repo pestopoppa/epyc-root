@@ -15,7 +15,7 @@
 
 Works correctly on pure MoE models (Qwen3-Coder-30B — returns content, no reasoning).
 
-Current workaround: `--reasoning off` server flag on architect_general. This is coarse — disables reasoning for ALL requests to that server, no per-request control.
+Current workaround (2026-04-15): Removed `--jinja` flag from architect_general entirely. Without `--jinja`, llama-server uses generic ChatML template with no thinking scaffolding. Previous `--reasoning off` workaround was insufficient — the jinja template itself primed the model into think mode. This is even coarser — no reasoning capability at all, no per-request control.
 
 ## Why This Matters
 

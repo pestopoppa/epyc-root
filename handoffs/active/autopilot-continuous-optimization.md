@@ -350,15 +350,18 @@ Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds)
 | 345 | GEPA Full Program Adapter | 93% MATH (vs 67% base); evolves signatures+modules+control flow; 35x fewer rollouts | P10 (AP-20) |
 | 349 | dspy.RLM Module | Metadata-first REPL exploration; sub_lm pattern; works with OpenAI-compatible /v1/ endpoint | P11 (AP-25–26) |
 
-## Known Issues — Architect Think-Block Loop (2026-04-14)
+## Known Issues — Architect Think-Block Loop (2026-04-14, RESOLVED 2026-04-15)
 
 Qwen3.5-122B-A10B on `architect_general` enters degenerate `<think>` block loops during routing decisions. Model closes a think block, emits partial answer, then re-opens `<think>` repeatedly — burning the full 512-token budget per attempt.
 
-**Root cause**: `repeat_penalty=1.1` + `temperature=0.1` = near-greedy sampling with insufficient repetition penalty. Model locks into `<think>` re-entry as highest-probability local pattern.
+**Root cause (revised 2026-04-15)**: The `--jinja` server flag loads Qwen3.5's native chat template, which includes `<think>`/`</think>` block scaffolding. The template itself primes the hybrid SSM+MoE model into think mode. Previous mitigations (`--reasoning off`, `_architect_early_stop()` streaming detection) were insufficient — the jinja template injects thinking preamble before `--reasoning` can suppress it.
 
-**Fix applied**: `_architect_early_stop()` in `chat_delegation.py` now detects think-block re-entry via `</think>.*<think>` regex in the streaming callback. Kills generation when second `<think>` opens — the answer is already in the buffer between blocks.
+**Fix applied (2026-04-15)**: Removed `--jinja` flag from architect_general server launch entirely. Without `--jinja`, llama-server falls back to generic ChatML template which has no thinking scaffolding — model never enters think mode. Also removed now-unnecessary `--reasoning off`. All other roles retain `--jinja`. Change in `orchestrator_stack.py:build_server_command()`.
 
-**Deferred tuning**: Raising `repeat_penalty` to 1.3+ and `temperature` to 0.3+ for architect role would reduce loop probability at the source. Not applied yet to keep fix minimal.
+**Previous mitigations (superseded)**:
+- `--reasoning off` server flag (commit 0591952) — insufficient, jinja template still primed thinking
+- `_architect_early_stop()` streaming detection (2026-04-14) — band-aid, didn't prevent wasted tokens
+- `repeat_penalty`/`temperature` tuning — never applied, no longer needed
 
 ## Staleness Notes
 
