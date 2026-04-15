@@ -1,6 +1,6 @@
 # Eval Tower Verification Framework
 
-**Status**: IN PROGRESS — EV-1/2/6 code complete (2026-04-15). EV-3 pending (Scoring Verifiers download). EV-4/5/7 need inference.
+**Status**: IN PROGRESS — EV-1/2/6 code complete (2026-04-15). EV-3 pending (Scoring Verifiers download). EV-4/5/7 need inference. AA-Omniscience hallucination suite integrated (2026-04-15).
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
 **Updated**: 2026-04-15
 **Priority**: MEDIUM (depends on AP-27 and Ouro P7)
@@ -265,3 +265,13 @@ ThinkPRM-1.5B at T2 requires loading a separate model. Per memory note (feedback
   - Delta from current approach: We verify answers but not question validity. Flawed questions waste eval budget and produce misleading results. Could improve T1/T2 dataset curation.
   - **Ablation insight**: Stage 5 (completeness) actually hurts F1 by +0.57pp — introduces false positives. Deploy stages 1-4 only.
   - **Hidden gem**: Referenced paper arxiv:2504.06514 shows missing premises cause models to generate MORE reasoning tokens — filtering flawed questions also reduces inference cost.
+
+## Research Intake Update — 2026-04-15 (Session 6)
+
+### New Benchmark Suites Integrated
+
+- **AA-Omniscience** (`omniscience` suite) — 600 factual questions across 6 domains (Finance, Health, Humanities, Law, Science/Engineering, Software Engineering). Tests knowledge reliability and hallucination detection. Wired into general/frontdoor/architect roles. F1 scoring with `<answer>` extraction. Abstention patterns stored for future ternary scorer. `AAOmniscienceAdapter` in `epyc-inference-research/scripts/benchmark/dataset_adapters.py`.
+
+- **AA-LCR** (`aa_lcr` suite) — 100 long-context multi-document reasoning questions (~100K tokens each). Requires one-time `download_aa_lcr.py` to fetch 173 source PDFs via pdf_router OCR pipeline. Wired into architect/ingest/long_context roles. `AALCRAdapter` reads from cached JSONL at `/mnt/raid0/llm/data/eval/aa_lcr/aa_lcr.jsonl`.
+
+- **Relevance to EV-4**: AA-Omniscience provides ground-truth calibration data for ECE/AUC measurements. Run omniscience suite through eval tower to measure hallucination-specific calibration alongside existing quality suites.
