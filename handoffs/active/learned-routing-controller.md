@@ -1,7 +1,7 @@
 # Learned Routing Controller: MLP Distillation from Episodic Memory
 
 **Created**: 2026-04-15
-**Status**: Phase 1 P1.1-P1.3 DONE — trained 92% val accuracy, per-class thresholds calibrated. P1.5 (enable flag) pending user decision.
+**Status**: Phase 1 COMPLETE — 92% val acc, flag enabled. Phase 2 P2.1-P2.2 DONE (endpoint built), P2.3+ needs inference.
 **Priority**: HIGH (low-hanging fruit — infrastructure exists, just needs retraining with better data)
 **Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), SkillBank (completed handoff)
 **Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes.
@@ -122,7 +122,7 @@ The episodic store has ~30 distinct action strings. Mapping to 5 clean classes:
 
 **Note**: coder_escalation (10K entries) excluded from training — all escalation memories have empty objective fields (logged at escalation time, not initial routing). Worker_explore accuracy is low (56.7%) because seeding data was 88% task_type=chat with low Q-values, making it look like frontdoor. Both gaps will improve as organic data with proper objectives accumulates.
 
-- [ ] **P1.5** Enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1` — monitor `decision_source` telemetry
+- [x] **P1.5** Enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1` in `orchestrator_stack.py` — DONE 2026-04-15. Takes effect on next API restart.
 - [x] **P1.6** Add extraction step to autopilot `structural_lab.py` before classifier training — DONE 2026-04-15
 
 ### Phase 1.5: Logit-Based Probe (No llama.cpp changes)
@@ -138,9 +138,9 @@ Validate "piggyback on frontdoor" concept before investing in hidden-state extra
 
 **SSM hybrid awareness**: Frontdoor is Jamba-style (Mamba SSM + attention). Probe attention layers only. Mean-pool across all token positions (SSM last-token state is recency-biased).
 
-- [ ] **P2.1** Enumerate attention layer indices in frontdoor model architecture
-- [ ] **P2.2** Add `/hidden-states` endpoint to llama.cpp fork
-- [ ] **P2.3** Collect mean-pooled hidden states at each attention layer during inference
+- [x] **P2.1** Enumerate attention layer indices — DONE 2026-04-15. Qwen3.5-35B-A3B: 41 layers, attention at 0,4,8,12,16,20,24,28,32,36,40 (11 layers), hidden_dim=2048
+- [x] **P2.2** Add `/hidden-states` endpoint to llama.cpp-experimental — DONE 2026-04-15. Commit `4c7fe20c6`. Graph capture + context mean-pooling + C API + server endpoint.
+- [ ] **P2.3** Collect mean-pooled hidden states at each attention layer during inference (needs live server test)
 - [ ] **P2.4** Train independent linear probes per attention layer — find best
 - [ ] **P2.5** If complementary, use learned attention pooling (N learnable weights)
 - [ ] **P2.6** Decision gate: >= 90% → Phase 3; < 80% → stay with BGE+MLP
