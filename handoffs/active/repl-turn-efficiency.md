@@ -1,6 +1,6 @@
 # REPL Turn Efficiency — Frecency Discovery + Combined Operations
 
-**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference, S5 analysis done 2026-04-12)
+**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference, S5 analysis done 2026-04-12, S6a-f done 2026-04-16)
 **Created**: 2026-04-09 (from research intake: intake-295, intake-301)
 **Priority**: MEDIUM
 **Categories**: agent_architecture
@@ -172,6 +172,21 @@ Expose `llm_batch()` as a first-class REPL tool rather than requiring models to 
 1. **Gap 3 — `_batch_llm_query` combined-op** (HIGH impact / LOW effort). 3-4 hours. The underlying `llm_batch()` already works; this is purely a REPL exposure issue. Every multi-sub-query task (common in agentic/coder suites) benefits immediately. Unblocked now.
 2. **Gap 1 — `workspace_scan` tool** (HIGH impact / MEDIUM effort). 4-6 hours. Directly targets the 3-4 wasted orientation turns observed in file-exploration tasks. Blocked on AP-26 for sub_lm quality validation, but can be built with frecency-only fallback first.
 3. **Gap 2 — `STUCK("reason")` signal** (MEDIUM impact / MEDIUM-HIGH effort). 6-8 hours. Reduces wasted turns on dead-end paths, but the recovery logic (episodic recall for similar stuck situations) adds complexity. Should be built after Gap 1/3 prove the combined-op pattern works at the REPL level.
+
+## S6: Specialist REPL Bug Fixes + Observability (2026-04-16)
+
+Session discovered and fixed 3 systemic bugs causing ~25% wasted specialist REPL turns (810/3227 calls), plus added web_search/web_fetch to REPL globals and role-aware specialist prompts.
+
+- [x] S6a: Fix `extract_code_from_response` dropping bare `"""` lines (473 NameErrors) — `code_utils.py`
+- [x] S6b: Fix `CALL("run_python_code")` routing through registry instead of REPL globals (182 ValueErrors) — `context.py`
+- [x] S6c: Fix dedup guard `continue` → `break` (63 wasted turns) — `chat_delegation.py`
+- [x] S6d: Add `repl_turn_errors` tracking to delegation stats + `specialist_repl_errors` anomaly signal — `chat_delegation.py`, `anomaly.py`
+- [x] S6e: Add `web_search()` REPL global + document in `root_lm_system.txt` — `combined_ops.py`, `environment.py`, `root_lm_system.txt`
+- [x] S6f: Role-aware `_build_compact_specialist_prompt` — search roles get web tool docs + REPL math guidance — `chat_delegation.py`
+
+See: `progress/2026-04/2026-04-16.md` for full details.
+
+---
 
 ## Research Intake Update — 2026-04-14
 
