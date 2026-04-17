@@ -848,9 +848,9 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 - **G2 + G3 sequentially**: G2 proxy DONE (gate passed). Full KVPress evaluation + G3 stacking test pending. **AM compaction is now the primary path** — P2 results show structured attention compresses near-losslessly at 2-5x with layer-adaptive strategy.
 - **G4**: Defer — FlowSteer library maturity unconfirmed.
 - **G6**: Low priority — v3 smoke tests showed no regression.
-- **G7**: ✅ DOWNLOADS COMPLETE (2026-04-16). Q8_0 (227GB) + UD-Q4_K_XL (132GB) + SuperGemma4-31b (18.7GB) + SuperGemma4-26b (16.8GB). Q8_0 is unusable — 0.12 tps (memory bandwidth saturated at 227GB with 256 experts). Q4_K_XL baseline: **14.0 tps** at 1×96t interleave (no speculation). Draft-max sweep: ngram-simple has zero impact (all values within 0.2 tps of baseline). No REAP variants of M2.7 exist yet.
-- **G7a**: ✅ NUMA SWEEP DONE (2026-04-17). 1×96t interleave = **14.0 tps** (winner). 1×96t node0 = 5.8-9.6 tps (half bandwidth). 2×96t dual = **0 tps** (mmap page sharing — kernel deduplicates pages, second instance gets zero local memory, cross-NUMA thrash). 4×48t skipped (same mmap problem). **Conclusion: multi-instance not viable for large MoE models with mmap. 1×96t interleave is the only production config.**
-- **G8 + G9**: Unblocked. G9 reframed as architect replacement eval — M2.7 Q4_K_XL at 14 tps already 3.7x faster than architect_coding (3.79) and 1.5x faster than architect_general (9.14). Quality eval next.
+- **G7**: ✅ COMPLETE (2026-04-17). All models downloaded and benchmarked. Q4_K_XL deleted (Q8 preferred for quality). M2.7 Q8 = 11.1 tps. Also swept: Qwen3.6 Q8 (27.4 tps), SG4-26b Q4 (42 tps), SG4-31b Q4 (9.0 tps), SG4-26b-MM Q8 (21.1 tps), Gemma4 E2B/E4B (deleted — no value).
+- **G7a**: ✅ COMPLETE (2026-04-17). Full NUMA characterization with concurrent requests. Key findings: (1) --mlock + --membind required for multi-instance, (2) Q8 > Q4 for dense models < 40GB, Q4 > Q8 for large MoE, (3) concurrent benchmarks show ~40% less aggregate than serial sum. New deterministic `numa_sweep.py` with early stopping + scaling gates.
+- **G8 + G9**: Unblocked. G9 reframed as architect replacement eval — M2.7 Q8 at 11.1 tps is 1.2x faster than architect_general (9.14) and 2.9x faster than architect_coding (3.79). Quality eval next.
 - **G10 + G11 + G12**: AA-Omniscience hallucination calibration — can run per-model sequentially, ~6h total.
 
 ### G10-G12: AA-Omniscience Factual-Risk Calibration (2026-04-15 research intake)
