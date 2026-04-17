@@ -143,6 +143,7 @@ Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scori
 - [x] **Phase 5c**: Build query operation ("what do we know about X?") — ✅ 2026-04-07
 - [x] Add credibility scoring to research-intake skill Phase 2 — ✅ 2026-04-07
 - [x] Add anti-confirmation-bias directive to research-intake Phase 3 — ✅ 2026-04-07
+- [x] Add parallel execution model (fan-out sub-agents for 3+ URLs, Phase 1+2) — ✅ 2026-04-17
 - [x] Update intake-268/269/270 verdicts and cross-references — ✅ 2026-04-06
 - [x] **Phase 5d**: Upstream project-wiki skill to root-archetype — ✅ 2026-04-07
 - [x] Session persistence documentation for research workflows — ✅ 2026-04-07

@@ -58,6 +58,17 @@ During Phase 5 (Report & Persist), after each entry is appended to `intake_index
 On successful completion of all entries:
 - Delete `.research-session.json` (session complete, no resume needed)
 
+## Parallel Execution Compatibility
+
+When Phase 1+2 runs in parallel (3+ URLs via sub-agents):
+
+- **Before dispatch**: Session file is created with all URLs in `entries_remaining`. Sub-agents do NOT modify the session file.
+- **After collection**: Sub-agent results are held in memory until Phase 5 persists them.
+- **During Phase 5**: Entries are appended to `intake_index.yaml` one at a time, with per-entry checkpointing (same as sequential mode).
+- **Crash recovery**: If a crash occurs during sub-agent execution (before Phase 5), all URLs remain in `entries_remaining`. On resume, re-dispatch all unprocessed URLs. No data loss — sub-agent results are ephemeral until persisted.
+
+The checkpoint protocol is unchanged — the parallel model affects when results are produced, not how they are persisted.
+
 ## Related Patterns
 
 The autopilot uses an analogous pattern: `autopilot_state.json` persists

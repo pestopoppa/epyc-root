@@ -21,13 +21,100 @@ Do not use when:
 
 ## Workflow
 
-Execute these 5 phases in order for each invocation.
+Execute these 5 phases in order for each invocation. **Phase 1 + Phase 2 can run in parallel** — see Parallel Execution below.
 
 ### Phase 0 — Session Resume Check
 
 Before starting Phase 1, check for an existing `.research-session.json` in the repo root. If found and less than 7 days old, offer to resume (skip already-processed URLs). If older than 7 days, warn about staleness and suggest starting fresh. See `references/session-persistence.md` for the full schema and protocol.
 
+### Parallel Execution (3+ URLs)
+
+When processing **3 or more URLs**, parallelize Phase 1 + Phase 2 by dispatching concurrent sub-agents — one per URL. For 1-2 URLs, skip this section and run Phase 1 → Phase 2 inline.
+
+#### Pre-dispatch Setup
+
+1. Read `research/intake_index.yaml` — collect all existing `arxiv_id` and `url` values into dedup lists.
+2. Read `references/cross-reference-map.md` — sub-agents need the category→file mapping.
+3. Note the highest existing intake ID (for Phase 5 — sub-agents do NOT assign IDs).
+
+#### Dispatch
+
+Spawn **one Agent per URL**. **All Agent calls must be in a single message** so they execute concurrently. Each Agent prompt must include:
+
+1. The URL to process
+2. The dedup lists (existing arxiv_ids + URLs from the index)
+3. The cross-reference map content
+4. The scoring rubrics and category list (below)
+5. Instruction to return a single YAML block — no file writes
+
+Each sub-agent performs Phase 1 (parse, dedup-check, fetch, extract) and Phase 2 (cross-reference search, scoring, verdict) for its URL. Include these instructions in the prompt:
+
+**Fetch rules**:
+- arXiv: fetch `https://ar5iv.org/abs/{arxiv_id}` via WebFetch, set `source_type: paper`
+- GitHub: fetch raw README.md + repo page via WebFetch, set `source_type: repo`
+- Other: fetch URL directly via WebFetch, set `source_type: blog`
+
+**Extract**: title, authors, key_claims (3-5 bullets), techniques, reported_results, referenced_arxiv_ids
+
+**Cross-reference search paths**:
+- Chapters: `/mnt/raid0/llm/epyc-inference-research/docs/chapters/*.md`
+- Active handoffs: `/mnt/raid0/llm/epyc-root/handoffs/active/*.md`
+- Completed handoffs: `/mnt/raid0/llm/epyc-root/handoffs/completed/*.md`
+- Experiments: `/mnt/raid0/llm/epyc-inference-research/docs/experiments/*.md`
+- Research notes: `/mnt/raid0/llm/epyc-root/research/*.md`
+
+**Scoring rubrics** (include verbatim in each sub-agent prompt):
+- **Novelty**: `duplicate` (exact arxiv_id/URL match) · `low` (well-covered in chapters) · `medium` (new perspective on existing work) · `high` (novel technique or significant new results)
+- **Relevance**: `none` · `low` · `medium` · `high` (matches active handoff or current optimization focus)
+- **Credibility** (0-6 integer, null for repos/blogs without empirical claims): peer-reviewed venue +2, published within 12 months +1 / older than 24 months -1, major lab or known contributor +1, commercial bias -1, independent corroboration +1 per source max +2
+- **Verdict**: `already_integrated` · `new_opportunity` · `worth_investigating` · `not_applicable` · `superseded` · `adopt_patterns` · `adopt_component`
+
+**Category list** (1+ per entry): `speculative_decoding`, `moe_optimization`, `retrieval_augmented_decoding`, `kv_cache`, `quantization`, `benchmark_methodology`, `cost_aware_routing`, `agent_architecture`, `context_extension`, `context_management`, `inference_serving`, `memory_augmented`, `training_distillation`, `multimodal`, `routing_intelligence`, `hardware_optimization`, `ssm_hybrid`, `autonomous_research`, `swarm_techniques`, `document_processing`, `knowledge_management`, `rag_alternatives`, `tool_implementation`, `local_inference`, `search_retrieval`
+
+**Required output format** — instruct each sub-agent to return exactly this YAML:
+
+```yaml
+url: "..."
+arxiv_id: "..." # or null
+source_type: paper|blog|repo
+title: "..."
+authors: [...]
+categories: [...]
+key_claims:
+  - "..."
+techniques: [...]
+reported_results: [...]
+referenced_arxiv_ids: [...]
+novelty: high|medium|low|duplicate
+relevance: high|medium|low|none
+credibility_score: # integer 0-6 or null
+verdict: ...
+cross_references:
+  chapters: [...]
+  handoffs: [...]
+  experiments: [...]
+  intake_entries: [...]
+novelty_justification: "..."
+relevance_justification: "..."
+verdict_justification: "..."
+```
+
+#### Result Collection
+
+After all sub-agents return:
+1. Parse each sub-agent's YAML output into a unified results list.
+2. If any sub-agent failed or timed out, process that URL inline as a fallback (run Phase 1 → Phase 2 directly).
+3. Proceed to Phase 3 with the collected results.
+
+**Constraints**:
+- Sub-agents do NOT assign intake IDs — sequential numbering happens in Phase 5.
+- Sub-agents do NOT write to `intake_index.yaml`, handoff files, or `.research-session.json`.
+- Sub-agents do NOT perform literature expansion (Phase 3) or Tier 2b contradicting evidence search — those require global coordination and run after collection.
+- Sub-agents return data only; the main agent handles all file writes and persistence.
+
 ### Phase 1 — Fetch & Extract
+
+> **3+ URLs?** This phase runs inside parallel sub-agents — see [Parallel Execution](#parallel-execution-3-urls) above. The instructions below are the canonical reference and also the inline path for 1-2 URLs.
 
 For each URL provided:
 
@@ -55,6 +142,8 @@ For each URL provided:
    - arXiv IDs referenced in the paper (for Phase 3 expansion)
 
 ### Phase 2 — Cross-Reference
+
+> **3+ URLs?** This phase runs inside parallel sub-agents — see [Parallel Execution](#parallel-execution-3-urls) above. The instructions below are the canonical reference and also the inline path for 1-2 URLs.
 
 For each non-duplicate entry:
 
@@ -231,13 +320,10 @@ For entries with `verdict: new_opportunity` AND `relevance: high` that don't mat
 - Evidence: Either `.research-session.json` does not exist (fresh start), OR session decision (resume/fresh) was explicitly stated.
 - Gate: Do not proceed to Phase 1 until session state is resolved.
 
-### Phase 1 — Fetch & Extract
-- Evidence per entry: (1) `source_type` determined from URL pattern, (2) duplicate check against `intake_index.yaml` by arxiv_id and URL, (3) WebFetch call made and content received, (4) at least 3 `key_claims` extracted from actual content.
-- Gate: Every URL must have a Phase 1 output block before Phase 2 begins.
-
-### Phase 2 — Cross-Reference
-- Evidence per entry: (1) `cross-reference-map.md` read and category mapping applied, (2) at least one directory searched per applicable type, (3) novelty/relevance/credibility each have explicit justification, (4) verdict assigned with reasoning.
-- Gate: All non-duplicate entries must complete cross-referencing before Phase 3.
+### Phase 1+2 — Fetch, Extract & Cross-Reference
+- Evidence per entry: (1) `source_type` determined from URL pattern, (2) duplicate check against `intake_index.yaml` by arxiv_id and URL, (3) WebFetch call made and content received, (4) at least 3 `key_claims` extracted from actual content, (5) `cross-reference-map.md` read and category mapping applied, (6) at least one directory searched per applicable type, (7) novelty/relevance/credibility each have explicit justification, (8) verdict assigned with reasoning.
+- Gate: All URLs must have complete Phase 1+2 results (inline or from sub-agents) before Phase 3 begins.
+- **Parallel mode**: Each sub-agent's YAML output must contain all required fields. If a sub-agent returns incomplete data or fails, process that URL inline before proceeding.
 
 ### Phase 3 — Literature Expansion
 - Evidence: (1) Expansion only for entries with `relevance >= medium`, (2) total new entries <= 10, (3) Tier 2b contradicting evidence search performed for qualifying entries, (4) expanded entries have `discovered_via` and `expanded_from` fields.
