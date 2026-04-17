@@ -2,12 +2,12 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
+**Last compiled**: 2026-04-17
 **Sources**: 22 documents (1 deep-dive, 15 intake entries, 6 handoffs)
 
 ## Summary
 
-Autonomous research in the EPYC context refers to systems that can propose, execute, evaluate, and learn from optimization experiments without human intervention. The project's AutoPilot is a continuous optimization loop with 4 optimizer species (Seeder for 3-way eval and Q-value training, NumericSwarm for Optuna NSGA-II parameter search, PromptForge for LLM-guided prompt mutation, StructuralLab for flag and routing model lifecycle experiments), a tiered evaluation tower (T0: 10 questions in 30s, T1: 100 questions in 5m, T2: 500+ questions in 30m), a 4D Pareto archive (quality x speed x -cost x reliability), safety gates with quality floor and per-suite regression guards, and an Evolution Manager species for knowledge distillation into a FAISS+SQLite strategy store.
+Autonomous research in the EPYC context refers to systems that can propose, execute, evaluate, and learn from optimization experiments without human intervention. The project's AutoPilot is a continuous optimization loop with 4 optimizer species (Seeder for dynamic per-role eval and Q-value training, NumericSwarm for Optuna NSGA-II parameter search, PromptForge for LLM-guided prompt mutation, StructuralLab for flag and routing model lifecycle experiments), a tiered evaluation tower (T0: 10 questions in 30s, T1: 100 questions in 5m, T2: 500+ questions in 30m), a 4D Pareto archive (quality x speed x -cost x reliability), safety gates with quality floor and per-suite regression guards, and an Evolution Manager species for knowledge distillation into a FAISS+SQLite strategy store.
 
 The central insight synthesized across all research sources is that **knowledge distillation must be a separate, explicit step after every optimization trial -- not just metric recording**. EvoScientist (intake-108) provides the strongest evidence: its three-agent pipeline (Researcher, Engineer, Evolution Manager) with two persistent memory modules achieves +10.17 percentage points in code execution success rates through strategy distillation alone, and removing all evolution channels causes -45.83 average gap. The Evolution Manager's three channels -- Idea Direction Evolution (what abstract principle led to success), Idea Validation Evolution (why ideas failed with LLM-analyzed reasons), and Experiment Strategy Evolution (generalizable strategies from code search trajectories) -- address the specific gap identified in the EPYC AutoPilot: species were effective optimizers but memoryless beyond the Pareto archive and Optuna's internal state. This has been addressed by implementing an Evolution Manager species that runs every 5 trials, distilling knowledge via LLM summarization into a retrievable strategy store.
 
@@ -38,6 +38,8 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - **AutoResearch suitability requires four properties.** Scalar metrics, modular architecture, fast iteration cycles, and version-controlled modifications. The EPYC AutoPilot satisfies all four, confirming it is in the right structural class for autonomous optimization. The single-file modification constraint from AutoResearch (intake-148) and the program.md strategy separation from PraxLab (intake-149) both validate existing autopilot design patterns. [intake-148, intake-149]
 
 - **Execution trace feedback provides +15 points over score-only feedback.** The Meta-Harness ablation (intake-244) shows: scores only 34.6% median accuracy, scores + text summaries 34.9%, full filesystem access to traces 50.0%. This is implemented as Tier 1 in the autopilot via inference_tap.log trace injection into PromptForge's failure context. [meta-harness-optimization.md handoff]
+
+- **Phase 5 seeder refactor: per-role eval replaces 3-way eval (2026-04-17).** The original 3-way eval (SELF:direct, SELF:repl, ARCHITECT) built Q-values for 3 abstract action classes, not per-model. This caused 96% uniform Q-values because the signal was too coarse. The refactored seeder dynamically discovers active roles from `model_registry.yaml` via `discover_active_roles()` and tests each role individually with `force_mode=""` (natural mode selection) and `allow_delegation=True`. Rewards are keyed by role name (e.g., "frontdoor", "architect_general"), building per-model Q-values. The eval tower remains end-to-end (`force_role=""`) to measure system-level routing quality. **Adaptation surface for stack changes**: `seeding_types.py` is the only file requiring manual updates (port mappings via `ROLE_PORT`, exclusions via `SEEDING_EXCLUDED_ROLES`, key-to-role aliases via `_REGISTRY_KEY_TO_ROLE`). Role discovery reads `server_mode` section of `model_registry.yaml` dynamically. When roles are removed, discovery adapts automatically; when renamed, update `_REGISTRY_KEY_TO_ROLE`; when consolidated, old Q-values persist harmlessly. [scripts/benchmark/seeding_types.py, scripts/benchmark/seeding_eval.py, scripts/autopilot/species/seeder.py]
 
 - **DAR-1 reveals 96% uniform Q-values -- Q-scorer has barely learned preferences.** Regret analysis on 7,211 routing decisions (Apr 10-14) shows Q-value spread is <0.001 for 96% of decisions. Selection score spread is non-trivial (median 0.107) but comes entirely from cost/similarity features, not Q-values. 3,355 learned vs 3,856 rules/classifier decisions. The implication: contrastive Q-updates (DAR-2) are essential to accelerate Q-learning from sparse signal. [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md)
 
@@ -84,7 +86,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ## Related Categories
 
 - [Agent Architecture](agent-architecture.md) -- the autopilot optimizes the orchestrator's agent configuration
-- [Routing Intelligence](routing-intelligence.md) -- Seeder species generates 3-way eval data that trains routing classifiers
+- [Routing Intelligence](routing-intelligence.md) -- Seeder species generates per-role eval data that trains routing Q-values
 - [Memory Augmented](memory-augmented.md) -- strategy store and episodic memory are the autopilot's learning infrastructure
 - [Tool Implementation](tool-implementation.md) -- GEPA and code mutation use tool infrastructure for experiments
 

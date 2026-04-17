@@ -1,8 +1,8 @@
 # AutoPilot: Continuous Recursive Optimization
 
-**Status**: AR-3 run 2 completed (44 trials, 6 frontier, 1 useful change). Safety hardened after file corruption incident. Think-block loop fix applied (2026-04-14). Ready for relaunch.
+**Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-04-14
+**Updated**: 2026-04-17
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 ## Architecture
@@ -11,7 +11,7 @@ A continuous agent loop that autonomously optimizes orchestration intelligence t
 
 ```
 Controller (Claude CLI meta-reasoning)
-  ├── Species 0: Seeder (3-way eval → Q-value training)
+  ├── Species 0: Seeder (per-role eval → Q-value training)
   ├── Species 1: NumericSwarm (Optuna NSGA-II → hot-swap config)
   ├── Species 2: PromptForge (LLM prompt mutation → .md hot-swap)
   └── Species 3: StructuralLab (flags + routing model lifecycle)
@@ -130,9 +130,23 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 
 ## Train/Validate Split
 
-- **Training** (Seeder): 579 debug suite questions + 53K pool → Q-value training
-- **Validation** (EvalTower): HF benchmark questions (MMLU, GSM8K, etc.) → system quality
+- **Training** (Seeder): 579 debug suite questions + 53K pool → Q-value training via per-role eval
+- **Validation** (EvalTower): HF benchmark questions (MMLU, GSM8K, etc.) → system quality (end-to-end, `force_role=""`)
 - Prevents overfitting: debug suites train routing intelligence, benchmarks validate generalization
+
+## Phase 5: Per-Role Seeder (2026-04-17)
+
+The original 3-way eval (SELF:direct, SELF:repl, ARCHITECT) was a pre-autopilot simplification that prevented Q-values from learning per-model preferences (96% uniform after 7,211 decisions). Replaced with dynamic per-role eval.
+
+**Key changes:**
+- `discover_active_roles()` reads `server_mode` from model_registry.yaml → 6 active roles
+- `evaluate_question_per_role()` tests each role with `force_mode=""` (natural mode) + `allow_delegation=True`
+- Rewards keyed by role name (e.g., "frontdoor", "architect_general") not abstract classes ("SELF:direct")
+- Periodic role refresh every 10 batches for stack change resilience
+
+**Adaptation surface** (when stack changes): only `seeding_types.py` needs updates — `ROLE_PORT`, `SEEDING_EXCLUDED_ROLES`, `_REGISTRY_KEY_TO_ROLE`. See `wiki/autonomous-research.md` for full table.
+
+**Deferred**: `route_per_role()` in retriever.py (follow-up once per-role Q-values accumulate).
 
 ## Evolution: Seeding → AutoResearch
 

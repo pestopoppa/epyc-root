@@ -20,7 +20,7 @@
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | AR-3 relaunching with GEPA integrated. P11 controller upgrades DONE. P10 AP-18/19/20 DONE. AP-14–17 DONE. | AP-21 (conditional on AR-3 data), AP-26/27 RLM+RLVR (post-AR-3) |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Phase 5 seeder refactor DONE** (2026-04-17). 3-way→per-role eval. Blacklist cleaned (6→1). Model signatures in controller. AR-3 needs restart. | Restart AR-3, accumulate per-role Q-values, then route_per_role() in retriever |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-14 (Orchestrator focused slice 100% + broader benchmark tranches A/B/C/D/E/F/G/H/I/J/K/L/M/N/O/P/Q/R/S/T/U/V)
+**Updated**: 2026-04-17 (Phase 5 seeder refactor: 3-way→per-role eval + blacklist cleanup + model signatures)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -54,7 +54,7 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
-| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, P5 AR-3 relaunching with GEPA, P6 RI-10 canary, P7-P9 pending, **P10 AP-19/20+MH-4 folded into AR-3** (2026-04-12), P10b/P11 non-inference DONE. Remaining: AP-21 (conditional), AP-26/27 (post-AR-3) |
+| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE** (3-way→per-role, blacklist cleanup, model sigs), P6 RI-10 canary, P7-P9 pending, P10/P11 non-inference DONE. AR-3 needs restart with new seeder. |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring |
