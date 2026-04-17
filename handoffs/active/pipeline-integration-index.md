@@ -18,8 +18,8 @@
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, TTS blocked) | LOW | 2026-04-04 |
-| [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active | P2 (medium) | 2026-03-17 |
+| [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, **TTS Path D candidate surfaced 2026-04-17** — LuxTTS/ZipVoice-Distill CPU benchmark) | LOW | 2026-04-17 |
+| [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
 | [lean-proving-pipeline.md](lean-proving-pipeline.md) | Lean 4 theorem proving | stub | unset | 2026-03-28 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
 
@@ -48,10 +48,12 @@
 - [ ] S4: End-to-end pipeline test on FormalQualBench subset (depends on S1)
 - [ ] S5: Two-tier integration: Leanstral planning → Goedel-CP execution (depends on S3+S4)
 
-### P3 — Multimodal TTS (blocked)
+### P3 — Multimodal TTS (candidate Path D surfaced 2026-04-17)
 
 - [ ] Path A (Qwen3 TTS): Debug codec token generation, compare C++ vs PyTorch reference
 - [ ] Path B (MiniCPM-O): Phase 1 test of built-in CosyVoice2 TTS
+- [ ] Path C (Qwen3-TTS PyTorch sidecar): FastAPI wrapper on port 8110; VRAM/latency benchmark on EPYC
+- [ ] **Path D (NEW, 2026-04-17)**: CPU benchmark upstream `k2-fsa/ZipVoice-Distill` (ASRU 2025, arxiv:2506.13053) on EPYC 9655 — 6-config sweep per `research/deep-dives/luxtts-cpu-tts-candidate.md` §8 (1-thread baseline, PyTorch FP32 16/32-thread, ONNX FP32/INT8 16-thread, LuxTTS 48kHz variant). Metrics: RTF, first-packet latency, WER (whisper-large-v3 on LibriSpeech test-clean), SIM-o (WavLM-SV), UTMOS, memory peak. Promote if RTF<0.35, first-packet<400ms, WER<2.5, memory<2GB. Park if RTF>0.8 or WER>3.0 or memory>4GB. **1-week sidecar integration, NOT a llama.cpp port** (avoid Path A fate).
 - [ ] Whichever path unblocks first → register TTS endpoint on port 9002
 
 ### P4 — Doc-to-LoRA (low priority)

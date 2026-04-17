@@ -122,6 +122,8 @@ Depends on Phase 4 A/B results.
 
 Depends on observability (P4) and autoresearch baseline (P5). **Phase F now includes KVCOMM cross-instance KV sharing** (intake-352, NeurIPS'25) for homogeneous worker pools — see `dynamic-stack-concurrency.md` § Phase F.
 
+> **Ownership note (2026-04-17)**: This handoff has dual relevance. Phases B-E (stack exploration, QuarterScheduler, templates, autoresearch) are routing-and-optimization concerns owned here. **Phase F (KVCOMM F1-F4) is inference-acceleration-adjacent** — it compounds with AM compaction L4b and affects cross-NUMA cache coherence. Phase F status is cross-listed in `inference-acceleration-index.md` landscape table for discoverability. Single source of truth remains this file + the underlying handoff.
+
 - [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 - [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08). **Design audit 2026-04-09**: 6 gaps identified. **Gap resolutions 2026-04-09**: All 6 gaps resolved with concrete specs (dynamic URL API, liveness heartbeat, quarter-fixed ports, 3-phase drain protocol, idle tracking, degradation via existing retry paths). See `dynamic-stack-concurrency.md` § DS-6 Gap Resolutions. Implementation deferred to Phase F.

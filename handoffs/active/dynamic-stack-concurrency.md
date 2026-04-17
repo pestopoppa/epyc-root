@@ -6,7 +6,8 @@
 **Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction)
+**Domain**: routing-and-optimization (primary — Phases B-E: stack exploration, QuarterScheduler, templates, autoresearch); inference-acceleration (Phase F KVCOMM cross-listed for discoverability — F1 blocks on AM compaction P2)
+**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row)
 
 ---
 

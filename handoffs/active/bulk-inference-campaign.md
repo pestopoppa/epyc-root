@@ -1,8 +1,8 @@
 # Bulk Inference Campaign: Packages B-E
 
-**Status**: active (A+B+C+E+F done, D relaunching. G1/G2/AM-L1-L3b/SEAL all complete 2026-04-13. AM has native llama.cpp beta injection + server endpoint. H1/H2/H3/H6 folded into D. v3 binary live.)
+**Status**: active (A+B+C+E+F done, D relaunching. G1/G2/AM-L1-L3b/SEAL all complete 2026-04-13. AM has native llama.cpp beta injection + server endpoint. H1/H2/H3/H6 folded into D. v3 binary live. G7/G7a MiniMax NUMA sweeps done 2026-04-17.)
 **Created**: 2026-04-06
-**Updated**: 2026-04-13
+**Updated**: 2026-04-17
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)

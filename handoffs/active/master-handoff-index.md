@@ -72,7 +72,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | S1 done; S2-S5 queued; priority elevated (formalizer-overthinking + Math-Verify intake-377 + cost-reduction hypothesis arxiv:2504.06514) | **MEDIUM** | 2026-04-15 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research, I +3 DAR/ThinkPRM**) | HIGH | 2026-04-15 |
-| [non-inference-backlog.md](../completed/non-inference-backlog.md) | Cross-cutting code tasks | ✅ **COMPLETE** 2026-04-12 — archived to completed/ 2026-04-17 | ~~MEDIUM~~ | 2026-04-12 |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code/infra tasks | **ACTIVE Round 2** (2026-04-17) — 30 unblocked items (NIB2-01..30) catalogued from audit. Round 1 (18/18) → [completed/](../completed/non-inference-backlog.md). | MEDIUM | 2026-04-17 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache compression (EA) | **DEPLOYED** — EA scorer in production kernel + server endpoint + autopilot. S4/S5/S6/S7 done. Next: S8 autopilot exploration → S9 orchestrator auto-trigger | HIGH | 2026-04-14 |
 | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (L1-L4+L4b merged to production-consolidated-v3. P2 coding benchmarks pending) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE — S1 runtime PASSED (5/5, 2026-04-14). S2 LoRA training unblocked. | HIGH | 2026-04-14 |
@@ -112,6 +112,7 @@ Changes in one domain often affect others. Key coupling points:
 | SearXNG backend (search infra) | ColBERT reranker (richer snippets), Routing P8b (search pipeline) | SearXNG JSON API replaces DDG HTML scraping; engines[]/score metadata enhances ColBERT confidence; unresponsive_engines[] feeds monitoring |
 | Decision-aware routing (R&O P13) | Routing (difficulty signal), Research (AP-27 RLVR) | Resolves zero-predictive-spread in difficulty_signal.py; new reward signal needs eval tower verification |
 | Eval tower verification (RE P8) | Routing (AP-27 RLVR), Research (Ouro P7) | Provides calibration infrastructure (ECE/AUC) for RLVR formalization; Ouro as sentinel candidate |
+| Dynamic stack concurrency (R&O, `dynamic-stack-concurrency.md` Phase F) | Inference acceleration (AM compaction P2 → KVCOMM F1) | Phase F1 blocks on AM compaction P2; Phase F's cross-NUMA anchor pool compounds with L4b compaction ratio measurements. **Ownership**: routing-and-optimization (primary); Phase F mirrored in inference-acceleration-index landscape for discoverability. |
 
 ---
 

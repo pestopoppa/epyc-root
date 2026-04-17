@@ -26,6 +26,8 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) | **ACTIVE** — Diff Attn V2 designed (implementation path mapped; awaiting pretrained checkpoints) | Differential attention (2h Q, even/odd split, sigmoid lambda) | Future Diff Transformer models | ~65% param efficiency (Microsoft claim) | Awaiting pretrained models from Microsoft. Synthetic GGUF loads. MoBA #2 priority. |
 | [`gpu-acceleration-path.md`](gpu-acceleration-path.md) | **RESEARCHED** — DGX Spark target | DGX Spark (128GB unified), rocWMMA, CPU+GPU hybrid MoE | All MoE production models | DGX Spark: ~70 t/s MoE decode | Acquire DGX Spark; existing AMD research retained as fallback |
 | [`log-linear-gated-deltanet-readiness.md`](log-linear-gated-deltanet-readiness.md) | **STUB** — activates on pretrained model availability | Log-linear O(log L) state for Gated DeltaNet | Qwen3.5/Qwen4 hybrids | 4-10x state reduction, 1M+ context | Monitor github.com/HanGuo97/log-linear-attention |
+| [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md) | **IN-PROGRESS** — Q4_K_M+Q8_0 downloaded | Qwen3.6-35B-A3B drop-in architect upgrade | Architect quarter | Terminal-Bench claims pending local validation | Benchmark (AA-Omniscience + coding) then swap in model_registry.yaml |
+| [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (Phase F KVCOMM only — primary ownership: routing-and-optimization) | **QUEUED** — F1 blocks on AM compaction P2; F2-F4 designed | q4_0 offset estimation, cross-NUMA anchor pool, ConcurrencyAwareBackend, `prefill_speedup_coder_pool` metric | All production (cross-NUMA cache sharing) | Compounds with L4b AM compaction ratio | See primary handoff for Phases B-E status; only Phase F is inference-acceleration-relevant |
 
 ### Archived (completed/)
 
@@ -203,7 +205,7 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | **KV cache quantization** | `kv-cache-quantization.md` | ACTIVE — Hadamard deployed, monitoring TurboQuant |
 | **KV cache compaction** | `attention-matching-kv-compaction.md` | ACTIVE — L1-L4+L4b merged to production, native ggml compaction. P2 coding benchmarks pending |
 | **KV cache selection** | `triattention-kv-selection.md` | ACTIVE — Expected Attention (S1) + TriAttention (S2) evaluation |
-| **Cross-instance KV sharing** | `dynamic-stack-concurrency.md` (Phase F) | PLANNED — KVCOMM for homogeneous worker pools (intake-352) |
+| **Cross-instance KV sharing** | `dynamic-stack-concurrency.md` Phase F (F1-F4) | PLANNED — q4_0 offset estimation, anchor pool, ConcurrencyAwareBackend, `prefill_speedup_coder_pool` metric. **Ownership**: routing-and-optimization (primary); Phase F status mirrored in landscape table above for discoverability. |
 | Tree speculation | `completed/tree-speculation-numa-drafting.md` | COMPLETE — tree ≈ linear at 48t |
 | DFlash block diffusion | `completed/dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
 | SSM/hybrid acceleration | `completed/ssm-hybrid-acceleration.md` | COMPREHENSIVE — NUMA is the answer |
