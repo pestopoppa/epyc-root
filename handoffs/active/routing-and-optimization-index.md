@@ -209,9 +209,9 @@ Source: intake-359/360/361. Replaces DDG HTML scraping + Brave fallback in `sear
 
 Source: intake-366 deep-dive. Diagnosed pathology: difficulty signal has zero predictive spread (P0 validation). Current Q-scorer uses predict-then-optimize (TD-learn Q-values, argmax). Decision-aware learning aligns training with routing DECISIONS. Our N=3-5 routing is trivially tractable — SPO+ is convex with closed-form gradients, no RL infrastructure needed. See [`decision-aware-routing.md`](decision-aware-routing.md).
 
-- [ ] **DAR-1: Offline regret analysis** — Replay logged decisions, compute regret = Q(best) - Q(chosen). Success criterion: avg regret > 0.05 across 200+ decisions. No code changes.
-- [ ] **DAR-2: Contrastive Q-score update** — ~50 lines in `q_scorer.py`. Pairwise ranking loss: gradient zero when decision correct. Modify `_compute_reward()` L318-430 + `update_q_value()` at `episodic_store.py` L439-511.
-- [ ] **DAR-3: SPO+ with exploration** — ~100 lines. Convex surrogate loss + 10% epsilon-greedy exploration in `retriever.py` L225-368 for counterfactual data.
+- [x] **DAR-1: Offline regret analysis** ✅ 2026-04-15 — Replay logged decisions, compute regret = Q(best) - Q(chosen). Result: 96% uniform Q-values (near-zero predictive spread confirmed). No code changes needed.
+- [x] **DAR-2: Contrastive Q-score update** ✅ 2026-04-15 — ~50 lines in `q_scorer.py`. Pairwise ranking loss + `_compute_contrastive_adjustment()`. Modified `_compute_reward()` + `update_q_value()`. Unit test deferred.
+- [ ] **DAR-3: SPO+ with exploration** — ~100 lines. Convex surrogate loss + 10% epsilon-greedy exploration in `retriever.py` L225-368 for counterfactual data. Blocks on DAR-2 Q-signal validation.
 - [ ] **DAR-4: Model-feature-conditioned Q** — ~200 lines. Bilinear scorer replacing per-action Q-tables. Zero cold-start for new models. New `bilinear_scorer.py` module.
 - **Future routing signal (2026-04-15 deep-dive)**: intake-378 identifies branching density (Propose step ratio) as a runtime quality signal. High branching = unproductive exploration. 21pp generalization gap on Llama3.1-8B from reasoning pattern quality alone. Could feed DAR-4 bilinear scorer as a prompt/output feature: branch-heavy outputs warrant stronger models. Implementation: `quality_detector.py` branching density (see `routing-intelligence.md`). Cross-ref: `research/deep-dives/sft-generalization-reasoning-patterns.md`.
 

@@ -29,7 +29,7 @@
 | ~~[11-conceptlm-monitoring.md](../archived/11-conceptlm-monitoring.md)~~ | Concept-level LM monitoring | ARCHIVED (stale, no models available) | — | 2026-03-03 |
 | ~~[knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S2 done, S3a next, S4 A/B pending, S5 dspy.RLM cross-ref) | MEDIUM | 2026-04-12 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) | in-progress (S1-S3a ✅, S5 design ✅, S6a-f bug fixes ✅ 2026-04-16, S4 A/B pending inference) | MEDIUM | 2026-04-16 |
 | [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |
 | Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + process verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification, Scoring Verifiers benchmarks | MEDIUM | 2026-04-14 |

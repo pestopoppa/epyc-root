@@ -70,7 +70,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 |---------|--------|--------|----------|-------------|
 | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | S1-S4 done (ONNX Runtime, 180ms, PyLate eliminated), S5 gated on AR-3 data | MEDIUM | 2026-04-14 |
 | [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
-| [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | stub (S1 done) | LOW | 2026-04-05 |
+| [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | S1 done; S2-S5 queued; priority elevated (formalizer-overthinking + Math-Verify intake-377 + cost-reduction hypothesis arxiv:2504.06514) | **MEDIUM** | 2026-04-15 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research, I +3 DAR/ThinkPRM**) | HIGH | 2026-04-15 |
 | [non-inference-backlog.md](../completed/non-inference-backlog.md) | Cross-cutting code tasks | ✅ **COMPLETE** 2026-04-12 — archived to completed/ 2026-04-17 | ~~MEDIUM~~ | 2026-04-12 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache compression (EA) | **DEPLOYED** — EA scorer in production kernel + server endpoint + autopilot. S4/S5/S6/S7 done. Next: S8 autopilot exploration → S9 orchestrator auto-trigger | HIGH | 2026-04-14 |

@@ -277,34 +277,14 @@ All core infrastructure verified in code as of 2026-04-01:
 
 ### HIGH priority (next compute session)
 
-1. **AR-3 continuation**: Relaunch — `python scripts/autopilot/autopilot.py start --tui`
+1. **AR-3 continuation**: Relaunch with new Phase 5 per-role seeder — `python scripts/autopilot/autopilot.py start --tui`
    - Run 2 (2026-04-02–04): 46 trials, 7 frontier. One useful change: `get_direct_answer_prefix()` in resolver.py (q 2.4→3.0)
    - **Corruption incident**: Trial ~25 replaced escalation.py (454→3 lines). API down 11+ hours. Safety hardened (5 gaps fixed).
    - ~~T0 saturated at q=3.0~~ **FIXED**: Hybrid eval (T0 fast-reject + T1 real gate) now gives honest signal per trial.
    - Baseline recalibrated to T1 scale (q=1.16). Safety gate tier-aware.
-   - State at trial_counter=46
+   - Phase 5 seeder refactor (2026-04-17) completed — restart with fresh baseline.
 
-
-2. **AP-14: Structured deficiency classification** — Add `deficiency_category` enum to `JournalEntry` in `experiment_journal.py`. Values: QUALITY_FLOOR, REGRESSION, PER_SUITE, ROUTING_DIVERSITY, THROUGHPUT, CONSECUTIVE_FAILURES, CODE_VALIDATION, SHRINKAGE, REVERT. Auto-populated from SafetyGate violation type. Enables journal filtering by failure mode and downstream pattern detection in PromptForge.
-   - Source: intake-265 deep-dive (AutoResearchClaw structured error taxonomy)
-
-3. **AP-15: Species field verification audit** — Verify all 5 species populate `hypothesis` + `expected_mechanism` during AR-3. AP-8 added fields; confirm Seeder, NumericSwarm, PromptForge, StructuralLab, EvolutionManager actually fill them.
-   - Acceptance: 100% of trials have non-empty hypothesis + expected_mechanism in JSONL
-   - Source: intake-265 deep-dive
-
-4. **AP-16: Instruction token budget tracking** — Add `instruction_token_count` (int) and `instruction_token_ratio` (float) to `EvalResult` in `eval_tower.py`.
-   - Implementation: In `run_eval()`, before scoring, count tokens in all loaded `.md` templates (resolver, escalation, tool policy prompts) using `LlamaTokenizer` (already available). Ratio = instruction_tokens / total_input_tokens.
-   - Emit via `to_grep_lines()`: `METRIC instruction_tokens: N` and `METRIC instruction_ratio: 0.XX`.
-   - Add to `JournalEntry` for longitudinal tracking.
-   - Alert: log warning if ratio > 0.20 (intake-272 threshold).
-   - Acceptance: metric appears in JSONL for 10+ consecutive trials.
-   - Source: intake-272 (AGENTS.md eval 20%+ cost), intake-271 (14-22% overhead)
-
-5. **AP-17: Structural pruning in StructuralLab** — New `structural_prune` action type.
-   - Implementation: `structural_lab.py` proposes block-level deletions from `.md` prompt files (full sections, not line-edits). Uses same allowlist as code_mutation.
-   - Safety: deleted block saved in journal for rollback. Quality must be >= baseline AND instruction_token_ratio must decrease.
-   - Depends on AP-16 (need the metric to evaluate prune impact).
-   - Source: intake-272 (context files hurt), intake-271 (failure-driven only)
+*(AP-14/15/16/17 moved to Completed Work — all ✅ 2026-04-07 per routing-and-optimization-index P11. See Implementation Status section below.)*
 
 ### P10 — GEPA PromptForge Integration (intake-327/345/240)
 
