@@ -1,6 +1,6 @@
 # YaRN Context Extension Research
 
-**Status**: STUB — for future research
+**Status**: ⚠️ QUEUED FOR BLOCKED MOVE (2026-04-17 audit — 24d stale; blocker P3 long-context eval datasets resolved 2026-04-05 but no pickup). **Gate to reactivate**: context_extension becomes a concrete workload requirement. Move `active/` → `blocked/` pending directory permissions fix.
 **Created**: 2026-03-09
 **Priority**: LOW
 **Workstream**: Research

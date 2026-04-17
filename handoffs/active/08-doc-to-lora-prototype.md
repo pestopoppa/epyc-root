@@ -1,6 +1,6 @@
 # Doc-to-LoRA Prototype
 
-**Status**: ACTIVE (low priority — reference material, not urgent)
+**Status**: ⚠️ QUEUED FOR ARCHIVE (2026-04-17 audit — 31d stale, use case "largely solved by existing tooling", Phase B blocked on cloud GPU). Findings 1-8 retained as reference. Move `active/` → `archived/` pending directory permissions fix.
 **Created**: 2026-03-03
 **Revised**: 2026-03-17 (added QVAC Fabric/BitNet research context, Finding 8, Phase A-bis)
 **Priority**: P3 — low priority, high-effort experimental

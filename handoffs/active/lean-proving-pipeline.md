@@ -1,6 +1,6 @@
 # Lean 4 Proving Pipeline — Leanstral + Goedel-Code-Prover
 
-**Status**: stub
+**Status**: ⚠️ QUEUED FOR BLOCKED MOVE (2026-04-17 audit — 20d stale; stub with no progress; no owner; cross-repo coordination unassigned). **Gate to reactivate**: assign S1 owner (Goedel-CP-8B GGUF convert, lowest-effort entry). Move `active/` → `blocked/` pending directory permissions fix.
 **Created**: 2026-03-28 (via research intake deep dive)
 **Categories**: specialist_models, formal_verification, moe_optimization
 **Depends on**: hermes-agent-index.md (OpenGauss context), kv-cache-quantization.md (REAP infrastructure)

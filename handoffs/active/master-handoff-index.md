@@ -82,6 +82,11 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [decision-aware-routing.md](decision-aware-routing.md) | Q-scorer decision-aware learning | NEW — 4-phase experiment (regret analysis → contrastive → SPO+ → bilinear) | HIGH | 2026-04-14 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification | MEDIUM | 2026-04-14 |
 | [qwen36-production-upgrade.md](qwen36-production-upgrade.md) | Model upgrade evaluation | IN-PROGRESS — GGUF downloaded (Q4_K_M+Q8_0), deep dive confirms drop-in replacement. Benchmark pending. | **HIGH** | 2026-04-17 |
+| [learned-routing-controller.md](learned-routing-controller.md) | Routing classifier training | Phase 1 ✅ (92% val acc, 157K samples, flag enabled); P1.5 logit probe + P2.3-2.6 hidden-state probes + P3 BGE elimination pending | **HIGH** | 2026-04-15 |
+| [parallel-seeding-eval.md](parallel-seeding-eval.md) | Seeding harness throughput | READY (no blockers); 2x AR-3 throughput candidate. Needs ~200 LoC (`parallel_seeding.py`, `seeding_port_sets.py`). | MEDIUM | 2026-04-14 |
+| [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Per-request `</think>` budget | READY — 4-step llama.cpp-experimental investigation plan; no owner. Workaround: `--jinja` removed from architect_general (coarse). | MEDIUM | 2026-04-17 |
+| [readme-refresh.md](readme-refresh.md) | Documentation | GATED on AR-3 trial ≥100 (currently ~78). 4 numbered tasks: epyc-root + epyc-orchestrator + epyc-inference-research READMEs + autopilot plots snapshot. | LOW | 2026-04-14 |
+| [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Cross-repo upstreaming | Epyc-root side DONE (KB linter, brevity templates, wiki.yaml, wiki compile). 3 tasks remain in root-archetype repo (no local clone). | LOW | 2026-04-14 |
 
 ---
 
