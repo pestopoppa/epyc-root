@@ -164,3 +164,14 @@ After completing any task:
 
 - `research/deep-dives/opengauss-architecture-analysis.md` — 10 architectural patterns identified
 - `research/deep-dives/langgraph-ecosystem-comparison.md` — Agent Protocol naming alignment
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+- **[intake-388] "Hermes Agent Reasoning Traces"** (huggingface.co/datasets/lambda/hermes-agent-reasoning-traces)
+  - Relevance: 14,701 multi-turn tool-calling trajectories from Hermes Agent harness. Real tool execution (terminal, file ops, browser), not synthetic. Two configs: Kimi-K2.5 (7,646 samples, avg 24.3 turns) and GLM-5.1 (7,055 samples, avg 19.1 turns). Apache 2.0.
+  - Key technique: ShareGPT format with `<think>` reasoning blocks + `<tool_call>` invocations + `<tool_response>` results. 9 task categories including Terminal & Coding, Repository Tasks, Browser Automation.
+  - Delta from current approach: Our Hermes integration focuses on cherry-picking architectural patterns. This dataset provides real agent behavior traces that could be used for fine-tuning local models on agentic tool use — directly complementing the outer shell work.
+- **[intake-393] "Hermes Agent Traces Filtered"** (huggingface.co/datasets/DJLougen/hermes-agent-traces-filtered)
+  - Relevance: Quality-filtered subset (3,679 of 7,646 rows, ~48% kept). Filtered on reasoning depth, structural integrity, tool-call JSON validity, deliberate tool selection reasoning, self-correction patterns. 14x deeper think blocks, 2x self-correction rate.
+  - Delta: Higher quality for fine-tuning — removes trivial/noisy traces. Designed as Stage 2 dataset on top of strong reasoning models.

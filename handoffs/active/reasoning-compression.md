@@ -346,3 +346,16 @@ The formalizer pipeline (`mathsmith-hc-formalizer-eval.md`, `src/formalizer.py`)
 - **Compression** reduces OUTPUT tokens: prunes redundant reasoning after generation (Tier 1), steers toward conciseness (Tier 2), or trains for shorter traces (Tier 3)
 
 Theoretical link: CIB (Conditional Information Bottleneck, `research/deep-dives/overthinking-info-bottleneck.md`) shows formalizer raises I(Z; Y | X), which Proposition 4.1 proves reduces optimal reasoning length. The S4 A/B test in the formalizer handoff should measure total pipeline token cost (formalizer + solver) vs solver-only baseline, at equal or better accuracy — providing empirical validation. Source: user insight connecting arxiv:2504.06514 (missing premises → overthinking) to formalizer value proposition.
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+- **[intake-386] "LongCoT: Benchmarking Long-Horizon Chain-of-Thought Reasoning"** (arxiv:2604.14140)
+  - Relevance: Directly validates compression hypothesis — frontier models achieve <10% accuracy on long-horizon reasoning (GPT 5.2: 9.8%, Gemini 3 Pro: 6.1%). Longer reasoning traces help but don't solve the problem. Accuracy falls sharply as problem DAG sizes grow.
+  - Key technique: 2,500 expert-designed problems across 5 domains requiring 10K-100K+ reasoning tokens. Deterministic verification.
+  - Reported results: Best model <10% accuracy; simple scaffolds fail to close the gap.
+  - Delta from current approach: Corroborates the core insight behind reasoning compression — unbounded reasoning is harmful. Also relevant as a benchmark for evaluating our compressed-reasoning models.
+- **[intake-392] "Limited Reasoning Space: The cage of long-horizon reasoning in LLMs"** (arxiv:2602.19281)
+  - Relevance: Provides theoretical grounding for why longer reasoning degrades performance — the "Limited Reasoning Space" hypothesis explains attention diffusion in extended chains.
+  - Key technique: Halo framework uses model predictive control with entropy-driven dual controller for adaptive reasoning budget.
+  - Delta from current approach: Aligns with our Tier 1-3 compression taxonomy. The Halo "Measure-then-Plan" strategy is a dynamic variant of reasoning budget control — complementary to per-request-reasoning-budget.md.

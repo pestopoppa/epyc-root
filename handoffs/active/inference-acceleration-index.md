@@ -390,3 +390,15 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
 - At very long sequences (S ≫ model dim): attention exceeds 50% of MACs, transitions to compute-bound
 - This means: GPU most beneficial for prefill and long-context attention, not short-context decode
 - Our NUMA 4-way remains optimal for short-context decode; GPU would complement for prefill/long-context
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+- **[intake-387] "Qwen3.6-35B-A3B: Agentic Coding Power, Now Open to All"** (Qwen Team, April 2026)
+  - Relevance: **Direct successor to production model Qwen3.5-35B-A3B.** Same Gated DeltaNet + MoE architecture (10×(3×GDN→MoE → 1×Attn→MoE)), 256 experts, 8+1 active. Improved benchmarks: SWE-bench Verified 73.4% (up from 70.0), Terminal-Bench 2.0 51.5% (up from 40.5). New features: preserve_thinking, enhanced tool calling.
+  - Key technique: Drop-in architecture upgrade. GGUF quantizations available (unsloth/Qwen3.6-35B-A3B-GGUF). Q4_K_M = 22.1 GB.
+  - Reported results: +3.4pp SWE-bench, +11pp Terminal-Bench, +5pp SWE-bench Pro over Qwen3.5.
+  - Delta from current approach: Our production stack runs Qwen3.5-35B-A3B. This is a parameter-for-parameter upgrade with the same architecture our llama.cpp fork already supports. **Warrants immediate GGUF benchmark on EPYC hardware.**
+- **[intake-391] Qwen3.6-35B-A3B GGUF (unsloth)** (huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF)
+  - Relevance: GGUF quantizations ready for llama.cpp. Q4_K_M = 22.1 GB, Q8_0 = 36.9 GB. Full range from IQ1_M (10 GB) to BF16 (69.4 GB).
+  - Delta: Removes conversion blocking step — download and benchmark directly.

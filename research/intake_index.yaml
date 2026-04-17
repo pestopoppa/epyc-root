@@ -13807,3 +13807,429 @@
     calibration. Consider augmenting with SimpleQA failures from
     seeding logs (already identified as source candidate in
     routing-intelligence Phase 4 notes).
+- id: intake-384
+  url: https://prismml.com/news/ternary-bonsai
+  source_type: blog
+  arxiv_id: null
+  title: 'Introducing Ternary Bonsai: Top Intelligence at 1.58 Bits'
+  authors:
+  - PrismML
+  categories:
+  - quantization
+  - local_inference
+  key_claims:
+  - '1.58-bit ternary weights {-1, 0, +1} achieve 9x memory reduction vs FP16 with competitive performance'
+  - 'Ternary Bonsai 8B scores 75.5 avg benchmark (vs 70.5 for 1-bit Bonsai 8B) in 1.75 GB footprint'
+  - '82 tok/s on M4 Pro, 27 tok/s on iPhone 17 Pro Max; 3-4x energy efficiency vs FP16'
+  - 'Group-wise quantization: 128 weights share one FP16 scale factor'
+  - 'Models available at 8B, 4B, 1.7B sizes, Apache 2.0, MLX framework'
+  techniques:
+  - ternary weight quantization
+  - group-wise scale factors
+  - trained-from-scratch ternary models
+  reported_results: '8B: 75.5 avg benchmark, 1.75GB, 82 tok/s M4 Pro. Original 1-bit Bonsai-8B: 70.5 avg, 1.15GB, 368 tok/s RTX 4090'
+  novelty: high
+  relevance: medium
+  credibility_score: 0
+  verdict: worth_investigating
+  discovered_via: input
+  contradicting_evidence:
+  - 'Code generation weakness: produces plausible code that fails to compile (known extreme quant limitation)'
+  - 'Scaling beyond 8B unproven — theoretical guarantee is asymptotic with unknown convergence rate'
+  - 'Independent validation lacking — benchmarks are self-reported by PrismML only'
+  - 'Hardware-limited: current speedup from memory savings, not ternary compute exploitation'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - routing-intelligence.md
+    completed:
+    - kv-cache-quantization.md
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    REVISED (user feedback): Original 1-bit Bonsai-8B (Q1_0 format, 1.15 GB,
+    Qwen3-8B base) has GGUF support via PrismML llama.cpp fork
+    (github.com/PrismML-Eng/llama.cpp). Q1_0 kernels not in upstream yet.
+    70.5 avg benchmark at 1.15 GB — potential ultra-fast cheap-first/worker
+    model for simple routing tasks, first-pass filtering, or draft model for
+    speculative decoding. Ternary Bonsai (1.58-bit, 75.5 avg) is still MLX-only.
+    Code generation is weak — not suitable for coding tasks. Worth investigating
+    for non-coding cheap-first routing: classification, summarization, simple QA.
+    Would need to cherry-pick Q1_0 kernel support into our llama.cpp fork.
+- id: intake-385
+  url: https://huggingface.co/blog/continuous_batching
+  source_type: blog
+  arxiv_id: null
+  title: 'Continuous Batching from First Principles'
+  authors:
+  - Remi Ouazan Reboul
+  - Arthur Zucker
+  - Luc Georges
+  categories:
+  - inference_serving
+  - kv_cache
+  key_claims:
+  - 'Continuous batching maximizes LLM serving throughput by dynamically swapping completed conversations'
+  - 'KV-caching reduces compute from O(n^2) to O(n) by avoiding recomputation'
+  - 'Ragged batching eliminates padding waste entirely vs padded batching'
+  - 'Chunked prefill enables flexible prompt processing within memory constraints'
+  techniques:
+  - continuous batching
+  - ragged batching
+  - chunked prefill
+  - dynamic scheduling
+  - KV-caching
+  reported_results: 'Educational article — no empirical benchmark results'
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: already_integrated
+  discovered_via: input
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - inference-acceleration-index.md
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    Educational explainer of well-known techniques. llama.cpp server already implements
+    continuous batching. Useful as reference for batching terminology. Part of
+    HuggingFace blog series — next article covers paged attention.
+- id: intake-386
+  arxiv_id: '2604.14140'
+  url: https://arxiv.org/abs/2604.14140
+  source_type: paper
+  title: 'LongCoT: Benchmarking Long-Horizon Chain-of-Thought Reasoning'
+  authors:
+  - Sumeet Ramesh Motwani
+  - Daniel Nichols
+  - Charles London
+  - et al.
+  categories:
+  - benchmark_methodology
+  - context_extension
+  key_claims:
+  - 'Best frontier models achieve <10% accuracy on long-horizon reasoning (GPT 5.2: 9.8%, Gemini 3 Pro: 6.1%)'
+  - '2,500 expert-designed problems across chemistry, math, CS, chess, logic requiring 10K-100K+ reasoning tokens'
+  - 'Accuracy falls sharply as problem DAG sizes grow — failures stem from long-horizon reasoning, not repeated short-reasoning errors'
+  - 'Simple scaffolds (tool use, self-consistency) fail to close the gap'
+  - 'Individual steps are solvable; composition is the challenge'
+  techniques:
+  - long-horizon reasoning benchmark
+  - deterministic verification across 5 domains
+  - dependency graph complexity analysis
+  reported_results: 'GPT 5.2: 9.8%, Gemini 3 Pro: 6.1%, ~62K tokens/question avg'
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  verdict: new_opportunity
+  discovered_via: input
+  contradicting_evidence:
+  - 'No contradicting evidence for core finding. Multiple corroborating works (Limited Reasoning Space, SokoBench, R-Horizon) all confirm scaling failure.'
+  - 'Possible limitation: domains may not represent all reasoning types — no natural language or ethical reasoning tasks included'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - bulk-inference-campaign.md
+    - reasoning-compression.md
+    - eval-tower-verification.md
+    - per-request-reasoning-budget.md
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: >
+    Validates reasoning compression hypothesis — unbounded reasoning is harmful.
+    Benchmark could be run on local models to calibrate eval suite. Two tiers:
+    LongCoT-Mini (~500 easy) and full LongCoT (~2000 medium+hard). Code at
+    github.com/LongHorizonReasoning/longcot, dataset on HuggingFace.
+- id: intake-387
+  url: https://huggingface.co/Qwen/Qwen3.6-35B-A3B
+  source_type: blog
+  arxiv_id: null
+  title: 'Qwen3.6-35B-A3B: Agentic Coding Power, Now Open to All'
+  authors:
+  - Qwen Team
+  categories:
+  - moe_optimization
+  - ssm_hybrid
+  - inference_serving
+  key_claims:
+  - 'Direct successor to Qwen3.5-35B-A3B with same architecture: 10x(3xGDN->MoE -> 1xAttn->MoE), 256 experts, 8+1 active'
+  - 'SWE-bench Verified 73.4% (up from 70.0), Terminal-Bench 2.0 51.5% (up from 40.5)'
+  - 'New preserve_thinking feature retains reasoning context across multi-turn conversations'
+  - '262K native context, extensible to 1M+ with YaRN scaling'
+  - '35B total / 3B active parameters — same compute footprint as predecessor'
+  techniques:
+  - Gated DeltaNet + Gated Attention hybrid
+  - sparse MoE (256 experts, 8+1 active)
+  - preserve_thinking for iterative reasoning
+  - YaRN context extension
+  reported_results: 'SWE-bench Verified 73.4%, Terminal-Bench 51.5%, MMLU-Pro 85.2%, AIME26 92.7%'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: new_opportunity
+  discovered_via: input
+  contradicting_evidence:
+  - 'BenchLM provisional ranking #41/109 overall — strong in coding (#15) but weaker in knowledge (#38)'
+  - 'Benchmarks are self-reported by Qwen team. Independent validation pending.'
+  - 'Reasoning mode incurs higher latency and token usage'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - log-linear-gated-deltanet-readiness.md
+    - multiscreen-attention-evaluation.md
+    - learned-routing-controller.md
+    - bulk-inference-campaign.md
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created:
+  - qwen36-production-upgrade.md
+  notes: >
+    CRITICAL: Direct successor to production model. Same architecture means
+    llama.cpp fork should support with zero patches. GGUF available from unsloth
+    (Q4_K_M = 22.1 GB). Warrants immediate benchmark on EPYC hardware.
+    Released April 16, 2026.
+- id: intake-388
+  url: https://huggingface.co/datasets/lambda/hermes-agent-reasoning-traces
+  source_type: blog
+  arxiv_id: null
+  title: 'Hermes Agent Reasoning Traces'
+  authors:
+  - Lambda
+  - Nous Research
+  categories:
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - '14,701 multi-turn tool-calling trajectories with real tool execution (not synthetic)'
+  - 'Two configs: Kimi-K2.5 (7,646 samples, avg 24.3 turns, 13.9 tool calls) and GLM-5.1 (7,055 samples)'
+  - '9 task categories: Terminal & Coding, Agent Tools, Repository Tasks, Browser Automation, etc.'
+  - 'ShareGPT format with <think> reasoning + <tool_call> + <tool_response> blocks'
+  - '1.62 GB total, Apache 2.0 license'
+  techniques:
+  - real agent trajectory collection
+  - multi-turn tool-calling traces
+  - reasoning-augmented agent data
+  reported_results: '14,701 trajectories, 185K+ turns (kimi), 134K+ turns (glm-5.1)'
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: input
+  contradicting_evidence:
+  - 'Quality-filtered version keeps only 48% of rows — suggests significant noise in raw dataset'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+    - hermes-outer-shell.md
+    - reasoning-compression.md
+  handoffs_updated:
+  - hermes-agent-index.md
+  handoffs_created: []
+  notes: >
+    Directly relevant to Hermes Agent integration. Real tool execution traces
+    from production harness. Could fine-tune local models on agentic tool use.
+    Quality varies — filtered version (intake-393) recommended for training.
+    8+ derived models already trained.
+- id: intake-389
+  arxiv_id: '2604.08706'
+  url: https://arxiv.org/abs/2604.08706
+  source_type: paper
+  title: 'Efficient RL Training for LLMs with Experience Replay'
+  authors:
+  - Charles Arnal
+  - Vivien Cabannes
+  - Taco Cohen
+  - Julia Kempe
+  - Remi Munos
+  categories:
+  - training_distillation
+  key_claims:
+  - 'Experience replay reduces inference compute by up to 40% while maintaining or improving accuracy'
+  - 'Strict on-policy sampling is suboptimal when generation costs are high'
+  - 'Replay buffers act as regularizers that stabilize training and preserve output diversity'
+  - 'Optimal buffer design balances staleness, diversity, and inference cost'
+  - 'Pass@k improves with moderate replay, suggesting increased training distribution diversity'
+  techniques:
+  - FIFO circular replay buffer for GRPO
+  - positive-bias sampling
+  - compute ratio optimization
+  reported_results: 'Up to 40% compute savings on MATH benchmarks (Qwen2.5-7B, Qwen3-0.6B with GRPO)'
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  discovered_via: input
+  contradicting_evidence:
+  - 'No contradicting evidence found — possible confirmation bias risk'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs: []
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    We dont train LLMs — our stack is inference-only. Technique is theoretically
+    sound but not actionable for EPYC. May become relevant if we pursue
+    fine-tuning via reasoning-compression Tier 3 approaches.
+- id: intake-390
+  url: https://github.com/ggml-org/llama.cpp/pull/21344
+  source_type: repo
+  arxiv_id: null
+  title: 'llama.cpp PR #21344: gfx1151 nwarps, tile sizing to curb VGPR pressure'
+  authors:
+  - pedapudi
+  categories:
+  - hardware_optimization
+  - local_inference
+  key_claims:
+  - 'AMD RDNA3.5 (gfx1151) GPU kernel tuning: mmq_x_max=48, mmq_y=64, nwarps=4'
+  - 'Prefill speedups on Qwen3.5-122B Q4_K_M: pp128 +73%, pp256 +54%, pp512 +33%, pp1024 +17%'
+  - 'Dedicated RDNA3.5 MMVQ config instead of reusing RDNA2 settings'
+  techniques:
+  - VGPR pressure reduction via nwarps/tile sizing
+  - RDNA3.5-specific MMQ kernel tuning
+  reported_results: 'pp128 +73%, pp256 +54%, pp512 +33%, pp1024 +17% on gfx1151'
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+  handoffs_updated: []
+  handoffs_created: []
+  notes: >
+    AMD consumer GPU optimization (RDNA3.5 / gfx1151). Not applicable to our
+    CPU-centric EPYC 9655 stack. We dont have RDNA3.5 hardware. The
+    gpu-acceleration-path targets DGX Spark (NVIDIA GB10), not AMD consumer GPUs.
+    PR is still open.
+- id: intake-391
+  url: https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF
+  source_type: repo
+  arxiv_id: null
+  title: 'Qwen3.6-35B-A3B GGUF Quantizations (Unsloth)'
+  authors:
+  - Unsloth
+  categories:
+  - moe_optimization
+  - ssm_hybrid
+  - local_inference
+  key_claims:
+  - 'Full GGUF quantization range: IQ1_M (10GB) to BF16 (69.4GB)'
+  - 'Q4_K_M = 22.1 GB — matches Qwen3.5 Q4_K_M footprint'
+  - 'Unsloth Dynamic 2.0 optimization for improved quantization quality'
+  techniques:
+  - GGUF quantization
+  - Unsloth Dynamic 2.0
+  reported_results: 'Quantization sizes published; no inference benchmarks'
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-387
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - inference-acceleration-index.md
+    - qwen36-production-upgrade.md
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created: []
+  notes: >
+    GGUF quantizations ready for immediate download and benchmark. Q4_K_M is
+    22.1 GB — fits production memory budget. Same architecture as Qwen3.5 so
+    llama.cpp fork should support without patches.
+- id: intake-392
+  arxiv_id: '2602.19281'
+  url: https://arxiv.org/abs/2602.19281
+  source_type: paper
+  title: 'Limited Reasoning Space: The cage of long-horizon reasoning in LLMs'
+  authors:
+  - Zhenyu Li
+  - Guanlin Wu
+  - Cheems Wang
+  - Yongqiang Zhao
+  categories:
+  - benchmark_methodology
+  - context_extension
+  key_claims:
+  - 'Over-planning degrades LLM performance — exceeding optimal compute budget generates redundant feedback'
+  - 'Static planning approaches fail to recognize boundaries of effective reasoning'
+  - 'Attention distribution becomes critically diffuse in extended reasoning chains'
+  - 'Proposes Halo framework with entropy-driven dual controller for adaptive reasoning budget'
+  techniques:
+  - Limited Reasoning Space hypothesis
+  - Halo framework (model predictive control)
+  - entropy-driven dual controller
+  - Measure-then-Plan strategy
+  reported_results: 'Theoretical analysis using non-autonomous stochastic dynamical systems'
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-386
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: >
+    Provides theoretical grounding for LongCoT findings and reasoning compression.
+    Halo frameworks adaptive reasoning budget aligns with per-request reasoning
+    budget work. Measure-then-Plan is a dynamic complement to static budget allocation.
+- id: intake-393
+  url: https://huggingface.co/datasets/DJLougen/hermes-agent-traces-filtered
+  source_type: blog
+  arxiv_id: null
+  title: 'Hermes Agent Traces Filtered (Quality-Filtered Subset)'
+  authors:
+  - DJLougen
+  categories:
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - 'Quality-filtered from 7,646 to 3,679 rows (48% kept) using automated structural analysis'
+  - '14x deeper think blocks, 2x self-correction rate vs raw dataset'
+  - '100% valid JSON in tool calls (filtered malformed entries)'
+  - 'Designed as Stage 2 fine-tuning dataset on strong reasoning base models'
+  techniques:
+  - automated quality filtering
+  - reasoning depth scoring
+  - tool-call validity verification
+  - self-correction pattern detection
+  reported_results: '3,679 high-quality trajectories, 100% valid JSON, 14x deeper reasoning'
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-388
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - hermes-agent-index.md
+  handoffs_updated:
+  - hermes-agent-index.md
+  handoffs_created: []
+  notes: >
+    Higher quality subset of intake-388. If we pursue fine-tuning local models
+    for agentic tool use, this filtered version is preferable. Filtering methodology
+    (reasoning depth, self-correction) aligns with reasoning compression principles.

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-17 (Phase 5 seeder refactor: 3-way→per-role eval + blacklist cleanup + model signatures)
+**Updated**: 2026-04-17 (Research intake: 10 entries, Qwen3.6 production upgrade handoff created, 3 model downloads)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -55,7 +55,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE** (3-way→per-role, blacklist cleanup, model sigs), P6 RI-10 canary, P7-P9 pending, P10/P11 non-inference DONE. AR-3 needs restart with new seeder. |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 3 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), **NEW: Qwen3.6 production upgrade** (GGUF downloaded, benchmark pending) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
@@ -81,6 +81,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate enforces specialist routing floors (`237 passed`, `seed_specialist_routing*` at `100%` floors), strict warning gate includes legacy tests (`255 passed`), and `integration-sanity` is now fully strict (includes `PytestUnraisableExceptionWarning` as error) and green (`372 passed, 12 skipped`) after sqlite/embedder lifecycle cleanup + integration client teardown hardening. GitNexus native `npx` path remains restored/reindexed (`status: ✅ up-to-date`). | MEDIUM | 2026-04-14 |
 | [decision-aware-routing.md](decision-aware-routing.md) | Q-scorer decision-aware learning | NEW — 4-phase experiment (regret analysis → contrastive → SPO+ → bilinear) | HIGH | 2026-04-14 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification | MEDIUM | 2026-04-14 |
+| [qwen36-production-upgrade.md](qwen36-production-upgrade.md) | Model upgrade evaluation | IN-PROGRESS — GGUF downloaded (Q4_K_M+Q8_0), deep dive confirms drop-in replacement. Benchmark pending. | **HIGH** | 2026-04-17 |
 
 ---
 

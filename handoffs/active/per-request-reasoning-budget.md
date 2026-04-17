@@ -61,3 +61,13 @@ curl http://localhost:8280/v1/chat/completions \
 - `budget_tokens=512` → reasoning capped at ~512 tokens, then content follows
 - No regression on pure MoE models
 - Orchestrator can thread `thinking.budget_tokens` through ChatRequest per role
+
+## Research Intake Update — 2026-04-17
+
+### Adaptive Reasoning Budget via Attention Entropy (Halo Framework)
+- **[intake-392]** "Limited Reasoning Space" (arxiv:2602.19281) proposes replacing fixed token budgets with **entropy-based adaptive control**
+- **Mechanism**: Monitor mean attention entropy across layers during inference (O(1), <1% overhead). When accumulated uncertainty exceeds threshold → trigger semantic compression (summarize reasoning so far) + context reset.
+- **Results**: 76.4% on RULER (3x over AdaCoT), 1.29x token overhead vs Tree-of-Thoughts' 3.5x. Tested on Qwen2.5 (7B/72B), Mixtral, DeepSeek-V2-Lite.
+- **No public implementation** — but architecturally simple. The Observer reads attention distributions already computed during inference. Could be exposed as a per-layer entropy metric in llama-server API.
+- **Relevance**: Once budget_tokens enforcement works (the core problem above), entropy monitoring becomes the natural next step — adaptive budget instead of fixed cap. The Observer could feed the orchestrator a real-time "model is diverging" signal that triggers early `</think>` injection.
+- **Implementation path**: (1) Expose per-layer attention entropy in llama-server, (2) orchestrator reads entropy signal, (3) orchestrator adjusts budget_tokens dynamically per-request based on entropy trend.
