@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
-**Sources**: 18 documents (6 deep-dives, 3 active handoffs, 9 intake entries)
+**Last compiled**: 2026-04-17
+**Sources**: 21 documents (6 deep-dives, 3 active handoffs, 12 intake entries)
 
 ## Summary
 
@@ -40,6 +40,12 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - **Simple observation masking matches LLM summarization**: intake-274 (The Complexity Trap, arXiv:2508.21433) finds that stripping older tool outputs achieves the same performance as expensive LLM-based summarization for agent context management, at 50% of the cost. The hybrid approach (masking plus summarization) yields only 7-11% further gains. This directly validates our pattern-based tool output compression architecture. [intake-274](https://arxiv.org/abs/2508.21433)
 
 - **Tool output compression achieves 60-90% per command type**: Our Phase 2 native compression module implements 7 command-specific handlers (pytest, cargo test, git status/diff/log, ls, build compilers), each applying domain-appropriate strategies -- failure-focus for test runners, stats extraction for git status, error-focus for compilers. This layers upstream of the existing spill-and-truncate mechanisms for multiplicative benefit. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+
+- **Progressive-disclosure retrieval is the right pattern for compressed tool outputs**: Claude-Mem (intake-395) implements a 3-layer retrieval stack (search → timeline → get_observations) with hybrid FTS5+Chroma over AI-summarized observations, claiming ~10x token savings via batched-ID full-detail fetch only after index filtering. The architectural pattern -- index filtering before bulk fetch -- directly parallels the existing truncation+peek() architecture. The component itself is not adopted (AGPL-3.0, Bun/Node stack). [tool-output-compression handoff](../handoffs/active/tool-output-compression.md)
+
+- **Durable-workflow and snapshot-resume patterns address tool output loss on disconnect**: Open Agents (intake-397) uses Vercel Workflow SDK step persistence with stream-reconnect so tool outputs belong to sandbox state rather than agent context -- outputs survive disconnects and compaction. The pattern (control-plane / execution-sandbox separation, snapshot-based hibernate/resume) is architecturally analogous to the spill-to-file + peek() mechanism but makes sandbox state durable across long-horizon sessions. Pattern-only relevance (TS/Vercel stack). [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
+
+- **Minimal atomic tool surfaces reduce per-turn context inflation**: GenericAgent (intake-399) operates with 9 atomic tools and a <30K context budget, using dynamic tool creation via `code_run` rather than growing the tool surface. Layered L0-L4 memory replaces full-context scanning. The design principle -- prefer lazy-loaded tool outputs and skill crystallization of repeat tasks -- reinforces the existing compression-first architecture and the REPL turn efficiency goal. [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
 
 ### Reasoning Chain Compression
 

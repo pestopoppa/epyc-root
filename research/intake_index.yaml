@@ -14834,6 +14834,7 @@
   - Jean Kaddour
   categories:
   - training_distillation
+  - autonomous_research
   key_claims:
   - 'TPO decouples target distribution construction from parameter optimization — constructs closed-form target q_i proportional to p_old_i * exp(u_i/eta), fits via cross-entropy loss'
   - 'Eliminates policy gradients, clipping, and critics entirely — gradient is simply (p - q), vanishing when policy matches target'
@@ -14847,7 +14848,7 @@
   referenced_arxiv_ids:
   - '2604.06159'
   novelty: medium
-  relevance: low
+  relevance: medium
   credibility_score: null
   verdict: worth_investigating
   discovered_via: input
@@ -14857,17 +14858,20 @@
     handoffs:
     - reasoning-compression.md
     - decision-aware-routing.md
+    - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
     - intake-404
   handoffs_updated: []
   handoffs_created: []
   novelty_justification: 'Reference implementation for a novel RL training method. The technique itself is scored higher in the companion paper entry (intake-404). Repo provides reproducible code and CLI, adding implementation value beyond the paper.'
-  relevance_justification: 'EPYC does not currently RL-train LLMs — uses pre-trained models for CPU inference. Relevance is low but non-zero: if Tier 3 training (OPSDC, RLVR, FoldGRPO) materializes per reasoning-compression.md, TPO would be a strong GRPO replacement candidate. The JAX implementation is not directly usable (EPYC uses PyTorch/llama.cpp), but the algorithm is framework-agnostic.'
+  relevance_justification: 'Two integration paths: (1) Tier 3 training — if OPSDC/RLVR/FoldGRPO materializes, TPO replaces GRPO as RL backbone. (2) Autopilot NumericSwarm — TPOs core mechanism (construct target from scored samples, fit via cross-entropy) is the Cross-Entropy Method (CEM). The autopilot numeric_swarm.py uses NSGA-II/Optuna over 23 continuous+discrete params with 4D Pareto scoring. A CEM-style sampler derived from TPOs target construction could replace or augment NSGA-II, particularly if hypervolume stagnation is observed. Full control surface embedding (66+ dims including flags) is infeasible due to heterogeneous action space and expensive evaluations, but the 23-param numeric surface is tractable.'
   notes: >
     Companion repo for arxiv:2604.06159. Clean JAX codebase with uv-based setup
-    and optional CUDA support. Worth bookmarking if Tier 3 RL training enters
-    the active pipeline.
+    and optional CUDA support. Two relevance paths: (1) Tier 3 RL training
+    pipeline, (2) autopilot numeric optimizer — TPOs target construction is
+    CEM, a direct alternative to NSGA-II for the 23-param numeric surface.
+    The bandit implementation in the repo is closest to the autopilot use case.
 
 - id: intake-404
   url: https://arxiv.org/abs/2604.06159
@@ -14878,6 +14882,7 @@
   - Jean Kaddour
   categories:
   - training_distillation
+  - autonomous_research
   key_claims:
   - 'TPO separates target distribution construction from parameter optimization — given scored completions, constructs q_i proportional to p_old_i * exp(u_i/eta) and fits via cross-entropy. Gradient is (p - q), vanishing at convergence.'
   - 'Under sparse/terminal rewards, TPO substantially outperforms PG, PPO, GRPO, and DG — at sequence length H=10 with terminal reward: TPO 7.4% error vs GRPO 50.4%, PPO fails to converge'
@@ -14906,7 +14911,7 @@
   - '2602.05547'
   - '2602.02710'
   novelty: high
-  relevance: low
+  relevance: medium
   credibility_score: 2
   verdict: worth_investigating
   discovered_via: input
@@ -14916,20 +14921,204 @@
     handoffs:
     - reasoning-compression.md
     - decision-aware-routing.md
+    - autopilot-continuous-optimization.md
     experiments: []
     intake_entries:
     - intake-403
   handoffs_updated:
   - reasoning-compression.md
+  - autopilot-continuous-optimization.md
   handoffs_created: []
   novelty_justification: 'Novel RL training method that replaces policy gradients with cross-entropy fitting of a closed-form target distribution. Strong empirical results, particularly on sparse-reward tasks where GRPO collapses (7.4% vs 50.4% at H=10). Multi-epoch stability property is architecturally significant — GRPO degrades non-monotonically with epoch count. No prior coverage in chapters or experiments.'
-  relevance_justification: 'EPYC is an inference-focused stack that does not RL-train LLMs. Relevance is low but non-zero: (1) reasoning-compression Tier 3 references GRPO-based training (OPSDC, RLSD, FoldGRPO) — TPO would be a direct replacement if any of these activate. (2) The sparse-reward insight is particularly relevant because reasoning verification rewards are binary (correct/incorrect), which is exactly where TPO excels. (3) decision-aware-routing mentions SPO+ loss for Q-scorer training — TPOs cross-entropy approach is conceptually adjacent but for a different regime.'
+  relevance_justification: 'Two integration paths elevate relevance to medium: (1) Tier 3 training — reasoning-compression references GRPO-based training (OPSDC, RLSD, FoldGRPO). TPO is a direct GRPO replacement, especially strong on sparse binary rewards (reasoning verification). (2) Autopilot NumericSwarm — TPOs core mechanism (q_i proportional to p_old * exp(score), fit via cross-entropy) is the Cross-Entropy Method (CEM). The autopilot numeric_swarm.py uses NSGA-II/Optuna over 5 parameter surfaces (23 params total) with 4D Pareto scoring. A CEM-style sampler could replace or augment NSGA-II for the numeric surface. Full control surface (66+ dims with flags) is infeasible — heterogeneous action space (numeric + text mutations + binary flags) and expensive eval tower (30s-30min per trial) make K-rollout groups prohibitive. The 23-param numeric surface is tractable. The papers bandit experiments (single-context K=100, multi-context N=100 K=10) are the closest structural analog to the autopilot trial loop.'
   notes: >
-    Strongest GRPO alternative in the literature to date for sparse-reward LLM
-    training. The key insight — that constructing a closed-form target and fitting
-    via cross-entropy eliminates pathological gradient behavior under sparse
-    rewards — is elegant and well-supported empirically. Limitations: (1) tested
-    only at 1.5-1.7B scale, (2) single author / no peer review yet, (3) does
-    not reduce the rollout cost (still needs K completions per context). Watch
-    for larger-scale replications and community adoption before considering for
-    any future EPYC training pipeline.
+    Strongest GRPO alternative for sparse-reward LLM training, with a secondary
+    application path via CEM for autopilot numeric optimization. Two paths:
+    PATH 1 (Tier 3 training): If OPSDC/RLVR/FoldGRPO activates, TPO replaces
+    GRPO as RL backbone. Sparse binary verification rewards are exactly where
+    TPO dominates (7.4% vs 50.4% at H=10).
+    PATH 2 (autopilot CEM): TPOs target construction is mathematically CEM.
+    The autopilots NumericSwarm (NSGA-II over 23 params, 4D Pareto) could
+    trial a CEM sampler: sample K configs from N(mu, sigma), score via eval
+    tower, refit to elite set. Requires scalarizing the 4D objectives
+    (hypervolume contribution is the natural choice). Worth prototyping if
+    NSGA-II stagnation becomes a bottleneck (hv_slope < 0.001 already
+    triggers exploration boost — CEM could be the boost mechanism).
+    Limitations: (1) paper tested at 1.5-1.7B only, (2) single author /
+    no peer review, (3) full control surface embedding infeasible.
+
+- id: intake-405
+  arxiv_id: null
+  url: https://github.com/dropbox/witchcraft
+  source_type: repo
+  title: 'Witchcraft: Rust XTR-Warp Semantic Search Engine (Dropbox)'
+  authors:
+  - Dropbox Inc.
+  categories:
+  - search_retrieval
+  - local_inference
+  - quantization
+  key_claims:
+  - From-scratch reimplementation of Stanford XTR-Warp in safe Rust with single-file SQLite backing storage
+  - 21ms p.95 end-to-end search latency on NFCorpus at 33% NDCG@10 on Apple M2 Max
+  - More than twice as fast as original XTR-WARP on server-class hardware at similar accuracy
+  - Zero external dependencies — no API keys, vector databases, chunking strategies, or re-rankers
+  - Hybrid search combining semantic XTR with BM25 via SQLite FTS
+  techniques:
+  - XTR contextualized token retrieval
+  - GGUF quantization via candle framework
+  - Hybrid BM25 + semantic search in SQLite
+  - Single-file SQLite persistence with resume capability
+  - Rust NAPI Node.js native module binding
+  - fbgemm packed GEMM operations
+  reported_results: '21ms p95 latency (M2 Max), 33% NDCG@10 (NFCorpus), 2x faster than original XTR-WARP on server-class hardware'
+  referenced_arxiv_ids:
+  - '2304.01982'
+  - '2501.17788'
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    - searxng-search-backend.md
+    experiments: []
+    intake_entries:
+    - intake-174
+    - intake-175
+    codebase: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  contradicting_evidence:
+  - '33% NDCG@10 on NFCorpus is significantly lower than ColBERT-Zero 55.43 BEIR average — XTR accuracy tradeoff for speed'
+  - 'XTR has known scalability limitations: missed relevant tokens, limited evaluation scope (BEIR-only per OpenReview)'
+  - 'No x86/EPYC benchmarks provided — 21ms claim is Apple Silicon only, no Linux/server perf data'
+  - 'WARP paper (2501.17788) showed XTR reference implementation needed 41x speedup to be competitive'
+  novelty_justification: 'Rust reimplementation of XTR-Warp with novel engineering: single-file SQLite persistence, hybrid BM25+semantic, GGUF quantized T5 via candle, zero-dependency deployment. The project already tracks ColBERT-family retrieval extensively (ColBERT-Zero, GTE-ModernColBERT, mxbai-edge-colbert) but XTR architecture is not covered. Medium because the underlying technique (XTR token retrieval) is known but the Rust/SQLite packaging is new.'
+  relevance_justification: 'Related to active search infrastructure work: colbert-reranker-web-research.md (same retrieval domain, different architecture), searxng-search-backend.md (search infrastructure). The zero-dependency SQLite-based approach could serve as lightweight local retrieval for session search or document indexing. However, core pipeline decisions (ColBERT + SearXNG) are already made, and 33% NDCG@10 underperforms ColBERT-Zero 55.43. Medium because it offers a distinct deployment model (embedded, no server) but doesn not outperform current choices on accuracy.'
+  notes: >
+    Witchcraft is interesting primarily for its deployment model: single SQLite file,
+    no vector DB, no API keys, runs entirely on-device. The pickbrain example (semantic
+    search over AI coding sessions) is directly relevant to Hermes agent memory search.
+    Apache 2.0 license is clean. Key limitation: XTR accuracy (33% NDCG@10) trails
+    ColBERT-family (55%+) significantly. The candle-based GGUF T5 quantization pathway
+    is noteworthy — same framework ecosystem as llama.cpp GGUF models. Potential use
+    cases: (1) session transcript search for Hermes, (2) lightweight doc search without
+    standing up a retrieval server, (3) reference implementation for Rust embedding
+    inference. Not a replacement for ColBERT reranker or SearXNG search backend.
+
+- id: intake-406
+  arxiv_id: '2501.17788'
+  url: https://arxiv.org/abs/2501.17788
+  source_type: paper
+  title: 'WARP: An Efficient Engine for Multi-Vector Retrieval'
+  authors:
+  - Jan Luca Scheerer
+  - Matei Zaharia
+  - Christopher Potts
+  - Gustavo Alonso
+  - Omar Khattab
+  categories:
+  - search_retrieval
+  key_claims:
+  - 41x latency reduction vs XTR reference implementation via three innovations
+  - 3x speedup over ColBERTv2/PLAID engine while preserving retrieval quality
+  - WARP_SELECT enables dynamic similarity imputation for missing token scores
+  - Implicit decompression avoids costly vector reconstruction during retrieval
+  - Two-stage reduction process for efficient score aggregation
+  techniques:
+  - WARP_SELECT dynamic similarity imputation
+  - Implicit decompression (skip vector reconstruction)
+  - Two-stage reduction for score aggregation
+  - Highly-optimized C++ kernels
+  reported_results: '41x vs XTR reference, 3x vs ColBERTv2/PLAID, quality-preserving'
+  referenced_arxiv_ids:
+  - '2304.01982'
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-405
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-405
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence: null
+  novelty_justification: 'Novel multi-vector retrieval engine from Stanford/ETH/Berkeley accepted at SIGIR 2025. Directly supersedes XTR reference implementation (41x speedup). Related to but architecturally distinct from ColBERT/PLAID already tracked in our retrieval work. Medium because the multi-vector retrieval domain is well-covered but WARP-specific optimizations (implicit decompression, WARP_SELECT) are not.'
+  relevance_justification: 'Informs understanding of XTR efficiency landscape (Witchcraft reimplements XTR-Warp). The 3x speedup over ColBERTv2/PLAID is relevant context for the colbert-reranker-web-research handoff. However, EPYC uses ColBERT for snippet-level reranking (10 items), not corpus-scale retrieval where WARP optimizations matter most.'
+  notes: >
+    WARP is the academic engine that Witchcraft (intake-405) reimplements in Rust.
+    Key context: WARP showed XTR reference was 41x slower than optimized — this means
+    Witchcraft's claim of "2x faster than original" is modest compared to WARP's 41x.
+    The C++ kernel optimizations in WARP are not directly portable but the algorithmic
+    innovations (WARP_SELECT, implicit decompression) could inform future retrieval work.
+    SIGIR 2025 acceptance confirms technical credibility.
+
+- id: intake-407
+  arxiv_id: '2304.01982'
+  url: https://arxiv.org/abs/2304.01982
+  source_type: paper
+  title: 'XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval'
+  authors:
+  - Jinhyuk Lee
+  - Zhuyun Dai
+  - Sai Meher Karthik Duddu
+  - Tao Lei
+  - Iftekhar Naim
+  - Ming-Wei Chang
+  - Vincent Y. Zhao
+  categories:
+  - search_retrieval
+  key_claims:
+  - Simplifies multi-vector retrieval by prioritizing important document tokens for scoring
+  - Scoring using only retrieved tokens rather than entire documents
+  - 2-3 orders of magnitude cheaper inference than ColBERT full-document scoring
+  - +2.8 nDCG@10 on BEIR benchmark over prior state-of-the-art without distillation
+  techniques:
+  - Contextualized token retrieval (XTR)
+  - Novel objective function for token importance prioritization
+  - Selective token scoring (score from retrieved tokens only)
+  reported_results: '+2.8 BEIR nDCG@10, 100-1000x cheaper inference than ColBERT full-doc scoring'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-405
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-405
+    - intake-406
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'OpenReview notes limited evaluation scope (BEIR-only, may not generalize to real-world scenarios)'
+  - 'Token retrieval can miss relevant tokens despite improved recall'
+  - 'WARP follow-up showed reference implementation was 41x suboptimal, suggesting engineering overhead to deploy effectively'
+  novelty_justification: 'Foundational XTR paper from Google DeepMind (2023). Well-known in IR community. Low novelty because the technique is established and the project already tracks ColBERT-family extensively. Included for reference as the basis for Witchcraft (intake-405).'
+  relevance_justification: 'Provides theoretical foundation for understanding Witchcraft approach. The token retrieval vs late interaction tradeoff is relevant context for the ColBERT reranker decision. Medium because it informs an active architectural choice, even though EPYC chose ColBERT over XTR.'
+  notes: >
+    Foundational paper for XTR architecture that Witchcraft reimplements. Key insight:
+    scoring only retrieved tokens instead of all document tokens yields 100-1000x
+    speedup at modest accuracy cost. This explains Witchcraft's speed advantage and
+    accuracy gap vs ColBERT. The WARP follow-up (intake-406) addressed XTR's engineering
+    inefficiencies. Published April 2023, older but still architecturally relevant as
+    the alternative multi-vector paradigm to ColBERT.

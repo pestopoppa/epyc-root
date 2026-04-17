@@ -2,7 +2,7 @@
 
 **Status**: monitoring (do NOT merge TQ3_1S — see rationale below)
 **Created**: 2026-04-01 (via research intake)
-**Updated**: 2026-04-01 (deep-dive: downgraded from "evaluate" to "monitor")
+**Updated**: 2026-04-17 (PR #21038 confirmed landed upstream as commit `744c0c731` 2026-04-01; auto-enabled in v3. PR #21089 and ChunkKV remain open.)
 **Categories**: quantization, hardware_optimization
 
 ## Why NOT to Merge TQ3_1S
@@ -15,11 +15,11 @@
 
 ## What to Monitor Instead (High Priority)
 
-### PR #21038 — ggerganov's Hadamard Rotation (HIGHEST PRIORITY)
+### PR #21038 — ggerganov's Hadamard Rotation ✅ LANDED
 - **What**: Applies WHT rotation to ALL existing KV cache quant types (Q4_0, Q5_0, Q8_0 etc.)
 - **Impact**: Q4_0 KV cache PPL improves 25-77% on small models. Q8_0 with rotation matches FP16 on reasoning benchmarks
-- **Why it matters**: Free quality improvement when merged — no model re-quantization needed, just rebuild llama.cpp
-- **Status**: Open PR, by ggerganov (maintainer)
+- **Why it matters**: Free quality improvement — no model re-quantization needed, just rebuild llama.cpp
+- **Status**: ✅ MERGED upstream as commit `744c0c731` (2026-04-01). Auto-enables in `production-consolidated-v3` when KV types are quantized. `--kv-hadamard` flag removed from orchestrator config (was our prior custom WHT impl, now redundant).
 - **URL**: https://github.com/ggml-org/llama.cpp/pull/21038
 
 ### PR #21089 — CPU TurboQuant KV Cache (TBQ3_0/TBQ4_0)
@@ -44,7 +44,7 @@
 
 ## Action Items
 
-- [ ] Watch PR #21038 for merge — rebuild our fork when it lands
+- [x] Watch PR #21038 for merge — ✅ LANDED 2026-04-01 as commit `744c0c731`, auto-enables in v3
 - [ ] Evaluate PR #21089 when merged — test TBQ3_0 KV cache on Qwen2.5-Coder-32B context extension
 - [ ] Read ChunkKV paper — assess if implementable in llama.cpp
 - [ ] Revisit TQ3_1S weight quant only if: upstream adopts + multi-model benchmarks + Q4_K_M comparison + CPU kernels

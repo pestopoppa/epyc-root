@@ -237,3 +237,17 @@ Rivera & Menolascina, "ModernBERT + ColBERT: Enhancing biomedical RAG," arXiv:25
   - Key detail: `engines=` API param allows per-request engine selection — could route different query types to different engine sets.
 - **[intake-361] "mcp-searxng: MCP Server for SearXNG"** (github:ihor-sokoliuk/mcp-searxng)
   - Relevance: 635-star MCP bridge with `searxng_web_search` + `web_url_read` tools. Alternative integration path for Claude Code sessions (separate from orchestrator backend).
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+- **[intake-405] "Witchcraft: Rust XTR-Warp Semantic Search Engine"** (github:dropbox/witchcraft)
+  - Relevance: Alternative retrieval architecture in the same multi-vector space. XTR (token retrieval) vs ColBERT (late interaction) represents a different accuracy/speed tradeoff. Witchcraft packages XTR-Warp as zero-dependency Rust binary with SQLite persistence.
+  - Key technique: XTR contextualized token retrieval with GGUF-quantized T5 (candle), hybrid BM25+semantic search in SQLite FTS, single-file deployment.
+  - Reported results: 21ms p95 (M2 Max), 33% NDCG@10 (NFCorpus), 2x faster than original XTR-WARP.
+  - Delta from current approach: XTR trades accuracy for speed — 33% NDCG@10 vs ColBERT-Zero 55.43. Our ColBERT reranking decision is validated: ColBERT-family is substantially more accurate for the 10-snippet reranking use case. Witchcraft's embedded/serverless model is interesting for different use cases (session search, offline doc indexing) but not competitive for pipeline reranking.
+- **[intake-406] "WARP: An Efficient Engine for Multi-Vector Retrieval"** (arxiv:2501.17788)
+  - Relevance: SIGIR'25 paper showing 3x speedup over ColBERTv2/PLAID and 41x over XTR reference. Confirms multi-vector retrieval efficiency is an active research area. The WARP_SELECT (dynamic similarity imputation) and implicit decompression techniques are potentially applicable to future retrieval optimization.
+  - Delta from current approach: WARP optimizes corpus-scale retrieval (millions of passages); our ColBERT use case is snippet-level reranking (10 items) where these optimizations have minimal impact.
+- **[intake-407] "XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval"** (arxiv:2304.01982)
+  - Relevance: Foundational XTR paper from Google DeepMind. Token retrieval (score from subset) vs late interaction (score from all tokens) is the architectural fork between XTR and ColBERT. XTR claims 100-1000x cheaper inference at modest accuracy cost — confirmed by Witchcraft's speed/accuracy profile.

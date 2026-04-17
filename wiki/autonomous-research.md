@@ -3,7 +3,7 @@
 **Category**: `autonomous_research`
 **Confidence**: verified
 **Last compiled**: 2026-04-17
-**Sources**: 22 documents (1 deep-dive, 15 intake entries, 6 handoffs)
+**Sources**: 24 documents (1 deep-dive, 15 intake entries, 8 handoffs)
 
 ## Summary
 
@@ -45,6 +45,14 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 
 - **Contrastive Q-score approach addresses uniform Q-value pathology.** DAR-2 adds `_compute_contrastive_adjustment()` to `q_scorer.py` -- an additive contrastive term capped at +/-0.1 that sharpens decision boundaries. Feature-flagged `CONTRASTIVE_Q_UPDATES` (ON by default). Every new routing decision gets decision-boundary sharpening, accelerating Q-learning from the near-zero signal discovered by DAR-1. [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md)
 
+- **Qwen3.5 KV cache `seq_add` assertion crash fixed (2026-04-15).** architect_general (Qwen3.5-122B-A10B) crashed mid-AR-3 at trial ~204 with `GGML_ASSERT(n_pos_per_embd() == 1)` in `llama-kv-cache.cpp`. Root cause: Qwen3.5 uses `LLAMA_ROPE_TYPE_IMROPE` (`n_pos_per_embd() == 4`), which the `seq_add()` and `seq_div()` functions blocked via overly conservative assertions. Fix: removed the three assertion guards; the underlying K-shift already handles IMROPE correctly via `build_rope_shift()`. Trials 204-215 are tainted (frontdoor-only, no escalation). Fix applies to all Qwen3.5 hybrids (QWEN35, QWEN35MOE); dense models (Qwen3, Qwen3MOE) were unaffected. [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md)
+
+- **Architect think-block loop root cause identified and fixed (2026-04-15).** Qwen3.5-122B-A10B entered degenerate `<think>` loops burning its full 512-token budget per attempt. Root cause: the `--jinja` server flag loaded Qwen3.5's native chat template, which includes `<think>`/`</think>` scaffolding that primes the hybrid SSM+MoE model into think mode before `--reasoning off` can suppress it. Fix: removed `--jinja` from architect_general server launch. Without it, llama-server falls back to generic ChatML with no thinking scaffolding. All other roles retain `--jinja`. Previous mitigations (`--reasoning off`, `_architect_early_stop()` streaming detection) were insufficient because the template injection happens first. [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md)
+
+- **AM KV compaction integrated into autopilot controller (2026-04-14).** The autopilot controller can now issue `{"type": "slot_compact", "port": N, "keep_ratio": 0.3}` actions. Slot memory visibility (`_query_slot_memory()`) queries `/slots` on production ports (8070-8084) every trial and surfaces per-slot context size in the controller prompt. Controller prompt guideline #7 directs compaction when any slot exceeds 4000 tokens cached. Passive by default -- no behavior change until controller issues a compact request. Validated parameters: keep_ratio=0.3, beta=0.5. Long-context validation (8K-32K) pending AR-3 traffic. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
+
+- **Model comparison benchmarks complete: G7/G7a (2026-04-17).** MiniMax M2.7 Q8 benchmarked at 11.1 tps -- 1.2x faster than architect_general (9.14 tps) and 2.9x faster than architect_coding (3.79 tps). Q4_K_XL deleted (Q8 preferred for quality). Full NUMA characterization (G7a): `--mlock + --membind` required for multi-instance; Q8 > Q4 for dense models <40GB; Q4 > Q8 for large MoE; concurrent benchmarks show ~40% less aggregate than serial sum. Also benchmarked: Qwen3.6 Q8 (27.4 tps), SG4-26b Q4 (42 tps), SG4-31b Q4 (9.0 tps), SG4-26b-MM Q8 (21.1 tps), Gemma4 E2B/E4B (deleted -- no value). Quality benchmark infrastructure ready: `--all-suites` flag added to `run_benchmark.py`. G9 (M2.7 vs both architects) unblocked. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
+
 - **Package I created for post-AR-3 decision-aware routing validation.** Three tasks: I1 (DAR-3 SPO+ exploration -- 10% epsilon-greedy for counterfactual data), I2 (DAR-4 bilinear scorer A/B -- model-feature-conditioned Q vs per-action Q-tables), I3 (EV-5 ThinkPRM-1.5B T2 process verification). Package I requires isolated measurement because routing behavior modifications would contaminate other eval runs. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
 
 - **Eval tower verification framework advancing (EV-1/2/6 code complete).** EV-1 adds `confidence` field to QuestionResult. EV-2 adds ECE/AUC computation in `_aggregate()`. EV-6 adds cross-family verification constraint (`VERIFICATION_FAMILIES` dict + `check_cross_family()`). ECE/AUC metrics auto-accumulate in journal on AR-3 restart. EV-3 (Scoring Verifiers benchmark download), EV-4 (calibration baseline), and EV-5 (ThinkPRM-1.5B deployment) remain pending. AP-27 now points to eval-tower-verification.md as its implementation plan. [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md)
@@ -52,10 +60,11 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
-1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval, DAR-2 contrastive Q-updates ON by default, ECE/AUC auto-accumulation). State at trial_counter=46. Hybrid eval (T0 fast-reject + T1 real gate) gives honest signal per trial.
+1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval, DAR-2 contrastive Q-updates ON by default, ECE/AUC auto-accumulation, Phase 5 per-role seeder). State at trial_counter=46 (prior to Qwen3.5 crash at trial ~204). Both architect instances relaunched with patched binary. Verify routing diversity recovery before running trials.
 2. **AP-21: GEPA vs LLM mutation decision** -- after 50+ AR-3 trials, compare GEPA vs LLM mutation acceptance rates and Pareto frontier contributions. If GEPA dominates, increase ratio from 30% to 100%.
 3. **AP-14: Structured deficiency classification** -- add `deficiency_category` enum to JournalEntry. Auto-populate from SafetyGate violation type. Enables pattern detection (Omni-SimpleMem finding: structured defect classification is prerequisite for targeted fixes).
-4. **Package I (post-AR-3)** -- Decision-aware routing validation: DAR-3 SPO+ exploration (counterfactual data), DAR-4 bilinear scorer A/B, EV-5 ThinkPRM-1.5B T2 verification. Must run isolated from other eval.
+4. **G9: M2.7 vs architect replacement eval** -- M2.7 Q8 at 11.1 tps is faster than both architects. Run standard eval suite (MATH, coding, general) to determine if M2.7 can replace architect_coding and architect_general. Frees ~380GB RAM and simplifies stack if quality holds.
+5. **Package I (post-AR-3)** -- Decision-aware routing validation: DAR-3 SPO+ exploration (counterfactual data), DAR-4 bilinear scorer A/B, EV-5 ThinkPRM-1.5B T2 verification. Must run isolated from other eval.
 
 ### Medium Priority
 4. **AP-15: Species field verification audit** -- verify all 5 species (including Evolution Manager) populate `hypothesis` + `expected_mechanism` during AR-3. Missing fields reduce strategy distillation quality.
@@ -76,6 +85,8 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ## Open Questions
 
 - DAR-1 shows 96% uniform Q-values after 7,211 decisions -- how many additional routing decisions (with DAR-2 contrastive updates active) are needed before Q-values become discriminative?
+- Trials 204-215 in AR-3 are tainted (frontdoor-only, architect down). Should the journal discard these trials, mark them, or treat them as a stress-test of single-model routing?
+- M2.7 Q8 at 11.1 tps outpaces both architects in speed -- what is the quality delta on coding and reasoning benchmarks that would make the architect consolidation worthwhile?
 - What is the optimal GEPA-to-LLM mutation ratio? Initial setting is 30% GEPA. AR-3 data will resolve this empirically.
 - Can GEPA Full Program Adapter evolve routing logic, tool definitions, and escalation pipeline (not just prompts)? The +26pp MATH improvement (93% vs 67% baseline) suggests transformative potential, but the EPYC orchestrator's complexity far exceeds a single DSPy program.
 - Should the autopilot controller use persistent short-term memory across AR-3 sessions, or reset between sessions? Current implementation persists as markdown.
@@ -110,5 +121,5 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [intake-335](https://github.com/gepa-ai/gepa) GEPA Implementation Repository (already_integrated)
 - [intake-338](https://github.com/microsoft/agent-lightning) Agent Lightning -- zero-code agent optimization, RL+prompt+SFT modes, hierarchical credit assignment (new_opportunity, high relevance)
 - [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md) -- AP-27 implementation plan (EV-1-7), ECE/AUC metrics, Aletheia RLVR recipes, ThinkPRM deployment, cross-family verification
-- [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md) -- Package I for post-AR-3 decision-aware routing validation (DAR-3/4 + EV-5)
-- [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md) -- DAR-1 regret analysis results (96% uniform Q-values), DAR-2 contrastive Q-score implementation, AR-3 restart prep
+- [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md) -- Packages A-I; Package I for post-AR-3 decision-aware routing validation (DAR-3/4 + EV-5); G7/G7a model benchmarks; AM KV compaction integration (2026-04-14)
+- [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md) -- DAR-1 regret analysis results (96% uniform Q-values), DAR-2 contrastive Q-score implementation, AR-3 restart prep; Qwen3.5 KV crash + architect think-loop fixes
