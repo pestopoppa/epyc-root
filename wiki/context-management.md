@@ -80,6 +80,7 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - **Compression quality evaluation** (Phase 2a/2b done): 30B-A3B validated as minimum viable summarizer (3.0/3.0 retention). 5-level compression ladder tested: L3 is the sweet spot at 82% compression with 2.84/3 retention. L5 and Phase 3c (process reward signals) pending.
 - **Segment retention scoring**: ConsolidatedSegment with access_count, importance_score (accumulates +3 per access, +5 per update, decays at 0.995 per turn delta), and maturity tiers (draft at creation, validated at score 65+, core at 85+, demotion below 35/60).
 - **Memento KV block masking feasibility**: Confirmed 2026-04-13 that `llama_memory_seq_rm()` can serve as the block eviction primitive in llama.cpp. Mid-sequence removal works; position gap semantics are correct (RoPE phases preserved). Training script for OpenMementos-228K ready with two-stage LoRA design. Blocked on model fine-tuning compute.
+- **REPL turn efficiency: S6 bug fixes + observability (2026-04-16, done)**: Three systemic bugs accounting for ~25% wasted specialist REPL turns (810/3227 calls) fixed: (a) `extract_code_from_response` dropping bare `"""` lines causing 473 NameErrors; (b) `CALL("run_python_code")` routing through registry instead of REPL globals causing 182 ValueErrors; (c) dedup guard `continue → break` causing 63 wasted turns. Added `repl_turn_errors` tracking and `specialist_repl_errors` anomaly signal. Added `web_search()` REPL global and role-aware specialist prompts. S4 (A/B benchmark) and S5 Gap 1-3 implementations (workspace_scan, STUCK signal, llm_batch combined-op) remain pending inference. [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
 
 ### SEAL Control Vector Multi-Role Results
 
@@ -106,6 +107,8 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - Bullet-list vs. narrative consolidation format: intake-273 (context rot) finds shuffled content outperforms structured content for retrieval tasks, but this may reverse for reasoning. A/B test needed.
 - What is the break-even point for multi-layer compression stacking (KV quantization + block masking + compaction)? Each pair tested independently; quality cliff under triple stacking is the key unknown. Theoretical combined: up to 120x; conservative estimate: 40x.
 - Can AgentFold's two-level approach be replicated with prompt engineering alone (no SFT), or does the model need fine-tuning to reliably produce structured folding directives?
+- Does the progressive-disclosure retrieval pattern from intake-395 (Claude-Mem) apply to tool-output retrieval in our spill-to-file architecture? The FTS5+Chroma index-before-fetch design could reduce peek() round-trips when models need to scan multiple spilled outputs.
+- S6 fixed ~25% wasted REPL turns via bug fixes (S6a-c). After these fixes, does the Omega metric (7/10 suites show tools hurt accuracy) change materially, or does the fundamental direct-vs-REPL accuracy gap persist even with correct tool routing?
 
 ## Related Categories
 
@@ -128,6 +131,10 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-301](https://axi.md/) AXI Agent Experience Interface -- TOON format achieves ~40% token savings; progressive disclosure mirrors truncation+peek architecture
 - [intake-302](https://arxiv.org/abs/2603.29919) SkillReducer -- 48% tool description compression via adversarial delta debugging; complements output compression
 - [context-folding-progressive handoff](../handoffs/active/context-folding-progressive.md) -- Multi-phase production implementation: Phase 0-1 complete, Phase 2a/2b done, Phase 3 in design
-- [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done
+- [tool-output-compression handoff](../handoffs/active/tool-output-compression.md) -- 7 command handlers, 60-90% reduction, Phase 3 definition compression done; 2026-04-17 update: intake-395 (Claude-Mem progressive-disclosure), intake-397 (Open Agents durable workflow), intake-399 (GenericAgent minimal tool surfaces)
 - [memento-block-reasoning-compression handoff](../handoffs/active/memento-block-reasoning-compression.md) -- llama.cpp block masking feasibility confirmed, SFT training design complete
 - [Reasoning Compression handoff](../handoffs/active/reasoning-compression.md) -- SEAL multi-role regression results, branching density metrics from intake-378, training data strategy synthesis
+- [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md) -- S1-S3/S5-S6 done; S6 fixed 3 bugs causing ~25% wasted specialist REPL turns (810/3,227 calls); 2026-04-17 update: intake-397 (durable-reconnect patterns), intake-399 (minimal tool surface design pressure)
+- [intake-395](https://github.com/thedotmack/claude-mem) Claude-Mem -- 3-layer progressive-disclosure retrieval (FTS5+Chroma, ~10x token savings); pattern applicable to tool-output retrieval surfaces
+- [intake-397](https://github.com/vercel-labs/open-agents) Open Agents -- durable workflow + stream-reconnect + control-plane/sandbox separation; patterns for long-running tool output survival
+- [intake-399](https://github.com/lsdefine/GenericAgent) GenericAgent -- 9 atomic tools + <30K context + L0-L4 memory; design pressure toward minimal tool surfaces and lazy-loaded outputs

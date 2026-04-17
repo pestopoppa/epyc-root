@@ -89,6 +89,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - M2.7 Q8 at 11.1 tps outpaces both architects in speed -- what is the quality delta on coding and reasoning benchmarks that would make the architect consolidation worthwhile?
 - What is the optimal GEPA-to-LLM mutation ratio? Initial setting is 30% GEPA. AR-3 data will resolve this empirically.
 - Can GEPA Full Program Adapter evolve routing logic, tool definitions, and escalation pipeline (not just prompts)? The +26pp MATH improvement (93% vs 67% baseline) suggests transformative potential, but the EPYC orchestrator's complexity far exceeds a single DSPy program.
+- Could the NumericSwarm's NSGA-II sampler be replaced or augmented by a Cross-Entropy Method (CEM) sampler for the 23-param numeric surface? TPO's target construction `q ∝ p_old * exp(score/η)` is mathematically CEM. Concrete trigger: when `hypervolume_slope() < 0.001` signals stagnation, switch to CEM as the exploration boost. Requires scalarizing 4D Pareto objectives (hypervolume contribution). [intake-404]
 - Should the autopilot controller use persistent short-term memory across AR-3 sessions, or reset between sessions? Current implementation persists as markdown.
 - What is the right trial cadence for the Evolution Manager species? Currently every 5 trials. Too frequent wastes compute on distillation; too infrequent loses temporal locality of insights.
 - How should parallel autopilot instances share the experiment journal without write conflicts? Append-only protocol (simpler, eventual consistency) vs explicit file locking (stronger guarantees, deadlock risk).
@@ -120,6 +121,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [intake-329](https://www.minimax.io/news/minimax-m27-en) MiniMax M2.7 -- 3-component self-evolution harness, 30% improvement over 100+ rounds (worth_investigating)
 - [intake-335](https://github.com/gepa-ai/gepa) GEPA Implementation Repository (already_integrated)
 - [intake-338](https://github.com/microsoft/agent-lightning) Agent Lightning -- zero-code agent optimization, RL+prompt+SFT modes, hierarchical credit assignment (new_opportunity, high relevance)
+- [intake-404](https://arxiv.org/abs/2604.06159) Target Policy Optimization -- TPO's cross-entropy target construction is CEM; applicable to NumericSwarm as NSGA-II stagnation-triggered exploration boost (worth_investigating, medium relevance)
 - [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md) -- AP-27 implementation plan (EV-1-7), ECE/AUC metrics, Aletheia RLVR recipes, ThinkPRM deployment, cross-family verification
 - [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md) -- Packages A-I; Package I for post-AR-3 decision-aware routing validation (DAR-3/4 + EV-5); G7/G7a model benchmarks; AM KV compaction integration (2026-04-14)
 - [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md) -- DAR-1 regret analysis results (96% uniform Q-values), DAR-2 contrastive Q-score implementation, AR-3 restart prep; Qwen3.5 KV crash + architect think-loop fixes

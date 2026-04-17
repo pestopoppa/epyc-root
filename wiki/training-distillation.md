@@ -62,10 +62,11 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 - Does the 21pp architecture-dependent gap (Llama3.1-8B vs Qwen2.5-7B at 5.1pp) generalize beyond math to code and agentic tasks?
 - Can branching density (Propose step %) serve as a runtime quality signal for routing decisions, not just training data filtering?
 - At what model scale does DPO become viable for RLVR verification training (Aletheia shows -23.4% at 1.5B, viable at 14B)?
+- Is TPO (intake-404) a viable GRPO replacement for Tier 3 training? TPO claims 7x fewer steps on sparse rewards (7.4% vs 50.4% at H=10) and stable multi-epoch training. Only tested at 1.5-1.7B; awaiting 7B+ replication.
 
 ## Related Categories
 
-- [Reinforcement Learning](reinforcement-learning.md) -- ACT uses GRPO; OPSDC uses reverse KL; SkillBank references SkillRL
+- [Reinforcement Learning](reinforcement-learning.md) -- ACT uses GRPO; OPSDC uses reverse KL; SkillBank references SkillRL; TPO (intake-404) replaces GRPO via cross-entropy target fitting
 - [Cost-Aware Routing](cost-aware-routing.md) -- reasoning compression directly reduces routing costs
 - [KV Cache](kv-cache.md) -- Memento block masking and SEAL interact with KV cache management
 - [Context Management](context-management.md) -- SkillBank prompt injection and context-folding are complementary
