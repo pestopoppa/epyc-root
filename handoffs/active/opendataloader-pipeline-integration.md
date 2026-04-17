@@ -126,3 +126,16 @@ PDF Input
 - ODL local mode is rule-based (XY-Cut++ algorithm), not ML — no GPU needed, deterministic output
 - Python SDK wraps Java CLI — each `convert()` spawns JVM. Sidecar pattern recommended for production.
 - The structured context improvement for VL models (Phase 2) is the highest-value item — figures are currently analyzed without any document context.
+
+## Research Intake Update — 2026-04-17
+
+### Evaluated and skipped
+
+- **[intake-398] google/magika** — evaluated 2026-04-17, verdict **not_applicable**.
+  Deep dive (`research/deep-dives/magika-filetype-detection.md`) confirmed:
+  OpenDataLoader is PDF-only (not a filetype detector — original question malformed);
+  EPYC's corpus is homogeneous known-format URL-fetch (arXiv PDFs, GitHub READMEs,
+  HTML, HF cards) where format is declared by URL/MIME/extension; no pipeline stage
+  needs generic byte-sniffing; live test on EPYC misclassified JSON as JSONL;
+  80 MB onnxruntime + 225 ms cold-start for zero accuracy gain.
+  Reconsider only if EPYC starts ingesting arbitrary binary corpora.

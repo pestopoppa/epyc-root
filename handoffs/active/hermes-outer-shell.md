@@ -259,3 +259,12 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 
 ### 2026-04-14
 - **[intake-361] mcp-searxng**: MCP Server for SearXNG (635 stars, MIT, TypeScript). Exposes `searxng_web_search` and `web_url_read` tools via Model Context Protocol. When SearXNG is deployed locally (see [`searxng-search-backend.md`](/workspace/handoffs/active/searxng-search-backend.md), R&O P12), mcp-searxng could replace the cloud-dependent `web_search` tool (line 121, currently Firecrawl/Tavily, disabled) with a local, privacy-respecting alternative. Future opportunity — lower priority than orchestrator backend integration (P12 SX-1–SX-6).
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App for Background Coding Agents"** (repo: vercel-labs/open-agents)
+  - Relevance: directly analogous to hermes-outer-shell's two-layer architecture — open-agents makes the explicit design choice that the agent runs OUTSIDE the sandbox and interacts via file/search/shell tools, with a durable workflow between them. Maps cleanly to the outer-shell ↔ inner-execution separation.
+  - Key technique: (1) agent-outside-sandbox control-plane separation with tool-driven sandbox interaction; (2) durable workflow execution (Vercel Workflow SDK) with persisted steps, streaming, cancellation, and reconnect-to-stream; (3) snapshot-based sandbox hibernate/resume independent from agent/model choice.
+  - Delta: TS/Vercel stack is not portable to EPYC, but the three design decisions above are directly worth mining during Phase 2+ of hermes-outer-shell: stable contract between outer/inner layers, durable workflow for reconnect-on-disconnect, and snapshot-resume as analogue for session-log/episodic-store resumability.

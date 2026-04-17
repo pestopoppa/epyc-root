@@ -196,3 +196,17 @@ See: `progress/2026-04/2026-04-16.md` for full details.
   - Key update: ColGREP now offers native Claude Code integration. Combines regex filtering with semantic ranking via ColBERT-style multi-vector embeddings (~300 embeddings per code unit, MaxSim scoring). Fully local, single Rust binary.
   - Status: Already integrated (GTE-ModernColBERT-v1 swap completed per colbert-zero-research-integration). ColGREP CLI still blocked on upstream ONNX panic per existing notes. Frecency fallback remains active.
   - Action: Monitor v1.2.0 for ONNX panic fix that would unblock ColGREP CLI bridge
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App for Background Coding Agents"** (repo: vercel-labs/open-agents)
+  - Relevance: durable workflow with reconnect-to-stream semantics as a model for long-running REPL sessions surviving disconnects; explicit control-plane / execution-sandbox separation.
+  - Key technique: Vercel Workflow SDK multi-step durable runs with streaming + cancellation + reconnect; snapshot-based sandbox hibernate/resume; GitHub-integrated branch→commit→PR flow driven by the agent.
+  - Delta: patterns (durable-reconnect, snapshot-resume, control-plane separation) are directly analogous to the REPL turn-efficiency goal of stable long-horizon sessions without wasted turns on reconnection.
+
+- **[intake-399] "GenericAgent: minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: 9 atomic tools + 100-line agent loop + <30K context budget is a concrete reference for minimizing wasted turns by reducing decision surface.
+  - Key technique: minimal atomic tool set with dynamic tool creation via `code_run`; layered L0–L4 memory replaces full-context scanning.
+  - Delta: design pressure toward smaller tool surfaces and skill crystallization of repeat tasks (so repeat requests become one-line invocations instead of multi-turn re-derivations).

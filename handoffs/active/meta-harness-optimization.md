@@ -143,3 +143,22 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: 93% MATH (vs 67% base) by evolving entire program structure, not just prompts
   - Key technique: GEPA evolving signatures, modules, control flow with as few as 3 examples
   - Delta from current approach: Meta-Harness searches over harness code. GEPA Full Program Adapter could be the search algorithm — replacing or augmenting our current LLM-guided mutation with evolutionary Pareto-optimal search. The +26pp result suggests this is a significantly stronger optimizer.
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-394] "Evolver: GEP-Powered Self-Evolution Engine for AI Agents"** (repo: EvoMap/evolver)
+  - Relevance: auditable protocol-bound evolution (Gene/Capsule/EvolutionEvent JSONL assets) as a reference design for meta-harness mutation governance.
+  - Key technique: strategy-preset intent mixer (innovate/optimize/repair weights), log-signal selector-driven prompt routing, protected source files.
+  - Delta: adds a packaging/governance pattern to compare against our own harness-search artifact representation; not a new search algorithm.
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App for Background Coding Agents"** (repo: vercel-labs/open-agents)
+  - Relevance: agent-control-plane-separate-from-execution-sandbox pattern as a reference for the meta-harness search runtime separation from the orchestrator it optimizes.
+  - Key technique: durable workflow execution with reconnect-to-stream semantics (Vercel Workflow SDK), snapshot-based sandbox hibernate/resume, explicit contract between control plane and execution environment.
+  - Delta: TypeScript/Vercel-locked stack is not adoptable as a component, but the durable-workflow-reconnect and snapshot-resume design patterns are worth mining for long-running harness search sessions.
+
+- **[intake-399] "GenericAgent: A minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: extreme-minimalism constraint (~3K LOC, ~100-line loop, 9 atomic tools, <30K context) as a design target for the meta-harness search space upper bound.
+  - Key technique: 5-tier memory taxonomy (L0 Meta Rules / L1 Insight Index / L2 Global Facts / L3 Task Skills/SOPs / L4 Session Archive); skill-crystallization from solved tasks into reusable SOPs.
+  - Delta: gives a concrete reference architecture for "how small can a useful agent loop be" — useful lower-bound anchor when proposing new harness variants. No benchmarks; single-user Chinese-market desktop agent.

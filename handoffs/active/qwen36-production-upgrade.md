@@ -1,8 +1,8 @@
 # Qwen3.6-35B-A3B — Production Upgrade Evaluation
 
-**Status**: in-progress (GGUF downloading)
+**Status**: in-progress (quality benchmark ready)
 **Created**: 2026-04-17 (via research intake)
-**Updated**: 2026-04-17 (deep dive complete, downloads started)
+**Updated**: 2026-04-17 (NUMA sweeps complete, quality benchmark infrastructure ready)
 **Categories**: moe_optimization, ssm_hybrid, inference_serving
 **Priority**: HIGH (direct production model successor)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -65,16 +65,16 @@ No regressions reported.
 
 - [x] **llama.cpp compatibility**: Confirmed — identical model_type, zero patches needed
 - [x] **preserve_thinking**: Works via `--jinja` flag with chat template kwargs
-- [ ] **tok/s on EPYC 9655**: Pending — download in progress
-- [ ] **PPL regressions**: Pending — needs AA-Omniscience eval
-- [ ] **Coding eval**: Pending — validate Terminal-Bench claims locally
+- [x] **tok/s on EPYC 9655**: 25.6 baseline, 27.4 with ngram dm=64 (+10.1%). Q8 faster than Q4 (25.6 vs 24.4).
+- [ ] **PPL regressions**: Pending — quality benchmark ready to execute
+- [ ] **Coding eval**: Pending — quality benchmark ready to execute
 
 ## Evaluation Plan
 
-1. [x] Download Q4_K_M GGUF from unsloth/Qwen3.6-35B-A3B-GGUF — **IN PROGRESS**
-2. [x] Download Q8_0 GGUF — **IN PROGRESS**
-3. [ ] Run throughput benchmark (single-model 192t, NUMA 4-way) — compare to Qwen3.5 baseline
-4. [ ] Run AA-Omniscience 600-question eval — compare factual accuracy
+1. [x] Download Q4_K_M GGUF from unsloth/Qwen3.6-35B-A3B-GGUF — COMPLETE (deleted, Q8 faster)
+2. [x] Download Q8_0 GGUF — COMPLETE (`/mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf`)
+3. [x] Run throughput benchmark (single-model 192t, NUMA 4-way) — COMPLETE: 25.6 baseline, 27.4 w/ngram, 57.4 quad, 76.8 eight
+4. [ ] Run quality eval (full suite battery via run_benchmark) — READY: `--all-suites --skip-long-context --with-lookup`
 5. [ ] Run coding eval (SWE-bench subset or equivalent) — validate agentic coding claims
 6. [ ] If no regressions: swap into production registry (`model_registry.yaml`)
 
@@ -82,8 +82,8 @@ No regressions reported.
 
 | Quant | Size | File | Status |
 |-------|------|------|--------|
-| Q4_K_M | 22.1 GB | `Qwen3.6-35B-A3B-UD-Q4_K_M.gguf` | Downloading |
-| Q8_0 | 36.9 GB | `Qwen3.6-35B-A3B-Q8_0.gguf` | Downloading |
+| Q4_K_M | 22.1 GB | `Qwen3.6-35B-A3B-UD-Q4_K_M.gguf` | DELETED (Q8 faster) |
+| Q8_0 | 36.9 GB | `Qwen3.6-35B-A3B-Q8_0.gguf` | Active |
 
 Target: `/mnt/raid0/llm/models/`
 

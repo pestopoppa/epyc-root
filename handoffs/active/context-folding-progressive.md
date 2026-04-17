@@ -936,3 +936,19 @@ Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/meme
 - **intake-326 DOWNGRADED**: MemPalace 96.6% is ChromaDB vector search, NOT the palace architecture. GitHub issue #214 confirms benchmarks don't exercise the hierarchical system. Still useful: L0-L3 stack design and temporal KG with validity windows.
 - **intake-316 gap analysis**: Our weakest axis is FORGETTING (append-only, no provenance). Recommend: validity timestamps on compacted segments, supersession detection, hybrid raw+derived for recent vs old turns.
 - **intake-332 UPGRADE**: Ouro-2.6B-Thinking (MATH-500 90.85%, AIME24 pass@10 90%) could be a reasoning verifier. 2.6B runs on CPU via transformers. Not llama.cpp compatible (looped arch).
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-395] "Claude-Mem: Persistent Memory Compression System for Claude Code"** (repo: thedotmack/claude-mem)
+  - Relevance: productionized reference implementation of hybrid-search retrieval over compacted session memory — pattern directly reusable in Phase 2 summarizer collection and in the planned compacted-memory retrieval surface.
+  - Key technique: **3-layer MCP search workflow** (search index → timeline context → get_observations full details) claiming ~10x token savings via progressive disclosure; hybrid SQLite FTS5 + Chroma vector search; `<private>` tag convention for user-controlled exclusion.
+  - Lifecycle-hook taxonomy (SessionStart/UserPromptSubmit/PostToolUse/Stop/SessionEnd) is a reference model for what signals to log during compaction training-data collection.
+  - Reported results: none empirical — token-savings claim is not methodologically anchored.
+  - Delta: adopt patterns (progressive-disclosure retrieval layer, hook-based capture taxonomy, privacy-tag convention) rather than the component itself (AGPL-3.0, Bun/Node stack orthogonal to our Python/llama.cpp). Overlaps intake-135 (Cognee), intake-268/269/270 (Karpathy LLM Wiki ecosystem), intake-277 (Hermes LLM Wiki skill).
+
+- **[intake-399] "GenericAgent: minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: 5-tier L0–L4 memory taxonomy designed to keep working context <30K tokens — a concrete reference architecture for how layered memory maps to token-budget discipline.
+  - Key technique: L0 Meta Rules / L1 Insight Index / L2 Global Facts / L3 Task Skills(SOPs) / L4 Session Archive; skill crystallization promotes episodic traces to reusable SOPs.
+  - Delta: cross-references Hermes MemPalace (intake-326) and the LLM Wiki ecosystem; useful as a layering template alongside the retrieval-layer patterns from claude-mem.

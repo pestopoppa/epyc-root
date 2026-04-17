@@ -257,3 +257,22 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 - [x] P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Removed 4 duplicates, all "Do NOT" clauses, merged related tools, flattened sections. Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B. Instruction token ratio: 16.0%. 162 tests pass.
 - [ ] P3c: Measure `instruction_token_ratio` delta (AP-16) — ratio dropped 29.8% → 16.0% (static measure done; AP-16 runtime measurement pending inference)
 - [ ] P3d: A/B test compressed vs original definitions on seeding harness
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-395] "Claude-Mem: Persistent Memory Compression System for Claude Code"** (repo: thedotmack/claude-mem)
+  - Relevance: 3-layer progressive-disclosure retrieval (search → timeline → get_observations) is a direct template for how compressed tool outputs could be queried token-efficiently.
+  - Key technique: hybrid FTS5+Chroma search over AI-summarized observations; ~10x token savings claimed via batched-ID full-detail fetch only after index filtering.
+  - Delta: adopt the progressive-disclosure layering pattern for tool-output retrieval surfaces; do not adopt the component (AGPL-3.0, Bun/Node).
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App for Background Coding Agents"** (repo: vercel-labs/open-agents)
+  - Relevance: durable-workflow + tool-result reconnection patterns for long-running tool invocations whose outputs should survive disconnects/compaction.
+  - Key technique: Vercel Workflow SDK step persistence with stream-reconnect; explicit agent/sandbox separation so tool outputs belong to the sandbox state rather than agent context.
+  - Delta: pattern-only (TS/Vercel stack); cross-ref with hermes-outer-shell's two-layer memory architecture.
+
+- **[intake-399] "GenericAgent: minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: minimal-tool-set discipline (9 atomic tools, <30K context) as a constraint when designing compression-aware tool interfaces.
+  - Key technique: dynamic tool creation via `code_run` rather than adding tool surface area; layered memory pulls reduce per-turn context inflation.
+  - Delta: reinforces the design pressure toward minimal tool surfaces and lazy-loaded tool outputs.

@@ -286,3 +286,32 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
   - Key technique: Four-stage pipeline (LocEnc→TSLM→RALM→LocDiT), AudioVAE V2, MiniCPM-4 backbone
   - RTF ~0.13 on RTX 4090, 48kHz studio quality, voice cloning + voice design from text descriptions
   - Delta from current approach: Our Qwen3-TTS is blocked (outputs noise in llama.cpp). VoxCPM2 is tokenizer-free (avoids discrete token ceiling) but requires GPU (RTX 4090 for real-time). Blocked by same GPU constraint. Worth tracking for GPU upgrade path.
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research
+
+- **[intake-396] "Voicebox — Open-Source Voice Synthesis Studio (local-first ElevenLabs alternative)"** (repo: jamiepine/voicebox)
+  - Relevance: directly addresses the BLOCKED TTS component. Bundles 5 engines behind a unified interface with AMD ROCm + CPU backends.
+  - Key technique: unified multi-engine adapter, sentence-boundary auto-chunking with crossfade for unlimited-length synthesis, Spotify pedalboard DSP post-processing chain.
+  - Reported results: LuxTTS claim of ~1GB VRAM and 150x realtime on CPU at 48kHz (self-reported). Chatterbox Turbo with inline paralinguistic tags.
+  - Delta from current approach: adds a **Path D** (CPU-native LuxTTS) option beyond current Path A (Qwen3-TTS llama.cpp — noise), Path B (MiniCPM-O — untested), Path C (Qwen3-TTS PyTorch sidecar).
+
+- **[intake-401] "LuxTTS — Lightweight ZipVoice-Distilled TTS with 48kHz Voice Cloning"** (HF: YatharthS/LuxTTS, discovered via voicebox)
+  - Relevance: **strongest candidate for unblocking TTS on CPU-only EPYC**. Distilled ZipVoice (arxiv:2506.13053) with 4 flow-matching steps, <1GB VRAM, faster-than-realtime CPU claim.
+  - Key technique: flow distillation to 4 steps, custom 48kHz vocoder, improved sampler over Euler.
+  - Reported results: self-reported 150x RT GPU, faster-than-RT CPU, no published WER/MOS. Apache 2.0 license.
+  - Caveats: single-author HF upload, no formal benchmarks, third-party reviews note "slightly mechanical pacing" vs heavier models, language coverage ambiguous (English-only per model card).
+  - Delta: if CPU RTF <1.0 holds in our measurement, replaces Path A/C with a simpler sidecar.
+
+- **[intake-402] "Opensourcing TADA: Fast, Reliable Speech Generation Through Text-Acoustic Synchronization"** (Hume AI, arxiv:2602.23068, discovered via voicebox)
+  - Relevance: **long-form (700s+) coherent synthesis** unique candidate for future long-document/narration use cases.
+  - Key technique: 1:1 text-acoustic dual alignment on a Llama-3.2-1B backbone with flow-matching decoder; Speech Free Guidance (SFG).
+  - Reported results: RTF 0.09 (>5x peer LLM-TTS), 0 hallucinations/1000+ LibriTTSR samples, 4.18/5.0 speaker similarity, 3.78/5.0 naturalness on EARS eval (2nd overall), ~700s in 2048-token context.
+  - Caveats: speaker drift beyond ~700s, limited multilingual (9 langs), commercial-vendor self-reported benchmarks, audio-head non-trivial to port to GGUF/llama.cpp.
+  - Delta: if long-form TTS becomes a workload, 1B checkpoint fits EPYC's CPU profile; otherwise shelve until blocked pipeline is revisited.
+
+### Recommended Next Steps
+1. Run CPU benchmark of LuxTTS on EPYC: measure RTF, first-packet latency, voice-clone WER → decide Path D viability.
+2. Inspect voicebox's engine-adapter code (Tauri/TypeScript) for a unified-interface pattern to reuse across Paths A–D.
+3. Flag TADA for review when multimodal pipeline unblocks — it addresses a distinct long-form use case not solvable by shorter-context TTS models.

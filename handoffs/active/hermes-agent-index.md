@@ -175,3 +175,23 @@ After completing any task:
 - **[intake-393] "Hermes Agent Traces Filtered"** (huggingface.co/datasets/DJLougen/hermes-agent-traces-filtered)
   - Relevance: Quality-filtered subset (3,679 of 7,646 rows, ~48% kept). Filtered on reasoning depth, structural integrity, tool-call JSON validity, deliberate tool selection reasoning, self-correction patterns. 14x deeper think blocks, 2x self-correction rate.
   - Delta: Higher quality for fine-tuning — removes trivial/noisy traces. Designed as Stage 2 dataset on top of strong reasoning models.
+
+## Research Intake Update — 2026-04-17
+
+### New Related Research (Agent Architecture Cluster)
+
+- **[intake-394] "Evolver: GEP-Powered Self-Evolution Engine for AI Agents"** (repo: EvoMap/evolver)
+  - Relevance: Hermes self-evolution governance — auditable Gene/Capsule/EvolutionEvent JSONL assets, strategy-preset intent mixer, protected-source-files safety pattern.
+  - Delta: pattern comparison against our PromptForge/GEPA (intake-327) and MiniMax-M2.7 self-evolution (intake-328) lineage. Not a component adoption.
+
+- **[intake-395] "Claude-Mem: Persistent Memory Compression System for Claude Code"** (repo: thedotmack/claude-mem)
+  - Relevance: Hermes memory / LLM-Wiki cluster — productionized 3-layer MCP retrieval (search → timeline → get_observations) with ~10x token savings claim; lifecycle-hook capture taxonomy.
+  - Delta: adopt patterns only (AGPL-3.0, Bun/Node); overlaps intake-135 (Cognee), intake-268–270 (Karpathy LLM Wiki ecosystem), intake-277 (Hermes LLM Wiki skill), intake-321 (Karpathy CLAUDE.md).
+
+- **[intake-397] "Open Agents — Vercel-Labs Reference App"** (repo: vercel-labs/open-agents)
+  - Relevance: outer-shell / durable-workflow reference — agent outside sandbox, Workflow SDK reconnect-to-stream, snapshot-based resume.
+  - Delta: TS/Vercel stack; pattern extraction only. See hermes-outer-shell.md for detailed mapping.
+
+- **[intake-399] "GenericAgent: minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
+  - Relevance: minimalism constraint (~3K LOC, 100-line loop, 9 atomic tools, <30K context) + L0–L4 memory taxonomy directly adjacent to Hermes + MemPalace (intake-326) architecture.
+  - Delta: design-space anchor for Hermes loop minimality and a concrete 5-tier memory taxonomy template.

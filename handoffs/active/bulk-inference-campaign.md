@@ -850,7 +850,7 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 - **G6**: Low priority — v3 smoke tests showed no regression.
 - **G7**: ✅ COMPLETE (2026-04-17). All models downloaded and benchmarked. Q4_K_XL deleted (Q8 preferred for quality). M2.7 Q8 = 11.1 tps. Also swept: Qwen3.6 Q8 (27.4 tps), SG4-26b Q4 (42 tps), SG4-31b Q4 (9.0 tps), SG4-26b-MM Q8 (21.1 tps), Gemma4 E2B/E4B (deleted — no value).
 - **G7a**: ✅ COMPLETE (2026-04-17). Full NUMA characterization with concurrent requests. Key findings: (1) --mlock + --membind required for multi-instance, (2) Q8 > Q4 for dense models < 40GB, Q4 > Q8 for large MoE, (3) concurrent benchmarks show ~40% less aggregate than serial sum. New deterministic `numa_sweep.py` with early stopping + scaling gates.
-- **G8 + G9**: Unblocked. G9 reframed as architect replacement eval — M2.7 Q8 at 11.1 tps is 1.2x faster than architect_general (9.14) and 2.9x faster than architect_coding (3.79). Quality eval next.
+- **G8 + G9**: Unblocked. G9 reframed as architect replacement eval — M2.7 Q8 at 11.1 tps is 1.2x faster than architect_general (9.14) and 2.9x faster than architect_coding (3.79). Quality benchmark infrastructure ready: `--all-suites` flag added to `run_benchmark.py`, `--spec-type ngram-simple` support added for Qwen3.6/SG4-31b. Execution command prepared (362 questions across 5 models).
 - **G10 + G11 + G12**: AA-Omniscience hallucination calibration — can run per-model sequentially, ~6h total.
 
 ### G10-G12: AA-Omniscience Factual-Risk Calibration (2026-04-15 research intake)

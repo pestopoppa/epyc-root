@@ -14233,3 +14233,703 @@
     Higher quality subset of intake-388. If we pursue fine-tuning local models
     for agentic tool use, this filtered version is preferable. Filtering methodology
     (reasoning depth, self-correction) aligns with reasoning compression principles.
+- id: intake-394
+  url: https://github.com/EvoMap/evolver
+  source_type: repo
+  arxiv_id: null
+  title: 'Evolver: GEP-Powered Self-Evolution Engine for AI Agents'
+  authors:
+  - EvoMap
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - knowledge_management
+  key_claims:
+  - 'GEP (Genome Evolution Protocol) enforces auditable, protocol-constrained evolution of agent prompts via Genes, Capsules, and EvolutionEvents stored in structured JSON/JSONL assets'
+  - 'Evolver is a prompt generator, not a code patcher — scans memory/ logs, selects best-matching Gene/Capsule, emits protocol-bound prompts; the host runtime (e.g. OpenClaw) interprets stdout directives like sessions_spawn(...)'
+  - 'Configurable strategy presets (balanced/innovate/harden/repair-only) explicitly bias intent mix (e.g. 80/15/5 vs 0/20/80)'
+  - 'Signal de-duplication detects stagnation patterns to prevent repair loops; protected source files prevent autonomous agents from overwriting the evolver core'
+  - 'Optional Hub connection to evomap.ai enables worker pool, skill store, heartbeat-based task dispatch, and collaborative Evolution Circles'
+  techniques:
+  - GEP (Genome Evolution Protocol)
+  - Genes + Capsules + EvolutionEvents as reusable auditable assets
+  - Mutation object + evolvable PersonalityState gating each cycle
+  - Log-signal extraction for selector-driven prompt routing
+  - Strategy preset weighting (innovate/optimize/repair)
+  - Worker pool / heartbeat / skill store over A2A hub
+  reported_results: 'No benchmarks or empirical claims in README'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  contradicting_evidence:
+  - "Deep dive 2026-04-17: GEP assets structurally empty — capsules.json ships {version:1, capsules:[]}, events.jsonl is 0 bytes. 'Auditable evolution asset store' is a schema skeleton, not a live protocol."
+  - 'javascript-obfuscator as devDependency; src/gep/ contains .integrity, crypto.js, shield.js, deviceId.js, envFingerprint.js — anti-tamper plumbing hostile to vendoring.'
+  - 'Hub is real but unreliable: Issue #110 is invite-gated; open issues flag Hub API returning internal_error since ~cycle #712 (4+ days).'
+  - 'EvoMap publicly accused Nous of copying Hermes; Nous rebutted (Hermes repo predates Evolver by 6mo, uses GEPA not GEP). Adopting Evolver wholesale would force picking a side.'
+  - 'Algorithmic core is below PromptForge+GEPA (intake-327) — no Pareto selection, no population, no rollout sampling. Evolver is a prompt-builder CLI; OpenClaw runtime does the actual mutation.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - hermes-agent-index.md
+    - meta-harness-optimization.md
+    intake_entries:
+    - intake-327
+    - intake-328
+    deep_dives:
+    - evomap-evolver-gep-protocol.md
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - hermes-agent-index.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: 'Downgraded medium→low after deep dive (2026-04-17). GEP schema is concrete only at the 7-field Gene-record level; Capsule and EvolutionEvent stores ship empty. Algorithmic core is below PromptForge+GEPA. Novelty is purely at the governance-schema layer, not a new optimization technique.'
+  relevance_justification: 'Relevant to PromptForge species in autopilot-continuous-optimization. Node.js stack vs our Python, partially obfuscated shipped code, credibility-damaging public dispute, and a Hub that is invite-gated and unreliable cap relevance at medium with tight scope (schema-crib only).'
+  notes: >
+    Three adoptable ideas for PromptForge (schema-crib only, no component/code):
+    (1) Gene-record YAML catalog replacing the flat MUTATION_TYPES list in
+    prompt_forge.py:37; (2) per-strategy forbidden_paths deny-list alongside
+    CODE_MUTATION_ALLOWLIST; (3) strategy-preset intent-mix weighting (balanced/
+    innovate/harden/repair) as a program.md tunable; (4) align experiment_journal.jsonl
+    field names with EvolutionEvent shape for future interop. See
+    research/deep-dives/evomap-evolver-gep-protocol.md for details.
+- id: intake-395
+  url: https://github.com/thedotmack/claude-mem
+  source_type: repo
+  arxiv_id: null
+  title: 'Claude-Mem: Persistent Memory Compression System for Claude Code'
+  authors:
+  - Alex Newman (@thedotmack)
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - agent_architecture
+  - context_extension
+  - tool_implementation
+  key_claims:
+  - 'Automatically captures tool usage observations during Claude Code sessions, compresses them with Claude agent-sdk, and injects relevant context into future sessions for persistent cross-session memory'
+  - '3-layer MCP search workflow (search index -> timeline context -> get_observations full details) claims ~10x token savings by filtering before fetching'
+  - 'Hybrid search architecture combines SQLite FTS5 full-text with Chroma vector database'
+  - '5 lifecycle hooks (SessionStart/UserPromptSubmit/PostToolUse/Stop/SessionEnd), Bun-managed worker HTTP API on port 37777, mem-search skill with progressive disclosure'
+  - "Beta 'Endless Mode' advertises biomimetic memory architecture; privacy tags (<private>) exclude sensitive content from storage"
+  techniques:
+  - Claude Code lifecycle hook-based session capture
+  - AI-summarized observations in SQLite with FTS5 full-text search
+  - Chroma vector database for semantic retrieval (hybrid search)
+  - 3-layer progressive disclosure search with batched ID fetching
+  - MCP tools exposing search/timeline/get_observations
+  - Bun-managed HTTP worker service with web viewer UI
+  reported_results: 'No empirical benchmarks; token-savings claim is a hardcoded arithmetic ratio (~50-100 tok description vs ~500-1000 tok detail), not a measurement'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  discovered_via: input
+  contradicting_evidence:
+  - "Deep dive 2026-04-17: '3-layer search workflow' is a client-side skill convention over a 2-strategy cascade (Chroma-if-available else FTS5), not a 3-tier retrieval architecture. HybridSearchStrategy is NOT wired to the public search MCP tool."
+  - "'10x token savings' has no empirical basis — it is literally discovery_tokens vs detail_tokens * 2 in endless-mode-token-calculator.js. docs/public/endless-mode.mdx explicitly concedes 'Theoretical projections — Efficiency gains not yet validated in production.'"
+  - '7 lifecycle hooks, not 5 (Setup, SessionStart, UserPromptSubmit, PreToolUse-on-Read, PostToolUse, Stop, SessionEnd). PreToolUse-on-Read injection is a signal class EPYC does not currently capture — this is the genuinely novel hook.'
+  - 'Observer-sidecar architecture doubles per-tool-call inference cost (runs a separate tool-disabled Claude subprocess in parallel). Design tradeoff, not strict improvement over in-session compaction.'
+  - 'Known issues: SDK pool deadlocks (#1868 critical), SQLite/Chroma drift (#1856), observation loss on worker restart (#2053), 3-7s Stop-hook latency per turn.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - hermes-agent-index.md
+    intake_entries:
+    - intake-135
+    - intake-268
+    - intake-269
+    - intake-270
+    - intake-277
+    - intake-316
+    - intake-321
+    deep_dives:
+    - claude-mem-persistent-memory.md
+  handoffs_updated:
+  - context-folding-progressive.md
+  - tool-output-compression.md
+  - hermes-agent-index.md
+  handoffs_created: []
+  novelty_justification: 'Downgraded medium→low after deep dive (2026-04-17). Core idea heavily overlaps intake-135/268-270/277. "3-layer" is a client-side convention, "10x savings" is an arithmetic ratio not a measurement, "biomimetic" is marketing. Contribution is productized Claude-Code-specific engineering on well-covered ground.'
+  relevance_justification: 'Five concretely adoptable patterns (A-E below) against context-folding-progressive.md Phase 2 and tool-output-compression.md. Confirms our direction rather than unlocking new capability — EPYC already has ~80% of this direction planned. AGPL-3.0 precludes code adoption.'
+  notes: >
+    Five concrete patterns (replacing the original three vague ones):
+    (A) observer-sidecar architecture (separate subprocess for summarization);
+    (B) data-driven mode-defined observation taxonomy;
+    (C) batched-ID fetch MCP tool as progressive-disclosure enforcement;
+    (D) <private> tag + edge-layer stripping (src/utils/tag-stripping.ts, ~30 LOC,
+    6 tag types, ReDoS protection) — highest signal-per-LOC, slots into
+    context-folding-progressive.md Phase 2d;
+    (E) six-field Stop-hook summary schema (request/investigated/learned/completed/
+    next_steps/notes).
+    Patterns C, D, E are directly actionable. AGPL-3.0 means re-implement in Python.
+    See research/deep-dives/claude-mem-persistent-memory.md for details.
+- id: intake-396
+  url: https://github.com/jamiepine/voicebox
+  source_type: repo
+  arxiv_id: null
+  title: 'Voicebox — Open-Source Voice Synthesis Studio (local-first ElevenLabs alternative)'
+  authors:
+  - jamiepine
+  categories:
+  - multimodal
+  - tool_implementation
+  - local_inference
+  key_claims:
+  - 'Local-first voice cloning studio bundling 5 TTS engines (Qwen3-TTS 0.6B/1.7B, LuxTTS, Chatterbox Multilingual, Chatterbox Turbo, HumeAI TADA 1B/3B) behind one UI/API'
+  - 'Broad HW backend coverage: MLX/Metal (Apple Silicon), CUDA, ROCm (AMD), DirectML, Intel Arc IPEX/XPU, CPU fallback'
+  - 'LuxTTS claims ~1GB VRAM and 150x realtime on CPU at 48kHz — candidate for CPU-only EPYC deployment'
+  - 'Unlimited-length generation via sentence-boundary auto-chunking (100-5000 char) with configurable crossfade (0-200ms)'
+  - '8 post-processing effects via Spotify pedalboard; paralinguistic tags ([laugh],[sigh],[gasp]) through Chatterbox Turbo; REST API; Tauri (Rust) app; Whisper transcription'
+  techniques:
+  - Multi-engine TTS orchestration behind unified interface
+  - Sentence-boundary auto-chunking with crossfade
+  - Paralinguistic/emotion tag injection (Chatterbox Turbo)
+  - Spotify pedalboard DSP post-processing chain
+  - Per-model GPU memory unload
+  - Serial generation queue with SSE streaming
+  - Multi-backend dispatch (MLX, CUDA, ROCm, DirectML, IPEX, CPU)
+  reported_results: 'LuxTTS ~1GB VRAM, 48kHz, 150x RT CPU (vendor-reported). MLX 4-5x faster via ANE vs CPU baseline. Chatterbox Multilingual: 23 languages. TADA: 700s+ coherent audio.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: ROCm auto-config is FICTION — grep of entire repo (Rust main.rs, Python, Dockerfile, justfile) for rocm|hsa|amd|gfx returns zero matches outside docs. Issue #368 confirms real AMD users silently fall back to CPU.'
+  - '"CPU backend coverage" is LuxTTS-specific, not universal. Only luxtts_backend.py has CPU thread tuning. Other 4 engines have no CPU-specific paths; voicebox docs admit Qwen 1.7B/Chatterbox-ML/TADA-3B are "painful" on CPU.'
+  - 'Does NOT unblock TTS pipeline — real unblocker remains LuxTTS (intake-401) or upstream ZipVoice-Distill.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - multimodal-pipeline.md
+    intake_entries:
+    - intake-123
+    - intake-317
+    deep_dives:
+    - voicebox-multi-engine-tts-studio.md
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Not a new model — aggregates existing engines into unified studio. Medium novelty in (a) packaging patterns (clean typing.Protocol-based 6-method TTS interface, ModelConfig dataclass registry), (b) surfacing LuxTTS + HumeAI TADA. ROCm claim now struck as fiction.'
+  relevance_justification: 'Downgraded high→medium after deep dive. Surfaces LuxTTS (the real unblocker) and has two direct-copy patterns (chunked_tts.py ~240 lines, task_queue.py ~40 lines). But voicebox itself is a Tauri desktop studio, not a sidecar we can deploy; 2/3 of backend is studio-specific (stories/effects/timeline/Whisper).'
+  notes: >
+    Direct-copy targets (~550 LOC): chunked_tts.py (sentence-boundary chunker
+    with abbreviation/paralinguistic/CJK/decimal handling, linear equal-power
+    crossfade 0-200ms, per-chunk deterministic seeding), task_queue.py (40-line
+    serial asyncio.Queue worker — add backpressure cap), TTSBackend Protocol
+    (typing.Protocol-based 6-method interface), Dockerfile template.
+    Do NOT cite voicebox as ROCm reference — that claim is fabricated.
+    Do NOT extract whole backend — studio-specific.
+    LuxTTS discovered here is the actual TTS unblocker (see intake-401).
+    See research/deep-dives/voicebox-multi-engine-tts-studio.md for details.
+- id: intake-397
+  url: https://github.com/vercel-labs/open-agents
+  source_type: repo
+  arxiv_id: null
+  title: 'Open Agents — Vercel-Labs Reference App for Background Coding Agents'
+  authors:
+  - vercel-labs
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - 'Three-layer system: web UI, durable agent workflow, and sandbox VM — with deliberate architectural decision that the agent runs OUTSIDE the sandbox and interacts via file/search/shell tools'
+  - 'Agent execution decoupled from request lifecycle via Vercel Workflow SDK: multi-step durable runs with streaming, cancellation, and reconnect-to-resume semantics'
+  - 'Sandbox lifecycle (Vercel Sandbox VMs with snapshot-based resume + hibernation) evolves independently from agent/model choices'
+  - 'Built-in GitHub integration for end-to-end repo clone -> branch -> auto-commit -> push -> PR flow'
+  - 'Optional features layer: Redis/KV skills cache, ElevenLabs voice transcription, read-only session sharing links'
+  techniques:
+  - Agent-outside-sandbox architecture (control plane / execution environment separation)
+  - Durable workflow execution (Vercel Workflow SDK) with persisted steps and stream reconnection
+  - Snapshot-based sandbox hibernate/resume
+  - Tool-driven sandbox interaction (file, search, shell, task, skill, web tools)
+  - Monorepo layout (apps/web + packages/agent + packages/sandbox + packages/shared)
+  reported_results: 'No benchmarks; reference app only'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: "Snapshot-based hibernate" is FS-only in Vercel Sandbox (FS + installed packages, no memory/process state). E2B (Firecracker) and Modal do real hibernate; Vercel does not. The initial framing was generous.'
+  - 'GitHub PR automation and snapshot hibernate do not survive scrutiny as novel patterns — both reduce to "use a cloud-managed workflow engine with a managed Firecracker sandbox pool."'
+  - 'Issue #776 (Daytona backend request) confirms the sandbox abstraction is NOT actually pluggable yet — would need work to swap backends. Issue #800: sandbox creation failures with no diagnostics.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - hermes-outer-shell.md
+    - hermes-agent-index.md
+    - meta-harness-optimization.md
+    - repl-turn-efficiency.md
+    - tool-output-compression.md
+    intake_entries:
+    - intake-257
+    - intake-318
+    deep_dives:
+    - vercel-open-agents-durable-workflow.md
+  handoffs_updated:
+  - hermes-outer-shell.md
+  - hermes-agent-index.md
+  - meta-harness-optimization.md
+  - repl-turn-efficiency.md
+  - tool-output-compression.md
+  handoffs_created: []
+  novelty_justification: 'Reference-app patterns are standard in TypeScript/cloud agent space. No empirical claims, no new technique. The genuine transferable contribution is the workflow event log substrate ((step_id, input_hash, output) → persisted with a stream index for client reconnect) — ~200 lines of SQLite, portable.'
+  relevance_justification: 'Upgraded low→medium after deep dive surfaced genuinely portable patterns: (1) ~200-line SQLite event log for reconnect-on-disconnect (repl-turn-efficiency.md), (2) task.ts scoped-subagent pattern tighter than _escalate() (meta-harness-optimization.md), (3) FS-backed large-payload convention from Issue #781 fix (tool-output-compression.md, web_fetch/web_search/peek).'
+  notes: >
+    Three surviving patterns after scrutiny:
+    (1) Workflow event log (~200 LOC Python/SQLite) — (step_id, input_hash,
+    output) persistence + stream index for client reconnect. Directly applicable
+    to repl-turn-efficiency.md wasted-turns-on-reconnect goal.
+    (2) ExecutionEnvironment Protocol — typed contract between outer control
+    plane and inner sandbox. Cleaner than embedding; hermes-outer-shell Phase 2+.
+    (3) Large-output-to-FS convention (Issue #781 fix) — tool returns
+    {status, content_type, byte_count, file_path}; full payload in sandbox FS;
+    model fetches details via read. Cross-tool convention for web_fetch,
+    web_search, peek, search results.
+    Two patterns DO NOT survive: GitHub PR automation (cloud glue), snapshot
+    hibernate (FS-only, not memory+process like E2B/Firecracker).
+    See research/deep-dives/vercel-open-agents-durable-workflow.md for details.
+- id: intake-398
+  url: https://github.com/google/magika
+  source_type: repo
+  arxiv_id: null
+  title: 'Magika: AI-Powered File Type Detection'
+  authors:
+  - Google (Security Research)
+  categories:
+  - document_processing
+  - tool_implementation
+  key_claims:
+  - 'Custom deep-learning file-type classifier (few-MB model) identifies 200+ content types with ~99% average precision/recall on test set'
+  - 'Trained/evaluated on ~100M sample dataset; outperforms prior approaches especially on textual content types'
+  - 'Per-file inference time ~5ms on single CPU after one-off model load; near-constant latency independent of file size'
+  - 'Deployed at Google scale (Gmail/Drive/Safe Browsing) routing hundreds of billions of samples weekly; integrated with VirusTotal and abuse.ch'
+  - 'Ships CLI (Rust), Python, JS/TS, GoLang bindings; per-content-type thresholds and confidence modes; published at ICSE 2025'
+  techniques:
+  - Small CNN-based content-type classifier on raw byte prefix/window
+  - Per-class confidence thresholds with fallback to generic labels
+  - CPU-only inference with fixed-size byte sampling (size-invariant latency)
+  - Multi-language bindings around a shared ONNX model
+  reported_results: '~99% avg precision/recall on balanced set; 2.8ms/file CPU measured on EPYC (cold-start 225ms); trained on ~100M files; deployed at Google scale'
+  referenced_arxiv_ids:
+  - '2409.13768'
+  novelty: medium
+  relevance: none
+  credibility_score: 4
+  verdict: not_applicable
+  discovered_via: input
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: Architecture correction — NOT a CNN. It is a shallow byte-embedding MLP (two 256-d Dense+GELU, global max-pool, ~1MB weights). Input: three fixed 512-byte windows. 113 classes in paper, "200+" in v1.0.2.'
+  - 'Live measurement on EPYC: cold-start 225ms (206ms import + 18ms instantiate), per-file identification 2.8ms. Install 3.2MB but pulls onnxruntime (~80MB).'
+  - 'Live test on EPYC corpus: JSON file misclassified as JSONL — confirmed confidently-wrong-on-similar-formats caveat.'
+  - 'OpenDataLoader is NOT a filetype detector — it is PDF-only. Original "does ODL make Magika redundant?" question was malformed.'
+  - 'EPYC corpus is homogeneous known-format URL-fetch (arXiv PDFs, GitHub READMEs, HTML, HF model cards); format is already declared by URL/MIME/extension. pdf_router.py, document_preprocessor.py, tools/web/fetch.py reviewed — none need generic byte-sniffing.'
+  - 'Anjackson found Magika returned high-confidence wrong predictions on OOD files (MOVs as MP4, MPEG as ICO). ICSE 2025 paper own limitations: balanced-dataset accuracy not representative of real-world long-tail; degrades on <~100-byte samples.'
+  - 'HackerNews: libmagic speed comparison used ~393% CPU (multi-core) vs libmagic single-threaded. Paper own numbers: libmagic is 7.7x faster per file single-threaded.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    intake_entries: []
+    deep_dives:
+    - magika-filetype-detection.md
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  handoffs_created: []
+  novelty_justification: 'Novel application of small byte-embedding MLP to file-type classification at production scale; peer-reviewed at ICSE 2025 (arxiv:2409.13768). Well-engineered open-sourced production artifact. Medium novelty — tooling/engineering, not a decoding/serving advance.'
+  relevance_justification: 'Downgraded low→none after deep dive. EPYC corpus is known-format URL-fetch; no pipeline stage needs generic filetype detection. 80MB onnxruntime + 225ms cold-start + stochastic misclassifier (JSON→JSONL observed) for zero accuracy gain over URL/MIME/extension.'
+  notes: >
+    NOT_APPLICABLE for EPYC. Solution searching for a problem: corpus is
+    homogeneous known-format, OpenDataLoader is PDF-only (unrelated), no
+    byte-sniffing stage needed. Reconsider only if EPYC starts ingesting
+    arbitrary binary corpora (forensic/malware/unknown-extension uploads).
+    See research/deep-dives/magika-filetype-detection.md.
+- id: intake-399
+  url: https://github.com/lsdefine/GenericAgent
+  source_type: repo
+  arxiv_id: null
+  title: 'GenericAgent: A minimal self-evolving autonomous agent framework'
+  authors:
+  - lsdefine
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - memory_augmented
+  - knowledge_management
+  key_claims:
+  - 'Core framework ~3K LOC with ~100-line autonomous execution loop (agent_loop.py) and only 9 atomic tools'
+  - 'Self-evolving skill crystallization: every solved task distilled into reusable skill (SOP) so repeat requests become one-line invocations'
+  - 'Layered memory system with five tiers — L0 Meta Rules, L1 Insight Index, L2 Global Facts, L3 Task Skills/SOPs, L4 Session Archive — keeps working context <30K tokens vs 200K-1M for other agents'
+  - 'System-level control: real-browser injection, terminal, filesystem, keyboard/mouse, screen vision, mobile via ADB; compatible with Claude, Gemini, Kimi, MiniMax'
+  - 'Self-bootstrap claim: entire repo allegedly produced autonomously by GenericAgent itself; cites comparison to OpenClaw (~530K LOC) and Claude Code'
+  techniques:
+  - Minimal atomic tool-set (9 tools) with dynamic tool creation via code_run
+  - Layered memory hierarchy (L0-L4) for routing/recall
+  - Skill crystallization — promoting episodic traces to reusable SOPs
+  - Compact (<30K) context window management via layered recall
+  - Multi-frontend (Streamlit / Qt / Telegram / WeChat) delivery harness
+  reported_results: 'No benchmarks; self-bootstrap claim unverified'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  discovered_via: input
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - meta-harness-optimization.md
+    - hermes-agent-index.md
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - repl-turn-efficiency.md
+    intake_entries:
+    - intake-326
+    - intake-327
+    - intake-388
+    - intake-393
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - hermes-agent-index.md
+  - context-folding-progressive.md
+  - tool-output-compression.md
+  - repl-turn-efficiency.md
+  handoffs_created: []
+  novelty_justification: 'Individual ingredients (layered memory a la MemGPT, skill library a la Voyager, minimal tool-calling loop) are well known. Novelty tightened after deep dive: the "100-line loop / 9 atomic tools / 3K LOC" framing is real but delegates into ga.py (558 LOC tools) + llmcore.py (918 LOC plumbing) + simphtml.py (870 LOC DOM). More honest: ~2K LOC of agent logic; "9 tools" is 1 Turing-complete code_run + 8 conveniences.'
+  relevance_justification: 'Directly adjacent to EPYC agent-architecture threads: meta-harness-optimization, hermes-agent-index, context-folding-progressive, tool-output-compression, repl-turn-efficiency. L1 insight-index + curated SOPs + content-in-reply-body + generator-based tool dispatch are genuinely portable patterns.'
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: "Minimalism" is real-but-framed. 100-line loop delegates into ga.py (558 LOC), llmcore.py (918 LOC), simphtml.py (870 LOC). More honest: ~2K LOC of agent logic. "9 tools" is 1 Turing-complete code_run + 8 conveniences.'
+  - 'L0-L4 memory is a naming convention over flat markdown files, not a storage layer. No index, no embeddings, no paging. L1 injected into system prompt; L2/L3 are markdowns the LLM file_reads on keyword hint; L4 is zip-archived raw logs via 12h cron. "Promotion" is an LLM prompt that tells itself to file_patch memory files.'
+  - 'Skill crystallization is 100% prompt-engineered, not learned or rule-based. No frequency threshold, no verifier (unlike Voyager), no embedding-gated skill add.'
+  - 'No security model — code_run runs arbitrary Python/shell as user. Zero sandbox. Appropriate for personal-PC automation; unsuitable for shared/server use.'
+  - 'Self-bootstrap claim is marketing hyperbole: of ~340 commits, ~5% have auto-generated-looking messages, 95% are conventional-style. Author drives git via agent ~90% but reviews output — do not cite as evidence the framework can self-bootstrap.'
+  notes: >
+    adopt_patterns (NOT adopt_framework). Borrow the techniques, not the engine.
+    Six specific patterns for EPYC (meta-harness / hermes-agent / context-folding):
+    (1) L1 insight-index (≤30 lines, always-in-context, keyword→filename only);
+    (2) content-in-reply-body protocol for verbose tool inputs (<file_content> tags);
+    (3) engine-level no_tool recovery (empty / max_tokens / big-code-block-without-call cases);
+    (4) generator-based tool dispatch (stream + structured return from one function);
+    (5) periodic session-archiver cron (compress raw logs into monthly zips);
+    (6) memory_cleanup_sop.md ROI rubric as LLM-self-applied curation prompt.
+    Do NOT adopt: bespoke tool schema (use MCP), unsandboxed code_run, memory-as-
+    markdown whole-cloth, CN-specific SOPs/frontends.
+    Do NOT port the numbers (100/9/3K) as benchmarks — cite the discipline, not
+    the marketing. For EPYCs small/medium local models this pattern needs
+    adaptation (simpler SOPs, stricter tool contracts to replace SOP discipline).
+    See research/deep-dives/genericagent-minimal-framework.md.
+- id: intake-400
+  url: https://github.com/BasedHardware/omi
+  source_type: repo
+  arxiv_id: null
+  title: 'Omi - Open-Source AI Wearable / AI-Friend Device'
+  authors:
+  - BasedHardware
+  categories:
+  - multimodal
+  - memory_augmented
+  - agent_architecture
+  key_claims:
+  - 'Open-source AI system that captures screen activity and conversations and provides real-time transcription across desktop, mobile, and wearable form factors'
+  - 'Automatic summary generation and action-item extraction from captured content (Deepgram STT + LLM summarization)'
+  - 'Context-aware AI assistant with persistent memory of observed user interactions'
+  - 'Cross-platform stack: macOS (Swift/SwiftUI), mobile (Flutter/React Native), wearables (nRF/Zephyr, ESP32-S3, BLE)'
+  - 'Claims 300,000+ professional users; backend is Python/FastAPI + Firebase/Firestore + Redis; exposes MCP server endpoints'
+  techniques:
+  - Deepgram speech-to-text
+  - Voice activity detection (VAD)
+  - Speaker diarization
+  - BLE wearable firmware (nRF/Zephyr, ESP32-S3)
+  - LLM-based summarization and chat
+  - Model Context Protocol (MCP) server
+  - Persistent conversation memory store (Firebase/Firestore + Redis)
+  reported_results: 'No empirical benchmarks; 300K users claim is marketing'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  contradicting_evidence: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - orchestrator-conversation-management.md
+    - memrl-episodic-memory.md
+    - graphiti_memrl_enhancement.md
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Omi is a consumer-facing product assembly of well-known off-the-shelf components (Deepgram STT, VAD, diarization, LLM summarization, BLE firmware). No novel algorithms, architectures, or empirical results relevant to server-side LLM orchestration.'
+  relevance_justification: 'EPYC is server-side LLM specialist orchestrator; Omi is client-side wearable/desktop capture device. Only thematic overlap is persistent user memory, which EPYC already implemented natively via B1 User Modeling (orchestrator-conversation-management.md) and Graphiti/MemRL episodic-memory handoffs.'
+  notes: >
+    not_applicable — Omi is a wearable capture product, not an inference/
+    orchestration technique. Memory/user-modeling concepts already covered by
+    EPYCs completed B1 user modeling and Graphiti/MemRL episodic memory work.
+    No component or pattern worth porting into EPYC.
+- id: intake-401
+  url: https://huggingface.co/YatharthS/LuxTTS
+  source_type: repo
+  arxiv_id: null
+  title: 'LuxTTS — Lightweight ZipVoice-Distilled TTS with 48kHz Voice Cloning'
+  authors:
+  - YatharthS (Yatharth Sharma)
+  categories:
+  - multimodal
+  - local_inference
+  key_claims:
+  - 'Distilled ZipVoice architecture (4 flow-matching steps) fitting in <1GB VRAM'
+  - '150x realtime on single GPU; faster-than-realtime on CPU with no GPU required'
+  - '48kHz speech output (vs 24kHz typical) via custom vocoder'
+  - 'SOTA zero-shot voice cloning claimed on par with models 10x larger'
+  - 'Improved sampling technique over standard Euler sampling for quality at low step count'
+  techniques:
+  - ZipVoice flow-matching backbone (Zipformer vector field estimator)
+  - Flow distillation to 4 sampling steps (eliminates CFG overhead)
+  - Custom 48kHz vocoder (replaces standard 24kHz)
+  - Higher-quality sampler than Euler
+  - Zero-shot voice cloning from short reference audio
+  reported_results: 'LuxTTS self-reported: 150x RT GPU, faster-than-RT CPU, <1GB VRAM, 48kHz. Upstream ZipVoice-Distill (arxiv:2506.13053, ASRU 2025): WER=1.51, single-thread Xeon 8457C RTF=1.22 at 4-NFE. Projected EPYC 9655 RTF: 0.15-0.25 (FP32 16-thread), 0.06-0.10 (INT8 ONNX).'
+  referenced_arxiv_ids:
+  - '2506.13053'
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: new_opportunity
+  discovered_via: expansion
+  expanded_from: intake-396
+  parent_model: k2-fsa/ZipVoice-Distill
+  parent_credibility: 4
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: LuxTTS-the-fork is a thin community wrapper (swaps in Vocos 48kHz head + adds t_shift sampler param). Real integration target is upstream k2-fsa/ZipVoice-Distill — ASRU 2025 publication, WER=1.51, official ONNX export, INT8 quant, sherpa-onnx C++ runtime already shipped.'
+  - "Third-party review: pacing 'sometimes slightly mechanical compared with heavier neural models' — loses to alternatives on natural pacing / expressive delivery. Voice-cloning SIM-o=0.657 mid-pack (Qwen3-TTS 0.789). English-only in LuxTTS fork; ZH in upstream."
+  - 'HF model card lists English only (one secondary blog claims English+Chinese). Language coverage narrower than Qwen3-TTS (10 langs) or VoxCPM2 (30 langs).'
+  - 'Single-author unverified HuggingFace upload; LuxTTS fork strips upstream deployment story. Start from k2-fsa/ZipVoice, not the fork.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - multimodal-pipeline.md
+    intake_entries:
+    - intake-123
+    - intake-317
+    - intake-242
+    - intake-396
+    deep_dives:
+    - luxtts-cpu-tts-candidate.md
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Medium — base architecture (ZipVoice flow-matching) is published research (2506.13053); LuxTTS contributes engineering distillation (4-step, 48kHz Vocos vocoder, t_shift sampler). Flow-matching is NOT fundamentally CPU-hostile here: Zipformer (not DiT) with [1,2,4,2,1] downsampling keeps sequence length short in middle layers; 4 NFE x 123M params = ~18x less FLOPs per utterance than F5-TTS.'
+  relevance_justification: 'High — multimodal-pipeline.md is BLOCKED on TTS. Upstream ZipVoice-Distill projected RTF on EPYC 9655 is 0.15-0.25 (4-6x realtime) or 0.06-0.10 with INT8 ONNX, first-packet 150-300ms, <1GB RAM, coexists with 70B LLM trivially. 1-week sidecar integration via pip install zipvoice → optional ONNX+sherpa-onnx swap. Quality is real for WER (beats F5-TTS, E2-TTS, XTTS, CosyVoice2 on LibriSpeech); SIM-o mid-pack.'
+  notes: >
+    Verdict upgraded to new_opportunity after deep dive (2026-04-17). The intake
+    CTA — "decide if its worth a local CPU benchmark" — is answered yes.
+    Key insight: real integration target is upstream k2-fsa/ZipVoice-Distill
+    (credibility 4), not the thin LuxTTS fork (credibility 2).
+    INTEGRATION PLAN: 1-week sidecar, NOT a llama.cpp port (avoid Path A fate).
+    pip install zipvoice → benchmark → swap to ONNX+sherpa-onnx if latency
+    gains justify.
+    BENCHMARK PROTOCOL (see deep-dive §8): 6 configs sweep — baseline 1-thread,
+    PyTorch FP32 16/32-thread, ONNX FP32/INT8 16-thread, plus LuxTTS 48kHz
+    variant. Metrics: RTF, first-packet, WER (whisper-large-v3 judge on
+    LibriSpeech test-clean), SIM-o (WavLM-SV), UTMOS, memory peak.
+    Decision thresholds: promote if RTF<0.35, first-packet<400ms, WER<2.5,
+    memory<2GB. Park if RTF>0.8 or WER>3.0 or memory>4GB.
+    Does NOT obsolete Qwen3-TTS Path C (multilingual parity) or VoxCPM2/TADA
+    (GPU-era upgrades).
+    See research/deep-dives/luxtts-cpu-tts-candidate.md.
+- id: intake-402
+  arxiv_id: '2602.23068'
+  url: https://www.hume.ai/blog/opensource-tada
+  source_type: blog
+  title: 'Opensourcing TADA: Fast, Reliable Speech Generation Through Text-Acoustic Synchronization'
+  authors:
+  - Sharath Rao
+  - Mori Liu
+  - Trung Dang
+  - Ananya Gupta
+  - Christopher Gagne
+  - Panagiotis Tzirakis
+  - Alice Baird
+  - Jakub Piotr Clapa
+  - Peter Chin
+  - Alan Cowen
+  - Hume AI
+  categories:
+  - multimodal
+  key_claims:
+  - '1:1 text-acoustic synchronization (one continuous acoustic vector per text token) eliminates content hallucinations by construction — zero hallucinations across 1000+ LibriTTSR test samples'
+  - 'Real-time factor (RTF) of 0.09, >5x faster than comparable LLM-based TTS systems, by operating at 2-3 frames/sec vs 12.5-75 tokens/sec'
+  - 'Supports up to ~700s of audio in a 2048-token context window (vs ~70s for conventional TTS) — 10x context efficiency for long-form coherent synthesis'
+  - 'In EARS expressive long-form human eval: 4.18/5.0 speaker similarity and 3.78/5.0 naturalness, placing second overall'
+  - 'Released 1B (Llama 3.2 1B, English) and 3B-ml (multilingual: English + 7 languages) open-source checkpoints, plus full audio tokenizer and flow-matching decoder'
+  techniques:
+  - Text-Acoustic Dual Alignment (TADA) synchronous tokenization
+  - Llama-based autoregressive LLM backbone with flow-matching acoustic head
+  - Speech Free Guidance (SFG) — logit blending between text-only and text-speech modes
+  - Latent-space flow matching for continuous acoustic features
+  - On-device deployment targeting (1B size)
+  reported_results: 'RTF=0.09 (>5x speedup); 0 hallucinations/1000+ LibriTTSR; Speaker sim 4.18/5.0 (EARS); Naturalness 3.78/5.0 (EARS 2nd place); ~700s audio in 2048-token context.'
+  referenced_arxiv_ids:
+  - '2602.23068'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-396
+  contradicting_evidence:
+  - 'Deep dive 2026-04-17: RTF=0.09 is H100 + torch.compile + bf16. HF card explicitly sets device="cuda". Flow-matching head runs 10 Euler steps per acoustic frame. SFG doubles LLM forward passes. Zero GGUF/llama.cpp/ONNX path exists. "Edge device" in marketing means iPhone-class NPU, not server CPU.'
+  - 'Backbone is NOT stock Llama 3.2. Five modifications: additive acoustic input fusion, K-step position shift, dual output heads, acoustic-mask embedding, KL-distillation against base Llama. A GGUF of Llama 3.2 1B is not a drop-in; a custom llama.cpp port would be weeks plus separate ONNX/ggml ports for the flow-matching head and tada-codec.'
+  - 'Language count correction: 3B-ml is 10 languages (ar, ch, de, en, es, fr, it, ja, pl, pt), not "English + 7" or "9" — initial intake and third-party review were both imprecise.'
+  - '"2nd place on EARS" uses TADA-3B + Online Rejection Sampling, multiplying inference cost. Raw TADA-3B: speaker similarity 67.0 vs Index-TTS 76.9 — competitive, not winning.'
+  - 'License: weights under Llama 3.2 Community License (not Apache), code MIT. LuxTTS/ZipVoice is cleanly Apache 2.0.'
+  - "Hume's own blog acknowledges speaker drift on generations >10min/>700s, partially mitigated by online rejection sampling and context resets."
+  - 'Modality gap: language quality degrades when text is generated alongside speech; SFG only partially closes the gap. Pre-trained only for speech continuation — requires additional fine-tuning for assistant/dialog scenarios.'
+  - 'Third-party review (emelia.io): nascent ecosystem (~6 GitHub commits at review time), no demonstrated consumer-hardware on-device benchmarks despite marketing claim.'
+  - 'Commercial vendor bias: Hume is a paid-API company; open-sourcing TADA serves as loss-leader / research PR for paid EVI voice platform — self-reported benchmarks warrant independent replication.'
+  ingested_date: '2026-04-17'
+  cross_references:
+    handoffs:
+    - multimodal-pipeline.md
+    intake_entries:
+    - intake-396
+    - intake-401
+    deep_dives:
+    - hume-tada-text-acoustic-alignment.md
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: '1:1 text-acoustic tokenization via CTC+Viterbi alignment over LLM subword vocab with Bit Diffusion duration encoding is architecturally distinct from Encodec/SNAC/Mimi/continuous-VALL-E. Hallucination elimination is real "by construction" (not just training-induced). Paper is rigorous with ablations.'
+  relevance_justification: 'Medium — tilted lower after deep dive. Not a CPU contender today: every RTF=0.09 is H100+bf16; 10-step flow-matching per frame; 5 custom Llama modifications preclude GGUF drop-in; license is Llama Community (not Apache). Benchmark LuxTTS first, sequentially — TADA stays shelved with two re-entry triggers: (1) long-form >2min coherent audio becomes an EPYC workload, or (2) GPU enters deployment.'
+  notes: >
+    worth_investigating (unchanged, but scope tightened). NOT a CPU contender
+    today. Architecture IS genuinely novel (worth academic attention).
+    HEAD-TO-HEAD: benchmark LuxTTS/ZipVoice-Distill (intake-401) first.
+    Sequential, not parallel — LuxTTS is ~1 week, TADA is months of llama.cpp
+    port work with uncertain payoff.
+    RE-ENTRY TRIGGERS for TADA:
+    (1) Long-form (>2min) coherent audio becomes a real EPYC workload, OR
+    (2) GPU becomes part of the deployment.
+    Until one triggers, park TADA.
+    See research/deep-dives/hume-tada-text-acoustic-alignment.md.
+
+- id: intake-403
+  url: https://github.com/jeankaddour/tpo
+  arxiv_id: null
+  source_type: repo
+  title: 'Target Policy Optimization — JAX Implementation'
+  authors:
+  - Jean Kaddour
+  categories:
+  - training_distillation
+  key_claims:
+  - 'TPO decouples target distribution construction from parameter optimization — constructs closed-form target q_i proportional to p_old_i * exp(u_i/eta), fits via cross-entropy loss'
+  - 'Eliminates policy gradients, clipping, and critics entirely — gradient is simply (p - q), vanishing when policy matches target'
+  - 'JAX implementation covers tabular bandits, MNIST contextual bandits, and transformer sequence tasks with CLI interface'
+  - 'Includes comparisons against PG, PPO, GRPO, and DG baselines across all domains'
+  techniques:
+  - Target Policy Optimization (TPO) via cross-entropy minimization
+  - Z-score standardization for arbitrary score scales
+  - Frozen target distribution for multi-epoch stability
+  reported_results: 'Reference implementation for arxiv:2604.06159. See intake-404 for full results.'
+  referenced_arxiv_ids:
+  - '2604.06159'
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-404
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Reference implementation for a novel RL training method. The technique itself is scored higher in the companion paper entry (intake-404). Repo provides reproducible code and CLI, adding implementation value beyond the paper.'
+  relevance_justification: 'EPYC does not currently RL-train LLMs — uses pre-trained models for CPU inference. Relevance is low but non-zero: if Tier 3 training (OPSDC, RLVR, FoldGRPO) materializes per reasoning-compression.md, TPO would be a strong GRPO replacement candidate. The JAX implementation is not directly usable (EPYC uses PyTorch/llama.cpp), but the algorithm is framework-agnostic.'
+  notes: >
+    Companion repo for arxiv:2604.06159. Clean JAX codebase with uv-based setup
+    and optional CUDA support. Worth bookmarking if Tier 3 RL training enters
+    the active pipeline.
+
+- id: intake-404
+  url: https://arxiv.org/abs/2604.06159
+  arxiv_id: '2604.06159'
+  source_type: paper
+  title: 'Target Policy Optimization'
+  authors:
+  - Jean Kaddour
+  categories:
+  - training_distillation
+  key_claims:
+  - 'TPO separates target distribution construction from parameter optimization — given scored completions, constructs q_i proportional to p_old_i * exp(u_i/eta) and fits via cross-entropy. Gradient is (p - q), vanishing at convergence.'
+  - 'Under sparse/terminal rewards, TPO substantially outperforms PG, PPO, GRPO, and DG — at sequence length H=10 with terminal reward: TPO 7.4% error vs GRPO 50.4%, PPO fails to converge'
+  - 'Multi-epoch stability: fixed target supports stable gradient reuse. TPO achieves 0.2% error at 4 epochs vs GRPO non-monotonic behavior (37.6% at 2 epochs, 1.1% at 16 epochs)'
+  - 'Signal concentration: TPO eliminates zero-variance (all-fail) groups faster than baselines, concentrating updates where ranking information exists'
+  - 'LLM-scale validation (1.5-1.7B): on Reasoning Gym Graph Coloring, TPO reaches 0.96 score vs GRPO ~0 on Qwen3-1.7B; on GSM8K, TPO converges to 85-87% matching GRPO but ~10 steps faster'
+  techniques:
+  - Target Policy Optimization (TPO) with closed-form target distribution
+  - Cross-entropy minimization replacing policy gradients
+  - Z-score standardization for within-group score normalization
+  - KL-regularized interpretation (target solves max sum(r_i * u_i) - eta * KL(r || p_old))
+  - Temperature parameter eta (robust across 0.25-2.0 range)
+  - Frozen target across multiple gradient epochs
+  reported_results: 'Terminal reward H=10: TPO 7.4% vs GRPO 50.4% error; Token reversal V=2: TPO 58 steps vs GRPO 904; Multi-epoch K=32: TPO 0.2% at 4 epochs; Reasoning Gym Graph Coloring (Qwen3-1.7B): TPO 0.96 vs GRPO ~0; GSM8K: both ~85-87% final, TPO converges ~10 steps earlier; Zero-variance masking: TPO 0.05% vs GRPO-masked 29.7%'
+  referenced_arxiv_ids:
+  - '2603.14608'
+  - '2402.14740'
+  - '2404.16767'
+  - '2402.01306'
+  - '2402.03300'
+  - '2501.12948'
+  - '2501.03262'
+  - '2510.13786'
+  - '2510.18855'
+  - '2601.05242'
+  - '2602.05547'
+  - '2602.02710'
+  novelty: high
+  relevance: low
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-403
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: 'Novel RL training method that replaces policy gradients with cross-entropy fitting of a closed-form target distribution. Strong empirical results, particularly on sparse-reward tasks where GRPO collapses (7.4% vs 50.4% at H=10). Multi-epoch stability property is architecturally significant — GRPO degrades non-monotonically with epoch count. No prior coverage in chapters or experiments.'
+  relevance_justification: 'EPYC is an inference-focused stack that does not RL-train LLMs. Relevance is low but non-zero: (1) reasoning-compression Tier 3 references GRPO-based training (OPSDC, RLSD, FoldGRPO) — TPO would be a direct replacement if any of these activate. (2) The sparse-reward insight is particularly relevant because reasoning verification rewards are binary (correct/incorrect), which is exactly where TPO excels. (3) decision-aware-routing mentions SPO+ loss for Q-scorer training — TPOs cross-entropy approach is conceptually adjacent but for a different regime.'
+  notes: >
+    Strongest GRPO alternative in the literature to date for sparse-reward LLM
+    training. The key insight — that constructing a closed-form target and fitting
+    via cross-entropy eliminates pathological gradient behavior under sparse
+    rewards — is elegant and well-supported empirically. Limitations: (1) tested
+    only at 1.5-1.7B scale, (2) single author / no peer review yet, (3) does
+    not reduce the rollout cost (still needs K completions per context). Watch
+    for larger-scale replications and community adoption before considering for
+    any future EPYC training pipeline.
