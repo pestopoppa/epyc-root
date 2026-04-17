@@ -68,9 +68,8 @@ The canonicalizer proposal (`epyc-inference-research/research/MATHSMITH_CANONICA
 - [ ] Measure total pipeline token cost: (formalizer tokens + solver tokens) vs (baseline solver tokens). Report per-problem breakdown — formalizer overhead is fixed (~300-500 tok) but solver savings should scale with problem ambiguity. Net cost reduction at equal-or-better accuracy validates the cost-reduction hypothesis (arxiv:2504.06514)
 - [ ] Use Math-Verify (intake-377) for answer comparison instead of exact-match — 66% more accurate on math expressions. See eval-tower-verification.md for caveats (NOT symmetric, NOT thread-safe)
 
-### S5: Update proposal document
-- [ ] Rewrite `MATHSMITH_CANONICALIZER_PROPOSAL.md` to reflect current deployment, HC results, and A/B findings
-- [ ] Or retire it in favor of this handoff
+### S5: Update proposal document — DONE 2026-04-17
+- [x] Retired `MATHSMITH_CANONICALIZER_PROPOSAL.md` (renamed to `.retired`). This handoff is the authoritative document; the 3+ month stale proposal added no value.
 
 ## Open Questions
 

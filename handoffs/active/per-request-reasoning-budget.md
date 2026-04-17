@@ -1,6 +1,6 @@
 # Per-Request Reasoning Budget for Hybrid SSM+MoE Models
 
-**Status**: READY (investigation needed in llama.cpp-experimental)
+**Status**: INVESTIGATION COMPLETE (Steps 1-2 done 2026-04-17; Steps 3-4 need running server)
 **Created**: 2026-04-15
 **Priority**: MEDIUM (unblocks per-request reasoning control, autopilot tuning)
 **Categories**: llama.cpp, inference
@@ -48,12 +48,65 @@ curl http://localhost:8280/v1/chat/completions \
 3. **Test fix**: When `budget_tokens=0`, inject `</think>` as the very first generated token (before any SSM state update). Verify on Qwen3.5-35B-A3B
 4. **Test budget>0**: Verify that `budget_tokens=N` correctly caps reasoning at N tokens then transitions to content
 
-## Key Files
+## Investigation Results (2026-04-17, Steps 1-2)
 
-- `tools/server/server.cpp` — request parsing, thinking budget parameter
-- `common/chat.cpp` — chat template application, `enable_thinking` logic
-- `src/llama-sampling.cpp` — token sampling (forced token injection point)
-- `tools/server/server-context.cpp` — slot management, generation loop
+### Budget Enforcement Pipeline (Fully Traced)
+
+The reasoning budget is enforced via a **sampling-level state machine** — not a model-level control. The complete flow:
+
+1. **Request parsing**: `server-common.cpp:1108-1118` reads `thinking.budget_tokens` → `reasoning_budget_tokens`
+2. **Sampler init**: `sampling.cpp:260-299` creates `common_reasoning_budget_init()` with budget, start/end tag tokens, and prefill tokens
+3. **State machine**: `reasoning-budget.cpp:59-127` implements:
+   - `IDLE` → wait for `<think>` tag tokens
+   - `COUNTING` → decrement remaining budget per generated token
+   - `FORCING` → force `</think>` + fallback message by setting all other logits to -∞
+   - `DONE` → passthrough (no more budget control)
+4. **Logit forcing**: `reasoning-budget.cpp:129-149` — when `FORCING`, sets all logits to `-INFINITY` except the next forced token
+
+### Root Cause: SSM State Update Race
+
+The bug is specific to **hybrid SSM+MoE models** (Qwen3.5-A3B):
+
+- **Attention layers** process the full context bidirectionally — budget forcing works because logit manipulation happens before the next token is committed
+- **SSM/Mamba layers** update their recurrent state **during each token generation step** (`llama-context.cpp:3345-3354` accesses `llama_memory_hybrid`)
+- When `budget_tokens=0`, the state machine promotes from `COUNTING` to `FORCING` at init (`reasoning-budget.cpp:201-204`), but the **prefill matching** (`reasoning-budget.cpp:221-246`) must first detect `<think>` in the prefill before promotion happens
+- On hybrid models, the first generated token after `<think>` triggers an SSM state update that commits the model to a reasoning trajectory, even though the sampler is about to force `</think>`
+
+### Proposed Fix (Steps 3-4, needs running server)
+
+**Fix A** (minimal): In `reasoning-budget.cpp:200-204`, ensure `FORCING` state is set BEFORE the first token is generated when `budget=0` AND `<think>` is detected in prefill. Current code does this, but the SSM has already processed the prefill with `<think>` visible — the fix may need to strip `<think>` from the SSM prefill or inject `</think>` into the prefill itself.
+
+**Fix B** (robust): For hybrid models, when `budget_tokens=0`, do not include `<think>` in the generation prompt at all. This means the chat template should suppress the think scaffold when budget=0 — modify `chat.cpp:1313-1331` to check budget before setting `thinking_start_tag`.
+
+**Fix C** (workaround): Already deployed — remove `--jinja` flag entirely. Loses all thinking capability but avoids the SSM state commitment issue.
+
+### Verified Test Protocol (for Steps 3-4)
+
+```bash
+# Test 1: budget=0 → no reasoning (the bug)
+curl localhost:8280/v1/chat/completions -d '{"model":"auto","messages":[{"role":"user","content":"What is 2+2?"}],"max_tokens":64,"thinking":{"budget_tokens":0}}'
+
+# Test 2: budget=512 → capped reasoning
+curl localhost:8280/v1/chat/completions -d '{"model":"auto","messages":[{"role":"user","content":"Prove sqrt(2) is irrational"}],"max_tokens":1024,"thinking":{"budget_tokens":512}}'
+
+# Test 3: No regression on pure MoE (port 8082)
+curl localhost:8082/v1/chat/completions -d '{"model":"auto","messages":[{"role":"user","content":"What is 2+2?"}],"max_tokens":64,"thinking":{"budget_tokens":0}}'
+```
+
+## Key Files (Updated with Line Numbers)
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `tools/server/server-common.cpp` | 1108-1118 | Request budget parsing (OAI format) |
+| `tools/server/server-common.cpp` | 1636-1644 | Anthropic format parsing |
+| `tools/server/server-task.cpp` | 488-506 | Budget param extraction + tokenization |
+| `common/chat.cpp` | 1313-1331 | Think tag setup for chat templates |
+| `common/sampling.cpp` | 260-299 | Sampler init with reasoning budget |
+| `common/reasoning-budget.cpp` | 59-127 | **State machine** (IDLE→COUNTING→FORCING→DONE) |
+| `common/reasoning-budget.cpp` | 129-149 | **Logit forcing** (-∞ for non-forced tokens) |
+| `common/reasoning-budget.cpp` | 200-204 | **Budget=0 promotion** (COUNTING→FORCING) |
+| `common/reasoning-budget.cpp` | 221-246 | **Prefill detection** (initial state from prefill) |
+| `src/llama-context.cpp` | 3345-3354 | **Hybrid SSM memory access** (root cause) |
 
 ## Success Criteria
 

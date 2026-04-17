@@ -71,7 +71,7 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 - [x] Full logging: `DAR-2 contrastive: adj=X.XXXX reward=Y.YYY→Z.ZZZ task=...`
 - [x] 5,285 tests pass (flag ON and OFF), 0 regressions. GitNexus re-indexed.
 - [x] `episodic.db.backup-20260415` created before activation
-- [ ] Add dedicated unit test for `_compute_contrastive_adjustment()` with mock store (deferred)
+- [x] Add dedicated unit test for `_compute_contrastive_adjustment()` with mock store — **DONE 2026-04-17**: `TestComputeContrastiveAdjustment` class with 13 tests in `tests/unit/test_q_scorer.py`
 
 **Implementation**: Added in `_score_task()` between reward computation and `_update_routing_memory()`. The method retrieves top-10 similar routing memories, compares selected model's Q-value against alternatives with learned Q-values, and computes a bounded adjustment that sharpens the decision boundary. Zero adjustment when ranking is already correct with sufficient margin.
 
