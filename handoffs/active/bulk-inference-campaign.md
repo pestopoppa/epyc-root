@@ -814,9 +814,10 @@ These tasks are scattered across active handoffs and require inference compute b
 | G4 | FlowSteer activation steering | [reasoning-compression.md](reasoning-compression.md) Tier 2 | Test nonlinear activation steering for concise reasoning on 30B-A3B worker. | worker_explore | ~6h |
 | G5 | short-m@k voting baseline | [reasoning-compression.md](reasoning-compression.md) Tier 1 | Run k=3 parallel generations, majority vote. Measure accuracy vs single-shot on GPQA/math. | Any reasoning model | ~4h |
 | G6 | v3 clean NUMA throughput | [llama-cpp-v3-upstream-rebuild.md](../completed/llama-cpp-v3-upstream-rebuild.md) | Isolated NUMA test (requires stopping production stack). Compare v3 vs v2 48t quarter throughput. | frontdoor or worker | ~1h |
-| G7 | MiniMax M2.7 eval | Research intake (intake-328/329) | Download UD-IQ4_XS (108GB) from unsloth/MiniMax-M2.7-GGUF. Benchmark throughput + quality on EPYC. MoE 229B-A10B, 256 experts, 200K context. | Standalone (108GB+ RAM) | ~8h |
-| G8 | MiniMax tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
-| G9 | MiniMax quality comparison | Research intake (intake-328/329) | Run standard eval suite (MATH, coding, general). Compare vs Qwen3-30B-A3B worker + Qwen3-35B-A3B coder. Q4 quant has 22.8% more errors — test carefully. | Standalone | ~6h |
+| G7 | MiniMax M2.7 download + launch | Research intake (intake-328/329) | ✅ DOWNLOADING: Q8_0 (243GB) + UD-Q4_K_XL (141GB) from unsloth/MiniMax-M2.7-GGUF → `/mnt/raid0/llm/models/MiniMax-M2.7-GGUF/`. MoE 230B-A10B, 256 experts, 200K ctx. Launch with `--spec-type ngram-simple --draft-max 64`, `numactl --interleave=all`. No spec-dec (200K vocab, no compatible draft). Expected: Q4_K_XL ~12-16 tps w/ ngram, Q8_0 ~9-13 tps w/ ngram. | Standalone | ~2h |
+| G7a | MiniMax M2.7 NUMA sweep | — | Sweep NUMA parallelization: 1×192t interleave vs 2×96t per-node vs 4×48t quarters. Model fits single node (~141-243GB vs ~560GB/node). 256-expert scatter pattern may favor interleave. | Standalone | ~3h |
+| G8 | MiniMax M2.7 tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
+| G9 | MiniMax M2.7 architect replacement eval | Research intake (intake-328/329) | **Goal: replace both architect_coding (Qwen3-Coder-480B, 3.79 tps) and architect_general (Qwen3-235B, 9.14 tps) with single M2.7.** Run standard eval suite (MATH, coding, general). Q4_K_XL is -6.0 pts from baseline (~22.8% more errors). M2.7 scored 56.22% SWE-Pro. Compare quality on architect-specific benchmarks. If quality ≥ both architects → consolidate to 1 model, freeing ~380GB RAM + simplifying stack. | Standalone | ~6h |
 
 ### Progress (updated 2026-04-13)
 
@@ -847,7 +848,9 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 - **G2 + G3 sequentially**: G2 proxy DONE (gate passed). Full KVPress evaluation + G3 stacking test pending. **AM compaction is now the primary path** — P2 results show structured attention compresses near-losslessly at 2-5x with layer-adaptive strategy.
 - **G4**: Defer — FlowSteer library maturity unconfirmed.
 - **G6**: Low priority — v3 smoke tests showed no regression.
-- **G7 + G8 + G9**: MiniMax M2.7 — unchanged, requires 108GB+ standalone.
+- **G7**: ✅ DOWNLOADS COMPLETE (2026-04-16). Q8_0 (227GB) + UD-Q4_K_XL (132GB) + SuperGemma4-31b (18.7GB) + SuperGemma4-26b (16.8GB). Q8_0 is unusable — 0.12 tps (memory bandwidth saturated at 227GB with 256 experts). Q4_K_XL baseline: **14.0 tps** at 1×96t interleave (no speculation). Draft-max sweep: ngram-simple has zero impact (all values within 0.2 tps of baseline). No REAP variants of M2.7 exist yet.
+- **G7a**: ✅ NUMA SWEEP DONE (2026-04-17). 1×96t interleave = **14.0 tps** (winner). 1×96t node0 = 5.8-9.6 tps (half bandwidth). 2×96t dual = **0 tps** (mmap page sharing — kernel deduplicates pages, second instance gets zero local memory, cross-NUMA thrash). 4×48t skipped (same mmap problem). **Conclusion: multi-instance not viable for large MoE models with mmap. 1×96t interleave is the only production config.**
+- **G8 + G9**: Unblocked. G9 reframed as architect replacement eval — M2.7 Q4_K_XL at 14 tps already 3.7x faster than architect_coding (3.79) and 1.5x faster than architect_general (9.14). Quality eval next.
 - **G10 + G11 + G12**: AA-Omniscience hallucination calibration — can run per-model sequentially, ~6h total.
 
 ### G10-G12: AA-Omniscience Factual-Risk Calibration (2026-04-15 research intake)
