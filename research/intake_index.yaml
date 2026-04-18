@@ -15122,3 +15122,158 @@
     accuracy gap vs ColBERT. The WARP follow-up (intake-406) addressed XTR's engineering
     inefficiencies. Published April 2023, older but still architecturally relevant as
     the alternative multi-vector paradigm to ColBERT.
+
+- id: intake-408
+  url: https://github.com/ahstat/episodic-memory-benchmark
+  arxiv_id: '2501.13121'
+  source_type: repo
+  title: 'Episodic Memories Generation and Evaluation Benchmark for Large Language Models'
+  authors:
+  - Alexis Huet
+  - Zied Ben Houidi
+  - Dario Rossi
+  categories:
+  - benchmark_methodology
+  - context_extension
+  - memory_augmented
+  key_claims:
+  - 'Measures how effectively LLMs encode, store, and retrieve episodic events within extended narratives (10K-1M tokens)'
+  - 'Even SOTA models (GPT-5 0.942, Gemini-2.5-Pro 0.968) show significant gaps in chronological awareness (0.80 best) versus near-perfect recall'
+  - 'Dual-metric evaluation: Simple Recall Score (F1 by matching event count groups) and Chronological Awareness Score (latest-state + Kendall tau ordering)'
+  - 'Synthetic narratives with controlled ground truth avoid data contamination — 11 datasets across 4 styles, 3 lengths'
+  - 'Fine-tuning fails to embed episodic knowledge — merely overfits to single learned facts without temporal/relational understanding'
+  techniques:
+  - Synthetic episodic narrative generation with skewed event sampling
+  - Cue composition framework (temporal, spatial, entity, content dimensions)
+  - Shared universe structure with recurring entities across chapters
+  - Chronological awareness via Kendall tau coefficient scoring
+  - 36 question templates spanning recall and temporal ordering
+  reported_results:
+  - 'Gemini-2.5-Pro: 0.968 recall / 0.796 chronological (200ch, 100K tokens)'
+  - 'GPT-5: 0.942 recall / 0.804 chronological'
+  - 'Claude-Sonnet-4: 0.790 recall / 0.326 chronological'
+  - 'Llama-3.1-405B: 0.504 recall / 0.129 chronological'
+  - 'Claude-3.5-Sonnet: 0.470 recall / 0.090 chronological'
+  - '24 models evaluated on 200-chapter 100K-token benchmark'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  expanded_from: null
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters:
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - long-context-eval-datasets.md
+    - yarn-context-extension-research.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Synthetic narratives may not capture real-world episodic memory complexity — structured event generation lacks the ambiguity and noise of natural documents'
+  - 'ICLR reviewer notes acknowledged context size limitation — models struggle even at modest 10-100K tokens, questioning whether benchmark measures memory vs attention capacity'
+  - 'No contradicting evidence found disputing the benchmarks validity as a measurement tool — ICLR 2025 acceptance is strong signal. Possible confirmation bias risk on claim that fine-tuning categorically fails'
+  novelty_justification: >
+    Long-context eval datasets already collected (LongBench, RULER, NIAH, ZeroSCROLLS
+    in completed/long-context-eval-datasets.md). This benchmark adds a new evaluation
+    paradigm: structured episodic memory testing (entity tracking, temporal ordering)
+    rather than simple retrieval or needle-finding. Medium because existing eval
+    infrastructure covers retrieval well, but episodic/temporal dimension is genuinely new.
+  relevance_justification: >
+    EPYC serves models with varying context lengths and the benchmark provides model
+    quality data across 24 models at 100K tokens. Informs routing decisions for
+    long-document tasks (e.g., Gemini-2.5 class dramatically outperforms Claude/Llama
+    on temporal awareness). Medium because EPYC focuses on CPU inference optimization,
+    not LLM capability evaluation — but model quality data feeds routing intelligence.
+  notes: >
+    ICLR 2025. MIT license. 11 synthetic datasets (default, world news, sci-fi, ordered)
+    at 10K/100K/1M tokens. Key insight for EPYC: chronological awareness is much harder
+    than recall — even GPT-5 only reaches 0.804 vs 0.942 recall. This gap could inform
+    task-specific routing: simple recall tasks can use cheaper models, but temporal
+    reasoning tasks need top-tier models. The benchmark methodology (deterministic F1
+    scoring, synthetic ground truth) aligns with our ch07 benchmark construction
+    philosophy. Could complement existing RULER/NIAH suite for evaluating context
+    extension quality (YaRN research handoff).
+
+- id: intake-409
+  url: https://github.com/em-llm/EM-LLM-model
+  arxiv_id: '2407.09450'
+  source_type: repo
+  title: 'EM-LLM: Human-inspired Episodic Memory for Infinite Context LLMs'
+  authors:
+  - Zafeirios Fountas
+  - Martin A Benfeghoul
+  - Adnan Oomerjee
+  - Fenia Christopoulou
+  - Gerasimos Lampouras
+  - Haitham Bou-Ammar
+  - Jun Wang
+  categories:
+  - memory_augmented
+  - context_extension
+  - rag_alternatives
+  key_claims:
+  - 'Handles retrieval across 10M tokens — computationally infeasible for full-context models'
+  - 'Outperforms InfLLM (prior SOTA retrieval method) with 4.3% relative improvement on LongBench and 33% on PassageRetrieval'
+  - 'Exceeds full-context model performance while maintaining computational efficiency'
+  - 'Event segmentation correlates strongly with human-perceived events — biologically-inspired boundary detection'
+  - 'Requires no fine-tuning — works across LLaMA-3.1, Mistral, Phi baselines'
+  techniques:
+  - Bayesian surprise with graph-theoretic boundary refinement for event segmentation
+  - Dual-stage retrieval (k-NN similarity + temporally contiguous event selection)
+  - Per-layer surprise calculation for memory formation
+  - Online event boundary detection during token processing
+  reported_results:
+  - '4.3% relative improvement over InfLLM on LongBench overall'
+  - '33% improvement on PassageRetrieval task specifically'
+  - 'Scales to 10M token contexts'
+  - 'Strong correlation between model and human event boundaries'
+  referenced_arxiv_ids:
+  - '2501.13121'
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-408
+  ingested_date: '2026-04-17'
+  cross_references:
+    chapters: []
+    handoffs:
+    - long-context-eval-datasets.md
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-408
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Retrieval-based approaches inherently lose information not retrieved — episodic segmentation may miss cross-event dependencies'
+  - 'Huawei Noah Ark Lab affiliation — credibility_score accounts for major lab (+1) but no independent replication found yet'
+  - 'No contradicting evidence found on core claims — ICLR 2025 peer review is strong signal. Performance gaps vs full-context on reasoning-heavy tasks not extensively characterized'
+  novelty_justification: >
+    EM-LLM introduces a biologically-inspired alternative to YaRN/rope-scaling for
+    context extension. Unlike YaRN (which extends attention), EM-LLM segments and
+    retrieves. Medium novelty: the project tracks RAG alternatives (rag_alternatives
+    category) and context extension (YaRN handoff), but this specific approach
+    (Bayesian surprise + event segmentation) is new to the index.
+  relevance_justification: >
+    Relevant to EPYC context extension strategy. If Qwen3.5 context needs exceed
+    YaRN capacity, EM-LLM offers an alternative that scales to 10M tokens with no
+    fine-tuning. Works with LLaMA-family models (our stack). Medium because YaRN is
+    the current context extension path and EM-LLM adds retrieval overhead that may
+    not suit CPU inference latency requirements.
+  notes: >
+    ICLR 2025. Code available on GitHub. Key architectural insight: event boundaries
+    detected via surprise (Shannon information spike) + graph community detection.
+    For EPYC: this is a retrieval-augmented approach that could complement or replace
+    YaRN for extreme context lengths (>1M tokens). The no-fine-tuning requirement is
+    attractive. Main concern for CPU inference: the dual-stage retrieval adds latency
+    per generation step. Would need benchmarking on our hardware to assess viability.
+    Could inform the dynamic-stack-concurrency handoff if a dedicated retrieval
+    process is needed.

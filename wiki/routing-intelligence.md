@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
-**Sources**: 19 documents (0 dedicated deep-dives, 14 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-04-18
+**Sources**: 21 documents (0 dedicated deep-dives, 16 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -38,6 +38,8 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **Late-interaction retrieval could improve classification quality.** Reason-ModernColBERT (intake-174) uses a 150M-parameter ColBERT model with MaxSim late-interaction scoring that outperforms 7B+ dense retrievers on reasoning benchmarks. The CachedContrastive training loss is efficient. This architecture could replace the current dense embedding model in the classification retriever with better semantic matching on reasoning-intensive routing decisions. [intake-174](https://huggingface.co/lightonai/Reason-ModernColBERT)
 
 - **OPSDC's difficulty adaptation is a zero-cost routing signal.** The reasoning compression research (intake-110) shows that comparing output length with vs without a conciseness prompt produces a difficulty ratio: large ratio = easy problem (route to fast model), small ratio = hard problem (escalate). This KL divergence between concise-prompted and base model is available without any additional training. [reasoning-compression.md handoff]
+
+- **Reasoning models catastrophically fail at long-context episodic memory — a strong routing signal.** The Tulving Episodic Memory Benchmark (arXiv 2501.13121, 24 models, 100K tokens) reveals that reasoning models (o1, DeepSeek-R1, o1-mini) excel at short-context (10K) episodic tasks but collapse at 100K. DeepSeek-R1: 0.988→0.572 recall (-42%), 0.964→0.147 chronological (-85%). o1: 0.978→0.384 (-61%), 0.948→0.052 (-95%). Only Gemini-2.5 survives (-1% recall, -16% chronological). Chronological awareness varies 10x across models (0.033 to 0.817) — a stronger routing differentiator than recall. **Actionable**: `is_reasoning_model` binary flag is more informative for DAR-4 bilinear scorer model features than `is_moe`. For long-document temporal reasoning tasks, routing to reasoning-focused models is actively harmful. [intake-408, decision-aware-routing.md]
 
 - **Branching density is a generation-time quality signal for routing.** Reasoning pattern structure determines output quality: DeepSeek-R1 produces 33.3% propose (branching) steps vs 22.5% for gpt-oss-120b, and Llama3.1-8B shows a 21pp generalization gap (29.5% vs 50.5%) from identical problems and budgets but different reasoning trace structure. High branching density at inference time -- excessive "Perhaps", "Another approach", "Alternatively" transitions -- signals the model is diverging rather than converging. Proposed `detect_branching_density()` in `quality_detector.py` could trigger truncation, escalation, or negative Q-scorer reward. Complements factual_risk (input-side) and difficulty_signal (prompt-level) with an output-side, generation-level signal. Deferred until prompt-level features are validated in shadow mode. [routing-intelligence.md handoff, Branching Density section 2026-04-15; intake-378]
 

@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-04-14
-**Sources**: 26 documents
+**Last compiled**: 2026-04-18
+**Sources**: 28 documents
 
 ## Summary
 
@@ -72,6 +72,23 @@ Terminal-Bench 2.0 (arxiv:2601.11868) provides five patterns directly applicable
 5. **Structured task.yaml metadata** -- difficulty, timeout budget, category tags, expected duration. Could inform a test registry for the integration test suite.
 
 Terminal-Bench also defines an 8-category failure taxonomy (Disobey Task Specification, Step Repetition, Context Loss, Premature Termination, and 4 others) that maps to orchestrator failure modes. The recommendation is to adopt outcome-driven verification for new llama-server integration tests, defer container-per-test infrastructure until measured need (current mock-based tests provide fast CI), and adopt task.yaml metadata for test classification.
+
+## Tulving Episodic Memory Benchmark
+
+The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) introduces a complementary evaluation paradigm to the existing RULER/NIAH/LongBench/ZeroSCROLLS suite. Where those benchmarks test retrieval ("find the needle"), Tulving tests episodic memory: can a model track entity states across 200 chapters and order events chronologically? The benchmark generates synthetic book-like narratives with controlled ground truth (dates, locations, entity names, event contents) using a skewed geometric distribution for entity frequency, enabling multi-occurrence tracking evaluation.
+
+Two metrics: **Simple Recall Score** (F1 grouped by matching event count bins: 0/1/2/3-5/6+, averaged across bins) and **Chronological Awareness Score** (average of Latest State score and Kendall τ temporal ordering score). The chronological score is dramatically harder — even GPT-5 only achieves 0.804 vs 0.942 recall. 11 datasets span 10K-1M tokens across 4 narrative styles (default, world news, sci-fi, ordered).
+
+Key findings for benchmark methodology:
+- **95% deterministic scoring.** Ground truth items are specific tokens (dates, location names, entity names). Exact + normalized string matching covers ~95% of cases. The LLM-as-judge handles only ~5% partial matches (e.g., "Bethpage State Park" vs "Bethpage Black Course" = 0.5). This aligns with our ch07 deterministic scoring philosophy.
+- **Sharp cliff between 10K and 100K tokens.** Single-event recall drops 15pp, multi-event recall drops 31-33pp from 10K→100K (GPT-4o). This is a cliff, not gradual degradation. Only Gemini-2.5 family survives with <2% recall loss.
+- **Reasoning models catastrophically fail at long context.** DeepSeek-R1 drops from 0.988→0.572 recall (-42%) and 0.964→0.147 chronological (-85%) from 10K→100K. o1 drops -61%/-95%. o1-mini drops -64%/-96%. These models excel at short-context episodic tasks and collapse at 100K — their effective context utilization windows are much shorter than advertised context lengths.
+- **RAG chunk granularity is critical.** Chapter-level RAG (event-boundary-aligned) matches in-context performance (0.82 vs 0.81 F1). Paragraph-level RAG degrades to 0.60 because event information distributes across paragraphs. Event-boundary-aligned chunking >> fixed-size chunking for episodic tasks.
+- **Fine-tuning fails for episodic knowledge.** GPT-4o-mini fine-tuned on single-event QA achieves 0.83 F1 on single-event questions but 0.00 on hallucination avoidance (0-event questions) and 0.19-0.37 on multi-event. It memorizes single facts without temporal/relational understanding.
+
+Pre-generated datasets are available on Figshare (MIT license). Integration into our harness requires: download 20ch dataset, llama-server adapter, deterministic F1 scorer, suite registration. The 200ch variant is proposed as a YaRN context extension quality gate (P3b in research-evaluation-index).
+
+> Source: [intake-408](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
 > Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
 

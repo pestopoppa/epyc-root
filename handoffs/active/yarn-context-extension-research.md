@@ -1,6 +1,6 @@
 # YaRN Context Extension Research
 
-**Status**: ⚠️ QUEUED FOR BLOCKED MOVE (2026-04-17 audit — 24d stale; blocker P3 long-context eval datasets resolved 2026-04-05 but no pickup). **Gate to reactivate**: context_extension becomes a concrete workload requirement. Move `active/` → `blocked/` pending directory permissions fix.
+**Status**: QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05). New quality gate added: Tulving 200ch episodic memory benchmark (P3b in research-evaluation-index). **Gate to reactivate**: context_extension becomes a concrete workload requirement.
 **Created**: 2026-03-09
 **Priority**: LOW
 **Workstream**: Research
@@ -58,6 +58,24 @@ llama-server -m model.gguf -c 1048576 \
 - **Tutorial**: [Understanding YaRN (Medium)](https://medium.com/@rcrajatchawla/understanding-yarn-extending-context-window-of-llms-3f21e3522465)
 - **Qwen3-Next-80B**: [HuggingFace model card](https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct) — RULER 91.8% avg across 4K-1M
 - **Qwen3.5-27B**: [HuggingFace model card](https://huggingface.co/Qwen/Qwen3.5-27B) — 256K native, 1M with YaRN
+
+## Research Intake Update — 2026-04-18
+
+### Tulving Episodic Memory Benchmark as YaRN Quality Gate (intake-408/409 deep-dive)
+
+The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tests entity tracking and temporal ordering across extended narratives. The 200ch variant (100K tokens, 686 QA pairs) is now proposed as a quality gate for YaRN extension, complementing RULER/NIAH.
+
+**Why this benchmark matters for YaRN**: RULER and NIAH test retrieval ("find the needle"). Tulving tests episodic memory ("track this entity across 200 chapters and order events chronologically"). YaRN quality degradation at extended contexts may manifest differently across these axes — a model could pass NIAH at 512K but fail temporal ordering.
+
+**Scaling data from the benchmark** (across 24 models at 100K tokens):
+- Sharp performance cliff between 10K and 100K for most models. Only Gemini-2.5 survives with <2% recall loss.
+- Chronological awareness degrades faster than simple recall at every scale transition
+- At 1M tokens (Gemini-2.5-Pro only): recall 0.968→0.654, chronological 0.796→0.320
+- **Prediction for YaRN**: Expect steeper degradation on chronological awareness than on RULER/NIAH at equivalent context lengths. If YaRN-extended Qwen3.5 passes RULER at 512K but fails Tulving chronological awareness, it signals attention distribution problems that YaRN's RoPE scaling doesn't fully compensate.
+
+**Integration**: The 200ch dataset (Figshare download, MIT license) is queued as P3b in [research-evaluation-index.md](research-evaluation-index.md). Add to P4 YaRN eval alongside RULER quality degradation curve.
+
+**EM-LLM alternative (intake-409)**: EM-LLM (arXiv 2407.09450) extends context to 10M tokens via episodic memory retrieval with no fine-tuning. Outperforms InfLLM +4.3% on LongBench. Complementary to YaRN (YaRN extends native window; EM-LLM retrieves beyond it). However, full integration requires deep llama.cpp modifications (per-layer KV access, unified softmax) — estimated 4-8 weeks. **Not viable for our stack without major surgery.** YaRN remains the preferred context extension path.
 
 ## Research Intake Update — 2026-03-24
 

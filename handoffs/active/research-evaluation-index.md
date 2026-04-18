@@ -90,11 +90,25 @@ See [memento-block-reasoning-compression.md](memento-block-reasoning-compression
 - [x] Create adapter scripts — ✅ 2026-04-05. `long_context_adapters.py` (5 classes), registered in `dataset_adapters.py` + `suites.py`.
 - [x] Validation — ✅ 2026-04-05. All 5 suites: OK (1,630 total questions).
 
+### P3b — Tulving Episodic Memory Benchmark (from intake-408 deep-dive)
+
+Source: "Episodic Memories Generation and Evaluation Benchmark for LLMs" (arXiv 2501.13121, ICLR 2025). 11 synthetic datasets (10K/100K/1M tokens), deterministic F1 scoring, 36 question templates testing entity tracking + temporal ordering. Complements existing RULER/NIAH/LongBench/ZeroSCROLLS suite — tests episodic memory (state tracking, chronological reasoning), not just retrieval.
+
+**Key deep-dive findings**: Scoring is 95% deterministic (string matching against known ground truth tokens — dates, locations, entity names). LLM-as-judge only handles ~5% fuzzy cases. Reasoning models (o1, DeepSeek-R1) catastrophically fail at 100K tokens despite near-perfect scores at 10K. Gemini-2.5 is anomalously robust (-1.4% recall drop from 10K→100K vs -61% for o1).
+
+- [ ] Download pre-generated 20ch dataset from Figshare (10K tokens, 456 QA pairs). No generation pipeline needed.
+- [ ] Write llama-server adapter for answer generation (replace OpenAI/Anthropic API calls with `/completion` endpoint)
+- [ ] Implement deterministic F1 scorer: exact + normalized string matching against known ground truth. Covers ~95% of cases. Optional LLM-as-judge fallback for remaining ~5%.
+- [ ] Register as new suite in `dataset_adapters.py` + `suites.py`. Report Simple Recall Score + Chronological Awareness Score per model/quant.
+- [ ] Run 20ch benchmark on all production models (10K context — any model handles this)
+- [ ] (Deferred to P4) Download 200ch dataset (100K tokens, 686 QA pairs) for YaRN quality gating
+
 ### P4 — YaRN Context Extension (when datasets ready)
 
 - [ ] Benchmark quality degradation curve from 256K → 512K → 1M with YaRN
 - [ ] Measure KV cache memory impact at 1M context
 - [ ] Measure speed impact of YaRN extension
+- [ ] Run Tulving 200ch (100K) benchmark under YaRN — catches temporal reasoning failures that RULER/NIAH miss. Sharp cliff expected: most models lose 30-60% recall from 10K→100K. Chronological awareness degrades faster than recall at every scale transition.
 
 ### P5 — Harness Engineering Experiments (from intake-271/272/273/274 deep-dive)
 
@@ -174,7 +188,8 @@ P1 (tool-output-compression RTK)  ──independent──
 P2 (reasoning SEAL vectors)       ──depends on model server availability──
 P2.5 (KB governance improvements) ──independent (companion: root-archetype linter)──
 P3 (long-context datasets)        ──independent──
-P4 (YaRN extension)               ──depends on P3 (datasets)──
+P3b (Tulving episodic benchmark)  ──independent (20ch); 200ch deferred to P4──
+P4 (YaRN extension)               ──depends on P3 (datasets) + P3b 200ch──
 P5 (harness engineering experiments)  ──depends on P3 (datasets) + Package B/C results──
 P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopilot log data; S4 depends on seeding harness──
 P7 (Ouro LoopLM eval)               ──independent (download + benchmark)──

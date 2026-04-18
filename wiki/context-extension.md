@@ -2,8 +2,8 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-04-13
-**Sources**: 19 documents (0 dedicated deep-dives, 4 cross-referenced deep-dives, 3 active handoffs, 12 intake entries)
+**Last compiled**: 2026-04-18
+**Sources**: 21 documents (0 dedicated deep-dives, 4 cross-referenced deep-dives, 3 active handoffs, 14 intake entries)
 
 ## Summary
 
@@ -84,6 +84,7 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 ### Not Actionable
 
 - **MemAgent for interactive use on CPU**: Sequential chain with ~73 seconds per 1K-token segment makes this viable only for offline batch processing. A 100K document takes ~24 minutes. However, the RL-trained compaction policy concept informs our session compaction quality improvements.
+- **EM-LLM episodic memory for infinite context (intake-409)**: EM-LLM (arXiv 2407.09450, ICLR 2025) integrates Bayesian-surprise event segmentation + dual-stage retrieval (k-NN + temporally contiguous) to handle 10M+ token contexts with no fine-tuning. Outperforms InfLLM by 4.3% on LongBench. However, full integration requires deep llama.cpp surgery: per-layer KV pair access, unified softmax across local + retrieved attention scores, and per-token logprobs during prefill — estimated 4-8 weeks of C++ work in ggml. RAM blocker: episodic memory stores FP16 KV cache across all layers (10M tokens = ~1.2TB, 1M tokens = ~125GB). Quantized model weights don't help — KV cache is still FP16. YaRN remains better ROI. **Salvageable insight**: surprisal-based chunking (detect event boundaries from logprob spikes) can improve existing ColBERT retrieval pipeline without any model modification — proposed as S7 in colbert-reranker-web-research handoff. [intake-409, yarn-context-extension-research.md]
 - **Native 1M context without KV compression**: KV cache memory at 1M tokens is prohibitive on our 384GB RAM budget shared with model weights. Requires TurboQuant-level KV compression (6x+) first.
 - **InftyThink/InftyThink+ direct adoption**: Requires SFT+RL training pipeline with verl framework. The iterative summarization pattern is implementable at the orchestrator level without model training (our context-folding approximates this), but the learned compression quality is not replicable without RL.
 - **MSA (Memory Sparse Attention, intake-245)**: End-to-end memory model scaling approach. Not applicable to our serving-only stack.
@@ -98,6 +99,7 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - Can MemAgent's RL-trained compaction policy be distilled into our session compaction without the full sequential architecture -- extracting the "what to remember" signal without the "process segment by segment" overhead?
 - For the hybrid approach (YaRN for first 128K, chunked processing for overflow): what is the optimal segment size and memory buffer size for our specific models, and does the transition introduce artifacts?
 - How does context extension interact with speculative decoding at long contexts? Acceptance rates may change as the draft model's effective context diverges from the target's.
+- **Tulving episodic memory benchmark as quality gate** (intake-408): Existing long-context eval (RULER, NIAH, LongBench) tests retrieval. The Tulving benchmark (arXiv 2501.13121, 200ch/100K variant) tests episodic memory — entity tracking and temporal ordering across extended narratives. Sharp cliff: most models lose 30-60% recall from 10K→100K. Chronological awareness degrades faster than recall at every scale. Proposed as a YaRN quality gate alongside RULER — if YaRN-extended models pass NIAH but fail Tulving temporal ordering, it signals attention distribution problems YaRN doesn't compensate. [research-evaluation-index.md P3b/P4]
 
 ## Related Categories
 

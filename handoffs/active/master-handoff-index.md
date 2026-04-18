@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-17 (Research intake: 9 new entries + 2 dedupe skipped, Qwen3.6 production upgrade handoff created, 3 model downloads)
+**Updated**: 2026-04-18 (Research intake: episodic memory benchmark + EM-LLM deep dive → 4 handoff refinements)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -57,7 +57,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE** (3-way→per-role, blacklist cleanup, model sigs), P6 RI-10 canary, P7-P9 pending, P10/P11 non-inference DONE. AR-3 needs restart with new seeder. |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), **NEW: Qwen3.6 production upgrade** (GGUF downloaded, benchmark pending) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new + P3b | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring, **P3b Tulving episodic benchmark** (new) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
@@ -68,7 +68,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
-| [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | S1-S4 done (ONNX Runtime, 180ms, PyLate eliminated), S5 gated on AR-3 data | MEDIUM | 2026-04-14 |
+| [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | web_research pipeline | S1-S4 done (ONNX Runtime, 180ms, PyLate eliminated), S5 gated on AR-3 data, S7 surprisal chunking proposed | MEDIUM | 2026-04-18 |
 | [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | S1 done; S2-S4 queued; ~~S5~~ ✅ proposal retired 2026-04-17. Priority elevated (formalizer-overthinking + Math-Verify intake-377 + cost-reduction hypothesis arxiv:2504.06514) | **MEDIUM** | 2026-04-17 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research, I +3 DAR/ThinkPRM**) | HIGH | 2026-04-15 |
@@ -79,7 +79,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [gpu-acceleration-path.md](gpu-acceleration-path.md) | Hardware acceleration | researched (vLLM DDTree+Dflash spec-dec plan added, activates on GPU acquisition) | LOW | 2026-04-15 |
 | [orchestrator-refactoring-audit.md](../completed/orchestrator-refactoring-audit.md) | Code quality, observability | ~~COMPLETE~~ ✅ 2026-04-13 All 8 phases + success flip + TOON + test suite 4893/0/7 | ~~HIGH~~ | 2026-04-13 |
 | [integration-test-coverage.md](integration-test-coverage.md) | Test coverage | ACTIVE — graph integration fixtures still needed; focused slice gate enforces specialist routing floors (`237 passed`, `seed_specialist_routing*` at `100%` floors), strict warning gate includes legacy tests (`255 passed`), and `integration-sanity` is now fully strict (includes `PytestUnraisableExceptionWarning` as error) and green (`372 passed, 12 skipped`) after sqlite/embedder lifecycle cleanup + integration client teardown hardening. GitNexus native `npx` path remains restored/reindexed (`status: ✅ up-to-date`). | MEDIUM | 2026-04-14 |
-| [decision-aware-routing.md](decision-aware-routing.md) | Q-scorer decision-aware learning | NEW — 4-phase experiment (regret analysis → contrastive → SPO+ → bilinear) | HIGH | 2026-04-14 |
+| [decision-aware-routing.md](decision-aware-routing.md) | Q-scorer decision-aware learning | DAR-1/2/3/4 done. Episodic memory routing intel added (reasoning models collapse at 100K). | HIGH | 2026-04-18 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification | MEDIUM | 2026-04-14 |
 | [qwen36-production-upgrade.md](qwen36-production-upgrade.md) | Model upgrade evaluation | IN-PROGRESS — GGUF downloaded (Q4_K_M+Q8_0), deep dive confirms drop-in replacement. Benchmark pending. | **HIGH** | 2026-04-17 |
 | [learned-routing-controller.md](learned-routing-controller.md) | Routing classifier training | Phase 1 ✅ (92% val acc, 157K samples, flag enabled); P1.5 logit probe + P2.3-2.6 hidden-state probes + P3 BGE elimination pending | **HIGH** | 2026-04-15 |

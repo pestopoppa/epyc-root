@@ -121,6 +121,30 @@ DAR-3 (SPO+ with exploration)      ──depends on DAR-2 producing ranked Q-val
 DAR-4 (model-feature-conditioned)  ──independently developable in parallel with DAR-2/3──
 ```
 
+## Research Intake Update — 2026-04-18
+
+### Episodic Memory Benchmark: Routing Intelligence Signal (intake-408/409 deep-dive)
+
+The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tested 24 models on 100K-token narratives requiring entity tracking and temporal ordering. Two metrics: Simple Recall (F1) and Chronological Awareness (Kendall τ). Key routing-relevant findings:
+
+**Reasoning models catastrophically fail at long-context episodic memory:**
+
+| Model | Recall (10K→100K) | Chronological (10K→100K) | Architecture |
+|-------|-------------------|--------------------------|--------------|
+| DeepSeek-R1 | 0.988→0.572 (-42%) | 0.964→0.147 (-85%) | MoE, reasoning |
+| o1 | 0.978→0.384 (-61%) | 0.948→0.052 (-95%) | reasoning |
+| GPT-4o | 0.908→0.670 (-26%) | 0.182→0.204 (+12%) | base |
+| Gemini-2.5-Pro | 0.982→0.968 (-1%) | 0.948→0.796 (-16%) | base |
+
+**Routing implications:**
+- Chronological awareness varies **10x** across models (0.033 to 0.817) — a stronger differentiator than recall for routing decisions
+- Reasoning models excel at short-context episodic tasks but collapse at 100K — their effective context utilization windows are much shorter than advertised context lengths
+- For long-document temporal reasoning tasks, routing to reasoning-focused models is **actively harmful** (o1 scores worse than GPT-4o-mini)
+- MoE vs dense architecture shows no clear signal — model size and training approach dominate
+- **RAG chunk granularity matters**: chapter-level RAG matches in-context (0.82 vs 0.81 F1), paragraph-level RAG degrades to 0.60. Event-boundary-aligned chunking is critical.
+
+**Actionable for DAR-4**: The `is_moe` binary feature in the bilinear scorer model features is less informative than a `reasoning_model` binary flag. Consider adding `is_reasoning_model` to `ModelFeatures` — it strongly predicts long-context episodic performance.
+
 ## Cross-Cutting Concerns
 
 ### 1. Q-Scorer Baselines

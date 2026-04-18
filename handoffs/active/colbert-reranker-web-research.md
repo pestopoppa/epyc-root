@@ -146,6 +146,19 @@ grep "web_research relevance summary" /path/to/orchestrator.log | tail -20
 - [ ] **S6: A/B test** — Compare reranked (10 results → top 3 by ColBERT) vs current (5 results → top 3 by DDG order) on web_research benchmark questions. Metrics: synthesis quality, irrelevant page rate, total latency.
   - Effort: ~2h inference time, depends on S5
 
+## Research Intake Update — 2026-04-18
+
+### Surprisal-Based Chunking for Retrieval Pipeline (intake-408/409 deep-dive)
+
+Deep-dive analysis of EM-LLM (arXiv 2407.09450, ICLR 2025) and the Tulving Episodic Memory Benchmark (arXiv 2501.13121) revealed two findings relevant to this pipeline:
+
+**1. RAG chunk granularity is critical for episodic tasks.** The Tulving benchmark tested RAG at paragraph-level vs chapter-level chunking. Paragraph-level RAG *degrades* single-event recall from 0.81 (in-context) to 0.60, because event information is distributed across paragraphs. Chapter-level RAG (event-boundary-aligned) recovers to 0.82, matching in-context. **Implication for web_research**: when fetching pages for synthesis, paragraph-level extraction (current 6000-char chunks) may split relevant context. Event-boundary-aligned chunking would preserve coherent information units.
+
+**2. Surprisal-based chunking (EM-LLM Option D — low effort, partial benefit).** EM-LLM's full architecture requires deep llama.cpp modifications (not viable). But its core segmentation insight is extractable: use per-token log-probability surprisal from llama.cpp `/completion` (logprobs already available) to detect event boundaries. Boundary = where surprisal exceeds µ + γσ (rolling window statistics). Feed these semantically-coherent chunks into ColBERT reranker instead of fixed-size splits.
+
+**Proposed S7 (future, post-S6 validation):**
+- [ ] **S7: Surprisal-based page chunking** — After fetching pages, run through llama.cpp `/tokenize` + `/completion` with `n_probs`, compute per-token surprisal, split at surprise spikes. Feed chunks to ColBERT MaxSim instead of raw paragraphs. Tests whether event-boundary chunking improves synthesis quality on real web pages (where structure is less clean than synthetic narratives). Depends on S5/S6 confirming ColBERT reranking adds value.
+
 ## Key Files
 
 | Resource | Path | Role |
