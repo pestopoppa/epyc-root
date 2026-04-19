@@ -74,7 +74,7 @@ No regressions reported.
 1. [x] Download Q4_K_M GGUF from unsloth/Qwen3.6-35B-A3B-GGUF — COMPLETE (deleted, Q8 faster)
 2. [x] Download Q8_0 GGUF — COMPLETE (`/mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf`)
 3. [x] Run throughput benchmark (single-model 192t, NUMA 4-way) — COMPLETE: 25.6 baseline, 27.4 w/ngram, 57.4 quad, 76.8 eight
-4. [ ] Run quality eval (full suite battery via run_benchmark) — READY: `--all-suites --skip-long-context --with-lookup`
+4. [ ] Run quality eval (full suite battery via run_benchmark) — IN PROGRESS: required `use_chat_api: true`, `reasoning: off`, KV `q8_0/q8_0`. Three failed attempts (think loops, `/think` loops, degenerate repetition) before finding correct config. Current run uses `--reasoning off` server flag.
 5. [ ] Run coding eval (SWE-bench subset or equivalent) — validate agentic coding claims
 6. [ ] If no regressions: swap into production registry (`model_registry.yaml`)
 
