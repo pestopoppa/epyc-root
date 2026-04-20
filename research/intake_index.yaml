@@ -15277,3 +15277,259 @@
     per generation step. Would need benchmarking on our hardware to assess viability.
     Could inform the dynamic-stack-concurrency handoff if a dedicated retrieval
     process is needed.
+
+- id: intake-410
+  url: https://www.arxiv.org/abs/2603.29791
+  arxiv_id: '2603.29791'
+  source_type: paper
+  title: 'Reasoning-Driven Synthetic Data Generation and Evaluation'
+  authors:
+  - Tim R. Davidson
+  - Benoit Seguin
+  - Enrico Bacis
+  - Cesar Ilharco
+  - Hamza Harkous
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  - autonomous_research
+  key_claims:
+  - 'Simula: a reasoning-first, seedless framework for scalable synthetic data generation with explainability and fine-grained control'
+  - 'Mechanism design (how data is generated) is a distinct research axis orthogonal to defining good data quality'
+  - 'Double-critic rejection sampling mitigates sycophancy bias in auto-verification of generated samples'
+  - 'Optimal data properties are context-dependent — no universal silver bullet across domains, models, and scales'
+  - 'Full execution trace feedback provides +15 accuracy points over score-only feedback in ablation'
+  techniques:
+  - Simula framework (reasoning-first seedless generation)
+  - Taxonomy-based coverage with best-of-N sampling and generator-critic refinement
+  - Complexification (agentic refinement with controlled complexity increases)
+  - Double-critic rejection sampling (independent correctness/incorrectness assessment)
+  - Calibrated complexity scoring (batch-wise pairwise Elo ranking)
+  - Level Ratio Coverage (taxonomic coverage metric)
+  reported_results:
+  - 'Taxonomy completeness: 0.74 (grounded), 0.78 (conceptual) vs 0.52 for 0-shot baseline'
+  - 'Novel coverage: 1.72x original taxonomy size'
+  - 'GSM8k: full system plateaus ~75% accuracy (student) vs 88% teacher (Gemini 2.5-Flash)'
+  - 'CTI-RCM: bridges ~83% of student-teacher gap at 128k data points'
+  - 'High complexity split achieves 10% accuracy gain over low complexity at 64k data points on GSM8k'
+  - 'Baseline system requires up to 5x fewer inference calls per data point than full Simula'
+  referenced_arxiv_ids:
+  - '2402.13064'
+  - '2410.12476'
+  - '2407.21787'
+  - '2412.02980'
+  - '2412.03304'
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-18'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Purely synthetic training hits a quality ceiling — model-on-model bootstrapping risks producing knock-off versions mirroring source model limitations'
+  - 'Rejection sampling has inefficiency in high dimensions — finding suitable proposal distributions becomes increasingly difficult'
+  - 'Paper itself acknowledges context-dependent findings — optimal data properties vary by domain, model, and scale, limiting generalizability'
+  - 'Student model (Gemma 3 4B) performance plateaus when teacher-student gap closes, suggesting diminishing returns'
+  novelty_justification: >
+    Synthetic data generation is broadly represented in the index (55 hits for
+    training_distillation/synthetic data). However, Simula's specific combination of
+    seedless taxonomy-based generation, double-critic rejection sampling, and
+    mechanism design focus is a distinct methodology not previously covered. The
+    reasoning-first approach with ablation-backed design choices adds a new
+    methodological perspective.
+  relevance_justification: >
+    EPYC focuses on CPU inference optimization, not model training. No training-capable
+    GPUs available (GT 1030 display-only). The doc-to-LoRA handoff is queued for archive.
+    Synthetic data generation requires cloud GPU for fine-tuning. However, the evaluation
+    methodology (double-critic, complexity scoring) could inform our autopilot's eval
+    design if we later need to generate synthetic benchmark data.
+  notes: >
+    TMLR 2026 with J2C Certification. Uses Gemini 2.5-Flash as teacher, Gemma 3 4B as
+    student with LoRA fine-tuning. Key architectural insight: mechanism design (how to
+    generate) is distinct from quality definition (what is good). The double-critic
+    approach (independent correctness + incorrectness assessment) is interesting for
+    our own eval tower design. Five system variants tested with ablation. 512k unique
+    data points generated per dataset after deduplication. Evaluated on GSM8k, CTI-MCQ,
+    CTI-RCM, LEXam, Global MMLU.
+
+- id: intake-411
+  url: https://github.com/QwenLM/Qwen-Agent
+  arxiv_id: null
+  source_type: repo
+  title: 'Qwen-Agent — Agent Framework for LLM Applications by Alibaba/Qwen'
+  authors:
+  - Qwen Team (Alibaba Group)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - context_extension
+  key_claims:
+  - 'Framework for building LLM applications with function calling, MCP, code interpreter, and RAG capabilities'
+  - 'RAG solutions outperform native long-context models on two challenging benchmarks'
+  - 'Perfect results on 1M-token needle-in-haystack tests'
+  - 'Supports parallel and multi-step tool calling with streaming output'
+  - 'MCP server integration for extensible tool ecosystems'
+  techniques:
+  - Function calling with parallel execution support
+  - ReActChat and FnCallAgent implementations
+  - Tool-Integrated Reasoning (TIR)
+  - MCP server integration
+  - Docker-sandboxed code interpreter
+  - RAG for 1M-token contexts
+  reported_results:
+  - 'RAG outperforms native long-context models on two benchmarks (unspecified)'
+  - 'Perfect on 1M-token needle-in-haystack'
+  - '16.1k GitHub stars, 1.6k forks'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  deep_dive: research/deep-dives/qwen-agent-framework-deep-dive.md
+  discovered_via: null
+  expanded_from: null
+  ingested_date: '2026-04-18'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - hermes-agent-index.md
+    - hermes-outer-shell.md
+    - eval-tower-verification.md
+    - bulk-inference-campaign.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - hermes-agent-index.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Qwen models show inconsistent performance especially when debugging existing code'
+  - 'Smaller Qwen models have obvious reasoning ceiling on graduate-level math and advanced coding'
+  - 'Gemma 4 native function calling trained to produce more well-formed outputs with correct argument schemas vs Qwen in edge cases'
+  - 'Qwen 3.5 criticized for overthinking on simple tasks (addressed in 3.6 Plus)'
+  novelty_justification: >
+    Agent frameworks are well-covered in the index (119 entries for agent_architecture
+    + tool_implementation). Hermes Agent has been deeply analyzed across multiple
+    intake entries. The individual concepts (function calling, MCP, tool use, code
+    interpreter, RAG) are all well-established. Qwen-Agent is a solid reference
+    implementation but does not introduce novel architectural patterns.
+  relevance_justification: >
+    MCP integration patterns inform hermes-outer-shell Phase 2 routing API. RAG for
+    1M-token contexts relevant to context management work. Function calling patterns
+    useful as reference for orchestrator conversation management. However, EPYC runs
+    on self-hosted CPU inference — DashScope dependency and Alibaba cloud orientation
+    limit direct adoption. Value is primarily as a pattern reference.
+  notes: >
+    Apache-2.0 license. 16.1k stars. Python 91.4%. Recent updates: Qwen3.5 agent demos
+    (Feb 2026), DeepPlanning benchmark (Jan 2026), VLM support (Sep 2025), Qwen3-Coder
+    demos (Jul 2025). Key integrations: DashScope, OpenAI-compatible APIs (vLLM, Ollama),
+    MCP servers, Docker code interpreter, Gradio 5 GUI. Powers the backend of Qwen Chat.
+    Modular design (BaseChatModel, BaseTool, Agent classes). The DeepPlanning benchmark
+    (intake-412) was released as part of this project.
+
+- id: intake-412
+  url: https://arxiv.org/abs/2601.18137
+  arxiv_id: '2601.18137'
+  source_type: paper
+  title: 'DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints'
+  authors:
+  - Yinger Zhang
+  - Shutong Jiang
+  - Renhao Li
+  - Jianhong Tu
+  - Yang Su
+  - Lianghao Deng
+  - Xudong Guo
+  - Chenxu Lv
+  - Junyang Lin
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  key_claims:
+  - 'Existing agent benchmarks emphasize step-level reasoning over global constrained optimization — DeepPlanning addresses this gap'
+  - 'Even frontier LLMs struggle with long-horizon planning: GPT-5.2-high achieves only 44.6% case accuracy'
+  - 'Reasoning-equipped models consistently outperform non-reasoning variants across all tested models'
+  - 'Parallel tool use improves effectiveness-efficiency trade-offs in agent planning'
+  - 'Rule-based automated scoring with verifiable constraints, not LLM-based evaluation'
+  techniques:
+  - Layered task generation (solution-centric reverse generation with constraint injection)
+  - Commonsense Score (8-dimension evaluation with 21 binary checkpoints)
+  - Composite Score (average of Commonsense + Personalized scores)
+  - Case Accuracy (strict metric requiring perfect scores on both dimensions)
+  - Offline sandbox evaluation with rule-based automated scoring
+  reported_results:
+  - 'GPT-5.2-high: 44.6% avg case accuracy (best overall), 85.8% travel composite'
+  - 'Claude-4.5-Opus (thinking): 33.9% avg accuracy, 75.1% travel composite'
+  - 'Claude-4.5-Opus (no thinking): 26.3% avg accuracy — 7.6pp drop without reasoning'
+  - 'Qwen3-Max (thinking): 28.7% avg accuracy; (no thinking): 12.8% — 15.9pp reasoning gap'
+  - 'Grok-4.1-Fast: 3.0% avg accuracy (worst performer)'
+  - '26 models across 10 organizations evaluated'
+  - '120 travel tasks + 120 shopping tasks, 7708 avg records per travel task'
+  referenced_arxiv_ids:
+  - '2509.17158'
+  - '2506.07982'
+  - '2507.06261'
+  - '2504.13914'
+  - '2509.26490'
+  - '2510.09011'
+  - '2406.12045'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  deep_dive: research/deep-dives/deepplanning-agent-benchmark.md
+  discovered_via: expansion
+  expanded_from: intake-411
+  ingested_date: '2026-04-18'
+  deep_dive_date: '2026-04-18'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - repl-turn-efficiency.md
+    - routing-intelligence.md
+    - eval-tower-verification.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-411
+  handoffs_updated:
+  - hermes-agent-index.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  contradicting_evidence:
+  - 'Benchmark from Qwen/Alibaba team — models from the same organization may receive favorable task design or evaluation calibration'
+  - 'Only two domains (travel + shopping) — generalizability to other planning domains unverified'
+  - 'No peer-reviewed publication venue listed — community validation still pending'
+  novelty_justification: >
+    Benchmark methodology chapters exist (06, 07) but focus on inference quality
+    benchmarks, not agent planning benchmarks. DeepPlanning introduces a distinct
+    evaluation paradigm: verifiable global constraints (time budgets, cost limits)
+    across long-horizon multi-step plans. The layered task generation and rule-based
+    automated scoring methodology is new to the index.
+  relevance_justification: >
+    Informs understanding of agent planning capabilities across frontier models. The
+    benchmark reveals that reasoning-equipped models significantly outperform non-reasoning
+    variants — relevant to routing decisions. Error analysis of global optimization
+    failures maps to autopilot planning quality assessment. Rule-based scoring aligns
+    with ch07 benchmark construction philosophy. Medium because EPYC focuses on CPU
+    inference optimization, not agent planning — but the methodology insights are
+    transferable.
+  notes: >
+    January 2026. Qwen/Alibaba team. Dataset on HuggingFace (Qwen/DeepPlanning).
+    26 models from 10 organizations. Key insight for EPYC: the reasoning gap is large
+    (Qwen3-Max drops 15.9pp without thinking, Claude-4.5-Opus drops 7.6pp). Travel
+    planning uses minute-level scheduling with 9 APIs and 7708 avg records per task.
+    Shopping has 3 complexity levels with coupon timing constraints. Error taxonomy:
+    101-103 global optimization failures most prevalent. Bilingual travel tasks
+    (Chinese/English). Released alongside Qwen-Agent framework (intake-411).

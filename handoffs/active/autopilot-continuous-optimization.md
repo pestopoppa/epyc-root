@@ -490,3 +490,12 @@ intake-378 (arxiv:2604.01702) identifies Propose step ratio as a quality metric 
   - Key technique: Closed-form target distribution from scored samples + cross-entropy fitting. No policy gradients, no clipping, no critic. Temperature η controls exploration (robust across 0.25-2.0).
   - Reported results: On bandits (closest analog to autopilot trials): TPO converges fastest with lowest misalignment to oracle gradient. Multi-epoch stable where GRPO oscillates destructively.
   - Delta from current approach: NumericSwarm uses NSGA-II (Optuna) with per-surface studies and 4D Pareto scoring. A CEM sampler would: (1) maintain Gaussian N(μ,Σ) per surface, (2) sample K configs, (3) score via eval tower, (4) refit to elite set weighted by scalarized Pareto score (hypervolume contribution). Requires scalarizing the 4D objectives — hypervolume contribution is the natural choice. Full control surface embedding (66+ dims with flags + text mutations) is infeasible due to heterogeneous action space and expensive evaluations. **Concrete integration point**: when `hypervolume_slope() < 0.001` triggers stagnation detection in `pareto_archive.py`, switch from NSGA-II to CEM sampling as the exploration boost mechanism (currently just increases exploration weight). Code reference: `numeric_swarm.py:99` (sampler init), `pareto_archive.py:188-200` (stagnation detection).
+
+## Research Intake Update — 2026-04-18
+
+### New Related Research
+
+- **[intake-412] "DeepPlanning: Benchmarking Long-Horizon Agentic Planning"** (arxiv:2601.18137)
+  - Relevance: Benchmark for long-horizon agent planning with verifiable constraints. 26 frontier models evaluated across travel planning (minute-level scheduling, 9 APIs) and shopping planning (15 APIs, coupon timing). Even GPT-5.2-high only achieves 44.6% case accuracy. Rule-based automated scoring aligns with our ch07 benchmark construction philosophy.
+  - Key insight for autopilot: Reasoning-equipped models consistently outperform non-reasoning variants. Parallel tool use improves effectiveness-efficiency trade-offs. Error analysis of 140 failed trajectories shows global optimization failures are most prevalent — directly relevant to autopilot's multi-step planning quality assessment.
+  - Delta from current approach: Potential benchmark addition for evaluating autopilot planning quality. Layered task generation methodology (solution-centric reverse generation) could inform synthetic eval task construction for AR-3 runs.

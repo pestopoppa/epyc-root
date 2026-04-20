@@ -37,6 +37,14 @@ Run reliable benchmarks, analyze results, and produce decision-grade comparisons
 - Acceptance rate for speculative decoding
 - Stability and variance across repeated runs
 
+## Registry Integration
+
+When recording benchmark results in `model_registry.yaml`:
+- Use canonical scoring format: `{pct: <float>, raw: "<n/m>"}` — see `agents/shared/ENGINEERING_STANDARDS.md` § Model Registry Standards.
+- Never write bare floats, quoted percentage strings, or unquoted fraction strings.
+- Preserve inline comments for rescored dates and methodology notes.
+- Benchmarks run without think mode for stability — the think/no-think capability gap is a known calibration offset tracked separately, not a flaw in methodology.
+
 ## Guardrails
 
 - Do not conclude from a single noisy run.

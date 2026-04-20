@@ -195,3 +195,17 @@ After completing any task:
 - **[intake-399] "GenericAgent: minimal self-evolving autonomous agent framework"** (repo: lsdefine/GenericAgent)
   - Relevance: minimalism constraint (~3K LOC, 100-line loop, 9 atomic tools, <30K context) + L0–L4 memory taxonomy directly adjacent to Hermes + MemPalace (intake-326) architecture.
   - Delta: design-space anchor for Hermes loop minimality and a concrete 5-tier memory taxonomy template.
+
+## Research Intake Update — 2026-04-18
+
+### New Related Research
+
+- **[intake-411] "Qwen-Agent — Agent Framework by Alibaba/Qwen"** (repo: QwenLM/Qwen-Agent)
+  - Relevance: Reference agent framework (16.1k stars, Apache-2.0) with MCP server integration, parallel function calling, Docker-sandboxed code interpreter, and RAG for 1M-token contexts. Directly comparable to Hermes outer-shell architecture.
+  - Key patterns: MCP-first tool ecosystem, Gradio-based GUI for rapid deployment, DashScope + OpenAI-compatible model backends (vLLM, Ollama).
+  - Delta from current approach: Hermes uses persistent memory + self-improving skills (deeper autonomy); Qwen-Agent is more framework-oriented (broader tool ecosystem, MCP-native). The parallel function calling and MCP integration patterns are reference-quality for hermes-outer-shell.md Phase 2 routing API. Not adopt_component (Alibaba DashScope dependency, Python-only).
+
+- **[intake-412] "DeepPlanning: Benchmarking Long-Horizon Agentic Planning"** (arxiv:2601.18137)
+  - Relevance: Benchmark for multi-step agent planning with verifiable constraints (travel + shopping domains). 26 models evaluated. Even GPT-5.2-high only achieves 44.6% case accuracy — frontier models struggle with global constraint optimization.
+  - Key insight: Reasoning-equipped models consistently outperform non-reasoning variants. Parallel tool use improves effectiveness-efficiency trade-offs. Rule-based automated scoring (not LLM-based eval).
+  - Delta: Evaluation methodology for agent planning quality — potential benchmark addition for assessing orchestrator planning capabilities. Cross-refs ch07 benchmark construction philosophy.

@@ -75,6 +75,45 @@ with open(checkpoint, "a") as ckpt:
         log.info("[%d/%d] %s", i+1, len(items), item.id)
 ```
 
+## Model Registry Standards
+
+The research model registry (`epyc-inference-research/orchestration/model_registry.yaml`) is the comprehensive benchmark record. All scoring fields must use the canonical format:
+
+### Scoring Fields
+
+All `quality_score`, `vl_score`, and `blind_score` fields use an inline YAML map:
+
+```yaml
+quality_score: {pct: 65.4, raw: "159/243"}   # standard: pct + raw fraction
+vl_score: {pct: 92.0, raw: "11/12"}          # same format for vision-language
+blind_score: {pct: 36.0}                      # raw omitted when fraction unavailable
+blind_score: {pct: null, note: "not scored"}  # null pct with note for unscored entries
+```
+
+- `pct` (float): percentage score — native YAML float for programmatic comparison. Use `null` when no single score applies.
+- `raw` (string, optional): numerator/denominator fraction when available.
+- `note` (string, optional): replaces `raw` for special cases (unscored, multi-config annotations).
+- Supplementary context (rescored dates, scale descriptions) goes in YAML inline comments.
+
+**Anti-patterns** (never use):
+```yaml
+quality_score: 60.5              # bare float — missing raw fraction
+quality_score: 66/69 (96%)       # unquoted string — YAML parse error risk
+quality_score: "36%"             # quoted string — not programmatically comparable
+vl_score: "11/12 (92%)"         # quoted string — mixed format
+```
+
+### Registry Scope
+
+- **Research registry** (`epyc-inference-research`): comprehensive benchmark record — all tested models, all quants, deprecated entries preserved with notes.
+- **Orchestrator registry** (`epyc-orchestrator`): active stack only — lean, production-facing.
+
+### Model Entry Requirements
+
+- Paths must be absolute (not relative to any base).
+- Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
+- Deprecated models retain their entry with a `deprecated: true` flag and reason in comments.
+
 ## Verification Minimum
 
 Before finalizing:
