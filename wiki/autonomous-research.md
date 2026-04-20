@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 24 documents (1 deep-dive, 15 intake entries, 8 handoffs)
+**Last compiled**: 2026-04-19
+**Sources**: 26 documents (2 deep-dives, 16 intake entries, 8 handoffs)
 
 ## Summary
 
@@ -56,6 +56,10 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - **Package I created for post-AR-3 decision-aware routing validation.** Three tasks: I1 (DAR-3 SPO+ exploration -- 10% epsilon-greedy for counterfactual data), I2 (DAR-4 bilinear scorer A/B -- model-feature-conditioned Q vs per-action Q-tables), I3 (EV-5 ThinkPRM-1.5B T2 process verification). Package I requires isolated measurement because routing behavior modifications would contaminate other eval runs. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md)
 
 - **Eval tower verification framework advancing (EV-1/2/6 code complete).** EV-1 adds `confidence` field to QuestionResult. EV-2 adds ECE/AUC computation in `_aggregate()`. EV-6 adds cross-family verification constraint (`VERIFICATION_FAMILIES` dict + `check_cross_family()`). ECE/AUC metrics auto-accumulate in journal on AR-3 restart. EV-3 (Scoring Verifiers benchmark download), EV-4 (calibration baseline), and EV-5 (ThinkPRM-1.5B deployment) remain pending. AP-27 now points to eval-tower-verification.md as its implementation plan. [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md)
+
+- **Simula's mechanism design principles directly inform eval tower and autopilot design.** Simula (intake-410, TMLR 2026) establishes that: (1) optimal data/eval properties are domain/model/scale-dependent -- no universal configuration; (2) independently controlling multiple axes (diversity, complexity, quality) always outperforms single-axis optimization despite higher cost; (3) quality > quantity -- better data scales better than more data. For the autopilot eval tower: different models need different eval distributions, eval results on one difficulty band may not predict another, and the tower should separately control and report diversity, complexity, and quality rather than a single aggregate score. The double-critic rejection sampling pattern (accept only when independent correctness/incorrectness assessments agree) is deployable today as a Q-Scorer quality verification upgrade with prompt-only changes. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
+
+- **Meta-Harness Tier 2b: GEPA integration validated and Agent Lightning telemetry adopted (2026-04-17).** GEPA evolutionary search algorithm is folded into AR-3 Package D at 30% of PromptForge trials. Agent Lightning's trace collection pattern adopted as `telemetry.py` module with `TelemetryCollector`, `TransitionRecord` (OTLP-compatible), and per-step decomposition (controller_reasoning, action_execution, safety_gate). The Evolver intake (intake-394) adds a governance reference pattern (Gene-record schema with signals_match/preconditions/constraints) but provides no new search algorithm. Open Agents intake (intake-397) adds durable-workflow-reconnect patterns relevant to long-running harness search sessions. [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md)
 
 ## Actionable for EPYC
 
@@ -125,3 +129,4 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [eval-tower-verification.md](../handoffs/active/eval-tower-verification.md) -- AP-27 implementation plan (EV-1-7), ECE/AUC metrics, Aletheia RLVR recipes, ThinkPRM deployment, cross-family verification
 - [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md) -- Packages A-I; Package I for post-AR-3 decision-aware routing validation (DAR-3/4 + EV-5); G7/G7a model benchmarks; AM KV compaction integration (2026-04-14)
 - [progress/2026-04/2026-04-15.md](../progress/2026-04/2026-04-15.md) -- DAR-1 regret analysis results (96% uniform Q-values), DAR-2 contrastive Q-score implementation, AR-3 restart prep; Qwen3.5 KV crash + architect think-loop fixes
+- [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, mechanism design principles for eval tower (multi-axis control, quality>quantity), double-critic rejection sampling for Q-Scorer, calibrated Elo complexity scoring for difficulty stratification, taxonomy-based coverage analysis for benchmark construction

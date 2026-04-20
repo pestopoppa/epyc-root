@@ -15533,3 +15533,448 @@
     Shopping has 3 complexity levels with coupon timing constraints. Error taxonomy:
     101-103 global optimization failures most prevalent. Bilingual travel tasks
     (Chinese/English). Released alongside Qwen-Agent framework (intake-411).
+
+- id: intake-413
+  url: https://arxiv.org/abs/2601.10402
+  arxiv_id: '2601.10402'
+  source_type: paper
+  discovered_via: input
+  title: 'Toward Ultra-Long-Horizon Agentic Science: Cognitive Accumulation for Machine Learning Engineering'
+  authors:
+  - Xinyu Zhu
+  - Yuzhu Cai
+  - Zexi Liu
+  - Bingyang Zheng
+  - Cheng Wang
+  - Rui Ye
+  - Yuzhi Zhang
+  - Linfeng Zhang
+  - Weinan E
+  - Siheng Chen
+  - Yanfeng Wang
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - context_management
+  - knowledge_management
+  - memory_augmented
+  key_claims:
+  - 'Ultra-long-horizon autonomy (days/weeks) is the primary bottleneck for agentic scientific discovery; static context windows prevent sustained coherent reasoning'
+  - 'Hierarchical Cognitive Caching (HCC) decouples immediate execution from long-term strategy by dynamically distilling execution traces into stable, reusable knowledge'
+  - 'Cross-task wisdom consolidation enables structural differentiation of experience over time, mirroring computer memory hierarchy (L1/L2/L3 cache analogues)'
+  - 'ML-Master 2.0 achieves 56.44% medal rate on MLE-Bench under 24-hour budgets (SOTA)'
+  - 'Cognitive accumulation is more effective than reactive context management for sustained agentic tasks'
+  techniques:
+  - Hierarchical Cognitive Caching (HCC) architecture
+  - Dynamic distillation of execution traces into stable knowledge representations
+  - Cross-task wisdom consolidation across experiment sessions
+  - Multi-tiered knowledge structuring (working memory / episodic / semantic levels)
+  reported_results:
+  - '56.44% medal rate on OpenAI MLE-Bench (24-hour budget)'
+  - 'State-of-the-art on machine learning engineering benchmarks'
+  - 'Sustained coherent behavior over multi-day autonomous ML research sessions'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-04-20'
+  contradicting_evidence:
+  - 'No contradicting evidence found — possible confirmation bias risk'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - context-folding-progressive.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: >
+    HCC's hierarchical distillation is a structured approach to long-horizon agent memory.
+    However, multi-level memory for agents is well-explored (MemRL, Graphiti, episodic
+    memory systems). Novelty is in the ML-engineering application and explicit cognitive
+    accumulation framing rather than a fundamentally new mechanism.
+  relevance_justification: >
+    EPYC's AutoPilot already runs autonomous multi-day experiments and faces context
+    accumulation challenges. HCC's distillation of experiment traces into hierarchical
+    knowledge layers is directly applicable to improving AutoPilot's cross-session
+    knowledge retention and strategy_store.
+
+- id: intake-414
+  url: https://github.com/mibayy/token-savior
+  arxiv_id: null
+  source_type: repo
+  discovered_via: input
+  title: 'Token Savior Recall — 97% Token Reduction MCP Server for Claude Code'
+  authors:
+  - Mibayy
+  categories:
+  - context_management
+  - knowledge_management
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - '97% fewer tokens via structural AST navigation (symbol-level lookups) replacing full-file reads'
+  - '98% task success rate (118/120) vs 56% baseline (67/120) on tsbench with Claude Opus 4.7'
+  - '40% reduction in active token consumption and 85% reduction in injected characters'
+  - '46% wall-time reduction (28 min vs 51 min) on 60-task coding workload'
+  - 'Persistent cross-session memory with Bayesian validity tracking, contradiction detection, MDL distillation'
+  techniques:
+  - Structural AST indexing with symbol-level granularity (105 tools)
+  - Three-layer progressive disclosure memory contract (15/60/200 tokens per result)
+  - Hybrid BM25 + vector search (all-MiniLM-L6-v2) fused via Reciprocal Rank Fusion
+  - SQLite WAL + FTS5 + optional Chroma vector store
+  - MDL distillation for compressing redundant observations into conventions
+  - Content-hash symbol staleness detection for automatic memory invalidation
+  - LRU scoring with recency + access count + type weighting
+  reported_results:
+  - 'tsbench: 118/120 (98%) vs 67/120 (56%) baseline'
+  - 'Active tokens: -40% (614K vs 1.02M)'
+  - 'Injected characters: -85% (216K vs 1.43M)'
+  - 'Wall time: -46% (28 min vs 51 min)'
+  - 'Symbol lookup: -99.9% token reduction (41M to 67 chars)'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-04-20'
+  contradicting_evidence:
+  - 'No contradicting evidence found — possible confirmation bias risk'
+  - 'Benchmark (tsbench) is self-produced with no independent validation'
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    - tool-output-compression.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-395
+    - intake-301
+    - intake-302
+    - intake-259
+  handoffs_updated:
+  - context-folding-progressive.md
+  - meta-harness-optimization.md
+  - tool-output-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    Core techniques (progressive disclosure, BM25+vector hybrid, SQLite FTS5, lifecycle hooks)
+    are established patterns in intake-395, intake-301, and context-folding handoffs. The
+    differentiation is RRF fusion, AST-level symbol staleness tracking (content-hash
+    invalidation), and MDL convention promotion — incrementally novel over claude-mem.
+  relevance_justification: >
+    Token-saving impact is most direct for Claude API autopilot sessions and context
+    pressure in constrained local models. Core patterns overlap with active work in
+    context-folding and tool-output-compression handoffs. The RRF BM25+vector fusion
+    and content-hash staleness invalidation are the specific patterns worth extracting.
+
+- id: intake-415
+  url: https://github.com/mksglu/context-mode
+  arxiv_id: null
+  source_type: repo
+  discovered_via: input
+  title: 'Context Mode — Context Window Optimization for AI Coding Agents'
+  authors:
+  - mksglu
+  categories:
+  - context_management
+  - agent_architecture
+  - tool_implementation
+  - knowledge_management
+  key_claims:
+  - 'Sandbox isolation via subprocess execution reduces raw tool output entering context by up to 99%'
+  - 'FTS5 with BM25 ranking, Porter stemming, trigram matching, and RRF enables intent-driven selective retrieval when output exceeds 5KB'
+  - 'Session continuity across compaction events via SQLite persistence and <=2KB priority-tiered XML snapshots'
+  - 'Hook-based interception (PreToolUse, PostToolUse, PreCompact, SessionStart) across 12+ platforms'
+  - '94-100% context savings across 21 benchmark scenarios; session duration extends from ~30min to ~3hrs'
+  techniques:
+  - Subprocess sandbox isolation (11 languages; only stdout enters context)
+  - FTS5 full-text search with BM25 ranking and Reciprocal Rank Fusion
+  - Porter stemming + trigram substring search with proximity reranking
+  - Priority-tiered XML session snapshots (<=2KB) for compaction recovery
+  - Hook-based interception (PreToolUse, PostToolUse, PreCompact, SessionStart)
+  - Intent-driven filtering with 5KB threshold gating
+  reported_results:
+  - 'Playwright snapshot: 56.2KB to 299B (99% reduction)'
+  - 'GitHub Issues x20: 58.9KB to 1.1KB (98% reduction)'
+  - 'Large JSON API: 7.5MB to 0.9KB (99% reduction)'
+  - 'Full repo research: 986KB to 62KB across 5 calls (94% reduction)'
+  - 'Session duration: ~30min to ~3hrs with state persistence'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  ingested_date: '2026-04-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-259
+    - intake-301
+    - intake-302
+  handoffs_updated:
+  - context-folding-progressive.md
+  - tool-output-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    Individual techniques (FTS5/BM25, subprocess sandboxing, session snapshots, hook
+    interception) are not novel in isolation. The integrated system combining intent-driven
+    output filtering + compaction-safe session continuity + multi-platform hook routing
+    is a coherent practical synthesis. The PreCompact hook pattern for session snapshot
+    injection is a concrete implementation not covered in existing handoffs.
+  relevance_justification: >
+    Directly addresses tool-output-compression Phase 3 (MCP tool wrapping) and
+    context-folding compaction boundary detection. The subprocess sandbox pattern is
+    the workaround for the PostToolUse hook limitation identified in tool-output-compression.
+    The >5KB intent-threshold gating heuristic is practically borrowable.
+
+- id: intake-416
+  url: https://arxiv.org/abs/2604.14191
+  arxiv_id: '2604.14191'
+  source_type: paper
+  discovered_via: input
+  title: 'Attention to Mamba: A Recipe for Cross-Architecture Distillation'
+  authors:
+  - Abhinav Moudgil
+  - Ningyuan Huang
+  - Eeshan Gunesh Dhekane
+  - Pau Rodriguez
+  - Luca Zappella
+  - Federico Danieli
+  categories:
+  - training_distillation
+  - ssm_hybrid
+  key_claims:
+  - 'Naive distillation from Transformer teachers to Mamba students fails; principled initialization and intermediate stages are required'
+  - 'Two-stage pipeline (Transformer to linearized Attention to Mamba) enables effective cross-architecture knowledge transfer'
+  - 'Proper Mamba initialization from linearized attention checkpoint substantially closes the quality gap'
+  - 'Distilled Mamba achieves competitive perplexity (14.11 vs teacher 13.86 on Pythia-1B scale)'
+  techniques:
+  - Two-stage cross-architecture distillation (Transformer to linearized Attention to Mamba)
+  - Kernel trick adaptation for linearized attention intermediate representation
+  - Layer-wise hidden state alignment across incompatible architectures
+  - Principled Mamba initialization from linearized attention checkpoint
+  reported_results:
+  - 'Distilled Pythia-1B Mamba perplexity: 14.11 vs teacher 13.86 (gap: 0.25)'
+  - 'Competitive on LAMBADA, HellaSwag, PIQA, WinoGrande, BoolQ, LogiQA, RACE'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  verdict: worth_investigating
+  ingested_date: '2026-04-20'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - log-linear-gated-deltanet-readiness.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Cross-architecture distillation from Transformers to Mamba is a genuinely distinct
+    technique not previously indexed. However, the production stack uses Delta Net hybrids,
+    not standard Mamba. The two-stage linearization pathway is novel in execution.
+  relevance_justification: >
+    EPYC does not run Mamba-family models — production models are Delta Net hybrids or
+    dense Transformers. Distilling into pure Mamba is not an active workstream. Could
+    theoretically inform future model acquisition decisions for SSM variants on CPU.
+
+- id: intake-417
+  url: https://z-lab.ai/projects/flashdrive/
+  arxiv_id: null
+  source_type: blog
+  discovered_via: input
+  title: 'FlashDrive: Flash Vision-Language-Action Inference For Autonomous Driving'
+  authors:
+  - Zekai Li
+  - Yihao Liang
+  - Hongfei Zhang
+  - Jian Chen
+  - Zhijian Liu
+  categories:
+  - speculative_decoding
+  - kv_cache
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - '4.5x end-to-end latency reduction on Alpamayo 1.5 VLA baseline (716ms to 159ms) on RTX PRO 6000'
+  - 'Streaming inference exploits 75% inter-frame KV cache overlap via reuse + custom attention masks'
+  - 'DFlash block diffusion speculative reasoning effective on structured low-entropy driving tokens'
+  - 'Adaptive flow matching caches middle denoising steps, concentrating compute on critical stages'
+  techniques:
+  - Streaming KV cache reuse (75% frame overlap with custom attention masks)
+  - DFlash block diffusion speculative reasoning
+  - Adaptive flow matching velocity caching
+  - W4A8 quantization via ParoQuant
+  - CUDA graphs + kernel fusion
+  reported_results:
+  - 'End-to-end latency: 159ms vs 716ms baseline (4.5x) on RTX PRO 6000'
+  - 'ADE@6.4s: 1.56m vs 1.72m baseline (improved accuracy)'
+  - '4.0-5.7x speedup range across multiple NVIDIA platforms'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  ingested_date: '2026-04-20'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-158
+    - intake-296
+    - intake-297
+    - intake-298
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    New multi-technique combination from z-lab applying DFlash in VLA/autonomous-driving
+    context. Individual techniques are known; the co-design for a 4-stage VLA pipeline
+    and adaptive flow matching caching are not previously documented.
+  relevance_justification: >
+    Entirely GPU + NVIDIA platform specific, targets autonomous driving VLA inference.
+    No overlap to EPYC's CPU text inference. DFlash component already evaluated and
+    concluded not viable on CPU (27% per-token acceptance on Q4_K_M).
+
+- id: intake-418
+  url: https://arxiv.org/abs/2604.08224
+  arxiv_id: '2604.08224'
+  source_type: paper
+  discovered_via: search
+  expanded_from: intake-413
+  title: 'Externalization in LLM Agents: A Unified Review of Memory, Skills, Protocols and Harness Engineering'
+  authors:
+  - Chenyu Zhou
+  - Huacan Chai
+  - Wenteng Chen
+  - Zihan Guo
+  - Rong Shan
+  - Yuanyi Song
+  - Tianyi Xu
+  - Yingxuan Yang
+  - Aofan Yu
+  - Weiming Zhang
+  - Congming Zheng
+  - Jiachen Zhu
+  - Zeyu Zheng
+  - Zhuosheng Zhang
+  - Xingyu Lou
+  - Changwang Zhang
+  - Zhihui Fu
+  - Jun Wang
+  - Weiwen Liu
+  - Jianghao Lin
+  - Weinan Zhang
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - context_management
+  - knowledge_management
+  - tool_implementation
+  - inference_serving
+  key_claims:
+  - 'Agent capability gains increasingly come from external cognitive infrastructure rather than stronger model weights alone'
+  - 'Three-dimensional externalization model: memory externalizes state, skills externalize procedural expertise, protocols externalize interaction structure'
+  - 'Agent evolution follows three eras: weights era, context era, and harness era'
+  - 'The harness layer provides orchestration, sandboxing, observability, governance, and context budget management'
+  - 'Emerging directions include self-evolving harnesses and shared agent infrastructure'
+  techniques:
+  - Hierarchical memory with extraction, consolidation, and forgetting operations
+  - GraphRAG for structured memory retrieval
+  - Adaptive memory using mixture-of-experts routing
+  - Progressive disclosure and skill registries
+  - Harness-level context budget management
+  - Self-evolving harness search
+  reported_results:
+  - 'Survey/position paper — no novel quantitative benchmarks'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-04-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-244
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: >
+    Survey synthesizing existing work on memory, skills, and protocols — all three axes
+    are already well-represented in the intake index with more specific entries. The
+    three-era framing is clean but introduces no new techniques or results.
+  relevance_justification: >
+    The harness engineering framing directly maps to EPYC's orchestrator architecture.
+    The weights-to-context-to-harness progression is a useful lens for system design.
+    The taxonomy could audit completeness of EPYC's agent infrastructure coverage.
+
+- id: intake-419
+  url: https://github.com/ooples/token-optimizer-mcp
+  arxiv_id: null
+  source_type: repo
+  discovered_via: search
+  expanded_from: intake-414
+  title: 'Token Optimizer MCP — 95%+ Token Reduction via Caching, Compression, and Smart Tool Intelligence'
+  authors:
+  - ooples
+  categories:
+  - context_management
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - '95%+ token reduction through caching, compression, and smart tool intelligence'
+  - 'MCP server for Claude Code and compatible AI agents'
+  - 'CI/CD benchmarking infrastructure with <10% regression thresholds'
+  techniques:
+  - Caching (mechanism unspecified)
+  - Compression (strategy unspecified)
+  - Smart tool intelligence (likely tool-call reduction or batching)
+  reported_results:
+  - '95%+ token reduction (marketing headline, no methodology or baseline)'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  ingested_date: '2026-04-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-259
+    - intake-274
+    - intake-301
+    - intake-302
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    All three technique axes (caching, compression, tool batching) are already addressed
+    by existing EPYC infrastructure and prior intake entries. The 95%+ claim is unsupported
+    by any visible methodology.
+  relevance_justification: >
+    MCP server wrapping unspecified techniques for Claude Code does not plug into EPYC's
+    orchestrator REPL pipeline. Fully superseded by existing infrastructure (RTK, native
+    compress_tool_output.py, AXI/TOON, SkillReducer).

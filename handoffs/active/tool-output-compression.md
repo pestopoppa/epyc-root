@@ -276,3 +276,18 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
   - Relevance: minimal-tool-set discipline (9 atomic tools, <30K context) as a constraint when designing compression-aware tool interfaces.
   - Key technique: dynamic tool creation via `code_run` rather than adding tool surface area; layered memory pulls reduce per-turn context inflation.
   - Delta: reinforces the design pressure toward minimal tool surfaces and lazy-loaded tool outputs.
+
+## Research Intake Update — 2026-04-20
+
+### New Related Research
+- **[intake-414] "Token Savior Recall — 97% Token Reduction MCP Server"** (repo: mibayy/token-savior)
+  - Relevance: AST-level symbol navigation replaces full-file reads (41M → 67 chars per symbol lookup); hybrid BM25+vector search with RRF fusion for memory retrieval.
+  - Key technique: structural AST indexing with symbol-level granularity; three-layer progressive disclosure contract (15/60/200 tokens); backward slice (130→12 lines, -92%); content-hash staleness detection.
+  - Reported results: 98% task success rate, 40% active token reduction, 85% injected char reduction, 46% wall-time reduction.
+  - Delta from current approach: RRF fusion in search path is an upgrade over simpler cascade; content-hash symbol staleness for automatic invalidation when code changes is novel for the compression pipeline.
+
+- **[intake-415] "Context Mode — Context Window Optimization for AI Coding Agents"** (repo: mksglu/context-mode)
+  - Relevance: subprocess sandbox execution prevents raw tool output from entering context — the exact Phase 3 MCP tool wrapping pattern identified in this handoff.
+  - Key technique: subprocess sandbox in 11 language runtimes (only stdout enters context); FTS5+BM25 with RRF and Porter stemming; intent-driven filtering (>5KB threshold → index, return relevant sections only).
+  - Reported results: Playwright snapshot 56.2KB→299B (99%); GitHub issues x20: 58.9KB→1.1KB (98%); large JSON API: 7.5MB→0.9KB (99%).
+  - Delta from current approach: the subprocess sandbox pattern is the workaround for the PostToolUse hook limitation identified in Phase 2. The >5KB intent-threshold gating heuristic is a practical implementation detail worth borrowing.

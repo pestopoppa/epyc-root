@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
-**Sources**: 21 documents
+**Last compiled**: 2026-04-19
+**Sources**: 22 documents
 
 ## Summary
 
@@ -39,6 +39,9 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 - **Safety degrades asymmetrically with reasoning SFT**: Reasoning improves while safety degrades with long-CoT SFT -- any future fine-tuning must include safety benchmarks [sft-generalization-reasoning-patterns.md]
 - **Aletheia RLVR training is scale-dependent**: 1.5B needs on-policy GRPO + negative samples, skip thinking traces. 14B needs thinking traces + negative samples for stability. DPO is catastrophic at 1.5B (-23.4%) but viable at 14B [eval-tower-verification.md]
 - **TTS accuracy does not predict RL training effectiveness**: SWE-RM (intake-368) showed two verifiers with identical accuracy produce completely different RL outcomes (AUC 0.805 smooth vs AUC 0.710 collapse). ECE + AUC are critical missing eval metrics [eval-tower-verification.md]
+- **Simula provides a principled mechanism-design framework for synthetic data generation and evaluation.** Simula (arxiv:2603.29791, intake-410, TMLR 2026 with J2C certification) decomposes data generation into four independently controllable axes: coverage (taxonomy-based global diversification), local variation (meta-prompting), complexity (configurable complexification fraction), and quality (double-critic rejection sampling). Key finding: there is no single optimal way to generate synthetic data -- the relationship between data properties and downstream performance is deeply idiosyncratic. High complexity yields +10% accuracy on GSM8k (strong teacher, 88%) but hurts on LEXam (weak teacher, 57%). The full system (all axes) almost always dominates simpler baselines despite costing 5x more inference per data point -- training costs dominate generation costs. Quality > Quantity: better data scales better. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
+- **Simula's taxonomy generation nearly doubles coverage over zero-shot approaches** (Level Ratio Coverage 1.72 vs 0.83) while maintaining soundness (0.97). The generator-critic refinement loop discovers edge cases humans missed (novelty score 0.94). Global diversification (deep taxonomy sampling) drives dataset-wide embedding diversity; local diversification (meta-prompting) drives within-cluster variation. The two are additive. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
+- **Student-teacher saturation bounds distillation utility.** Simula shows CTI-RCM saturates at ~65% student accuracy vs 70% teacher (bridging 83% of the gap at 128k samples). Beyond this point, more data yields diminishing returns regardless of quality. When teacher accuracy is low (LEXam 57%), the double-critic correctly rejects 61% of generated data -- the pipeline becomes extremely inefficient but produces correct behavior (not generating wrong training data). [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
 
 ## Actionable for EPYC
 
@@ -51,6 +54,8 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 - **Trajectory filtering for any future training data**: If using OpenR1-Math-220k or DeepSeek-R1 distilled data, MUST filter by branching density (Proxy 2: branching keyword proportion) before training. Unfiltered R1 traces produce 21pp worse generalization on Llama3.1-8B. Zero training cost -- preprocessing only.
 - **Depth over breadth for SFT**: When training reasoning adapters, use repeated exposure (128 epochs on curated subset) rather than large single-pass datasets. Token accuracy serves as the saturation indicator. Safety evaluation mandatory alongside capability evaluation.
 - **Aletheia 1.5B for CPU verification inference**: Pre-trained ThinkPRM-1.5B or Aletheia-1.5B models can be downloaded and quantized today for T2 eval tower process verification. Training recipe (on-policy GRPO, binary rewards, 2:1 pos/neg ratio, temperature 1.0, no thinking traces at 1.5B) deferred to DGX Spark.
+- **Simula's taxonomy-based coverage analysis for eval set construction**: Generate deep taxonomies for eval domains (coding, math, reasoning, tool use), map existing eval questions to taxonomy nodes, compute Level Ratio Coverage to identify under-represented sub-domains, and generate targeted questions for gaps. Zero training cost -- uses local LLM for taxonomy generation and coverage scoring. Applicable to benchmark construction and specialist routing seeder.
+- **Simula's complexity-aware insights for routing**: A model's optimal complexity band is bounded by its competence (teacher ceiling). For routing: high-complexity queries should route to strongest model, low-complexity to cheapest. Elo complexity scores could serve as routing classifier features.
 
 ## Open Questions
 
@@ -80,4 +85,5 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 - [Memento handoff](/workspace/handoffs/active/memento-block-reasoning-compression.md) -- Block-level KV compression, dual information stream discovery, composability analysis
 - [SFT Generalization & Reasoning Patterns deep dive](/workspace/research/deep-dives/sft-generalization-reasoning-patterns.md) -- Branching density taxonomy, dilution effect, trajectory filtering, repeated exposure findings (intake-373/374/378)
 - [Eval Tower Verification handoff](/workspace/handoffs/active/eval-tower-verification.md) -- Aletheia scale-dependent RLVR recipes, SWE-RM TTS vs RL effectiveness, ECE/AUC metrics, ThinkPRM deployment plan
+- [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, TMLR 2026, reasoning-driven seedless framework, double-critic rejection sampling, calibrated Elo complexity scoring, taxonomy-based coverage (1.72 vs 0.83), mechanism design principles (no silver bullet, quality>quantity, complexity requires calibration), student-teacher saturation bounds
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Skill effectiveness scoring integration with confidence calibration

@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-18 (Research intake: episodic memory benchmark + EM-LLM deep dive → 4 handoff refinements)
+**Updated**: 2026-04-20 (Research intake: Simula + Qwen-Agent + DeepPlanning, 3 deep dives, registry standardization, EA script cleanup)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---

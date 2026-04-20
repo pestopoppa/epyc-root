@@ -67,6 +67,11 @@ categories:
     description: Long-context methods including YaRN, RoPE scaling, sliding window, and sparse attention.
     related_chapters: []
 
+  context_management:
+    label: Context Management
+    description: Context compaction, session folding, token compression, tool output filtering, prompt cache optimization.
+    related_chapters: []
+
   inference_serving:
     label: Inference Serving
     description: Serving infrastructure, batching, scheduling, continuous batching, disaggregated serving.

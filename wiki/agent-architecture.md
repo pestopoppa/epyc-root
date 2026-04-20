@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 26 documents (7 deep-dives, 15 intake entries, 4 handoffs)
+**Last compiled**: 2026-04-19
+**Sources**: 28 documents (9 deep-dives, 15 intake entries, 4 handoffs)
 
 ## Summary
 
@@ -17,7 +17,15 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 ## Key Findings
 
-### New Findings (2026-04-17)
+### New Findings (2026-04-19)
+
+- **Qwen-Agent's MCP singleton manager pattern fills an identified gap in EPYC tool extensibility.** Qwen-Agent (QwenLM/Qwen-Agent, intake-411) implements an `MCPManager` singleton managing MCP server connections in a background async event loop on a dedicated thread, with dynamic `BaseTool` subclass generation per discovered MCP tool, ping+auto-reconnect health checks, and atexit cleanup. The pattern gives MCP tools the same interface as native tools -- the agent loop does not distinguish between native and MCP-backed tools. This is the cleanest MCP integration pattern surveyed and directly applicable to our `tool_registry.py`. Implementation would create `src/tools/mcp_manager.py` (~200 LoC), register MCP tools alongside native tools, and gate access via `tool_policy.py`. Not urgent (current tool ecosystem is sufficient) but becomes relevant for MemPalace MCP (H-8) or other MCP-based tools. Updated verdict: `adopt_patterns`. [qwen-agent-framework-deep-dive.md](../research/deep-dives/qwen-agent-framework-deep-dive.md) `verified`
+
+- **DeepPlanning benchmark provides the strongest empirical evidence for reasoning-mode routing.** DeepPlanning (arXiv:2601.18137, intake-412) is a 240-task planning benchmark with fully deterministic rule-based scoring across 26 models. The reasoning vs non-reasoning gap is the largest documented in the literature: GPT-5.2 gains +40.1pp overall (4.5% to 44.6%) and +34.6pp on travel case accuracy. Critically, reasoning mode achieves higher accuracy with *fewer* tool calls and *fewer* turns (Claude-4.5-Opus: 12.5 vs 16.9 turns, 72.9 vs 79.5 tool calls). The benchmark demonstrates that planning tasks benefit from reasoning far more than typical QA benchmarks -- adding a planning-complexity signal to the Category A classifier would improve routing decisions. The multi-granularity scoring architecture (8-dimension commonsense / composite / case-level binary) catches failure modes that single-metric scoring misses entirely: models scoring 85 composite can have 0% case accuracy. [deepplanning-agent-benchmark.md](../research/deep-dives/deepplanning-agent-benchmark.md) `external`
+
+- **DeepPlanning's error taxonomy validates investment in global optimization over local reasoning.** Analysis of 140 failed trajectories shows global optimization failures dominate (101/80 travel, 52/60 shopping) -- agents gather correct information and satisfy local constraints but fail at maintaining global coherence (temporal overlaps, logical discontinuities between days, suboptimal combinatorial choices). This is the frontier capability separating 35% case accuracy from 0%. Implicit constraint failures (B2) are more common than explicit ones (B1), meaning models are better at following stated requirements than inferring unstated real-world constraints. [deepplanning-agent-benchmark.md](../research/deep-dives/deepplanning-agent-benchmark.md) `external`
+
+### Findings (2026-04-17)
 
 - **Observer-sidecar pattern: clean separation without context pollution.** claude-mem (intake-395) implements a tool-disabled LLM subprocess running alongside the primary session in an isolated cwd and sanitized env. It captures every PostToolUse event and emits structured XML `<observation>` records without any tool access of its own. The primary session never sees compaction work; the observer never sees user context. This is architecturally distinct from EPYC's current in-session compaction (which mutates the main session's summary). The sidecar doubles per-tool inference cost, so local adoption should pair it with a cheap local model as observer. AGPL-3.0 license blocks code vendoring; re-implement patterns in Python. [claude-mem-persistent-memory.md](../research/deep-dives/claude-mem-persistent-memory.md) `inferred`
 
@@ -141,3 +149,5 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [genericagent-minimal-framework.md](../research/deep-dives/genericagent-minimal-framework.md) -- L0-L4 flat-file memory taxonomy, L1 ≤30-line always-in-context insight index, content-in-reply-body tool pattern, `no_tool` recovery handler, generator-based tool dispatch, L4 session archiver cron, LLM-driven promotion via SOP discipline; no sandbox, CN-market-first, not portable wholesale
 - [vercel-open-agents-durable-workflow.md](../research/deep-dives/vercel-open-agents-durable-workflow.md) -- workflow event log for durable reconnect (portable pattern), typed Sandbox interface (exec/execDetached/read/write), scoped `task` subagent contract with summary-only return, large-output-to-FS convention; Vercel Sandbox is FS-only snapshot not memory hibernate, CRIU not viable for REPL with llama-server sockets
 - [evomap-evolver-gep-protocol.md](../research/deep-dives/evomap-evolver-gep-protocol.md) -- Gene-record schema for mutation governance (signals_match/preconditions/strategy/constraints/validation), per-strategy forbidden-path deny-list, intent-mix strategy presets, EvolutionEvent log field alignment; no empirical benchmarks, partially obfuscated code, GPL-3.0, Hub invite-gated and unreliable; EvoMap/Hermes dispute has no technical merit
+- [qwen-agent-framework-deep-dive.md](../research/deep-dives/qwen-agent-framework-deep-dive.md) -- intake-411, MCP singleton manager pattern (dynamic BaseTool subclass per tool, ping+reconnect, background async thread), Nous function-calling template (parallel `<tool_call>` XML), Reciprocal Rank Fusion hybrid search (`1/(rank+1+60)`), ParallelDocQA map-reduce, Router (LLM-driven selection, naive vs our learned routing); verdict: adopt_patterns (MCP integration model, RRF formula, DeepPlanning eval methodology)
+- [deepplanning-agent-benchmark.md](../research/deep-dives/deepplanning-agent-benchmark.md) -- intake-412, 240-task planning benchmark with rule-based deterministic scoring, 26-model leaderboard, reasoning-mode gap data (+7.6pp to +40.1pp), multi-granularity scoring (dimension/composite/case), error taxonomy (global optimization dominant), reverse-generation solvability guarantee; verdict: adopt_patterns (multi-granularity scoring, planning-complexity signal, reverse-generation for PromptForge)

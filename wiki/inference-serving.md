@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 15 documents
+**Last compiled**: 2026-04-19
+**Sources**: 17 documents
 
 ## Summary
 
@@ -28,6 +28,8 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
 - **Round-robin routing implemented**: RoundRobinBackend wraps multi-instance backends using comma-separated URLs. Frontdoor (4 instances) and coder_escalation (4 instances) distribute requests round-robin. Least-loaded routing is a future optimization. [numa-orchestrator-deployment.md]
 - **Infrastructure failures produce no reward**: Timeouts, connection errors, and backend-down events are classified separately and excluded from Q-value updates. This prevents slow or flaky backends from biasing routing probabilities. [08-cost-aware-rewards.md]
 - **Auxiliary services**: NextPLAID (multi-vector code/doc retrieval, ONNX INT8), LightOnOCR (PDF OCR, 19x PDF speedup), BGE embedder pool (6 instances, probe-first). [04-production-server-stack.md]
+- **Qwen3.6-35B-A3B is a validated drop-in upgrade path for the production frontdoor.** Byte-for-byte identical architecture to Qwen3.5-35B-A3B (same `qwen3_5_moe` model type, same 10x(3xGDN->MoE -> 1xAttn->MoE) pattern). All improvements are post-training only -- no llama.cpp patches needed beyond existing Qwen3.5 support. Performance: 25.6 tps baseline, 27.4 with ngram dm=64 (+10.1%), 57.4 quad-instance, 76.8 eight-instance. Q8 is faster than Q4 (25.6 vs 24.4). Key benchmarks: SWE-bench +3.4pp (73.4), Terminal-Bench +11pp (51.5), NL2Repo +8.9pp (29.4). `preserve_thinking` feature works via `--jinja` flag. Quality benchmark pending (required `use_chat_api + reasoning off + KV q8_0`; earlier attempts hit think-loops). [qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md)
+- **Model-specific serving configurations are critical for correct behavior (2026-04-19).** Five new models each required unique configurations not documented in the codebase. Universal findings: (1) Gemma4 models need `use_chat_api + repeat_penalty 1.05 + reasoning off + KV q8_0` to avoid degenerate repetition (70-83% of responses without fix) and thought leakage; (2) Qwen3.6 needs `use_chat_api + reasoning off` to avoid `<think>` loops; (3) M2.7 needs `--jinja` for correct template (37% training data leakage without it) and must NOT use repeat_penalty (caused 52%->27% regression); (4) SG4-26b Q4KM proved irrecoverable (16.2%) due to fundamental MoE expert routing degradation at Q4 -- model deprecated and GGUF deleted. The benchmark infrastructure now supports per-model `disable_thinking`, `repeat_penalty`, and `reasoning` flags. [progress/2026-04-19](../progress/2026-04/2026-04-19.md)
 
 ## Actionable for EPYC
 
@@ -64,4 +66,6 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
 - [Chapter 08: Cost-Aware Rewards](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) -- Infrastructure error handling, cost normalization per serving role
 - [Attention Matching KV Compaction](/workspace/handoffs/active/attention-matching-kv-compaction.md) -- L1-L4 merged, passive KV compression
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Worker swap to 30B-A3B, registry updates
+- [Qwen3.6 Production Upgrade](/workspace/handoffs/active/qwen36-production-upgrade.md) -- intake-387/391, drop-in architecture, throughput benchmarks (25.6-76.8 tps), preserve_thinking feature, quality benchmark in progress
+- [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign, per-model serving config discovery (Gemma4/Qwen3.6/M2.7/SG4), SG4-26b Q4KM deprecation, benchmark infrastructure upgrades
 - Intake entries: 22 results across intake index and handoffs including Qwen3.5 serving recipe (intake-152), DFlash speculation (intake-158), REAP models (intake-181/184/186), and 7 active/completed handoffs

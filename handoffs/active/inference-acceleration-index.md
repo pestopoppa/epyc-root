@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-04-11
+**Updated**: 2026-04-20 (EA eval script cleaned, registry scoring fields standardized to {pct, raw})
 
 ## Agent Operating Instructions
 

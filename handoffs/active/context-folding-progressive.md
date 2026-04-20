@@ -952,3 +952,24 @@ Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/meme
   - Relevance: 5-tier L0–L4 memory taxonomy designed to keep working context <30K tokens — a concrete reference architecture for how layered memory maps to token-budget discipline.
   - Key technique: L0 Meta Rules / L1 Insight Index / L2 Global Facts / L3 Task Skills(SOPs) / L4 Session Archive; skill crystallization promotes episodic traces to reusable SOPs.
   - Delta: cross-references Hermes MemPalace (intake-326) and the LLM Wiki ecosystem; useful as a layering template alongside the retrieval-layer patterns from claude-mem.
+
+## Research Intake Update — 2026-04-20
+
+### New Related Research
+- **[intake-413] "Toward Ultra-Long-Horizon Agentic Science: Cognitive Accumulation for ML Engineering"** (arxiv:2601.10402)
+  - Relevance: HCC's hierarchical distillation of execution traces into multi-tier knowledge (L1/L2/L3 cache analogue) directly addresses cross-session knowledge retention — the same problem context-folding solves at the conversation level.
+  - Key technique: Hierarchical Cognitive Caching (HCC) with dynamic distillation of execution traces into stable, reusable knowledge representations; cross-task wisdom consolidation.
+  - Reported results: 56.44% medal rate on MLE-Bench (24h budget).
+  - Delta from current approach: context-folding compresses within a session; HCC proposes cross-session knowledge consolidation — complementary layer above folding.
+
+- **[intake-414] "Token Savior Recall — 97% Token Reduction MCP Server"** (repo: mibayy/token-savior)
+  - Relevance: hybrid BM25+vector search with RRF fusion for memory retrieval — directly applicable to the retrieval layer of context-folding's compacted knowledge base.
+  - Key technique: three-layer progressive disclosure memory contract (15/60/200 tokens per result); content-hash symbol staleness for automatic memory invalidation on code changes; MDL distillation for convention promotion.
+  - Reported results: 98% task success rate (118/120 vs 56% baseline), 40% active token reduction, 85% injected char reduction.
+  - Delta from current approach: adds RRF fusion and MDL auto-promotion over existing claude-mem patterns; the staleness-detection mechanism is novel for invalidating folded knowledge when source code changes.
+
+- **[intake-415] "Context Mode — Context Window Optimization for AI Coding Agents"** (repo: mksglu/context-mode)
+  - Relevance: subprocess sandbox isolation prevents raw tool output from entering context (99% reduction); PreCompact hook injects ≤2KB priority-tiered session snapshot — directly actionable for compaction boundary detection.
+  - Key technique: FTS5+BM25 with RRF and Porter stemming; intent-driven filtering (>5KB → index, return only relevant sections); PreCompact session snapshot injection.
+  - Reported results: 94-100% context savings across 21 scenarios; session duration extends from ~30min to ~3hrs.
+  - Delta from current approach: context-folding operates on conversation history; context-mode operates upstream on tool output. The PreCompact hook pattern for session snapshot injection is a concrete implementation pattern not covered here.

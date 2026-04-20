@@ -162,3 +162,21 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: extreme-minimalism constraint (~3K LOC, ~100-line loop, 9 atomic tools, <30K context) as a design target for the meta-harness search space upper bound.
   - Key technique: 5-tier memory taxonomy (L0 Meta Rules / L1 Insight Index / L2 Global Facts / L3 Task Skills/SOPs / L4 Session Archive); skill-crystallization from solved tasks into reusable SOPs.
   - Delta: gives a concrete reference architecture for "how small can a useful agent loop be" — useful lower-bound anchor when proposing new harness variants. No benchmarks; single-user Chinese-market desktop agent.
+
+## Research Intake Update — 2026-04-20
+
+### New Related Research
+- **[intake-413] "Toward Ultra-Long-Horizon Agentic Science: Cognitive Accumulation for ML Engineering"** (arxiv:2601.10402)
+  - Relevance: HCC architecture demonstrates that tiered knowledge distillation (execution traces → phase knowledge → cross-task wisdom) yields SOTA on autonomous ML engineering — directly validates the meta-harness memory layer design.
+  - Key technique: Hierarchical Cognitive Caching with L1/L2/L3 cache analogy; cross-task wisdom consolidation; 56.44% medal rate on MLE-Bench.
+  - Delta from current approach: the distillation pipeline converting raw experiment logs into structured reusable knowledge could improve AutoPilot's strategy_store and PromptForge mutation quality.
+
+- **[intake-414] "Token Savior Recall — 97% Token Reduction MCP Server"** (repo: mibayy/token-savior)
+  - Relevance: 105-tool AST-level structural codebase navigation reduces context injection by 97% — relevant to harness search space for tool-surface minimization.
+  - Key technique: content-hash symbol staleness detection for automatic memory invalidation; MDL convention promotion (notes→conventions auto-upgrade); Bayesian validity tracking.
+  - Delta from current approach: the MDL distillation for convention promotion and staleness invalidation patterns are novel harness engineering primitives not in current search space.
+
+- **[intake-418] "Externalization in LLM Agents: A Unified Review of Memory, Skills, Protocols and Harness Engineering"** (arxiv:2604.08224)
+  - Relevance: positions the harness layer as the primary locus of agent capability improvement (weights→context→harness era progression) — directly validates the meta-harness optimization thesis.
+  - Key technique: three-dimensional externalization taxonomy (memory/skills/protocols) + harness layer orchestration; self-evolving harness search.
+  - Delta from current approach: the unified taxonomy could audit completeness of EPYC's agent infrastructure; the "harness era" framing reinforces the meta-harness investment direction.

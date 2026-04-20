@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE — Full production pipeline deployed. Autopilot control surfaces wired. Next: autopilot exploration → orchestrator auto-trigger.
 **Created**: 2026-04-08 (via research intake)
-**Updated**: 2026-04-14 (EA scorer in production kernel, server endpoint, autopilot integration, gap guardrails)
+**Updated**: 2026-04-20 (EA eval script cleaned: dead LongBench code removed, use_covariance/use_vnorm wired, timing fields simplified)
 **Priority**: MEDIUM
 **Categories**: kv_cache, inference_serving, memory_bandwidth
 

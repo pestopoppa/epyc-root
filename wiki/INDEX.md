@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-04-14
+**Last compiled**: 2026-04-19
 **Articles**: 24 compiled, 6 stub categories
-**Total sources**: 235 documents across 6 source types
+**Total sources**: 246 documents across 6 source types
 
 ---
 
@@ -22,8 +22,8 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 15 | Production stack: 4-tier agent hierarchy, NUMA-pinned instances, ~515 GB deployed footprint |
-| [Local Inference](local-inference.md) | 15 | Custom llama.cpp fork (23+ patches incl. Diff Attn V2), GGUF-native pipeline, 12 acceleration techniques catalogued |
+| [Inference Serving](inference-serving.md) | 17 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); per-model serving configs critical for quality |
+| [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 
 ## Routing & Evaluation
 
@@ -31,14 +31,14 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
 | [Routing Intelligence](routing-intelligence.md) | 17 | MemRL with 2,714 episodic memories, FAISS 35x speedup, species budget rebalancing |
-| [Benchmark Methodology](benchmark-methodology.md) | 26 | All 10 seeding modules at 100% coverage; 61 integration tests; 1,290-measurement sweep overturned prior assumptions |
+| [Benchmark Methodology](benchmark-methodology.md) | 31 | DeepPlanning rule-based scoring + case-vs-composite gap; Simula double-critic + Elo complexity; 5-model quality benchmark infrastructure |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 22 | Paperclip cost governance, LangGraph comparison, OpenGauss tool pair sanitization pattern |
-| [Autonomous Research](autonomous-research.md) | 19 | EvoScientist evolution manager fills AutoPilot memory gap; strategy distillation yields +10.17pp |
+| [Agent Architecture](agent-architecture.md) | 28 | MCP singleton pattern (Qwen-Agent), DeepPlanning reasoning-mode gap (+40pp), global optimization as dominant failure mode |
+| [Autonomous Research](autonomous-research.md) | 26 | Simula mechanism design for eval tower; Meta-Harness GEPA+telemetry (Tier 2b); Phase 5 per-role seeder |
 | [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
 
 ## Context & Compression
@@ -53,7 +53,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Training & Distillation](training-distillation.md) | 18 | ACT contrastive RL outperforms imitation learning; cross-size transfer 8B→4B works well |
+| [Training & Distillation](training-distillation.md) | 22 | Simula reasoning-driven synthetic data (TMLR 2026): taxonomy coverage 2x, double-critic, complexity-aware generation |
 | [Reinforcement Learning](reinforcement-learning.md) | 14 | AReaL ruled out (6-order compute mismatch); GRPO/DAPO ubiquitous in deep-dive research |
 
 ## Multimodal & Domain

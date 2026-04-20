@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-04-18
-**Sources**: 28 documents
+**Last compiled**: 2026-04-19
+**Sources**: 31 documents
 
 ## Summary
 
@@ -36,6 +36,11 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - Scoring Verifiers 4-metric protocol (Top-1, Bottom-1, Spearman rho, MAE) establishes that accuracy alone is insufficient for verifier evaluation: SWE-RM showed identical-accuracy verifiers producing opposite RL outcomes (AUC 0.805 smooth vs 0.710 collapse). Reasoning models dominate verification by 5-9pp. Self-evaluation bias degrades Top-1 by 10-15pp. [eval-tower-verification.md]
 - Terminal-Bench 2.0 introduces outcome-driven verification (test final container state, not intermediate commands), container-per-test isolation, and three-property test design (specificity, solvability, integrity). The reward file mechanism (`reward.json` with graded metrics) is applicable to T1/T2 eval tiers needing partial credit. [integration-test-coverage.md]
 - Math-Verify symbolic comparison fixes a 66% underestimation in math scoring: accuracy 0.1328 vs lm-eval-harness 0.0802 on MATH dataset. Three-step cascading comparison (string, numeric, symbolic) handles LaTeX, equivalent expressions, set notation, and percentages. Critical caveat: NOT thread-safe (`signal.alarm()`). [math-verify-integration-analysis.md]
+- **DeepPlanning's rule-based deterministic scoring eliminates LLM-as-judge variance for constraint satisfaction tasks.** Every score is computed by programmatic Python rules that check constraints against the agent's output -- no inter-rater disagreement, no stochastic variance, O(1) compute per evaluation. The 8-dimension commonsense taxonomy (route consistency, sandbox compliance, itinerary structure, time feasibility, business hours, duration rationality, cost calculation, activity diversity) with 21 checkpoints provides a concrete template for building rule-based benchmark suites. All-or-nothing dimension scoring is harsh but realistic -- a plan with one temporal overlap is a broken plan. [deepplanning-agent-benchmark.md](../research/deep-dives/deepplanning-agent-benchmark.md)
+- **Case accuracy vs composite reveals a critical evaluation gap.** DeepPlanning's 26-model leaderboard shows models scoring 60-80 composite (average constraint satisfaction) with near-zero case accuracy (all constraints satisfied simultaneously). The pattern holds across model families: Gemini-3-Pro-Preview achieves 41.8 composite but 0.7% travel case accuracy. This directly motivates adding case-level "all-pass" binary metrics alongside averaged quality scores in the eval tower. A growing composite-vs-case gap indicates fragility inappropriate for deployment. [deepplanning-agent-benchmark.md](../research/deep-dives/deepplanning-agent-benchmark.md)
+- **Simula's double-critic rejection sampling addresses sycophancy bias in LLM-as-judge scoring.** Instead of a single "Is this correct?" assessment, two independent queries are made: "Is this CORRECT?" and "Is this INCORRECT?". Accept only when critics agree (Critic 1 YES, Critic 2 NO). A sycophantic model saying "yes" to both triggers rejection. Empirical validation on MATH: positive lift exists whenever `p(accept|correct) > p(accept|incorrect)`. LEXam shows correct failure mode: 61% rejection rate when teacher accuracy is only 57%. Cost is 2x judge inference per scored item. Applicable to Q-Scorer quality verification with prompt-only changes. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
+- **Simula's calibrated Elo complexity scoring enables principled difficulty stratification.** Batch-wise pairwise scoring aggregated into per-sample Elo ratings provides calibrated, cross-dataset complexity comparisons. Validation: model-assigned Elo aligns with human-annotated complexity labels on MATH (5-level) and Global MMLU (education levels). Rejected samples have systematically higher Elo scores than accepted ones. For EPYC: a `complexity_scorer.py` utility could stratify any benchmark suite by difficulty band, enabling adaptive testing that starts at medium difficulty and escalates/de-escalates based on model performance. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
+- **New model quality benchmarks reveal critical serving infrastructure gaps (2026-04-19).** Five models (M2.7, Qwen3.6, SG4-31b, SG4-26b-MM, SG4-26b-Q4KM) required iterative debugging: Gemma4 needed `use_chat_api + repeat_penalty 1.05 + reasoning off + KV q8_0`; Qwen3.6 entered `<think>` loops until `use_chat_api + reasoning off`; M2.7 needed `--jinja` for correct template (37% training data leakage without it). SG4-26b Q4KM proved irrecoverable (16.2%) and was deprecated. The benchmark infrastructure gained `--all-suites`, `--spec-type` passthrough, binary peak search for lookup_ngram sweeps, and per-model `disable_thinking`/`repeat_penalty` support. [progress/2026-04-19](../progress/2026-04/2026-04-19.md)
 
 ## Actionable for EPYC
 
@@ -114,6 +119,9 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - The post-AR-3 analysis index defines 7 phases with 11 go/no-go metrics. Can this checklist-driven analysis pattern be generalized to future multi-day inference campaigns?
 - What is the actual impact of Math-Verify's 66% underestimation correction on routing decisions? Do models currently penalized on math suites recover meaningfully when scored with symbolic comparison?
 - Should Terminal-Bench's container-per-test pattern be adopted for llama-server integration tests, or does the current mock-based approach provide sufficient coverage?
+- Can Simula's double-critic pattern be applied to the Q-Scorer without architectural changes (prompt-only modification)? What is the agreement rate and how does disagreement frequency correlate with model reliability?
+- Should case-level "all-pass" binary metrics be added to the eval tower alongside averaged quality scores? DeepPlanning shows composite-vs-case gap is a fragility indicator.
+- What is the optimal batch size for Elo complexity scoring of benchmark questions? Simula uses K appearances across batches to reduce noise -- what K is practical for our local LLM throughput?
 
 ## Related Categories
 
@@ -138,4 +146,7 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Packages B-E results (RI-9, TrimR, difficulty, Omega, tool A/B, CF 2a-2c, TALE), post-AR-3 analysis framework
 - [Eval Tower Verification](/workspace/handoffs/active/eval-tower-verification.md) -- Scoring Verifiers 4-metric protocol, reasoning model dominance, SWE-RM calibration gap, ThinkPRM process verification, cross-family verification constraint
 - [Math-Verify Integration Analysis](/workspace/research/deep-dives/math-verify-integration-analysis.md) -- intake-377/379, symbolic math comparison, 66% underestimation fix, ANTLR4 parsing, thread safety caveats
+- [DeepPlanning Agent Benchmark deep dive](/workspace/research/deep-dives/deepplanning-agent-benchmark.md) -- intake-412, rule-based deterministic scoring, 26-model leaderboard, multi-granularity scoring (dimension/composite/case), reasoning-mode gap data, error taxonomy, reverse-generation methodology
+- [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, double-critic rejection sampling (sycophancy-resistant verification), calibrated Elo complexity scoring (cross-dataset difficulty stratification), taxonomy-based coverage analysis
+- [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign (M2.7, Qwen3.6, SG4-31b, SG4-26b-MM), serving infrastructure debugging, benchmark tooling upgrades
 - [Intake entries: 15 papers](/workspace/.claude/skills/project-wiki/data/) -- ARC, MMLU, GSM8K, HumanEval, MBPP, IFEval, BFCL, SpecExec, PhysReason, and others (all verdict: already_integrated)
