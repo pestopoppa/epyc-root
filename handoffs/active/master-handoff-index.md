@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-20 (Research intake: Simula + Qwen-Agent + DeepPlanning, 3 deep dives, registry standardization, EA script cleanup)
+**Updated**: 2026-04-20 (Research intake: 7 entries intake-413–419, 4 deep dives incl. AutoPilot iteration strategy synthesis, P14 added to routing index)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -47,6 +47,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 16 | ~~HIGH~~ | ~~Orchestrator refactoring audit~~ ✅ 2026-04-13 All 8 phases complete + InferenceResult success flip + TOON encoder + test suite 4893/0/7. Moved to completed/. | [orchestrator-refactoring-audit](../completed/orchestrator-refactoring-audit.md) |
 | 17 | HIGH | **Decision-aware Q-scorer routing** (P13). Zero predictive spread diagnosed in Package B. 4-phase experiment: regret analysis → contrastive → SPO+ → bilinear. | [routing-and-optimization-index](routing-and-optimization-index.md) P13 |
 | 18 | MED | **Eval tower verification framework** (P8). ECE/AUC calibration + ThinkPRM process verification + Scoring Verifiers benchmarks. Enables AP-27 RLVR. | [research-evaluation-index](research-evaluation-index.md) P8 |
+| 19 | MED | **AutoPilot iteration strategy upgrade** (P14). 4-phase: strategy memory upgrade (RRF+staleness), knowledge distillation pipeline (L1→L2→L3), controller context budget, mutation knowledge graph. AP-28 through AP-31. | [routing-and-optimization-index](routing-and-optimization-index.md) P14 |
 
 ---
 
@@ -54,7 +55,7 @@ Highest-impact work across all domains. Each item points to where the details li
 
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
-| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE** (3-way→per-role, blacklist cleanup, model sigs), P6 RI-10 canary, P7-P9 pending, P10/P11 non-inference DONE. AR-3 needs restart with new seeder. |
+| Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE**, P6 RI-10 canary, P7-P9 pending, P10/P11 DONE, P13 DAR-1/2 done, **P14 NEW: AutoPilot iteration strategy upgrade** (AP-28–31, 4-phase: strategy memory, knowledge distillation, context budget, mutation graph). AR-3 needs restart. |
 | Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), **NEW: Qwen3.6 production upgrade** (GGUF downloaded, benchmark pending) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new + P3b | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring, **P3b Tulving episodic benchmark** (new) |

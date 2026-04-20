@@ -217,6 +217,17 @@ Source: intake-366 deep-dive. Diagnosed pathology: difficulty signal has zero pr
 - [ ] **DAR-4: Model-feature-conditioned Q** — ~200 lines. Bilinear scorer replacing per-action Q-tables. Zero cold-start for new models. New `bilinear_scorer.py` module.
 - **Future routing signal (2026-04-15 deep-dive)**: intake-378 identifies branching density (Propose step ratio) as a runtime quality signal. High branching = unproductive exploration. 21pp generalization gap on Llama3.1-8B from reasoning pattern quality alone. Could feed DAR-4 bilinear scorer as a prompt/output feature: branch-heavy outputs warrant stronger models. Implementation: `quality_detector.py` branching density (see `routing-intelligence.md`). Cross-ref: `research/deep-dives/sft-generalization-reasoning-patterns.md`.
 
+### P14 — AutoPilot Iteration Strategy Upgrade (2026-04-20 deep-dive synthesis)
+
+Source: intake-413 (HCC), intake-414 (Token Savior), intake-415 (Context Mode). Synthesis deep dive: `research/deep-dives/autopilot-iteration-strategy-synthesis.md`. See [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) for full context.
+
+4-phase improvement plan for AutoPilot knowledge accumulation, retrieval quality, and context budget management. Phase 1 is directly implementable from the synthesis document.
+
+- [ ] **AP-28: Strategy Memory Upgrade** — ~200 LoC changes to `strategy_store.py`. Add FTS5 parallel index + RRF fusion, content-hash staleness detection (hash model_registry + prompts), Bayesian validity tracking. Zero-downtime schema migration.
+- [ ] **AP-29: Knowledge Distillation Pipeline** — ~300 LoC new `knowledge_distiller.py`. L1→L2→L3 tier promotion every 25 trials. Embedding-based clustering + MDL consolidation. Convention promotion when 3+ species agree.
+- [ ] **AP-30: Controller Context Budget** — ~150 LoC changes to `autopilot.py` + `eval_tower.py`. Fixed token budgets per controller prompt section. Progressive disclosure for strategy injection. 5KB threshold gating on eval output.
+- [ ] **AP-31: Mutation Knowledge Graph** — ~200 LoC enhancement to `prompt_forge.py`. Track mutation_type × failure_pattern × outcome triples. Enable informed crossover from Pareto-best prompt sections.
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.

@@ -499,3 +499,36 @@ intake-378 (arxiv:2604.01702) identifies Propose step ratio as a quality metric 
   - Relevance: Benchmark for long-horizon agent planning with verifiable constraints. 26 frontier models evaluated across travel planning (minute-level scheduling, 9 APIs) and shopping planning (15 APIs, coupon timing). Even GPT-5.2-high only achieves 44.6% case accuracy. Rule-based automated scoring aligns with our ch07 benchmark construction philosophy.
   - Key insight for autopilot: Reasoning-equipped models consistently outperform non-reasoning variants. Parallel tool use improves effectiveness-efficiency trade-offs. Error analysis of 140 failed trajectories shows global optimization failures are most prevalent — directly relevant to autopilot's multi-step planning quality assessment.
   - Delta from current approach: Potential benchmark addition for evaluating autopilot planning quality. Layered task generation methodology (solution-centric reverse generation) could inform synthetic eval task construction for AR-3 runs.
+
+## Research Intake Update — 2026-04-20
+
+### New Related Research
+
+- **[intake-413] "Toward Ultra-Long-Horizon Agentic Science: Cognitive Accumulation for ML Engineering"** (arxiv:2601.10402)
+  - Relevance: HCC (Hierarchical Cognitive Caching) maps directly to AutoPilot's memory architecture gap — `strategy_store.py` is flat where HCC is L1/L2/L3 tiered. ML-Master 2.0 achieves 56.44% SOTA on MLE-Bench using this approach.
+  - Key technique: L1 (execution traces, volatile) → L2 (phase summaries, semi-stable) → L3 (cross-task wisdom, persistent). Promotion operators P1/P2 trigger at phase/task boundaries.
+  - **Deep dive**: `research/deep-dives/hcc-cognitive-accumulation-autopilot.md` — maps HCC tiers to `short_term_memory.py` (≈L1), missing L2 consolidation, `strategy_store.py` (≈L3 structurally but flat functionally). Proposes concrete `knowledge_distiller.py` (~300 LoC) for L1→L2→L3 promotion.
+  - Delta from current approach: AutoPilot stores individual strategy insights but never distills patterns across trials. HCC provides the missing consolidation/promotion pipeline.
+
+- **[intake-414] "Token Savior Recall — 97% Token Reduction MCP Server"** (repo: mibayy/token-savior)
+  - Relevance: Four extractable patterns for `strategy_store.py`: (1) RRF hybrid retrieval (BM25+FAISS), (2) content-hash staleness detection, (3) MDL convention promotion, (4) progressive disclosure.
+  - **Deep dive**: `research/deep-dives/token-savior-extractable-patterns.md` — concrete schema changes, Python code sketches, priority ordering (staleness > RRF > disclosure > MDL).
+  - Delta from current approach: strategy_store has no staleness detection (stale strategies from changed configs never expire) and pure FAISS retrieval misses exact-term matches.
+
+- **[intake-415] "Context Mode — Context Window Optimization for AI Coding Agents"** (repo: mksglu/context-mode)
+  - Relevance: Subprocess sandbox (99% output reduction) and 5KB threshold gating applicable to eval tower output in controller prompt.
+  - **Deep dive**: `research/deep-dives/context-mode-tool-compression-patterns.md` — estimated 30-50% context reduction in eval-heavy autopilot sessions.
+  - Delta from current approach: eval tower output inflates controller prompt with no budget control; threshold gating + FTS5 indexing would index large outputs and serve relevant excerpts.
+
+### Synthesis Deep Dive
+
+**`research/deep-dives/autopilot-iteration-strategy-synthesis.md`** — 4-phase improvement plan:
+
+| Phase | What | Target | Scope |
+|-------|------|--------|-------|
+| 1 | Strategy Memory Upgrade | `strategy_store.py` | +FTS5/RRF, staleness detection, Bayesian validity (~200 LoC) |
+| 2 | Knowledge Distillation Pipeline | new `knowledge_distiller.py` | L1→L2→L3 tier promotion, MDL consolidation (~300 LoC) |
+| 3 | Controller Context Budget | `autopilot.py`, `eval_tower.py` | Progressive disclosure, 5KB gating, token budgets (~150 LoC) |
+| 4 | Mutation Knowledge Graph | `prompt_forge.py` | mutation×failure×outcome tracking, informed crossover (~200 LoC) |
+
+Phase 1 is directly implementable from the synthesis document. Phases 1+2 parallelize with Phase 3.

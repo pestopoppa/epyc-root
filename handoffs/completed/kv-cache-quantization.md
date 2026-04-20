@@ -1,6 +1,6 @@
 # KV Cache Quantization (TurboQuant / PolarQuant / QJL)
 
-**Status**: ACTIVE — Hadamard Phase 1 cherry-picked to production (`b51c905`, 2026-03-28). TurboQuant/PolarQuant/QJL/hybrid buffer ABANDONED. See "Current Work — Resume Here" section below.
+**Status**: COMPLETED — Hadamard Phase 1 cherry-picked to production (`b51c905`, 2026-03-28). TurboQuant/PolarQuant/QJL/hybrid buffer ABANDONED.
 **Production config**: `--kv-hadamard -ctk q4_0 -ctv f16` (pure-attention models) or `-ctk q4_0 -ctv q4_0` (hybrid SSM). Quality-neutral, zero overhead.
 **v3 upstream note**: `--kv-hadamard` is superseded by upstream PR #21038 (`744c0c731`, 2026-04-01) which auto-enables identical Walsh-Hadamard rotation when KV types are quantized. In `production-consolidated-v3`, remove `--kv-hadamard` from orchestrator config — rotation is automatic. See [`llama-cpp-v3-upstream-rebuild.md`](llama-cpp-v3-upstream-rebuild.md).
 **GPU path note**: If GPU acceleration is pursued (see [`gpu-acceleration-path.md`](gpu-acceleration-path.md)), KV cache strategy may differ: FP8 KV cache on MI300X yields 2.1x throughput boost (intake-311); flash attention via rocWMMA accelerates prefill but not decode (intake-306). Current Hadamard+q4_0 strategy remains optimal for CPU path. GPU path would use `-DGGML_HIP_ROCWMMA_FATTN=ON` for prefill FA acceleration.

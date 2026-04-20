@@ -1,6 +1,6 @@
 # Non-Inference Backlog — Tasks Actionable Without Compute
 
-**Status**: active
+**Status**: completed
 **Created**: 2026-04-11 (consolidated from audit of near-complete and active handoffs)
 **Updated**: 2026-04-12 (tasks 7-18 completed; AP-14/AP-16 confirmed already done per routing index 2026-04-07; tasks 1-2/4-6 completed 2026-04-11)
 **Priority**: MEDIUM

@@ -15575,10 +15575,12 @@
   - 'Sustained coherent behavior over multi-day autonomous ML research sessions'
   referenced_arxiv_ids: []
   novelty: medium
-  relevance: medium
+  relevance: high
   credibility_score: 3
-  verdict: worth_investigating
+  verdict: adopt_patterns
   ingested_date: '2026-04-20'
+  deep_dive: research/deep-dives/hcc-cognitive-accumulation-autopilot.md
+  deep_dive_date: '2026-04-20'
   contradicting_evidence:
   - 'No contradicting evidence found — possible confirmation bias risk'
   cross_references:
@@ -15639,10 +15641,12 @@
   - 'Symbol lookup: -99.9% token reduction (41M to 67 chars)'
   referenced_arxiv_ids: []
   novelty: medium
-  relevance: medium
-  credibility_score: 3
-  verdict: worth_investigating
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
   ingested_date: '2026-04-20'
+  deep_dive: research/deep-dives/token-savior-extractable-patterns.md
+  deep_dive_date: '2026-04-20'
   contradicting_evidence:
   - 'No contradicting evidence found — possible confirmation bias risk'
   - 'Benchmark (tsbench) is self-produced with no independent validation'
@@ -15712,6 +15716,8 @@
   credibility_score: null
   verdict: adopt_patterns
   ingested_date: '2026-04-20'
+  deep_dive: research/deep-dives/context-mode-tool-compression-patterns.md
+  deep_dive_date: '2026-04-20'
   cross_references:
     chapters: []
     handoffs:
@@ -15978,3 +15984,307 @@
     MCP server wrapping unspecified techniques for Claude Code does not plug into EPYC's
     orchestrator REPL pipeline. Fully superseded by existing infrastructure (RTK, native
     compress_tool_output.py, AXI/TOON, SkillReducer).
+
+- id: intake-420
+  url: https://github.com/kyegomez/OpenMythos
+  arxiv_id: null
+  source_type: repo
+  title: 'OpenMythos: A Theoretical Reconstruction of the Claude Mythos Architecture'
+  authors:
+  - Kye Gomez
+  categories:
+  - agent_architecture
+  - moe_optimization
+  - ssm_hybrid
+  key_claims:
+  - 'Claude Mythos is hypothesized to be a Recurrent-Depth Transformer (RDT) that recycles transformer layers L times rather than stacking unique layers, achieving kL-layer quality with k-layer parameters'
+  - 'Reasoning occurs in continuous latent space across loop iterations rather than via discrete chain-of-thought tokens'
+  - 'Looped transformers exhibit phase-transition-like capability emergence on novel compositional tasks'
+  - 'The Parcae stability technique constrains injection parameters so spectral radius remains <1 via discretized LTI systems'
+  - 'Adaptive Computation Time (ACT) enables dynamic halting of loop iterations, allowing variable-depth inference at runtime'
+  techniques:
+  - Recurrent block with learnable A/B injection parameters
+  - LTI-constrained spectral radius control for training stability
+  - Mixture of Experts with routed and shared experts
+  - Adaptive Computation Time (ACT) for dynamic loop halting
+  - Loop-index positional embeddings (RoPE-style)
+  reported_results:
+  - 'No benchmark numbers — theoretical reconstruction only with configurable 1B-1T parameter variants'
+  referenced_arxiv_ids:
+  - '2604.07822'
+  - '2604.12946'
+  - '2502.17416'
+  - '2412.06769'
+  - '2410.20672'
+  - '2603.15619'
+  - '1807.03819'
+  - '2401.06066'
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-20'
+  discovered_via: input
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    - 05-deprecated-approaches.md
+    handoffs:
+    - reasoning-compression.md
+    - log-linear-gated-deltanet-readiness.md
+    - per-request-reasoning-budget.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-332
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Looped/recurrent-depth transformer space already well-covered by intake-332 (Ouro).
+    OpenMythos adds speculative Claude Mythos framing and surfaces newer arxiv IDs (2604.07822,
+    2604.12946) for Parcae stability and Loop-Think-Generalize, but no new empirical claims.
+  relevance_justification: >
+    EPYC production stack is Qwen3.5 hybrid SSM+MoE, not recurrent-depth transformers.
+    Looped architectures require pretraining from scratch. No deployable artifact provided.
+    The Parcae paper (2604.12946) on scaling laws for stable looped LMs is the only
+    actionable pointer worth following up on.
+
+- id: intake-421
+  url: https://github.com/davebcn87/pi-autoresearch
+  arxiv_id: null
+  source_type: repo
+  title: 'pi-autoresearch: Autonomous Experiment Loop Extension for pi AI Agent'
+  authors:
+  - davebcn87
+  categories:
+  - autonomous_research
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - 'Enables fully autonomous optimization loops: try an idea, benchmark it, keep improvements, revert regressions, repeat indefinitely'
+  - 'Sessions survive restarts and context resets via append-only JSONL logs and a persistent markdown strategy file'
+  - 'Confidence scoring using Median Absolute Deviation (MAD) distinguishes real improvements from benchmark noise after 3+ runs'
+  - 'Optional backpressure checks (tests, types, lint) prevent correctness regressions during optimization'
+  - 'Domain-agnostic: works for test speed, bundle size, LLM training, build times, or any scalar metric'
+  techniques:
+  - Median Absolute Deviation (MAD) robust noise estimation for confidence scoring
+  - Append-only JSONL experiment logging for session continuity
+  - Git-based branching with auto-commit for monotonic improvement tracking
+  - Backpressure validation via user-supplied correctness shell scripts
+  - Dashboard TUI with keyboard navigation for experiment monitoring
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: adopt_component
+  ingested_date: '2026-04-20'
+  discovered_via: input
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-148
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Thin extension of karpathy/autoresearch (intake-148) adding git branching, MAD confidence
+    scoring, and JSONL persistence. All three core patterns already implemented in EPYC AutoPilot:
+    worktree_manager.py (git isolation), experiment_journal.py (append-only JSONL), safety_gate.py
+    (regression guards). 5.9k GitHub stars indicate adoption but not novel contribution.
+  relevance_justification: >
+    EPYC AutoPilot already implements a superset with 4D Pareto archive, 4 optimizer species,
+    tiered evaluation tower, and strategy memory store. The MAD confidence scoring pattern is
+    the only element not explicitly present, but safety gate per-suite regression guards serve
+    the same purpose with more sophistication.
+
+- id: intake-422
+  url: https://github.com/RightNow-AI/TIDE
+  arxiv_id: null
+  source_type: repo
+  title: 'TIDE: Token-Informed Depth Execution'
+  authors:
+  - RightNow AI
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - 'Tokens can exit transformer layers early without model retraining — calibration trains tiny MLP routers (~0.5M params) at checkpoint layers by measuring cosine similarity (threshold 0.98 = converged)'
+  - '99% of decode tokens and 100% of prefill tokens exit early at router confidence 0.70-0.85 while maintaining correctness'
+  - 'Achieves up to 7.2% prefill latency reduction and 8.1% throughput gain on A100 GPU (DeepSeek R1 8B / Qwen3 8B)'
+  - 'Plug-and-play via HuggingFace AutoModelForCausalLM with UniversalAdapter; built-in adapters for LLaMA, Mistral, Qwen'
+  - 'CUDA kernel optimization handles asymmetric token routing via fused LayerNorm, router scoring, batch compaction'
+  techniques:
+  - Calibration-based MLP router training on ~2000 text samples per model
+  - Cosine similarity between hidden states across layers as convergence signal
+  - Per-token dynamic early exit at checkpoint intervals
+  - Batch compaction for separating continuing vs exiting tokens
+  - Fused CUDA kernels for LayerNorm + routing + batch management
+  - UniversalAdapter architecture probing for plug-and-play compatibility
+  reported_results:
+  - 'DeepSeek R1 Distill 8B (A100-SXM4-40GB, bf16): 39.08ms to 36.26ms prefill (-7.2%); 973 to 1037 tok/s (+6.5%)'
+  - 'Qwen3 8B (batch-8): 46.82ms to 44.14ms prefill (-5.7%); throughput +8.1%'
+  - '100% exit rate on prefill; 98-99% exit rate on decode at threshold 0.85-0.70'
+  referenced_arxiv_ids:
+  - '2603.21365'
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: adopt_patterns
+  ingested_date: '2026-04-20'
+  discovered_via: input
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 05-deprecated-approaches.md
+    handoffs:
+    - hsd-hierarchical-self-speculation.md
+    experiments:
+    - self-speculation-benchmark.md
+    - hispec-external-draft-benchmark.md
+    intake_entries:
+    - intake-422
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Calibration-router approach (train tiny MLPs on cosine similarity, no base model fine-tuning)
+    is a meaningful variant not directly covered in chapters. Chapter 10 covers HiSpec/SWIFT/LayerSkip
+    but all require EE-head training or model fine-tuning. TIDE plug-and-play calibration is the
+    missing variant documented as needed. However, early-exit concept is well-covered overall.
+  relevance_justification: >
+    EPYC runs CPU-only inference via llama.cpp. TIDE benchmarks are GPU-only (A100, CUDA kernels,
+    HuggingFace transformers). The fork layer-skip patch (hsd-hierarchical-self-speculation) found
+    near-zero acceptance without EE fine-tuning. TIDE addresses the fine-tuning barrier but
+    implementation is entirely HuggingFace/CUDA. Low relevance for immediate deployment;
+    worth tracking for calibration-router concept if CPU early-exit support added.
+
+- id: intake-423
+  url: https://arxiv.org/abs/2603.21365
+  arxiv_id: '2603.21365'
+  source_type: paper
+  title: 'TIDE: Token-Informed Depth Execution for Per-Token Early Exit in LLM Inference'
+  authors:
+  - Jaber Jaber
+  - Osama Jaber
+  categories:
+  - inference_serving
+  - hardware_optimization
+  key_claims:
+  - 'Post-training system requiring no model retraining — tiny learned routers calibrated in under 3 minutes using 2000 WikiText samples'
+  - '98-99% of tokens exit early during autoregressive decoding with 100% early exit during prefill'
+  - '6.6-8.1% single-batch throughput improvement and 7.2% prefill latency reduction on A100 with DeepSeek R1 8B and Qwen3 8B'
+  - 'Router checkpoint is only ~4 MB and works with any HuggingFace causal LM without modifying model weights'
+  - 'Fused CUDA kernels with GPU architecture auto-detection underpin runtime efficiency'
+  techniques:
+  - Per-token early exit via learned routers at periodic checkpoint layers
+  - Hidden state convergence detection as exit criterion
+  - Post-training calibration on WikiText-2 (2000 samples)
+  - Fused CUDA kernels (float32/float16/bfloat16)
+  - GPU architecture auto-detection for kernel dispatch
+  reported_results:
+  - 'DeepSeek R1 Distill 8B on A100: 7.2% prefill latency reduction, 6.6% throughput improvement'
+  - 'Qwen3 8B on A100 batch-8: 8.1% throughput improvement'
+  - 'Router checkpoint size: ~4 MB'
+  - 'Calibration time: under 3 minutes'
+  - '1308 lines Python + 1081 lines CUDA/C++ with 74 passing tests'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  ingested_date: '2026-04-20'
+  discovered_via: input
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 05-deprecated-approaches.md
+    handoffs:
+    - llama-cpp-fork-rebase.md
+    - hsd-hierarchical-self-speculation.md
+    experiments: []
+    intake_entries:
+    - intake-422
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Core idea (post-training routers for per-token early exit) directly covered by LayerSkip
+    (2404.16710) and SWIFT (2410.06916) in chapter 10. TIDE adds GPU-CUDA implementation and
+    hidden-state convergence criterion but does not advance conceptual novelty beyond existing
+    knowledge base coverage.
+  relevance_justification: >
+    EPYC runs CPU inference via llama.cpp with GGUF quantized models. TIDE requires HuggingFace
+    PyTorch models and fused CUDA kernels — structurally incompatible. The fork already has
+    experimental layer-skip patch, and HSD handoff shows early exit without EE-trained models
+    yields near-zero benefit. Reported throughput gains (6.6-8.1%) are GPU-only and modest.
+    No path to CPU/GGUF deployment.
+
+- id: intake-424
+  url: https://github.com/m0at/rvllm
+  arxiv_id: null
+  source_type: repo
+  title: 'rvllm — High-Performance LLM Inference Engine (Rust/CUDA + JAX/XLA)'
+  authors:
+  - m0at
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - quantization
+  key_claims:
+  - 'Gemma 4 E4B achieves 78.3 tok/s at B=1 on TPU v6e-4, with peak 16,794 tok/s throughput and 3,230 tok/s/$ cost efficiency'
+  - 'GPU (H100) path surpasses vLLM by ~24% at B=128 using FP8 quantization + CUDA graph capture across all 60 layers in single graph (~935 nodes)'
+  - 'EAGLE-3 speculative decoding (experimental) with 450M draft head proposing K=5 tokens projects 1.8x speedup'
+  - 'Dual-path TPU architecture: single-scan up to 32K, split-cache with blockwise global attention beyond, enabling 128K-token inference at 40.56 ms/step'
+  - 'Zero Python in GPU serving path; pure Rust binary with structured error handling'
+  techniques:
+  - FP8 weight quantization with per-channel scales via custom CUTLASS channelscale epilogue
+  - CUDA graph capture (single unified graph, ~935 nodes, 60 layers)
+  - Flash Attention 3 (SM90) for paged decoding
+  - Pure JAX + XLA compilation for TPU path
+  - EAGLE-3 speculative decoding with 450M draft head (K=5 token proposals)
+  - Dual-path attention with automatic 32K context boundary switching
+  - Paged attention for KV cache management
+  reported_results:
+  - 'Gemma 4 E4B (TPU v6e-4): 78.3 tok/s at B=1, 16794 tok/s peak, PPL 5.87'
+  - 'Gemma 4 31B (TPU v6e-4): 9600 tok/s peak at B=768, 40.56 ms/step at 128K context'
+  - 'Gemma 4 31B (H100 FP8): 8786 tok/s peak at B=512, PPL 14.75'
+  - 'H100 outperforms vLLM by +24% at B=128'
+  - 'EAGLE-3: 1.8x projected speedup (experimental)'
+  - 'Cost efficiency: 3230 tok/s/$ for E4B on TPU v6e-4'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  ingested_date: '2026-04-20'
+  discovered_via: input
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 01-speculative-decoding.md
+    - 02-moe-optimization.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    EAGLE-3 well-documented in chapter 10. FP8+CUDA-graph+FA3 GPU stack mirrors gpu-acceleration-path.md.
+    Novel angle is Rust-native zero-Python serving and concrete H100 benchmark data outperforming
+    vLLM at B=128+, adding reference data not yet in knowledge base.
+  relevance_justification: >
+    GPU/TPU-only (H100, TPU v6e), EPYC stack is CPU-first. No H100 hardware currently.
+    Gemma 4 models dropped from stack. EAGLE-3 implementation requires GPU-native serving.
+    gpu-acceleration-path.md is LOW priority contingent on hardware acquisition.
+  verdict_justification: >
+    Reference implementation for GPU acquisition roadmap. CUDA graph capture strategy
+    (single 935-node graph for 60 layers) and H100 vs vLLM benchmarks provide concrete
+    performance targets. EAGLE-3 draft head approach (450M params, K=5) relevant to
+    planned GPU speculation experiments.

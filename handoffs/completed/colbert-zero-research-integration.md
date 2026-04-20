@@ -1,6 +1,6 @@
 # ColBERT-Zero Research Integration
 
-**Status**: ACTIVE
+**Status**: COMPLETED
 **Created**: 2026-02-20
 **Priority**: MEDIUM
 **Paper**: [ColBERT-Zero (arXiv:2602.16609)](https://arxiv.org/abs/2602.16609) — Chaffin et al., LightOn AI, Feb 2026
