@@ -69,3 +69,5 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
 - [Qwen3.6 Production Upgrade](/workspace/handoffs/active/qwen36-production-upgrade.md) -- intake-387/391, drop-in architecture, throughput benchmarks (25.6-76.8 tps), preserve_thinking feature, quality benchmark in progress
 - [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign, per-model serving config discovery (Gemma4/Qwen3.6/M2.7/SG4), SG4-26b Q4KM deprecation, benchmark infrastructure upgrades
 - Intake entries: 22 results across intake index and handoffs including Qwen3.5 serving recipe (intake-152), DFlash speculation (intake-158), REAP models (intake-181/184/186), and 7 active/completed handoffs
+- [intake-424](https://github.com/m0at/rvllm) rvllm -- Rust/CUDA+JAX/XLA engine, H100 +24% over vLLM at B=128, EAGLE-3 (450M draft K=5), validates no-framework philosophy. GPU-only, reference bookmark for hardware acquisition.
+- [rvllm deep-dive](../research/deep-dives/rvllm-gpu-inference-reference.md) -- Benchmark reference data (Gemma 4 31B: 8786 tok/s H100 FP8), CUDA graph capture strategy, draft/target ratio 1.5%

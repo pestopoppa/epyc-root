@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 26 documents (2 deep-dives, 4 completed handoffs, 2 active handoffs, 18 intake entries)
+**Last compiled**: 2026-04-20
+**Sources**: 29 documents (3 deep-dives, 4 completed handoffs, 2 active handoffs, 20 intake entries)
 
 ## Summary
 
@@ -14,6 +14,8 @@ Our production experience spans the full spectrum. Tree speculation on Qwen2.5-C
 The frontier technique is DFlash (block diffusion speculation), which drafts 16 tokens in a single O(1) forward pass through a 0.5B drafter -- a genuine architectural advance over the linear O(N) cost of EAGLE-style autoregressive drafting. On GPU, DFlash achieves 6.49 accepted tokens per round on Qwen3-8B (greedy). However, our 21-commit llama.cpp C++ port (forward pass verified bit-exact against HuggingFace) demonstrated that DFlash is not viable on Q4_K_M quantized models: per-token acceptance drops to 27%, yielding only 1.4% block acceptance. The quantization noise in hidden state extraction degrades the conditioning signal beyond recovery. The autoregressive drafter wins decisively (36.5 vs 13.0 t/s). A complementary technique, DART, uses a single-layer drafter with a 100GB n-gram trie from the Dolma corpus to prune draft trees, boosting acceptance by +0.5-0.7 tokens -- feasible on our 768GB+ RAM but with lower base acceptance (3.67-3.76 vs DFlash's 6.49).
 
 A separate line of research addresses reasoning efficiency without touching the draft-verify loop. The short-m@k paper demonstrates that shorter reasoning chains are up to 34.5% more accurate than longer ones within the same question, because correct reasoning proceeds efficiently while incorrect reasoning wanders (95-188 backtracks for correct vs 269-352 for incorrect). This yields a zero-cost "length alarm" heuristic: when a `<think>` block exceeds 1.5x the difficulty band budget, cancel and re-generate with a fresh seed. The full parallel approach (k concurrent streams, take the first m to finish) requires multi-slot infrastructure we currently lack, but the heuristic alone integrates cleanly with our existing difficulty-band system at near-zero implementation cost.
+
+A promising new direction is calibration-based early exit (TIDE, intake-422/423). Unlike LayerSkip/SWIFT which require fine-tuning, TIDE trains tiny MLP routers (~0.5M params) on cosine similarity between hidden states at checkpoint layers -- calibration takes <3 minutes on 2000 samples. On GPU, this yields 6.6-8.1% throughput gains. On CPU at batch_size=1, the gain is projected at 15-25% because (a) there is no batch compaction overhead, (b) layer compute is the dominant cost, and (c) the router check is a trivial matmul. Our fork already has `n_layer_exit` support across 7 model architectures including qwen3moe (production); the deep dive maps a 3-phase implementation path from external router → per-token exit → GGUF-embedded routers. This directly addresses the HSD finding that static layer-skip yields near-zero acceptance -- the learned router prevents quality degradation by only exiting tokens that have genuinely converged.
 
 The current state of the art for our stack is not speculative decoding at all -- it is NUMA 4-way parallel serving (4 independent model instances on 48 threads each), which delivers 6.7x aggregate throughput on the frontdoor role. Speculative decoding provides incremental gains on top (+17-21% from draft_max tuning, +2-5% from tree branching on large dense targets) but is no longer the primary acceleration lever. The opening provided by REAP expert pruning is significant, however: REAP-25B is pure MoE (`qwen3moe` arch), meaning speculative decoding works where the hybrid frontdoor previously made it impossible.
 
@@ -84,3 +86,6 @@ The current state of the art for our stack is not speculative decoding at all --
 - [intake-152](https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html) Qwen3.5 serving recipe -- Hybrid MoE+Delta Net configuration tips for non-speculation optimization
 - [intake-158](https://arxiv.org/abs/2602.06036) DFlash paper (arxiv:2602.06036) -- Block diffusion speculation, O(1) draft cost, tau=6.49
 - [intake-159](https://arxiv.org/abs/2601.19278) DART paper (arxiv:2601.19278) -- N-gram-pruned parallel drafting, single-layer drafter, Dolma trie
+- [intake-422](https://github.com/RightNow-AI/TIDE) TIDE: Token-Informed Depth Execution -- Calibration-trained MLP routers for per-token early exit without model fine-tuning; deep dive upgraded to adopt_patterns
+- [intake-423](https://arxiv.org/abs/2603.21365) TIDE paper (arxiv:2603.21365) -- Post-training early exit, 6.6-8.1% GPU throughput gain, projected 15-25% CPU gain
+- [TIDE deep-dive](../research/deep-dives/tide-calibration-router-early-exit.md) -- Implementation roadmap for calibration-router on fork's n_layer_exit infrastructure

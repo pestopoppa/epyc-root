@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-04-20 (EA eval script cleaned, registry scoring fields standardized to {pct, raw})
+**Updated**: 2026-04-20 (TIDE calibration-router early exit added; EA eval script cleaned, registry scoring fields standardized to {pct, raw})
 
 ## Agent Operating Instructions
 
@@ -29,6 +29,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md) | **IN-PROGRESS** — Q4_K_M+Q8_0 downloaded | Qwen3.6-35B-A3B drop-in architect upgrade | Architect quarter | Terminal-Bench claims pending local validation | Benchmark (AA-Omniscience + coding) then swap in model_registry.yaml |
 | [`llama-cpp-fork-rebase.md`](llama-cpp-fork-rebase.md) | **IN-PROGRESS** — cherry-picks applied, full rebase deferred | Rebase production-consolidated-v3 onto upstream for chat template fixes | Qwen3.6, M2.7, Gemma4 | Upstream 73.8% vs fork 0% on Qwen3.6 | Full rebase with patch verification; blocking quality benchmarks |
 | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (Phase F KVCOMM only — primary ownership: routing-and-optimization) | **QUEUED** — F1 blocks on AM compaction P2; F2-F4 designed | q4_0 offset estimation, cross-NUMA anchor pool, ConcurrencyAwareBackend, `prefill_speedup_coder_pool` metric | All production (cross-NUMA cache sharing) | Compounds with L4b AM compaction ratio | See primary handoff for Phases B-E status; only Phase F is inference-acceleration-relevant |
+| TIDE Calibration-Router Early Exit (intake-422/423) | **NEW** — deep dive complete, adopt_patterns | Post-training MLP routers on hidden state cosine similarity; per-token dynamic early exit | All production (qwen3moe, qwen3, qwen2) | **15-25% decode speedup** (projected CPU, no batch compaction overhead) | Phase 1: calibration script + external router on existing `n_layer_exit`. [Deep dive](../../research/deep-dives/tide-calibration-router-early-exit.md) |
 
 ### Archived (completed/)
 

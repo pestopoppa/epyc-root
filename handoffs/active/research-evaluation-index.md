@@ -34,6 +34,8 @@
 | Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + process verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification, Scoring Verifiers benchmarks | MEDIUM | 2026-04-14 |
 | (intake-412) DeepPlanning benchmark | Agent planning eval methodology | Reference — rule-based automated scoring, 26-model leaderboard, reasoning gap 7-16pp | LOW | 2026-04-20 |
+| (intake-421) MAD confidence scoring | AutoPilot safety gate noise filter | **adopt_component** — ~20 LoC addition to safety_gate.py. Deep dive: [pi-autoresearch-mad-scoring.md](../../research/deep-dives/pi-autoresearch-mad-scoring.md) | MEDIUM | 2026-04-20 |
+| (intake-422) TIDE early exit | Calibration-router for per-token layer skip | **adopt_patterns** — implement on fork n_layer_exit. Deep dive: [tide-calibration-router-early-exit.md](../../research/deep-dives/tide-calibration-router-early-exit.md) | MEDIUM | 2026-04-20 |
 
 ---
 

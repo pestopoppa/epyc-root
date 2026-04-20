@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-20 (Research intake: 7 entries intake-413–419, 4 deep dives incl. AutoPilot iteration strategy synthesis, P14 added to routing index)
+**Updated**: 2026-04-20 (Session 3: Research intake 5 entries intake-420–424, 4 deep dives, TIDE adopt_patterns + MAD adopt_component verdicts, wiki compiled)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -48,6 +48,8 @@ Highest-impact work across all domains. Each item points to where the details li
 | 17 | HIGH | **Decision-aware Q-scorer routing** (P13). Zero predictive spread diagnosed in Package B. 4-phase experiment: regret analysis → contrastive → SPO+ → bilinear. | [routing-and-optimization-index](routing-and-optimization-index.md) P13 |
 | 18 | MED | **Eval tower verification framework** (P8). ECE/AUC calibration + ThinkPRM process verification + Scoring Verifiers benchmarks. Enables AP-27 RLVR. | [research-evaluation-index](research-evaluation-index.md) P8 |
 | 19 | MED | **AutoPilot iteration strategy upgrade** (P14). 4-phase: strategy memory upgrade (RRF+staleness), knowledge distillation pipeline (L1→L2→L3), controller context budget, mutation knowledge graph. AP-28 through AP-31. | [routing-and-optimization-index](routing-and-optimization-index.md) P14 |
+| 20 | MED | **TIDE calibration-router early exit** (intake-422). Implement post-training MLP routers on fork's n_layer_exit. 15-25% CPU decode speedup projected. 3-phase: external router → per-token exit → GGUF-embedded. | [inference-acceleration-index](inference-acceleration-index.md) |
+| 21 | LOW | **MAD confidence scoring** (intake-421). Add Median Absolute Deviation noise filter to safety_gate.py (~20 LoC). Prevents false-positive eval waste. | [routing-and-optimization-index](routing-and-optimization-index.md) |
 
 ---
 
@@ -56,9 +58,9 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE**, P6 RI-10 canary, P7-P9 pending, P10/P11 DONE, P13 DAR-1/2 done, **P14 NEW: AutoPilot iteration strategy upgrade** (AP-28–31, 4-phase: strategy memory, knowledge distillation, context budget, mutation graph). AR-3 needs restart. |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 4 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), **NEW: Qwen3.6 production upgrade** (GGUF downloaded, benchmark pending) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 5 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), Qwen3.6 production upgrade (GGUF downloaded, benchmark pending), **NEW: TIDE calibration-router early exit** (adopt_patterns, 15-25% CPU gain projected) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
-| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 new + P3b | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring, **P3b Tulving episodic benchmark** (new) |
+| Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 + P3b + 2 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring, P3b Tulving episodic benchmark, **NEW: MAD confidence scoring** (adopt_component), **TIDE early exit** (adopt_patterns) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
 
 ---
