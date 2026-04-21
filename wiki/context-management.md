@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 21 documents (6 deep-dives, 3 active handoffs, 12 intake entries)
+**Last compiled**: 2026-04-21
+**Sources**: 22 documents (6 deep-dives, 3 active handoffs, 13 intake entries)
 
 ## Summary
 
@@ -16,6 +16,10 @@ The research landscape is converging on a spectrum from text-level to KV-level c
 The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
 
 ## Key Findings
+
+### New Finding (2026-04-21)
+
+- **Claude Code's five-layer compaction pipeline provides an external taxonomy for EPYC's L1-L5 tiers.** "Dive into Claude Code" (arxiv:2604.14228, intake-426) documents Anthropic's own production compaction pipeline: **budget reduction → snip → microcompact → context collapse → auto-compact**. Each layer operates at a different timescale and granularity. This is directly comparable to our 5-layer stack and worth mapping one-to-one to identify coverage gaps. The paper's caveat matters more than the taxonomy: Anthropic's own harness-design blog observes "context anxiety" in Sonnet 4.5 where compaction alone became insufficient — compaction silently discards provenance and load-bearing intermediate conclusions. Context resets (hard clears) are sometimes the right tool. This is a data point for EPYC's Phase 3 quality-monitoring work: detect and log the kind of provenance loss that triggered Anthropic's context-reset fallback. [context-folding-progressive.md 2026-04-21 update] `external`
 
 ### Compression Architecture
 

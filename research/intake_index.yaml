@@ -16288,3 +16288,268 @@
     (single 935-node graph for 60 layers) and H100 vs vLLM benchmarks provide concrete
     performance targets. EAGLE-3 draft head approach (450M params, K=5) relevant to
     planned GPU speculation experiments.
+
+- id: intake-425
+  url: https://arxiv.org/abs/2604.14004
+  arxiv_id: '2604.14004'
+  source_type: paper
+  title: 'Memory Transfer Learning: How Memories are Transferred Across Domains in Coding Agents'
+  authors:
+  - Kangsan Kim
+  - Minki Kang
+  - Taeil Kim
+  - Yanlai Yang
+  - Mengye Ren
+  - Sung Ju Hwang
+  categories:
+  - agent_architecture
+  - knowledge_management
+  - context_management
+  key_claims:
+  - 'Cross-domain memory transfer from a unified heterogeneous memory pool improves coding agent performance by 3.7% on average across 6 benchmarks'
+  - 'Abstraction level dictates transferability: high-level insights generalize well, low-level traces induce negative transfer due to excessive specificity'
+  - 'Meta-knowledge (validation routines, debugging strategies) transfers better than task-specific code implementations'
+  - 'Transfer effectiveness scales with memory pool size; memory transfers across models (GPT-5-mini, DeepSeek V3.2, Qwen3-Coder-480B)'
+  - 'Simple embedding similarity retrieval (cosine on text-embedding-3-small) outperforms LLM reranking and adaptive rewriting for memory selection'
+  techniques:
+  - 'Memory Transfer Learning (MTL) framework'
+  - 'Four memory representations: Trajectory (raw actions), Workflow (extracted code), Summary (synthesized descriptions), Insight (abstract generalizable knowledge)'
+  - 'Cross-domain memory pooling from heterogeneous benchmarks'
+  - 'Embedding-based memory retrieval (top-3 cosine similarity)'
+  reported_results:
+  - 'Average +3.7% improvement across 6 benchmarks with Insight representation (GPT-5-mini)'
+  - 'SWEBench-Verified: 0.770 vs 0.730 zero-shot (+4.0%)'
+  - 'ReplicationBench: 0.189 vs 0.111 zero-shot (+7.8%)'
+  - 'MLGym-Bench: 0.750 vs 0.667 zero-shot (+8.3%)'
+  - 'Cross-model transfer: DeepSeek V3.2 +2.6%, Qwen3-Coder +1.8%'
+  - 'MTL (431 memories) outperforms AgentKB (5,899 memories) by +1.7%'
+  - 'Task-agnostic insights +1.1% over task-specific insights'
+  referenced_arxiv_ids:
+  - '2511.06449'
+  - '2603.00729'
+  - '2512.10696'
+  - '2507.23361'
+  - '2508.09101'
+  - '2505.09388'
+  - '2601.11868'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: adopt_patterns
+  ingested_date: '2026-04-21'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence:
+  - '"Memory Transplants" (ICLR 2026 Workshop, OpenReview AIJsjIqfsp) finds architecture transfer is system-dependent with no universal direction, static content transfer provides limited benefit beyond no-memory baseline, and weaker solvers benefit most (+15pp vs +7pp) — suggesting the 3.7% gain may be model-capability-dependent'
+  - '"Memory Control Flow Attacks on LLM Agents" (arxiv:2603.15125) shows persistent memory in agentic systems can be exploited — stored user profiles and interaction context that shapes tool-use decisions introduces security attack surface'
+  - 'Multi-agent memory literature identifies retrieval noise, latency/storage costs, perspective inconsistency, and procedural drift as persistent limitations of long-term memory systems'
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    - orchestrator-conversation-management.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-413
+    - intake-156
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: >
+    Core finding (abstract insights transfer better than concrete traces) is established
+    in transfer learning. However, systematic empirical framework comparing four abstraction
+    levels across six coding benchmarks with three models is new. Negative transfer taxonomy
+    (domain-mismatched anchoring, false validation confidence, misapplied best-practice
+    transfer) provides useful diagnostic categories. Adjacent territory covered by HCC
+    (intake-413, hierarchical memory distillation) and MemAgent (intake-156, RL-trained
+    memory). This paper adds the cross-domain transfer dimension not in those entries.
+  relevance_justification: >
+    Moderate relevance to AutoPilot's strategy_store (FAISS+SQLite retrieval) and HCC
+    upgrade path in autopilot-continuous-optimization handoff. Insight representation maps
+    to HCC's L3 (Prior Wisdom) tier. Finding that embedding retrieval outperforms LLM
+    reranking validates current FAISS-based approach. Negative transfer taxonomy actionable
+    for PromptForge mutation safety. However, paper uses cloud API models (GPT-5-mini),
+    not local inference — no bearing on core inference optimization stack.
+  verdict_justification: >
+    Design principles directly adoptable: (1) Insight abstraction format for strategy_store
+    entries — title + description + generalizable content with no task-specific details;
+    (2) embedding retrieval beating LLM reranking saves over-engineering retrieval layer;
+    (3) negative transfer taxonomy informs PromptForge safety gates. Not new_opportunity
+    because no new infrastructure needed — pattern-level improvements to existing components.
+
+- id: intake-426
+  url: https://arxiv.org/abs/2604.14228
+  arxiv_id: '2604.14228'
+  source_type: paper
+  title: 'Dive into Claude Code: The Design Space of Today''s and Future AI Agent Systems'
+  authors:
+  - Jiacheng Liu
+  - Xiaohan Zhao
+  - Xinyi Shang
+  - Zhiqiang Shen
+  categories:
+  - agent_architecture
+  - context_management
+  - routing_intelligence
+  key_claims:
+  - 'Claude Code architecture is 98.4% operational infrastructure and only 1.6% AI decision logic — complexity lives in permissions, context compaction, extensibility, and persistence'
+  - 'Five human values (human decision authority, safety/security, reliable execution, capability amplification, contextual adaptability) traced through 13 design principles to implementation choices'
+  - 'Five-layer compaction pipeline for context management: budget reduction, snip, microcompact, context collapse, auto-compact'
+  - 'Comparison with OpenClaw shows identical design questions produce different architectural answers depending on deployment context (CLI agent vs gateway control plane)'
+  - 'Six open design directions: observability-evaluation gap, persistence/memory, harness boundary evolution, horizon scaling, governance at scale, long-term human capability preservation'
+  techniques:
+  - 'Five-layer context compaction pipeline (budget reduction, snip, microcompact, context collapse, auto-compact)'
+  - 'Seven-mode permission system with ML-based safety classifier (Sonnet 4.6 background)'
+  - 'Subagent delegation with worktree isolation'
+  - 'Append-only JSONL session storage with sidechain files'
+  - 'Four-mechanism extensibility (MCP, plugins, skills, hooks)'
+  reported_results:
+  - '27% of Claude Code tasks represent novel work not otherwise attempted'
+  - '93% of permission prompts receive user approval'
+  - '40% auto-approve rate by 750 sessions (vs ~20% at <50 sessions) — graduated trust'
+  - '1.6% AI decision logic vs 98.4% operational infrastructure'
+  - '54 built-in tools (19 unconditional, 35 conditional)'
+  - '200K-1M token context window (model-dependent)'
+  referenced_arxiv_ids:
+  - '2511.09268'
+  - '2509.14744'
+  - '2508.08322'
+  - '2407.16741'
+  - '2405.15793'
+  - '2511.03690'
+  - '2508.00083'
+  - '2601.01743'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: adopt_patterns
+  ingested_date: '2026-04-21'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence:
+  - 'Anthropic''s own harness design blog acknowledges "context anxiety" in Sonnet 4.5 made compaction alone insufficient — context resets sometimes needed as alternative'
+  - 'Compaction can silently discard provenance and load-bearing information — "90% of agent production failures come from outside the system prompt" including compaction data loss'
+  - 'External study cited within the paper itself: 17% lower comprehension scores for developers in AI-assisted conditions — raises question about long-term human capability preservation'
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - context-folding-progressive.md
+    - hermes-outer-shell.md
+    - hermes-agent-index.md
+    - routing-intelligence.md
+    - meta-harness-optimization.md
+    - reasoning-compression.md
+    - memento-block-reasoning-compression.md
+    - decision-aware-routing.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - context-folding-progressive.md
+  - meta-harness-optimization.md
+  - routing-intelligence.md
+  handoffs_created: []
+  novelty_justification: >
+    Architectural analysis/reverse-engineering paper, not a novel technique. Five-layer
+    compaction taxonomy and 13-design-principles framework provide useful vocabulary.
+    Underlying techniques (context compaction, permission systems, extensibility) are
+    individually well-known. Comparative analysis with OpenClaw adds new perspective on
+    how deployment context shapes architectural choices. Medium — new systematization of
+    existing concepts, not new concepts.
+  relevance_justification: >
+    Touches several active workstreams: five-layer compaction pipeline maps onto
+    context-folding-progressive.md tiers; gateway-vs-CLI comparison mirrors
+    hermes-outer-shell.md evaluation; ML-based classifier parallels
+    learned-routing-controller.md; 98.4% infrastructure finding validates
+    meta-harness-optimization.md direction. However, descriptive analysis paper —
+    offers design vocabulary and architectural validation, not implementable algorithms
+    or measured optimizations for CPU inference stack.
+  verdict_justification: >
+    Adopt-patterns: well-organized design space taxonomy (13 principles, 5 values, 6 open
+    directions) informs hermes-outer-shell integration and context-folding pipeline.
+    Five-layer compaction taxonomy worth mapping against our L1-L5 tiers to identify gaps.
+    Graduated trust model (seven permission modes) and observability-evaluation gap relevant
+    to routing intelligence and eval tower. No direct code/algorithm to adopt — design
+    patterns and comparative framework are the value.
+
+- id: intake-427
+  url: https://huggingface.co/0xSero/GLM-5.1-555B-A14B-REAP-NVFP4
+  arxiv_id: null
+  source_type: repo
+  title: '0xSero/GLM-5.1-555B-A14B-REAP-NVFP4 — NVFP4 Quantization of REAP-Pruned GLM-5.1 (192 experts, 14B active)'
+  authors:
+  - 0xSero
+  categories:
+  - moe_optimization
+  - quantization
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - 'NVFP4 (4-bit weights + FP8 per-group scales, group=16) quantization of GLM-5.1-555B-A14B-REAP, compressing 1.1TB BF16 to 320GB (~3.4x)'
+  - 'REAP prunes GLM-5.1 from 256 to 192 experts per MoE layer (~25% pruning), keeping 14B active params/token'
+  - 'Blackwell-native FP4 format — requires sm_100+ (B200) or sm_120 (RTX PRO 6000); will NOT run on H100 natively'
+  - 'Detailed deployment guide for sglang on 8x RTX PRO 6000 Blackwell 96GB with specific backend flags'
+  - 'Sensitive layers kept in BF16: first 3 MLP layers + DSA indexer weights across all 78 layers'
+  techniques:
+  - 'REAP expert pruning (256 -> 192 experts, ~25%)'
+  - 'NVFP4 quantization (4-bit weights + FP8 per-group scales, group=16)'
+  - 'Intel AutoRound 0.12.2 layerwise calibration (50 iters, 512 nsamples)'
+  - 'Selective BF16 retention for quant-sensitive layers (lm_head, early MLP, DSA indexer)'
+  - 'Custom calibration dataset mix (structured outputs, function calling, agentic, coding, reasoning)'
+  - 'compressed-tensors format for sglang/vLLM compatibility'
+  reported_results:
+  - '3.4x compression: 1.1TB BF16 -> 320GB NVFP4'
+  - 'Layer loss trajectory: early layers (0-9) near-zero loss; deep layers (56-77) 1e-1 to 8e-1 with 10-20% reduction after 50 iters'
+  - 'No MMLU/GSM8K/IFEval benchmarks published — author recommends measuring on sm120'
+  - 'Quantization wall time: ~7.5 hours on 8x H100 80GB'
+  - '7 REAP variant family table spanning BF16, NVFP4, GPTQ-W4A16, GGUF across 192 and 154 expert counts'
+  referenced_arxiv_ids:
+  - '2510.13999'
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-21'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-181
+    - intake-183
+    - intake-184
+    - intake-279
+    - intake-236
+    - intake-281
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    REAP on GLM-5.1 is incremental — 0xSero's REAP work extensively documented in
+    intake-183/184 and completed reap-moe-expert-pruning handoff. NVFP4 format noted in
+    intake-279 (GLM-5.1 model card) and llama-cpp-v3-upstream-rebuild handoff. Specific
+    combination (REAP + NVFP4 on GLM-5.1) is new but follows known pattern. Detailed
+    Blackwell deployment guide and AutoRound calibration recipe are genuinely new data.
+  relevance_justification: >
+    Three blockers prevent local deployment: (1) 320GB exceeds ~250GB working memory
+    budget for CPU inference, (2) NVFP4 is GPU-native format incompatible with
+    llama.cpp/CPU, (3) llama.cpp DSA indexer unimplemented. inference-acceleration-index
+    explicitly marks GLM-5.1 as NOT ACTIONABLE for local deployment. Relevant only if/when
+    Blackwell hardware acquired AND DSA implemented in llama.cpp or switch to sglang.
+  verdict_justification: >
+    Worth investigating as future reference — NVFP4 calibration recipe (dataset design,
+    selective BF16 retention, AutoRound settings) contains useful methodology for future GPU
+    quantization. Comprehensive GLM-5.1 REAP family variant table (7 models across formats)
+    is valuable catalog. All three blockers from intake-279 persist. Not new_opportunity
+    because REAP is well-covered (completed handoff) and NVFP4 adds no value to CPU stack.

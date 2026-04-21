@@ -581,3 +581,9 @@ High branching density at inference time = the model is diverging rather than co
   - Reported results: 600 expert-level questions across 6 domains/42 topics; automated grading via Gemini 2.5 Flash with regex+semantic extraction
   - Delta from current approach: Phase 3 factual_risk.py scores input-side risk with regex features but has no ground-truth calibration dataset (noted as gap in Phase 4 exit criteria). AA-Omniscience provides exactly this — run local models against it to get per-model hallucination baselines. The "reward abstention" philosophy matches our risk-aware routing: models that refuse uncertain answers should be scored higher, not penalized.
   - Dataset: `ArtificialAnalysis/AA-Omniscience-Public` on HuggingFace (Apache 2.0)
+
+- **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
+  - Relevance: Documents Claude Code's ML-based permission classifier (runs on Sonnet 4.6 in background) that evaluates whether tool calls can proceed without user approval. The classifier sees the user request + tool call but NOT model prose — deliberate design to prevent the model from influencing its own safety gate. Parallel to our learned routing classifier architecture.
+  - Key technique: Seven-mode permission system with ML-based safety classifier; graduated trust model (auto-approve rate grows from ~20% at <50 sessions to 40% at 750+ sessions).
+  - Reported results: 93% permission approval rate; 54 built-in tools (19 unconditional, 35 conditional).
+  - Delta from current approach: The graduated trust model (permission classifier confidence grows with session history) is a pattern we could adopt for routing confidence — new models start with conservative routing thresholds that relax as benchmark data accumulates. The deliberate input-only classification (excluding model reasoning) is an anti-gaming pattern relevant to our factual_risk scorer.

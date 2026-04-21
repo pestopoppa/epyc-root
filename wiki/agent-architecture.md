@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-04-19
-**Sources**: 28 documents (9 deep-dives, 15 intake entries, 4 handoffs)
+**Last compiled**: 2026-04-21
+**Sources**: 30 documents (9 deep-dives, 17 intake entries, 4 handoffs)
 
 ## Summary
 
@@ -16,6 +16,12 @@ The EPYC orchestrator's tiered pipeline sits between these topologies. It has st
 The key architectural tension is between the current pydantic_graph's flat 7-node structure and the need for composable subgraphs as the system grows. LangGraph's subgraph composition, checkpoint granularity with time-travel debugging, and `interrupt()` flexibility at any node represent genuine capability gaps. However, migration carries significant risk: 180+ state fields, 120+ tests, and deep domain-specific features (MemRL, think-harder ROI, budget enforcement, 5-layer context) have no LangGraph equivalents and would require porting. The recommended path is hybrid -- build new capabilities as LangGraph subgraphs alongside the existing pydantic_graph, migrating nodes incrementally.
 
 ## Key Findings
+
+### New Findings (2026-04-21)
+
+- **Memory Transfer Learning validates insight-level abstraction over trace-level memory.** MTL (arxiv:2604.14004, intake-425) empirically shows cross-domain memory transfer improves coding agent performance by +3.7% on average across 6 benchmarks, but only when memories use the "Insight" abstraction (title + description + generalizable content, no task-specific details). Concrete traces induce negative transfer due to specificity. Simple embedding retrieval (cosine on `text-embedding-3-small`) outperforms LLM reranking — validating our FAISS-based `strategy_store` approach. A 431-memory MTL set outperforms AgentKB's 5,899 memories by +1.7%, reinforcing that curated abstraction beats raw accumulation. The negative-transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer) is directly actionable for PromptForge mutation safety gates. Caveat (intake-426 follow-up): "Memory Transplants" ICLR 2026 Workshop finds architecture transfer is system-dependent and weaker solvers benefit most — the 3.7% gain may not hold for stronger models. [autopilot-continuous-optimization.md 2026-04-21 update, meta-harness-optimization.md 2026-04-21 update] `verified`
+
+- **Claude Code design study is the strongest external validation of the meta-harness optimization thesis.** "Dive into Claude Code" (arxiv:2604.14228, intake-426) documents that 98.4% of agent complexity lives in operational infrastructure (permissions, context management, tool routing), not AI decision logic. This independently confirms the meta-harness-optimization handoff's core bet: harness engineering is the primary locus of agent capability improvement, not raw model capability. The paper's five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact) is a concrete taxonomy for auditing coverage gaps against EPYC's L1-L5 compression tiers. Other extractable patterns: seven-mode permission system with ML-based safety classifier (93% approval rate, 40% auto-approve by 750 sessions); append-only JSONL session storage with sidechain files; the "observability-evaluation gap" framing (agents produce outputs but evaluating them is hard) identified as an open design direction. Caveat from Anthropic's own harness blog: "context anxiety" in Sonnet 4.5 made compaction alone insufficient — compaction silently discards provenance and context resets are sometimes needed. [meta-harness-optimization.md 2026-04-21 update, context-folding-progressive.md 2026-04-21 update] `external`
 
 ### New Findings (2026-04-19)
 

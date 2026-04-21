@@ -532,3 +532,12 @@ intake-378 (arxiv:2604.01702) identifies Propose step ratio as a quality metric 
 | 4 | Mutation Knowledge Graph | `prompt_forge.py` | mutation×failure×outcome tracking, informed crossover (~200 LoC) |
 
 Phase 1 is directly implementable from the synthesis document. Phases 1+2 parallelize with Phase 3.
+
+## Research Intake Update — 2026-04-21
+
+### New Related Research
+- **[intake-425] "Memory Transfer Learning: How Memories are Transferred Across Domains in Coding Agents"** (arxiv:2604.14004)
+  - Relevance: Cross-domain memory pooling from heterogeneous benchmarks improves coding agent performance by 3.7%. The "Insight" abstraction (title + description + generalizable content, no task-specific details) maps directly to strategy_store entry format. Finding that simple embedding retrieval (cosine on text-embedding-3-small) outperforms LLM reranking validates our FAISS-based approach.
+  - Key technique: Four memory representations (Trajectory/Workflow/Summary/Insight) with cross-domain pooling; negative transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer).
+  - Reported results: +3.7% average across 6 benchmarks; MTL (431 memories) outperforms AgentKB (5,899 memories) by +1.7%.
+  - Delta from current approach: The negative transfer taxonomy is directly actionable for PromptForge mutation safety gates. The finding that task-agnostic insights outperform task-specific insights (+1.1%) suggests strategy_store should favor abstract patterns over concrete implementation traces. Caveat: "Memory Transplants" (ICLR 2026 Workshop) finds architecture transfer is system-dependent and weaker solvers benefit most — the 3.7% gain may not hold for stronger models.

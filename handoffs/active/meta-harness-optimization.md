@@ -180,3 +180,13 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: positions the harness layer as the primary locus of agent capability improvement (weights→context→harness era progression) — directly validates the meta-harness optimization thesis.
   - Key technique: three-dimensional externalization taxonomy (memory/skills/protocols) + harness layer orchestration; self-evolving harness search.
   - Delta from current approach: the unified taxonomy could audit completeness of EPYC's agent infrastructure; the "harness era" framing reinforces the meta-harness investment direction.
+
+- **[intake-425] "Memory Transfer Learning: How Memories are Transferred Across Domains in Coding Agents"** (arxiv:2604.14004)
+  - Relevance: Empirically validates that abstract "Insight" representations transfer better than concrete traces across coding domains (+3.7% avg). Simple embedding retrieval outperforms LLM reranking — directly applicable to harness memory layer design decisions.
+  - Key technique: Four-tier memory abstraction (Trajectory → Workflow → Summary → Insight); negative transfer taxonomy for safety gates.
+  - Delta from current approach: The Insight format (title + description + generalizable content, no task-specific details) is a concrete template for harness memory entries. The negative transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer) can inform PromptForge mutation guardrails.
+
+- **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
+  - Relevance: Independent confirmation that 98.4% of agent complexity lives in operational infrastructure — strongest external validation of the meta-harness optimization thesis. Identifies six open design directions including the observability-evaluation gap and harness boundary evolution.
+  - Key technique: 13 design principles traced from 5 human values to implementation choices; five-layer compaction pipeline; comparative analysis (Claude Code vs OpenClaw) showing deployment context drives architectural choices.
+  - Delta from current approach: The observability-evaluation gap (agents produce outputs but evaluating them is hard) and the finding that 27% of Claude Code tasks represent novel work are new data points for justifying meta-harness investment. The comparative framework (CLI agent vs gateway agent) is relevant to our Hermes integration decisions.

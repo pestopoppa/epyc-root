@@ -973,3 +973,9 @@ Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/meme
   - Key technique: FTS5+BM25 with RRF and Porter stemming; intent-driven filtering (>5KB → index, return only relevant sections); PreCompact session snapshot injection.
   - Reported results: 94-100% context savings across 21 scenarios; session duration extends from ~30min to ~3hrs.
   - Delta from current approach: context-folding operates on conversation history; context-mode operates upstream on tool output. The PreCompact hook pattern for session snapshot injection is a concrete implementation pattern not covered here.
+
+- **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
+  - Relevance: Documents Claude Code's five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact) — directly comparable to our L1-L5 compression tiers. Confirms 98.4% of agent complexity lives in operational infrastructure (permissions, context management, tool routing), not AI decision logic.
+  - Key technique: Five-layer compaction pipeline taxonomy; seven-mode permission system with ML-based safety classifier; append-only JSONL session storage with sidechain files.
+  - Reported results: 200K-1M token context windows; 93% permission approval rate; graduated trust (40% auto-approve by 750 sessions).
+  - Delta from current approach: The five-layer taxonomy (budget reduction, snip, microcompact, context collapse, auto-compact) should be mapped against our own compression tiers to identify coverage gaps. Caveat: Anthropic's own harness design blog notes "context anxiety" in Sonnet 4.5 made compaction alone insufficient — context resets sometimes needed. Compaction can silently discard provenance/load-bearing information.

@@ -293,3 +293,12 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
 2. **Budget AMD GPU** ($750-900): RX 7900 XTX for hybrid MoE offload -- attention+dense on GPU (~130 t/s on small models), experts on CPU via NUMA. Requires confirming `-ot` works with HIP backend. Less attractive now that DGX Spark costs only ~5x more while eliminating the PCIe bottleneck entirely.
 3. **Datacenter AMD** (MI300X/MI325X): Still the ceiling for raw throughput (5.3 TB/s HBM3, hipBLASLt grouped GEMM). Only relevant if workload scales beyond what two DGX Sparks can handle.
 4. **Open investigation**: Two-tier expert cache (#20757) remains valuable for discrete GPU setups but is irrelevant on unified memory architectures like DGX Spark.
+
+## Research Intake Update — 2026-04-21
+
+### New Related Research
+- **[intake-427] "0xSero/GLM-5.1-555B-A14B-REAP-NVFP4"** (huggingface.co/0xSero/GLM-5.1-555B-A14B-REAP-NVFP4)
+  - Relevance: NVFP4 quantization (4-bit weights + FP8 per-group scales) of REAP-pruned GLM-5.1 (256→192 experts, 14B active). Compresses 1.1TB BF16 to 320GB. Requires Blackwell sm_100+ (B200) or sm_120 (RTX PRO 6000) — will NOT run on H100 natively.
+  - Key technique: REAP expert pruning + NVFP4 quantization; Intel AutoRound 0.12.2 calibration (50 iters, 512 nsamples); selective BF16 retention for quant-sensitive layers; sglang deployment on 8x RTX PRO 6000 Blackwell 96GB.
+  - Reported results: 3.4x compression (1.1TB→320GB); no published quality benchmarks yet.
+  - Delta from current approach: NOT actionable for current CPU-first stack — 320GB exceeds working memory budget, NVFP4 is GPU-native format, and llama.cpp DSA indexer is unimplemented. However, the NVFP4 calibration recipe (dataset mix design, selective BF16 retention, AutoRound settings) is useful methodology if/when Blackwell hardware is acquired. The 7-variant GLM-5.1 REAP family table (spanning BF16/NVFP4/GPTQ/GGUF across 192/154 expert counts) is a valuable reference catalog.

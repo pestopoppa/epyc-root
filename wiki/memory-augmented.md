@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 20 documents (1 deep-dive, 15 intake entries, 2 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-04-21
+**Sources**: 21 documents (1 deep-dive, 16 intake entries, 2 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -18,6 +18,10 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-04-21)
+
+- **Memory Transfer Learning's four-tier abstraction (Trajectory → Workflow → Summary → Insight) is a concrete template for EPYC's strategy store.** MTL (arxiv:2604.14004, intake-425) empirically shows cross-domain memory transfer gains +3.7% on coding benchmarks, but **only when stored at the Insight level** (title + description + generalizable content, no task-specific details). Concrete traces induce negative transfer. Notable size-vs-quality result: MTL's 431 curated Insights beat AgentKB's 5,899 raw memories by +1.7% — curated abstraction beats raw accumulation. Simple embedding retrieval (cosine on `text-embedding-3-small`) outperforms LLM reranking, validating EPYC's FAISS-based strategy_store. The negative transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer) is directly actionable for PromptForge safety gates. Worth noting: the "Memory Transplants" ICLR 2026 Workshop caveat — architecture transfer is system-dependent and weaker solvers benefit most, so the +3.7% may not scale to stronger base models. [autopilot-continuous-optimization.md 2026-04-21 update] `verified`
 
 - **RL-trained compaction can maintain near-flat accuracy across 437.5x context extrapolation.** MemAgent's 14B model achieves 84.4% at 28K and 78.1% at 3.5M on RULER-HotpotQA, with only 5.47pp degradation. All baselines (QwenLong-L1-32B, Qwen2.5-14B-1M, DS-R1-Distill-32B) collapse beyond 224K. The mechanism is surprisingly simple: a fixed 1,024-token memory buffer completely overwritten at each 5,000-token segment, trained with Multi-Conversation DAPO where reward from the final answer broadcasts uniformly across all segment conversations. However, the approach has critical failure modes: irreversible information loss from overwrite, memory capacity ceiling at 1,024 tokens, single-question bias (must reprocess entire document for a different query), and no streaming or backtracking. [memagent-rl-memory.md](../research/deep-dives/memagent-rl-memory.md)
 
