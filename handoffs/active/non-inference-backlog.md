@@ -1,8 +1,9 @@
 # Non-Inference Backlog — Round 2 (2026-04-17 audit refresh)
 
-**Status**: ACTIVE — 28 unblocked non-inference tasks catalogued across all active handoffs
+**Status**: ACTIVE — 34 non-inference tasks catalogued (23/30 original Round 2 complete; 4 added 2026-04-21 supplement)
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
+**Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit)
 **Priority**: MEDIUM (as a whole; individual items tagged HIGH/MED/LOW below)
 
 ---
@@ -40,10 +41,10 @@ This is the "what can I pick up right now with no inference available?" list. It
 
 ## Medium-effort implementation (multi-day, no inference required)
 
-- [ ] **NIB2-12**: `parallel_seeding.py` + `seeding_port_sets.py` — [`parallel-seeding-eval.md`](parallel-seeding-eval.md) L29-32. ~200 LoC, 1 day. Unlocks 2× AR-3 throughput. No blockers.
+- [ ] **NIB2-12**: `parallel_seeding.py` + `seeding_port_sets.py` — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15 (merged 2026-04-21 from parallel-seeding-eval.md). ~200 LoC, 1 day. Unlocks 2× AR-3 throughput. No blockers.
 - [x] **NIB2-13**: OpenDataLoader Phase 1 swap in `pdf_router.py` — [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) L36-44. 1-2 days. JVM lifecycle + swap `pdftotext -layout` for `opendataloader_pdf.convert(...)`, retain entropy/garbage quality checks, update `tests/services/test_pdf_router.py`. **DONE 2026-04-17**: Added `_extract_with_opendataloader()` method, `PDF_EXTRACTOR=opendataloader` env var routing, fallback to pdftotext if ODL returns empty. Quality checks retained. ODL package install needed for production.
 - [x] **NIB2-14**: Clone `opendataloader-bench`, add `document_extraction` suite with NID/TEDS/MHS scoring — [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) L95-107. 1 day. **DONE 2026-04-17**: Created `document_extraction_adapter.py` with `DocumentExtractionAdapter` class, `score_nid()` (reading order), `score_teds()` (table structure), `score_mhs()` (heading hierarchy), `score_document()` (aggregate). Registered in dataset_adapters.py. 18 scoring tests. Repo clone deferred (Git LFS).
-- [ ] **NIB2-15**: Goedel-CP-8B GGUF conversion + Q4_K_M/Q8_0 quantization — [`lean-proving-pipeline.md`](lean-proving-pipeline.md) S1 (queued-for-blocked, but conversion is non-inference and 4-6h). Quality validation is inference-gated.
+- [ ] **NIB2-15**: Goedel-CP-8B GGUF conversion + Q4_K_M/Q8_0 quantization — [`pipeline-integration-index.md`](pipeline-integration-index.md) § P2.S1 (merged 2026-04-21 from lean-proving-pipeline.md). 4-6h conversion is non-inference; quality validation is inference-gated.
 - [x] **NIB2-16**: DAR-3 SPO+ with exploration — [`decision-aware-routing.md`](decision-aware-routing.md) L82-92. ~100 lines in `q_scorer.py` + `retriever.py`; convex surrogate + 10% epsilon-greedy. 3-4 sessions. Code is independent of inference; counterfactual data accumulates downstream. **DONE 2026-04-17**: `_compute_spo_plus_adjustment()` in q_scorer.py (SPO_PLUS_ENABLED flag), epsilon-greedy in HybridRouter.route() (SPO_PLUS_EPSILON env), 7 tests. SPO+ supersedes DAR-2 contrastive when both enabled.
 - [x] **NIB2-17**: DAR-4 bilinear scorer — [`decision-aware-routing.md`](decision-aware-routing.md) L97-113. ~200 lines, new `bilinear_scorer.py`. 4-5 sessions. Independent of DAR-3; developable in parallel. **DONE 2026-04-17**: `BilinearScorer` class with Q(prompt,model) = sigmoid(v_m^T W v_p + b). ModelFeatures from ScoringConfig, prompt features from task IR heuristics. Online SGD updates, save/load, zero cold-start. BILINEAR_SCORER_ENABLED flag. 16 tests.
 - [ ] **NIB2-18**: DS-6 QuarterScheduler scaffolding — [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) § DS-6. 2-3 days. Design is complete (6 gaps resolved 2026-04-09); code-only implementation while Phase E inference runs later.
@@ -60,8 +61,19 @@ This is the "what can I pick up right now with no inference available?" list. It
 ## Infra & governance
 
 - [x] **NIB2-28**: Coverage gate floor raises per Phase B plan — [`integration-test-coverage.md`](integration-test-coverage.md). 1-2h. Policy-only bumps; tests already at the higher floors. **DONE 2026-04-17**: Raised 5 floors to 100% (seeding_infra, executor, registry, output_parser, onboard, seeding_orchestrator). Note: seeding_injection.py has pre-existing regression (53% vs 100% floor).
-- [ ] **NIB2-29**: `orchestrator_stack.py` port-doc update for 8080-8084 / 8180-8184 stream split (if NIB2-12 adopted) — [`parallel-seeding-eval.md`](parallel-seeding-eval.md). <1h.
+- [ ] **NIB2-29**: `orchestrator_stack.py` port-doc update for 8080-8084 / 8180-8184 stream split (if NIB2-12 adopted) — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15. <1h.
 - [x] **NIB2-30**: GitNexus post-commit hook embeddings-preservation verification — [`CLAUDE.md`](../../CLAUDE.md) § Keeping the Index Fresh. 1h. Verify hook handles `--embeddings` flag correctly. **DONE 2026-04-17**: No PostToolUse hook configured (only PreToolUse hooks exist). `.gitnexus/meta.json` shows `embeddings: 0` — no embeddings to preserve. Issue is moot; `--embeddings` flag only matters when embeddings exist.
+
+---
+
+## Round 2 supplement (added 2026-04-21 — cross-cutting hygiene audit)
+
+Items surfaced by the 2026-04-21 handoff audit that were not in the original Round 2 catalogue. Same reporting protocol as NIB2-01..30.
+
+- [ ] **NIB2-31**: SearXNG Docker deploy + `_search_searxng()` implementation — [`searxng-search-backend.md`](searxng-search-backend.md) SX-5/6 code portion. 2-4h. Docker container + ~15 LoC JSON-API replacement in `search.py`. Load test (SX-5) and default swap (SX-6) are gated on AR-3 warmup in Package D Phase 6b; the deploy + code path itself is non-inference.
+- [ ] **NIB2-32**: Reasoning compression Action 3 shadow-data validation at recalibrated thresholds (0.15/0.35) — [`reasoning-compression.md`](reasoning-compression.md) L93. 1-2d. Log-only analysis: cross-correlate shadow-mode difficulty bands against Package B benchmark accuracy. No live eval required — data already collected in shadow telemetry.
+- [ ] **NIB2-33**: Hermes outer shell auth scaffolding (OAuth2 / session tokens + per-user context isolation) — [`hermes-outer-shell.md`](hermes-outer-shell.md) L82-105. 2-4d. Pure code (API surface + middleware). Deferred explicitly to Phase 2 in the handoff; low-priority but fully non-inference.
+- [ ] **NIB2-34**: Routing Intelligence Phase 4 expanded calibration dataset — [`routing-intelligence.md`](routing-intelligence.md) Phase 3 Design Req 3 + `routing-and-optimization-index.md` P1 RI-1 (supplement). 1-2d. Build labeled prompt set from seeding diagnostic logs + AA-Omniscience 600-q benchmark (intake-381, Apache 2.0). Current RI-1 dataset (2,000 regex-derived examples) is sufficient for shadow but not for enforce rollout decisions — RI-7 A/B was underpowered (n=70/arm, target 500/arm). Data pipeline work is non-inference; re-running A/B needs inference.
 
 ---
 
@@ -86,7 +98,7 @@ When you complete an NIB2-NN item:
 2. Update the linked canonical handoff's TODO / next-steps section to match.
 3. Add a one-line entry in `progress/YYYY-MM/YYYY-MM-DD.md`.
 4. If the item belonged to a phased handoff (e.g. "Phase 2c ByteRover enhancement"), bump that handoff's status line.
-5. On completing all 30 items: move this file to `completed/` as Round 2, and run a fresh audit to open Round 3.
+5. On completing all 34 items: move this file to `completed/` as Round 2, and run a fresh audit to open Round 3.
 
 ---
 

@@ -120,9 +120,10 @@ These are the commits between our fork base (`b8721`) and upstream that directly
 ### Validation
 
 - **Qwen3.6 think-loop fix: CONFIRMED.** CLI test with simple math prompt produced coherent thinking + correct answer ("2 plus 2 equals 4"). No `</think>` loops. The reasoning budget sampler skip (`56666fa60`) was the fix — the sampler was unconditionally activating and trapping the model.
+- **Quality benchmark retest: 16/16 PASS.** All 16 questions that previously scored 0% (think-loops or empty responses) now produce substantive answers via `/v1/chat/completions` API on the patched server. Results saved to `benchmarks/results/reviews/qwen36_q8_0_retest_fork_fix.json`.
 - **Build**: Clean incremental build, both `llama-server` and `llama-cli` binaries verified.
 - **Backup branch**: `production-v3-backup` at `cf88fe409` (pre-cherry-pick HEAD).
-- **Note**: CLI test only (server-based chat API test deferred — M2.7 benchmark occupying port 8080 + CPU). Quality benchmarks should be run to confirm the 0%→73.8% improvement at scale.
+- **Reasoning mode finding**: `--reasoning auto` with this model causes pathological verbosity (8K+ tokens of reasoning without closing `</think>`). Use `enable_thinking: false` in chat_template_kwargs for quality benchmarks (matches upstream conditions). The thinking mode interaction needs separate investigation.
 
 ### Current HEAD
 
@@ -184,7 +185,7 @@ Keep using `LLAMA_BIN_DIR` to point benchmarks at the experimental binary for Qw
 After cherry-picks (partial) / full rebase:
 1. [ ] Qwen3.5-35B-A3B (production frontdoor) — still works with IMROPE (cherry-picks don't touch IMROPE code, should be fine)
 2. [x] Qwen3.6-35B-A3B — chat template works, no think-loops (CONFIRMED via CLI 2026-04-20)
-3. [ ] Qwen3.6-35B-A3B — quality benchmark (70 questions) to confirm 0%→73.8% improvement
+3. [x] Qwen3.6-35B-A3B — 16/16 failing questions now PASS (retest 2026-04-20, enable_thinking=false)
 4. [ ] M2.7 — Jinja template renders correctly, no training data leakage
 5. [ ] Gemma4 (SG4-31b, SG4-26b-MM) — test with new Gemma4 template + grammar fixes
 6. [ ] `--lookup` flag — still available (cherry-picks don't touch this)

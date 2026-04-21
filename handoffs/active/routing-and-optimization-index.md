@@ -228,6 +228,39 @@ Source: intake-413 (HCC), intake-414 (Token Savior), intake-415 (Context Mode). 
 - [ ] **AP-30: Controller Context Budget** — ~150 LoC changes to `autopilot.py` + `eval_tower.py`. Fixed token budgets per controller prompt section. Progressive disclosure for strategy injection. 5KB threshold gating on eval output.
 - [ ] **AP-31: Mutation Knowledge Graph** — ~200 LoC enhancement to `prompt_forge.py`. Track mutation_type × failure_pattern × outcome triples. Enable informed crossover from Pareto-best prompt sections.
 
+### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
+
+Independent workstream — 2× AR-3 throughput by running 2 concurrent eval streams on dedicated port sets. No contention, no changes to existing seeding scripts, no inference dependency on implementation side. **Cross-ref**: `non-inference-backlog.md` NIB2-12 (implementation) and NIB2-29 (port-doc update).
+
+**Problem**: AR-3 evaluates questions sequentially through the 3-way pipeline. With 192 CPU threads and 30 model servers, seeding utilization is ~13%. Each trial takes 20-40 minutes. Quarter instances (8180-8381) receive zero traffic from seeding.
+
+**Design**: Run 2 concurrent eval streams (not 4 — architect_general and architect_coding each have only 2 instances).
+
+| Stream | frontdoor | coder | worker | architect_gen | architect_code |
+|--------|:---------:|:-----:|:------:|:-------------:|:--------------:|
+| A | 8080 | 8081 | 8082 | 8083 | 8084 |
+| B | 8180 | 8181 | 8182 | 8183 | 8184 |
+
+**New files** (existing scripts untouched):
+
+| File | Purpose |
+|------|---------|
+| `scripts/benchmark/parallel_seeding.py` | NEW — parallel orchestrator. Imports from existing seeding_eval/orchestrator. Splits questions across 2 streams. ThreadPoolExecutor(2). Thread-safe checkpoint. |
+| `scripts/benchmark/seeding_port_sets.py` | NEW — port set definitions (STREAM_A, STREAM_B). |
+
+**Key details**:
+- Pass `server_urls` dict in ChatRequest to pin each stream to its port set (field already exists)
+- Scope slot erasure to stream's own ports only
+- Thread lock around checkpoint JSONL writes
+- Ingest (1 instance, 8085) could contend — rare in seeding, acceptable
+
+**Expected impact**: 2× throughput (10-20 min trials instead of 20-40). Same quality/speed measurements (no cross-stream contention). Fallback: use original `seed_specialist_routing.py` if anything breaks.
+
+**Deferred**: 4-stream parallelism — requires adding 3rd/4th architect instances on remaining NUMA quarters.
+
+- [ ] **PS-1: Implement `parallel_seeding.py` + `seeding_port_sets.py`** — ~200 LoC total. Tracked as NIB2-12 in non-inference-backlog.
+- [ ] **PS-2: Update `orchestrator_stack.py` port docs** — reflect 8080-8084 / 8180-8184 stream split once PS-1 lands. Tracked as NIB2-29.
+
 ### P9 — Legacy Cleanup & Operational Debt
 
 Extracted from archived `rlm-orchestrator-roadmap.md` (Section 4, Follow-On Tasks). Independent — can be done any time.

@@ -2,12 +2,16 @@
 
 **Status**: researched (literature survey complete 2026-04-14, RX 7900 XTX + hybrid MoE path prioritized)
 **Created**: 2026-04-10 (via research intake deep-dive)
-**Updated**: 2026-04-15 (added vLLM DDTree+Dflash speculation plan — community benchmark 91 tok/s on GB10)
+**Updated**: 2026-04-21 (no GPU acquired; vLLM DDTree+Dflash plan still current)
 **Categories**: hardware_optimization, inference_serving, moe_optimization, speculative_decoding
 **Priority**: LOW (activates when GPU hardware is acquired)
 **Workstream**: Future
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](kv-cache-quantization.md) (GPU KV strategy)
+
+## Status as of 2026-04-21
+
+Backburner — no GPU hardware acquired (DGX Spark / RX 7900 XTX / alternate path). Plan of record is vLLM DDTree+Dflash spec-dec on CPU+GPU hybrid MoE when hardware lands (community benchmark 91 tok/s on GB10, added 2026-04-15). Activation trigger unchanged: acquisition of training-capable GPU. Per `project_dgx_spark_target` memory: DGX Spark external benchmark files are compiled reference data, not local measurements.
 
 ## Objective
 

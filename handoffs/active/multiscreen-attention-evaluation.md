@@ -2,9 +2,13 @@
 
 **Status**: active (literature survey complete 2026-04-14, priority ranking established)
 **Created**: 2026-04-04 (via research intake)
-**Updated**: 2026-04-14 (full literature survey: Diff Attn V2 + MoBA prioritized over Multiscreen)
+**Updated**: 2026-04-21 (monitoring confirmed — no new pretrained checkpoints; priority ranking unchanged from 2026-04-14 survey)
 **Categories**: kv_cache, inference_serving, ssm_hybrid
 **Scope note**: This handoff expanded beyond Multiscreen evaluation into a comprehensive sub-quadratic attention mechanism survey. Multiscreen-specific evaluation is Section 1. Log-Linear GDN readiness tracked in [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
+
+## Status as of 2026-04-21
+
+Backburner survey — awaiting pretrained weight releases for the prioritized architectures (Diff Attn V2, MoBA, Multiscreen). No upstream movement detected since 2026-04-14 survey. Section 1 (Multiscreen evaluation) remains gated on Section 2 priority items shipping weights first.
 
 ## Objective
 

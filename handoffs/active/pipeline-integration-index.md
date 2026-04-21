@@ -20,7 +20,7 @@
 |---------|--------|--------|----------|-------------|
 | [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, **TTS Path D candidate surfaced 2026-04-17** — LuxTTS/ZipVoice-Distill CPU benchmark) | LOW | 2026-04-17 |
 | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
-| [lean-proving-pipeline.md](lean-proving-pipeline.md) | Lean 4 theorem proving | stub | unset | 2026-03-28 |
+| ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
 
 ---
@@ -40,13 +40,29 @@
 - [ ] **Phase 3**: Deploy hybrid sidecar; benchmark 3-way routing; run comparison suite (200 PDFs)
 - [ ] Clone opendataloader-bench; implement NID/TEDS/MHS scoring
 
-### P2 — Lean 4 Proving Pipeline
+### P2 — Lean 4 Proving Pipeline (merged 2026-04-21 from `lean-proving-pipeline.md`)
 
-- [ ] S1: Convert Goedel-CP-8B to GGUF, quantize Q4_K_M/Q8_0, validate
-- [ ] S2: Profile Leanstral expert activation on Lean 4 workloads (target 95% coverage)
-- [ ] S3: REAP-prune Leanstral to ~20GB (depends on S2)
-- [ ] S4: End-to-end pipeline test on FormalQualBench subset (depends on S1)
-- [ ] S5: Two-tier integration: Leanstral planning → Goedel-CP execution (depends on S3+S4)
+**Architecture**: Two-tier proof pipeline analogous to OCR pattern (large model plans, small model executes at volume).
+
+- **Tier 1 Planner**: Leanstral (119B MoE, 6.5B active; DeepSeek V3-style MoE + MLA; `deepseek2` in llama.cpp; Apache 2.0) — repo-scale context, proof strategy, subgoal decomposition. REAP-prune candidate (~20GB pruned vs ~68GB full Q4_K_M). 26.3 pass@2 on FLTEval.
+- **Tier 2 Executor**: Goedel-Code-Prover-8B (Qwen3-8B base, no modifications; `qwen3` in llama.cpp; MIT) — tactic generation, leaf-goal proving, hierarchical search. 62.0% prove success on 427 tasks. Q4_K_M ~4.5GB, expected 25-40 t/s on EPYC 9655.
+- **Verifier**: Lean 4 + Mathlib4 via lean-ray-server; lean-lsp-mcp for Leanstral integration.
+- **Memory budget**: ~25GB combined (REAP-pruned Leanstral + Goedel-CP Q4_K_M) — massive headroom.
+
+**Deep dives**: `research/deep-dives/goedel-code-prover-analysis.md`, `research/deep-dives/leanstral-architecture-analysis.md`.
+
+- [ ] **S1: Convert Goedel-CP-8B to GGUF** — Download safetensors, `python convert_hf_to_gguf.py Goedel-LM/Goedel-Code-Prover-8B --outtype f16`, quantize Q4_K_M + Q8_0, validate proof generation via llama-server, add to model registry as `role: lean_prover`. Tracked as NIB2-15 (format conversion is non-inference; proof validation is inference-gated).
+- [ ] **S2: Profile Leanstral expert activation** — Download `jackcloudman/Leanstral-2603-GGUF` Q4_K_M (~68GB), run with `--moe-expert-stats` on Lean 4 proof workloads. If ≤32 experts cover 95%: proceed with REAP. If spread is uniform: defer.
+- [ ] **S3: REAP-prune Leanstral** (depends on S2) — Top-N experts (from S2), quantize Q4_K_M (~20GB target), benchmark quality on FLTEval subset.
+- [ ] **S4: End-to-end pipeline test** (depends on S1) — Goedel-CP decomposition against local llama-server, FormalQualBench subset (5/23). Compare vs OpenGauss baseline (8/23).
+- [ ] **S5: Two-tier integration** (depends on S3+S4) — Routing: Leanstral planning → Goedel-CP execution. Adapter between MCP output and Goedel-CP input. Full FormalQualBench (23 theorems).
+
+**Open questions**:
+- Leanstral planning output format alignment with Goedel-CP input expectations
+- lean-ray-server and lean-lsp-mcp coexistence (single vs separate Lean toolchains)
+- FormalQualBench appropriateness for code verification (vs Verina subset)
+- Minimum viable concurrency for Goedel-CP
+- Stripping Leanstral's Pixtral vision encoder (~1B dead params)
 
 ### P3 — Multimodal TTS (candidate Path D surfaced 2026-04-17)
 

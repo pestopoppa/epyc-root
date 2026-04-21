@@ -1,6 +1,6 @@
 # EPYC Handoff — Master Index
 
-**Updated**: 2026-04-20 (Session 3: Research intake 5 entries intake-420–424, 4 deep dives, TIDE adopt_patterns + MAD adopt_component verdicts, wiki compiled)
+**Updated**: 2026-04-21 (Handoff hygiene audit: parallel-seeding-eval merged → routing-and-optimization P15; lean-proving-pipeline merged → pipeline-integration P2; 5 backburner monitoring handoffs refreshed; NIB2-31..34 supplement added)
 **Purpose**: Single entry point for any agent. Read this to discover active work and where to start.
 
 ---
@@ -75,7 +75,7 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [searxng-search-backend.md](searxng-search-backend.md) | web_search infrastructure | SX-1–4 done, SX-5/6 folded into AR-3 Package D Phase 6b | MEDIUM | 2026-04-14 |
 | [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formal verification | S1 done; S2-S4 queued; ~~S5~~ ✅ proposal retired 2026-04-17. Priority elevated (formalizer-overthinking + Math-Verify intake-377 + cost-reduction hypothesis arxiv:2504.06514) | **MEDIUM** | 2026-04-17 |
 | [bulk-inference-campaign.md](bulk-inference-campaign.md) | Cross-cutting eval | active (A-C+E+F done, D running, **G +3 MiniMax, H +7 GEPA/RLM/Ouro research, I +3 DAR/ThinkPRM**) | HIGH | 2026-04-15 |
-| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code/infra tasks | **ACTIVE Round 2** — **23/30 done** (NIB2-01..30). 218 tests added, 6 new modules, telemetry wired. 7 remaining (3 deferred NUMA, 2 data/analysis, 1 model conversion, 1 contingent). Round 1 (18/18) → [completed/](../completed/non-inference-backlog.md). | MEDIUM | 2026-04-17 |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting code/infra tasks | **ACTIVE Round 2** — **23/34 done** (NIB2-01..30 original + NIB2-31..34 supplement). 218 tests added, 6 new modules, telemetry wired. 11 remaining (original 7 + 4 supplement: SearXNG deploy, reasoning-compression validation, Hermes auth, RI calibration). Round 1 (18/18) → [completed/](../completed/non-inference-backlog.md). | MEDIUM | 2026-04-21 |
 | [triattention-kv-selection.md](triattention-kv-selection.md) | KV cache compression (EA) | **DEPLOYED** — EA scorer in production kernel + server endpoint + autopilot. S4/S5/S6/S7 done. Next: S8 autopilot exploration → S9 orchestrator auto-trigger | HIGH | 2026-04-14 |
 | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) | KV cache latent-space compaction | ACTIVE (L1-L4+L4b merged to production-consolidated-v3. P2 coding benchmarks pending) | MEDIUM | 2026-04-13 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block reasoning KV masking | ACTIVE — S1 runtime PASSED (5/5, 2026-04-14). S2 LoRA training unblocked. | HIGH | 2026-04-14 |
@@ -86,7 +86,6 @@ Not covered by any sub-index. Small, focused, or cross-cutting.
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification | MEDIUM | 2026-04-14 |
 | [qwen36-production-upgrade.md](qwen36-production-upgrade.md) | Model upgrade evaluation | IN-PROGRESS — GGUF downloaded (Q4_K_M+Q8_0), deep dive confirms drop-in replacement. Benchmark pending. | **HIGH** | 2026-04-17 |
 | [learned-routing-controller.md](learned-routing-controller.md) | Routing classifier training | Phase 1 ✅ (92% val acc, 157K samples, flag enabled); P1.5 logit probe + P2.3-2.6 hidden-state probes + P3 BGE elimination pending | **HIGH** | 2026-04-15 |
-| [parallel-seeding-eval.md](parallel-seeding-eval.md) | Seeding harness throughput | READY (no blockers); 2x AR-3 throughput candidate. Needs ~200 LoC (`parallel_seeding.py`, `seeding_port_sets.py`). | MEDIUM | 2026-04-14 |
 | [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Per-request `</think>` budget | Steps 1-2 DONE (root cause: SSM state race on hybrids, 3 fix options proposed). Steps 3-4 need running server. Workaround: `--jinja` removed from architect_general (coarse). | MEDIUM | 2026-04-17 |
 | [readme-refresh.md](readme-refresh.md) | Documentation | GATED on AR-3 trial ≥100 (currently ~78). 4 numbered tasks: epyc-root + epyc-orchestrator + epyc-inference-research READMEs + autopilot plots snapshot. | LOW | 2026-04-14 |
 | [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Cross-repo upstreaming | Epyc-root side DONE (KB linter, brevity templates, wiki.yaml, wiki compile). 3 tasks remain in root-archetype repo (no local clone). | LOW | 2026-04-14 |

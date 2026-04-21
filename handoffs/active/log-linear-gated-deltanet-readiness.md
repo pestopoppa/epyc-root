@@ -2,8 +2,13 @@
 
 **Status**: stub (MONITORING) — blocked on pretrained model availability
 **Created**: 2026-04-14 (via research intake deep dive)
+**Updated**: 2026-04-21 (monitoring confirmed — no pretrained release yet)
 **Categories**: ssm_hybrid, context_extension, inference_serving
 **Priority**: HIGH (strategic) — activates when gate criteria met
+
+## Status as of 2026-04-21
+
+Backburner monitoring — no pretrained Log-Linear Gated DeltaNet checkpoint released yet (per HF/arxiv checks). Gate criteria unchanged. Stub retained as reference for rapid activation when upstream ships weights. Cross-ref intake-356 remains authoritative research context.
 
 ## Objective
 

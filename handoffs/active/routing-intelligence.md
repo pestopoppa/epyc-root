@@ -1,10 +1,31 @@
 # Routing Intelligence: Semantic Classifiers + Factual-Risk Routing
 
 **Created**: 2026-02-18 (consolidated from `classifier-refactoring.md` + `delegation-escalation-factual-risk-routing-track.md`)
-**Last audited**: 2026-03-24
-**Status**: PHASES 0-4 CODE COMPLETE (2026-03-29) — RI-2–6 implemented, RI-1 calibration dataset built (2000 examples). RI-7 A/B test pending (needs compute). Phases 5-6 deferred.
+**Last audited**: 2026-04-21
+**Status**: PHASES 0-5 CODE COMPLETE — RI-2–6 implemented (2026-03-29), RI-1 calibration dataset built (2026-03-29, 2000 examples), RI-7 A/B ran (2026-03-31, underpowered n=70/arm, NS results), RI-8 risk fields on `RoleResult` verified (2026-03-29). Phase 6 (RI-10 canary) **ACTIVE since 2026-04-06**, window extended to 2026-04-27 for adequate n≥50 high-risk samples.
 **Priority**: HIGH
-**Blocked by**: RI-7 A/B test needs production stack + orchestrator API running
+**Blocked by**: RI-10 canary completion + RI-11/12 rollout stages
+
+## Status as of 2026-04-21
+
+**Phase status reconciled with `routing-and-optimization-index.md`** (authoritative for cross-referenced tasks):
+
+| Stage | Canonical ID | Status | Source of truth |
+|-------|--------------|--------|-----------------|
+| Phase 0 telemetry | (legacy) | ✅ 2026-03-05 | this file |
+| Phase 1 types/config/parsers | (legacy) | ✅ 2026-02-19 | this file |
+| Phase 2 input classifier/MemRL | (legacy) | ✅ (built independently) | this file |
+| Phase 3 factual-risk scorer shadow | (legacy) | ✅ 2026-03-15 | this file |
+| Phase 4 enforce mode | RI-1..7 | ✅ 2026-03-29 / 2026-03-31 | routing-and-optimization-index P1 |
+| Phase 5 seeding integration | RI-8 | ✅ 2026-03-29 | routing-and-optimization-index P3 |
+| — | RI-9 threshold sweep | Pending → Package B | bulk-inference-campaign |
+| Phase 6 canary | RI-10 | 🔄 ACTIVE (to 2026-04-27) | routing-and-optimization-index P6 |
+| Phase 6 expand | RI-11 | Pending RI-10 | routing-and-optimization-index P6 |
+| Phase 6 global | RI-12 | Pending RI-11 | routing-and-optimization-index P6 |
+
+**Interaction with Decision-Aware Routing (DAR)**: `decision-aware-routing.md` P13 addresses the zero-predictive-spread pathology on the difficulty signal. DAR-1/2/3/4 code is complete as of 2026-04-17 (contrastive Q update, SPO+ with epsilon-greedy, bilinear scorer). The factual-risk signal in this handoff is complementary to DAR — DAR reshapes *how* Q-values are learned (decision-aware vs predict-then-optimize); factual-risk is one of several prompt-side features that feed into routing decisions. If DAR-3/4 training uses the eval tower reward signal, Math-Verify adoption (cross-cutting concern #13 in routing-and-optimization-index) must precede to avoid biased rewards.
+
+**Outstanding non-inference work** tracked in `non-inference-backlog.md` NIB2-34: build an expanded calibration dataset for Phase 4 enforce (AA-Omniscience 600-question dataset identified in intake-381 as a strong candidate; 2026-03-29 RI-1 dataset is regex-derived, not benchmark-validated).
 
 ---
 

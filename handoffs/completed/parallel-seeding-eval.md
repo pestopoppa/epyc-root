@@ -1,7 +1,8 @@
 # Parallel Seeding Eval via NUMA Quarter Isolation
 
-**Status**: READY (design complete, not started)
+**Status**: MERGED 2026-04-21 into `routing-and-optimization-index.md` § P15. Implementation tracked as NIB2-12 in `non-inference-backlog.md`. Design content preserved here for historical reference; see canonical section for current tracking.
 **Created**: 2026-04-14
+**Merged**: 2026-04-21 (standalone handoff → routing-and-optimization-index P15; no in-flight state lost)
 **Priority**: MEDIUM (2x throughput for AR-3, not blocking)
 **Categories**: infrastructure, benchmarking
 **Depends on**: None (existing scripts untouched)

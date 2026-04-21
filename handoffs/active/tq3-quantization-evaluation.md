@@ -2,8 +2,12 @@
 
 **Status**: monitoring (do NOT merge TQ3_1S — see rationale below)
 **Created**: 2026-04-01 (via research intake)
-**Updated**: 2026-04-17 (PR #21038 confirmed landed upstream as commit `744c0c731` 2026-04-01; auto-enabled in v3. PR #21089 and ChunkKV remain open.)
+**Updated**: 2026-04-21 (monitoring confirmed — PR #21089 still open, ChunkKV unchanged)
 **Categories**: quantization, hardware_optimization
+
+## Status as of 2026-04-21
+
+Backburner monitoring. PR #21038 remains merged and auto-enabled in production v3 (confirmed 2026-04-17). PR #21089 (TBQ3_0/TBQ4_0 CPU KV cache kernels) still open — no movement since last review. ChunkKV proposal unchanged. TQ3_1S rejection stands (immaturity + wrong target; see rationale below). Next revisit: when PR #21089 receives maintainer review or lands.
 
 ## Why NOT to Merge TQ3_1S
 

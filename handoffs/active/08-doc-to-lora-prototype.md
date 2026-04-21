@@ -1,11 +1,16 @@
 # Doc-to-LoRA Prototype
 
-**Status**: ⚠️ QUEUED FOR ARCHIVE (2026-04-17 audit — 31d stale, use case "largely solved by existing tooling", Phase B blocked on cloud GPU). Findings 1-8 retained as reference. Move `active/` → `archived/` pending directory permissions fix.
+**Status**: BACKBURNER (reference material) — 2026-04-21 audit confirms: keep in `active/` per backburner-no-archive policy. Use case largely solved by existing REPL tooling; findings 1-8 retained as research reference. Phase B blocked on cloud GPU acquisition.
 **Created**: 2026-03-03
 **Revised**: 2026-03-17 (added QVAC Fabric/BitNet research context, Finding 8, Phase A-bis)
+**Updated**: 2026-04-21 (backburner confirmation — prior "queued for archive" flag superseded)
 **Priority**: P3 — low priority, high-effort experimental
 **Effort**: High
 **Source**: [Doc-to-LoRA paper (arxiv.org/pdf/2602.15902)](https://arxiv.org/pdf/2602.15902) | [Paper Breakdown](https://paperbreakdown.com/abs/2602.15902)
+
+## Status as of 2026-04-21
+
+Backburner — keep in `active/` as reference material. The 2026-04-17 "queued for archive" flag is withdrawn per standing policy (backburner items are refreshed in place, not archived). No change in scope: Findings 1-8 document the research landscape; Phase B (hypernetwork retraining) remains gated on cloud GPU access; Phase A (CPU-only format conversion + LoRA hot-swap validation) could still be picked up if the worker-model-compensation hypothesis becomes interesting.
 
 **Hardware constraint**: AMD EPYC 9655 (192 threads), GT 1030 (2 GB display-only). **No training-capable GPUs.** All Phase A validation runs on CPU. Hypernetwork retraining requires cloud GPU rental (Phase B).
 
