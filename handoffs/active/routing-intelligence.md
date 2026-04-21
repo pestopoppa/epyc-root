@@ -25,7 +25,7 @@
 
 **Interaction with Decision-Aware Routing (DAR)**: `decision-aware-routing.md` P13 addresses the zero-predictive-spread pathology on the difficulty signal. DAR-1/2/3/4 code is complete as of 2026-04-17 (contrastive Q update, SPO+ with epsilon-greedy, bilinear scorer). The factual-risk signal in this handoff is complementary to DAR — DAR reshapes *how* Q-values are learned (decision-aware vs predict-then-optimize); factual-risk is one of several prompt-side features that feed into routing decisions. If DAR-3/4 training uses the eval tower reward signal, Math-Verify adoption (cross-cutting concern #13 in routing-and-optimization-index) must precede to avoid biased rewards.
 
-**Outstanding non-inference work** tracked in `non-inference-backlog.md` NIB2-34: build an expanded calibration dataset for Phase 4 enforce (AA-Omniscience 600-question dataset identified in intake-381 as a strong candidate; 2026-03-29 RI-1 dataset is regex-derived, not benchmark-validated).
+**Outstanding non-inference work** tracked in `non-inference-backlog.md` NIB2-34: build an expanded calibration dataset for Phase 4 enforce (AA-Omniscience 600-question dataset identified in intake-381 as a strong candidate; 2026-03-29 RI-1 dataset is regex-derived, not benchmark-validated). **V2 DONE 2026-04-21**: `orchestration/factual_risk_calibration_v2.jsonl` (2,600 examples, 6 AA-Omniscience domains + v1 base, stratified 70/15/15 splits, 4-class labels, risk_features populated). Built by `scripts/build_factual_risk_calibration_v2.py`.
 
 ---
 

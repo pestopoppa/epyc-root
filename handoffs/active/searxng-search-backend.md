@@ -126,6 +126,26 @@ Wire `unresponsive_engines[]` from JSON response into orchestrator telemetry (fi
 - Alert when >50% of configured engines appear in `unresponsive_engines` for 3+ consecutive queries
 - Track engine failure rate over time to detect gradual degradation (DDG CAPTCHA, Brave rate limiting)
 
+### Post-AR-3 Analysis Script (NIB2-31, 2026-04-21)
+
+`scripts/analysis/searxng_health_report.py` aggregates SX-4 telemetry + `web_search` tool latency into a go/no-go verdict for the SX-6 default swap.
+
+```bash
+# Last 7 days (default window)
+python3 scripts/analysis/searxng_health_report.py
+
+# Specific day
+python3 scripts/analysis/searxng_health_report.py --date 2026-04-21
+
+# Date range
+python3 scripts/analysis/searxng_health_report.py --from 2026-04-14 --to 2026-04-21
+
+# Machine-readable (CI / dashboards)
+python3 scripts/analysis/searxng_health_report.py --json
+```
+
+Verdict is `PROCEED` / `HOLD` / `INSUFFICIENT_DATA`. Thresholds: bad-query rate >5% (engines >50% down), fallback rate >10%, SearXNG p95 > 2× DDG p95, or <20 observed queries. Exit code 0 for PROCEED/INSUFFICIENT_DATA, 1 for HOLD — suitable for pre-swap CI gate.
+
 ## Critical Caveats (from deep-dive)
 
 1. **Google blocks SearXNG** via TLS/HTTP2 fingerprinting (issue #2515). Expect Google engine to be unreliable. Mitigation: rely on DDG/Brave/Wikipedia/Qwant.

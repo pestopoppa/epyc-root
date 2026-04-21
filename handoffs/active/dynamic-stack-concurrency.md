@@ -1,8 +1,14 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: Phases B-D complete. DS-6 (QuarterScheduler) + DS-7 (stack templates) scaffolding implemented 2026-04-11. Phase E awaiting AR-3 results.
+**Status**: Phases B-D complete. DS-6 (QuarterScheduler) scaffolding implemented 2026-04-11, DS-7 (stack templates) scaffolding 2026-04-11 + Gap 3/4 closure 2026-04-21 (NIB2-19). Phase E awaiting AR-3 results.
 **Created**: 2026-03-24
-**Updated**: 2026-04-11
+**Updated**: 2026-04-21
+
+## DS-7 Gap 3 + Gap 4 closure (2026-04-21, NIB2-19)
+
+- **Gap 3 (migration path)**: Full-restart protocol implemented in `src/config/stack_migration.py` (~230 LOC). Six phases: save_kv → stop_all → start_target → restore_kv → verify_health. Dry-run mode for CI/pre-flight. CLI: `orchestrator_stack.py start --migrate-to <profile> --dry-run`. Diff-based migration deferred to DS-6 QuarterScheduler (NIB2-18) per `feedback_numa_concurrency_complexity`.
+- **Gap 4 (resource budget)**: `ResourceBudget` dataclass (`max_mlock_gb`, `max_total_gb`, `reserve_kv_gb`) added to `StackTemplate`. Optional `resource_budget:` block in template YAML; system defaults when absent. `validate_template()` extended with 3 new checks (HOT mlock ceiling, total loaded ceiling, KV headroom floor). `default.yaml` carries an explicit budget block (800/930/100 GB).
+- **Tests**: 10 new tests in `tests/unit/test_stack_templates_v2.py`, all passing. Full unit suite (296 tests) clean.
 **Priority**: HIGH (pre-warm + migration enables optimal single-session AND concurrent throughput)
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
