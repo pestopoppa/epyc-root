@@ -107,6 +107,8 @@ Critical integration caveats: (1) `verify(gold, pred)` is NOT symmetric -- gold 
 
 A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality rather than answer quality via a 5-stage pipeline. Ablation shows Stage 5 (completeness) actually hurts F1 by +0.57pp -- deploy stages 1-4 only. A referenced finding (arxiv:2504.06514) shows that questions with missing premises cause models to generate MORE reasoning tokens, meaning filtering flawed questions also reduces inference cost.
 
+**NIB2-03 audit applied stages 1-3 to the EPYC question pool (2026-04-21)**: 5,670 math-suite questions (aime + math + olympiadbench + physreason) scanned via `scripts/benchmark/dataset_audit/mathq_verify_audit.py`; 251 flagged (4.43%). Stage 4 (symbolic consistency between atomic assumptions and conclusions) deferred because it requires LLM-based decomposition. Signal finding: GSM8K's use of `$` as a **currency** symbol (`$10`, `$68`) collides with LaTeX math delimiters — 244 flags on the `math` suite alone. The heuristic is correct but the prompts are legible; mitigation is to gate the unbalanced-`$` check on prompts that also contain LaTeX commands. Smaller false-positive signal on AIME's `\sqrt{N}` shapes (~10 flags) will be tightened in a v2 pass. Without a working `antlr4-python3-runtime`, sympy-level parse validation is skipped to avoid flooding false positives. [`progress/2026-04/mathq-verify-audit-2026-04-21.md`]
+
 > Source: [Math-Verify Integration Analysis](/workspace/research/deep-dives/math-verify-integration-analysis.md) -- intake-377/379, symbolic comparison, 66% underestimation fix, thread safety caveats
 
 ## Open Questions

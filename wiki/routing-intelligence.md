@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-04-18
+**Last compiled**: 2026-04-21
 **Sources**: 21 documents (0 dedicated deep-dives, 16 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
@@ -24,6 +24,10 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **MemRL-backed classification provides Q-value weighted voting for routing decisions.** The `ClassificationRetriever` (315 lines) in `src/classifiers/classification_retriever.py` uses episodic memory with Q-value weighted voting and keyword fallback. It provides `classify_prompt()`, `classify_for_routing()`, and `should_use_direct_mode()` methods. Exemplar seeding from YAML happens automatically on first startup. This represents a fundamentally more sophisticated approach than any surveyed framework -- LangGraph has only manual lambda routing, Paperclip routes via org-chart hierarchy, AgentRxiv has no routing at all. [routing-intelligence.md handoff, Phase 2; langgraph-ecosystem-comparison.md]
 
 - **Factual-risk scoring is implemented and logging but not yet enforcing.** The regex-only scorer in `src/classifiers/factual_risk.py` (280 lines, 43 tests) has confirmed p95 overhead <5ms in shadow mode. Per-role adjustment scales the risk score by model capability tier. The 2000-example calibration dataset (RI-1) is built. Enforcement requires wiring into cheap-first bypass, plan review gate, escalation policy, failure graph veto, and review objective. [routing-intelligence.md handoff, Phase 3-4]
+
+- **Shadow telemetry is now persistent (NIB2-35, 2026-04-21).** The `difficulty_score`/`difficulty_band` and `factual_risk_score`/`factual_risk_band` signals computed by `_route_request()` were previously lost to ephemeral server logs — a prior attempt to re-validate difficulty thresholds (NIB2-32) found zero joinable records. The fix propagates all four fields through `ChatResponse` → `RoleResult` → `seeding_diagnostics.jsonl` via a `_attach_routing_telemetry()` finalizer and an extended `build_diagnostic()` at all seeding call sites. Offline analyzers (`difficulty_signal_validation.py`, `searxng_health_report.py`, `build_factual_risk_calibration_v2.py`) can now join shadow predictions against pass/fail ground truth without a separate progress-log join. [non-inference-backlog.md NIB2-35; reasoning-compression.md Action 3]
+
+- **V2 factual-risk calibration dataset expands to 6 domains (NIB2-34, 2026-04-21).** `orchestration/factual_risk_calibration_v2.jsonl` merges the v1 2,000-example regex-derived set with AA-Omniscience's 600 public questions across Finance, Health, Humanities, Law, Science & Engineering, and Software Engineering domains. 4-class labels (CORRECT / INCORRECT / PARTIAL / NOT_ATTEMPTED) support abstention-aware calibration per AA-Omniscience's scoring philosophy. 70/15/15 stratified split by (label, domain) buckets. 2,600 total examples — sufficient for n=500/arm A/B runs (vs. RI-7's underpowered n=70/arm). [non-inference-backlog.md NIB2-34]
 
 - **Nine production routing subsystems must coordinate without conflicting.** The integration map documents how each subsystem interacts: the difficulty signal gates cheap-first, the MLP classifier handles role selection, the GAT router uses graph-based features, the BindingRouter handles forced assignments, the FailureGraph vetoes known-bad routes, conformal prediction gates output uncertainty, think-harder regulates escalation compute, cost-aware Q-scoring adjusts for NUMA load, the plan review gate validates generated plans, and the SkillAugmentedRouter adjusts for tool availability. No unified priority scheme exists for the full stack when all are enabled simultaneously. [routing-intelligence.md handoff, Integration Map]
 
