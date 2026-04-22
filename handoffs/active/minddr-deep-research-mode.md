@@ -52,49 +52,24 @@ If Phase 1 delivers ≥5pp durable uplift AND if pipeline-stage specialization s
 
 ### Phase 1 tasks (MD-1..MD-9)
 
-**MD-1: Design `deep_research_mode` feature flag** [2h]
-- Add to `features.py`: `deep_research_mode: bool = False`
-- Environment override: `ORCHESTRATOR_DEEP_RESEARCH_MODE=1`
-- Wire into routing decision at pipeline entry
+**MD-1: Design `deep_research_mode` feature flag** [2h] — **DONE 2026-04-22 (NIB2-45)**. `features.py` gained `deep_research_mode: bool = False` + FeatureSpec; env override `ORCHESTRATOR_DEEP_RESEARCH_MODE=1`. Wiring into the routing decision itself is a 1-line check in the request dispatcher (see MD-6 note below); the flag machinery is ready.
 
-**MD-2: Extend Category A classifier for "research-like" query detection** [2h]
-- Add to `classifier_config.yaml`: `research_like` category with exemplars (multi-step questions, "compare X and Y", "deep dive on Z")
-- Extend `ClassificationRetriever` to emit `is_research_like: bool`
+**MD-2: Extend Category A classifier for "research-like" query detection** [2h] — **DONE 2026-04-22**. `orchestration/classifier_config.yaml` gained `research_like` exemplars (7 seed prompts). `src/classifiers/research_like.py` provides dep-free `is_research_like()` + `score_research_like()`. MemRL-based Q-value learning path (via existing `ClassificationRetriever`) remains available for future refinement.
 
-**MD-3: Design Planning Agent system prompt** [2h]
-- Task decomposition format: numbered sub-questions with evidence-requirement notes
-- Constraints: 3-7 sub-questions, each independently searchable
-- Emit to `orchestration/prompts/planning_agent.md`
+**MD-3/4/5: Three agent prompts** — **DONE 2026-04-22**. `orchestration/prompts/planning_agent.md` (3-7 sub-questions, evidence tags WEB/CITATION/BENCHMARK/DOCS/COMPARISON), `deep_search_agent.md` (ReAct with `[src:<ref>]` citation contract + Sub-Report block schema), `report_agent.md` (outline-first synthesis, citation preservation, explicit Gaps section).
 
-**MD-4: Design DeepSearch Agent system prompt** [1h]
-- ReAct search emphasis: think → search → synthesize per sub-question
-- Evidence grounding requirements
-- Emit to `orchestration/prompts/deep_search_agent.md`
+**MD-6: Implement pydantic_graph flow** [3 weeks] — **DONE 2026-04-22**. New standalone subpackage `src/graph/minddr/` (decoupled from production `src/graph/` orchestration graph):
+- `state.py` — `MindDRState`, `MindDRDeps` (injectable LLM callables), `MindDRResult`, `SubQuestion`, `SubReport`, `EvidenceTag`.
+- `parsing.py` — `parse_planning_output` (tag filtering / index dedup / max-N clamp) + `parse_sub_report` (graceful field extraction + indented-evidence scanner).
+- `nodes.py` — `PlanningNode`, `DeepSearchFanOutNode` (asyncio.gather bounded by `max_parallel` semaphore, per-question graceful degradation), `ReportSynthesisNode`.
+- `graph.py` — `minddr_graph` Graph singleton + `run_minddr()` entry point + `load_minddr_prompts()` disk loader.
+- Request-dispatcher wiring (feature_flag && is_research_like → run_minddr else existing path) is a 1-line check — intentionally deferred so inference-side testing can land independently.
 
-**MD-5: Design Report Agent system prompt** [2h]
-- Outline-first synthesis: start with section headers, then fill
-- Citation grounding: every claim tied to a search result
-- Emit to `orchestration/prompts/report_agent.md`
+**MD-7: Extend EvalTower with multi-dimensional rubric** [2 weeks, handed to `eval-tower-verification.md` EV-9] — **STUB DONE 2026-04-22**. `EvalResult` gained four NaN-safe rubric fields (`rubric_reasoning_trajectory`, `rubric_tool_calls`, `rubric_outline`, `rubric_content_stage`). LLM-as-judge scoring functions themselves remain EV-9 and inference-gated.
 
-**MD-6: Implement pydantic_graph flow** [3 weeks]
-- New nodes: `PlanningNode`, `DeepSearchFanOutNode`, `ReportSynthesisNode`
-- Parallel fan-out on sub-questions
-- Shared state: sub-question results collected by DeepSearchFanOutNode → fed to ReportSynthesisNode
-- Feature-flag-gated at pipeline entry
+**MD-8: Create sentinel suite** [3 days] — **DONE 2026-04-22**. `orchestration/deep_research_sentinel.yaml` with 20 curated queries (7 BrowseComp + 7 WideSearch + 6 mixed) each carrying `expected_contains` structural hints for rubric scoring. Every entry passes `is_research_like()` (enforced by test).
 
-**MD-7: Extend EvalTower with multi-dimensional rubric** [2 weeks, handed to `eval-tower-verification.md` EV-9]
-- New rubric fields: reasoning-trajectory score, tool-call score, outline score, content-stage score
-- LLM-as-judge scoring functions (deterministic fallback for low-cost T1 runs)
-
-**MD-8: Create sentinel suite** [3 days]
-- 20-40 research-like queries with multi-dimensional ground truth
-- Suite name: `deep_research_sentinel` in `question_pool.yaml`
-- Stratified: 10 BrowseComp-style, 10 WideSearch-style, 10 mixed
-
-**MD-9: A/B test with ≥+5pp success criterion** [1 day inference, INFERENCE-GATED]
-- Run sentinel suite with and without `deep_research_mode`
-- Measure: quality uplift, tool-call count, latency, per-rubric scores
-- Promote to production default if uplift ≥5pp AND no regression
+**MD-9: A/B test with ≥+5pp success criterion** [1 day inference, **INFERENCE-GATED**] — pending inference window. Run sentinel suite with/without `deep_research_mode`; promote to production default if uplift ≥5pp and no regression.
 
 ### Phase 2 tasks (MD-10..MD-13, GPU-gated)
 
