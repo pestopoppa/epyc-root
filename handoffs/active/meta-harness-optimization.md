@@ -231,6 +231,77 @@ Both Phase-1 paths are training-free and implementable today. They operate on di
 
 Candidate new StructuralLab mutation types. 2d design + 1d integration into `program.md` search space. Tracked in `non-inference-backlog.md` NIB2-41. No dedicated handoff needed; this is a local extension to the existing mutation-type registry.
 
+#### Design (2026-04-22)
+
+Two new `StructuralLab` methods that operate on `orchestration/repl_memory/strategy_store.py` — the FAISS+SQLite strategy memory used by Seeder/NumericSwarm/PromptForge/StructuralLab.
+
+**M1 — `mdl_compress_strategies`** (Pattern C in `research/deep-dives/token-savior-extractable-patterns.md` §3 L459-706).
+- **Input**: all strategies in the store (or last N by `window_trials`).
+- **Process**:
+  1. Jaccard-cluster strategy insights by shared-token similarity (threshold 0.60).
+  2. For each cluster of size ≥ `min_cluster_size` (default 3): compute `MDL_before = Σ|zlib(insight_i)|` (per-entry description length) and `MDL_after = |zlib(representative)| + Σ|zlib(delta_i)|` where `delta_i` is the insight with tokens-in-representative masked out.
+  3. Promote the cluster to a **convention** if `(MDL_before - MDL_after) / MDL_before ≥ compression_threshold` (default 0.20).
+  4. Write convention to a new `strategy_conventions` table (additive — `CREATE TABLE IF NOT EXISTS`), with `representative`, `member_ids` JSON list, `compression_ratio`, `promoted_at`, `span_trials`.
+- **Output**: `{"status": "ok", "clusters_examined": N, "conventions_promoted": K, "total_compression_saved_bytes": B}`.
+- **Why `zlib` length as MDL proxy**: `zlib.compress(text.encode())` length is a standard MDL approximation (intake-414 + token-savior deep-dive L475). Paper-grade Rissanen MDL is overkill for string payloads this small.
+
+**M2 — `staleness_invalidate_strategies`** (Pattern B in deep-dive §2 L243-457).
+- **Input**: strategy store + a `scan_targets` list of content-bearing paths (default: `orchestration/prompts/**/*.md`, `orchestration/classifier_config.yaml`, `orchestration/model_registry.yaml`).
+- **Process**:
+  1. For each scan target compute `sha256(content)`. Maintain a `content_hashes` table mapping `target_path → current_hash`.
+  2. If a strategy's `metadata_json` references a path whose hash changed since the strategy's `created_at`, apply a **Bayesian validity update**: `beta_fail += 1` (on the `strategy_validity` table, also additive).
+  3. Compute `validity = alpha / (alpha + beta_fail)` (Beta distribution mean, α starts at 2 for prior, no prior successes). Strategies with `validity < 0.40` enter **quarantine** (boolean column, excluded from `retrieve()`). Strategies with `0.40 ≤ validity < 0.60` are flagged `suspected` (returned from retrieve but with warning metadata).
+  4. **Cascade**: if a quarantined strategy is referenced by the currently-loaded `routing_classifier_weights.npz` checkpoint (metadata trail), mark the checkpoint stale — autopilot's next cycle should retrain.
+- **Output**: `{"status": "ok", "targets_scanned": T, "hashes_changed": C, "strategies_checked": S, "quarantined": Q, "suspected": X, "cascade_invalidated": I}`.
+
+**Schema additions** to `strategy_store.py _init_schema()`:
+```sql
+CREATE TABLE IF NOT EXISTS strategy_conventions (
+    id TEXT PRIMARY KEY,
+    representative TEXT NOT NULL,
+    member_ids TEXT NOT NULL,         -- JSON array of strategy ids
+    compression_ratio REAL NOT NULL,
+    span_trials TEXT NOT NULL,         -- JSON [min_trial, max_trial]
+    promoted_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS strategy_validity (
+    strategy_id TEXT PRIMARY KEY,
+    alpha INTEGER NOT NULL DEFAULT 2,
+    beta_fail INTEGER NOT NULL DEFAULT 0,
+    quarantined INTEGER NOT NULL DEFAULT 0,
+    last_checked_at TEXT,
+    FOREIGN KEY (strategy_id) REFERENCES strategies(id)
+);
+CREATE TABLE IF NOT EXISTS content_hashes (
+    target_path TEXT PRIMARY KEY,
+    content_hash TEXT NOT NULL,
+    last_seen_at TEXT NOT NULL
+);
+```
+
+All three are pure additions (`IF NOT EXISTS`); existing strategies default to `alpha=2, beta_fail=0, quarantined=0`, so no migration is needed.
+
+**Integration points** (per `evolution_manager.py` cadence):
+- Hook `mdl_compress_strategies` after every 50 new strategies (log-only first, promote with dry-run guard).
+- Hook `staleness_invalidate_strategies` on each autopilot trial boundary (fast — just sha256s).
+
+**`program.md` search space documentation**: add a paragraph under "Tier 5: Stack Topology" describing the two new action shapes so the controller knows they exist as mutation options.
+
+**Testing**: 6 unit tests in `tests/autopilot/test_structural_lab_mutations.py`:
+1. MDL compresses a cluster of 3 near-identical insights into one convention (ratio > 0.20).
+2. MDL does NOT compress clusters below threshold.
+3. Staleness increments `beta_fail` when a referenced prompt hash changes.
+4. Staleness quarantines strategies whose validity drops below 0.40.
+5. Cascade invalidates routing classifier checkpoint when upstream strategy is quarantined.
+6. No-op when the store is empty.
+
+Files touched:
+- `orchestration/repl_memory/strategy_store.py` — schema + 3 helper methods (`_add_convention`, `_update_validity`, `_scan_content_hashes`).
+- `scripts/autopilot/species/_content_hash.py` — new, ~40 LoC, sha256 over canonical file bytes.
+- `scripts/autopilot/species/structural_lab.py` — `mdl_compress_strategies()` and `staleness_invalidate_strategies()` methods (~150 LoC total).
+- `scripts/autopilot/program.md` — 1-paragraph addition.
+- `tests/autopilot/test_structural_lab_mutations.py` — new, 6 tests.
+
 ### Cross-references
 
 - `routing-and-optimization-index.md` P17 (Agent-World pointer) + P18 (MindDR pointer)
