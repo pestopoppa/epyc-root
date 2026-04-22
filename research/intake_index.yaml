@@ -16478,52 +16478,62 @@
     patterns and comparative framework are the value.
 
 - id: intake-427
-  url: https://huggingface.co/0xSero/GLM-5.1-555B-A14B-REAP-NVFP4
+  url: https://huggingface.co/0xSero/GLM-5.1-555B-A14B-REAP-GGUF
   arxiv_id: null
   source_type: repo
-  title: '0xSero/GLM-5.1-555B-A14B-REAP-NVFP4 — NVFP4 Quantization of REAP-Pruned GLM-5.1 (192 experts, 14B active)'
+  title: '0xSero/GLM-5.1-555B-A14B-REAP-GGUF — CPU-Deployable 555B/14B-Active MoE (REVISED from NVFP4)'
   authors:
   - 0xSero
   categories:
   - moe_optimization
   - quantization
-  - hardware_optimization
+  - local_inference
   - inference_serving
   key_claims:
-  - 'NVFP4 (4-bit weights + FP8 per-group scales, group=16) quantization of GLM-5.1-555B-A14B-REAP, compressing 1.1TB BF16 to 320GB (~3.4x)'
+  - 'GGUF Q4_K_M variant (325GB) is CPU-deployable via llama.cpp — fits in 1052GB available RAM with 727GB remaining'
   - 'REAP prunes GLM-5.1 from 256 to 192 experts per MoE layer (~25% pruning), keeping 14B active params/token'
-  - 'Blackwell-native FP4 format — requires sm_100+ (B200) or sm_120 (RTX PRO 6000); will NOT run on H100 natively'
-  - 'Detailed deployment guide for sglang on 8x RTX PRO 6000 Blackwell 96GB with specific backend flags'
-  - 'Sensitive layers kept in BF16: first 3 MLP layers + DSA indexer weights across all 78 layers'
+  - '14B active params yields estimated 25-40 tok/s CPU decode (comparable to a 14B dense model, but with 555B total expert diversity)'
+  - 'Benchmarks: 88% Terminal-Bench (44/50), 66% SWE-bench Pro (33/50), 60% GSM8K, 0% repetition loops across 220 probes'
+  - 'llama.cpp compatible: --reasoning on --reasoning-format deepseek --jinja, 131K context window'
+  - 'Mixed quant: Q8_0 for critical paths (attention, shared expert, DSA indexer, dense layers 0-2), Q4_K/Q6_K for routed experts'
+  - 'CRITICAL: Only 555B/192-expert variant is viable — the 444B/154-expert GGUF is BROKEN (29% degeneration, deprecated)'
+  - 'Stack simplification candidate: could replace architect_general (122B, 69GB) + architect_coding (246B, 139GB) = 208GB with single 325GB model'
+  - 'Also available: NVFP4 (GPU-native, Blackwell-only), GPTQ-W4A16, BF16 — 7 variants total across 192 and 154 expert counts'
   techniques:
   - 'REAP expert pruning (256 -> 192 experts, ~25%)'
-  - 'NVFP4 quantization (4-bit weights + FP8 per-group scales, group=16)'
-  - 'Intel AutoRound 0.12.2 layerwise calibration (50 iters, 512 nsamples)'
-  - 'Selective BF16 retention for quant-sensitive layers (lm_head, early MLP, DSA indexer)'
-  - 'Custom calibration dataset mix (structured outputs, function calling, agentic, coding, reasoning)'
-  - 'compressed-tensors format for sglang/vLLM compatibility'
+  - 'Q4_K_M GGUF with mixed quantization (Q8_0 for sensitive layers, Q4_K/Q6_K for experts)'
+  - 'DSA (Dynamic Sparse Attention) + MLA architecture — indexer tensors loaded but forward pass dense MLA fallback in llama.cpp'
+  - 'Intel AutoRound 0.12.2 layerwise calibration (50 iters, 512 nsamples) for NVFP4 variant'
+  - 'Selective Q8_0 retention for quant-sensitive layers (lm_head, early MLP, DSA indexer, shared expert)'
   reported_results:
-  - '3.4x compression: 1.1TB BF16 -> 320GB NVFP4'
-  - 'Layer loss trajectory: early layers (0-9) near-zero loss; deep layers (56-77) 1e-1 to 8e-1 with 10-20% reduction after 50 iters'
-  - 'No MMLU/GSM8K/IFEval benchmarks published — author recommends measuring on sm120'
-  - 'Quantization wall time: ~7.5 hours on 8x H100 80GB'
+  - 'Terminal-Bench: 88% (44/50), 0 repetition loops'
+  - 'SWE-bench Pro: 66% (33/50), 0 repetition loops'
+  - 'GSM8K: 60% (30/50), 0 repetition loops'
+  - 'HLE: 18% (9/50)'
+  - 'Degeneration fuzz test: 4/45 (8.9%) borderline, no hard failures'
+  - 'Q4_K_M GGUF size: 325GB (single file)'
   - '7 REAP variant family table spanning BF16, NVFP4, GPTQ-W4A16, GGUF across 192 and 154 expert counts'
   referenced_arxiv_ids:
   - '2510.13999'
-  novelty: low
-  relevance: low
+  novelty: medium
+  relevance: high
   credibility_score: null
-  verdict: worth_investigating
+  verdict: new_opportunity
   ingested_date: '2026-04-21'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: null
+  contradicting_evidence:
+  - 'GLM-4.7 models scored 43% quality with SEVERE repetition loops in EPYC benchmarks — different generation but warrants caution'
+  - 'DSA indexer forward pass NOT implemented in llama.cpp (PR#19460 merged arch only) — model runs dense MLA fallback, suboptimal for long contexts'
+  - '325GB model leaves only 92GB free on RAID0 (417GB available) — tight for concurrent model operations during evaluation'
+  - '444B/154-expert variant suffered 29% degeneration rate (40% code gen, 75% structured output) — expert count is critical threshold'
   cross_references:
     chapters: []
     handoffs:
     - gpu-acceleration-path.md
     - inference-acceleration-index.md
     - dynamic-stack-concurrency.md
+    - glm51-reap-cpu-evaluation.md
     experiments: []
     intake_entries:
     - intake-181
@@ -16534,22 +16544,33 @@
     - intake-281
   handoffs_updated:
   - gpu-acceleration-path.md
-  handoffs_created: []
+  - inference-acceleration-index.md
+  handoffs_created:
+  - glm51-reap-cpu-evaluation.md
   novelty_justification: >
-    REAP on GLM-5.1 is incremental — 0xSero's REAP work extensively documented in
-    intake-183/184 and completed reap-moe-expert-pruning handoff. NVFP4 format noted in
-    intake-279 (GLM-5.1 model card) and llama-cpp-v3-upstream-rebuild handoff. Specific
-    combination (REAP + NVFP4 on GLM-5.1) is new but follows known pattern. Detailed
-    Blackwell deployment guide and AutoRound calibration recipe are genuinely new data.
+    REVISED 2026-04-22. Original assessment focused on NVFP4 (GPU-only) variant and scored
+    low. The GGUF Q4_K_M variant (325GB, CPU-deployable) changes the picture: first
+    production-ready GGUF of a 555B MoE with published benchmarks (88% Terminal-Bench, 66%
+    SWE-bench Pro, 0% repetition loops) proving stability at 25% pruning. REAP methodology
+    itself is well-documented (intake-183/184, completed handoff), but the specific
+    application to GLM-5.1 with quality validation and GGUF availability is genuinely new.
+    The 444B/154-expert failure (29% degeneration) vs 555B/192-expert success (0%
+    degeneration) is a valuable finding about expert count thresholds.
   relevance_justification: >
-    Three blockers prevent local deployment: (1) 320GB exceeds ~250GB working memory
-    budget for CPU inference, (2) NVFP4 is GPU-native format incompatible with
-    llama.cpp/CPU, (3) llama.cpp DSA indexer unimplemented. inference-acceleration-index
-    explicitly marks GLM-5.1 as NOT ACTIONABLE for local deployment. Relevant only if/when
-    Blackwell hardware acquired AND DSA implemented in llama.cpp or switch to sglang.
+    REVISED 2026-04-22. All three original blockers are resolved: (1) 325GB GGUF fits in
+    1052GB available RAM with 727GB remaining, (2) GGUF is CPU-native format compatible
+    with llama.cpp, (3) benchmarks show 88% Terminal-Bench and 66% SWE-bench Pro with 0%
+    repetition loops. 14B active params yields ~25-40 tok/s CPU estimate, comparable to
+    architect_general (4.3 t/s on 122B) but with 555B total expert diversity. Stack
+    simplification candidate: replacing architect_general (69GB) + architect_coding (139GB)
+    = 208GB with single 325GB model. DSA indexer unimplemented but works with dense MLA
+    fallback; fork development target. Storage tight (92GB remaining after download).
   verdict_justification: >
-    Worth investigating as future reference — NVFP4 calibration recipe (dataset design,
-    selective BF16 retention, AutoRound settings) contains useful methodology for future GPU
-    quantization. Comprehensive GLM-5.1 REAP family variant table (7 models across formats)
-    is valuable catalog. All three blockers from intake-279 persist. Not new_opportunity
-    because REAP is well-covered (completed handoff) and NVFP4 adds no value to CPU stack.
+    REVISED 2026-04-22. New opportunity because GGUF variant removes all original blockers.
+    Stack simplification potential (2 architect models → 1) justifies dedicated evaluation
+    handoff. 88% Terminal-Bench and 66% SWE-bench Pro benchmark claims need local
+    validation but are promising. 14B active params at 555B total is the best quality/speed
+    ratio available for CPU inference. Created glm51-reap-cpu-evaluation.md with 9-phase
+    evaluation plan. Risks: GLM-4.7 had quality issues (different gen), DSA indexer
+    unimplemented, 325GB leaves 92GB free on disk, NUMA characteristics unknown at this
+    model size.

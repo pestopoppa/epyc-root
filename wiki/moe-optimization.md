@@ -2,8 +2,8 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
-**Sources**: 23 documents (2 deep-dives, 3 handoffs, 18 intake entries)
+**Last compiled**: 2026-04-22
+**Sources**: 24 documents (2 deep-dives, 3 handoffs, 19 intake entries)
 
 ## Summary
 
@@ -71,6 +71,12 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 
 - **REAP-pruned models enable speculative decoding where hybrids cannot**: REAP-25B is pure MoE (`qwen3moe` arch), so all speculation approaches work (dm=24 linear at 39.62 t/s, lookup safe at 37.91 t/s, tree hurts at 30.83 t/s). If the frontdoor role shifts from hybrid Qwen3.5-35B-A3B to REAP-25B, speculation becomes viable for the highest-volume role in the orchestrator. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
 
+### GLM-5.1 REAP and Expert Pruning Thresholds
+
+- **GLM-5.1-555B-A14B-REAP GGUF is the first 555B MoE with published GGUF benchmarks.** 325GB Q4_K_M, 14B active parameters from 192 experts (top-8 routing), 88% Terminal-Bench, 66% SWE-bench Pro, 0% repetition loops. CPU-deployable via llama.cpp. Evaluation handoff created: glm51-reap-cpu-evaluation.md. [intake-427]
+
+- **Expert count threshold finding confirms 25-30% as the pruning sweet spot.** 192/256 experts (25% prune) = stable with 0% degeneration; 154/256 experts (40% prune) = BROKEN with 29% degeneration. This aligns with the Goldilocks zone finding from 0xSero's MiniMax-M2.1 stress tests, independently confirming that 25-30% pruning is near-lossless while 40%+ risks catastrophic quality collapse on large-expert-count architectures. [intake-427]
+
 ### MoE Serving and Offloading Research
 
 - **Flash-MoE (intake-166)**: Pure C/Metal inference engine for Qwen3.5-397B on MacBook Pro -- relevant as reference for memory-efficient MoE serving on consumer hardware. The architecture insights about expert caching may inform our NUMA expert placement strategy. [intake-166](https://github.com/danveloper/flash-moe)
@@ -133,3 +139,4 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 - [intake-166](https://github.com/danveloper/flash-moe) Flash-MoE -- Pure C/Metal inference for MoE on consumer hardware
 - [intake-167](https://arxiv.org/abs/2601.17063) FlashMoE SSD offloading -- ML-based expert cache replacement
 - [intake-168](https://arxiv.org/abs/2508.21706) SpecMoEOff -- Overlapping expert loading with speculation
+- [intake-427] GLM-5.1-555B-A14B-REAP GGUF -- 325GB Q4_K_M, 14B active from 192 experts, 88% Terminal-Bench, 66% SWE-bench Pro, expert count threshold (25% safe / 40% broken)

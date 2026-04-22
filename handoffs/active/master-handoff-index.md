@@ -50,6 +50,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | 19 | MED | **AutoPilot iteration strategy upgrade** (P14). 4-phase: strategy memory upgrade (RRF+staleness), knowledge distillation pipeline (L1→L2→L3), controller context budget, mutation knowledge graph. AP-28 through AP-31. | [routing-and-optimization-index](routing-and-optimization-index.md) P14 |
 | 20 | MED | **TIDE calibration-router early exit** (intake-422). Implement post-training MLP routers on fork's n_layer_exit. 15-25% CPU decode speedup projected. 3-phase: external router → per-token exit → GGUF-embedded. | [inference-acceleration-index](inference-acceleration-index.md) |
 | 21 | LOW | **MAD confidence scoring** (intake-421). Add Median Absolute Deviation noise filter to safety_gate.py (~20 LoC). Prevents false-positive eval waste. | [routing-and-optimization-index](routing-and-optimization-index.md) |
+| 22 | MED | **GLM-5.1-REAP CPU eval** (intake-427 revised). 555B/14B-active GGUF (325GB). Stack simplification: replace 2 architect models (208GB) with 1. 88% Terminal-Bench, 66% SWE-bench Pro claimed. Storage tight (92GB remaining). | [inference-acceleration-index](inference-acceleration-index.md) / [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) |
 
 ---
 
@@ -58,7 +59,7 @@ Highest-impact work across all domains. Each item points to where the details li
 | Domain | Index | Handoffs | Status |
 |--------|-------|----------|--------|
 | Routing & Optimization | [routing-and-optimization-index.md](routing-and-optimization-index.md) | 11 | P0-P4 complete, **P5 Phase 5 seeder refactor DONE**, P6 RI-10 canary, P7-P9 pending, P10/P11 DONE, P13 DAR-1/2 done, **P14 NEW: AutoPilot iteration strategy upgrade** (AP-28–31, 4-phase: strategy memory, knowledge distillation, context budget, mutation graph). AR-3 needs restart. |
-| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 5 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), Qwen3.6 production upgrade (GGUF downloaded, benchmark pending), **NEW: TIDE calibration-router early exit** (adopt_patterns, 15-25% CPU gain projected) |
+| Inference Acceleration | [inference-acceleration-index.md](inference-acceleration-index.md) | 6 active + completed | KV quantization COMPLETED (moved), **KV compaction L1-L4+L4b merged to production** (native ggml), KV selection eval phase, ~~v3 PRODUCTION~~ (completed/), GPU acceleration path (researched, +vLLM Dflash plan), **Log-Linear GDN readiness** (stub — monitoring), Qwen3.6 production upgrade (GGUF downloaded, benchmark pending), TIDE calibration-router early exit (adopt_patterns, 15-25% CPU gain projected), **NEW: GLM-5.1-REAP CPU eval** (intake-427 revised, 555B/14B-active GGUF, stack simplification candidate) |
 | Agent Integration | [hermes-agent-index.md](hermes-agent-index.md) | 3 | B1-B7 ALL COMPLETE + integration wired, shell low priority |
 | Research & Evaluation | [research-evaluation-index.md](research-evaluation-index.md) | 8 + P7 + P3b + 2 new | tool-compression A/B done (+4pp), REPL S1-S2 done (S3a/S5 next), reasoning done, **P7 Ouro eval queued**, multiscreen → full sub-quadratic survey, **Log-Linear GDN** HIGH priority monitoring, P3b Tulving episodic benchmark, **NEW: MAD confidence scoring** (adopt_component), **TIDE early exit** (adopt_patterns) |
 | Pipeline Integration | [pipeline-integration-index.md](pipeline-integration-index.md) | 4 | vision done, TTS blocked, PDF/Lean pending |
@@ -115,6 +116,7 @@ Changes in one domain often affect others. Key coupling points:
 | Decision-aware routing (R&O P13) | Routing (difficulty signal), Research (AP-27 RLVR) | Resolves zero-predictive-spread in difficulty_signal.py; new reward signal needs eval tower verification |
 | Eval tower verification (RE P8) | Routing (AP-27 RLVR), Research (Ouro P7) | Provides calibration infrastructure (ECE/AUC) for RLVR formalization; Ouro as sentinel candidate |
 | Dynamic stack concurrency (R&O, `dynamic-stack-concurrency.md` Phase F) | Inference acceleration (AM compaction P2 → KVCOMM F1) | Phase F1 blocks on AM compaction P2; Phase F's cross-NUMA anchor pool compounds with L4b compaction ratio measurements. **Ownership**: routing-and-optimization (primary); Phase F mirrored in inference-acceleration-index landscape for discoverability. |
+| GLM-5.1-REAP evaluation (IA) | Routing (stack config, Q-scorer baselines), Research (model eval methodology) | If GLM-5.1 replaces architect_general + architect_coding: Q-scorer baselines (RI-0) must update, NUMA allocation changes (2x96t → new config), routing rules for 2-model→1-model architect tier need revision. |
 
 ---
 

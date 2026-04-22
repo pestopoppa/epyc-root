@@ -36,6 +36,8 @@
 | (intake-412) DeepPlanning benchmark | Agent planning eval methodology | Reference — rule-based automated scoring, 26-model leaderboard, reasoning gap 7-16pp | LOW | 2026-04-20 |
 | (intake-421) MAD confidence scoring | AutoPilot safety gate noise filter | **adopt_component** — ~20 LoC addition to safety_gate.py. Deep dive: [pi-autoresearch-mad-scoring.md](../../research/deep-dives/pi-autoresearch-mad-scoring.md) | MEDIUM | 2026-04-20 |
 | (intake-422) TIDE early exit | Calibration-router for per-token layer skip | **adopt_patterns** — implement on fork n_layer_exit. Deep dive: [tide-calibration-router-early-exit.md](../../research/deep-dives/tide-calibration-router-early-exit.md) | MEDIUM | 2026-04-20 |
+| [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **NEW** — download pending, storage-constrained (325GB model, 417GB free). 9-phase eval plan. | MEDIUM | 2026-04-22 |
+| (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | Monitoring — design task from intake-426 deep dive | LOW | 2026-04-22 |
 
 ---
 
@@ -180,6 +182,7 @@ Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scori
 - ~~**ConceptLM**: Quarterly check for open-weight concept-level models or framework support~~ (archived)
 - [ ] **Multiscreen**: Monitor for community reproduction, model releases, or llama.cpp PRs
 - [ ] **Log-Linear GDN**: Watch github.com/HanGuo97/log-linear-attention and NVlabs/GatedDeltaNet for pretrained model releases. Activates [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
+- [ ] **Compaction gap analysis** (intake-426): Map Claude Code's five-layer pipeline (budget reduction, snip, microcompact, context collapse, auto-compact) against our L1-L5 tiers. Identify whether a "Budget Reduction" equivalent (per-message output size caps) is warranted. See [context-folding-progressive.md](context-folding-progressive.md) Research Intake Update 2026-04-21. Design task — no code until gap significance is assessed.
 
 ---
 
@@ -197,6 +200,8 @@ P5 (harness engineering experiments)  ──depends on P3 (datasets) + Package B
 P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopilot log data; S4 depends on seeding harness──
 P7 (Ouro LoopLM eval)               ──independent (download + benchmark)──
 P8 (eval tower verification)         ──EV-1/2/6 DONE (2026-04-15); EV-0/3 independent; EV-4/5 need inference; EV-7 depends on all + P7──
+GLM-5.1-REAP eval                    ──independent (download + benchmark); stack simplification depends on quality results──
+Compaction gap analysis               ──independent (design task from intake-426)──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
 Multiscreen monitoring            ──depends on external adoption──

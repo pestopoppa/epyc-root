@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-21
-**Sources**: 22 documents (6 deep-dives, 3 active handoffs, 13 intake entries)
+**Last compiled**: 2026-04-22
+**Sources**: 24 documents (6 deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
 
@@ -20,6 +20,12 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 ### New Finding (2026-04-21)
 
 - **Claude Code's five-layer compaction pipeline provides an external taxonomy for EPYC's L1-L5 tiers.** "Dive into Claude Code" (arxiv:2604.14228, intake-426) documents Anthropic's own production compaction pipeline: **budget reduction → snip → microcompact → context collapse → auto-compact**. Each layer operates at a different timescale and granularity. This is directly comparable to our 5-layer stack and worth mapping one-to-one to identify coverage gaps. The paper's caveat matters more than the taxonomy: Anthropic's own harness-design blog observes "context anxiety" in Sonnet 4.5 where compaction alone became insufficient — compaction silently discards provenance and load-bearing intermediate conclusions. Context resets (hard clears) are sometimes the right tool. This is a data point for EPYC's Phase 3 quality-monitoring work: detect and log the kind of provenance loss that triggered Anthropic's context-reset fallback. [context-folding-progressive.md 2026-04-21 update] `external`
+
+- **Claude Code five-layer compaction pipeline mapped against EPYC's L1-L5 tiers.** Budget Reduction (gap -- we have no equivalent), Snip ~ Phase 0 hard preview limits, Microcompact ~ Phase 1+ tool output compression, Context Collapse ~ Phase 2 deep consolidation, Auto-Compact ~ Phase 1 deep consolidation at boundaries. The mapping reveals a concrete coverage gap: Budget Reduction enforces per-message output size caps, replacing oversized tool outputs with content references before they enter context. EPYC has no equivalent mechanism -- tool outputs are truncated after generation, not capped during generation. [intake-426]
+
+- **Budget Reduction gap identified as a new optimization target.** Claude Code replaces oversized tool outputs with content references (file paths, summaries) at the output generation layer, preventing large payloads from ever entering the context window. EPYC's spill-and-truncate operates post-hoc -- the model has already generated the full output and it is truncated before the next turn. A pre-generation size budget (analogous to `--max-tokens` but for tool output) would reduce wasted generation compute. [intake-426]
+
+- **Simple embedding retrieval outperforms LLM reranking for memory-augmented context -- validates FAISS approach.** Memory Transfer Learning (arxiv:2604.14004, intake-425) shows that cosine similarity retrieval with N=3 candidates on `text-embedding-3-small` outperforms both LLM-based reranking and adaptive rewriting for cross-domain memory retrieval. This directly validates the FAISS-based retrieval in `strategy_store.py` over more complex retrieval pipelines. The finding reinforces the "simple retrieval, curated content" principle: 431 curated insight-format memories outperform 5,899 raw memories by +1.7%. [intake-425]
 
 ### Compression Architecture
 
@@ -146,3 +152,5 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-414](https://github.com/mibayy/token-savior) Token Savior Recall -- RRF hybrid retrieval (BM25+FAISS), content-hash staleness detection, MDL convention promotion, progressive disclosure. Deep dive: 4 extractable patterns for strategy_store.py (adopt_patterns)
 - [intake-415](https://github.com/mksglu/context-mode) Context Mode -- subprocess sandbox (99% output reduction), 5KB threshold gating, FTS5 indexing, PreCompact session snapshots. Deep dive: solves PostToolUse hook limitation, 30-50% context reduction (adopt_patterns)
 - [intake-418](https://arxiv.org/abs/2604.08224) Externalization in LLM Agents -- survey: weights→context→harness era progression; validates meta-harness optimization thesis (worth_investigating)
+- [intake-425](https://arxiv.org/abs/2604.14004) Memory Transfer Learning -- simple embedding retrieval (cosine, N=3) outperforms LLM reranking; 431 curated insight-format memories beat 5,899 raw memories; validates FAISS-based strategy_store approach
+- [intake-426](https://arxiv.org/abs/2604.14228) Dive into Claude Code -- five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact); Budget Reduction gap identified for EPYC; "context as scarce resource" design principle

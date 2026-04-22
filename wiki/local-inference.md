@@ -2,8 +2,8 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-04-19
-**Sources**: 16 documents
+**Last compiled**: 2026-04-22
+**Sources**: 18 documents
 
 ## Summary
 
@@ -32,6 +32,7 @@ Speculative decoding is the primary acceleration method. The production stack us
 - **--draft-p-split 0 must be explicit for linear speculation**: The production binary defaults p_split=0.1 (tree ON). Silent tree activation causes kv_unified=true, n_seq_max=9, and draft truncation overhead. [numa-orchestrator-deployment.md]
 - **Cherry-picked upstream commits fix Qwen3.6 think-loops and Gemma4 template issues (2026-04-20).** Four upstream commits were cleanly cherry-picked onto `production-consolidated-v3` with zero conflicts: `56666fa60` (skip reasoning budget sampler when no budget requested -- the Qwen3.6 fix), `ddf03c6d9` (fix ambiguous Gemma4 grammar rule), `d7ff074c8` (enable reasoning budget sampler for Gemma4), `3fc65063d` (better align to updated Gemma4 template). Validated: Qwen3.6 CLI test produced coherent thinking + correct answer, no `</think>` loops. The reasoning budget sampler was unconditionally activating and trapping models -- the skip commit was the root cause fix. Current HEAD: `cd5f4fcd0`, 35 custom commits ahead of merge base, 121 behind upstream (was 125). Full rebase deferred but no longer blocking. [llama-cpp-fork-rebase.md](../handoffs/active/llama-cpp-fork-rebase.md)
 - **Fork conflict risk is lower than initially assessed.** Actual code analysis found: `src/llama-kv-cache*` has ZERO conflict risk (10 of our patches, 0 upstream changes), `common/chat*` has ZERO risk (0 ours, 10 upstream all cherry-pickable), `tools/server/server.cpp` has ZERO risk (handoff was wrong). Real battleground is `common/common.h` (6 ours vs 4 upstream, including `libcommon->libllama-common` rename). Recommended: drop 7 experimental patches during full rebase to reduce conflict surface from 41 to 24 patches. [llama-cpp-fork-rebase.md](../handoffs/active/llama-cpp-fork-rebase.md)
+- **GLM-5.1-555B-A14B-REAP GGUF as potential stack addition.** 325GB Q4_K_M fits in 1052GB available RAM with 14B active parameters for an estimated ~25-40 tok/s on CPU. Stack simplification candidate: could replace architect_general (69GB) + architect_coding (139GB) = 208GB with a single 325GB model. Storage constraint: 417GB free on RAID, 92GB remaining after download. llama.cpp launch flags: `--reasoning on --reasoning-format deepseek --jinja`. DSA indexer tensors loaded but forward pass not implemented — dense MLA fallback. [intake-427, glm51-reap-cpu-evaluation.md]
 - **Stock upstream produces 73.8% quality on Qwen3.6 vs 0% on our fork (pre-fix).** The reasoning budget sampler bug caused 100% degenerate `</think>` loops on all thinking-capable models. Post cherry-pick, CLI testing confirms the fix. Quality benchmarks should confirm the 0%->73.8% improvement at scale. M2.7 scored worse on upstream (41.1% vs 55.7%) because 4x token budget gave room for more training data leakage -- the model needs `max_tokens` tuning independently. [llama-cpp-fork-rebase.md](../handoffs/active/llama-cpp-fork-rebase.md)
 
 ## Actionable for EPYC
@@ -75,3 +76,5 @@ Speculative decoding is the primary acceleration method. The production stack us
 - [Progress 2026-04-14 Session 22](/workspace/progress/2026-04/2026-04-14.md) -- Differential Transformer V2 implementation (9 files, 155 LOC core), zero new ggml ops, regression-safe on all production models, blocked on pretrained weights
 - [llama-cpp-fork-rebase.md](/workspace/handoffs/active/llama-cpp-fork-rebase.md) -- Cherry-pick results (4 commits, zero conflicts), Qwen3.6 think-loop fix confirmed, conflict risk reassessment (lower than estimated), experimental patch drop strategy, full rebase deferred but unblocked
 - Intake entries: 5 results including CPU+GPU hybrid MoE inference guide (intake-310, high relevance), rocWMMA (intake-303), and community model evaluations
+- [intake-427] GLM-5.1-555B-A14B-REAP GGUF -- 325GB Q4_K_M, 14B active, ~25-40 tok/s CPU estimate, stack simplification candidate
+- [glm51-reap-cpu-evaluation.md] GLM-5.1 REAP CPU Evaluation -- deployment feasibility, storage constraints, llama.cpp flags

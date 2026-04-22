@@ -228,6 +228,14 @@ Source: intake-413 (HCC), intake-414 (Token Savior), intake-415 (Context Mode). 
 - [ ] **AP-30: Controller Context Budget** — ~150 LoC changes to `autopilot.py` + `eval_tower.py`. Fixed token budgets per controller prompt section. Progressive disclosure for strategy injection. 5KB threshold gating on eval output.
 - [ ] **AP-31: Mutation Knowledge Graph** — ~200 LoC enhancement to `prompt_forge.py`. Track mutation_type × failure_pattern × outcome triples. Enable informed crossover from Pareto-best prompt sections.
 
+### P16 — Strategy Store + PromptForge Safety (2026-04-22 research intake deep-dive)
+
+Source: intake-425 (Memory Transfer Learning, arXiv:2604.14004). Deep dive confirms 4 adoptable patterns for autopilot strategy_store and PromptForge mutation safety. See [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) Research Intake Update 2026-04-21.
+
+- [ ] **AP-32: Insight format for strategy_store entries** — Adopt the `(title, description, generalized_content)` format with no task-specific implementation details for new strategy_store entries. Audit existing entries for over-specificity. Task-agnostic insights outperform task-specific by +1.1%. ~50 LoC in `strategy_store.py`. Validates HCC L3 upgrade path (AP-29).
+- [ ] **AP-33: Negative transfer safety gates for PromptForge** — Implement 3 mutation safety checks based on negative transfer taxonomy: (1) domain-mismatched anchoring detector (reject mutations that import patterns from mismatched benchmark suites), (2) false validation confidence flag (warn when mutation success is based on <5 trials), (3) misapplied best-practice filter (reject mutations that generalize suite-specific patterns). ~100 LoC in `prompt_forge.py` safety section.
+- [ ] **AP-34: Validate N=3 embedding retrieval** — Confirm that our FAISS top-3 cosine retrieval matches or exceeds any LLM-based reranking we might consider. Paper shows: embedding similarity (0.630 avg) > LLM reranking (0.598) > adaptive rewriting (0.608). Run ablation: top-1 vs top-3 vs top-5 on next AR-3 run. Zero code changes — configuration experiment via autopilot.
+
 ### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
 
 Independent workstream — 2× AR-3 throughput by running 2 concurrent eval streams on dedicated port sets. No contention, no changes to existing seeding scripts, no inference dependency on implementation side. **Cross-ref**: `non-inference-backlog.md` NIB2-12 (implementation) and NIB2-29 (port-doc update).
@@ -428,3 +436,12 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
   - **Key insight**: A tiny MLP routing policy (~5-10k params, 2x64 hidden) trained via PPO on our seeding diagnostics data could replace heuristic routing rules. Sub-microsecond inference. Deploy as 50 lines of C linked into orchestrator.
   - **vs xRouter (7B)**: xRouter reads full prompt text; tiny MLP operates on pre-extracted classifier features. We already have the feature pipeline (factual_risk, difficulty_signal, keyword classification). The RL policy sits on top.
   - **Action**: Queue BaRP, PROTEUS, LLM Bandit for next intake batch. Evaluate offline RL feasibility on Package A data.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research (intake-425/426 deep-dive)
+- **[intake-425] "Memory Transfer Learning: How Memories are Transferred Across Domains in Coding Agents"** (arxiv:2604.14004)
+  - 4 adoptable patterns for strategy_store and PromptForge: (1) Insight abstraction format `(title, description, generalized_content)` with no task-specific details, (2) N=3 embedding retrieval validation (embedding > LLM reranking > adaptive rewriting), (3) negative transfer safety gates (3-category taxonomy), (4) task-agnostic > task-specific insights (+1.1%). See P16 (AP-32/33/34) above.
+- **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
+  - Graduated trust model for routing confidence thresholds: new models start conservative (~20% auto-approve at <50 sessions), relax as benchmarks accumulate (40% at 750+ sessions). Pattern applicable to RI-10 canary and learned routing controller work. No new task code — design pattern absorbed into existing P6/P13.
+  - Input-only classification (anti-gaming pattern): Claude Code's permission classifier sees user request + tool call but NOT model reasoning — prevents model from influencing its own safety gate. Validates current `factual_risk.py` design which classifies on input features only. No code change needed.

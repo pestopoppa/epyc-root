@@ -30,6 +30,7 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`llama-cpp-fork-rebase.md`](llama-cpp-fork-rebase.md) | **IN-PROGRESS** — cherry-picks applied, 16/16 Qwen3.6 questions fixed | Rebase production-consolidated-v3 onto upstream for chat template fixes | Qwen3.6, M2.7, Gemma4 | Upstream 73.8% vs fork 0% → **16/16 PASS** on patched fork | Full rebase planned holistically with TIDE: [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) |
 | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (Phase F KVCOMM only — primary ownership: routing-and-optimization) | **QUEUED** — F1 blocks on AM compaction P2; F2-F4 designed | q4_0 offset estimation, cross-NUMA anchor pool, ConcurrencyAwareBackend, `prefill_speedup_coder_pool` metric | All production (cross-NUMA cache sharing) | Compounds with L4b AM compaction ratio | See primary handoff for Phases B-E status; only Phase F is inference-acceleration-relevant |
 | TIDE Calibration-Router Early Exit (intake-422/423) | **NEW** — deep dive complete, adopt_patterns | Post-training MLP routers on hidden state cosine similarity; per-token dynamic early exit | All production (qwen3moe, qwen3, qwen2) | **15-25% decode speedup** (projected CPU, no batch compaction overhead) | Phase 1 planned in [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) (bundled with rebase). [Deep dive](../../research/deep-dives/tide-calibration-router-early-exit.md) |
+| [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) | **NEW** — download pending, storage-constrained | REAP 25% (256→192 experts), Q4_K_M GGUF (325GB) | GLM-5.1-555B-A14B (architect replacement candidate) | Stack simplification: 208GB→325GB (1 model replaces 2) | Pre-download storage audit, then 9-phase eval |
 
 ### Archived (completed/)
 
@@ -331,6 +332,7 @@ Every test the agent should run, across all handoffs. Ordered by priority.
   - **REAP-50% exists**: 0xSero/GLM-5-REAP-50pct-FP8 (381B, 128 experts). No GGUF, no benchmarks. Q4 est. ~230GB — borderline but blocked by missing DSA.
   - **GGUF sizes** (unsloth): Q4_K_M=456GB, Q3_K_M=360GB, Q2_K=276GB, UD-IQ2_XXS=241GB. All exceed our working memory budget for full model.
   - **Verdict: NOT ACTIONABLE for local deployment.** Three independent blockers: (1) size, (2) missing DSA in llama.cpp, (3) unknown REAP quality. Monitor for llama.cpp DSA indexer PR.
+  - **2026-04-22 REVISION**: The above assessment was for BASE GLM-5.1 (754B, 456GB Q4_K_M). The REAP'd GLM-5.1-555B-A14B variant (released by 0xSero after this assessment) removes blockers (1) and (2): Q4_K_M GGUF = 325GB (fits in RAM), llama.cpp compatible. Blocker (3) partially resolved: benchmarks show 88% Terminal-Bench, 66% SWE-bench Pro, 0% repetition loops across 220 probes. **Revised verdict: ACTIONABLE — see [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md)**. Note: only the 555B/192-expert variant is viable; the 444B/154-expert variant is BROKEN (29% degeneration).
 
 ## Research Intake Update — 2026-04-10
 
@@ -406,3 +408,14 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
 - **[intake-391] Qwen3.6-35B-A3B GGUF (unsloth)** (huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF)
   - Relevance: GGUF quantizations ready for llama.cpp. Q4_K_M = 22.1 GB, Q8_0 = 36.9 GB. Full range from IQ1_M (10 GB) to BF16 (69.4 GB).
   - Delta: Removes conversion blocking step — download and benchmark directly.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+- **[intake-427 REVISED] "0xSero/GLM-5.1-555B-A14B-REAP-GGUF"** (huggingface.co/0xSero/GLM-5.1-555B-A14B-REAP-GGUF)
+  - **REVISED from original NVFP4 assessment (2026-04-21) — now new_opportunity.** Original intake focused on the GPU-native NVFP4 variant. Deep dive revealed a Q4_K_M GGUF variant (325GB) exists and is CPU-deployable via llama.cpp.
+  - Relevance: 555B total / 14B active params, 192 experts (top-8 routing), DSA + MLA. Benchmarks: 88% Terminal-Bench, 66% SWE-bench Pro, 0% repetition loops across 220 probes. 131K context window. llama.cpp flags: `--reasoning on --reasoning-format deepseek --jinja`.
+  - Stack simplification potential: Could replace architect_general (Qwen3.5-122B, 69GB) + architect_coding (REAP-246B, 139GB) = 208GB with single 325GB model. If successful, nets 300GB free disk after removing old models.
+  - Delta from current approach: Removes all 3 original blockers from intake-281 assessment: (1) size fits in 1052GB available RAM, (2) GGUF is CPU-native, (3) benchmarks available. DSA indexer unimplemented but dense MLA fallback works. Storage tight (92GB remaining during eval).
+  - **CRITICAL**: Only the 555B/192-expert variant is viable. The 444B/154-expert GGUF is BROKEN (29% degeneration, deprecated).
+  - New handoff: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — 9-phase evaluation plan with fail-fast gates.
