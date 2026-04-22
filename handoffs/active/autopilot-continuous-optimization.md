@@ -592,7 +592,7 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 **Fix**: extend MetaOptimizer with a diversity-stall signal. ~1-2h.
 
-- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials.
+- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials. **Amended 2026-04-22 post Tier 2b**: couple with `semantic_embedding_agreement` to avoid rebalancing on surface-level distinct-2 drops that don't reflect real diversity collapse (arXiv 2506.00514 metric-gaming critique). Rebalance trigger: distinct-2 drops AND semantic agreement drops AND Verbalized Sampling recovery probe fails to close >50% of the gap. Depends on amended EV-8 landing first.
 
 ### Cross-references
 

@@ -89,11 +89,15 @@ Post-DGX-Spark: train Qwen3-8B → Agent-World-8B-EPYC via multi-env GRPO on the
 - Register via `tool_policy.py` (per standing policy: only open-source self-hosted tools)
 - Cross-ref `orchestration/agent_world_tools.yaml` (new)
 
-### AW-8 (Phase 1.5): Serve Agent-World-8B/14B public weights [conditional]
+### AW-8 (Phase 1.5): Corroboration probe on released Agent-World-8B/14B weights
 
-- Contingent on public weight release by paper authors
+**Upgraded 2026-04-22 post Tier 2b sweep** from "Optional SFT" / freebie to a mandatory **corroboration probe** before any Phase 2 GPU commit. The paper's "beat proprietary on 23 benchmarks" is UNREPRODUCED in open literature; the 23-suite omits SWE-Bench Verified, GAIA, WebArena Hard, and OSWorld (suite-class cherry-picking).
+
+- Contingent on public weight release by paper authors (1k-env subset + pipeline released Feb 2026; 8B/14B weights unconfirmed)
 - If released: download, quantize Q4_K_M GGUF, register as `worker_agent_world` role in `model_registry.yaml`
 - Acts as reference model for task solvability (AW-4)
+- **New corroboration gate**: run released 8B on SWE-Bench Verified + GAIA (benchmarks the paper OMITTED). If performance diverges meaningfully from same-class open-weight baselines on these omitted benchmarks, downgrade intake-444 and revisit Phase 2 cost-benefit.
+- See `/workspace/research/deep-dives/agent-world-environment-synthesis.md` § Tier 2b Contradicting-Evidence Sweep (2026-04-22) for the full rationale.
 
 ### AW-9 (Phase 2, GPU-gated): Multi-env GRPO training [deferred]
 
