@@ -209,17 +209,19 @@ From Aletheia (intake-370, TU Darmstadt):
 **Target**: NIB2-42 in `non-inference-backlog.md`.
 
 Tasks:
-- [ ] Add 4 fields to `EvalResult` at `safety_gate.py` (L44-100): `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr`.
-- [ ] Add supplemental field `diversity_semantic_embedding_agreement` — pairwise cosine agreement across N completions on a sentence-embedder (anti-gaming against surface-level distinct-2).
-- [ ] Implement `diversity_metrics.py` scoring functions.
-- [ ] Wire through `to_grep_lines()` for log parsing.
-- [ ] One-day baseline pass: 4 production roles × 20 open-ended prompts × 4 completions (temperature 0.7 baseline + T=1.0 ladder point for recovery probe).
-- [ ] **Amended SafetyGate policy** (originally "reject if distinct-2 drops >20% AND quality not up"):
+- [x] Add 4 fields to `EvalResult` at `safety_gate.py` (L44-100): `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr`. **DONE 2026-04-22 (NIB2-42)**: EvalResult landed in new `src/safety_gate.py`.
+- [x] Add supplemental field `diversity_semantic_embedding_agreement` — pairwise cosine agreement across N completions on a sentence-embedder (anti-gaming against surface-level distinct-2). **DONE 2026-04-22**: accepts injected embedder; NaN fallback when absent.
+- [x] Implement `diversity_metrics.py` scoring functions. **DONE 2026-04-22**: `src/tools/diversity/metrics.py` — entropy, distinct_n, self_bleu (cumulative BLEU-4 with brevity penalty), type_token_ratio, semantic_embedding_agreement, compute_all bundle.
+- [ ] Wire through `to_grep_lines()` for log parsing. (Pending — depends on existing `to_grep_lines()` refactor path; can land alongside the baseline-population run.)
+- [ ] One-day baseline pass: 4 production roles × 20 open-ended prompts × 4 completions (temperature 0.7 baseline + T=1.0 ladder point for recovery probe). **Inference-gated; baseline yaml schema ready (`orchestration/autopilot_baseline.yaml` diversity_baseline: + diversity_baseline_meta: blocks).**
+- [x] **Amended SafetyGate policy** (originally "reject if distinct-2 drops >20% AND quality not up"): **DONE 2026-04-22 (NIB2-42)**: `SafetyGate` in `src/safety_gate.py`. Tier 1 WARN / Tier 2 REJECT (all 4 signals). Warn-only default via `SAFETY_GATE_WARN_ONLY` env var (default ON).
   - **Tier 1 WARN**: distinct-2 drops >20% AND quality not up → log warning, investigate.
   - **Tier 2 REJECT**: only when ALL of: (a) distinct-2 drops >20%, (b) semantic-embedding-agreement drops >10%, (c) quality not up, (d) **Verbalized Sampling probe fails to recover >50% of the gap**. Multi-signal reject prevents rejecting models that merely lack a calibrated sampling prompt.
   - Warn-only mode mandatory until Verbalized Sampling replication on Qwen3-30B-A3B produces baseline recovery data.
-- [ ] **Verbalized Sampling recovery probe**: implement distributional-prompt variant ("generate 5 diverse responses with probabilities...") as part of the diversity baseline. A model that recovers >50% via VS is NOT a candidate for rejection.
+- [x] **Verbalized Sampling recovery probe**: implement distributional-prompt variant ("generate 5 diverse responses with probabilities...") as part of the diversity baseline. A model that recovers >50% via VS is NOT a candidate for rejection. **DONE 2026-04-22**: `src/tools/diversity/verbalized_sampling.py` with `VS_DISTRIBUTIONAL_PROMPT` template, `recovery_ratio()`, `format_vs_prompt()`, `parse_vs_completions()`. Never calls inference directly; caller injects completions.
 - [ ] Deferred: temperature-ladder experiment (T=0.7/1.0/1.3); CoT-suppression ablation.
+
+**Test coverage (2026-04-22)**: `tests/unit/test_safety_gate_diversity.py` — 14 tests all passing. Metric math, embedder mock, 3 verdict paths, Tier 2 REJECT all-four-signals requirement, VS recovery > 0.50 suppresses REJECT, warn-only converts REJECT → WARN, NaN-baseline falls through to PASS, VS parser tolerance.
 
 Exit criterion: baseline file populated; warn-only rule live for 10 trials AND VS recovery probe integrated AND Qwen/Llama replication of OLMo-3 finding attempted; then flip warn → multi-signal reject.
 
