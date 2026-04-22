@@ -399,3 +399,85 @@ The counter-risk: if Qwen3.5-Omni-class TTS becomes the quality expectation (1.2
 - MarkTechPost release note: https://www.marktechpost.com/2026/03/30/alibaba-qwen-team-releases-qwen3-5-omni-a-native-multimodal-model-for-text-audio-video-and-realtime-interaction/
 - Sibling reference (Qwen3-Omni open-weight): https://github.com/QwenLM/Qwen3-Omni
 - Derivative GGUF check: https://huggingface.co/mradermacher/MARTHA-2B-Qwen3.5-Omni-GGUF (community derivative, not official)
+
+---
+
+## Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+**Purpose**: Challenge the self-reported SOTA numbers and probe whether API-only release is hiding weaknesses. Verdict (`not_applicable`, `adoption_blocker: closed_source_api_only`) is not revisited — this section strengthens the rationale and provides monitoring signals for the open-weight sibling Qwen3-Omni-30B-A3B.
+
+### T2b.1 Queries Run
+
+1. `"Qwen3.5-Omni" Gemini-3.1 comparison criticism`
+2. `"Qwen3.5-Omni" reproduction OR independent evaluation`
+3. `Alibaba Qwen benchmark selection bias audio`
+4. `Qwen3-Omni 30B Apache open weights closed source strategy change 2026`
+
+### T2b.2 Findings — Credibility of Self-Reported SOTA
+
+**Finding 1: "215 SOTA results" is a marketing aggregate, not a unified benchmark.**
+- Source: `buildfastwithai.com/blogs/qwen3-5-omni-multimodal-ai-review` (April 2026 review), `digitalapplied.com/blog/qwen-3-5-omni-vs-gemini-3-1-vs-gpt-5-4-comparison`.
+- The 215 count aggregates across subtasks — individual language pairs, specific audio genres, narrow benchmark categories. A model can claim hundreds of SOTAs while losing on the specific benchmark that matters most for a given use case. This is a known pattern in multimodal research PR; Qwen3.5-Omni is not uniquely guilty, but the framing is marketing, not science.
+
+**Finding 2: Gemini-3.1 Pro comparison is credible-but-narrow.**
+- Qwen3.5-Omni-Plus genuinely wins on *general audio understanding, reasoning, recognition, and translation* and on *VoiceBench* (93.1 vs 88.9). These are consistent multi-source reports.
+- Gemini-3.1 Pro still wins on *video understanding and long-context* (1M tokens, 1hr video / 8.4hr audio per prompt). Qwen3.5-Omni's "400s of 720P video in single pass" is ~15× less than Gemini's ceiling. The "10+ hours of audio" claim is plausibly real but untested independently.
+- The audio-visual comprehension category is a *tie*, not a Qwen win. Intake's "surpasses Gemini-3.1 Pro on key audio tasks" is accurate but narrow.
+
+**Finding 3: Gaps within 2 absolute points on critical benchmarks are inside re-evaluation noise.**
+- MMAU 82.2 vs 81.1 (1.1pt), DailyOmni 84.6 vs 82.7 (1.9pt), Qualcomm IVD 68.5 vs 66.2 (2.3pt).
+- Alibaba re-evaluated Gemini-3.1 Pro via the Google API; Google does not publish reproducible eval configs. Re-evaluation at <2pt gaps is reliably within reproducibility variance for audio LLMs.
+- Only RUL-MuchoMusic (72.4 vs 59.6, 12.8pt) would survive noise — and that is the single largest gap, suspiciously so.
+
+**Finding 4: No independent third-party reproduction exists yet.**
+- Source: `buildfastwithai.com` review explicitly flags: *"benchmarks self-selected by the releasing lab tend to favor the releasing lab, and more neutral third-party evaluations will tell a clearer story over the next few weeks."*
+- EvalScope / OmniBench framework for evaluating Qwen3-Omni exists but no public leaderboard result as of 2026-04-22. Artificial Analysis has begun adding Qwen3.5-Omni-Plus comparison pages but composite scores are not yet populated with independent-run numbers.
+- Expected timeline for credible third-party numbers: 4–8 weeks post-release (late May / early June 2026).
+
+### T2b.3 Findings — Why API-Only?
+
+**Finding 5: Strategy shift is explicit and confirmed across multiple sources.**
+- Qwen3-Omni-30B-A3B-Instruct / -Thinking / -Captioner: Apache 2.0 on HuggingFace.
+- Qwen3.5-Omni **AND** Qwen3.6-Plus (April 2026): both released closed, API-only, no license, no weight-release timeline.
+- Source: `digitalapplied.com/blog/open-weight-vs-closed-source-ai-models-q2-2026`: *"Alibaba ships Qwen 3.6 Plus and Qwen 3.5-Omni as closed weights even though earlier Qwen versions were open."*
+- Alibaba's public statement: will "continue focus on open source" — but the flagship models are now closed. This is a two-tier strategy: flagship proprietary, smaller/older siblings open.
+
+**Finding 6: Plausible motivations (ranked by likelihood).**
+1. **Competitive hold** (high): Gemini-3.1 Pro and GPT-5.4 are closed; open-sourcing a model that competes with them would be uniquely disadvantageous. This is the straightforward commercial explanation.
+2. **Speech pipeline reliability/safety** (medium): ARIA streaming TTS with voice cloning (10+ languages with emotional nuance) has obvious deepfake/fraud risk. Closed API allows Alibaba to rate-limit and audit. This would explain why the text-only Qwen3.5-397B-A17B (intake-387) was released open but the omni variant was not.
+3. **Benchmark fragility** (low-medium): If some of the 215 SOTA numbers do not survive independent reproduction, an open-weight release would expose this quickly. This is **speculative** but consistent with the pattern of closing the flagship while keeping the smaller sibling open.
+4. **Infrastructure coupling** (low): Qwen3.5-Omni may rely on Alibaba Cloud–specific serving infrastructure that is non-trivial to export. Less likely since Qwen3-Omni-30B-A3B runs via vLLM / Transformers.
+
+None of these motivations are mutually exclusive, and none can be ruled out under the current API-only release.
+
+### T2b.4 Historical Gap — Alibaba Self-Reported vs Independent
+
+Search for "Alibaba Qwen benchmark selection bias audio" returned no specific controversy — unlike, e.g., the well-documented gaps on earlier text-only model benchmarks from some Chinese labs. The Qwen text models (Qwen2.5, Qwen3) have generally held up on independent evaluation (LMSYS Chatbot Arena, Artificial Analysis composite), with typical independent-eval regression of 3–8% vs self-reported headline scores — within normal industry range. **No evidence suggests Qwen audio numbers are systematically inflated relative to text.** However, the audio eval ecosystem is less mature (fewer independent benchmarks, smaller sample of third-party reproducers), so the gap could be larger here and simply not yet detected.
+
+### T2b.5 Implications for Monitoring Qwen3-Omni-30B-A3B (Open-Weight Sibling)
+
+The open-weight sibling `Qwen3-Omni-30B-A3B-Instruct` (Apache 2.0, on HuggingFace) is the concrete adoption candidate if the quality gap to Qwen3.5-Omni turns out to be smaller than the marketing implies.
+
+**Monitoring signals to track**:
+1. **Artificial Analysis composite**: when they populate Qwen3.5-Omni-Plus with independently-run audio-understanding numbers, compare against Qwen3-Omni-30B-A3B headline numbers. A narrow gap (< 5 absolute points on MMAU/DailyOmni) would make the 30B-A3B a credible adoption target with no quality regret.
+2. **EvalScope OmniBench third-party runs**: watch for community-submitted Qwen3-Omni-30B-A3B numbers on the same audio benchmarks Alibaba reported for Qwen3.5-Omni-Plus. This gives a direct quality-delta measurement.
+3. **Qwen3.5-Omni weight-release announcement**: Alibaba has historically followed API-first → weights-later on some prior flagships (Qwen2.5-Max took ~4 months). Reopen this file if weights drop.
+4. **GGUF availability for Qwen3-Omni-30B-A3B**: llama.cpp mainline does not yet register an `omni` architecture. A community GGUF appearing would unblock CPU-feasibility testing on EPYC, providing concrete ground-truth for the §6 estimates.
+
+### T2b.6 Net Effect on Verdict
+
+**No change.** Verdict remains `not_applicable` with `adoption_blocker: closed_source_api_only`. Tier 2b evidence *strengthens* rather than weakens the downgrade rationale:
+- The 215-SOTA framing is confirmed marketing-heavy.
+- Gemini-3.1 Pro "wins" are narrow and noise-adjacent on critical benchmarks.
+- Closed-source decision looks deliberate and structural (two-tier flagship/sibling strategy), not a short-term hold. Weight release is not imminent.
+- The open-weight sibling Qwen3-Omni-30B-A3B becomes the concrete Tier-1 monitoring target; Qwen3.5-Omni drops to Tier-2 (watch quarterly for weight release, no active effort).
+
+**Cross-reference update**: recommend adding `intake-432` to a future "closed-source flagship with open-weight sibling" monitoring list when that list is created (not created in this sweep per Research Intake governance — no sub-agent index modifications without user approval).
+
+**Sources added in sweep**:
+- https://www.buildfastwithai.com/blogs/qwen3-5-omni-multimodal-ai-review
+- https://www.digitalapplied.com/blog/qwen-3-5-omni-vs-gemini-3-1-vs-gpt-5-4-comparison
+- https://www.digitalapplied.com/blog/open-weight-vs-closed-source-ai-models-q2-2026
+- https://artificialanalysis.ai/models/comparisons/qwen3-5-omni-plus-vs-gemini-3-pro
+- https://evalscope.readthedocs.io/en/latest/best_practice/qwen3_omni.html
+- https://huggingface.co/Qwen/Qwen3-Omni-30B-A3B-Instruct

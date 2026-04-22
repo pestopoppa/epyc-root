@@ -412,4 +412,62 @@ Any of these may be promoted to an active handoff once adoption of LateOn as pri
 - Author: EPYC research deep-dive pipeline
 - Confidence: high (primary sources re-fetched, numbers cross-verified against blog + both model cards)
 - Next review: after E1–E4 completion or 2026-05-01, whichever comes first
-- Tier 2b contradicting-evidence flag: **run before adoption** (LightOn commercial bias, decontamination methodology, EPYC-domain MaxSim scaling)
+- Tier 2b contradicting-evidence flag: **run 2026-04-22 — no downgrade required; see Section 10**
+
+## 10. Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+### 10.1 Queries Run
+
+Three targeted WebSearch queries executed against the public web:
+
+1. `"LightOn LateOn" OR "DenseOn" criticism limitations` — surfaced LightOn-authored materials plus one Nuit Blanche index entry; no critical third-party analysis.
+2. `"ModernColBERT" BEIR reproduction independent evaluation` — surfaced LightOn's own evaluation reproduction boilerplate (HF discussion on `Reason-ModernColBERT/discussions/1`), Leonie Monigatti's X notebook reproducing the advertised ColBERT-small comparison, and SIGIR 2024 "Brewing BEIR" (Thakur et al.) which targets BEIR methodology generally but does not mention LateOn/DenseOn.
+3. `decontaminated BEIR methodology criticism xxhash 13-gram retrieval benchmark` — no direct match for LightOn's xxhash64 + 13-gram containment protocol; surfaced the original BEIR paper, the "Brewing BEIR" reproducibility study, and BEIR-NL (Dutch) which reports 2–3pp nDCG@10 translation-artifact losses.
+
+Supplementary queries executed to probe license and overfitting risk:
+
+4. `LightOn Apache 2.0 training data commercial deployment hidden clauses retrieval` — secondary license guides (MindStudio, Medium) confirm Apache 2.0 is a standard permissive license with no custom restrictions. LightOnOCR-2 prior release explicitly confirmed Apache 2.0 on weights + training data with no negotiation clauses.
+5. `ModernBERT retrieval overfitting BEIR leakage fine-tune MSMARCO NQ` — surfaced `Fantastic (small) Retrievers and How to Train` (arXiv:2510.14880) plus `MultiContrievers` (BlackboxNLP 2024) which analyze dense-retriever training dynamics but do not single out ModernBERT as a leakage vector.
+
+### 10.2 Findings
+
+**No direct contradicting evidence.** Neither the headline BEIR 57.22 nor the decontaminated 60.36 figure has been independently reproduced or refuted in public literature as of 2026-04-22. The only third-party reproduction surfaced is Leonie Monigatti's X-hosted notebook, which reproduces the *advertised* ModernColBERT → ColBERT-small comparison rather than challenging it.
+
+**Documented soft spots (from LightOn's own disclosures, not third-party critique).**
+- LateOn-Code (sibling model, not base LateOn) scores 10.5/23 on AppsRetrieval vs 84.4 expected — attributed to 1024/2048-token query/document length caps. This is a sibling-model issue, but signals LightOn's published numbers can have substantive soft spots that sit outside the headline tables.
+- Decontaminated leaderboard drops 2 of 14 BEIR subsets (DBPedia, NQ) due to >85% leakage-driven removal, reporting a 12-subset decontaminated average. Raw (14) and decontaminated (12) averages are therefore not strictly comparable; the headline "+3.14pp" is across different subset mixes.
+
+**Methodological concerns surfacing from adjacent literature.**
+- "Brewing BEIR" (SIGIR 2024, Thakur et al.) documents that shallow relevance judgments and short noisy documents materially distort BEIR scores; length-based denoising and post-hoc re-judging re-rank models substantially and keep BM25 competitive. This applies to all BEIR numbers in the table, not just LateOn's, but does weaken the absolute claim that +2.55pp is a clean quality signal.
+- The 13-gram containment threshold of 0.5 is the GPT-3 (Brown et al. 2020) protocol, widely reused in LM data-contamination audits. No IR-specific validation surfaced; a short-query false-positive mode is plausible (stylistic overlap between short queries and trained pairs can cross 0.5 containment without true leakage). LightOn does not report sensitivity to threshold choice.
+- No independent analysis of xxhash64-normalised exact-match pass; protocol is sound but the reported empirical removal rates (e.g. 88.6% NQ leakage in mGTE training) depend on trusting LightOn's training-corpus hash set.
+
+**License fine-print.** Apache 2.0 on both weights and the released training datasets appears genuinely clean. Multiple secondary sources confirm the standard permissive terms: commercial fine-tuning permitted, no weight-release obligation, no training-data disclosure requirement. No hidden commercial-deployment clauses surfaced. LightOnOCR-2's prior release set a precedent of clean Apache 2.0 on weights + data.
+
+**Commercial bias risk — unresolved.** LightOn is a commercial vendor of retrieval services (sovereign-AI enterprise GenAI platform). The decontamination protocol, the training data curation, the benchmark selection, and the filtering pipeline are all authored by the same team that sells the resulting products. Independent reproduction on BEIR 13.0 has not yet appeared. This is a confirmation-bias risk rather than evidence of dishonesty: no claim is contradicted, but the evidence base is entirely vendor-internal.
+
+### 10.3 Implications for the S5 Swap Plan
+
+**Verdict retained: `new_opportunity`.** No contradicting evidence is strong enough to warrant downgrade to `worth_investigating` or `not_applicable`. The binding facts are unchanged:
+- LateOn weights are Apache 2.0 and available.
+- ModernBERT backbone + 128-dim output matches current GTE-ModernColBERT-v1 plumbing.
+- Headline BEIR gain (+2.55pp over deployed model) is large enough to survive modest methodology noise.
+- License is genuinely permissive.
+
+**Additional guardrails recommended before production swap (augments Section 6 experiment plan).**
+
+1. **Do not rely on headline BEIR alone.** Treat BEIR 57.22 / 60.36 as internal LightOn claims pending independent reproduction. E3 sentinel A/B on EPYC's web_research suite is the authoritative decision gate — a +2.55pp BEIR gain that does not produce ≥1pp irrelevant_rate reduction on our sentinels is a no-swap signal, not a marginal signal.
+2. **Add an E4b sub-experiment**: re-run NFCorpus + FiQA + SciFact (three BEIR subsets with low leakage risk per LightOn's own reporting) locally on both LateOn and GTE-ModernColBERT-v1 INT8 ONNX exports, report nDCG@10 deltas, and confirm the ordering matches LightOn's claim. Estimated effort: 2 hours. Gates on E1 (ONNX export).
+3. **Record raw-14 vs decontaminated-12 asymmetry in wiki/search-retrieval.md** once adoption is decided. Readers comparing raw 54.67 → 57.22 must not conflate that with the decontaminated 60.36 figure, which is a different subset mix.
+4. **Flag LightOn commercial bias in the handoff update.** `handoffs/active/colbert-reranker-web-research.md` should carry a standing note that all BEIR evidence for the LateOn family originates from the vendor until E3/E4b produce local validation.
+5. **No license-related action items.** Apache 2.0 is clean; no additional review required.
+
+### 10.4 Residual Open Questions (for next review)
+
+- Has any third-party lab reproduced LateOn BEIR 57.22? (Re-check 2026-05-01.)
+- Does the decontamination protocol's 13-gram threshold produce stable rankings at threshold 0.3 and 0.7? (Only relevant if we adopt the protocol internally per Section 4.2 item 2.)
+- Are there published MinHash-LSH cross-checks of LightOn's exact-hash + 13-gram approach? (Noted as Mitigation in Section 7.1 item 2.)
+
+### 10.5 Summary
+
+Tier 2b sweep on 2026-04-22 found **no direct contradicting evidence** against intake-428's five key claims. The main residual risk is **confirmation bias from vendor-internal evidence base** (LightOn authors the models, the benchmark protocol, and the training data). All headline numbers remain unrefuted but also remain unreplicated by third parties. Verdict `new_opportunity` retained. E3 (sentinel A/B) upgraded from "authoritative EPYC-domain test" to **the only non-vendor validation gate before production swap**; added E4b (local BEIR subset reproduction) as a lightweight independent cross-check.

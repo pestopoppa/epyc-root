@@ -440,3 +440,58 @@ Decision gate: at Phase 1 completion, review whether uplift is concentrated in r
 MindDR is a strong "adopt the pattern, defer the training" paper. The **three-agent role factoring** is adoptable as prompt-level orchestration on today's EPYC stack with meaningful expected uplift on research-like queries. The **four-stage RL recipe** is a concrete, detailed training protocol that slots cleanly into the existing DGX-Spark-gated workstream (meta-harness Tier 3, AReaL runner). The **multi-dimensional rubric evaluation** is the most immediately useful *standalone* contribution — it extends the eval tower for any open-ended task today, independent of whether we adopt the agent architecture.
 
 Intake verdict: `worth_investigating` → `adopt_patterns (Phase 1)` + `revisit_post_DGX (Phase 2)`.
+
+---
+
+## Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+Run scope: four targeted WebSearch queries challenging the five load-bearing claims in intake-438. All queries executed against general web + arxiv. Nothing behind paywalls was reached.
+
+### Queries executed
+
+1. `"Mind DeepResearch" Li Auto reproduction OR criticism`
+2. `"MindDR Bench" 51.8 SOTA independent evaluation`
+3. `"Search-RL" "Report-RL" reproduction limitations deep research`
+4. `GSPO GRPO MoE 15pp comparison criticism reinforcement learning`
+
+### Findings by claim
+
+**Claim 1 — SOTA 51.8 on MindDR Bench.**
+No independent re-run found. MindDR Bench is a *self-curated* evaluation set: 500 queries mined from Li Auto's own intelligent-assistant production logs, spanning 16 domains (automotive, travel, technology, finance, etc.). The paper itself acknowledges the automotive-industry skew of the training population. Because the benchmark is neither public nor maintained by a neutral third party, and because no external deep-research agent has been evaluated on it, the 51.8 SOTA claim is *intrinsically unverifiable* outside the authors. This is not a fatal flaw — Li Auto has a legitimate reason to measure on their own distribution — but it means the 51.8 number should not be used as a headline comparison against OpenAI DR, Gemini DR, or Tongyi DR without disclosing the benchmark's provenance.
+
+**Claim 2 — Public-benchmark numbers (BrowseComp-ZH 45.7, BrowseComp 42.8, WideSearch 46.5, xbench-DS 75.0).**
+Third-party benchmarks, so reproducible *in principle*. But no independent re-run on MindDR-released checkpoints has been published to date. Magnitudes are in-family with Tongyi DeepResearch (arxiv 2510.24701v2) and DeepResearcher (arxiv 2504.03160v1), which report similar numbers for 30B-class agents on these benchmarks. So: plausible, cross-corroborated by *family of systems*, but NOT specifically verified for MindDR. Risk for our purposes is low, because Phase 1 adoption relies on the architectural *pattern*, not on hitting these specific numbers.
+
+**Claim 3 — Four-stage training recipe (SFT → Search-RL → Report-RL → preference alignment) is replicable.**
+The *components* are all public — Search-R1, R1-Searcher, ReSearch predate the Search-RL stage; Report-RL is a mild variant of rubric-conditioned PPO; preference alignment is standard DPO/RLHF. The *novelty* is sequencing them. Two concerns surfaced by the searches:
+  - Deep-RL reproducibility baseline is poor (Henderson et al. 1709.06560 "Deep RL that Matters"): intrinsic variance, stochastic environments, unreported hyperparameters; four-stage pipelines compound these.
+  - Surveys at arxiv 2509.06733 (RL Foundations for Deep Research) and 2508.12752 (Deep Research Survey) note that static-corpus RAG-RL approaches (which dominate the open-source deep-research space) have known ceiling issues due to sanitized environments. MindDR moves to real-web search, which helps, but the paper does not release reproduction code or full hyperparameters at first-release, and it does not ablate the Search-RL × Report-RL interaction. So the recipe is *not yet verifiably replicable* externally.
+
+**Claim 4 — GSPO vs GRPO ~15pp on MoE.**
+This is the *best-supported* claim in the paper. External corroboration exists:
+  - GSPO paper itself (Chujie Zheng et al., arxiv 2507.18071, Qwen team) documents that GRPO's token-level importance ratios become unreliable on MoE because the set of activated experts shifts ~10% per gradient update on a 48-layer Qwen3-30B-A3B-Base model.
+  - Qwen3 blog post (qwenlm.github.io/blog/gspo) reports GSPO eliminated the Routing Replay strategy GRPO needed for convergence.
+  - Multiple review posts (Medium, HuggingFace blog) consistently place GSPO above GRPO on MoE.
+  - Caveat: newer variants RSPO (Router-Shift Policy Optimization) and GMPO report matching or exceeding GSPO on the same benchmarks. The ~15pp gap vs GRPO is real but is a GRPO-baseline artifact; vs RSPO or GMPO the gap shrinks or flips.
+
+**Claim 5 — ~30B scale sufficient to beat proprietary on research-like tasks.**
+Consistent with Tongyi DeepResearch and DeepResearcher. Not contradicted. Caveat: "beat proprietary" is evaluated only on open benchmarks where proprietary systems were *also measured externally* — actual OpenAI Deep Research and Gemini Deep Research APIs change continuously, so snapshot comparisons have short shelf lives.
+
+### Public-benchmark legitimacy flag (explicit per request)
+
+The 42-75% public-benchmark range (BrowseComp-ZH, BrowseComp, WideSearch, xbench-DS) **looks legitimate**, not cherry-picked. Evidence: (a) the numbers are in-family with two independently-produced peers (Tongyi DR, DeepResearcher) at similar parameter scale; (b) these are third-party benchmarks, so gaming them would require disclosed-set overfit which would likely be called out on HuggingFace / X; (c) no contradicting independent evaluation was found.
+
+The **MindDR Bench 51.8** number, by contrast, stands alone — it is the only strong signal on a self-curated domain-skewed benchmark, and should be treated as an internal engineering metric, not a SOTA claim, until an independent party evaluates competing systems on the same 500-query set.
+
+### Implication for Phase 1 adoption (MD-1..MD-9 prompt-level pattern)
+
+Phase 1 adoption (prompt-level three-agent factoring: Planning / DeepSearch / Report, plus the multi-dimensional rubric eval) remains **justified**, because:
+
+1. Phase 1 depends on the *architectural pattern* (three-agent role specialization + rubric evaluation), NOT on any specific benchmark number.
+2. The pattern has multiple independent analogues (AgentRxiv, Paperclip, OpenGauss multi-agent research), so MindDR is not the sole source.
+3. No Tier-2b finding contradicts the *architectural* claim. The contradictions we found are about (a) MindDR Bench being internal-only and (b) four-stage RL training not being verifiably replicable yet — both of which are out-of-scope for Phase 1 (prompt-level) and in-scope only for Phase 2 (DGX-gated training).
+4. The multi-dimensional rubric evaluation carries independent value regardless of whether the MindDR checkpoints themselves are reproducible.
+
+**Phase 2 adoption (four-stage RL training recipe) should be gated harder than Phase 1**: require either (a) official MindDR code release + hyperparameters, or (b) an independent reproduction paper, before committing DGX time to Search-RL × Report-RL pipeline implementation. Until then, Phase 2 stays in the `revisit_post_DGX` bucket and should NOT be treated as a pre-validated recipe.
+
+**Net**: Phase 1 (MD-1..MD-9) proceeds unchanged. Phase 2 gains an additional gate beyond hardware — reproducibility evidence for the four-stage recipe.

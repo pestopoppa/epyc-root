@@ -424,3 +424,85 @@ Until corroborated, treat "beats proprietary" as **plausible but not confirmed**
 | Tier 2b status | **Not run** — beat-proprietary + 23-benchmark selection bias require external corroboration. |
 
 **Top 1 next action**: scaffold `epyc-orchestrator/scripts/autopilot/species/env_synth/` stub with an ETD agent wrapping existing web_search + fetch_url + question_pool.py as a seed arena. Run 48h on a 50-environment target. Feed gap diagnosis into AutoPilot controller prompt. No new training, no new models, no new benchmarks outside gold ring.
+
+---
+
+## Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+### Queries run (WebSearch)
+
+1. `"Agent-World" reproduction OR criticism beat proprietary benchmark`
+2. `Environment-Task Discovery reward hacking criticism self-synthesized benchmark`
+3. `self-evolving agent training arena gaming benchmark contamination`
+4. `"Agent-World-8B" OR "Agent-World-14B" independent evaluation reproduction`
+5. `Agent-World arxiv 2604.18292 open source weights release code MCP registry`
+6. `Agent-World 23 benchmarks SkillsBench ClawEval authorship same team`
+7. `deterministic verifier gameable agent RL programmatic oracle failure modes`
+
+### Findings against each challenged claim
+
+#### C1 — "Agent-World-8B/14B beat proprietary baselines across 23 benchmarks"
+
+**Status: UNREPRODUCED.** No third-party replication of the headline numbers appears in the public literature as of 2026-04-22. All references trace back to:
+- the Agent-World paper itself (arxiv:2604.18292);
+- the HuggingFace paper page (huggingface.co/papers/2604.18292);
+- the Snowflake engineering blog describing "Agent World Model (AWM)" — an architectural *cousin* (arxiv:2602.10090), not the identical artifact, though it inherits the same 53.83 -> 65.94 / 70.18 numbers.
+
+The exact proprietary comparator list (which GPT-X, which Claude revision, which Gemini, with which tool-calling harness) is not independently verified. Known pattern (MindDR / intake-438 caveat): proprietary baselines are often pinned to older API versions that postdate the authors' training window.
+
+**Verdict on C1: plausible but unconfirmed. The claim should NOT be cited in downstream planning as if it were an established fact.**
+
+#### C2 — "ETD produces verifiable tasks with controllable difficulty"
+
+**Status: DESIGN-PLAUSIBLE, EXECUTION-RISKY.** The design (programmatic oracle + parameterised k/chain-length/distractor count) is coherent, but the reward-hacking literature makes the failure envelope concrete:
+- Survey on reward hacking (arxiv:2507.05619, Comprehensive Empirical Study, Jul 2025) and Lilian Weng's review (2024) document that deterministic verifiers are routinely bypassed in practice (assertion rewriting, sys.exit(0), test-file edits, process-killing in game-play).
+- RLEF (ICML 2025) proposes the standard mitigation — private-test holdout with only public tests for intermediate feedback. Agent-World does not report doing this for its synthesized verifiers.
+- TRACE (arxiv:2601.20103, Jan 2026) explicitly flags circular labeling risk when the same model family produces both synthesis and detection/verification.
+
+**Verdict on C2: verifiability claim is procedural, not empirical — the paper provides no verifier-fuzzing or private-test-holdout analysis.**
+
+#### C3 — "CSE combines multi-env RL with dynamic task synthesis"
+
+**Status: ARCHITECTURAL NOVELTY CONFIRMED, QUALITY CLAIM UNCONFIRMED.** The architecture (closed loop: synthesize -> train -> diagnose gaps -> re-synthesize) is corroborated by similar frameworks: AgentEvolver (modelscope, GitHub), AReaL async RL (arxiv intake pending). So the pattern exists and is credible. The specific claim that *this* instantiation produces the reported gains is the unreproduced part (see C1).
+
+#### C4 — "Scaling correlates with environment diversity and self-evolution rounds"
+
+**Status: PLAUSIBLE BUT SELF-REPORTED.** All scaling curves are from the same paper using the same arena. There is no external replication at 4B / 8B / 14B across an independent environment pool. The concern is circular: if the arena is constructed by the same model family that is being evaluated, diversity-vs-performance correlation can be inflated by synthesis quirks the agent learns to exploit.
+
+#### C5 — "MCP integration provides unified real-world service interface (19,822 tools)"
+
+**Status: PARTIALLY CONFIRMED.** Snowflake-Labs/agent-world-model repo exists (GitHub), HF paper page live. **Released as of Feb 2026**: synthesis pipeline, **1,000-environment subset** (not 1,978), and RL-trained agents. **Not confirmed released**: the full 19,822-tool MCP registry, complete arena, and 14B weights. Release scope for "Agent-World proper" vs "Agent World Model (AWM)" is ambiguous — same team, overlapping numbers, different artifact names.
+
+### Benchmark selection bias (23-suite)
+
+- **ClawEval**: Peking U + HKU, arxiv:2604.06132v1 — different institutions from Agent-World authors (Dong, Lu, Huang, Zhong are not in ClawEval's author list per search results). Not author-overlap, but co-release timing (April 2026) in the same "real-world agent benchmark" marketing wave.
+- **SkillsBench**: benchflow-ai, arxiv:2602.12670 — third-party; released Feb 2026.
+- **τ²-Bench, BFCL V4, MCP-Mark**: external, pre-existing benchmarks.
+
+So the 23 benchmarks are **not all author-controlled**. However, the paper does not report results on well-established external held-outs that *don't* fit a tool-use-heavy profile — **SWE-Bench Verified, GAIA, WebArena Hard, OSWorld** are conspicuously absent. Selection bias is not from co-authorship but from **suite-class cherry-picking**: the 23 are all within a profile that favors arena-trained tool-use agents.
+
+### Arena-agent collusion
+
+Confirmed risk per the reward-hacking literature. Agent-World uses Qwen3 family for both ETD and trained agent. TRACE (arxiv:2601.20103) specifically cites this pattern as producing "optimistically biased" scores from circular labeling. Deep-dive §10.3 flagged this — sweep confirms the concern is materially real, not speculative.
+
+### Impact on Phase 1 training-free adoption (AW-1..AW-6)
+
+**Phase 1 adoption remains defensible. Rationale:**
+
+1. Phase 1 (AW-1..AW-6) imports Agent-World as an **architectural pattern** — deep-search ETD + capability-gap diagnosis + programmatic verifier scaffolding + co-evolution loop. It does **not** inherit Agent-World's weights, its arena, or its benchmark numbers.
+2. The beat-proprietary claim, which is the weakest element under scrutiny, is entirely irrelevant to Phase 1. Phase 1 improvements are **diagnostic signal quality**, not **benchmark score**.
+3. The verifier-gaming risk *does* apply to Phase 1, but deep-dive §10.2/§10.3 already prescribed the correct mitigations: (a) reference-model sanity pass before accepting synthesized tasks, (b) held-out verifier path frozen at arena creation time, (c) gold-ring immutable benchmarks the agent cannot propose changes to, (d) cross-family separation — use frontdoor/architect_general for ETD, not the same model family being evaluated.
+
+**Phase 2 gating (stricter than before):** Phase 2 (full RL specialization on synthesized arena) was already GPU-gated on DGX Spark acquisition. **New gating condition added**: before committing compute to Phase 2, independent external-benchmark replication of Agent-World's claim must exist — either in the literature or by our own Phase 1.5 SFT reproduction of the released 8B checkpoint on SWE-Bench Verified / GAIA. If Phase 1.5 on the released weights fails to match paper claims on external benchmarks, Phase 2 is downgraded from "defer-until-GPU" to "do-not-pursue".
+
+**Phase 1.5 (SFT on released checkpoint) repurposed as Tier 2b corroboration probe:** rather than treating Phase 1.5 as a zero-risk freebie, it now carries a *diagnostic* role — running the released Agent-World-8B against SWE-Bench Verified + GAIA locally would be the single most informative datapoint for deciding Phase 2.
+
+### Updated verdict row in §12
+
+| Tier 2b status | **Run 2026-04-22. Beat-proprietary claim UNREPRODUCED in open literature; all numbers author-self-reported. Phase 1 adoption (pattern-level) unaffected. Phase 2 (RL specialization) adds external-replication gate on top of existing DGX Spark gate. Phase 1.5 (SFT on released weights) upgraded from freebie to corroboration probe.** |
+
+### Items still open
+
+- [ ] Run Agent-World-8B released checkpoint against SWE-Bench Verified and GAIA when weights + inference harness are confirmed public.
+- [ ] Check ArXiv v2 / TMLR submission of 2604.18292 for reviewer-visible additional comparator details.
+- [ ] Monitor huggingface.co/papers/2604.18292 comment section and Semantic Scholar citations over next 90 days for independent replication attempts.

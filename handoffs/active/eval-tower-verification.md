@@ -200,19 +200,30 @@ From Aletheia (intake-370, TU Darmstadt):
 
 ### EV-8: Diversity metrics (NEW 2026-04-22, DD4 / intake-441)
 
-**Source**: `/workspace/research/deep-dives/diversity-collapse-posttraining.md` (402 lines). Post-training diversity loss is **structural (weights), not format** — inference-time interventions cannot recover it. Any future checkpoint swap needs a diversity-regression gate alongside quality/ECE/AUC.
+**Source**: `/workspace/research/deep-dives/diversity-collapse-posttraining.md` (402 lines + Tier 2b sweep 2026-04-22).
+
+**⚠️ Load-bearing claim contested (Tier 2b, 2026-04-22)**: Verbalized Sampling (arXiv 2510.01171, Zhang et al. 2025) is a **training-free inference-time prompt** that recovers **66.8%** of the base-model diversity gap and delivers 1.6-2.1× diversity boost. This directly refutes intake-441's load-bearing claim ("inference-time interventions cannot recover training-time diversity loss"). Additional findings: self-BLEU ignores quality (ACL W19-2311); distinct-N/self-BLEU are surface-level and gameable (arXiv 2506.00514); OLMo-3 results not replicated on Qwen/Llama/MoE families.
+
+**EV-8 AMENDED to two-tier warn/reject with recovery probe**:
 
 **Target**: NIB2-42 in `non-inference-backlog.md`.
 
 Tasks:
-- [ ] Add 4 fields to `EvalResult` at `safety_gate.py` (currently L44-100): `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr`.
-- [ ] Implement `diversity_metrics.py` scoring functions. Distinct-2 = `len(unique 2-grams) / len(2-grams)`; self-BLEU = pairwise BLEU across N completions; TTR = type-token ratio.
+- [ ] Add 4 fields to `EvalResult` at `safety_gate.py` (L44-100): `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr`.
+- [ ] Add supplemental field `diversity_semantic_embedding_agreement` — pairwise cosine agreement across N completions on a sentence-embedder (anti-gaming against surface-level distinct-2).
+- [ ] Implement `diversity_metrics.py` scoring functions.
 - [ ] Wire through `to_grep_lines()` for log parsing.
-- [ ] One-day baseline pass: 4 production roles (architect_general, architect_coding, coder, worker) × 20 open-ended prompts × 4 completions (temperature 0.7). Populate `autopilot_baseline.yaml` with per-role thresholds.
-- [ ] SafetyGate rule (warn-only for 10 trials, then enforce): **reject checkpoint if distinct-2 drops >20% AND quality not up**. Couples diversity with quality to prevent metric gaming.
-- [ ] Deferred: temperature-ladder experiment (T=0.7/1.0/1.3); CoT-suppression ablation on Think models.
+- [ ] One-day baseline pass: 4 production roles × 20 open-ended prompts × 4 completions (temperature 0.7 baseline + T=1.0 ladder point for recovery probe).
+- [ ] **Amended SafetyGate policy** (originally "reject if distinct-2 drops >20% AND quality not up"):
+  - **Tier 1 WARN**: distinct-2 drops >20% AND quality not up → log warning, investigate.
+  - **Tier 2 REJECT**: only when ALL of: (a) distinct-2 drops >20%, (b) semantic-embedding-agreement drops >10%, (c) quality not up, (d) **Verbalized Sampling probe fails to recover >50% of the gap**. Multi-signal reject prevents rejecting models that merely lack a calibrated sampling prompt.
+  - Warn-only mode mandatory until Verbalized Sampling replication on Qwen3-30B-A3B produces baseline recovery data.
+- [ ] **Verbalized Sampling recovery probe**: implement distributional-prompt variant ("generate 5 diverse responses with probabilities...") as part of the diversity baseline. A model that recovers >50% via VS is NOT a candidate for rejection.
+- [ ] Deferred: temperature-ladder experiment (T=0.7/1.0/1.3); CoT-suppression ablation.
 
-Exit criterion: baseline file populated; warn-only rule live for 10 trials; then flip warn → reject.
+Exit criterion: baseline file populated; warn-only rule live for 10 trials AND VS recovery probe integrated AND Qwen/Llama replication of OLMo-3 finding attempted; then flip warn → multi-signal reject.
+
+**Reason for amended gate**: Verbalized Sampling evidence shows the "weights-only, inference-irrecoverable" framing was overstated. The amended multi-signal gate avoids false-negatives (rejecting checkpoints that just need better sampling prompts).
 
 ### EV-9: Multi-dimensional rubric (NEW 2026-04-22, DD7 / intake-438)
 

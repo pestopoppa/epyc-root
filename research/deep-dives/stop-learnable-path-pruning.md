@@ -399,3 +399,84 @@ STOP fills a genuine gap in EPYC's reasoning-compression taxonomy: the internal-
 No existing technique is REPLACED or SUPERSEDED by STOP.
 
 **Next action**: keep STOP on the reasoning-compression handoff as a `worth_investigating` Tier 1.5 entry with the Phase 0–4 experiment plan attached. Do not commit to implementation until NIB2-32 produces a live difficulty-signal verdict (the natural gating substrate for k-sampling), at which point STOP becomes the first learnable technique we can add without GPU training cost.
+
+---
+
+## Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+Search queries executed (WebSearch, 4 queries):
+
+1. `"STOP" "super token" pruning reproduction LLM reasoning`
+2. `"path pruning" parallel reasoning LLM limitations criticism 2026`
+3. `AIME25 benchmark 30 questions statistical power variance reasoning`
+4. `Medusa learned verification heads token prediction LLM parallel`
+5. `training-free confidence threshold pruning parallel reasoning self-consistency early stopping`
+6. `"learnable prompt token" "prefix" classifier probe LLM frozen backbone`
+7. `AIME 2025 pass@1 variance 8 seeds confidence interval evaluation protocol`
+
+### Findings
+
+**(a) AIME25 statistical power — the 84% → 90% headline is under-reported.**
+AIME25 is exactly 30 questions; +6pp = 2 additional questions correct. Independent evaluation platforms (artificialanalysis.ai, vals.ai, AoPS) and the DeepScaleR community protocol (github.com/agentica-project/deepscaler/issues/3) now **require 8-seed averaged pass@1 with confidence intervals** specifically because single-seed AIME25 runs are noise-dominated. STOP paper reports a single-seed point estimate without a CI. VAR-MATH (arxiv 2507.12885) explicitly demonstrates that AIME25 single-instance evaluation is "highly susceptible to sampling noise" and calls for symbolic multi-instantiation to recover signal. A +2-question improvement is well inside the typical per-seed variance observed on community reruns of AIME25 (±3–7pp is routine). The headline claim is **not replication-grade**.
+
+**(b) Mechanism novelty is narrower than claimed.**
+The STOP mechanism — single learnable prefix token + lightweight linear/MLP scoring head on a frozen backbone — is a direct instance of **prompt tuning / prefix tuning with a probe classifier**, a technique class with extensive prior art:
+- Token- and Layer-Selective Probes (arxiv 2601.13288) — trains lightweight probes on frozen-backbone hidden states for single-pass classification; introduces learned token-layer aggregation.
+- Prefix Probing (arxiv 2512.16650) — lightweight prefix-position probes for harmful-content detection.
+- Prompt tuning / prefix tuning (Lester et al. 2021; Li & Liang 2021) — the standard "learnable soft prompt + frozen backbone" recipe. STOP is this recipe applied to a value-discrimination target.
+
+What **is** genuinely novel: the application target (path productivity at prefix level for parallel reasoning) and the 2×2 taxonomy (signal × policy). The *mechanism* is not a new primitive.
+
+**(c) Training-free competitors exist and are not benchmarked against.**
+Several training-free confidence-based early-stopping methods achieve selection gains in the same regime STOP targets:
+- **DeepConf** (Zhao et al., jiaweizzhao.github.io/deepconf) — sliding-window group confidence + online early-termination; terminates low-confidence traces mid-generation; aggregates survivors with confidence-weighted majority voting.
+- **Stop-When-Enough** (arxiv 2510.10103) — adaptive early stopping for CoT reasoning.
+- **REFRAIN** — SW-UCB (Sliding-Window UCB) multi-armed bandit for adaptive threshold.
+- **Confidence-Dynamics early stopping** (arxiv 2604.04930) — early stopping for LRMs via confidence dynamics.
+- **SlimSC** — semantic-similarity heuristic for self-consistency redundancy elimination.
+- **Latent Informativeness Signals** (OpenReview Eq5dKfdtiA) — inference-time CoT pruning via latent signals.
+- **ConCISE** (aclanthology 2025.emnlp-main.405) — confidence-guided step compression.
+
+Crucially, the STOP paper does **not** include DeepConf or Stop-When-Enough in its baseline grid. A learnable probe that matches but does not beat a training-free confidence-based heuristic is not worth the training cost.
+
+**(d) Medusa rediscovery check — negative.**
+Medusa (arxiv 2401.10774) adds multiple decoding heads for token-level speculative acceptance with tree attention — a fundamentally different mechanism (token-level speedup, not branch-selection). Medusa-1's frozen-backbone + learnable-head training pattern is a precedent for STOP's training recipe, but STOP is not a Medusa rediscovery. However, this comparison shows that the "frozen backbone + learnable head" design pattern has a mature 2+ year track record with known failure modes (Medusa's speedup gain depends heavily on acceptance rate, which in turn depends on backbone-head alignment — the STOP paper's choice to not ablate layer selection is concerning against this precedent).
+
+**(e) "Initial errors" interpretability claim unfalsified.**
+The paper claims STOP "identifies unproductive branches from initial errors" but does not provide a falsification test. Three alternative explanations are not ruled out:
+1. **Length proxy** — short-m@k's own analysis shows that correct traces are statistically shorter, so a prefix-probe learning "short == productive" would achieve most of STOP's gain heuristically.
+2. **Canonicity bias** — the probe may simply reject non-canonical-but-correct traces (mode collapse to a teacher distribution).
+3. **Surface-token patterns** — the probe may key on early markers like "Let me think" or "Actually" rather than semantic error detection.
+
+No ablation against a length-only classifier baseline is reported. Until such an ablation is run, the claim "unproductive branches from initial errors" is mechanistically unsupported.
+
+### Verdict change recommendation
+
+**Do not change the `verdict` field** (remains `worth_investigating`), but the dive's Section 3.1 headline-results table should be annotated in situ with "(single-seed; 30 questions; no CI; likely within 95% CI of baseline)" and Section 9.1 should elevate "AIME25 sample size" from a mentioned caveat to a **primary reproducibility concern**. Credibility score could reasonably drop from **6 → 4–5** on re-review: the mechanism is sound and compositional, but the empirical evidence is weaker than initially scored and the novelty is narrower than claimed.
+
+### Phase 1 probe AUC gate — recommend tightening
+
+The current Phase 1 gate is **AUC ≥ 0.75** at C ≤ 128. Given:
+- DeepConf and Stop-When-Enough achieve selection gains with zero training (i.e., their implicit AUC is whatever confidence-thresholding buys),
+- Length alone on short-m@k gives a non-trivial selection signal,
+- An AUC of 0.75 is only modestly above length-heuristic baselines.
+
+**Recommend tightening the gate to AUC ≥ 0.80 at C ≤ 128, AND requiring ≥ 0.05 AUC delta over a length-only classifier baseline**. The length-baseline delta is the single most important control — if a linear classifier on `len(prefix_tokens)` alone achieves AUC 0.72, a learned probe at 0.75 is effectively re-implementing length. This new gate forces the evidence for the "learnable internal signal" story to stand on its own. Also add DeepConf as a Phase 3 A/B arm — if STOP does not beat DeepConf at equal compute, STOP is dominated by a training-free method and should not be adopted.
+
+### Actions taken
+
+- `research/intake_index.yaml` intake-437: appended 5 contradicting-evidence entries (verdict field unchanged).
+- This deep-dive section.
+
+### Sources
+
+- [AIME 2025 Benchmark: An Analysis of AI Math Reasoning (IntuitionLabs)](https://intuitionlabs.ai/articles/aime-2025-ai-benchmark-explained)
+- [VAR-MATH: Probing True Mathematical Reasoning (arxiv 2507.12885)](https://arxiv.org/html/2507.12885)
+- [DeepScaleR issue on AIME reproducibility (rllm-org/rllm #3)](https://github.com/agentica-project/deepscaler/issues/3)
+- [DeepConf paper](https://jiaweizzhao.github.io/deepconf/static/pdfs/deepconf_arxiv.pdf)
+- [Stop-When-Enough: Adaptive Early-Stopping for CoT (arxiv 2510.10103)](https://arxiv.org/html/2510.10103v1)
+- [Early Stopping for LRMs via Confidence Dynamics (arxiv 2604.04930)](https://arxiv.org/html/2604.04930)
+- [Token- and Layer-Selective Probes (arxiv 2601.13288)](https://arxiv.org/html/2601.13288)
+- [Prefix Probing (arxiv 2512.16650)](https://arxiv.org/html/2512.16650v1)
+- [Medusa: Multiple Decoding Heads (arxiv 2401.10774)](https://arxiv.org/abs/2401.10774)
+- [Inference-Time CoT Pruning with Latent Informativeness Signals (OpenReview)](https://openreview.net/pdf?id=Eq5dKfdtiA)

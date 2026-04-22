@@ -400,3 +400,83 @@ The core claim — post-training collapses output diversity in weights, not form
 4. Is there a way to *measure* mutation-proposer diversity cheaply enough to put it on the autopilot dashboard? Yes — §7.4's pairwise embedding distance metric is O(N²) in accepted-mutation count, trivially cheap at N~100.
 
 Log entry for research-evaluation-index and intake index: classified `worth_investigating`, actionable in ~3 days of engineering effort (2 days integration + 1 day baseline experiment). Next deep-dive candidate from the same cluster: whether entropy-regularized DPO / KL-augmented preference optimization meaningfully preserves diversity — relevant if we ever train our own preference-tuned checkpoint.
+
+---
+
+## Tier 2b Contradicting-Evidence Sweep (2026-04-22)
+
+**Goal**: Challenge the five key claims of intake-441 with a literature sweep, particularly the load-bearing claim for EV-8 that **inference-time interventions cannot recover training-time diversity loss**.
+
+### Queries Executed
+
+1. `post-training diversity collapse inference recovery counter-evidence LLM`
+2. `temperature sampling top-p diversity recovery RLHF fine-tuned models`
+3. `OLMo 3 diversity analysis reproduction post-training 2026`
+4. `distinct-2 self-BLEU post-training diversity metric criticism gaming`
+
+### Primary Finding — LOAD-BEARING CLAIM CONTESTED
+
+**Verbalized Sampling (arXiv 2510.01171, Zhang et al., 2025, OpenReview submission 9jQkmGunGo)**:
+A training-free, inference-time prompting strategy that asks the aligned model to emit a *distribution* of responses rather than a single response. Reported results:
+
+- Recovers **66.8%** of the base-model diversity gap at inference time (no weight changes, no fine-tuning).
+- Delivers **1.6-2.1×** diversity boost in creative writing while preserving task quality.
+- Root-cause framing: mode collapse is caused by **typicality bias in preference-annotation data** (humans favor familiar / typical text). Latent diversity is *retained* in weights; it just isn't *surfaced* under standard prompting conventions.
+
+This **directly contradicts the paper's claim #5** — the claim on which EV-8's SafetyGate rule was explicitly conditioned ("you cannot undo SFT-induced mode collapse purely at generation time"). The OLMo 3 paper tested temperature, top-p, and prompt rotation; it did not test a distributional-prompting protocol. Verbalized Sampling is outside the paper's ablation grid and reports a qualitatively different result.
+
+### Secondary Findings — Metric Validity
+
+**Self-BLEU criticism (Alihosseini et al., ACL W19-2311, 2019)**:
+Self-BLEU ignores generation quality and fails to match proper divergence metrics; manually-constructed models can outperform real text on BLEU/Self-BLEU, so Self-BLEU alone is not a reliable diversity indicator.
+
+**Form-based metric weakness (arXiv 2506.00514, 2025)**:
+Distinct-N and Self-BLEU are surface-level. Form-based metrics show high distributional overlap across genuinely-different output sets; semantic-embedding metrics (Chamfer distance, BERTScore-style) distinguish diversity far better. Concrete implication for EV-8: a mutation injecting lexical filler or simple paraphrase could pass a distinct-2 gate without supplying real semantic variety — the gaming risk is not hypothetical, it is the default behavior of surface-level diversity metrics under adversarial optimization pressure.
+
+### Family Generalization — Untested
+
+**OLMo 3 specificity**: No replication found on Qwen3 / Qwen3.5 / Llama-3, and crucially no MoE coverage. Our production stack runs Qwen3-30B-A3B + GLM-4.5 (both MoE). The claim that "SFT dominates narrowing, DPO dominates on chat" is a single-family datapoint. An MoE router may attenuate or amplify collapse via expert-selection entropy — untested either way.
+
+### Practitioner Counter-Signal (weaker)
+
+2026 sampling-parameter guides (learnprompting, promptingguide.ai, amitray 2026) consistently describe T=0.8-1.2 + top-p=0.8-0.95 as effective diversity levers on aligned models in deployed settings. This is not peer-reviewed, but it is a broad practitioner counter-signal to the paper's "temperature plateaus well short of base" claim.
+
+### Impact on EV-8 (SafetyGate Diversity-Regression Rule)
+
+The EV-8 rule proposed in §6.4 was: **"Reject if distinct-2 drops >20% and self-BLEU rises >0.10 AND quality has not significantly improved"**. The contradicting evidence tempers — but does not invalidate — this design. Concrete amendments:
+
+1. **Do not build EV-8 around the assumption that inference-time recovery is impossible.** If Verbalized Sampling (or something like it) can recover 66.8% of the gap at inference time, then a checkpoint that *appears* to have regressed diversity might just be mis-prompted. EV-8 should (a) evaluate candidate checkpoints with a Verbalized-Sampling-style distributional prompt in addition to the stock prompt, or (b) treat distinct-2 drops as a *signal for further investigation*, not an automatic reject.
+
+2. **Demote Self-BLEU from the composite rule** or require it to agree with an embedding-based semantic-diversity metric before it can contribute to a reject decision. §9.2 already flagged self-BLEU as noise-prone; the ACL 2019 evidence and arXiv 2506.00514 strengthen that flag to "do not gate on self-BLEU alone."
+
+3. **Guard against surface-level gaming**. The composite rule in §9.6 ("reject only if diversity drops AND quality is not up") remains necessary but insufficient. Add a semantic-embedding diversity check (cosine-distance between sentence embeddings of completions) as a secondary signal before rejecting on distinct-2 alone.
+
+4. **Retain the -20% distinct-2 threshold as a warn signal, not a reject signal, until we validate on our own stack**. §6.6 Phase 2 (warn only) becomes more important given the contested evidence. Do not flip to Phase 3 (reject) without first running a replication on Qwen3-30B-A3B and without adding the Verbalized-Sampling evaluation prompt.
+
+5. **MoE-specific validation before trusting any diversity gate on our production checkpoints**. §9.1 already raised this; the Tier 2b sweep did not find a paper that resolves it.
+
+### Amended EV-8 Rule (proposed)
+
+| Check | Trigger | Action |
+|-------|---------|--------|
+| Diversity regression (warn) | distinct-2 drops >20% on stock prompt | Warn, investigate with Verbalized-Sampling-style distributional prompt |
+| Diversity regression (reject) | distinct-2 drops >20% on stock prompt AND distributional-prompt recovery <50% of gap AND semantic-embedding diversity also drops >15% AND quality not up | Reject |
+
+The reject path is now conditioned on multi-signal agreement, not on a single surface metric. This is consistent with the paper's own multi-metric philosophy (§3.3) but strictly stronger because it explicitly tests whether the apparent diversity loss is recoverable at inference time.
+
+### Verdict After Sweep
+
+- The **load-bearing claim is materially contested.** Verbalized Sampling is direct, peer-reviewed counter-evidence that inference-time recovery is possible to a substantial degree. The paper's claim should be downgraded from "inference-time cannot recover" to "stock temperature/nucleus sampling cannot recover — distributional-prompting protocols can."
+- EV-8 remains worth building, but the threshold must be **softer on the reject side** and must include an inference-time-recovery probe before rejecting a checkpoint.
+- Paper's other claims (SFT-dominant narrowing on Think, DPO-dominant on Instruct, CoT-suppression preserves answer-level diversity, quality-vs-residual decomposition) were **not directly refuted** by the sweep. They remain plausible and actionable for model-selection reporting.
+
+### Follow-on Items (Not Blocking)
+
+- Implement Verbalized Sampling as an eval prompt option in EvalTower (~1 day). Use it as a second reading when a candidate checkpoint triggers the diversity warn.
+- Run Verbalized Sampling on our current architect_general / coder / worker to measure the in-stack inference-recovery ceiling — this is a direct replication of the arXiv 2510.01171 result on our models, and it quantifies how much of the OLMo 3 paper's pessimism generalizes to our stack.
+- Track Zhang et al. 2025 for reported failure modes — if Verbalized Sampling fails on reasoning-heavy tasks (our Think-track use case), that is a narrower scope for EV-8 reject gating that might still be defensible.
+
+### Files Updated
+
+- `research/intake_index.yaml` — intake-441 `contradicting_evidence` list populated; `tier_2b_status` added; `eval-tower-verification.md` added to cross-referenced handoffs.
+- `research/deep-dives/diversity-collapse-posttraining.md` — this section.

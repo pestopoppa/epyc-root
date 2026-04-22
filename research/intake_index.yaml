@@ -16623,7 +16623,15 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - 'No direct contradicting evidence found in Tier 2b sweep 2026-04-22 across three targeted WebSearch queries — possible confirmation bias risk; LightOn is a commercial retrieval vendor so reliance on self-reported BEIR warrants independent local validation before production swap'
+  - 'Only LateOn-Code sibling (not base LateOn) has a publicly documented benchmark weakness — AppsRetrieval scores 10.5/23 vs 84.4 expected, attributed to 1024/2048-token query/doc length caps. Not directly applicable to LateOn BEIR claim but signals LightOn''s published numbers can have unflattering soft spots not featured in headline tables (LightOn blog self-disclosure)'
+  - 'Apache 2.0 on LateOn/DenseOn weights AND the embeddings-pre-training / embeddings-fine-tuning datasets independently confirmed as standard permissive release with no custom restrictions or negotiation clauses (secondary license guides, 2026). No hidden commercial-deployment fine-print surfaced'
+  - 'BEIR evaluation broadly criticized in literature (Thakur et al. "Brewing BEIR" SIGIR 2024; length-based denoising can shift scores substantially; BM25 stays competitive post-cleaning). LightOn''s decontamination protocol addresses one axis (train-test leakage) but not relevance-judgment noise — so +3.14pp decontaminated gain is evidence of robust learning only w.r.t. leakage, not overall BEIR construct validity'
+  - '13-gram containment threshold 0.5 is the GPT-3 (Brown et al. 2020) protocol, reused in GPT-4/LLaMA/Llama-2 data-contamination audits. Widely accepted in LM training literature but no IR-specific validation surfaced; a short-query false-positive mode is plausible and not addressed in LightOn''s report'
+  - 'Decontaminated leaderboard drops 2 of 14 BEIR subsets (DBPedia, NQ) due to >85% leakage-driven removal — asymmetry (raw=14, decon=12) means raw-vs-decon numbers are not strictly comparable. LightOn discloses this but the headline +3.14pp figure does not footnote it'
+  contradicting_evidence_tier: 2b
+  contradicting_evidence_sweep_date: '2026-04-22'
   cross_references:
     chapters: []
     handoffs:
@@ -16647,7 +16655,9 @@
     new_opportunity: same backbone (ModernBERT) + same parameter class (≤150M) + Apache
     2.0 + higher BEIR scores make this a low-risk upgrade candidate. Action: (1) verify
     ONNX INT8 variant, (2) benchmark reranking latency vs 180ms GTE baseline, (3) A/B on
-    web_research sentinel suite. Tier 2b contradicting-evidence not run — flagged.
+    web_research sentinel suite. Tier 2b contradicting-evidence sweep completed
+    2026-04-22 — no independent replication of 57.22/60.36 found; verdict retained but
+    E3 sentinel A/B is authoritative EPYC-domain validation before production swap.
 
 - id: intake-429
   url: https://docs.lighter.xyz/about-lighter/technical-architecture-lighter-core
@@ -16847,7 +16857,15 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - 'Tier 2b sweep 2026-04-22: "215 SOTA results" is a marketing aggregate across many subtasks (language pairs, audio genres, narrow benchmark categories), not a unified benchmark — model can claim hundreds of SOTAs while losing on specific user-relevant benchmarks (buildfastwithai, digitalapplied 2026)'
+  - 'Gemini-3.1 Pro comparisons are Alibaba-internal re-evaluations via API; MMAU (82.2 vs 81.1), DailyOmni (84.6 vs 82.7), Qualcomm IVD (68.5 vs 66.2) gaps all within 2 absolute points — inside plausible re-eval noise'
+  - 'Self-selected benchmarks by releasing lab tend to favor the releasing lab; neutral third-party evaluations not yet available (buildfastwithai review, April 2026)'
+  - 'Gemini 3.1 Pro actually wins on video understanding and long-context (1M tokens, 1hr video / 8.4hr audio per prompt) vs Qwen3.5-Omni — contradicts "SOTA everywhere" framing'
+  - 'Closed-source (API-only) release means external parties CANNOT reproduce any of the 215 benchmarks — unfalsifiable risk of bench-like query routing to specialized handling'
+  - 'Strategy shift confirmed: Alibaba explicitly released Qwen3.5-Omni + Qwen3.6-Plus (Apr 2026) as proprietary, breaking the Apache-2.0 pattern of Qwen3-Omni-30B-A3B, Qwen3.5-397B-A17B — competitive-hold motivation plausible (South China Morning Post, digitalapplied 2026)'
+  - 'No independent third-party reproduction yet (EvalScope OmniBench framework emerging but no public leaderboard result as of 2026-04-22)'
+  - 'ARIA novelty is incremental engineering (per-prefix item-level ratio cap), not conceptual leap — rate-adaptive interleaving has prior art in VALL-E and Hume TADA (intake-402)'
   cross_references:
     chapters:
     - 02-moe-optimization.md
@@ -17120,7 +17138,12 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - '2026-04-22 Tier 2b sweep: AIME25 is 30 questions — +6pp = 2 questions flipped. Community evaluation protocol (artificialanalysis.ai, vals.ai, DeepScaleR, DeepConf) requires 8-seed averaged pass@1 with CIs; STOP reports single-seed point estimate. +6pp plausibly inside 95% CI of baseline. Sources: intuitionlabs.ai/articles/aime-2025-ai-benchmark-explained; github.com/agentica-project/deepscaler/issues/3.'
+  - '2026-04-22 Prior art weakens mechanism novelty: prompt-tuning / prefix-tuning with frozen-backbone probe classifiers is well-established (arxiv 2601.13288 token-layer selective probes, arxiv 2512.16650 prefix probing, IBM prompt-tuning docs). A single learnable prefix token + linear scoring head on a frozen LLM is standard prompt-tuning machinery. Novelty survives at the application/taxonomy level, not the mechanism level.'
+  - '2026-04-22 Training-free competitors unreferenced: DeepConf (sliding-window group confidence), Stop-When-Enough (arxiv 2510.10103), REFRAIN (SW-UCB bandit), Confidence-Dynamics early stopping (arxiv 2604.04930), SlimSC semantic-similarity, Latent Informativeness Signals CoT pruning. If any matches STOP at >=1.5pp or >=25% token savings, STOP''s training cost is not justified.'
+  - '2026-04-22 Medusa analogy is loose — Medusa (arxiv 2401.10774) adds decoding heads for token-level speculative acceptance, not branch-selection; different mechanism. But "frozen-backbone + learnable head" training pattern has a 2+ year Medusa-1 track record. Open question: does value-discrimination transfer as cleanly as next-token prediction did?'
+  - '2026-04-22 "Identifies unproductive branches from initial errors" unfalsified — paper lacks ablation isolating (a) legitimate error detection vs (b) rejection of non-canonical-but-correct traces vs (c) length proxy (short = doomed is a known short-m@k confound). Without a length-only baseline ablation, the learned signal may be largely re-implementing short-m@k.'
   cross_references:
     chapters: []
     handoffs:
@@ -17177,7 +17200,13 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - 'Tier 2b (2026-04-22): No independent replication of MindDR Bench 51.8 or the public-benchmark numbers (BrowseComp-ZH 45.7, WideSearch 46.5, xbench-DS 75.0) found — only the paper itself and derivative blog summaries. Public benchmarks are third-party so reproducible in principle, but at this date nobody outside the MindDR team has re-run them on released MindDR checkpoints.'
+  - 'MindDR Bench is self-curated from Li Auto assistant logs (500 queries, 16 domains including automotive/travel/finance). Authors acknowledge automotive-industry scenario skew — "RACE score 51.8" is on their own distribution, and independent deep-research agents have not been evaluated on it. SOTA claim is intrinsically unverifiable outside the authors.'
+  - 'Search-RL / Report-RL pattern is not unique — Search-R1, R1-Searcher, ReSearch predate it. Surveys (arxiv 2509.06733 RL Foundations for Deep Research, 2508.12752 Deep Research Survey) note static-corpus RAG-RL has known ceiling issues; MindDR moves to real-web search but does not publish reproduction code or hyperparameters at paper release, so the four-stage recipe is not yet verifiably replicable externally.'
+  - 'Deep-RL reproducibility broadly is poor (Henderson et al. 1709.06560 "Deep RL that Matters"): intrinsic variance, stochastic environments, unreported hyperparams. Four-stage pipelines compound this — interaction effects between Search-RL and Report-RL stages are not ablated in the paper.'
+  - 'GSPO vs GRPO ~15pp MoE claim is consistent with the GSPO paper (Qwen team, arxiv 2507.18071) and the Qwen3 training report — GRPO''s token-level importance ratios become unreliable on MoE due to ~10% expert-activation drift per gradient step. This specific claim has external corroboration and is NOT contradicted. However, newer alternatives (RSPO, GMPO) report matching or exceeding GSPO, suggesting the ~15pp gap may shrink as the field moves past GRPO baselines.'
+  - 'Public-benchmark numbers (42-75% range across BrowseComp/WideSearch/xbench-DS) are plausible for a well-trained 30B agent and align with the broader open-source deep-research trend (Tongyi DeepResearch, DeepResearcher report similar magnitudes). No direct contradicting evidence, but also no independent confirmation specific to MindDR checkpoints.'
   cross_references:
     chapters:
     - 09-claude-debugger.md
@@ -17350,18 +17379,25 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - 'Verbalized Sampling (arXiv 2510.01171, Zhang et al., 2025) — training-free prompting strategy that mitigates mode collapse at INFERENCE time; recovers ~66.8% of base-model diversity and delivers 1.6-2.1x boost in creative writing. Directly contradicts load-bearing claim #5 (inference-time interventions cannot recover training-time diversity loss). Root cause framed as typicality bias in preference data, not weight-level collapse — prompting for a distribution of responses unlocks latent diversity aligned models still retain.'
+  - 'Self-BLEU metric criticism (Alihosseini et al., ACL W19-2311, 2019) — Self-BLEU ignores quality and fails to match divergence-based diversity metrics; real text samples can be outperformed by manually-constructed models on both BLEU and Self-BLEU. Threatens validity of the paper''s self-BLEU axis.'
+  - 'Form-based diversity metric weakness (arXiv 2506.00514, 2025) — distinct-N and self-BLEU are surface-level; form-based metrics have high distributional overlap and cannot distinguish semantic diversity. Embedding / Chamfer metrics separate diverse from non-diverse sets better than self-BLEU-3. Supports EV-8 gaming risk: a mutation injecting random lexical filler could pass distinct-2 without semantic-diversity gain.'
+  - 'OLMo 3 family specificity — paper is entirely on OLMo 3 7B dense; no cross-family replication on Qwen3/Llama-3/Mistral, and no MoE coverage (our production stack includes Qwen3-30B-A3B + GLM-4.5 MoE). Generalization to our actual models is untested in the literature.'
+  - 'Temperature / top-p sampling practitioner literature (2026) — T=0.8-1.2 with top-p=0.8-0.95 is widely reported to restore useful diversity on aligned models. Weaker (non-peer-reviewed) counter-signal, but suggests the paper''s "temperature bumps plateau well short of base" claim is contested in applied deployments.'
   cross_references:
     chapters: []
     handoffs:
     - autopilot-continuous-optimization.md
     - reasoning-compression.md
+    - eval-tower-verification.md
     experiments: []
     intake_entries: []
   handoffs_updated:
   - autopilot-continuous-optimization.md
   - reasoning-compression.md
   handoffs_created: []
+  tier_2b_status: 'swept_2026-04-22 — strong contradicting evidence found (Verbalized Sampling arXiv 2510.01171 directly refutes load-bearing claim #5); EV-8 SafetyGate design flagged for tempering. See deep-dive §Tier 2b sweep.'
   novelty_justification: >
     Decomposition of diversity loss into quality-control + residual is novel framing.
     Multi-lineage, multi-task empirical approach.
@@ -17511,7 +17547,13 @@
   ingested_date: '2026-04-22'
   discovered_via: input
   expanded_from: null
-  contradicting_evidence: []
+  contradicting_evidence:
+  - 'Tier 2b sweep 2026-04-22: no independent reproduction of Agent-World-14B > proprietary claim found; all performance numbers (53.83 -> 65.94 at 8B, 70.18 at 14B) trace back to the Snowflake/paper authors themselves.'
+  - 'ClawEval (Peking U + HKU, arxiv:2604.06132) and SkillsBench (benchflow-ai, arxiv:2602.12670) co-released Feb-Apr 2026 alongside the Agent-World arena — no explicit author overlap confirmed, but independent held-out benchmarks (SWE-Bench Verified, GAIA, WebArena Hard) are absent from the Agent-World paper; 23-benchmark selection bias remains unrebutted.'
+  - 'Benchmark-gaming literature (CodeSOTA 2025 SWE-bench contamination debate; MindStudio Claude-Opus-4.6 specification-gaming case) shows self-synthesized or static benchmarks are routinely gamed; GAMEBOT/GameArena (OpenReview 2025) argue dynamic, non-authored benchmarks are required to avoid contamination — implying Agent-World''s arena-as-training-and-evaluation design is susceptible.'
+  - 'Reward-hacking survey evidence (arxiv:2507.05619; Lilian Weng 2024; beren.io 2025-04-27): deterministic programmatic verifiers are the primary gameable surface; documented failures include test-file rewriting, sys.exit(0) exploitation, assertion-reading shortcuts. Agent-World''s "every task has a programmatic oracle" design sits inside this failure envelope; the paper does not report verifier-fuzzing or RLEF-style private-test holdout.'
+  - 'Arena-agent collusion risk: ETD discovery agent and training agent both use Qwen3 family. TRACE benchmark-contamination analysis (arxiv:2601.20103) notes circular labeling when generator and evaluator share backbone yields "optimistically biased" scores — matches the failure mode in deep-dive §10.3.'
+  - 'Open-source status partial: HF paper page + Snowflake-Labs/agent-world-model repo confirm synthesis pipeline + 1,000-env subset + trained agents released Feb 2026. Full 1,978-env arena, 19,822-tool MCP registry, and 14B weights NOT confirmed public. Snowflake blog describes "Agent World Model (AWM)" (arxiv:2602.10090) as architectural cousin, not identical artifact — release scope for Agent-World proper remains ambiguous.'
   cross_references:
     chapters:
     - 09-claude-debugger.md
@@ -17532,7 +17574,13 @@
     Addresses autopilot's capability-gap identification challenge. Parallels AR-3 idea
     space at a different layer (task/environment synthesis vs prompt/structural mutation).
   verdict_justification: >
-    worth_investigating. Tier 2b not run — beat-proprietary claim needs corroboration.
+    worth_investigating. Tier 2b run 2026-04-22: beat-proprietary claim unreproduced and
+    relies entirely on author-released numbers; 23-benchmark selection bias and
+    deterministic-verifier gaming risk unresolved. Phase 1 training-free adoption
+    (AW-1..AW-6) remains defensible — it uses Agent-World only as an environment-synthesis
+    pattern and does NOT depend on the beat-proprietary claim. Phase 2 (RL specialization)
+    should be gated on external held-out benchmark corroboration in addition to DGX Spark
+    availability.
 
 - id: intake-445
   url: https://arxiv.org/abs/2604.18394

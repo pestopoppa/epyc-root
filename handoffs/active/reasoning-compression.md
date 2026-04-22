@@ -399,7 +399,7 @@ Theoretical link: CIB (Conditional Information Bottleneck, `research/deep-dives/
 **Phased experiment plan** (total ~5 inference-days):
 
 - **Phase 0 — Instrumentation** (~1d, non-inference, NIB2-46): reserve unused token in the tokenizer; add orchestrator hook for hidden-state fetch at a specific prefix position. Update `scripts/benchmark/seeding_types.py` `RoleResult` with `prefix_hidden_state` optional field.
-- **Phase 1 — Probe data collection** (~2d, inference-gated on worker `-np ≥ 2`): run k=4 parallel sampling on GSM8K+MATH+GPQA (≈4k rollouts). Target: **AUC ≥ 0.75** at C ≤ 128 super-token vocabulary.
+- **Phase 1 — Probe data collection** (~2d, inference-gated on worker `-np ≥ 2`): run k=4 parallel sampling on GSM8K+MATH+GPQA (≈4k rollouts). Target: **AUC ≥ 0.80 AND ≥0.05 AUC delta over length-only baseline** (tightened 2026-04-22 post Tier 2b — original 0.75 gate was not robust against simple length/canonicity proxies; 84→90 AIME25 result is only 2 questions on a 30-question set without 8-seed CI, so the probe must prove genuine signal over trivial heuristics).
 - **Phase 2 — Train probe head** (~0.5d): linear `[d_model → 1]` + super-token embedding. Frozen backbone; no DGX Spark needed.
 - **Phase 3 — Online A/B** (~1d, inference): STOP k=4 α=0.5 vs majority@4 on held-out GSM8K+MATH+GPQA. Success gate: ≥1.5pp accuracy gain OR ≥25% token savings.
 - **Phase 4 — Integration** (~1d): gate STOP behind difficulty bands (easy=no, medium=k=2, hard=k=4). Cross-ref `routing-intelligence.md` STOP gating policy.
@@ -412,12 +412,18 @@ Theoretical link: CIB (Conditional Information Bottleneck, `research/deep-dives/
 - Difficulty signal + band caps (natural gating: decides whether STOP is invoked at all)
 - N-gram loop detection (in-flight mid-generation detection independent of probe)
 
-**Gates**:
-- Phase 1 probe AUC ≥ 0.75: proceed to Phase 2.
-- Phase 3 ≥1.5pp accuracy gain OR ≥25% token savings: promote to production.
-- If fail: revert to short-m@k + TrimR only. Keep STOP as `worth_investigating`.
+**Gates** (tightened 2026-04-22 post Tier 2b):
+- Phase 1 probe AUC ≥ 0.80 AND ≥0.05 delta over length-only baseline: proceed to Phase 2.
+- Phase 3: ≥1.5pp accuracy gain OR ≥25% token savings vs majority@4 baseline, AND at least parity vs DeepConf (training-free confidence pruning, arxiv 2509.24944). Add DeepConf as Phase 3 A/B arm.
+- If either gate fails: revert to short-m@k + TrimR only. Keep STOP as `worth_investigating`.
 
-**Tier 2b** flag: AIME25 result (84 → 90 under fixed compute) is on 30 questions — independent replication needed before committing to the production path.
+**Tier 2b findings (2026-04-22 sweep)**:
+- AIME25 84 → 90 is only 2 questions on a 30-question set, reported as single-seed without CI; community protocol (Artificial Analysis, DeepScaleR, VAR-MATH arxiv:2507.12885) requires 8-seed averaged pass@1 with CIs. Likely within baseline 95% CI.
+- "Learnable prefix-token + scoring head on frozen backbone" is standard prefix-tuning (arxiv 2601.13288, 2512.16650) — taxonomy novelty survives but mechanism novelty does not.
+- Training-free competitors unbenchmarked: DeepConf (2509.24944), Stop-When-Enough (2510.10103), REFRAIN, Confidence-Dynamics (2604.04930), SlimSC, ConCISE.
+- "Initial errors" claim unfalsified: no length-only baseline ablation in the paper; the learned signal may be a length/canonicity proxy.
+- Credibility score recommended 6 → 4-5 on re-review.
+See `/workspace/research/deep-dives/stop-learnable-path-pruning.md` § Tier 2b for detail.
 
 ## Diversity Collapse Interaction (2026-04-22, DD4 / intake-441)
 
