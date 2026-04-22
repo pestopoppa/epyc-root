@@ -1,6 +1,6 @@
 # Non-Inference Backlog — Round 2 (2026-04-17 audit refresh)
 
-**Status**: ACTIVE — 43 non-inference tasks catalogued. 29/43 done (23 original Round 2 + 4 × 2026-04-21 supplement + 0 × 2026-04-22 supplement). Open: 9 new NIB2-40..48 entries from 2026-04-22 deep-dive integration pass. NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
+**Status**: ACTIVE — 43 non-inference tasks catalogued. 31/43 done (23 original Round 2 + 4 × 2026-04-21 supplement + 2 × 2026-04-22 supplement = NIB2-47/NIB2-48). Open: NIB2-40..46 (7 items). NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
 **Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit)
@@ -86,8 +86,8 @@ Items surfaced by the 8 research deep dives landed 2026-04-22 (`/workspace/resea
 - [ ] **NIB2-44**: Agent-World `env_synth/` module scaffold (DD6, intake-444). 3-4w code; training-free. Sub-module: etd_agent / task_synthesizer / verifier_builder / mcp_tool_registry. Wires into autopilot as 5th species. → [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) AW-1..AW-6.
 - [ ] **NIB2-45**: MindDR Phase 1 `deep_research_mode` scaffold (DD7, intake-438). ~3w code + sentinel suite. Feature flag + classifier extension + 3 agent prompts + pydantic_graph nodes + sentinel suite. → [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) MD-1..MD-9.
 - [ ] **NIB2-46**: STOP Phase 0 instrumentation in llama.cpp (DD3, intake-437). ~1d code; non-inference (hook-level). Reserve unused token, add orchestrator hook for hidden-state fetch at prefix position. **Gated on NIB2-32** difficulty-signal re-validation producing a live verdict. → [`reasoning-compression.md`](reasoning-compression.md) Action 10a.
-- [ ] **NIB2-47**: ONNX INT8 export of LateOn + parity test vs PyLate (DD1-A1, intake-428/430/431). ~1h. Non-inference. Prerequisite for S3b latency benchmark. → [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) S3b.
-- [ ] **NIB2-48**: Update intake-432 verdict to `reference_only` + mark intakes 435/436/440 with explicit `trigger_to_reactivate` fields (DD2/DD8). ~30min. Pure metadata fix. → `research/intake_index.yaml`.
+- [x] **NIB2-47**: ONNX INT8 export of LateOn + parity test vs PyLate (DD1-A1, intake-428/430/431). ~1h. Non-inference. Prerequisite for S3b latency benchmark. → [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) S3b. **DONE 2026-04-22 (code)**: `scripts/benchmark/colbert/export_lateon_onnx_int8.py` downloads pre-quantized `lightonai/LateOn` ONNX INT8 (shipped on HF) + runs 20-snippet parity vs PyLate reference with tolerance 1e-2. `src/tools/web/colbert_reranker.py` extended with `LATEON_MODEL_PATH` env var override. pyproject extras `[colbert-export]` group added. 13/13 colbert tests passing (+2 new). Execution deferred until orchestrator `.venv` receives the colbert-export extras.
+- [x] **NIB2-48**: Update intake-432 verdict to `reference_only` + mark intakes 435/436/440 with explicit `trigger_to_reactivate` fields (DD2/DD8). ~30min. Pure metadata fix. → `research/intake_index.yaml`. **DONE 2026-04-22**: Audit showed 435/436/440 already had `trigger_to_reactivate` from the 2026-04-22 intake-trio deep-dive pass; only intake-432 verdict flip (`not_applicable` → `reference_only`, L16854) needed.
 
 ---
 

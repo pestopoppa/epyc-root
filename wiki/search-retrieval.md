@@ -36,7 +36,7 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 |---|---|---|---|---|---|
 | GTE-ModernColBERT-v1 | 149M | 54.67 | — | ✅ port 8089 | Apache 2.0 |
 | ColBERT-Zero | 149M | 55.39 | — | No (was S5 primary until 2026-04-22) | Apache 2.0 |
-| LateOn (intake-430) | 149M | **57.22** | **60.36** | No (S5 primary candidate 2026-04-22) | Apache 2.0 |
+| LateOn (intake-430) | 149M | **57.22** | **60.36** | Code ready (NIB2-47 2026-04-22; `LATEON_MODEL_PATH` env var activation) | Apache 2.0 |
 | DenseOn (intake-431) | 149M | 56.20 | 57.71 | No (probe-first pool candidate) | Apache 2.0 |
 | ~~Reason-ModernColBERT~~ | 150M | 22.62–30.28 BRIGHT | — | Eliminated | CC-BY-NC-4.0 |
 

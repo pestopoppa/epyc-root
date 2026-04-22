@@ -16851,7 +16851,7 @@
   novelty: high
   relevance: high
   credibility_score: 5
-  verdict: not_applicable
+  verdict: reference_only
   adoption_blocker: closed_source_api_only
   trigger_to_reactivate: Alibaba releases open weights for Qwen3.5-Omni OR Qwen3-Omni-30B-A3B (Apache 2.0 sibling) proves CPU-viable
   ingested_date: '2026-04-22'
