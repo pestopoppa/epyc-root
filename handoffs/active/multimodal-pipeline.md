@@ -315,3 +315,47 @@ This represents a **third TTS path** alongside Path A (Qwen3-TTS C++ port, block
 1. Run CPU benchmark of LuxTTS on EPYC: measure RTF, first-packet latency, voice-clone WER → decide Path D viability.
 2. Inspect voicebox's engine-adapter code (Tauri/TypeScript) for a unified-interface pattern to reuse across Paths A–D.
 3. Flag TADA for review when multimodal pipeline unblocks — it addresses a distinct long-form use case not solvable by shorter-context TTS models.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-432] "Qwen3.5-Omni Technical Report"** (arxiv:2604.15804)
+  - Relevance: Potential unblock for Path A/B/C/D TTS work. Native end-to-end omni-modal (text+audio+image+video) at hundreds-of-billions scale with ARIA (Adaptive Rate Interleave Alignment) for stable streaming speech synthesis.
+  - Key technique: Hybrid Attention MoE Thinker+Talker components; ARIA dynamic text-speech alignment; dual-tokenizer audio (25Hz semantic + 12Hz acoustic).
+  - Reported results: SOTA across 215 audio/AV benchmarks; surpasses Gemini-3.1 Pro on key audio tasks; 10 languages with emotional nuance; 400s of 720P video in single context.
+  - Delta from current approach: Existing TTS paths A/B/C/D are blocked or CPU-infeasible. Qwen3.5-Omni is a candidate if (a) open weights / GGUF are available, (b) audio-codec decode is CPU-feasible on NUMA 4-way, (c) inference budget fits. Worth a feasibility probe before committing to any existing TTS path.
+
+- **[intake-435] "PersonaVLM: Long-Term Personalized Multimodal LLMs"** (arxiv:2604.13074)
+  - Relevance: Cross-reference only. Single-user EPYC design per `project_autopilot_stack_assembly` makes direct personalization work low priority. Chronological multimodal memory extraction and 128k context patterns are reference material for any future multi-user work.
+  - Key technique: Proactive memory extraction + multi-turn reasoning + personality-aligned generation + Persona-MME benchmark (2,000+ cases, 7 aspects, 14 tasks).
+  - Delta: Not actionable under current single-user constraint; file as reference.
+
+### Next Actions (scoped for this handoff)
+
+- [ ] Check Qwen3.5-Omni for open-weight release / GGUF availability on HuggingFace
+- [ ] If available: estimate CPU inference cost for audio-codec path (ARIA pipeline) on one NUMA node
+- [ ] Decide whether Qwen3.5-Omni becomes a new TTS Path E or supersedes existing paths
+
+## Deep-Dive Integration — 2026-04-22 (DD2 verdict)
+
+**Source**: `/workspace/research/deep-dives/qwen35-omni-tts-unblock.md` (401 lines). Adoption decision: **Scenario C — NOT open-weight, file as reference, no adoption.**
+
+Alibaba broke its Apache-2.0 tradition and released Qwen3.5-Omni on 2026-03-30 as **API-only** (Alibaba Cloud / Qwen Chat / HF demo Space). No weight release is announced; no GGUF path exists; the only `Qwen3.5-Omni-GGUF` on HF is a 2B community derivative fine-tune, not official.
+
+**Decision**: **Path D (ZipVoice-Distill / LuxTTS) remains the primary EPYC TTS unblock path.** No Path E added.
+
+**Corrections to intake-432 entry**:
+- Tokenizer description was wrong: paper uses unified 6.25Hz AuT + RVQ codec, NOT dual 25Hz+12Hz (that's Qwen3-TTS's design; the intake brief conflated them). Correction applied 2026-04-22.
+- Intake-432 verdict updated: `new_opportunity` → `reference_only` with `adoption_blocker: closed_source_api_only`.
+
+**Preserved patterns (transplantable ideas)**:
+- **ARIA dynamic rate-cap**: even without weights, the ARIA mechanism (adaptive per-prefix text/speech ratio cap to prevent cascading generation errors) is a candidate **debug intervention for Path A** if Path A's noise-output issue is ever revisited. Pattern documented here for future reference.
+- **Thinker+Talker split**: generic pattern (generator + speech head) is already in our existing Path C plan; Qwen3.5-Omni validates it at scale.
+
+**Monitor**: **Qwen3-Omni-30B-A3B (Apache 2.0)** is the open-weight sibling to Qwen3.5-Omni. Quarterly check for CPU-viable GGUF conversions. If it lands, it supersedes Path D and becomes a credible Path E.
+
+**Cross-references**:
+- `/workspace/research/deep-dives/qwen35-omni-tts-unblock.md` (full analysis)
+- `/workspace/research/deep-dives/luxtts-cpu-tts-candidate.md` (Path D baseline)
+- `inference-acceleration-index.md` — Qwen3.5-Omni cross-ref row added 2026-04-22

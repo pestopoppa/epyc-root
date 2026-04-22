@@ -364,3 +364,63 @@ Theoretical link: CIB (Conditional Information Bottleneck, `research/deep-dives/
   - Key technique: Target q_i proportional to p_i^old * exp(u_i/eta); gradient is simply p-q, vanishing at convergence. No clipping, no critic, no policy gradients.
   - Reported results: Terminal reward H=10: TPO 7.4% error vs GRPO 50.4%; Reasoning Gym Graph Coloring (Qwen3-1.7B): TPO 0.96 vs GRPO ~0; multi-epoch stable (TPO 0.2% at 4 epochs vs GRPO non-monotonic 37.6% at 2 epochs).
   - Delta from current approach: All Tier 3 references (OPSDC, RLSD, FoldGRPO) use GRPO as the RL backbone. TPO's sparse-reward advantage is particularly relevant since reasoning verification rewards are inherently sparse (binary correct/incorrect). Low relevance today (we don't RL-train), but high potential value if Tier 3 materializes.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-437] "Cut Your Losses! Learning to Prune Paths Early for Efficient Parallel Reasoning"** (arxiv:2604.16029)
+  - Relevance: STOP (Super TOken for Pruning) is a learnable, prefix-level path-pruning mechanism that complements our existing TrimR/difficulty-band framework at a different layer.
+  - Key technique: Learnable super token at prefix level identifies unproductive branches from initial errors; first systematic taxonomy of path pruning (internal/external signal × learnable/heuristic).
+  - Reported results: GPT-OSS-20B AIME25 84% → 90% under fixed compute. Scales 1.5B–20B, covering our worker/coder tier.
+  - Delta from current approach: Our Tier 1 uses TrimR (training-free) and difficulty_signal (shadow). STOP is learnable and internal-signal — a third category in the taxonomy. Compositional feasibility with think-strip + difficulty bands is worth evaluating.
+
+- **[intake-441] "Where does output diversity collapse in post-training?"** (arxiv:2604.16027)
+  - Relevance: Post-trained LMs generate significantly less varied outputs than base models; the collapse is in weights, not generation format. CoT suppression preserves answer-level diversity in Think models. This constrains what our reasoning length alarm (Action 9) and conciseness prompts can achieve.
+  - Key finding: Inference-time interventions cannot recover training-time diversity loss. Diversity loss decomposes into quality-control + residual components.
+  - Delta: We've been treating verbose reasoning as a generation-format problem. This paper argues some of the variation (or lack thereof) is baked in. Useful framing when evaluating new post-trained checkpoints — measure diversity alongside accuracy.
+
+- **[intake-443] "OneVL: One-Step Latent Reasoning and Planning with Vision-Language Explanation"** (arxiv:2604.18486)
+  - Relevance: Dual-objective compression (text + future-frame prediction) produces more generalizable latent representations than single-objective text compression. Prefill-only inference pattern (decoders discarded at inference) is interesting for CPU efficiency.
+  - Key technique: Latent CoT with dual auxiliary decoders (language + world model), 4 visual + 2 language latent tokens, three-stage training.
+  - Delta: Autonomous-driving domain. Methodological insights (dual-objective compression, prefill-only inference) transferable to Action 3 enforce-mode design — consider whether a second auxiliary objective (beyond token-level reconstruction) could sharpen our difficulty signal.
+
+### Notes
+
+- intake-437 STOP is the most directly actionable — feasibility probe against current think-strip path is a clear next experiment.
+- intake-441 diversity-collapse finding suggests adding a diversity metric to the eval tower alongside accuracy (connects to eval-tower-verification.md).
+
+## Action 10a — STOP Learnable Path Pruning (2026-04-22, DD3 / intake-437)
+
+**Source**: `/workspace/research/deep-dives/stop-learnable-path-pruning.md` (401 lines). Compositional verdicts: STOP COMPOSES WITH all existing Tier 1 techniques (TrimR, short-m@k, conciseness, difficulty bands, n-gram loop detection). Fills an unoccupied quadrant in the pruning taxonomy: **internal signal × learnable × selection** (we currently cover external/heuristic/selection via TrimR and internal/heuristic/detection via n-gram loops).
+
+**Target**: NIB2-46 in backlog. Gated on NIB2-32 difficulty-signal re-validation producing a live verdict (STOP's cost savings only make sense at `difficulty_band ∈ {medium, hard}`).
+
+**Phased experiment plan** (total ~5 inference-days):
+
+- **Phase 0 — Instrumentation** (~1d, non-inference, NIB2-46): reserve unused token in the tokenizer; add orchestrator hook for hidden-state fetch at a specific prefix position. Update `scripts/benchmark/seeding_types.py` `RoleResult` with `prefix_hidden_state` optional field.
+- **Phase 1 — Probe data collection** (~2d, inference-gated on worker `-np ≥ 2`): run k=4 parallel sampling on GSM8K+MATH+GPQA (≈4k rollouts). Target: **AUC ≥ 0.75** at C ≤ 128 super-token vocabulary.
+- **Phase 2 — Train probe head** (~0.5d): linear `[d_model → 1]` + super-token embedding. Frozen backbone; no DGX Spark needed.
+- **Phase 3 — Online A/B** (~1d, inference): STOP k=4 α=0.5 vs majority@4 on held-out GSM8K+MATH+GPQA. Success gate: ≥1.5pp accuracy gain OR ≥25% token savings.
+- **Phase 4 — Integration** (~1d): gate STOP behind difficulty bands (easy=no, medium=k=2, hard=k=4). Cross-ref `routing-intelligence.md` STOP gating policy.
+- **Phase 5 — Telemetry** (~1d): probe-score distribution, prune-decision counts, per-suite performance.
+
+**Compositional** with:
+- TrimR (post-hoc paragraph pruning on STOP survivors)
+- short-m@k / reasoning length alarm (single-sample re-roll vs multi-sample selection — orthogonal)
+- Conciseness prompts (upstream style control)
+- Difficulty signal + band caps (natural gating: decides whether STOP is invoked at all)
+- N-gram loop detection (in-flight mid-generation detection independent of probe)
+
+**Gates**:
+- Phase 1 probe AUC ≥ 0.75: proceed to Phase 2.
+- Phase 3 ≥1.5pp accuracy gain OR ≥25% token savings: promote to production.
+- If fail: revert to short-m@k + TrimR only. Keep STOP as `worth_investigating`.
+
+**Tier 2b** flag: AIME25 result (84 → 90 under fixed compute) is on 30 questions — independent replication needed before committing to the production path.
+
+## Diversity Collapse Interaction (2026-04-22, DD4 / intake-441)
+
+Our Action 12-15 conciseness work and Action 9 reasoning-length-alarm operate at generation-format level. Intake-441 shows post-training diversity loss is **structural (weights)** — inference-time interventions cannot recover it. This bounds the upside of format-level conciseness prompts. Concretely: if a model's base-diversity is collapsed, even perfect prompting cannot produce novel reasoning paths — we can only prune what's there.
+
+**Implication**: factor diversity-collapse awareness into model-selection decisions for the worker/coder tier. When evaluating new post-trained checkpoints, include diversity metrics alongside accuracy (see `eval-tower-verification.md` EV-8). Do not chase +1pp accuracy from a model whose diversity baseline collapsed by >20%.

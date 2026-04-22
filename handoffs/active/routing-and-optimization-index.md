@@ -32,6 +32,8 @@
 | Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done, SX-5/6 folded into AR-3 Package D | SX-5 load test + SX-6 swap gated on AR-3 warmup |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | Phase 1 P1.1-P1.4+P1.6 DONE — 92% val acc, per-class thresholds calibrated | P1.5 enable flag, Phase 1.5 logit probe |
+| Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
+| Deep Research Mode | [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 prompt-level, Phase 2 GPU-gated (intake-438, DD7) | MD-1: `deep_research_mode` feature flag |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -235,6 +237,18 @@ Source: intake-425 (Memory Transfer Learning, arXiv:2604.14004). Deep dive confi
 - [ ] **AP-32: Insight format for strategy_store entries** — Adopt the `(title, description, generalized_content)` format with no task-specific implementation details for new strategy_store entries. Audit existing entries for over-specificity. Task-agnostic insights outperform task-specific by +1.1%. ~50 LoC in `strategy_store.py`. Validates HCC L3 upgrade path (AP-29).
 - [ ] **AP-33: Negative transfer safety gates for PromptForge** — Implement 3 mutation safety checks based on negative transfer taxonomy: (1) domain-mismatched anchoring detector (reject mutations that import patterns from mismatched benchmark suites), (2) false validation confidence flag (warn when mutation success is based on <5 trials), (3) misapplied best-practice filter (reject mutations that generalize suite-specific patterns). ~100 LoC in `prompt_forge.py` safety section.
 - [ ] **AP-34: Validate N=3 embedding retrieval** — Confirm that our FAISS top-3 cosine retrieval matches or exceeds any LLM-based reranking we might consider. Paper shows: embedding similarity (0.630 avg) > LLM reranking (0.598) > adaptive rewriting (0.608). Run ablation: top-1 vs top-3 vs top-5 on next AR-3 run. Zero code changes — configuration experiment via autopilot.
+
+### P17 — Environment Synthesis Species (2026-04-22 deep-dive integration, DD6)
+
+Pointer — full plan tracked in [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md). Phase 1 is training-free and CPU-feasible today; Phase 2 is GPU-gated (post-DGX-Spark). Makes env-synth the 5th autopilot species (alongside Seeder/NumericSwarm/PromptForge/StructuralLab), providing a concrete Tier 3 outer-loop rebuild recipe for meta-harness.
+
+- [ ] **P17 rollup**: see `agent-world-env-synthesis.md` AW-1..AW-9 — entry points: AW-1 (`env_synth/` module scaffold), AW-6 (48h arena bootstrap).
+
+### P18 — Deep Research Mode (2026-04-22 deep-dive integration, DD7)
+
+Pointer — full plan tracked in [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report) is zero-infra and falsifiable under existing eval tower. Phase 2 adds the paper's four-stage RL recipe (SFT → Search-RL → Report-RL → preference alignment) post-DGX-Spark. Phase 3 conditionally refactors the orchestrator's Tier-B architect split.
+
+- [ ] **P18 rollup**: see `minddr-deep-research-mode.md` MD-1..MD-14 — entry points: MD-1 (`deep_research_mode` feature flag), MD-6 (pydantic_graph flow), MD-7 (multi-dimensional rubric — hands off to `eval-tower-verification.md` EV-9).
 
 ### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
 

@@ -264,3 +264,50 @@ Rivera & Menolascina, "ModernBERT + ColBERT: Enhancing biomedical RAG," arXiv:25
   - Delta from current approach: WARP optimizes corpus-scale retrieval (millions of passages); our ColBERT use case is snippet-level reranking (10 items) where these optimizations have minimal impact.
 - **[intake-407] "XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval"** (arxiv:2304.01982)
   - Relevance: Foundational XTR paper from Google DeepMind. Token retrieval (score from subset) vs late interaction (score from all tokens) is the architectural fork between XTR and ColBERT. XTR claims 100-1000x cheaper inference at modest accuracy cost — confirmed by Witchcraft's speed/accuracy profile.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research (LightOn DenseOn/LateOn release)
+
+- **[intake-428] "DenseOn with the LateOn: Open State-of-the-Art Single and Multi-Vector Models"** (HF blog, LightOn, Apache 2.0)
+  - Relevance: Direct successor to ColBERT-Zero from the same LightOn team. Both models Apache 2.0 (vs Reason-ModernColBERT's CC-BY-NC-4.0, which previously forced elimination). LateOn is multi-vector reranker; DenseOn is dense retriever.
+  - Key technique: Two-stage contrastive training (665M curated pairs) + NV-Retriever hard negatives + decontaminated BEIR evaluation protocol.
+  - Reported results: LateOn BEIR 57.22 / decontaminated 60.36; DenseOn BEIR 56.20 / decontaminated 57.71. Both at <150M parameters, outperforming 4x larger models.
+  - Delta from current approach: GTE-ModernColBERT-v1 (54.67 BEIR, 180ms/10 snippets, currently deployed on :8089) is same architecture family. LateOn is +2.55pp BEIR drop-in candidate. DenseOn is secondary candidate for probe-first pool alternative to BGE-small.
+
+- **[intake-430] "LateOn" model card** — ModernBERT (149M), 128-dim per-token multi-vector, MaxSim scoring via PyLate.
+- **[intake-431] "DenseOn" model card** — ModernBERT (149M), CLS pooling + asymmetric query/document prompts.
+
+### Next Actions (scoped for this handoff)
+
+- [ ] Verify ONNX INT8 variant availability for LateOn on HF Hub
+- [ ] Benchmark LateOn CPU latency vs GTE-ModernColBERT-v1 baseline (target: <200ms for 10 snippets)
+- [ ] If latency acceptable: A/B test LateOn vs current model on web_research sentinel queries (when AR-3 Package D data accumulates)
+- [ ] Secondary: evaluate DenseOn for probe-first pool if BGE-small retention becomes a bottleneck
+
+## S3b / S4b / S7 — LateOn Drop-in Upgrade (2026-04-22, DD1)
+
+**Source**: `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md` (415 lines). LateOn (intake-430) is a same-architecture drop-in for currently-deployed GTE-ModernColBERT-v1 with **+2.55pp BEIR** (57.22 vs 54.67) and +1.83pp vs ColBERT-Zero. Same backbone (ModernBERT), same parameter class (149M), same 128-dim output, same Apache 2.0 license.
+
+**Target**: NIB2-47 (ONNX export) + inference-gated follow-ups.
+
+**Amended S5 plan**: LateOn becomes primary candidate for the reranker swap. GTE-ModernColBERT-v1 remains the fallback baseline. ColBERT-Zero (earlier primary candidate) is now secondary — LateOn wins by same-family comparison.
+
+Tasks:
+
+- [ ] **S3b**: ONNX INT8 export of LateOn + parity test vs PyLate reference (NIB2-47, ~1h, non-inference). Unblocked today independent of AR-3.
+- [ ] **S4b**: Re-run CPU latency benchmark with LateOn INT8 (DD1-A2, ~30min + 2h inference). Target: latency ≤ 200ms for 10 snippets (GTE baseline 180ms).
+- [ ] **S7**: Adopt LightOn's decontamination protocol (xxhash64 + 13-gram containment, threshold 0.5) as EPYC-internal retrieval-eval standard. Write `scripts/benchmark/decontaminate_against_embeddings_training.py`. Decontaminate AR-3 Package D sentinel suite before running E3. Guards against "new model wins because it saw the test" failure mode.
+- [ ] **S5** (amended): A/B test LateOn vs GTE-ModernColBERT-v1 on decontaminated web_research sentinel queries. Gated on AR-3 Package D completion.
+
+### Expand — Local fine-tune (newly unblocked)
+
+LightOn released the full 665M curated pre-training corpus + 1.69M fine-tuning corpus under Apache 2.0. Previously blocked by Reason-ModernColBERT's CC-BY-NC-4.0 license; this release makes an EPYC-domain-specialized reranker a ~1-day experiment once primary adoption is stable.
+
+- [ ] **S8** (park until primary S5 stable + GPU available): local NV-Retriever fine-tune on REPL+sentinel queries. GPU-gated to DGX Spark. Worth revisiting as a Phase 2+ enhancement.
+
+### Cross-references
+
+- `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md`
+- Intake sources: 428 (blog), 430 (LateOn card), 431 (DenseOn card)
+- `wiki/search-retrieval.md` (updated 2026-04-22 with LateOn/DenseOn rows + decontaminated-BEIR column)

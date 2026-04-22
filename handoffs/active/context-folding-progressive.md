@@ -979,3 +979,54 @@ Deep-dive on 5 entries (intake-289/290/292/293/294) in `research/deep-dives/meme
   - Key technique: Five-layer compaction pipeline taxonomy; seven-mode permission system with ML-based safety classifier; append-only JSONL session storage with sidechain files.
   - Reported results: 200K-1M token context windows; 93% permission approval rate; graduated trust (40% auto-approve by 750 sessions).
   - Delta from current approach: The five-layer taxonomy (budget reduction, snip, microcompact, context collapse, auto-compact) should be mapped against our own compression tiers to identify coverage gaps. Caveat: Anthropic's own harness design blog notes "context anxiety" in Sonnet 4.5 made compaction alone insufficient — context resets sometimes needed. Compaction can silently discard provenance/load-bearing information.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-443] "OneVL: One-Step Latent Reasoning and Planning with Vision-Language Explanation"** (arxiv:2604.18486, Xiaomi)
+  - Relevance: Dual-objective compression (text reconstruction + world-model / future-frame prediction) produces more generalizable latent representations than single-objective compression. Latent token design (4 visual + 2 language tokens) enables prefill-only inference — decoders are discarded at inference.
+  - Key technique: Latent CoT with dual auxiliary decoders trained in three stages (pretraining → warmup → joint fine-tuning). Inference uses prefill-only single parallel pass.
+  - Reported results (autonomous-driving domain): NAVSIM PDM 88.84 vs 87.30 baseline; latency 4.46s vs 6.58s (AR CoT).
+  - Delta from current approach: Our context-folding Phase 2a/2b uses helpfulness-scored text-level summarization. OneVL's insight that a *second* auxiliary objective (beyond language reconstruction) sharpens the latent is directly applicable: could we pair our summarizer with a second objective (e.g., downstream-task-success prediction) to improve compression quality? Methodological reference for Phase 2b design discussions, not an immediate implementation target.
+
+## Phase 2c Addendum — Dual-Objective Compression Probe (2026-04-22, DD5)
+
+**Source**: `/workspace/research/deep-dives/onevl-dual-objective-latent-compression.md` (595 lines). OneVL (intake-443) demonstrates that dual-objective training (language reconstruction + world-model / future-frame prediction) produces more generalizable latent representations than single-objective text-only compression. Our existing Phase 2a/2b summarizer is single-objective (helpfulness scoring) — may be under-performing what dual-objective could achieve.
+
+**Target**: NIB2-43 in backlog. Training-free probe only; full dual-objective fine-tune is GPU-gated (post-DGX-Spark).
+
+**Phase 2c.0 — Training-free α-sweep probe**:
+
+Hypothesis: combined score `α·helpfulness + (1-α)·task_success` on existing summarizer outputs predicts downstream task success better than helpfulness alone (`α=1.0`).
+
+- [ ] Implement task-success classifier (LLM-judge or retrieval-based) — ~1h.
+- [ ] α-sweep: score existing summarizer outputs at α ∈ {0.0, 0.25, 0.5, 0.75, 1.0}. ~2-3h inference.
+- [ ] Measure correlation with downstream task success on held-out autopilot eval set.
+- **Gate**: if α<1.0 outperforms α=1.0 by >2% on task success, promote to Phase 2b design variant. If α=1.0 optimal, single-objective sufficient — park dual-objective entirely.
+
+**Phase 2c.1 — Full dual-objective fine-tune (GPU-gated, deferred)**:
+
+Post-DGX-Spark: train a summarizer whose summarization head is training-only and discarded at inference (prefill-only pattern per OneVL). Inference cost identical to current path; summary quality implicitly encoded in backbone.
+
+## Compaction-Pipeline Gap Analysis (2026-04-22, DD8 / intake-426)
+
+**Target**: NIB2-40 in backlog. 4h design task.
+
+Map Claude Code's 5-layer pipeline against EPYC L1-L5:
+
+| Claude Code layer | Operates at | EPYC equivalent | Gap? |
+|---|---|---|---|
+| budget-reduction | Per-message output size cap | ??? | **likely gap** |
+| snip | Strategic content excision | L3 segment trimming | similar |
+| microcompact | Per-tool output compression | L2 tool output compression | similar |
+| context-collapse | Multi-block summarization | L4 two-level condensation | similar |
+| auto-compact | Threshold-based full compaction | L5 threshold-based compaction | similar |
+
+**Decision needed**: does EPYC need a "budget-reduction" equivalent? Anthropic's harness-design blog notes "context anxiety" in Sonnet 4.5 — compaction alone was insufficient; per-message output caps became necessary. Our current pipeline has no equivalent per-response size cap beyond token_budget at task level.
+
+### Cross-references
+
+- `/workspace/research/deep-dives/onevl-dual-objective-latent-compression.md` (Phase 2c.0 α-sweep detail)
+- `/workspace/research/deep-dives/intake-trio-202604-references.md` (W-RAC / PersonaVLM / 1D-Tokens reference note)
+- Intake sources: 443 (OneVL), 426 (Claude Code compaction pipeline)

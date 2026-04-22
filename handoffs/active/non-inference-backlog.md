@@ -1,6 +1,6 @@
 # Non-Inference Backlog — Round 2 (2026-04-17 audit refresh)
 
-**Status**: ACTIVE — 34 non-inference tasks catalogued (23/30 original Round 2 complete; 4 added 2026-04-21 supplement: NIB2-31/32/34/35 — all done same day; NIB2-33 moved to excluded same day). 29/34 done.
+**Status**: ACTIVE — 43 non-inference tasks catalogued. 29/43 done (23 original Round 2 + 4 × 2026-04-21 supplement + 0 × 2026-04-22 supplement). Open: 9 new NIB2-40..48 entries from 2026-04-22 deep-dive integration pass. NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
 **Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit)
@@ -75,6 +75,20 @@ Items surfaced by the 2026-04-21 handoff audit that were not in the original Rou
 - [x] **NIB2-35** (added 2026-04-21): Persist `routing_meta.difficulty_*` + `factual_risk_*` to `seeding_diagnostics.jsonl` — prerequisite for NIB2-32 re-validation. ~20 LoC in `scripts/benchmark/seeding_types.py` (RoleResult) + emit site. Pure code, no inference. Discovered while executing NIB2-32. **DONE 2026-04-21**: added `difficulty_score`/`difficulty_band` to `RoleResult` (joining existing `factual_risk_*`); added 4 fields to `ChatResponse` with `_attach_routing_telemetry()` finalizer in `_handle_chat`; extended `build_diagnostic()` + all 4 call sites in `seed_specialist_routing[_v2].py`; analyzer `difficulty_signal_validation.py` prefers the new top-level fields and falls back to legacy progress-log join. 2 new tests + 44 related tests passing.
 - [x] **NIB2-34**: Routing Intelligence Phase 4 expanded calibration dataset — [`routing-intelligence.md`](routing-intelligence.md) Phase 3 Design Req 3 + `routing-and-optimization-index.md` P1 RI-1 (supplement). 1-2d. Build labeled prompt set from seeding diagnostic logs + AA-Omniscience 600-q benchmark (intake-381, Apache 2.0). **DONE 2026-04-21**: `scripts/build_factual_risk_calibration_v2.py` produces 2,600-example dataset (v1 2,000 + AA-Omniscience 600 across 6 domains: Finance/Health/Humanities/Law/Sci&Eng/SWE) at `orchestration/factual_risk_calibration_v2.jsonl` with 70/15/15 stratified splits. 4-class labels (CORRECT/INCORRECT/PARTIAL/NOT_ATTEMPTED) + per-prompt `risk_features` from `factual_risk.assess_risk()`. NOT_ATTEMPTED dominates (70%) because AA-Omniscience and v1-tier examples have no inference outcomes yet — will reclassify after next benchmark run. Data size sufficient for n=500/arm target; fresh seeding-diagnostics yielded 0 new entries (all v1 already captured them).
 
+## Round 2 supplement (added 2026-04-22 — deep-dive integration pass)
+
+Items surfaced by the 8 research deep dives landed 2026-04-22 (`/workspace/research/deep-dives/{lighton, qwen35-omni, stop-learnable, diversity-collapse, onevl, agent-world, minddr, intake-trio}.md`). Each entry maps to a specific deep-dive action item and a target handoff.
+
+- [ ] **NIB2-40**: Compaction-pipeline gap analysis — map Claude Code's 5-layer pipeline (budget-reduction → snip → microcompact → context-collapse → auto-compact, intake-426) against EPYC L1-L5. 4h design task; outcome = decision on per-message output-size caps. → [`context-folding-progressive.md`](context-folding-progressive.md) Phase 2c addendum + DD8 reference.
+- [ ] **NIB2-41**: MDL distillation + staleness-detection mutation primitives for StructuralLab (from intake-414 Token Savior). 2d design + 1d integration into `program.md` search space. Candidate new mutation types. → [`meta-harness-optimization.md`](meta-harness-optimization.md) Tier 2b refinement.
+- [ ] **NIB2-42**: Diversity metrics in `EvalResult` + baseline pass on 4 production roles (DD4, intake-441). ~4-6h code + 3-4h inference. Add `diversity_entropy`/`diversity_distinct2`/`diversity_self_bleu`/`diversity_ttr` fields. Populate `autopilot_baseline.yaml` with per-role thresholds. SafetyGate rule: reject checkpoint if distinct-2 drops >20% AND quality not up. → [`eval-tower-verification.md`](eval-tower-verification.md) EV-8.
+- [ ] **NIB2-43**: OneVL dual-objective α-sweep probe (training-free; DD5, intake-443). ~3-5h inference. Score existing summarizer outputs with α·helpfulness + (1-α)·task-success; α ∈ {0.0, 0.25, 0.5, 0.75, 1.0}. Gate: if α<1.0 outperforms α=1.0 by >2%, promote to Phase 2b design variant. → [`context-folding-progressive.md`](context-folding-progressive.md) Phase 2c addendum.
+- [ ] **NIB2-44**: Agent-World `env_synth/` module scaffold (DD6, intake-444). 3-4w code; training-free. Sub-module: etd_agent / task_synthesizer / verifier_builder / mcp_tool_registry. Wires into autopilot as 5th species. → [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) AW-1..AW-6.
+- [ ] **NIB2-45**: MindDR Phase 1 `deep_research_mode` scaffold (DD7, intake-438). ~3w code + sentinel suite. Feature flag + classifier extension + 3 agent prompts + pydantic_graph nodes + sentinel suite. → [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) MD-1..MD-9.
+- [ ] **NIB2-46**: STOP Phase 0 instrumentation in llama.cpp (DD3, intake-437). ~1d code; non-inference (hook-level). Reserve unused token, add orchestrator hook for hidden-state fetch at prefix position. **Gated on NIB2-32** difficulty-signal re-validation producing a live verdict. → [`reasoning-compression.md`](reasoning-compression.md) Action 10a.
+- [ ] **NIB2-47**: ONNX INT8 export of LateOn + parity test vs PyLate (DD1-A1, intake-428/430/431). ~1h. Non-inference. Prerequisite for S3b latency benchmark. → [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) S3b.
+- [ ] **NIB2-48**: Update intake-432 verdict to `reference_only` + mark intakes 435/436/440 with explicit `trigger_to_reactivate` fields (DD2/DD8). ~30min. Pure metadata fix. → `research/intake_index.yaml`.
+
 ---
 
 ## Items explicitly excluded (blocked or inference-required)
@@ -99,7 +113,7 @@ When you complete an NIB2-NN item:
 2. Update the linked canonical handoff's TODO / next-steps section to match.
 3. Add a one-line entry in `progress/YYYY-MM/YYYY-MM-DD.md`.
 4. If the item belonged to a phased handoff (e.g. "Phase 2c ByteRover enhancement"), bump that handoff's status line.
-5. On completing all 33 items: move this file to `completed/` as Round 2, and run a fresh audit to open Round 3.
+5. On completing all 43 items: move this file to `completed/` as Round 2, and run a fresh audit to open Round 3.
 
 ---
 

@@ -16574,3 +16574,1059 @@
     evaluation plan. Risks: GLM-4.7 had quality issues (different gen), DSA indexer
     unimplemented, 325GB leaves 92GB free on disk, NUMA characteristics unknown at this
     model size.
+
+- id: intake-428
+  url: https://huggingface.co/blog/lightonai/denseon-lateon
+  arxiv_id: null
+  source_type: blog
+  title: 'DenseOn with the LateOn: Open State-of-the-Art Single and Multi-Vector Models'
+  authors:
+  - Raphael Sourty
+  - Antoine Chaffin
+  - Paulo Moura
+  - Amélie Chatelain
+  categories:
+  - search_retrieval
+  - training_distillation
+  key_claims:
+  - 'LateOn achieves 57.22 NDCG@10 on BEIR with <150M parameters, surpassing much larger models (including ColBERT-Zero 55.39 and 4x larger Jina-ColBERT-v2)'
+  - 'DenseOn achieves 56.20 NDCG@10 as top base-size dense retriever, breaking the 56-point barrier while maintaining sub-150M scale'
+  - 'Multi-vector (ColBERT) models generalize 2.3x better than dense models under decontamination — stronger learning vs data leakage'
+  - 'Apache 2.0 release of both models + all training data (1.4B → 665M curated pairs) enabling reproducibility'
+  - 'Effective filtering + decontamination confirms genuine learning: LateOn decontaminated 60.36 NDCG@10 (+3.14pp), DenseOn 57.71 (+1.51pp)'
+  techniques:
+  - Two-stage contrastive training (665M pairs + supervised FT with NV-Retriever hard negatives)
+  - Composable data filtering (30+ filters; MD5 dedup; cross-encoder scoring)
+  - Multinomial source sampling
+  - ModernBERT backbone with asymmetric CLS pooling
+  - Decontaminated BEIR evaluation protocol
+  reported_results:
+  - 'BEIR NDCG@10: LateOn 57.22 (multi-vector), DenseOn 56.20 (dense)'
+  - 'Decontaminated BEIR: LateOn 60.36 (+3.14pp), DenseOn 57.71 (+1.51pp)'
+  - 'LateOn first ColBERT variant <150M to exceed 57.0'
+  - 'DenseOn first dense <150M to exceed 56.0'
+  referenced_arxiv_ids:
+  - '2407.19669'
+  - '2402.01613'
+  - '2405.05374'
+  - '2407.15831'
+  - '2412.13663'
+  - '2004.12832'
+  - '2104.08663'
+  - '2602.16609'
+  - '2508.03555'
+  - '2408.16672'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: new_opportunity
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    intake_entries:
+    - intake-174
+    experiments: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  novelty_justification: >
+    New LightOn release (2026-04) with Apache 2.0 licensing and fully open training data.
+    Direct successor to ColBERT-Zero and Reason-ModernColBERT (intake-174, eliminated
+    CC-BY-NC-4.0). Decontamination evaluation is a novel protocol for distinguishing
+    genuine learning from benchmark leakage.
+  relevance_justification: >
+    EPYC currently deploys GTE-ModernColBERT-v1 (BEIR 54.67) on port 8089 and the
+    colbert-reranker-web-research handoff is actively choosing a reranker model. LateOn
+    (57.22) is a same-architecture drop-in with +2.55pp BEIR. Both Apache 2.0.
+  verdict_justification: >
+    new_opportunity: same backbone (ModernBERT) + same parameter class (≤150M) + Apache
+    2.0 + higher BEIR scores make this a low-risk upgrade candidate. Action: (1) verify
+    ONNX INT8 variant, (2) benchmark reranking latency vs 180ms GTE baseline, (3) A/B on
+    web_research sentinel suite. Tier 2b contradicting-evidence not run — flagged.
+
+- id: intake-429
+  url: https://docs.lighter.xyz/about-lighter/technical-architecture-lighter-core
+  arxiv_id: null
+  source_type: blog
+  title: 'Technical Architecture: Lighter Core'
+  authors: []
+  categories:
+  - hardware_optimization
+  key_claims:
+  - 'Uses succinct execution proofs with Ethereum as anchoring layer to prevent operator misbehavior'
+  - 'Employs zero-knowledge proofs for scalability without relying on decentralized consensus'
+  - 'Users can reconstruct state from on-chain data and withdraw independently if sequencer fails'
+  techniques:
+  - Proof aggregation and batching
+  - Multi-layer proof verification
+  - On-chain fallback (Escape Hatch mode)
+  - State compression for Ethereum posting
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: none
+  credibility_score: null
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Lighter is a DeFi trading protocol (not LightOn the AI company — likely included by
+    name confusion). Techniques are established blockchain scalability patterns.
+  relevance_justification: >
+    Out of scope per project_opensource_only + CPU-inference focus.
+  verdict_justification: >
+    not_applicable. Blockchain/DeFi.
+
+- id: intake-430
+  url: https://huggingface.co/lightonai/LateOn
+  arxiv_id: null
+  source_type: repo
+  title: 'LateOn: State-of-the-Art ColBERT Retrieval Model by LightOn'
+  authors:
+  - Raphael Sourty
+  - Antoine Chaffin
+  - Orion Weller
+  - Paulo Moura
+  - Amélie Chatelain
+  categories:
+  - search_retrieval
+  - retrieval_augmented_decoding
+  key_claims:
+  - 'First ColBERT model to break 57 on BEIR (57.22 NDCG@10)'
+  - 'Beats every existing ColBERT model including 4x larger variants'
+  - '60.36 NDCG@10 on decontaminated BEIR split'
+  - 'ModernBERT (149M) with fully open training data'
+  - 'PyLate library for multi-vector (128-dim) retrieval with MaxSim scoring'
+  techniques:
+  - Late-interaction retrieval (ColBERT architecture)
+  - Multi-vector embeddings (128-dim per token)
+  - MaxSim similarity
+  - Hard-negative contrastive fine-tuning
+  - ModernBERT backbone (149M)
+  reported_results:
+  - 'BEIR NDCG@10: 57.22'
+  - 'Decontaminated BEIR: 60.36'
+  - 'vs GTE-ModernColBERT-v1 (54.75): +2.47pp; vs ColBERT-Zero (55.39): +1.83pp'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    intake_entries:
+    - intake-174
+    - intake-428
+    experiments: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  novelty_justification: >
+    Incremental over ColBERT-Zero (+1.83pp) via superior hard-negative mining and data
+    curation. Same architecture family.
+  relevance_justification: >
+    Drop-in candidate for GTE-ModernColBERT-v1 on port 8089. Same backbone, same
+    parameter count, same 128-dim output.
+  verdict_justification: >
+    worth_investigating pending ONNX INT8 availability + CPU latency benchmark.
+
+- id: intake-431
+  url: https://huggingface.co/lightonai/DenseOn
+  arxiv_id: null
+  source_type: repo
+  title: 'DenseOn: State-of-the-Art Dense Retrieval Model by LightOn'
+  authors:
+  - Raphael Sourty
+  - Antoine Chaffin
+  - Orion Weller
+  - Paulo Moura
+  - Amélie Chatelain
+  categories:
+  - search_retrieval
+  - retrieval_augmented_decoding
+  key_claims:
+  - 'First sub-150M dense model to break 56 NDCG@10 on BEIR (56.20)'
+  - 'Outperforms models 4x larger (Qwen3-Embedding-0.6B at 55.52)'
+  - 'ModernBERT backbone (149M) with CLS pooling and asymmetric query/document prompts'
+  - 'Maintained performance under decontamination (57.71 NDCG@10)'
+  - 'Trained on 665M curated pairs with 30+ composable filters'
+  techniques:
+  - Dense single-vector retrieval with cosine similarity
+  - CLS pooling
+  - Asymmetric query/document prompts
+  - NV-Retriever hard negative mining
+  reported_results:
+  - 'BEIR average: 56.20 NDCG@10 (14 datasets)'
+  - 'Decontaminated BEIR: 57.71 NDCG@10'
+  - 'vs GTE-ModernBERT at same size (55.19): +1.01pp'
+  referenced_arxiv_ids:
+  - '2602.16609'
+  - '2508.03555'
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    intake_entries:
+    - intake-174
+    - intake-428
+    experiments: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  novelty_justification: >
+    Incremental dense retriever release. Same ModernBERT backbone family.
+  relevance_justification: >
+    Dense retriever candidate alternative to BGE-small pool. LateOn is the stronger
+    pair-release for reranking; DenseOn fits best as a probe-first index upgrade.
+  verdict_justification: >
+    worth_investigating as secondary candidate.
+
+- id: intake-432
+  url: https://arxiv.org/abs/2604.15804
+  arxiv_id: '2604.15804'
+  source_type: paper
+  title: Qwen3.5-Omni Technical Report
+  authors:
+  - Qwen Team (Alibaba Group)
+  categories:
+  - multimodal
+  - moe_optimization
+  - hardware_optimization
+  key_claims:
+  - 'Scales to hundreds of billions of parameters with native end-to-end omni-modal (text+audio+image+video) capabilities and 256k context'
+  - 'SOTA on 215 audio and audio-visual understanding benchmarks, surpassing Gemini-3.1 Pro on key audio tasks'
+  - 'Supports 10+ hours of audio understanding and 400 seconds of 720P video in single inference pass'
+  - 'ARIA (Adaptive Rate Interleave Alignment) for stable streaming speech synthesis'
+  - 'Emergent Audio-Visual Vibe Coding capability'
+  techniques:
+  - Hybrid Attention MoE (Thinker + Talker components)
+  - ARIA dynamic text-speech alignment
+  - Script-level structured caption generation
+  - Unified 6.25Hz AuT + RVQ codec (CORRECTED 2026-04-22 per DD2 deep dive; original intake misreported as dual 25Hz+12Hz — that is Qwen3-TTS's design, not Qwen3.5-Omni's)
+  reported_results:
+  - 'SOTA across 215 audio/AV benchmarks'
+  - 'Surpasses Gemini-3.1 Pro on key audio tasks'
+  - '10 languages with emotional nuance'
+  - '400 seconds of 720P video in single context'
+  referenced_arxiv_ids:
+  - '2601.15621'
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: not_applicable
+  adoption_blocker: closed_source_api_only
+  trigger_to_reactivate: Alibaba releases open weights for Qwen3.5-Omni OR Qwen3-Omni-30B-A3B (Apache 2.0 sibling) proves CPU-viable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - multimodal-pipeline.md
+    - tq3-quantization-evaluation.md
+    intake_entries:
+    - intake-121
+    - intake-123
+    experiments: []
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: >
+    End-to-end native omni-modal integration with ARIA streaming speech synthesis. Hybrid
+    Thinker+Talker MoE is a substantive architectural contribution.
+  relevance_justification: >
+    Potential TTS unblock for multimodal-pipeline.md (4 competing TTS paths currently
+    blocked). CPU-only feasibility uncertain — requires GGUF availability + codec CPU
+    evaluation.
+  verdict_justification: >
+    new_opportunity with open questions: (a) open weights / GGUF? (b) CPU feasibility?
+    (c) NUMA 4-way inference budget?
+
+- id: intake-433
+  url: https://arxiv.org/abs/2604.16044
+  arxiv_id: '2604.16044'
+  source_type: paper
+  title: Elucidating the SNR-t Bias of Diffusion Probabilistic Models
+  authors:
+  - Meng Yu
+  - Lei Sun
+  - Jianhao Zeng
+  - Xiangxiang Chu
+  - Kun Zhan
+  categories:
+  - multimodal
+  key_claims:
+  - 'SNR-t bias: SNR and timestep become misaligned during inference despite being coupled during training'
+  - 'Misalignment causes error accumulation across reverse denoising'
+  - 'Differential correction method with negligible overhead'
+  - 'CVPR 2026 accepted'
+  techniques:
+  - Differential correction for denoising schedule
+  - Frequency decomposition
+  reported_results:
+  - 'Improvements across IDDPM, ADM, DDIM, A-DPM, EA-DPM, EDM, PFGM++, FLUX'
+  - 'Negligible compute overhead'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Incremental correction to diffusion denoising timestep scheduling.
+  relevance_justification: >
+    Image generation / diffusion inference — orthogonal to EPYC's CPU LLM focus.
+  verdict_justification: >
+    not_applicable.
+
+- id: intake-434
+  url: https://arxiv.org/abs/2502.07408
+  arxiv_id: '2502.07408'
+  source_type: paper
+  title: 'Maximal Brain Damage Without Data or Optimization: Disrupting Neural Networks via Sign-Bit Flips'
+  authors:
+  - Ido Galil
+  - Moshe Kimhi
+  - Ran El-Yaniv
+  categories:
+  - safety
+  key_claims:
+  - 'Flipping 2 sign bits in ResNet-50 reduces ImageNet accuracy by 99.8%'
+  - '2 sign flips in different experts reduce Qwen3-30B-A3B-Thinking from 78% to 0% on reasoning tasks'
+  - 'DNL method identifies critical parameters without training data or optimization'
+  - 'Sign-bit protection provides practical defense'
+  techniques:
+  - DNL (Deep Neural Lesion) sign-bit identification
+  - 1P-DNL single forward-backward pass variant
+  reported_results:
+  - 'ResNet-50: 99.8% accuracy loss from 2 sign bits'
+  - 'Qwen3-30B-A3B-Thinking: 78% → 0% via expert targeting'
+  - 'Mask R-CNN / YOLOv8-seg: near-zero performance with dual bit flips'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-221
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Novel data-free DNL identification method. Core finding has prior art in adversarial
+    robustness literature.
+  relevance_justification: >
+    Security / robustness research. Notable finding that Qwen3-30B-A3B MoE is vulnerable
+    to 2-sign-bit expert attacks, but no production threat model.
+  verdict_justification: >
+    not_applicable to optimization work. Flag for security team if/when adversarial
+    robustness becomes a production constraint.
+
+- id: intake-435
+  url: https://arxiv.org/abs/2604.13074
+  arxiv_id: '2604.13074'
+  source_type: paper
+  title: 'PersonaVLM: Long-Term Personalized Multimodal LLMs'
+  authors:
+  - Chang Nie
+  - Chaoyou Fu
+  - Yifan Zhang
+  - Haihua Yang
+  - Caifeng Shan
+  categories:
+  - memory_augmented
+  - multimodal
+  - routing_intelligence
+  key_claims:
+  - 'Transforms general-purpose MLLMs into personalized assistants via long-term interaction tracking'
+  - 'Captures evolving user preferences and personality beyond single-turn'
+  - 'Proactive memory extraction + multi-turn reasoning + personality-aligned generation'
+  - 'Persona-MME benchmark: 2,000+ cases across 7 aspects, 14 tasks'
+  - 'Outperforms GPT-4o on personalization (+5.2% on Persona-MME)'
+  techniques:
+  - Chronological multimodal memory extraction/summarization
+  - Memory database + retrieval-augmented reasoning
+  - Multi-turn reasoning with 128k context
+  - User personality inference and alignment
+  reported_results:
+  - '22.4% improvement over baseline on Persona-MME'
+  - '9.8% improvement on PersonaMem'
+  - '+5.2% vs GPT-4o on Persona-MME'
+  - '128k token context capacity'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  trigger_to_reactivate: concrete multi-user use case materializes on EPYC
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: >
+    Chronological multimodal memory extraction + personality inference + 128k context.
+    CVPR 2026 accepted.
+  relevance_justification: >
+    Single-user EPYC design limits direct adoption. Patterns inform conversation-management
+    B1 User Modeling.
+  verdict_justification: >
+    worth_investigating as reference pattern.
+
+- id: intake-436
+  url: https://arxiv.org/abs/2604.04936
+  arxiv_id: '2604.04936'
+  source_type: paper
+  title: 'Web Retrieval-Aware Chunking (W-RAC) for Efficient and Cost-Effective Retrieval-Augmented Generation Systems'
+  authors:
+  - Uday Allu
+  - Sonu Kedia
+  - Tanmay Odapally
+  - Biddwan Ahmed
+  categories:
+  - document_processing
+  - rag_alternatives
+  - context_management
+  key_claims:
+  - 'Traditional chunking suffers from high token cost, redundancy, and limited scalability'
+  - 'W-RAC decouples text extraction from semantic chunk planning using ID-addressable units'
+  - 'LLM-guided grouping (no content generation) reduces hallucination risk'
+  - 'Order-of-magnitude reduction in chunking LLM costs vs traditional chunking'
+  techniques:
+  - Web content parsing into structured ID-addressable units
+  - Decoupled extraction + semantic grouping
+  - Retrieval-aware chunk planning
+  - LLM-guided grouping without content generation
+  reported_results:
+  - 'Comparable or better retrieval performance vs traditional chunking'
+  - 'Order-of-magnitude LLM cost reduction'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  trigger_to_reactivate: LLM-guided chunking proposed for hard document classes (scanned PDFs, complex multi-column layouts)
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  handoffs_created: []
+  novelty_justification: >
+    Cost-aware chunking via decoupled LLM-guided grouping.
+  relevance_justification: >
+    Directly applicable to opendataloader-pipeline-integration Phase 1 (document chunking).
+  verdict_justification: >
+    worth_investigating. Candidate: benchmark W-RAC vs current pdftotext→document_chunker
+    using opendataloader-bench NID/TEDS/MHS metrics.
+
+- id: intake-437
+  url: https://arxiv.org/abs/2604.16029
+  arxiv_id: '2604.16029'
+  source_type: paper
+  title: 'Cut Your Losses! Learning to Prune Paths Early for Efficient Parallel Reasoning'
+  authors:
+  - Jiaxi Bi
+  - Tongxu Luo
+  - Wenyu Du
+  - Zhengyang Tang
+  - Benyou Wang
+  categories:
+  - context_management
+  - cost_aware_routing
+  - speculative_decoding
+  key_claims:
+  - 'STOP (Super TOken for Pruning) eliminates unproductive reasoning branches from initial errors'
+  - 'Early path pruning via learnable token-based mechanism at prefix level'
+  - 'First systematic taxonomy: internal vs external signal; learnable vs heuristic'
+  - 'Learnable internal pruning is an unexplored efficiency lever'
+  - 'Scales across 1.5B–20B models and compute budgets'
+  techniques:
+  - STOP learnable token-based pruning
+  - Prefix-level path identification
+  - Internal/external signal discrimination
+  reported_results:
+  - 'GPT-OSS-20B AIME25: 84% → 90% under fixed compute'
+  - 'Superior efficiency vs baseline pruning'
+  - 'Scales 1.5B–20B'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-110
+    - intake-126
+    - intake-127
+    - intake-129
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    Learnable pruning mechanism distinct from existing training-free verifiers (TrimR)
+    and activation steering (FlowSteer). Taxonomy framing is useful beyond the paper.
+  relevance_justification: >
+    Directly relevant to reasoning-compression.md Tier 1. AIME25 +6pp under fixed compute
+    is significant. Complements existing approaches at a different pruning layer.
+  verdict_justification: >
+    worth_investigating. Evaluate hybrid feasibility with think-strip + difficulty bands.
+
+- id: intake-438
+  url: https://arxiv.org/abs/2604.14518
+  arxiv_id: '2604.14518'
+  source_type: paper
+  title: Mind DeepResearch Technical Report
+  authors:
+  - MindDR Team
+  - Li Auto Inc
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - autonomous_research
+  key_claims:
+  - 'Multi-agent framework (Planning + DeepSearch + Report) achieves competitive deep research at ~30B scale'
+  - 'Four-stage training: SFT cold-start + Search-RL + Report-RL + preference alignment'
+  - 'Multi-dimensional rubric evaluation superior to single RACE metric'
+  - 'Production deployment at Li Auto'
+  - 'SOTA 51.8 on MindDR Bench'
+  techniques:
+  - Multi-agent orchestration (Planning/DeepSearch/Report)
+  - Search-RL + Report-RL training
+  - Agent role specialization via SFT
+  - Multi-dimensional evaluation rubrics
+  reported_results:
+  - 'BrowseComp-ZH 45.7%, BrowseComp 42.8%, WideSearch 46.5%'
+  - 'xbench-DS 75.0%, DeepResearch Bench 52.5, MindDR Bench 51.8'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - routing-intelligence.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - repl-turn-efficiency.md
+    experiments: []
+    intake_entries:
+    - intake-412
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: >
+    Multi-agent specialization + Search-RL / Report-RL training is a novel combination.
+    Production deployment demonstrates viability.
+  relevance_justification: >
+    Architecture parallels EPYC's Tier A/B/C role-specialized orchestrator. Patterns for
+    multi-agent coordination + RL role specialization inform autopilot + meta-harness.
+  verdict_justification: >
+    worth_investigating. Tier 2b not run — flag for follow-up on internal-benchmark SOTA
+    claim.
+
+- id: intake-439
+  url: https://arxiv.org/abs/2604.16503
+  arxiv_id: '2604.16503'
+  source_type: paper
+  title: 'Motif-Video 2B: Technical Report'
+  authors:
+  - Junghwan Lim
+  - Wai Ting Cheung
+  - Minsu Ha
+  - Beomgyu Kim
+  categories:
+  - multimodal
+  key_claims:
+  - 'Strong text-to-video quality at <10M clips, <100k H200 GPU hours'
+  - 'Three-part pathway design (early fusion, joint representation, detail refinement)'
+  - 'Shared cross-attention for long sequences'
+  - 'Dynamic token routing for compute-efficient training'
+  techniques:
+  - Three-pathway backbone
+  - Shared cross-attention
+  - Dynamic token routing
+  reported_results:
+  - 'VBench: 83.76% surpassing larger competitors'
+  - 'Fewer parameters and reduced training data'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 5
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Incremental architectural improvements to text-to-video synthesis.
+  relevance_justification: >
+    Video generation is orthogonal to EPYC's CPU LLM focus.
+  verdict_justification: >
+    not_applicable.
+
+- id: intake-440
+  url: https://arxiv.org/abs/2604.15453
+  arxiv_id: '2604.15453'
+  source_type: paper
+  title: (1D) Ordered Tokens Enable Efficient Test-Time Search
+  authors:
+  - Zhitong Gao
+  - Parham Rezaei
+  - Ali Cy
+  - Mingqiao Ye
+  - Nataša Jovanović
+  - Jesse Allardice
+  - Afshin Dehghan
+  - Amir Zamir
+  - Roman Bachmann
+  - Oğuzhan Fatih Kar
+  categories:
+  - speculative_decoding
+  - benchmark_methodology
+  - multimodal
+  key_claims:
+  - 'Coarse-to-fine 1D ordered tokenization outperforms 2D grid tokenization for test-time search'
+  - 'AR models on ordered tokens exhibit improved test-time scaling'
+  - 'Pure test-time search enables training-free text-to-image generation when guided by verifiers'
+  - 'Intermediate states in ordered sequences carry semantic meaning for verifier steering'
+  techniques:
+  - 1D ordered tokenization
+  - Best-of-N, beam, lookahead search
+  - Multimodal verifier ensembles
+  - Nested dropout training
+  reported_results:
+  - 'Improved test-time scaling via 1D ordered tokens over 2D baselines'
+  - 'Training-free image generation via verifier-guided search'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: worth_investigating
+  trigger_to_reactivate: hierarchical speculation design discussion for future-gen LLMs (draft/target granularity split, tree-search speculation, or verifier-between-stages design)
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence:
+  - 'Test-time search adds inference-time cost; verifier-ensemble overhead is poorly suited to CPU inference'
+  - 'Domain is image generation, not LLM text — generalization unclear'
+  - 'Small-model validation (Janus, LlamaGen) — scaling to 70B+ LLMs unknown'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 06-benchmarking-framework.md
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    1D ordered tokenization framing is a structural contribution; search-over-tokens is
+    established.
+  relevance_justification: >
+    Image-generation domain; verifier-ensemble overhead incompatible with CPU budget.
+    Potentially interesting for future hierarchical-speculation work.
+  verdict_justification: >
+    worth_investigating as reference, not immediate action item.
+
+- id: intake-441
+  url: https://arxiv.org/abs/2604.16027
+  arxiv_id: '2604.16027'
+  source_type: paper
+  title: Where does output diversity collapse in post-training?
+  authors:
+  - Constantinos Karouzos
+  - Xingwei Tan
+  - Nikolaos Aletras
+  categories:
+  - training_distillation
+  - context_management
+  - autonomous_research
+  key_claims:
+  - 'Post-trained LMs generate significantly less varied outputs than base models'
+  - 'Diversity collapse location correlates with training data composition rather than post-training method'
+  - 'CoT suppression preserves answer-level diversity in Think models — collapse is in weights, not format'
+  - 'Diversity loss decomposes into quality-control and genuine narrowing'
+  - 'Inference-time interventions cannot recover training-time diversity loss'
+  techniques:
+  - Analysis across OLMo 3 lineages (Think, Instruct, RL-Zero)
+  - 15-task diversity evaluation (entropy, diversity-2, type-token ratio, self-BLEU)
+  - Decomposition into quality-control + residual
+  reported_results:
+  - 'Think lineage loses most semantic diversity at SFT stage'
+  - 'DPO effects larger in Instruct than Think'
+  - 'Think models retain more correct-answer diversity despite aggregate collapse'
+  - 'Patterns task-dependent and correlate with training data composition'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    Decomposition of diversity loss into quality-control + residual is novel framing.
+    Multi-lineage, multi-task empirical approach.
+  relevance_justification: >
+    Informs PromptForge mutation diversity strategies and reasoning length alarm work.
+    Finding that inference-time cannot recover training-time diversity constrains what
+    prompt tuning can achieve.
+  verdict_justification: >
+    worth_investigating. (1) measure diversity on our benchmarks, (2) factor into model
+    selection.
+
+- id: intake-442
+  url: https://arxiv.org/abs/2604.18168
+  arxiv_id: '2604.18168'
+  source_type: paper
+  title: Extending One-Step Image Generation from Class Labels to Text via Discriminative Text Representation
+  authors:
+  - Chenxi Zhao
+  - Chen Zhu
+  - Xiaokun Feng
+  categories:
+  - multimodal
+  key_claims:
+  - 'Extends MeanFlow (one-step image generation) to text-conditioned synthesis'
+  - 'Text features require high discriminability for one-step generation'
+  - 'Conventional LLM text encoder training strategies perform poorly'
+  techniques:
+  - LLM-based text encoders with discriminability optimization
+  - MeanFlow adaptation for text conditioning
+  reported_results:
+  - 'Significant performance improvements on diffusion models'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: 3
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Incremental extension of MeanFlow to text conditioning.
+  relevance_justification: >
+    Image generation with diffusion — out of scope.
+  verdict_justification: >
+    not_applicable.
+
+- id: intake-443
+  url: https://arxiv.org/abs/2604.18486
+  arxiv_id: '2604.18486'
+  source_type: paper
+  title: 'OneVL: One-Step Latent Reasoning and Planning with Vision-Language Explanation'
+  authors:
+  - Jinghui Lu
+  - Xiaomi Embodied Intelligence
+  categories:
+  - context_management
+  - multimodal
+  key_claims:
+  - 'First latent CoT method to surpass explicit CoT'
+  - 'Answer-only inference latency with superior accuracy vs explicit CoT'
+  - 'Dual auxiliary decoder supervision (language + world model) produces more generalizable latent representations'
+  - '4 visual + 2 language latent tokens enable prefill-only inference'
+  - 'World model supervision (future-frame prediction) guides causal-reasoning compression'
+  techniques:
+  - Latent CoT with dual auxiliary decoders
+  - VLA + world-model joint framework
+  - Three-stage training (pretraining → warmup → joint FT)
+  - Prefill-only inference (decoders discarded at inference)
+  reported_results:
+  - 'NAVSIM PDM-score: 88.84 vs 87.30 baseline'
+  - 'ROADWork ADE/FDE: 12.49/28.80 vs 22.68/80.78'
+  - 'NAVSIM latency: 4.46s vs 6.58s (AR CoT baseline)'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - context-folding-progressive.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - context-folding-progressive.md
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    Dual-objective compression (text + future-frame prediction) is a novel extension of
+    latent CoT. Prefill-only inference pattern interesting for CPU efficiency.
+  relevance_justification: >
+    Autonomous-driving domain limits direct applicability. Methodological insights
+    transferable to text-only reasoning compression.
+  verdict_justification: >
+    worth_investigating as methodological reference for context-folding Phase 2b and
+    reasoning-compression Action 3 enforce-mode design.
+
+- id: intake-444
+  url: https://arxiv.org/abs/2604.18292
+  arxiv_id: '2604.18292'
+  source_type: paper
+  title: 'Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence'
+  authors:
+  - Guanting Dong
+  - Junting Lu
+  - Junjie Huang
+  - Wanjun Zhong
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  key_claims:
+  - 'Agentic Environment-Task Discovery autonomously explores databases/tool ecosystems to synthesize verifiable tasks with controllable difficulty'
+  - 'Continuous Self-Evolving Agent Training combines multi-env RL with dynamic task synthesis'
+  - 'Agent-World-8B and 14B outperform proprietary models across 23 benchmarks'
+  - 'Self-evolution enables co-evolution of policies and environments'
+  - 'Model Context Protocol (MCP) for unified real-world service interface'
+  techniques:
+  - Agentic Environment-Task Discovery
+  - Continuous Self-Evolving Agent Training
+  - Multi-environment RL
+  - Dynamic task synthesis
+  - MCP integration
+  reported_results:
+  - 'Agent-World-8B/14B beat proprietary baselines across 23 agent benchmarks'
+  - 'Scaling correlates with environment diversity and self-evolution rounds'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-412
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: >
+    Autonomous environment discovery + dynamic task synthesis is a novel scaling mechanism
+    for agent training.
+  relevance_justification: >
+    Addresses autopilot's capability-gap identification challenge. Parallels AR-3 idea
+    space at a different layer (task/environment synthesis vs prompt/structural mutation).
+  verdict_justification: >
+    worth_investigating. Tier 2b not run — beat-proprietary claim needs corroboration.
+
+- id: intake-445
+  url: https://arxiv.org/abs/2604.18394
+  arxiv_id: '2604.18394'
+  source_type: paper
+  title: 'OpenGame: Open Agentic Coding for Games'
+  authors:
+  - Yilei Jiang
+  - Jinyuan Hu
+  - Qianyin Xiao
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - 'Template Skill + Debug Skill architecture generates playable games from descriptions'
+  - 'GameCoder-27B via continual pre-training + SFT + execution-grounded RLHF'
+  - 'VLM judging + headless browser execution for correctness evaluation'
+  - 'Open-source release (CC BY 4.0)'
+  techniques:
+  - Template Skill + Debug Skill architecture
+  - GameCoder-27B specialized code LLM
+  - Execution-grounded RLHF
+  - VLM-based judging
+  reported_results:
+  - 'SOTA on 150 diverse game prompts'
+  - 'Metrics: Build Health, Visual Usability, Intent Alignment'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 6
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Specialized agentic architecture for game synthesis. Template/Debug split is reasonable
+    design; execution-grounded RLHF is established.
+  relevance_justification: >
+    Game synthesis is orthogonal to EPYC's LLM inference optimization focus.
+  verdict_justification: >
+    not_applicable.
+
+- id: intake-446
+  url: https://arxiv.org/abs/2604.18564
+  arxiv_id: '2604.18564'
+  source_type: paper
+  title: 'MultiWorld: Scalable Multi-Agent Multi-View Video World Models'
+  authors:
+  - Haoyu Wu
+  - Jiwen Yu
+  - Yingtian Zou
+  - Xihui Liu
+  categories:
+  - multimodal
+  - agent_architecture
+  key_claims:
+  - 'Video world models fail to capture complex multi-agent interactions'
+  - 'Framework enables accurate control of multiple agents with multi-view consistency'
+  - 'Flexible scaling of agent/view counts with parallel view synthesis'
+  techniques:
+  - Multi-Agent Condition Module
+  - Global State Encoder
+  - Parallel multi-view synthesis
+  reported_results:
+  - 'Improved video quality on multi-player game environments'
+  - 'Superior action-following accuracy vs baselines'
+  - 'Multi-view consistency across cameras'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 5
+  verdict: not_applicable
+  ingested_date: '2026-04-22'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Specialized extension of video world models to multi-agent setting.
+  relevance_justification: >
+    Video generation + world modeling is orthogonal to EPYC's CPU LLM focus.
+  verdict_justification: >
+    not_applicable.

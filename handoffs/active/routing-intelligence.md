@@ -587,3 +587,27 @@ High branching density at inference time = the model is diverging rather than co
   - Key technique: Seven-mode permission system with ML-based safety classifier; graduated trust model (auto-approve rate grows from ~20% at <50 sessions to 40% at 750+ sessions).
   - Reported results: 93% permission approval rate; 54 built-in tools (19 unconditional, 35 conditional).
   - Delta from current approach: The graduated trust model (permission classifier confidence grows with session history) is a pattern we could adopt for routing confidence — new models start with conservative routing thresholds that relax as benchmark data accumulates. The deliberate input-only classification (excluding model reasoning) is an anti-gaming pattern relevant to our factual_risk scorer.
+
+## Deep-Dive Integration — 2026-04-22
+
+### Deep Research Mode → dedicated handoff
+
+DD7 (MindDR, intake-438) produces a three-agent specialization pattern (Planning / DeepSearch / Report) suitable for research-like queries. Phase 1 is prompt-level and zero-infra; Phase 2 four-stage RL GPU-gated. Full plan: [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). Entry point: MD-1 `deep_research_mode` feature flag + MD-2 extends Category A classifier with `research_like` exemplars.
+
+Routing interaction: when `deep_research_mode` is on AND query matches `research_like`, the three-agent pydantic_graph pipeline supersedes the current direct/REPL/delegated mode selection for that request. Classifier-level decision — no changes to Q-scorer or escalation policy required for Phase 1.
+
+### STOP gating policy (DD3, intake-437)
+
+When `reasoning-compression.md` Action 10a (STOP learnable path pruning) reaches enforce mode, the gating policy is:
+
+- `difficulty_band == easy` → do NOT invoke STOP (token overhead not worth it)
+- `difficulty_band == medium` → STOP with k=2 parallel samples
+- `difficulty_band == hard` → STOP with k=4 parallel samples
+
+This cross-cuts with P13 Decision-Aware Routing — STOP's expected-cost model feeds into the SPO+ routing decision when both are on. Deep dive: `/workspace/research/deep-dives/stop-learnable-path-pruning.md`.
+
+### Cross-references
+
+- [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) — full Deep Research Mode plan
+- [`reasoning-compression.md`](reasoning-compression.md) Action 10a — STOP implementation
+- `routing-and-optimization-index.md` P13 (Decision-Aware Routing) + P18 (Deep Research Mode pointer)

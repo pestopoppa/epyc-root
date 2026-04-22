@@ -50,6 +50,7 @@
 - [x] Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-09 (Package B Phase 4). At 0.15/0.35: NO predictive spread — escalation rate flat across easy/medium/hard (62/61/62%). Signal does not differentiate routing needs at current thresholds.
 - [ ] If validated: implement enforce mode — **BLOCKED**: difficulty signal has no predictive power at current thresholds. Need semantic features or different approach before enforce.
 - [x] Compute Omega metric per-suite — ✅ 2026-04-09 (Package B Phase 4). **7/10 suites: tools HURT accuracy** (direct > REPL). Worst: agentic -54pp, coder -44pp, general -26pp. Only hotpotqa +12pp and gpqa +6pp benefit.
+- [ ] **Action 10a (2026-04-22, DD3)**: STOP learnable path pruning probe — prefix-level learnable super-token fills an unoccupied quadrant (internal × learnable × selection) in the reasoning-compression taxonomy. Composes with all Tier 1 techniques (TrimR, short-m@k, difficulty bands). 5-inference-day probe plan with AUC ≥ 0.75 gate. **Gated on NIB2-32 difficulty-signal re-validation** (needs telemetry accumulated post-NIB2-35 fix). → `reasoning-compression.md` Action 10a + DD3 deep-dive (`/workspace/research/deep-dives/stop-learnable-path-pruning.md`).
 
 ### P1 — Tool Output Compression
 
@@ -153,6 +154,8 @@ Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scori
 - [ ] **EV-5**: Deploy ThinkPRM-1.5B-Q4KM for T2 process verification (~100 lines, needs model download)
 - [x] **EV-6**: Cross-family verification constraint enforcement — ✅ 2026-04-15. `VERIFICATION_FAMILIES` dict + `check_cross_family()` in `eval_tower.py`. Supports Qwen/Llama/DeepSeek/Ouro/Mistral/Gemma. Permissive default (unknown families pass).
 - [ ] **EV-7**: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7)
+- [ ] **EV-8** (NEW 2026-04-22, DD4): **Diversity metrics in EvalResult** — add `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr` fields to `EvalResult` at `safety_gate.py`. Implement `diversity_metrics.py` scoring. Wire `to_grep_lines()`. Baseline pass on 4 production roles (architect_general/architect_coding/coder/worker). SafetyGate rule: reject checkpoint if distinct-2 drops >20% AND quality not up. **Blocking prerequisite** for any future checkpoint swap — intake-441 shows post-training diversity loss is structural and inference-time-irrecoverable. Deep dive: `/workspace/research/deep-dives/diversity-collapse-posttraining.md`.
+- [ ] **EV-9** (NEW 2026-04-22, DD7): **Multi-dimensional rubric extension** — extend `EvalResult` with reasoning-trajectory / tool-call / outline / content-stage rubric fields. 20-40 research-like sentinel queries (`deep_research_sentinel` suite). Supports `minddr-deep-research-mode.md` Phase 1 A/B evaluation (MD-7). LLM-as-judge with deterministic fallback for T1.
 - **Math-Verify integration note** (intake-377, 2026-04-15): `score_answer_deterministic()` underestimates math capability by ~66%. EV-4 calibration baseline and S4 formalizer eval should use Math-Verify for answer comparison. See `eval-tower-verification.md` 2026-04-15 update for caveats (NOT symmetric, NOT thread-safe). Deep dive: `research/deep-dives/math-verify-integration-analysis.md`.
 
 ### P2.5 — Knowledge Base Governance (from intake-268/269/270/277)

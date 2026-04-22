@@ -39,6 +39,7 @@
 - [ ] **Phase 2**: Parse ODL JSON for figures/tables; enrich VL model prompts; improve chunker with heading hierarchy
 - [ ] **Phase 3**: Deploy hybrid sidecar; benchmark 3-way routing; run comparison suite (200 PDFs)
 - [ ] Clone opendataloader-bench; implement NID/TEDS/MHS scoring
+- **Future consideration (DD8, intake-436 W-RAC)**: if Phase 2+ introduces LLM-guided chunking for hard document classes (scanned PDFs, complex multi-column layouts), W-RAC's ID-addressable-unit pattern (decouple extraction from grouping; LLM for grouping decisions only, not content generation) is the preferred design. Trigger condition documented in `/workspace/research/deep-dives/intake-trio-202604-references.md`.
 
 ### P2 — Lean 4 Proving Pipeline (merged 2026-04-21 from `lean-proving-pipeline.md`)
 

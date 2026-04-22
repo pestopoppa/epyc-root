@@ -2,8 +2,8 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 22 documents
+**Last compiled**: 2026-04-22
+**Sources**: 25 documents (added intake-428/430/431 LightOn DenseOn/LateOn)
 
 ## Summary
 
@@ -26,6 +26,21 @@ A 2026-04-17 intake sweep (intake-405/406/407) mapped the XTR and WARP lines of 
 A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3k GitHub stars, AGPL-3.0) as a replacement for the current DDG HTML scraping + Brave fallback in `search.py`. The current `_search_duckduckgo()` function is 112 lines of fragile regex HTML parsing using subprocess curl, subject to bot detection and layout changes. SearXNG provides a self-hosted JSON API (`GET /search?q=...&format=json`) aggregating 250+ search engines with structured results including multi-engine provenance (`engines[]`, `positions[]`, `score` fields). Result merging is built-in -- when multiple engines return the same URL, they're merged with boosted score. The deployment is a Docker container (~183MB) with Granian ASGI server and optional Valkey sidecar for rate limiting. Critical caveats: (1) the limiter's API_MAX=4 requests/hour for JSON format blocks all programmatic use -- must be disabled for backend use, (2) bot detection blocks python-requests/curl user-agents when limiter is enabled, (3) JSON format is NOT enabled by default -- requires adding `json` to `search.formats` in settings.yml, (4) Google actively blocks SearXNG via TLS/HTTP2 fingerprinting, making it unreliable as an engine. Per-engine configuration supports weight multipliers, timeouts, retry policies, and proxy chains, allowing fine-tuning of individual engines. The `unresponsive_engines[]` field in JSON responses reports which engines failed per query, providing a monitoring signal without checking container logs. The SearXNG backend composes naturally with the ColBERT reranker S5: SearXNG returns top-N snippets via JSON, ColBERT reranks by MaxSim, top-3 get fetched and synthesized. An MCP server for SearXNG (intake-361, mcp-searxng, 635 stars, MIT) provides an alternative integration path for Claude Code sessions. Work items SX-1 through SX-6 are tracked in routing-and-optimization-index P12.
 
 ## Key Findings
+
+### New (2026-04-22, DD1)
+
+- **LightOn DenseOn/LateOn release (Apache 2.0, 2026-04)** [intake-428/430/431] is a same-family drop-in upgrade for deployed GTE-ModernColBERT-v1. LateOn: BEIR NDCG@10 **57.22** (+2.55pp over GTE-ModernColBERT-v1 at 54.67; +1.83pp over ColBERT-Zero at 55.43), decontaminated BEIR 60.36. DenseOn (dense sibling): BEIR 56.20 — first sub-150M dense model past 56, outperforms 4x-larger models. Both ModernBERT-149M. **Amended plan**: LateOn is now primary candidate for the colbert-reranker S5 swap, with GTE as fallback baseline (was ColBERT-Zero primary). Decontamination protocol (xxhash64 + 13-gram containment, threshold 0.5) adopted as EPYC-internal retrieval-eval standard. Newly unblocked: local NV-Retriever fine-tune on REPL+sentinel queries (Apache 2.0 corpora released).
+- Deployed-model BEIR comparison table:
+
+| Model | Params | BEIR NDCG@10 | Decontaminated | Deployed? | License |
+|---|---|---|---|---|---|
+| GTE-ModernColBERT-v1 | 149M | 54.67 | — | ✅ port 8089 | Apache 2.0 |
+| ColBERT-Zero | 149M | 55.39 | — | No (was S5 primary until 2026-04-22) | Apache 2.0 |
+| LateOn (intake-430) | 149M | **57.22** | **60.36** | No (S5 primary candidate 2026-04-22) | Apache 2.0 |
+| DenseOn (intake-431) | 149M | 56.20 | 57.71 | No (probe-first pool candidate) | Apache 2.0 |
+| ~~Reason-ModernColBERT~~ | 150M | 22.62–30.28 BRIGHT | — | Eliminated | CC-BY-NC-4.0 |
+
+### Existing
 
 - Two distinct retrieval systems: ColBERT 128-dim multi-vector (codebase/docs) vs BGE-large 1024-dim single-vector (MemRL routing memory). Complementary, not competing [Ch.07 MemRL]
 - GTE-ModernColBERT-v1 upgrade: 5/10 queries better, 4 same, 0 worse. Latency 28ms -> 50ms (+78%). BEIR avg 54.67, LongEmbed SOTA 88.39 [colbert-zero-research-integration.md]

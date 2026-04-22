@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-04-19
-**Sources**: 22 documents
+**Last compiled**: 2026-04-22
+**Sources**: 23 documents (added intake-441 diversity collapse)
 
 ## Summary
 
@@ -22,6 +22,11 @@ A critical finding from SFT generalization research (intake-374, intake-378) is 
 Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
 
 ## Key Findings
+
+### New (2026-04-22, DD4)
+
+- **Post-training diversity collapse is STRUCTURAL (in weights), not a generation-format issue** [intake-441, arxiv:2604.16027]. OLMo 3 three-lineage study: Think models lose most semantic diversity at SFT stage; Instruct models see larger effects from DPO. CoT suppression preserves answer-level diversity in Think models — collapse is in the weights, not the generation format. **Inference-time interventions (conciseness prompts, temperature adjustment, reasoning-length alarms) cannot recover training-time diversity loss.** Decomposition: diversity loss = quality-control component + residual/genuine-narrowing component. Task-dependent. **Implication for EPYC**: (1) model selection must include diversity metrics (distinct-2, self-BLEU, entropy, TTR) alongside accuracy for any checkpoint swap — see `eval-tower-verification.md` EV-8; (2) PromptForge mutation diversity is fundamentally bounded by base-model diversity, so a diversity-coverage term is needed (autopilot AP-35); (3) SFT-dominant narrowing on reasoning tracks, DPO on chat tracks — training-pipeline choices have measurable downstream impact. Deep dive: `/workspace/research/deep-dives/diversity-collapse-posttraining.md`.
+
 
 - Agents can beat official model instruction tuning on narrow tasks like function calling (+22pp on BFCL) but achieve only 23% vs 51% on general post-training benchmarks [agent-training-posttrainbench-act.md]
 - Medium reasoning effort outperforms high for strong models: GPT-5.1 scored 19.7% (medium) vs 17.2% (high) while using half the tokens [agent-training-posttrainbench-act.md]

@@ -190,3 +190,50 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
   - Relevance: Independent confirmation that 98.4% of agent complexity lives in operational infrastructure — strongest external validation of the meta-harness optimization thesis. Identifies six open design directions including the observability-evaluation gap and harness boundary evolution.
   - Key technique: 13 design principles traced from 5 human values to implementation choices; five-layer compaction pipeline; comparative analysis (Claude Code vs OpenClaw) showing deployment context drives architectural choices.
   - Delta from current approach: The observability-evaluation gap (agents produce outputs but evaluating them is hard) and the finding that 27% of Claude Code tasks represent novel work are new data points for justifying meta-harness investment. The comparative framework (CLI agent vs gateway agent) is relevant to our Hermes integration decisions.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-438] "Mind DeepResearch Technical Report"** (arxiv:2604.14518, Li Auto, production deployment)
+  - Relevance: Multi-agent framework with role specialization via RL. Production deployment demonstrates meta-harness viability at 30B scale. Complements meta-harness thesis that harness-layer investment dominates capability-layer investment.
+  - Key technique: Four-stage training (SFT → Search-RL → Report-RL → preference alignment) with multi-dimensional rubric evaluation.
+  - Reported results: SOTA 51.8 on MindDR Bench; BrowseComp-ZH 45.7%, WideSearch 46.5%, xbench-DS 75.0%.
+  - Delta: Our meta-harness work focuses on orchestration + context + routing. MindDR extends to RL agent-role specialization — an axis we've deferred (GPU-gated). Useful reference for a future Tier 3 direction if GPU becomes available.
+
+- **[intake-444] "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence"** (arxiv:2604.18292)
+  - Relevance: Self-evolving agent training with autonomous environment-task discovery. Addresses the meta-harness question: how do we scale past fixed benchmarks without manually curating tasks?
+  - Key technique: Agentic Environment-Task Discovery + Continuous Self-Evolving Agent Training + MCP integration for real-world services.
+  - Reported results: Agent-World-8B/14B beat proprietary baselines across 23 benchmarks.
+  - Delta: Environment synthesis as a scaling mechanism is orthogonal to our meta-harness Tiers 1-2 (orchestration) and the autopilot's AR-3 mutation loop. Consider as a Tier 2b or Tier 3 direction where the "harness" synthesizes its own evaluation environments.
+
+## Deep-Dive Integration — 2026-04-22
+
+### Tier 3 — Concrete Outer-Loop Rebuild Recipes (now split into 2 dedicated handoffs)
+
+The long-deferred Tier 3 outer-loop rebuild now has two concrete forward paths, each with its own dedicated handoff:
+
+**1. [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) — Environment synthesis arena (DD6, intake-444)**
+
+- Phase 1 training-free and CPU-feasible today: LLM-orchestrated exploration of databases + MCP tool ecosystem → synthesized verifiable tasks with controllable difficulty → fed into AR-3 as additional benchmark input.
+- Phase 2 multi-env GRPO training: GPU-gated (post-DGX-Spark). Trains Qwen3-8B → Agent-World-8B-EPYC.
+- Entry point: AW-1 `env_synth/` module scaffold.
+
+**2. [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) — Three-agent RL specialization (DD7, intake-438)**
+
+- Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report): zero-infra, falsifiable under eval tower, ~3w code.
+- Phase 2 four-stage training recipe: SFT → Search-RL (GSPO/GRPO) → Report-RL (DAPO) → preference alignment (DPO + Self-SFT). GPU-gated.
+- Entry point: MD-1 `deep_research_mode` feature flag.
+
+Both Phase-1 paths are training-free and implementable today. They operate on different axes: Agent-World expands the benchmark surface (bottom-up); MindDR refactors the routing pipeline (top-down). A fully-rebuilt Tier 3 eventually combines both — synthesized tasks (Agent-World Phase 1) train the three-agent pipeline (MindDR Phase 2) when GPU is available.
+
+### NIB2-41 — MDL distillation + staleness-detection mutation primitives (intake-414 Token Savior)
+
+Candidate new StructuralLab mutation types. 2d design + 1d integration into `program.md` search space. Tracked in `non-inference-backlog.md` NIB2-41. No dedicated handoff needed; this is a local extension to the existing mutation-type registry.
+
+### Cross-references
+
+- `routing-and-optimization-index.md` P17 (Agent-World pointer) + P18 (MindDR pointer)
+- `agent-world-env-synthesis.md` + `minddr-deep-research-mode.md`
+- `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
+- `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md`

@@ -198,6 +198,36 @@ From Aletheia (intake-370, TU Darmstadt):
 
 **Dependencies**: EV-1–4 provide the calibration infrastructure. Ouro P7 provides the sentinel model.
 
+### EV-8: Diversity metrics (NEW 2026-04-22, DD4 / intake-441)
+
+**Source**: `/workspace/research/deep-dives/diversity-collapse-posttraining.md` (402 lines). Post-training diversity loss is **structural (weights), not format** — inference-time interventions cannot recover it. Any future checkpoint swap needs a diversity-regression gate alongside quality/ECE/AUC.
+
+**Target**: NIB2-42 in `non-inference-backlog.md`.
+
+Tasks:
+- [ ] Add 4 fields to `EvalResult` at `safety_gate.py` (currently L44-100): `diversity_entropy`, `diversity_distinct2`, `diversity_self_bleu`, `diversity_ttr`.
+- [ ] Implement `diversity_metrics.py` scoring functions. Distinct-2 = `len(unique 2-grams) / len(2-grams)`; self-BLEU = pairwise BLEU across N completions; TTR = type-token ratio.
+- [ ] Wire through `to_grep_lines()` for log parsing.
+- [ ] One-day baseline pass: 4 production roles (architect_general, architect_coding, coder, worker) × 20 open-ended prompts × 4 completions (temperature 0.7). Populate `autopilot_baseline.yaml` with per-role thresholds.
+- [ ] SafetyGate rule (warn-only for 10 trials, then enforce): **reject checkpoint if distinct-2 drops >20% AND quality not up**. Couples diversity with quality to prevent metric gaming.
+- [ ] Deferred: temperature-ladder experiment (T=0.7/1.0/1.3); CoT-suppression ablation on Think models.
+
+Exit criterion: baseline file populated; warn-only rule live for 10 trials; then flip warn → reject.
+
+### EV-9: Multi-dimensional rubric (NEW 2026-04-22, DD7 / intake-438)
+
+**Source**: `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md` (442 lines). Required dependency for `minddr-deep-research-mode.md` MD-7.
+
+**Target**: Supports NIB2-45 MindDR Phase 1.
+
+Tasks:
+- [ ] Extend `EvalResult` with rubric fields: `rubric_reasoning_trajectory`, `rubric_tool_calls`, `rubric_outline`, `rubric_content_stage`.
+- [ ] LLM-as-judge scoring functions per rubric dimension (deterministic fallback via regex+structure for T1 low-cost runs).
+- [ ] Create `deep_research_sentinel` suite: 20-40 research-like queries with multi-dimensional ground truth. 10 BrowseComp-style + 10 WideSearch-style + 10 mixed.
+- [ ] Wire rubric scoring into existing `to_grep_lines()` — one `METRIC rubric_<dim>: <score>` line per dimension.
+
+Exit criterion: `minddr-deep-research-mode.md` MD-9 A/B test can produce multi-dimensional scores.
+
 ## Dependency Graph
 
 ```

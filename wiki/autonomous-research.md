@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-20
-**Sources**: 28 documents (3 deep-dives, 17 intake entries, 8 handoffs)
+**Last compiled**: 2026-04-22
+**Sources**: 30 documents (added intake-438 MindDR + intake-444 Agent-World; 4 deep-dives, 19 intake entries, 10 handoffs)
 
 ## Summary
 
@@ -16,6 +16,14 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-04-22, DD6 + DD7)
+
+- **Environment-synthesis + co-evolution is the next scaling dimension beyond retrieval-augmented iteration** [intake-444 Agent-World, arxiv:2604.18292]. Agent-World-8B/14B beats proprietary baselines across 23 benchmarks via autonomous Environment-Task Discovery (LLM-orchestrated exploration of databases + MCP tool ecosystems) + Continuous Self-Evolving Agent Training (multi-env RL + dynamic task synthesis). This is the **strongest external validation of the meta-harness thesis** — harness-layer investment (environment synthesis) out-scaled weights-layer investment in the paper's ablations. EPYC adoption is split: **Phase 1 is training-free and CPU-feasible today** (ETD agent, task synthesizer, verifier builder, MCP tool registry — tracked in `agent-world-env-synthesis.md` AW-1..AW-7); **Phase 2 multi-env GRPO training is GPU-gated** (post-DGX-Spark). This makes autopilot's 5th species (env_synth) an immediate implementation target and concretizes meta-harness Tier 3's deferred outer-loop rebuild. Deep dive: `/workspace/research/deep-dives/agent-world-environment-synthesis.md`.
+
+- **Multi-agent role specialization via RL is production-validated at 30B scale** [intake-438 MindDR, Li Auto]. MindDR deploys Planning + DeepSearch + Report agents with four-stage training (SFT → Search-RL/GSPO-GRPO → Report-RL/DAPO → preference-alignment/DPO+Self-SFT). Independent production deployment confirms the architecture pattern at a scale we can reach (30B ≈ our Tier-B specialists). **Phase 1 prompt-level adoption (zero-infra, no RL) is immediate** — tracked in `minddr-deep-research-mode.md` MD-1..MD-9. **Phase 2 four-stage training recipe is GPU-gated** — concrete recipe for meta-harness Tier 3 when DGX Spark arrives. Public benchmarks (BrowseComp-ZH 45.7, WideSearch 46.5, xbench-DS 75.0) are reliable anchors; MindDR Bench 51.8 SOTA is self-curated so read as deployment evidence, not generalization. Deep dive: `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md`.
+
+### Existing
 
 - **The Evolution Manager pattern addresses the largest gap in automated optimization.** EvoScientist's ablation study quantifies the value: without Idea Direction Evolution -22.50 average gap (novelty and feasibility hurt most), without Idea Validation Evolution -20.00 (feasibility disproportionately harmed), without all evolution -45.83. Strategy distillation alone (ESE) yields +10.17pp code execution success rate (34.39% to 44.56%). The core insight: raw trial metrics do not capture why things worked or failed. The Evolution Manager observes trial histories and distills abstract, generalizable strategies before storage -- it never executes experiments or generates ideas, only observes and distills. [evoscientist-multi-agent-evolution.md](../research/deep-dives/evoscientist-multi-agent-evolution.md)
 

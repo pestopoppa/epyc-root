@@ -139,3 +139,18 @@ PDF Input
   needs generic byte-sniffing; live test on EPYC misclassified JSON as JSONL;
   80 MB onnxruntime + 225 ms cold-start for zero accuracy gain.
   Reconsider only if EPYC starts ingesting arbitrary binary corpora.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-436] "Web Retrieval-Aware Chunking (W-RAC) for Efficient and Cost-Effective Retrieval-Augmented Generation Systems"** (arxiv:2604.04936)
+  - Relevance: Directly applicable to Phase 1 chunking strategy. W-RAC claims an order-of-magnitude reduction in chunking-related LLM costs vs traditional LLM-based chunking, with comparable or better retrieval performance.
+  - Key technique: Decouple text extraction from semantic chunk planning using ID-addressable units; LLM is used for *grouping decisions only*, not content generation — eliminating a major hallucination source in agentic chunking pipelines.
+  - Reported results: Comparable or better retrieval performance vs traditional chunking; order-of-magnitude LLM cost reduction.
+  - Delta from current approach: Current pipeline is pdftotext → document_chunker (non-LLM). W-RAC is relevant if we ever add LLM-guided chunking for hard cases (scanned PDFs, complex layouts). Candidate benchmark: compare W-RAC vs current chunker on opendataloader-bench NID/TEDS/MHS metrics when we build that evaluation harness.
+
+### Next Actions
+
+- [ ] If/when LLM-based chunking is proposed for difficult document classes: evaluate W-RAC's ID-addressable-unit pattern as the preferred design
+- [ ] Cite as prior art in Phase 2 (hybrid routing) design if cost becomes a bottleneck

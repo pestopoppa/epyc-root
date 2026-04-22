@@ -541,3 +541,63 @@ Phase 1 is directly implementable from the synthesis document. Phases 1+2 parall
   - Key technique: Four memory representations (Trajectory/Workflow/Summary/Insight) with cross-domain pooling; negative transfer taxonomy (domain-mismatched anchoring, false validation confidence, misapplied best-practice transfer).
   - Reported results: +3.7% average across 6 benchmarks; MTL (431 memories) outperforms AgentKB (5,899 memories) by +1.7%.
   - Delta from current approach: The negative transfer taxonomy is directly actionable for PromptForge mutation safety gates. The finding that task-agnostic insights outperform task-specific insights (+1.1%) suggests strategy_store should favor abstract patterns over concrete implementation traces. Caveat: "Memory Transplants" (ICLR 2026 Workshop) finds architecture transfer is system-dependent and weaker solvers benefit most — the 3.7% gain may not hold for stronger models.
+
+## Research Intake Update — 2026-04-22
+
+### New Related Research
+
+- **[intake-438] "Mind DeepResearch Technical Report"** (arxiv:2604.14518, Li Auto)
+  - Relevance: Production multi-agent framework (Planning + DeepSearch + Report) with four-stage training (SFT cold-start + Search-RL + Report-RL + preference alignment). Architecture parallels EPYC's Tier A/B/C role-specialization.
+  - Key technique: Agent role specialization via SFT, RL specialization per agent role, multi-dimensional rubric evaluation.
+  - Reported results: BrowseComp-ZH 45.7%, WideSearch 46.5%, SOTA 51.8 on MindDR Bench at ~30B scale.
+  - Delta from current approach: Our AR-3 explores prompt/structural mutations at the autopilot layer. MindDR explores the agent-role training layer (RL specialization). The two are orthogonal and complementary — RL agent specialization is a longer-term path we haven't opened. Tier 2b contradicting-evidence not run.
+
+- **[intake-441] "Where does output diversity collapse in post-training?"** (arxiv:2604.16027)
+  - Relevance: PromptForge mutation diversity depends on base-model output diversity. Paper shows post-training (SFT especially) systematically narrows output distribution — inference-time prompting can't recover training-time diversity loss. This constrains how much diversity PromptForge mutations can realistically generate.
+  - Key finding: Diversity loss decomposes into quality-control and residual/genuine-narrowing components; task-dependent.
+  - Delta: Factor diversity-collapse awareness into model-selection decisions. When evaluating new post-trained checkpoints for autopilot (e.g., next architect swap), add a diversity metric alongside accuracy.
+
+- **[intake-444] "Agent-World: Scaling Real-World Environment Synthesis for Evolving General Agent Intelligence"** (arxiv:2604.18292)
+  - Relevance: Autonomous environment + task discovery with controllable difficulty. Addresses capability-gap identification challenge that parallels autopilot's goal of finding useful mutations.
+  - Key technique: Agentic Environment-Task Discovery + Continuous Self-Evolving Agent Training + Multi-env RL + dynamic task synthesis + MCP integration.
+  - Reported results: Agent-World-8B/14B beat proprietary baselines across 23 agent benchmarks; scaling correlates with environment diversity.
+  - Delta: Environment synthesis as a scaling lever is a different axis from our AR-3 prompt/structural mutation space. Could inform future extensions (e.g., AR-4 that synthesizes new benchmark tasks rather than optimizing against a fixed suite). Tier 2b not run on beat-proprietary claim.
+
+## Deep-Dive Integration — 2026-04-22
+
+### P16 — Strategy Memory Safety Gates (intake-425 + DD4)
+
+Tracked in `routing-and-optimization-index.md` P16. Three adoptable patterns:
+
+- **AP-32: Insight format audit** — adopt `(title, description, generalized_content)` format with no task-specific implementation details for new strategy_store entries. Audit existing entries for over-specificity. ~50 LoC in `strategy_store.py`. Converges with AP-28 (strategy memory upgrade, FTS5+RRF).
+- **AP-33: Negative-transfer safety gates** for PromptForge — 3 mutation safety checks (domain-mismatched anchoring detector; false validation confidence flag when mutation success is based on <5 trials; misapplied best-practice filter rejecting mutations that generalize suite-specific patterns). ~100 LoC in `prompt_forge.py`.
+- **AP-34: Validate N=3 embedding retrieval** — confirm FAISS top-3 cosine matches or exceeds LLM reranking. Paper shows embedding similarity (0.630 avg) > LLM reranking (0.598) > adaptive rewriting (0.608). Zero code — configuration experiment on next AR-3.
+
+### Environment Synthesis Species → dedicated handoff
+
+Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked in a dedicated handoff: [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md). Phase 1 training-free and CPU-feasible today (AW-1 `env_synth/` module scaffold is the entry point). Phase 2 multi-env GRPO GPU-gated. Journal-event format (`EnvSynthAction` with `environment_id`/`tool_set`/`synthesized_tasks` fields) will follow AP-3 journal conventions.
+
+### PromptForge diversity-coverage term (DD4-A7)
+
+**Problem**: intake-441 shows post-training diversity loss is structural (in weights). Our mutation search can exhaust "diverse-looking but weight-constrained" space quickly.
+
+**Fix**: add a diversity-coverage term to PromptForge's mutation scoring: penalize mutations that fall into FAISS-dense regions of the mutation embedding space. ~2h once DD4 baselines land (NIB2-42 / EV-8).
+
+- [ ] **AP-35**: Implement `diversity_coverage_penalty()` in `prompt_forge.py`. Use existing FAISS index of strategy_store embeddings. Penalty = -log(density) at the mutation's embedding location.
+- [ ] **AP-36**: Wire into `_score_mutation()` alongside quality/cost scores.
+
+### GEPA rebalance trigger (DD4-A8)
+
+**Problem**: if mutation diversity stalls (distinct-2 on generated mutations drops below baseline for N trials), species-budget rebalance should trigger before quality regresses.
+
+**Fix**: extend MetaOptimizer with a diversity-stall signal. ~1-2h.
+
+- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials.
+
+### Cross-references
+
+- `routing-and-optimization-index.md` P14/P16/P17/P18
+- `eval-tower-verification.md` EV-8 (diversity metrics — required prerequisite for AP-35)
+- `agent-world-env-synthesis.md` (full env-synth plan)
+- `/workspace/research/deep-dives/diversity-collapse-posttraining.md`
+- `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
