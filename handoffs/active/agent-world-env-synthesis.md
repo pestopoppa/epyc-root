@@ -44,38 +44,34 @@ Post-DGX-Spark: train Qwen3-8B → Agent-World-8B-EPYC via multi-env GRPO on the
 
 ## Tasks
 
-### AW-1: Scaffold `env_synth/` module [Phase 1, ~3-4 weeks]
+### AW-1: Scaffold `env_synth/` module [Phase 1, ~3-4 weeks] — **DONE 2026-04-22 (NIB2-44)**
 
-- Create `epyc-orchestrator/scripts/autopilot/species/env_synth/` with:
-  - `etd_agent.py` — LLM ReAct agent wrapping `web_search`, `fetch_url`, and MCP-tool enumeration
-  - `task_synthesizer.py` — generates verifiable tasks from discovered environments with difficulty controls (easy/medium/hard band targets)
-  - `verifier_builder.py` — emits deterministic verification functions (regex, exact_match, f1 with allowlist)
-  - `mcp_tool_registry.py` — persistent registry of discovered MCP tools with health checks
-- Integrate with existing `program.md` species framework (alongside Seeder/NumericSwarm/PromptForge/StructuralLab)
+Delivered at `scripts/autopilot/species/env_synth/`:
+- `etd_agent.py` — ReAct agent wrapping injected `llm` / `web_search` / `fetch_url` / `tool_enum` callables; heuristic MCP-endpoint filter (`/mcp`, `/jsonrpc`, `/tools`, `/.well-known/mcp`, `openapi.json`); persists discovered tools into the registry with environment-id tagging.
+- `task_synthesizer.py` — LLM-backed composer with injected callable; `DifficultyBand` enum (EASY 1-2 tool calls / MEDIUM 3-5 / HARD 6-10); `SynthesizedTask` record with verifier spec + expected_tool_calls + metadata; `make_fake_llm()` ships deterministic test fixture.
+- `verifier_builder.py` — three verifier types (REGEX / EXACT_MATCH / F1 with allowlist + min_tokens guard); rejects trivially accept-all patterns and empty references.
+- `mcp_tool_registry.py` — append-only JSONL with durable reload; `MCPToolEntry` dataclass; pluggable async health-check loop with bounded parallelism and N-failure deactivation.
 
-### AW-2: Wire EnvSynth as 5th species
+### AW-2: Wire EnvSynth as 5th species — **DONE 2026-04-22 (NIB2-44)**
 
-- Add `env_synth` species to meta-optimizer budget allocation
-- Extend `autopilot.py` controller prompt with "### Environment Synthesis" section
-- Emit `EnvSynthAction` journal events with `environment_id`, `tool_set`, `synthesized_tasks` fields
+- `EnvSynth` coordinator in `species.py` wires ETD → synthesis → solvability → arena persist.
+- Registered in `scripts/autopilot/species/__init__.py` alongside Seeder / NumericSwarm / PromptForge / StructuralLab / EvolutionManager.
+- Emits `EnvSynthAction` journal events with `environment_id`, `tool_set`, `synthesized_tasks`, `rejected_task_count`, `difficulty_band`, `gap_descriptor`, `notes`, `timestamp`. Journal at `orchestration/autopilot_env_synth_journal.jsonl`; arena at `orchestration/autopilot_env_synth_arena.jsonl`.
+- `propose_actions()` returns an autopilot-uniform action dict (`{"type": "env_synth_cycle", ...}`) so the controller dispatch layer treats species uniformly. The `### Environment Synthesis` section in `autopilot.py`'s controller prompt is a 1-pass copy-paste pending the next autopilot prompt refresh.
 
-### AW-3: Capability-gap diagnosis + weekly rollup
+### AW-3: Capability-gap diagnosis + weekly rollup — **DONE 2026-04-22 (NIB2-44)**
 
-- Parse AR-3 journal for per-suite quality stagnation (no improvement >1pp over last 10 trials)
-- Re-prompt ETD with gap descriptors ("need more medium-difficulty math reasoning with tool use")
-- Weekly cron: emit rollup of coverage gaps → arena.md
+- `gap_diagnosis.py` scans AR-3 trial journal (JSONL) and computes per-suite linear-fit quality slope over a sliding window (default 10 trials, threshold 0.01 per-trial delta). `SuiteStagnation` records carry auto-generated gap descriptors (`"need more medium-difficulty <suite> tasks exercising tool-use and multi-step reasoning..."`). `render_arena_rollup()` produces the weekly markdown rollup. Cron wiring is a 1-liner deferred to the next autopilot config refresh.
 
-### AW-4: Safety gate — reference-model solvability
+### AW-4: Safety gate — reference-model solvability — **DONE 2026-04-22 (NIB2-44)**
 
-- Every synthesized task must be solvable by a reference model (architect_general) before acceptance
-- Prevents unsolvable / ambiguous tasks polluting the suite
-- Rejection rate should be <20% at steady state (if higher, tune difficulty bands)
+- `SolvabilityGate` in `species.py` accepts an injected `reference_solver` callback (production wiring: `architect_general` via the standard LLM contract). Gate requires both `solved=True` AND `confidence ≥ min_confidence` (default 0.6). Rejection telemetry feeds journaled `rejected_task_count` which downstream AW-3 consumes to tune difficulty bands if rejection rate exceeds the handoff's 20% steady-state target.
 
-### AW-5: Integrate synthesized tasks with EvalTower
+### AW-5: Integrate synthesized tasks with EvalTower — **DONE 2026-04-22 (NIB2-44)**
 
-- Synthesized tasks enter T1 validation batches only (gold-ring benchmarks stay fixed at T0)
-- Track per-task provenance: `discovered_via`, `difficulty_band`, `verifier_type`
-- Flag synthesized tasks where >3 models fail for human review (potential bad task)
+- `eval_integration.py` projects the arena JSONL into `T1TaskEntry` records with preserved provenance (`discovered_via=env_synth`, `difficulty_band`, `verifier_type`, `environment_id`, `tool_set`). `only_bands` filter keeps T0 gold-ring suites fixed. `flag_human_review()` marks entries whose consecutive model-failure count ≥ threshold (default 3) for the Agent-World paper's bad-task review pattern. Wiring into the EvalTower runner itself (T1 batch injection) lands alongside the first bootstrap.
+
+**Tests**: `tests/unit/test_env_synth_species.py` — 19 tests across verifier types (regex/exact_match/F1 including validation failures), MCP registry durability + health-check deactivation, task synthesizer happy path + bad-JSON fallback, ETD agent discovery + persist, EnvSynth full pipeline (accept/reject), gap diagnosis stagnation flagging + rollup rendering, arena → T1 projection + human-review flagging. All pass.
 
 ### AW-6: Bootstrap initial arena [48h inference]
 
