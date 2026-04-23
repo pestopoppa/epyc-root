@@ -3,7 +3,7 @@
 **Category**: `hardware_optimization`
 **Confidence**: verified
 **Last compiled**: 2026-04-23
-**Sources**: 22 documents
+**Sources**: 24 documents
 
 ## Summary
 
@@ -96,4 +96,33 @@ Roofline check: Qwen3.6-27B Q8 is 26.6 GB; effective DDR5 BW ~460 GB/s → **17 
 ### Megakernel / GPU roofline context
 
 For any future GPU engine: Hazy Research megakernels hit 78% memory bandwidth utilization on H100 (vs ~50% for vLLM/SGLang) via an on-GPU instruction interpreter per SM, shared-memory pagination, counter-based dependency tracking. Lucebox ports this to RTX 3090 + Qwen3.5-0.8B (1.55× vs llama.cpp BF16) and separately ships a DFlash GGUF port for Qwen3.5-27B at 207 tok/s peak / 129.5 t/s mean on HumanEval via llama.cpp fork with tree-mode support. These establish the GPU roofline target (78% MB utilization) for any future engine we build or evaluate.
+
+### Single-instance vs aggregate throughput gap — and the uncharted CPU TP lever
+
+On our EPYC 9655, 4×48t NUMA-pinned instances give **6.7× aggregate throughput** on 30B-A3B (95.8 t/s) vs 1×192t interleaved (14.2 t/s). A single interactive session only sees per-instance speed — **single-session decode is at ~20–50% of what the hardware can physically deliver**. The other 50–80% shows up only as aggregate across independent processes. Cause on a single socket: thread scaling plateaus around 48–64 threads per instance (GGML barrier cost dominates past that); the 12 memory channels are shared as one contention target; per-CCD L3 locality is wasted. Current single-instance 192t measured: 14.2 t/s × 16 GB = ~227 GB/s effective, i.e. ~50% of the 460 GB/s socket ceiling — confirms barrier-bound, not BW-bound.
+
+Two paths to close the gap (both new 2026-04-23 handoffs):
+
+- **Intra-process tensor-parallel decode across CCDs + comm-hiding** (`intra-process-tensor-parallel-decode.md`): shard each matmul column-wise across 12 CCDs, each CCD's threads read their local weight slice from local memory channels, reduction via shared-L3 buffer (240 KB per reduce, effectively free), comm-hiding via next-layer prefetch in the barrier window, per-CCD hierarchical thread pools. Unlike GPU TP, the "communication" is the same shared memory system the compute uses — bandwidth savings come from weight locality (each CCD reading its slice from its local channels), not from avoiding a fabric. **No known CPU prior art with CCD-fabric awareness** — GPU-native design pattern ported to CPU. Projected 2–3.5× single-instance under NPS2, 3.5–5× under NPS4/L3-as-NUMA. Combined with GEMV ukernels (1.5–2.5×), total 5.5× conservative / 12.5× stretch, capped by 460 GB/s BW ceiling.
+
+- **System-level tuning audit** (`single-instance-system-tuning.md`): NPS mode (currently NPS2 — 2 NUMA nodes / 6 channels each; candidates NPS4 or L3-as-NUMA exposing 4 or 12 nodes), THP (currently `madvise`; candidate `always`), explicit 1 GB hugepages (currently 0 allocated), IRQ affinity, per-CCD sync primitive (replaces GGML global barrier), SMT on/off for AVX-512-heavy decode, per-NUMA weight replication for small models under NPS4/L3aaN. Projected 15–40% alone; gating multiplier for TP-sharding's full gain.
+
+### Physical state at 2026-04-23 (baseline for future optimization work)
+
+| Knob | Current |
+|------|---------|
+| NUMA mode | NPS2 (2 nodes, 6 channels each, distances 10/12) |
+| THP | `madvise` |
+| Explicit hugepages | 0 allocated |
+| Governor | `performance` ✅ |
+| SMT | enabled (192 logical threads from 96 cores) |
+| NUMA balancing | default (kernel-controlled; AMD recommends explicit off) |
+| IRQ affinity | default (not pinned) |
+| Free memory | ~318 GB (out of 1.13 TB) |
+
+These become the baseline for CPU3 Phase 0 measurements under the new `cpu-inference-optimization-index.md` backlog.
+
+- [Intra-Process Tensor-Parallel Decode](/workspace/handoffs/active/intra-process-tensor-parallel-decode.md) -- new 2026-04-23, CCD sharding + comm-hiding, projected 2–5× single-instance
+- [Single-Instance System Tuning](/workspace/handoffs/active/single-instance-system-tuning.md) -- new 2026-04-23, NPS/THP/hugepages/barrier/IRQ audit, projected 15–40% alone
+- [CPU Inference Optimization Index](/workspace/handoffs/active/cpu-inference-optimization-index.md) -- new 2026-04-23, backlog umbrella for all unimplemented CPU throughput techniques (CPU1–CPU14)
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes

@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-04-19
-**Sources**: 17 documents
+**Last compiled**: 2026-04-23
+**Sources**: 19 documents
 
 ## Summary
 
@@ -82,3 +82,15 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
 - Intake entries: 22 results across intake index and handoffs including Qwen3.5 serving recipe (intake-152), DFlash speculation (intake-158), REAP models (intake-181/184/186), and 7 active/completed handoffs
 - [intake-424](https://github.com/m0at/rvllm) rvllm -- Rust/CUDA+JAX/XLA engine, H100 +24% over vLLM at B=128, EAGLE-3 (450M draft K=5), validates no-framework philosophy. GPU-only, reference bookmark for hardware acquisition.
 - [rvllm deep-dive](../research/deep-dives/rvllm-gpu-inference-reference.md) -- Benchmark reference data (Gemma 4 31B: 8786 tok/s H100 FP8), CUDA graph capture strategy, draft/target ratio 1.5%
+
+## 2026-04-23 Additions — Single-instance throughput backlog
+
+Deployment has leaned hard on NUMA 4-way multi-instance aggregate throughput (6.7× frontdoor). This makes concurrent-session aggregate great but leaves single-session interactive use at 14.2 t/s on 30B-A3B — the user-visible slow path. Three new handoffs target single-session decode specifically, under a new backlog index:
+
+- **[CPU Inference Optimization Index](../handoffs/active/cpu-inference-optimization-index.md)** — forward-looking backlog umbrella listing all 14 unimplemented CPU throughput techniques (CPU1–CPU14), with dependency graph, composition matrix, and the 460 GB/s BW ceiling as physical cap. Start gate: CPU3 Phase 0 baseline (uncore counters + barrier profiling on 30B-A3B 192t).
+- **[Intra-Process Tensor-Parallel Decode](../handoffs/active/intra-process-tensor-parallel-decode.md)** — the largest single lever: shard each matmul across 12 CCDs with shared-L3 reduction and next-layer prefetch comm-hiding. Closes the 1×instance vs N×instance gap for single-session. Projected 2–5× single-instance depending on NPS mode. Would take 30B-A3B from 14 t/s → 28–70 t/s single-session. No known CPU prior art; GPU TP pattern ported to CPU.
+- **[Single-Instance System Tuning](../handoffs/active/single-instance-system-tuning.md)** — NPS mode audit (NPS2 current, NPS4/L3aaN candidates), THP (`madvise`→`always`), 1 GB hugepages, IRQ affinity, per-CCD sync primitive (replaces GGML global barrier), SMT, weight replication. Projected 15–40% alone. Some items (NPS, SMT) require reboot windows; others are zero-cost sysctls.
+
+Composition: TP × GEMV ukernel × system tuning multiply up to the 460 GB/s BW ceiling. Realistic 2.5× TP × 1.75× ukernel × 1.25× tuning = 5.5× single-instance; stretch 5× × 2.5× × 1.4× = 17.5× but clipped by ceiling on most production models. Beyond the ceiling requires reducing weights-read-per-token (KV work, speculation, sparsity).
+
+What this does NOT replace: the NUMA 4-way multi-instance deployment for concurrent sessions stays. TP sharding changes what "full-speed instance" means; the ConcurrencyAwareBackend routing architecture is unchanged.

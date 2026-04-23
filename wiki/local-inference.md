@@ -2,8 +2,8 @@
 
 **Category**: `local_inference`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
-**Sources**: 18 documents
+**Last compiled**: 2026-04-23
+**Sources**: 20 documents
 
 ## Summary
 
@@ -78,3 +78,15 @@ Speculative decoding is the primary acceleration method. The production stack us
 - Intake entries: 5 results including CPU+GPU hybrid MoE inference guide (intake-310, high relevance), rocWMMA (intake-303), and community model evaluations
 - [intake-427] GLM-5.1-555B-A14B-REAP GGUF -- 325GB Q4_K_M, 14B active, ~25-40 tok/s CPU estimate, stack simplification candidate
 - [glm51-reap-cpu-evaluation.md] GLM-5.1 REAP CPU Evaluation -- deployment feasibility, storage constraints, llama.cpp flags
+
+## 2026-04-23 Additions — Single-instance peak throughput backlog
+
+Three new handoffs (2026-04-23) open the forward-looking CPU throughput backlog for single-instance decode on EPYC 9655:
+
+- **[Intra-Process Tensor-Parallel Decode](../handoffs/active/intra-process-tensor-parallel-decode.md)** — shard each matmul column-wise across 12 CCDs with shared-L3 reduction (effectively free on CPU, unlike GPU where NVLink reduce dominates) and next-layer weight prefetch overlapping the barrier. Per-CCD hierarchical thread pool replaces GGML's global 192-thread barrier. Projected 2–5× single-instance decode, depending on NPS mode. Closes the gap between 1×instance throughput and the N×instance aggregate that NUMA 4-way deployment currently delivers only to concurrent sessions. No known CPU prior art — the design pattern is GPU-native (Megatron-LM column-sharded attention + row-sharded MLP) ported to CPU, where "communication" = shared memory traffic, not a separate fabric.
+
+- **[Single-Instance System Tuning](../handoffs/active/single-instance-system-tuning.md)** — exhaustive audit of system knobs that affect single-instance decode but have never been systematically measured on our hardware: NPS mode (NPS2 → NPS4 / L3-as-NUMA), THP (`madvise` → `always`), explicit 1 GB hugepages (currently 0 allocated), IRQ affinity, per-CCD sync primitive (replaces GGML global barrier), SMT toggle for AVX-512-heavy workloads, per-NUMA weight replication. Projected 15–40% alone; required for TP-sharding's full gain under NPS4/L3aaN. Phases staged so reboot windows are batched.
+
+- **[CPU Inference Optimization Index](../handoffs/active/cpu-inference-optimization-index.md)** — backlog index aggregating all 14 unimplemented CPU throughput techniques (CPU1–CPU14): TP sharding, GEMV ukernels, system tuning, per-CCD sync, hugepages, ZenDNN 5.2 eval, tinyBLAS integration, weight replication, dense-weight sparsity, sub-Q4 quant eval, compiler/PGO/LTO, BOLT post-link, prefill optimizations, `--parallel` slot decode benchmarks. Includes dependency graph (CPU3 Phase 0 baseline gates everything), composition matrix (TP × ukernel × tuning multiplicative up to 460 GB/s BW ceiling), and explicit list of what's deployed or concluded-not-viable so future agents don't re-open closed work.
+
+Start gate for the entire backlog: **CPU3 Phase 0 baseline measurement** — `perf stat` uncore counters + barrier-time profiling on Qwen3-Coder-30B-A3B Q4_K_M at 192t. Tells us which lever has the most headroom before committing to any code.
