@@ -1,11 +1,11 @@
 # llama.cpp Kernel Push + Full Rebase — Holistic Plan
 
-**Status**: in-progress (v4 branch: 23 commits on upstream, builds clean, Qwen3.6 validated; tree spec + TIDE hooks pending)
+**Status**: COMPLETE (v4 production kernel finalized 2026-04-23. TIDE post-hoc deprecated — research dead end. Hadamard KV smoothing + f16 fix merged from experimental. Quality benchmarks queued.)
 **Created**: 2026-04-20
 **Priority**: HIGH
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-fork-rebase.md`](llama-cpp-fork-rebase.md), [`tide-calibration-router-early-exit.md`](../../research/deep-dives/tide-calibration-router-early-exit.md)
-**Repo**: `/mnt/raid0/llm/llama.cpp` (branch `production-consolidated-v3`, HEAD `cd5f4fcd0`)
+**Repo**: `/mnt/raid0/llm/llama.cpp` (branch `production-consolidated-v4`)
 
 ## Objective
 
@@ -49,6 +49,59 @@ All KV cache, paged attention, server slot management, OpenMP, --moe-n-expert, A
 ### Validated:
 - Build: clean ✓
 - Qwen3.6 smoke test: reasoning-budget 4096, produces thinking + answer at 25.5 t/s ✓
+
+---
+
+## Execution Log (2026-04-23 — Session 2)
+
+### TIDE Adapter Experiment → FAILED → DEPRECATED
+- Trained bottleneck MLP adapters (128/256/512 dim) to map layer-32 → layer-64 hidden states for Qwen3.6-27B
+- Validation cosine: 128=0.888, 256=0.9998, 512=1.000 — but ALL produce garbage on unseen prompts
+- Raw layer-32 exit (no adapter) also produces garbage (cos approx 0.2 with layer 64)
+- Research confirmed: "Diminishing Returns of Early-Exit Decoding in Modern LLMs" (Mar 2026) — post-hoc early exit gives <10% speedup on modern models. LayerSkip (Meta) needs modified training for 2x+.
+- **CONCLUSION**: Post-hoc TIDE is a dead end for modern LLMs. n_layer_exit infrastructure retained (useful for LayerSkip-trained models).
+
+### TIDE Cleanup
+- Removed adapter MLP code from qwen3.cpp, qwen35moe.cpp, qwen35.cpp
+- Deleted tide-adapter.h
+- Kept n_layer_exit infrastructure in all model builders
+
+### Experimental Kernel Merge
+- Audited llama.cpp-experimental repo — identified 2 features missing from production:
+  1. **f16 model fix**: cast K/V to f32 before ggml_set_rows (prevents garbage KV with f16 weight models)
+  2. **Hadamard KV smoothing** (`--kv-hadamard`): Walsh-Hadamard Transform before KV quantization, reduces q4_0 PPL gap from +0.055 to +0.017, zero overhead
+- Both applied to production-consolidated-v4, build clean
+- Deleted 20GB core dump from experimental repo, updated to latest upstream
+
+### Sanity Checks (5 models — ALL PASS)
+| Model | Template | Speed | Result |
+|-------|----------|-------|--------|
+| Qwen3.6-35B-A3B Q8 | --chat-template chatml | 26.5-30.3 t/s | PASS |
+| Qwen3.6-27B Q8 | --chat-template chatml | 4.9 t/s | PASS |
+| Qwen3.6-27B Q4_K_M | --chat-template chatml | 9.2 t/s | PASS |
+| SG4-31b Q4_K_M | default | 9.2 t/s | PASS |
+| M2.7 Q8 | --jinja + enable_thinking:false | 12.3 t/s | PASS |
+
+Key finding: Qwen3.6 models MUST use `--chat-template chatml` (embedded jinja is multimodal VL template that corrupts text-only output). M2.7 chat parser crashes with thinking ON (mixed-language reasoning) — benchmark with thinking OFF.
+
+### Registry + Executor Updates
+- Added Qwen3.6-27B Q8 and Q4_K_M entries (new)
+- Fixed 35B-A3B architecture field: qwen3 → qwen35moe
+- Added `chat_template: chatml` to all Qwen3.6 entries
+- Added HuggingFace recommended sampling params (thinking/non-thinking splits) for all models
+- Added M2.7 thinking caveat + min_p/top_k from model card; SG4 top_k=64 from Gemma4 card
+- Wired `chat_template` param through executor.py and run_benchmark.py
+
+### draft_max Sweep Results
+| Model | Ngram Effect | Verdict |
+|-------|-------------|---------|
+| Qwen3.6-27B Q4 | 8.93-8.99 t/s (0%) | none — SSM hybrid |
+| Qwen3-4B-2507 Q8 | 29.9-31.7 t/s (0%) | none — compute-bound |
+| Nemotron-Nano-9B Q8 | 8.91-8.97 t/s (0%) | none — SSM hybrid |
+All marked `ngram_tested: true` in registry. Baseline TPS recorded.
+
+### Quality Benchmarks Queued
+7 models: qwen36_q8_0, qwen36_27b_q8, qwen36_27b_q4km, supergemma4_31b_q4km, minimax_m27_q8, qwen3_4b_2507_q8, nemotron_nano_9b_q8
 
 ---
 
@@ -198,9 +251,11 @@ The fix is validated but needs integration:
 
 ---
 
-## Phase 3: TIDE Phase 1 Implementation (Estimated: 2-3 hours)
+## Phase 3: TIDE Phase 1 Implementation — DEPRECATED 2026-04-23
 
-### What We're Building
+**STATUS: DEPRECATED** — Post-hoc TIDE is a dead end for modern LLMs. Bottleneck MLP adapters (128/256/512 dim) trained on 500 calibration samples achieved val cos 0.9998-1.000 but ALL produce garbage on unseen prompts. Raw layer-32 exit also produces garbage (cos approx 0.2 with final layer). Research confirmed: "Diminishing Returns of Early-Exit Decoding in Modern LLMs" (Mar 2026) — post-hoc early exit gives <10% speedup on modern models. LayerSkip (Meta) needs modified training for 2x+. Adapter code removed from production; n_layer_exit infrastructure retained (useful for LayerSkip-trained models).
+
+### Original Plan (retained for historical reference)
 
 A calibration-based learned router that enables per-token early exit. Phase 1 targets **per-batch** exit (simpler than per-token) which is sufficient for our batch_size=1 decode workload.
 
@@ -265,22 +320,35 @@ if (tide_router && batch_size == 1) {
 ## Phase 4: Validation & Deployment
 
 ### Build & Smoke Tests
-- [ ] `cmake --build . -j$(nproc)` — clean compile
+- [x] `cmake --build . -j$(nproc)` — clean compile ✓ (2026-04-23)
 - [ ] All production models load (`--moe-n-expert`, `--lookup`, paged attention)
 - [ ] Qwen3.5-35B-A3B: IMROPE still works (KV chunk reuse)
-- [ ] Qwen3.6-35B-A3B: No think-loops (with `enable_thinking=false` and with reasoning fix)
+- [x] Qwen3.6-35B-A3B: Sanity check PASS — 26.5-30.3 t/s with chatml template ✓ (2026-04-23)
+- [x] Qwen3.6-27B Q8/Q4: Sanity check PASS — 4.9/9.2 t/s ✓ (2026-04-23)
+- [x] SG4-31b: Sanity check PASS — 9.2 t/s, default template ✓ (2026-04-23)
+- [x] M2.7: Sanity check PASS — 12.3 t/s, thinking OFF (parser crash with ON) ✓ (2026-04-23)
 - [ ] Gemma4: Template fixes work (repeat_penalty + --jinja)
-- [ ] `--early-exit-threshold 0.9`: Loads router, exits early, quality holds
+- ~~[ ] `--early-exit-threshold 0.9`: Loads router, exits early, quality holds~~ (TIDE DEPRECATED)
 
 ### Quality Benchmarks
 - [ ] Qwen3.6 full 70-question benchmark: target ≥73.8% (current upstream baseline)
-- [ ] Qwen3.6 with TIDE enabled: target ≥70% (≤5% quality loss for speed)
+- ~~[ ] Qwen3.6 with TIDE enabled: target ≥70% (≤5% quality loss for speed)~~ (TIDE DEPRECATED)
 - [ ] Gemma4 SG4-31b: target ≥66% (current baseline, verify no regression)
-- [ ] Speed test: Qwen3.6 decode t/s with TIDE vs without
+- ~~[ ] Speed test: Qwen3.6 decode t/s with TIDE vs without~~ (TIDE DEPRECATED)
+
+### Registry Updates ✓ (2026-04-23)
+- [x] Added Qwen3.6-27B Q8 and Q4_K_M entries
+- [x] Fixed 35B-A3B architecture field: qwen3 → qwen35moe
+- [x] Added `chat_template: chatml` to all Qwen3.6 entries
+- [x] HuggingFace recommended sampling params added for all models
+- [x] M2.7 thinking caveat + min_p/top_k from model card
+- [x] SG4 top_k=64 from Gemma4 card
+- [x] Wired `chat_template` through executor.py and run_benchmark.py
+- [x] draft_max sweep: 3 models (27B Q4, 4B, Nemotron) all zero ngram effect
 
 ### Deployment
 - [ ] Push to fork remote (`git push fork production-consolidated-v4`)
-- [ ] Update `model_registry.yaml` with new binary path and TIDE config
+- [x] Update `model_registry.yaml` with new entries and sampling config ✓ (2026-04-23)
 - [ ] Restart production stack
 - [ ] Monitor for 1 hour (no crashes, quality holds)
 

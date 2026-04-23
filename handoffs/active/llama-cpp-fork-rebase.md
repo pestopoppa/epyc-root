@@ -1,6 +1,6 @@
 # llama.cpp Fork Rebase — Chat Template + Reasoning Fixes
 
-**Status**: in-progress (cherry-picks applied, full rebase deferred)
+**Status**: superseded — merged into [llama-cpp-kernel-push-rebase.md](llama-cpp-kernel-push-rebase.md). v4 branch has all cherry-picks + full rebase + TIDE.
 **Created**: 2026-04-20
 **Updated**: 2026-04-20
 **Priority**: HIGH (blocking quality benchmarks for Qwen3.6, M2.7, Gemma4)
