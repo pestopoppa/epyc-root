@@ -303,3 +303,21 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
   - Reported results: 3.4x compression (1.1TB→320GB); no published quality benchmarks yet.
   - Delta from current approach: The NVFP4 variant described above is NOT actionable for the CPU-first stack (GPU-native format, Blackwell-only). However, the NVFP4 calibration recipe (dataset mix design, selective BF16 retention, AutoRound settings) is useful methodology if/when Blackwell hardware is acquired.
   - **2026-04-22 REVISION**: A **GGUF variant** (`0xSero/GLM-5.1-555B-A14B-REAP-GGUF`, Q4_K_M = 325GB) also exists and IS actionable for the CPU-first stack. This variant has its own dedicated evaluation handoff: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md). The NVFP4 variant documented above remains relevant only for future GPU deployment scenarios.
+
+## Research Intake Update — 2026-04-23
+
+### New Related Research
+
+- **[intake-447] "Lucebox Hub: Hand-tuned LLM inference for consumer GPUs (Megakernel + DFlash GGUF port)"** (github.com/Luce-Org/lucebox-hub)
+  - Relevance: First published GGUF Q4_K_M port of DFlash speculative decoding, running on a single RTX 3090 via a llama.cpp fork (`Luce-Org/llama.cpp-dflash-ggml`) with tree-mode support. Directly contradicts the "no llama.cpp / no GGUF" blocker recorded in [intake-158](../../research/intake_index.yaml) and the `vLLM DDTree+Dflash` note above — there is now a llama.cpp-native path (GPU only) for DFlash + DDTree on Qwen3.5-27B.
+  - Key technique: persistent megakernel (single CUDA dispatch, all 24 layers of Qwen3.5-0.8B) + custom tree-aware SSM (DeltaNet) state-rollback kernels + GGUF Q4_K_M quant targeting. Ampere+ (sm_86+), CUDA 12+, PyTorch 2.0+, batch size 1.
+  - Reported results: DFlash on RTX 3090 reaches **207.6 tok/s peak / 129.5 tok/s mean on HumanEval** (5.46x / 3.43x over autoregressive on the same card). Megakernel Qwen3.5-0.8B reaches **37,800 tok/s prefill, 413 tok/s decode** (1.55x vs llama.cpp BF16, 30% less power).
+  - Delta from current approach: our completed DFlash evaluation (`handoffs/completed/dflash-block-diffusion-speculation.md`) concluded NOT VIABLE on CPU Q4_K_M; this is an orthogonal GPU path that becomes the natural integration reference if/when GPU hardware is acquired. RTX 3090 is not our target (DGX Spark GB10 / Blackwell is) — the kernels would need re-tuning for Blackwell, but the integration pattern (llama.cpp fork with tree-mode + GGUF) is the reusable piece. Credibility is medium-low (single author collective, self-reported benchmarks, no third-party replications yet).
+  - Action: **track, do not activate**. Revisit at GPU-acquisition trigger. Pin `Luce-Org/llama.cpp-dflash-ggml` as the integration reference for the vLLM/llama.cpp + DFlash + DDTree reproduction plan documented above.
+
+- **[intake-448] "Look Ma, No Bubbles! Designing a Low-Latency Megakernel for Llama-1B"** (hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles)
+  - Relevance: Foundational methodology paper that intake-447 ports to consumer GPUs. Hazy Research (Stanford) describes the persistent-megakernel + on-GPU-interpreter pattern that eliminates per-op kernel launch overhead.
+  - Key technique: one persistent CUDA kernel; each SM runs a pre-scheduled instruction sequence via an on-GPU interpreter; shared-memory pagination (213 kB / 13 pages, explicit req/release); counter-based global-memory synchronization for instruction dependencies.
+  - Reported results: **78% memory-bandwidth utilization on H100**, sub-1ms forward pass (2.5x vs vLLM, 1.5x vs SGLang); ~680 us on B200 (3.5x vs vLLM). Llama-1B workload.
+  - Delta from current approach: direct relevance to any future Blackwell / DGX Spark inference engine we might build — establishes the pattern Lucebox uses and that Mirage Persistent Kernel (arXiv:2512.22219) and ThunderMLA extend. Not activatable until GPU hardware arrives.
+  - Action: **read as design primer** at GPU-acquisition trigger. Candidate for future literature expansion: ThunderMLA + Mirage Persistent Kernel.

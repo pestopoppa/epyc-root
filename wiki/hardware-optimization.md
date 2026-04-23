@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-14
-**Sources**: 19 documents
+**Last compiled**: 2026-04-23
+**Sources**: 22 documents
 
 ## Summary
 
@@ -72,5 +72,28 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - [SpecExec Verification Profile](/mnt/raid0/llm/epyc-inference-research/docs/experiments/specexec-verification-profile.md) -- Verification latency curves, NUMA impact on verification, draft model costs
 - [Progress 2026-03-18](/workspace/progress/2026-03/2026-03-18.md) -- NUMA parallel decode S2 benchmark, production model sweep, T5/T6 tree+NUMA
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Comprehensive spec param sweep (1,290 measurements), corrected registry values
-- [GPU Acceleration Path](/workspace/handoffs/active/gpu-acceleration-path.md) -- DGX Spark analysis, consumer GPU benchmarks, hybrid MoE offloading survey, KV cache split strategies
+- [GPU Acceleration Path](/workspace/handoffs/active/gpu-acceleration-path.md) -- DGX Spark analysis, consumer GPU benchmarks, hybrid MoE offloading survey, KV cache split strategies; 2026-04-23 adds Lucebox + Hazy megakernel research
+- [CPU Shape-Specialized GEMV Decode](/workspace/handoffs/active/cpu-shape-specialized-gemv-decode.md) -- new 2026-04-23 handoff stub for Zen 5 AVX-512 M=1 GEMV microkernel investigation; 4-phase plan with falsification gates
+- [Deep Dive: Lucebox Hub](/workspace/research/deep-dives/lucebox-hub-consumer-gpu-dflash.md) -- consumer-RTX-3090 DFlash GGUF port + DeltaNet-hybrid megakernel; resolves intake-158's "no llama.cpp / no GGUF" blocker on GPU side
+- [Deep Dive: Hazy Research Megakernel](/workspace/research/deep-dives/hazy-megakernel-llm-inference.md) -- single-dispatch kernel methodology; 78% H100 memory bandwidth vs ~50% for vLLM/SGLang; foundational for any future GPU engine we build
+
+## 2026-04-23 Additions
+
+### CPU throughput levers — post-TIDE deprecation landscape
+
+The TIDE calibration-router early-exit track was deprecated 2026-04-23 (projection quality could not be solved with linear or bottleneck-adapter approaches, after 1.76× speed was confirmed at 50% layers). Remaining CPU throughput levers:
+
+- **Weight-reduction strategies (mature/in-production)**: NUMA 4-way, MoE expert pruning (REAP), AM KV compaction, KV quantization, ngram-simple spec. These are the workhorses.
+- **Operator fusion (ruled out empirically)**: Hadamard + unfused `q4_0` beat TurboQuant + fused dequant by 2.2× on our hardware. Upstream llama.cpp has stopped investing in CPU fusion (recent fusion commits all target CUDA/SYCL/WebGPU). Fusion hides compute latency, not memory latency; our workloads are bandwidth-bound (or recurrence-bound for hybrid).
+- **Shape-specialized GEMV microkernels (uncharted)**: the one remaining lever. Prior art: llamafile 2.8× on Zen 4, KleidiAI 2.0× decode on Graviton 3. Zen 5's 512-bit AVX-512 datapath (doubled from Zen 4) favors this path. Full investigation handoff at `cpu-shape-specialized-gemv-decode.md`; Phase 0 profiling gate before committing code. Projected 1.5–2.5× end-to-end decode speedup if lever proves out.
+
+### Perf-gap decomposition: Qwen3.6-27B at 4.8 t/s on EPYC 9655
+
+Important clarification to prior benchmarks: **the 25.6 t/s figure in `qwen36-production-upgrade.md` is for Qwen3.6-35B-A3B (MoE, 3B active), not Qwen3.6-27B (dense hybrid)**. The 27B dense baseline is **4.8 t/s** (`progress/2026-04/2026-04-22-kernel-push.md:63`). Dense vs A3B is a ~9× bandwidth-per-token difference because the dense variant touches all 27B params per token while A3B touches only 3B.
+
+Roofline check: Qwen3.6-27B Q8 is 26.6 GB; effective DDR5 BW ~460 GB/s → **17 t/s ceiling** if bandwidth-bound. We're at 4.8 t/s → **28% of roofline**. Compute-bound on DeltaNet sequential recurrence (75% of layers), not bandwidth-limited. Getting to 50% of roofline via ukernel work → 8.5 t/s (1.77×); 80% → 13.6 t/s (2.83×). Anything past 80% requires parallel-scan SSM state, which is GPU-only.
+
+### Megakernel / GPU roofline context
+
+For any future GPU engine: Hazy Research megakernels hit 78% memory bandwidth utilization on H100 (vs ~50% for vLLM/SGLang) via an on-GPU instruction interpreter per SM, shared-memory pagination, counter-based dependency tracking. Lucebox ports this to RTX 3090 + Qwen3.5-0.8B (1.55× vs llama.cpp BF16) and separately ships a DFlash GGUF port for Qwen3.5-27B at 207 tok/s peak / 129.5 t/s mean on HumanEval via llama.cpp fork with tree-mode support. These establish the GPU roofline target (78% MB utilization) for any future engine we build or evaluate.
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes

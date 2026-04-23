@@ -17678,3 +17678,276 @@
     Video generation + world modeling is orthogonal to EPYC's CPU LLM focus.
   verdict_justification: >
     not_applicable.
+
+- id: intake-447
+  url: https://github.com/Luce-Org/lucebox-hub
+  arxiv_id: null
+  source_type: repo
+  title: 'Lucebox Hub: Hand-tuned LLM inference for consumer GPUs (Megakernel + DFlash GGUF port)'
+  authors:
+  - Luce-Org (open-source collective)
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - local_inference
+  - inference_serving
+  - ssm_hybrid
+  key_claims:
+  - 'Megakernel fuses all 24 layers of Qwen3.5-0.8B (18 DeltaNet + 6 full attention) into a single persistent CUDA kernel with cooperative grid sync — no CPU round-trips between layers'
+  - 'First GGUF Q4_K_M port of DFlash speculative decoding for Qwen3.5-27B on a single RTX 3090 via llama.cpp fork with tree-mode support'
+  - 'Hand-tuned chip-specific optimizations are viable with AI-assisted tooling; MIT-licensed with reproducible benchmarks'
+  - 'Megakernel reaches 1.87 tok/J on 2020-era RTX 3090, matching newer Apple silicon at ~2x throughput'
+  - 'Targets Ampere+ (sm_86+), CUDA 12+, PyTorch 2.0+, batch-size-1 local inference only'
+  techniques:
+  - Persistent megakernel (single-dispatch all-layer fusion; Hazy Research methodology ported to Qwen3.5)
+  - DFlash block-diffusion drafting ported to GGUF/Q4_K_M
+  - DDTree verification (tree-structured multi-candidate accept)
+  - Custom CUDA kernels for tree-aware SSM state rollback (DeltaNet)
+  - llama.cpp fork with tree-mode integration (Luce-Org/llama.cpp-dflash-ggml)
+  reported_results:
+  - 'Megakernel Qwen3.5-0.8B on RTX 3090: 37,800 tok/s prefill, 413 tok/s decode, 1.55x vs llama.cpp BF16, 30% less power'
+  - 'DFlash Qwen3.5-27B on RTX 3090: 207.6 tok/s peak, 129.5 tok/s mean HumanEval (5.46x / 3.43x over autoregressive)'
+  - 'Requires ~1.5 GB VRAM for BF16 weights, batch size 1 only'
+  referenced_arxiv_ids: []
+  implementation_urls:
+  - https://github.com/Luce-Org/lucebox-hub
+  - https://github.com/Luce-Org/llama.cpp-dflash-ggml
+  - https://www.lucebox.com
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No contradicting evidence surfaced in Tier 2b search — project is new (~1 month old, 699 stars) with no third-party replications published'
+  - 'Self-reported benchmarks only; not yet audited by external labs'
+  - 'Single-GPU, batch-size-1 constraint severely limits production applicability'
+  - 'Possible confirmation bias risk — all reported results are from Luce-Org authors on their own hardware; independent corroboration available only for the Megakernel methodology (Hazy Research, intake-448), not the DFlash GGUF port or the specific tok/s numbers'
+  verdict: worth_investigating
+  ingested_date: '2026-04-23'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 05-deprecated-approaches.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    - dflash-block-diffusion-speculation.md
+    - tree-speculation-numa-drafting.md
+    - ssm-hybrid-acceleration.md
+    experiments: []
+    intake_entries:
+    - intake-158
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    DFlash algorithm is already covered by intake-158 (z-lab paper), which explicitly flagged
+    "NO llama.cpp support, no GGUF, no CPU inference path" as a critical blocker for our stack.
+    Lucebox directly resolves that blocker by publishing a GGUF Q4_K_M port + llama.cpp fork with
+    tree-mode support — concretely moving the known DFlash technique into a deployable form for
+    GGUF-centric stacks. The Megakernel component is genuinely new to our intake (Hazy Research
+    methodology applied to Qwen3.5-0.8B). Not `high` because neither DFlash nor Megakernel is
+    originally introduced here — Lucebox is a hand-tuned port / engineering effort, not novel
+    research.
+  relevance_justification: >
+    Directly contradicts the "no llama.cpp path" blocker recorded in intake-158 and referenced in
+    `gpu-acceleration-path.md`. However, relevance is `medium` (not `high`) because: (1) no GPU
+    hardware is yet acquired (per `project_dgx_spark_target` memory); (2) `gpu-acceleration-path`
+    handoff is explicitly LOW priority; (3) RTX 3090 / Ampere is not the planned target — EPYC is
+    aiming for DGX Spark (GB10 / Blackwell), so the specific kernels would need re-tuning. Tracking
+    value is high for the GPU-acquisition scenario; actionable value is low today.
+  verdict_justification: >
+    `worth_investigating`, not `new_opportunity`, because GPU work is backburner. Not
+    `already_integrated` (our DFlash work was CPU-only and concluded NOT VIABLE on the CPU path).
+    Not `adopt_component` because we have no GPU hardware to run Lucebox on. Revisit promptly when
+    DGX Spark / alternate GPU arrives — at that point the llama.cpp-dflash-ggml fork becomes a
+    concrete integration reference and the Megakernel pattern becomes a design input for Blackwell
+    kernels.
+  notes: >
+    Lucebox Hub is distinct from z-lab/DFlash (intake-158). z-lab published the algorithm; Lucebox
+    published a consumer-GPU engineering port with llama.cpp integration. The key Lucebox
+    contribution relative to our stack is the `Luce-Org/llama.cpp-dflash-ggml` fork — this is
+    the integration reference if/when we add GPU serving. Megakernel is an orthogonal, separately
+    interesting technique (single persistent CUDA kernel across all transformer layers) with
+    potential to inspire similar work on Blackwell. For now: track but do not activate. See
+    `project_dgx_spark_target` memory.
+
+- id: intake-448
+  url: https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles
+  arxiv_id: null
+  source_type: blog
+  title: "Look Ma, No Bubbles! Designing a Low-Latency Megakernel for Llama-1B"
+  authors:
+  - Benjamin Spector
+  - Jordan Juravsky
+  - Stuart Sul
+  - Owen Dugan
+  - Dylan Lim
+  - Dan Fu
+  - Simran Arora
+  - Chris Ré
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  key_claims:
+  - 'Existing LLM inference engines (vLLM, SGLang) use only ~50% of available GPU bandwidth due to per-kernel setup/teardown and memory pipeline bubbles'
+  - 'A single unified megakernel eliminates op boundaries; each SM runs a pre-scheduled instruction sequence via an on-GPU interpreter'
+  - 'Achieves 78% of memory bandwidth on H100 and 1.5-2.5x over vLLM/SGLang'
+  - 'Sub-1ms forward pass on H100, ~680us on B200'
+  - 'Shared-memory paging (213kB, 13 pages, explicit request/release) plus counter-based global-memory synchronization enable early instruction launch and fine-grained overlap'
+  techniques:
+  - Persistent megakernel with on-GPU interpreter per SM
+  - Pre-scheduled per-SM instruction sequences (Python-side, reusable across forward passes)
+  - Shared-memory pagination with explicit req/release semantics
+  - Counter-based global-memory synchronization of instruction dependencies
+  - Fine-grained chunked processing of intermediate states
+  reported_results:
+  - 'H100: <1ms forward pass, 2.5x vs vLLM, 1.5x vs SGLang, 78% memory bandwidth utilization'
+  - 'B200: ~680us forward pass, 3.5x vs vLLM'
+  referenced_arxiv_ids: []
+  implementation_urls:
+  - https://github.com/HazyResearch/Megakernels
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  contradicting_evidence:
+  - 'No direct contradicting evidence found; methodology has been independently extended (Mirage Persistent Kernel, ThunderMLA) which corroborates the direction'
+  verdict: worth_investigating
+  ingested_date: '2026-04-23'
+  discovered_via: expansion
+  expanded_from: intake-447
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-447
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    Megakernel methodology (on-GPU interpreter + pre-scheduled per-SM instruction sequences) is
+    not present in our existing intake. Stanford Hazy Research lab authorship + original
+    technique + extended by follow-up work (Mirage Persistent Kernel, ThunderMLA) → genuinely new
+    to our corpus.
+  relevance_justification: >
+    Same hardware constraint as intake-447 (GPU-specific, none acquired), but this is the
+    foundational methodology paper that Lucebox ports. Understanding the megakernel pattern is
+    prerequisite to evaluating Lucebox or designing any Blackwell port. Directly relevant to
+    `gpu-acceleration-path.md` but not activatable today.
+  verdict_justification: >
+    `worth_investigating` — foundational methodology for any future GPU inference path.
+    Referenced by intake-447 (Lucebox) as its methodological parent. Not actionable until GPU
+    hardware arrives; at that point, re-read as the design primer for single-dispatch inference.
+  notes: >
+    Foundational methodology blog. Lucebox (intake-447) ports this pattern to consumer RTX 3090 +
+    Qwen3.5-0.8B. Key insight: each SM runs a scheduled instruction sequence rather than firing
+    discrete kernels. Related work worth future expansion: ThunderMLA (Hazy Research, 2025-03-04,
+    FlashMLA fused) and Mirage Persistent Kernel (arXiv:2512.22219, compiler for
+    mega-kernelization).
+
+- id: intake-449
+  url: https://huggingface.co/openai/privacy-filter
+  arxiv_id: null
+  source_type: repo
+  title: "OpenAI Privacy Filter: PII Token-Classifier (1.5B MoE / 50M active, Apache 2.0)"
+  authors:
+  - OpenAI
+  categories:
+  - document_processing
+  - tool_implementation
+  - moe_optimization
+  key_claims:
+  - 'Bidirectional token classifier pretrained autoregressively then converted to encoder; labels an input sequence in a single forward pass with constrained Viterbi span decoding'
+  - '1.5B total / 50M active MoE (128 experts, top-4 routing), 8-layer pre-norm transformer encoder, GQA (14Q/2KV, group=7), rotary, banded attention (band=128, effective window=257 tokens), d_model=640'
+  - '128k-token context with high throughput and no chunking; WebGPU and CPU-laptop deployable'
+  - 'Output taxonomy: 8 PII span classes (account_number, private_address, private_email, private_person, private_phone, private_url, private_date, secret) × BIOES → 33 token classes'
+  - 'Apache 2.0 licensed; designed for on-prem data sanitization; runtime-configurable precision/recall tradeoff via preset operating points'
+  techniques:
+  - Autoregressive-pretrain → bidirectional-encoder conversion
+  - Banded attention with 257-token effective window
+  - Sparse MoE feed-forward (128 experts, top-4) in a small-model setting
+  - Constrained Viterbi span decoding over BIOES labels
+  reported_results:
+  - 'Release date: 2026-04-22'
+  - 'PII-Masking-300k (raw): 96.00% F1, 94.04% precision, 98.04% recall'
+  - 'PII-Masking-300k (corrected after OpenAI-audited annotation fixes): 97.43% F1, 96.79% precision, 98.08% recall'
+  - 'OpenAI internal eval (domain-specific): 94.3% F1 (cf. <30% for Llama-family NER baselines, 13.9% for Piiranha on same eval — note domain-shift caveat: Piiranha reports 98%+ on its own multilingual benchmarks)'
+  - 'Fine-tuning on small domain-specific data: F1 improves 54% → 96%'
+  - 'Limitations acknowledged: under-detection of uncommon names / regional conventions, over-redaction of public entities, span-boundary fragmentation in mixed-format text, novel-credential misses, degradation on non-English/non-Latin scripts'
+  - '1,888 downloads last month (per HF Hub at fetch time, one day post-release)'
+  referenced_arxiv_ids: []
+  implementation_urls:
+  - https://huggingface.co/openai/privacy-filter
+  - https://github.com/openai/privacy-filter
+  - https://huggingface.co/spaces/openai/privacy-filter
+  - https://cdn.openai.com/pdf/c66281ed-b638-456a-8ce1-97e9f5264a90/OpenAI-Privacy-Filter-Model-Card.pdf
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  contradicting_evidence:
+  - 'No third-party benchmark replications located as of 2026-04-23 (model was released 2026-04-22, one day prior)'
+  - 'Model card self-identifies failure modes and explicitly disclaims compliance/anonymization guarantees'
+  - 'The 97.43% "corrected" F1 involved OpenAI auditing and fixing annotations in the third-party benchmark — methodological caveat even if the fixes were genuine'
+  - 'Internal-eval comparisons (94.3% vs <30% for Llama, 13.9% for Piiranha) are not fair head-to-head: Piiranha reports 98%+ on its own multilingual benchmarks, so the gap is domain-shift, not capability'
+  - 'Commercial bias signal: primary promoted use case is "sanitize input before sending to ChatGPT", aligning the model with OpenAI API adoption incentives'
+  verdict: worth_investigating
+  ingested_date: '2026-04-23'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - knowledge-base-governance-improvements.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  handoffs_created: []
+  deep_dive: research/deep-dives/openai-privacy-filter-pii-preprocessor.md
+  novelty_justification: >
+    PII/privacy token classification itself is a well-established task; the model is not a novel
+    technique. What makes it `medium` (not `low`) is the architectural bundle and the concrete
+    benchmark data: (i) 128-expert sparse MoE with **top-4 routing in a small (~50M active)
+    bidirectional encoder — 3.3% active-param ratio, ~2.6× sparser than our A3B models**; (ii)
+    banded attention with 257-token effective window at 128k context; (iii) the
+    autoregressive-pretrain → bidirectional-encoder conversion recipe; (iv) 96–97% F1 on the
+    PII-Masking-300k third-party benchmark, 94.3% F1 on OpenAI's internal eval. None of these
+    patterns or benchmark levels are previously indexed in our intake for PII/preprocessing models.
+  relevance_justification: >
+    Relevance is `low` for our core inference-optimization workstreams — EPYC research is focused
+    on LLM decode throughput, MoE optimization for *generative* workloads, and hybrid SSM
+    speculation, none of which this model touches. However, per `feedback_dont_dismiss_creative_uses`,
+    creative deployment uses include: (a) preprocessing filter in the
+    `opendataloader-pipeline-integration` pipeline's Phase 2 "structured context" step
+    (that handoff explicitly flags "No prompt injection filtering" as a gap; PII is adjacent),
+    (b) scrub-step on research-intake content before persisting to the knowledge base, (c)
+    training-data hygiene if/when we build SFT corpora that include user conversations. Apache 2.0
+    license + on-prem deployable matches `feedback_opensource_only`.
+  verdict_justification: >
+    `worth_investigating`, not `not_applicable`: the model has at least three plausible creative
+    uses in our stack (data sanitization, KB hygiene, training-data scrub), and the architectural
+    details (128-expert MoE, banded attention, AR→bidirectional conversion) are worth tagging
+    even if we never deploy this specific model — they are design references for any future
+    small-MoE preprocessor we might build. Not `new_opportunity` because none of these uses are
+    on the current roadmap and relevance is `low`, so the stub-creation criteria are not met.
+  notes: >
+    Deep-dive completed 2026-04-23 — see `research/deep-dives/openai-privacy-filter-pii-preprocessor.md`.
+    Treat this entry as a bookmarked tool rather than an active technique to adopt. Revisit if
+    (a) the orchestrator begins handling third-party user data directly, (b) the KB begins
+    ingesting user-generated text that may contain PII, or (c) we begin fine-tuning on conversation
+    logs. Key architectural reference points (the reason this is `medium` novelty rather than
+    `low`): (1) 50M active / 1.5B total → **3.3% active-param ratio** (50M/1.5B), ~2.6× sparser
+    than our Qwen3.5-35B-A3B (3B/35B ≈ 8.6%) — pushes small-MoE sparsity further than we have
+    precedent for, useful reference if `project_learned_routing_controller` upgrades from dense
+    MLP to MoE in Phase 1.5+; (2) 128 experts with top-4 routing = 3.1% expert-active ratio, 32-way
+    pre-compute discrimination via the router, reference for multi-class task routing; (3)
+    banded attention with band=128 / effective 257-token window at 128k context demonstrates
+    that purely-local attention is sufficient for locally-decidable tasks, informs any future
+    long-context classifier we build; (4) autoregressive-pretrain → bidirectional-encoder
+    conversion is a notable transfer-learning recipe — potentially applicable if we ever
+    fine-tune task-specific encoders from our own Qwen3.5/3.6 checkpoints.

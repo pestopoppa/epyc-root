@@ -154,3 +154,14 @@ PDF Input
 
 - [ ] If/when LLM-based chunking is proposed for difficult document classes: evaluate W-RAC's ID-addressable-unit pattern as the preferred design
 - [ ] Cite as prior art in Phase 2 (hybrid routing) design if cost becomes a bottleneck
+
+## Research Intake Update — 2026-04-23
+
+### New Related Research
+
+- **[intake-449] "OpenAI Privacy Filter: PII Token-Classifier (1.5B MoE / 50M active, Apache 2.0)"** (huggingface.co/openai/privacy-filter)
+  - Relevance: **adjacent, not identical, to gap #5** ("No prompt injection filtering") — the OpenAI privacy filter is a PII detector, not a prompt-injection detector. But it is in the same architectural slot (a small preprocessing classifier that runs on extracted text before it reaches the LLM context), so it's worth tagging as a candidate plug-in for any future pipeline step that needs to mask sensitive spans before downstream-LLM ingestion.
+  - Key technique: bidirectional token classifier (AR-pretrained, converted to encoder), 1.5B total / 50M active sparse-MoE (128 experts top-4), banded attention (band=128, effective 257-token window) at 128k context, BIOES span decoding over 8 PII classes. Apache 2.0.
+  - Reported results: no quantitative numbers disclosed in the model card at fetch time (2026-04-23). Self-identified failure modes: non-English degradation, uncommon names / regional conventions, span fragmentation, novel credentials. 1,888 downloads/month on HF.
+  - Delta from current approach: this pipeline does not currently have a PII-masking step. If/when a step is added (either for KB ingestion or if the orchestrator ever handles third-party user data), this is the default Apache-2.0 option to evaluate. Does not address gap #5 (prompt injection) — that remains an open requirement.
+  - Action: **track only**. Do not add a privacy step to Phase 1 or Phase 2 of this pipeline unless a concrete requirement surfaces.
