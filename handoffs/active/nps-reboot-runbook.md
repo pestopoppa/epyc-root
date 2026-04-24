@@ -190,6 +190,18 @@ Compare post-reboot vs pre-reboot numbers. Key deltas to examine:
 - **If CPU1 still ~neutral under NPS4**: consider L3-as-NUMA reboot (Phase 2). If L3aaN also neutral → CPU1 is not the right lever on this hardware; deprioritize in favor of CPU4 (sync primitive, independent of NUMA) or KV-side memory optimizations.
 - **If multi-instance 4×48t regresses under NPS4**: may need to re-pin cpusets (4 quarters under NPS4 = 4 NUMA nodes — potentially better). If still regressed, rollback to NPS2.
 
+### L3-as-NUMA (12-way) future reboot — memory budget for weight replication
+
+If and when we reboot to L3-as-NUMA (12 NUMA nodes = 1 per CCD), weight replication under Lever A' would scale to **12 replicas**. Memory budget:
+
+- 30B-A3B Q4_K_M (17 GB) × 12 = **204 GB**
+- Qwen3.5-35B-A3B Q4_K_M (~20 GB) × 12 = **240 GB**
+- REAP-246B Q4_K_M (~130 GB) × 12 = **1560 GB** → **does not fit** in 1.1 TB RAM
+
+So for large models like REAP-246B, L3aaN replication is infeasible. NPS4 (4 replicas × 130 = 520 GB) works. Constraint: pick NPS mode based on largest model you need to run with full per-node replication.
+
+Decision deferred per user: "we can do [L3aaN] later after we've exhausted our NPS4 optimization tracks". Under current NPS4 the 4-replica ceiling is 4 × max_model_size ≤ 1.1 TB → max ~275 GB model.
+
 ### Rollback (if NPS4 breaks something critical)
 
 Return to BIOS, set NPS mode back to NPS2. Reboot. Re-apply sysctls.
