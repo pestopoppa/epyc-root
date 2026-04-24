@@ -116,6 +116,42 @@ Profile via `perf record --call-graph dwarf` on both OpenMP and noomp+CPU1-stack
 
 **What is NOT useful**: more CPU2 kernel work on Q8 (kernel is already near-optimal at the BW ceiling); more DeltaNet parallelism (<1% of cycles); adding more threads (plateau at 16-24t). Q6_K and Q5_K 8x8 kernels would still help Q4_K_M decode (Session 14 dispatcher gap is unchanged) but don't address the hybrid-overhead gap.
 
+### Session 15 part 5 (2026-04-24): two graph-rewrite probes — both disproved, ceiling confirmed
+
+After the part-4 profile, two angles tested for reducing the 22% `ggml_barrier` overhead.
+
+**Angle A: extend Phase 1.4 barrier-local coverage to RMS_NORM.** Phase 1.4 currently downgrades `MUL_MAT/elementwise → elementwise` between-op barriers from global to CCD-local. Adding `RMS_NORM` would convert ~half of the 21.6% global barrier time into 2.94% local — projected +5-10%.
+
+**Verdict: NOT SAFE.** RMS_NORM at decode shape `[d, 1, 1, 1]` runs single-threaded (only thread 0 with ne01=1). Cross-CCD threads need a global barrier to see thread 0's writes. Phase 1.4's "axis-0 partition" precondition is specifically what RMS_NORM at decode VIOLATES. Expanding the coverage would silently corrupt outputs.
+
+**Angle B: parallelize RMS_NORM across ne00 via intra-op reduction.** Implementation in commit `0467a5c17` on `cpu-optimization/q8-8x8-avx512bw`. Two phases per row: per-thread partial-sum → `ggml_barrier` → reduce + parallel scale. PPL preserved at 6.6767 (within noise of 6.6985).
+
+**Verdict: NET-NEGATIVE.** Throughput on Qwen3.6-27B Q8_0 at 96t with full noomp+CPU1 stack:
+
+| Config | t/s @ 96t | Δ |
+|--------|-----------|---|
+| default (parallel-RMS off) | 4.41 | baseline |
+| parallel-RMS on | **4.02** | **−8.8%** |
+
+The intra-op barrier (~5 μs at 96t on the existing 2-level CCD-hierarchical impl) costs more than the saved single-thread compute (~10 μs). Net wall-time goes from ~10 μs (RMS norm thread 0 + others wait) to ~10.3 μs (parallel sum + barrier + reduce + parallel scale). Default OFF; kept env-gated (`GGML_RMS_NORM_PARALLEL=1`) as scaffolding for future probing on workloads with very wide ne00 or cheaper barrier impls.
+
+### Final verdict on the 4.4 t/s ceiling for Qwen3.6-27B Q8_0
+
+The 22% in `ggml_barrier` is **barrier-count-bound, not per-barrier-cost-bound**. Adding intra-op barriers (parallelizing small ops) makes things worse. Lighter-weight barriers don't help if the count stays constant. **The only lever that actually reduces barrier count is operator fusion** — collapsing N consecutive ops into one super-op.
+
+The remaining concretely-fusable cluster in qwen35 DeltaNet: `wqkv + wqkv_gate + ssm_beta + ssm_alpha` (4 matmuls all reading `attn_norm`, producing independent outputs). Fusing into one super-matmul = saves 3 barriers per DeltaNet layer × 48 = 144 barriers/token = ~6 ms = **+2.6% throughput**. Real but modest. Requires model-loader change (concatenate weights at load) + qwen35.cpp graph-builder change (slice the fused output). Effort ~1 day for ~3% gain.
+
+**Not pursued.** ROI doesn't beat the production-side alternative: Q4_K_M on this exact model already runs at 6.75 t/s — **+52% over Q8** with zero code changes. Or Q6_K/Q5_K 8x8 AVX-512BW kernels would lift Q4_K_M decode by another +2-5% each (Session 14 dispatcher gap is open).
+
+**CPU2 closes here for Q8 specifically.** The 4.4 t/s ceiling is genuinely architecture-bound for this hardware × this hybrid model combination. Branch `cpu-optimization/q8-8x8-avx512bw` carries 4 commits on top of `138b26cd4`:
+
+- `1d18efce3` — AVX-512BW 8x8 Q8_0 GEMV kernel (+31.8% at 1t, +1-3% at 96t)
+- `e84a5c82f` — auto-mbind CPU_REPACK + K-parallel activation quant
+- `ba1c23900` — env-gated DeltaNet S_v sub-chunking (default off, no current effect)
+- `0467a5c17` — env-gated parallel RMS_NORM (default off, net-negative at 96t)
+
+All correct, env-gated for safety, PPL-preserved. Production deployment can rebase this branch onto v5 cleanly.
+
 ---
 
 **Archived initial-measurement table (pre-NUMA-fix, for history):**
