@@ -301,3 +301,21 @@ All production accelerations compose cleanly with the experimental kernel — no
 ### Decision gate: L3-as-NUMA BIOS reboot is next
 
 Every software-level lever on NPS4 has been exercised or ruled out. The 48.81 t/s single-instance peak (Qwen3-Coder-30B-A3B Q4_K_M) represents the ceiling of non-BIOS optimizations. L3aaN would expose **12 NUMA domains (one per CCD)** rather than NPS4's 4, enabling genuine per-CCD weight locality via per-CCD replicas. Expected gain from L3aaN: +10–20% on decode, contingent on whether the 12-domain layout delivers CCD-local reads where the 4-domain NPS4 currently forces cross-channel traffic for most accesses.
+
+### Q4 vs Q8 throughput on the experimental kernel (2026-04-24)
+
+Same stack, code-completion prompt, via llama-server + curl:
+
+| Model | Quant | Config | tg (t/s) |
+|---|---|---|---|
+| Qwen3-Coder-30B-A3B | Q4_K_M | base | 45.63 |
+| Qwen3-Coder-30B-A3B | Q4_K_M | + spec (dm=8) + ngram | 58.01 |
+| Qwen3.5-35B-A3B | Q4_K_M | base | 31.25 |
+| Qwen3.5-35B-A3B | Q4_K_M | + moe6 + q4_0 KV | 32.61 |
+| Qwen3.5-35B-A3B (abliterated proxy) | Q8_0 | base | 22.20 |
+| Qwen3.5-35B-A3B (abliterated proxy) | Q8_0 | + moe6 + q4_0 KV | 24.83 |
+| Qwen3.6-35B-A3B | Q8_0 | base | 22.29 |
+| Qwen3.6-27B (dense hybrid) | Q4_K_M | base | 7.14 |
+| Qwen3.6-27B (dense hybrid) | Q8_0 | base | 4.36 |
+
+Q4→Q8 ratios: **0.71 on 35B-A3B hybrid** (SSM compute partially amortizes the BW doubling), **0.61 on 27B dense hybrid** (closer to the pure BW ratio since dense weights dominate). MoE expert reduction (moe6 + q4_0 KV) scales with Q4 and Q8: +4% on Q4, +12% on Q8 — the expert-reduction gain grows when BW cost per expert is larger. No Q8-specific kernel bugs observed.
