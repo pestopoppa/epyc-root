@@ -31,3 +31,9 @@ tmp/
 core
 .coverage
 .last_compile
+
+# Local test/compile cruft
+.coverage
+.coverage.*
+coverage.json
+.last_compile
