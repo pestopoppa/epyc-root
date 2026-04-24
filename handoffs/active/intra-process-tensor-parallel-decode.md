@@ -49,6 +49,71 @@ Extended the standalone microbench (`/mnt/raid0/llm/cpu-tp-prototype/tp_gemv_num
 
 **Real CPU1 gains require NPS4 or L3-as-NUMA BIOS change** (reboot window; CPU3 Phase 2 in the umbrella index). Under NPS4 / L3aaN the node-distance ratio grows, 4-way or 12-way locality becomes physically meaningful, and CPU1's TP projection (2-5× single-instance) can materialize. Without the BIOS change, further CPU1 work on NPS2 has diminishing returns.
 
+### 2026-04-24 Phase 1b — NPS4 reboot re-bench
+
+Rebooted into NPS4 (4 NUMA nodes, 3 channels each, distance 10/12). Full results: `research/deep-dives/cpu-tp-phase1b-nps4-2026-04-24.md` and `data/cpu_optimization/2026-04-24-nps4/SUMMARY.md`.
+
+Headline (Qwen3-Coder-30B-A3B Q4, 96t, `-p 0 -n 64 -r 3`):
+
+| Config | NPS2 (freeze) | NPS4 |
+|---|---|---|
+| OMP flat | 47.17 | 21.03 |
+| OMP + `interleave=all` | — | 25.35 |
+| noOMP flat | 38.87 | 14.01 |
+| noOMP + CCD pools (Phase 1.0+1.1) | 44.85 | 15.07 |
+| **noOMP + CCD + `interleave=all`** | — | **27.86** |
+
+- CPU1 Phase 1.0+1.1 under NPS4 (with interleave) = **+12.5% over OMP+interleave baseline**. Meets the runbook's `>10%` gate to proceed with Phase 1.2/1.3.
+- Absolute single-instance perf under NPS4 = 27.86, still **−38% vs NPS2's 44.85**. Software `interleave=all` only partially recovers NPS2 behavior.
+- Multi-instance 4×48t frontdoor regresses −26% (50.8 → 37.74 on 35B-A3B Q4).
+- Concurrent 48×4t NPS4-native is a new peak: **104.35 t/s aggregate** on 30B-A3B Q4 with per-node `membind` + 12 instances per node.
+- `numa_balancing=1` auto-migration was net negative (20.42 vs 21.03).
+
+**Why interleave doesn't fully emulate NPS2**: remote-access ratio rises from 50% to 75% per thread; within-node stripe halves from 6 to 3 channels; 4-way directory coherency adds lookup/snoop paths. These are fixed hardware taxes, not software-addressable.
+
+**Decision pending user input.** Four options; recommendation is Option 2 (Phase 1.3 NUMA weight mbind, 2-3 days) to close the single-instance gap while keeping CPU1 gain and 48×4t peak:
+1. Rollback to NPS2
+2. Stay NPS4 + implement Phase 1.3 NUMA weight mbind
+3. Stay NPS4 + deploy 48×4t concurrent in production
+4. Reboot to L3-as-NUMA
+
+### 2026-04-24 Phase 1.3 v1 IMPLEMENTED — set_mempolicy(MPOL_INTERLEAVE)
+
+User approved Option 2. First Phase 1.3 iteration landed in `src/llama-mmap.cpp` on the same branch. Gated by `GGML_NUMA_WEIGHTS=1`. The code:
+
+- Counts NUMA nodes via `/sys/devices/system/node/nodeN`
+- Calls `syscall(SYS_set_mempolicy, MPOL_INTERLEAVE, ...)` BEFORE `mmap()`
+- Suppresses `MAP_POPULATE` when enabled so readahead fills pages under the new policy
+
+Originally tried per-region `mbind()` — failed because file-backed MAP_SHARED pages do NOT honor per-region policy once kernel readahead has queued them. `set_mempolicy` is process-wide and DOES govern readahead placement.
+
+#### Clean-cache NPS4 measurements (Qwen3-Coder-30B-A3B Q4, 96t, `-p 0 -n 64 -r 3`)
+
+| Config | NPS4 t/s |
+|---|---|
+| noOMP flat (baseline) | 14.53 |
+| noOMP + CCD | 15.45 |
+| noOMP + NW=1 | 34.84 |
+| **noOMP + CCD + NW=1** | **39.59** |
+
+- Phase 1.3 alone delivers **+140%** (baseline 14.5 → 34.8)
+- CPU1 Phase 1.0+1.1 on top of Phase 1.3: **+13.6%** (34.8 → 39.6)
+- Combined vs baseline: **+156%**
+- **88% of NPS2 pre-reboot best** (44.85); gap closed from −38% to −12%
+
+Inline set_mempolicy is **+16% better than external `numactl --interleave=all`** (39.59 vs 27.86 on the same build). Hypothesis: `MAP_POPULATE` + POSIX_FADV_SEQUENTIAL let the kernel readahead thread populate pages under a different effective policy than the exec-time numactl policy. Disabling MAP_POPULATE inside the mmap constructor lets the reshaped task policy govern all placement, including readahead.
+
+#### Decision: NPS4 locked in
+
+With Phase 1.3 landed, NPS4 now delivers 39.59 t/s single-instance + 104 t/s aggregate at 48×4t. Net trade vs NPS2: −12% single-instance for +100%+ aggregate at concurrent peak. Clear win given user approved orchestrator rework for the concurrent path.
+
+#### Still pending (Phase 1.3 v2 + Phase 1.2)
+
+- **v2 — tensor-aware striping**: per-tensor mbind with large stripe chunks. Needs `init_mappings()` / `weights_map` awareness.
+- **Phase 1.2 — CCD-aware work distribution**: change `ith/nth` in `ggml_compute_forward_mul_mat` so each CCD's threads handle a contiguous row range. Combined with v2 striping, gives true per-node locality.
+
+Target: close the remaining 12% vs NPS2 and potentially exceed it.
+
 ### NPS BIOS tradeoff summary
 
 | Mode | Nodes | CCDs/node | Cross-node cost | Notes |
