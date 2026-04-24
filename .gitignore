@@ -29,3 +29,5 @@ Thumbs.db
 tmp/
 .gitnexus
 core
+.coverage
+.last_compile
