@@ -114,6 +114,52 @@ With Phase 1.3 landed, NPS4 now delivers 39.59 t/s single-instance + 104 t/s agg
 
 Target: close the remaining 12% vs NPS2 and potentially exceed it.
 
+### 2026-04-24 (later same session) — Phase 1.2 landed + Phase 1.3 v2 scaffolding
+
+Committed [`61b00eb53`](https://… ) on `cpu-optimization/backlog-2026-04-23`.
+
+**Phase 1.2** (ggml-cpu.c: `ggml_compute_forward_mul_mat`):
+- Env gate `GGML_CCD_WORK_DIST=1` (requires `GGML_CCD_POOLS=1`).
+- When active, bypasses the default dynamic chunk-stealing loop and assigns each thread a contiguous output-row slice: CCD c gets `[c*big/n_ccd, (c+1)*big/n_ccd)`, then within the CCD each thread takes a strided sub-slice.
+- Bit-exact with prior behavior when env unset. Gated behind `GGML_USE_OPENMP=off`.
+
+**Phase 1.3 `local` mode** (llama-mmap.cpp):
+- Added alongside the existing `=1/=interleave` mode.
+- `GGML_NUMA_WEIGHTS=local` disables `MAP_POPULATE` and sets `POSIX_FADV_RANDOM` so pages fault on demand under the touching thread's default LOCAL policy. No global `set_mempolicy`.
+- Intended endpoint: combined with a per-CCD warm-up touch pass, each CCD's threads first-touch their assigned weight rows and pages land on the CCD's node.
+
+**Measured (NPS4, Qwen3-Coder-30B-A3B Q4, 96t, n=64 r=3)**:
+
+| Config | t/s |
+|---|---|
+| Phase 1.0+1.1 + NW=1 (interleave) — baseline for Phase 1.2 | **40.40 – 41.38** (avg ~40.8) |
+| Phase 1.0+1.1 + Phase 1.2 + NW=1 | 29.76 (cold) / 40.96 / 40.18 (avg ~40.6) |
+| Phase 1.0+1.1 + Phase 1.2 + NW=local (no warm-up pass) | 18.4 – 18.6 |
+
+Phase 1.2 under interleave is **net neutral** (static partition loses some work-stealing benefit; per-node locality gain of Phase 1.2 is zero when weights are 4 KB-interleaved, so no offset).
+
+Phase 1.2 + `NW=local` (no warm-up) lands 15 GB on node 0 alone (observed via numastat) because the main thread touches weights during model-load before CCD threads run inference. That concentrates placement on whichever node init runs on.
+
+**Why these modes don't yet deliver**: Phase 1.2 needs per-node weight locality to pay off; page-interleave doesn't provide it. `NW=local` with no warm-up also doesn't provide it (main thread faults most pages first). Both are correct *foundations*; the missing piece is a warm-up step.
+
+### Phase 1.3 v2 proper design (next session)
+
+After `init_mappings()` completes AND when `GGML_NUMA_WEIGHTS=local` + `GGML_CCD_POOLS=1` are set:
+
+1. Read the same CCD geometry env vars the pool uses (or derive from n_threads / ccd_threads).
+2. Spawn N pinned pthreads (one per CCD), each bound to that CCD's CPU set and NUMA node via `sched_setaffinity` + `mbind` on the thread's stack/heap.
+3. Each thread iterates the weights_map and for each tensor, reads one byte from every page in the rows `[c*N/n_ccd, (c+1)*N/n_ccd)` range (matching Phase 1.2's partitioning).
+4. First-touch places those pages on the thread's NUMA node.
+5. Threads exit; model is now per-node-cached.
+
+Estimated effort: 1-2 days. Expected result: 44+ t/s single-instance, closing or exceeding the NPS2 baseline gap.
+
+### Current deployable operating point (NPS4)
+
+- **Phase 1.0+1.1 + Phase 1.3 v1 (NW=1)**: **40-41 t/s single-instance** (89% of NPS2 baseline 44.85)
+- **48×4t concurrent NPS4-native**: 104 t/s aggregate (new peak)
+- Phase 1.2 env-gated-off in production until Phase 1.3 v2 completes (or: enable Phase 1.2 in concurrent 48×4t layouts where each instance is membind'd to one node — then CCD work dist within each instance IS useful)
+
 ### NPS BIOS tradeoff summary
 
 | Mode | Nodes | CCDs/node | Cross-node cost | Notes |
