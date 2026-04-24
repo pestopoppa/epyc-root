@@ -72,6 +72,25 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 - [x] H-8: Prototype MemPalace MCP integration with Hermes outer shell — `claude mcp add mempalace -- python -m mempalace.mcp_server`. 19 tools (palace reads, writes, KG, navigation, agent diary). Local-first (ChromaDB+SQLite), MIT. Gives Hermes persistent cross-session memory with 96.6% LongMemEval recall. Source: intake-326. -- Done 2026-04-12. Setup script at scripts/hermes/mempalace_setup.sh. MCP server config documented in hermes-config.yaml.
 - [x] H-9: Add anti-rationalization tables to agent governance skills — adopt pattern from intake-337 (addyosmani/agent-skills). Each SKILL.md gets a "Rationalizations" section with excuse|rebuttal table to prevent LLM shortcutting of quality gates. Priority skills: research-intake, agent-file-architecture. Also tracked in non-inference-backlog Task 8. — ✅ 2026-04-12. Verification gates + anti-rationalization tables added to research-intake and agent-file-architecture SKILL.md.
 
+### P2.6 — Upstream Release Integration (from 2026-04-24 intake-454 deep-dive)
+
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Major upstream release (v0.11.0 / v2026.4.23): 1,556 commits / 761 PRs / 29 contributors since v0.9.0. **Key finding from deep-dive**: `/mnt/raid0/llm/hermes-agent` is NOT a fork — it tracks upstream cleanly with only an untracked `HERMES.md`. All EPYC customization is external (`scripts/hermes/` + orchestrator `x_*` overrides). Recommendation: bump the pin, do not rebase.
+
+- [ ] **P2.6.1 — D — Pin bump v2026.3.23 → v2026.4.23** (~2–4 h; bare checkout = no inference, smoke tests = inference)
+  - Currently pinned at `v2026.3.23-43-ge5691eed` per `git -C /mnt/raid0/llm/hermes-agent describe --tags`
+  - Steps: `git -C /mnt/raid0/llm/hermes-agent fetch && git -C /mnt/raid0/llm/hermes-agent checkout v2026.4.23` + re-run `scripts/hermes/setup.sh` (or current setup script)
+  - Smoke-test 5 validation scenarios (basic chat / tool use / streaming / one `x_*` override / multi-turn) — **REQUIRES INFERENCE — Wave 2**
+- [ ] **P2.6.2 — H-verify breaking-change checklist** (mostly file inspection — non-inference; one item needs running model)
+  - [ ] Config schema diff: `diff scripts/hermes/config.example.yaml <new release example config>` — flag any new required keys (`max_spawn_depth`, plugin config, execution mode candidates per deep-dive)
+  - [ ] state.db VACUUM behavior: confirm first-startup VACUUM delay does not exceed expected window; consider pre-warming or background VACUUM in setup script
+  - [ ] Slash-command namespace clash: scan our `scripts/hermes/skills/*/SKILL.md` for `/steer`, `/clear`, `/use`, `/escalation`, `/nocode` etc. — confirm none collide with new upstream native commands
+  - [ ] Ink TUI CLI contract: verify our scripted/headless invocations of `hermes` (in `scripts/hermes/launch.sh` and similar) still work with the Ink rewrite — flag any changed flags/exit-codes
+  - [ ] ChatCompletions transport refactor probe: hit our orchestrator's `/v1/chat/completions` with the new client — **REQUIRES INFERENCE — Wave 2**
+  - [ ] Compressor fallback-chain interaction: confirm the new fallback chain does not conflict with our `provider: "main"` auxiliary config; inspect config-loading order
+- [ ] **P2.6.3 — Downstream port to compressor** — see [`tool-output-compression.md`](tool-output-compression.md) Phase 3d (E)
+- [ ] **P2.6.4 — Downstream refactor of `x_*` overrides** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2+ Enhancement (F)
+- [ ] **P2.6.5 — Subagent + single-slot llama-server validation** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 Validation (G); **REQUIRES INFERENCE — Wave 2**
+
 ### P4 — Open-Source Orchestrator (future)
 
 - [ ] Validate MemRL routing produces measurable quality improvement

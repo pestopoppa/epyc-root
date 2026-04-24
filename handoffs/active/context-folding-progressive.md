@@ -710,6 +710,8 @@ class CompactionQualityMonitor:
 - `consolidation_count` — how many consolidations since last check
 - `degradation_alert` — boolean, True if trend detected
 
+**Cross-ref (added 2026-04-24 from intake-454)**: the upstream-compressor anti-thrashing port tracked in [`tool-output-compression.md`](tool-output-compression.md) Phase 3d (action E) directly reduces the kind of compress→uncompress→re-compress oscillation that this monitor flags as a degradation signal. Sequencing recommendation: land Phase 3d before tuning Phase 3c's `degradation_alert` thresholds, otherwise we'd be calibrating against oscillation noise that Phase 3d will silence.
+
 ### Phase 3 Code Changes (all sub-phases)
 
 | File | Change |

@@ -17975,7 +17975,7 @@
   reported_results: []
   referenced_arxiv_ids: []
   novelty: low
-  relevance: medium
+  relevance: high
   credibility_score: null
   verdict: adopt_patterns
   ingested_date: '2026-04-24'
@@ -18001,24 +18001,29 @@
   - repl-turn-efficiency.md
   - tool-output-compression.md
   handoffs_created: []
+  deep_dive: research/deep-dives/veniceai-skills-cross-runtime-authoring.md
   novelty_justification: >
     SKILL.md format itself is the Anthropic/Claude Code-originated agent skill spec already in
     use across our stack (.claude/skills/). Venice's contribution is a well-curated multi-runtime
     authoring style guide and an OpenAPI-sync pipeline — useful reference implementation but not
     a new technique.
   relevance_justification: >
-    Venice.ai is a commercial API (against feedback_opensource_only for direct consumption), but
-    (a) the repo explicitly documents Hermes Agent as a first-class target runtime with canonical
-    skill-install paths, (b) the authoring conventions (≤500 lines, endpoint tables, gotchas
-    section) and OpenAPI→SKILL.md drift-detection pattern are directly applicable to our LLM Wiki
-    Skill (intake-277) and meta-harness skill optimization (intake-327), (c) provides a reference
-    for how a public org structures portable skills across Claude Code + Hermes simultaneously.
+    Deep-dive 2026-04-24 upgraded medium → high: the OpenAPI→SKILL.md drift-detection pattern maps
+    to a concrete unfilled gap (no CI sync between `src/api/models/openai.py` x_* fields and
+    `scripts/hermes/skills/*.md`) we have already come close to hitting, and the authoring-rubric
+    retrofit is materially cheaper now (3 skills) than after intake-454's namespaced plugin
+    bundles grow the corpus. Hermes is a first-class target runtime per Venice.
   verdict_justification: >
-    adopt_patterns: not applicable as an API consumer (closed commercial service) but the
-    sync_from_swagger.py drift-detection pattern, the cross-runtime install/frontmatter discipline,
-    and the authoring style rubric (short lead, endpoint tables, curl+SDK, gotchas, ≤500 lines)
-    are worth adopting for our own SKILL.md corpus under .claude/skills/ and ~/.hermes/skills/.
-    No code to import; patterns only.
+    adopt_patterns (confirmed post deep-dive): not applicable as an API consumer but the
+    sync_from_swagger.py drift-detection pattern, cross-runtime install discipline, and
+    authoring rubric (≤500 lines, endpoint tables, curl+SDK, gotchas) are directly adoptable
+    under .claude/skills/ and scripts/hermes/skills/. No code to import; patterns only.
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/veniceai-skills-cross-runtime-authoring.md.
+    Refinement: relevance medium → high (concrete drift-detector gap identified). Top actions
+    queued into hermes-outer-shell P2: (1) skills TEMPLATE.md + codified rubric (~30 min),
+    (2) check_drift.py modeled on sync_from_swagger.py, wired as pre-commit hook (~2 hr),
+    (3) overview/SKILL.md entry-point skill enumerating all x_* overrides (~30 min).
 - id: intake-451
   arxiv_id: null
   url: https://github.com/stanford-iris-lab/meta-harness
@@ -18055,7 +18060,7 @@
   novelty: low
   relevance: high
   credibility_score: null
-  verdict: adopt_component
+  verdict: adopt_patterns
   ingested_date: '2026-04-24'
   discovered_via: input
   expanded_from: null
@@ -18076,27 +18081,37 @@
   - repl-turn-efficiency.md
   - hermes-agent-index.md
   handoffs_created: []
+  deep_dive: research/deep-dives/meta-harness-official-reference-code.md
   novelty_justification: >
-    Companion code repo for already-indexed intake-244. README is explicit that this is 'a cleaned
-    up version of the code we used for the paper' with no additional experiments or ablations.
-    Value is purely in making the framework runnable — ONBOARDING.md, domain_spec template,
-    claude_wrapper examples, and two reference experiment scaffolds. No DSPy/GEPA listed as
-    dependencies; proposer agent integration is via thin wrappers. Novelty beyond the paper is
-    therefore low.
+    Companion code repo for already-indexed intake-244. README explicit that this is 'a cleaned up
+    version of the code we used for the paper' with no additional experiments or ablations. Value
+    is purely in making the framework runnable — ONBOARDING.md, domain_spec template,
+    claude_wrapper examples, and two reference experiment scaffolds.
   relevance_justification: >
-    meta-harness-optimization.md is an active Tier-1+Tier-2-implemented handoff where we re-derived
-    the core search loop from the paper. The official framework plus ONBOARDING flow and reference
-    examples (especially the agent-tasks scaffold evolution on terminal_bench_2) directly validate
-    our local implementation and could accelerate Tier 2b upgrades. Autopilot and
-    repl-turn-efficiency also depend on the same agentic harness-search idea.
+    meta-harness-optimization.md is an active Tier-1+Tier-2-implemented handoff driven by
+    intake-244. The official reference code validates our local re-derivation and the tbench2
+    scaffold-evolution example is the closest analog to our code-mutation search space.
   verdict_justification: >
-    Paper is already integrated into the active stack (intake-244 drove meta-harness-optimization.md
-    Tier 1/2). The repo contribution is runnable reference code: adopt selected components —
-    specifically the ONBOARDING.md + domain_spec.md pattern for onboarding new domains (orchestrator
-    roles, eval suites), and the claude_wrapper.py proposer-logging pattern — into PromptForge/
-    autopilot. Terminal_bench_2 scaffold-evolution example is the closest analog to our
-    code-mutation search space and worth reading before Tier 2b. No need to wholesale port;
-    cherry-pick.
+    Deep-dive 2026-04-24 DOWNGRADED adopt_component → adopt_patterns. Authors' own "not tested
+    beyond verifying it runs" disclaimer is load-bearing; no shared framework package exists
+    (each reference example is a self-contained tree). Our Tier-1/Tier-2 already re-derived and
+    integrated with instrumentation; wholesale import would replace a working system with
+    un-instrumented reference code. Value is in qualitative patterns (ONBOARDING flow, SKILL.md
+    proposer prior, session-receipt format, read-failed-AND-successful-traces, predict-cost-delta
+    constraint) — cherry-pick, don't port.
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/meta-harness-official-reference-code.md.
+    Refinement: verdict adopt_component → adopt_patterns. Surfaced findings the paper
+    underspecified that the code reveals: (1) proposer reads both failed AND successful
+    trajectories (our B3 feeds recent-only); (2) no algorithmic parent selection — proposer
+    reads full frontier and chooses autonomously (our PromptForge pre-selects via strategy-store
+    retrieve, A/B-able); (3) mutations must predict cost impact, not just quality (we predict
+    quality only); (4) per-proposer-session audit layout is richer than our journal — cheap
+    additive win; (5) tbench2-artifact environment-bootstrapping validates repl-turn-efficiency
+    S5 Gap-1 (workspace_scan). Top actions: MH-6 adopt SKILL.md proposer-prior template for
+    PromptForge (~100 LoC); MH-7 upgrade capture_recent_traces → capture_contrastive_traces
+    (k_success, k_failure) (~40 LoC); MH-9 add new_file mutation type with directory-scoped
+    allowlist (~80 LoC + tests).
 - id: intake-452
   arxiv_id: null
   url: https://github.com/chiefautism/privacy-parser
@@ -18141,31 +18156,32 @@
   handoffs_updated:
   - opendataloader-pipeline-integration.md
   handoffs_created: []
+  deep_dive: research/deep-dives/chiefautism-privacy-parser-span-extraction.md
   novelty_justification: >
-    Lightweight wrapper over the already-ingested OpenAI Privacy Filter weights (intake-449). Adds
-    two engineering patterns worth noting — (a) hybrid model+regex backstop boosting F1
-    from 0.733 → 0.929, (b) span-extraction reuse of the same classifier for audit/inventory
-    rather than masking — but introduces no new model, training, or algorithm. The
-    Viterbi+BIOES+regex-backstop pattern is standard NER engineering.
+    Lightweight wrapper over the already-ingested OpenAI Privacy Filter weights (intake-449).
+    Engineering contribution = surgical regex backstop: restricted to exactly three labels
+    (private_url, secret, account_number) with asymmetric override rules (strong-prefix-required
+    for URLs/secrets, full-containment-plus-phone-mislabel-required for account swaps) and
+    span-merge uses per-label gap caps (person=3 chars, account=1, email=0). That surgical design
+    is what lifts F1 from 0.733 → 0.929 at +100 ms.
   relevance_justification: >
-    Medium, not low: opendataloader-pipeline-integration.md gap #5 flagged that no PII/injection
-    filter exists before LLM ingestion, and intake-449's deep-dive already tagged the OpenAI
-    privacy-filter as the default Apache-2.0 plug-in for that slot. This repo provides a
-    ready-to-use Apache-2.0 Python wrapper (HybridPIIParser) that drops into the ODL pipeline and
-    also enables a KB-hygiene use case (auditing wiki/ and research/ for accidentally-committed
-    PII before git push) per feedback_dont_dismiss_creative_uses. Not high because it does not
-    address prompt-injection (the actual gap #5) and we do not currently process third-party
-    user PII.
+    Medium (unchanged post deep-dive): opendataloader-pipeline-integration.md gap #5 remains open
+    (PII is adjacent, not prompt-injection). KB-hygiene pre-commit hook across three repos under
+    /mnt/raid0/llm is the concrete adoption slot.
   verdict_justification: >
-    adopt_patterns — not superseded-by / superseding intake-449 (it IS intake-449 repackaged as
-    extraction rather than masking). Two concrete adoption paths: (1) if/when the ODL pipeline
-    adds a PII preprocessing step, use HybridPIIParser directly (Apache-2.0, CPU-ready, 600 ms)
-    rather than building a custom wrapper around the raw opf weights; (2) KB-hygiene pre-commit
-    hook to audit wiki/handoffs/research for accidentally-committed emails/phones/secrets
-    (secret label is particularly valuable — catches leaked tokens). Not new_opportunity because
-    the underlying model is already tracked; not already_integrated because we have not wired
-    the pipeline yet. The ~600 ms CPU latency is acceptable for KB ingestion but would dominate
-    per-request orchestrator latency — evaluate only in offline/batch slots.
+    Deep-dive 2026-04-24 kept verdict adopt_patterns for the orchestrator hot path, but narrowed
+    to adopt_component for one concrete slot: pre-commit KB-hygiene secret scanning across
+    /mnt/raid0/llm/epyc-{root,orchestrator,inference-research}. Two-tier adoption path: ship
+    regex-only pre-commit first, gate on secret + account_number; re-evaluate hybrid upgrade
+    after 30 days only if regex misses 2+ novel shapes. Gap #5 (prompt injection) not closed
+    by this — remains open.
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/chiefautism-privacy-parser-span-extraction.md.
+    Refinement: narrow adopt_component slot identified (pre-commit hygiene). Top actions:
+    (1) regex-only pre-commit hook at scripts/hooks/pii_precommit.sh gating on secret +
+    account_number on staged files (~half day); (2) build 30-50-example held-out fixture of
+    real-shape secrets at research/fixtures/pii_hygiene_eval.jsonl; (3) re-evaluate hybrid
+    upgrade after 30 days, upgrade only if regex misses 2+ novel shapes.
 - id: intake-453
   arxiv_id: null
   url: https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m
@@ -18205,7 +18221,7 @@
   - 'Comparison baseline Reason-ModernColBERT 150M: BRIGHT 22.62 mean'
   referenced_arxiv_ids:
   - '2510.14880'
-  novelty: medium
+  novelty: high
   relevance: high
   credibility_score: 4
   contradicting_evidence:
@@ -18213,8 +18229,7 @@
   - '32M scale does not benefit from lower-casing preprocessing (no clear trend vs clear gains at 17M), suggesting the 32M size sits near the expressive ceiling for this ColBERT variant.'
   - 'Reason-ModernColBERT (parent technique) explicitly documented as scaling poorly to very large queries due to MaxSim asymmetry — limits reasoning-trace injection at query time.'
   - 'No independent third-party replication of BRIGHT 19.00 located as of 2026-04-24 (model released 2026-04-22, two days prior).'
-  - 'License ambiguity: frontmatter declares Apache-2.0 but README body notes CC-BY-NC-4.0 inherited from training data — commercial deployment risk until resolved with authors.'
-  verdict: worth_investigating
+  verdict: adopt_component
   ingested_date: '2026-04-24'
   discovered_via: input
   expanded_from: null
@@ -18231,30 +18246,37 @@
   - colbert-reranker-web-research.md
   - searxng-search-backend.md
   handoffs_created: []
+  deep_dive: research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md
   novelty_justification: >
-    32M-param ColBERT specialized for reasoning retrieval at ~5x smaller footprint than
-    Reason-ModernColBERT is a genuine addition to the edge-scale late-interaction pool. Not a
-    duplicate of intake-174 (Reason-ModernColBERT 150M) — different size class and different
-    base (mxbai-edge vs ModernBERT-150M). Not a duplicate of intake-430 LateOn. Modest because
-    BRIGHT mean 19.00 trails the 150M reference 22.62 (−3.6 pts) and symbol-dense splits are
-    architecturally capped by the base tokenizer.
+    Deep-dive 2026-04-24 upgraded medium → high: first reasoning-specialized ColBERT at edge
+    scale (32M params). On BRIGHT natural-language splits (biology, earth_science,
+    sustainable_living, pony) it matches or beats its 150M Reason-ModernColBERT sibling — those
+    are exactly our web_research traffic pattern. The −3.6 full-mean gap is entirely from
+    symbol-dense splits (leetcode, aops, theoremqa) that are not our workload.
   relevance_justification: >
-    colbert-reranker-web-research.md is active, S5 in progress; fallback slot explicitly names
-    mxbai-edge-colbert (17M/32M Apache 2.0). This model is that fallback + reasoning fine-tune,
-    sharing the same 128-dim output as GTE-ModernColBERT-v1 currently deployed on :8089 and
-    LateOn candidate (intake-430). Small ~32M size makes it attractive for CPU reranking where
-    180ms/call (150M GTE ONNX INT8) is the current latency; a 5x smaller backbone could drop
-    this to ~40ms. Directly on-topic for the snippet-reranking pipeline and for KB-governance
-    reranking reuse.
+    colbert-reranker-web-research.md S5 is active with the fallback slot explicitly naming
+    mxbai-edge-colbert (17M/32M). This model is that fallback + reasoning fine-tune, sharing
+    the same 128-dim output as deployed GTE-ModernColBERT-v1 (150M, :8089) and LateOn
+    candidate (intake-430). Extrapolated latency ~40-50 ms p50 vs GTE's 180 ms.
   verdict_justification: >
-    Worth investigating as a low-cost benchmark: S4b-style CPU latency probe + BRIGHT-style
-    reasoning-query A/B against LateOn and GTE-ModernColBERT-v1. Not adopt_component yet because
-    (a) BRIGHT 19.00 < LateOn/GTE general BEIR equivalent, (b) README has a license conflict
-    (frontmatter Apache-2.0 vs body 'CC-BY-NC-4.0 inherited') that must be resolved before
-    commercial-adjacent deployment, (c) no ONNX INT8 variant shipped — would need PyLate→ONNX
-    export path. If license resolves to Apache-2.0 and latency drops to ~40ms with acceptable
-    BRIGHT on natural-language web_research queries, promotes to adopt_component as the
-    CPU-latency fallback in colbert-reranker-web-research S5.
+    Deep-dive 2026-04-24 UPGRADED worth_investigating → adopt_component for the S5 *fallback*
+    slot (LateOn stays primary on BEIR strength). Conditional on three gates: (1) ONNX INT8
+    parity against PyLate (<1e-2 L2), (2) EPYC median latency ≤80 ms @ 48 threads for 10
+    snippets, (3) A/B within 1pp of LateOn on web_research queries. Operating plan: three-slot
+    reranker selector (GTE baseline / LateOn primary / Reason-mxbai fallback) via
+    REASON_MXBAI_MODEL_PATH env var.
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md.
+    Refinement: novelty medium → high, verdict worth_investigating → adopt_component (conditional
+    on gates). CPU latency estimate ~40-50 ms p50 per 10-snippet call (optimistic 20 ms,
+    pessimistic 60-80 ms), derived by scaling the measured 180 ms GTE-150M-INT8 number by the
+    backbone ratio (10 × 384²) / (22 × 768²) ≈ 0.113 and discounting the FLOP ratio to 25%
+    realization under the BW-bound heuristic from feedback_cpu_decode_bw_bound. Top actions
+    queued into colbert-reranker-web-research S5: (1) S3c — ONNX INT8 export + parity fixture
+    via existing /workspace/venvs/export312/ venv (~1 hr, reuses LateOn venv); (2) S4c — EPYC
+    latency benchmark via scripts/benchmark/bench_colbert_rerank.py targeting ~40-50ms p50
+    (~30 min); (3) S5 amendment — extend colbert_reranker.py with REASON_MXBAI_MODEL_PATH env
+    var alongside LATEON_MODEL_PATH, document three operating points.
 - id: intake-454
   arxiv_id: null
   url: https://github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23
@@ -18302,7 +18324,7 @@
   novelty: medium
   relevance: high
   credibility_score: null
-  verdict: adopt_patterns
+  verdict: adopt_component
   ingested_date: '2026-04-24'
   discovered_via: input
   expanded_from: null
@@ -18330,27 +18352,41 @@
   - meta-harness-optimization.md
   - repl-turn-efficiency.md
   handoffs_created: []
+  deep_dive: research/deep-dives/hermes-agent-v2026-4-23-release.md
   novelty_justification: >
     Release-specific patterns beyond intake-117 baseline: orchestrator subagent role with
-    cross-agent file locking, /steer mid-run correction, compressor anti-thrashing+language-aware+
-    fallback, plugin execution-veto/result-transform hooks, transport-layer abstraction. These
-    are concrete mechanisms not covered by the main-repo intake entry or PR#5100 (wiki skill).
-    Not `high` because individual building blocks (compression, subagents, MCP) are known; the
-    novelty is in their hermes-specific composition.
+    cross-agent file locking, /steer mid-run correction, compressor anti-thrashing +
+    language-aware + fallback, plugin execution-veto/result-transform hooks, transport-layer
+    abstraction. Composition is hermes-specific; individual building blocks (compression,
+    subagents, MCP) are known.
   relevance_justification: >
-    Directly touches 4+ active handoffs: (1) hermes-outer-shell — plugin surface + shell-hook
-    skills map to our scripts/hermes/skills SKILL.md work and x_* API overrides;
-    (2) tool-output-compression — compressor anti-thrashing/dedup/fallback patterns portable
-    to our compress_tool_output.py; (3) context-folding-progressive — language-aware +
-    smart-collapse applicable to our session folding; (4) meta-harness-optimization —
-    orchestrator+subagent spawn model informs our escalation chain. EPYC runs hermes-agent as
-    frontend, so every release is directly consumable via fork merge.
+    Directly touches 4+ active handoffs (hermes-outer-shell, tool-output-compression,
+    context-folding-progressive, meta-harness-optimization). EPYC tracks hermes-agent upstream
+    cleanly — every release is directly consumable.
   verdict_justification: >
-    adopt_patterns: we run a hermes-agent fork (adopt_component is implicit baseline), but the
-    actionable work is cherry-picking specific patterns — compressor anti-thrashing, plugin
-    veto/transform hooks, /steer, cross-agent file locking, transport abstraction — into our
-    Phase B cherry-pick workstream and tool-output-compression Phase 3+. All open-source MIT,
-    no SaaS dependencies (satisfies feedback_opensource_only).
+    Deep-dive 2026-04-24 UPGRADED adopt_patterns → adopt_component. Key finding:
+    /mnt/raid0/llm/hermes-agent is NOT a fork — it tracks upstream main cleanly with only an
+    untracked HERMES.md. All our customization is external (/workspace/scripts/hermes/ +
+    orchestrator x_* overrides). Recommendation: bump the pin v2026.3.23 → v2026.4.23
+    (`git fetch && git checkout v2026.4.23` + re-run setup script, ~2-4h), then selectively
+    adopt patterns (compressor anti-thrashing, plugin-bundle override re-expression,
+    subagent+slot interaction) per existing handoffs.
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/hermes-agent-v2026-4-23-release.md.
+    Refinement: verdict adopt_patterns → adopt_component for base-binary bump + adopt_patterns
+    for specific patterns. Top actions: (1) bump to v2026.4.23 today + smoke-test 5 validation
+    scenarios (2-4h); (2) port compressor anti-thrashing + fallback chain into
+    scripts/utils/compress_tool_output.py — closes tool-output-compression Phase 2b known
+    oscillation failure mode (4-8h); (3) re-express x_* overrides as a namespaced Hermes plugin
+    bundle using new register_command + pre_tool_call veto + transform_tool_result — replaces
+    three skill YAMLs (4-6h); (4) validate subagent + single-slot llama-server interaction,
+    settles hermes-outer-shell Question 5 (3-5h). Breaking-change risks: ChatCompletions
+    transport refactor may affect Jinja template + SSE streaming + x_* overrides; config schema
+    likely adds new keys (max_spawn_depth, plugin config, execution mode); state.db VACUUM
+    delay on first post-upgrade start; compressor fallback-chain + our provider:"main"
+    auxiliary config could interact poorly; Ink TUI rewrite (310 commits) may change
+    headless/scripted CLI contract; potential slash-command namespace clash with upstream
+    /steer or /clear.
 - id: intake-455
   arxiv_id: null
   url: 'inline:qwen36-27b-spec-decoding-rtx4090-2026-04-24'
@@ -18389,10 +18425,11 @@
   relevance: low
   credibility_score: 2
   contradicting_evidence:
-  - 'thc1006/qwen3.6-speculative-decoding-rtx3090 (GitHub, 2026-04-19): 19 configurations on Qwen3.6-35B-A3B + Qwen3.5-0.8B draft on RTX 3090 post PR #19493 found NO net speedup on Ampere + A3B MoE — but that is MoE not dense 27B, so does not directly refute the dense-target note'
+  - 'CRITICAL ARCHITECTURE CORRECTION (deep-dive 2026-04-24): Qwen3.6-27B is NOT true dense — it is hybrid Gated-DeltaNet + Gated-Attention (3:1 GDN:attention, 64 layers total, 48 GDN + 16 Gated-Attn), same architecture class as Qwen3.5-27B. The "dense" label refers to dense FFN (no MoE). Spec-dec verification-wall (feedback_qwen35_27b_architecture) inherits wholesale — CPU spec-dec remains foreclosed.'
+  - 'thc1006/qwen3.6-speculative-decoding-rtx3090 (GitHub, 2026-04-19): 19 configurations on Qwen3.6-35B-A3B + Qwen3.5-0.8B draft on RTX 3090 post PR #19493 found NO net speedup on Ampere + A3B MoE — but that is MoE not dense-FFN, so does not directly refute the dense-FFN-target note'
   - 'vLLM issue #36872: Qwen3.5-35B-A3B-FP8 spec-dec produced gibberish + throughput collapse — evidence that spec-dec acceptance is fragile and run-variance is a real concern'
   - 'Acceptance rate collapse documented: 61.3% -> 0.9% -> 0.0% across consecutive requests in some Qwen spec-dec setups, reinforcing the 49-85% run-to-run variance in the note (85% peak is best-case, not typical)'
-  - 'Model existence CONFIRMED: Qwen3.6-27B dense released 2026-04-22 on HuggingFace (Apache 2.0), 27B dense, 262K ctx extensible to 1M — consistent with note'
+  - 'Model existence CONFIRMED: Qwen3.6-27B released 2026-04-22 on HuggingFace, 27B total with dense FFN, hybrid GDN+attention, 262K ctx extensible to 1M'
   verdict: worth_investigating
   ingested_date: '2026-04-24'
   discovered_via: input
@@ -18410,28 +18447,36 @@
   - qwen36-production-upgrade.md
   - inference-acceleration-index.md
   handoffs_created: []
+  deep_dive: research/deep-dives/qwen36-27b-dense-spec-dec-cpu-feasibility.md
   novelty_justification: >
-    Spec-dec with same-family small draft on dense targets is well-covered in
-    wiki/speculative-decoding.md and prior intake (e.g. intake-422/423 TIDE, DFlash,
-    tree-speculation). Novel data points: (a) confirmed 5.9x on brand-new Qwen3.6-27B dense
-    (released 2 days ago 2026-04-22), (b) 1.7B beats 4B distilled draft on net throughput —
-    useful empirical counter-intuition, (c) long-context scaling data (128K-192K retains 126-159
-    tok/s) is genuinely new for consumer-GPU spec-dec.
+    Deep-dive 2026-04-24 kept novelty medium but reframed: durable takeaway is the same-family
+    small-draft heuristic (1.7B beats 4B on net throughput). Architecture is identical class to
+    Qwen3.5-27B (hybrid GDN + Gated-Attention, just dense FFN rather than MoE) — zero
+    generational novelty in the model itself. GPU spec-dec claim on Qwen3.6-27B remains a
+    fresh-model data point.
   relevance_justification: >
-    EPYC production stack is CPU-only (EPYC 9655, 1.1TB RAM) targeting Qwen3.5/3.6-35B-A3B MoE
-    hybrid — fundamentally different arch from dense 27B. GPU work is backburnered in
-    gpu-acceleration-path.md (no GPU acquired). Dense 27B is not in the EPYC model roster and
-    spec-dec's verification-wall problem on hybrid SSM (documented in wiki) means these RTX 4090
-    results do NOT transfer to production. Low relevance, but non-zero because:
-    (1) Qwen3.6-27B could become a new coder/worker candidate if CPU throughput is feasible,
-    (2) same-family 1.7B draft lesson may apply to future dense models,
-    (3) data point for gpu-acceleration-path.md when hardware lands.
+    Deep-dive 2026-04-24 kept relevance low (not full medium): (1) Qwen3.6-27B is a fresh coder/
+    worker candidate for CPU evaluation — but strictly WITHOUT spec-dec since the GDN+attention
+    hybrid architecture means the verification-wall (feedback_qwen35_27b_architecture) applies;
+    (2) GPU spec-dec numbers remain bookmark-only (no GPU acquired); (3) the same-family small
+    draft heuristic is durable literature for future dense-FFN models.
   verdict_justification: >
-    worth_investigating, not new_opportunity: the 27B dense model itself is a fresh drop
-    (2026-04-22) and might deserve a CPU-feasibility probe even though this note targets a 24GB
-    GPU we don't have. The spec-dec technique is already well-understood on our stack
-    (chapter 01 / wiki). Main actionable items: (1) flag Qwen3.6-27B dense as a model-intake
-    candidate to evaluate on CPU for coder role, (2) note the 1.7B same-family draft heuristic
-    for gpu-acceleration-path.md future work. Anonymous forum source + 3-run variance
-    (49-85% acceptance) + single-box reproduction argue against promoting to new_opportunity
-    without independent replication.
+    worth_investigating (unchanged post deep-dive). Deep-dive reframed the action: no CPU
+    spec-dec experiments — they are architecturally foreclosed by the GDN verification wall.
+    What is worth investigating is the CPU throughput of Qwen3.6-27B itself for the coder/worker
+    slot, BW-roofline-projected at ~7.5-9 t/s single-instance / ~30 t/s NUMA-4-way aggregate
+    (matches existing Qwen3.5-27B measurement since architecture class is identical).
+  notes: >
+    Deep-dive 2026-04-24 at research/deep-dives/qwen36-27b-dense-spec-dec-cpu-feasibility.md.
+    CRITICAL REFINEMENT: intake originally assumed Qwen3.6-27B is "true dense" — deep-dive
+    confirmed it is hybrid Gated-DeltaNet + Gated-Attention (3:1 GDN:attention, 64 layers =
+    48 GDN + 16 Gated-Attn), same arch class as Qwen3.5-27B. "Dense" refers to dense FFN (no
+    MoE). CPU spec-dec remains dead (verification wall). CPU BW-roofline calc: 14.9 GB active
+    weights/token (Q4_K_M), 460 GB/s effective EPYC 9655 BW → theoretical ceiling 30.9 tok/s at
+    100% BW utilization, realistic at measured ~24% utilization → ~7.5-9 t/s single-instance
+    / ~30 t/s NUMA-4-way aggregate. Top actions: (1) CPU throughput probe on
+    unsloth/Qwen3.6-27B-GGUF Q4_K_M (16.8 GB) single-instance + NUMA-4-way, expect
+    ~7.5-9 t/s / ~30 t/s; (2) coder-escalation quality A/B vs Qwen2.5-Coder-32B on agentic
+    coding eval — decision gate for coder_escalation swap; (3) explicitly DO NOT run CPU
+    spec-dec experiments (architecturally foreclosed); bookmark 4090 spec-dec numbers for
+    GPU-acquisition trigger only.

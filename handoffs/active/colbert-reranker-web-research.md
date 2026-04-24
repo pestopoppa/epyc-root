@@ -306,6 +306,24 @@ LightOn released the full 665M curated pre-training corpus + 1.69M fine-tuning c
 
 - [ ] **S8** (park until primary S5 stable + GPU available): local NV-Retriever fine-tune on REPL+sentinel queries. GPU-gated to DGX Spark. Worth revisiting as a Phase 2+ enhancement.
 
+## S3c / S4c / S5-amend — Reason-mxbai-colbert-v0-32m Edge-Reasoning Fallback (2026-04-24, intake-453)
+
+Source: [`research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md`](../../research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md). 32M ColBERT fine-tuned on BGE-reasoner + ReasonIR-HQ hard negatives. On BRIGHT natural-language splits (biology, earth_science, sustainable_living, pony) it matches or beats the 150M Reason-ModernColBERT sibling — those are exactly our web_research workload pattern. The −3.6 BRIGHT full-mean gap is entirely from symbol-dense splits (leetcode, aops, theoremqa) that are not our queries.
+
+**Amended S5 plan (now 3-slot)**: GTE-ModernColBERT-v1 baseline / **LateOn primary** (general BEIR strength) / **Reason-mxbai-32m fallback** (CPU-latency-budget slot). Three-way `MODEL_PATH` env-var selector. Conditional adoption on three gates: (1) ONNX INT8 parity (<1e-2 L2 vs PyLate), (2) EPYC median latency ≤80 ms @ 48 threads for 10 snippets, (3) A/B within 1pp of LateOn on natural-language web_research queries.
+
+CPU latency estimate ~40–50 ms p50 per 10-snippet call (optimistic 20 ms, pessimistic 60–80 ms). Derived by scaling the measured 180 ms GTE-150M-INT8 number by the backbone ratio (10 × 384²) / (22 × 768²) ≈ 0.113 and discounting the FLOP ratio to 25% realization under the BW-bound heuristic from `feedback_cpu_decode_bw_bound`.
+
+Tasks:
+
+- [ ] **S3c**: ONNX INT8 export of `Reason-mxbai-colbert-v0-32m` + parity test vs PyLate reference (~1 h, non-inference). Unblocked independent of AR-3. Reuses the same `[colbert-export]` venv + path as S3b; add a `--model-id DataScience-UIBK/Reason-mxbai-colbert-v0-32m` switch to `export_lateon_onnx_int8.py` (or fork to `export_reason_mxbai_onnx_int8.py` if the existing script is too LateOn-specific). Parity tolerance: `1e-2` L2.
+- [ ] **S4c**: CPU latency benchmark with Reason-mxbai INT8 at 48 threads for 10 snippets (~30 min once the bench harness exists). Target median ≤80 ms. **Prereq**: `scripts/benchmark/bench_colbert_rerank.py` does not yet exist — needs ~1 h of harness work, which also unblocks S4b's deferred LateOn-INT8 latency run.
+- [ ] **S5-amend**: extend `src/tools/web/colbert_reranker.py` with `REASON_MXBAI_MODEL_PATH` env var alongside the existing `LATEON_MODEL_PATH`. Three-slot operating-point selector documented in code comments + this handoff. (~minor, non-inference for the config; full A/B inference-gated on AR-3 Package D, same gate as S5.)
+
+### Independence note
+
+S3c/S4c/S5-amend do not require AR-3. AR-3 only gates the **A/B rollout** (S5 / S6). Implementation, export, and latency probing can land on the next non-inference work session and slot directly into the existing 3-slot selector when AR-3 unblocks.
+
 ### Cross-references
 
 - `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md`

@@ -248,6 +248,42 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 - [ ] Test `x_disable_repl` end-to-end (needs inference)
 - [ ] Test `x_max_escalation` with full graph (depends on LangGraph migration)
 
+#### Skills Authoring Rubric (added 2026-04-24 from intake-450 deep-dive)
+
+Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../../research/deep-dives/veniceai-skills-cross-runtime-authoring.md). Three non-inference work items, mostly independent. Apply Venice's cross-runtime SKILL.md authoring discipline before our skill corpus grows.
+
+- [ ] **A — `scripts/hermes/skills/TEMPLATE.md` + ≤500-line authoring rubric** (~30 min)
+  - Codify: short lead paragraph → endpoint/override table → curl + one SDK example → explicit "Gotchas" section → ≤500 line cap
+  - Reference Venice's pattern at `github.com/veniceai/skills` (any individual skill is the canonical example)
+  - Write the rubric as a separate `scripts/hermes/skills/AUTHORING.md` next to the template if the template itself would be too cluttered
+- [ ] **B — `scripts/hermes/skills/check_drift.py` + pre-commit hook wire** (~2 h, depends on A)
+  - Parse `x_*` field declarations in `OpenAIChatRequest` (under `epyc-orchestrator/src/api/models/openai.py` per our overrides — confirm path on implementation)
+  - Regex-scan all `scripts/hermes/skills/**/*.md` for documented `x_*` references
+  - Two-way diff: declared-but-undocumented and documented-but-undeclared
+  - Exit 1 on drift with a clear message; exit 0 on clean
+  - Wire as a hook in `epyc-orchestrator/.git/hooks/pre-commit` — references `feedback_handoff_driven_tracking` discipline
+  - Modeled on Venice's `sync_from_swagger.py` pattern
+- [ ] **C — `scripts/hermes/skills/overview/SKILL.md` (entry-point inventory)** (~30 min, depends on A)
+  - Lists every `x_*` override + what it does + which command-skill (`/use`, `/escalation`, `/nocode`) consumes it
+  - Acts as the index for new readers + first thing the drift detector references
+
+#### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
+
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Depends on Wave 1B item D (pin bump v2026.3.23 → v2026.4.23) — D lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.5.
+
+- [ ] **F — Re-express `x_*` overrides as a namespaced Hermes plugin bundle** (4–6 h, depends on D)
+  - Replace the three current SKILL.md YAMLs (`/use`, `/escalation`, `/nocode`) with a single namespaced plugin bundle using v0.11.0's new `register_command` + `pre_tool_call` veto + `transform_tool_result` hooks
+  - Removes hand-maintained YAML drift surface (which B's drift detector exists to police — F + B together close the loop)
+  - All code work, no inference required for the implementation. End-to-end validation rolls into G.
+
+#### Phase 2 Validation (added 2026-04-24 from intake-454 deep-dive)
+
+- [ ] **G — Validate subagent + single-slot llama-server interaction** (3–5 h, depends on D and F; **REQUIRES INFERENCE — Wave 2**)
+  - **Resolves Question 5** above (swarm coordination)
+  - Spawn 2+ parallel subagents via the new orchestrator role; each hits a single-slot llama-server independently
+  - Confirm: no head-of-line blocking, correct request serialization, no shared-state corruption
+  - If issues found: document the failure mode and either (i) configure spawn-depth ceiling appropriately, or (ii) move single-slot servers behind a request-broker
+
 ## Research Intake Updates
 
 ### 2026-03-15

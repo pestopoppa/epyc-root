@@ -304,3 +304,31 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 - **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
   - Relevance: ≤500-line SKILL.md rubric + explicit "gotchas" section — models the pattern this handoff's definition-reduction work (Phase 3a-b) is already following.
   - Delta: corroborating reference point, not a new technique. Apply to any future skill authored from compression insights.
+
+## Phase 3d — Fallback Chain (added 2026-04-24 from intake-454 deep-dive)
+
+Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Upstream hermes-agent v2026.4.23 ships compressor improvements that **directly close a Phase 2b oscillation failure mode** flagged in our monitoring. All work non-inference (offline fixtures sufficient for unit-level validation).
+
+### Objective
+
+Port three upstream compressor patterns into our `scripts/utils/compress_tool_output.py`:
+1. **Anti-thrashing** — prevents the "compress → uncompress → re-compress" oscillation we already see in Phase 2b monitoring telemetry.
+2. **Language-aware collapse** — preserves code-block structure across multi-language tool outputs (current per-content-type routing is a coarser version of this).
+3. **Fallback-to-main-model chain on 503/404** — when the compressor model is unavailable, degrade to main-model summarization rather than dropping into retry loops that poison context.
+
+### Dependency
+
+- D — pin bump v2026.3.23 → v2026.4.23 (lives in [`hermes-agent-index.md`](hermes-agent-index.md) P2.6.1) — recommended-but-not-strict prerequisite. We can read the upstream patches directly without bumping our pin first; bumping makes side-by-side comparison easier and lets us run upstream's anti-thrashing test fixtures.
+
+### Work Items
+
+- [ ] **3d.1 — Inspect upstream patches** — locate the v0.10.0 → v0.11.0 commits touching the compressor module in `/mnt/raid0/llm/hermes-agent`. Identify the three patterns (anti-thrashing, language-aware, fallback chain) at the function/class level. Capture upstream's test fixtures if any. (~1 h)
+- [ ] **3d.2 — Port anti-thrashing into `scripts/utils/compress_tool_output.py`** — minimal version: track recent compress/decompress operations on the same content hash; suppress the third operation in any A→B→A oscillation pattern within a turn. (~2 h)
+- [ ] **3d.3 — Port language-aware collapse** — extend the existing per-content-type routing with a language detector for code blocks (re-use existing fence-marker heuristics in the file); preserve fence boundaries when collapsing. (~2 h)
+- [ ] **3d.4 — Port fallback chain (503/404 → main model)** — when compressor model returns 503/404 or times out, route the input through the main model with a prompt template targeting summarization instead of compression-style condensation; cap fallback retries at 1. (~1–2 h)
+- [ ] **3d.5 — Validate against recorded oscillation transcript** — replay a saved Phase 2b monitoring transcript that exhibits the documented oscillation; confirm anti-thrashing prevents the third compression and the resulting context is correct. (~1 h, offline fixture only)
+
+### Cross-references
+
+- Synergizes with [`context-folding-progressive.md`](context-folding-progressive.md) Phase 3c — anti-thrashing reduces oscillation-induced false positives in their monitoring telemetry. See that handoff's Phase 3c subsection for cross-ref.
+- Companion to [`hermes-agent-index.md`](hermes-agent-index.md) P2.6 (the pin bump that gives us side-by-side access to upstream patches).
