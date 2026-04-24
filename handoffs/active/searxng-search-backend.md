@@ -199,3 +199,11 @@ AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution
   - Integration path: If research intake pipeline needs page scraping beyond WebFetch (e.g., for JS-heavy pages, PDFs), Crawl4AI could be deployed alongside SearXNG. Docker deployment available. Worth evaluating for ColBERT reranker fetch step (colbert-reranker-web-research.md S5).
 
 **Policy note (2026-04-14)**: Given open-source-only infrastructure preference, Crawl4AI (intake-372, Apache-2.0) is the preferred evaluation target for deep page scraping. Firecrawl (intake-364/365) evaluation deferred — cloud-first SaaS model conflicts with self-hosted philosophy. Evaluate Crawl4AI after AR-3 when web_research sentinel data quantifies JS-heavy fetch failure rates. If WebFetch suffices for >90% of pages, neither tool is needed short-term.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-453] "Reason-mxbai-colbert-v0-32m: Edge-Scale Reasoning ColBERT (32M params)"** (`huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m`)
+  - Relevance: candidate CPU-latency-friendly reranker over SearXNG top-K results. 32M params ≈ 5× smaller than current 150M GTE-ModernColBERT-v1 on :8089; could drop reranker call from ~180 ms → ~40 ms if PyLate→ONNX export path works.
+  - Delta: this sharpens the reranker choice behind SearXNG output but does not change the search-engine tuning or SX-5/6 work items. Tracked primarily in `colbert-reranker-web-research.md` — flagged here so SX-5 analysis factors in the latency/quality trade.

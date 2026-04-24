@@ -1,0 +1,30 @@
+{
+  "started_at": "2026-04-24",
+  "invocation_urls": [
+    "https://github.com/veniceai/skills",
+    "https://arxiv.org/abs/2603.28052",
+    "https://github.com/stanford-iris-lab/meta-harness",
+    "https://github.com/chiefautism/privacy-parser",
+    "https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m",
+    "https://github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23",
+    "inline:qwen36-27b-spec-decoding-rtx4090-note"
+  ],
+  "entries_processed": [
+    {
+      "url": "https://arxiv.org/abs/2603.28052",
+      "status": "duplicate",
+      "existing_id": "intake-244",
+      "note": "Meta-Harness paper already indexed"
+    }
+  ],
+  "entries_remaining": [
+    "https://github.com/veniceai/skills",
+    "https://github.com/stanford-iris-lab/meta-harness",
+    "https://github.com/chiefautism/privacy-parser",
+    "https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m",
+    "https://github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23",
+    "inline:qwen36-27b-spec-decoding-rtx4090-note"
+  ],
+  "next_intake_id": 450,
+  "phase": "dispatching_subagents"
+}

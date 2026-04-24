@@ -311,3 +311,15 @@ LightOn released the full 665M curated pre-training corpus + 1.69M fine-tuning c
 - `/workspace/research/deep-dives/lighton-denseon-lateon-retrieval-upgrade.md`
 - Intake sources: 428 (blog), 430 (LateOn card), 431 (DenseOn card)
 - `wiki/search-retrieval.md` (updated 2026-04-22 with LateOn/DenseOn rows + decontaminated-BEIR column)
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-453] "Reason-mxbai-colbert-v0-32m: Edge-Scale Reasoning ColBERT (32M params)"** (`huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m`)
+  - Relevance: 32M-param ColBERT fine-tuned on BGE-reasoner + ReasonIR-HQ hard negatives, built on mxbai-edge-colbert-v0-32m (our explicitly named S5 CPU-latency fallback candidate). Edge-scale sibling of Reason-ModernColBERT (intake-174, 150M).
+  - Reported results: BRIGHT nDCG@10 full-mean **19.00** (vs Reason-ModernColBERT 150M = 22.62, −3.6 pts); beats or matches 150M on natural-language splits (biology 32.71, earth_science 43.88, sustainable_living 20.77); lags on symbol-dense splits (leetcode, aops, theoremqa) due to case-insensitive tokenizer + sans_pos + 10-layer depth.
+  - Key technique: widened projection head 64→128 dim preserving base weights on first 64 dims (matches GTE-ModernColBERT-v1 128-dim output currently deployed on :8089); two-stage curriculum (VL warmup → BGE-reasoner/ReasonIR-HQ hard negatives); CachedContrastive loss, 8×H100 training.
+  - Delta from current approach: at ~5× smaller than Reason-ModernColBERT-150M, this is the direct CPU-latency fallback candidate the S5 plan already names. A targeted CPU-latency probe + BRIGHT-style A/B against LateOn and GTE-ModernColBERT-v1 is the cheapest next experiment. Current GTE-ONNX-INT8 is ~180 ms/call; 5× smaller backbone should drop to ~40 ms if PyLate→ONNX export path works.
+  - Caveats (Tier 2b): (1) README has a **license conflict** (frontmatter Apache-2.0 vs body "CC-BY-NC-4.0 inherited from training data") — must be resolved before any commercial-adjacent deployment. (2) No ONNX INT8 variant shipped — PyLate→ONNX export is an unvalidated dependency. (3) Base mxbai-edge-colbert-v0 authors self-describe it as a "proof-of-concept baseline" (arxiv 2510.14880); architectural ceiling on symbol-dense retrieval inherited. (4) Model released 2026-04-22 — no independent third-party replication yet.
+  - Action: queue S5 as A/B candidate after AR-3 web_research sentinel data lands. Treat BRIGHT 19.00 as ceiling — web_research queries are mostly natural-language, which is the model's strong suit, but verify before committing to ONNX export work.

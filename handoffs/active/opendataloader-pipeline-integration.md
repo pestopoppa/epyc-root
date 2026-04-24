@@ -165,3 +165,13 @@ PDF Input
   - Reported results: no quantitative numbers disclosed in the model card at fetch time (2026-04-23). Self-identified failure modes: non-English degradation, uncommon names / regional conventions, span fragmentation, novel credentials. 1,888 downloads/month on HF.
   - Delta from current approach: this pipeline does not currently have a PII-masking step. If/when a step is added (either for KB ingestion or if the orchestrator ever handles third-party user data), this is the default Apache-2.0 option to evaluate. Does not address gap #5 (prompt injection) — that remains an open requirement.
   - Action: **track only**. Do not add a privacy step to Phase 1 or Phase 2 of this pipeline unless a concrete requirement surfaces.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-452] "OpenAI Privacy Parser — inverse of OpenAI Privacy Filter (returns PII spans instead of masking)"** (`github.com/chiefautism/privacy-parser`)
+  - Relevance: lightweight Apache-2.0 Python wrapper over the exact intake-449 opf 1.5B weights — returns structured character spans instead of `<REDACTED>` masks. Three backends: pure-regex (1.000 F1 on fixture, µs), model-only (0.733 F1, ~500 ms CPU), and HybridPIIParser (model + span-merge + regex backstop, **0.929 F1, ~600 ms CPU**).
+  - Key technique: BIOES + tuned Viterbi over opf logits → char spans → span-merge → regex backstop for URL/secret/account_number. The model+regex hybrid pattern is the non-trivial engineering contribution beyond intake-449.
+  - Delta from current approach: this pipeline's gap #5 (no PII/injection filter) remains open. If a PII step is ever added, `HybridPIIParser` is a drop-in — avoids re-wrapping the raw opf weights ourselves. ~600 ms CPU latency is acceptable for offline/batch KB ingestion but would dominate per-request orchestrator latency.
+  - Action: **track only** — consistent with the intake-449 action above. No pipeline change. Bookmark for the offline/batch slot when a concrete requirement surfaces. Does not address prompt-injection filtering (still gap #5).

@@ -210,3 +210,20 @@ See: `progress/2026-04/2026-04-16.md` for full details.
   - Relevance: 9 atomic tools + 100-line agent loop + <30K context budget is a concrete reference for minimizing wasted turns by reducing decision surface.
   - Key technique: minimal atomic tool set with dynamic tool creation via `code_run`; layered L0–L4 memory replaces full-context scanning.
   - Delta: design pressure toward smaller tool surfaces and skill crystallization of repeat tasks (so repeat requests become one-line invocations instead of multi-turn re-derivations).
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: release adds `/steer <prompt>` mid-run course correction that avoids aborting the turn — directly relevant to per-turn efficiency work. Also adds compressor smart-collapse + dedup + anti-thrashing which reduces context churn across turns.
+  - Key technique: mid-run steer without turn termination; compressor fallback-to-main-model chain (503/404) that prevents context-corruption retries.
+  - Delta: `/steer` is an alternative to the "abort + restart with correction" pattern; evaluate whether it reduces net turns in the ~3-5-turn corrections we see in transcripts. Compressor fallback chain removes a class of "compressor failed → retry whole turn" waste.
+
+- **[intake-451] "Meta-Harness (official reference code)"** (`github.com/stanford-iris-lab/meta-harness`)
+  - Relevance: scaffold-evolution example in terminal_bench_2 is a reference for systematically searching over REPL workflow scaffolds (tool-use templates, planning prompts) instead of hand-tuning.
+  - Delta: potential Tier-3 work — apply meta-harness scaffold-search to the REPL harness itself once Tier-1/2 skill-crystallization baseline is stable.
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: ≤500-line SKILL.md rubric with explicit "gotchas" section — directly applicable to the skill-crystallization output format.
+  - Delta: adopt the authoring rubric as the canonical template when crystallizing repeat REPL flows into skills.

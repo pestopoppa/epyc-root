@@ -601,3 +601,12 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 - `agent-world-env-synthesis.md` (full env-synth plan)
 - `/workspace/research/deep-dives/diversity-collapse-posttraining.md`
 - `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-451] "Meta-Harness (official reference code)"** (`github.com/stanford-iris-lab/meta-harness`)
+  - Relevance: official companion code for intake-244 (the Meta-Harness paper this handoff's meta-controller echoes). ONBOARDING.md + `domain_spec.md` template is a direct analogue of autopilot's role-spec scaffolding.
+  - Key technique: agent-tasks scaffold evolution on terminal_bench_2 — the closest open-source analog to autopilot's code-mutation search space. `claude_wrapper.py` proposer-logging pattern fits PromptForge's audit trail.
+  - Delta: cherry-pick ONBOARDING/domain-spec pattern for autopilot's new-role onboarding. Read terminal_bench_2 before any Tier-2b code-mutation upgrade. Do not wholesale port — repo is explicitly "cleaned up version of paper code, not tested beyond running."

@@ -268,3 +268,17 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
   - Relevance: directly analogous to hermes-outer-shell's two-layer architecture — open-agents makes the explicit design choice that the agent runs OUTSIDE the sandbox and interacts via file/search/shell tools, with a durable workflow between them. Maps cleanly to the outer-shell ↔ inner-execution separation.
   - Key technique: (1) agent-outside-sandbox control-plane separation with tool-driven sandbox interaction; (2) durable workflow execution (Vercel Workflow SDK) with persisted steps, streaming, cancellation, and reconnect-to-stream; (3) snapshot-based sandbox hibernate/resume independent from agent/model choice.
   - Delta: TS/Vercel stack is not portable to EPYC, but the three design decisions above are directly worth mining during Phase 2+ of hermes-outer-shell: stable contract between outer/inner layers, durable workflow for reconnect-on-disconnect, and snapshot-resume as analogue for session-log/episodic-store resumability.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: Hermes is documented as a first-class target runtime (`$HERMES_OPTIONAL_SKILLS_DIR` / `~/.hermes/skills/`). Reference implementation of the cross-runtime SKILL.md install pattern that our `scripts/hermes/skills/` is currently bootstrapping.
+  - Key technique: ≤500-line SKILL.md authoring rubric (short lead paragraph, endpoint tables, curl + one SDK example, explicit gotchas section); `sync_from_swagger.py` for OpenAPI→skill drift detection.
+  - Delta: adopt the authoring rubric for our `scripts/hermes/skills/` corpus; consider the drift-detection pattern for any x_* overrides we script against internal routing APIs. Ignore the Venice API itself (commercial, non-OSS).
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: major release with expanded plugin surface — slash-command registration, direct tool dispatch, execution veto, result-transform hooks, shell-hook lifecycle callbacks, namespaced skill bundles. All directly relevant to Phase 2+ outer-shell plugin architecture and skills validation.
+  - Key technique: namespaced skill bundles + shell-hook lifecycle enables packaging our `x_*` overrides as a discrete bundle instead of patching global config.
+  - Delta: evaluate the plugin-veto + result-transform hooks as an alternative to the hard-fork-and-patch pattern we've been using for routing-API overrides. Potentially removes the need for maintaining hermes-agent fork diffs if the plugin surface is expressive enough.

@@ -308,3 +308,20 @@ Files touched:
 - `agent-world-env-synthesis.md` + `minddr-deep-research-mode.md`
 - `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
 - `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md`
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-451] "Meta-Harness (official reference code)"** (`github.com/stanford-iris-lab/meta-harness`)
+  - Relevance: the official code companion to intake-244 (the paper that drove this handoff). Ships `ONBOARDING.md` flow + `domain_spec.md` template that walks a coding-assistant conversation to a new-domain spec; two reference experiments (text_classification = memory-system search, terminal_bench_2 = scaffold evolution); `claude_wrapper.py` proposer examples.
+  - Reported results: no new empirical numbers beyond the paper — README explicitly states "cleaned up version of the code we used for the paper... not tested beyond verifying that it runs."
+  - Delta from current approach: our Tier-1/Tier-2 implementation was re-derived from the paper. The official repo validates our design. Cherry-pick (a) the ONBOARDING flow + `domain_spec.md` template for onboarding new domains (orchestrator roles / eval suites), and (b) the `claude_wrapper.py` proposer-logging pattern for PromptForge. Read the terminal_bench_2 scaffold-evolution example before any Tier-2b upgrade — it is the closest analog to our code-mutation search space.
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: SKILL.md authoring rubric applicable to skill-crystallization outputs of meta-harness runs. The ≤500-line / endpoint-table / gotchas-section template is a ready-made standard for any Skill0-style artifact this handoff produces.
+  - Delta: adopt the authoring rubric; ignore Venice's commercial API.
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: release introduces orchestrator-role subagents with cross-agent file-state coordination and `/steer` mid-run correction — direct primitives for a multi-proposer meta-harness where specialized roles (code-mutator, memory-designer, scaffold-evolver) run in parallel and share state via file locks.
+  - Delta: evaluate whether the new orchestrator spawn depth + file-state coordination removes the need for our custom subagent wiring in the Tier-2b plan. If yes, the handoff can delegate coordination to hermes-agent and focus purely on the harness-search loop.

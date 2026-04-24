@@ -1030,3 +1030,12 @@ Map Claude Code's 5-layer pipeline against EPYC L1-L5:
 - `/workspace/research/deep-dives/onevl-dual-objective-latent-compression.md` (Phase 2c.0 α-sweep detail)
 - `/workspace/research/deep-dives/intake-trio-202604-references.md` (W-RAC / PersonaVLM / 1D-Tokens reference note)
 - Intake sources: 443 (OneVL), 426 (Claude Code compaction pipeline)
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: upstream compressor gains smart collapse, dedup, anti-thrashing, language-respecting collapse, and fallback-to-main-model chain — direct primitives for progressive session compaction.
+  - Key technique: **anti-thrashing** (prevents the "compress → uncompress → re-compress" oscillation that can degrade retention scores across folds); **language-aware collapse** (preserves code-block structure through compaction — relevant to L3/L4 where we currently risk collapsing code fences); **fallback chain** on compressor failure prevents context-corruption retries that would poison the fold history.
+  - Delta from current approach: Phase 3c pending on our side. Evaluate whether to port upstream compressor patches vs. continue our independent implementation. Anti-thrashing in particular addresses a hypothesized failure mode at L5 (the still-pending level); language-aware collapse is a natural extension to the existing L3 sweet-spot compressor.

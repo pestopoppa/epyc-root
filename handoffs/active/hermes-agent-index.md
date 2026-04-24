@@ -209,3 +209,22 @@ After completing any task:
   - Relevance: Benchmark for multi-step agent planning with verifiable constraints (travel + shopping domains). 26 models evaluated. Even GPT-5.2-high only achieves 44.6% case accuracy — frontier models struggle with global constraint optimization.
   - Key insight: Reasoning-equipped models consistently outperform non-reasoning variants. Parallel tool use improves effectiveness-efficiency trade-offs. Rule-based automated scoring (not LLM-based eval).
   - Delta: Evaluation methodology for agent planning quality — potential benchmark addition for assessing orchestrator planning capabilities. Cross-refs ch07 benchmark construction philosophy.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: canonical cross-runtime SKILL.md authoring style guide; Hermes is a first-class target runtime per their docs (`$HERMES_OPTIONAL_SKILLS_DIR` / `~/.hermes/skills/`).
+  - Key technique: OpenAPI→SKILL.md drift-detection via `sync_from_swagger.py` (nightly CI); ≤500-line authoring rubric (short lead, endpoint tables, curl+SDK, gotchas).
+  - Delta: reference implementation of the same cross-runtime pattern we use (`.claude/skills/` + `scripts/hermes/skills/`); adopt the drift-detection and authoring rubric — ignore the Venice API surface (commercial, non-OSS).
+
+- **[intake-451] "Meta-Harness (official reference code)"** (`github.com/stanford-iris-lab/meta-harness`)
+  - Relevance: runnable companion code for intake-244 that drives `meta-harness-optimization.md`. Ships ONBOARDING.md + `domain_spec.md` template + two reference experiments (text_classification, terminal_bench_2) + `claude_wrapper.py` proposer integration.
+  - Key technique: agent-tasks scaffold evolution on terminal_bench_2 is the closest analog to our code-mutation search space.
+  - Delta: cherry-pick — do not wholesale port. Repo explicitly disclaims "not tested beyond verifying it runs"; Tier-1/2 local implementation already exists.
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: major release (1,556 commits / 761 PRs / 29 contributors since v0.9.0) — not a bugfix. Introduces orchestrator-role subagents with cross-agent file-state coordination, `/steer` mid-run correction, compressor anti-thrashing + language-aware + fallback chain, plugin execution-veto/result-transform hooks, transport-layer abstraction.
+  - Key technique: cross-agent file-state locking for parallel subagent spawn; 5 new inference transports (Gemini CLI OAuth, NIM, ai-gateway, etc.); 12 MCP improvements including CDP raw passthrough.
+  - Delta: we run a hermes-agent fork — this release is a major merge target. Individual patterns (compressor anti-thrashing, plugin hooks, /steer) map 1:1 to active handoffs (tool-output-compression, context-folding-progressive, meta-harness-optimization). MIT-licensed, no SaaS deps.

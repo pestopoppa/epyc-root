@@ -291,3 +291,16 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
   - Key technique: subprocess sandbox in 11 language runtimes (only stdout enters context); FTS5+BM25 with RRF and Porter stemming; intent-driven filtering (>5KB threshold → index, return relevant sections only).
   - Reported results: Playwright snapshot 56.2KB→299B (99%); GitHub issues x20: 58.9KB→1.1KB (98%); large JSON API: 7.5MB→0.9KB (99%).
   - Delta from current approach: the subprocess sandbox pattern is the workaround for the PostToolUse hook limitation identified in Phase 2. The >5KB intent-threshold gating heuristic is a practical implementation detail worth borrowing.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
+  - Relevance: upstream compressor gains anti-thrashing, dedup, language-respecting collapse, and a fallback-to-main-model chain on 503/404. Directly overlaps this handoff's Phase 3+ compressor work.
+  - Key technique: anti-thrashing (prevents the "compress → uncompress → compress again" oscillation we flagged in Phase 2b monitoring); language-aware collapse (preserves code-block structure in multi-language tool outputs); fallback chain so compressor failures degrade to main-model summarization instead of retry loops.
+  - Delta: evaluate whether to port upstream compressor patches directly (our fork lags); the anti-thrashing logic in particular is a concrete fix for a known Phase 2b failure mode. Language-aware collapse is a natural extension to the current content-type routing.
+
+- **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
+  - Relevance: ≤500-line SKILL.md rubric + explicit "gotchas" section — models the pattern this handoff's definition-reduction work (Phase 3a-b) is already following.
+  - Delta: corroborating reference point, not a new technique. Apply to any future skill authored from compression insights.
