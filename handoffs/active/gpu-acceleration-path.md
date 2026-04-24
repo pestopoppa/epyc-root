@@ -321,3 +321,15 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
   - Reported results: **78% memory-bandwidth utilization on H100**, sub-1ms forward pass (2.5x vs vLLM, 1.5x vs SGLang); ~680 us on B200 (3.5x vs vLLM). Llama-1B workload.
   - Delta from current approach: direct relevance to any future Blackwell / DGX Spark inference engine we might build — establishes the pattern Lucebox uses and that Mirage Persistent Kernel (arXiv:2512.22219) and ThunderMLA extend. Not activatable until GPU hardware arrives.
   - Action: **read as design primer** at GPU-acquisition trigger. Candidate for future literature expansion: ThunderMLA + Mirage Persistent Kernel.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-455] "Qwen3.6-27B Spec-Decoding on RTX 4090 with 1.7B Same-Family Draft (community note)"** (`inline:qwen36-27b-spec-decoding-rtx4090-2026-04-24`)
+  - Relevance: consumer-GPU (RTX 4090, 24 GB) reference point for speculative decoding on the freshly-released **Qwen3.6-27B dense** target model (released 2026-04-22) with a vanilla Qwen3-1.7B draft via ik_llama.cpp. Directly adjacent to this handoff's future GPU spec-dec evaluation.
+  - Reported results: 5.9× speedup over Ollama (26 → 154 tok/s peak @ 85.2% acceptance, 3-run avg ~127 tok/s); 128K–192K context retains 126–159 tok/s on 4000-tok generations; VRAM ~21.8 GB at 96K with Q4 KV cache + FA.
+  - Key technique: same-family 1.7B draft beats a 4B distilled variant on **net throughput** (154 vs 85 tok/s) despite slightly lower acceptance — draft forward-pass cost dominates acceptance gain. ik_llama.cpp exposes `--draft-max 12 --draft-min 3 --draft-p-min 0.6` flags that Ollama/LM Studio do not.
+  - Caveats (Tier 2b): (1) anonymous community note, not peer-reviewed; (2) run-to-run acceptance variance **49.6%–85.2% across 3 runs** is large — 154 tok/s is a best-case peak, not typical; (3) thc1006/qwen3.6-speculative-decoding-rtx3090 (2026-04-19) tested 19 configs on Qwen3.6-**35B-A3B** + 0.8B draft on RTX 3090 post-PR-#19493 and found **no net speedup** on Ampere + A3B MoE (MoE verification-wall / hybrid SSM issue); (4) vLLM issue #36872 documents spec-dec gibberish + throughput collapse under some configs, and Qwen acceptance-rate collapse (61.3% → 0.9% → 0.0%) across consecutive requests is documented elsewhere — fragility is real.
+  - Delta from current approach: no GPU acquired; this is literature-only for now. Two durable takeaways worth recording even before hardware lands — (a) same-family small-draft heuristic (smallest-draft-that-preserves-vocabulary wins on **net** throughput), (b) 27B-dense + 1.7B-draft is a concrete GPU-era candidate worth re-checking at GPU-acquisition trigger. Do not transfer the 5.9× claim to the CPU/35B-A3B production stack — hybrid-SSM verification-wall documented in `wiki/speculative-decoding.md` makes these results non-portable.
+  - Action: **bookmark only**. Promote to evaluation when GPU acquired OR when Qwen3.6-27B dense is a serious CPU-inference candidate for the worker/coder slot (see `qwen36-production-upgrade.md` update for model-intake flag).

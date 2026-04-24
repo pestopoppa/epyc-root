@@ -427,3 +427,12 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
   - Delta from current approach: Removes all 3 original blockers from intake-281 assessment: (1) size fits in 1052GB available RAM, (2) GGUF is CPU-native, (3) benchmarks available. DSA indexer unimplemented but dense MLA fallback works. Storage tight (92GB remaining during eval).
   - **CRITICAL**: Only the 555B/192-expert variant is viable. The 444B/154-expert GGUF is BROKEN (29% degeneration, deprecated).
   - New handoff: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) — 9-phase evaluation plan with fail-fast gates.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-455] "Qwen3.6-27B Spec-Decoding on RTX 4090 with 1.7B Same-Family Draft (community note)"** (`inline:qwen36-27b-spec-decoding-rtx4090-2026-04-24`)
+  - Relevance: consumer-GPU (RTX 4090) reference point for spec-decoding on a freshly-released dense 27B target. Reports 5.9× vs Ollama peak (154 tok/s @ 85% acceptance) with a same-family 1.7B draft via ik_llama.cpp; 128K–192K context retains 126–159 tok/s.
+  - **Non-portability**: these numbers do NOT apply to our CPU-only EPYC 9655 production stack nor to the 35B-A3B hybrid-MoE we actually run (verification-wall issue documented; thc1006 found zero net spec-dec speedup on 35B-A3B + Ampere). Tracked primarily in `gpu-acceleration-path.md`.
+  - Relevance to index: (a) reinforces the same-family small-draft heuristic for future dense CPU-candidates, (b) flags **Qwen3.6-27B dense** (released 2026-04-22, Apache-2.0) as a net-new CPU model-intake candidate — see `qwen36-production-upgrade.md` update.

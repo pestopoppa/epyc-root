@@ -90,3 +90,12 @@ Target: `/mnt/raid0/llm/models/`
 ## Notes
 
 Released April 16, 2026. This is a weights-only upgrade — all improvements from post-training focused on agentic coding. The +11pp Terminal-Bench gain is the most compelling signal for our orchestrator use case. Ollama already ships it as `qwen3.6:35b-a3b`.
+
+## Research Intake Update — 2026-04-24
+
+### New Related Research
+
+- **[intake-455] "Qwen3.6-27B Spec-Decoding on RTX 4090 with 1.7B Same-Family Draft (community note)"** (`inline:qwen36-27b-spec-decoding-rtx4090-2026-04-24`)
+  - **Model mismatch caveat**: this note targets the freshly-released **Qwen3.6-27B dense** (released 2026-04-22, Apache-2.0, 262K ctx extensible to 1M), which is **distinct** from this handoff's **Qwen3.6-35B-A3B hybrid-MoE**. The 5.9× GPU speedup numbers do **not** transfer — MoE + hybrid-SSM verification-wall is documented in `wiki/speculative-decoding.md`, and thc1006's 19-config sweep on Qwen3.6-35B-A3B + 0.8B draft on RTX 3090 (2026-04-19) found **no net speedup** post-PR-#19493.
+  - Relevance to this handoff: signals that Qwen3.6 family now has a **dense 27B variant** — a potential new worker/coder model candidate. Worth a separate CPU-feasibility probe (BW-bound decode on EPYC 9655 for a 27B dense in Q4_K_M).
+  - Action: **flag for model-intake** — evaluate Qwen3.6-27B-Q4_K_M as a CPU candidate for the coder/worker slot. Do not conflate with the 35B-A3B upgrade tracked here. If promoted, spawn a sibling handoff.
