@@ -90,3 +90,19 @@ Three new handoffs (2026-04-23) open the forward-looking CPU throughput backlog 
 - **[CPU Inference Optimization Index](../handoffs/active/cpu-inference-optimization-index.md)** — backlog index aggregating all 14 unimplemented CPU throughput techniques (CPU1–CPU14): TP sharding, GEMV ukernels, system tuning, per-CCD sync, hugepages, ZenDNN 5.2 eval, tinyBLAS integration, weight replication, dense-weight sparsity, sub-Q4 quant eval, compiler/PGO/LTO, BOLT post-link, prefill optimizations, `--parallel` slot decode benchmarks. Includes dependency graph (CPU3 Phase 0 baseline gates everything), composition matrix (TP × ukernel × tuning multiplicative up to 460 GB/s BW ceiling), and explicit list of what's deployed or concluded-not-viable so future agents don't re-open closed work.
 
 Start gate for the entire backlog: **CPU3 Phase 0 baseline measurement** — `perf stat` uncore counters + barrier-time profiling on Qwen3-Coder-30B-A3B Q4_K_M at 192t. Tells us which lever has the most headroom before committing to any code.
+
+## 2026-04-23 late-session — Phase 0 executed, CPU2 falsified
+
+Phase 0 ran end-to-end on 2026-04-23 in `llama.cpp-experimental` on `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`). Key measurements and decisions:
+
+- **Thread sweep** on Qwen3-Coder-30B-A3B Q4_K_M (`-p 0 -n 64 -r 3`, quiet host): 24t=40.8 t/s, 48t=39.6, **96t node 0 pinned = 49.1 (PEAK)**, 144t cross-NUMA=25.7 bimodal, 192t `--numa distribute`=18.7 bimodal.
+- **perf profile Qwen3.6-27B Q8_0 @ 96t (4.41 t/s)**: 63.43% `ggml_vec_dot_q8_0_q8_0`, 32.34% libomp spin/barrier, 0.11% DeltaNet (`gated_delta_net` + `ssm_conv` combined — refutes the feared DeltaNet-dominates gate).
+- **CPU2 Phase 1 Target #1 implemented and tested**: ported `ggml_vec_dot_q8_0_q8_0` from AVX2 (256-bit) to AVX-512VNNI (512-bit) using existing `mul_sum_i8_pairs_acc_int32x16` helper. Disassembly confirmed `vpdpbusd %zmm` in new path. Measured +1.7% at 96t / −3.6% at 1t — projection of 1.46× falsified. Cause: perf cycles inside the dot loop are DRAM-wait, not ALU. Change reverted.
+- **Promotions based on measurement**:
+  - CPU1 (TP-sharding) Phase 0 gate PASSED (192t at 8% of 460 GB/s roofline; barrier >15% required, measured 32–45%). Phase 1 prototype remains ~1 week of work.
+  - CPU4 (per-CCD sync primitive) promoted from MED-bundled to HIGH standalone on measured 32–45% barrier cost.
+  - CPU2 (GEMV ukernels on quantized decode) deprioritized.
+- **CPU3 zero-reboot knobs applied via user sudo**: THP→always, numa_balancing=0, 1GB hugepage on node 1. Net within noise on canonical workload.
+- **96t-single-NUMA-node operating point** emerged as actionable: +26% vs production worker_explore (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1.
+
+See `research/deep-dives/cpu-optimization-phase0-baseline.md` for full analysis + revised gate decisions. Auto-memory entry `feedback_cpu_decode_bw_bound.md` captures the lesson: when perf shows high overhead inside a quantized-decode inner dot loop on this hardware, those samples are typically DRAM-wait cycles; a cheap wider-SIMD A/B test resolves the question in hours before committing to shape-specialized ukernel work.

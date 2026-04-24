@@ -12,6 +12,125 @@
 - [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — multi-instance aggregate path (current workaround; this handoff is the alternative)
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — KV-side lever (independent; composes)
 
+## 2026-04-24 Phase 1.0 implementation — NEGATIVE/NEUTRAL on barrier-only change
+
+**Implemented**: per-CCD 2-level sense-reversing barrier in `ggml-cpu.c` (noOMP path only, env-var `GGML_CCD_POOLS=1` gated). Full details in `research/deep-dives/cpu-tp-phase1a-ccd-barrier-2026-04-24.md`.
+
+**Measured** (Qwen3-Coder-30B-A3B Q4, 96t, n=64 r=3):
+- OMP flat (production): 45.92 t/s
+- noOMP flat (ggml default): 38.90 t/s
+- **noOMP + per-CCD 2-level barrier**: 38.22 t/s → **−1.7% vs noOMP flat, neutral**
+
+**Lesson**: the 32-45% barrier cost measured yesterday via `perf` on the OMP build was **libomp-specific** — it's libgomp's own spin/futex implementation. ggml's own atomic barrier (used in noOMP) is already efficient enough that splitting it into 2 levels doesn't help. **Barrier-restructuring alone is NOT the Phase 1 lever.**
+
+**What's still needed for real CPU1 gain**:
+1. **CCD-aware thread affinity via `cpumask`**: pin each worker to its CCD's 8 physical cores. ggml has `cpumask` infrastructure already but propagates a flat mask from `tpp->cpumask`. A per-CCD-block mask application would make `ith/nth` strided work distribution land on CCD-local cores.
+2. **Per-CCD NUMA-bound weight allocation**: explicit `mbind` / first-touch policy so weight rows assigned to CCD c land on that CCD's physically-nearest NUMA node. Without this, all threads pull weights from a non-local DRAM pool regardless of which CCD they run on.
+3. **(Maybe) CCD-shard matmul work distribution**: change `ith/nth` from flat strided to CCD-block-contiguous in `ggml_compute_forward_mul_mat`.
+
+**Phase 1 is now genuinely a 1-week task** split across: thread pinning (~1 day), NUMA weight placement (~2 days), work-distribution changes (~2 days), end-to-end validation (~2 days). Phase 1.0 (barrier-only) is complete and in-tree as a negative baseline — future Phase 1.1/1.2/1.3 work builds on it.
+
+### 2026-04-24 late — NPS2 BIOS is the real ceiling
+
+Extended the standalone microbench (`/mnt/raid0/llm/cpu-tp-prototype/tp_gemv_numa_bench.cpp`) to measure 2-way NUMA-local TP (each half of the weight matrix `mbind`'d to a different node, threads pinned to that node):
+
+- Flat 96t (current pattern): 246 GB/s
+- 2-way NUMA-local: 250 GB/s → **+1.5%, within noise**
+
+`move_pages` confirmed page placement. The reason NUMA-local TP doesn't help under NPS2: the **node distance ratio is only 10/12 = 20%** (per `numactl --hardware`). Cross-node DRAM access is only 20% slower than local. With 50% accesses hitting the wrong node in random allocation, the average overhead is ~10% — too small to offset the coordination overhead of 2-way TP, which adds its own barriers + per-path dispatch.
+
+**Combined NPS2 CPU1 ceiling** (summing all tested interventions):
+| Lever | Measured benefit |
+|---|---|
+| Per-CCD 2-level barrier | neutral |
+| CCD-aware thread pinning | +2% |
+| 2-way NUMA-local weights (mbind + first-touch) | +1.5% |
+| **NPS2 total** | **~2-5% best case** |
+
+**Real CPU1 gains require NPS4 or L3-as-NUMA BIOS change** (reboot window; CPU3 Phase 2 in the umbrella index). Under NPS4 / L3aaN the node-distance ratio grows, 4-way or 12-way locality becomes physically meaningful, and CPU1's TP projection (2-5× single-instance) can materialize. Without the BIOS change, further CPU1 work on NPS2 has diminishing returns.
+
+### NPS BIOS tradeoff summary
+
+| Mode | Nodes | CCDs/node | Cross-node cost | Notes |
+|---|---|---|---|---|
+| NPS1 | 1 | 12 | n/a | No NUMA awareness required |
+| **NPS2** (current) | 2 | 6 | 20% | Current production; CPU1 ceiling ~5% |
+| NPS4 | 4 | 3 | larger | 4-way NUMA TP friendly |
+| L3-as-NUMA | 12 | 1 | largest | Per-CCD NUMA — full CPU1 potential |
+
+Side effects of NPS mode change to evaluate before reboot:
+- 4×48t multi-instance production deployment (frontdoor/coder) may re-benchmark differently — the NUMA quarters would map to actual nodes under NPS4
+- `--numa distribute` and `--numa interleave=all` semantics shift with more nodes
+- `mlock` behavior unchanged but page-allocation behavior changes
+- Naive code (no NUMA API) typically sees slight shifts (mostly neutral)
+
+---
+
+## 2026-04-24 Phase 0 microbench — pattern validated, +6% to +28% over flat OpenMP at DRAM scale
+
+Implemented a standalone C++ microbench (`/mnt/raid0/llm/cpu-tp-prototype/tp_gemv_bench.cpp`) comparing:
+- Flat OpenMP 192t / 96t (ephemeral + persistent variants) — current ggml pattern
+- **TP 12×16**: 12 pthread workers pinned to 12 CCDs via `sched_setaffinity` (8 phys + 8 HT each), each running a persistent 16-thread OpenMP sub-team sharding its 1/12 of N.
+
+Measured at three working-set sizes on K=5120 FP32 GEMV (`y = W·x`):
+
+| W size | Cache state | Best flat | TP 12×16 | TP gain |
+|---|---|---|---|---|
+| 0.33 GB | L3-resident | 192t flat = 857 GB/s | 591 GB/s | **−31%** (L3 BW dominates, more threads win) |
+| 3.81 GB | DRAM-bound | 192t persistent = 204 GB/s | **210 GB/s** | **+3%** (+14% vs ephemeral 184) |
+| 15.26 GB | DRAM-bound | 192t persistent = 205 GB/s | **215 GB/s** | **+5%** (+6% vs ephemeral 204) |
+
+At DRAM scale the TP pattern wins. The gain is modest on a single GEMV (+5-14%) because the microbench amortizes spawn overhead over many iterations and has no chain-of-ops cumulative cost. Real ggml decode has 64 layers × 7 matmul shapes per token; cumulative barrier cost makes the TP gain grow. See `research/deep-dives/cpu-tp-sharding-phase0-microbench-2026-04-24.md` for full analysis.
+
+**Numerical validation**: bit-exact match between all modes at all sizes.
+
+**Key refinement**: the microbench's "flat OpenMP ephemeral vs persistent" gap (+11%) reflects OpenMP runtime behavior. **Inspection of `ggml/src/ggml-cpu/ggml-cpu.c:467-503` shows ggml ALREADY uses a persistent threadpool** (`struct ggml_threadpool` with long-lived workers, atomic `n_graph` / `n_barrier_passed` coordination). So the ephemeral-vs-persistent gap is not something Phase 1 unlocks — ggml has it.
+
+The remaining Phase 1 work is the **per-CCD sub-pool structure**: split ggml's flat 192-way threadpool into 12 CCD-pinned sub-pools (16 threads each), with per-sub-pool barriers and cross-CCD coordination only where necessary. The 32-45% barrier cost in perf is the spin-wait on the FLAT 192-way `n_barrier_passed`; replacing it with 12 × 16-way local barriers + occasional cross-CCD tree reduction should recover a large fraction.
+
+### Phase 1 code sites to modify (identified 2026-04-24)
+
+- `ggml/src/ggml-cpu/ggml-cpu.c:467` — `struct ggml_threadpool` — add array of sub-pool coordinators
+- `ggml/src/ggml-cpu/ggml-cpu-impl.h:532` — `ggml_barrier()` — add per-sub-pool variant + cross-CCD tree-reduce
+- Thread launch in threadpool init — apply CCD-aware `cpumask` per worker (8 phys + 8 HT on its CCD)
+- `ggml_compute_forward_mul_mat` — work-distribution math already uses `ith/nth`; with CCD-pinned workers the natural split puts each worker on CCD-local output rows.
+- Env-var gate: `GGML_CCD_POOLS=1` enables the sub-pool path; default off.
+
+Effort: ~1 week. Risk: touching ggml threading (barrier correctness, deadlock potential, cross-CCD reduction bugs). Bit-exact validation against existing ggml is a hard gate.
+
+## 2026-04-23 Phase 0 GATE PASSED — promoted to HIGH top priority
+
+Phase 0 feasibility gate decisions per the CPU-optimization coordinated pickup:
+
+**Gate (a) — single-instance at 192t is <60% of memory-BW roofline**: **PASSED by huge margin.**
+- Measured 18.7 t/s at 192t (`--numa distribute --mlock`, quiet host, bimodal samples 13.58 / 23.81).
+- Bytes/token on Qwen3-Coder-30B-A3B Q4_K_M (3B active) ≈ 2 GB/token → 37 GB/s = **8% of 460 GB/s roofline**.
+
+**Gate (b) — barrier cost at 192t is >15% of per-token time**: **PASSED.**
+- perf record on 96t decode: **32–45% of cycles** in libomp spin-wait / OpenMP barrier (unresolved addresses in `0x0000000000026580` family).
+- 192t barrier cost extrapolates higher given the bimodal sample variance at 144t and 192t configs.
+
+**Additional data points:**
+- 96t single-node (taskset 0-95, node 0) peak: **49.11 t/s** (stddev 0.08 on quiet host) — the natural "saturate one NUMA node" operating point not previously measured in production.
+- 192t full machine: 18.7 t/s. **96t/192t ratio = 2.63×** — a single NUMA node with half the threads beats the full machine by >2.5× for single-instance decode. This is the explicit TP-sharding opportunity.
+- 144t (cross-NUMA, 0-143): 25.7 t/s with bimodal stddev 18.5 (samples 12.66 / 38.83) — confirms cross-NUMA contention is catastrophic without proper weight sharding.
+
+**CPU2 GEMV falsification (see `cpu-shape-specialized-gemv-decode.md`)**: the Phase 0 perf profile showed 63.43% of Q8_0 cycles in `ggml_vec_dot_q8_0_q8_0`, but an AVX-512VNNI port of that function delivered only +1.7% end-to-end at 96t (projection was 1.46×). Decode is BW-bound, not compute-bound. This **strengthens the case for CPU1** — BW is the actual bottleneck, and CCD-local weight sharding addresses it directly.
+
+Phase 1 prototype is gated as **GO**; implementation is ~1 week of work (per-CCD thread pools + Option A replicated reduce + one MLP-up layer shard + numerical validation + bench). Schedule for a dedicated session.
+
+---
+
+## 2026-04-23 Audit Cross-References (read before starting Phase 0)
+
+Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) §Pickup Sequence):
+
+- **`perf` is NOT installed** on the host. Phase 0 profiling must use `GGML_PERF=1` for per-op timers, `rdtsc`-bracketed micro-harness for tight loops, `/usr/bin/time -v` for wall + page-faults, `getrusage` for context-switch and RSS. Install `linux-tools-$(uname -r)` only with user approval.
+- **tinyBLAS is already in the fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` under `GGML_USE_LLAMAFILE`. Any TP-sharding work should measure on/off baselines so the TP gain is isolated from the sgemm gain.
+- **KleidiAI plugin** at `ggml/src/ggml-cpu/kleidiai/` is the repo-internal directory-layout template for a new `zen5-tp/` plugin (CMake wiring, dispatch registry, fail-open fallback pattern).
+- **Work in `llama.cpp-experimental`** on `cpu-optimization/backlog-2026-04-23` branch off `production-consolidated-v4`, never in the production `llama.cpp` tree.
+- **CPU3 Phase 0 baseline** (from `single-instance-system-tuning.md`) runs first and is a hard prerequisite — this handoff's Phase 0 gates reference its thread-sweep, DeltaNet-fraction, and barrier-cost numbers.
+
 ---
 
 ## The Problem

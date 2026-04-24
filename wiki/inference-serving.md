@@ -94,3 +94,41 @@ Deployment has leaned hard on NUMA 4-way multi-instance aggregate throughput (6.
 Composition: TP × GEMV ukernel × system tuning multiply up to the 460 GB/s BW ceiling. Realistic 2.5× TP × 1.75× ukernel × 1.25× tuning = 5.5× single-instance; stretch 5× × 2.5× × 1.4× = 17.5× but clipped by ceiling on most production models. Beyond the ceiling requires reducing weights-read-per-token (KV work, speculation, sparsity).
 
 What this does NOT replace: the NUMA 4-way multi-instance deployment for concurrent sessions stays. TP sharding changes what "full-speed instance" means; the ConcurrencyAwareBackend routing architecture is unchanged.
+
+## 2026-04-23 late-session update — CPU2 falsified, 96t-single-node opportunity found
+
+Phase 0 of the CPU optimization pickup (see `hardware-optimization.md` §2026-04-23 late-session) changes the serving story in two ways:
+
+1. **The 1.75× ukernel factor in the composition above is falsified by measurement**. AVX-512VNNI port of the hottest Q8_0 decode function (`ggml_vec_dot_q8_0_q8_0`) delivered +1.7% end-to-end at 96t (not 1.46×), because quantized decode is BW-bound on this hardware — perf samples inside the dot loop are DRAM-wait, not ALU-bound. Revised composition is 2.5× TP × **1.0× ukernel** × 1.25× tuning = 3.1× single-instance. Still valuable; just smaller.
+
+2. **A new single-instance operating point emerged: 96t pinned to NUMA node 0.** On Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline), 96t taskset = **49.11 t/s** (quiet host, stddev 0.08) vs production worker_explore 1×24t = 39.1 t/s. **+26% single-session decode with zero code change.** Worth a production sweep before the CPU1 TP-sharding Phase 1 prototype (because: simpler to deploy, 0-cost validation, independent of CPU1 outcome).
+
+| Config | Qwen3-Coder-30B-A3B Q4_K_M t/s | Notes |
+|---|---|---|
+| 1×24t (worker_explore current) | 39.1 | Production |
+| 1×48t | 39.6 | Barrier-bound, no gain over 24t |
+| **1×96t taskset 0–95 (node 0)** | **49.11** | **+26% vs current production; unmeasured before today** |
+| 4×48t NUMA-pinned (frontdoor style) | 95.8 aggregate | Aggregate throughput across 4 sessions |
+| 1×192t `--numa distribute --mlock` | 18.7 | Cross-NUMA penalty dominates |
+
+CPU1 TP-sharding (gate passed) would close the 49→95 single-session gap via CCD-local weight sharding + per-CCD pools + reduction-during-barrier-window prefetch. CPU4 per-CCD sync primitive (promoted to HIGH on the 32–45% barrier-cost measurement) is an independent lever that could recover barrier idle time.
+
+Action for `dynamic-stack-concurrency.md` / routing owner: benchmark 1×96t single-node under realistic concurrent load; verify KV scaling; verify multi-instance aggregate doesn't regress if adopted as a single-session fast path. Task #10 tracks.
+
+## 2026-04-24 — Concurrent-split sweep dominates: +110% production throughput available
+
+**Bigger finding**: going the OPPOSITE direction from "1×96t single" — splitting the socket into MORE smaller concurrent instances — delivers the largest production gain in this work stream. SMT-paired splits measured:
+
+| Model | 4×48t (current) | Peak split | Aggregate gain |
+|---|---|---|---|
+| Qwen3.6-35B-A3B Q8 (frontdoor class) | 64.3 | **48×4t = 135.1 t/s** | **+110%** |
+| Qwen3.6-27B Q8 (dense hybrid) | 6.6 | **48×4t = 15.4 t/s** | **+133%** |
+| Qwen2.5-Coder-32B Q4 (dense) | 13.6 | **32×6t = 20.0 t/s** | **+47%** |
+
+35B-A3B Q8 at 48×4t hits **~100% of the 460 GB/s BW socket roofline**. Dense Q4 peaks earlier (32×6t) because at 48×4t per-instance compute is too small to saturate that instance's BW share. Optimal split is model-specific.
+
+**This is a config-only change to `orchestrator_stack.py`** — replace 4×48t quarters with N×N-phys-SMT-paired instances. Orchestration overhead grows (48 llama-server processes per role × 3 roles = 144 processes); health checks, rolling restarts, log aggregation need updates. Per-session throughput at 48×4t is ~2.8 t/s on 35B-A3B (135/48), so this is strictly for **concurrent workloads** — single-user interactive routes stay on 1×48t or 1×96t.
+
+**Autopilot implications**: `project_autopilot_stack_assembly.md` memory predicted dynamic mode switching would matter. Today validated with hard numbers: the stack should switch between single-session modes (1×48t / 1×96t for ~27 t/s/user interactive) and concurrent-split modes (48×4t for 135 t/s aggregate across N users) based on real-time load.
+
+Deep-dive: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`. Auto-memory: `project_concurrent_split_throughput.md`.

@@ -5,8 +5,31 @@
 **Scope boundary**: CPU decode/prefill throughput on local EPYC 9655 single-socket hardware. Excludes: GPU levers (see `gpu-acceleration-path.md`), routing/orchestration (see `routing-and-optimization-index.md`), quality/eval (see `research-evaluation-index.md`).
 
 **Created**: 2026-04-23 (after single-vs-aggregate throughput discussion revealed several uncharted single-instance levers with no tracking home)
-**Updated**: 2026-04-23
+**Updated**: 2026-04-23 (coordinated pickup plan initiated — see §Pickup Sequence below)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+
+## Pickup Sequence (2026-04-23)
+
+A coordinated pickup plan launched on 2026-04-23 covers 7 of the 14 backlog items (CPU1, CPU2, CPU3, CPU5, CPU6, CPU7, CPU11) in an ordered sequence; the remaining 7 are gated downstream or owned by other handoffs. Pre-Phase-0 audit resolved several open questions:
+
+- **tinyBLAS IS already integrated into our fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` (MPL-2.0, gated by `GGML_USE_LLAMAFILE`) → CPU7 becomes an on/off measurement, not an integration task.
+- **KleidiAI plugin already in fork** at `ggml/src/ggml-cpu/kleidiai/` → directly reusable template for CPU2's proposed `zen5-ukernels/` directory.
+- **`perf` is NOT installed** on the host; Phase 0 profiling uses `GGML_PERF=1` + `rdtsc` + `/usr/bin/time -v` + `getrusage` fallbacks unless sudo install is approved.
+- **All work in `/mnt/raid0/llm/llama.cpp-experimental`** on a fresh branch `cpu-optimization/backlog-2026-04-23` off `production-consolidated-v4`, so everything stays mergeable into a future v5.
+
+Step order:
+
+1. **Step 0** — handoff corrections + master-index registration (this update is part of it).
+2. **Step 1** — three standalone cheap checks in parallel: CPU6 ZenDNN eval, CPU7 tinyBLAS on/off, CPU11 compiler flag audit. One shared write-up.
+3. **Step 2** — re-anchor `llama.cpp-experimental` on fresh `production-consolidated-v4` (preserve existing `test-qwen36-upstream` state on an archive branch first).
+4. **Step 3** — **CPU3 Phase 0 root baseline** (the dependency graph's root gate): system-state audit + thread sweep + per-op breakdown + barrier cost + effective BW. Gate: DeltaNet <40%, 48t <80% of 192t, BW <70% of roofline.
+5. **Step 4** — CPU3 zero-reboot knob sweep (THP, numa_balancing, 1 GB hugepages = CPU5, IRQ affinity, `--numa` modes, decoupled threads). User-approval-gated on any `sudo sysctl`.
+6. **Step 5** — **CPU1 Phase 0+1** TP-sharding single-layer prototype on Qwen3-Coder-30B-A3B MLP-up. Phase 0 gate: BW <60% roofline AND barrier cost >15%. Phase 1 gate: ≥1.3× on single layer.
+7. **Step 6** — **CPU2 Phase 0+1** GEMV single-ukernel prototype on Qwen3.6-27B Q8_0 MLP-up (K=5120→N=27648). Phase 1 gate: ≥1.15× end-to-end.
+8. **Step 7** — synthesis + user-facing downstream gate decisions (CPU1 Phase 2, CPU2 Phase 2, BIOS window, or shelve-in-favor-of-zero-reboot-wins).
+
+The plan document is at `/home/node/.claude/plans/lets-pickup-handoffs-active-cpu-shape-sp-sunny-tower.md`. Status of each step is tracked via the TaskCreate/TaskList system in the active session.
+
 
 ---
 
@@ -27,10 +50,10 @@ Every agent working on CPU optimization work listed here MUST:
 
 Ordered by expected single-instance decode throughput gain × feasibility.
 
-- [ ] **CPU1 — HIGH** Intra-process tensor-parallel decode (CCD sharding + comm-hiding) → see `intra-process-tensor-parallel-decode.md`. Highest single lever; 2–5× single-instance decode. Interacts with CPU2, CPU3.
-- [ ] **CPU2 — HIGH** Shape-specialized GEMV microkernels for Zen 5 → see `cpu-shape-specialized-gemv-decode.md`. 1.5–2.5× single-instance decode. Composes multiplicatively with CPU1.
-- [ ] **CPU3 — HIGH** System-level tuning (NPS mode, hugepages, barrier, IRQ, SMT) → see `single-instance-system-tuning.md`. 15–40% alone; a prerequisite for the full CPU1 gain under NPS4/L3aaN.
-- [ ] **CPU4 — MED** Per-CCD hierarchical sync primitive (part of CPU3 Phase 3, also a prerequisite for CPU1 Phase 2). 10–30% barrier cost reduction at 192t.
+- [ ] **CPU1 — HIGH (promoted highest)** Intra-process tensor-parallel decode (CCD sharding + comm-hiding) → see `intra-process-tensor-parallel-decode.md`. **Phase 0 gate PASSED 2026-04-23** (192t at 8% of BW roofline; 96t/192t ratio 2.63×; barrier cost 32-45% of cycles measured). **Phase 0 microbench VALIDATED 2026-04-24**: standalone C++ GEMV shows TP 12×16 pattern delivers +5% to +14% over flat OpenMP (and +27% over flat 96t) at DRAM scale. Highest single lever; 2–5× single-instance decode. Pattern splits into Phase 1a (persistent thread pool, ~day) and Phase 1b (per-CCD structure, ~week).
+- [ ] **CPU2 — DEPRIORITIZED 2026-04-23** Shape-specialized GEMV microkernels → see `cpu-shape-specialized-gemv-decode.md`. **Phase 1 Target #1 measurement falsified projection** — AVX-512VNNI port of `ggml_vec_dot_q8_0_q8_0` delivered +1.7% at 96t, −3.6% at 1t on Qwen3.6-27B Q8_0. Decode is BW-bound, not compute-bound; perf cycles in the dot loop are DRAM-wait cycles. Revisit only if prefill/batched decode becomes the target (different regime).
+- [ ] **CPU3 — HIGH** System-level tuning (NPS mode, hugepages, barrier, IRQ, SMT) → see `single-instance-system-tuning.md`. 15–40% alone; a prerequisite for the full CPU1 gain under NPS4/L3aaN. **Zero-reboot knobs partially applied 2026-04-23** (THP→always, numa_balancing=0, 1GB hugepages — net within noise on canonical baseline).
+- [ ] **CPU4 — HIGH (promoted 2026-04-23)** Per-CCD hierarchical sync primitive (was part of CPU3 Phase 3). 32–45% of decode cycles measured in OpenMP barriers — standalone HIGH lever independent of CPU1. 10–30% barrier cost reduction at 192t.
 - [ ] **CPU5 — MED** Explicit hugepages (1 GB) for weight mmap (part of CPU3 Phase 1). 5–15% on long decode runs.
 - [ ] **CPU6 — MED** ZenDNN 5.2 evaluation on our stack (AMD-optimized drop-in). Claimed "200% vs prior"; not yet validated on llama.cpp. 1-day test.
 - [ ] **CPU7 — MED** tinyBLAS / llamafile integration assessment. If already mergeable into our fork, unlocks part of CPU2 without a full from-scratch ukernel implementation.
@@ -50,10 +73,10 @@ Items CPU1–CPU8 are the active backlog. CPU9–CPU14 are watchlist items; purs
 
 | ID | Handoff / work | Status | Priority | Gain target | Blocks / blocked by |
 |----|---------------|--------|----------|-------------|---------------------|
-| CPU1 | [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) | stub | HIGH | 2–5× single-instance | Blocked by CPU3 Phase 0; Phase 3 blocked by CPU3 Phase 2 (BIOS reboot) |
-| CPU2 | [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) | stub | HIGH (MED per current row) | 1.5–2.5× single-instance | Phase 0 profiling overlaps with CPU1 Phase 0; composes with CPU1 |
-| CPU3 | [`single-instance-system-tuning.md`](single-instance-system-tuning.md) | stub | HIGH | 15–40% alone; gating multiplier for CPU1 | Phase 2 requires reboot; coordinates with CPU1 Phase 3 |
-| CPU4 | Per-CCD sync primitive | stub (part of CPU3 Phase 3) | MED | 10–30% barrier cost | Prerequisite for CPU1 Phase 2 |
+| CPU1 | [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) | **Phase 0 microbench validated 2026-04-24** | **HIGH (top)** | 2–5× single-instance projected; +5-14% single-GEMV measured | Phase 1a persistent pool (~day), Phase 1b per-CCD (~week); microbench code at `/mnt/raid0/llm/cpu-tp-prototype/` |
+| CPU2 | [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) | **Phase 1 Target #1 FALSIFIED 2026-04-23** | DEPRIORITIZED | Measured +1.7% at 96t (not 1.46×); BW-bound not compute-bound | Revisit only for prefill/batched decode regime |
+| CPU3 | [`single-instance-system-tuning.md`](single-instance-system-tuning.md) | **Phase 0 + zero-reboot knobs partial 2026-04-23** | HIGH | 15–40% alone; gating multiplier for CPU1 | Phase 2 requires reboot; coordinates with CPU1 Phase 3 |
+| CPU4 | Per-CCD sync primitive | **Promoted 2026-04-23 based on 32-45% measured barrier cost** | **HIGH (standalone)** | 10–30% barrier cost reduction | Independent of CPU1; +16-22% end-to-end projected |
 | CPU5 | 1 GB hugepages | stub (part of CPU3 Phase 1) | MED | 5–15% | Kernel boot param |
 | CPU6 | ZenDNN 5.2 eval | not started | MED | Unknown; AMD claims up to 2× | 1-day test; low risk |
 | CPU7 | tinyBLAS / llamafile integration | not started | MED | Partially supplants CPU2 | License + fork-merge check |

@@ -126,3 +126,110 @@ These become the baseline for CPU3 Phase 0 measurements under the new `cpu-infer
 - [Single-Instance System Tuning](/workspace/handoffs/active/single-instance-system-tuning.md) -- new 2026-04-23, NPS/THP/hugepages/barrier/IRQ audit, projected 15–40% alone
 - [CPU Inference Optimization Index](/workspace/handoffs/active/cpu-inference-optimization-index.md) -- new 2026-04-23, backlog umbrella for all unimplemented CPU throughput techniques (CPU1–CPU14)
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes
+
+## 2026-04-23 late-session measurement update (supersedes projections above)
+
+Phase 0 of the CPU optimization coordinated pickup executed 2026-04-23 with `perf record --call-graph dwarf` (installed via user sudo), on `llama.cpp-experimental` at `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`). Findings materially revise the earlier-in-this-document projections:
+
+### CPU2 GEMV ukernels — FALSIFIED by measurement
+
+Phase 1 Target #1 implemented: ported `ggml_vec_dot_q8_0_q8_0` from AVX2 (256-bit) to AVX-512VNNI (512-bit) using the existing `mul_sum_i8_pairs_acc_int32x16` helper in `avx512-helpers.h`. Disassembly verified — new binary emits `vpdpbusd %zmm1,%zmm0,%zmm2` + `vpabsb %zmm,%zmm` + `vpmovb2m`; baseline emits `{vex} vpdpbusd %ymm`. Measured on Qwen3.6-27B Q8_0 decode:
+
+- 96t pinned: AVX2 = 4.241 t/s, AVX-512VNNI = 4.313 t/s → **+1.7%** (within noise)
+- 1t pinned: AVX2 = 1.020 t/s, AVX-512VNNI = 0.983 t/s → **−3.6%** (port overhead regressed)
+
+Projection was 1.46× end-to-end; measured 1.017× at 96t. **Falsified by factor 30×.** Root cause: the 63.43% perf-sample count in `ggml_vec_dot_q8_0_q8_0` was cycles waiting for DRAM loads inside the inner loop, not ALU-bound compute. Doubling ALU width can't help when the CPU is stalled on memory. Change reverted; `quants.c` is clean. Same pattern observed for tinyBLAS (`GGML_USE_LLAMAFILE` on/off = 0% delta on both Q4_K_M and Q8_0 decode) and BLIS 5.2 (AOCL LD_PRELOAD on/off = 0% delta).
+
+Implication: **compute-focused CPU ukernel work for quantized decode is not the right lever on EPYC 9655.** The earlier projection of 1.5–2.5× end-to-end was based on mis-reading perf samples. Memory-side levers (CPU1 TP-sharding, CPU4 sync primitive, KV compression) are the real opportunities. CPU2 may still help for prefill (M > 1) or batched decode where compute/BW ratio shifts.
+
+### CPU1 TP-sharding Phase 0 — GATE PASSED
+
+Phase 0 feasibility gate criteria from `intra-process-tensor-parallel-decode.md`:
+
+- Gate (a): 192t single-instance <60% of 460 GB/s roofline → measured 18.7 t/s × ~2 GB/token = **8% of roofline**, PASS by huge margin.
+- Gate (b): barrier cost >15% of per-token time → measured **32–45%** of cycles in libomp spin/barrier at 96t (`0x0000000000026580` family unresolved in perf), PASS.
+
+Phase 1 prototype is gated GO. 96t single-node / 192t full-machine throughput ratio = **2.63×** (49.11 / 18.7) is the concrete closing target for CCD-local weight sharding.
+
+### CPU4 per-CCD sync primitive — PROMOTED to HIGH standalone
+
+32–45% of decode cycles in OpenMP barrier/spin is a concrete measurement (not speculation). Originally MED / bundled into CPU3 Phase 3; now a standalone HIGH lever. ROI: halving barrier cost → +16% end-to-end on Q8_0, +22% on Q4_K_M.
+
+### CPU3 zero-reboot knobs — within noise on canonical workload
+
+User-applied 2026-04-23 via sudo:
+- `kernel.perf_event_paranoid=1` (enables userspace perf profiling in container)
+- `kernel.numa_balancing=0` (disable)
+- `/sys/kernel/mm/transparent_hugepage/enabled=always`
+- `/sys/kernel/mm/transparent_hugepage/defrag=always`
+- 1× 1GB hugepage allocated on node 1 (kernel did not honor 40-page request — needs boot param for bulk 1GB allocation)
+
+Re-benched 96t Qwen3-Coder-30B-A3B Q4_K_M across 3 runs after knobs: 46.4 / 46.4 / 48.2 t/s. Pre-knob baseline was 49.1 t/s. Net delta within measurement variance (cold-cache effects dominate). Knobs kept but not materially impactful on this workload. Further CPU3 work (NPS BIOS window, IRQ affinity, per-NUMA weight replication) still pending.
+
+### New single-instance operating point — 96t-ALL-PHYSICAL-CORES (corrected 2026-04-24)
+
+**Correction to 2026-04-23 labeling**: `taskset -c 0-95` is **all 96 physical cores across BOTH nodes (no SMT)**, NOT "full node 0". NUMA map:
+- node 0 cpus: `0-47, 96-143` (physical + hyperthreads)
+- node 1 cpus: `48-95, 144-191`
+
+The real driver is avoiding hyperthreads — verified 2026-04-24: 96t all-physical (0-95) = 49.3 t/s vs 96t node 0 with HT (0-47,96-143) = 44.6 t/s → **−9.5% penalty from enabling HT**.
+
+**Correction to +26% universal claim**: the 2026-04-23 "+26%" conflated (a) different models, (b) different session page-cache states. Apples-to-apples same-session measurement on Qwen3-Coder-30B-A3B Q4_K_M: 24t (cores 0-23) = 44.32 t/s, 96t all-physical = 49.34 t/s → **+11%**, not +26%. See `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md` for the corrected multi-model matrix.
+
+### Original thread sweep (numbers unchanged, labels corrected)
+
+Systematic thread sweep on Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline model, `-n 64 -r 3`, quiet host):
+
+| Threads | CPU set | t/s (avg) | stddev | Note |
+|---|---|---|---|---|
+| 24 | taskset 0–23 (node 0 Q0A physical) | 40.76 (2026-04-23) / 44.32 (2026-04-24) | 0.11 / 0.03 | Production worker_explore registry value = 39.1; measured higher today |
+| 48 | taskset 0–47 (node 0 physical) | 39.59 / 45.80 | 0.21 / 0.10 | Barrier cost offsets BW gain over 24t |
+| **96** | **taskset 0–95 (ALL PHYSICAL, BOTH NODES)** | **49.11 / 49.34** | **0.08 / 0.09** | **Peak** — uses all 12 DDR5 channels, no SMT |
+| 96 (HT) | taskset 0-47,96-143 (node 0 phys+HT) | 44.63 (2026-04-24) | 0.04 | **-9.5% vs 96 all-physical** — HT hurts |
+| 144 | taskset 0–143 (crosses NUMA unevenly) | 25.74 | 18.50 (bimodal 12.66/38.83) | Cross-NUMA disaster |
+| 192 | full machine, `--numa distribute --mlock` | 18.69 | 7.23 (bimodal) | Production registry value = 14.2 |
+
+**Corrected finding (2026-04-24 multi-model sweep)**: 96t-all-physical vs 48t-half-node is **model-dependent**:
+
+| Model | Class | 48t | 96t all-phys | Δ |
+|---|---|---|---|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | MoE Q4 (3B active) | 45.80 | 49.34 | **+7.7%** |
+| Qwen3.6-27B Q4_K_M | Dense hybrid Q4 | 6.67 | **8.97** | **+34.5%** |
+| Qwen2.5-Coder-32B Q4_K_M | Dense Q4 | 6.92 | **10.80** | **+56.1%** |
+| Qwen3.6-27B Q8_0 | Dense hybrid Q8 | 4.26 | 4.19 | −1.6% |
+| Qwen3.6-35B-A3B Q8_0 | MoE Q8 (frontdoor class) | 27.28 | 24.93 | **−8.6%** |
+
+**Dense-Q4 models win big** (1.3-1.6×); MoE Q4 gets small gain; Q8 models flat-or-worse (closer to BW roofline at 48t).
+
+**Concurrent-load sweep** (2026-04-24, SMT-paired splits, `-p 0 -n 32 -r 2`, **N INDEPENDENT llama-bench processes in parallel** — not single-instance TP-sharding): aggregate throughput **monotonically increases** as we split the socket into more concurrent instances.
+
+| Model | 4×48t | 8×24t | 16×12t | 32×6t | **48×4t** | Peak | Δ 4→peak |
+|---|---|---|---|---|---|---|---|
+| Qwen3.6-27B Q8 (dense hybrid) | 6.62 | 7.91 | 8.55 | 10.47 | **15.39** | 48×4t | **+133%** |
+| Qwen3.6-35B-A3B Q8 (frontdoor class) | 64.26 | 76.35 | 85.89 | 92.75 | **135.08** | 48×4t | **+110%** |
+| Qwen2.5-Coder-32B Q4 (dense) | 13.64 | 15.08 | 16.01 | **20.03** | 17.34 ↓ | 32×6t | **+47%** |
+
+**Biggest production finding of the session**: switching the orchestrator from **4×48t quarters** (current production) to per-model-optimal splits delivers **+47% to +133%** aggregate throughput with NO code changes. **35B-A3B Q8 at 48×4t hits 135 t/s, ≈100% of the 460 GB/s BW socket roofline** (up from 49% at 4×48t). Per-session throughput at 48-way split is tiny (2.8 t/s per session on 35B-A3B Q8) — this is strictly for concurrent/bulk workloads; single-session latency paths stay on 1×48t/1×96t. Coder-32B Q4 peaks at 32×6t and regresses at 48×4t (per-instance compute too small to saturate BW share).
+
+Hypothesized mechanisms (Phase-0 perf data supports #1 and #2):
+1. **Barrier cost is O(threads per instance)**: perf showed 32-45% of cycles in libomp barriers at 96t. Smaller instance barriers (6t vs 48t) are dramatically cheaper. 32 small barriers in parallel beat 4 large ones.
+2. **CCD locality**: 6 physical cores ≈ <1 CCD on EPYC 9655 (8 cores/CCD). Smaller instances keep their working set within a single CCD → minimal cross-CCD L3/IOD coherence traffic.
+3. **Page cache coherence**: all instances mmap the same GGUF, so weight reads share the page cache. No extra memory pressure from more instances.
+4. **BW channel interleaving**: finer-grained instance → finer-grained memory channel contention resolution.
+
+**Single-session crossover**: 1×48t isolated on 35B-A3B Q8 = 27.3 t/s. Split 32×6t aggregate 92.75 / 32 = 2.9 t/s per session. Single-session wins up to ~3 concurrent users; split wins at ≥4 concurrent.
+
+Full corrected analysis: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`.
+
+### Memory note on decode-path perf interpretation
+
+Going forward: when `perf report` shows a large overhead percentage inside a quantized-decode inner dot/matmul function on this hardware, treat those samples as **DRAM-wait cycles, not ALU-bound work**, unless separately verified. A cheap A/B test (wider-SIMD port) resolves the question in hours. See `feedback_cpu_decode_bw_bound.md` in auto-memory.
+
+### Session artifacts landed
+
+- `research/deep-dives/cpu-optimization-phase0-baseline.md` — full Phase 0 baseline + thread sweep + per-function perf profile + GGUF metadata for Qwen3.6-27B + revised CPU1/CPU2/CPU4 gate decisions.
+- `research/deep-dives/cpu-optimization-cheap-checks-2026-04.md` — tinyBLAS/BLIS/compiler A/B all within noise.
+- `progress/2026-04/2026-04-23-cpu-optimization-kickoff.md` — session narrative + step closures.
+- `handoffs/active/cpu-inference-optimization-index.md` — pickup-sequence + revised priorities.
+- `handoffs/active/cpu-shape-specialized-gemv-decode.md` — deprioritized status + negative-result writeup.
+- `handoffs/active/intra-process-tensor-parallel-decode.md` — Phase 0 gate-passed annotation + data.

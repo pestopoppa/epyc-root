@@ -1,8 +1,8 @@
 # CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode
 
-**Status**: stub (investigation not started)
+**Status**: **DEPRIORITIZED 2026-04-23** — Phase 1 Target #1 measurement falsified the compute-bound projection; decode is BW-bound on this workload. See §Phase 1 Target #1 result below.
 **Created**: 2026-04-23 (via session discussion of CPU fusion viability)
-**Priority**: MEDIUM — speculative lever, but one of few remaining uncharted CPU throughput paths post-TIDE deprecation
+**Priority**: ~~MEDIUM~~ DEPRIORITIZED — revisit only for prefill/batched-decode regime where the compute/BW ratio shifts.
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -16,7 +16,45 @@
 
 **Investigation not started. This handoff documents the rationale, prior art, and work plan for a future pickup.**
 
-Motivation: after the TIDE calibration-router early-exit track was deprecated 2026-04-23 (projection quality could not be solved with either linear or bottleneck-adapter approaches), the set of remaining CPU throughput levers is narrow. Weight-reduction strategies (MoE expert pruning, AM KV compaction, KV quantization, ngram-simple spec) are mature or in production. Operator-level fusion was found not viable on CPU (Hadamard + unfused `q4_0` beat TurboQuant + fused by 2.2×; see `kv-cache-quantization.md` and session discussion 2026-04-23). The one significant unexplored CPU lever remaining is **shape-specialized GEMV microkernels for the M=1 decode regime** on the EPYC 9655's AVX-512 datapath.
+### 2026-04-23 Phase 1 Target #1 — NEGATIVE RESULT (deprioritizes this handoff)
+
+Implemented the "quick win" Phase 1 Target #1 identified by the Phase 0 audit: ported `ggml_vec_dot_q8_0_q8_0` from AVX2 (256-bit) to AVX-512VNNI (512-bit) inside `ggml/src/ggml-cpu/arch/x86/quants.c`, using the existing `mul_sum_i8_pairs_acc_int32x16` helper in `avx512-helpers.h`. Disassembly verified — `vpdpbusd %zmm,%zmm,%zmm` + `vpabsb %zmm,%zmm` + `vpmovb2m` in the new path vs `{vex} vpdpbusd %ymm,%ymm,%ymm` in the baseline.
+
+Measured on **Qwen3.6-27B Q8_0** (the canonical CPU2 target, where perf had shown 63.43% of cycles in this function):
+
+| Config | AVX2 baseline | AVX-512VNNI | Delta |
+|---|---|---|---|
+| 96t pinned, `-n 64 -r 3` | 4.241 t/s (σ=0.075) | 4.313 t/s (σ=0.003) | **+1.7%** |
+| 1t pinned, `-n 8 -r 2` | 1.020 t/s | 0.983 t/s | **−3.6%** (port overhead regressed) |
+
+**Projection was 1.46× end-to-end; measured 1.017×**. Falsified by a factor of 30×.
+
+Root cause: the 63.43% perf sample count inside `ggml_vec_dot_q8_0_q8_0` was **cycles waiting for DRAM loads inside the inner loop**, not cycles doing ALU work. Doubling the ALU throughput (256-bit → 512-bit VNNI) can't help when the CPU is stalled on memory. At 1-thread, the per-iteration port overhead (cross-lane `vinsertf32x8`, `_mm512_reduce_add_ps`, odd-block tail) actively regresses.
+
+Change reverted (`git diff ggml/src/ggml-cpu/arch/x86/quants.c` is clean). Build artifact at `build-vnni-q8/` preserved for reference until next session cleanup.
+
+**Where CPU2 might still help** (future lanes, not pursued in current session):
+- Prefill matmuls (M > 1) where compute/BW ratio is better.
+- Attention softmax/RoPE on FP16/BF16 activations (would benefit from VDPBF16PS, not VNNI).
+- Batched multi-user decode (`-np N`) as N grows toward prefill regime — tracked under CPU14.
+
+**Work redirected to CPU1 (TP-sharding) and CPU4 (per-CCD sync primitive)** — memory-bandwidth-addressing levers rather than compute-addressing. See [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) for updated priorities.
+
+### 2026-04-23 audit update (pre-Phase-0)
+
+Joined the coordinated pickup sequence under [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) as **CPU2**. Pre-Phase-0 audit resolved several open items and adjusted gates. Key changes from the original draft:
+
+- **tinyBLAS IS already in the fork** (answers Open Question 1). See updated Prior Art §5 and Phase 0 § below.
+- **KleidiAI plugin is repo-internal prior art** for how a Zen 5 ukernel plugin directory should be laid out. See updated Prior Art §2.
+- **`perf` is not installed** on the host. Phase 0 profiling must use `GGML_PERF=1` + `rdtsc` micro-harness + `getrusage` + `/usr/bin/time -v` fallbacks.
+- **Phase 0 DeltaNet gate tightened from >60% to >40%** — Amdahl's bound on matmul speedup vs the 1.5× Phase 2 target.
+- **TIDE date-collision note**: latest fork commits dated 2026-04-23 (`143ded626`, `c4e06b01e`, `59d2012b2`) are TIDE-related, same day as TIDE's deprecation. Phase 0 baseline runs should confirm TIDE code paths are dormant or compiled out.
+- **Path fix**: `kv-cache-quantization.md` reference updated to `../completed/kv-cache-quantization.md`.
+- **Phase 3 roster items (Coder-480B, SG4, M2.7)**: deferred per user directive until Phase 3 is actually scoped. Do not edit roster yet.
+
+Original handoff rationale is preserved below. All Phase 0 code/profiling work happens in `/mnt/raid0/llm/llama.cpp-experimental` on a fresh branch off `production-consolidated-v4` — never in the production `llama.cpp` tree.
+
+Motivation: after the TIDE calibration-router early-exit track was deprecated 2026-04-23 (projection quality could not be solved with either linear or bottleneck-adapter approaches), the set of remaining CPU throughput levers is narrow. Weight-reduction strategies (MoE expert pruning, AM KV compaction, KV quantization, ngram-simple spec) are mature or in production. Operator-level fusion was found not viable on CPU (Hadamard + unfused `q4_0` beat TurboQuant + fused by 2.2×; see [`../completed/kv-cache-quantization.md`](../completed/kv-cache-quantization.md) and session discussion 2026-04-23). The one significant unexplored CPU lever remaining is **shape-specialized GEMV microkernels for the M=1 decode regime** on the EPYC 9655's AVX-512 datapath.
 
 This handoff is a research/implementation stub. No work has been started. The expected effort is medium (hundreds of lines of templated C++ intrinsics, no assembly), the expected gain is 1.5–2.5× decode throughput on our production models based on prior-art extrapolation, and the payoff scenario is significant — 1.5–2× on Qwen3.6-27B (4.8 t/s → 7–10 t/s) and multiplicative composition with existing gains (NUMA 4-way, ngram spec, KV compaction).
 
@@ -77,17 +115,24 @@ There is no shape-specialized single-row GEMV ukernel for Zen 5 in upstream ggml
 
 Decode at batch=1 is a sequence of GEMV operations (matrix × vector), not GEMM. The shapes depend on the model's hidden size, head count/dim, MLP intermediate size, and (for MoE) expert size.
 
-**Qwen3.6-27B (dense hybrid, 64 layers):**
+**Qwen3.6-27B (dense hybrid, 64 layers)** — **dims corrected 2026-04-23 from GGUF metadata of `/mnt/raid0/llm/models/Qwen3.6-27B-Q8_0.gguf` (arch `qwen35`)**:
+
 | Op | Shape (K → N) | Per-token calls | Notes |
 |---|---|---|---|
-| Attention QKV projection | 5120 → ~6400 (GQA: Q=5120, K=640, V=640 with 14Q/2KV heads) | 64 (1 per layer) | For the ~25% full-attention layers; DeltaNet layers have different shapes |
-| Attention output projection | 5120 → 5120 | 64 | |
-| MLP up | 5120 → 27648 | 64 | Largest shape |
-| MLP gate | 5120 → 27648 | 64 | Largest shape (pair with up) |
-| MLP down | 27648 → 5120 | 64 | |
-| DeltaNet QKV+state | model-specific | 48 (75% of layers) | Requires separate analysis; state-update shape differs from standard matmul |
+| Attention Q projection | **5120 → 6144** (24 heads × 256 head_dim) | 16 (full-attention layers only, every 4th) | GQA: 24 Q heads, 4 KV heads, head_dim=256 |
+| Attention K projection | **5120 → 1024** (4 heads × 256 head_dim) | 16 | Small shape — may not benefit from ukernel |
+| Attention V projection | **5120 → 1024** | 16 | Small shape — may not benefit from ukernel |
+| Attention output projection | **6144 → 5120** | 16 | Input size differs from other projections |
+| MLP gate | **5120 → 17408** | 64 | All layers have MLP |
+| MLP up | **5120 → 17408** | 64 | Paired with gate |
+| MLP down | **17408 → 5120** | 64 | |
+| DeltaNet (qwen35.ssm.*): inner_size=6144, conv_kernel=4, state_size=128, group_count=16, time_step_rank=48 | model-specific | 48 (75% of layers) | Requires separate analysis |
 
-Total: ~5 distinct non-DeltaNet shapes, each called 64 times per token. Specialize each → ukernel count ≈ 5 × quant_types (Q4_K_M, Q8_0) = 10 ukernels for this model.
+Total: ~7 distinct non-DeltaNet shapes, MLP shapes dominate (64 calls/layer × 3 shapes vs 16 × 4 for attention). Specialize each → ukernel count ≈ 7 × quant_types (Q4_K_M, Q8_0) = 14 ukernels for this model.
+
+**Context length: 262144 (256K)**. `full_attention_interval = 4` (every 4th layer is full attention, others are DeltaNet → 16 full + 48 DeltaNet = 75% DeltaNet, matches handoff assumption).
+
+**Original draft had MLP=27648 (+59% vs actual 17408) and GQA=14Q/2KV (vs actual 24Q/4KV); corrected from authoritative GGUF metadata 2026-04-23 audit.** The smaller MLP dim is significant: it narrows the Phase 1 ukernel target and reduces the per-layer GEMV work. At 5120×17408 Q8_0, the MLP-up weight matrix is 89 MB (vs 141 MB for the originally-claimed 27648), which changes the L3 resident-working-set calculation.
 
 **Qwen3.5/3.6-35B-A3B (hybrid MoE, 3B active):**
 | Op | Shape (K → N) | Per-token calls |
@@ -164,7 +209,7 @@ Total per 32-weight block: ~6 instructions of dequant + 1 FMA. Compare to the ge
 - **Catalog size**: 84 ukernels shipped across platforms as of llamafile 0.7.
 - **Maintenance**: Entirely C++; no assembly. Shipped in llamafile 0.7+, integrated into some ggml builds.
 - **Primary source**: [justine.lol/matmul/](https://justine.lol/matmul/) — required reading before starting this work.
-- **Integration question for us**: Can we pull tinyBLAS into our llama.cpp fork, or is it license-incompatible / too intrusive? Needs checking.
+- **Integration status for us (resolved 2026-04-23 audit)**: **tinyBLAS IS ALREADY integrated into our fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` + `sgemm.h` (MPL-2.0), gated by the `GGML_USE_LLAMAFILE` macro. Compiles clean across all build targets. Open Question 1 is answered: no license/merge issue. The Phase 0 measurement we need is sgemm-enabled vs sgemm-disabled on Zen 5, not "can we integrate it."
 
 ### 2. ARM KleidiAI
 
@@ -175,6 +220,7 @@ Total per 32-weight block: ~6 instructions of dequant + 1 FMA. Compare to the ge
 - **Effort**: Medium-high; requires ARM ISA expertise (DOT product, SME2).
 - **Primary source**: [Gope et al., arXiv:2501.00032](https://arxiv.org/abs/2501.00032) — most directly relevant paper for our setup. Required reading.
 - **Integration**: KleidiAI is integrated into llama.cpp upstream via a plugin with separate GEMV/GEMM dispatchers (ARM only). The x86 analog is what this handoff proposes.
+- **Repo-internal template (resolved 2026-04-23 audit)**: the KleidiAI plugin sits at `ggml/src/ggml-cpu/kleidiai/` in our fork — ARM-only dispatcher with its own CMake wiring, kernel registry, and fallback-to-ggml-default pattern. **This is the directly-reusable directory layout for our proposed `ggml/src/ggml-cpu/zen5-ukernels/` plugin.** New ukernels should follow this structure rather than reinvent it.
 
 ### 3. Intel oneDNN / MKL
 
@@ -217,9 +263,10 @@ Relevant compiler flags (GCC/Clang): `-mavx512f -mavx512bf16 -mavx512vnni -mavx5
 
 - [ ] Read [justine.lol/matmul](https://justine.lol/matmul/) end-to-end. Extract the exact Zen 4 ukernel pattern for Q8_0.
 - [ ] Read [Gope et al., arXiv:2501.00032](https://arxiv.org/abs/2501.00032). Extract the GEMV register-blocking and codebook-resident technique.
-- [ ] Profile a baseline Qwen3.6-27B Q8_0 decode with `perf stat -e cycles,instructions,cache-references,cache-misses,dTLB-load-misses,l2_rqsts.demand_data_rd_hit`. Also run `perf record -g` and flamegraph the hot functions.
-- [ ] Measure: (a) time in matmul ops vs time in DeltaNet recurrence vs time in RMSNorm/RoPE/sampling. (b) IPC and L1/L2 hit rates in the matmul functions. (c) fraction of decode time in `ggml_compute_forward_mul_mat` and its callees.
-- [ ] **Gate**: if >60% of decode time is in DeltaNet recurrence (not matmul), abandon and document why. Otherwise proceed.
+- [ ] Profile a baseline Qwen3.6-27B Q8_0 decode. **Note (2026-04-23 audit): `perf` is NOT installed on the host** (`which perf` empty; `linux-tools-$(uname -r)` absent). Use fallbacks: (a) rebuild with `GGML_PERF=1` for per-op timings; (b) `rdtsc`-bracketed micro-harness for tight loops; (c) `/usr/bin/time -v` for wall-clock and page-fault counts; (d) `getrusage` for context-switch and RSS. If sudo is available and the user approves, install `linux-tools-$(uname -r)` for proper `perf stat -e cycles,instructions,cache-references,cache-misses,dTLB-load-misses,l2_rqsts.demand_data_rd_hit` + `perf record -g` flamegraph.
+- [ ] **Measure tinyBLAS on/off first** (new Phase 0 step per 2026-04-23 audit): `ggml/src/ggml-cpu/llamafile/sgemm.cpp` is already compiled under `GGML_USE_LLAMAFILE`. Rebuild twice (macro on/off), record end-to-end tok/s delta. This single datum quantifies how much M=1 gain is already "free" and informs the remaining headroom a custom Zen 5 ukernel could recover.
+- [ ] Measure: (a) time in matmul ops vs time in DeltaNet recurrence vs time in RMSNorm/RoPE/sampling. (b) IPC and L1/L2 hit rates in the matmul functions (via `GGML_PERF` + any installed counters). (c) fraction of decode time in `ggml_compute_forward_mul_mat` and its callees.
+- [ ] **Gate (tightened 2026-04-23 from >60% to >40%)**: if >40% of decode time is in DeltaNet recurrence (not matmul), abandon and document why. Reason: by Amdahl's law, with ≥40% DeltaNet time, max end-to-end speedup from matmul acceleration cannot reach the Phase 2 target of 1.5× even with an infinitely-fast ukernel. Otherwise proceed.
 
 **Artifacts:** a short markdown writeup (`research/deep-dives/cpu-gemv-feasibility-baseline.md`) with the profiling numbers and the gate decision.
 
@@ -227,7 +274,7 @@ Relevant compiler flags (GCC/Clang): `-mavx512f -mavx512bf16 -mavx512vnni -mavx5
 
 **Goal:** implement **one** ukernel for **one** shape on **one** model and measure end-to-end speedup.
 
-Target: **Qwen3.6-27B Q8_0 MLP-up matmul**, shape K=5120 → N=27648.
+Target: **Qwen3.6-27B Q8_0 MLP-up matmul**, shape **K=5120 → N=17408** (corrected 2026-04-23 from GGUF metadata; original draft said N=27648 in error).
 
 - [ ] Write a standalone benchmark harness that calls just this matmul (not the full model), with the same activation layout ggml uses. Measure baseline perf.
 - [ ] Implement the ukernel as a single C++ file with compile-time template parameters `<K, N>`. Use AVX-512 + VDPBF16PS intrinsics. Register-block the output tile (1×32 or 1×16 — measure both).
@@ -355,7 +402,7 @@ Every phase must pass:
 
 ## Open Questions
 
-1. **Is llamafile's tinyBLAS already usable on our fork?** If so, much of Phase 1–3 is a pull + test, not a write. Check `llama.cpp` tip for the LLAMAFILE macro and the `sgemm.cpp` it gates.
+1. ~~**Is llamafile's tinyBLAS already usable on our fork?**~~ **RESOLVED 2026-04-23**: YES. `ggml/src/ggml-cpu/llamafile/sgemm.cpp` + `sgemm.h` (MPL-2.0) compiled under `GGML_USE_LLAMAFILE` macro. Phase 0 measures sgemm on/off delta as a first step; the residual headroom above that is what a custom Zen 5 ukernel would target.
 2. **Does ZenDNN 5.2 actually help?** AMD claims "200% improvement" over prior versions via the Low Overhead API, but we haven't evaluated it on our stack. Worth a 1-day test before committing to ukernel work.
 3. **What about Q4_0 instead of Q4_K_M?** Our production uses Q4_K_M but some benchmarks have shown Q4_0 is simpler to ukernel-ize (see `kv-cache-quantization.md` TurboQuant experience). If Q4_0 ukernel is 2× faster than Q4_K_M at similar PPL, re-quant is a cheaper win than ukernel work on Q4_K_M.
 4. **Does Justine Tunney have Zen 5 benchmarks we could cite?** Her llamafile results are on Zen 4. Zen 5 numbers would firm up the prior-art case.
@@ -395,7 +442,7 @@ Every phase must pass:
 
 - [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — current kernel-level work on v4.
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — orthogonal lever; composes with ukernel speedup.
-- [`kv-cache-quantization.md`](kv-cache-quantization.md) — TurboQuant vs Hadamard result that shows fusion isn't automatically a win.
+- [`../completed/kv-cache-quantization.md`](../completed/kv-cache-quantization.md) — TurboQuant vs Hadamard result that shows fusion isn't automatically a win.
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — TensileLite reference; cross-reference for shape-specialization context.
 
 ### Upstream code to inspect
@@ -420,10 +467,13 @@ Every phase must pass:
 
 When resuming this handoff:
 
-- [ ] Re-read this doc end-to-end.
-- [ ] Check `master-handoff-index.md` for any status changes since 2026-04-23.
+- [ ] Re-read this doc end-to-end including the 2026-04-23 audit update block.
+- [ ] Check `master-handoff-index.md` and `cpu-inference-optimization-index.md` for any status changes since 2026-04-23.
 - [ ] Check llama.cpp upstream for any new CPU ukernel PRs (this handoff may be partially obsoleted).
 - [ ] Check for any new Justine Tunney / tinyBLAS Zen 5 benchmarks.
-- [ ] Run Phase 0 baseline measurements first — do not skip the profiling gate.
+- [ ] **Work in `/mnt/raid0/llm/llama.cpp-experimental`, never the production `llama.cpp` tree.** Ensure the experimental worktree is anchored on `production-consolidated-v4` (or successor) before starting.
+- [ ] **Measure tinyBLAS on/off as first Phase 0 step** (`GGML_USE_LLAMAFILE` macro); that delta changes the remaining headroom calculation.
+- [ ] **Confirm TIDE code paths are dormant** — fork commits `143ded626`, `c4e06b01e`, `59d2012b2` are TIDE-related and dated 2026-04-23 (same day as TIDE's deprecation). Baseline must not run with early-exit enabled.
+- [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
 - [ ] Start a new `progress/YYYY-MM/YYYY-MM-DD.md` entry before Phase 1 work begins.
 - [ ] Update this handoff's Status field as phases close.

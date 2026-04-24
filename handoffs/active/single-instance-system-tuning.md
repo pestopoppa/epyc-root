@@ -11,6 +11,16 @@
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — per-kernel compute lever
 - [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — multi-instance NUMA deployment (existing production config that some of these knobs might affect)
 
+## 2026-04-23 Audit Cross-References (read before starting Phase 0)
+
+Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) §Pickup Sequence):
+
+- **`perf` is NOT installed** on the host (`which perf` empty; `linux-tools-$(uname -r)` absent). This affects Phase 0 profiling here directly. Use fallbacks: `GGML_PERF=1` for per-op timers, `rdtsc`-bracketed micro-harness, `/usr/bin/time -v` for wall + page-faults, `cat /proc/<pid>/status` for VmLck/RSS, `getrusage`. Install `linux-tools-$(uname -r)` only with user approval.
+- **tinyBLAS is already in the fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` under `GGML_USE_LLAMAFILE`. Tuning-knob sweeps should be performed with the same macro setting throughout a sweep to avoid conflating system-tuning deltas with sgemm deltas.
+- **Work in `llama.cpp-experimental`** on `cpu-optimization/backlog-2026-04-23` branch off `production-consolidated-v4`, never in the production `llama.cpp` tree.
+- **This handoff's Phase 0 baseline is the root gate** for CPU1 (TP-sharding) and CPU2 (GEMV ukernels). Extra deliverables requested by those handoffs: full `--threads` sweep (24/48/96/144/192), per-op time breakdown with DeltaNet fraction, barrier cost at 48/96/192 threads, effective-bandwidth-vs-460 GB/s calculation, Qwen3.6-27B GGUF head-config dump.
+- **User-approval gate** required before any `sudo sysctl` or IRQ-affinity change — these affect shared system state.
+
 ---
 
 ## Problem
