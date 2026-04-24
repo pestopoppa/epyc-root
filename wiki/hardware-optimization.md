@@ -382,3 +382,65 @@ The Q6_K and Q5_K 8x8 AVX-512BW kernels from the morning's recommendation remain
 ### General lesson — backend-buffer NUMA placement
 
 `ggml_aligned_malloc` returns unfaulted anonymous pages that get pinned to whichever NUMA node first-touches them. For the CPU_REPACK buffer, that meant all 26 GB on node 0 → 96-thread reads through one node's memory controllers → 2.8× regression. The fix (`mbind(buffer, size, MPOL_INTERLEAVE, all_nodes)` inside the buffer-type allocator, gated on `ggml_is_numa()`) is general and worth applying to every backend buffer type that holds large multi-thread-read working sets. Reference impl: commit `e84a5c82f` on `cpu-optimization/q8-8x8-avx512bw`.
+
+## 2026-04-24 Session 15 part 4-5 — perf profile + graph-rewrite probe
+
+After the kernel + NUMA fix (parts 1-3 above) the throughput ceiling on Qwen3.6-27B Q8_0 sat at 4.4 t/s and the user pushed back on the "BW-saturated" framing. Sessions 15 parts 4 and 5 ran a `perf record --call-graph dwarf` profile and tried two graph-level rewrites; both disproved the simple-fix hypothesis and clarified the actual ceiling.
+
+### Profile (part 4)
+
+`perf record -F 999 -g --call-graph dwarf,8192` on noomp + full CPU1 stack (`GGML_CCD_POOLS=1 GGML_NUMA_WEIGHTS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1`):
+
+- **72.15%** in `ggml_vec_dot_q8_0_q8_0` (single-row Q8 dot — DRAM-stall-dominated)
+- **21.63%** in `ggml_barrier` (already 2-level CCD-hierarchical, CPU1 Phase 1.0+1.1)
+- **2.94%** in `ggml_barrier_local` (CPU1 Phase 1.4, selectively used)
+- **<4%** everything else; DeltaNet ops are <1% combined
+
+`perf stat` confirmed: **0.17 IPC** (3.4% of Zen 5 peak), `frontend_stalls=0.81%`. ~96% of cycles are backend-stalled on memory. Doubling ALU width is decisively useless on this kernel — third independent confirmation (Sessions 13, 14, 15 part 4) that quantized-decode kernels are DRAM-bound, not ALU-bound.
+
+### Cross-architecture / cross-quant BW utilization
+
+Same hardware (EPYC 9655 NPS4, 96 threads):
+
+| Model | Architecture | Quant | t/s @ 96t | BW achieved | % of 460 GB/s |
+|-------|--------------|-------|-----------|-------------|---------------|
+| Qwen3.6-27B | 75% DeltaNet hybrid | Q8_0 | 4.42 | 117 GB/s | 25% |
+| Qwen3.6-27B | 75% DeltaNet hybrid | Q4_K_M | 6.75 | 106 GB/s | 23% |
+| Qwen2.5-Coder-32B | pure dense | Q4_K_M | 10.8 (registry) | 200 GB/s | 44% |
+
+Both quants of the **same hybrid model** land at the same ~24% BW utilization. The Q4↔Q8 throughput difference is purely the bytes-per-token ratio. Pure-dense models on the same hardware hit ~44% — **the 1.7× gap is hybrid-architecture overhead, not quant-bound or kernel-bound.** Theoretical ceiling for Qwen3.6-27B Q8_0 if it matched dense BW utilization: 460 × 0.44 / 26.6 = **7.6 t/s** (+72% over current).
+
+### Graph-rewrite angles tried (part 5)
+
+**Angle A: extend Phase 1.4 barrier-local coverage to RMS_NORM.** NOT SAFE: RMS_NORM at decode shape `[d, 1, 1, 1]` runs single-threaded (only thread 0 with ne01=1 in the upstream `for (i01 = ith; i01 < ne01; i01 += nth)` loop). Cross-CCD threads need a global barrier to see thread 0's writes; Phase 1.4's "axis-0 partition" precondition is exactly what RMS_NORM at decode violates. Expanding the coverage would silently corrupt outputs.
+
+**Angle B: parallelize RMS_NORM across ne00 with an intra-op reduction barrier.** Implementation in commit `0467a5c17` on `cpu-optimization/q8-8x8-avx512bw`. Each thread computes a partial sum over its k-slice → `ggml_barrier` → reduce + parallel scale. PPL preserved (6.6767 vs 6.6985 baseline, within noise).
+
+NET-NEGATIVE at 96t: **4.02 vs 4.41 t/s = −8.8% regression.** The intra-op barrier (~5 μs at 96t) costs more than the saved single-thread compute (~10 μs). Default OFF, kept env-gated (`GGML_RMS_NORM_PARALLEL=1`) for documentation + future probing on workloads where the math could flip.
+
+### Why both probes confirm the ceiling
+
+The 22% in `ggml_barrier` is **barrier-count-bound, not per-barrier-cost-bound**. Adding intra-op barriers (parallelizing within ops) makes things worse. Lighter-weight barrier impls (CPU1 Phase 1.0+1.1's 2-level CCD-hierarchical is already there) don't help if the count stays constant. **The only lever that actually reduces barrier count is operator fusion** — collapsing N consecutive ops into one super-op so the executor only barriers once.
+
+### Concretely fusable cluster (not pursued — ROI doesn't justify)
+
+In qwen35.cpp DeltaNet builder: `wqkv` + `wqkv_gate` + `ssm_beta` + `ssm_alpha` are 4 matmuls all reading the same `attn_norm` output and producing independent results combined later in `gated_delta_net`. Fusing into one super-matmul (concatenated weight tensor at model-load + sliced output at graph-construction) saves 3 barriers per DeltaNet layer × 48 layers = 144 barriers/token = ~6 ms = **+2.6% throughput**. Effort: ~1 day.
+
+Not pursued because the ROI doesn't beat the production-side alternative: **Q4_K_M on this exact model already runs at 6.75 t/s — +52% over Q8 with zero code changes.** Plus Q6_K/Q5_K 8x8 AVX-512BW kernels (Session 14 dispatcher gap, unchanged) would lift Q4_K_M decode by another +2-5% each.
+
+### Final verdict on Qwen3.6-27B Q8_0 single-instance throughput
+
+**The 4.4 t/s ceiling is genuinely architecture-bound for this hardware × this hybrid model.** Not BW-bound (only 25% of 460 GB/s); not kernel-bound (Session 15 AVX-512BW + NUMA fix already at the optimum); not parallelism-bound within ops (Session 15 parts 3 + 5 disproved). It is bound by barrier count × small per-op compute on a hybrid graph with ~590 ops/token.
+
+The CPU2 lineage closes here for Q8 specifically. Production-side moves (Q4_K_M switch, Q6_K/Q5_K kernels, eventual op fusion of the QKV+gate+beta+alpha matmuls) remain the only paths to higher throughput, none of which are CPU2 territory.
+
+### Reference data + commits
+
+- Profile data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-24-q8-profile/` (raw `.data` files git-ignored at 36+18 GB; `findings.md` + symbol reports tracked).
+- Branch: `cpu-optimization/q8-8x8-avx512bw` on `llama.cpp-experimental`, 4 commits ahead of `138b26cd4`:
+  - `1d18efce3` AVX-512BW 8x8 Q8_0 GEMV kernel
+  - `e84a5c82f` auto-mbind CPU_REPACK + K-parallel activation quant
+  - `ba1c23900` env-gated DeltaNet S_v sub-chunking (default off)
+  - `0467a5c17` env-gated parallel RMS_NORM (default off, net-negative)
+
+All correct, env-gated for safety, PPL-preserved.
