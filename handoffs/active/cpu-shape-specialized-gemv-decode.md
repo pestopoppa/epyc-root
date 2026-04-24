@@ -1,6 +1,6 @@
 # CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode
 
-**Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel IMPLEMENTED + CORRECT 2026-04-24 — BUT tensor_traits multi-thread dispatch is the new bottleneck.** Kernel wins +25% at 1 thread, regresses 56-73% at 4-96 threads. The SIMD kernel itself does its job; the blocker moved upstream into the repack dispatch path. See §Session 15 AVX-512BW result below.
+**Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel LANDED + NUMA fix LANDED 2026-04-24 — production-viable without env vars.** Kernel correctly emits `vpmaddubsw`+`vpmaddwd` on Zen 5, +31.8% at 1 thread, +1.6% at 96 threads (BW-saturated ceiling ~4.5 t/s on 27B Q8_0). The root cause of the initial 2.8× regression was NUMA first-touch of the CPU_REPACK buffer pinning 26 GB to node 0 — fixed by auto-mbind(MPOL_INTERLEAVE) inside the buffer allocator. PPL preserved. See §Session 15 below.
 **Created**: 2026-04-23 (via session discussion of CPU fusion viability)
 **Priority**: ~~MEDIUM~~ DEPRIORITIZED — revisit only for prefill/batched-decode regime where the compute/BW ratio shifts.
 **Categories**: hardware_optimization, inference_serving, local_inference
@@ -27,7 +27,47 @@ A fresh child branch `cpu-optimization/q8-8x8-avx512bw` off `cpu-optimization/ba
 
 **Correctness**: PPL on Wikitext-2 (3 chunks, ctx=512) = **6.6985 ± 0.708** with AVX-512BW path active — sensible baseline for this quant, no NaN, no divergence. Disassembly verified: loop emits `vpmaddubsw %zmm, vpmaddwd %zmm`, not `vpdpbusd`.
 
-**Performance on Qwen3.6-27B-Q8_0 (baseline-vs-new, `-fa 1 --numa distribute -p 0 -n ≥32`)**:
+**Initial measurement showed a 2.8× regression at 96 threads despite winning +25% at 1 thread.** Root cause was NOT the kernel: the CPU_REPACK buffer was being first-touched on NUMA node 0 (26 GB pinned to one node, 96 threads × 4 nodes saturated that node's memory controllers). Plus a secondary serialization in `forward_mul_mat` for ne11 < 4 activation quantization. Both fixed in-session (commits `1d18efce3` + `e84a5c82f`):
+
+1. **Auto-mbind the CPU_REPACK buffer** to `MPOL_INTERLEAVE` across all NUMA nodes inside `ggml_backend_cpu_repack_buffer_type_alloc_buffer`, gated on `ggml_is_numa()`. Scoped to this buffer, not process-wide. Log line `cpu-repack: mbind(MPOL_INTERLEAVE) on 25.4 GiB across 4 NUMA nodes` confirms at load time.
+2. **K-parallel activation quant** for ne11 < 4 in tensor_traits `forward_mul_mat`, mirroring the standard-path pattern (ggml-cpu.c:1466-1475). Minor effect alone (NUMA dominated) but corrects an unrelated serialization.
+
+**Final performance on Qwen3.6-27B-Q8_0** (`-fa 1 --numa distribute`, NO env vars — auto-mbind kicks in automatically):
+
+| Threads | Baseline (non-repacked) | Repack 8x8 + AVX-512BW | Δ |
+|---------|-------------------------|-------------------------|---|
+| 1 | 0.85 t/s | **1.12 t/s** | **+31.8%** |
+| 12 | 4.41 | 4.54 | +2.9% |
+| 24 | 4.50 | 4.54 | +0.9% |
+| 48 | 4.51 | 4.56 | +1.1% |
+| 96 | 4.32 | 4.39 | +1.6% |
+
+PPL on Wikitext-2 (3 chunks, ctx=512) = **6.6985 ± 0.708** with the AVX-512BW path + auto-mbind active. Unchanged from pre-mbind run. Disassembly still confirms `vpmaddubsw`+`vpmaddwd` in the hot loop, not `vpdpbusd`.
+
+Q8_0 decode is BW-saturated at ~4.5 t/s on this hardware (12t+), so the +1-3% at high thread count is the real kernel edge over the baseline single-row path — both hit the ~26% of roofline ceiling together. The +31.8% at 1 thread is where the 8-row amortization win survives because DRAM isn't saturated. Consistent with `feedback_cpu_decode_bw_bound.md`: **don't write compute-focused ukernels for quantized decode without a BW roofline check** — the realistic CPU2 gain is 1t-specific, not the projected +40-70% at high thread count.
+
+**Before-vs-after comparison of the NUMA fix:**
+
+| Threads | Baseline | Repack+BW w/o NUMA fix | Repack+BW w/ auto-mbind |
+|---------|----------|------------------------|-------------------------|
+| 1 | 0.84 | 1.05 | 1.12 |
+| 24 | 4.46 | 1.60 | 4.54 |
+| 96 | 4.38 | 1.58 | 4.39 |
+
+Without the NUMA fix, the repack path capped at ~1.6 t/s regardless of thread count because all 26 GB of weights lived on node 0.
+
+**Status: production-viable at parity-plus without env vars.** Gates remain `GGML_Q8_0_8X8=1` + `GGML_Q8_0_8X8_AVX=1`, both default OFF. Safe to flip default ON in a follow-up once Q6_K and Q5_K get the same 8x8 SIMD treatment so a blanket Q{5,6,8}_K x86 repack enable-flip makes sense holistically.
+
+**Recommended follow-ups:**
+- **Q6_K 8x8 AVX-512BW** — Session 14 flagged Q6_K at 18.2% of Q4_K_M decode cycles; same dispatcher-NEON-only gap. Complexity ~2× Q8_0 due to 4+2 bit-split unpack. Expected: +2-5% on Q4_K_M decode.
+- **Q5_K 8x8 AVX-512BW** — smaller cycle share (4.6%), same complexity profile as Q6_K. Lower priority but trivial follow-on once Q6_K is done.
+- **Cross-check Q4_K_M at 1t** to confirm the +30% single-thread win extends there too — validates the tensor_traits path across all types.
+- **Upstream the NUMA fix** — `mbind(MPOL_INTERLEAVE)` on CPU_REPACK buffer is a real bug-fix affecting every multi-NUMA host running any repacked quant. Worth a PR to ggml-org/llama.cpp independent of the Q8_0 kernel.
+- **Flip default ON** — once Q6_K/Q5_K land, remove the `GGML_Q8_0_8X8` env gate and make x86 Q8_0/Q{5,6}_K repack the default.
+
+---
+
+**Archived initial-measurement table (pre-NUMA-fix, for history):**
 
 | Threads | Baseline (no repack) | Repack 8x8 + AVX-512BW | Δ |
 |---------|----------------------|-------------------------|---|
