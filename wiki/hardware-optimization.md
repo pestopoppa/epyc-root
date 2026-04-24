@@ -333,3 +333,52 @@ Gradient test on 2026-04-24 — flipping the dispatcher to use the existing `*_g
 Conclusion: the plumbing is sound but the kernel side is missing. Writing hand-optimized AVX-512BW 8x8 repacked GEMV kernels for Q8_0 (biggest win: 77% cycle share, simplest kernel) and Q6_K (18% on Q4_K_M dense, more complex due to 4+2 bit unpack) is the next real software-level lever after L3aaN. Use AVX-512BW width (`_mm512_maddubs_epi16` + `_mm512_madd_epi16`) — NOT VPDPBUSD — because Zen 5's maddubs has 2/cycle throughput vs VNNI's 1/cycle. Expected gain: +40-70% on Q8 decode, +7-10% on Q4_K_M dense.
 
 Effort: 4-6 hours per kernel. Deferred pending L3aaN reboot (higher ROI, zero code risk).
+
+## 2026-04-24 Session 15 update — Q8_0 8x8 AVX-512BW kernel landed; ceiling is NOT BW-bound
+
+The 2026-04-24 morning entry above predicted "+40-70% on Q8 decode" from a hand-written AVX-512BW 8x8 Q8_0 kernel. Session 15 in the afternoon implemented that kernel and found the prediction was **partly right and partly wrong**, with two important corrections:
+
+### Kernel implementation — landed and correct
+
+Branch `cpu-optimization/q8-8x8-avx512bw` off `cpu-optimization/backlog-2026-04-23` (HEAD `138b26cd4`), 3 commits totaling +445 / -17 LOC:
+
+- `1d18efce3` — AVX-512BW 8x8 Q8_0 GEMV kernel + scaffolding. Hot loop: `vpabsb` + `vpmovb2m` + masked `vpsubb` + `vpmaddubsw` + `vpmaddwd` + `vpaddd`. Disassembly verified the kernel emits these (NOT `vpdpbusd`); the existing `mul_sum_i8_pairs_acc_int32x16` helper auto-selects VNNI under `__AVX512VNNI__` so the kernel inlines the BW path manually. PPL on Wikitext-2 (3 chunks, ctx=512) = 6.6985 ± 0.708, sensible for Qwen3.6-27B-Q8_0.
+- `e84a5c82f` — auto-`mbind(MPOL_INTERLEAVE)` on the CPU_REPACK buffer when `ggml_is_numa()` is true, plus K-parallel activation quantization for ne11 < 4 in tensor_traits `forward_mul_mat`. Without the mbind, first-touch placed all 26 GB of repacked weights on NUMA node 0 and 96 threads × 4 NPS4 nodes saturated that single node's memory controllers — observed initial regression 2.8× at 96t. Mbind fix is general-purpose; affects every repacked quant on multi-NUMA hosts.
+- `ba1c23900` — env-gated `gated_delta_net` S_v sub-chunking refactor (default OFF). Hypothesis was that `nr = H * n_seqs = 16` chunking caps DeltaNet to 16 effective threads on Qwen3.6-27B at decode. Refactor expanded `nr = H * n_seqs * k_per_head` and partitioned each head's S_v=256 axis into k_per_head sub-chunks. Net-neutral throughput at 96t for k_per_head ∈ {1, 6, 16} → DeltaNet is **not** the dominant bottleneck. Refactor kept env-gated for future probing.
+
+### Throughput numbers — reality check
+
+| Threads | Baseline (non-repacked) | Repack 8x8 + AVX-512BW | Δ |
+|---------|-------------------------|-------------------------|---|
+| 1 | 0.85 t/s | **1.12 t/s** | **+31.8%** |
+| 12 | 4.41 | 4.54 | +2.9% |
+| 24 | 4.50 | 4.54 | +0.9% |
+| 48 | 4.51 | 4.56 | +1.1% |
+| 96 | 4.32 | 4.39 | +1.6% |
+
+The +31.8% at 1 thread is real (the 8-row amortization win when DRAM isn't saturated). The +1-3% at 12-96t is the kernel's edge over the single-row baseline at the throughput ceiling.
+
+### Correction to "BW-bound" framing
+
+Initial Session 15 writeup called 4.4 t/s "BW-saturated at the memory ceiling." This was wrong. The math:
+
+- Qwen3.6-27B Q8_0 at 96t = 4.4 t/s × 26.6 GB/token = **118 GB/s = 26% of theoretical 460 GB/s ceiling**.
+- Qwen2.5-Coder-32B (pure dense) Q4_K_M = 10.8 t/s × 18.5 GB = **200 GB/s = 41% of ceiling** on same hardware.
+
+The 1.7× BW-utilization gap means Qwen3.6-27B has substantial untapped headroom — it's **not** memory-bandwidth-bound. The ceiling at 4.4 t/s comes from somewhere else.
+
+The DeltaNet refactor probe disproved one obvious candidate (`gated_delta_net` parallelism). Remaining hypotheses (unprobed, ranked by likelihood):
+
+1. **Barrier overhead × hybrid op count.** 64 layers × ~10 ggml ops per DeltaNet layer = ~592 ops per token, each followed by `ggml_barrier`. At 96t × NPS4, barriers eat ~28% of decode cycles per CPU1 Phase 1.3 measurements on simpler graphs; the hybrid graph likely has 2-3× more barriers than comparable Qwen2.5 dense.
+2. **Op kernels around the fused DeltaNet** (RMS norm, conv1d short-conv, gate projection, residual) — not yet probed individually.
+3. **Activation quant per-matmul at ne11=1** — even with the standard path's K-parallel `from_float`, may still be suboptimal.
+
+### Action
+
+The next session should be a **`GGML_PERF=1` profile of Qwen3.6-27B Q8_0 decode at 96t**, paired with the same profile on a pure-dense reference (e.g. Qwen2.5-Coder-32B Q4KM if a current GGUF is built) to localize the 26%→41% BW utilization gap to specific ops. Profile-then-fix beats fix-then-measure.
+
+The Q6_K and Q5_K 8x8 AVX-512BW kernels from the morning's recommendation remain valid follow-ups (Session 14 dispatcher gap is unchanged), expected +2-5% each on Q4_K_M dense. The auto-mbind fix is a general multi-NUMA bug worth upstreaming to `ggml-org/llama.cpp` independent of the CPU2 lineage.
+
+### General lesson — backend-buffer NUMA placement
+
+`ggml_aligned_malloc` returns unfaulted anonymous pages that get pinned to whichever NUMA node first-touches them. For the CPU_REPACK buffer, that meant all 26 GB on node 0 → 96-thread reads through one node's memory controllers → 2.8× regression. The fix (`mbind(buffer, size, MPOL_INTERLEAVE, all_nodes)` inside the buffer-type allocator, gated on `ggml_is_numa()`) is general and worth applying to every backend buffer type that holds large multi-thread-read working sets. Reference impl: commit `e84a5c82f` on `cpu-optimization/q8-8x8-avx512bw`.

@@ -1,6 +1,6 @@
 # CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode
 
-**Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel LANDED + NUMA fix LANDED 2026-04-24 — production-viable without env vars.** Kernel correctly emits `vpmaddubsw`+`vpmaddwd` on Zen 5, +31.8% at 1 thread, +1.6% at 96 threads (BW-saturated ceiling ~4.5 t/s on 27B Q8_0). The root cause of the initial 2.8× regression was NUMA first-touch of the CPU_REPACK buffer pinning 26 GB to node 0 — fixed by auto-mbind(MPOL_INTERLEAVE) inside the buffer allocator. PPL preserved. See §Session 15 below.
+**Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel LANDED + NUMA fix LANDED 2026-04-24 — production-viable without env vars.** Kernel correctly emits `vpmaddubsw`+`vpmaddwd` on Zen 5, +31.8% at 1 thread, +1-3% at 12-96 threads (Qwen3.6-27B Q8_0 caps at ~4.4 t/s). PPL preserved. NUMA first-touch of CPU_REPACK buffer was the dominant root cause of the initial 2.8× multi-thread regression — fixed by auto-mbind(MPOL_INTERLEAVE) inside the buffer allocator. **The 4.4 t/s ceiling is NOT memory-bandwidth — only 26% of theoretical 460 GB/s, vs Qwen2.5-Coder-32B dense at 41% on same hardware.** A DeltaNet parallelism refactor was probed and disproved (k_per_head ∈ {1,6,16} all give 4.43 t/s). Real bottleneck still unidentified — most likely barrier overhead × hybrid-architecture op count. Next investigation should be a `GGML_PERF=1` profile, not more kernel work. See §Session 15 below.
 **Created**: 2026-04-23 (via session discussion of CPU fusion viability)
 **Priority**: ~~MEDIUM~~ DEPRIORITIZED — revisit only for prefill/batched-decode regime where the compute/BW ratio shifts.
 **Categories**: hardware_optimization, inference_serving, local_inference
@@ -64,6 +64,26 @@ Without the NUMA fix, the repack path capped at ~1.6 t/s regardless of thread co
 - **Cross-check Q4_K_M at 1t** to confirm the +30% single-thread win extends there too — validates the tensor_traits path across all types.
 - **Upstream the NUMA fix** — `mbind(MPOL_INTERLEAVE)` on CPU_REPACK buffer is a real bug-fix affecting every multi-NUMA host running any repacked quant. Worth a PR to ggml-org/llama.cpp independent of the Q8_0 kernel.
 - **Flip default ON** — once Q6_K/Q5_K land, remove the `GGML_Q8_0_8X8` env gate and make x86 Q8_0/Q{5,6}_K repack the default.
+
+### Session 15 part 3 (2026-04-24): probing the 4.4 t/s ceiling
+
+User pushed back on the "BW-saturated" framing — Qwen2.5-Coder-32B dense reaches 41% BW utilization on same hardware vs Qwen3.6-27B Q8_0's 26%. Real BW ceiling for 27B Q8 is ~17 t/s (460 / 26.6); we're at 26% of that (~4.4 t/s). There IS ~1.7× untapped headroom; "BW-bound" was the wrong frame.
+
+**Hypothesis (disproved)**: `gated_delta_net`'s `nr = H * n_seqs = 16` chunking caps DeltaNet work to 16 threads, leaving 80 idle at decode. Empirical match: scaling stops at 16t (8t=4.17, 16t=4.38, 32t=4.41, 96t=4.38).
+
+**Refactor**: expanded `nr = H * n_seqs * k_per_head`, partitioning each head's S_v=256 axis into k_per_head sub-chunks. State is stored transposed so a contiguous j-range is contiguous bytes. All 4 inner phases (scale, delta, outer product, attn_out) parallelize cleanly along j with per-thread delta[] scratch — no cross-thread reduction needed. Implementation in `ggml/src/ggml-cpu/ops.cpp:ggml_compute_forward_gated_delta_net_one_chunk` (commit `ba1c23900`).
+
+**Result: net-neutral.** k_per_head ∈ {1, 6, 16} all give ~4.43 t/s at 96t. PPL preserved (6.6767 vs 6.6985 baseline, within noise). The hypothesis is **disproved** — `gated_delta_net` is NOT the dominant bottleneck on Qwen3.6-27B Q8 at 96t.
+
+The refactor was committed default-OFF (`k_per_head=1`, original behavior). Env override `GGML_GDN_K_PER_HEAD=N` exposes the refactor for future probing on models where DeltaNet *does* dominate (e.g. larger H_v at decode, prefill-like workloads).
+
+**Real bottleneck candidates** (still hypothesized, not measured — needs profile):
+
+1. **Barrier overhead × hybrid op count**. Qwen3.6-27B has 64 layers × ~10 ggml ops per DeltaNet layer = ~592 ops per token, each followed by `ggml_barrier`. Per CPU1 Phase 1.3, barriers eat 28% of decode cycles at 96t on a less complex graph; the hybrid graph likely has 2-3× more barriers than comparable Qwen2.5 dense.
+2. **Conv1D / RMS norm / other op kernels** wrapping the fused `ggml_gated_delta_net` — not yet probed.
+3. **Activation quant per-matmul** at ne11=1 — the standard path's K-parallel `from_float` may still be suboptimal at high thread counts.
+
+**Action**: do NOT do more kernel guesses without data. The next session should be a `GGML_PERF=1` profile of Qwen3.6-27B Q8_0 decode at 96t, paired with the same profile on Qwen2.5-Coder-32B Q4KM (or any pure-dense reference). The 26% → 41% BW utilization gap should localize to specific ops; that's where the next lever is. Profile-then-fix, not fix-then-measure.
 
 ---
 
