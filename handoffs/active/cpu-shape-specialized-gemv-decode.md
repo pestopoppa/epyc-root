@@ -85,6 +85,37 @@ The refactor was committed default-OFF (`k_per_head=1`, original behavior). Env 
 
 **Action**: do NOT do more kernel guesses without data. The next session should be a `GGML_PERF=1` profile of Qwen3.6-27B Q8_0 decode at 96t, paired with the same profile on Qwen2.5-Coder-32B Q4KM (or any pure-dense reference). The 26% → 41% BW utilization gap should localize to specific ops; that's where the next lever is. Profile-then-fix, not fix-then-measure.
 
+### Session 15 part 4 (2026-04-24): perf profile run, 4.4 t/s ceiling explained
+
+Profile via `perf record --call-graph dwarf` on both OpenMP and noomp+CPU1-stack builds, plus `perf stat` counters. Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-24-q8-profile/`. Full writeup: `findings.md` in same directory.
+
+**Top-symbol breakdown (noomp + CPU1 stack, Qwen3.6-27B Q8_0, 96t)**:
+
+| Symbol | % cycles | Notes |
+|--------|---------|-------|
+| `ggml_vec_dot_q8_0_q8_0` | 72.15% | Single-row Q8 dot — mostly DRAM-load waits |
+| `ggml_barrier` | 21.63% | 2-level CCD-hierarchical barrier (CPU1 Phase 1.0+1.1) |
+| `ggml_barrier_local` | 2.94% | CPU1 Phase 1.4 axis-0-aligned barrier (selectively used) |
+| everything else | <4% | DeltaNet, MLP, RMS norm, RoPE, sampling combined |
+
+**Perf-stat: 0.17 IPC.** Modern Zen 5 sustains ~5 IPC on dense compute. We're at 3.4% of theoretical compute throughput, with `frontend_stalls=0.81%`. 96.6% of cycles are backend-stalled on memory. **Decisive confirmation that 27B Q8_0 decode is purely DRAM-bound, not ALU-bound.** Doubling ALU width cannot help (consistent with the falsified VNNI probes from Sessions 13/14, and with Session 15's +1-3% high-thread-count edge from the AVX-512BW kernel — the kernel is correct but cycles are spent waiting on memory, not crunching).
+
+**Cross-quant test** confirmed BW utilization is architecture-bound, not quant-bound: 27B Q8_0 = 25% of 460 GB/s, 27B Q4_K_M = 23%, both well below Qwen2.5-Coder-32B dense at 44%. The 1.7× gap is entirely hybrid-architecture overhead.
+
+**DeltaNet is NOT the bottleneck** — profile shows <1% of cycles in DeltaNet ops (across `ggml_compute_forward_gated_delta_net_one_chunk` + wrappers). The Session 15 part 3 refactor was correctly disproved by data here.
+
+**Real bottleneck is `ggml_barrier` × hybrid op count.** Estimated ~590 ops/token in Qwen3.6-27B vs ~450 in pure-dense Qwen2.5-Coder-32B (30% more), with smaller per-op compute (DeltaNet wrappers are short), making barrier overhead a larger fraction. Both OpenMP and the custom 2-level CCD-hierarchical implementations land at ~24% in barriers — switching threadpools doesn't change throughput because the barrier mechanism is already optimal; the bottleneck is the **count** and **distribution** of barriers across small ops.
+
+**Theoretical headroom** if we matched pure-dense BW utilization on 27B Q8_0: 4.42 → **460 × 0.44 / 26.6 = 7.6 t/s** (+72%). Realistic ROI ranking for the gap-closing levers:
+
+1. **Op fusion of DeltaNet wrapper ops** (RMS norm + conv1d + gate projection + residual). +2-3% expected; smaller than initial estimates because wrappers aren't the dominant barrier surface.
+2. **Inter-op barrier elimination via graph rewrites** (e.g. Q/K/V projections from same input run concurrently with no dependency until attention). +10-15% potential, but a substantial graph-pass project.
+3. **Faster `ggml_barrier` impl** — already 2-level CCD-hierarchical; tournament/wait-free variants are ~5% upper bound.
+4. **Speculative decoding** — prior memory `feedback_qwen35_27b_architecture.md` says hybrid CPU spec-dec is dead; revisit if Dflash matures.
+5. **Use Q4_K_M instead of Q8_0** — already +52% on this model (6.75 vs 4.42 t/s). Production-side decision.
+
+**What is NOT useful**: more CPU2 kernel work on Q8 (kernel is already near-optimal at the BW ceiling); more DeltaNet parallelism (<1% of cycles); adding more threads (plateau at 16-24t). Q6_K and Q5_K 8x8 kernels would still help Q4_K_M decode (Session 14 dispatcher gap is unchanged) but don't address the hybrid-overhead gap.
+
 ---
 
 **Archived initial-measurement table (pre-NUMA-fix, for history):**
