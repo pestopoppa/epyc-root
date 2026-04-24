@@ -115,8 +115,9 @@ Ordered by expected single-instance decode throughput gain × feasibility.
 - [ ] **CPU12 — LOW** ccache / BOLT / FDO-style post-link binary optimization of the llama-server binary.
 - [ ] **CPU13 — LOW** Prefill-specific optimizations: paged attention RSS investigation (deferred from v3 rebuild), chunked prefill for long contexts.
 - [ ] **CPU14 — LOW** Batched slot decode (`-np N --parallel`) benchmark suite — aggregate, not single-session. Partial overlap with dynamic-stack-concurrency; deserves its own baseline under the new stack.
+- [ ] **CPU15 — HIGH (new 2026-04-24)** Large-MoE as primary target + expert parallelism → see [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md). Two linked tracks: (A) strategic reframe — target large sparse MoE (≥100B total, ≥10B activated, ≥64 experts) to exploit the hardware's RAM:BW ratio and the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s); (B) expert-parallelism mechanism — shard experts across CCDs/NUMA nodes/processes to convert aggregate BW into single-stream throughput. Phase 0 is a cheap 4–6 h baseline (re-measure Qwen3-235B-A22B + 480B-A35B on current NPS4 + `GGML_NUMA_WEIGHTS=1` + AVX-512BW stack) that falsifies or opens the mechanism work. Expected gain 2–5× single-stream on large MoE. Contends with `orchestrator-nps4-48x4-notes.md` for NUMA topology — Decision Point D2 in the child handoff.
 
-Items CPU1–CPU8 are the active backlog. CPU9–CPU14 are watchlist items; pursue only when higher-priority work is gated.
+Items CPU1–CPU8 and CPU15 are the active backlog. CPU9–CPU14 are watchlist items; pursue only when higher-priority work is gated.
 
 ---
 
@@ -138,6 +139,7 @@ Items CPU1–CPU8 are the active backlog. CPU9–CPU14 are watchlist items; purs
 | CPU12 | BOLT / FDO binary post-link | not started | LOW | 1–3% | Low-risk; mature tooling |
 | CPU13 | Prefill optimizations | deferred (from v3 rebuild) | LOW | Prefill-specific | Not decode-critical |
 | CPU14 | `--parallel` slot decode bench | not started | LOW | Aggregate only | Covered partially by `dynamic-stack-concurrency.md` |
+| CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 0 LANDED 2026-04-24, D1 gate FAILS → Phase 1 warranted** | **HIGH** | REAP-246B 6.14 t/s @96t, M2.7 10.23 t/s @48t (33% BW vs hybrid 25%, dense 44%); Phase 1 EP target 2-5× | Phase 1 reuses CPU1 P1.2 substrate; Phase 0 confirmed no auto-fix from MoE alone |
 
 ---
 
@@ -234,6 +236,8 @@ The combined multiplier compounds until the 460 GB/s ceiling clips it. A realist
 
 Under NPS4/L3aaN, the existing quarter-instance geometry shifts: instead of 4×48t instances on 2 NUMA nodes, we'd have 4×3-CCD instances on 4 nodes, or 12×1-CCD instances on 12 nodes. Re-benchmark required.
 
+**CPU15 reframing (2026-04-24)**: the 2.13× concurrent-aggregate gap (single-instance 48.81 → concurrent ~104 t/s on 30B-A3B Q4_K_M) suggests the hardware's natural target is **large sparse MoE** with per-NUMA expert parallelism, not small dense / small hybrid MoE. CPU15 opens that axis: Phase 0 is a cheap re-measurement of Qwen3-235B-A22B + 480B-A35B on the current NPS4 stack; Phase 1+ implements per-CCD expert sharding in the llama.cpp fork. See [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md).
+
 ### BIOS / reboot budget
 
 Reboots are expensive. Batch all BIOS investigations into single maintenance windows:
@@ -329,3 +333,4 @@ After completing any task listed here:
 ## Changelog
 
 - 2026-04-23: Initial creation. CPU1/CPU2/CPU3 stubs populated; CPU4–CPU14 watchlist added.
+- 2026-04-24: CPU15 added ([`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md)). Rationale: all CPU-general software levers exhausted on single-instance NPS4; the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s) indicates large sparse MoE + expert parallelism is the next open axis. Multi-instance deployment section updated to reference CPU15.
