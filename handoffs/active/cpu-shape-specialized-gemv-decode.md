@@ -1,6 +1,6 @@
 # CPU Shape-Specialized GEMV Microkernel for Zen 5 Decode
 
-**Status**: **DEPRIORITIZED 2026-04-23** — Phase 1 Target #1 measurement falsified the compute-bound projection; decode is BW-bound on this workload. See §Phase 1 Target #1 result below.
+**Status**: **Phase 1 AVX-512BW 8x8 Q8_0 kernel IMPLEMENTED + CORRECT 2026-04-24 — BUT tensor_traits multi-thread dispatch is the new bottleneck.** Kernel wins +25% at 1 thread, regresses 56-73% at 4-96 threads. The SIMD kernel itself does its job; the blocker moved upstream into the repack dispatch path. See §Session 15 AVX-512BW result below.
 **Created**: 2026-04-23 (via session discussion of CPU fusion viability)
 **Priority**: ~~MEDIUM~~ DEPRIORITIZED — revisit only for prefill/batched-decode regime where the compute/BW ratio shifts.
 **Categories**: hardware_optimization, inference_serving, local_inference
@@ -12,11 +12,51 @@
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — where TensileLite shape-specialization discussion originated
 - [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) — paged attention / OpenMP repack / MoE expert reduction context
 
-## Status as of 2026-04-23
+## Status as of 2026-04-24
 
-**Investigation not started. This handoff documents the rationale, prior art, and work plan for a future pickup.**
+### Session 15 — AVX-512BW 8x8 GEMV kernel LANDED, scaffold validated, multi-thread regression identified
 
-### 2026-04-23 Phase 1 Target #1 — NEGATIVE RESULT (deprioritizes this handoff)
+A fresh child branch `cpu-optimization/q8-8x8-avx512bw` off `cpu-optimization/backlog-2026-04-23` (HEAD `138b26cd4`) contains:
+
+- **New `block_q8_0x8` repack** — `make_block_q8_0x8` + `repack_q8_0_to_q8_0_8_bl` + `template <> int repack<block_q8_0, 8, 8>` specialization in `ggml/src/ggml-cpu/repack.cpp`. Layout: 8 fp16 scales + 256 bytes of i8 weights arranged so that each 64-byte sub-chunk of `.qs` is [R0[0..7], R1[0..7], …, R7[0..7]] — exactly one ZMM load per K-sub-chunk.
+- **Generic reference GEMV + GEMM** — `ggml_gemv_q8_0_8x8_q8_0_generic` + `ggml_gemm_q8_0_8x8_q8_0_generic` mirroring the 4x8 generics with `ncols_interleaved=8`. Used as the correctness anchor.
+- **AVX-512BW SIMD GEMV** — `gemv_q8_0_8x8_q8_0_avx512bw` in `arch/x86/repack.cpp`. Per K-block, 4 ZMM-wide subchunk iterations of `{vpabsb, vpmovb2m, masked vpsubb, vpmaddubsw, vpmaddwd, vpaddd}` to fold signed×signed i8 dots into a 16-lane i32 accumulator; the 16 lanes are reduced pairwise (`vpsrlq 32` + `vpaddd` + `vpmovqd`) to 8 per-row i32 sums, scaled by `d_B × d_A` and FMA'd into an fp32 accumulator across K-blocks. The helper `mul_sum_i8_pairs_acc_int32x16` from `avx512-helpers.h` was deliberately **not** used — it auto-selects VPDPBUSD (VNNI) under `__AVX512VNNI__` and Sessions 13/14 already falsified VNNI on Zen 5 (VPMADDUBSW runs 2/cycle vs VPDPBUSD 1/cycle).
+- **Dispatcher branch** for x86 in `ggml_repack_get_optimal_repack_type` under the `GGML_TYPE_Q8_0` arm, gated on `GGML_Q8_0_8X8=1` env var + `cur->ne[1] % 8 == 0`.
+- **Runtime A/B switch** `GGML_Q8_0_8X8_AVX ∈ {0,1}` inside the `ggml_gemv_q8_0_8x8_q8_0` entry to select SIMD vs portable-C without rebuilding.
+- **ARM + generic arch-fallback.h aliases** for `ggml_gemv_q8_0_8x8_q8_0` and `ggml_gemm_q8_0_8x8_q8_0` so cross-arch builds keep linking.
+
+**Correctness**: PPL on Wikitext-2 (3 chunks, ctx=512) = **6.6985 ± 0.708** with AVX-512BW path active — sensible baseline for this quant, no NaN, no divergence. Disassembly verified: loop emits `vpmaddubsw %zmm, vpmaddwd %zmm`, not `vpdpbusd`.
+
+**Performance on Qwen3.6-27B-Q8_0 (baseline-vs-new, `-fa 1 --numa distribute -p 0 -n ≥32`)**:
+
+| Threads | Baseline (no repack) | Repack 8x8 + AVX-512BW | Δ |
+|---------|----------------------|-------------------------|---|
+| 1 | 0.84 t/s | **1.05 t/s** | **+25.0%** |
+| 4 | 2.95 | 1.29 | −56.3% |
+| 12 | 4.35 | 1.27 | −70.8% |
+| 24 | 4.46 | 1.60 | −64.1% |
+| 48 | 4.11 | 1.12 | −72.7% |
+| 96 | 4.38 | 1.58 | −63.9% |
+
+The **kernel itself is both correct and faster** (+25% single-thread). What caps the multi-thread number is the tensor_traits `forward_mul_mat` plumbing — absolute throughput *peaks* at 24t (1.60) and *regresses* at 48/96t, the opposite of the baseline path which scales cleanly to 12t then BW-saturates at ~4.4 t/s. Raw data + detailed analysis: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-24-q8-8x8-kernel/thread-scaling-summary.md`.
+
+**Bottleneck candidates** (unprobed, ranked by likelihood):
+1. **Serialized `from_float` activation quant at ne11=1** — only thread 0 runs, the other 95 hit `ggml_barrier`, which is 28% of decode cycles at 96t per CPU1 Phase 1.3 handoff.
+2. **`disable_chunking = ggml_is_numa()`** kills dynamic work-stealing; each thread gets one static chunk, and any thread slower than average stalls the per-matmul barrier.
+3. **CPU_REPACK buffer may not be THP-backed** (vs baseline's mmap'd GGUF pages, which are 2 MiB under `THP=always`).
+4. **No SW prefetch** in the 8x8 BW kernel — working set per thread is 8× larger than the non-repacked single-row path, so L1 hit rate is likely worse.
+
+These are **tensor_traits plumbing issues that affect every repack-backed ggml type, not a Zen-5 kernel issue**. Q4_K_M via the same path hits 6.84 t/s (Session 14 baseline), which suggests its higher compute-per-byte ratio hides the plumbing cost — Q8_0's simpler 1-byte dot exposes it.
+
+**Recommended follow-up** (on a fresh handoff, out of CPU2 scope):
+- Instrument `forward_mul_mat` with `GGML_PERF=1`-style per-phase timing (activation quant vs barrier vs GEMV) at 1/24/96 threads to isolate which of #1–#4 dominates.
+- If #1 dominates: parallelize `from_float` quant for ne11=1 by striping K-blocks across threads instead of rows. This is a repack-infra fix that would lift *every* repacked quant at ne11=1.
+- If #4 dominates: add `_mm_prefetch(b_ptr[l+1].qs, _MM_HINT_T0)` inside the K-block loop.
+- Cross-check Q4_K_M via `ggml_gemv_q4_K_8x8_q8_K` at 1t vs 24t vs 96t to see whether it shows a muted version of the same scaling pattern.
+
+Kernel is landed behind env gates (`GGML_Q8_0_8X8=1`, `GGML_Q8_0_8X8_AVX=1`) — default OFF, no impact on production paths. Flipping default requires the multi-thread bottleneck to be fixed first.
+
+### 2026-04-23 Phase 1 Target #1 — NEGATIVE RESULT (VNNI falsification, preserved for history)
 
 Implemented the "quick win" Phase 1 Target #1 identified by the Phase 0 audit: ported `ggml_vec_dot_q8_0_q8_0` from AVX2 (256-bit) to AVX-512VNNI (512-bit) inside `ggml/src/ggml-cpu/arch/x86/quants.c`, using the existing `mul_sum_i8_pairs_acc_int32x16` helper in `avx512-helpers.h`. Disassembly verified — `vpdpbusd %zmm,%zmm,%zmm` + `vpabsb %zmm,%zmm` + `vpmovb2m` in the new path vs `{vex} vpdpbusd %ymm,%ymm,%ymm` in the baseline.
 
