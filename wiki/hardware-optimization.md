@@ -233,3 +233,71 @@ Going forward: when `perf report` shows a large overhead percentage inside a qua
 - `handoffs/active/cpu-inference-optimization-index.md` — pickup-sequence + revised priorities.
 - `handoffs/active/cpu-shape-specialized-gemv-decode.md` — deprioritized status + negative-result writeup.
 - `handoffs/active/intra-process-tensor-parallel-decode.md` — Phase 0 gate-passed annotation + data.
+
+---
+
+## 2026-04-24 late: Phase 1.4 shipped, fusion track closed, Zen 5 VNNI surprise
+
+Outcome of the CPU optimization sprint's software-level phase on NPS4:
+
+### Current operating point (reproducible)
+
+```
+GGML_CCD_POOLS=1 GGML_NUMA_WEIGHTS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1 \
+  taskset -c 0-47 llama-server -t 48 --flash-attn on --mlock
+```
+
+- Single-instance peak (llama-bench, `-n 64 -fa 1 -r 5`): **48.81 ± 0.08 t/s** on Qwen3-Coder-30B-A3B Q4_K_M.
+- Layered with production stack (server + spec decode dm=8 + ngram-simple lookup) on code prompts: **58 t/s** (+27% on top of Phase 1.4).
+- 4×48t concurrent aggregate: 77.5 t/s (new baseline after CCD-cpuset hang fix).
+
+### Phase 1.4 (shipped)
+
+`acb1bbdd7` — axis-0-aligned partitioning in element-wise ops (ADD, MUL, SCALE, UNARY) + safe CCD-local between-op barrier downgrade. Together with Phase 1.0/1.1/1.2/1.3 (CCD pools, pinning, work-dist, NUMA_WEIGHTS mempolicy interleave), this represents the full exploitation of CCD-locality in a single-instance decode path. Gains: 40 t/s session-start → 48.81 t/s (+22%). Phase 1.4 profile: barrier 43% → 28%, GEMV steady at ~33.5%, other 28% → 38%.
+
+### Op-fusion infrastructure — reverted (no signal)
+
+`b2154f3f3` (infra) + `9ea5b40e8` (Phase 2 graph-construction) briefly shipped with PPL-bit-exact correctness and a repack-path fusion kernel to handle the Q4_K_M repacked-weight path. Throughput gain on MUL_MAT+ADD fusion: **within ±0.4% noise in both fa=0 and fa=1 modes**. Why it didn't matter: the fused ADD is a tiny 2048-float tensor; the barrier it saves is ~0.5% of per-layer cost; and attention-internal fusion (the other potential target) is already fully handled by `ggml_flash_attn_ext` (single graph op covers Q@K + softmax + V@KQ). With no remaining leverage target, keeping fusion infra meant pure technical debt. Reverted as `c34aac61b` + `138b26cd4`.
+
+**Takeaway**: on models where flash attention is enabled (which is all our production MoE workloads), there is no CPU-general op-fusion lever left to pull. Future fusion work only makes sense if (a) attention is NOT using flash attn for some reason, or (b) we discover a specific multi-op sequence with disproportionately large barrier cost that the Phase 1.4 local-barrier downgrade can't already catch.
+
+### Q4_K GEMV VNNI probe — net-negative on Zen 5 (NOT committed)
+
+Profile showed 33.5% of decode cycles in `ggml_gemv_q4_K_8x8_q8_K` (AVX2 kernel using `_mm256_maddubs_epi16` + `_mm256_madd_epi16`). Straightforward AVX-512VNNI port: replace the 8× `maddubs_epi16` + 7× `add_epi16` + 1× `madd_epi16` chain with 8× `_mm256_dpbusd_epi32` + 1× `_mm256_mullo_epi32`. PPL bit-exact with baseline (10.9882), so correctness holds. Throughput: **tg64 48.81 → 48.18 t/s** (slight regression outside of baseline's tight stddev).
+
+**Root cause — Zen 5 instruction throughput asymmetry**:
+- `VPMADDUBSW` 256-bit: **2 ops/cycle**
+- `VPDPBUSD` 256-bit or 512-bit: **1 op/cycle**
+- `VPMULLD` 256-bit: 1 op/cycle, 3-cycle latency
+
+Total cycle count:
+- AVX2 path: 16 ops / 2 per cycle = **8 cycles/sub-block**
+- VNNI path: 9 ops / 1 per cycle = **9 cycles/sub-block**
+
+The existing AVX2 kernel is actually **better-matched to Zen 5's pipeline** than a VNNI replacement, even though it's nominally more instructions. This contradicts the common assumption that VPDPBUSD always beats maddubs+add+madd — on Zen 5 specifically, maddubs has 2× the throughput of VNNI for this kernel shape. The same negative conclusion now holds for both Q4_K_M (compute-bound candidate, this probe) and Q8_0 (BW-bound, 2026-04-23 probe). Not committed; stash dropped.
+
+**Actionable**: do not port other quantized GEMV kernels (Q5_K, Q6_K, Q2_K, etc.) to VNNI on Zen 5 without a measured A/B. The speed assumption flips on different CPUs (Zen 4, Intel Sapphire Rapids have VNNI-favorable throughput ratios). Revisit if/when we acquire Zen 6 or a different server class.
+
+### llama-bench `-fa` default gotcha
+
+`llama-bench` defaults to `-fa 0` (flash attention OFF) while `llama-perplexity` uses `-fa auto` (which enables it). This is a ~8–10% swing on CPU decode throughput and caused a false "regression" scare this sprint. **Always pass `-fa 1` explicitly when benchmarking decode**. Production `llama-server` uses `--flash-attn on` in the standard stack — that corresponds to `-fa 1` in llama-bench.
+
+### Production-stack composability verified
+
+Before committing to the L3-as-NUMA reboot, layered the production-stack accelerations on top of the Phase 1.4 experimental kernel via `llama-server` + curl (prompt: Python linked-list scaffold, 170 prompt tokens / 256 generated):
+
+| Model | Config | tg (t/s) |
+|---|---|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | base | 45.63 |
+| Qwen3-Coder-30B-A3B Q4_K_M | + spec (dm=8) | **55.47** (+22%) |
+| Qwen3-Coder-30B-A3B Q4_K_M | + spec + ngram-simple | **58.01** (+27%) |
+| Qwen3.5-35B-A3B Q4_K_M (hybrid) | base | 31.25 |
+| Qwen3.5-35B-A3B Q4_K_M (hybrid) | + moe6 + q4_0 KV | 32.61 |
+| Qwen3.5-27B Q4_K_M (dense hybrid) | base | 7.56 |
+| Qwen3.6-27B Q4_K_M (dense hybrid) | base | 7.14 |
+
+All production accelerations compose cleanly with the experimental kernel — no regressions.
+
+### Decision gate: L3-as-NUMA BIOS reboot is next
+
+Every software-level lever on NPS4 has been exercised or ruled out. The 48.81 t/s single-instance peak (Qwen3-Coder-30B-A3B Q4_K_M) represents the ceiling of non-BIOS optimizations. L3aaN would expose **12 NUMA domains (one per CCD)** rather than NPS4's 4, enabling genuine per-CCD weight locality via per-CCD replicas. Expected gain from L3aaN: +10–20% on decode, contingent on whether the 12-domain layout delivers CCD-local reads where the 4-domain NPS4 currently forces cross-channel traffic for most accesses.
