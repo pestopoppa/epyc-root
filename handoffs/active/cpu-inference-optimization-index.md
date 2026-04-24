@@ -8,6 +8,39 @@
 **Updated**: 2026-04-23 (coordinated pickup plan initiated — see §Pickup Sequence below)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
+## ⚑ START HERE if resuming after NPS4 reboot
+
+**Entry point hierarchy for a fresh agent session:**
+1. `handoffs/active/master-handoff-index.md` (top-level — see row 27a/27 for CPU work)
+2. **this file** (`cpu-inference-optimization-index.md`) — all 14 CPU tracks + current status
+3. `handoffs/active/nps-reboot-runbook.md` — step-by-step post-reboot protocol
+
+**Pre-reboot baseline freeze** (for regression detection): `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/pre-nps4-freeze/SUMMARY.md`
+
+**State to re-establish immediately after reboot**:
+- `sudo sysctl kernel.perf_event_paranoid=1`
+- `sudo sysctl kernel.numa_balancing=0`
+- `echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled`
+- `echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag`
+
+**Workspace** (untouched by reboot):
+- `llama.cpp-experimental` on branch `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`)
+- Builds ready: `build-llamafile-on` (OMP production), `build-noomp` (with CPU1 Phase 1.0+1.1 code), `build-vnni-q8` (CPU2 falsified, safe to delete)
+- Microbenches at `/mnt/raid0/llm/cpu-tp-prototype/`: `tp_gemv_bench`, `tp_gemv_numa_bench`
+- libnuma-dev now installed in container (as of 2026-04-24) for Phase 1.3 work
+
+**Tasks queued** (in TaskList): #12 (post-NPS4 re-bench + CPU1 decision), #13 (Phase 1.2 CCD work distribution), #14 (Phase 1.3 NUMA weight mbind), #11 (CPU4 sync primitive — NUMA-independent, can proceed regardless).
+
+## Pending BIOS reboot — NPS2 → NPS4 (scheduled 2026-04-24)
+
+CPU1 Phase 1.0+1.1 measurement under NPS2 showed ceiling ~5% vs OMP production — 2-way NUMA is too coarse on this hardware (node distance 10/12 = 20% cross-node penalty). Reboot to **NPS4** scheduled to test whether 4-way NUMA unlocks meaningful CPU1 gains. Decision tree:
+
+- **NPS4 delivers >10% CPU1 gain** → proceed to CPU1 Phase 1.2 (CCD work distribution) + 1.3 (NUMA weight mbind). Tasks #13/#14.
+- **NPS4 is marginal (<5%)** → second reboot to L3-as-NUMA (12-way) to test upper bound. If L3aaN also marginal → CPU1 is not the right lever on this hardware; shift to CPU4 (task #11 — NUMA-independent) and KV-side memory work.
+- **NPS4 regresses multi-instance production** → rollback to NPS2.
+
+**Full runbook**: [`nps-reboot-runbook.md`](nps-reboot-runbook.md) — pre-reboot freeze baselines, BIOS step-by-step, post-reboot validation, re-benchmark protocol, decision tree, rollback procedure, and all future Phase 1.2/1.3/1.4 work items.
+
 ## Pickup Sequence (2026-04-23)
 
 A coordinated pickup plan launched on 2026-04-23 covers 7 of the 14 backlog items (CPU1, CPU2, CPU3, CPU5, CPU6, CPU7, CPU11) in an ordered sequence; the remaining 7 are gated downstream or owned by other handoffs. Pre-Phase-0 audit resolved several open questions:
@@ -50,7 +83,7 @@ Every agent working on CPU optimization work listed here MUST:
 
 Ordered by expected single-instance decode throughput gain × feasibility.
 
-- [ ] **CPU1 — HIGH (promoted highest)** Intra-process tensor-parallel decode (CCD sharding + comm-hiding) → see `intra-process-tensor-parallel-decode.md`. **Phase 0 gate PASSED 2026-04-23** (192t at 8% of BW roofline; 96t/192t ratio 2.63×; barrier cost 32-45% of cycles measured). **Phase 0 microbench VALIDATED 2026-04-24**: standalone C++ GEMV shows TP 12×16 pattern delivers +5% to +14% over flat OpenMP (and +27% over flat 96t) at DRAM scale. Highest single lever; 2–5× single-instance decode. Pattern splits into Phase 1a (persistent thread pool, ~day) and Phase 1b (per-CCD structure, ~week).
+- [ ] **CPU1 — HIGH (top, NPS-gated)** Intra-process tensor-parallel decode (CCD sharding + comm-hiding) → see `intra-process-tensor-parallel-decode.md`. **Phase 1.0+1.1 IMPLEMENTED 2026-04-24** (per-CCD 2-level barrier + CCD-aware cpumask in ggml, env-var `GGML_CCD_POOLS=1`, noOMP path). Measured under NPS2: neutral vs noOMP flat baseline (CCD 44.85 vs flat 38.87 warm-cache; still 5% behind OMP 47.17). **Ceiling is NPS2 memory fabric**, not the TP primitives. **Next: NPS4 BIOS reboot** (task #12, see runbook), then conditionally Phase 1.2 (CCD-aware work distribution, task #13) + Phase 1.3 (NUMA-bound weight mmap, task #14).
 - [ ] **CPU2 — DEPRIORITIZED 2026-04-23** Shape-specialized GEMV microkernels → see `cpu-shape-specialized-gemv-decode.md`. **Phase 1 Target #1 measurement falsified projection** — AVX-512VNNI port of `ggml_vec_dot_q8_0_q8_0` delivered +1.7% at 96t, −3.6% at 1t on Qwen3.6-27B Q8_0. Decode is BW-bound, not compute-bound; perf cycles in the dot loop are DRAM-wait cycles. Revisit only if prefill/batched decode becomes the target (different regime).
 - [ ] **CPU3 — HIGH** System-level tuning (NPS mode, hugepages, barrier, IRQ, SMT) → see `single-instance-system-tuning.md`. 15–40% alone; a prerequisite for the full CPU1 gain under NPS4/L3aaN. **Zero-reboot knobs partially applied 2026-04-23** (THP→always, numa_balancing=0, 1GB hugepages — net within noise on canonical baseline).
 - [ ] **CPU4 — HIGH (promoted 2026-04-23)** Per-CCD hierarchical sync primitive (was part of CPU3 Phase 3). 32–45% of decode cycles measured in OpenMP barriers — standalone HIGH lever independent of CPU1. 10–30% barrier cost reduction at 192t.
@@ -73,7 +106,7 @@ Items CPU1–CPU8 are the active backlog. CPU9–CPU14 are watchlist items; purs
 
 | ID | Handoff / work | Status | Priority | Gain target | Blocks / blocked by |
 |----|---------------|--------|----------|-------------|---------------------|
-| CPU1 | [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) | **Phase 0 microbench validated 2026-04-24** | **HIGH (top)** | 2–5× single-instance projected; +5-14% single-GEMV measured | Phase 1a persistent pool (~day), Phase 1b per-CCD (~week); microbench code at `/mnt/raid0/llm/cpu-tp-prototype/` |
+| CPU1 | [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) | **Phase 1.0+1.1 implemented, NPS2-gated 2026-04-24** | **HIGH (top, NPS-gated)** | NPS2 ceiling ~5% (measured); NPS4/L3aaN upper bound TBD | Phase 1.2 (work dist, ~3d) + Phase 1.3 (NUMA weights, ~3d) gated on NPS4 reboot showing >10% gain. Code in `build-noomp`. |
 | CPU2 | [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) | **Phase 1 Target #1 FALSIFIED 2026-04-23** | DEPRIORITIZED | Measured +1.7% at 96t (not 1.46×); BW-bound not compute-bound | Revisit only for prefill/batched decode regime |
 | CPU3 | [`single-instance-system-tuning.md`](single-instance-system-tuning.md) | **Phase 0 + zero-reboot knobs partial 2026-04-23** | HIGH | 15–40% alone; gating multiplier for CPU1 | Phase 2 requires reboot; coordinates with CPU1 Phase 3 |
 | CPU4 | Per-CCD sync primitive | **Promoted 2026-04-23 based on 32-45% measured barrier cost** | **HIGH (standalone)** | 10–30% barrier cost reduction | Independent of CPU1; +16-22% end-to-end projected |
