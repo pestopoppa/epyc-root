@@ -319,3 +319,17 @@ Same stack, code-completion prompt, via llama-server + curl:
 | Qwen3.6-27B (dense hybrid) | Q8_0 | base | 4.36 |
 
 Q4→Q8 ratios: **0.71 on 35B-A3B hybrid** (SSM compute partially amortizes the BW doubling), **0.61 on 27B dense hybrid** (closer to the pure BW ratio since dense weights dominate). MoE expert reduction (moe6 + q4_0 KV) scales with Q4 and Q8: +4% on Q4, +12% on Q8 — the expert-reduction gain grows when BW cost per expert is larger. No Q8-specific kernel bugs observed.
+
+### x86 K-quant + Q8_0 repack dispatcher gaps (2026-04-24)
+
+`ggml/src/ggml-cpu/repack.cpp:ggml_repack_get_optimal_repack_type` has NEON-only dispatch branches for `GGML_TYPE_Q5_K`, `GGML_TYPE_Q6_K`, and `GGML_TYPE_Q8_0`. On x86 these types fall through to `nullptr` → tensors remain in the non-repacked layout and run the single-row `ggml_vec_dot_*` kernels from `arch/x86/quants.c`.
+
+Profile consequences on Qwen3.6-27B (dense hybrid) decode:
+- Q4_K_M quant: 49.3% cycles in `ggml_gemv_q4_K_8x8_q8_K` (repacked AVX2, fast), **18.2% in `ggml_vec_dot_q6_K_q8_K` (non-repacked)**, 4.6% in `ggml_vec_dot_q5_K_q8_K` (non-repacked). Unsloth's imatrix Q4_K_M aggressively uses Q6_K for `attn_qkv.weight` and `ffn_down.weight` — the biggest non-expert tensors per layer.
+- Q8_0 quant: **77.4% cycles in `ggml_vec_dot_q8_0_q8_0` (non-repacked single-row)**. All Q8 workloads are throttled by this single-row kernel.
+
+Gradient test on 2026-04-24 — flipping the dispatcher to use the existing `*_generic` C implementations for Q5_K/Q6_K produced **−66% to −71% regression** (generic kernels are scalar C with triple-nested loops; they don't auto-vectorize well enough to match the hand-tuned AVX2 `vec_dot_*`). For Q8_0 the generic 4x8 kernel is **neutral** (no sub-block scales → simpler, auto-vectorizes to AVX2-equivalent).
+
+Conclusion: the plumbing is sound but the kernel side is missing. Writing hand-optimized AVX-512BW 8x8 repacked GEMV kernels for Q8_0 (biggest win: 77% cycle share, simplest kernel) and Q6_K (18% on Q4_K_M dense, more complex due to 4+2 bit unpack) is the next real software-level lever after L3aaN. Use AVX-512BW width (`_mm512_maddubs_epi16` + `_mm512_madd_epi16`) — NOT VPDPBUSD — because Zen 5's maddubs has 2/cycle throughput vs VNNI's 1/cycle. Expected gain: +40-70% on Q8 decode, +7-10% on Q4_K_M dense.
+
+Effort: 4-6 hours per kernel. Deferred pending L3aaN reboot (higher ROI, zero code risk).
