@@ -2,8 +2,8 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
-**Sources**: 24 documents (2 deep-dives, 3 handoffs, 19 intake entries)
+**Last compiled**: 2026-04-25
+**Sources**: 25 documents (2 deep-dives, 4 handoffs, 19 intake entries)
 
 ## Summary
 
@@ -76,6 +76,18 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 - **GLM-5.1-555B-A14B-REAP GGUF is the first 555B MoE with published GGUF benchmarks.** 325GB Q4_K_M, 14B active parameters from 192 experts (top-8 routing), 88% Terminal-Bench, 66% SWE-bench Pro, 0% repetition loops. CPU-deployable via llama.cpp. Evaluation handoff created: glm51-reap-cpu-evaluation.md. [intake-427]
 
 - **Expert count threshold finding confirms 25-30% as the pruning sweet spot.** 192/256 experts (25% prune) = stable with 0% degeneration; 154/256 experts (40% prune) = BROKEN with 29% degeneration. This aligns with the Goldilocks zone finding from 0xSero's MiniMax-M2.1 stress tests, independently confirming that 25-30% pruning is near-lossless while 40%+ risks catastrophic quality collapse on large-expert-count architectures. [intake-427]
+
+### Inter-process Expert Parallelism (CPU15 Phase 3, 2026-04-25)
+
+After REAP made REAP-246B production-viable in absolute terms, the open question shifted to whether *single-stream* throughput on large MoE could exceed the 6.16 t/s Phase 0 baseline by sharding active expert compute across NUMA nodes. Phase 1/2 intra-process attempts (per-CCD expert sharding inside one llama.cpp process) all D3-failed: the fundamental limitation is ggml's sequential-per-op graph executor — even with sharding, all threads still execute op N together with global barriers, so per-NUMA parallelism isn't achievable inside one process. **Phase 3 escapes that constraint by running N independent llama.cpp processes connected via shared-memory IPC, each computing 1/N of experts at every MoE op.** The IPC primitive (`ep_dispatcher` library, [Phase 3.1 prototype](../../cpu-ep-prototype/)) achieves 0.73 μs RTT for 4 NUMA-pinned workers — ~200× under the viability threshold.
+
+The integration into `llama.cpp-experimental:feature/cpu-ep-inter-process` landed 8 commits in one session: bootstrap fork at `ggml_cpu_init`, IPC harness inside `ggml_compute_forward_mul_mat_id`, expert slicing (`cur_a % ep_n_inst != ep_my_id`) with parallel sum-reduce + merged broadcast, NUMA pinning, worker drone mode (workers skip non-MoE ops and receive src1+ids from master at each MoE op), and multi-node pinning with MPOL_INTERLEAVE on the per-instance node block. Output is bit-exact to single-instance baseline at every smoke-test configuration.
+
+**Best EP throughput achieved**: 21.2 t/s on gemma-4-26B-A4B-it Q4_K_M = 76% of single-instance baseline 28.0 t/s (configuration: `GGML_EP_NUMA_PIN=1 GGML_EP_WORKER_DRONE=1`, N=2, 48t per instance, multi-node pin master→[0,1] worker→[2,3]). Notable: process-wide `MPOL_INTERLEAVE` (set by `GGML_NUMA_WEIGHTS=1`) and llama.cpp's `--numa distribute` thread placement both *fight* per-instance pinning by trying to spread compute or pages across all 4 nodes regardless of EP partition — the EP-pinned config wins by NOT setting them.
+
+**Open at session end**: throughput is below baseline because workers each mmap the full GGUF, so the 1/N experts they actually compute aren't on their local node. Step (e.1) GGUF expert sharding (next session) addresses this by allocating only the kept slice per expert tensor in a node-local anon-mmap and rewriting `tensor->data`. Combined with the existing drone-mode + multi-node-pin, this should close the gap and deliver the D3' ≥+20% gate over 6.16 t/s on REAP-246B.
+
+[CPU15 handoff](../handoffs/active/large-moe-expert-parallelism.md), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
 
 ### MoE Serving and Offloading Research
 

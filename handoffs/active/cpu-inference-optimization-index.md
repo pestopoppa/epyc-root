@@ -139,7 +139,7 @@ Items CPU1–CPU8 and CPU15 are the active backlog. CPU9–CPU14 are watchlist i
 | CPU12 | BOLT / FDO binary post-link | not started | LOW | 1–3% | Low-risk; mature tooling |
 | CPU13 | Prefill optimizations | deferred (from v3 rebuild) | LOW | Prefill-specific | Not decode-critical |
 | CPU14 | `--parallel` slot decode bench | not started | LOW | Aggregate only | Covered partially by `dynamic-stack-concurrency.md` |
-| CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 0 LANDED 2026-04-24, D1 gate FAILS → Phase 1 warranted** | **HIGH** | REAP-246B 6.14 t/s @96t, M2.7 10.23 t/s @48t (33% BW vs hybrid 25%, dense 44%); Phase 1 EP target 2-5× | Phase 1 reuses CPU1 P1.2 substrate; Phase 0 confirmed no auto-fix from MoE alone |
+| CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 3.2 a→e.2 LANDED 2026-04-25** (8 commits on `feature/cpu-ep-inter-process`); functionally complete, bit-exact, **21.2 t/s = 76% of single-instance baseline on gemma-26B-A4B Q4_K_M** | **HIGH** | Phase 3.0 IPC RTT 0.73 μs validates harness; Phase 3.1 library `f47bec4`; expert slicing + gather + sum-reduce + drone mode + multi-node pin all live; **e.1 GGUF expert sharding next** for memory + locality, then PPL gate (f) and D3' throughput gate (g) ≥+20% over 6.16 t/s on REAP-246B | Phase 1/2 intra-process EP attempts (2026-04-25) all D3-failed due to ggml's sequential graph executor; Phase 3 inter-process escapes that constraint |
 
 ---
 
@@ -334,3 +334,4 @@ After completing any task listed here:
 
 - 2026-04-23: Initial creation. CPU1/CPU2/CPU3 stubs populated; CPU4–CPU14 watchlist added.
 - 2026-04-24: CPU15 added ([`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md)). Rationale: all CPU-general software levers exhausted on single-instance NPS4; the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s) indicates large sparse MoE + expert parallelism is the next open axis. Multi-instance deployment section updated to reference CPU15.
+- 2026-04-25: CPU15 Phase 3.2 a→e.2 LANDED. Inter-process Expert Parallelism functionally complete and bit-exact across all configurations tested. 8 commits on `llama.cpp-experimental:feature/cpu-ep-inter-process` plus 5 docs commits on `epyc-root:main`. Best EP throughput 21.2 t/s = 76% of single-instance baseline 28 t/s on gemma-4-26B-A4B-it Q4_K_M. **Throughput is the open problem**: workers each mmap full GGUF so the 1/N experts they actually compute aren't on their local node. Step (e.1) GGUF expert sharding next.
