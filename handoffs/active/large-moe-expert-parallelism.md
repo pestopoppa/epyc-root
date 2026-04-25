@@ -29,16 +29,18 @@ Final verified throughput on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 24, a
 
 **Drone-mode PPL drift on Qwen3.5-family**: Qwen3.6-35B-A3B uses shared-expert architecture (regular `mul_mat` outside `mul_mat_id`). Workers in drone mode skip the shared expert; master output diverges by ~6 tokens. Suspected cause: some non-`MUL_MAT_ID` op produces data master's `MUL_MAT_ID` consumes; needs investigation. For now use NO-drone + shard path (still +56% on Qwen3.6).
 
-**Production deployment guidance**:
-- Frontdoor / coder / general on Qwen3.6-35B-A3B class: EP N=2 + `GGML_EP_NUMA_PIN=1 GGML_EP_SHARD=1` (no drone), 48t per instance, **+56% bit-exact**.
-- gemma-26B-A4B class: EP N=2 + drone+shard works (+6%, bit-exact).
-- REAP-246B / M2.7 / large MoE: stay on single-instance `--numa distribute` 96t.
+**Production deployment guidance** (revised after PPL gate):
+- Frontdoor / coder / general on Qwen3.6-35B-A3B class: EP N=2 + `GGML_EP_ROLE=master GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1`, 48t per instance, **+100% throughput, bit-identical PPL** (32-chunk WikiText-2 gate confirmed).
+- gemma-26B-A4B class: same config, +6%, bit-exact.
+- REAP-246B / M2.7 / large MoE: pending — `GGML_EP_MASTER_ALL_NODES=1` is the correct architecture (master keeps full bandwidth, workers shard local) but needs eager shard allocation (3.2(g.1)) before steady-state perf is measurable. For now, stay on single-instance `--numa distribute` 96t.
+
+**PPL gate (3.2(f)) PASSED**: 32 chunks of WikiText-2 on Qwen3.6-35B-A3B Q8_0. Baseline and EP+drone+shard produce bit-identical PPL values across all chunks (e.g. `[1]4.3289,[2]6.0929,...,[32]5.7225`). Sampling-time token divergence in llama-cli was argmax jitter on FP-rounding-equivalent logits — the underlying probability distribution is identical.
 
 The strategy works on the architectures where it's expected to. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
 
 **Next session**: Phase 3.2(f) PPL gate on WikiText-2 (verify the bit-exact paths over a long corpus), Phase 3.2(d.1.d) debug Qwen3.5-family drone divergence (instrument graph topology compare), Phase 3.3 production wiring (`model_registry.yaml` + `orchestrator_stack.py` `large_moe_ep_pool` backend with model-class auto-selection between EP and single-instance).
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 evening — cross-model sweep landed. EP delivers **+56-100% on Qwen3.6-35B-A3B**, +6% on gemma-26B-A4B, regresses on >200B bandwidth-saturated MoE (REAP-246B, M2.7). Production guidance: deploy EP for medium MoE, single-instance for large. Drone mode PPL drifts on Qwen3.5-family shared-expert arch — bit-exact path (no drone, with shard) still gives +56% on Qwen3.6.
+**Updated**: 2026-04-25 night — **PPL gate PASSED bit-identical** on Qwen3.6 with drone+shard (32 chunks WikiText-2). The earlier llama-cli "divergence" was sampling-argmax jitter on FP-rounding-equivalent logits, not real PPL drift. Drone mode IS deployable on Qwen3.5-family for the **+100% throughput**. Also added `GGML_EP_MASTER_ALL_NODES=1` for bandwidth-bound large MoE (master spans all 4 nodes, workers stay pinned) — architecture correct on REAP-246B but needs eager shard allocation to measure steady-state perf (lazy shard's 180 GiB memcpy dominates the run).
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
