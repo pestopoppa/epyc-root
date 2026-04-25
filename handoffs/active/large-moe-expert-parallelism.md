@@ -484,6 +484,8 @@ Master's parallel sum-reduce after gather can still use all 96 threads — that'
 
 **Effort**: 2-3 hours for the basic spin-park version + smoke test on REAP-246B. 4-6 hours for the futex-based refinement if perf measurement shows the spinning costs are non-trivial.
 
+**Status update 2026-04-25 night**: code landed in `62c63cd3f` on `llama.cpp-experimental:feature/cpu-ep-inter-process`. ~30 LOC inside `ggml_compute_forward_mul_mat_id`'s existing EP block — no threadpool internals surgery. Env-gated by `GGML_EP_MASTER_PARK=1`, default OFF so symmetric configs (Qwen3.6 N=2 multi-node-pin) are unchanged. Steady-state perf measurement on REAP-246B requires eager-shard (g.1) first because lazy-shard's ~180 GiB total memcpy dominates the llama-bench window. Code is correctness-verified (builds clean, regression test on Qwen3.6 with park OFF runs unchanged). **Order of next-session work: (g.1) eager-shard → re-measure REAP-246B with (g.0) + (h) + (g.1) stack. Predicted ~13 t/s = +93% over baseline 6.89 t/s.**
+
 ---
 
 #### Phase 3.3 (REVISED post-3.2) — Production wiring with env-var bootstrap
