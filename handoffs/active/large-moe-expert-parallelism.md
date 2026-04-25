@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: Phase 1a+1b LANDED 2026-04-25 — D3 gate FAILS, mbind on MAP_SHARED can't move cached pages; Phase 2 needs anonymous-mmap'd experts
+**Status**: Phase 1a+1b+2 LANDED 2026-04-25 — D3 gate FAILS for all three; intra-process EP exhausted on this hardware/model
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 1 implementation + measurements; D3 gate verdict)
+**Updated**: 2026-04-25 (Phase 2 anon-copies implementation + measurements; full intra-process EP exhausted)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -266,7 +266,10 @@ Populate as phases execute.
 | 2026-04-25 | P1a | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + `GGML_EXPERT_CCD_SHARDING=1` | 48 | 2K | 6.25±0.02 | 33% | same |
 | 2026-04-25 | P1a+1b | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING=1 + EP_CCD_LAYOUT=1 | 96 | 2K | 6.15±0.02 | 33% | same |
 | 2026-04-25 | P1+REPL | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING + NUMA_REPLICATE + redirect | 96 | 2K | 3.90±0.01 | 21% (replica overhead) | same |
-| | P2 | Qwen3-235B-A22B | Q4_K_M | 4-instance inter-process EP, 4×24t | 24×4 | 2K | TBD | TBD | TBD |
+| 2026-04-25 | P2 | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + ANON_COPIES (no SHARDING) | 96 | 2K | 6.13±0.00 | 33% | `data/cpu_optimization/2026-04-25-large-moe-ep-phase2/` |
+| 2026-04-25 | P2 | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING + EP_ANON_COPIES | 96 | 2K | **5.88±0.01** | 31% (regression) | same |
+| 2026-04-25 | P2 | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING + EP_ANON_COPIES | 48 | 2K | 5.93±0.02 | 32% (regression) | same |
+| | P2 (inter-proc) | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | 4-instance inter-process EP, 4×24t | 24×4 | 2K | TBD | TBD | TBD |
 
 ---
 
@@ -343,3 +346,35 @@ After each phase:
     - (revert of REPLICATE redirect that regressed; not committed)
 
     Code is correct, env-gated, PPL-preserved. It composes cleanly with future Phase 2 work but doesn't move the throughput needle alone.
+
+- **2026-04-25 (later)**: Phase 2 anonymous-mmap-experts approach implemented + measured. Side-steps Phase 1b's file-mmap-mbind limitation by allocating anonymous mmaps per NUMA node sized to hold each node's expert share, mbind'ing each region BEFORE memcpy (so first-touch reliably places pages). Compute-time `mul_mat_id` redirect via `ggml_ep_anon_lookup_()` registry.
+    - Commit `9ccb00245` on `feature/cpu-ep-intra-process`. Default OFF behind `GGML_EXPERT_ANON_COPIES=1`. Memory: 131.7 GiB anon (~33 GiB/node avg) for REAP-246B vs 138 GiB file mmap — 95% extra rather than 4× as in `NUMA_REPLICATE`.
+    - **Correctness verified**: PPL = 9.3042 ± 0.991 with `EP_SHARDING=1 EP_ANON_COPIES=1`, BIT-EXACT identical to baseline. Load-time log line confirms the 186 expert tensors / 131.7 GiB are split across the 4 nodes correctly.
+    - **Throughput on REAP-246B Q4_K_M @ 96t**:
+
+      | Config | t/s | Δ vs baseline |
+      |---|---|---|
+      | Baseline | 6.16 ± 0.01 | — |
+      | `EP_ANON_COPIES=1` (no SHARDING; redirect path inactive) | 6.13 ± 0.00 | −0.5% |
+      | `EP_SHARDING=1 + EP_ANON_COPIES=1` (full Phase 2) | 5.88 ± 0.01 | **−4.5%** |
+
+      D3 gate FAILS again. The anon copies are correctly placed (load-time log confirms 33 GiB/node), the redirect fires (PPL bit-exact), but throughput regresses.
+
+    **Why Phase 2 regresses despite correct locality**: post-mortem analysis suggests **load imbalance** is the actual binding constraint for static-modulo expert sharding on this model:
+
+    1. REAP-246B has 80 experts × top-8 active ≈ 10% activation rate per token.
+    2. With `e mod n_ccd` assignment: 80 / 12 CCDs ≈ 6.67 experts per CCD.
+    3. Top-8 active under random selection: ~8/12 = 0.67 active experts per CCD per token in expectation. Variance is non-trivial — some CCDs get 0 active experts (idle), others get 2 (bottleneck).
+    4. Wall time per layer = max-CCD-time. The slowest CCD (with the most active experts) gates the entire layer.
+    5. Theoretical BW math: 132 ns avg latency under interleave vs 80 ns local pinned → ~65% speedup possible. Realized: load imbalance + redirect overhead + hardware prefetcher working better on the file mmap's contiguous expert layout than on the strided per-node anon layout → net −4.5%.
+
+    **Phase 2's anon-copies infrastructure is valid; static-modulo expert sharding is the wrong dispatch policy** for top-K sparse activation. The architectural fix is dynamic expert dispatch (observe which experts are active per token, route them to free CCDs), but that's a substantially deeper change.
+
+    **All three intra-process EP variants ship as env-gated, PPL-preserved scaffolding** for the next push (inter-process EP per Phase 2 of the original handoff scope, 2-3 weeks). Not flipped on by default; baseline behavior unchanged.
+
+    Branch state on `feature/cpu-ep-intra-process` (3 commits ahead of `cpu-optimization/q8-8x8-avx512bw`):
+    - `8d0428a97` Phase 1a — per-CCD work distribution
+    - `c98c0123c` Phase 1b — per-expert mbind layout (no measurable effect; file-mmap limitation)
+    - `9ccb00245` Phase 2 — anonymous-mmap'd expert-only NUMA copies + redirect
+
+    PPL bit-exact on all configurations. The intra-process EP track is **exhausted** as a CPU2-style "drop-in kernel improvement" — the remaining theoretical gain (~65% from full local pinning) is gated by the load-imbalance problem, which requires a dispatch-policy redesign rather than a memory-placement fix.
