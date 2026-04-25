@@ -18480,3 +18480,158 @@
     coding eval — decision gate for coder_escalation swap; (3) explicitly DO NOT run CPU
     spec-dec experiments (architecturally foreclosed); bookmark 4090 spec-dec numbers for
     GPU-acquisition trigger only.
+- id: intake-456
+  arxiv_id: null
+  url: https://www.ahmadosman.com/blog/do-not-use-llama-cpp-or-ollama-on-multi-gpus-setups-use-vllm-or-exllamav2/
+  source_type: blog
+  title: 'Stop Wasting Your Multi-GPU Setup With llama.cpp: Use vLLM or ExLlamaV2 for Tensor Parallelism'
+  authors:
+  - Ahmad M. Osman
+  publication_date: '2025-02-07'
+  categories:
+  - inference_serving
+  - local_inference
+  - hardware_optimization
+  key_claims:
+  - llama.cpp does not support batch inference and is unsuitable for multi-request serving
+  - llama.cpp's only valid use case is CPU offloading when GPU VRAM is insufficient
+  - Multi-GPU setups should use tensor parallelism via vLLM or ExLlamaV2 (TP "loves 2^n")
+  - Ollama is dismissed as a thin llama.cpp wrapper with no TP support
+  - llama.cpp's concurrent request handling is "more on the software threading side" rather than genuine parallelism
+  techniques:
+  - tensor parallelism (multi-GPU)
+  - vLLM serving
+  - ExLlamaV2 + EXL2 quantization
+  - GGUF (referenced as comparison)
+  reported_results:
+  - 'DeepSeek v2.5 236B BF16 on AMD Epyc Milan 7713 + 512GB DDR4-3200: ~1 token/second (CPU-only)'
+  - 'Llama 3.1 70B BF16 on 8x RTX 3090 with vLLM tensor parallelism: ~800 tokens/second batch'
+  - '50 async ~2k-token requests on 8x GPU vLLM TP: 2 min 29 sec total'
+  referenced_arxiv_ids:
+  - '1706.03762'
+  novelty: low
+  relevance: low
+  credibility_score: 1
+  contradicting_evidence:
+  - 'Author claim "llama.cpp concurrent serving is just software threading" contradicts our local CPU finding (project_concurrent_split_throughput memory, 2026-04-24): 4x48t -> 32x6t NUMA-aware concurrent split delivered +44-58% aggregate throughput with zero code change on EPYC 9655. The claim is GPU-true, CPU-false on Zen5/NPS4.'
+  - 'Author cites only one CPU data point (DeepSeek 236B BF16 on Epyc Milan / DDR4) — not generalizable to Zen5/DDR5/Q4 stacks. No methodology disclosed.'
+  - 'Blog is single-author opinion, no peer review; commercial-adjacent advocacy for vLLM/ExLlamaV2.'
+  verdict: not_applicable
+  ingested_date: '2026-04-25'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - intra-process-tensor-parallel-decode.md
+    - cpu-inference-optimization-index.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Pure GPU-TP advocacy with one anecdotal CPU data point. No new techniques, no NUMA / kernel /
+    threading / quantization insight. TP "loves 2^n" and vLLM serving are well-covered in our
+    existing chapters and handoffs. Single CPU number (BF16 dense 236B on Zen3/DDR4) is a generic
+    BW-roofline anchor, not novel knowledge.
+  relevance_justification: >
+    Low. Our stack is opensource-only, CPU-only on EPYC 9655 Zen5 + DDR5 NPS4. The blog's
+    actionable recommendations (buy 8x GPU, use vLLM/ExLlamaV2) are out of scope per
+    user_hardware memory and feedback_opensource_only memory. The CPU comment exists only as a
+    strawman to motivate the GPU pivot. None of the blog's specific techniques port to CPU
+    decode optimization on Zen5 / Q4_K_M / NPS4.
+  verdict_justification: >
+    not_applicable. The post adds nothing to the active CPU optimization tracks
+    (intra-process-tensor-parallel-decode, cpu-inference-optimization-index): no new technique,
+    no new arxiv reference, no measurement methodology. Cross-references recorded for traceability
+    only — handoffs not updated because doing so would be noise. Filed as external BW-roofline
+    anecdote.
+  notes: >
+    External BW-roofline sanity-check: blog reports ~1 t/s for DeepSeek v2.5 236B BF16 on Epyc
+    Milan 7713 + DDR4-3200. Reconciles with our 39-49 t/s on 30B-A3B Q4_K_M (Zen5/DDR5/NPS4):
+    Q4 vs BF16 ~4x weight-traffic reduction, 30B-MoE-active-3B vs 236B-dense ~9-10x active
+    params, Zen5+DDR5 vs Zen3+DDR4 ~1.5-2x BW. Author's dismissal of llama.cpp concurrent
+    serving as "software threading only" is contradicted by project_concurrent_split_throughput
+    finding on Zen5. Cited llama.cpp issue #9086 (TP support) is already adjacent to our
+    intra-process-tensor-parallel-decode handoff but blog adds no new insight there.
+- id: intake-457
+  arxiv_id: '2604.21254'
+  url: https://arxiv.org/abs/2604.21254
+  source_type: paper
+  title: Hyperloop Transformers
+  authors:
+  - Abbas Zeitoun
+  - Lucas Torraba-Hennigen
+  - Yoon Kim
+  publication_date: '2026-04-23'
+  categories:
+  - local_inference
+  - quantization
+  - training_distillation
+  key_claims:
+  - Three-block Transformer (begin / middle / end) with recurrence applied only to the middle block reduces parameter count by ~50% vs depth-matched baselines while matching or exceeding their quality
+  - Hyper-connections (matrix-valued residual streams) augment the looped middle block with minimal parameter overhead, and are placed only after the loop
+  - Quality advantage is preserved after post-training weight quantization, supporting memory-constrained deployment
+  - Targeted at memory-efficient language modeling for on-device / memory-constrained applications
+  techniques:
+  - looped transformers (layer reuse across depth)
+  - three-block architectural decomposition (begin / middle / end)
+  - hyper-connections / matrix-valued residual streams
+  - post-training quantization compatibility
+  reported_results:
+  - '~50% fewer parameters than depth-matched baselines with superior or matching performance (no concrete benchmark numbers in abstract — paper-body extraction not performed)'
+  - 'Quality preserved after post-training quantization (qualitative claim, no numeric delta in abstract)'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  contradicting_evidence:
+  - 'Parameter-reduction is not equivalent to DRAM-bandwidth reduction on CPU. Per feedback_cpu_decode_bw_bound (CPU decode is BW-bound on EPYC 9655) and project_cpu1_software_levers_exhausted, our bottleneck is unique-weight DRAM traffic per token. A looped middle block reuses the SAME weights across iterations: traffic per forward pass = unique-weight bytes × loop_count IF weights do not stay L3-resident. For our 30B-A3B Q4 (~14 GB active) or 27B Q4 (~14.9 GB active), looped weights cannot fit in L3 (256 MB) — so parameter reduction at fixed effective depth offers no per-token DRAM-traffic win on Zen5. Looping helps memory FOOTPRINT (model size on disk / RAM) but not BW-bound decode throughput at our model scale.'
+  - 'Looped architectures require non-standard inference (shared-weight recurrence + special handling for any adaptive halting). Per intake-332 (Ouro) deep-dive: llama.cpp compatibility is doubtful for this class; GGUF conversion needs special handling for recurrence. Yoon Kim Hyperloop has no public implementation yet (2 days post-submission).'
+  - 'Three-block architecture with recurrence-only-in-middle complicates KV cache layout vs standard transformer — practical inference engines may not support the pattern out of the box.'
+  verdict: worth_investigating
+  ingested_date: '2026-04-25'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - inference-acceleration-index.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-332
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Combination is fresh — looped transformers (Universal Transformers, Ouro) and hyper-
+    connections (ByteDance 2025) are pre-existing primitives, but their composition with
+    a three-block (begin / middle / end) decomposition where recurrence applies only to the
+    middle and hyper-connections are post-loop is a specific architectural contribution. Not
+    high-novelty (extends a well-mapped family already in the index) but a new perspective
+    worth tracking.
+  relevance_justification: >
+    Low. We do not train models in this stack — our pipeline is "select pretrained GGUF →
+    quantize → CPU-decode optimize." Hyperloop is a from-scratch architecture requiring
+    pretraining and would need llama.cpp arch support before it could even be loaded for CPU
+    inference (cf. Ouro deep-dive — looped arch is not standard transformer inference and
+    GGUF conversion is non-trivial). Even hypothetically: parameter reduction does not reduce
+    DRAM traffic per token at our model scale (>L3), which is the actual decode bottleneck
+    per feedback_cpu_decode_bw_bound. Bookmark only.
+  verdict_justification: >
+    worth_investigating (bookmark). The architecture pattern is interesting if/when we ever
+    train a small CPU-friendly draft, classifier, or router (cf. project_learned_routing_
+    controller — currently MLP routing classifier @ 92% val acc; future iterations might
+    benefit from a parameter-efficient small-LM head). Action: NONE for current 30B/27B
+    targets. Re-check if (a) a public Hyperloop implementation appears, (b) we move to GPU
+    where compute-cycle savings become as valuable as DRAM-traffic savings, or (c) we kick
+    off any from-scratch small-model training.
+  notes: >
+    Extracted from abstract only — paper body not crawled. Authors include Yoon Kim (MIT,
+    known NLP contributor). Submitted 2026-04-23. No public implementation as of intake date
+    (2026-04-25, 2 days post-submission). Family connections in our index: intake-332 (Ouro,
+    ByteDance recurrent-depth LM with measured CPU feasibility note) and the OpenMythos
+    recurrent-depth-transformer hypothesis entry. Together these suggest a re-evaluation of
+    looped LMs as small-model candidates IF llama.cpp gains arch support. Until then: filed
+    as bookmark; no handoff updated because nothing actionable on current CPU-decode targets.
