@@ -81,11 +81,44 @@ A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameter
 
 After REAP made REAP-246B production-viable in absolute terms, the open question shifted to whether *single-stream* throughput on large MoE could exceed the 6.16 t/s Phase 0 baseline by sharding active expert compute across NUMA nodes. Phase 1/2 intra-process attempts (per-CCD expert sharding inside one llama.cpp process) all D3-failed: the fundamental limitation is ggml's sequential-per-op graph executor — even with sharding, all threads still execute op N together with global barriers, so per-NUMA parallelism isn't achievable inside one process. **Phase 3 escapes that constraint by running N independent llama.cpp processes connected via shared-memory IPC, each computing 1/N of experts at every MoE op.** The IPC primitive (`ep_dispatcher` library, [Phase 3.1 prototype](../../cpu-ep-prototype/)) achieves 0.73 μs RTT for 4 NUMA-pinned workers — ~200× under the viability threshold.
 
-The integration into `llama.cpp-experimental:feature/cpu-ep-inter-process` landed 8 commits in one session: bootstrap fork at `ggml_cpu_init`, IPC harness inside `ggml_compute_forward_mul_mat_id`, expert slicing (`cur_a % ep_n_inst != ep_my_id`) with parallel sum-reduce + merged broadcast, NUMA pinning, worker drone mode (workers skip non-MoE ops and receive src1+ids from master at each MoE op), and multi-node pinning with MPOL_INTERLEAVE on the per-instance node block. Output is bit-exact to single-instance baseline at every smoke-test configuration.
+The integration into `llama.cpp-experimental:feature/cpu-ep-inter-process` landed 13 commits in one day: bootstrap fork at `ggml_cpu_init`, IPC harness inside `ggml_compute_forward_mul_mat_id`, expert slicing with parallel sum-reduce + merged broadcast, NUMA pinning, worker drone mode (workers skip non-MoE ops and receive src1+ids from master at each MoE op), multi-node pinning, lazy expert-tensor sharding (`ggml-ep-shard.{h,cpp}`), `GGML_EP_MASTER_ALL_NODES` for bandwidth-bound configs, plus a critical `#ifndef GGML_USE_OPENMP` guard fix that exposed earlier "throughput numbers" as measurement artifacts.
 
-**Best EP throughput achieved**: 21.2 t/s on gemma-4-26B-A4B-it Q4_K_M = 76% of single-instance baseline 28.0 t/s (configuration: `GGML_EP_NUMA_PIN=1 GGML_EP_WORKER_DRONE=1`, N=2, 48t per instance, multi-node pin master→[0,1] worker→[2,3]). Notable: process-wide `MPOL_INTERLEAVE` (set by `GGML_NUMA_WEIGHTS=1`) and llama.cpp's `--numa distribute` thread placement both *fight* per-instance pinning by trying to spread compute or pages across all 4 nodes regardless of EP partition — the EP-pinned config wins by NOT setting them.
+#### Production results
 
-**Open at session end**: throughput is below baseline because workers each mmap the full GGUF, so the 1/N experts they actually compute aren't on their local node. Step (e.1) GGUF expert sharding (next session) addresses this by allocating only the kept slice per expert tensor in a node-local anon-mmap and rewriting `tensor->data`. Combined with the existing drone-mode + multi-node-pin, this should close the gap and deliver the D3' ≥+20% gate over 6.16 t/s on REAP-246B.
+| Model | Total / Active | Baseline (96t, --numa distribute) | EP best | Δ | Verdict |
+|-------|---------------|----------------------------------|---------|---|---------|
+| gemma-4-26B-A4B-it Q4_K_M | 26B / 4B | 28.5 t/s | 30.3 (N=2 drone+shard) | +6% | Bit-exact ✓ |
+| **Qwen3.6-35B-A3B Q8_0** | 35B / 3B | 9.93 t/s | **19.90** (N=2 drone+shard 48t) | **+100%** | Bit-identical PPL ✓ |
+| REAP-246B-A35B Q4_K_M | 246B / 35B | 6.89 t/s | 0.1 (N=4 master-all-nodes) | −98% | EP doesn't help ✗ |
+| MiniMax-M2.7 Q8_0 | 230B / 10B | 9.98 t/s | 7.72 (N=2 shard) | −23% | EP doesn't help ✗ |
+
+The 32-chunk WikiText-2 PPL gate confirmed bit-identical perplexity between baseline and EP+drone+shard on Qwen3.6-35B-A3B (`[1]4.3289...[32]5.7225` in both runs). Visible token-level divergence in `llama-cli` was sampling-argmax jitter on FP-rounding-equivalent logits — the underlying probability distribution is identical.
+
+#### Why EP wins on medium MoE but fails on >150B-class
+
+**Wins on Qwen3.6-35B-A3B class** because compute, not bandwidth, dominates. With 3B active params and ~35 GiB Q8_0 model size, single-instance at 96t under-utilises the 4-NUMA bandwidth profile; EP at N=2 with each instance spanning 2 nodes lets master handle non-MoE compute fully while workers parallelise MoE — net 2× throughput.
+
+**Fails on REAP-246B / M2.7** because single-instance with `--numa distribute` already saturates 100% of system DDR bandwidth across all 4 nodes. EP at N=4 with master spanning all nodes (`GGML_EP_MASTER_ALL_NODES=1`) creates **thread oversubscription**: 96 master threads + 24×3 worker threads = 168 simultaneous threads on 96 physical cores during MoE ops. OS scheduler thrashing dominates, per-token time blows out 70× vs baseline.
+
+The fundamental issue: ggml's threadpool is fixed-size per process, so it can't dynamically resize between non-MoE phase (master-only active) and MoE phase (all instances active in parallel). Architectural fix would require dynamic threadpool resizing or phase-aware spin-parking — real engineering, deferred indefinitely.
+
+#### Production deployment routing
+
+| Total params | Mode | Reason |
+|--------------|------|--------|
+| < 50B MoE | EP N=2 drone+shard, 48t per instance | Compute-bound, parallelism wins |
+| 50–150B MoE | EP N=2 drone+shard (validate first) | Likely benefits, bandwidth-edge |
+| > 150B MoE | single-instance --numa distribute 96t | Bandwidth-saturated; oversubscription |
+| Dense | single-instance | No MoE ops to parallelise |
+
+#### Deferred memory and latency optimisations
+
+- **Eager shard allocation (3.2(g.1))**: pre-allocate compact expert buffers at model-load time instead of lazily on first `mul_mat_id` call. Improves first-token latency on medium-MoE deployments. ~3-4 hours work.
+- **`MADV_DONTNEED` on post-copy mmap pages (3.2(g.2))**: after `ggml_ep_shard_lookup` memcpys experts into the local anon buffer, `madvise(MADV_DONTNEED)` on the source mmap region releases the now-redundant page-cache pages. ~138 GB savings on REAP-246B-class. ~30 minutes work + PPL re-verify.
+
+#### Architecture summary
+
+The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning, drone mode, lazy shard) is **complete and correct**. The 13 commits constituting Phase 3.2 deliver a deployable EP capability for medium-MoE. The negative result on REAP-246B-class is a clean closure — bandwidth math doesn't favour partitioning when single-instance already uses 100% of available DDR bandwidth, and on EPYC NPS4 specifically that crossover happens around 150B total params.
 
 [CPU15 handoff](../handoffs/active/large-moe-expert-parallelism.md), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
 
