@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: Phase 1a+1b+2 LANDED 2026-04-25 — D3 gate FAILS for all three; intra-process EP exhausted on this hardware/model
+**Status**: Intra-process EP exhausted (1a+1b+2, all D3 fails) → **Phase 3.0 IPC prototype validates inter-process EP is viable** (RTT <1 μs, 0.1% token overhead). Phase 3.1+ implementation queued (~2-3 weeks).
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 2 anon-copies implementation + measurements; full intra-process EP exhausted)
+**Updated**: 2026-04-25 (Phase 3.0 IPC prototype landed at /mnt/raid0/llm/cpu-ep-prototype/; GO decision)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -221,7 +221,8 @@ Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-
 
 ### Phase 2 — Inter-process EP prototype (2–3 w)
 
-- [ ] Design shared-memory dispatch library (localhost; `/dev/shm` ring buffers or POSIX `shm_open` + futex). Prototype in isolation first at `/mnt/raid0/llm/cpu-ep-prototype/`.
+- [x] **Phase 3.0 IPC prototype** at `/mnt/raid0/llm/cpu-ep-prototype/` (commit `4901cc7`): standalone master+4-worker process pool with NUMA-pinned busy-spin sync. **Pure IPC RTT = 0.86 μs at 4 workers; 0.4% projected token overhead with realistic compute.** Decisively under the 200 μs viability threshold. ✅ 2026-04-25.
+- [ ] Phase 3.1: generic `ep_dispatcher.{h,cpp}` library extracted from prototype (~1-2 d).
 - [ ] Branch: `llama.cpp-experimental / feature/cpu-ep-inter-process`.
 - [ ] Add env gates: `GGML_EP_INSTANCE_ROLE={server,client,standalone}`, `GGML_EP_INSTANCE_ID`, `GGML_EP_N_INSTANCES`.
 - [ ] Server role: holds assigned expert shard; services dispatch/gather RPC from client.
@@ -378,3 +379,38 @@ After each phase:
     - `9ccb00245` Phase 2 — anonymous-mmap'd expert-only NUMA copies + redirect
 
     PPL bit-exact on all configurations. The intra-process EP track is **exhausted** as a CPU2-style "drop-in kernel improvement" — the remaining theoretical gain (~65% from full local pinning) is gated by the load-imbalance problem, which requires a dispatch-policy redesign rather than a memory-placement fix.
+
+- **2026-04-25 (later)**: **Phase 3.0 IPC prototype landed and validated.** Per user's clarified ask (split BOTH the prerouting pass AND the active expert pass across 4 NUMA-pinned llama.cpp instances cooperating on a SINGLE generation stream — i.e. the original handoff Phase 2 scope, slightly stronger because the router shards too), the next architectural move is full inter-process EP. Standalone prototype at `/mnt/raid0/llm/cpu-ep-prototype/` (commit `4901cc7` in that repo) measures the binding constraint: **can 4 NUMA-pinned processes synchronize fast enough between MoE layers?**
+
+    Setup: master process + 4 worker processes, each pinned to a distinct NUMA node, busy-spinning on cacheline-separated atomic state. Each iteration: master broadcasts hidden state via shared mmap → workers wake, do simulated compute, signal done → master gathers.
+
+    Round-trip latency on EPYC 9655 NPS4:
+
+    | Configuration | Per-iter RTT | Projected token IPC (62 layers × 3 sync rounds) | % of baseline 162 ms/token |
+    |---|---|---|---|
+    | **Pure IPC (no fake compute)** | **0.86 μs** | **0.16 ms** | **0.1%** |
+    | With 5120-float fake compute | 3.42 μs | 0.64 ms | 0.4% |
+    | Hidden=32K (huge state) | 16.22 μs | 3.02 ms | 1.9% |
+    | Hidden=1024 (small) | 1.60 μs | 0.30 ms | 0.2% |
+    | 8 workers (oversubscribed) | 3.89 μs | 0.72 ms | 0.4% |
+    | NUMA-unpinned (control) | 3.41 μs | 0.64 ms | 0.4% |
+
+    **Decision: GO for full Phase 3.** Pure IPC RTT is ~200× under the viability threshold (was ≤200 μs; achieved <1 μs). The synchronization primitive is essentially free; the remaining engineering is model-state sharding across processes, not sync optimization.
+
+    **What this validates**:
+    - The user's vision (4 NUMA-pinned llama.cpp instances cooperating on one stream, both router and experts split) is architecturally sound.
+    - Sync points (broadcast input, exchange router scores, gather expert outputs — ~3 per MoE layer) cost <1 μs each.
+    - Pure busy-spin atomic state on cacheline-separated locations beats futex/eventfd at this granularity. Workers burn a CPU but that's exactly the production deployment pattern.
+
+    **What it doesn't yet validate** (deferred to Phase 3.1+):
+    - Per-instance memory placement under real load (prototype uses 20 KB broadcast region; real KV+attention spans MB)
+    - GGUF shard loading: each instance must load only ITS 1/4 of expert weights (model-loader change)
+    - ggml graph executor calling into the IPC primitive at MoE boundaries (custom op or graph-compute callback)
+    - Process orchestration: spawn, health-check, graceful shutdown
+
+    **Phase 3.1+ scope** (next 2-3 sessions, ~2-3 weeks total):
+    - **3.1**: generic IPC primitive library `ep_dispatcher.{h,cpp}` (~1-2 days)
+    - **3.2**: llama.cpp integration — `--ep-role`, `--ep-instance-id`, expert-shard GGUF load, graph executor hook (~1 week)
+    - **3.3**: production wiring — `model_registry.yaml` `ep_config` schema, `orchestrator_stack.py` `large_moe_ep_pool` backend (~2-3 days)
+
+    Full RESULTS.md + PLAN.md at `/mnt/raid0/llm/cpu-ep-prototype/`.
