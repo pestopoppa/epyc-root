@@ -416,6 +416,29 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
 
 **Risk**: model loader hook is the most invasive change (touches llama.cpp core). Alternative if too invasive: an explicit warm-up first inference at startup (run a single dummy token through the graph to populate all shards). Less elegant but zero loader changes.
 
+#### Phase 3.2(g.2) — Reclaim post-copy GGUF mmap pages via `MADV_DONTNEED`
+
+**Why**: after `ggml_ep_shard_lookup` memcpy's expert tensor `e` from the GGUF mmap into a node-local anon buffer, the source pages stay resident in the kernel page cache even though no process needs to read them again (everyone reads from their compact local shard). On REAP-246B this is **~138 GB of dead-weight cache** — full expert-tensor portion of the GGUF replicated in cache that the kernel won't evict because there's plenty of free RAM and no pressure.
+
+**Fix**: in `ggml_ep_shard_lookup`, after the memcpy completes, call `madvise(<src0_tensor_data_ptr>, <src0_total_bytes>, MADV_DONTNEED)` to tell the kernel we won't need the source pages again. Once all N processes do this for a given tensor, the page cache reference count for those pages drops to zero and the kernel can evict them on demand (or eagerly with `MADV_FREE` semantics on newer kernels).
+
+**Caveats**:
+- Must be called only AFTER all expert data for the tensor has been copied — single-instance scope (per-process call) since each process copies its own slice.
+- Applies cleanly to MAP_SHARED|MAP_FILE pages. MAP_PRIVATE pages would behave differently (private dirty pages would be re-zeroed, but that's not our case).
+- If the model loader later re-reads the file for any non-expert ops (unlikely for `*ffn_*_exps*` tensors which are exclusively used in MoE op), pages would re-fault from disk. A non-issue for the steady-state inference path.
+- Should be measured before deploying — if `MADV_DONTNEED` causes excessive page faults during inference (e.g., master also reads source pages for some reason), revert.
+
+**Files to change**: `ggml/src/ggml-cpu/ggml-ep-shard.cpp` — ~5 lines added inside `ggml_ep_shard_lookup` after the memcpy loop.
+
+**Estimated savings**:
+- REAP-246B: ~138 GB (full expert tensor portion of GGUF)
+- Qwen3-Coder-30B-A3B: ~10 GB
+- gemma-26B-A4B: ~12 GB
+
+**Effort**: ~30 minutes — implement, test that PPL is still bit-identical, measure RSS before/after.
+
+This complements (g.1) eager-shard nicely: (g.1) makes shard allocation deterministic at load time, (g.2) reclaims the post-copy redundancy. Together they put REAP-246B's per-process steady-state RSS at ~35 GiB (kept experts only) instead of ~315 GiB (kept experts + full mmap source).
+
 ---
 
 #### Phase 3.3 (REVISED post-3.2) — Production wiring with env-var bootstrap
