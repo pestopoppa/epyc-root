@@ -387,6 +387,130 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
 - **Phase 3.2**: ~1 week (llama.cpp integration + measurement)
 - **Phase 3.3**: ~2-3 days (production wiring)
 
+---
+
+#### Phase 3.2(g.1) — Eager shard allocation (next session, ~3-4 hours)
+
+**Why needed**: lazy `ggml_ep_shard_lookup` populates compact buffers on first `mul_mat_id` call per tensor. Acceptable for small models (gemma-26B-A4B: ~44 MiB per shard, amortizes in <1 s) but dominates run time for large models (REAP-246B: 246 MiB × 60 layers × 3 tensor types × 4 processes ≈ 180 GiB total memcpy contending on memory subsystem; lazy version takes 5-10 minutes to populate). Steady-state perf measurement on REAP-246B is gated on this.
+
+**Design**: a public `void ggml_ep_shard_warm_all_experts(void)` function that walks all loaded model tensors, identifies expert tensors by name pattern (`*ffn_*_exps*` or `*ffn_*_exps_w*`), and calls `ggml_ep_shard_lookup` on each. Implementation steps:
+
+1. **Tensor enumeration** — extend `ggml-ep-shard` to maintain a thread-safe vector of registered model tensors (or accept tensor pointers explicitly via `ggml_ep_shard_register_expert_tensor`). Simplest: expose `ggml_ep_shard_register_expert_tensor(struct ggml_tensor *)` that the model loader calls once per expert tensor at load time.
+
+2. **Hook in the model loader** — in `llama-model-loader.cpp::init_mappings` (or `llama_load_model_from_file_internal` post-init), iterate `model.tensors_by_name` and call `ggml_ep_shard_register_expert_tensor(tensor)` for any tensor whose name matches `*ffn_(gate|up|down)_exps*`.
+
+3. **Eager warm pass** — at the end of model load (or on first `ggml_init` after load), call `ggml_ep_shard_warm_all_experts()`. The function:
+   - Iterates registered tensors (single-threaded; the loop body is trivial)
+   - Calls `ggml_ep_shard_lookup` on each, which performs the mmap+memcpy under a mutex
+   - For parallelism: spawn N worker threads (where N = `omp_get_max_threads()` or similar), each pulls tensors from a work queue
+   - First-touch via `mbind(MPOL_BIND, this_process_node_mask, MPOL_MF_STRICT)` already happens inside `ggml_ep_shard_lookup`
+
+4. **Env-gating** — `GGML_EP_SHARD_EAGER=1` enables the eager pass; default is lazy (current behaviour). Recommend always-on once measured to be reliable.
+
+5. **Validation** — re-run REAP-246B with `GGML_EP_ROLE=master GGML_EP_N_INSTANCES=4 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1 GGML_EP_SHARD_EAGER=1`. Expected steady-state throughput per back-of-envelope math (45ms non-MoE @ full bandwidth + 25.5ms parallel-MoE on workers + ~5ms sync) ≈ 13.6 t/s = +97% over baseline 6.89 t/s.
+
+**Files to change**:
+- `ggml/src/ggml-cpu/ggml-ep-shard.{h,cpp}` — add `register_expert_tensor` + `warm_all_experts` API
+- `src/llama-model-loader.cpp` — call register on each expert tensor at load
+- `src/llama-model.cpp` or `common/common.cpp` — call warm_all_experts at end of model init
+
+**Risk**: model loader hook is the most invasive change (touches llama.cpp core). Alternative if too invasive: an explicit warm-up first inference at startup (run a single dummy token through the graph to populate all shards). Less elegant but zero loader changes.
+
+---
+
+#### Phase 3.3 (REVISED post-3.2) — Production wiring with env-var bootstrap
+
+The original 3.3 design (above) assumed CLI-arg-driven master/worker orchestration. The actual implementation uses **env-var bootstrap** which is simpler — orchestrator launches ONE master process with EP env vars set, master forks workers internally. No separate worker process management.
+
+**`model_registry.yaml` schema (revised)**:
+
+```yaml
+models:
+  qwen35_q4km:                        # frontdoor model
+    path: ${MODELS}/Qwen3.5-35B-A3B-UD-Q4_K_M.gguf
+    backend: llama_server
+    deployment:
+      mode: ep_inter_process          # vs the existing "single" / "numa_quarter" / "numa_full"
+      n_instances: 2
+      threads_per_instance: 48
+      env:
+        GGML_EP_ROLE: master
+        GGML_EP_N_INSTANCES: "2"
+        GGML_EP_NUMA_PIN: "1"
+        GGML_EP_WORKER_DRONE: "1"
+        GGML_EP_SHARD: "1"
+        # GGML_EP_MASTER_ALL_NODES: "1"   # enable for >100B models once eager-shard lands
+    expected_throughput_tg: 19.9      # +100% over single-instance 9.93 t/s (PPL-bit-exact)
+    ppl_bit_exact: true               # 32-chunk WikiText-2 gate passed
+```
+
+**`orchestrator_stack.py` changes** (sketch):
+
+```python
+# In NUMA_CONFIG (or new EP_CONFIG):
+NUMA_CONFIG["frontdoor_ep"] = {
+    "instances": [
+        # Single launch — master forks N-1 workers via env-var bootstrap
+        (None, 8070, 48),  # cpu_list=None means don't taskset; bootstrap handles pinning
+    ],
+    "mlock": True,
+    "ep_env": {
+        "GGML_EP_ROLE": "master",
+        "GGML_EP_N_INSTANCES": "2",
+        "GGML_EP_NUMA_PIN": "1",
+        "GGML_EP_WORKER_DRONE": "1",
+        "GGML_EP_SHARD": "1",
+    },
+}
+
+# In launch logic:
+def _launch_instance(role: str, instance_idx: int, ...):
+    cfg = NUMA_CONFIG[role]
+    env = os.environ.copy()
+    env.update(cfg.get("ep_env", {}))
+    # Don't taskset when EP — bootstrap pins each instance to its node block
+    if "ep_env" in cfg:
+        cmd = [LLAMA_SERVER, "-m", model_path, "-t", str(threads), "--port", str(port), ...]
+    else:
+        cmd = ["taskset", "-c", cpu_list, LLAMA_SERVER, ...]
+    subprocess.Popen(cmd, env=env)
+```
+
+**Health check**: master's `llama-server` `/health` endpoint already returns 200 when ready. Worker processes are managed by the bootstrap (PR_SET_PDEATHSIG ensures they die when master dies); orchestrator only tracks master PID.
+
+**Auto-selector for which models get EP** (key decision the orchestrator needs):
+
+```python
+def select_deployment_mode(model: ModelEntry) -> str:
+    # MoE classification
+    is_moe = "moe" in model.architecture or "ep_config" in model.deployment
+    if not is_moe:
+        return "single"
+
+    # Size class — based on cross-model sweep 2026-04-25
+    total_b = model.total_params / 1e9
+    if total_b < 50:
+        return "ep_n2_drone_shard"        # +56-100% (gemma, Qwen3.6, Qwen3.5-35B)
+    elif total_b < 150:
+        return "ep_n2_drone_shard"        # likely benefits, validate before deploy
+    else:
+        # >150B: bandwidth-saturated. Stay single-instance until master-all-nodes
+        # + eager-shard validates on REAP-246B/M2.7 class.
+        return "single_numa_distribute"
+```
+
+**Deployment lineup after this lands**:
+| Role | Model | Mode | Throughput |
+|------|-------|------|-----------|
+| frontdoor | Qwen3.5-35B-A3B Q4_K_M | EP N=2 drone+shard | ~25 t/s (vs 12.7 single) |
+| worker_explore | Qwen3-Coder-30B-A3B Q4_K_M | EP N=2 drone+shard | TBD (validate first) |
+| architect_general | Qwen3.5-122B-A10B Q4_K_M | EP N=2 (no drone) initially | TBD; validate post-eager-shard |
+| architect_coding | REAP-246B Q4_K_M | single 96t (until eager-shard validates EP) | 6.89 t/s (current) |
+
+**Risk**: NUMA pinning currently assumes EPYC NPS4 (4 nodes). Auto-detect node count would be cleaner; fall back to single-node-per-instance on systems with !=4 nodes. Defer until first non-NPS4 deployment target appears.
+
+**Effort**: 2-3 days as before, slightly less now that env-var bootstrap simplifies the launcher logic.
+
 **Grand total**: 2-3 weeks of focused work across multiple sessions. Same as the original handoff scope; the IPC-validation step (3.0) eliminates the largest risk (sync overhead).
 
 ### Phase 4 — Upstream contribution (opportunistic, post-Phase 3)
