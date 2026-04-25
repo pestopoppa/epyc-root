@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: Phase 0 baseline COMPLETE 2026-04-24 — D1 gate FAILS, Phase 1 EP work warranted
+**Status**: Phase 1a+1b LANDED 2026-04-25 — D3 gate FAILS, mbind on MAP_SHARED can't move cached pages; Phase 2 needs anonymous-mmap'd experts
 **Created**: 2026-04-24
-**Updated**: 2026-04-24 (Phase 0 measurements landed; D1 gate decision recorded)
+**Updated**: 2026-04-25 (Phase 1 implementation + measurements; D3 gate verdict)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -208,16 +208,16 @@ Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-
 
 ### Phase 1 — Intra-process per-CCD EP prototype (3–5 d)
 
-- [ ] Branch: `llama.cpp-experimental / feature/cpu-ep-intra-process` off `cpu-optimization/backlog-2026-04-23`.
-- [ ] Modify `ggml_compute_forward_mul_mat_id` (ggml-cpu.c:1435–1690): replace flat per-expert atomic counters with per-CCD counter pools; expert `e` assigned to CCD(`e mod n_ccd`).
-- [ ] Add `GGML_EXPERT_CCD_SHARDING=1` env gate; preserve existing code path when unset.
-- [ ] Add optional expert weight re-layout pass at model load (env gate `GGML_EXPERT_CCD_LAYOUT=1`) — experts grouped by owning CCD, contiguous allocation, `mbind` per CCD.
-- [ ] PPL validation (Wikitext-2): bit-exact or <0.5% regression gate.
-- [ ] Benchmark Qwen3-235B-A22B with and without sharding on NPS4 + thread sweep.
-- [ ] Write findings to `research/deep-dives/cpu-ep-intra-process-phase1-<date>.md`.
-- [ ] **Gate D3** — require ≥20% over Phase 0 baseline to proceed to Phase 2.
+- [x] Branch: `feature/cpu-ep-intra-process` off `cpu-optimization/q8-8x8-avx512bw` (rebased from the originally-planned backlog branch since Session 15 work landed on the q8-8x8 branch). ✅ 2026-04-25.
+- [x] Modify `ggml_compute_forward_mul_mat_id` (ggml-cpu.c:1735-1908): assign expert `e` to CCD(`e mod n_ccd`); within-CCD chunking uses ccd_threads instead of nth. ✅ 2026-04-25 (`8d0428a97`).
+- [x] Add `GGML_EXPERT_CCD_SHARDING=1` env gate; preserve existing flat work-stealing code path when unset. ✅ 2026-04-25.
+- [x] Add expert weight re-layout pass at model load — env-gated `GGML_EXPERT_CCD_LAYOUT=1` in `init_mappings`. Identifies `*ffn_*_exps*` tensors, mbinds each expert's ne[2] slice to NUMA node (e % n_ccd) / n_ccd_per_node with MPOL_MF_MOVE. ✅ 2026-04-25 (`c98c0123c`).
+- [x] PPL validation (Wikitext-2): bit-exact (9.3042 ± 0.991 same with/without on REAP-246B Q4_K_M). ✅ 2026-04-25.
+- [x] ~~Benchmark Qwen3-235B-A22B~~ — NOT ON DISK. Substituted REAP-246B Q4_K_M (deployed `architect_coding`).
+- [x] **Gate D3 — FAILS.** All EP modes (sharding alone, sharding+layout, sharding+replicate+redirect) within ±2% of baseline 6.24 t/s; target was +20%. Root cause: `mbind` on MAP_SHARED file mmap can't reliably move cached pages without CAP_SYS_NICE; per-expert pinning reports success (131.7 GiB pinned in log) but doesn't translate to throughput gain. ✅ 2026-04-25.
+- [ ] ~~Findings to research/deep-dives~~ — captured in this handoff's narrative + commit messages instead. Sufficient for the negative result.
 
-**Effort**: 3–5 d. **Reuses** CPU1 Phase 1.2 per-CCD substrate and CPU4 per-CCD barrier primitive (if landed).
+**Effort**: ~6 h wall-clock for both Phase 1a + Phase 1b. **Result**: correct + env-gated infrastructure, no measurable throughput gain. The mechanism (per-expert NUMA pinning via mbind) is fundamentally weaker than expected on file-backed mmap. Phase 2 (inter-process or anonymous-mmap expert copies) needed to actually deliver locality.
 
 ### Phase 2 — Inter-process EP prototype (2–3 w)
 
@@ -262,7 +262,10 @@ Populate as phases execute.
 | 2026-04-24 | P0 | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 full stack `-fa 1` | 192 (HT) | 2K | 4.37±0.17 | 24% | same |
 | 2026-04-24 | P0 | MiniMax-M2.7 230B-A10B | Q8_0 | NPS4 full stack `-fa 1` | 48 | 2K | **10.23±0.57** | 33% | same |
 | 2026-04-24 | P0 | MiniMax-M2.7 230B-A10B | Q8_0 | NPS4 full stack `-fa 1` | 96 | 2K | 8.21±0.14 | 27% | same |
-| | P1 | Qwen3-235B-A22B | Q4_K_M | 1×96t + `GGML_EXPERT_CCD_SHARDING=1` | 96 | 2K | TBD | TBD | TBD |
+| 2026-04-25 | P1a | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + `GGML_EXPERT_CCD_SHARDING=1` | 96 | 2K | 6.17±0.02 | 33% | `data/cpu_optimization/2026-04-25-large-moe-ep-phase1/` |
+| 2026-04-25 | P1a | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + `GGML_EXPERT_CCD_SHARDING=1` | 48 | 2K | 6.25±0.02 | 33% | same |
+| 2026-04-25 | P1a+1b | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING=1 + EP_CCD_LAYOUT=1 | 96 | 2K | 6.15±0.02 | 33% | same |
+| 2026-04-25 | P1+REPL | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | NPS4 + EP_SHARDING + NUMA_REPLICATE + redirect | 96 | 2K | 3.90±0.01 | 21% (replica overhead) | same |
 | | P2 | Qwen3-235B-A22B | Q4_K_M | 4-instance inter-process EP, 4×24t | 24×4 | 2K | TBD | TBD | TBD |
 
 ---
@@ -312,3 +315,31 @@ After each phase:
 
 - **2026-04-24**: Handoff created. Origin: user observation on memory-bound single-instance decode + the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s on 30B-A3B Q4_K_M) ⇒ large sparse MoE is the hardware-matched target. Phase 0 scoped; no measurements yet. Registered as CPU15 in `cpu-inference-optimization-index.md` and master-index row 27c.
 - **2026-04-24 (later)**: Phase 0 measurements landed. REAP-246B Q4_K_M peak 6.14 t/s at 96t (+50% over pre-NPS4 480B); M2.7 Q8_0 peak 10.23 t/s at 48t (~comparable to pre-NPS4 11.1). Both at ~33% BW utilization. **D1 gate FAILS** — Phase 1 (intra-process per-CCD EP) work is warranted. Reframe direction partially validated: large MoE extracts more BW than hybrid (33% vs 25%) but doesn't auto-solve to dense's 44%.
+
+- **2026-04-25**: Phase 1a + 1b implementation landed on `feature/cpu-ep-intra-process` branch.
+    - Phase 1a (`8d0428a97`): per-CCD expert work distribution in `ggml_compute_forward_mul_mat_id`. Expert e → CCD(e mod n_ccd); within-CCD chunking uses ccd_threads. Default OFF behind `GGML_EXPERT_CCD_SHARDING=1`. Bit-exact correctness verified (Qwen3.6-35B-A3B Q8 PPL 5.5010 ± 0.525 in both modes).
+    - Phase 1b (`c98c0123c`): per-expert NUMA pinning via `mbind(MPOL_BIND, MPOL_MF_MOVE)` in `init_mappings`. Identifies expert tensors by name pattern `*ffn_*_exps*`, partitions ne[2] axis, pins each expert's byte range to NUMA node `(e % n_ccd) / n_ccd_per_node`. Default OFF behind `GGML_EXPERT_CCD_LAYOUT=1`. Log line at load time confirms pinning: "expert-ccd-layout: pinned 14880 experts across 186 tensors = 131.7 GiB to 4 NUMA nodes". Bit-exact PPL = 9.3042 ± 0.991 with and without on REAP-246B Q4_K_M.
+
+    **D3 gate FAILS**. Throughput on REAP-246B Q4_K_M 96t with full noomp + CPU1 stack:
+
+    | Config | t/s @ 96t | Δ vs baseline |
+    |---|---|---|
+    | Baseline (no EP) | 6.24 ± 0.02 | — |
+    | `EP_SHARDING=1` | 6.17 ± 0.02 | −1.1% |
+    | `EP_SHARDING=1 + EP_CCD_LAYOUT=1` | 6.15 ± 0.02 | −1.4% |
+    | `EP_SHARDING=1 + NUMA_REPLICATE=1` + replica redirect | 3.90 ± 0.01 | −37% (replica overhead dominates) |
+
+    Target was +20% over Phase 0 baseline 6.14. Achieved 0% (within noise).
+
+    **Root cause of the negative result**: `mbind(MPOL_MF_MOVE)` on MAP_SHARED file mmap appears NOT to actually relocate cached pages on this kernel/workload. The 14,880 mbind syscalls return success and report 131.7 GiB pinned, but throughput stays unchanged. Linux treats file-backed page-cache pages specially — user-space `MPOL_MF_MOVE` may decline to move pages that the kernel considers "shared" (with the page cache or other potential mappers) without `CAP_SYS_NICE` and `MPOL_MF_MOVE_ALL`.
+
+    The cleaner alternative is **NUMA_REPLICATE-style anonymous-mmap'd expert copies** with redirect, but the existing `GGML_NUMA_REPLICATE=1` infrastructure copies the ENTIRE model 4× (138 GiB → 552 GiB), and even with my mul_mat_id replica redirect added, the overhead of building+holding 4 full replicas regressed throughput to 3.90 t/s.
+
+    **Conclusion**: Phase 1 as implemented (per-expert mbind on file mmap) is correct but the underlying mechanism (file-backed mbind) is too weak to deliver the projected 20%+ gain. The right Phase 2 path is anonymous-mmap'd EXPERT-ONLY copies (not full model) that are first-touched from threads on the target node — then accessed via redirect from `mul_mat_id`. Substantially more code than Phase 1.
+
+    Branch state on `feature/cpu-ep-intra-process` (3 commits ahead of `cpu-optimization/q8-8x8-avx512bw`):
+    - `8d0428a97` Phase 1a — per-CCD work distribution (default off)
+    - `c98c0123c` Phase 1b — per-expert mbind layout (default off)
+    - (revert of REPLICATE redirect that regressed; not committed)
+
+    Code is correct, env-gated, PPL-preserved. It composes cleanly with future Phase 2 work but doesn't move the throughput needle alone.
