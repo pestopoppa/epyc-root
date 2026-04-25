@@ -439,6 +439,51 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
 
 This complements (g.1) eager-shard nicely: (g.1) makes shard allocation deterministic at load time, (g.2) reclaims the post-copy redundancy. Together they put REAP-246B's per-process steady-state RSS at ~35 GiB (kept experts only) instead of ~315 GiB (kept experts + full mmap source).
 
+#### Phase 3.2(h) — Master phase-aware threading (unlocks REAP-246B-class)
+
+**Why**: REAP-246B with `GGML_EP_MASTER_ALL_NODES=1 -t 96` and 3 workers at `-t 24` each puts **168 simultaneous threads on 96 physical cores** during MoE ops. OS scheduler thrashing dominates → 0.1 t/s (measured 2026-04-25). The fundamental cause: ggml's threadpool is fixed-size per process so master can't drop from 96 → 24 threads when entering the MoE phase where workers also activate.
+
+This is NOT "deferred indefinitely" — there's a tractable fix at the `mul_mat_id` op level that doesn't touch ggml's threadpool internals.
+
+**Approach**: at the top of `ggml_compute_forward_mul_mat_id`'s EP path, when `ep_master_active && ep_slice`, compute a reduced thread count for master's expert-loop participation:
+
+```c
+const int master_moe_nth = (ep_master_active && ep_slice)
+    ? (nth + ep_n_inst - 1) / ep_n_inst   // 96 / 4 = 24
+    : nth;
+
+// Threads with ith >= master_moe_nth on master skip the expert loop entirely
+// (they sit at the existing close-barrier waiting for ith==0 to finish gather+sum).
+if (ep_master_active && ep_slice && ith >= master_moe_nth) {
+    // park at the close barrier; don't participate in this op's compute
+    ggml_barrier(params->threadpool);  // matches the close barrier
+    return;
+}
+
+// Remaining threads do chunked expert work using master_moe_nth as eff_nth
+// (replaces the existing eff_nth = nth fall-through inside the expert loop).
+```
+
+Master's parallel sum-reduce after gather can still use all 96 threads — that's quick, bandwidth-friendly, and workers are already done by then so no oversubscription.
+
+**Net thread count during MoE op**:
+- Master: 24 threads compute + 72 threads spinning at barrier (no DRAM traffic, just CPU cycles)
+- Workers: 24 + 24 + 24 = 72 threads
+- Memory-active threads: 24 + 72 = **96 (one per core ✓)**
+- CPU-spinning extras: 72 master parkers contending for cycles but not bandwidth
+
+**Refinement (4-6 h instead of 2-3 h)**: replace the parker spin-barrier with a futex-based wait so the OS can schedule worker threads onto those cores during MoE. Bigger ggml change — adds a per-thread suspend primitive that's coordinated with the existing `ggml_barrier`. Worth it if smoke test shows the spinning is causing measurable perf hit on workers.
+
+**Validation target**: REAP-246B with the (g.1) + (g.2) + (h) stack should plausibly hit baseline (6.89 t/s) or better, unlocking EP for the production `architect_coding` role. The math:
+- Non-MoE @ master full bandwidth (-t 96 unchanged in non-MoE phase): same as baseline single-instance non-MoE = ~45 ms/token
+- MoE @ 4 instances each on 24 threads, NUMA-local expert reads via shard: ~25 ms/token (estimated, ¼ of single-instance MoE time)
+- Sync overhead: ~5 ms/token (3 IPC rounds × ~2 ms each, including gather + sum-reduce)
+- Total: ~75 ms/token = 13.3 t/s = +93% over baseline 6.89 t/s
+
+**Files to change**: `ggml/src/ggml-cpu/ggml-cpu.c::ggml_compute_forward_mul_mat_id` only. ~30 lines added/modified inside the existing EP block. No threadpool-internals surgery.
+
+**Effort**: 2-3 hours for the basic spin-park version + smoke test on REAP-246B. 4-6 hours for the futex-based refinement if perf measurement shows the spinning costs are non-trivial.
+
 ---
 
 #### Phase 3.3 (REVISED post-3.2) — Production wiring with env-var bootstrap
