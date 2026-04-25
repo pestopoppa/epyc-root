@@ -15,11 +15,30 @@ Final verified throughput on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 24, a
 | EP N=4 + drone | 20.6 | 72% |
 | EP N=4 + drone + shard | 22.6 | 79% |
 
-The strategy works. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
+**Cross-model sweep results (2026-04-25 evening)** showing the regime where EP wins vs regresses:
 
-**Next session**: Phase 3.2(f) PPL gate on WikiText-2 + Phase 3.2(g) D3' throughput gate (≥+20% over 6.16 t/s on REAP-246B Q4_K_M). REAP-246B has more experts and bigger per-expert size than gemma-26B-A4B, so the EP partition should align better with N=4 NUMA instances — expect meaningful headroom over the +6% we measured here.
+| Model | Total / Active | Baseline | EP best | Δ |
+|-------|---------------|----------|---------|---|
+| gemma-4-26B-A4B-it Q4_K_M | 26B / 4B | 28.5 t/s | 30.3 (drone+shard) | **+6%** ✓ |
+| Qwen3.6-35B-A3B Q8_0 | 35B / 3B | 9.93 t/s | 19.90 (drone+shard, ⚠ PPL drift) | +100% |
+| Qwen3.6-35B-A3B Q8_0 (bit-exact) | 35B / 3B | 9.93 t/s | 15.46 (NO drone, +shard) | **+56%** ✓ |
+| REAP-246B-A35B Q4_K_M | 246B / 35B | 6.89 t/s | 3.65 (N=2, shard) | **−47%** ✗ |
+| MiniMax-M2.7 Q8_0 | 230B / 10B | 9.98 t/s | 7.72 (N=2, shard) | **−23%** ✗ |
+
+**Pattern**: EP wins on small/medium MoE (≤50B); regresses on bandwidth-saturated large MoE (≥200B). For large models, single-instance with `--numa distribute` already saturates all 4 nodes' aggregate bandwidth, and per-instance pinning gives master only 50-25% of system bandwidth which becomes the bottleneck.
+
+**Drone-mode PPL drift on Qwen3.5-family**: Qwen3.6-35B-A3B uses shared-expert architecture (regular `mul_mat` outside `mul_mat_id`). Workers in drone mode skip the shared expert; master output diverges by ~6 tokens. Suspected cause: some non-`MUL_MAT_ID` op produces data master's `MUL_MAT_ID` consumes; needs investigation. For now use NO-drone + shard path (still +56% on Qwen3.6).
+
+**Production deployment guidance**:
+- Frontdoor / coder / general on Qwen3.6-35B-A3B class: EP N=2 + `GGML_EP_NUMA_PIN=1 GGML_EP_SHARD=1` (no drone), 48t per instance, **+56% bit-exact**.
+- gemma-26B-A4B class: EP N=2 + drone+shard works (+6%, bit-exact).
+- REAP-246B / M2.7 / large MoE: stay on single-instance `--numa distribute` 96t.
+
+The strategy works on the architectures where it's expected to. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
+
+**Next session**: Phase 3.2(f) PPL gate on WikiText-2 (verify the bit-exact paths over a long corpus), Phase 3.2(d.1.d) debug Qwen3.5-family drone divergence (instrument graph topology compare), Phase 3.3 production wiring (`model_registry.yaml` + `orchestrator_stack.py` `large_moe_ep_pool` backend with model-class auto-selection between EP and single-instance).
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.2(e.1) FIXED `ff6833b19` — EP top block moved before src1 quantization; drone+shard now bit-exact and **EP N=2 + drone + shard = 30.3 t/s = 106% of baseline 28.5 t/s on gemma-26B-A4B**. PPL gate (f) and REAP-246B D3' gate (g) next.)
+**Updated**: 2026-04-25 evening — cross-model sweep landed. EP delivers **+56-100% on Qwen3.6-35B-A3B**, +6% on gemma-26B-A4B, regresses on >200B bandwidth-saturated MoE (REAP-246B, M2.7). Production guidance: deploy EP for medium MoE, single-instance for large. Drone mode PPL drifts on Qwen3.5-family shared-expert arch — bit-exact path (no drone, with shard) still gives +56% on Qwen3.6.
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
