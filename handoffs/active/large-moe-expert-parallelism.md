@@ -1,8 +1,25 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **Phase 3.2(e.2) LANDED 2026-04-25** — Inter-process Expert Parallelism is functionally **complete and correct**: N independent processes execute lockstep MoE compute with bit-exact output at every smoke-test configuration. Eight commits stacked on `feature/cpu-ep-inter-process`: 3.2(a) library import (`aa6476ab0`), 3.2(b+c) bootstrap fork (`f8cb6f6d1`), 3.2(d.0) master IPC harness (`8d53675fe`), 3.2(d.1.a) workers exit passive loop and run llama.cpp normally (`385ee1d5c`), 3.2(d.1.b) actual expert slicing + gather + parallel sum-reduce + merged broadcast (`f9d7fe4c1`), 3.2(d.1.c) NUMA pinning one instance per node (`e2b8c5834`), 3.2(e.0) worker drone mode skipping non-MoE ops (`6193ee731`), 3.2(e.2) multi-node NUMA pinning per instance (`12c5b8ad4`). **Best throughput so far: 21.2 t/s on gemma-4-26B-A4B-it Q4_K_M = 76% of single-instance baseline 28.0 t/s** with config `GGML_EP_NUMA_PIN=1 GGML_EP_WORKER_DRONE=1` at N=2 + 48t (no `GGML_NUMA_WEIGHTS=1`, no `--numa distribute` — those fight per-instance pinning). The remaining gap is fundamentally **memory locality of expert weights**: workers each mmap the full GGUF so the 1/N experts they actually compute aren't on their local node. Step (e.1) GGUF expert sharding (next session's headline) addresses this directly. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests.
+**Status**: **Phase 3.2(e.1) attempt — 2026-04-25, critical OPENMP-guard fix landed in `e001b3eda`**. **REVISED HONEST FRAMING** (after fix exposed prior measurement error):
+
+Earlier in today's session, 8 commits added inter-process EP plumbing on `feature/cpu-ep-inter-process` (`aa6476ab0` through `12c5b8ad4`). All earlier "EP working at 76% of baseline" measurements were **mirages** — the EP code was wrapped in `#ifndef GGML_USE_OPENMP` guards inherited from Phase 1/2 intra-process EP, but the production llama.cpp build defaults to `GGML_OPENMP=ON` so the entire inter-process EP path was preprocessor-stripped. What we were actually measuring was N independent llama.cpp processes running the same deterministic graph with zero coordination — bit-exact came from determinism, throughput numbers were memory-bandwidth contention noise.
+
+**Commit `e001b3eda` (3.2(e.1) attempt) extracted the inter-process EP code from those guards and made it real for the first time**. Re-measured honestly on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 48):
+
+| Config | Output | Generation t/s |
+|--------|--------|----------------|
+| Baseline single-instance | "[Start thinking]\nThe user is asking for" | **28.5** |
+| EP N=2 + multi-node pin, NO drone, NO shard | bit-exact same | **19.4** = 68% baseline |
+| EP N=2 + drone mode | "...The capital of France is" | 25.5 — **PPL BROKEN** |
+| EP N=2 + drone + shard | same broken output | 28.7 — **PPL BROKEN** |
+
+The no-flags EP path (slicing + gather + parallel sum-reduce + merged broadcast) is bit-exact correct at 19.4 t/s. **Drone mode and shard are env-gated opt-ins, currently broken, off by default — shipping is safe.**
+
+Suspected bug for drone mode: master memcpy's `ggml_nbytes(src1)` from `src1->data` into broadcast region, but `src1` may be non-contiguous (a view/permute of an upstream tensor) so the copy doesn't capture the actual hidden state. Fix path: check `ggml_is_contiguous(src1)` and either skip drone-mode broadcast for that op or use `ggml_get_n_tasks` / strided copy. Same risk applies to ids tensor.
+
+Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.2 a→b→c→d.0→d.1.a→d.1.b→d.1.c→e.0→e.2 all landed; GGUF expert sharding e.1 next for memory + locality)
+**Updated**: 2026-04-25 (Phase 3.2(e.1) attempt: critical OPENMP-guard fix `e001b3eda` revealed prior 8 commits were preprocessor-stripped; honest no-flags EP at 19.4 t/s = 68% baseline. Drone mode + shard env-gated and currently PPL-broken — debug next.)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
