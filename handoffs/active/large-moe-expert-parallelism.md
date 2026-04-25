@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **Phase 3.1 LANDED 2026-04-25** — `ep_dispatcher` library extracted, 5/5 unit tests pass, RTT 0.73 μs (15% faster than monolithic prototype). Ready for Phase 3.2 llama.cpp integration.
+**Status**: **Phase 3.2(b+c) LANDED 2026-04-25** — env-var-driven master/worker fork wired into `ggml_cpu_init` on `feature/cpu-ep-inter-process` (`f8cb6f6d1`). `GGML_EP_ROLE=master GGML_EP_N_INSTANCES=N` forks N-1 worker llama.cpp processes that enter a passive wait loop; smoke-tested with Qwen3-0.6B-Q8_0 + llama-cli (master generates normally, workers reaped on exit, baseline path unchanged). Workers do no useful work yet — graph executor hook at `mul_mat_id` is the next step (d). Phase 3.1 RTT measurement was 0.73 μs with 5/5 unit tests passing; Phase 3.2(a) library import committed `aa6476ab0`.
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.1 dispatcher library committed; Phase 3.2 next)
+**Updated**: 2026-04-25 (Phase 3.2(b+c) fork harness landed; graph-executor hook next)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -256,8 +256,10 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
 
 **Goal**: wire `ep_dispatcher` into llama.cpp so that running with `--ep-role=master --ep-n-instances=4` spawns 4 worker llama.cpp processes that hold 1/4 of the experts each, and the MoE op (`ggml_compute_forward_mul_mat_id`) calls into the dispatcher at expert boundaries.
 
-- [ ] Branch: `llama.cpp-experimental / feature/cpu-ep-inter-process` off `cpu-optimization/q8-8x8-avx512bw`.
-- [ ] **CLI args**: extend `common/arg.cpp` with:
+- [x] Branch: `llama.cpp-experimental / feature/cpu-ep-inter-process` off `cpu-optimization/q8-8x8-avx512bw`. ✅ 2026-04-25.
+- [x] **(a) Library import**: copy `ep_dispatcher.{h,cpp}` from `cpu-ep-prototype/` into `ggml/include/ggml-ep-dispatcher.h` + `ggml/src/ggml-cpu/ep-dispatcher.cpp`; add to `GGML_CPU_SOURCES` in `ggml/src/ggml-cpu/CMakeLists.txt`. Verified all 16 `ep_*` symbols exported by `libggml-cpu.so`. ✅ 2026-04-25 (`aa6476ab0`).
+- [x] **(b+c) Bootstrap harness**: env-var-driven (`GGML_EP_ROLE=master`, `GGML_EP_N_INSTANCES=N`) `ep_session_create_master` call at the very top of `ggml_cpu_init`, before any threads/locks. Worker children enter a passive wait_go/signal_done loop and `_exit()` on EXIT signal or `PR_SET_PDEATHSIG`. Master registers `atexit` cleanup. New files: `ggml/src/ggml-cpu/ggml-ep-bootstrap.{h,cpp}`. Smoke-tested with Qwen3-0.6B-Q8_0 + llama-cli: master forks N-1 workers, generates tokens, exits cleanly; baseline (no env vars) and `GGML_EP_N_INSTANCES=1` are zero-overhead. ✅ 2026-04-25 (`f8cb6f6d1`). Note: env-var bootstrap chosen for the first cut over `common/arg.cpp` CLI plumbing because (i) every llama.cpp binary (cli/bench/server/perplexity/embedding) inherits it for free, and (ii) gating pattern matches existing `GGML_NUMA_WEIGHTS`/`GGML_CCD_WORK_DIST`. CLI plumbing can be added later if a binary-specific need appears.
+- [ ] **CLI args (deferred — env-var bootstrap covers all binaries)**: extend `common/arg.cpp` with:
     - `--ep-role={none,master,worker}` (default `none`, baseline behavior)
     - `--ep-instance-id N` (worker only; master is implicitly 0)
     - `--ep-n-instances N` (master sets; worker reads from env passed by master)
