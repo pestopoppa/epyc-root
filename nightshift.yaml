@@ -1,5 +1,5 @@
 # Nightshift Project Configuration — AMD EPYC 9655 Inference Optimization
-# Location: /mnt/raid0/llm/claude/nightshift.yaml
+# Location: /mnt/raid0/llm/epyc-root/nightshift.yaml
 #
 # This project runs heavy local inference (llama.cpp) overnight.
 # Nightshift uses remote Claude Code CLI — no local GPU/model conflict.

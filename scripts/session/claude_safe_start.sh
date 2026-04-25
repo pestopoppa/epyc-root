@@ -49,7 +49,6 @@ mkdir -p /mnt/raid0/llm/tmp
 mkdir -p /mnt/raid0/llm/cache/{huggingface,pip,npm,cargo,torch}
 mkdir -p /mnt/raid0/llm/data
 mkdir -p /mnt/raid0/llm/claude_workspace
-mkdir -p /mnt/raid0/llm/LOGS
 
 echo "✓ Directories created"
 echo ""

@@ -38,3 +38,6 @@ core
 .coverage.*
 coverage.json
 .last_compile
+
+# Backup artifacts (bundles, archives — never commit binaries)
+backups/
