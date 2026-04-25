@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: Intra-process EP exhausted (1a+1b+2, all D3 fails) → **Phase 3.0 IPC prototype validates inter-process EP is viable** (RTT <1 μs, 0.1% token overhead). Phase 3.1+ implementation queued (~2-3 weeks).
+**Status**: **Phase 3.1 LANDED 2026-04-25** — `ep_dispatcher` library extracted, 5/5 unit tests pass, RTT 0.73 μs (15% faster than monolithic prototype). Ready for Phase 3.2 llama.cpp integration.
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.0 IPC prototype landed at /mnt/raid0/llm/cpu-ep-prototype/; GO decision)
+**Updated**: 2026-04-25 (Phase 3.1 dispatcher library committed; Phase 3.2 next)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -229,33 +229,28 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
 - [x] Pure IPC RTT measured at 0.86 μs (4 workers); fake-compute RTT 3.42 μs; 0.4% projected token overhead.
 - [x] GO decision recorded.
 
-#### Phase 3.1 — Extract `ep_dispatcher` library (~1-2 days)
+#### Phase 3.1 — Extract `ep_dispatcher` library ✅ 2026-04-25
 
-**Goal**: convert the prototype's monolithic `ipc_bench.cpp` into a reusable C-callable library that llama.cpp can link against. Header + impl + unit tests + standalone latency benchmark using the library (validates the API is right).
+**Result**: library committed at `/mnt/raid0/llm/cpu-ep-prototype/` HEAD `f47bec4`. RTT 0.73 μs (15% faster than monolithic prototype's 0.86 μs thanks to per-cacheline state isolation eliminating false sharing). All 5 tests pass.
 
-- [ ] Create `/mnt/raid0/llm/cpu-ep-prototype/ep_dispatcher.h` with C-compatible API:
-    - `struct ep_session;` (opaque)
-    - `struct ep_config { int n_workers; size_t broadcast_bytes; size_t gather_bytes_per_worker; const int * worker_cpus; const int * worker_numa_nodes; };`
-    - `enum ep_role { EP_ROLE_MASTER, EP_ROLE_WORKER };`
-    - `int ep_session_create_master(const ep_config *, struct ep_session ** out);` — returns 0 + populates session; forks N worker children that re-enter as `ep_session_attach_worker()`
-    - `int ep_session_attach_worker(int instance_id, struct ep_session ** out);` — child returns from fork, attaches to existing shm
-    - `void ep_session_destroy(struct ep_session *);` — sends EXIT, joins workers
-    - `int ep_broadcast(struct ep_session *, const void * src, size_t bytes);` — master copies src into broadcast region, signals all workers GO
-    - `int ep_wait_workers(struct ep_session *);` — master spin-waits for all workers DONE; resets state to IDLE
-    - `int ep_gather(struct ep_session *, const void * out_ptrs[]);` — populates `out_ptrs[w]` with read-only pointer to worker w's gather region
-    - `int ep_worker_recv(struct ep_session *, void * dst, size_t bytes);` — worker spin-waits for GO, copies broadcast into dst
-    - `int ep_worker_send_done(struct ep_session *, const void * src, size_t bytes);` — worker copies src into gather region, signals DONE
-- [ ] Create `ep_dispatcher.cpp` with the implementation (refactored from `ipc_bench.cpp`). Build as static library via simple Makefile (no CMake to keep dependencies minimal at this stage).
-- [ ] Create `test_ep_dispatcher.cpp`:
-    - **Unit test 1** — round-trip latency at n_workers ∈ {1, 2, 4, 8}, broadcast_bytes ∈ {64, 1024, 5120, 32768}. Print stats.
-    - **Unit test 2** — bit-exact: master broadcasts deterministic data, workers transform with known function, gather + verify.
-    - **Stress test** — 1M iterations to surface any state-machine race.
-    - **Failure injection** — kill one worker mid-decode (`SIGKILL`); master should detect within 1 ms and return an error.
-    - **Parent-death test** — fork master, master forks workers, kill master; workers should detect (`getppid() == 1` after PR_SET_PDEATHSIG) and exit cleanly.
-- [ ] Migrate `ipc_bench.cpp` to use the library (sanity check that the API surface is right; ipc_bench should produce the same RTT numbers as the monolithic prototype).
-- [ ] **Gate**: all unit tests pass, parent-death test passes, RTT numbers within 10% of the monolithic prototype.
+- [x] `ep_dispatcher.h` with full C-callable API (~150 LOC). Final API expanded vs. original sketch:
+    - `ep_session_create_master`, `ep_session_destroy`, `ep_session_role/instance_id/n_workers`
+    - `ep_broadcast`, `ep_wait_workers`, `ep_gather` (master)
+    - `ep_worker_recv`, `ep_worker_send_done` (copy-based worker API)
+    - `ep_worker_wait_go`, `ep_worker_signal_done` (lower-level worker API)
+    - `ep_master_broadcast_buffer`, `ep_worker_broadcast_buffer`, `ep_worker_gather_buffer` (direct-buffer accessors that skip memcpys for hot paths)
+    - `ep_master_reap_dead` (explicit waitpid; auto-called periodically inside `ep_wait_workers`)
+- [x] `ep_dispatcher.cpp` implementation (~280 LOC). Critical bug fix vs monolithic prototype: `ep_session` is malloc'd (not MAP_SHARED) so per-process fields (role, instance_id) get COW'd at fork time and don't propagate writes across processes.
+- [x] `test_ep_dispatcher.cpp` (~340 LOC). All 5 tests pass:
+    - **`rtt`** — 5 configs (worker count + payload). RTT 0.73 μs at 4 workers / 5K floats / no compute.
+    - **`bitexact`** — master broadcasts deterministic ints; 4 workers transform `out[i] = in[i] * (1+w)`; master gathers and verifies. 0 failures across 5 rounds × 1024 × 4.
+    - **`stress`** — 1M iterations in 5.71 s, no state-machine races.
+    - **`fail`** — worker 3 deliberately exits at iter 5; master detects via `ESRCH` at iter 4 (sub-iteration latency). `ep_master_reap_dead` auto-fires every 4096 spin iterations (~μs) inside `ep_wait_workers`.
+    - **`pdeath`** — master crashes; workers detect via `PR_SET_PDEATHSIG=SIGTERM` and exit cleanly with no zombies.
+- [x] `ipc_bench.cpp` migrated to use the library; uses `ep_master_broadcast_buffer` for direct write access (matches monolithic prototype's path). RTT 0.73 μs at 4 workers / 5K floats / no compute — 15% better than monolithic 0.86 μs.
+- [x] **Gates passed**: all unit tests pass, parent-death works, RTT BEATS the monolithic prototype.
 
-**Deliverables**: `ep_dispatcher.h`, `ep_dispatcher.cpp`, `test_ep_dispatcher.cpp`, `Makefile`, `libep_dispatcher.a`. Effort: 1-2 days.
+**Deliverables shipped**: `ep_dispatcher.h`, `ep_dispatcher.cpp`, `test_ep_dispatcher.cpp`, `Makefile`, `libep_dispatcher.a`, plus migrated `ipc_bench.cpp`. Build: `make all`. Test: `make test`.
 
 #### Phase 3.2 — llama.cpp integration (~1 week)
 
@@ -520,3 +515,14 @@ After each phase:
     - Process orchestration: spawn, health-check, graceful shutdown
 
     Full RESULTS.md + PLAN.md at `/mnt/raid0/llm/cpu-ep-prototype/`. Detailed Phase 3.1+ scope follows in the next section.
+
+- **2026-04-25 (final)**: **Phase 3.1 dispatcher library extracted** at `/mnt/raid0/llm/cpu-ep-prototype/` commit `f47bec4`. `ep_dispatcher.{h,cpp}` builds a static library `libep_dispatcher.a` ready for llama.cpp linking. Critical bug fix vs the monolithic prototype: `ep_session` is malloc'd (not MAP_SHARED) so per-process role/instance_id get COW'd at fork without propagating writes; only the inner pointers (ctl, broadcast, gather) point into shared mmap regions. Per-cacheline state isolation (one `ep_state_slot` = full 64-byte cacheline per worker) eliminates false sharing as master writes state[0..N]=GO in succession.
+
+    Test results (5/5 pass):
+    - **rtt** — 5 configs, RTT 0.73 μs at 4 workers / 5K floats / no compute (15% faster than monolithic prototype's 0.86 μs)
+    - **bitexact** — 5 rounds × 1024 ints × 4 workers, 0 failures
+    - **stress** — 1M iterations in 5.71 s, no state-machine races
+    - **fail** — worker 3 exits at iter 5; master detects via ESRCH at iter 4 (sub-iteration latency via `ep_master_reap_dead` polling every 4096 spin iterations inside `ep_wait_workers`)
+    - **pdeath** — master crashes; workers detect via PR_SET_PDEATHSIG=SIGTERM and exit cleanly with no zombies
+
+    Phase 3.2 (llama.cpp integration) is the next gate. Library is C-callable so linking should be straightforward; integration work is mostly: CLI args, master/worker model load split, GGUF expert-shard loading, and the graph executor hook in `ggml_compute_forward_mul_mat_id`.
