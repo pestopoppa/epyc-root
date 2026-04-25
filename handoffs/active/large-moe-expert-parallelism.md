@@ -219,35 +219,146 @@ Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-
 
 **Effort**: ~6 h wall-clock for both Phase 1a + Phase 1b. **Result**: correct + env-gated infrastructure, no measurable throughput gain. The mechanism (per-expert NUMA pinning via mbind) is fundamentally weaker than expected on file-backed mmap. Phase 2 (inter-process or anonymous-mmap expert copies) needed to actually deliver locality.
 
-### Phase 2 — Inter-process EP prototype (2–3 w)
+### Phase 3 — Inter-process EP, full implementation (~2-3 weeks across 3 sub-phases)
 
-- [x] **Phase 3.0 IPC prototype** at `/mnt/raid0/llm/cpu-ep-prototype/` (commit `4901cc7`): standalone master+4-worker process pool with NUMA-pinned busy-spin sync. **Pure IPC RTT = 0.86 μs at 4 workers; 0.4% projected token overhead with realistic compute.** Decisively under the 200 μs viability threshold. ✅ 2026-04-25.
-- [ ] Phase 3.1: generic `ep_dispatcher.{h,cpp}` library extracted from prototype (~1-2 d).
-- [ ] Branch: `llama.cpp-experimental / feature/cpu-ep-inter-process`.
-- [ ] Add env gates: `GGML_EP_INSTANCE_ROLE={server,client,standalone}`, `GGML_EP_INSTANCE_ID`, `GGML_EP_N_INSTANCES`.
-- [ ] Server role: holds assigned expert shard; services dispatch/gather RPC from client.
-- [ ] Client role: runs attention + router; dispatches expert compute to servers; combines expert outputs.
-- [ ] Variant 3 fallback wired in: if decode dispatch cost is prohibitive, restrict inter-process EP to prefill.
-- [ ] Measure end-to-end single-stream t/s at 2K / 8K / 32K context.
-- [ ] Write findings to `research/deep-dives/cpu-ep-inter-process-phase2-<date>.md`.
+The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is engineering, broken into three sub-phases that can land independently.
 
-**Effort**: 2–3 w. **Blocks on** Phase 1 gate D3 + Phase 0 gate D1.
+#### Phase 3.0 — IPC prototype ✅ 2026-04-25
 
-### Phase 3 — Orchestrator integration (3–5 d)
+- [x] Standalone master + 4-worker process pool with NUMA-pinned busy-spin sync at `/mnt/raid0/llm/cpu-ep-prototype/` (commit `4901cc7`).
+- [x] Pure IPC RTT measured at 0.86 μs (4 workers); fake-compute RTT 3.42 μs; 0.4% projected token overhead.
+- [x] GO decision recorded.
 
-- [ ] Extend `model_registry.yaml` schema with an `ep_config` block (n_instances, per-instance cpuset, expert-shard map, launch order).
-- [ ] Extend `orchestrator_stack.py`: add a virtual `large_moe_ep_pool` backend that multiplexes N EP-mode llama-server processes as a single logical endpoint.
-- [ ] Sequential launch with mlock wait (per `feedback_sequential_model_loading`).
-- [ ] Health checks: all N instances must be healthy before routing.
-- [ ] Document in `orchestration/` with an example 235B-A22B EP config.
-- [ ] Revisit D2 contention with the 48×4t concurrent path — propose a workload-classifier heuristic or manual toggle.
+#### Phase 3.1 — Extract `ep_dispatcher` library (~1-2 days)
 
-**Effort**: 3–5 d. **Blocks on** Phase 2 production readiness.
+**Goal**: convert the prototype's monolithic `ipc_bench.cpp` into a reusable C-callable library that llama.cpp can link against. Header + impl + unit tests + standalone latency benchmark using the library (validates the API is right).
 
-### Phase 4 — Upstream contribution (opportunistic)
+- [ ] Create `/mnt/raid0/llm/cpu-ep-prototype/ep_dispatcher.h` with C-compatible API:
+    - `struct ep_session;` (opaque)
+    - `struct ep_config { int n_workers; size_t broadcast_bytes; size_t gather_bytes_per_worker; const int * worker_cpus; const int * worker_numa_nodes; };`
+    - `enum ep_role { EP_ROLE_MASTER, EP_ROLE_WORKER };`
+    - `int ep_session_create_master(const ep_config *, struct ep_session ** out);` — returns 0 + populates session; forks N worker children that re-enter as `ep_session_attach_worker()`
+    - `int ep_session_attach_worker(int instance_id, struct ep_session ** out);` — child returns from fork, attaches to existing shm
+    - `void ep_session_destroy(struct ep_session *);` — sends EXIT, joins workers
+    - `int ep_broadcast(struct ep_session *, const void * src, size_t bytes);` — master copies src into broadcast region, signals all workers GO
+    - `int ep_wait_workers(struct ep_session *);` — master spin-waits for all workers DONE; resets state to IDLE
+    - `int ep_gather(struct ep_session *, const void * out_ptrs[]);` — populates `out_ptrs[w]` with read-only pointer to worker w's gather region
+    - `int ep_worker_recv(struct ep_session *, void * dst, size_t bytes);` — worker spin-waits for GO, copies broadcast into dst
+    - `int ep_worker_send_done(struct ep_session *, const void * src, size_t bytes);` — worker copies src into gather region, signals DONE
+- [ ] Create `ep_dispatcher.cpp` with the implementation (refactored from `ipc_bench.cpp`). Build as static library via simple Makefile (no CMake to keep dependencies minimal at this stage).
+- [ ] Create `test_ep_dispatcher.cpp`:
+    - **Unit test 1** — round-trip latency at n_workers ∈ {1, 2, 4, 8}, broadcast_bytes ∈ {64, 1024, 5120, 32768}. Print stats.
+    - **Unit test 2** — bit-exact: master broadcasts deterministic data, workers transform with known function, gather + verify.
+    - **Stress test** — 1M iterations to surface any state-machine race.
+    - **Failure injection** — kill one worker mid-decode (`SIGKILL`); master should detect within 1 ms and return an error.
+    - **Parent-death test** — fork master, master forks workers, kill master; workers should detect (`getppid() == 1` after PR_SET_PDEATHSIG) and exit cleanly.
+- [ ] Migrate `ipc_bench.cpp` to use the library (sanity check that the API surface is right; ipc_bench should produce the same RTT numbers as the monolithic prototype).
+- [ ] **Gate**: all unit tests pass, parent-death test passes, RTT numbers within 10% of the monolithic prototype.
 
-- [ ] Upstream PR to ggml-org/llama.cpp for per-CCD sharding (Phase 1) — env-gated, default OFF.
-- [ ] Separate upstream PR for inter-process EP if Phase 2 viable.
+**Deliverables**: `ep_dispatcher.h`, `ep_dispatcher.cpp`, `test_ep_dispatcher.cpp`, `Makefile`, `libep_dispatcher.a`. Effort: 1-2 days.
+
+#### Phase 3.2 — llama.cpp integration (~1 week)
+
+**Goal**: wire `ep_dispatcher` into llama.cpp so that running with `--ep-role=master --ep-n-instances=4` spawns 4 worker llama.cpp processes that hold 1/4 of the experts each, and the MoE op (`ggml_compute_forward_mul_mat_id`) calls into the dispatcher at expert boundaries.
+
+- [ ] Branch: `llama.cpp-experimental / feature/cpu-ep-inter-process` off `cpu-optimization/q8-8x8-avx512bw`.
+- [ ] **CLI args**: extend `common/arg.cpp` with:
+    - `--ep-role={none,master,worker}` (default `none`, baseline behavior)
+    - `--ep-instance-id N` (worker only; master is implicitly 0)
+    - `--ep-n-instances N` (master sets; worker reads from env passed by master)
+    - `--ep-master-shm-fd N` (worker only; master passes the shm fd through env or fork inheritance)
+- [ ] **Process orchestration** in `llama.cpp` `main`:
+    - When master: parse args, init `ep_session_create_master`, fork N-1 workers (master is also instance 0), proceed with model load
+    - When worker (post-fork): call `ep_session_attach_worker`, then proceed with model load — but only loading ITS expert shard
+    - `prctl(PR_SET_PDEATHSIG, SIGTERM)` in worker so it dies if master crashes
+- [ ] **GGUF shard loading** in `llama-model-loader.cpp`:
+    - When `cparams.ep_n_instances > 0`: in `init_mappings`, identify expert tensors `*ffn_*_exps*`, and for each tensor, MEMCPY only the experts assigned to this instance into a smaller anonymous buffer (size = per_expert_bytes × experts_for_this_instance). Reassign the tensor's `data` pointer to the shrunk buffer.
+    - Non-expert tensors: loaded normally on all instances (~3× extra RAM for non-expert weights, manageable for large MoE where experts dominate).
+    - PPL gate after this change with N=1 instance: must be bit-exact to baseline.
+    - PPL gate with N=4 instances: must be bit-exact (since each instance only computes its experts; sum-reduce should equal full computation).
+- [ ] **Graph executor hook** in `ggml_compute_forward_mul_mat_id`:
+    - When `params->threadpool->ep_session != NULL` and op is MoE expert matmul:
+      - Master: serialize hidden state into broadcast region via `ep_broadcast`, kick off own assigned experts in parallel, `ep_wait_workers`, `ep_gather`, sum-reduce all instances' partial outputs into final `dst`
+      - Worker: when its compute thread enters this op, `ep_worker_recv` to get hidden state, compute its assigned experts, `ep_worker_send_done` with partial result
+    - Router op (`*ffn_gate_inp.weight` matmul): same pattern — each instance computes scores for ITS experts, master gathers all scores via dispatcher, computes global top-K, broadcasts top-K assignment to all workers via a second `ep_broadcast` round.
+- [ ] **Threadpool integration**:
+    - Add `ep_session * ep_session;` field to `struct ggml_threadpool`
+    - When set, the `ggml_compute_forward_mul_mat_id` (and router matmul) takes the dispatcher path; otherwise normal path
+- [ ] **Output combine**:
+    - Each instance produces a partial output for ITS top-K-assigned experts
+    - Master sum-reduces N partials into one (the final MoE op output)
+    - This requires the worker→master bandwidth in gather region; for hidden_dim=5120 × n_tokens=1 × n_seqs=1 = 20 KB per instance × 4 = 80 KB → trivial
+- [ ] **Test plan**:
+    - PPL with `--ep-role=master --ep-n-instances=1` (degenerate single-instance) bit-exact to baseline
+    - PPL with `--ep-role=master --ep-n-instances=2` bit-exact (or within rounding noise on FP32 sum-reduce)
+    - PPL with `--ep-role=master --ep-n-instances=4` bit-exact
+    - Throughput: REAP-246B Q4_K_M `--ep-n-instances=4 -t 24` (24 per instance × 4 = 96 total threads). Gate D3': ≥+20% over the 6.16 t/s Phase 0 baseline (target 7.4 t/s minimum; aspirational 12-25 t/s).
+    - Robustness: 5-minute sustained decode with no crashes; SIGTERM master and all workers exit cleanly; SIGKILL one worker and master detects + exits within 1 sec.
+- [ ] **Gate D3'**: throughput ≥+20% over Phase 0 baseline. Below that → debug or shelve.
+
+**Risks**:
+- *GGUF shard load complexity*: existing model loader is heavily mmap-oriented. Cleanest implementation may be a post-load pass that copies kept experts into anon buffers + redirects tensor->data, rather than modifying mmap handling. ~half a day of careful work.
+- *Graph executor reentrancy*: the dispatcher path calls `ep_wait_workers` which blocks; meanwhile the compute thread is supposed to be doing work. Solution: master's "own experts" computation runs in parallel with `ep_wait_workers` by structuring the per-thread inner loop to do master-experts first, then wait.
+- *Sum-reduce numeric drift*: bit-exact only guaranteed if N=1; with N=4 the partial sum order changes vs single-instance, so FP32 results may differ by ulps. PPL gate accepts <0.5% drift.
+- *Worker model load time*: 4 instances each loading 1/4 of expert weights + full non-expert weights. With sequential mlock waits per `feedback_sequential_model_loading.md`, total load is 4× one instance's load. Acceptable for production but slow for dev iteration.
+
+**Deliverables**: feature branch with all changes; throughput + PPL data committed under `data/cpu_optimization/2026-04-XX-cpu-ep-phase3-2/`. Effort: 1 week.
+
+#### Phase 3.3 — Production wiring (~2-3 days)
+
+**Goal**: deploy inter-process EP via `orchestrator_stack.py` so `model_registry.yaml` can declare a `large_moe_ep_pool` backend and the orchestrator launches the master + workers automatically.
+
+- [ ] Extend `model_registry.yaml` schema:
+    ```yaml
+    models:
+      reap_246b_ep4:
+        path: /mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-Q4_K_M.gguf
+        backend: large_moe_ep_pool
+        ep_config:
+          n_instances: 4
+          expert_shard_strategy: round_robin  # e mod n_instances
+          per_instance:
+            - cpuset: "0-23"
+              numa_node: 0
+            - cpuset: "24-47"
+              numa_node: 1
+            - cpuset: "48-71"
+              numa_node: 2
+            - cpuset: "72-95"
+              numa_node: 3
+          broadcast_buffer_size: 32768
+          gather_buffer_size_per_worker: 65536
+    ```
+- [ ] Extend `orchestrator_stack.py`:
+    - New backend type `large_moe_ep_pool` that launches master with `--ep-role=master --ep-n-instances=N`
+    - Master spawns workers internally (not orchestrator-managed); orchestrator only tracks the master process
+    - Health check: HTTP GET `/health` on master endpoint; master's handler verifies all worker child PIDs are alive (`waitpid(WNOHANG)`)
+    - Sequential launch with mlock wait per `feedback_sequential_model_loading`
+    - Graceful shutdown: SIGTERM master → master sends EXIT to workers via dispatcher → all exit cleanly
+    - Restart policy: any worker death → orchestrator kills master → restart whole group
+- [ ] Document in `orchestration/examples/large-moe-ep4.yaml` with an annotated REAP-246B example
+- [ ] **D2 resolution**: document the operational decision criterion for choosing between
+    - 4×48t concurrent (multi-user throughput) — keep current
+    - 4-instance EP (single-stream throughput) — new
+    - Hybrid: time-slicing between modes via a workload classifier (deferred — complex; not in this phase)
+- [ ] Memory verification: confirm production deployment uses ~138 GiB (file mmap) + ~33 GiB × 4 (per-instance non-expert weights replicated) ≈ 270 GiB total; fits within the 1.1 TiB host RAM with comfortable headroom.
+
+**Deliverables**: orchestrator config schema + backend wired; one annotated example; D2 decision documented. Effort: 2-3 days.
+
+#### Phase 3 totals
+
+- **Phase 3.0**: ✅ done (1 day)
+- **Phase 3.1**: ~1-2 days (dispatcher library + tests)
+- **Phase 3.2**: ~1 week (llama.cpp integration + measurement)
+- **Phase 3.3**: ~2-3 days (production wiring)
+
+**Grand total**: 2-3 weeks of focused work across multiple sessions. Same as the original handoff scope; the IPC-validation step (3.0) eliminates the largest risk (sync overhead).
+
+### Phase 4 — Upstream contribution (opportunistic, post-Phase 3)
+
+- [ ] Upstream PR to ggml-org/llama.cpp for per-CCD intra-process sharding (Phase 1a) — env-gated, default OFF. Even though net-neutral on hybrid MoE, the work-distribution piece is useful infrastructure for other workloads + composes with future fixes.
+- [ ] Separate upstream PR for `ep_dispatcher` + inter-process EP if Phase 3 lands and Phase 3.2 PPL/throughput gates pass.
+- [ ] Upstream the auto-mbind CPU_REPACK fix (Session 15 part 2 commit `e84a5c82f`) — independent general bug-fix affecting every multi-NUMA repacked quant.
 
 ---
 
@@ -408,9 +519,4 @@ After each phase:
     - ggml graph executor calling into the IPC primitive at MoE boundaries (custom op or graph-compute callback)
     - Process orchestration: spawn, health-check, graceful shutdown
 
-    **Phase 3.1+ scope** (next 2-3 sessions, ~2-3 weeks total):
-    - **3.1**: generic IPC primitive library `ep_dispatcher.{h,cpp}` (~1-2 days)
-    - **3.2**: llama.cpp integration — `--ep-role`, `--ep-instance-id`, expert-shard GGUF load, graph executor hook (~1 week)
-    - **3.3**: production wiring — `model_registry.yaml` `ep_config` schema, `orchestrator_stack.py` `large_moe_ep_pool` backend (~2-3 days)
-
-    Full RESULTS.md + PLAN.md at `/mnt/raid0/llm/cpu-ep-prototype/`.
+    Full RESULTS.md + PLAN.md at `/mnt/raid0/llm/cpu-ep-prototype/`. Detailed Phase 3.1+ scope follows in the next section.
