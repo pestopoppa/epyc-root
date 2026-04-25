@@ -1,8 +1,8 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **Phase 3.2(b+c) LANDED 2026-04-25** — env-var-driven master/worker fork wired into `ggml_cpu_init` on `feature/cpu-ep-inter-process` (`f8cb6f6d1`). `GGML_EP_ROLE=master GGML_EP_N_INSTANCES=N` forks N-1 worker llama.cpp processes that enter a passive wait loop; smoke-tested with Qwen3-0.6B-Q8_0 + llama-cli (master generates normally, workers reaped on exit, baseline path unchanged). Workers do no useful work yet — graph executor hook at `mul_mat_id` is the next step (d). Phase 3.1 RTT measurement was 0.73 μs with 5/5 unit tests passing; Phase 3.2(a) library import committed `aa6476ab0`.
+**Status**: **Phase 3.2(d.0) LANDED 2026-04-25** — IPC harness wired around `ggml_compute_forward_mul_mat_id` on `feature/cpu-ep-inter-process` (`8d53675fe`). Master now calls `ep_broadcast`/`ep_wait_workers` at every MoE op; workers in the bootstrap passive loop ack each round; master still does full compute, PPL bit-exact to baseline. Smoke-tested on gemma-4-26B-A4B-it Q4_K_M MoE: same generated text, throughput within noise (25.8 → 26.5 t/s). Earlier today: 3.2(a) library import (`aa6476ab0`), 3.2(b+c) bootstrap fork (`f8cb6f6d1`), 3.1 dispatcher library extraction (`f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests). Workers still contribute no compute — step (d.1) refactors workers out of the passive loop with stdio redirect + NUMA pinning + actual gather/sum-reduce in mul_mat_id; step (e) shards GGUF experts to 1/N memory.
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.2(b+c) fork harness landed; graph-executor hook next)
+**Updated**: 2026-04-25 (Phase 3.2(d.0) IPC harness wired into mul_mat_id; work distribution next)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -273,11 +273,13 @@ The IPC viability question is settled (Phase 3.0, 2026-04-25). Remaining work is
     - Non-expert tensors: loaded normally on all instances (~3× extra RAM for non-expert weights, manageable for large MoE where experts dominate).
     - PPL gate after this change with N=1 instance: must be bit-exact to baseline.
     - PPL gate with N=4 instances: must be bit-exact (since each instance only computes its experts; sum-reduce should equal full computation).
-- [ ] **Graph executor hook** in `ggml_compute_forward_mul_mat_id`:
-    - When `params->threadpool->ep_session != NULL` and op is MoE expert matmul:
-      - Master: serialize hidden state into broadcast region via `ep_broadcast`, kick off own assigned experts in parallel, `ep_wait_workers`, `ep_gather`, sum-reduce all instances' partial outputs into final `dst`
-      - Worker: when its compute thread enters this op, `ep_worker_recv` to get hidden state, compute its assigned experts, `ep_worker_send_done` with partial result
-    - Router op (`*ffn_gate_inp.weight` matmul): same pattern — each instance computes scores for ITS experts, master gathers all scores via dispatcher, computes global top-K, broadcasts top-K assignment to all workers via a second `ep_broadcast` round.
+- [x] **(d.0) Master-only IPC harness** in `ggml_compute_forward_mul_mat_id`: when `ggml_ep_get_session() != NULL && role == EP_ROLE_MASTER && n_workers > 0`, master signals via `ep_broadcast(NULL, 0)` at op top and waits via `ep_wait_workers` at op bottom. Single thread does the IPC (`ith==0`); `ggml_barrier` gates other threads. Workers stay in bootstrap passive ack loop. Master still does full compute → PPL bit-exact. Smoke-tested on gemma-4-26B-A4B-it Q4_K_M: same output ("[Start thinking]\nThe user is asking for"), throughput 25.8 → 26.5 t/s (within noise). ✅ 2026-04-25 (`8d53675fe`).
+- [ ] **(d.1) Workers exit passive loop** and run a real compute path:
+    - Move bootstrap fork from `ggml_cpu_init` to a post-model-load hook so workers inherit master's model mmaps via copy-on-write.
+    - Worker stdout/stderr → /dev/null; NUMA-pin via `cfg.worker_cpus` / `worker_numa_nodes` (env var `GGML_EP_NUMA_PIN=1`).
+    - Inside `mul_mat_id`, both master and workers skip experts not assigned (`cur_a % ep_n_inst != ep_my_id`).
+    - After expert loop: each instance writes partial dst to gather region; master sum-reduces; second broadcast round sends merged dst back to workers so their next op sees the same input.
+- [ ] **Router op** (`*ffn_gate_inp.weight` matmul): same pattern as the expert matmul — each instance computes scores for ITS experts, master gathers all scores via dispatcher, computes global top-K, broadcasts top-K assignment via a second `ep_broadcast` round. Probably defer until step (d.1) main expert hook is bit-exact.
 - [ ] **Threadpool integration**:
     - Add `ep_session * ep_session;` field to `struct ggml_threadpool`
     - When set, the `ggml_compute_forward_mul_mat_id` (and router matmul) takes the dispatcher path; otherwise normal path
