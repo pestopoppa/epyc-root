@@ -22,6 +22,7 @@
 | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
 | ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
+| [internal-kb-rag.md](internal-kb-rag.md) | Internal markdown KB retrieval pipeline | STUB 2026-04-25 — sibling consumer of colbert-reranker-web-research's ONNX/MaxSim plumbing; no AR-3 gate | P5 (medium) | 2026-04-25 |
 
 ---
 
@@ -79,6 +80,14 @@
 - [ ] Implement D2L→GGUF format conversion for LoRA adapters
 - [ ] (Note: core use case largely solved by existing REPL tooling — this is exploratory)
 
+### P5 — Internal Knowledge-Base RAG (added 2026-04-25 from local-RAG architecture review)
+
+Pointer — full plan tracked in [`internal-kb-rag.md`](internal-kb-rag.md). ColBERT-based retrieval over `wiki/`, `handoffs/active/`, `handoffs/completed/`, `research/`, `progress/`, `docs/chapters/` so Explore subagents stop grep/finding blind. Reuses the ONNX/MaxSim encoder being built for [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) — extract a shared encoder module (K1) so both consumers import the same path. **Not** AR-3-gated; can ship independently of S5/S6. Index-on-commit hook generalizes the existing GitNexus PostToolUse-on-commit pattern from code to markdown.
+
+- [ ] **P5 rollup**: see `internal-kb-rag.md` K1..K7 — entry points: K1 (extract shared encoder module from web_research path), K3 (initial index build), K5 (index-on-commit hook).
+
+**Cross-cutting note**: K1 explicitly coordinates with `colbert-reranker-web-research.md` S5 — both should land the same shared module. `archived/` is deliberately excluded from the corpus to keep retrieval signal clean; archived state is misleading by design.
+
 ---
 
 ## Dependency Graph
@@ -93,6 +102,7 @@ P2.S4 (pipeline test)     ──depends on S1──
 P2.S5 (2-tier integration)──depends on S3 + S4──
 P3 (TTS)                  ──blocked on codec debugging──
 P4 (doc-to-LoRA)          ──independent (low priority)──
+P5 (internal KB-RAG)      ──independent (reuses colbert-reranker S3/S4 encoder); K1 coordinates with colbert-reranker S5──
 ```
 
 ---

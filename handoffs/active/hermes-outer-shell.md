@@ -284,6 +284,28 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
   - Confirm: no head-of-line blocking, correct request serialization, no shared-state corruption
   - If issues found: document the failure mode and either (i) configure spawn-depth ceiling appropriately, or (ii) move single-slot servers behind a request-broker
 
+#### Phase 2++ — Multi-Client Generalization (added 2026-04-25 from local-RAG architecture review)
+
+Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` override surface. The same contract is sufficient for non-Hermes clients (CLI, coding-agent, IDE-agent), but we have not enumerated the other client types or verified the surface is sufficient for their use patterns. The friend's local-RAG architecture treats CLI / coding / IDE agents as first-class peer clients of the routing/inference layer — same pattern, different consumers. This section captures the generalization work.
+
+- [ ] **N — Enumerate non-Hermes client types and their override needs** (~1 h, no inference)
+  - Concrete client list to evaluate: (i) bare-metal `curl`/Python script driving the orchestrator API directly, (ii) Claude Code as a coding-agent client (would call our endpoint via `--model` or a proxy), (iii) Codex CLI (parallel to Claude Code, OpenAI's coding agent), (iv) any IDE plugin (Cursor / VS Code Copilot Chat / Continue.dev) that supports custom OpenAI-compatible endpoints
+  - For each, list the routing overrides actually needed (force-model, escalation cap, REPL disable, role override, streaming preferences). Capture in a table parallel to the existing Hermes slash-command → API mapping
+  - Output: a `## Client Surface Audit` subsection in this handoff
+- [ ] **O — Verify override surface is sufficient (gap analysis)** (~1 h, no inference, depends on N)
+  - Diff the audit table from N against the current `OpenAIChatRequest` extension fields (`x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, `x_show_routing`)
+  - Flag any client need that has no current override path. Triage each gap as: (a) add new `x_*` field, (b) document a workaround, (c) reject as out of scope
+  - Output: gap list + decision per gap
+- [ ] **P — Reference non-Hermes client wiring** (~2 h, depends on O; **may need inference if validating live**)
+  - Pick one non-Hermes client from N (recommend bare-metal Python script first — fewest moving parts) and stand it up against `localhost:8000/v1/chat/completions`
+  - Verify the same override semantics behave identically vs Hermes (force-model, escalation cap, REPL disable)
+  - Document the wiring recipe in this handoff so other client types can follow the same pattern
+- [ ] **Q — Sufficiency call: do not absorb client-side concerns into the orchestrator** (~30 min, design discipline note)
+  - Decision rule to record explicitly: per-client UX (slash commands, prompts, conversation memory) lives in the **client**, not the orchestrator. The orchestrator exposes overrides; clients map their UX to override values. This is the same discipline as the Hermes slash-command → `x_*` mapping — generalized as a principle, not a one-off
+  - Output: 1-paragraph statement appended to the handoff's `## Pros` section so future contributors see it during refactor decisions
+
+**Cross-reference**: this work generalizes the Hermes-specific Phase 2 routing API into a multi-client contract. Coordinates with the new [`internal-kb-rag.md`](internal-kb-rag.md) — a KB-RAG client (e.g., Explore-subagent) that wants to call the orchestrator with retrieved context will use the same `/v1/chat/completions` + `x_*` surface; if anything is missing for that pattern, capture it as a gap in O.
+
 ## Research Intake Updates
 
 ### 2026-03-15
