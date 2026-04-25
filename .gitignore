@@ -26,7 +26,8 @@ Thumbs.db
 .claude/settings.local.json
 
 # Temp
-tmp/
+tmp/*
+!tmp/.gitkeep
 .gitnexus
 core
 .coverage
