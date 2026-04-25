@@ -1,25 +1,25 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **Phase 3.2(e.1) attempt — 2026-04-25, critical OPENMP-guard fix landed in `e001b3eda`**. **REVISED HONEST FRAMING** (after fix exposed prior measurement error):
+**Status**: **Phase 3.2(e.1) FIXED + LANDED 2026-04-25** — Inter-process Expert Parallelism is bit-exact and **exceeds single-instance baseline at N=2 with drone + shard**.
 
-Earlier in today's session, 8 commits added inter-process EP plumbing on `feature/cpu-ep-inter-process` (`aa6476ab0` through `12c5b8ad4`). All earlier "EP working at 76% of baseline" measurements were **mirages** — the EP code was wrapped in `#ifndef GGML_USE_OPENMP` guards inherited from Phase 1/2 intra-process EP, but the production llama.cpp build defaults to `GGML_OPENMP=ON` so the entire inter-process EP path was preprocessor-stripped. What we were actually measuring was N independent llama.cpp processes running the same deterministic graph with zero coordination — bit-exact came from determinism, throughput numbers were memory-bandwidth contention noise.
+Today shipped 10 commits on `llama.cpp-experimental:feature/cpu-ep-inter-process`. The mid-session OPENMP-guard finding (`e001b3eda`) revealed all 8 prior commits were preprocessor-stripped from the production build; subsequent debugging traced drone-mode PPL divergence to **EP top block ordered AFTER src1 quantization** — workers' uninitialized src1 was getting quantized into wdata before the EP memcpy delivered correct src1, so the late copy was a no-op on the path the expert compute actually used. **Commit `ff6833b19` moved the EP top block before the quantization loop with an interposing `ggml_barrier`**, fixing both drone mode and (by composition) drone+shard.
 
-**Commit `e001b3eda` (3.2(e.1) attempt) extracted the inter-process EP code from those guards and made it real for the first time**. Re-measured honestly on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 48):
+Final verified throughput on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 24, all bit-exact):
 
-| Config | Output | Generation t/s |
-|--------|--------|----------------|
-| Baseline single-instance | "[Start thinking]\nThe user is asking for" | **28.5** |
-| EP N=2 + multi-node pin, NO drone, NO shard | bit-exact same | **19.4** = 68% baseline |
-| EP N=2 + drone mode | "...The capital of France is" | 25.5 — **PPL BROKEN** |
-| EP N=2 + drone + shard | same broken output | 28.7 — **PPL BROKEN** |
+| Config | Generation t/s | vs baseline |
+|--------|---------------|-------------|
+| Baseline 24t single-instance | 28.5 | 100% |
+| EP N=2 no drone no shard | 19.4 | 68% |
+| EP N=2 + drone | 26.6 | 93% |
+| **EP N=2 + drone + shard** | **30.3** | **106%** — exceeds baseline |
+| EP N=4 + drone | 20.6 | 72% |
+| EP N=4 + drone + shard | 22.6 | 79% |
 
-The no-flags EP path (slicing + gather + parallel sum-reduce + merged broadcast) is bit-exact correct at 19.4 t/s. **Drone mode and shard are env-gated opt-ins, currently broken, off by default — shipping is safe.**
+The strategy works. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
 
-Suspected bug for drone mode: master memcpy's `ggml_nbytes(src1)` from `src1->data` into broadcast region, but `src1` may be non-contiguous (a view/permute of an upstream tensor) so the copy doesn't capture the actual hidden state. Fix path: check `ggml_is_contiguous(src1)` and either skip drone-mode broadcast for that op or use `ggml_get_n_tasks` / strided copy. Same risk applies to ids tensor.
-
-Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
+**Next session**: Phase 3.2(f) PPL gate on WikiText-2 + Phase 3.2(g) D3' throughput gate (≥+20% over 6.16 t/s on REAP-246B Q4_K_M). REAP-246B has more experts and bigger per-expert size than gemma-26B-A4B, so the EP partition should align better with N=4 NUMA instances — expect meaningful headroom over the +6% we measured here.
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 (Phase 3.2(e.1) attempt: critical OPENMP-guard fix `e001b3eda` revealed prior 8 commits were preprocessor-stripped; honest no-flags EP at 19.4 t/s = 68% baseline. Drone mode + shard env-gated and currently PPL-broken — debug next.)
+**Updated**: 2026-04-25 (Phase 3.2(e.1) FIXED `ff6833b19` — EP top block moved before src1 quantization; drone+shard now bit-exact and **EP N=2 + drone + shard = 30.3 t/s = 106% of baseline 28.5 t/s on gemma-26B-A4B**. PPL gate (f) and REAP-246B D3' gate (g) next.)
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
