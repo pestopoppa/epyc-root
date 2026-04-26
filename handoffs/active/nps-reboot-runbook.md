@@ -312,7 +312,9 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 
 # L3aaN evaluation plan — 2026-04-26 update
 
-**Status**: pre-reboot SNAPSHOT IN HAND, BIOS reboot pending user authorization. Post-reboot agent: read this section first.
+**Status (2026-04-26 evening)**: **EVALUATION COMPLETE — L3aaN REVERT REQUIRED.** All 5 canonical production models regressed 30–52% vs NPS4; EP frontdoor regressed 51%. Decision matrix triggered "Any model regresses ≥5% → Revert L3aaN immediately" on every measured config. Awaiting user-driven BIOS reboot to NPS4. Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-26-l3aan/`. Full writeup: `progress/2026-04/2026-04-26.md`.
+
+**For the next agent**: skip the procedure below — it has already been executed. Read the L3aaN result table in `cpu-inference-optimization-index.md` ⚑ block and proceed to Phase H on NPS4 once the user has reverted.
 
 ## Context as of 2026-04-26
 

@@ -8,9 +8,32 @@
 **Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
-## ⚑ START HERE if resuming after L3aaN reboot (2026-04-26)
+## ⚑ L3aaN REVERTED 2026-04-26 evening — NPS4 is final
 
-**Entry point hierarchy for a fresh agent session:**
+L3aaN evaluation completed. **Outcome: catastrophic regression across every measured config.** All 5 canonical production models regressed 30–52% vs NPS4 reference; the supposed BW-bound L3aaN target (Qwen3.6-35B Q8_0) regressed −44.5% canonical and −51.2% with the full EP stack (vs the +17.18 t/s reference). Decision: **revert to NPS4 via BIOS** (user-driven, ~30 min downtime).
+
+L3aaN measurement table (canonical no-flags; full data in `progress/2026-04/2026-04-26.md`):
+
+| Model | NPS4 | L3aaN canonical | L3aaN best (`--interleave=all`) | Δ best vs NPS4 |
+|-------|------|-----------------|---------------------------------|----------------|
+| Qwen3-Coder-30B-A3B Q4_K_M | 43.57 ± 0.10 | 23.07 ± 0.10 | 27.90 (96t) / **29.42** (24t) | **−32.5%** |
+| Qwen3.6-35B-A3B Q8_0 | 14.63 ± 0.01 | 8.12 ± 0.01 | 8.32 ± 0.01 | **−43.1%** |
+| Qwen3-Next-80B-A3B Q4_K_M | 23.25 ± 0.08 | 14.12 ± 0.05 | 15.93 ± 0.02 | **−31.5%** |
+| REAP-246B-A35B Q4_K_M | 6.85 ± 0.01 | 3.30 ± 0.00 | 3.91 ± 0.02 | **−42.9%** |
+| gemma-4-26B-A4B Q4_K_M | 25.01 ± 0.08 | 17.51 ± 0.04 | 18.62 ± 0.05 | **−25.6%** |
+| Qwen3.6-35B Q8_0 + full EP | 17.18 (ref) | 8.39 ± 0.01 | (not retested at 12-way) | (canon −51%) |
+
+Audit-driven supplemental sweep (post-canonical) tested: `GGML_NUMA_WEIGHTS=1` alone (+2%, deprecated), 3-flag stable stack `CCD_POOLS+CCD_WORK_DIST+BARRIER_LOCAL` (+2%, same as NPS4), `GGML_NUMA_REPACK_INTERLEAVE=0` kill-switch (neutral), `GGML_EP_N_INSTANCES=12` (neutral), `numactl --interleave=all` (largest lever: +13–21% on Q4_K_M models, +2.5% on Q8_0), thread sweep 96/48/24/12/8 (24t is the L3aaN sweet spot for Coder-30B), literature `--no-mmap + --numa distribute` recipe (matched `--interleave=all`, did not exceed). **Even the best stacked L3aaN config (Coder-30B 29.42 @ 24t with interleave) is −32.5% vs NPS4 single-instance reference 43.57, and −40% vs NPS4 documented peak 48.81.** Every production model still regresses 26–43% on best-known L3aaN config.
+
+**12-rank concurrent-split aggregate (the L3aaN-designed workload pattern) was also measured**: 12 parallel `llama-bench` instances pinned per-CCD on Coder-30B Q4_K_M = **67.38 t/s aggregate vs NPS4 ~104 t/s = −35%**, with high per-instance variance (4 of 12 std > 3 t/s). HPC MPI ranks have private memory; llama.cpp inference shares the GGUF mmap, so pinning doesn't isolate weight reads.
+
+Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-26-l3aan/`. After BIOS revert, canonical baselines should re-snap to the pre-reboot NPS4 reference (re-verify with the smoke-test command at the bottom of this block).
+
+**Forward path post-revert**: Phase H (PPL gates) on NPS4. Then I → J → K → L → M. CPU16/CPU17/CPU18/CPU19 backlog (added 2026-04-26) is independent of NUMA topology and can proceed in parallel with the revert window.
+
+## Entry point hierarchy for a fresh agent session
+
+**(was "START HERE if resuming after L3aaN reboot" — superseded above; the entry list below remains accurate)**
 1. `handoffs/active/master-handoff-index.md` (top-level — see row 27/27b for CPU work)
 2. **this file** (`cpu-inference-optimization-index.md`) — CPU tracks + current status
 3. `handoffs/active/nps-reboot-runbook.md` — **the "L3aaN evaluation plan — 2026-04-26 update" section is the post-reboot procedure**, with pre-reboot snapshot, decision matrix, and step-by-step
