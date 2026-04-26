@@ -20,6 +20,7 @@
 | `GGML_EXPERT_CCD_SHARDING` | off | superseded | ggml-cpu.c:1986 |
 | `GGML_Q8_0_8X8` | off | opt-in optimization | repack.cpp:4944 |
 | `GGML_Q8_0_8X8_AVX` | off | opt-in optimization | arch/x86/repack.cpp:1550 |
+| **`GGML_NUMA_REPACK_INTERLEAVE`** | **on** | **kill-switch (CPU2 mbind)** | repack.cpp:5024 |
 | `GGML_EP_ROLE` | off | EP control plane | ggml-ep-bootstrap.cpp:114 |
 | `GGML_EP_N_INSTANCES` | off | EP control plane | ggml-ep-bootstrap.cpp:124 |
 | `GGML_EP_NUMA_PIN` | off | EP control plane | ggml-ep-bootstrap.cpp:177 |
@@ -28,9 +29,9 @@
 | `GGML_EP_WORKER_DRONE` | off | EP feature | ggml-cpu.c:1671, 2259 |
 | `GGML_EP_MASTER_PARK` | off | EP feature | ggml-cpu.c:1688 |
 
-**Plus an unconditional behavior change** (no env gate, default-on at the source):
+**Behavior changes that activate on every multi-NUMA host (no model-level opt-in):**
 
-- `repack.cpp` mbind(MPOL_INTERLEAVE) on every CPU_REPACK buffer ≥ 1 MiB on multi-NUMA hosts. Introduced by `e84a5c82f` for the CPU2 AVX-512BW kernel; activates regardless of whether `GGML_Q8_0_8X8_AVX=1` is set.
+- `repack.cpp` mbind(MPOL_INTERLEAVE) on every CPU_REPACK buffer ≥ 1 MiB. Introduced by `e84a5c82f` for the CPU2 AVX-512BW kernel; activates regardless of whether `GGML_Q8_0_8X8_AVX=1` is set. **Now gated by `GGML_NUMA_REPACK_INTERLEAVE` (default ON, set `=0` to disable)** so the behavior can be measured in isolation and rolled back per-deployment if needed.
 
 ## Detail per class
 
@@ -73,7 +74,22 @@ Recommendation: keep default-off, document.
 - `GGML_Q8_0_8X8=1` (repack.cpp:4944): activate the 8x8 Q8_0 repack scaffold. Default-off because the kernel only wins on 1-thread workloads (+31.8%) and is BW-saturated at 12-96t (+1-3%). Production benefit is narrow.
 - `GGML_Q8_0_8X8_AVX=1` (arch/x86/repack.cpp:1550): activate the AVX-512BW 8x8 GEMV kernel. Same default-off rationale.
 
-**Caveat**: even with both Q8_0_8X8 flags off, the repack.cpp mbind(MPOL_INTERLEAVE) introduced by `e84a5c82f` is unconditional. This is a separate behavior change that activates whenever a model touches CPU_REPACK on a multi-NUMA host. Q4_K_M models that bypass CPU_REPACK are unaffected; quantized 8x8 layouts (Q8_0 etc.) that use CPU_REPACK trigger it. Phase H PPL gates and Phase J v5 audit must verify this is correctness-neutral and perf-positive, otherwise gate it.
+### kill-switch (CPU2 mbind) — added 2026-04-26
+
+- `GGML_NUMA_REPACK_INTERLEAVE=0` (repack.cpp:5024): disable the unconditional `mbind(MPOL_INTERLEAVE)` on CPU_REPACK buffers ≥ 1 MiB. **Default ON** for backward compatibility with the post-`e84a5c82f` behavior.
+
+**Why default-on**: measured 2026-04-26 with kill-switch:
+
+| Model | mbind ON (default) | mbind OFF | Δ |
+|-------|--------------------|-----------|----|
+| Qwen3.6-35B-A3B Q8_0 | **14.63 ± 0.01** | 13.76 ± 1.78 | mbind = **+6% AND stabilizing** |
+| REAP-246B-A35B Q4_K_M | 6.85 ± 0.01 | 6.91 ± 0.01 | mbind = -0.9% (small loss on Q4_K_M) |
+
+The mbind is a clear win on Q8_0 (the CPU2 target — both faster *and* much more stable) and a minor wash on Q4_K_M. Default ON is correct. Set `=0` only when (a) measuring the baseline impact of the mbind itself, (b) running an alternative NUMA strategy (per-CCD bind, replication), or (c) diagnosing a regression and need to rule the mbind out.
+
+A startup `GGML_LOG_INFO` is emitted when `GGML_NUMA_REPACK_INTERLEAVE=0` is set, so the disabled state is visible in server logs without grepping the source.
+
+**Q4_K_M Note**: Q4_K_M models use CPU_REPACK too (REAP-246B was observed with a 110 GB CPU_REPACK buffer at load), so the env var affects them — the kill-switch is not a Q8_0-only knob. Q4_K_M just doesn't see a perf benefit from the mbind.
 
 ### EP family (CPU15 Phase 3.2 inter-process)
 
