@@ -2,7 +2,7 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-25
+**Last compiled**: 2026-04-26
 **Sources**: 25 documents (2 deep-dives, 4 handoffs, 19 intake entries)
 
 ## Summary
@@ -94,11 +94,11 @@ The integration into `llama.cpp-experimental:feature/cpu-ep-inter-process` lande
 
 The 32-chunk WikiText-2 PPL gate confirmed bit-identical perplexity between baseline and EP+drone+shard on Qwen3.6-35B-A3B (`[1]4.3289...[32]5.7225` in both runs). Visible token-level divergence in `llama-cli` was sampling-argmax jitter on FP-rounding-equivalent logits — the underlying probability distribution is identical.
 
-#### Why EP wins on medium MoE but fails on >150B-class
+#### Why EP wins on medium MoE and remains unresolved on >150B-class
 
 **Wins on Qwen3.6-35B-A3B class** because compute, not bandwidth, dominates. With 3B active params and ~35 GiB Q8_0 model size, single-instance at 96t under-utilises the 4-NUMA bandwidth profile; EP at N=2 with each instance spanning 2 nodes lets master handle non-MoE compute fully while workers parallelise MoE — net 2× throughput.
 
-**Fails on REAP-246B / M2.7** because single-instance with `--numa distribute` already saturates 100% of system DDR bandwidth across all 4 nodes. EP at N=4 with master spanning all nodes (`GGML_EP_MASTER_ALL_NODES=1`) creates **thread oversubscription**: 96 master threads + 24×3 worker threads = 168 simultaneous threads on 96 physical cores during MoE ops. OS scheduler thrashing dominates, per-token time blows out 70× vs baseline.
+**Current >150B outcome (REAP-246B / M2.7)**: EP regresses on measured configs, but aggregate-DDR saturation is not proven as the root cause. The strongest observed failure mode is thread oversubscription in master-all-nodes style configs (`96 + 24×3` threads on 96 physical cores), plus unresolved sync/imbalance effects. Root-cause closure now depends on CPU24 uncore/fabric counters and CPU23 regime coverage.
 
 The fundamental issue: ggml's threadpool is fixed-size per process, so it can't dynamically resize between non-MoE phase (master-only active) and MoE phase (all instances active in parallel). Architectural fix would require dynamic threadpool resizing or phase-aware spin-parking — real engineering, deferred indefinitely.
 
@@ -108,7 +108,7 @@ The fundamental issue: ggml's threadpool is fixed-size per process, so it can't 
 |--------------|------|--------|
 | < 50B MoE | EP N=2 drone+shard, 48t per instance | Compute-bound, parallelism wins |
 | 50–150B MoE | EP N=2 drone+shard (validate first) | Likely benefits, bandwidth-edge |
-| > 150B MoE | single-instance --numa distribute 96t | Bandwidth-saturated; oversubscription |
+| > 150B MoE | single-instance --numa distribute 96t (current) | EP regressions observed; attribution still open |
 | Dense | single-instance | No MoE ops to parallelise |
 
 #### Deferred memory and latency optimisations
@@ -118,7 +118,7 @@ The fundamental issue: ggml's threadpool is fixed-size per process, so it can't 
 
 #### Architecture summary
 
-The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning, drone mode, lazy shard) is **complete and correct**. The 13 commits constituting Phase 3.2 deliver a deployable EP capability for medium-MoE. The negative result on REAP-246B-class is a clean closure — bandwidth math doesn't favour partitioning when single-instance already uses 100% of available DDR bandwidth, and on EPYC NPS4 specifically that crossover happens around 150B total params.
+The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning, drone mode, lazy shard) is **complete and correct**. The 13 commits constituting Phase 3.2 deliver a deployable EP capability for medium-MoE. For REAP-246B-class, treat closure as provisional pending CPU24 attribution rather than "bandwidth-saturation-closed."
 
 [CPU15 handoff](../handoffs/active/large-moe-expert-parallelism.md), [progress 2026-04-25](../progress/2026-04/2026-04-25.md)
 
@@ -187,5 +187,5 @@ The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning
 - [intake-427] GLM-5.1-555B-A14B-REAP GGUF -- 325GB Q4_K_M, 14B active from 192 experts, 88% Terminal-Bench, 66% SWE-bench Pro, expert count threshold (25% safe / 40% broken)
 - [intake-449] OpenAI Privacy Filter (huggingface.co/openai/privacy-filter) -- 2026-04-23: **aggressive small-MoE sparsity reference**. 128 experts with top-4 routing in a 1.5B-total / **50M-active (3.3%)** bidirectional encoder — ~2.6× sparser than our Qwen3.5/3.6-35B-A3B (8.6% active). 96% F1 on PII-Masking-300k. Not for deployment (PII task is off-roadmap), but design reference if `project_learned_routing_controller` upgrades from dense MLP to MoE router. [Deep-dive](../research/deep-dives/openai-privacy-filter-pii-preprocessor.md)
 - [intake-467] MegaBlocks (arXiv:2211.15841, Stanford/MosaicML, MLSys 2023) -- 2026-04-26: foundational dropless-MoE via block-sparse grouped GEMM with **blocked-CSR-COO + transpose-indices** encoding. Eliminates capacity-factor padding/dropping. Anchors CPU18 backlog item: port the **indexing scheme** (not the GPU kernel) into CPU2's AVX-512BW Q8_0 expert-GEMM path for padding-free CPU MoE expert dispatch. Compounds with already-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) wins.
-- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing the measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regression on bandwidth-saturated >150B MoE. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md).
+- [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md).
 - [intake-471] Expert Choice Routing (arXiv:2202.09368, Google, NeurIPS 2022) -- 2026-04-26: **filed not_applicable**. Inverts dispatch (experts pick top-k tokens vs token picks top-k experts) for perfect load balance with no auxiliary loss. Three independent reasons: (1) training-time choice — our stack does no pre-training; (2) all production MoEs ship token-choice routers, cannot retrofit without retraining; (3) load-imbalance is largely absent on single-user CPU decode. Filed as literature reference only.

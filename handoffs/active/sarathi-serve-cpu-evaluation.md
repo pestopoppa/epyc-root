@@ -1,11 +1,15 @@
 # Sarathi-Serve / Chunked-Prefill Evaluation on EPYC NUMA
 
-**Status**: stub (created 2026-04-26 via research intake batch)
+**Status**: ACTIVE (wave-scoped plan, created 2026-04-26)
 **Categories**: inference_serving, local_inference, hardware_optimization
 **Priority**: MEDIUM-HIGH (likely the cheaper architectural win compared to CPU16 NUMA-disagg, and likely obsoletes it)
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU17)
-**Related**: [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling)
+**Related**: [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 protocol gate)
+
+## Pipeline placement
+
+This handoff is the serving-side execution track for **CPU23 (Wave 3 regime coverage)**. It should start only after Wave 0 protocol setup (CPU20) and should feed class-level conclusions back into CPU15/CPU16 routing decisions.
 
 ## Objective
 
@@ -43,13 +47,13 @@ The Sarathi authors themselves note (intake-469) that disagg "could be challengi
 ## Proposed Phase 0 — Cheap Probe (no code)
 
 1. Audit existing llama-server flags for chunked-prefill support: `--chunk-size`, `--parallel-prompt`, `--cont-batching`, etc. Document current defaults and what's exposed.
-2. Construct a synthetic workload: 1 long prompt (16k tokens) arriving mid-stream against 3 in-flight decodes. Measure TBT spike on the in-flight decodes with/without chunked prefill.
+2. Construct a synthetic workload matrix: 1 long prompt arriving mid-stream against 3 in-flight decodes at **2K / 8K / 32K** context regimes. Measure TBT spike on in-flight decodes with/without chunked prefill.
 3. If TBT spike reduction ≥30% at the chunk size sweet spot, advance to Phase 1.
 
 ## Proposed Phase 1 — NUMA-Pinned Shard Sweep
 
 1. Enable chunked prefill on each of the 4×48t shards; sweep chunk size {128, 256, 512, 1024, 2048} tokens.
-2. Measure: decode-stall fraction during long-prompt-mid-stream, aggregate throughput, per-iteration latency variance.
+2. Measure: decode-stall fraction during long-prompt-mid-stream, aggregate throughput, per-iteration latency variance, and prefill/decode interference under mixed arrival.
 3. Compare against existing dynamic-stack-concurrency baseline (no chunking).
 4. Gate: if Phase 1 shows ≥20% decode-stall reduction without aggregate-throughput regression, propose production rollout via DS-7 stack template extension.
 
@@ -61,6 +65,6 @@ The Sarathi authors themselves note (intake-469) that disagg "could be challengi
 
 ## Notes
 
-- This stub is a **direct outcome** of the 2026-04-26 research-intake batch (intake-458 to 472). The Tier 2b critique of disaggregated serving (recorded in intake-459/460/472 `contradicting_evidence` fields) flagged Sarathi-Serve as the natural CPU-appropriate alternative.
+- This handoff is a **direct outcome** of the 2026-04-26 research-intake batch (intake-458 to 472). The Tier 2b critique of disaggregated serving (recorded in intake-459/460/472 `contradicting_evidence` fields) flagged Sarathi-Serve as the natural CPU-appropriate alternative.
 - Surface this stub via [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block (CPU17).
 - Independent of L3aaN reboot — can be picked up before, during, or after.

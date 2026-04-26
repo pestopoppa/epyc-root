@@ -1,6 +1,6 @@
 # Single-Instance System-Level Throughput Tuning
 
-**Status**: stub (investigation not started)
+**Status**: ACTIVE — partial execution complete (status refreshed 2026-04-26 critique-integration pass)
 **Created**: 2026-04-23 (user-identified gap — "leave nothing on the table" single-instance throughput)
 **Priority**: HIGH — several knobs are zero-code changes with measurable gains, and some are prerequisites for the TP-sharding lever.
 **Categories**: hardware_optimization, inference_serving, local_inference

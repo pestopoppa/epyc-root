@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-04-23
+**Last compiled**: 2026-04-26
 **Sources**: 19 documents
 
 ## Summary
@@ -140,3 +140,14 @@ Research-intake batch indexed the disaggregation lineage: DistServe (intake-459,
 **Tier 2b critique mattered.** Disaggregation can REGRESS 20-30% on small/short workloads (BentoML handbook; vLLM disagg_prefill docs explicitly state "does not improve throughput" — it trades throughput for TTFT/SLO interference reduction). NVIDIA's "Beyond the Buzz" (arXiv:2506.05508, Jun 2025, first systematic study) shows disagg only wins on prefill-heavy traffic + larger models with dynamic rate matching + elastic scaling; static splits lose. EPYC's xGMI inter-socket bandwidth (~64 GB/s/dir) is ~14× lower than NVLink, making the KV-transfer tax proportionally worse on CPU. Single-user CPU regime is the opposite of the multi-tenant GPU regime where DistServe/Splitwise were validated.
 
 **The CPU-appropriate alternative is chunked prefill, not disagg.** Sarathi-Serve (intake-048, OSDI'24, **already_integrated** upstream) achieves the same prefill/decode interference elimination via chunked-prefill + decode-piggybacking hybrid batches — no KV migration, no high-bandwidth interconnect requirement. Sarathi authors explicitly note disagg "could be challenging in the absence of high-bandwidth interconnects." Two CPU backlog tracks now reflect this finding: CPU16 (`numa-prefill-decode-disaggregation.md` — feasibility-gated stub with Tier 2b counter-evidence pre-recorded; Phase 0 = empirical xGMI BW falsification) and CPU17 (`sarathi-serve-cpu-evaluation.md` — chunked-prefill eval, the cheaper path likely to obsolete CPU16). See [`cpu-inference-optimization-index.md`](../handoffs/active/cpu-inference-optimization-index.md) ⚑ START HERE block.
+
+## 2026-04-26 critique-integration addendum
+
+Serving-side CPU optimization now follows a strict wave pipeline:
+
+1. CPU20 protocol gate (benchmark rigor/revalidation)
+2. CPU21 + CPU24 attribution (runtime matrix + uncore/fabric counters)
+3. CPU22 mechanism work (dynamic MoE load balancing)
+4. CPU23 regime matrix (2K/8K/32K + interference), including this Sarathi-serving path
+
+Implication for serving decisions: treat any decode-only or single-regime conclusion as provisional until CPU23 coverage completes.

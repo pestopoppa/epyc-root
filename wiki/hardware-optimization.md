@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-23
+**Last compiled**: 2026-04-26
 **Sources**: 24 documents
 
 ## Summary
@@ -86,6 +86,12 @@ The TIDE calibration-router early-exit track was deprecated 2026-04-23 (projecti
 - **Weight-reduction strategies (mature/in-production)**: NUMA 4-way, MoE expert pruning (REAP), AM KV compaction, KV quantization, ngram-simple spec. These are the workhorses.
 - **Operator fusion (ruled out empirically)**: Hadamard + unfused `q4_0` beat TurboQuant + fused dequant by 2.2× on our hardware. Upstream llama.cpp has stopped investing in CPU fusion (recent fusion commits all target CUDA/SYCL/WebGPU). Fusion hides compute latency, not memory latency; our workloads are bandwidth-bound (or recurrence-bound for hybrid).
 - **Shape-specialized GEMV microkernels (uncharted)**: the one remaining lever. Prior art: llamafile 2.8× on Zen 4, KleidiAI 2.0× decode on Graviton 3. Zen 5's 512-bit AVX-512 datapath (doubled from Zen 4) favors this path. Full investigation handoff at `cpu-shape-specialized-gemv-decode.md`; Phase 0 profiling gate before committing code. Projected 1.5–2.5× end-to-end decode speedup if lever proves out.
+
+### 2026-04-26 critique-integration addendum
+
+- CPU4 hierarchical barrier work is now recorded as a **falsified single implementation variant**, not a full sync-class closure.
+- Cross-track sequencing is explicit: CPU20 (rigor) → CPU21+CPU24 (attribution) → CPU22 (mechanism) → CPU23 (regime coverage).
+- >150B EP regressions remain open for hardware-attribution closure; aggregate-DDR saturation is not accepted as proven root cause without CPU24 counter evidence.
 
 ### Perf-gap decomposition: Qwen3.6-27B at 4.8 t/s on EPYC 9655
 

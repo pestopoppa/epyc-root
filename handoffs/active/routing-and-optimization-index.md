@@ -27,7 +27,7 @@
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
 | LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 3 infra complete (7 per-node flags + dispatch + 48 tests) | Phase 3: Flip flags per node + production validation |
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
-| ~~Retrain Routing Models~~ | ~~[`retrain-routing-models.md`](../blocked/retrain-routing-models.md)~~ | SUPERSEDED by Learned Routing Controller Phase 1 (2026-04-15, 157K samples, 92% val acc, flag enabled). Duplicate `active/` copy removed 2026-04-17; `blocked/` copy awaits move to `archived/`. | — |
+| ~~Retrain Routing Models~~ | ~~(blocked handoff removed; archival pending)~~ | SUPERSEDED by Learned Routing Controller Phase 1 (2026-04-15, 157K samples, 92% val acc, flag enabled). Duplicate `active/` copy removed 2026-04-17; blocked copy no longer present. | — |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
 | Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done, SX-5/6 folded into AR-3 Package D | SX-5 load test + SX-6 swap gated on AR-3 warmup |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |

@@ -1,6 +1,6 @@
 # Intra-Process Tensor-Parallel Decode Across CCDs (Single-Instance Saturation)
 
-**Status**: stub (investigation not started)
+**Status**: ACTIVE — implemented phases with pending revalidation-gated follow-ons (status refreshed 2026-04-26 critique-integration pass)
 **Created**: 2026-04-23 (user-identified gap after single-vs-aggregate throughput discussion)
 **Priority**: HIGH — the single largest uncharted single-instance lever on CPU. Makes 1×instance approach N×instance aggregate throughput for single-session decode.
 **Categories**: hardware_optimization, inference_serving, local_inference

@@ -5,7 +5,7 @@
 **Scope boundary**: CPU decode/prefill throughput on local EPYC 9655 single-socket hardware. Excludes: GPU levers (see `gpu-acceleration-path.md`), routing/orchestration (see `routing-and-optimization-index.md`), quality/eval (see `research-evaluation-index.md`).
 
 **Created**: 2026-04-23 (after single-vs-aggregate throughput discussion revealed several uncharted single-instance levers with no tracking home)
-**Updated**: 2026-04-23 (coordinated pickup plan initiated — see §Pickup Sequence below)
+**Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
 ## ⚑ START HERE if resuming after L3aaN reboot (2026-04-26)
@@ -15,7 +15,14 @@
 2. **this file** (`cpu-inference-optimization-index.md`) — CPU tracks + current status
 3. `handoffs/active/nps-reboot-runbook.md` — **the "L3aaN evaluation plan — 2026-04-26 update" section is the post-reboot procedure**, with pre-reboot snapshot, decision matrix, and step-by-step
 4. `progress/2026-04/2026-04-26.md` — full Phase A-G + P1-P4 narrative (today's session)
-5. `handoffs/active/cpu-kernel-env-flags-inventory.md` — every env var classified
+5. [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) — every env var classified
+6. [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) — mandatory benchmark protocol + revalidation gate (CPU20)
+7. [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md) — Wave 1 runtime attribution matrix (CPU21)
+8. [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) — Wave 1 >150B bottleneck attribution (CPU24)
+9. [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) — Wave 2 mechanism track (CPU22)
+10. [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) — Wave 3 context/interference coverage (CPU23)
+11. [`cpu-optimization-thesis-pause-2026-04-26.md`](cpu-optimization-thesis-pause-2026-04-26.md) — correction ledger for methodology/conclusion drift
+12. [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) — concurrent topology reference (contention point for CPU15/CPU17 decisions)
 
 **State to re-establish immediately after reboot**:
 - `numactl --hardware` → expect 12 NUMA nodes (was 4 under NPS4)
@@ -62,6 +69,27 @@ LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-co
 **Earlier session's pre-NPS4 baseline freeze** (still on disk, lower-priority reference): `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/pre-nps4-freeze/SUMMARY.md`
 
 **Tasks queued** (in TaskList): #12 (post-NPS4 re-bench + CPU1 decision), #13 (Phase 1.2 CCD work distribution), #14 (Phase 1.3 NUMA weight mbind), #11 (CPU4 sync primitive — NUMA-independent, can proceed regardless).
+
+## ⚑ Methodology Hardening Gate (added 2026-04-26)
+
+Before any new "exhausted" or "deployment-ready" claim, complete **CPU20** protocol and explicitly revalidate claims that were previously affected by:
+
+- wrong baseline selection (`--numa distribute` vs canonical no-flags baseline)
+- zombie-process contamination (`pgrep -af "llama"` not clean before benches)
+- wrong shared-library resolution (v4 library loaded instead of experimental build)
+- OpenMP preprocessor guard mistakes (code measured while compiled out)
+
+Interpretation rule for the next session: claims from runs that violate the protocol are provisional and must be rerun before downstream decisions.
+
+## Pipeline Waves (constructive flow across tracks)
+
+Use this order so tracks compose instead of conflicting:
+
+1. **Wave 0 — Integrity Gate**: CPU20 benchmark rigor + revalidation (must-pass)
+2. **Wave 1 — Root-Cause Attribution**: CPU21 OpenMP runtime/scheduling matrix + CPU24 uncore/fabric attribution
+3. **Wave 2 — Mechanism Work**: CPU22 dynamic MoE load balancing (only after Wave 1 identifies the dominant bottleneck class)
+4. **Wave 3 — Regime Coverage**: CPU23 context matrix (2K/8K/32K + prefill/decode interference)
+5. **Wave 4 — Existing Tracks Resume**: CPU1/CPU2/CPU15/CPU17/CPU18/CPU19 with revised evidence quality gates
 
 ## ⚑ NEW WORK ADDED 2026-04-26 (post research-intake batch — surface for fresh agent)
 
@@ -144,12 +172,17 @@ Every agent working on CPU optimization work listed here MUST:
 
 ## Prioritized Task List
 
-Ordered by expected single-instance decode throughput gain × feasibility.
+Ordered by expected single-instance decode throughput gain × feasibility, with the Wave-0 integrity gate first.
 
+- [ ] **CPU20 — CRITICAL (new 2026-04-26)** Benchmark rigor + revalidation gate → see [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md). Canonicalize environment, process hygiene, cache-state protocol, and baseline policy before any new optimization claim. Re-run headline claims that were previously impacted by methodology drift.
+- [ ] **CPU21 — HIGH (new 2026-04-26)** OpenMP runtime/scheduling matrix for sync-heavy Q4_K_M class → see [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md). Compare libgomp/libomp, schedule/chunk policies, and affinity permutations before declaring sync-class software levers exhausted.
+- [ ] **CPU24 — HIGH (new 2026-04-26)** REAP-class uncore/fabric counter attribution (IMC/channel/fabric/remote-miss) → see [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md). Mandatory before closing >150B EP root-cause analysis.
+- [ ] **CPU22 — HIGH (new 2026-04-26)** Dynamic MoE expert load balancing (work stealing/runtime rebalance) → see [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md). Follow-on to static-modulo sharding failures targeting structural expert-imbalance.
+- [ ] **CPU23 — MEDIUM-HIGH (new 2026-04-26)** Full context-regime matrix (2K/8K/32K + long-prompt-mid-stream interference) → see [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md). Prevents decode-only overgeneralization.
 - [ ] **CPU1 — HIGH (top, NPS4 locked, Phase 1.4 shipped, software-level levers exhausted)** Intra-process tensor-parallel decode → see `intra-process-tensor-parallel-decode.md`. **Single-instance best 48.81 ± 0.08 t/s at 48 threads with `-fa 1`** (full stack: `GGML_CCD_POOLS=1 GGML_NUMA_WEIGHTS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1`). Phase 1.4 landed and PPL-verified. Post-Phase-1.4 perf profile: barrier 28%, GEMV 33.5%, other 38%. Concurrent teardown hang non-reproducible (closed; resolved by cpuset fixes `0ade7bd4d`+`69b4c3fa4`). **Op-fusion Phase 2 reverted (2026-04-24)** — was correct (PPL bit-exact) but throughput-neutral in both fa=0 and fa=1; attention-internal fusion is already done by `ggml_flash_attn_ext` so fusion infra had no remaining leverage target. Reverted as `c34aac61b` + `138b26cd4`. **GEMV VNNI probe (2026-04-24) also net-negative** — added AVX-512VNNI path to `ggml_gemv_q4_K_8x8_q8_K` (PPL bit-exact); throughput slightly regressed because on Zen 5 VPMADDUBSW runs at 2/cycle while VPDPBUSD is only 1/cycle, so AVX2 is actually better-matched to this CPU for Q4_K GEMV. Not committed. **All CPU-general software levers now exhausted on NPS4**; next meaningful gate is the **L3-as-NUMA BIOS reboot** (item 27b).
 - [ ] **CPU2 — AVX-512BW kernel + NUMA fix LANDED 2026-04-24, production-viable** Shape-specialized GEMV microkernels → see `cpu-shape-specialized-gemv-decode.md`. Session 15 landed (commits `1d18efce3` + `e84a5c82f` + `ba1c23900` on branch `cpu-optimization/q8-8x8-avx512bw`): AVX-512BW 8x8 Q8_0 GEMV kernel (hot loop emits `vpmaddubsw`+`vpmaddwd`, deliberately bypassing the VNNI-auto-selecting helper — Zen 5 falsified VNNI twice already), plus auto-`mbind(MPOL_INTERLEAVE)` on the CPU_REPACK buffer when `ggml_is_numa()`, plus an env-gated `gated_delta_net` S_v sub-chunking refactor (default off — a probe that disproved DeltaNet as the bottleneck). **Final performance on Qwen3.6-27B-Q8_0** at 96t = 4.39 vs baseline 4.32 (+1.6%); at 1t = 1.12 vs 0.85 (+31.8%). PPL on Wikitext-2 = 6.6985 (preserved). **The 4.4 t/s ceiling is NOT memory-bandwidth** — only 26% of theoretical 460 GB/s vs Qwen2.5-Coder-32B dense at 41% on same hardware. Real bottleneck unidentified; next session should be a `GGML_PERF=1` profile, not more kernel work. **No env gates required** — auto-mbind runs automatically on multi-NUMA systems; the `GGML_Q8_0_8X8` + `GGML_Q8_0_8X8_AVX` flags remain default OFF for rollout caution. **Follow-ups**: profile-then-fix Qwen3.6-27B decode at 96t to find the real ceiling cause, Q6_K + Q5_K 8x8 kernels (Session 14 flagged both as dispatcher-NEON-only gaps, ~2× Q8_0 complexity for bit-split unpack), upstream the `mbind` fix (general bug affecting every multi-NUMA repacked quant).
 - [ ] **CPU3 — HIGH** System-level tuning (NPS mode, hugepages, barrier, IRQ, SMT) → see `single-instance-system-tuning.md`. 15–40% alone; a prerequisite for the full CPU1 gain under NPS4/L3aaN. **Zero-reboot knobs partially applied 2026-04-23** (THP→always, numa_balancing=0, 1GB hugepages — net within noise on canonical baseline).
-- [ ] **CPU4 — HIGH (promoted 2026-04-23)** Per-CCD hierarchical sync primitive (was part of CPU3 Phase 3). 32–45% of decode cycles measured in OpenMP barriers — standalone HIGH lever independent of CPU1. 10–30% barrier cost reduction at 192t.
+- [ ] **CPU4 — COMPLETE (negative single-variant result, 2026-04-26)** Hierarchical OpenMP barrier variant tested and reverted (net-negative). Do not pursue further barrier-primitive surgery until CPU21 runtime matrix completes and confirms residual sync opportunity.
 - [ ] **CPU5 — MED** Explicit hugepages (1 GB) for weight mmap (part of CPU3 Phase 1). 5–15% on long decode runs.
 - [ ] **CPU6 — MED** ZenDNN 5.2 evaluation on our stack (AMD-optimized drop-in). Claimed "200% vs prior"; not yet validated on llama.cpp. 1-day test.
 - [ ] **CPU7 — MED** tinyBLAS / llamafile integration assessment. If already mergeable into our fork, unlocks part of CPU2 without a full from-scratch ukernel implementation.
@@ -160,13 +193,13 @@ Ordered by expected single-instance decode throughput gain × feasibility.
 - [ ] **CPU12 — LOW** ccache / BOLT / FDO-style post-link binary optimization of the llama-server binary.
 - [ ] **CPU13 — LOW** Prefill-specific optimizations: paged attention RSS investigation (deferred from v3 rebuild), chunked prefill for long contexts.
 - [ ] **CPU14 — LOW** Batched slot decode (`-np N --parallel`) benchmark suite — aggregate, not single-session. Partial overlap with dynamic-stack-concurrency; deserves its own baseline under the new stack.
-- [ ] **CPU15 — HIGH (new 2026-04-24)** Large-MoE as primary target + expert parallelism → see [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md). Two linked tracks: (A) strategic reframe — target large sparse MoE (≥100B total, ≥10B activated, ≥64 experts) to exploit the hardware's RAM:BW ratio and the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s); (B) expert-parallelism mechanism — shard experts across CCDs/NUMA nodes/processes to convert aggregate BW into single-stream throughput. Phase 0 is a cheap 4–6 h baseline (re-measure Qwen3-235B-A22B + 480B-A35B on current NPS4 + `GGML_NUMA_WEIGHTS=1` + AVX-512BW stack) that falsifies or opens the mechanism work. Expected gain 2–5× single-stream on large MoE. Contends with `orchestrator-nps4-48x4-notes.md` for NUMA topology — Decision Point D2 in the child handoff.
+- [ ] **CPU15 — HIGH (new 2026-04-24)** Large-MoE as primary target + expert parallelism → see [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md). Two linked tracks: (A) strategic reframe — target large sparse MoE (≥100B total, ≥10B activated, ≥64 experts) to exploit the hardware's RAM:BW ratio and the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s); (B) expert-parallelism mechanism — shard experts across CCDs/NUMA nodes/processes to convert aggregate BW into single-stream throughput. Phase 0 is a cheap 4–6 h baseline (re-measure Qwen3-235B-A22B + 480B-A35B on current NPS4 + `GGML_NUMA_WEIGHTS=1` + AVX-512BW stack) that falsifies or opens the mechanism work. Expected gain 2–5× single-stream on large MoE. Contends with `orchestrator-nps4-48x4-notes.md` for NUMA topology — Decision Point D2 in the child handoff. **Important correction**: >150B regressions observed so far are real, but aggregate-DDR saturation is not the proven root cause; CPU24 attribution remains open.
 - [ ] **CPU16 — MEDIUM (new 2026-04-26, feasibility-gated)** NUMA-disaggregated prefill/decode → see [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md). Inspired by DistServe (intake-459), Splitwise (intake-460), Mooncake (intake-472). Phase 0: empirical xGMI sustained KV-cache-shaped transfer BW measurement. **Strong Tier 2b counter-evidence pre-recorded in stub**: disagg can REGRESS 20-30% on small/short workloads, EPYC xGMI ~64 GB/s vs NVLink ~900 GB/s makes KV-transfer tax proportionally worse, single-user CPU regime is the wrong regime. Phase 0 gate: if KV-transfer time at typical context lengths >10% of decode time, close stub. Likely obsoleted by CPU17 — pursue CPU17 first.
 - [ ] **CPU17 — MEDIUM-HIGH (new 2026-04-26)** Sarathi-Serve / chunked-prefill evaluation on EPYC NUMA → see [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md). Sarathi-Serve (intake-048, already_integrated upstream) achieves prefill/decode interference elimination WITHOUT KV migration — the cheaper architectural alternative to CPU16 disagg. Scope: enable chunked-prefill in llama-server, sweep chunk size on 4×48t NUMA shards, measure decode-stall reduction during long-prompt-mid-stream scenarios. Sarathi v1 (intake-469) authors explicitly note disagg "could be challenging in the absence of high-bandwidth interconnects" — this is the CPU-appropriate path. **If it works on our regime, it likely obsoletes CPU16**.
 - [ ] **CPU18 — MEDIUM-HIGH (new 2026-04-26)** MegaBlocks blocked-CSR-COO + transpose-indices port to CPU2 expert-GEMM. MegaBlocks (intake-467) introduced dropless MoE via block-sparse grouped GEMM. The **indexing scheme** (blocked-CSR-COO + transpose indices) is the transferable artifact for CPU MoE expert dispatch — eliminates capacity-factor padding/dropping. Port into CPU2 AVX-512BW Q8_0 expert-GEMM path (cpu-shape-specialized-gemv-decode.md). Compounds with CPU2's just-landed +31.8% (1t) / +1-3% (12-96t) gains. NOT a GPU kernel port.
 - [ ] **CPU19 — MEDIUM-HIGH (new 2026-04-26)** Tutel 2DH all-to-all port to CPU15 inter-process EP shared-memory ring. Tutel (intake-470) introduced two-dimensional hierarchical all-to-all that aggregates intra-node first, then inter-node exchange. Maps onto our 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24 via intra-CCD combine first, then inter-NUMA exchange. Directly addresses CPU15 Phase 3 measured regression cause for REAP-246B (-53%) and MiniMax-M2.7 (-23%). Phase 3.4 candidate stub for [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md).
 
-Items CPU1–CPU8, CPU15, and CPU16–CPU19 are the active backlog. CPU9–CPU14 are watchlist items; pursue only when higher-priority work is gated.
+Primary active backlog is CPU20–CPU24 (wave pipeline), then CPU1/CPU2/CPU3/CPU15/CPU16–CPU19. CPU9–CPU14 remain watchlist items; pursue only when higher-priority work is gated.
 
 ---
 
@@ -177,7 +210,7 @@ Items CPU1–CPU8, CPU15, and CPU16–CPU19 are the active backlog. CPU9–CPU14
 | CPU1 | [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) | **Phase 1.3 v1 IMPLEMENTED 2026-04-24; NPS4 locked** | **HIGH (top, in flight)** | Phase 1.3 v1 alone +140%; with CPU1 P1.0+1.1 +156% vs baseline; 39.59 single-inst (88% NPS2) | Phase 1.3 v2 (per-tensor stripe, 2d) + Phase 1.2 (CCD work dist, 2-3d) next. |
 | CPU2 | [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) | **Session 15 AVX-512BW 8x8 kernel + NUMA auto-mbind LANDED 2026-04-24** | production-viable | 1t: +31.8% ; 12-96t: +0.9-2.9% (BW-saturated ceiling) | Q6_K/Q5_K are the natural follow-ons (same NEON-only dispatcher gap, ~2× complexity) |
 | CPU3 | [`single-instance-system-tuning.md`](single-instance-system-tuning.md) | **Phase 0 + zero-reboot knobs partial 2026-04-23** | HIGH | 15–40% alone; gating multiplier for CPU1 | Phase 2 requires reboot; coordinates with CPU1 Phase 3 |
-| CPU4 | Per-CCD sync primitive | **Promoted 2026-04-23 based on 32-45% measured barrier cost** | **HIGH (standalone)** | 10–30% barrier cost reduction | Independent of CPU1; +16-22% end-to-end projected |
+| CPU4 | [`cpu-hierarchical-barrier.md`](cpu-hierarchical-barrier.md) | **COMPLETE 2026-04-26 (negative for tested variant)** | MEDIUM (conditional reopen) | Falsified one custom barrier path; no deployable gain | Reopen only after CPU21 if runtime evidence still indicates sync headroom |
 | CPU5 | 1 GB hugepages | stub (part of CPU3 Phase 1) | MED | 5–15% | Kernel boot param |
 | CPU6 | ZenDNN 5.2 eval | not started | MED | Unknown; AMD claims up to 2× | 1-day test; low risk |
 | CPU7 | tinyBLAS / llamafile integration | not started | MED | Partially supplants CPU2 | License + fork-merge check |
@@ -188,9 +221,14 @@ Items CPU1–CPU8, CPU15, and CPU16–CPU19 are the active backlog. CPU9–CPU14
 | CPU12 | BOLT / FDO binary post-link | not started | LOW | 1–3% | Low-risk; mature tooling |
 | CPU13 | Prefill optimizations | deferred (from v3 rebuild) | LOW | Prefill-specific | Not decode-critical |
 | CPU14 | `--parallel` slot decode bench | not started | LOW | Aggregate only | Covered partially by `dynamic-stack-concurrency.md` |
-| CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 3 COMPLETE 2026-04-26** — EP **+100% bit-exact PPL on Qwen3.6-35B-A3B**, +6% on gemma-26B-A4B; **REAP-246B confirmed REGRESSION** at -53% even with eager-warm + all flags (bandwidth-saturated >150B class doesn't benefit from EP on EPYC NPS4) | **HIGH** | Phase 3.0 IPC RTT 0.73 μs; Phase 3.1 library `f47bec4`; full Phase 3.2 stack a→h all live. **Production routing**: <50B MoE → EP N=2 drone+shard +100% bit-exact PPL; >150B MoE → stay single-instance --numa distribute. Phase 3.3 production wiring next session (env-var bootstrap simplifies launcher) | Phase 1/2 intra-process EP all D3-failed; Phase 3 inter-process beats single-instance on medium MoE; closes the bandwidth-math question on >150B class |
+| CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 3 COMPLETE 2026-04-26** — EP **+100% bit-exact PPL on Qwen3.6-35B-A3B**, +6% on gemma-26B-A4B; **REAP-246B confirmed REGRESSION** at -53% even with eager-warm + all flags | **HIGH** | Phase 3.0 IPC RTT 0.73 μs; Phase 3.1 library `f47bec4`; full Phase 3.2 stack a→h all live. **Production routing (current evidence)**: frontdoor-class Q8_0 can benefit; >150B class currently regresses and stays single-instance pending deeper attribution. | Phase 1/2 intra-process EP all D3-failed; Phase 3 inter-process beats single-instance on medium MoE; **root cause for >150B still open (see CPU24)** |
+| CPU20 | [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) | **NEW 2026-04-26** | **CRITICAL** | Prevent invalid conclusions; enforce reproducible baselines | Gates all CPU tracks before new claims |
+| CPU21 | [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md) | **NEW 2026-04-26** | HIGH | Recover sync-class throughput without kernel surgery | Needs CPU20; informs CPU4/CPU22 |
+| CPU22 | [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) | **NEW 2026-04-26** | HIGH | Address structural expert imbalance left by static modulo sharding | Needs CPU21+CPU24 attribution |
+| CPU23 | [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) | **NEW 2026-04-26** | MEDIUM-HIGH | Prevent decode-only overgeneralization | Needs CPU20 harness |
+| CPU24 | [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) | **NEW 2026-04-26** | HIGH | Identify true >150B bottleneck class | Needs CPU20; informs CPU15/L3aaN decisions |
 | CPU16 | [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) | **STUB 2026-04-26** — qualified feasibility study, Tier 2b counter-evidence pre-recorded | MEDIUM (feasibility-gated) | TBD — Phase 0 falsification gate first | Likely obsoleted by CPU17 — pursue CPU17 first |
-| CPU17 | [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md) | **STUB 2026-04-26** | MEDIUM-HIGH | Decode-stall reduction during long-prompt-mid-stream; targets CPU16 obsolescence | None (Sarathi-Serve already upstream as intake-048) |
+| CPU17 | [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md) | **ACTIVE plan scaffold 2026-04-26** | MEDIUM-HIGH | Decode-stall reduction during long-prompt-mid-stream; targets CPU16 obsolescence | Feeds CPU23 regime matrix; inherits CPU20 protocol |
 | CPU18 | MegaBlocks indexing port (line item; subsection of [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) on first session) | **NEW 2026-04-26** | MEDIUM-HIGH | Padding-free CPU MoE expert dispatch; compounds with CPU2 wins | Compounds with CPU2 |
 | CPU19 | Tutel 2DH port (line item; subsection of [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) Phase 3.4 on first session) | **NEW 2026-04-26** | MEDIUM-HIGH | ~96 → ~24 sync points/token target; addresses REAP-246B / MiniMax-M2.7 regression | Compounds with CPU15 drone+shard |
 
@@ -245,6 +283,12 @@ Items CPU1–CPU8, CPU15, and CPU16–CPU19 are the active backlog. CPU9–CPU14
 - **CPU1 Phase 2** (full model TP) needs **CPU4** (sync primitive) to land first, or the global-barrier cost will eat the TP gain.
 - **CPU1 Phase 3** (L3aaN benchmark) needs **CPU3 Phase 2** (BIOS change) to expose the NUMA topology TP wants.
 - **CPU8** (weight replication) is conditional on NPS4/L3aaN being adopted (**CPU3 Phase 2 outcome**).
+
+**Critique-integration dependencies (2026-04-26):**
+- **CPU20** is the quality gate for all new claims. No optimization closure without protocol-compliant reruns.
+- **CPU21 + CPU24** must precede any renewed "sync-class exhausted" or ">150B root cause closed" declaration.
+- **CPU22** should not start until CPU21/CPU24 identify where imbalance dominates.
+- **CPU23** must run before final class-level production guidance, to avoid decode-only bias.
 
 Standalone paths that don't need baseline:
 - **CPU6** (ZenDNN eval) — 1-day test, no dependencies.
@@ -314,6 +358,7 @@ Baseline and progress measurements rely on:
 - `perf stat` / `perf record` for uncore counters and hot-function profiling.
 - AMD μProf (if installable) for IOD fabric counters.
 - Benchmark data: save all results under `epyc-inference-research/data/cpu_optimization/<date>/`.
+- Protocol source of truth: [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20).
 
 Baseline model for all comparisons (unless a handoff specifies otherwise): **Qwen3-Coder-30B-A3B Q4_K_M**. It's hybrid + MoE (representative of our stack), mid-size (measurable), and is the existing frontdoor/worker model so deployed perf is relevant.
 
@@ -389,4 +434,6 @@ After completing any task listed here:
 - 2026-04-24: CPU15 added ([`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md)). Rationale: all CPU-general software levers exhausted on single-instance NPS4; the 2.13× concurrent-aggregate gap (48.81 → ~104 t/s) indicates large sparse MoE + expert parallelism is the next open axis. Multi-instance deployment section updated to reference CPU15.
 - 2026-04-26: CPU16/CPU17/CPU18/CPU19 added from the 2026-04-26 research-intake batch (intake-458 through 472). CPU16 = NUMA prefill/decode disagg feasibility (with stub + pre-recorded Tier 2b counter-evidence). CPU17 = Sarathi-Serve chunked-prefill eval (likely obsoletes CPU16). CPU18 = MegaBlocks blocked-CSR-COO indexing port to CPU2. CPU19 = Tutel 2DH all-to-all port to CPU15. ⚑ START HERE block updated; Prioritized Task List + Handoff Landscape updated. New work is independent of the L3aaN reboot — can be picked up before/during/after.
 - 2026-04-25: CPU15 Phase 3.2 a→e.2 added 8 commits on `llama.cpp-experimental:feature/cpu-ep-inter-process` plus 5 docs commits on `epyc-root:main`. **REVISED 2026-04-25 evening**: Phase 3.2(e.1) attempt revealed all 8 prior commits were inside `#ifndef GGML_USE_OPENMP` guards and stripped from the production build. Commit `e001b3eda` extracted inter-process EP from those guards; first honest measurement is no-flags EP path bit-exact at 19.4 t/s = 68% of single-instance baseline 28.5 t/s. `GGML_EP_WORKER_DRONE=1` and `GGML_EP_SHARD=1` were initially PPL-broken — root-caused to EP top block ordering AFTER the src1 quantization loop (workers' uninitialized src1 quantized into wdata before broadcast delivered correct data). **`ff6833b19` moved the EP top block before quantization with a barrier; drone + shard now bit-exact. EP N=2 + drone + shard = 30.3 t/s = 106% of single-instance baseline = +6% over baseline.** Architecture validated; PPL gate (f) on WikiText-2 + REAP-246B D3' gate (g) ≥+20% over 6.16 t/s are the remaining work.
-- 2026-04-26: CPU15 Phase 3 COMPLETE. (g.1) eager parallel shard warm-up landed in `43c65b926` — collective `ggml_barrier`-coordinated parallel memcpy collapses ~250 ms single-threaded first-call cost on REAP-246B-class tensors to ~250 μs across all 96 master threads. Unblocked REAP-246B steady-state measurement: **−53% vs baseline (3.26 t/s vs 6.89)**. Master-all-nodes + park combo would not finish (master-parker spinning threads contend for cores with workers, per-tensor warm cost ~20 sec instead of 2 ms). Conclusion: EP doesn't help bandwidth-saturated >150B-class MoE on EPYC NPS4 — single-instance --numa distribute already saturates 100% of aggregate DDR bandwidth, partitioning divides bandwidth without recovering useful compute parallelism. **Production routing**: <50B MoE → EP N=2 drone+shard (+56-100% bit-exact); >150B MoE → single-instance. Phase 3.3 production wiring next session.
+- 2026-04-26: CPU15 Phase 3 COMPLETE. (g.1) eager parallel shard warm-up landed in `43c65b926` — collective `ggml_barrier`-coordinated parallel memcpy collapses ~250 ms single-threaded first-call cost on REAP-246B-class tensors to ~250 μs across all 96 master threads. Unblocked REAP-246B steady-state measurement: **−53% vs baseline (3.26 t/s vs 6.89)**. Master-all-nodes + park combo would not finish (master-parker spinning threads contend for cores with workers, per-tensor warm cost ~20 sec instead of 2 ms). Current conclusion: EP is a narrow win on frontdoor-class Q8_0; >150B-class remains regressive on measured configs. **Root-cause not closed by aggregate-bandwidth framing; attribution continues under CPU24.**
+- 2026-04-26: Critique-integration pass added **CPU20–CPU24**. Wave-based flow now enforces: integrity gate → root-cause attribution → mechanism work → context-regime coverage before final deployment claims.
+- 2026-04-26 (later): Added dedicated handoffs for **CPU21/CPU22/CPU23/CPU24** and re-framed CPU4 as a falsified single-variant track (not full sync-class closure). Updated landscape to link wave tracks directly.

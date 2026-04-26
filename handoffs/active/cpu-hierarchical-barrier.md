@@ -1,8 +1,8 @@
 # CPU4 — Hierarchical Barrier in OpenMP Path
 
-**Status**: COMPLETE — **NEGATIVE RESULT** (2026-04-26)
+**Status**: COMPLETE (single-variant test) — **NEGATIVE RESULT** (2026-04-26)
 **Goal**: Reclaim the ~30% of decode cycles currently spent in `#pragma omp barrier` (libgomp wait paths) on Q4_K_M sync-bound models.
-**Outcome**: Implementation works, measurements show consistent **net-negative** (-2 to -4%) across configs. libgomp's omp barrier is competitive with or better than a custom 2-level CCD-aware barrier on this hardware. Reverted; design preserved here for record.
+**Outcome**: Implementation works, measurements show consistent **net-negative** (-2 to -4%) across configs. libgomp's omp barrier is competitive with or better than this custom 2-level CCD-aware barrier on this hardware. Reverted; design preserved here as one falsified variant, not full sync-track closure.
 **Owner**: 2026-04-26 session.
 
 ## Background — why CPU4 matters
@@ -95,7 +95,7 @@ Same sense-flip protocol as the non-OpenMP path → same memory ordering guarant
 5. **Decision**
    - If +5% or more on REAP-246B + Qwen3-Next-80B with PPL bit-identical → **ship in v5 default-off** (production opt-in)
    - If +1-4% only → keep gated, document as marginal
-   - If neutral or worse → revert; document as evidence that the OMP barrier isn't actually the dominant lever (rules out CPU4 entirely)
+   - If neutral or worse → revert; document as evidence that this barrier variant is not the dominant lever
 
 ## Out of scope (future iterations)
 
@@ -138,15 +138,16 @@ This is a strong **negative result** for software-level sync optimization on the
   1. **Lock-free expert-loop dispatch** — let CCDs grab the next available expert dynamically instead of static partitioning. Out of scope for this round; would require redesigning `mul_mat_id` work distribution.
   2. **Cross-CCD work migration** — move work from idle CCDs to busy ones. Complex, requires runtime profiling.
   3. **Different MoE quantization layouts** — pre-shuffle experts so each CCD's assigned slice has balanced compute. Requires offline tooling.
-- L3aaN BIOS reboot stays closed off for this class — confirmed sync-structural, not NUMA-locality.
+- L3aaN should not be justified by this barrier test alone; topology decisions should rely on CPU21/CPU24 evidence.
 - The +1.8% from CPU1's `CCD_POOLS + CCD_WORK_DIST + BARRIER_LOCAL_BETWEEN_OPS` (without NUMA_WEIGHTS) on Coder-30B remains valid as a small substrate gain in non-OpenMP builds. **This does not extend to OpenMP builds** per CPU4's measurements above.
+- Next constructive path is Wave 1/2: CPU21 OpenMP runtime/scheduling matrix first, then CPU22 dynamic load balancing for structural expert-imbalance.
 
 ## Disposition
 
 - Code reverted (no changes shipped to llama.cpp-experimental).
 - Design preserved in this handoff for future-session reference.
-- P4 task marked complete with negative outcome.
-- The Q4_K_M sync-bound class has no remaining software lever in this round.
+- P4 task marked complete for this implementation variant.
+- Treat broader sync-track closure as **pending CPU21/CPU22 evidence**, not closed.
 
 ## Cross-references
 
@@ -155,3 +156,4 @@ This is a strong **negative result** for software-level sync optimization on the
 - Phase D evidence: `progress/2026-04/2026-04-26.md` REAP-246B perf stat
 - P2 evidence (sync-bound class): `progress/2026-04/2026-04-26.md` cross-model perf stat
 - Env-flag inventory: `cpu-kernel-env-flags-inventory.md`
+- Wave dependencies: `cpu-openmp-runtime-scheduling-matrix.md` (CPU21), `cpu-dynamic-moe-load-balancing.md` (CPU22)

@@ -316,7 +316,7 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 
 ## Context as of 2026-04-26
 
-A full Phase A-G plan ran today: canonical baselines + regression bisect (no source regression — historical 49.34 was a transient) + REAP-246B perf profile + bottleneck classification across the 5 production models + CPU1 stack instability isolation + CPU2 mbind kill-switch + CPU4 hierarchical sync (NEGATIVE). All findings in `progress/2026-04/2026-04-26.md`. Strategic position: **EP +17% on Qwen3.6-35B Q8_0 frontdoor** is the only confirmed production gain from CPU1+CPU2+CPU15 work. The 4 Q4_K_M production models are sync-bound (structural MoE imbalance — no software lever). Q8_0 frontdoor is bandwidth-bound (the remaining lever after EP is **L3aaN** — finer NUMA granularity).
+A full Phase A-G plan ran today: canonical baselines + regression bisect (no source regression — historical 49.34 was a transient) + REAP-246B perf profile + bottleneck classification across the 5 production models + CPU1 stack instability isolation + CPU2 mbind kill-switch + CPU4 hierarchical sync (NEGATIVE). All findings in `progress/2026-04/2026-04-26.md`. Strategic position: **EP +17% on Qwen3.6-35B Q8_0 frontdoor** is the only confirmed production gain from CPU1+CPU2+CPU15 work. The 4 Q4_K_M production models are sync-heavy with structural imbalance signals; next closure gates are CPU21 runtime matrix + CPU22 dynamic balancing, not barrier-only conclusions. Q8_0 frontdoor is bandwidth-bound (the remaining lever after EP is **L3aaN** — finer NUMA granularity).
 
 ## Pre-reboot snapshot (canonical NPS4 baselines at HEAD `8cb04da9d`)
 

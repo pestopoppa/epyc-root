@@ -81,7 +81,7 @@ Speculative decoding on Qwen3.5 hybrids is **dead on CPU** (exhaustively tested 
 
 **Our research validates this direction:**
 - DFlash paper reports τ=6.49 accepted tokens per round on Qwen3.5-35B-A3B (GPU) — [intake-158](https://arxiv.org/abs/2602.06036)
-- GPU works because parallel scan handles recurrent state, unlike CPU where each token traverses 30+ Delta Net layers sequentially — [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md)
+- GPU works because parallel scan handles recurrent state, unlike CPU where each token traverses 30+ Delta Net layers sequentially — [DFlash deep-dive](../../research/deep-dives/dflash-dart-diffusion-speculation.md)
 - Our C++ DFlash implementation verified forward pass correctness (hidden states match HF to <0.01) — the problem was never the algorithm, it was CPU sequential verification cost
 
 **Reproduction plan (activates when Spark is acquired):**

@@ -1,6 +1,6 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **Phase 3.2(e.1) FIXED + LANDED 2026-04-25** — Inter-process Expert Parallelism is bit-exact and **exceeds single-instance baseline at N=2 with drone + shard**.
+**Status**: **ACTIVE (Phase 3 complete, 2026-04-26)** — inter-process EP is a **narrow production win** (frontdoor-class Q8_0) with confirmed regressions on >150B class; root-cause attribution remains open under CPU24.
 
 Today shipped 10 commits on `llama.cpp-experimental:feature/cpu-ep-inter-process`. The mid-session OPENMP-guard finding (`e001b3eda`) revealed all 8 prior commits were preprocessor-stripped from the production build; subsequent debugging traced drone-mode PPL divergence to **EP top block ordered AFTER src1 quantization** — workers' uninitialized src1 was getting quantized into wdata before the EP memcpy delivered correct src1, so the late copy was a no-op on the path the expert compute actually used. **Commit `ff6833b19` moved the EP top block before the quantization loop with an interposing `ggml_barrier`**, fixing both drone mode and (by composition) drone+shard.
 
@@ -25,20 +25,20 @@ Final verified throughput on gemma-4-26B-A4B-it Q4_K_M (--seed 42, -n 8 -t 24, a
 | REAP-246B-A35B Q4_K_M | 246B / 35B | 6.89 t/s | 3.65 (N=2, shard) | **−47%** ✗ |
 | MiniMax-M2.7 Q8_0 | 230B / 10B | 9.98 t/s | 7.72 (N=2, shard) | **−23%** ✗ |
 
-**Pattern**: EP wins on small/medium MoE (≤50B); regresses on bandwidth-saturated large MoE (≥200B). For large models, single-instance with `--numa distribute` already saturates all 4 nodes' aggregate bandwidth, and per-instance pinning gives master only 50-25% of system bandwidth which becomes the bottleneck.
+**Pattern (corrected 2026-04-26)**: EP wins on small/medium MoE (≤50B) and regresses on tested >150B models. The regressions are real, but **aggregate DDR saturation is not a proven cause**; CPU24 uncore/fabric attribution is required before closing the >150B class.
 
 **Drone-mode PPL drift on Qwen3.5-family**: Qwen3.6-35B-A3B uses shared-expert architecture (regular `mul_mat` outside `mul_mat_id`). Workers in drone mode skip the shared expert; master output diverges by ~6 tokens. Suspected cause: some non-`MUL_MAT_ID` op produces data master's `MUL_MAT_ID` consumes; needs investigation. For now use NO-drone + shard path (still +56% on Qwen3.6).
 
-**Production deployment guidance** (revised after PPL gate):
-- Frontdoor / coder / general on Qwen3.6-35B-A3B class: EP N=2 + `GGML_EP_ROLE=master GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1`, 48t per instance, **+100% throughput, bit-identical PPL** (32-chunk WikiText-2 gate confirmed).
-- gemma-26B-A4B class: same config, +6%, bit-exact.
-- REAP-246B / M2.7 / large MoE: pending — `GGML_EP_MASTER_ALL_NODES=1` is the correct architecture (master keeps full bandwidth, workers shard local) but needs eager shard allocation (3.2(g.1)) before steady-state perf is measurable. For now, stay on single-instance `--numa distribute` 96t.
+**Production deployment guidance** (corrected with honest canonical baselines):
+- Frontdoor-class Q8_0 (Qwen3.6-35B-A3B): keep EP as a candidate production route; current canonical result is **+17%** with bit-identical PPL on validated configs.
+- Medium MoE (gemma-26B-A4B class): EP can be positive (+6% observed), but still requires CPU20 protocol-compliant reruns before hard deployment closure.
+- >150B class (REAP-246B / M2.7): keep single-instance routing for now. Treat mechanism closure as **open** until CPU24 attribution and CPU23 regime coverage complete.
 
 **PPL gate (3.2(f)) PASSED**: 32 chunks of WikiText-2 on Qwen3.6-35B-A3B Q8_0. Baseline and EP+drone+shard produce bit-identical PPL values across all chunks (e.g. `[1]4.3289,[2]6.0929,...,[32]5.7225`). Sampling-time token divergence in llama-cli was argmax jitter on FP-rounding-equivalent logits — the underlying probability distribution is identical.
 
 The strategy works on the architectures where it's expected to. Phase 3.1 dispatcher library: `f47bec4` in cpu-ep-prototype, RTT 0.73 μs, 5/5 tests, unchanged.
 
-**Next session**: Phase 3.2(f) PPL gate on WikiText-2 (verify the bit-exact paths over a long corpus), Phase 3.2(d.1.d) debug Qwen3.5-family drone divergence (instrument graph topology compare), Phase 3.3 production wiring (`model_registry.yaml` + `orchestrator_stack.py` `large_moe_ep_pool` backend with model-class auto-selection between EP and single-instance).
+**Next session (wave-aligned)**: complete CPU20 revalidation set for EP claims, then CPU24 attribution for >150B regressions, then CPU23 context-regime matrix (2K/8K/32K + interference), then resume mechanism work (CPU19/CPU22) with attribution-backed targets.
 **Created**: 2026-04-24
 **Updated**: 2026-04-26 — Cross-model sweep WITH HONEST BASELINES (`-t 96` no flags, not `--numa distribute`) revealed the earlier "+100%/+64%/+25%" claims were partly artifact of `--numa distribute` itself hurting these models. Honest results: **Qwen3.6-35B-A3B (frontdoor class) +17%**, Qwen3-Coder-30B-A3B (worker_explore) -10%, Qwen3-Next-80B-A3B at parity, REAP-246B/M2.7 regress. EP is a narrower production win than Round 1 numbers suggested — only the frontdoor benefits. Drone mode is still PPL bit-identical (32-chunk WikiText-2 confirmed yesterday).
 **Priority**: HIGH
@@ -48,6 +48,9 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 **Related**:
 - [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
+- [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 — mandatory quality gate before closure claims)
+- [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) (CPU24 — required to close >150B root cause)
+- [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) (CPU23 — required before class-level production guidance)
 
 ## Research Intake Update — 2026-04-26
 
@@ -499,11 +502,11 @@ Master's parallel sum-reduce after gather can still use all 96 threads — that'
 
 **Status update 2026-04-25 night**: code landed in `62c63cd3f` on `llama.cpp-experimental:feature/cpu-ep-inter-process`. ~30 LOC inside `ggml_compute_forward_mul_mat_id`'s existing EP block — no threadpool internals surgery. Env-gated by `GGML_EP_MASTER_PARK=1`, default OFF so symmetric configs (Qwen3.6 N=2 multi-node-pin) are unchanged.
 
-**Status update 2026-04-26: (g.1) eager-warm landed in `43c65b926` and unblocked REAP-246B measurement.** Final REAP-246B result: **3.26 t/s** (N=4 single-node-per-instance + drone + shard + eager-warm) vs baseline 6.89 t/s = **−53%**. Per-instance lazy-shard 600s timeout was the gating issue; eager-warm with parallel memcpy collapses the 180 GiB total first-touch into a few seconds amortized. The remaining gap is **fundamental bandwidth math**: REAP-246B at 138 GB Q4_K_M saturates 100% of EPYC NPS4's aggregate DDR bandwidth in single-instance mode, and partitioning into 4 instances each on one node gives each one only 25% of system bandwidth → 4× the per-instance compute time → master gates aggregate throughput.
+**Status update 2026-04-26: (g.1) eager-warm landed in `43c65b926` and unblocked REAP-246B measurement.** Final REAP-246B result: **3.26 t/s** (N=4 single-node-per-instance + drone + shard + eager-warm) vs baseline 6.89 t/s = **−53%**. Per-instance lazy-shard 600s timeout was the gating issue; eager-warm with parallel memcpy collapses the 180 GiB total first-touch into a few seconds amortized. The remaining gap persisted even though aggregate DDR is not saturated at baseline, so the bottleneck class remains **unattributed** pending CPU24 counter-backed analysis.
 
 **Predicted +93% from (g.0) master-all-nodes + (h) park stack didn't materialize**: the master_park architecture introduces master-parker threads that contend for cores with workers, even when notionally "spinning at a barrier". Per-tensor warm cost ballooned to ~20 seconds in master-all-nodes config (vs ~2 ms expected from the math) because of OS scheduler thrashing with 96 master + 72 worker threads on 96 cores. The simpler N=4 single-node-per-instance config (no master_all_nodes, no park) avoids that contention but loses single-system-bandwidth for master's non-MoE compute — net regression to 3.26 t/s.
 
-**Conclusion**: EP doesn't help bandwidth-saturated >150B-class MoE on EPYC NPS4. Cross-validated on REAP-246B (-53%) and M2.7 (-23%). Production routing decision stands: REAP-246B and M2.7 stay on single-instance --numa distribute 96t. EP delivers for medium MoE (Qwen3.6-35B-A3B class +100% bit-identical PPL).
+**Conclusion (revised)**: EP is currently a frontdoor/medium-MoE lever, while >150B regressions are reproducible but not yet root-caused. Production routing remains single-instance for REAP-246B and M2.7 until CPU24 attribution + CPU23 regime coverage complete.
 
 ### Open question: would L3-as-NUMA (12 nodes) change the >150B-class outcome?
 
@@ -523,7 +526,7 @@ EPYC 9655 has 12 CCDs. NPS4 currently presents these as 4 NUMA nodes (3 CCDs eac
 
 2. **Better cache utilization**: 12 instances each on their CCD's L3 (32 MB) might hit caches more effectively for KV cache + scratch buffers than 96 threads contending across all L3s. Net effect on bandwidth-bound expert reads is small but non-zero.
 
-**Action**: defer to after L3aaN reboot lands for other reasons (CPU1 TP exploration). At that point, re-test REAP-246B with EP N=12 and measure. If +20% over baseline, deploy. If neutral or worse, definitively close the >150B-class question.
+**Action**: defer >150B closure decisions until CPU20+CPU24+CPU23 sequence is complete. L3aaN retest (EP N=12) remains conditional on those artifacts.
 
 **Required capability for the test**: eager-shard (3.2(g.1)) — already landed (`43c65b926`). Master phase-aware threading (3.2(h)) — already landed (`62c63cd3f`) but only useful for asymmetric thread configs. For L3aaN N=12, all instances would use 8 threads each (symmetric); master_park may not be needed.
 
@@ -605,8 +608,8 @@ def select_deployment_mode(model: ModelEntry) -> str:
     elif total_b < 150:
         return "ep_n2_drone_shard"        # likely benefits, validate before deploy
     else:
-        # >150B: bandwidth-saturated. Stay single-instance until master-all-nodes
-        # + eager-shard validates on REAP-246B/M2.7 class.
+        # >150B: currently regressive in EP measurements; root cause still open (CPU24).
+        # Keep single-instance until attribution + regime coverage gates pass.
         return "single_numa_distribute"
 ```
 
