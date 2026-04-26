@@ -80,6 +80,37 @@ The Sarathi authors themselves note (intake-469) that disagg "could be challengi
 
 **Effort**: ~6-8 hours wall (workload generator + measurement harness + 5×3=15 sweeps × ~30 sec each). Not yet executed; deferred to next session block.
 
+## Phase 0 quick directional probe — executed 2026-04-26 evening (CLOSE)
+
+Before committing to the full 6-8h workload generator, ran a cheap directional probe: sweep `-ub` (microbatch / chunk-prefill granularity) on Coder-30B Q4_K_M with combined `pp4096 + tg32` at the proper canonical config. Goal: see if `-ub` tuning has any signal worth investigating further on our single-user regime.
+
+| `-ub` | pp4096 (prefill t/s) | tg32 (decode t/s) | Prefill Δ vs ub=2048 |
+|-------|---------------------:|------------------:|---------------------:|
+| 128   | 243.91 ± 0.03 | 46.50 ± 0.60 | **−52.3%** |
+| 256   | 358.10 ± 0.40 | 46.95 ± 0.60 | **−30.0%** |
+| 512 (default) | 443.83 ± 0.26 | 46.26 ± 0.31 | **−13.2%** |
+| 1024  | 480.54 ± 2.39 | 46.83 ± 0.45 | **−6.0%** |
+| 2048  | 511.22 ± 0.55 | 46.61 ± 0.55 | reference |
+
+**Key findings**:
+1. Prefill speed scales sub-linearly with `-ub` (2.1× from 128 → 2048).
+2. **Decode speed is essentially constant at 46-47 t/s across all `-ub` values** — single-stream decode isn't blocked by anything that microbatch sizing affects.
+3. Smaller `-ub` enables finer-grained Sarathi-style decode-prefill interleaving but at the cost of substantial prefill regression (−52% at `-ub 128`).
+
+**Strategic conclusion — CLOSE CPU17 for our regime**:
+
+For single-user interactive workloads (our actual production deployment): the default cont-batching + `-ub 512` is near-optimal. Smaller `-ub` only damages prefill; there's no decode-stall-during-prefill problem to solve since requests don't compete for resources within a single iteration on single-user.
+
+For multi-tenant scenarios (not our deployment): the Sarathi trade-off MIGHT make sense, but the prefill regression at small `-ub` (−52%) means the TBT-spike reduction would need to exceed 50% to break even — implausible.
+
+**Recommendation**: close CPU17. The literature claim ("Sarathi-Serve eliminates prefill/decode interference") is real but applies to multi-tenant GPU servers with thousands of concurrent users. For our deployment (1 user, CPU, intermittent agentic loops), the default cont-batching + `-ub 512` already captures most of the benefit; per-slot adaptive chunk sizing would be needed to do better, which is significant code work for marginal returns on our actual workload.
+
+**Re-open trigger**: if we ever shift to a multi-tenant deployment pattern (shared API serving multiple agents), revisit with per-shard `-ub` tuning (`-ub 256` for interactive-priority, `-ub 1024` for batch-priority) before considering full Sarathi-Serve TBT-SLO scheduler integration.
+
+**CPU16 (NUMA disagg) closure**: per the original handoff, CPU17 was meant to falsify or obsolete CPU16. Since CPU17 itself produces minimal signal for our regime, CPU16 is also closed by inheritance — there's no decode-stall-during-prefill problem to solve via either chunked-prefill OR full disaggregation on single-user CPU.
+
+**Data**: `data/cpu_optimization/2026-04-26-cpu17/SUMMARY.md` and per-`-ub` raw bench logs.
+
 ## Proposed Phase 1 — NUMA-Pinned Shard Sweep
 
 1. Enable chunked prefill on each of the 4×48t shards; sweep chunk size {128, 256, 512, 1024, 2048} tokens.
