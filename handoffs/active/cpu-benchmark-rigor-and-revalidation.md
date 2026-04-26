@@ -50,9 +50,26 @@ Capture before each batch:
 - governor, SMT, and thread placement metadata
 - host load summary (`uptime`, top-level CPU/memory)
 
-### P3. Baseline policy (REVISED 2026-04-26 late evening — asymmetry investigation closed)
+### P3. Baseline policy (REVISED 2026-04-26 late evening — CPU21 affinity wins integrated)
 
-**PRIMARY canonical** = `numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 -r 3` (cold-cache; mmap mode irrelevant per 2x2 matrix verification — both `--mmap 0` and `--mmap 1` produce equivalent results within noise when `--interleave=all` is active).
+**PRIMARY canonical** =
+```
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all --physcpubind=0-95 \
+  llama-bench -t 96 -fa 1 -p 0 -n 32 -r 3
+```
+
+(cold-cache; mmap mode irrelevant per 2x2 matrix verification — both `--mmap 0` and `--mmap 1` produce equivalent results within noise when `--interleave=all` is active).
+
+**Canonical numbers on this config (2026-04-26 evening, post-CPU21)**:
+- Qwen3-Coder-30B-A3B Q4_K_M: **47.08 ± 0.15 t/s**
+- Qwen3.6-35B-A3B Q8_0: **23.04 ± 0.01 t/s**
+- Qwen3-Coder-REAP-246B-A35B Q4_K_M: **6.33 ± 0.00 t/s**
+- (Next-80B + gemma-26B not yet re-measured at this stack but expected to gain similar +3-8%)
+
+**OpenMP env vars are non-optional**: the CPU21 sweep showed `OMP_PROC_BIND=spread OMP_PLACES=cores` delivers +3-8% across all model classes vs default. `OMP_WAIT_POLICY=active` adds another +0.5% (and importantly avoids the catastrophic `passive` mode at −81.6%). The combined stack is additive (or near-additive). See `data/cpu_optimization/2026-04-26-cpu21/SUMMARY.md`.
+
+**`OMP_WAIT_POLICY=passive` is a deployment trap** — produces 5.5× regression (8.04 vs 43.82 on Coder-30B) when threads sleep on barriers instead of spinning. Add a guard at session start: refuse to bench if `$OMP_WAIT_POLICY = passive`.
 
 **Why revised**: the historic `taskset -c 0-95 -t 96 -fa 1` baseline (mmap=1 default) is sub-optimal — it relies on file-mmap first-touch placement which scatters or clusters weight pages depending on which thread first faults each page. Many "+X% optimization wins" measured against that baseline collapse to noise when re-measured against the proper config. See compounding-matrix data 2026-04-26 (`data/cpu_optimization/2026-04-26-compounding/`):
 
