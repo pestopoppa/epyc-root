@@ -35,24 +35,28 @@
 
 ## Detail per class
 
-### needs verification (CPU1 stack — formerly "production-ready")
+### CPU1 stack — per-flag classification after P3 isolation (2026-04-26)
 
-`GGML_CCD_POOLS`, `GGML_NUMA_WEIGHTS`, `GGML_CCD_WORK_DIST`, `GGML_BARRIER_LOCAL_BETWEEN_OPS` — together form what was treated through 2026-04-24 as the canonical CPU1 stack (production-recommended default-on). Phase C (2026-04-26) re-tested and found:
+**P3 (per-flag isolation on Coder-30B Q4_K_M and Qwen3.6-35B Q8_0)** revealed the instability is **exclusively `GGML_NUMA_WEIGHTS=1`**. The other 3 flags are safe individually and stable in combination.
 
-- Std on Qwen3-Coder-30B-A3B Q4_K_M with stack: ±13-18 t/s (vs ±0.10 t/s canonical)
-- Mean on Qwen3.6-35B-A3B Q8_0 with stack: 12.39 t/s vs 14.63 canonical = **-15%**
-- Mean on Qwen3-Coder-30B-A3B Q4_K_M with stack: 40-42 t/s vs 43.57 canonical = **-3 to -7%**
-- Same instability at `acb1bbdd7` (CPU1 P1.4 land, no CPU2/CPU15 yet) — intrinsic to the stack itself
-- Historical "+17%" / "+140%" gains do not reproduce on a 2-day-uptime fragmented system
-
-**Implication**: these flags must NOT default-on in v5. The historical wins were captured during fresh-NPS-state windows. The implementation needs a robustness pass (likely around `set_mempolicy(MPOL_INTERLEAVE)` first-touch interaction with kernel page-allocator state) before being trusted as default behavior. Phase H (PPL gates) should pass — correctness was verified previously — but a perf-stability gate is now also required.
+| Flag | Coder-30B Q4_K_M | Qwen3.6-35B Q8_0 | Verdict |
+|------|-------------------|-------------------|---------|
+| canonical (none) | 43.37 ± 0.10 | 14.63 ± 0.01 | reference |
+| `GGML_CCD_POOLS=1` only | 43.44 ± 0.06 | (small effect) | **safe, stable** |
+| `GGML_NUMA_WEIGHTS=1` only | **20-33 ± 19-22** | **8-9 ± 4-5** | **UNSTABLE — DEPRECATED** |
+| `GGML_CCD_WORK_DIST=1` only | 43.66 ± 0.18 | (small effect) | **safe, stable** |
+| `GGML_BARRIER_LOCAL_BETWEEN_OPS=1` only | 43.88 ± 0.15 | (small effect) | **safe, stable** |
+| 3-flag stack (no NW) | 44.15 ± 0.13 | 14.39 ± 0.03 | **+1.8% / parity, stable** |
+| Full 4-flag stack (with NW) | 33-42 ± 13-18 | 8-12 ± 2-4 | **broken by NW** |
 
 #### Sub-flag detail
 
-- `GGML_CCD_POOLS=1` (ggml-cpu.c:3831): per-CCD threadpool partitioning. Creates one mini-threadpool per CCD (8-thread groups on EPYC 9655) instead of a single 96-thread pool.
-- `GGML_NUMA_WEIGHTS=1` (llama-mmap.cpp:471, llama-model-loader.cpp:1548): set_mempolicy(MPOL_INTERLEAVE) before mmap, suppress MAP_POPULATE so first-touch interleaves pages across NUMA nodes. Interaction with kernel page-allocator state is the suspected source of variance.
-- `GGML_CCD_WORK_DIST=1` (ggml-cpu.c:1531, 3610): expert work distribution within mul_mat_id is laid out per-CCD instead of flat 0..nth-1. Default flat is the safer baseline.
-- `GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (ggml-cpu.c:3606): use the CCD-local 2-level barrier between ops; default uses the global ggml_barrier. The 2-level barrier was introduced by Phase 1.0 (commit `a64d27dee`).
+- `GGML_CCD_POOLS=1` (ggml-cpu.c:3831): per-CCD threadpool partitioning. **Production-safe.**
+- `GGML_NUMA_WEIGHTS=1` (llama-mmap.cpp:471, llama-model-loader.cpp:1548): originally process-wide `set_mempolicy(MPOL_INTERLEAVE)` before mmap. **Fixed 2026-04-26 in commit `8cb04da9d`** to use per-region `mbind()` (correct scope), but the underlying `MPOL_INTERLEAVE` mechanism remains unstable on shared file-cache multi-NUMA hosts. **DEPRECATED — do not enable in production.** Future work: replace with private anon mmap + custom file-load, or mlock+mbind+MOVE_PAGES for deterministic placement.
+- `GGML_CCD_WORK_DIST=1` (ggml-cpu.c:1531, 3610): per-CCD expert work distribution. **Production-safe.**
+- `GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (ggml-cpu.c:3606): CCD-local 2-level barrier. **Production-safe.**
+
+**Recommended CPU1 stack for production** (after P3): `GGML_CCD_POOLS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (no NUMA_WEIGHTS). +1.8% on Coder-30B Q4_K_M, parity on Qwen3.6-35B Q8_0, **stable**. Default-OFF until v5 audit confirms PPL bit-identical on the full lineup.
 
 ### diagnostic (always-off, useful for debugging)
 
