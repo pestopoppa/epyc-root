@@ -8,6 +8,55 @@
 **Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
+## ⚑⚑⚑ POST-REVERT PICKUP — fresh agent starts HERE
+
+**State at last session-end (2026-04-26 evening)**: Machine is **booted into L3aaN mode (12 NUMA nodes)** which was decisively rejected by full evaluation + literature review (see ⚑ block below). User is performing a manual BIOS revert to NPS4 (~30 min downtime). When you start, the machine may be:
+
+- **(A) Still on L3aaN** (revert not yet done) — politely confirm with user before doing anything else.
+- **(B) Back on NPS4** (revert done) — proceed with the verification + Phase H sequence below.
+
+### Verification sequence after NPS4 revert (do this in order)
+
+1. **Topology sanity** — `numactl --hardware` MUST show **4 nodes** (0-3), not 12. If you see 12 nodes the revert didn't take; STOP and tell user.
+2. **Re-apply sysctls** (they drift across reboots — confirmed twice now):
+   - `sudo bash -c 'echo 0 > /proc/sys/kernel/numa_balancing && echo always > /sys/kernel/mm/transparent_hugepage/enabled'`
+   - Verify `cat /proc/sys/kernel/numa_balancing` = 0 and `cat /sys/kernel/mm/transparent_hugepage/enabled` = `[always] madvise never`
+   - Verify `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor` = `performance` (usually persistent)
+3. **Process hygiene** — `pgrep -af "llama" | grep -v "grep\|zsh\|docker"` MUST be empty.
+4. **Branch state** — `cd /mnt/raid0/llm/llama.cpp-experimental && git rev-parse --short HEAD` should be `8cb04da9d` on `feature/cpu-ep-inter-process`. Build at `build/bin/llama-bench`.
+5. **Smoke test against pre-reboot reference** (Coder-30B should re-snap to **43.57 ± 0.10 t/s** if NPS4 is restored cleanly):
+   ```bash
+   LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib \
+     taskset -c 0-95 /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench \
+     -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
+     -t 96 -fa 1 -p 0 -n 32 -r 3
+   ```
+   - **PASS criterion**: 43.57 ± 0.10 t/s within ±2% (i.e. 42.7-44.4 range).
+   - **If FAIL**: stop, investigate (could be cache state, drifted sysctls, residual L3aaN-fault page-cache from prior runs — try `sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches` then re-run).
+6. **Confirm restoration on remaining 4 production models** (only if step 5 passes). Compare against the canonical NPS4 reference table in this file. ±2% acceptable; ≥5% deviation = stop.
+7. **Mark task #15 complete** in TaskList; **delete it** if no longer relevant.
+
+### Forward path AFTER step 6 passes
+
+- **Phase H — PPL gates** is the next forward step. Per `cpu-kernel-env-flags-inventory.md` cherry-pick plan, run 32-chunk WikiText-2 PPL via `llama-perplexity` for each production model × {canonical, kill-switch off, CPU1 3-flag opt-in, EP-frontdoor (Qwen3.6 only)}. Bit-identical OR ≤1e-4 relative drift required for v5 ship.
+- **Phase I → J → K → L → M** (v5 cherry-pick → audit → shadow → orchestration wiring → rollout) follow per `cpu-optimization-thesis-pause-2026-04-26.md` track plan.
+- **CPU16/17/18/19 backlog** (disagg/Sarathi/MegaBlocks/Tutel ports from the 2026-04-26 research-intake batch) is independent of the NUMA topology and can proceed in parallel.
+- **CPU20–CPU24 wave pipeline** (benchmark rigor → OpenMP matrix → uncore attribution → dynamic balancing → context regimes) gates any new "exhausted/deployable" claim per the audit policy.
+
+### What was decided in this session — do NOT reopen without new mechanism
+
+- **L3aaN is rejected for this stack.** Don't re-propose without first integrating per-NUMA-node weight replication (vproxy-tools' GGML_NUMA_MIRROR fork) AND an experiment showing it beats NPS4 peak 48.81 on Coder-30B. The 12-rank concurrent-split (the literature's "designed-for L3aaN" workload pattern) ALSO regressed −35% vs NPS4 aggregate — see `data/cpu_optimization/2026-04-26-l3aan/concurrent12/SUMMARY.md`.
+- **`GGML_NUMA_WEIGHTS=1` is DEPRECATED.** Don't re-enable in production stacks. Use the 3-flag stable stack `CCD_POOLS + CCD_WORK_DIST + BARRIER_LOCAL_BETWEEN_OPS` (without NW) for opt-in research only.
+- **EP frontdoor (+17% on Qwen3.6-35B Q8_0)** is the only confirmed production gain from CPU1+CPU2+CPU15 work; everything else is opt-in research.
+
+### Memory references
+
+- `project_l3aan_reverted.md` — full L3aaN result + literature integration
+- `feedback_canonical_baseline_protocol.md` — `taskset -c 0-95 -t 96 -fa 1` + zombie check + 460 GB/s aggregate BW reference
+- `feedback_llama_bench_fa_default.md` — ALWAYS pass `-fa 1` explicitly
+
+---
+
 ## ⚑ L3aaN REVERTED 2026-04-26 evening — NPS4 is final
 
 L3aaN evaluation completed. **Outcome: catastrophic regression across every measured config.** All 5 canonical production models regressed 30–52% vs NPS4 reference; the supposed BW-bound L3aaN target (Qwen3.6-35B Q8_0) regressed −44.5% canonical and −51.2% with the full EP stack (vs the +17.18 t/s reference). Decision: **revert to NPS4 via BIOS** (user-driven, ~30 min downtime).

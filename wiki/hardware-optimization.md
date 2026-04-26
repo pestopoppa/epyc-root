@@ -527,3 +527,81 @@ Historical 2026-04-25 claim: `--numa distribute` regresses Qwen3.6-35B Q8_0 from
 - `handoffs/active/cpu-optimization-thesis-pause-2026-04-26.md` — companion doc
 - `llama.cpp-experimental:af2e45de4` — kill-switch
 - `llama.cpp-experimental:8cb04da9d` — NUMA_WEIGHTS per-region mbind fix
+
+## 2026-04-26 evening: L3-as-NUMA evaluated and rejected
+
+The user's pre-recorded "next gate after NPS4 software levers exhausted" — switching the BIOS NUMA Nodes Per Socket setting from NPS4 (4 nodes × 3 CCDs) to L3-as-NUMA (12 nodes × 1 CCD) — was tested in this session. **Outcome: catastrophic regression on every measured config; reverted.**
+
+### Result table — L3aaN single-engine (96 cores)
+
+| Model | NPS4 | L3aaN canonical | L3aaN best (`numactl --interleave=all`) | Δ best vs NPS4 |
+|-------|------|-----------------|------------------------------------------|----------------|
+| Qwen3-Coder-30B-A3B Q4_K_M | 43.57 ± 0.10 | 23.07 ± 0.10 | 27.90 (96t) / 29.42 (24t) | **−32.5%** |
+| Qwen3.6-35B-A3B Q8_0 | 14.63 ± 0.01 | 8.12 ± 0.01 | 8.32 ± 0.01 | **−43.1%** |
+| Qwen3-Next-80B-A3B Q4_K_M | 23.25 ± 0.08 | 14.12 ± 0.05 | 15.93 ± 0.02 | **−31.5%** |
+| REAP-246B-A35B Q4_K_M | 6.85 ± 0.01 | 3.30 ± 0.00 | 3.91 ± 0.02 | **−42.9%** |
+| gemma-4-26B-A4B Q4_K_M | 25.01 ± 0.08 | 17.51 ± 0.04 | 18.62 ± 0.05 | **−25.6%** |
+| Qwen3.6-35B Q8_0 + full EP | 17.18 (ref) | 8.39 ± 0.01 | (12-way EP at 8.49) | (canon −51%) |
+
+### Result table — L3aaN 12-rank concurrent-split (the "designed-for" pattern)
+
+12 parallel `llama-bench` instances pinned per-CCD (`numactl --cpunodebind=N --membind=N -t 8`) on Coder-30B Q4_K_M:
+
+| Configuration | Aggregate t/s | vs NPS4 |
+|---------------|---------------|---------|
+| NPS4 4×48t | ~104 | ref |
+| NPS4 32×6t (concurrent-split) | ~104 | parity |
+| **L3aaN 12×8t** | **67.38** (high variance) | **−35%** |
+
+### Tweaks tested (audit-driven, all measured)
+
+- `GGML_NUMA_WEIGHTS=1` alone (deprecated, kept for record): +2.3% on Coder-30B
+- 3-flag stable stack (`CCD_POOLS + CCD_WORK_DIST + BARRIER_LOCAL_BETWEEN_OPS`): +1.9% Coder, +3.4% Q8_0
+- `GGML_NUMA_REPACK_INTERLEAVE=0` (CPU2 mbind kill-switch): neutral
+- `GGML_EP_N_INSTANCES=12` (12-way EP, the documented L3aaN payoff path): neutral (8.49 t/s)
+- `numactl --interleave=all -t 96`: **+20.9%** on Coder-30B Q4_K_M (largest single lever); only +2.5% on Q8_0 because CPU2 auto-mbind already handles its CPU_REPACK buffer
+- Thread sweep at `--interleave=all`: 24t is the sweet spot (29.42 t/s — 3 NUMA nodes × 8 cores = local L3 + 3 channels)
+- Literature `--no-mmap + --numa distribute` recipe (issue #11744): matched `--interleave=all`, did not exceed
+- Best stacked single-engine config (24t + `--interleave=all` + 3-flag): 29.19 — no compounding above topology lever
+
+### Why L3aaN structurally fails for this workload (literature-confirmed)
+
+A background literature review (subagent, 70 tool calls) returned 6 highest-quality sources:
+
+1. **L3aaN does NOT change IOD/UMC interleave or aggregate channel BW — only the SRAT table.** Source: [Broadcom TechDocs — L3 LLC as NUMA](https://techdocs.broadcom.com/us/en/storage-and-ethernet-connectivity/ethernet-nic-controllers/bcm957xxx/adapters/Tuning/bios-tuning/l3-llc-last-level-cache-as-numa.html), [HPC Advisory Council — AMD EPYC Tuning Guide](https://hpcadvisorycouncil.atlassian.net/wiki/spaces/HPCWORKS/pages/1280442391/AMD+2nd+Gen+EPYC+CPU+Tuning+Guide+for+InfiniBand+HPC). The original BW-bound Q8_0 hypothesis was wrong: hardware BW is unchanged, only the OS scheduler hints differ.
+2. **L3aaN is classified as a benchmarking/diagnostic feature, not production.** Broadcom: *"meant for isolating L3 caches and is not recommended for production deployments."*
+3. **AMD's own AI/ML recommendation for Turin is NPS4**, not L3aaN. Source: [Phoronix EPYC 9005 HPC tuning](https://www.phoronix.com/review/amd-epyc-9005-hpc-tuning).
+4. **L3aaN is for HPC/MPI rank-per-CCX patterns** (each rank loads private memory into its CCD-local node), not OpenMP-style 96-thread shared-memory inference. SUSE/AMD/Lenovo guides consensus.
+5. **`numactl --interleave=all` is the documented standard mitigation** for the multi-node first-touch pathology. [llama.cpp issue #1437](https://github.com/ggml-org/llama.cpp/issues/1437) shows +125% on 4 nodes; we measured +13-21% on 12 nodes for Q4_K_M.
+6. **The dual-socket `--no-mmap + --numa distribute` recipe (+80% in [issue #11744](https://github.com/ggml-org/llama.cpp/issues/11744))** is recovering an 8× cross-socket xGMI bottleneck that doesn't exist on single-socket EPYC. Different category of fix.
+
+### Why concurrent-split also regresses
+
+HPC MPI workloads have **per-rank private memory** — each rank loads its data into the CCD's local DDR. llama.cpp inference has **shared file-backed memory** (one GGUF mmap, pages placed by first-touch and shared across all instances). Even with `--cpunodebind=N --membind=N`, GGUF pages aren't replicated, so 11/12 instances always read remote pages. Per-CCD BW budget is also too small: 1 CCD ≈ 38 GB/s vs NPS4 quarter ≈ 115 GB/s.
+
+### Untested literature-suggested path
+
+`GGML_NUMA_MIRROR` (vproxy-tools/llama.cpp fork — full per-node weight replication; +60% on dense FP16 dual 9275F per [discussion #12289](https://github.com/ggml-org/llama.cpp/discussions/12289)). Memory cost at 12 nodes:
+
+| Model | 12× rep | fits 1.1 TB? | × 1.6 (optimistic) | vs NPS4 ref |
+|-------|---------|--------------|--------------------|-------------|
+| Coder-30B Q4 | 207 GB | ✓ | 47.1 | +8% / −3% vs peak |
+| Q3.6-35B Q8 | 412 GB | ✓ | 13.3 | −9% |
+| Next-80B Q4 | 541 GB | ✓ | 25.5 | +10% |
+| REAP-246B Q4 | **1660 GB** | ✗ DOES NOT FIT | n/a | n/a |
+| Gemma-26B Q4 | 188 GB | ✓ | 29.8 | +19% |
+
+Modest projected gains on 3 of 5 models, breaks REAP-246B at 12-way. Not worth the multi-day fork merge plus per-model orchestrator routing complexity.
+
+### Decision and forward path
+
+L3aaN is **rejected** for this stack. Production NUMA topology is **NPS4 going forward**. The single confirmed production gain from CPU1+CPU2+CPU15 work remains EP frontdoor (+17% on Qwen3.6-35B Q8_0); everything else is opt-in research.
+
+### Sources (2026-04-26 evening)
+
+- `progress/2026-04/2026-04-26.md` — L3aaN evaluation + supplemental tweak sweep + literature review + 12-rank concurrent split
+- `handoffs/active/cpu-inference-optimization-index.md` — POST-REVERT PICKUP block + result tables
+- `handoffs/active/nps-reboot-runbook.md` — runbook header marked complete
+- `data/cpu_optimization/2026-04-26-l3aan/` — 16 raw bench logs, plus `concurrent12/SUMMARY.md`
+- `memory/project_l3aan_reverted.md` — auto-memory entry (per-NUMA replication caveat noted)
+- Literature: Broadcom L3 LLC as NUMA, HPC Advisory Council EPYC Tuning Guide, llama.cpp #1437, #11744, #12289, Phoronix EPYC 9005 HPC tuning
