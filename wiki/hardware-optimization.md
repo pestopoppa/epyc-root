@@ -605,3 +605,39 @@ L3aaN is **rejected** for this stack. Production NUMA topology is **NPS4 going f
 - `data/cpu_optimization/2026-04-26-l3aan/` — 16 raw bench logs, plus `concurrent12/SUMMARY.md`
 - `memory/project_l3aan_reverted.md` — auto-memory entry (per-NUMA replication caveat noted)
 - Literature: Broadcom L3 LLC as NUMA, HPC Advisory Council EPYC Tuning Guide, llama.cpp #1437, #11744, #12289, Phoronix EPYC 9005 HPC tuning
+
+## 2026-04-26 late evening — Post-revert findings (CRITICAL)
+
+After the user's manual BIOS revert from L3aaN back to NPS4, the post-revert verification surfaced three findings that revise the framing of all earlier 2026-04 CPU optimization work:
+
+### Finding 1 — The "canonical NPS4 baseline" is a steady-state-after-warming figure, not a cold-cache value
+
+| Configuration | Cold-cache result (post-reboot) | Historical (warmed) reference |
+|---|---|---|
+| Coder-30B Q4_K_M, `taskset -c 0-95 -t 96 -fa 1` | **22.92 ± 0.13** | 43.57 ± 0.10 |
+| Same after 1 warm-up pass | 32.40 ± 0.08 | — |
+| Coder-30B Q4_K_M, `--mmap 0 + numactl --interleave=all -t 96` | **42.41 ± 0.23** | 43.57 ± 0.10 |
+
+The 43.57 number that was used as the L3aaN comparison baseline was a steady-state value reached after 1.5+ days of repeated benchmarking. From a fresh boot with caches dropped, plain canonical produces 22-23 t/s due to first-touch page-cache placement on `mmap 1` (default). `numactl --interleave=all` does NOT override file-cache placement — only anon-mmap. So `--mmap 0 + --interleave=all` is the only config that produces a reliable cold-cache baseline near the warmed reference.
+
+**Implication for the L3aaN evaluation**: Earlier in 2026-04-26 we declared "L3aaN regresses 47% on Coder-30B (23.07 vs 43.57)". The fair apples-to-apples comparison is L3aaN best (29.42 with `--interleave=all`) vs NPS4 best (42.41 with `--mmap 0 + --interleave=all`) = **L3aaN −30.6%**. The revert decision is unchanged (every other model still regresses 26-43% on best-known L3aaN config), but the framing was inflated by ~17 percentage points. Future cross-session comparisons must use the same cache-state and same NUMA-hint config.
+
+### Finding 2 — NVMe RAID0 is split across NUMA nodes 2 and 3 under NPS4
+
+Under L3aaN both NVMes lived in the same CCX quadrant. Under NPS4 they're split across nodes 2 and 3. RAID0 stripe IO will pull cross-node no matter where you pin the worker — single-node `numactl --cpunodebind=N --membind=N` can't keep IO local for `/mnt/raid0`.
+
+Recommended pattern for RAID-heavy work: `numactl --interleave=2,3 …`. For inference where weight loading goes through RAID, `numactl --interleave=all` covers both weight pages and IO buffers.
+
+This also explains the post-reboot anomaly that node 3 had 270 GB free vs 288 GB on others (~20 GB pinned to nodes 2-3 for RAID driver / DMA / buffer cache), and why `numactl --cpunodebind=0 --membind=0 -t 24` measured only 16 t/s rather than the expected ~26 t/s NPS4-quarter share.
+
+### Finding 3 — `kernel.numa_balancing` self-resets to 0 despite sysctl.d apply
+
+Confirmed by user 2026-04-26: the sysctl.d file is intact, `systemd-sysctl` reports successful apply, but the runtime value reads 0. Manual `echo 1 > /proc/sys/kernel/numa_balancing` works briefly but flips back. Earlier hypothesis that 12-node L3aaN was the cause is **invalidated** — same self-reset happens on plain NPS4. Real fix would be a oneshot service running after `systemd-sysctl`. Open item; not blocking.
+
+**Implication**: any benchmark that depends on `numa_balancing` state must check it explicitly per session, not trust the sysctl.d file.
+
+### Memory entries created
+
+- `memory/project_raid_numa_split_nps4.md` — RAID/NUMA split + recommended interleave config
+- `memory/feedback_numa_balancing_self_reset.md` — sysctl drift caveat
+- `memory/feedback_canonical_baseline_protocol.md` (extended) — cold-vs-warmed protocol distinction

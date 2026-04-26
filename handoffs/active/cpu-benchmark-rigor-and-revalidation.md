@@ -72,6 +72,19 @@ For every feature branch benchmarked:
 2. Label each run as warm-cache or cold-cache.
 3. Keep cache policy consistent within a comparison.
 
+### P5a. Cold-cache vs warmed-baseline distinction (added 2026-04-26 post-L3aaN-revert)
+
+Empirical finding from the post-revert verification: the historical "canonical NPS4 baseline" of **43.57 ± 0.10 t/s on Coder-30B Q4_K_M** was a steady-state value reached after 1.5+ days of repeated benchmarking. From a fresh boot with caches dropped, the same `taskset -c 0-95 -t 96 -fa 1` command produces **22.92 ± 0.13 t/s** — about half the historical reference. After one warm-up pass it climbs to 32.40; further warming continues to improve. The difference is page-cache placement: with `mmap 1` (default), GGUF pages are placed by first-touch on whichever node faulted them, and that initial scattering is what produces the 22-23 t/s cold figure.
+
+**Replacement for cold-cache canonical**: `--mmap 0 + numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1` reproduces 42.41 ± 0.23 t/s immediately on Coder-30B without warming dependency. This should be the canonical config for any cross-system or cross-session comparison where warming history differs.
+
+Required labels on every measurement going forward:
+- **cache state**: cold (post-`drop_caches` or post-reboot) / warmed (after N prior benches) / steady-state (after >1 hour of activity)
+- **mmap mode**: `mmap 1` (file-backed, default) / `mmap 0` (anon-allocated)
+- **numa hint**: `taskset` only / `numactl --interleave=all` / `--numa distribute` / EP / etc.
+
+Any historical claim that compares a cold result against a warmed baseline (or vice versa) must be flagged "non-canonical comparison" and re-run before driving production decisions.
+
 ## Required Revalidation Set (first deliverable)
 
 Re-run under this protocol:

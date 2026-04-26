@@ -8,33 +8,59 @@
 **Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
-## ⚑⚑⚑ POST-REVERT PICKUP — fresh agent starts HERE
+## ⚑⚑⚑ POST-REVERT VERIFIED 2026-04-26 — NPS4 hardware restored, with caveats
 
-**State at last session-end (2026-04-26 evening)**: Machine is **booted into L3aaN mode (12 NUMA nodes)** which was decisively rejected by full evaluation + literature review (see ⚑ block below). User is performing a manual BIOS revert to NPS4 (~30 min downtime). When you start, the machine may be:
+User completed BIOS revert to NPS4 on 2026-04-26 evening. Verification ran and surfaced **three critical findings** that refine all earlier 2026-04 CPU work. Read these before doing any benchmark.
 
-- **(A) Still on L3aaN** (revert not yet done) — politely confirm with user before doing anything else.
-- **(B) Back on NPS4** (revert done) — proceed with the verification + Phase H sequence below.
+### Verification result
 
-### Verification sequence after NPS4 revert (do this in order)
+- ✓ Topology: 4 nodes, distance 10/12 (NPS4 confirmed)
+- ✓ Branch: `8cb04da9d` on `feature/cpu-ep-inter-process`
+- ✓ Hardware BW restored — `--mmap 0 + numactl --interleave=all -t 96` gives **42.41 ± 0.23 t/s** on Coder-30B = within 2.7% of historical 43.57 ref
+- ⚠️ Plain canonical `taskset -c 0-95 -t 96 -fa 1` gives only **22.92 ± 0.13** cold-cache (warms to 32.40 after 1 pass; eventually 43+ after long warming)
 
-1. **Topology sanity** — `numactl --hardware` MUST show **4 nodes** (0-3), not 12. If you see 12 nodes the revert didn't take; STOP and tell user.
-2. **Re-apply sysctls** (they drift across reboots — confirmed twice now):
-   - `sudo bash -c 'echo 0 > /proc/sys/kernel/numa_balancing && echo always > /sys/kernel/mm/transparent_hugepage/enabled'`
-   - Verify `cat /proc/sys/kernel/numa_balancing` = 0 and `cat /sys/kernel/mm/transparent_hugepage/enabled` = `[always] madvise never`
-   - Verify `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor` = `performance` (usually persistent)
-3. **Process hygiene** — `pgrep -af "llama" | grep -v "grep\|zsh\|docker"` MUST be empty.
-4. **Branch state** — `cd /mnt/raid0/llm/llama.cpp-experimental && git rev-parse --short HEAD` should be `8cb04da9d` on `feature/cpu-ep-inter-process`. Build at `build/bin/llama-bench`.
-5. **Smoke test against pre-reboot reference** (Coder-30B should re-snap to **43.57 ± 0.10 t/s** if NPS4 is restored cleanly):
-   ```bash
-   LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib \
-     taskset -c 0-95 /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench \
-     -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
-     -t 96 -fa 1 -p 0 -n 32 -r 3
-   ```
-   - **PASS criterion**: 43.57 ± 0.10 t/s within ±2% (i.e. 42.7-44.4 range).
-   - **If FAIL**: stop, investigate (could be cache state, drifted sysctls, residual L3aaN-fault page-cache from prior runs — try `sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches` then re-run).
-6. **Confirm restoration on remaining 4 production models** (only if step 5 passes). Compare against the canonical NPS4 reference table in this file. ±2% acceptable; ≥5% deviation = stop.
-7. **Mark task #15 complete** in TaskList; **delete it** if no longer relevant.
+### Finding 1 — Canonical 43.57 was steady-state-after-warming, not cold-cache
+
+The historical NPS4 reference number used as the L3aaN comparison anchor was measured after 1.5+ days of continuous benchmarking. From a fresh boot it's 22-23 t/s on plain canonical. The reason: with `mmap 1` (default), GGUF pages are placed by first-touch — `numactl --interleave=all` does NOT override file-cache placement. Reliable cold-cache configs:
+
+| Config | Cold-cache result | Notes |
+|---|---|---|
+| `taskset -c 0-95 -t 96 -fa 1` | **22.92 ± 0.13** | warms slowly to 43+ over many passes |
+| Same after 1 warmup pass | 32.40 ± 0.08 | improving |
+| **`--mmap 0 + numactl --interleave=all -t 96 -fa 1`** | **42.41 ± 0.23** | **97% of warmed ref, no warming needed** |
+
+**Implication for L3aaN comparison**: earlier in the day "L3aaN regresses 47%" used cold-vs-warmed comparison and was inflated. Apples-to-apples NUMA-aware comparison is L3aaN best (29.42 with `--interleave=all`) vs NPS4 best (42.41 with `--mmap 0 + --interleave=all`) = **L3aaN −30.6%**. Revert decision unchanged.
+
+**Going forward**: use `--mmap 0 + numactl --interleave=all -t 96 -fa 1` as the cold-cache canonical config. Always label measurements with cache state (cold/warmed/steady-state).
+
+### Finding 2 — NVMe RAID0 split across NUMA nodes 2 and 3 under NPS4
+
+`/mnt/raid0` NVMes live on different nodes under NPS4 (same quadrant under L3aaN). RAID0 stripe IO is cross-node regardless of worker pinning. Single-node `numactl --cpunodebind=N --membind=N` cannot keep IO local. **Recommended**: `numactl --interleave=2,3 …` for RAID-heavy work; `numactl --interleave=all` for full-machine inference (covers weights + IO buffers). Memory entry: `project_raid_numa_split_nps4.md`.
+
+### Finding 3 — `kernel.numa_balancing` self-resets to 0 despite sysctl.d
+
+User confirmed: file intact, `systemd-sysctl` reports successful apply, runtime reads 0. Manual `echo 1 >` works briefly then flips back. Happens on plain NPS4 too — earlier "L3aaN-caused-it" hypothesis is invalidated. Real fix: oneshot service post-`systemd-sysctl`; left as open item. **Always check `cat /proc/sys/kernel/numa_balancing` per session — don't trust the file.** Memory entry: `feedback_numa_balancing_self_reset.md`.
+
+### Forward path AFTER reading the above
+
+- Phase H (PPL gates) is the next forward step on NPS4. Use `--mmap 0 + numactl --interleave=all -t 96 -fa 1` as the cold-cache reference for any Coder-30B comparison; reproduce 42.41 t/s before declaring any new optimization win.
+- Phases I → J → K → L → M (v5 cherry-pick → audit → shadow → orchestration → rollout) per `cpu-optimization-thesis-pause-2026-04-26.md`.
+- CPU16/17/18/19 backlog (disagg/Sarathi/MegaBlocks/Tutel ports) is independent of NUMA topology, can proceed in parallel.
+- CPU20–CPU24 wave pipeline gates any new "exhausted/deployable" claim. Note CPU20 protocol now requires explicit cache-state labels (P5a).
+
+### What was decided in this session — do NOT reopen without new mechanism
+
+- **L3aaN is rejected** for this stack. Don't re-propose without integrating per-NUMA-node weight replication (vproxy-tools' GGML_NUMA_MIRROR fork) AND empirical evidence beating NPS4 best 42.41 on Coder-30B. The 12-rank concurrent-split (the literature's "designed-for L3aaN" pattern) regressed −35% vs NPS4 aggregate.
+- **`GGML_NUMA_WEIGHTS=1` is DEPRECATED.** Use the 3-flag stable stack `CCD_POOLS + CCD_WORK_DIST + BARRIER_LOCAL_BETWEEN_OPS` (without NW) for opt-in research only.
+- **EP frontdoor (+17% on Qwen3.6-35B Q8_0)** is the only confirmed production gain from CPU1+CPU2+CPU15 work; everything else is opt-in research.
+
+### Memory references
+
+- `project_l3aan_reverted.md` — full L3aaN result + literature integration
+- `project_raid_numa_split_nps4.md` — NEW 2026-04-26 — RAID/NUMA split + interleave guidance
+- `feedback_numa_balancing_self_reset.md` — NEW 2026-04-26 — sysctl drift caveat
+- `feedback_canonical_baseline_protocol.md` (extended) — NEW empirical addendum on cold-vs-warmed
+- `feedback_llama_bench_fa_default.md` — ALWAYS pass `-fa 1` explicitly
 
 ### Forward path AFTER step 6 passes
 
