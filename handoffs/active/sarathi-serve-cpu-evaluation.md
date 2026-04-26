@@ -44,11 +44,41 @@ The Sarathi authors themselves note (intake-469) that disagg "could be challengi
 - What's the right chunk size for our typical workload mix (single-user interactive vs. seeding/eval batches)?
 - Does it interact with CPU15 inter-process EP (drone+shard) on Qwen3.6-35B-A3B Q8_0? (EP changes per-step compute profile.)
 
-## Proposed Phase 0 — Cheap Probe (no code)
+## Phase 0 — Audit (executed 2026-04-26 evening)
 
-1. Audit existing llama-server flags for chunked-prefill support: `--chunk-size`, `--parallel-prompt`, `--cont-batching`, etc. Document current defaults and what's exposed.
-2. Construct a synthetic workload matrix: 1 long prompt arriving mid-stream against 3 in-flight decodes at **2K / 8K / 32K** context regimes. Measure TBT spike on in-flight decodes with/without chunked prefill.
-3. If TBT spike reduction ≥30% at the chunk size sweet spot, advance to Phase 1.
+**Audit method**: `llama-server --help` flag grep for batching/prefill/scheduling primitives on HEAD `8cb04da9d`.
+
+**Available primitives** (none are explicitly named "chunked prefill"; Sarathi-style scheduling can be approximated with these):
+
+| Flag | Default | What it does |
+|------|---------|--------------|
+| `-cb, --cont-batching` | enabled | continuous (a.k.a. dynamic) batching — allows new requests to join in-flight batches |
+| `-np, --parallel N` | -1 (auto) | number of server slots (parallel sequences) |
+| `-b, --batch-size N` | 2048 | logical maximum batch size (per iteration) |
+| `-ub, --ubatch-size N` | 512 | physical maximum batch size (microbatching boundary inside one iteration) |
+| `-n, --predict N` | -1 | number of tokens to predict per request |
+| `-c, --ctx-size N` | model | shared context size |
+| `--paged-attn N` | 0 | paged attention with block size N tokens (off by default) |
+| `-cpent, --checkpoint-every-n-tokens` | -1 | checkpoint every n tokens during prefill |
+| `-ctxcp, --ctx-checkpoints` | 32 | max ctx checkpoints per slot |
+| `--cache-idle-slots` | enabled | save/clear idle slots |
+
+**Key observation**: there is NO single "chunk size" for prefill chunking. Instead, the **logical (`-b`) and physical (`-ub`) batch sizes** determine how much prefill work is processed per scheduler iteration. Sarathi-Serve's chunked-prefill behavior approximates as: `-ub` controls the chunk size for prefill chunks; `-cb` enables decodes to piggyback in the same iteration as prefill chunks (when slot scheduler arranges it).
+
+**Implication**: Sarathi-style hybrid batching is **partially supported by default**: `-cb` is enabled, `-ub 512` chunks prefill into ≤512-token slices. What's missing vs Sarathi:
+1. No explicit decode-prefill-mix priority knob (the scheduler decides)
+2. No TBT-SLO scheduling
+3. No workload-aware adaptive chunk size
+4. `-ub` is global, not per-slot
+
+**Phase 0 cheap probe** (NEXT — not yet executed):
+1. Construct synthetic workload: 1 long prompt (8K tokens) arriving via HTTP after 3 decode requests are already in-flight at 2K context. Measure decode TBT (time-between-tokens) spike on the 3 in-flight requests during the long prompt's prefill.
+2. Sweep `-ub`: 128, 256, 512, 1024, 2048 tokens. Measure: decode-stall fraction, aggregate throughput, per-iteration latency variance.
+3. Repeat at 2K / 8K / 32K context regimes.
+
+**Gate**: If TBT spike on in-flight decodes reduces ≥30% at the `-ub` sweet spot vs default 512, advance to Phase 1. Otherwise document "default already approximates Sarathi" and close.
+
+**Effort**: ~6-8 hours wall (workload generator + measurement harness + 5×3=15 sweeps × ~30 sec each). Not yet executed; deferred to next session block.
 
 ## Proposed Phase 1 — NUMA-Pinned Shard Sweep
 
