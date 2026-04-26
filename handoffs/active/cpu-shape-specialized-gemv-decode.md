@@ -671,3 +671,60 @@ Commit `af2e45de4` on `feature/cpu-ep-inter-process` adds `GGML_NUMA_REPACK_INTE
 Default-on is correct. Kill-switch is for: (a) measuring mbind's isolated impact, (b) running alternative NUMA strategies, (c) regression diagnostics. A startup `GGML_LOG_INFO` is emitted when `=0` is set so the disabled state is visible in server logs.
 
 The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.
+
+## Session 16 (2026-04-26 evening) — Q6_K 8x8 AVX-512BW dispatcher SCAFFOLDING landed
+
+**Motivation (refreshed)**: 2026-04-26 perf-record on REAP-246B Q4_K_M @ 96t (CPU24 deeper attribution) shows `ggml_vec_dot_q6_K_q8_K` is **15.64% of decode samples** — the second-largest cycle consumer after `ggml_gemv_q4_K_8x8_q8_K` (64.37%). The 8x8 GEMV path on x86 currently falls through to the portable scalar reference (`ggml_gemv_q6_K_8x8_q8_K_generic` in `repack.cpp:1126`) because `arch-fallback.h:100` aliased the entry point. The CPU24 finding **revalidated CPU2's priority** as the dominant attack surface (compute kernels = 80% of cycles), making Q6_K SIMD the highest-ROI remaining track.
+
+### Scaffolding shipped this session
+
+Pure plumbing only — the actual SIMD body is a stub that falls through to the generic reference. Designed so the next session can drop in the AVX-512BW body without touching the dispatcher/build/env wiring.
+
+1. **`arch-fallback.h`**: removed `#define ggml_gemv_q6_K_8x8_q8_K_generic ggml_gemv_q6_K_8x8_q8_K` from the x86 fallback section. Replaced with a comment pointing at the new dispatcher. The generic name `ggml_gemv_q6_K_8x8_q8_K_generic` (defined in `repack.cpp:1126`) remains unaliased on x86 so we can call it from our new dispatcher as the fallback path.
+2. **`arch/x86/repack.cpp`**: added `ggml_gemv_q6_K_8x8_q8_K` (entry point) and `gemv_q6_K_8x8_q8_K_avx512bw` (stub) immediately after the Q8_0 8x8 dispatcher (~line 1567). Mirrors the Q8_0 setup: env-gated `GGML_Q6_K_8X8_AVX=1` selects the AVX-512BW path (currently a stub that calls the generic), default off otherwise.
+3. **Build verified**: `cmake --build build --target llama-bench` clean, no warnings. Smoke test on Coder-30B Q4_K_M at proper canonical shows env-off and env-on produce identical throughput within noise (44.55 vs 44.69 — both call the generic reference).
+
+### Detailed algorithm design (for follow-up session implementing the SIMD body)
+
+**Block format reference** (`ggml-common.h:352`): `block_q6_K { uint8_t ql[128]; uint8_t qh[64]; int8_t scales[16]; ggml_half d; }`. Each weight is 6-bit signed (range −32..+31): `q = ((qh_2 << 4) | ql_4) - 32`. Per super-block: 256 weights, 16 sub-block scales, one fp16 super-block scale.
+
+**Repacked layout** (`repack.h`): `block_q6_Kx8 { ggml_half d[8]; int8_t scales[128]; uint8_t ql[1024]; uint8_t qh[512]; }`. 8 columns interleaved with `blocklen=8`: `ql_pos = k * ncols_interleaved * blocklen + j * blocklen + i` for sub-block `k`, column `j`, weight-pair `i`.
+
+**Kernel strategy** (translated from NEON `arch/arm/repack.cpp:1498`):
+
+1. **Bias precomputation** (avoid per-weight `-32` subtraction in inner loop). NEON computes `bias[col] = 32 * sum_i(q8.bsums[i] * widen(b_ptr[l].scales[i*8 + col]))` for `i` 0..15. AVX-512 analog: `VPMOVSXBW` widens 16 i8 scales to i16 lanes (32 bytes per VPMOVSXBW), `VPMADDWD` of i16 bsums × i16 scales gives i32 partial sums, accumulate across 16 sub-blocks, finish with `VPSLLD` by 5. Result: 8-lane i32 bias vector. ~30 instructions.
+
+2. **Inner GEMV body** — 2 halves × 4 sub-blocks × 8 cols × 8 weights per super-block.
+   - Load 64 ql bytes (one `__m512i` covering 8 cols × 8 weight-pairs)
+   - Load 32 qh bytes (one `__m256i` covering 8 cols × 8 weights of high-2-bits)
+   - Reconstruct unsigned 6-bit weights:
+     - low pair (slot 0..3 in chunk): `q = ((qh_byte >> qh_shift) & 0x33) << 4 | (ql_byte & 0x0F)` (shifts: `qh_shift=0` for sb 0,1; `qh_shift=2` for sb 2,3 — same right-shift trick NEON does)
+     - high pair (slot 4..7 in chunk): `q = ((qh_byte >> qh_shift) & 0xCC) << 2 | (ql_byte >> 4)`
+   - Load 16 i8 q8 activations broadcast across 8 cols (`VPBROADCASTQ` × 2)
+   - Dot product via `VPMADDUBSW` (unsigned q6 weights × signed q8 acts) + `VPMADDWD` chain. Zen 5 prefers this over VPDPBUSD per `project_zen5_vnni_vs_maddubs` memory.
+   - Multiply per-sub-block × per-col scale (i16 × i32) and add into 8-lane i32 accumulator.
+
+3. **Bias correction + scale-accumulate**:
+   - `acc_i32 = _mm256_sub_epi32(acc_i32, bias_i32)` (subtract precomputed bias)
+   - Convert to fp32, multiply by `q6_d × q8_d` (8-lane fp32 scales), FMA into `acc_row` fp32 accumulator.
+
+4. **Store** 8 fp32 results to `s + x*8`.
+
+**Estimated complexity**: ~150-200 lines of intrinsics, mirroring the NEON implementation density. Most of the bit-fiddling is in step 2's qh unpacking — the Q8_0 kernel didn't have this and is much shorter (~40 lines).
+
+**Bit-exact PPL gate required** before flipping the env default. Use `llama-perplexity` 32-chunk WikiText-2 on a Q4_K_M model that has Q6_K content (e.g., Coder-30B Q4_K_M — Q4_K_M models typically use Q6_K for output_norm and some attention components).
+
+**Expected gain**: +2-5% on Q4_K_M decode for sync-bound class (Coder-30B 47.08 → 48-49.5 range). Bounded above by the 15% Q6_K share of cycles per CPU24 perf-record, so no more than ~+15% in the limit (only realized if Q6_K kernel goes from completely scalar to fully BW-saturated, which it won't).
+
+### Files modified this session
+
+- `ggml/src/ggml-cpu/arch-fallback.h` — removed x86 alias for q6_K_8x8 generic
+- `ggml/src/ggml-cpu/arch/x86/repack.cpp` — added `ggml_gemv_q6_K_8x8_q8_K` + `gemv_q6_K_8x8_q8_K_avx512bw` (stub falls through to generic)
+
+### Next session deliverables
+
+1. Implement the SIMD body of `gemv_q6_K_8x8_q8_K_avx512bw` per the algorithm design above.
+2. PPL bit-exact validation on Coder-30B Q4_K_M.
+3. Throughput measurement: env on/off comparison on the 5 production models. Expected: +2-5% on Q4_K_M class, neutral on Q8_0 (no Q6_K content).
+4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
+5. After Q6_K lands, follow up with **Q5_K** (smaller cycle share ~4.6% per Session 14 dispatcher gap analysis, but trivial once the Q6_K bit-fiddling pattern is established).
