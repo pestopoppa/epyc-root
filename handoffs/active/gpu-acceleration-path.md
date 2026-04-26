@@ -49,6 +49,24 @@ The unified memory architecture eliminates the CPU-to-GPU PCIe bottleneck that d
 
 **Caveats:** ARM CPU (20 cores) is far weaker than EPYC 9655 (192 threads) for expert compute. Memory bandwidth is slightly lower than our EPYC DDR5 setup. FP4 scaling underperforms theoretical expectations (FP8-to-FP4 yields ~1.3-1.5x, not 2x). Not a drop-in replacement for the NUMA 4-way architecture -- it's a fundamentally different inference paradigm.
 
+## Research Intake Update — 2026-04-26
+
+GPU-stack curriculum ingested (intake batch 458-472). All entries below are DGX-Spark-prep references; none are actionable on current CPU stack.
+
+| ID | Source | Relevance Summary |
+|----|--------|-------------------|
+| intake-458 | FlashInfer (arXiv:2501.01005) | Block-sparse-as-unifier KV format + JIT attention templates. Production attention backend for vLLM/SGLang/MLC — Day-0 dependency when Spark lands. |
+| intake-461 | SGLang repo | Engine itself (intake-041 covered RadixAttention paper). Zero-overhead CPU scheduler + cache-aware load balancer + compressed-FSM structured output are portable patterns. Has documented Intel Xeon CPU backend. |
+| intake-462 | vLLM repo | Engine itself (intake-033 covered PagedAttention paper, intake-152/424/456 covered components). Active x86 CPU backend exists; chunked-prefill + automatic prefix-cache scheduling concepts portable. |
+| intake-463 | TensorRT-LLM repo | NVIDIA peak stack with **Wide-EP (large-scale expert parallelism)**, DWDP on NVL72, FP8/FP4 native, Prefill/Decode disaggregated serving, MTP/EAGLE/n-gram spec dec. Has Jetson branch (closest analog to Spark). |
+| intake-464 | FlashAttention-3 (arXiv:2407.08608) | Hopper-era warp-specialization + WGMMA + FP8 attention. Hardware-specific — DGX Spark Blackwell is the target. Producer/consumer warp pattern has speculative CPU prefetch/compute analogue. |
+| intake-465 | CUTLASS repo | NVIDIA Tensor Core GEMM template library. CuTe layout abstractions + grouped-GEMM patterns inform CPU MoE expert-dispatch design. Listed compatibility includes DGX Spark (SM12.1, CUDA 13.0). |
+| intake-466 | Triton repo | OpenAI kernel DSL. Most modern inference papers (FlashAttention 2/3, FlashInfer, MLA decode, log-linear GDN, BackLite) ship Triton reference impls — required literacy for kernel-paper consumption. CPU backend (triton-cpu) experimental. |
+
+**Activation triggers** (unchanged): all become Tier-1 actionable when DGX Spark or equivalent GPU is acquired. Until then, treat as reading-list references.
+
+**One non-DGX-Spark insight**: SGLang's structured-output via compressed FSM (~3× faster JSON decoding) is a clear upgrade target for llama.cpp's grammar engine independent of GPU acquisition. Worth a separate evaluation handoff if grammar throughput becomes a bottleneck.
+
 **Verdict:** At $4,699, DGX Spark is the most cost-effective path to GPU-accelerated MoE inference. It obsoletes the hybrid CPU+GPU offloading architecture (the entire `-ot "exps=CPU"` paradigm) by making expert offloading unnecessary. Primary path for models up to ~70B; pair two units for 200B+.
 
 ### vLLM + Speculative Decoding on DGX Spark (Future Work)

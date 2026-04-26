@@ -48,6 +48,19 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 **Related**:
 - [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
+
+## Research Intake Update — 2026-04-26
+
+MoE infrastructure literature ingested (intake batch 458-472). Direct relevance to Phase 3.x EP work:
+
+- **[intake-467] MegaBlocks** (arXiv:2211.15841): foundational dropless-MoE via block-sparse grouped GEMM with blocked-CSR-COO + transpose-indices encoding. Verdict: adopt_patterns — the **indexing scheme** (not the GPU kernel) is the transferable artifact for CPU expert dispatch. Eliminates capacity-factor padding/dropping — directly addresses the per-instance shard-assignment bottleneck in Variant 2.
+- **[intake-470] Tutel** (arXiv:2206.03382): adaptive parallelism on a unified parameter layout + **2DH (two-dimensional hierarchical) all-to-all** that aggregates intra-node first then inter-node. Verdict: adopt_patterns — 2DH maps cleanly onto our 4-NUMA-node × 12-CCD topology and could reduce the ~96 sync points/token regression cause for REAP-246B (-47%) and MiniMax-M2.7 (-23%) by aggregating intra-CCD then inter-NUMA. Also: dynamic per-step expert capacity (no static shard assignment) addresses Qwen3-Coder-480B routing imbalance.
+- **[intake-471] Expert Choice Routing** (arXiv:2202.09368): not_applicable — training-time routing inversion, cannot retrofit onto pretrained token-choice checkpoints. Filed as literature reference only.
+
+**Concrete recommendations**:
+1. **Phase 3.4 candidate**: 2DH ring-buffer redesign for inter-process EP shared-memory dispatch. Target: reduce sync count from ~96 to ~24/token via intra-NUMA-then-inter-NUMA aggregation.
+2. **CPU2 expert-GEMM investigation**: port MegaBlocks' blocked-CSR-COO + transpose-indices indexing into the AVX-512BW Q8_0 path. Indexing scheme is portable; kernel itself is not.
+3. **Variant 1/2/3 unified layout**: adopt Tutel's "one tensor layout that all parallelism strategies consume" so the orchestrator can switch EP topology per workload without weight re-layout.
 - [`single-instance-system-tuning.md`](single-instance-system-tuning.md) (CPU3 — NPS4 BIOS state is prerequisite)
 - [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) (**contention** — NUMA topology is exclusive; see Decision Point D2)
 - [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) (candidate model for Phase 0; master-index row 22)

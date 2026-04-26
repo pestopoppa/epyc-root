@@ -19,6 +19,7 @@ Evaluate the Multiscreen architecture (arXiv:2604.01178) as a potential next-gen
 | Intake ID | Title | Relevance | Verdict |
 |-----------|-------|-----------|---------|
 | intake-256 | Screening Is Enough — Multiscreen Architecture | high | new_opportunity |
+| intake-464 | FlashAttention-3 (arXiv:2407.08608) | medium | worth_investigating — canonical Hopper attention paper (added 2026-04-26). DGX Spark prep + CPU producer/consumer thread-split analog candidate. |
 
 ## Key Claims to Verify
 

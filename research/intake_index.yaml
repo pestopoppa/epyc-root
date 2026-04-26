@@ -18635,3 +18635,1135 @@
     recurrent-depth-transformer hypothesis entry. Together these suggest a re-evaluation of
     looped LMs as small-model candidates IF llama.cpp gains arch support. Until then: filed
     as bookmark; no handoff updated because nothing actionable on current CPU-decode targets.
+- id: intake-458
+  arxiv_id: '2501.01005'
+  url: https://arxiv.org/abs/2501.01005
+  source_type: paper
+  title: 'FlashInfer: Efficient and Customizable Attention Engine for LLM Inference Serving'
+  authors:
+  - Zihao Ye
+  - Lequn Chen
+  - Ruihang Lai
+  - Wuwei Lin
+  - Yineng Zhang
+  - Stephanie Wang
+  - Tianqi Chen
+  - Baris Kasikci
+  - Vinod Grover
+  - Arvind Krishnamurthy
+  - Luis Ceze
+  categories:
+  - kv_cache
+  - hardware_optimization
+  - inference_serving
+  key_claims:
+  - Unifies KV-cache storage heterogeneity (paged, ragged, radix-tree, prefix-shared) under a single block-sparse + composable format
+  - JIT-compiled customizable attention templates so diverse inference scenarios reuse one engine
+  - Load-balanced scheduling preserves CUDAGraph compatibility despite dynamic per-request KV shapes
+  - Integrated as the attention backend in SGLang, vLLM, and MLC-Engine
+  - 29-69% inter-token-latency reduction vs compiler backends; 28-30% latency reduction for long-context; 13-17% speedup on parallel generation
+  techniques:
+  - Block-sparse KV-cache format
+  - Composable formats (unified paged + ragged + radix)
+  - JIT compilation of attention templates
+  - Load-balanced scheduling (CUDAGraph-compatible)
+  - FlashAttention-style tiled CUDA kernels
+  reported_results:
+  - 29-69% inter-token-latency reduction vs compiler backends
+  - 28-30% latency reduction for long-context inference
+  - 13-17% speedup for parallel generation
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    experiments: []
+    intake_entries:
+    - intake-033
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    Block-sparse-as-unifier formulation (treating paged, ragged, radix-attention layouts
+    as one sparse format with one kernel) is genuinely new beyond standalone PagedAttention
+    /FlashAttention/RadixAttention. Combined with JIT attention-template compilation and
+    CUDAGraph-safe load balancing, it introduces ideas none of the existing handoffs cover.
+  relevance_justification: >
+    Direct CUDA kernels are non-applicable today (no GPU; DGX Spark not yet acquired).
+    However FlashInfer is the production attention backend for vLLM/SGLang/MLC, all of which
+    are part of the GPU-acceleration plan-of-record. Algorithmic transfer to CPU is partial:
+    block-sparse unification of ragged + paged + prefix-shared KV is a layout idea that maps
+    onto our radix-attention chapter and attention-matching-kv-compaction work.
+  verdict_justification: >
+    adopt_patterns rather than adopt_component: kernels are CUDA-only and irrelevant until
+    DGX Spark hardware lands. Two ideas worth absorbing now: (1) treating heterogeneous KV
+    layouts as a single block-sparse format, (2) JIT-compiled attention templates parameterized
+    by mask/positional-encoding variants. When GPU is acquired, this becomes adopt_component.
+
+- id: intake-459
+  arxiv_id: '2401.09670'
+  url: https://arxiv.org/abs/2401.09670
+  source_type: paper
+  title: 'DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving'
+  authors:
+  - Yinmin Zhong
+  - Shengyu Liu
+  - Junda Chen
+  - Jianbo Hu
+  - Yibo Zhu
+  - Xuanzhe Liu
+  - Xin Jin
+  - Hao Zhang
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - kv_cache
+  key_claims:
+  - Collocating prefill (compute-bound) and decode (memory-bound) on the same instance causes mutual interference; disaggregating eliminates it and lets each phase pick its own parallelism
+  - Per-GPU goodput (requests/s meeting both TTFT and TBT SLOs) is the right optimization target
+  - KV-cache transfer is negligible (<0.1% of total latency) when bandwidth-aware placement is used
+  - 4.48x throughput on summarization, 2.0-3.41x on chatbot vs vLLM-style collocated; 1.4-1.8x tighter SLOs at >90% attainment
+  - Pull-based KV transfer + periodic replanning enable workload adaptation without restart
+  techniques:
+  - Prefill-decode disaggregation
+  - Phase-specific parallelism
+  - Bandwidth-aware placement (high/low node-affinity)
+  - Pull-based KV cache transfer
+  - Pipeline bubble mitigation
+  - Periodic replanning
+  - Goodput-driven optimization
+  reported_results:
+  - 4.48x throughput on summarization vs vLLM collocated
+  - 2.0-3.41x throughput on chatbot workloads
+  - 1.4-1.8x tighter SLOs
+  - '>90% SLO attainment maintained'
+  - KV-transfer overhead <0.1% of latency under bandwidth-aware placement
+  referenced_arxiv_ids:
+  - '2308.16369'
+  - '2107.03374'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  contradicting_evidence:
+  - 'BentoML / vLLM disagg_prefill docs: disaggregation can REGRESS 20-30% on small workloads; explicitly "does not improve throughput" — trades throughput for TTFT/SLO interference reduction'
+  - 'Sarathi-Serve (intake-048, OSDI 2024): chunked prefill + stall-free hybrid batching achieves the same prefill/decode interference elimination WITHOUT KV migration; authors note disagg "could be challenging in the absence of high-bandwidth interconnects"'
+  - 'NVIDIA Beyond the Buzz (arXiv:2506.05508, Jun 2025): first systematic study — disagg only wins on prefill-heavy traffic + larger models; static splits lose; requires dynamic rate matching + elastic scaling'
+  - 'EPYC-specific: xGMI ~64 GB/s/dir vs NVLink ~900 GB/s — KV-transfer tax proportionally worse on CPU; single-user CPU regime is opposite of the multi-tenant GPU regime where DistServe was validated'
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - cpu-shape-specialized-gemv-decode.md
+    - kv-cache-quantization.md
+    - numa-prefill-decode-disaggregation.md
+    experiments: []
+    intake_entries:
+    - intake-048
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  handoffs_created:
+  - numa-prefill-decode-disaggregation.md
+  novelty_justification: >
+    Foundational paper introducing prefill-decode disaggregation as a serving architecture;
+    widely cited and the canonical reference for the technique. No prior DistServe intake.
+  relevance_justification: >
+    Maps directly to EPYC dual-socket NUMA topology in principle: prefill (compute-bound,
+    AVX-512BW dense) is suited to one socket; decode (memory-bandwidth-bound, GEMV) suited
+    to NUMA-pinned quarter-socket instances. Existing dynamic-stack-concurrency already
+    pre-warms 1x96t (prefill-favorable) and 4x48t (decode-favorable) instances per role —
+    DistServe formalizes this split + adds phase-aware request routing + KV migration.
+    However Tier 2b critique strongly tempers the in-practice relevance for our single-user
+    CPU regime — see contradicting_evidence and the numa-prefill-decode-disaggregation stub.
+  verdict_justification: >
+    Worth investigating — not adopt_component (system is GPU + NVLink-specific) but the
+    architectural pattern translates directly. Created stub handoff to qualify scope: Phase 0
+    falsification test (empirical xGMI KV-transfer bandwidth) before any code commitment.
+
+- id: intake-460
+  arxiv_id: '2311.18677'
+  url: https://arxiv.org/abs/2311.18677
+  source_type: paper
+  title: 'Splitwise: Efficient Generative LLM Inference Using Phase Splitting'
+  authors:
+  - Pratyush Patel
+  - Esha Choukse
+  - Chaojie Zhang
+  - Inigo Goiri
+  - Aashaka Shah
+  - Saeed Maleki
+  - Ricardo Bianchini
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - kv_cache
+  - cost_aware_routing
+  key_claims:
+  - LLM inference has two phases (prompt = compute-intensive, token = memory-bandwidth-intensive) with fundamentally different latency/throughput/power profiles
+  - Splitting onto separate machines lets each phase use hardware appropriate to its bottleneck and be provisioned independently
+  - KV-cache state transfer between prompt and token machines can be hidden via fast back-plane interconnects (InfiniBand/NVLink)
+  - Heterogeneous Splitwise clusters (e.g., H100 prompt + A100 token) optimize independently for cost, throughput, and power
+  - 1.4x higher throughput at 20% lower cost, or 2.35x higher throughput at the same cost+power
+  techniques:
+  - Phase splitting (prompt machine / token machine separation)
+  - KV-cache state transfer over high-bandwidth back-plane
+  - Layer-wise/asynchronous KV transfer to hide migration cost
+  - Heterogeneous cluster design (different GPU SKUs per phase)
+  - Production-trace-driven cluster sizing
+  - Power capping on token-generation machines for Perf/W
+  reported_results:
+  - 1.4x higher throughput at 20% lower cost
+  - 2.35x higher throughput under same cost and power budgets
+  - H100 has 3.43x compute, 1.75x power, 1.6x HBM bandwidth, 1.0x HBM capacity vs A100
+  - KV-cache transfer hidden via back-plane bandwidth — negligible E2E impact when overlapped
+  referenced_arxiv_ids:
+  - '2309.06180'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  contradicting_evidence:
+  - 'Same Tier 2b findings as DistServe (intake-459): workload-sensitive, can regress on small/short workloads, EPYC xGMI bandwidth proportionally worse than NVLink'
+  - 'Splitwise own paper section overhead: KV-transfer can be significant TBT fraction at light load; p50 TTFT comparable disagg-vs-colocated under low QPS'
+  - 'BanaServe (arXiv:2510.13223): one-way KV traffic leaves bidirectional interconnect channels idle; decode-instance fault propagates to multiple upstream prefill workers'
+  verdict: new_opportunity
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - intra-process-tensor-parallel-decode.md
+    - large-moe-expert-parallelism.md
+    - single-instance-system-tuning.md
+    - numa-prefill-decode-disaggregation.md
+    experiments: []
+    intake_entries:
+    - intake-459
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  handoffs_created:
+  - numa-prefill-decode-disaggregation.md
+  novelty_justification: >
+    First systems paper (MSR + UW, ISCA'24) to formally characterize prompt vs token phase
+    asymmetry from production Azure traces and propose physical machine-level disaggregation
+    with cost/throughput/power-optimized cluster designs.
+  relevance_justification: >
+    Direct architectural analog to EPYC's two-socket / 8-NUMA-node layout. KV-cache transfer
+    maps to NUMA cross-socket migration over xGMI. Splitwise's "token tier underutilizes
+    compute" insight supports our concurrent-split findings. User-flagged as the most-
+    interesting intake of this batch — but Tier 2b critique requires Phase 0 falsification
+    before implementation.
+  verdict_justification: >
+    new_opportunity (qualified by Tier 2b). Warrants deep_dive note (created stub handoff
+    numa-prefill-decode-disaggregation.md) examining whether socket-level prompt/decode
+    disaggregation on EPYC 9655 NPS4 is feasible given xGMI bandwidth and llama.cpp fork
+    modifications needed. Co-cite DistServe.
+
+- id: intake-461
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang
+  source_type: repo
+  title: 'SGLang — Structured Generation Language / High-Performance LLM Serving Engine'
+  authors:
+  - LMSYS / sgl-project
+  - Lianmin Zheng
+  - Ying Sheng
+  - SGLang community contributors
+  categories:
+  - inference_serving
+  - kv_cache
+  - speculative_decoding
+  - moe_optimization
+  - hardware_optimization
+  - agent_architecture
+  key_claims:
+  - RadixAttention prefix caching gives up to 5x faster inference; powers production deployments running trillions of tokens/day
+  - Zero-overhead CPU scheduler (v0.4) plus cache-aware load balancer for multi-replica deployments
+  - First-class structured output via compressed finite-state machine (~3x faster JSON decoding)
+  - Built-in speculative decoding, prefill-decode disaggregation, continuous batching, paged attention, chunked prefill, multi-LoRA, TP/PP/EP/DP parallelism
+  - Broad hardware backend reach — NVIDIA, AMD MI300/MI355, Intel Xeon CPUs, Google TPU, Ascend NPU
+  - Acts as rollout backbone for major RL/post-training stacks (AReaL, slime, verl, Tunix, Miles)
+  techniques:
+  - RadixAttention
+  - prefix caching
+  - zero-overhead CPU scheduler
+  - cache-aware load balancer
+  - prefill-decode disaggregation
+  - speculative decoding
+  - continuous batching
+  - paged attention
+  - chunked prefill
+  - tensor / pipeline / expert / data parallelism
+  - structured output via compressed FSM
+  - multi-LoRA batching
+  - quantization (FP4/FP8/INT4/AWQ/GPTQ)
+  - large-scale expert parallelism
+  - DeepSeek MLA optimizations
+  - SGLang frontend programming language
+  reported_results:
+  - 'v0.1: up to 5x faster inference via RadixAttention'
+  - 'v0.2: faster Llama3 serving than TensorRT-LLM and vLLM'
+  - 'v0.3: 7x faster DeepSeek MLA, 1.5x faster torch.compile'
+  - 'Compressed FSM: ~3x faster JSON decoding'
+  - 'DeepSeek on GB200 NVL72: 2.7x decode (Part I), 3.8x prefill / 4.8x decode (Part II)'
+  referenced_arxiv_ids:
+  - '2312.07104'
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - inference-acceleration-index.md
+    - gpu-acceleration-path.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-041
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    The repo is well-known (RadixAttention paper at intake-041) but the engine bundles
+    several sub-systems we have not catalogued as a unit: zero-overhead CPU scheduler,
+    cache-aware load balancer, compressed-FSM structured output, prefill-decode disagg, and
+    large-scale expert parallelism.
+  relevance_justification: >
+    Multiple components map onto active EPYC work: cache-aware load balancing and prefix
+    routing inform dynamic-stack-concurrency; compressed-FSM structured output is a clear
+    upgrade target for llama.cpp's grammar engine; documented Intel Xeon CPU backend means
+    SGLang is no longer strictly GPU-only.
+  verdict_justification: >
+    worth_investigating: engine is GPU-first today and llama.cpp remains production runtime,
+    but several design ideas are directly portable (FSM structured output, cache-aware routing,
+    scheduler) and Xeon CPU backend + role as deployment target for AITER/REAP/DFlash means
+    we should track releases.
+
+- id: intake-462
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm
+  source_type: repo
+  title: 'vLLM — Easy, fast, and cheap LLM serving for everyone'
+  authors:
+  - vLLM Project (originally Sky Computing Lab, UC Berkeley)
+  - Woosuk Kwon
+  - Zhuohan Li
+  - Siyuan Zhuang
+  - Ying Sheng
+  - Lianmin Zheng
+  - 2000+ open-source contributors
+  categories:
+  - inference_serving
+  - kv_cache
+  - moe_optimization
+  - speculative_decoding
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - PagedAttention manages attention K/V memory in fixed-size pages, eliminating fragmentation
+  - Continuous batching plus chunked prefill and prefix caching maximize serving throughput
+  - Wide quantization coverage (FP8, MXFP8/MXFP4, NVFP4, INT8/INT4, GPTQ/AWQ, GGUF, compressed-tensors, ModelOpt, TorchAO)
+  - Speculative decoding stack including n-gram, suffix, EAGLE, and DFlash drafters
+  - Tensor / pipeline / data / expert / context parallelism with disaggregated prefill, decode, encode
+  - Hardware portability NVIDIA, AMD, x86/ARM/PowerPC CPUs, plus TPU/Gaudi/Spyre/Ascend/NPU/Apple Silicon
+  techniques:
+  - PagedAttention
+  - continuous batching
+  - chunked prefill
+  - prefix caching (automatic)
+  - CUDA/HIP graphs
+  - torch.compile
+  - FlashAttention / FlashInfer / TRTLLM-GEN / FlashMLA / Triton attention kernels
+  - n-gram / suffix / EAGLE / DFlash speculative decoding
+  - tensor / pipeline / data / expert / context parallelism
+  - disaggregated prefill-decode-encode
+  - multi-LoRA (dense + MoE)
+  - structured outputs via xgrammar / guidance
+  - x86/ARM/PowerPC CPU backend plugin
+  reported_results:
+  - State-of-the-art serving throughput (see Kwon et al. SOSP 2023)
+  - 200+ supported model architectures on Hugging Face
+  referenced_arxiv_ids:
+  - '2309.06180'
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - cpu-inference-optimization-index.md
+    - inference-acceleration-index.md
+    - intra-process-tensor-parallel-decode.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-033
+    - intake-152
+    - intake-424
+    - intake-456
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    vLLM is mature, widely deployed; core ideas covered by intake-033, 152, 456 + chapters
+    01/04/10. Repo README itself introduces no new technique — it is the canonical
+    implementation rather than a novel contribution.
+  relevance_justification: >
+    EPYC stack runs llama.cpp on CPU; vLLM cannot be drop-in replacement. However vLLM has
+    active x86 CPU backend, and several scheduler/cache concepts are applicable to
+    dynamic-stack-concurrency, intra-process tensor-parallel decode, KV-cache quantization,
+    spec-decoding stack.
+  verdict_justification: >
+    Treat as reference codebase: study CPU backend (vllm/v1/worker/cpu_*, csrc/cpu/) for
+    PagedAttention paging logic, prefix-cache key derivation, chunked-prefill scheduling.
+    Re-evaluate as serving target if GPU acquired.
+
+- id: intake-463
+  arxiv_id: null
+  url: https://github.com/NVIDIA/TensorRT-LLM
+  source_type: repo
+  title: "TensorRT-LLM: NVIDIA's LLM and Visual-Gen inference optimization library"
+  authors:
+  - NVIDIA
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - quantization
+  - moe_optimization
+  - speculative_decoding
+  - kv_cache
+  - multimodal
+  key_claims:
+  - PyTorch-native open-source library (Apache 2.0) providing custom CUDA kernels (attention, GEMM, MoE) plus runtime optimizations for NVIDIA GPUs (Hopper/Blackwell, Jetson)
+  - Wide / large-scale Expert Parallelism (Wide-EP) with one-sided AllToAll over NVLink and DWDP (Distributed Weight Data Parallelism on NVL72)
+  - Disaggregated (Prefill / Decode) serving, in-flight (continuous) batching, multi-block / sparse / skip-softmax attention, KV-cache reuse, CUDA-graph capture
+  - Native FP8 (Hopper) and FP4 (Blackwell) weight + KV quantization paths via NVIDIA Model Optimizer
+  - Broad speculative-decoding stack EAGLE-style, MTP, n-gram, combined guided + speculative
+  - Integrates with NVIDIA Dynamo and Triton Inference Server; supports diffusion / visual-gen models
+  techniques:
+  - in-flight batching
+  - Prefill/Decode disaggregation
+  - Wide / large-scale Expert Parallelism (Wide-EP)
+  - DWDP (Distributed Weight Data Parallelism, NVL72)
+  - one-sided AllToAll over NVLink for MoE
+  - ADP (Attention Data Parallelism) balance strategy
+  - FP8 weight + KV quantization (Hopper)
+  - FP4 weight quantization (Blackwell)
+  - INT4 AWQ / weight-stripped engines
+  - multi-block attention
+  - sparse attention
+  - skip-softmax attention
+  - XQA kernel for grouped-query attention
+  - KV-cache reuse optimizations
+  - CUDA graphs
+  - NVSwitch MultiShot AllReduce
+  - MTP / EAGLE / n-gram speculative decoding
+  - guided + speculative decoding co-design
+  reported_results:
+  - 'Llama-4 Maverick: >1000 TPS/user on Blackwell (B200)'
+  - 'Llama-4: 40,000+ tok/s on B200'
+  - 'Llama-3.1-405B: 400 tok/s/node, 37 tok/s/user, single-node inference on 16k H100'
+  - 'Llama-3.3-70B: 3x throughput uplift via TRT-LLM speculative decoding'
+  - 'Multi-block attention: >3x throughput on long-sequence H200'
+  - World-record DeepSeek-R1 throughput on Blackwell (NVIDIA blog, 2025-03)
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - intra-process-tensor-parallel-decode.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    Aggregates several techniques individually high-value: Wide-EP with one-sided NVLink
+    AllToAll, DWDP, FP8/FP4 KV+weight quantization, sparse/skip-softmax attention,
+    MTP/EAGLE/n-gram spec dec, Prefill/Decode disagg.
+  relevance_justification: >
+    Directly relevant to gpu-acceleration-path.md (DGX Spark Day-0 readiness) and
+    intra-process-tensor-parallel-decode.md (TRT-LLM AllReduce pattern is GPU TP prior art).
+    Capped at medium because no GPU on-prem.
+  verdict_justification: >
+    worth_investigating as standing reference for DGX Spark forward-planning track and for
+    orchestrator design lessons (Wide-EP, disaggregated prefill/decode, one-sided AllToAll).
+    No immediate code action; should be linked from gpu-acceleration-path.md so Day-1 of any
+    Spark/Blackwell acquisition has direct pointer to TRT-LLM Blackwell DeepSeek-R1, FP4 KV,
+    and Wide-EP blog series.
+
+- id: intake-464
+  arxiv_id: '2407.08608'
+  url: https://arxiv.org/abs/2407.08608
+  source_type: paper
+  title: 'FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision'
+  authors:
+  - Jay Shah
+  - Ganesh Bikshandi
+  - Ying Zhang
+  - Vijay Thakkar
+  - Pradeep Ramani
+  - Tri Dao
+  categories:
+  - hardware_optimization
+  - quantization
+  - kv_cache
+  - inference_serving
+  key_claims:
+  - FA-2 achieves only ~35% utilization on H100 vs 80-90% for optimized GEMM kernels
+  - Producer-consumer warp-specialization pipelines TMA loads against WGMMA tensor-core matmul to hide latency
+  - Pingpong scheduling and intra-warpgroup overlap interleave block-wise GEMM and softmax
+  - Block quantization + incoherent processing (Hadamard rotation) enables FP8 attention with 2.6x lower numerical error
+  - End-to-end 1.5-2.0x speedup over FA2 on H100; FP16 ~740 TFLOPs/s; FP8 ~1.2 PFLOPs/s
+  techniques:
+  - Warp-specialization (producer/consumer warp split)
+  - TMA (Tensor Memory Accelerator) async loads
+  - WGMMA (Hopper warpgroup matmul) async tensor-core ops
+  - Pingpong scheduling between two warpgroups
+  - Intra-warpgroup GEMM/softmax overlap
+  - Block quantization for FP8
+  - Incoherent processing (Hadamard rotation) for outlier suppression
+  - Software pipelining of memory and compute
+  reported_results:
+  - 'FP16 forward: up to 740 TFLOPs/s on H100 (75% utilization)'
+  - 'FP8 forward: ~1.2 PFLOPs/s on H100'
+  - 1.5-2.0x speedup over FlashAttention-2 on H100 (FP16)
+  - FP8 numerical error 2.6x lower than baseline FP8 attention via incoherent processing
+  referenced_arxiv_ids:
+  - '2205.14135'
+  - '2307.08691'
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    Canonical Hopper-era attention kernel paper introducing three new ideas. First FA-family
+    work to systematically exploit hardware async (TMA + WGMMA) and FP8.
+  relevance_justification: >
+    Direct GPU/H100 path is non-applicable to current EPYC stack. However llama.cpp uses
+    -fa 1 FlashAttention-style kernel; algorithmic core is shared lineage. DGX Spark (GB10
+    Blackwell-class) is upcoming. Warp-specialization producer/consumer pattern has CPU
+    analog in dedicated prefetch/compute thread separation. Incoherent-processing Hadamard
+    rotation echoes TurboQuant in our KV-quant track.
+  verdict_justification: >
+    Tri Dao + Together AI + Princeton/CMU author list is top-tier authority. Add as canonical
+    FA3 reference. Optional CPU-side investigation: producer/consumer thread split for
+    prefetch + compute analog on Zen 5.
+
+- id: intake-465
+  arxiv_id: null
+  url: https://github.com/NVIDIA/cutlass
+  source_type: repo
+  title: 'CUTLASS — CUDA Templates for Linear Algebra Subroutines (NVIDIA)'
+  authors:
+  - NVIDIA
+  categories:
+  - hardware_optimization
+  - moe_optimization
+  - quantization
+  key_claims:
+  - C++/CUDA template library for high-performance GEMM with hierarchical decomposition
+  - CuTe core library provides Layout/Tensor abstractions for hierarchically multidimensional thread+data layouts
+  - CUTLASS 4.x adds Python-native CuTe DSL for writing CUDA kernels at parity with C++
+  - Broad mixed-precision and block-scaled support (FP64-FP4, NVFP4/MXFP4/MXFP6/MXFP8, INT4/INT8) across Volta-Blackwell
+  - Supports grouped GEMM, sparse GEMM, async copy pipelines, epilogue fusion (incl. channel-scale FP8)
+  - Listed compatibility includes NVIDIA DGX Spark (compute capability 12.1, CUDA 13.0)
+  techniques:
+  - Hierarchical GEMM decomposition (block/cluster/warp/thread tiles)
+  - CuTe Layout/Tensor algebra for tiling and partitioning
+  - Tensor Core mma / wgmma instruction wrappers
+  - Async copy pipelines (cp.async, TMA on Hopper/Blackwell)
+  - Grouped GEMM (variable-shape batched GEMM, MoE-relevant)
+  - Sparse GEMM kernels
+  - Mixed-precision and block-scaled GEMM
+  - Epilogue fusion (channel-scale, bias, activation)
+  - Python CuTe DSL for kernel authoring
+  reported_results:
+  - Near-peak utilization on Blackwell SM100 across input/output dtype matrix
+  - Continual perf improvements on H100 since CUTLASS 3.1 across FP16 and FP8 GEMM
+  - Listed support for B200/B300 Blackwell, RTX 50x0 (SM120), and DGX Spark (SM12.1)
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - large-moe-expert-parallelism.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-305
+    - intake-424
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    CUTLASS is established (since 2017) production library, not novel research.
+  relevance_justification: >
+    Pure CUDA — no direct applicability to current EPYC CPU-only stack. Medium relevance for
+    DGX Spark prep, CuTe layout/tile abstractions to inform AVX-512BW kernel tiling design,
+    grouped GEMM patterns transfer to CPU MoE expert dispatch.
+  verdict_justification: >
+    worth_investigating as reference architecture. Not actionable for production CPU work
+    today, but tracked as foundational reference.
+
+- id: intake-466
+  arxiv_id: null
+  url: https://github.com/triton-lang/triton
+  source_type: repo
+  title: 'Triton: A Language and Compiler for Custom Deep-Learning Primitives'
+  authors:
+  - Philippe Tillet (OpenAI)
+  - OpenAI Triton team and open-source contributors
+  categories:
+  - hardware_optimization
+  - kv_cache
+  - moe_optimization
+  key_claims:
+  - Python-embedded DSL for writing tiled neural-network kernels with productivity higher than CUDA
+  - MLIR/LLVM-based compiler lowers tile-level IR to GPU (NVPTX, AMDGPU) backends, with experimental CPU backend (triton-cpu)
+  - '@triton.jit kernels with autotuning, block-pointer abstractions, warp-level scheduling'
+  - 'TRITON_INTERPRET=1 enables CPU/Python execution of kernels for debugging without GPU'
+  - Powers core kernels in vLLM, FlashAttention 2/3, FlashInfer, HuggingFace kernel-hub, AITER, Unsloth, BackLite
+  techniques:
+  - Tile-level intermediate language (Triton-IR) over MLIR
+  - Python @triton.jit decorator with block-pointer/load/store primitives
+  - Autotuning over BLOCK_M/N/K, num_warps, num_stages
+  - LLVM-based code generation for NVPTX, AMDGPU, and experimental CPU backends
+  - Interpreter mode (TRITON_INTERPRET) for kernel debugging without GPU
+  reported_results:
+  - 'MAPL2019: matches/exceeds cuBLAS GEMM at much shorter source'
+  - Triton-CPU backend exists but is experimental; not yet competitive with hand-written AVX-512 on x86
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: >
+    Triton is foundational infrastructure (MAPL 2019, broadly known) — not a new technique.
+  relevance_justification: >
+    Direct relevance to current EPYC CPU stack is LOW — Triton's CPU backend is experimental.
+    Relevance becomes MEDIUM as literacy/reference baseline: most modern inference papers
+    ship Triton reference impls. Strategic prep for DGX Spark.
+  verdict_justification: >
+    worth_investigating as compiler/DSL literacy and DGX-Spark prep, not as direct dependency.
+
+- id: intake-467
+  arxiv_id: '2211.15841'
+  url: https://arxiv.org/abs/2211.15841
+  source_type: paper
+  title: 'MegaBlocks: Efficient Sparse Training with Mixture-of-Experts'
+  authors:
+  - Trevor Gale
+  - Deepak Narayanan
+  - Cliff Young
+  - Matei Zaharia
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  key_claims:
+  - MoE computation can be reformulated as block-sparse operations, eliminating the tradeoff between dropping tokens and padding waste
+  - Dropless MoE (dMoE) never drops tokens regardless of router load imbalance via block-diagonal matrix with variable-sized blocks
+  - Custom block-sparse GPU kernels using blocked-CSR-COO encoding plus transpose indices allow efficient sparse matmul in both transposed and non-transposed orderings
+  - End-to-end training speedup up to 40% over Tutel and up to 2.4x over dense Megatron-LM at matched quality
+  - Removes capacity_factor as a hyperparameter and the auxiliary tuning burden
+  techniques:
+  - Block-sparse grouped GEMM (variable-sized block-diagonal expert matmul)
+  - Blocked-CSR-COO sparse encoding
+  - Transpose indices for efficient sparse matmul in either orientation
+  - Permutation-free / padding-free expert dispatch
+  - Dropless MoE (dMoE) routing
+  - Integration with Megatron-LM training stack
+  reported_results:
+  - Up to +40% end-to-end MoE training throughput vs Tutel
+  - Up to 2.4x end-to-end training throughput vs dense Megatron-LM at matched quality
+  - MoEs trained with max capacity factor reach lower loss than fixed capacity_factor on The Pile
+  - Block-sparse kernel microbenchmarks competitive with cuBLAS batched-matmul on GPU at expert MLP shapes
+  referenced_arxiv_ids:
+  - '1701.06538'
+  - '2006.16668'
+  - '2101.03961'
+  - '2206.03382'
+  - '1909.08053'
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  expanded_from: null
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - large-moe-expert-parallelism.md
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-305
+    - intake-308
+  handoffs_updated:
+  - large-moe-expert-parallelism.md
+  handoffs_created: []
+  novelty_justification: >
+    Foundational 2022 work that defined the dropless / block-sparse-grouped-GEMM formulation
+    of MoE. Canonical citation for the formulation and clearest exposition of the kernel-level
+    argument.
+  relevance_justification: >
+    Production worker is Qwen3-30B-A3B MoE; CPU15 large-MoE-expert-parallelism is active
+    high-priority track. Expert dispatch overhead is named bottleneck. MegaBlocks block-
+    sparse-matmul-with-variable-block-sizes is exactly the missing primitive on CPU; blocked-
+    CSR-COO + transpose-indices design transfers to AVX-512BW Q8_0 8x8 kernel work.
+  verdict_justification: >
+    Integrate as Tier-1 reference under chapter 02-moe-optimization and as design citation in
+    CPU15 large-MoE-expert-parallelism handoff. The indexing scheme (not the GPU kernel) is
+    the transferable artifact for CPU expert dispatch.
+
+- id: intake-468
+  arxiv_id: null
+  url: https://www.usenix.org/conference/osdi22/presentation/yu
+  source_type: paper
+  title: 'ORCA: A Distributed Serving System for Transformer-Based Generative Models'
+  authors:
+  - Gyeong-In Yu
+  - Joo Seong Jeong
+  - Geon-Woo Kim
+  - Soojeong Kim
+  - Byung-Gon Chun
+  categories:
+  - inference_serving
+  - kv_cache
+  key_claims:
+  - 'Iteration-level scheduling: scheduler invokes the engine for ONE iteration at a time, so finished requests exit the batch immediately and new requests can join mid-flight (continuous batching)'
+  - 'Selective batching: batch only operations that tolerate ragged shapes (Linear, LayerNorm, residuals); leave Attention per-request so heterogeneous KV-lengths can coexist in one batch'
+  - Distributed execution layer with intra-layer + inter-layer parallelism and a control-plane/engine split
+  - KV cache is managed per-request and persists across iterations; scheduler treats KV residency as a first-class admission constraint
+  - 'GPT-3 175B: 36.9x throughput at iso-latency vs NVIDIA FasterTransformer'
+  techniques:
+  - iteration_level_scheduling (continuous_batching)
+  - selective_batching (per-op batchability classification)
+  - request-level KV cache residency tracking
+  - decoupled scheduler / engine control plane
+  - intra- and inter-layer model parallelism for distributed serving
+  - max-tokens-aware admission control to avoid OOM mid-batch
+  reported_results:
+  - 'GPT-3 175B: 36.9x throughput at the same p50/p99 latency vs FasterTransformer'
+  - Production deployment at FriendliAI (PeriFlow)
+  - Gains grow with workload heterogeneity (mix of short/long generations)
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: expansion
+  expanded_from: intake-460
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 06-benchmarking-framework.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-460
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  handoffs_created: []
+  novelty_justification: >
+    ORCA is the foundational paper that introduced continuous batching and selective batching
+    — the dominant serving paradigm now adopted by vLLM, TGI, TensorRT-LLM, SGLang. Highly
+    novel at publication; foundational for the field.
+  relevance_justification: >
+    llama-server already implements a form of continuous batching, but the EPYC orchestrator's
+    multi-instance NUMA split (4x48t) and draft-tree spec-decode change the scheduling
+    surface. ORCA's selective-batching abstraction is directly relevant to MoE expert routing
+    on CPU and to dynamic-stack-concurrency mid-flight admission policy.
+  verdict_justification: >
+    Patterns already partially adopted via llama-server upstream and foundational to vLLM/SGLang
+    patterns. Orchestrator layer above llama-server should adopt ORCA's control-plane/engine
+    split formalization — specifically the explicit max-tokens admission gate and per-iteration
+    re-batching across the 4x48t NUMA shards.
+  notes: >
+    URL points to USENIX OSDI 22 paper. arXiv ID 2207.00032 originally proposed by Splitwise
+    references actually maps to a different paper (DeepSpeed Inference); ORCA itself was
+    OSDI-only and has no arXiv version. arxiv_id field set to null.
+
+- id: intake-469
+  arxiv_id: '2308.16369'
+  url: https://arxiv.org/abs/2308.16369
+  source_type: paper
+  title: 'Sarathi: Efficient LLM Inference by Piggybacking Decodes with Chunked Prefills'
+  authors:
+  - Amey Agrawal
+  - Ashish Panwar
+  - Jayashree Mohan
+  - Nipun Kwatra
+  - Bhargav S. Gulavani
+  - Ramachandran Ramjee
+  categories:
+  - inference_serving
+  - local_inference
+  key_claims:
+  - Decode is compute-underutilized at small batch sizes (decode cost-per-token up to ~200x prefill cost-per-token)
+  - Chunked-prefills splits a prefill request into equal compute-sized chunks so multiple hybrid batches can be built from one prompt
+  - Decode-maximal batching constructs a batch from one prefill chunk plus decode slots; decodes piggyback on the compute-saturating prefill chunk
+  - Hybrid batches yield uniform per-step compute, eliminating pipeline bubbles
+  - Optimal chunk size selected per workload from average prefill-to-decode token ratio
+  techniques:
+  - Chunked prefill (split prompt into equal-compute chunks)
+  - Decode-maximal hybrid batching (1 prefill chunk + N piggybacked decodes per iteration)
+  - Uniform-compute micro-batching for pipeline parallelism
+  - Workload-aware chunk-size tuning from prefill:decode token ratio
+  reported_results:
+  - 'LLaMA-13B / A6000: up to 10x decode throughput, 1.33x end-to-end throughput'
+  - 'LLaMA-33B / A100: 4.25x decode throughput, 1.25x end-to-end throughput'
+  - 'GPT-3 / 8-way PP + 8-way TP / 64 A100s: 6.29x bubble reduction, 1.91x end-to-end throughput'
+  referenced_arxiv_ids:
+  - '2403.02310'
+  novelty: low
+  relevance: medium
+  credibility_score: 6
+  verdict: superseded
+  ingested_date: '2026-04-26'
+  discovered_via: expansion
+  expanded_from: intake-459
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-048
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  handoffs_created: []
+  novelty_justification: >
+    Foundational chunked-prefill + piggybacked-decode paper, but production-grade successor
+    Sarathi-Serve (2403.02310) is already in the index as intake-048 (already_integrated).
+    The v1 contribution is fully subsumed by the OSDI 2024 follow-up.
+  relevance_justification: >
+    Medium for EPYC stack: chunked-prefill is directly applicable to llama-server scheduling
+    and is already on dynamic-stack-concurrency radar via Sarathi-Serve.
+  verdict_justification: >
+    Superseded by its own follow-up Sarathi-Serve (2403.02310, intake-048, already_integrated).
+    Important counter-architecture to DistServe/Splitwise disaggregation — chunked prefill
+    + hybrid batching achieves prefill/decode interference elimination WITHOUT KV migration.
+
+- id: intake-470
+  arxiv_id: '2206.03382'
+  url: https://arxiv.org/abs/2206.03382
+  source_type: paper
+  title: 'Tutel: Adaptive Mixture-of-Experts at Scale'
+  authors:
+  - Changho Hwang
+  - Wei Cui
+  - Yifan Xiong
+  - Ziyue Yang
+  - Ze Liu
+  - Han Hu
+  - Zilong Wang
+  - Rafael Salas
+  - Jithin Jose
+  - Prabhat Ram
+  - Joe Chau
+  - Peng Cheng
+  - Fan Yang
+  - Mao Yang
+  - Yongqiang Xiong
+  categories:
+  - moe_optimization
+  - hardware_optimization
+  key_claims:
+  - Token routing dynamically determines per-expert workload at runtime; static parallelism strategies are inefficient
+  - Flex (Tutel runtime) switches parallelism and pipelining strategies adaptively at zero runtime cost via single unified layout for MoE parameters that all candidate strategies can consume without re-shuffling
+  - 2DH (two-dimensional hierarchical) all-to-all aggregates small per-expert messages along intra-node dimension first, then inter-node, drastically reducing fine-grained dispatch/combine latency
+  - Dynamic expert capacity removes fixed capacity-factor padding/dropping
+  - Single MoE-layer kernel speedup 4.96x on 16 A100s and 5.75x on 2048 A100s vs prior SOTA
+  - End-to-end SwinV2-MoE training up to 1.55x; inference up to 2.11x over Fairseq
+  techniques:
+  - Adaptive parallelism (data / expert / model / ZeRO) switched per-step on a unified parameter layout
+  - Adaptive pipelining of dispatch / expert-compute / combine
+  - 2DH all-to-all (intra-node aggregation then inter-node exchange) for small-message regimes
+  - Dynamic expert capacity (no fixed capacity factor)
+  - Flow-adaptive gating + top-k routing without padding
+  - Single unified parameter+activation tensor layout reused across all parallelism strategies
+  reported_results:
+  - 4.96x speedup on a single MoE layer over 16 A100 GPUs vs prior SOTA
+  - 5.75x speedup on a single MoE layer over 2048 A100 GPUs vs prior SOTA
+  - Up to 1.55x end-to-end SwinV2-MoE training speedup vs Fairseq-MoE
+  - Up to 2.11x end-to-end SwinV2-MoE inference speedup vs Fairseq-MoE
+  referenced_arxiv_ids:
+  - '1701.06538'
+  - '2006.16668'
+  - '2101.03961'
+  - '2201.05596'
+  - '1909.08053'
+  - '1910.02054'
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: expansion
+  expanded_from: intake-467
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - large-moe-expert-parallelism.md
+    experiments: []
+    intake_entries:
+    - intake-010
+    - intake-467
+  handoffs_updated:
+  - large-moe-expert-parallelism.md
+  handoffs_created: []
+  novelty_justification: >
+    MLSys 2023; predates MegaBlocks. Adaptive-layout idea (one tensor layout supporting all
+    parallelism strategies so the switch is zero-cost) is genuinely novel and not subsumed
+    by later work. 2DH all-to-all is the dominant pattern still cited in 2024-2026 MoE
+    serving stacks.
+  relevance_justification: >
+    Directly addresses bottleneck CPU15 Phase 3.2 just hit: per-MoE-layer dispatch sync
+    (~96 sync points per token on a 48-layer MoE) is the regression cause for REAP-246B/M2.7.
+    2DH all-to-all maps onto our 4-NUMA-node x 12-CCD topology.
+  verdict_justification: >
+    adopt_patterns, not adopt_component: Tutel is GPU-targeted (NCCL all-to-all over
+    NVLink/IB). Three patterns transfer: (1) 2DH hierarchical aggregation for inter-process
+    EP shared-memory ring; (2) dynamic per-step expert capacity instead of static shard
+    assignment; (3) unified parameter layout across Variants 1/2/3.
+
+- id: intake-471
+  arxiv_id: '2202.09368'
+  url: https://arxiv.org/abs/2202.09368
+  source_type: paper
+  title: 'Mixture-of-Experts with Expert Choice Routing'
+  authors:
+  - Yanqi Zhou
+  - Tao Lei
+  - Hanxiao Liu
+  - Nan Du
+  - Yanping Huang
+  - Vincent Zhao
+  - Andrew Dai
+  - Zhifeng Chen
+  - Quoc Le
+  - James Laudon
+  categories:
+  - moe_optimization
+  - routing_intelligence
+  - training_distillation
+  key_claims:
+  - Token-choice top-k routing (Switch/GShard) suffers from chronic load imbalance and forces every token to use a fixed k experts
+  - Inverting dispatch — letting each EXPERT pick its top-k tokens — guarantees perfect load balance by construction with NO auxiliary load-balancing loss
+  - Each token receives a VARIABLE number of experts (heterogeneous routing); important tokens get more compute
+  - On 8B-active / 64-expert model, Expert Choice achieves >2x faster pre-training convergence vs Switch top-1 and GShard top-2
+  - EC scales monotonically with expert count from 16 to 128; 8B/64E EC beats T5-11B dense on 7 of 11 GLUE/SuperGLUE tasks
+  techniques:
+  - 'Expert-choice routing: each expert independently selects its top-k highest-scoring tokens'
+  - Per-expert fixed bucket size (eliminates dropped tokens and overflow handling)
+  - Removal of auxiliary load-balancing loss term
+  - Heterogeneous per-token expert count (variable compute per token)
+  - Capacity factor c sweep trades quality vs activation cost
+  reported_results:
+  - '8B/64E EC reaches Switch top-1 / GShard top-2 perplexity in <50% of training steps'
+  - Strong scaling perplexity improvement as expert count grows 16 to 128
+  - 'GLUE/SuperGLUE: 8B/64E EC > T5-11B dense on 7/11 tasks'
+  referenced_arxiv_ids:
+  - '2105.04663'
+  novelty: low
+  relevance: low
+  credibility_score: 6
+  verdict: not_applicable
+  ingested_date: '2026-04-26'
+  discovered_via: expansion
+  expanded_from: intake-467
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - large-moe-expert-parallelism.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-449
+    - intake-467
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Low novelty for the EPYC stack at intake date (2026-04-26). Expert-Choice Routing is a
+    2022 NeurIPS-era contribution well-absorbed into MoE training literature.
+  relevance_justification: >
+    Low. EC is a pre-training routing strategy; cannot retrofit onto Qwen3 / REAP / GLM-5.1
+    weights without re-training the router. EPYC stack does no pre-training. Load-imbalance
+    problem EC solves is largely absent on single-user CPU decode.
+  verdict_justification: >
+    not_applicable. Three reasons: (1) EC is training-time, our stack does no pre-training;
+    (2) all production MoEs are token-choice and cannot be switched without retraining;
+    (3) load-imbalance is largely absent on single-user CPU decode. Filed as literature
+    reference only.
+
+- id: intake-472
+  arxiv_id: '2407.00079'
+  url: https://arxiv.org/abs/2407.00079
+  source_type: paper
+  title: 'Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving'
+  authors:
+  - Ruoyu Qin
+  - Zheming Li
+  - Weiran He
+  - Mingxing Zhang
+  - Yongwei Wu
+  - Weimin Zheng
+  - Xinran Xu
+  categories:
+  - inference_serving
+  - kv_cache
+  - hardware_optimization
+  - cost_aware_routing
+  key_claims:
+  - Disaggregating prefill and decode into separate node pools coordinated by a KVCache-centric global scheduler (Conductor) beats colocated serving on long-context, SLO-bound workloads
+  - A global KVCache pool aggregating CPU DRAM, SSD, and RDMA-reachable memory enables cross-request prefix reuse far beyond a single node's capacity
+  - Chunked/layer-wise pipelined prefill across multiple nodes reduces TTFT for very long prompts without violating TBT for in-flight decode requests
+  - Early-rejection / overload-oriented admission policy that predicts decode-stage load from prefill queue state prevents wasted prefill compute under overload
+  - In production at Moonshot/Kimi, Mooncake handles 75%+ more requests than the prior baseline at the same SLO
+  techniques:
+  - Prefill/decode disaggregation with separate node pools and per-stage SLOs (TTFT vs TBT)
+  - KVCache-centric global scheduler (Conductor) using cache-aware + load-aware request routing
+  - Hierarchical KVCache pool (GPU HBM, CPU DRAM, SSD, remote RDMA tiers)
+  - Layer-wise / chunked prefill pipelining across multiple prefill nodes for long prompts
+  - Cache-aware prefix matching and replication (hot-prefix replication, cold-prefix eviction)
+  - Early-rejection admission control based on predicted decode-stage backlog
+  - RDMA-based KV transfer between prefill and decode nodes overlapped with computation
+  reported_results:
+  - Up to 525% throughput improvement over vLLM colocated baseline on long-context simulated workloads under SLO
+  - Handles 75% more requests than prior production baseline at Kimi at equal SLO attainment
+  - TTFT reductions on Mooncake-Trace and ArXiv-Summary / L-Eval long-context traces vs vLLM and DistServe-style baselines
+  - KVCache pool hit rates materially reduce repeated prefill cost for shared system prompts and multi-turn sessions
+  referenced_arxiv_ids:
+  - '2401.09670'
+  - '2311.18677'
+  - '2309.06180'
+  - '2312.07104'
+  - '2305.13245'
+  - '2205.14135'
+  - '2307.08691'
+  - '1909.08053'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  contradicting_evidence:
+  - 'Same Tier 2b findings as DistServe/Splitwise: workload-sensitive, can regress on small/short workloads, EPYC xGMI bandwidth proportionally worse than NVLink'
+  - 'Mooncake assumes RDMA fabric and global KVCache pool — single-host CPU stack has no equivalent; only the KVCache-tiering pattern is portable to NUMA DRAM + SSD spill'
+  - 'Production-validated only on long-context Kimi traces — short-prompt single-user regime remains untested'
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: search
+  expanded_from: intake-459
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - inference-acceleration-index.md
+    - numa-prefill-decode-disaggregation.md
+    experiments: []
+    intake_entries:
+    - intake-459
+    - intake-460
+    - intake-041
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  handoffs_created:
+  - numa-prefill-decode-disaggregation.md
+  novelty_justification: >
+    Extends DistServe/Splitwise prefill/decode disaggregation with a first-class global
+    KVCache pool, cache-aware scheduling (Conductor), layer-wise pipelined prefill, and
+    overload-aware early rejection — a more complete architecture than prior disaggregation
+    work and validated at Kimi production scale rather than only in simulation.
+  relevance_justification: >
+    Our 2-socket EPYC 9655 with 8 NUMA nodes is structurally analogous to a small Mooncake
+    cluster: NUMA nodes can play the role of prefill vs decode pools, CPU DRAM tiers map onto
+    Mooncake KVCache pool, and existing concurrent-split work moves toward role-specialized
+    pools.
+  verdict_justification: >
+    Full component adoption infeasible (no RDMA fabric, single-host CPU, no Conductor binary
+    to drop in), but design patterns highly portable: NUMA-disaggregated prefill/decode pools
+    as CPU analogue, cache-aware routing, hierarchical KVCache tiering, early-rejection
+    admission control. Lift as patterns into dynamic-stack-concurrency handoff and
+    radix-attention chapter rather than rejecting for lack of cluster.

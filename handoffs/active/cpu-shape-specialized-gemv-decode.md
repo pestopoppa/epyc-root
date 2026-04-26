@@ -11,6 +11,20 @@
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — orthogonal throughput lever (KV-side)
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — where TensileLite shape-specialization discussion originated
 - [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) — paged attention / OpenMP repack / MoE expert reduction context
+- [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — where the CPU18 MegaBlocks indexing port (below) compounds
+
+## Phase 4 candidate (CPU18, added 2026-04-26 from research-intake batch)
+
+**MegaBlocks blocked-CSR-COO + transpose-indices port for CPU MoE expert dispatch**
+
+- Source: MegaBlocks paper (intake-467, arXiv:2211.15841, Stanford/MosaicML, MLSys 2023). Verdict: adopt_patterns.
+- Transferable artifact: the **indexing scheme** (blocked-CSR-COO sparse encoding + transpose indices for sparse matmul in either orientation), NOT the GPU kernel itself.
+- Why this matters on CPU: existing CPU2 8×8 Q8_0 kernel handles dense GEMV well, but MoE expert dispatch on CPU still relies on per-expert padding-or-drop logic inherited from upstream `mul_mat_id` path. MegaBlocks' "block-diagonal matrix with variable-sized blocks" formulation eliminates the capacity-factor padding/dropping tax at the dispatch layer.
+- Compounds with: just-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) Q8_0 8×8 wins, AND with CPU15 inter-process EP (intake-467 cross-references hipBLASLt grouped GEMM intake-305 and CUTLASS intake-465 / intake-424 as the GPU-side analogues we already track).
+- Does NOT require BIOS reboot or env var. Pure software change inside `ggml/src/ggml-cpu/`.
+- Open questions before starting: (1) does the indexing scheme map cleanly onto our existing 8×8 repack layout, or does it require a parallel repack format? (2) what's the per-token sync overhead of the indexing recompute on a 48-layer MoE? (3) does it interact with CPU15 drone+shard's expert-set partitioning?
+- Suggested first step: read `ggml/src/ggml-cpu/repack.cpp` to find the `mul_mat_id` path, then prototype a blocked-CSR-COO routing index in `llama.cpp-experimental` on a fresh branch off `cpu-optimization/q8-8x8-avx512bw`. Validate on Qwen3.6-35B-A3B Q8_0 (already CPU15-EP-friendly) and gemma-26B-A4B (already CPU15-EP-friendly).
+- Cross-reference: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block + Prioritized Task List item CPU18.
 
 ## Status as of 2026-04-24
 

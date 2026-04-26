@@ -13,7 +13,25 @@
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
 **Domain**: routing-and-optimization (primary — Phases B-E: stack exploration, QuarterScheduler, templates, autoresearch); inference-acceleration (Phase F KVCOMM cross-listed for discoverability — F1 blocks on AM compaction P2)
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row)
+**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row), [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (feasibility stub — disagg literature spawned 2026-04-26)
+
+## Research Intake Update — 2026-04-26
+
+Disaggregated-serving + scheduler literature ingested (intake batch 458-472). Direct relevance to DS-6/DS-7/Phase-F design:
+
+- **[intake-459] DistServe** (arXiv:2401.09670): foundational prefill/decode disaggregation. 4.48× throughput claim is goodput-under-SLO on multi-tenant GPU traffic — NOT free transfer.
+- **[intake-460] Splitwise** (arXiv:2311.18677): heterogeneous machine pools per phase; KV migration over high-bandwidth back-plane.
+- **[intake-472] Mooncake** (arXiv:2407.00079): KVCache-centric global pool + Conductor scheduler with cache-aware routing. The pool/tiering pattern is portable to NUMA DRAM even without full disagg.
+- **[intake-468] ORCA** (OSDI'22): iteration-level scheduling + selective batching. Foundational for the orchestrator scheduler abstraction; selective batching (per-op batchability classification) is the right framing for MoE expert routing across heterogeneous KV in the QuarterScheduler.
+- **[intake-469] Sarathi v1** (arXiv:2308.16369): superseded by Sarathi-Serve (intake-048, already_integrated). Important as the **counter-architecture** to disagg — chunked prefill + piggybacking achieves prefill/decode interference elimination WITHOUT KV migration. Likely the more EPYC-appropriate path.
+- **[intake-471] Expert Choice Routing** (arXiv:2202.09368): not_applicable — training-time routing change, not retrofittable to pretrained Qwen3/REAP/GLM checkpoints.
+
+**Tier 2b critique (important)**: Disagg can REGRESS 20-30% on short-prompt / low-concurrency workloads (BentoML, vLLM docs). NVIDIA "Beyond the Buzz" (arXiv:2506.05508) shows disagg only wins on prefill-heavy + larger models and requires dynamic rate-matching. KV-transfer overhead on EPYC xGMI (~64 GB/s) will be proportionally worse than on NVLink. **Single-user CPU regime is the wrong regime for naive disagg adoption** — see [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) for the qualified feasibility study.
+
+**Concrete actions for DS-6/DS-7**:
+1. Adopt ORCA's selective-batching abstraction in the QuarterScheduler (which ops are batchable across heterogeneous KV).
+2. Lift Mooncake's KVCache-tiering pattern (NUMA-local DRAM + SSD spill) into Phase F KVCOMM scope as a stretch goal.
+3. **Consider Sarathi-Serve adoption BEFORE NUMA-disagg** — it's already in intake (intake-048) and avoids the KV-transfer tax.
 
 ---
 
