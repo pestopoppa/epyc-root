@@ -33,7 +33,7 @@ The user-requested "verify lever compounding" methodology check (2026-04-26 even
 | Qwen3-Next-80B-A3B | Q4_K_M | 20.51 | 23.25 | −12% |
 | Qwen3-Coder-REAP-246B-A35B | Q4_K_M | 5.94 | 6.85 | −13% |
 
-For Q8_0 + gemma, **deploying `--mmap 0 + numactl --interleave=all` as the canonical config alone captures more than all the optimization code combined**. For Next-80B and REAP-246B the warmed mmap=1 path settles into better per-node distribution over time — proper canonical is not universally best.
+For Q8_0 + gemma, **deploying `numactl --interleave=all` as the canonical config alone captures more than all the optimization code combined**. The earlier "Next-80B + REAP-246B prefer warmed mmap=1" framing turned out to be **a measurement artifact** (asymmetry investigation 2026-04-26 late evening, `data/cpu_optimization/2026-04-26-asymmetry/SUMMARY.md`): the historical 23.25 / 6.85 numbers required HOURS-to-DAYS of system uptime for numa_balancing to learn model-specific access patterns. 5-run warming doesn't reach those values. Cold `--interleave=all` reaches **89-100% of long-warmed performance immediately on every model** — the 5-13% gap to long-warmed is real but unreachable in practical timeframes. **`numactl --interleave=all` is the SINGLE canonical for all models. No model-specific config needed.** mmap mode (1 vs 0) is irrelevant when `--interleave=all` is active.
 
 ### Strategic implications
 

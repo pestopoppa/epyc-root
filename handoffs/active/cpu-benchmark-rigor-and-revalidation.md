@@ -50,9 +50,9 @@ Capture before each batch:
 - governor, SMT, and thread placement metadata
 - host load summary (`uptime`, top-level CPU/memory)
 
-### P3. Baseline policy (REVISED 2026-04-26 evening — historic baseline was sub-optimal)
+### P3. Baseline policy (REVISED 2026-04-26 late evening — asymmetry investigation closed)
 
-**PRIMARY canonical** = `numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 --mmap 0 -r 3` (cold-cache, no warming dependency).
+**PRIMARY canonical** = `numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 -r 3` (cold-cache; mmap mode irrelevant per 2x2 matrix verification — both `--mmap 0` and `--mmap 1` produce equivalent results within noise when `--interleave=all` is active).
 
 **Why revised**: the historic `taskset -c 0-95 -t 96 -fa 1` baseline (mmap=1 default) is sub-optimal — it relies on file-mmap first-touch placement which scatters or clusters weight pages depending on which thread first faults each page. Many "+X% optimization wins" measured against that baseline collapse to noise when re-measured against the proper config. See compounding-matrix data 2026-04-26 (`data/cpu_optimization/2026-04-26-compounding/`):
 
@@ -67,7 +67,7 @@ Capture before each batch:
 
 **Two-baseline reporting requirement**: any new claim must report deltas against BOTH the proper cold canonical AND the warmed mmap=1 reference. Mismatches between the two indicate baseline-artifact wins.
 
-**Model-specific note**: proper canonical is dramatically better for Q8_0 (+44%) and gemma-26B (+39%); roughly equivalent for Coder-30B (−3%); WORSE for Next-80B (−12%) and REAP-246B (−13%). Production deployment should be model-aware — use whichever config wins per model. Don't default-to one canonical for production guidance without verifying per-model.
+**Model-specific note (REVISED late 2026-04-26 — asymmetry resolved)**: the earlier "Next-80B and REAP-246B prefer warmed mmap=1" finding was a measurement artifact. The historical 23.25 (Next) / 6.85 (REAP) numbers required hours-to-days of warming for numa_balancing to migrate pages into model-specific access patterns. 5-run warming doesn't reach those values (Next stays at 13.5 with mmap=1+taskset; REAP stays at 3.3). The cold `--interleave=all` config reaches 89-100% of long-warmed performance immediately on every model. **PRACTICAL: use `numactl --interleave=all` as the SINGLE canonical for all models. No model-specific config needed.** The 5-13% gap on Next/REAP to long-warmed steady-state is real but unreachable in practical timeframes (5-run warming with numa_balancing=1 only nudges Next 13.5 → 14.0). Asymmetry data: `data/cpu_optimization/2026-04-26-asymmetry/SUMMARY.md`.
 
 Any claim compared to a non-canonical baseline must be labeled "non-canonical" and cannot drive production routing decisions.
 
