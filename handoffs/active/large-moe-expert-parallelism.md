@@ -492,6 +492,26 @@ Master's parallel sum-reduce after gather can still use all 96 threads — that'
 
 **Conclusion**: EP doesn't help bandwidth-saturated >150B-class MoE on EPYC NPS4. Cross-validated on REAP-246B (-53%) and M2.7 (-23%). Production routing decision stands: REAP-246B and M2.7 stay on single-instance --numa distribute 96t. EP delivers for medium MoE (Qwen3.6-35B-A3B class +100% bit-identical PPL).
 
+### Open question: would L3-as-NUMA (12 nodes) change the >150B-class outcome?
+
+EPYC 9655 has 12 CCDs. NPS4 currently presents these as 4 NUMA nodes (3 CCDs each). The BIOS-level **L3-as-NUMA (L3aaN) mode** would expose each CCD as its own NUMA node = 12 nodes × 1 CCD (8 cores + 32 MB L3 each). With 12-way EP:
+
+**Memory budget feasibility**: each instance holds 1/12 of experts ≈ 11.5 GB anon shard + shared 138 GB GGUF mmap. Total system: 138 + 12 × 11.5 = 276 GB. Fits comfortably in 1.1 TB RAM. (Note: this is the shard-based budget; the original L3aaN budget calculation in `nps-reboot-runbook.md` line 199 assumed full weight replication and concluded "does not fit" — that assumption is obsolete under our shard-based EP.)
+
+**Bandwidth math**: each CCD has 1 IMC channel ≈ 10-12 GB/s. 12 instances × 12 GB/s = 120-144 GB/s aggregate, similar to NPS4's current `--numa distribute` peak. Single-instance baseline already uses ~100% of system DDR bandwidth via thread distribution. Per-instance MoE work in 12-way EP would still need ~10 GB of expert reads per token (35B active params / 12 = 2.9B per instance × 0.6 byte/param scaled), at 12 GB/s = ~830 ms per token = 1.2 t/s per instance. Master gates aggregate at the slowest worker.
+
+**Net prediction**: 12-way EP under L3aaN delivers similar-or-worse aggregate throughput vs current 6.89 t/s single-instance baseline. The bandwidth math doesn't fundamentally change with finer NUMA granularity — single-instance already saturates aggregate DDR; partitioning just divides the same bandwidth.
+
+**Two narrow paths where L3aaN MIGHT change the outcome**, both speculative without measurement:
+
+1. **Reduced coordination overhead**: single-instance with 96 threads has implicit barriers across CCDs that may have hidden cost; 12-way EP with 8 threads per instance has no cross-CCD barriers, only IPC at MoE op boundaries (sub-μs). If single-instance is non-trivially gated by cross-CCD coordination, EP could win.
+
+2. **Better cache utilization**: 12 instances each on their CCD's L3 (32 MB) might hit caches more effectively for KV cache + scratch buffers than 96 threads contending across all L3s. Net effect on bandwidth-bound expert reads is small but non-zero.
+
+**Action**: defer to after L3aaN reboot lands for other reasons (CPU1 TP exploration). At that point, re-test REAP-246B with EP N=12 and measure. If +20% over baseline, deploy. If neutral or worse, definitively close the >150B-class question.
+
+**Required capability for the test**: eager-shard (3.2(g.1)) — already landed (`43c65b926`). Master phase-aware threading (3.2(h)) — already landed (`62c63cd3f`) but only useful for asymmetric thread configs. For L3aaN N=12, all instances would use 8 threads each (symmetric); master_park may not be needed.
+
 ---
 
 #### Phase 3.3 (REVISED post-3.2) — Production wiring with env-var bootstrap

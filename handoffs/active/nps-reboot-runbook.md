@@ -198,9 +198,11 @@ If and when we reboot to L3-as-NUMA (12 NUMA nodes = 1 per CCD), weight replicat
 - Qwen3.5-35B-A3B Q4_K_M (~20 GB) × 12 = **240 GB**
 - REAP-246B Q4_K_M (~130 GB) × 12 = **1560 GB** → **does not fit** in 1.1 TB RAM
 
-So for large models like REAP-246B, L3aaN replication is infeasible. NPS4 (4 replicas × 130 = 520 GB) works. Constraint: pick NPS mode based on largest model you need to run with full per-node replication.
+So for large models like REAP-246B with **full weight replication**, L3aaN is infeasible. NPS4 (4 replicas × 130 = 520 GB) works.
 
-Decision deferred per user: "we can do [L3aaN] later after we've exhausted our NPS4 optimization tracks". Under current NPS4 the 4-replica ceiling is 4 × max_model_size ≤ 1.1 TB → max ~275 GB model.
+**Updated 2026-04-26**: under CPU15 Phase 3.2's **shard-based inter-process EP** (`large-moe-expert-parallelism.md`), each instance only holds 1/N of expert weights in a node-local anon buffer. For REAP-246B with N=12: 12 × 11.5 GB shard buffers + 138 GB shared GGUF mmap = 276 GB total — **fits comfortably in 1.1 TB RAM**. So L3aaN + EP-shard for REAP-246B IS memory-feasible; the constraint shifts from "RAM budget" to "bandwidth math". Whether it delivers throughput is an open question — see the L3aaN section in `large-moe-expert-parallelism.md` for the pre-reboot prediction (likely neutral-to-worse vs single-instance, with two narrow paths where it might win).
+
+Decision deferred per user: "we can do [L3aaN] later after we've exhausted our NPS4 optimization tracks". Under current NPS4 the 4-replica ceiling is 4 × max_model_size ≤ 1.1 TB → max ~275 GB model. Under L3aaN + EP-shard, the per-instance memory ceiling is 1.1 TB / N + shared mmap, giving access to much larger models if the bandwidth math works.
 
 ### Rollback (if NPS4 breaks something critical)
 
