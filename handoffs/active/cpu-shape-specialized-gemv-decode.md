@@ -644,3 +644,16 @@ When resuming this handoff:
 - [ ] Run Phase 0 baseline measurements — do not skip the profiling gate (DeltaNet >40% abandon threshold).
 - [ ] Start a new `progress/YYYY-MM/YYYY-MM-DD.md` entry before Phase 1 work begins.
 - [ ] Update this handoff's Status field as phases close.
+
+## 2026-04-26 update — kill-switch added
+
+Commit `af2e45de4` on `feature/cpu-ep-inter-process` adds `GGML_NUMA_REPACK_INTERLEAVE` (default ON) to gate the unconditional `mbind(MPOL_INTERLEAVE)` introduced by `e84a5c82f`. Measured impact:
+
+| Model | Quant | mbind ON (default) | mbind OFF (`=0`) | mbind effect |
+|-------|-------|--------------------|-------------------|--------------|
+| Qwen3.6-35B-A3B | Q8_0 | 14.63 ± 0.01 | 13.76 ± 1.78 | **+6% AND stabilizing** (CPU2 target) |
+| REAP-246B-A35B | Q4_K_M | 6.85 ± 0.01 | 6.91 ± 0.01 | -0.9% (Q4_K_M wash) |
+
+Default-on is correct. Kill-switch is for: (a) measuring mbind's isolated impact, (b) running alternative NUMA strategies, (c) regression diagnostics. A startup `GGML_LOG_INFO` is emitted when `=0` is set so the disabled state is visible in server logs.
+
+The DeltaNet/`GGML_PERF=1` profile gap mentioned in the original status block was filled 2026-04-26 via Phase D `perf stat` on REAP-246B + cross-model perf stat in P2. Findings: bottleneck class follows the QUANT (Q8_0 = BW-bound, Q4_K_M = sync-bound). See [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) for the complete CPU1/CPU2/CPU15 flag list and `progress/2026-04/2026-04-26.md` for measurements.

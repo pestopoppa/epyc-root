@@ -304,5 +304,149 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 - `research/deep-dives/cpu-tp-phase1a-ccd-barrier-2026-04-24.md` — Phase 1.0+1.1 ggml integration result + NPS2 ceiling analysis
 - `progress/2026-04/2026-04-23-cpu-optimization-kickoff.md`
 - `progress/2026-04/2026-04-24.md`
-- Memory: `project_cpu1_nps2_ceiling.md`, `project_concurrent_split_throughput.md`, `feedback_cpu_decode_bw_bound.md`
-- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`
+- `progress/2026-04/2026-04-26.md` — Phase A-G + P1-P4 (next session reference)
+- Memory: `project_cpu1_nps2_ceiling.md`, `project_concurrent_split_throughput.md`, `feedback_cpu_decode_bw_bound.md`, `feedback_canonical_baseline_protocol.md`
+- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `cpu-hierarchical-barrier.md`, `cpu-optimization-thesis-pause-2026-04-26.md`, `large-moe-expert-parallelism.md`
+
+---
+
+# L3aaN evaluation plan — 2026-04-26 update
+
+**Status**: pre-reboot SNAPSHOT IN HAND, BIOS reboot pending user authorization. Post-reboot agent: read this section first.
+
+## Context as of 2026-04-26
+
+A full Phase A-G plan ran today: canonical baselines + regression bisect (no source regression — historical 49.34 was a transient) + REAP-246B perf profile + bottleneck classification across the 5 production models + CPU1 stack instability isolation + CPU2 mbind kill-switch + CPU4 hierarchical sync (NEGATIVE). All findings in `progress/2026-04/2026-04-26.md`. Strategic position: **EP +17% on Qwen3.6-35B Q8_0 frontdoor** is the only confirmed production gain from CPU1+CPU2+CPU15 work. The 4 Q4_K_M production models are sync-bound (structural MoE imbalance — no software lever). Q8_0 frontdoor is bandwidth-bound (the remaining lever after EP is **L3aaN** — finer NUMA granularity).
+
+## Pre-reboot snapshot (canonical NPS4 baselines at HEAD `8cb04da9d`)
+
+`taskset -c 0-95 -t 96 -fa 1`, `LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib`, no env vars unless noted. `llama-bench -p 0 -n 32 -r 2/3` per row.
+
+| Model | Quant | Path | t/s ± std | perf class |
+|-------|-------|------|-----------|------------|
+| Qwen3-Coder-30B-A3B | Q4_K_M | `/mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf` | 43.57 ± 0.10 | sync-bound |
+| Qwen3.6-35B-A3B | Q8_0 | `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf` | 14.63 ± 0.01 | **BW-bound** ← L3aaN target |
+| Qwen3-Next-80B-A3B | Q4_K_M | `/mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Next-80B-A3B-Instruct-GGUF/Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf` | 23.25 ± 0.08 | sync-bound |
+| REAP-246B-A35B | Q4_K_M | `/mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-Q4_K_M.gguf` | 6.85 ± 0.01 | sync-bound |
+| gemma-4-26B-A4B-it | Q4_K_M | `/mnt/raid0/llm/models/gemma-4-26B-A4B-it-Q4_K_M.gguf` | 25.01 ± 0.08 | mixed |
+
+**Plus EP on the BW-bound frontdoor:**
+
+| Config | t/s ± std | vs canonical |
+|--------|-----------|--------------|
+| Qwen3.6-35B Q8_0 + `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1` | (+17% per prior session, 17.18 t/s) | reference for EP win |
+
+**System state at snapshot time:**
+- NPS4 (4 NUMA nodes, distance 10/12)
+- THP=always, numa_balancing=0
+- Governor=performance, base=1998 MHz, max=4510 MHz
+- Up 2 days, load avg 0.71-4.0 (varies during benches)
+- Free RAM: ~1100 GB
+
+## L3aaN reboot procedure
+
+Per AMD BIOS settings (varies by motherboard):
+1. `Advanced → AMD CBS → DF Common Options → Memory Addressing → NUMA Nodes Per Socket` → set to **L3 cache as NUMA domain** (alternatively labelled `NPS4 with L3 split` or similar)
+2. Save & exit, reboot
+3. Verify post-boot: `numactl --hardware` shows **12 nodes** (was 4 nodes under NPS4)
+4. Verify CCD layout intact: each node should have ~8 CPUs and ~96 GB
+5. Re-apply sysctls (THP=always, numa_balancing=0, governor=performance) — usually persistent but verify
+
+**Rollback**: same BIOS path, set back to `NPS4` (or whichever was prior). ~30 min downtime.
+
+## Post-reboot evaluation plan
+
+The post-reboot agent should run, IN ORDER:
+
+### Step 1 — Sanity (~5 min)
+- `numactl --hardware` → confirm 12 nodes
+- `pgrep -af "llama" | grep -v "grep\|zsh\|docker"` → must be clean
+- `ls /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench` → exists
+- `cd /mnt/raid0/llm/llama.cpp-experimental && git rev-parse --short HEAD` → expect `8cb04da9d`
+
+### Step 2 — Canonical baselines on all 5 production models (~30 min, sequential)
+
+EXACTLY the protocol from the pre-reboot snapshot (above). Same `LD_LIBRARY_PATH` prepend. `taskset -c 0-95 -t 96 -fa 1`. `llama-bench -p 0 -n 32 -r 2`. Record t/s + std.
+
+**Write results to**: `progress/2026-04/2026-04-NN-l3aan-evaluation.md` (NN = post-reboot date, e.g. `2026-04-27`).
+
+**Compare row-by-row to the snapshot table above.**
+
+### Step 3 — Regression detector
+
+For each model:
+- **Δ ≥ −2%** → no regression, continue
+- **−5% ≥ Δ > −2%** → flag, investigate before continuing
+- **Δ < −5%** → STOP. Likely L3aaN incompatible with this model class. Decision: revert.
+
+### Step 4 — EP frontdoor evaluation (~30 min)
+
+Qwen3.6-35B-A3B Q8_0 with full EP stack:
+```
+GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 \
+GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1 \
+LD_LIBRARY_PATH=... \
+./build/bin/llama-bench -m /mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf \
+  -t 96 -fa 1 -p 0 -n 32 -r 3
+```
+
+Expected: ≥17.18 t/s if L3aaN is neutral on EP. **>17.18 t/s = L3aaN wins; ship.** <17.18 t/s but no other regressions = L3aaN neutral, revert (cost > benefit).
+
+### Step 5 — Optional: per-CCD weight pinning probe
+
+L3aaN's UNIQUE value: 12 NUMA nodes = 1 CCD each. Could enable per-CCD weight pinning (`mbind` weights per-CCD-node + `GGML_CCD_WORK_DIST=1` for per-CCD work distribution → each CCD reads its own weights from local L3). This is the CPU1 Phase 1.3 "local" mode that wasn't fully implemented.
+
+If steps 1-4 pass, opportunistically try: `GGML_CCD_POOLS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (the safe 3-flag CPU1 stack from P3) under L3aaN. Could deliver more than the +1.8% it delivers under NPS4.
+
+### Step 6 — Decision matrix
+
+| Outcome | Action |
+|---------|--------|
+| All 5 canonical regression-free + EP frontdoor improves | **Keep L3aaN**; update `cpu-shape-specialized-gemv-decode.md`; proceed to Phase H |
+| All canonical regression-free + EP neutral | **Revert L3aaN** (no benefit); proceed to Phase H on NPS4 |
+| Any model regresses ≥5% | **Revert L3aaN immediately**; document which class was incompatible |
+| EP frontdoor regresses | Surprising; investigate before reverting (could be a config issue) |
+
+### Step 7 — Phase H (PPL gates, 6-12 hours wall-clock)
+
+After step 6 decision is final, run PPL gates on the chosen topology to validate v5 candidate stack:
+- Each production model × {canonical, kill-switch off, CPU1 3-flag opt-in (if shipping), EP-frontdoor (only Qwen3.6)}
+- 32-chunk WikiText-2 PPL via `llama-perplexity`
+- Bit-identical OR ≤1e-4 relative drift required for ship
+
+After Phase H: Phase I (v5 cherry-pick) → J (v5 audit) → K (shadow) → L (orchestration wiring) → M (rollout).
+
+## Branch state at wrap-up
+
+- `llama.cpp-experimental:feature/cpu-ep-inter-process` HEAD `8cb04da9d` — includes CPU2 mbind kill-switch (`af2e45de4`) + CPU1 P1.3 per-region mbind fix (`8cb04da9d`)
+- `epyc-root:main` HEAD `4a59ad5` — all P1-P4 progress + handoffs
+
+## What this session is NOT doing
+
+- NOT shipping v5 yet (user direction: exhaust ALL CPU optimization tracks first)
+- NOT touching orchestrator (Phase L blocked behind everything else)
+- NOT testing other quant types beyond what's already in production lineup
+
+## Key memory references for post-reboot agent
+
+- `feedback_canonical_baseline_protocol.md` — `taskset -c 0-95 -t 96 -fa 1` + zombie check + 460 GB/s aggregate BW reference
+- `feedback_llama_bench_fa_default.md` — ALWAYS pass `-fa 1` explicitly (default is 0)
+- `feedback_never_pipe_llama_output.md` — never pipe llama-cli output through grep/tail; use file redirection
+- `project_cpu_optimization_priorities_2026_04.md` — strategic context
+
+## Critical paths for post-reboot quick-start
+
+```bash
+# 1. Verify state
+numactl --hardware | head
+cd /mnt/raid0/llm/llama.cpp-experimental && git rev-parse --short HEAD  # expect 8cb04da9d
+pgrep -af "llama" | grep -v "grep\|zsh\|docker"
+
+# 2. Canonical baseline on Coder-30B (smoke test, ~1 min)
+LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib \
+  taskset -c 0-95 ./build/bin/llama-bench \
+  -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
+  -t 96 -fa 1 -p 0 -n 32 -r 2
+
+# 3. Compare to snapshot reference 43.57 ± 0.10 — if within ±2%, system OK
+```

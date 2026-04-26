@@ -444,3 +444,80 @@ The CPU2 lineage closes here for Q8 specifically. Production-side moves (Q4_K_M 
   - `0467a5c17` env-gated parallel RMS_NORM (default off, net-negative)
 
 All correct, env-gated for safety, PPL-preserved.
+
+## 2026-04-26 additions
+
+### Bottleneck class follows the QUANT, not the model size
+
+`perf stat` profile across 5 production models on EPYC 9655 NPS4 canonical baseline (`taskset -c 0-95 -t 96 -fa 1`, no env vars) — Phase D + P2 of the 2026-04-26 session:
+
+| Model | Quant | Size | t/s | IPC | CPU util | Cache miss | Class |
+|-------|-------|------|-----|-----|----------|------------|-------|
+| Qwen3-Coder-30B-A3B | Q4_K_M | 17.3 GiB | 44.0 | 0.38 | 46.6/96 | 22.5% | sync + cache stall |
+| **Qwen3.6-35B-A3B** | **Q8_0** | 34.4 GiB | **14.6** | **0.12** | **75.2/96** | 9.7% | **bandwidth-bound** |
+| Qwen3-Next-80B-A3B | Q4_K_M | 45.1 GiB | 23.3 | 0.41 | 41.7/96 | 16.6% | sync-bound |
+| REAP-246B-A35B | Q4_K_M | 138.3 GiB | 6.9 | 0.50 | 49.3/96 | 7.1% | sync-bound |
+| gemma-4-26B-A4B-it | Q4_K_M | 15.6 GiB | 25.0 | 0.23 | 59.0/96 | 13.9% | mixed |
+
+**Q8_0 → bandwidth-bound** (cores running, stalled on DRAM). Aggregate utilization ≈25-30% but per-NUMA-node BW likely saturated. The +17% EP win on Qwen3.6-35B-A3B is consistent with this (EP gives 2× DRAM channels).
+
+**Q4_K_M → sync-bound** (half the threads idle waiting at barriers). Aggregate BW only ~14% utilized; not bandwidth-limited. The 49/96 idle threads is **structural MoE top-K imbalance** — top-8 of 80 experts active per token creates uneven work distribution across CCDs, not a barrier-implementation defect.
+
+**Implication for software levers**:
+- Q8_0 frontdoor → EP (shipped, +17%) and L3aaN BIOS reboot (untested, BW-locality lever)
+- Q4_K_M lineup → no remaining software lever (CPU4 hierarchical sync was implemented and measured **net-negative**, see CPU4 entry below)
+
+### CPU4 hierarchical barrier on EPYC 9655 OpenMP — NEGATIVE RESULT
+
+Implemented per `handoffs/active/cpu-hierarchical-barrier.md`: extracted CPU1's existing 2-level sense-flip CCD-hierarchical barrier from `#ifndef GGML_USE_OPENMP` so it activates in production OpenMP builds. Per-thread state lookup via `tp->workers[omp_get_thread_num()]`.
+
+Build green, init logs confirm `[GGML_CCD_POOLS] enabled: 12 CCDs x 8 threads/CCD`. Measurements consistently net-negative:
+
+| Model | Config | Δ vs canonical |
+|-------|--------|----------------|
+| Coder-30B Q4_K_M | + GGML_CCD_POOLS=1 | -4.3% |
+| Coder-30B Q4_K_M | + GGML_CCD_POOLS=1 + OMP_PROC_BIND=close | -5.8% |
+| REAP-246B Q4_K_M | + GGML_CCD_POOLS=1 | -0.9% |
+| REAP-246B Q4_K_M | + GGML_CCD_POOLS=1 + OMP_PROC_BIND=close | -25% (catastrophic) |
+
+Reverted; design preserved for future reference. **libgomp's omp barrier is competitive with a custom 2-level CCD-aware barrier on this hardware**. The 22-30% cycles in libgomp.so are NOT pure waste — much is productive scheduling work that the OMP runtime does correctly. `OMP_PROC_BIND=close` itself regresses -7% on canonical (interferes with libgomp's NUMA-aware scheduling).
+
+### CPU1 NUMA_WEIGHTS instability isolated
+
+`GGML_NUMA_WEIGHTS=1` (set_mempolicy(MPOL_INTERLEAVE) before mmap) is the entire cause of the previously-observed CPU1-stack instability (±13-22 t/s std on Coder-30B; -15% on Qwen3.6-35B Q8_0). Per-flag isolation on Coder-30B Q4_K_M -r 5:
+
+| Config | t/s ± std | Verdict |
+|--------|-----------|---------|
+| canonical | 43.37 ± 0.10 | reference |
+| +CCD_POOLS only | 43.44 ± 0.06 | safe |
+| +NUMA_WEIGHTS only | 32.91 ± 22.18 | **UNSTABLE** |
+| +CCD_WORK_DIST only | 43.66 ± 0.18 | safe |
+| +BARRIER only | 43.88 ± 0.15 | safe |
+| 3-flag (no NW) | 44.15 ± 0.13 | **+1.8% stable** |
+
+Fix attempt at `llama.cpp-experimental:8cb04da9d`: replace process-wide `set_mempolicy` with per-region `mbind()` on the mmap region. **Correct scope fix but doesn't resolve the underlying instability** — `MPOL_INTERLEAVE` itself behaves unstably on shared file-cache multi-NUMA hosts under fragmented memory. `GGML_NUMA_WEIGHTS=1` is now deprecated for production. The 3-flag stack (no NW) is safe and delivers a small +1.8% on Coder-30B as opt-in.
+
+### "Regression" was a transient
+
+The historical 49.34 t/s on Qwen3-Coder-30B-A3B Q4_K_M (logged 2026-04-24 at HEAD `9e048fbc1`) is NOT reproducible today on the same source/binary. Same Apr-23-built binary measures 44.37 t/s today; a fresh-built binary at the same commit gives 44.29. **No source-level regression exists.** The 49.34 was a system-state spike (likely fresh post-reboot memory layout, favorable thermals, or page cache state) that doesn't generalize. 43-44 t/s is the stable canonical baseline at every commit from `9e048fbc1` through `8cb04da9d`.
+
+This finding extends to several other "wins" claimed during the CPU1 era: many were captured during fresh-NPS-state windows. Going forward, single-run t/s spikes should be cross-validated across multiple system-states (fresh-reboot vs warm vs fragmented) before being treated as repeatable optimizations.
+
+### CPU2 mbind kill-switch shipped
+
+`GGML_NUMA_REPACK_INTERLEAVE` env var (default ON, `=0` to disable) added at `llama.cpp-experimental:af2e45de4`. Gates the unconditional `mbind(MPOL_INTERLEAVE)` on CPU_REPACK buffers ≥1 MiB introduced by `e84a5c82f`. Default-on rationale: **+6% AND stabilizing on Q8_0 (CPU2 target)**, -0.9% wash on Q4_K_M.
+
+### `--numa distribute` paradox is mild today
+
+Historical 2026-04-25 claim: `--numa distribute` regresses Qwen3.6-35B Q8_0 from 14.69 → 9.93 (-32%). Today's measurement: -6% only (14.79 → 13.90). Like the Coder-30B "regression" above, the historical magnitude was a transient. Production guidance is unchanged: avoid `--numa distribute` on multi-NUMA MoE workloads. `--numa isolate` is genuinely pathological (12+ min on a 32-token decode); never use.
+
+### Sources (2026-04-26)
+
+- `progress/2026-04/2026-04-26.md` — full Phase A-G + P1-P4 narrative
+- `handoffs/active/cpu-kernel-env-flags-inventory.md` — 20 env knobs classified
+- `handoffs/active/cpu-hierarchical-barrier.md` — CPU4 design + negative-result data
+- `handoffs/active/cpu-shape-specialized-gemv-decode.md` (updated) — kill-switch addendum
+- `handoffs/active/nps-reboot-runbook.md` (updated) — L3aaN evaluation plan post-2026-04-26
+- `handoffs/active/cpu-optimization-thesis-pause-2026-04-26.md` — companion doc
+- `llama.cpp-experimental:af2e45de4` — kill-switch
+- `llama.cpp-experimental:8cb04da9d` — NUMA_WEIGHTS per-region mbind fix

@@ -8,26 +8,58 @@
 **Updated**: 2026-04-23 (coordinated pickup plan initiated — see §Pickup Sequence below)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
-## ⚑ START HERE if resuming after NPS4 reboot
+## ⚑ START HERE if resuming after L3aaN reboot (2026-04-26)
 
 **Entry point hierarchy for a fresh agent session:**
-1. `handoffs/active/master-handoff-index.md` (top-level — see row 27a/27 for CPU work)
-2. **this file** (`cpu-inference-optimization-index.md`) — all 14 CPU tracks + current status
-3. `handoffs/active/nps-reboot-runbook.md` — step-by-step post-reboot protocol
-
-**Pre-reboot baseline freeze** (for regression detection): `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/pre-nps4-freeze/SUMMARY.md`
+1. `handoffs/active/master-handoff-index.md` (top-level — see row 27/27b for CPU work)
+2. **this file** (`cpu-inference-optimization-index.md`) — CPU tracks + current status
+3. `handoffs/active/nps-reboot-runbook.md` — **the "L3aaN evaluation plan — 2026-04-26 update" section is the post-reboot procedure**, with pre-reboot snapshot, decision matrix, and step-by-step
+4. `progress/2026-04/2026-04-26.md` — full Phase A-G + P1-P4 narrative (today's session)
+5. `handoffs/active/cpu-kernel-env-flags-inventory.md` — every env var classified
 
 **State to re-establish immediately after reboot**:
-- `sudo sysctl kernel.perf_event_paranoid=1`
-- `sudo sysctl kernel.numa_balancing=0`
-- `echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled`
-- `echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag`
+- `numactl --hardware` → expect 12 NUMA nodes (was 4 under NPS4)
+- `cat /proc/sys/kernel/numa_balancing` → expect 0
+- `cat /sys/kernel/mm/transparent_hugepage/enabled` → expect `[always]`
+- `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor` → expect `performance`
+- (re-apply if any drifted)
 
 **Workspace** (untouched by reboot):
-- `llama.cpp-experimental` on branch `cpu-optimization/backlog-2026-04-23` (HEAD `9e048fbc1`)
-- Builds ready: `build-llamafile-on` (OMP production), `build-noomp` (with CPU1 Phase 1.0+1.1 code), `build-vnni-q8` (CPU2 falsified, safe to delete)
-- Microbenches at `/mnt/raid0/llm/cpu-tp-prototype/`: `tp_gemv_bench`, `tp_gemv_numa_bench`
-- libnuma-dev now installed in container (as of 2026-04-24) for Phase 1.3 work
+- `llama.cpp-experimental` on branch `feature/cpu-ep-inter-process` (HEAD `8cb04da9d`) — includes:
+  - `af2e45de4` CPU2 mbind kill-switch (`GGML_NUMA_REPACK_INTERLEAVE`, default ON)
+  - `8cb04da9d` CPU1 P1.3 per-region mbind fix (process-wide leak fix; underlying instability still present so flag remains deprecated)
+  - All CPU15 EP P3.2 work through `43c65b926`
+- Build: `/mnt/raid0/llm/llama.cpp-experimental/build/bin/` — last green at HEAD `8cb04da9d`
+- `LD_LIBRARY_PATH` MUST be prepended with `/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib` for benchmarks (system path has v4 production build first → "CPU backend not loaded" error otherwise)
+
+**Pre-reboot canonical baselines** (NPS4, HEAD `8cb04da9d`, `taskset -c 0-95 -t 96 -fa 1`, no env vars):
+
+| Model | Quant | t/s ± std |
+|-------|-------|-----------|
+| Qwen3-Coder-30B-A3B | Q4_K_M | 43.57 ± 0.10 |
+| Qwen3.6-35B-A3B | Q8_0 | 14.63 ± 0.01 |
+| Qwen3-Next-80B-A3B | Q4_K_M | 23.25 ± 0.08 |
+| REAP-246B-A35B | Q4_K_M | 6.85 ± 0.01 |
+| gemma-4-26B-A4B-it | Q4_K_M | 25.01 ± 0.08 |
+
+**EP frontdoor reference** (Qwen3.6-35B-A3B Q8_0 with `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1`): ≈17.18 t/s (+17%).
+
+**Post-reboot quick smoke-test command**:
+```bash
+LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib \
+  taskset -c 0-95 /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench \
+  -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
+  -t 96 -fa 1 -p 0 -n 32 -r 2
+# Expect 43.57 ± 0.10 t/s (within ±2% acceptable post-L3aaN)
+```
+
+**Decision criteria after post-reboot eval** (full plan in nps-reboot-runbook.md):
+- Each canonical baseline within ±2% of pre-reboot reference → no regression
+- Frontdoor EP improves over 17.18 t/s → L3aaN is a frontdoor win
+- Any production model regresses ≥5% → revert L3aaN
+- After decision: Phase H (PPL gates), then Phase I → J → K → L → M
+
+**Earlier session's pre-NPS4 baseline freeze** (still on disk, lower-priority reference): `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/pre-nps4-freeze/SUMMARY.md`
 
 **Tasks queued** (in TaskList): #12 (post-NPS4 re-bench + CPU1 decision), #13 (Phase 1.2 CCD work distribution), #14 (Phase 1.3 NUMA weight mbind), #11 (CPU4 sync primitive — NUMA-independent, can proceed regardless).
 
