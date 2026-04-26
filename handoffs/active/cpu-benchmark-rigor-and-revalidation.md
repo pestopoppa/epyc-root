@@ -50,12 +50,24 @@ Capture before each batch:
 - governor, SMT, and thread placement metadata
 - host load summary (`uptime`, top-level CPU/memory)
 
-### P3. Baseline policy
+### P3. Baseline policy (REVISED 2026-04-26 evening — historic baseline was sub-optimal)
 
-Canonical baseline for per-model comparisons:
-- `taskset -c 0-95 -t 96 -fa 1 -p 0 -n 32 -r 2`
-- no `--numa` flag unless explicitly testing that flag
-- no optimization env vars unless explicitly testing that flag
+**PRIMARY canonical** = `numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 --mmap 0 -r 3` (cold-cache, no warming dependency).
+
+**Why revised**: the historic `taskset -c 0-95 -t 96 -fa 1` baseline (mmap=1 default) is sub-optimal — it relies on file-mmap first-touch placement which scatters or clusters weight pages depending on which thread first faults each page. Many "+X% optimization wins" measured against that baseline collapse to noise when re-measured against the proper config. See compounding-matrix data 2026-04-26 (`data/cpu_optimization/2026-04-26-compounding/`):
+
+| Optimization | "Win" against historic mmap=1 | Real Δ on proper canonical |
+|---|---|---|
+| EP frontdoor on Qwen3.6-35B Q8_0 | +17% (14.63→17.18) | +1.6% (20.81→21.15) — noise |
+| EP regression on REAP-246B | −47% | 0% (5.94→5.92) — neutral |
+| CPU2 auto-mbind on Q8_0 | +6% | 0% — redundant with --interleave=all |
+| CPU1 3-flag on Coder-30B | +1.8% (warmed) | +0.6% — noise |
+
+**Secondary canonical** (production-relevant) = `taskset -c 0-95 -t 96 -fa 1 -p 0 -n 32 -r 3` (mmap=1, warmed). Required for direct comparison with current production deployment which uses mmap=1.
+
+**Two-baseline reporting requirement**: any new claim must report deltas against BOTH the proper cold canonical AND the warmed mmap=1 reference. Mismatches between the two indicate baseline-artifact wins.
+
+**Model-specific note**: proper canonical is dramatically better for Q8_0 (+44%) and gemma-26B (+39%); roughly equivalent for Coder-30B (−3%); WORSE for Next-80B (−12%) and REAP-246B (−13%). Production deployment should be model-aware — use whichever config wins per model. Don't default-to one canonical for production guidance without verifying per-model.
 
 Any claim compared to a non-canonical baseline must be labeled "non-canonical" and cannot drive production routing decisions.
 

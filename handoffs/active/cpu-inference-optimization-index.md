@@ -8,6 +8,44 @@
 **Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
+## ⚑⚑⚑⚑ COMPOUNDING-MATRIX FINDINGS 2026-04-26 evening — PRIOR WINS RE-MEASURED
+
+The user-requested "verify lever compounding" methodology check (2026-04-26 evening) **falsified the central production-push hypothesis**. Most prior "wins" collapse to noise when re-measured against the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all -t 96 -fa 1`) rather than the historic warmed mmap=1 reference.
+
+### Re-measured optimization deltas
+
+| Track | Historic claim (mmap=1 warmed ref) | Proper canonical Δ | Status |
+|---|---|---|---|
+| **CPU15 EP frontdoor (Qwen3.6 Q8_0)** | **+17%** (14.63→17.18) | **+1.6%** (20.81→21.15) | **DOWNGRADE — noise on proper baseline** |
+| **CPU15 EP regression on REAP-246B** | **−47%** (6.85→3.65) | **0%** (5.94→5.92) | **DOWNGRADE — was sub-baseline artifact** |
+| CPU2 auto-mbind on Q8_0 | +6% claimed | 0% — redundant with --interleave=all | DOWNGRADE — redundant |
+| CPU1 3-flag stack (Coder-30B Q4) | +1.8% (warmed mmap=1) | +0.6% | DOWNGRADE — noise |
+| CPU1 3-flag stack (Qwen3.6 Q8) | (small) | +1.7% | noise |
+| CPU2 AVX-512BW Q8_0 kernel itself | +31.8% @ 1t | unchanged — kernel does compute | Unchanged (still real for SIMD) |
+
+### The actual biggest win is the canonical config itself
+
+| Model | Quant | Proper canonical | Warmed mmap=1 ref | Δ |
+|---|---|---|---|---|
+| **Qwen3.6-35B-A3B** | **Q8_0** | **20.81** | 14.63 | **+44%** |
+| **gemma-4-26B-A4B** | **Q4_K_M** | **34.69** | 25.01 | **+39%** |
+| Qwen3-Coder-30B-A3B | Q4_K_M | 42.27 | 43.57 | −3% (~equivalent) |
+| Qwen3-Next-80B-A3B | Q4_K_M | 20.51 | 23.25 | −12% |
+| Qwen3-Coder-REAP-246B-A35B | Q4_K_M | 5.94 | 6.85 | −13% |
+
+For Q8_0 + gemma, **deploying `--mmap 0 + numactl --interleave=all` as the canonical config alone captures more than all the optimization code combined**. For Next-80B and REAP-246B the warmed mmap=1 path settles into better per-node distribution over time — proper canonical is not universally best.
+
+### Strategic implications
+
+1. **Most "production-shippable wins" were sub-baseline artifacts** — the EP code is bit-correct but provides no measurable throughput on the proper canonical for Qwen3.6 and is neutral on REAP-246B (rather than catastrophically regressing).
+2. **The L3aaN regression magnitudes** were also against the warmed mmap=1 baseline. Apples-to-apples NUMA-aware comparison: L3aaN best 29.42 vs NPS4 proper 42.27 = −30% on Coder. Revert decision unchanged but framing was inflated.
+3. **Production deployment should be model-aware** — use proper canonical for Q8_0 + gemma; warmed mmap=1 path for Next-80B + REAP-246B. The orchestrator's per-model config should encode this.
+4. **CPU24 attribution work simplifies**: there's no measurable EP regression on >150B to attribute when measured properly. The remaining open question is "what's the absolute ceiling for REAP-246B / what bottleneck class limits 5.94 t/s" rather than "why does EP regress".
+
+Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`. Documentation cascade: `feedback_canonical_baseline_protocol.md` (memory, extended in-place), `cpu-benchmark-rigor-and-revalidation.md` (CPU20 protocol revised), `large-moe-expert-parallelism.md` (CPU15 EP claim downgrade), `progress/2026-04/2026-04-26.md` (compounding section).
+
+---
+
 ## ⚑⚑⚑ POST-REVERT VERIFIED 2026-04-26 — NPS4 hardware restored, with caveats
 
 User completed BIOS revert to NPS4 on 2026-04-26 evening. Verification ran and surfaced **three critical findings** that refine all earlier 2026-04 CPU work. Read these before doing any benchmark.

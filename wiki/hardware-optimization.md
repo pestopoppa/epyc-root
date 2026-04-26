@@ -641,3 +641,36 @@ Confirmed by user 2026-04-26: the sysctl.d file is intact, `systemd-sysctl` repo
 - `memory/project_raid_numa_split_nps4.md` — RAID/NUMA split + recommended interleave config
 - `memory/feedback_numa_balancing_self_reset.md` — sysctl drift caveat
 - `memory/feedback_canonical_baseline_protocol.md` (extended) — cold-vs-warmed protocol distinction
+
+## 2026-04-26 late evening — Compounding matrix downgrades all prior CPU wins
+
+User-requested methodology check ("verify lever compounding"). Most prior optimization wins were sub-baseline artifacts. Full data: `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
+
+### Re-measured optimization deltas against proper cold canonical (`--mmap 0 + --interleave=all -t 96 -fa 1`)
+
+| Track | Historic (warmed mmap=1) | Proper canonical | Status |
+|---|---|---|---|
+| **CPU15 EP frontdoor (Qwen3.6-35B Q8_0)** | **+17%** (14.63→17.18) | **+1.6%** (20.81→21.15) | **DOWNGRADE — noise** |
+| **CPU15 EP regression on REAP-246B** | **−47%** (6.85→3.65) | **0%** (5.94→5.92) | **DOWNGRADE — was sub-baseline artifact** |
+| CPU2 auto-mbind on Q8_0 | +6% claimed | 0% (redundant with --interleave=all) | DOWNGRADE — redundant |
+| CPU1 3-flag stack (Coder-30B Q4) | +1.8% (warmed) | +0.6% | DOWNGRADE — noise |
+| CPU2 AVX-512BW Q8_0 SIMD kernel | +31.8% @ 1t | unchanged (kernel does compute) | unchanged |
+
+### The biggest practical win is the canonical config itself (no code)
+
+| Model | Quant | Proper canonical | Warmed mmap=1 ref | Δ |
+|---|---|---|---|---|
+| **Qwen3.6-35B-A3B** | **Q8_0** | **20.81** | 14.63 | **+44%** |
+| **gemma-4-26B-A4B** | **Q4_K_M** | **34.69** | 25.01 | **+39%** |
+| Qwen3-Coder-30B-A3B | Q4_K_M | 42.27 | 43.57 | −3% (~equivalent) |
+| Qwen3-Next-80B-A3B | Q4_K_M | 20.51 | 23.25 | −12% (warmed wins) |
+| REAP-246B-A35B | Q4_K_M | 5.94 | 6.85 | −13% (warmed wins) |
+
+Production deployment should be **model-aware**: `--mmap 0 + --interleave=all` is dramatically better for Q8_0 + gemma-26B; warmed mmap=1 path settles into better state for Next-80B + REAP-246B over time.
+
+### Strategic implications
+
+1. **Most "production-shippable" optimization gains were sub-baseline artifacts.** EP code is bit-correct (32-chunk WikiText-2 PPL bit-identical) but throughput-neutral on proper baseline. CPU2 auto-mbind is redundant with `--interleave=all`. CPU1 3-flag is noise.
+2. **CPU24 attribution scope simplifies**: there's no measurable EP regression on >150B to attribute. Open question becomes "what's the proper-canonical ceiling for REAP-246B (5.94 t/s)" rather than "why does EP regress".
+3. **CPU19 Tutel 2DH motivation evaporates**: was specifically to fix the >150B EP regression, which doesn't exist on proper canonical.
+4. **Production push roadmap simplifies**: the "+17% production gain" was largely illusory; the actual gain is the canonical config change (+44% on Q8_0, +39% on gemma) which requires no code, just per-model deployment config.

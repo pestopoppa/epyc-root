@@ -10,7 +10,7 @@ We went from "EP is the headline win" to a much more nuanced picture, and the co
 
 | Date | Claim | Status |
 |------|-------|--------|
-| 2026-04-25 | "EP +100% on Qwen3.6-35B-A3B, bit-identical PPL" | **Half right** — PPL is bit-exact, but +100% was vs `--numa distribute` baseline; vs honest `-t 96` baseline it's +17% |
+| 2026-04-25 | "EP +100% on Qwen3.6-35B-A3B, bit-identical PPL" | **Half right** — PPL is bit-exact, but +100% was vs `--numa distribute` baseline; vs honest `-t 96` baseline it's +17% — **AND on the proper cold canonical (`--mmap 0 + --interleave=all`) it's +1.6% (noise) — see compounding matrix 2026-04-26 evening** |
 | 2026-04-25 | "REAP-246B EP regresses because bandwidth-saturated" | **Wrong** — 145 GB/s used at baseline = 32% of 460 GB/s, not saturated |
 | 2026-04-25 | "EP wins for <50B class, fails for >150B" | **Partially wrong** — Qwen3-Coder-30B-A3B (worker_explore) regresses -10%, contradicting the size heuristic |
 | 2026-04-26 | "+25% on Qwen3-Coder-30B-A3B" | **Wrong baseline** — vs honest baseline, EP is -10% |
@@ -18,7 +18,7 @@ We went from "EP is the headline win" to a much more nuanced picture, and the co
 
 **Confirmed wins that survive scrutiny:**
 - **PPL bit-identical** on EP+drone+shard (32-chunk WikiText-2 on Qwen3.6) — the implementation is *correct*, just rarely *useful*
-- **Qwen3.6-35B-A3B at +17%** with honest baseline — the only meaningful production EP win
+- ~~**Qwen3.6-35B-A3B at +17%** with honest baseline — the only meaningful production EP win~~ — **DOWNGRADED 2026-04-26 evening**: the +17% was vs the warmed mmap=1 baseline. On the proper cold canonical (`--mmap 0 + --interleave=all`) EP delivers +1.6% (noise). The biggest practical gain on Q8_0 is the canonical config itself (+44% vs warmed mmap=1, no code).
 - **REAP-246B / M2.7 regress** — direction was right, framing (bandwidth) was wrong
 
 **Unexplained findings that need investigation:**
@@ -50,7 +50,7 @@ We went from "EP is the headline win" to a much more nuanced picture, and the co
 - **Priority**: medium — explains why our "EP wins" looked larger than they are; corrects production guidance
 
 ### H4: EP's value is genuine but narrow
-- **Evidence**: only Qwen3.6-35B-A3B benefits at +17% with honest baseline; PPL bit-exact preserved
+- **Evidence (DOWNGRADED 2026-04-26 evening)**: Qwen3.6-35B-A3B EP shows +17% only against the warmed mmap=1 baseline. On the proper cold canonical it's +1.6% (noise). PPL bit-exact preserved (the code is correct, the throughput claim was the artifact).
 - **Confidence**: high (after honest baseline correction)
 - **Implication**: production deployment of EP is for ONE model class, not the full MoE lineup
 - **Decision**: still worth shipping, but production wiring scope is narrower than originally thought

@@ -1,6 +1,16 @@
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **ACTIVE (Phase 3 complete, 2026-04-26)** — inter-process EP is a **narrow production win** (frontdoor-class Q8_0) with confirmed regressions on >150B class; root-cause attribution remains open under CPU24.
+**Status**: **ACTIVE (Phase 3 complete, 2026-04-26 evening) — EP wins DOWNGRADED to noise on proper baseline**. Inter-process EP is bit-correct but the historical "+17% on Qwen3.6-35B Q8_0" win was measured against the warmed mmap=1 reference; on the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all`) EP delivers **+1.6%** (noise). The "−47% regression on REAP-246B" was also a sub-baseline artifact — on proper canonical EP is **neutral** (5.92 vs 5.94, 0%). EP machinery is no longer a meaningful production gain on its own; production candidacy is now solely the canonical config change. See `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
+
+> **2026-04-26 evening compounding-matrix correction (load-bearing)**:
+>
+> | Claim | Historic (warmed mmap=1) | Proper canonical | Status |
+> |---|---|---|---|
+> | EP frontdoor on Qwen3.6-35B Q8_0 | +17% (14.63→17.18) | +1.6% (20.81→21.15) | DOWNGRADE — noise |
+> | EP regression on REAP-246B Q4 | −47% (6.85→3.65) | 0% (5.94→5.92) | DOWNGRADE — was sub-baseline artifact |
+> | EP +56% (no-drone+shard variant) on Qwen3.6 Q8 | (still bit-exact PPL) | not yet re-measured on proper baseline | needs re-measurement |
+>
+> The original Phase 3 result table below is preserved as historical record but should be read with the correction in mind. The CPU24 attribution work simplifies: there's no measurable EP regression on >150B to attribute when measured against the proper baseline. The remaining open question is "what's the ceiling for REAP-246B / what bottleneck class limits 5.94 t/s on proper canonical" — **not** "why does EP regress".
 
 Today shipped 10 commits on `llama.cpp-experimental:feature/cpu-ep-inter-process`. The mid-session OPENMP-guard finding (`e001b3eda`) revealed all 8 prior commits were preprocessor-stripped from the production build; subsequent debugging traced drone-mode PPL divergence to **EP top block ordered AFTER src1 quantization** — workers' uninitialized src1 was getting quantized into wdata before the EP memcpy delivered correct src1, so the late copy was a no-op on the path the expert compute actually used. **Commit `ff6833b19` moved the EP top block before the quantization loop with an interposing `ggml_barrier`**, fixing both drone mode and (by composition) drone+shard.
 
