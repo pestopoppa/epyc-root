@@ -40,7 +40,7 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 
 **Next session**: Phase 3.2(f) PPL gate on WikiText-2 (verify the bit-exact paths over a long corpus), Phase 3.2(d.1.d) debug Qwen3.5-family drone divergence (instrument graph topology compare), Phase 3.3 production wiring (`model_registry.yaml` + `orchestrator_stack.py` `large_moe_ep_pool` backend with model-class auto-selection between EP and single-instance).
 **Created**: 2026-04-24
-**Updated**: 2026-04-25 night — **PPL gate PASSED bit-identical** on Qwen3.6 with drone+shard (32 chunks WikiText-2). The earlier llama-cli "divergence" was sampling-argmax jitter on FP-rounding-equivalent logits, not real PPL drift. Drone mode IS deployable on Qwen3.5-family for the **+100% throughput**. Also added `GGML_EP_MASTER_ALL_NODES=1` for bandwidth-bound large MoE (master spans all 4 nodes, workers stay pinned) — architecture correct on REAP-246B but needs eager shard allocation to measure steady-state perf (lazy shard's 180 GiB memcpy dominates the run).
+**Updated**: 2026-04-26 — Cross-model sweep WITH HONEST BASELINES (`-t 96` no flags, not `--numa distribute`) revealed the earlier "+100%/+64%/+25%" claims were partly artifact of `--numa distribute` itself hurting these models. Honest results: **Qwen3.6-35B-A3B (frontdoor class) +17%**, Qwen3-Coder-30B-A3B (worker_explore) -10%, Qwen3-Next-80B-A3B at parity, REAP-246B/M2.7 regress. EP is a narrower production win than Round 1 numbers suggested — only the frontdoor benefits. Drone mode is still PPL bit-identical (32-chunk WikiText-2 confirmed yesterday).
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
