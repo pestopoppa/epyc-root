@@ -330,3 +330,13 @@ Files touched:
 - **[intake-454] "hermes-agent v2026.4.23 (v0.11.0)"** (`github.com/NousResearch/hermes-agent/releases/tag/v2026.4.23`)
   - Relevance: release introduces orchestrator-role subagents with cross-agent file-state coordination and `/steer` mid-run correction — direct primitives for a multi-proposer meta-harness where specialized roles (code-mutator, memory-designer, scaffold-evolver) run in parallel and share state via file locks.
   - Delta: evaluate whether the new orchestrator spawn depth + file-state coordination removes the need for our custom subagent wiring in the Tier-2b plan. If yes, the handoff can delegate coordination to hermes-agent and focus purely on the harness-search loop.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: production-grade composable hook surface that maps directly to the safety/audit middleware that PromptForge's Tier-2 code-mutation path needs. The framework defines `beforeToolCall` (preflight veto with `{ block: true, reason }`) and `afterToolCall` (field-replace-only result rewrite) as first-class hooks with **throw-isolation per call** — a throw inside `afterToolCall` becomes an error tool result for that one tool call instead of aborting the parallel batch (CHANGELOG #3084, 2026-04-17). 80+ contributors including Armin Ronacher (top-5).
+  - Key technique: **field-replace semantics for `afterToolCall`** — return any subset of `{ content, details, isError, terminate }` and only those fields are overwritten on the tool result; omitted fields keep their executed values. No deep merge. This is the natural composition shape for stacking unrelated middleware (audit · redaction · simplicity-criterion gating · code-syntax validation) without one layer knowing about the others.
+  - Delta from current approach: our PromptForge Tier-2 has the simplicity-criterion + AST-syntax-validate gates inlined into `dispatch_action()`. The pi-agent-core hook architecture suggests factoring those as discrete `before_tool_call` / `after_tool_call` handlers that compose cleanly when we add more gates (e.g., a Tier-2b code-trace inspection step, or per-mutation diff-size limits). Naming + factoring lift, not a port. Particularly relevant if Tier-2b's multi-proposer extension needs role-specific gates running in parallel.
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`

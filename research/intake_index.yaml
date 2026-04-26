@@ -19767,3 +19767,234 @@
     as CPU analogue, cache-aware routing, hierarchical KVCache tiering, early-rejection
     admission control. Lift as patterns into dynamic-stack-concurrency handoff and
     radix-attention chapter rather than rejecting for lack of cluster.
+
+- id: intake-473
+  arxiv_id: null
+  url: https://github.com/badlogic/pi-mono/tree/main/packages/agent
+  source_type: repo
+  title: '@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime with Tool Execution and Event Streaming'
+  authors:
+  - Mario Zechner (badlogic)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  key_claims:
+  - Stateful agent runtime built on @mariozechner/pi-ai (unified multi-provider LLM API — Anthropic, OpenAI, Google, etc.)
+  - Two-layer message model — flexible AgentMessage[] (with TypeScript declaration-merging for app-specific custom message types) is filtered/transformed via transformContext() then convertToLlm() before each LLM call
+  - Tool execution mode is configurable batch-wide — parallel by default with sequential preflight validation, falls back to sequential if any tool in the batch declares executionMode "sequential"
+  - Steering vs follow-up distinction — steer(msg) interrupts mid-tool-execution, followUp(msg) queues work after the current operation completes
+  - Tool results can include terminate=true to skip the automatic next-LLM-call (lets a tool act as a turn boundary)
+  - beforeToolCall preflight hook can block execution; afterToolCall postprocess hook can rewrite results before they are returned to the LLM
+  - streamProxy() and a low-level agentLoop()/agentLoopContinue() pair expose browser-friendly proxying and fine-grained control respectively
+  techniques:
+  - Two-stage message pipeline (transformContext → convertToLlm) decoupling agent-level state from per-call LLM payload
+  - Custom message types via TypeScript declaration merging (app-specific types filtered out at LLM boundary)
+  - Mixed parallel/sequential tool batching driven by per-tool executionMode declaration
+  - Steering/follow-up split (sync interrupt vs queued continuation) as distinct primitives in the agent API
+  - Terminate-hint protocol on tool results to short-circuit the agent loop
+  - Preflight/postprocess tool hooks (beforeToolCall / afterToolCall)
+  - Event-streaming barrier semantics — agent_end awaits subscriber settlement before resolving
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  contradicting_evidence:
+  - 'No public benchmark or task-success data for pi-agent-core itself; HuggingFace dataset (huggingface.co/datasets/badlogicgames/pi-mono) is raw session logs, not evals'
+  - 'New-contributor auto-close governance policy means absence of public design-flaw discussion is partly governance-induced, not a true silence'
+  - 'Project is 8 months old (since 2025-08-09); long-term maintenance commitment unproven despite high commit velocity'
+  verdict: adopt_patterns
+  ingested_date: '2026-04-26'
+  discovered_via: input
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - hermes-outer-shell.md
+    - meta-harness-optimization.md
+    - repl-turn-efficiency.md
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    intake_entries:
+    - intake-117
+    - intake-144
+    experiments: []
+  handoffs_updated:
+  - hermes-outer-shell.md
+  - meta-harness-optimization.md
+  - repl-turn-efficiency.md
+  - tool-output-compression.md
+  - context-folding-progressive.md
+  - hermes-agent-index.md
+  handoffs_created: []
+  novelty_justification: >
+    Initial scoring (novelty=low) was based on README-only reading and assumed
+    the patterns were undifferentiated from Vercel AI SDK / OpenAI Agents SDK
+    / deepagents. Source-level review shows the *named primitive set* is more
+    crisply factored than any of those — specifically (a) the explicit
+    transformContext + convertToLlm two-stage pipeline with declaration-merging
+    custom message types, (b) the steering vs follow-up split as named API with
+    one-at-a-time vs all queue modes, (c) afterToolCall field-replace semantics
+    with throw-isolation per CHANGELOG #3084, (d) terminate-unanimous-batch
+    rule. None are research-novel, but the documentation-and-architecture
+    novelty is genuinely above the comparator set.
+  relevance_justification: >
+    Initial scoring (relevance=low) assumed TS = irrelevant. Revised because
+    (a) the primitives port to Python in ~50 LOC each, (b) we have explicit
+    handoffs that need exactly these primitives but currently lack the names —
+    hermes-outer-shell (TS frontend), tool-output-compression (afterToolCall
+    semantics), repl-turn-efficiency (steering/follow-up distinction),
+    meta-harness-optimization (hook composition), context-folding-progressive
+    (transformContext per-turn invocation), (c) we *do* maintain a TS frontend
+    (Hermes outer shell, Package E streaming) where pi-agent-core could be a
+    literal drop-in. Not high — there is no immediate forcing function and our
+    orchestrator is Python — but medium because the primitive vocabulary is
+    immediately useful in design discussions on multiple active handoffs.
+  verdict_justification: >
+    Adopt patterns (not whole framework). Specific patterns to lift, in
+    priority order — (1) two-stage message pipeline (transformContext +
+    convertToLlm) with named custom-message-type discrimination, mapping to
+    epyc-orchestrator/src/orchestrator/; (2) beforeToolCall / afterToolCall
+    hooks with field-replace + throw-isolation semantics for clean composition
+    of security gates · audit · output redaction · compaction; (3) steering /
+    follow-up split as named API in our own request-handling layer; (4) per-
+    tool executionMode override + batch-fallback when we add tool concurrency;
+    (5) terminate-unanimous-batch rule when we add early-stop hints. Do NOT
+    adopt — Agent class wholesale (we have a different Python state model),
+    streamFn proxy injection (no SaaS-frontend trust boundary to defend),
+    declaration-merging mechanism (Python equivalent is just a discriminated
+    union dataclass).
+  notes: >
+    DEEP-DIVE 2026-04-26 (research/deep-dives/pi-agent-core-stateful-ts-runtime.md).
+    Initial intake materially mis-estimated credibility — the project is NOT a
+    single-author indie effort. 80+ contributors, 3,805 commits since 2025-08-09,
+    ~70 versions, formal CHANGELOG with issue traceback (closes #N), ~1:1
+    test/source ratio (2,048 LOC tests for 1,966 LOC src), and Armin Ronacher
+    (Flask, Sentry CTO) is a top-5 contributor with 55 commits. Project domain
+    is pi.dev (donated by exe.dev). Mario Zechner (badlogic) is the lead with
+    2,957 commits — well-respected developer (libGDX game framework) but
+    contrary to first-pass scoring this is genuinely a multi-contributor
+    project, not an indie effort. Sibling packages worth separately-scoped
+    intakes — pi-pods (vLLM deployment CLI, potentially relevant to gpu-
+    acceleration-path) and pi-coding-agent (45K-LOC consumer with real tool
+    implementations including bash, edit, edit-diff, find, grep, ls, read,
+    write, file-mutation-queue, truncate — separate from this framework
+    deep-dive). License MIT.
+- id: intake-474
+  arxiv_id: '2512.04695'
+  url: https://arxiv.org/abs/2512.04695
+  alternate_urls:
+  - https://openreview.net/forum?id=5HaRjXai12
+  source_type: paper
+  title: 'TRINITY: An Evolved LLM Coordinator'
+  authors:
+  - Jinglue Xu
+  - Qi Sun
+  - Peter Schwendeman
+  - Stefan Nielsen
+  - Edoardo Cetin
+  - Yujin Tang
+  venue: ICLR 2026
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - cost_aware_routing
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-04-26'
+  key_claims:
+  - Lightweight coordinator (≈0.6B LM + ≈10K-parameter head) orchestrates a pool of LLMs across multi-turn role assignments (Thinker / Worker / Verifier) without SFT or RL
+  - Separable CMA-ES outperforms RL, imitation learning, and random search for training the coordinator under high-dimensional + strict-budget constraints by exploiting block-ε-separability of the loss surface
+  - Hidden-state representations of the small LM provide rich input contextualization that the 10K head maps to agent-role logits (logits-to-agent mapping reads the penultimate token)
+  - Achieves 86.2% on LiveCodeBench (peer SOTA for coordination systems at submission time) and consistently outperforms individual models across coding, math, reasoning, and domain-knowledge benchmarks
+  - Demonstrates robust generalization to out-of-distribution tasks; skill acquisition is offloaded from the coordinator to the underlying agents
+  techniques:
+  - sep-CMA-ES (separable Covariance Matrix Adaptation Evolution Strategy) as black-box optimizer for routing/role-assignment heads
+  - Multi-turn role-typed delegation (Thinker / Worker / Verifier) over a fixed agent pool
+  - Logits-to-agent mapping via penultimate-token readout from a 0.6B LM
+  - Block-ε-separability exploitation in the loss landscape (diagonal covariance methods)
+  reported_results:
+  - 'LiveCodeBench: 86.2% (claimed new record at submission time for coordinator systems)'
+  - Outperforms individual constituent models on coding, math, reasoning, and domain-knowledge benchmarks
+  - Robust OOD generalization (specifics not in abstract)
+  contradicting_evidence:
+  - 'Author-acknowledged limitation (per ICLR 2026 PDF): gap between abstract reasoning and grounded execution — the coordinator can devise tool-using plans but cannot yet act on them; integration with code interpreters / APIs is future work'
+  - "LiveCodeBench leaderboard (2026-04) shows single-model SOTA at 91.7% (Gemini 3 Pro Preview) — Trinity's 86.2% is competitive among coordinator systems, not the absolute SOTA across all model classes; the comparison category matters"
+  - 'No public artifact (code/weights) verified at intake time — claims rest on reported numbers only'
+  - 'Paper is fresh (Dec 2025 arXiv, Apr 2026 last revision); no third-party replication yet'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 09-claude-debugger.md
+    handoffs:
+    - decision-aware-routing.md
+    - learned-routing-controller.md
+    - routing-intelligence.md
+    - routing-and-optimization-index.md
+    - meta-harness-optimization.md
+    intake_entries:
+    - intake-?  # xRouter (arxiv:2510.08439) — peer routing system trained with RL
+    - intake-?  # RouteLLM (arxiv:2406.18665) — peer binary routing
+    - intake-?  # Router-R1 (arxiv:2506.09033) — peer multi-round RL routing
+    experiments: []
+  handoffs_updated:
+  - decision-aware-routing.md
+  - learned-routing-controller.md
+  handoffs_created: []
+  novelty_justification: >
+    HIGH. Three orthogonal contributions vs prior intake (xRouter / RouteLLM /
+    Router-R1, all RL-based binary or end-to-end routers): (1) sep-CMA-ES
+    instead of RL/SFT for training the coordinator — an evolutionary-strategies
+    branch that the existing intake corpus does not cover for routing; (2)
+    multi-turn role-typed delegation (Thinker/Worker/Verifier over the SAME
+    agent pool) rather than single-shot model selection — closer to our own
+    multi-role orchestrator stack than to binary RouteLLM; (3) extreme
+    parameter budget (10K-parameter head over a 0.6B base LM, no SFT/RL needed)
+    that fits CPU-only training and inference budgets that intake-366
+    (decision-aware survey) flagged as the constraint disqualifying xRouter
+    and Router-R1.
+  relevance_justification: >
+    HIGH. Three active handoffs already explicitly compete in this design
+    space: decision-aware-routing.md tracks xRouter / RouteLLM / Router-R1
+    in its Research Context table — Trinity is a fourth peer with a
+    qualitatively different optimizer (ES vs RL); learned-routing-controller.md
+    runs a lightweight (≈200K-parameter, numpy-only) MLP head on top of an
+    embedding model — Trinity validates this lightweight-head architecture at
+    a slightly larger scale (0.6B LM + 10K head) and demonstrates that ES
+    training is viable when distillation labels are not available;
+    routing-intelligence.md is the umbrella for classifier-based routing
+    decisions and would benefit from the role-typed delegation pattern. CPU
+    feasibility is real: sep-CMA-ES on a 10K-parameter head is well within
+    EPYC's training envelope.
+  verdict_justification: >
+    new_opportunity. Specific opportunities, in priority order: (1) evaluate
+    sep-CMA-ES as an alternative training objective for the existing
+    learned-routing-controller MLP head when high-quality distillation labels
+    are unavailable — directly addresses the cold-start problem flagged in
+    learned-routing-controller P1; (2) extend the routing surface beyond
+    single-shot model selection to role-typed multi-turn delegation
+    (Thinker/Worker/Verifier) over our existing role pool — fits the
+    routing-intelligence Category-A input classifier; (3) read the
+    penultimate-token-logits-to-agent trick into our routing-classifier
+    architecture — gives a single-forward-pass routing head that piggybacks
+    on the embedding model already in use. Do NOT adopt the full Trinity
+    stack uncritically — the abstract-vs-grounded-execution limitation noted
+    by the authors is exactly the gap our orchestrator already addresses
+    (tool-grounded execution), so the integration target is the routing /
+    coordination LAYER, not the agent-execution layer.
+  notes: >
+    Two URLs supplied at intake refer to the SAME paper: arxiv:2512.04695 is
+    the preprint; openreview/forum?id=5HaRjXai12 is the ICLR 2026 venue
+    record (poster). Indexed under the arXiv URL; openreview URL recorded as
+    alternate. Authors include Edoardo Cetin and Yujin Tang (Sakana AI
+    affiliation, known contributors to evolutionary methods for ML). Code/
+    weights not published at intake time — verify availability before
+    proposing a concrete replication experiment. Phase-3 literature expansion
+    intentionally skipped this round: the immediate prior-art neighbours
+    (xRouter / RouteLLM / Router-R1) are already in the intake index, and a
+    deeper sep-CMA-ES literature dive should be a separate follow-up if the
+    user prioritises an ES-training spike for the routing controller.

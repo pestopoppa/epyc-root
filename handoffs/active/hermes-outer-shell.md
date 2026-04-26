@@ -340,3 +340,14 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Relevance: major release with expanded plugin surface — slash-command registration, direct tool dispatch, execution veto, result-transform hooks, shell-hook lifecycle callbacks, namespaced skill bundles. All directly relevant to Phase 2+ outer-shell plugin architecture and skills validation.
   - Key technique: namespaced skill bundles + shell-hook lifecycle enables packaging our `x_*` overrides as a discrete bundle instead of patching global config.
   - Delta: evaluate the plugin-veto + result-transform hooks as an alternative to the hard-fork-and-patch pattern we've been using for routing-API overrides. Potentially removes the need for maintaining hermes-agent fork diffs if the plugin surface is expressive enough.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: closest open-source TS analogue for what this handoff's outer-shell layer does. Stateful Agent class with tool execution, event streaming, custom message types via TS declaration merging, and a first-class `streamFn` injection point for proxy backends. 80+ contributors (Mario Zechner / badlogic + Armin Ronacher top-5), 3,805 commits, ~70 versions, formal CHANGELOG. Not an indie effort.
+  - Key technique: **two-stage message pipeline** — `transformContext()` operates on agent-level `AgentMessage[]` for pruning/injection, then `convertToLlm()` filters and shapes into the strict `user|assistant|toolResult` LLM payload. Custom message types extend a `CustomAgentMessages` interface via declaration merging and are filtered out at the LLM boundary. Cleaner than the tag-based shimming we currently do for routing-API overrides.
+  - Reported results: no benchmark suite for the framework itself; project publishes raw session logs at `huggingface.co/datasets/badlogicgames/pi-mono` as empirical surface.
+  - Delta from current approach: pi-agent-core is positioned as a *runtime layer* with no built-in tools, no memory tier, no plan-mode, and no MCP — explicitly excluded per project README. That maps almost exactly to what our outer-shell needs (Hermes provides the tools/memory; the shell handles transport + UX). Worth evaluating as a literal drop-in for Package E streaming, especially if we ever want to support a browser-only path (the included `streamProxy()` strips partial fields server-side and reconstructs client-side, which is the bandwidth-optimization shape we'd otherwise have to write ourselves). Not a fork/cherry-pick like the hermes-agent v0.11.0 work — this would be an *alternative* runtime backing the same UX. Pinned for design discussion only; no immediate action while Phase 2 streaming validation holds.
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`

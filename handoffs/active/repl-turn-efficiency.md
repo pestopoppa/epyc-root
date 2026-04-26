@@ -229,3 +229,17 @@ See: `progress/2026-04/2026-04-16.md` for full details.
 - **[intake-450] "Venice Skills — Agent Skills for the Venice.ai API"** (`github.com/veniceai/skills`)
   - Relevance: ≤500-line SKILL.md rubric with explicit "gotchas" section — directly applicable to the skill-crystallization output format.
   - Delta: adopt the authoring rubric as the canonical template when crystallizing repeat REPL flows into skills.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: ships **steering vs follow-up as two distinct named primitives** — exactly the user-typed-mid-response vs user-typed-after-response split that this handoff currently lacks vocabulary for. `steer(message)` injects before the next assistant turn (drained at every turn boundary while the agent is running); `followUp(message)` queues for after the agent would otherwise stop (drains only when no more tool calls remain). Two queues, not one. Preserves the ordering distinction the Omega problem is sensitive to.
+  - Key technique: each queue has a `mode: "all" | "one-at-a-time"` switch. Default `one-at-a-time` is a backpressure model — if the user types 4 messages while the LLM is mid-response, the agent absorbs one per turn rather than seeing all 4 jammed together at the next turn boundary. Order preserved, but agent isn't overloaded with bursty input. The mode is mutable at runtime via setter.
+  - Delta from current approach: this handoff's S3 contextual-suggestions work feature-flags the suggestion injection because it might worsen Omega; the pi-agent-core mode switch is the same problem framed as a first-class API knob rather than a hidden flag. Adopt the *vocabulary* (steer / follow-up / queue mode) in the orchestrator's request-handling layer even before any code port — naming alone clarifies whether a given REPL-turn change is steering (mid-flight) or follow-up (post-completion) and lets the Omega gate target the right one.
+  - Implementation refs (if porting):
+    - `agent.ts:113-144` — `PendingMessageQueue` with `drain()` semantics that differ by mode.
+    - `agent.ts:252-280` — `steer` / `followUp` / `clearSteeringQueue` / `clearFollowUpQueue` / `hasQueuedMessages` API surface.
+    - `agent-loop.ts:165, 218, 222` — twice-per-turn polling pattern that lets steer arrive without losing the in-flight tool batch.
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`

@@ -332,3 +332,16 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
 
 - Synergizes with [`context-folding-progressive.md`](context-folding-progressive.md) Phase 3c — anti-thrashing reduces oscillation-induced false positives in their monitoring telemetry. See that handoff's Phase 3c subsection for cross-ref.
 - Companion to [`hermes-agent-index.md`](hermes-agent-index.md) P2.6 (the pin bump that gives us side-by-side access to upstream patches).
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: defines `afterToolCall` as the canonical post-execute / pre-LLM-payload hook for tool-result rewriting. This is precisely the surface our compress_tool_output work needs to live on once it generalizes beyond a single point in the pipeline. Field-replace semantics let an `afterToolCall` return only the rewritten `content` (what the LLM sees) without touching `details` (what the UI sees), or vice versa — no deep merge, no coupling to tool internals.
+  - Key technique: **throw-isolation** — a throw inside an `afterToolCall` middleware becomes an error tool result for that one call only, batch continues. CHANGELOG #3084 (2026-04-17) shows this was a deliberate fix to an earlier "abort whole batch" bug. Means the compaction / fallback / language-aware-collapse logic can fail on a single output without taking down adjacent compressions in the same parallel batch — directly addresses the Phase 3d.4 "compressor 503/404 → main model" fallback story.
+  - Delta from current approach: our `scripts/utils/compress_tool_output.py` is currently invoked as a single point in the pipeline. The pi-agent-core hook architecture suggests factoring it as a composable middleware that other concerns (PII redaction, secret stripping, audit metadata injection) can stack onto without knowing about each other. Pairs cleanly with the upstream hermes v0.11.0 plugin-result-transform-hook surface tracked in 3d.x — same idea, different runtime.
+  - Implementation refs:
+    - `agent-loop.ts:617-642` — `afterToolCall` integration with field-replace semantics and throw-isolation.
+    - `types.ts:64-73` — `AfterToolCallResult` shape (`{ content?, details?, isError?, terminate? }`).
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`

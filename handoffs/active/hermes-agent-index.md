@@ -247,3 +247,17 @@ After completing any task:
   - Relevance: major release (1,556 commits / 761 PRs / 29 contributors since v0.9.0) — not a bugfix. Introduces orchestrator-role subagents with cross-agent file-state coordination, `/steer` mid-run correction, compressor anti-thrashing + language-aware + fallback chain, plugin execution-veto/result-transform hooks, transport-layer abstraction.
   - Key technique: cross-agent file-state locking for parallel subagent spawn; 5 new inference transports (Gemini CLI OAuth, NIM, ai-gateway, etc.); 12 MCP improvements including CDP raw passthrough.
   - Delta: we run a hermes-agent fork — this release is a major merge target. Individual patterns (compressor anti-thrashing, plugin hooks, /steer) map 1:1 to active handoffs (tool-output-compression, context-folding-progressive, meta-harness-optimization). MIT-licensed, no SaaS deps.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance to this index: pi-agent-core is the closest *runtime-layer* analogue to what our outer-shell layer (Path A) does — stateful Agent class, tool execution, event streaming, no built-in tools or memory tier (those are explicitly out of scope per project README, which positions it below a coding-agent harness). Maps to hermes-outer-shell update; ripples patterns into tool-output-compression, context-folding-progressive, repl-turn-efficiency, meta-harness-optimization.
+  - Key technique families lifted into child handoffs:
+    - **Two-stage message pipeline** (`transformContext` + `convertToLlm` with declaration-merging custom message types) → context-folding-progressive, hermes-outer-shell.
+    - **`beforeToolCall` / `afterToolCall` field-replace + throw-isolation** → tool-output-compression, meta-harness-optimization.
+    - **Steering vs follow-up split with `one-at-a-time` / `all` queue modes** → repl-turn-efficiency.
+    - **`streamFn` injection point + `streamProxy()` delta-only wire format** → hermes-outer-shell (drop-in candidate for Package E streaming).
+  - Source credibility: 80+ contributors (Mario Zechner / badlogic primary, **Armin Ronacher top-5**), 3,805 commits since 2025-08-09, ~70 versions, formal CHANGELOG with `closes #N`, ~1:1 test/source ratio. Not an indie project. Initial intake estimate (single-author indie) was wrong.
+  - Delta: no immediate cross-cutting action at the index level — concrete adoption decisions belong in each child handoff. This entry exists so a future agent landing on the index sees that pi-agent-core has cross-handoff implications and that the per-handoff lifts share a single deep-dive document (`research/deep-dives/pi-agent-core-stateful-ts-runtime.md`).

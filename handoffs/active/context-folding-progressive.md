@@ -1041,3 +1041,16 @@ Map Claude Code's 5-layer pipeline against EPYC L1-L5:
   - Relevance: upstream compressor gains smart collapse, dedup, anti-thrashing, language-respecting collapse, and fallback-to-main-model chain — direct primitives for progressive session compaction.
   - Key technique: **anti-thrashing** (prevents the "compress → uncompress → re-compress" oscillation that can degrade retention scores across folds); **language-aware collapse** (preserves code-block structure through compaction — relevant to L3/L4 where we currently risk collapsing code fences); **fallback chain** on compressor failure prevents context-corruption retries that would poison the fold history.
   - Delta from current approach: Phase 3c pending on our side. Evaluate whether to port upstream compressor patches vs. continue our independent implementation. Anti-thrashing in particular addresses a hypothesized failure mode at L5 (the still-pending level); language-aware collapse is a natural extension to the existing L3 sweet-spot compressor.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-473] "@mariozechner/pi-agent-core — Stateful TypeScript Agent Runtime"** (`github.com/badlogic/pi-mono/tree/main/packages/agent`)
+  - Relevance: defines a **per-turn `transformContext` hook** — `(messages: AgentMessage[], signal?: AbortSignal) => Promise<AgentMessage[]>` — that runs every turn, before the messages are converted to the LLM-strict payload shape. Operates at the agent-message level (custom types still in scope) so pruning/compaction logic doesn't need to know about LLM-specific roles. This is the natural shape for our progressive-folding work.
+  - Key technique: **two-stage pipeline** — `transformContext` (optional, agent-level, runs every turn) → `convertToLlm` (required, role-strict, LLM-payload-shaped). The split is exactly the boundary where progressive folding belongs: fold operates on agent state with full type information; the LLM sees the post-fold projection. Custom message types (notifications, artifacts, fold checkpoints) survive `transformContext` and are filtered/coerced only at the `convertToLlm` step.
+  - Delta from current approach: our progressive-folding code currently mixes "decide what to fold" (agent-level, semantic) with "render the payload the LLM sees" (LLM-strict, role-coerced). The pi-agent-core split is a clean factoring — pull our fold-decision logic into a per-turn `transform_context` step in the orchestrator and keep the LLM-shaping work in a separate stage. Naming + factoring lift; no code port required. Applies even before we tackle L5.
+  - Implementation refs:
+    - `agent-loop.ts:248-254` — the only place transformContext + convertToLlm are invoked, every turn.
+    - `types.ts:103-154` — contract docs for both hooks (must not throw, return safe fallback on failure).
+  - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`
