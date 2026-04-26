@@ -1,0 +1,133 @@
+# CPU Kernel Env-Flag Inventory — 2026-04-26
+
+**Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `43c65b926`)
+**Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15 work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
+
+## Inventory at a glance
+
+| Flag | Default | Class | File:line |
+|------|---------|-------|-----------|
+| `GGML_CCD_POOLS` | off | needs verification | ggml-cpu.c:3831 |
+| `GGML_NUMA_WEIGHTS` | off | needs verification | llama-mmap.cpp:471, llama-model-loader.cpp:1548 |
+| `GGML_CCD_WORK_DIST` | off | needs verification | ggml-cpu.c:1531, 3610 |
+| `GGML_BARRIER_LOCAL_BETWEEN_OPS` | off | needs verification | ggml-cpu.c:3606 |
+| `GGML_BARRIER_STRICT` | off | diagnostic | ggml-cpu.c:701 |
+| `GGML_NUMA_WARMUP_CCD` | off | diagnostic | llama-model-loader.cpp:1555, 1665, 1766 |
+| `GGML_NUMA_WARMUP_PHYS_PER_CCD` | off | diagnostic | llama-model-loader.cpp:1560 |
+| `GGML_NUMA_WARMUP_MIN_BYTES` | off | diagnostic | llama-model-loader.cpp:1585 |
+| `GGML_RMS_NORM_PARALLEL` | off | experimental (net-negative) | ops.cpp:3761 |
+| `GGML_GDN_K_PER_HEAD` | off | experimental (no current effect) | ops.cpp:11062 |
+| `GGML_EXPERT_CCD_SHARDING` | off | superseded | ggml-cpu.c:1986 |
+| `GGML_Q8_0_8X8` | off | opt-in optimization | repack.cpp:4944 |
+| `GGML_Q8_0_8X8_AVX` | off | opt-in optimization | arch/x86/repack.cpp:1550 |
+| `GGML_EP_ROLE` | off | EP control plane | ggml-ep-bootstrap.cpp:114 |
+| `GGML_EP_N_INSTANCES` | off | EP control plane | ggml-ep-bootstrap.cpp:124 |
+| `GGML_EP_NUMA_PIN` | off | EP control plane | ggml-ep-bootstrap.cpp:177 |
+| `GGML_EP_MASTER_ALL_NODES` | off | EP control plane | ggml-ep-bootstrap.cpp:184 |
+| `GGML_EP_SHARD` | off | EP feature | ggml-ep-shard.cpp:78 |
+| `GGML_EP_WORKER_DRONE` | off | EP feature | ggml-cpu.c:1671, 2259 |
+| `GGML_EP_MASTER_PARK` | off | EP feature | ggml-cpu.c:1688 |
+
+**Plus an unconditional behavior change** (no env gate, default-on at the source):
+
+- `repack.cpp` mbind(MPOL_INTERLEAVE) on every CPU_REPACK buffer ≥ 1 MiB on multi-NUMA hosts. Introduced by `e84a5c82f` for the CPU2 AVX-512BW kernel; activates regardless of whether `GGML_Q8_0_8X8_AVX=1` is set.
+
+## Detail per class
+
+### needs verification (CPU1 stack — formerly "production-ready")
+
+`GGML_CCD_POOLS`, `GGML_NUMA_WEIGHTS`, `GGML_CCD_WORK_DIST`, `GGML_BARRIER_LOCAL_BETWEEN_OPS` — together form what was treated through 2026-04-24 as the canonical CPU1 stack (production-recommended default-on). Phase C (2026-04-26) re-tested and found:
+
+- Std on Qwen3-Coder-30B-A3B Q4_K_M with stack: ±13-18 t/s (vs ±0.10 t/s canonical)
+- Mean on Qwen3.6-35B-A3B Q8_0 with stack: 12.39 t/s vs 14.63 canonical = **-15%**
+- Mean on Qwen3-Coder-30B-A3B Q4_K_M with stack: 40-42 t/s vs 43.57 canonical = **-3 to -7%**
+- Same instability at `acb1bbdd7` (CPU1 P1.4 land, no CPU2/CPU15 yet) — intrinsic to the stack itself
+- Historical "+17%" / "+140%" gains do not reproduce on a 2-day-uptime fragmented system
+
+**Implication**: these flags must NOT default-on in v5. The historical wins were captured during fresh-NPS-state windows. The implementation needs a robustness pass (likely around `set_mempolicy(MPOL_INTERLEAVE)` first-touch interaction with kernel page-allocator state) before being trusted as default behavior. Phase H (PPL gates) should pass — correctness was verified previously — but a perf-stability gate is now also required.
+
+#### Sub-flag detail
+
+- `GGML_CCD_POOLS=1` (ggml-cpu.c:3831): per-CCD threadpool partitioning. Creates one mini-threadpool per CCD (8-thread groups on EPYC 9655) instead of a single 96-thread pool.
+- `GGML_NUMA_WEIGHTS=1` (llama-mmap.cpp:471, llama-model-loader.cpp:1548): set_mempolicy(MPOL_INTERLEAVE) before mmap, suppress MAP_POPULATE so first-touch interleaves pages across NUMA nodes. Interaction with kernel page-allocator state is the suspected source of variance.
+- `GGML_CCD_WORK_DIST=1` (ggml-cpu.c:1531, 3610): expert work distribution within mul_mat_id is laid out per-CCD instead of flat 0..nth-1. Default flat is the safer baseline.
+- `GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (ggml-cpu.c:3606): use the CCD-local 2-level barrier between ops; default uses the global ggml_barrier. The 2-level barrier was introduced by Phase 1.0 (commit `a64d27dee`).
+
+### diagnostic (always-off, useful for debugging)
+
+- `GGML_BARRIER_STRICT=1` — forces strict serialization on the barrier path. Used to rule out memory-ordering bugs.
+- `GGML_NUMA_WARMUP_CCD=1` — explicit per-CCD warmup pass when loading a model. Useful for debugging the first-touch placement during MPOL_INTERLEAVE.
+- `GGML_NUMA_WARMUP_PHYS_PER_CCD=N` — number of physical cores per CCD to use during warmup (tuning).
+- `GGML_NUMA_WARMUP_MIN_BYTES=N` — minimum tensor size before per-CCD warmup applies.
+
+Recommendation: keep default-off, document.
+
+### experimental (default-off; falsified or net-negative)
+
+- `GGML_RMS_NORM_PARALLEL=1` (ops.cpp:3761): parallel inner-axis reduction in rms_norm. Tested net-negative when default-on. Keep gated for future research; do not default-on.
+- `GGML_GDN_K_PER_HEAD=N` (ops.cpp:11062): gated_delta_net K-axis sub-chunking. Tested net-zero (no current effect). Keep for future research.
+- `GGML_EXPERT_CCD_SHARDING=1` (ggml-cpu.c:1986): CPU15 Phase 1 intra-process expert sharding. Superseded by Phase 3 inter-process EP. Strip in v5 OR keep gated default-off for fallback.
+
+### opt-in optimization (CPU2)
+
+- `GGML_Q8_0_8X8=1` (repack.cpp:4944): activate the 8x8 Q8_0 repack scaffold. Default-off because the kernel only wins on 1-thread workloads (+31.8%) and is BW-saturated at 12-96t (+1-3%). Production benefit is narrow.
+- `GGML_Q8_0_8X8_AVX=1` (arch/x86/repack.cpp:1550): activate the AVX-512BW 8x8 GEMV kernel. Same default-off rationale.
+
+**Caveat**: even with both Q8_0_8X8 flags off, the repack.cpp mbind(MPOL_INTERLEAVE) introduced by `e84a5c82f` is unconditional. This is a separate behavior change that activates whenever a model touches CPU_REPACK on a multi-NUMA host. Q4_K_M models that bypass CPU_REPACK are unaffected; quantized 8x8 layouts (Q8_0 etc.) that use CPU_REPACK trigger it. Phase H PPL gates and Phase J v5 audit must verify this is correctness-neutral and perf-positive, otherwise gate it.
+
+### EP family (CPU15 Phase 3.2 inter-process)
+
+All seven flags default-off. Together control inter-process Expert Parallelism:
+
+- `GGML_EP_ROLE` ∈ `{master, worker}` — set automatically by ggml-ep-bootstrap; users typically don't set it.
+- `GGML_EP_N_INSTANCES=N` — total number of EP instances (master + workers).
+- `GGML_EP_NUMA_PIN=1` — pin each instance to its NUMA node (typically 1 instance per node on NPS4 = 4-way EP).
+- `GGML_EP_MASTER_ALL_NODES=1` — master keeps full DRAM bandwidth (no NUMA pinning); workers pin to their node.
+- `GGML_EP_SHARD=1` — each instance holds 1/N of expert weights (saves N× memory).
+- `GGML_EP_WORKER_DRONE=1` — workers skip non-MoE ops; master broadcasts src1+ids only.
+- `GGML_EP_MASTER_PARK=1` — master parker threads skip MoE expert loop to avoid oversubscription.
+
+**Phase 3.2 (g.1) state**: PPL bit-identical on Qwen3.6-35B-A3B Q8_0 with N=2 drone+shard. +17% honest baseline (vs canonical no-flags). Other production models (Coder-30B, Next-80B, REAP-246B, gemma-4-26B-A4B-it) regress or are at parity.
+
+**Recommendation**: cherry-pick all 7 flags into v5 default-off. Production routing wires them on for the frontdoor (Qwen3.6-35B-A3B) only, via orchestrator config (Phase L).
+
+## Cherry-pick plan for v5 (refines plan Phase I)
+
+### Definitely cherry-pick
+
+- All CPU1 commits **(default-off, NOT default-on)**: `a64d27dee`, `218325a14`, `61b00eb53`, `4f7f8bac4`, `04abecd13`, `d922314cc`, `0ade7bd4d`, `69b4c3fa4`, `9407a167e`, `315f891b0`, `c24a6c801`, `acb1bbdd7`. Stack remains gated for opt-in research/future work.
+- CPU2 AVX-512BW kernel `1d18efce3` (default-off via `GGML_Q8_0_8X8_AVX`).
+- CPU15 EP family `aa6476ab0` → `43c65b926` (default-off via env vars).
+- Diagnostic flags `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_*` (default-off).
+
+### Cherry-pick with modification
+
+- `e84a5c82f` (repack mbind): the unconditional mbind needs a kill-switch env var. Add `GGML_NUMA_REPACK_INTERLEAVE` (default ON for backward-compat with current behavior, but allow `=0` to disable). Phase H PPL gates verify correctness; if perf-neutral on the production lineup, leave default-on. If any regression observed, flip default-off.
+
+### Skip (revert chain)
+
+- `b2154f3f3`, `9ea5b40e8` (CPU1 op-fusion infra + Phase 2) — already reverted on the experimental branch by `138b26cd4`, `c34aac61b`. Skip the original commits AND their reverts; they cancel out.
+
+### Skip (research-only, default-off)
+
+- `ba1c23900` (gated_delta_net sub-chunking) — no current effect; not worth carrying.
+- `0467a5c17` (rms_norm parallel) — net-negative; not worth carrying.
+
+### Skip (superseded)
+
+- CPU15 Phase 1+2 intra-process: `8d0428a97`, `c98c0123c`, `9ccb00245` — superseded by Phase 3.2 inter-process EP.
+
+## Open questions for the audit gate
+
+1. **Why is the CPU1 stack unstable today?** Hypotheses: (a) kernel page-allocator state under fragmentation, (b) interaction with CPU2 mbind, (c) interaction with new threadpool init paths from CPU15. Phase D's bottleneck profile may shed light.
+2. **Is `e84a5c82f` mbind safe across architectures?** Q4_K_M models bypass CPU_REPACK, so they're unaffected. But what about K-quants on Zen 5 (Q5_K, Q6_K, Q8_0)? Need PPL gates.
+3. **Should `GGML_EP_*` ever default-on?** Recommendation: never. Always opt-in via orchestrator deployment.mode.
+
+## Cross-references
+
+- Plan: `~/.claude/plans/glistening-toasting-snail.md`
+- Companion: `handoffs/active/cpu-optimization-thesis-pause-2026-04-26.md`
+- Phase B+C results: `progress/2026-04/2026-04-26.md` (commit `1fd9c2c`)
+- CPU2 kernel handoff: `handoffs/active/cpu-shape-specialized-gemv-decode.md`
+- CPU15 EP handoff: `handoffs/active/large-moe-expert-parallelism.md`
+- CPU1 baseline analysis: memory `project_cpu1_phase13_v1.md`, `project_cpu1_software_levers_exhausted.md`
