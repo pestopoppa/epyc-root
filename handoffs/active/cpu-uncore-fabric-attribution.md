@@ -109,22 +109,39 @@ If the workload were perfectly parallel, 96 threads would deliver ~135 t/s. We g
 
 **Both models are NOT DRAM-saturated.** The earlier hypothesis that >150B class was "BW-saturated" is invalidated by the counter data — REAP uses only 26% of aggregate DRAM bandwidth.
 
-### Attribution
+### Attribution (REVISED post-perf-record 2026-04-26 evening)
 
-**`dominant_bottleneck = sync_imbalance + fabric_pressure (mixed)`**
+**`dominant_bottleneck = compute_kernel (memory-stalled INSIDE compute path)`**
 
-Evidence:
-1. Low IPC (0.19-0.39 vs Zen 5 peak 5) — cores stalled on memory accesses despite low BW utilization → individual access latency is the killer, not aggregate BW
-2. 4.27× scaling on 96 threads for REAP — sync overhead claims most of the parallelism
-3. 20-26% cross-NUMA fills — fabric-traversal latency adds to per-access cost
-4. 80% local fills — the L1-L3 hierarchy is well-utilized; the bottleneck is the 20% that has to traverse fabric
+Original "sync_imbalance" attribution was WRONG. perf-record hot-function profile on REAP-246B at 96t (`01_perfrecord_hotfunc.sh`, 25-second decode-phase capture, 160k samples) shows:
 
-### Implications for downstream tracks
+| Symbol | % of samples |
+|--------|-------------|
+| `ggml_gemv_q4_K_8x8_q8_K` (compute kernel) | **64.37%** |
+| `ggml_vec_dot_q6_K_q8_K` (compute kernel) | **15.64%** |
+| libgomp internal sync at offset 0x26580 | **15.50%** |
+| `ggml_compute_forward_flash_attn_ext` | 0.73% |
 
-- **CPU19 Tutel 2DH** (was deprioritized after compounding-matrix): the technique itself (intra-CCD aggregate first, then inter-NUMA exchange to reduce sync points/token) has **independent merit** beyond EP. Could apply to standard MoE expert dispatch sync pattern. Re-evaluate: CPU19 keeps research-grade priority but is not urgent.
-- **CPU22 dynamic load balancing**: still gated on CPU21 results, but the ~96% parallelism loss to sync overhead suggests STATIC partitioning is leaving substantial throughput on the table. Likely to be valuable.
-- **CPU21 OpenMP runtime matrix**: the 4.27× scaling (vs ideal 96×) is exactly what runtime-layer tuning should attack. Higher priority than originally framed.
-- **CPU15 EP**: was supposed to fix sync via inter-process coordination. On proper canonical EP is neutral (compounding-matrix). The sync-overhead problem is real but EP isn't the right tool for it.
+**80% of cycles are in compute kernels; only 15% in OpenMP sync.**
+
+The 4.27× scaling on 96 threads (vs ideal 96×) is NOT primarily sync overhead — it's per-thread bandwidth contention inside the compute kernels. With 96 threads sharing 460 GB/s aggregate, per-thread BW = 4.79 GB/s vs single-thread effectively-unlimited (single-thread saturates its local channel at ~30-40 GB/s). Cores spend 80% of cycles INSIDE the gemv loop but stalled on memory loads — perf-record sees them in the kernel's IP range, but the IPC counter (0.39) reveals they're not actually retiring instructions.
+
+**Refined evidence:**
+1. **80% time in compute kernels** (perf record) — kernels themselves are the wall-time consumer
+2. **IPC 0.39** (perf stat) — but kernels are memory-stalled, not compute-saturated
+3. **15% libgomp time** — real sync overhead, but secondary to compute-stall
+4. **20% cross-NUMA fills** — adds to per-access latency (within compute path)
+5. **26% aggregate BW used** — NOT BW-saturated at the system level, but per-thread BW share is what bottlenecks each core's compute
+6. **CPU21 affinity tuning gives +3-8%** — this is real but small; consistent with the secondary role of sync overhead
+
+### Implications for downstream tracks (UPDATED post-perf-record + CPU21)
+
+- **CPU19 Tutel 2DH**: motivation FURTHER weakened by perf-record. Sync is only 15% of REAP-246B cycles. Even if Tutel 2DH halved that overhead (best case), throughput would gain at most ~7-8%. Keep stub for archival; **DON'T pursue without new evidence**.
+- **CPU22 dynamic load balancing**: re-scoped. The "static partitioning leaving 96% on the table" framing was wrong. Dynamic balancing might still help by keeping all 96 threads productively in compute (instead of some waiting at barriers), but the gain ceiling is bounded by the 15% sync-overhead share. **Modest priority** — gated on CPU21 results AND new evidence that thread imbalance is significant.
+- **CPU21 OpenMP runtime matrix**: COMPLETE 2026-04-26 evening. Universal +3-8% via `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`. Real win but smaller than originally projected; consistent with sync being a secondary (15%) bottleneck.
+- **CPU15 EP**: throughput-neutral on proper canonical (compounding-matrix). EP code is bit-correct but doesn't address the actual bottleneck (compute kernels memory-stalled).
+- **CPU2 SIMD kernel work**: REVALIDATED PRIORITY. Since 80% of cycles ARE in compute kernels (gemv + vec_dot), faster SIMD compute = real wall-time reduction. Q6_K + Q5_K extensions (Tier 1.6) directly attack the dominant cycle consumer.
+- **Memory-latency-hiding research**: the bottleneck is per-thread DRAM access inside compute kernels. Possible levers (research-grade): software prefetching tuning, K-block sizing in 8x8 kernel, smaller working sets per thread.
 
 ### Updated guidance for CPU15 / L3aaN / runbook
 
