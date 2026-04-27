@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-04-19
-**Sources**: 31 documents
+**Last compiled**: 2026-04-27
+**Sources**: 33 documents
 
 ## Summary
 
@@ -41,6 +41,8 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **Simula's double-critic rejection sampling addresses sycophancy bias in LLM-as-judge scoring.** Instead of a single "Is this correct?" assessment, two independent queries are made: "Is this CORRECT?" and "Is this INCORRECT?". Accept only when critics agree (Critic 1 YES, Critic 2 NO). A sycophantic model saying "yes" to both triggers rejection. Empirical validation on MATH: positive lift exists whenever `p(accept|correct) > p(accept|incorrect)`. LEXam shows correct failure mode: 61% rejection rate when teacher accuracy is only 57%. Cost is 2x judge inference per scored item. Applicable to Q-Scorer quality verification with prompt-only changes. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
 - **Simula's calibrated Elo complexity scoring enables principled difficulty stratification.** Batch-wise pairwise scoring aggregated into per-sample Elo ratings provides calibrated, cross-dataset complexity comparisons. Validation: model-assigned Elo aligns with human-annotated complexity labels on MATH (5-level) and Global MMLU (education levels). Rejected samples have systematically higher Elo scores than accepted ones. For EPYC: a `complexity_scorer.py` utility could stratify any benchmark suite by difficulty band, enabling adaptive testing that starts at medium difficulty and escalates/de-escalates based on model performance. [simula-synthetic-data-generation.md](../research/deep-dives/simula-synthetic-data-generation.md)
 - **New model quality benchmarks reveal critical serving infrastructure gaps (2026-04-19).** Five models (M2.7, Qwen3.6, SG4-31b, SG4-26b-MM, SG4-26b-Q4KM) required iterative debugging: Gemma4 needed `use_chat_api + repeat_penalty 1.05 + reasoning off + KV q8_0`; Qwen3.6 entered `<think>` loops until `use_chat_api + reasoning off`; M2.7 needed `--jinja` for correct template (37% training data leakage without it). SG4-26b Q4KM proved irrecoverable (16.2%) and was deprecated. The benchmark infrastructure gained `--all-suites`, `--spec-type` passthrough, binary peak search for lookup_ngram sweeps, and per-model `disable_thinking`/`repeat_penalty` support. [progress/2026-04-19](../progress/2026-04/2026-04-19.md)
+- **Context-regime coverage is now mandatory before any class-level CPU optimization conclusion (CPU23 protocol)**. A track may not claim closure or class-wide deployment guidance unless 2K/8K/32K + long-prompt-mid-stream interference were all measured AND the conclusion direction is stable across regimes (or explicitly split by regime). Prevents decode-only overgeneralization. The CPU23 sweep on `-pg pp,tg` mode (combined prefill + 32-token decode at proper canonical: `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active numactl --interleave=all -t 96 -fa 1`) closed the methodology gate for the BW-bound (Q8_0 frontdoor) and sync-bound (Q4_K_M Coder-30B) class proxies on 2K/8K/32K. [cpu-context-regime-coverage.md]
+- **Apples-to-apples build flags are required for any bit-exactness validation**. A 0.116-PPL chunk-1 discrepancy that initially looked like a NUMA_MIRROR Phase 1a regression was traced to pure `-march=znver5` codegen drift in fp ops vs an unflagged `-O3` build. Building a third `build_znver5/` baseline (znver5 only, no MIRROR) restored bit-exactness. The lesson: any baseline comparison for a feature flag MUST hold all OTHER compile flags constant. PPL determinism is real (re-running the same build twice produces byte-identical output), so any non-zero delta between two builds points to a real code/codegen difference, but that difference may not be the feature you intended to test. [progress/2026-04-27]
 
 ## Actionable for EPYC
 

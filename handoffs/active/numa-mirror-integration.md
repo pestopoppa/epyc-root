@@ -1,17 +1,39 @@
 # NUMA_MIRROR Fork Integration — vproxy-tools/llama.cpp port
 
-**Status**: Phase 0a+0b COMPLETE 2026-04-27 — accessor refactor landed, ~164 refs migrated across 11 files, PPL bit-exact. Phase 1 (actual per-node mmap path) is the next work block.
+**Status**: Phase 0a+0b+1a+1b COMPLETE 2026-04-27 — accessor refactor + per-node pointer plumbing + TLS setter all landed and bit-exact. Phase 1c (actual per-node anon-mmap+mbind, buffer-level) is the next work block.
 
 **Commits**:
 - `9b1dbf4dd` (Phase 0a): tensor_data()/tensor_set_data() accessor in ggml.h + 97 refs migrated in 5 read-only files (ggml.c, ggml-cpu.c, amx.cpp, mmq.cpp, kleidiai.cpp)
 - `b9920cc44` (Phase 0b): 67 refs migrated in 6 files with writes/chained-pointers (ggml-backend.cpp, ggml-alloc.c, llama-model-loader.cpp, llama-kv-cache.cpp, llama-quant.cpp, ggml-backend-meta.cpp)
+- `ca39cb80a` (Phase 1a): `data_per_node[GGML_NUMA_MAX_NODES]` field in `struct ggml_tensor`; `tensor_data()` reads `data_per_node[ggml_current_numa_node]`; `tensor_set_data()` writes ALL N identically; new `tensor_set_data_per_node(t, node, p)` API; `ggml_new_tensor_impl` populates the array. Built with `-DGGML_NUMA_MIRROR=4`, all replicas identical = no behavior change.
+- `90a17af62` (Phase 1b): TLS setter at graph-compute entry. Each thread calls `getcpu(2)` after `set_numa_thread_affinity()` and writes the resulting node index to `ggml_current_numa_node`.
 
-**Validation**: PPL = 9.8567 ± 1.23745 (bit-exact, identical to pre-migration baseline). Coder-30B Q4_K_M throughput: 48.42 ± 0.06 (within noise; slight improvement possibly from accessor inlining).
+**Validation**:
+- Phase 0a/0b: PPL = 9.8567 ± 1.23745 (bit-exact, identical to pre-migration baseline). Coder-30B Q4_K_M throughput: 48.42 ± 0.06.
+- Phase 1a: PPL chunks 1-12 on Coder-30B Q4_K_M: chunk1=7.4537, chunk12=11.1215, final=11.1215. **Identical byte-for-byte** to a clean `-march=znver5` non-mirror build (apples-to-apples baseline). Earlier "regression" vs the unflagged build was pure `-march=znver5` codegen drift in fp ops, not a mirror bug.
+- Phase 1b: re-validated bit-exact after TLS setter wiring (chunk1=7.4537, final=11.1215, byte-identical to Phase 1a).
 
 **Files DEFERRED to Phase 0c**:
 - `ggml/src/ggml-opt.cpp`: type collision on `ggml_opt_dataset.data` (NOT a ggml_tensor). Blanket sed unsafe; needs per-line distinction between tensor accesses and dataset member accesses.
 
-**Phase 1 next** (actual mmap-mirror path). Implementation NOT YET STARTED.
+**Phase 1c next** — the actual per-node weight replication. Implementation NOT YET STARTED.
+
+## Phase 1c design
+
+The naive vproxy approach mirrors only the file mmap. Our build uses CPU_REPACK heavily — for Coder-30B Q4_K_M the model is 17 GB total, **13.4 GB of which lives in the CPU_REPACK buffer** (the AVX-512BW 8x8 interleaved layout produced by CPU2's repack path), with only 4.3 GB still backed by the original mmap. A mmap-only mirror leaves 79% of weight reads cross-NUMA and would not deliver the +25% gate.
+
+Phase 1c therefore needs **buffer-level** mirroring, not just mmap-level:
+
+1. `src/llama-mmap.cpp`: when `GGML_NUMA_MIRROR=N` is set, after the primary `mmap(MAP_SHARED, fd)` succeeds, allocate N anon mmaps of the same size (each `mbind`'d to its target node, no hugepages required), and memcpy the file contents into each. Expose `llama_mmap::addr_per_node(int n)`.
+2. `ggml/src/ggml-backend.cpp` / `ggml-cpu` buffer allocation: when MIRROR is on, the CPU backend buffer ctor allocates N replicas (`mmap(MAP_ANONYMOUS) + mbind`), and after the buffer is filled (post-load + post-repack), bulk-copies the primary buffer to each replica.
+3. `src/llama-model-loader.cpp` (and CPU_REPACK fill path): for every tensor, after `tensor_set_data(cur, primary)`, also `tensor_set_data_per_node(cur, n, replica_n + offs)` for each n.
+4. KV/scratch/activation buffers stay on the single-pointer fallback (set via `tensor_set_data` which writes all N identically — effectively the non-mirrored path).
+
+Hugepages are NOT provisioned on this host (`HugePages_Total = 0` for both 2 MB and 1 GB sizes, all 4 nodes). Phase 1c will use `mmap(MAP_ANONYMOUS|MAP_NORESERVE) + mbind(MPOL_BIND)` on regular 4 KB pages; THP will opportunistically promote to 2 MB. This is the "no-reboot" path. A later Phase 1d can switch to 1 GB hugepages if a reboot becomes acceptable.
+
+Memory budget reminder: REAP-246B Q4_K_M = 138 GB × 4 = 552 GB; Coder-30B Q4_K_M = 17 GB × 4 = 68 GB. All fit.
+
+Estimated effort for Phase 1c: ~1 engineer-day (focused). Phase 1c will land as one or two commits behind the same `GGML_NUMA_MIRROR=N` compile flag.
 **Priority**: **HIGH** — largest remaining concrete throughput lever after CPU1 software exhaustion + CPU2 SIMD work + CPU21 OMP affinity. Per CPU24 perf-record finding (compute kernels memory-stalled INSIDE on cross-NUMA loads at 96 threads with 4.8 GB/s/thread BW share), per-NUMA-node weight replication is the path to lift the per-thread BW ceiling.
 **Categories**: hardware_optimization, inference_serving, numa_optimization
 **Workstream**: Inference Acceleration → CPU Optimization

@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-26
-**Sources**: 24 documents
+**Last compiled**: 2026-04-27
+**Sources**: 27 documents
 
 ## Summary
 
@@ -31,6 +31,12 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **192-thread pytest is catastrophic**: Each worker loads its own embedding models (~3 GB), and 192 workers exhaust 1.13 TB RAM. Fixed with lazy model loading in test mode, memory guard at 100 GB minimum free, and blocking pytest -n auto. [02-storage-safety.md]
 - **Comprehensive spec param sweep (1,290 measurements) overturned multiple prior assumptions**: Tree speculation helps Q4KM coders (was assumed harmful), hurts 480B MoE (-19%, was assumed beneficial), and registry throughput values were 2.3-3.6x inflated from warm-cache measurements. Never trust single-run benchmarks. [progress/2026-03-21]
 - **Prompt lookup (--lookup) segfaults on Qwen3.5 hybrid SSM models** after 1-3 prompts due to prompt cache + recurrent state corruption. moe6-only is stable. Do not use until fixed upstream. [numa-orchestrator-deployment.md]
+- **NUMA_MIRROR per-node weight replication is the largest remaining lever after CPU1+CPU2+CPU15 software exhaustion**. CPU24 perf-record showed 80% of cycles inside compute kernels with IPC 0.39 (vs Zen 5 peak ~5) — cores are physically inside dot loops but stalled waiting for DRAM, with per-thread BW share at 96t = 4.79 GB/s of 460 GB/s aggregate. Cross-NUMA reads cost 150-250 cycles each. Per-NUMA-node weight replication (vproxy-tools fork, GGML_NUMA_MIRROR) eliminates cross-NUMA traffic. Reported upstream gains: +62% on QwQ-32B FP16, +34% on DeepSeek-R1 671B Q8 (single-socket EPYC 9275F, 2-node). Phase 2 gate for our fork: ≥+25% on Coder-30B over 47.98 t/s (~60 t/s target). [numa-mirror-integration.md, cpu-uncore-fabric-attribution.md]
+- **NUMA_MIRROR Phase 0/1a/1b framework is landed and bit-exact** on `feature/cpu-ep-inter-process` of llama.cpp-experimental. The migration involved 164 `tensor->data` references across 11 files moved to the `tensor_data()`/`tensor_set_data()` accessor (commits `9b1dbf4dd`, `b9920cc44`); `struct ggml_tensor` gained `data_per_node[GGML_NUMA_MAX_NODES]` (commit `ca39cb80a`); a TLS setter (`getcpu(2)` → `ggml_current_numa_node`) lands at graph-compute entry (commit `90a17af62`). PPL chunks 1-12 on Coder-30B Q4_K_M are byte-identical to a `-march=znver5` baseline build (chunk1=7.4537, final=11.1215). [numa-mirror-integration.md, progress/2026-04-27]
+- **A mmap-only mirror is insufficient for our build** — for Coder-30B Q4_K_M, ~17 GB total but **13.4 GB lives in CPU_REPACK** (CPU2's AVX-512BW 8x8 interleaved layout) and only ~4.3 GB stays in the original mmap. Phase 1c must mirror at the **buffer** level — both the file mmap AND the CPU_REPACK output — or 79% of weight reads stay cross-NUMA and the +25% gate fails. [numa-mirror-integration.md]
+- **Hugepages are NOT required for NUMA_MIRROR** on this host. `HugePages_Total = 0` for both 2 MB and 1 GB sizes across all 4 nodes. The Phase 1c path uses `mmap(MAP_ANONYMOUS) + mbind(MPOL_BIND)` on regular 4 KB pages with THP opportunistic 2 MB promotion — no kernel reboot needed. A later Phase 1d can switch to 1 GB hugepages if a reboot becomes acceptable. [numa-mirror-integration.md]
+- **Always compare apples-to-apples build flags when validating bit-exactness**. A 0.116-PPL chunk-1 discrepancy that initially looked like a NUMA_MIRROR Phase 1a bug turned out to be pure `-march=znver5` codegen drift in fp ops vs an unflagged `-O3` build. Building a third `build_znver5/` (znver5 only, no MIRROR) restored bit-exactness. Lesson: any baseline comparison for a feature flag must hold all OTHER compile flags constant. [progress/2026-04-27]
+- **CPU2 Q6_K AVX-512BW 8x8 kernel + T1 prefetch landed** (CPU2 Sessions 16-18). Q6_K SIMD kernel body (~95 lines of intrinsics) using `block_q6_Kx8` interleaved layout, validated bit-exact PPL = 9.8567. Q6_K with `_MM_HINT_T1` prefetch on ql/qh/q8.qs/scales = +0.7%. Q4_K T1 prefetch tested and **reverted** (−4%) — Q4_K block layout has tighter cache footprint that doesn't benefit from prefetch. Lesson: prefetch effectiveness is per-quant; never assume a pattern that works for Q6_K transfers to Q4_K. [cpu-shape-specialized-gemv-decode.md]
 
 ## Actionable for EPYC
 
