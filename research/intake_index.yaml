@@ -20526,3 +20526,88 @@
   novelty_justification: Context Unrolling is presented as a new technique for explicit cross-modal reasoning in unified omni models; not previously indexed in our intake or chapters. Paper itself is brand new (April 23, 2026) and conceptually distinct from prior unified omni work like Qwen3.5-Omni (intake-432) which focused on streaming speech (ARIA) rather than cross-modal reasoning unrolling.
   relevance_justification: EPYC active focus is CPU inference, NUMA optimization, speculative decoding, MoE/quantization, routing, agent architecture, and SSM-hybrid models. This paper is a generation-side multimodal architecture (text+image+video+3D) with no CPU-inference, GGUF, or open-weight signals on the abstract page. Multimodal is a listed focus area but our pipeline (multimodal-pipeline.md) is constrained to vision/audio integration via llama.cpp forks; a research-only training-time technique without weights or inference-side optimization has no path to adoption.
   verdict_justification: 'not_applicable: (1) abstract page provides no quantitative results to evaluate, (2) no mention of open weights, GGUF, or any inference-time mechanism we could port, (3) Context Unrolling is a training/reasoning-recipe contribution at the model-architecture level rather than an inference optimization, (4) directly parallels intake-432 (Qwen3.5-Omni) where the same lab-bias / API-only / no-CPU-path pattern led to non-adoption. Worth re-checking if weights or a GGUF derivative ship later — track via the existing multimodal-pipeline.md monitoring loop alongside Qwen3-Omni-30B-A3B.'
+- id: intake-485
+  arxiv_id: null
+  url: https://apxml.com/courses/practical-llm-quantization/chapter-1-foundations-model-quantization/symmetric-asymmetric-quantization
+  source_type: blog
+  title: Symmetric vs Asymmetric Quantization Schemes (ApX Practical LLM Quantization Ch.1)
+  authors:
+  - ApX Machine Learning (no individual author)
+  categories:
+  - quantization
+  novelty: low
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - 'Symmetric quantization fixes zero-point at 0 and uses scale s = R/127 (R = max(|r|)); simpler dequant but underutilizes integer range for skewed distributions.'
+  - 'Asymmetric quantization uses scale s = (max(r) − min(r)) / (qmax − qmin) and zero-point z = round(qmin − min(r)/s); maximizes precision for non-centered distributions like ReLU activations.'
+  - 'Core mapping: r ≈ s · (q − z); quantization q = clip(round(r/s) + z, qmin, qmax).'
+  - 'Symmetric is preferred for weight quantization (centered near zero); asymmetric is preferred for activations with skewed distributions.'
+  - 'Asymmetric incurs runtime overhead from non-zero zero-point handling during dequantization.'
+  techniques:
+  - Symmetric quantization (zero-point fixed at 0, range = max(|r|))
+  - Asymmetric quantization (full min/max mapping with non-zero zero-point)
+  reported_results:
+  - 'No empirical results, accuracy figures, or perplexity scores reported. Page contains only worked numeric examples (mapping [-3.8, 3.2] to INT8) for pedagogical illustration.'
+  referenced_arxiv_ids: []
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - 'intake-186 (bitnet.cpp — TQ1_0/TQ2_0 ternary quantization)'
+    - 'intake-246 (llama.cpp-tq3 — TQ3_1S weight quantization)'
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Symmetric vs asymmetric quantization is foundational textbook material defined originally by Jacob et al. 2018 and reproduced in every quantization tutorial since (PyTorch docs, TFLite docs, LLM-int8, GPTQ paper, AWQ paper). The page introduces no new formulas, no new schemes, and no new empirical evidence. Not a duplicate URL/arxiv per intake index check, but the underlying content is "low" novelty by the rubric ("technique already well-covered in chapters"-equivalent — already-foundational).'
+  relevance_justification: 'EPYC stack already operates several layers above this material: production deployment uses Q4_K_M (asymmetric, k-quant block-wise scales+mins), evaluates TQ3_1S/TBQ3_0/TBQ4_0, runs llama.cpp Hadamard-rotated KV (PR #21038, landed). The symmetric/asymmetric primitive is a precondition that is already internalized in every quant we ship; revisiting it offers no decision-relevant signal for current work (CPU1 NPS4 perf ceiling, KV-cache PRs, CPU2 AVX-512BW Q8_0 kernels).'
+  verdict_justification: 'not_applicable: (1) tutorial content with zero empirical claims and zero novel techniques, (2) no path to action — every quant scheme on our stack already encodes either symmetric (Q8_0) or asymmetric (Q4_K_M, Q5_K, Q6_K) handling correctly, (3) recorded primarily because the user explicitly submitted the URL and the index should reflect that submission, not because the content meaningfully extends the corpus. No handoff update — tq3-quantization-evaluation.md operates at a strictly higher abstraction level (TQ3/TBQ3_0/Hadamard/ChunkKV) where the primitive is assumed knowledge.'
+- id: intake-486
+  arxiv_id: null
+  url: https://apxml.com/courses/practical-llm-quantization/chapter-2-post-training-quantization-ptq/static-dynamic-quantization
+  source_type: blog
+  title: Static vs Dynamic Quantization Explained (ApX Practical LLM Quantization Ch.2)
+  authors:
+  - ApX Machine Learning (no individual author)
+  categories:
+  - quantization
+  novelty: low
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - 'Static quantization pre-computes activation scale/zero-point from a calibration dataset, enabling fully integer arithmetic at inference; preferred when throughput/latency matter and calibration data is available.'
+  - 'Dynamic quantization computes activation ranges per-batch on-the-fly, avoiding calibration but adding inference overhead; preferred when calibration data is unavailable or activation distributions are unpredictable.'
+  - 'Static quantization fails when runtime activation distributions differ significantly from those observed during calibration ("activation distribution shift" / outlier clipping).'
+  - 'For LLMs the throughput sensitivity makes static quantization the typical choice; dynamic is used as a fallback when calibration is impractical.'
+  - 'Calibration sensitivity: outliers not seen during calibration are clipped, "potentially losing important information" — the page does not quantify this.'
+  techniques:
+  - Static post-training quantization (calibration-fitted scale/zero-point on weights and activations)
+  - Dynamic post-training quantization (runtime activation range estimation; weights remain pre-quantized)
+  reported_results:
+  - 'No empirical results, accuracy figures, or perplexity scores reported. Page is purely conceptual.'
+  referenced_arxiv_ids:
+  - 'arxiv:1712.05877 (Jacob et al. 2018, "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference", CVPR 2018) — implicitly referenced, no arxiv ID printed on page'
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - 'intake-186 (bitnet.cpp — ternary quant)'
+    - 'intake-246 (llama.cpp-tq3)'
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Static vs dynamic PTQ taxonomy was formalized by Jacob et al. 2018 and is reproduced in every PTQ tutorial — TFLite, PyTorch eager-mode quant, LLM.int8, SmoothQuant, GPTQ, AWQ all cite or assume it. The page introduces no new technique, no new formula, and no new evaluation. Low novelty by the rubric.'
+  relevance_justification: 'EPYC inference is exclusively static-PTQ (GGUF Q4_K_M / Q5_K_M / Q6_K with imatrix-based asymmetric weight calibration; Q8_0 KV cache with optional Hadamard rotation). Dynamic quantization is not deployed on CPU because llama.cpp performs decode in already-quantized form with on-the-fly dequant per K-block, not via PyTorch-style observer hooks. The static/dynamic decision is therefore a closed question for our stack. No active handoff is gated on revisiting this primitive.'
+  verdict_justification: 'not_applicable: (1) zero empirical content, (2) the practical answer for our stack is fixed (static via imatrix), (3) static-vs-dynamic is upstream of every research-grade decision currently tracked (calibration-set composition, activation outlier handling via SmoothQuant/AWQ, KV-cache quant via TBQ3_0). Recording the entry because the user explicitly submitted it; not flagging for adoption or further investigation.'
