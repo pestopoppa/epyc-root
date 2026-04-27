@@ -1,6 +1,6 @@
 # Sarathi-Serve / Chunked-Prefill Evaluation on EPYC NUMA
 
-**Status**: ACTIVE (wave-scoped plan, created 2026-04-26)
+**Status**: DEPRIORITIZED for current single-user decode regime 2026-04-26 (Phase 0 probe: decode constant 46-47 t/s across all `-ub`; smaller `-ub` damages prefill -52%); **NOT EMPIRICALLY CLOSED for multi-tenant** — CPU23 Phase 2.2 (2026-04-28) found 9.6× rep-1 TTFT amplification under concurrent prefill on sync-bound MoE, the exact pathology Sarathi-Serve was designed to address. Re-promote on workload shift to multi-tenant API or prefill-heavy serving.
 **Categories**: inference_serving, local_inference, hardware_optimization
 **Priority**: MEDIUM-HIGH (likely the cheaper architectural win compared to CPU16 NUMA-disagg, and likely obsoletes it)
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -97,17 +97,17 @@ Before committing to the full 6-8h workload generator, ran a cheap directional p
 2. **Decode speed is essentially constant at 46-47 t/s across all `-ub` values** — single-stream decode isn't blocked by anything that microbatch sizing affects.
 3. Smaller `-ub` enables finer-grained Sarathi-style decode-prefill interleaving but at the cost of substantial prefill regression (−52% at `-ub 128`).
 
-**Strategic conclusion — CLOSE CPU17 for our regime**:
+**Strategic conclusion — DEPRIORITIZE CPU17 for current single-user regime; NOT exhausted for multi-tenant**:
 
 For single-user interactive workloads (our actual production deployment): the default cont-batching + `-ub 512` is near-optimal. Smaller `-ub` only damages prefill; there's no decode-stall-during-prefill problem to solve since requests don't compete for resources within a single iteration on single-user.
 
-For multi-tenant scenarios (not our deployment): the Sarathi trade-off MIGHT make sense, but the prefill regression at small `-ub` (−52%) means the TBT-spike reduction would need to exceed 50% to break even — implausible.
+For multi-tenant scenarios (not our current deployment): the Sarathi trade-off MIGHT make sense, but the Phase 0 probe at small `-ub` showed -52% prefill regression — break-even requires TBT-spike reduction >50%. **CPU23 Phase 2.2 (2026-04-28) added a key data point**: rep-1 first-decode TTFT amplification under concurrent prefill is 9.6× on sync-bound MoE Coder-30B (4.77 t/s vs baseline 47.99). In single-user this is non-actionable (occurs once per session). In multi-tenant it compounds across concurrent users — making Sarathi-Serve's TBT-SLO scheduling potentially material. The 9.6× signal is exactly the kind of pathology Sarathi was designed to address.
 
-**Recommendation**: close CPU17. The literature claim ("Sarathi-Serve eliminates prefill/decode interference") is real but applies to multi-tenant GPU servers with thousands of concurrent users. For our deployment (1 user, CPU, intermittent agentic loops), the default cont-batching + `-ub 512` already captures most of the benefit; per-slot adaptive chunk sizing would be needed to do better, which is significant code work for marginal returns on our actual workload.
+**Recommendation (REVISED 2026-04-27 evening per closure-inflation peer review)**: **DEPRIORITIZE CPU17 for the current single-user decode regime — NOT EMPIRICALLY CLOSED for multi-tenant**. The literature claim ("Sarathi-Serve eliminates prefill/decode interference") is real and the CPU23 9.6× TTFT amplification is the corresponding signal on our hardware. For our current deployment (1 user, CPU, intermittent agentic loops), default cont-batching + `-ub 512` already captures most of the benefit. **For multi-tenant API serving the technique remains a live, not-yet-tested option.**
 
-**Re-open trigger**: if we ever shift to a multi-tenant deployment pattern (shared API serving multiple agents), revisit with per-shard `-ub` tuning (`-ub 256` for interactive-priority, `-ub 1024` for batch-priority) before considering full Sarathi-Serve TBT-SLO scheduler integration.
+**Re-promote trigger**: workload shift to multi-tenant deployment (shared API serving multiple agents, prefill-heavy serving). Then revisit with per-shard `-ub` tuning (`-ub 256` for interactive-priority, `-ub 1024` for batch-priority) before considering full Sarathi-Serve TBT-SLO scheduler integration.
 
-**CPU16 (NUMA disagg) closure**: per the original handoff, CPU17 was meant to falsify or obsolete CPU16. Since CPU17 itself produces minimal signal for our regime, CPU16 is also closed by inheritance — there's no decode-stall-during-prefill problem to solve via either chunked-prefill OR full disaggregation on single-user CPU.
+**CPU16 (NUMA disagg) status**: per the original handoff, CPU17 was meant to falsify or obsolete CPU16. Since CPU17 itself produces minimal signal for current single-user regime, CPU16 inherits the same deprioritization. **NOT empirically closed**: the Phase 0 xGMI KV-transfer-BW measurement was never run; the analysis-based projection (xGMI ~64 GB/s vs NVLink ~900 GB/s) is suggestive but not measured. Re-promote on multi-tenant API shift.
 
 **Data**: `data/cpu_optimization/2026-04-26-cpu17/SUMMARY.md` and per-`-ub` raw bench logs.
 

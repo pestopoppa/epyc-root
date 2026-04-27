@@ -128,7 +128,7 @@ Build-time decisions are not env-flags; they are baked into the `llama-server` b
 
 | Lever | Class | v5 cherry-pick | Coder-30B | Q8 frontdoor | REAP-246B | Dense 27B | Bundle |
 |---|---|---|---|---|---|---|---|
-| **clang-20 + libomp + `-march=znver5`** | runtime + codegen | **Universal** | +6.4% baseline | +0.8% | −0.8% | (TBD) | `2026-04-28-cpu21-libomp-chunks/` |
+| **clang-20 + libomp + `-march=znver5`** | runtime + codegen | **Universal** | +6.4% baseline | +0.8% | −0.8% | −1.7% (within noise) | `2026-04-28-cpu21-libomp-chunks/` + `2026-04-28-cpu-cross-architecture-sanity/` |
 | **+ PGO** (`-fprofile-instr-use=merged.profdata`) | codegen | **Universal** | +3.2% | +6.6% | +1.3% | +2.4% | `2026-04-28-cpu11-pgo/` |
 | **+ LTO** (`-DGGML_LTO=ON`) | codegen | **NOT cherry-picked** | −1.0% within noise | n/m | n/m | n/m | `2026-04-28-cpu12-bolt-libomp/` |
 | **+ BOLT-libggml** (`llvm-bolt-20 -reorder-blocks=ext-tsp ...`) | layout | **Per-role only on Coder-30B** | +2.1% (60.54 t/s) | −1.2% | −0.1% | −0.9% | `2026-04-28-cpu12-bolt/` |
