@@ -77,6 +77,23 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 
 **Files**: `q_scorer.py` (L31 flag, L271-282 integration, L457-520 method)
 
+### DAR-1.5: REINFORCE-Pathology Audit (NEW 2026-04-26 — analytical, no code)
+
+**Source**: deep-dive [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) Section 2.2.
+
+**Trigger**: Trinity's Table 4 shows REINFORCE collapses to **0.253 LCB / 0.459 Math500** at the same training budget where sep-CMA-ES achieves **0.615 / 0.880**. The paper attributes this to the loss surface being block-ε-separable — pure policy-gradient methods get drowned in off-block noise. DAR-3 (SPO+) and DAR-4 (bilinear scorer) are NOT pure REINFORCE — they use closed-form gradients on contrastive losses — but the question is whether the same geometry hurts them in a milder form.
+
+**Goal**: a written analytical audit (no code, no rerun) answering: do the gradients used in DAR-2 (contrastive Q-update, ALREADY LANDED), DAR-3 (SPO+), and DAR-4 (bilinear scorer) share REINFORCE's vulnerability to off-block noise on a block-ε-separable loss? If yes for any of DAR-3/DAR-4, document the mitigation before implementation begins.
+
+- [ ] **DAR-1.5.1** Write out each loss's gradient form: REINFORCE (`∇log π · advantage`), contrastive Q (`∇(Q_chosen − Q_alt − margin)`), SPO+ (`max(0, 2·c_hat − c_true)` form), bilinear (`∇sigmoid(v_m^T W v_p + b)`). Identify which gradients couple parameters across notional "blocks" of the loss surface.
+- [ ] **DAR-1.5.2** Cross-reference with `learned-routing-controller.md` P4.2 — the block-ε-separability diagnostic on our actual landscape. If P4.2 confirms our problem IS block-ε-separable, DAR-1.5 conclusions become load-bearing for DAR-3/DAR-4. If P4.2 falsifies it, this audit downgrades to a footnote.
+- [ ] **DAR-1.5.3** For any loss that DOES couple across blocks (and our landscape is block-ε-separable), document the mitigation: (a) regularise toward block-diagonal weights, (b) add a population-style outer loop on top of the gradient method, (c) re-weight the gradient by inverse off-block coupling estimate, or (d) accept the risk and proceed.
+- [ ] **DAR-1.5.4** Decision gate before DAR-3: if DAR-1.5 flags a high-confidence pathology and P4.2 confirmed block-ε-separability, pause DAR-3/4 and reconsider. Otherwise proceed with DAR-3 as planned, with DAR-1.5 conclusions captured as a "Known Risks" sub-section.
+
+**Effort**: 1 session, analytical only. No infra, no code. Deliverable is a markdown sub-section appended to this handoff.
+
+**Why this matters even if it changes nothing**: it produces a *first-principles* answer to "does Trinity's REINFORCE result transfer to us?" — which the project repeatedly needs when reasoning about new optimizer choices. Cheap insurance against making the wrong optimizer call later.
+
 ### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions)
 
 - [ ] Implement SPO+ (Smart Predict-then-Optimize) loss:
@@ -175,3 +192,16 @@ The BaRP (arxiv:2510.08429) lightweight policy network and LLM Bandit (arxiv:250
 - The zero predictive spread diagnostic came from Package B Phase 4 with n=635. If the underlying issue is data sparsity rather than architectural, DAR-1 regret analysis will reveal this — regret would be near-zero because there are too few samples to establish reliable counterfactuals.
 - DAR-3 exploration routing (10% random) will temporarily degrade routing quality during data collection. Must run in shadow mode or during low-priority tasks.
 - DAR-4 bilinear scorer assumes model features are informative predictors of per-prompt quality. If all models perform similarly on most prompts (low variance), the feature-conditioned approach adds complexity without benefit.
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, openreview:5HaRjXai12)
+  - Authors: Jinglue Xu, Qi Sun, Peter Schwendeman, Stefan Nielsen, Edoardo Cetin, Yujin Tang
+  - Relevance: Fourth peer in this handoff's Research Context table alongside xRouter / RouteLLM / Router-R1 — same problem (lightweight policy that selects among LLMs), qualitatively different optimizer.
+  - Key technique: ≈0.6B base LM + ≈10K-parameter head, trained with **separable CMA-ES** (an evolutionary strategy) instead of RL/SFT. Penultimate-token hidden state is mapped to agent-role logits for multi-turn role-typed delegation (Thinker / Worker / Verifier).
+  - Reported results: 86.2% on LiveCodeBench (claimed coordinator-system record at submission); consistent gains over individual constituent models on coding/math/reasoning/domain-knowledge benchmarks; OOD generalization without SFT or RL.
+  - Delta from current approach (DAR): DAR is reshaping the *learning objective* of the existing TD-trained Q-scorer (predict-then-optimize → decision-aware). Trinity drops the TD/RL frame entirely and trains the routing head with a black-box ES against an end-task fitness signal — directly side-stepping the credit-assignment / Q-magnitude problem that DAR-1 diagnosed. If DAR-2/3/4 underdeliver on the zero-predictive-spread pathology, sep-CMA-ES on the existing routing head is the natural escalation path that does NOT require multi-GPU RL infra (xRouter / Router-R1's blocker) and is CPU-feasible at our scale (10K params, no gradient). Caveat: author-acknowledged limitation is the abstract-vs-grounded-execution gap, which Trinity does NOT solve — that part stays inside our orchestrator.
+  - Recommended follow-up: spike sep-CMA-ES as an alternative trainer for the existing `routing_classifier.py` MLP head when distillation labels are sparse. Add Trinity to the handoff's Research Context table.
+  - **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — read before extending DAR-2/3/4. Specifically section 2.2 ("ES side-steps the credit-assignment problem DAR is trying to solve") and action #4 ("Re-examine DAR-2/3/4 for hidden REINFORCE-class pathology" — analytical check on whether SPO+/bilinear gradients share REINFORCE's off-block-noise weakness on block-ε-separable losses).

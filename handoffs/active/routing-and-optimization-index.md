@@ -15,6 +15,12 @@
 
 ---
 
+## Standing Comparative Context
+
+Before proposing or revising routing/coordination architecture, read [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (intake-474, ICLR 2026, Sakana AI). Trinity is the most direct prior art for the lightweight-learned-coordinator-over-heterogeneous-pool thesis we are pursuing. The deep-dive cross-checks Trinity's choices against ours on architecture, training signal, optimizer, action space, and pool composition — and lists the portable lessons (tri-role action space, sep-CMA-ES cold-start, block-ε-separability diagnostic, SVD-FT) and the non-portable ones (penultimate-token finding, frontier-closed-pool gain numbers). Reference it explicitly when arguing for a routing-architecture change so we know which Trinity lever the change does or does not echo.
+
+---
+
 ## Subsystem Status
 
 | Subsystem | Handoff | Status | Next Action |
@@ -34,6 +40,8 @@
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | Phase 1 P1.1-P1.4+P1.6 DONE — 92% val acc, per-class thresholds calibrated | P1.5 enable flag, Phase 1.5 logit probe |
 | Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
 | Deep Research Mode | [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 prompt-level, Phase 2 GPU-gated (intake-438, DD7) | MD-1: `deep_research_mode` feature flag |
+| Tri-Role Coordinator | [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) | NEW 2026-04-26 — stub; Trinity-derived (intake-474, ICLR 2026); architectural change orthogonal to optimizer choice; +5–8 points in Trinity ablation | TR-1.1: audit existing role-bearing fields and produce {T, W, V} mapping table |
+| Outer-Coordinator Learned Head | [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) | NEW 2026-04-26 — SCOPING ONLY (Trinity-derived, intake-474); speculative long-term replacement of part of the Claude-driven autopilot loop | OC-0: scoping document — gated until tri-role + DAR + LRC Phase 4 land |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -249,6 +257,59 @@ Pointer — full plan tracked in [`agent-world-env-synthesis.md`](agent-world-en
 Pointer — full plan tracked in [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report) is zero-infra and falsifiable under existing eval tower. Phase 2 adds the paper's four-stage RL recipe (SFT → Search-RL → Report-RL → preference alignment) post-DGX-Spark. Phase 3 conditionally refactors the orchestrator's Tier-B architect split.
 
 - [ ] **P18 rollup**: see `minddr-deep-research-mode.md` MD-1..MD-14 — entry points: MD-1 (`deep_research_mode` feature flag), MD-6 (pydantic_graph flow), MD-7 (multi-dimensional rubric — hands off to `eval-tower-verification.md` EV-9).
+
+### P19 — Trinity-Derived Coordinator/Routing Tasks (2026-04-26 deep-dive integration)
+
+Source: deep-dive [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) on intake-474 (TRINITY: An Evolved LLM Coordinator, ICLR 2026, Sakana AI). Trinity is the most direct prior art for our lightweight-learned-coordinator-over-heterogeneous-pool thesis. The deep-dive cross-checks Trinity's design choices against ours and produces nine portable lessons. **Standing reference**: link the deep-dive when arguing for any routing-architecture change so we know which Trinity lever the change does or does not echo.
+
+These tasks live across multiple handoffs. This section is the index roll-up — for implementation detail, follow the linked handoff phases.
+
+**Architectural change (orthogonal to optimizer)**:
+
+- [ ] **P19.1**: TR-1 through TR-5 in [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md). Add per-call role axis (Thinker/Worker/Verifier) to routing decisions. Trinity ablation: removing tri-role costs −5 to −8 points across all four benchmarks; second-largest ablation effect after the feature-position swap. TR-1 (taxonomy + open questions) is a hard gate before TR-2+. **Independent of any optimizer work** — can ship under SFT, contrastive Q-update, or sep-CMA-ES alike.
+
+**Methodology audits on Learned Routing Controller**:
+
+- [ ] **P19.2**: P4.1 in [`learned-routing-controller.md`](learned-routing-controller.md). Feature-extraction position audit (BGE CLS vs mean-pool vs last-layer). Cheapest of the four LRC Phase 4 tasks; informs whether our 1031-dim input vector is well-chosen.
+- [ ] **P19.3**: P4.2 in [`learned-routing-controller.md`](learned-routing-controller.md). Block-ε-separability diagnostic on our routing landscape (full-rank vs block-diagonal-10 vs diagonal head). Tells us whether Trinity's optimizer-choice argument applies to our problem geometry. **Gates P19.5** (sep-CMA-ES spike).
+- [ ] **P19.4**: P4.3 in [`learned-routing-controller.md`](learned-routing-controller.md). SVD-scale fine-tuning trial on BGE backbone (~9K extra params, claimed +3-4 points in Trinity's ablation). Cheaper than LoRA, applicable independent of all other Phase 4 work.
+- [ ] **P19.5**: P4.4 in [`learned-routing-controller.md`](learned-routing-controller.md). sep-CMA-ES cold-start spike for routing surfaces lacking episodic labels. Population λ≈45, m=16, ≈10h overnight at 32-way concurrency for feasibility test. **Prerequisites**: P19.3 (block-ε diagnostic favourable) + Math-Verify adoption (cross-cutting concern #13) so eval-tower can serve as fitness oracle.
+
+**Methodology audit on Decision-Aware Routing**:
+
+- [ ] **P19.6**: DAR-1.5 in [`decision-aware-routing.md`](decision-aware-routing.md). REINFORCE-pathology audit — analytical, no code. Trinity's REINFORCE collapse (0.253 vs 0.615 LCB) raises the question of whether DAR-3/DAR-4 gradients share the same off-block-noise weakness on a block-ε-separable loss. 1 session of work. Cross-references P19.3 — together they answer "does Trinity's optimizer argument transfer to us?" with both empirical (P19.3) and analytical (P19.6) evidence.
+
+**Documentation update**:
+
+- [ ] **P19.7**: Update [`epyc-inference-research/docs/chapters/08-cost-aware-rewards.md`](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) to add a fourth methodological class — *ES-trained routers* — alongside RL-trained (xRouter / Router-R1), preference-trained (RouteLLM), and matrix-factorization. Trinity is the canonical citation. Cite intake-474 and the 21.9% mean error-reduction headline (caveat: heterogeneous-pool-specific). Doc edit; no code.
+
+**Speculative scoping**:
+
+- [ ] **P19.8**: OC-0 in [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md). Scoping document for whether a learned-head replacement of part of the Claude-driven autopilot loop is worth pursuing. Speculative; gated until tri-role + DAR + LRC Phase 4 land. Five sub-tasks (OC-0.1–0.5) to produce a written scope before any implementation phases are even drafted.
+
+**Dependency chain summary**:
+
+```
+P19.7 (chapter doc)         ──independent──
+P19.4 (SVD-FT trial)        ──independent──
+P19.2 (feature-position)    ──independent──
+P19.6 (DAR-1.5 audit)       ──independent──, but P19.3 result strengthens its conclusions
+P19.3 (block-ε diagnostic)  ──gates P19.5──
+P19.5 (sep-CMA-ES spike)    ──needs P19.3 favourable + Math-Verify adoption──
+P19.1 (tri-role TR-1..5)    ──independent of all P19.2-6, can run in parallel; TR-1 is its own hard gate──
+P19.8 (outer-coord scoping) ──gated until tri-role + DAR + LRC Phase 4 all land──
+```
+
+**Recommended execution order** (by cheapness × informativeness):
+1. P19.6 (DAR-1.5 audit — 1 session, analytical)
+2. P19.2 (feature-position audit — 1 session, single training run)
+3. P19.7 (chapter update — 1 session, doc only)
+4. P19.4 (SVD-FT trial — moderate, 2-3 sessions)
+5. P19.3 (block-ε diagnostic — moderate, 3-5 sessions)
+6. P19.1 (tri-role TR-1 scoping in parallel — start anytime)
+7. Conditional on above: P19.5 (sep-CMA-ES spike if P19.3 favourable + Math-Verify shipped)
+8. Long-term: P19.1 TR-2..5 (after TR-1 review)
+9. Speculative: P19.8 (only after the above land and reveal pain points)
 
 ### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
 

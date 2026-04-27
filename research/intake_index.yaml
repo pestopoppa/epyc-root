@@ -19907,20 +19907,24 @@
   verdict: new_opportunity
   ingested_date: '2026-04-26'
   key_claims:
-  - Lightweight coordinator (≈0.6B LM + ≈10K-parameter head) orchestrates a pool of LLMs across multi-turn role assignments (Thinker / Worker / Verifier) without SFT or RL
-  - Separable CMA-ES outperforms RL, imitation learning, and random search for training the coordinator under high-dimensional + strict-budget constraints by exploiting block-ε-separability of the loss surface
-  - Hidden-state representations of the small LM provide rich input contextualization that the 10K head maps to agent-role logits (logits-to-agent mapping reads the penultimate token)
-  - Achieves 86.2% on LiveCodeBench (peer SOTA for coordination systems at submission time) and consistently outperforms individual models across coding, math, reasoning, and domain-knowledge benchmarks
-  - Demonstrates robust generalization to out-of-distribution tasks; skill acquisition is offloaded from the coordinator to the underlying agents
+  - 'Backbone is Qwen3-0.6B with singular-value fine-tuning (~9K SV-scale params, orthogonal matrices frozen); 10K-parameter linear head reads the PENULTIMATE-token hidden state and outputs (L+3) logits — L=7 for LLM choice and 3 for role assignment {Thinker, Worker, Verifier}; total ~19K trainable params'
+  - 'Trained with sep-CMA-ES, λ≈32, replication m_CMA=16, total budget 1.5k–40k fitness evaluations; fitness = terminal binary reward on full multi-turn rollouts (correct answer = 1); no SFT, no RL, no labelled routing decisions'
+  - 'Multi-turn protocol up to K=5 turns, full transcript passed each turn, terminates when Verifier returns ACCEPT; pool = 7 LLMs (3 closed: GPT-5/Gemini-2.5-pro/Claude-4-Sonnet, 4 open: Gemma-3-27B-It/DeepSeek-R1-Distill-Qwen-32B/Qwen-3-32B-direct/Qwen-3-32B-reasoning)'
+  - 'Block-ε-separability of the scaled Hessian justifies diagonal CMA over full-rank: Proposition 2 gives Ω(1/n) per-iteration contraction for diagonal CMA; empirically a block-diagonal-10 head retains competitive mid-tier performance, confirming the geometry'
+  - 'Achieves 86.2±0.5% on LiveCodeBench v6 pass@1 (vs GPT-5 83.8%, Gemini 67.2%, Claude 46.5% individually); 21.9% mean relative-error reduction over 2nd-best baseline across 4 in-distribution benchmarks'
   techniques:
-  - sep-CMA-ES (separable Covariance Matrix Adaptation Evolution Strategy) as black-box optimizer for routing/role-assignment heads
-  - Multi-turn role-typed delegation (Thinker / Worker / Verifier) over a fixed agent pool
-  - Logits-to-agent mapping via penultimate-token readout from a 0.6B LM
-  - Block-ε-separability exploitation in the loss landscape (diagonal covariance methods)
+  - sep-CMA-ES (separable Covariance Matrix Adaptation Evolution Strategy) as gradient-free black-box optimizer for routing/role-assignment heads
+  - Singular-value fine-tuning (SVD-FT) of the backbone — learn only singular-value scales, keep orthogonal matrices fixed (~9K extra params, claimed +3-4 points)
+  - Penultimate-token hidden state as feature vector (vs final token, which costs >10 points on LCB)
+  - Decoupled (LLM × role) action space via flat (L+3)-dim logits, softmaxed independently
+  - Multi-turn role-typed delegation (Thinker analyses/plans, Worker executes, Verifier accepts/rejects) over a fixed heterogeneous agent pool
+  - Verifier-acceptance-driven early termination (max K=5 turns)
   reported_results:
-  - 'LiveCodeBench: 86.2% (claimed new record at submission time for coordinator systems)'
-  - Outperforms individual constituent models on coding, math, reasoning, and domain-knowledge benchmarks
-  - Robust OOD generalization (specifics not in abstract)
+  - 'LiveCodeBench v6 pass@1: 86.2±0.5% (Trinity) vs 83.8% (GPT-5), 67.2% (Gemini-2.5-pro), 46.5% (Claude-4-Sonnet) — claimed coordinator-system record at submission'
+  - 'Math500: 0.880, MMLU: 0.916, RLPR: 0.401 (sep-CMA-ES); REINFORCE collapses to 0.459/0.500/0.266 at comparable budget; Random Search 0.794/0.897/0.345; SFT 0.786/0.906/0.360'
+  - 'Ablations: removing tri-role costs −5 to −8 points across tasks; removing Thinker alone −6.0 on Math500 / −4.57 on RLPR; SVD-FT removal −3 to −4 points; final-token instead of penultimate >−10 points on LCB'
+  - 'Multi-agent baseline comparison: Trinity 0.62 LCB / 0.88 Math500 vs MasRouter 0.43/0.46, RouterDC up to 0.28 RLPR vs random 0.32; mean 21.9% relative-error reduction over 2nd-best'
+  - Beats every individual pool model even when those models get 5× extended context budget or 5× self-reflection
   contradicting_evidence:
   - 'Author-acknowledged limitation (per ICLR 2026 PDF): gap between abstract reasoning and grounded execution — the coordinator can devise tool-using plans but cannot yet act on them; integration with code interpreters / APIs is future work'
   - "LiveCodeBench leaderboard (2026-04) shows single-model SOTA at 91.7% (Gemini 3 Pro Preview) — Trinity's 86.2% is competitive among coordinator systems, not the absolute SOTA across all model classes; the comparison category matters"
@@ -19987,14 +19991,35 @@
     (tool-grounded execution), so the integration target is the routing /
     coordination LAYER, not the agent-execution layer.
   notes: >
-    Two URLs supplied at intake refer to the SAME paper: arxiv:2512.04695 is
-    the preprint; openreview/forum?id=5HaRjXai12 is the ICLR 2026 venue
-    record (poster). Indexed under the arXiv URL; openreview URL recorded as
-    alternate. Authors include Edoardo Cetin and Yujin Tang (Sakana AI
-    affiliation, known contributors to evolutionary methods for ML). Code/
-    weights not published at intake time — verify availability before
-    proposing a concrete replication experiment. Phase-3 literature expansion
-    intentionally skipped this round: the immediate prior-art neighbours
-    (xRouter / RouteLLM / Router-R1) are already in the intake index, and a
-    deeper sep-CMA-ES literature dive should be a separate follow-up if the
-    user prioritises an ES-training spike for the routing controller.
+    DEEP-DIVE 2026-04-26 at research/deep-dives/trinity-evolved-llm-coordinator-methodology.md
+    — TREAT AS STANDING COMPARATIVE CONTEXT for all orchestrator/routing
+    work. Trinity attacks the same thesis we are building around (lightweight
+    learned multi-turn coordinator over a heterogeneous agent pool); even if
+    our final architecture differs, Trinity is the most direct prior art and
+    revisions to our routing/coordination plans should reference it. Two URLs
+    supplied at intake refer to the SAME paper: arxiv:2512.04695 = preprint,
+    openreview/forum?id=5HaRjXai12 = ICLR 2026 venue record. Indexed under
+    arXiv URL; openreview URL recorded as alternate. Authors at Sakana AI;
+    Trinity is core to Sakana's commercial Sakana-Fugu product, so OPEN CODE
+    RELEASE IS UNLIKELY — replicate from paper, do not wait for github. Key
+    portable pieces (priority-ranked in deep-dive): (1) tri-role action space
+    Thinker/Worker/Verifier — architectural, optimizer-agnostic, single
+    biggest empirical lever in their ablations; (2) sep-CMA-ES as cold-start
+    trainer for routing surfaces lacking episodic labels (CPU-feasible at
+    our scale, ~10h overnight at 32-way concurrency for a feasibility test);
+    (3) block-ε-separability diagnostic — full-rank vs rank-10 vs diagonal
+    head ablation tells us whether their geometry argument applies to us;
+    (4) SVD-scale FT of backbone (~9K params, claimed +3-4 points, cheaper
+    than LoRA); (5) outer-coordination-layer Trinity analogue — a learned
+    head over the Claude-driven autopilot loop, not just the inner inference
+    pool. NOT directly portable: penultimate-vs-final-token finding (decoder-
+    specific, BGE is encoder), the 7-LLM pool with frontier closed models
+    (we are open-source-only on inner pool per feedback_opensource_only),
+    the 21.9% mean error-reduction headline (heterogeneous-pool-specific,
+    discount 2-5× for our inner pool). Pool-homogeneity caveat needs
+    layer-specific framing — inner pool is homogeneous (gain headroom is
+    smaller), outer Claude-driven layer is heterogeneous (Claude vs cheap
+    frontdoor vs specialist coder is wider quality gradient than Trinity's
+    inner pool, closer to their regime). Phase-3 literature expansion
+    skipped: immediate prior-art neighbours (xRouter / RouteLLM / Router-R1
+    / BaRP / LLM Bandit) all already in index.

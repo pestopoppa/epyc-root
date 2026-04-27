@@ -611,3 +611,13 @@ This cross-cuts with P13 Decision-Aware Routing — STOP's expected-cost model f
 - [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) — full Deep Research Mode plan
 - [`reasoning-compression.md`](reasoning-compression.md) Action 10a — STOP implementation
 - `routing-and-optimization-index.md` P13 (Decision-Aware Routing) + P18 (Deep Research Mode pointer)
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, Sakana AI)
+  - Relevance to this handoff: Trinity formalises a per-call *role assignment* (Thinker/Worker/Verifier) that is orthogonal to model selection. Their Verifier role corresponds approximately to this handoff's review-trigger / escalation-policy machinery — both decide whether the current answer is acceptable. The taxonomy decision in [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) TR-1.2 explicitly hands off here: does our existing review/escalation pipeline subsume Trinity's Verifier, or are they parallel mechanisms?
+  - Key Trinity ablation: removing the Thinker role alone costs −6.0 on Math500 and −4.57 on RLPR; removing tri-role entirely costs −5 to −8 across all benchmarks. Even *with* an existing review pipeline, if our orchestrator is collapsing the Thinker decision into "always Worker", we are leaving similar magnitude of headroom on the table.
+  - Cross-handoff coordination: when [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) reaches TR-1.2 (Verifier-vs-review decision), it must consult this handoff's Phase 6 risk-aware enforcement design — the existing factual-risk scorer + review trigger should be the substrate, with Verifier as either an explicit per-call action or a renaming of the existing trigger.
+  - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (especially section 2.1 on the tri-role gap and the open questions in section 6).

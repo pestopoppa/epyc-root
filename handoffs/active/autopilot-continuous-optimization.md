@@ -610,3 +610,25 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
   - Relevance: official companion code for intake-244 (the Meta-Harness paper this handoff's meta-controller echoes). ONBOARDING.md + `domain_spec.md` template is a direct analogue of autopilot's role-spec scaffolding.
   - Key technique: agent-tasks scaffold evolution on terminal_bench_2 — the closest open-source analog to autopilot's code-mutation search space. `claude_wrapper.py` proposer-logging pattern fits PromptForge's audit trail.
   - Delta: cherry-pick ONBOARDING/domain-spec pattern for autopilot's new-role onboarding. Read terminal_bench_2 before any Tier-2b code-mutation upgrade. Do not wholesale port — repo is explicitly "cleaned up version of paper code, not tested beyond running."
+
+## Research Intake Update — 2026-04-26
+
+### New Related Research
+
+- **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, Sakana AI)
+  - Relevance to autopilot: Trinity is the *outer-coordinator analogue* — a learned head that picks per-turn `(LLM, role)` from a heterogeneous pool, replacing what we currently do with Claude in the autopilot loop. The user observation flagged in the deep-dive: our outer Claude-driven layer is the closer Trinity match than our inner inference pool, since Claude vs cheap-frontdoor vs specialist-coder is a wider quality gradient than the all-open inner pool.
+  - Key technique: Qwen3-0.6B + 10K-parameter linear head, trained with sep-CMA-ES against terminal binary task reward. Multi-turn protocol: full transcript passed each turn, Verifier-acceptance termination at K≤5.
+  - Reported results: 21.9% mean relative-error reduction over the 2nd-best multi-agent baseline across LiveCodeBench / Math500 / MMLU / RLPR. The numbers are *heterogeneous-pool-specific* — discount appropriately for our setup.
+  - Delta from current autopilot: autopilot accumulates Q-values over many trials and feeds back into routing decisions. Trinity replaces the per-turn coordination decision itself with a learned head trained against task fitness. **A scoping handoff** [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) **was created 2026-04-26 to evaluate whether replacing part of this loop is worthwhile.** Phase OC-0 (scoping document) gates everything; OC-0.1 explicitly requires reading this handoff and `scripts/autopilot/` to inventory the per-turn decisions Claude makes today.
+  - **Action when OC-0 starts**: ensure the autopilot decision inventory (OC-0.1) is exhaustive — missing decisions in the inventory will undersell or oversell the cost-benefit estimate (OC-0.4).
+  - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md), especially section 2.3 ("pool-homogeneity caveat … where does Claude fit?").
+
+## Research Intake Update — 2026-04-27
+
+### New Related Research
+
+- **[intake-479] "Co-Evolving LLM Decision and Skill Bank Agents for Long-Horizon Tasks (COSPLAY)"** (arxiv:2604.20987)
+  - Relevance: directly parallels the closed-loop optimization motif here — a learnable skill bank co-evolved with the decision agent, with skills extracted, refined, and updated continuously from unlabeled rollouts. Adjacent to the completed `skillbank-distillation` handoff (recursive evolution + confidence scoring) and to intake-261 (Skill0 / SkillRL).
+  - Key techniques: (1) **skill contracts** — schema upgrade for skill-bank entries that bind preconditions/postconditions to each skill, enabling consistent retrieval and reuse; (2) **closed-loop refinement from unlabeled rollouts** — skill discovery pipeline that mines rollouts for new skills and updates contracts based on reward delta, not requiring labeled trajectories.
+  - Reported results: 8B base LLM with COSPLAY beats four frontier LLM baselines on single-player game benchmarks (+25.1% avg reward); evaluated across six game environments; competitive on multi-player social reasoning games.
+  - Delta from current approach: autopilot already has the closed-loop scaffold (Pareto frontier + checkpointed `autopilot_state.json`). Two adoptable patterns: (a) **skill contracts** as a schema upgrade for any future skill-evolution path (formalize pre/postconditions instead of free-text), and (b) **reward-delta-driven refinement** from unlabeled production traces as a lighter alternative to manually authored eval suites — useful if AP-35 expands toward online optimization with implicit signals. Verdict: `adopt_patterns`, not full framework adoption.

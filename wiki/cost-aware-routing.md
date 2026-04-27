@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
-**Sources**: 23 documents (1 deep-dive, 6 active handoffs, 16 intake entries)
+**Last compiled**: 2026-04-27
+**Sources**: 24 documents (2 deep-dives, 7 active handoffs, 17 intake entries)
 
 ## Summary
 
@@ -58,6 +58,19 @@ The EPYC orchestrator has a three-band difficulty classifier (easy/medium/hard) 
 - **OPSDC's length ratio is a free difficulty signal**: Comparing output length with and without a conciseness prompt yields a difficulty estimate at zero additional cost. Large ratio = easy (compressible); small ratio = hard (reasoning is load-bearing). Alternatively, just add a conciseness instruction: short output = easy, long output = hard. [intake-110](https://arxiv.org/abs/2603.05433)
 
 - **Explicit word limits outperform vague conciseness**: intake-276 deep-dive revealed that "be concise" prompts are the weakest tested form. Explicit numeric limits (e.g., "answer in under 15 words for factual questions") based on CCoT's 30-60 word sweet spot significantly outperform open-ended brevity instructions. Worker prompts have been upgraded accordingly. [reasoning-compression handoff]
+
+### Methodological Taxonomy of Learned Routers (2026-04-26 — Trinity deep-dive)
+
+The cost-aware-routing literature now divides cleanly into **four methodological classes** of learned router. Tracking these explicitly so design discussions can place new proposals on the map. Chapter 08-cost-aware-rewards in `epyc-inference-research/docs/chapters/` is queued for an update reflecting this (P19.7 in `routing-and-optimization-index.md`).
+
+| Class | Representative | Training | Action space | When applicable |
+|---|---|---|---|---|
+| RL-trained end-to-end | xRouter (arxiv:2510.08439, Salesforce 2025), Router-R1 (arxiv:2506.09033) | DAPO / GRPO with cost-aware reward; 7B router; multi-GPU | (model) | Cloud routing with API-cost reward; not CPU-feasible |
+| Preference / matrix-factorisation | RouteLLM (arxiv:2406.18665, LMSYS ICLR 2025) | Preference data; matrix factorization or BERT classifier | Binary strong/weak | Two-model routing with preference data |
+| Backprop on contrastive / decision-aware loss | DAR-2/3/4 (this stack), SPO+, bilinear scorer | Closed-form gradient on contrastive Q or SPO+ surrogate | (model) | When labelled routing decisions are available; CPU-feasible |
+| **Black-box ES against task fitness** (NEW 2026-04-26) | **Trinity (arxiv:2512.04695, ICLR 2026, Sakana AI)** | sep-CMA-ES on terminal binary reward; no labels, no gradients | (model, role) decoupled | When labels do not yet exist (cold-start); when loss is block-ε-separable; CPU-feasible at 10K-param head |
+
+**Trinity (intake-474)** is the canonical example of class 4. Reports 86.2% on LiveCodeBench v6 (claimed coordinator-system record), 21.9% mean relative-error reduction over 2nd-best multi-agent baseline. **Crucial for class-3 vs class-4 choice**: Trinity's REINFORCE ablation collapses to 0.253 LCB vs 0.615 for sep-CMA-ES at the same budget — pure policy gradients drown in off-block noise on block-ε-separable losses. The block-ε-separability of *our* routing landscape is testable (LRC P4.2) and gates whether class-4 ES becomes a viable cold-start trainer for our setup. Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md). [intake-474]
 
 ## Actionable for EPYC
 
