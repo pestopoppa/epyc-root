@@ -751,3 +751,55 @@ Pure plumbing only — the actual SIMD body is a stub that falls through to the 
 3. Throughput measurement: env on/off comparison on the 5 production models. Expected: +2-5% on Q4_K_M class, neutral on Q8_0 (no Q6_K content).
 4. If gain is real and PPL bit-exact: update [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) to add `GGML_Q6_K_8X8_AVX=1` to the production-ready opt-in list.
 5. After Q6_K lands, follow up with **Q5_K** (smaller cycle share ~4.6% per Session 14 dispatcher gap analysis, but trivial once the Q6_K bit-fiddling pattern is established).
+
+## Session 17 (2026-04-27) — Q6_K AVX-512BW SIMD body LANDED + bit-exact verified
+
+Implemented the full SIMD body for `gemv_q6_K_8x8_q8_K_avx512bw` per the Session 16 algorithm design. The kernel mirrors NEON's bias-precomputation trick (subtract −32 once via `bsums × scales × 32` out of the inner loop, leaving inner-loop weights unsigned 0..63) and uses the Zen 5-preferred `VPMADDUBSW + VPMADDWD` chain (project_zen5_vnni_vs_maddubs memory).
+
+### Validation
+
+**3-chunk WikiText-2 PPL bit-exact match**:
+- `GGML_Q6_K_8X8_AVX=0` (generic reference): **9.8567 ± 1.23745**
+- `GGML_Q6_K_8X8_AVX=1` (new SIMD kernel): **9.8567 ± 1.23745**
+
+Identical to all reported digits. The kernel is mathematically correct. Full 32-chunk WikiText-2 PPL gate is a follow-up validation step before flipping the env default; the 3-chunk match is sufficient to confirm there's no catastrophic correctness bug.
+
+### Throughput
+
+Modest gains, consistent with CPU24 perf-record finding (`ggml_vec_dot_q6_K_q8_K = 15.64%` of REAP-246B cycles, but compute kernels are memory-stalled INSIDE — faster SIMD means less time IN kernel but same time stalled on DRAM):
+
+| Model | env=0 (generic) | env=1 (SIMD) | Δ |
+|-------|----------------:|-------------:|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | 47.03 ± 0.07 | 47.21 ± 0.07 | +0.4% |
+| Qwen3-Coder-REAP-246B-A35B Q4_K_M | 6.36 ± 0.00 | 6.39 ± 0.00 | +0.5% |
+
+(Both runs at the proper canonical `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active numactl --interleave=all --physcpubind=0-95 -t 96 -fa 1 -p 0 -n 32 -r 3`.)
+
+The +0.4-0.5% gain is real but small — bounded above by the fraction of Q6_K cycles that are compute (vs memory-stall) at 96 threads. In single-thread-decode regime the gain would be substantially larger (analogous to Q8_0's +31.8% @ 1t).
+
+### Implementation summary
+
+- File: `ggml/src/ggml-cpu/arch/x86/repack.cpp`, function `gemv_q6_K_8x8_q8_K_avx512bw` (~95 lines of intrinsics)
+- Algorithm: bias precompute → for k 0..15 (load ql/qh, reconstruct q6, VPMADDUBSW+VPMADDWD chain, scale, accumulate) → subtract bias → FMA into row accumulator
+- Bit-extract: `_mm512_srli_epi16` + AND mask works correctly because mask discards cross-byte leak
+- Reduce 16 i32 lanes to 8 per-col via `srli_epi64(32) + add + cvtepi64_epi32` (same as Q8_0 8x8 kernel)
+- Env-gated `GGML_Q6_K_8X8_AVX=1`, default OFF until full 32-chunk PPL gate
+
+### Q5_K follow-on assessment — NOT trivial after all
+
+Reading the Q5_K generic implementation (`repack.cpp:559`) reveals Q5_K has a structurally different format:
+
+- **Different scale unpacking**: 6-bit scales packed as 4+2 bits via complex `utmp[]` reconstruction with `kmask1/2/3`. Q6_K just has plain int8 scales.
+- **1-bit qh per weight** (not 2-bit): `(qh >> qh_shift) & 1` extracted twice per byte (h0, h1). Different bit-fiddling pattern than Q6_K.
+- **Has dmin offset** (sum_minf computation): Q5_K stores 6-bit mins per sub-block; the bias trick is `sum_minf[col] = sum_sb(mins[sb,col] * (bsums[sb*2] + bsums[sb*2+1])) * dmin[col] * a_d`. Q6_K has no dmin equivalent.
+- **Weights are unsigned 5-bit (0..31)** not signed 6-bit; the offset model is fundamentally different (additive dmin*sum_a vs the −32 trick of Q6_K).
+
+Q5_K SIMD implementation requires its own careful design — not the "trivial follow-on" the original handoff implied. Resemblance to Q4_K (which has the dmin trick + 4-bit weights + scale unpacking) is closer than to Q6_K.
+
+**Recommendation**: defer Q5_K to a dedicated session. The Q4_K_M models we run have small Q5_K content (per Session 14 dispatcher analysis: 4.6% of cycles) so the expected gain is even smaller than Q6_K's measured +0.4-0.5%. Lower priority.
+
+### Next session deliverables
+
+1. **Full 32-chunk WikiText-2 PPL gate** on the Q6_K SIMD kernel (~30-60 min wall on Coder-30B Q4_K_M). Expected: identical to generic.
+2. If full PPL passes: update `cpu-kernel-env-flags-inventory.md` to mark `GGML_Q6_K_8X8_AVX=1` production-ready opt-in.
+3. Q5_K SIMD body as a separate dedicated session, using Q4_K's structure as the template (not Q6_K's).
