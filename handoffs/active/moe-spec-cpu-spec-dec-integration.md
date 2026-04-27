@@ -1,6 +1,13 @@
 # MoE-Spec — CPU Speculative-Decoding Verification with Budgeted Expert Selection
 
-**Status**: STUB — **LIVE ALGORITHMIC LEVER, NOT EXHAUSTED, NOT CLOSED**. Phase 0 falsification probe NOT yet run as of 2026-04-27 evening. Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths exhausted" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; previously a research note buried in `cpu-shape-specialized-gemv-decode.md`.
+**Status**: Phase 0 falsification probe DONE 2026-04-27 evening — **VERDICT: queue Phase 1 prototype (LOW risk, ~100-200 LOC, 1-2 days)**, but with **scope caveats** that materially shrink the expected gain vs the original 5-15% claim:
+
+1. The paper's GPU mechanism (HBM expert-weight loading reduction during tree spec-dec verification) does NOT directly translate, BUT the underlying "reduce distinct experts touched per verification batch → reduce DRAM expert-weight reads" mechanism DOES translate to CPU. CPU expert weights are mmap'd in DRAM and the verification's `mul_mat_id` op reuses each expert across all matching tokens in the batch.
+2. **Production runs Coder-30B and REAP-246B with `p_split=0` (linear spec-dec only)** — tree spec-dec was empirically tested and harmful (`registry:378 — Coder-30B tree net-negative at 48t`; `registry:447 — REAP-246B tree harmful at all ps values`). The paper is tree-only by mechanism (aggregates routing scores across 63-token EAGLE-3 trees), but the algorithm trivially extends to linear K=32 batched verification: aggregate routing scores across the K verification tokens, top-B select, mask out-of-S experts.
+3. **Existing `cparams.moe_n_expert_override` already captures partial compute reduction** — `--moe-n-expert N` reduces per-token K from 8 to N. Production already uses this (e.g., `--override-kv qwen3moe.expert_used_count=int:4` for some Coder-30B configs). MoE-Spec's contribution would be tree/batch-level union shrinkage on top of per-token K reduction; the available delta is narrower than the GPU case where no equivalent mechanism existed.
+4. Expected CPU gain on linear K=32 spec-dec: 3-8% upper bound (much less than paper's GPU 10-30% on tree). Below the original handoff's 5-15% framing but still potentially deployable.
+
+Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths exhausted" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; previously a research note buried in `cpu-shape-specialized-gemv-decode.md`. Phase 0 completed same evening.
 **Priority**: MEDIUM (algorithmic; competes with future hardware-acceleration work for engineer-time, NOT with closed CPU kernel/runtime tracks)
 **Categories**: moe_optimization, speculative_decoding, inference_serving, hardware_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -71,7 +78,89 @@ Output an explicit estimate:
 - If MEDIUM risk + 1-2 weeks prototype → escalate priority decision (compete with CPU22 work-stealing for engineer time).
 - If HIGH risk OR >2 weeks prototype → defer; prefer CPU22 work-stealing first.
 
-## Phase 1 — prototype scope (forthcoming after Phase 0)
+## Phase 0 — RESULTS (DONE 2026-04-27 evening)
+
+### Step 0.1 — paper read (arXiv:2602.16052)
+
+Authors: McDanel, Li, Surineni, Khaitan (Feb 2026). Pseudocode (Appendix B):
+```
+For draft tree of M tokens, hidden states {h_t}:
+  for each expert i: s_i = Σ_t g_i(h_t)         # aggregate routing-prob across tree
+  S = top-B experts by score s_i                  # tree-level shortlist
+  for each token t: expert subset = top_k(h_t) ∩ S  (truncate)
+                              OR    top-B(h_t restricted to S) (substitute)
+```
+
+Key facts:
+- **Mechanism targets memory bandwidth on GPU** ("expert explosion": 63-token EAGLE-3 tree on OLMoE-1B-7B activates 54 of 64 experts per layer; HBM must load the union)
+- **Tree-only on EAGLE-3 trees**; not evaluated on linear spec-dec
+- Budget B is **fixed per deployment**, searched empirically ({8, 16, 24, 32, 40, 48, 56} for OLMoE; {16, 24, 32, 48, 64} for Qwen3)
+- B can be < per-token top-K (k=8 with B=32 means tokens whose natural top-K falls outside S receive fewer than k experts)
+- Quality impact: **1.4% acceptance-rate reduction average**; task-dependent (code tolerates tight budgets, reasoning degrades steeper)
+- vs EAGLE-3 baseline: **10-30% throughput** on A100 GPU
+- **No code release** found; paper says "extends EAGLE-3 codebase"
+- Hardware: A100 80GB (single-GPU OLMoE/Qwen3, dual-GPU Mixtral). No CPU mention.
+
+### Step 0.2 — CPU spec-dec verifier path traced
+
+**Verification call site**: `tools/server/server-context.cpp:3030-3081` (slot decode path).
+Spec-dec drafts are produced via `common_speculative_draft()` (common/speculative.cpp); the target verification is the standard `llama_decode(ctx_tgt, batch)` with batch_size=K (linear) or batch_size=tree.n_nodes (tree).
+
+**Tree mechanism EXISTS in our fork**: `common/speculative.cpp:1137-1300` (DySpec heap-based dynamic tree construction). Triggers when `params.p_split > 0.0f` (line 1381). Production registry: tree DISABLED on Coder-30B + REAP-246B (`p_split: 0`); tree ENABLED on some other models with `p_split: 0.05`.
+
+**Routing-score location (the real insertion point)**: `src/llama-graph.cpp:1395-1458` (`build_moe_ffn` function).
+- Line 1398: `probs = ggml_soft_max(ctx0, logits)` → `[n_expert, n_tokens]`
+- Lines 1413-1454: existing **DeepSeek-V3 expert-groups mask** uses exactly the structure MoE-Spec needs — masks `selection_probs` to -infinity for out-of-group experts before `argsort_top_k`
+- Line 1458: `selected_experts = ggml_argsort_top_k(ctx0, selection_probs, n_expert_used)` → `[n_expert_used, n_tokens]`
+
+**Original handoff's "ggml_compute_forward_mul_mat_id is the insertion point" was wrong**. mul_mat_id sees only already-selected expert ids; the budgeting must fire before argsort_top_k at the graph-build layer.
+
+**Existing related infrastructure** (already in fork): `cparams.moe_n_expert_override` (`src/llama-cparams.h:46`) reduces per-token K from `n_expert_used` to override value. Wired through `--moe-n-expert N` CLI / `LLAMA_ARG_MOE_N_EXPERT` env. Implementation at `llama-graph.cpp:1477-1499`. **MoE-Spec is a different mechanism (per-batch top-B union shrinkage) — orthogonal to per-token K reduction.**
+
+### Step 0.3 — Compatibility analysis
+
+| Surface | Interaction | Verdict |
+|---|---|---|
+| Linear spec-dec (Coder-30B + REAP-246B production) | Aggregate routing scores across K=32 verification tokens; mask out-of-S experts | COMPATIBLE — algorithm trivially extends from tree-aggregation to batch-aggregation |
+| Tree spec-dec (DySpec, p_split>0) | Direct match for paper's algorithm | COMPATIBLE but production stack disables tree on the two target models |
+| `cparams.moe_n_expert_override` (per-token K reduction) | Both mask `selection_probs` before argsort; orderings: MoE-Spec mask first (per-batch), then existing override (per-token K) | COMPATIBLE — orthogonal masking; possibly compounding |
+| CPU15 EP (inter-process expert parallelism) | Master broadcasts src1+ids to workers; if budget masking happens at master before broadcast, workers see smaller `ids` array | COMPATIBLE — budget signal flows through cparams (no IPC ring change needed) — BUT CPU15 EP frontdoor only deployed on Qwen3.6-35B Q8_0; Coder/REAP do NOT use EP in production, so CPU15×MoE-Spec interaction is theoretical |
+| CPU22 work-stealing | Closed via test, default-OFF; if reopened, operates at tile-distribution layer below MoE-Spec's expert-selection layer | ORTHOGONAL |
+| `--draft-max=32 --p-split=0` (production Coder/REAP linear K=32) | Verification batch_size=32; MoE-Spec aggregates across the 32 tokens | COMPATIBLE |
+| PPL preservation | spec-dec produces bit-exact output by construction (verifier rejects mismatched draft tokens regardless of target's expert subset); MoE-Spec changes target's expert dispatch but not the acceptance rule | bit-exact PPL EXPECTED |
+
+**REAP-246B has a draft model** (`Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0.gguf`, registry line ~441). MoE-Spec applies to the target's verification step, not the draft. The draft model has its own architecture (dense at 0.75B, no MoE) so MoE-Spec is moot for the draft side. REAP-246B's MoE target is what MoE-Spec acts on.
+
+### Step 0.4 — Phase 1 prototype scope estimate
+
+| Item | Estimate |
+|---|---|
+| LOC | ~100-150 in `src/llama-graph.cpp` + ~20 in `src/llama-cparams.h` + `src/llama-context.cpp` + `common/common.cpp`/`.h` for `--moe-spec-budget` flag + env var |
+| New ggml ops | NONE — reuses existing `ggml_sum_rows` + `ggml_argsort_top_k` + `ggml_set_rows` + `ggml_fill` (all already used by DeepSeek-V3 expert-groups path; pattern at lines 1437-1454) |
+| Risk class | **LOW** — pure scheduler change, no kernel rewrite; bit-exact PPL is structural property of spec-dec (verifier rejects mismatches) |
+| Build/test cycle | 1-2 days prototype + 1 day measurement |
+| Falsification budget | Phase 1 MAX 3 days; if no signal, close honestly via test (not via inference) |
+
+### Phase 0 GATE VERDICT: **QUEUE PHASE 1**
+
+Per handoff Phase 0 gate criteria: "LOW risk + ≤500 LOC + ≤1-2 days prototype → queue Phase 1 immediately". All three met.
+
+**Prototype Phase 1 implementation sketch**:
+1. Add `cparams.moe_spec_budget` (default 0 = off), `--moe-spec-budget N` CLI flag, `GGML_MOE_SPEC_BUDGET=N` env var (mirrors existing `moe_n_expert_override` plumbing).
+2. In `src/llama-graph.cpp::build_moe_ffn` after line 1398 softmax, when `cparams.moe_spec_budget > 0 && cparams.moe_spec_budget < n_expert && n_tokens >= cparams.moe_spec_min_batch (default 8)`:
+   - Aggregate: `expert_scores = ggml_sum_rows(probs)` → `[1, n_expert]` (sum across n_tokens)
+   - Top-B select: `top_b = ggml_argsort_top_k(expert_scores, cparams.moe_spec_budget)` → `[B, 1]`
+   - Build mask following existing expert-groups pattern (lines 1437-1454): set selection_probs to -INFINITY for experts NOT in top-B
+   - Existing argsort_top_k at line 1458 naturally selects only in-S experts per token
+3. Quality validation: PPL bit-exact at 12 chunks WikiText-2 on Coder-30B Q4_K_M and REAP-246B Q4_K_M (will pass by construction).
+4. Throughput measurement: 5-rep proper canonical on:
+   - Coder-30B Q4_K_M with `--draft-max 32 -p-split 0` (production config), B sweep over {n_expert/2, n_expert*3/4, n_expert} where n_expert=128 (B=128 is off; B=64 mid; B=96 light)
+   - REAP-246B Q4_K_M with `--draft-max 32 -p-split 0`, B sweep matching n_expert (likely 80 for REAP-246B post-pruning; sweep {40, 60, 80})
+5. Success gate: ≥5% on at least one of the two models OR explicit closure via test.
+
+Phase 1 prototype branches from `feature/cpu-ep-inter-process` (current HEAD `0bc793637`).
+
+
 
 Likely env-gated `GGML_MOE_SPEC_BUDGET=N` (default 0 = off; 0 < N < expert_count = budget the verification-step expert selection to top-N by routing score) controlling the budgeted-expert count at verification.
 
