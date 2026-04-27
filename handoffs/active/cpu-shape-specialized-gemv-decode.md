@@ -26,6 +26,29 @@
 - Suggested first step: read `ggml/src/ggml-cpu/repack.cpp` to find the `mul_mat_id` path, then prototype a blocked-CSR-COO routing index in `llama.cpp-experimental` on a fresh branch off `cpu-optimization/q8-8x8-avx512bw`. Validate on Qwen3.6-35B-A3B Q8_0 (already CPU15-EP-friendly) and gemma-26B-A4B (already CPU15-EP-friendly).
 - Cross-reference: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑ START HERE block + Prioritized Task List item CPU18.
 
+### CPU18 design notes — added 2026-04-26 evening (post-CPU24 perf-record)
+
+Code path located: `ggml/src/ggml-cpu/ggml-cpu.c:1774` `ggml_compute_forward_mul_mat_id`. The expert dispatch loop is in `ggml_compute_forward_mul_mat_id_one_chunk` at `:1703`. The current implementation processes per-(expert, token) pairs via a routing pass that builds `n_kept` per-expert token lists, then runs per-expert GEMV on each list.
+
+**What MegaBlocks indexing replaces**: the per-expert padded GEMV calls. Currently each expert is processed as if it always has `capacity_factor × n_tokens / n_experts` rows; tokens beyond capacity are dropped or padded. MegaBlocks' blocked-CSR-COO encoding allows variable-sized expert blocks in a single "block-diagonal matrix with variable-sized blocks" formulation, avoiding both padding waste and drop loss.
+
+**On the CPU side specifically**: capacity-factor padding/dropping is largely a non-issue for our regime because:
+1. Single-user inference: typically 1 token/iteration, not large batches where capacity factor bites
+2. CPU MoE workloads use top-K (K=8 typically) with `n_kept` = K × n_tokens, no capacity cap by default
+3. Padding overhead only matters at large batch sizes which CPU rarely handles
+
+**Realistic CPU18 ROI on our workload**:
+- For single-token decode (the dominant path): each expert sees at most 1 token. Padding/drop logic isn't engaged. **Indexing change is a no-op.**
+- For prefill (multi-token batches): indexing change could reduce wasted compute on padded slots. Estimated +2-5% on long prefills, but prefill is already 200-500 t/s which is rarely the bottleneck.
+
+**Updated assessment (post-CPU24 perf-record)**: CPU24 attribution finding (compute kernels = 80% of cycles, sync = 15%) does NOT promote CPU18. The compute kernels are the GEMV inner loops, not expert-dispatch logic. CPU18 affects how many/which expert GEMVs run per token but doesn't make individual GEMV calls faster.
+
+**Recommendation**: **DEPRIORITIZE CPU18**. The expected gain (≤5% on prefill only, ≤0% on decode) doesn't justify ~50-70 hours of engineering effort to port the indexing scheme. Better leverage the same effort budget on:
+- CPU2 Q6_K + Q5_K SIMD kernels (compounds CPU2 SIMD wins, addresses the actual 80% compute-cycle target)
+- Per-thread BW-contention mitigations (the actual bottleneck per CPU24 perf-record)
+
+**Re-open trigger**: if we shift to a workload pattern with large batched MoE inference (e.g., agent batch processing, eval pipelines), revisit. For single-user interactive deployment, this is not a meaningful lever.
+
 ## Status as of 2026-04-24
 
 ### Session 15 — AVX-512BW 8x8 GEMV kernel LANDED, scaffold validated, multi-thread regression identified
