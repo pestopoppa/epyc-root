@@ -2,7 +2,7 @@
 
 **Purpose**: Entry point for autonomous agents navigating inference optimization work across the EPYC stack.
 **Created**: 2026-03-17
-**Updated**: 2026-04-26 (CPU critique-integration pass: CPU20 rigor gate added; CPU track statuses refreshed for post-Phase-A-G state)
+**Updated**: 2026-04-27 evening (CPU25 NUMA_MIRROR investigation CLOSED as DECISIVE NEGATIVE — full Phase 0a/0b/1a/1b/1c implementation landed bit-exact but Phase 2 throughput gate failed: -1.0% Coder-30B Q4_K_M, +0.6% Qwen3.6-35B Q8. Hardware is DRAM-channel-bound, not fabric-bound, on single-socket NPS4. Software-level CPU optimization runway materially exhausted; v5 production push is the next strategic step. CPU20 rigor gate from 2026-04-26 still in force.)
 
 ## Agent Operating Instructions
 
