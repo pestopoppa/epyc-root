@@ -95,11 +95,23 @@ For every feature branch benchmarked:
 2. Confirm compile-time guards (`GGML_USE_OPENMP`, etc.) do not compile out the measured path.
 3. Save one explicit proof artifact in the run folder.
 
-### P5. Replication and cache policy
+### P5. Replication and cache policy (UPDATED 2026-04-27 evening — sample-size requirements tightened)
 
-1. Run at least 3 reps for any claim stronger than ±2%.
-2. Label each run as warm-cache or cold-cache.
-3. Keep cache policy consistent within a comparison.
+Rep-count thresholds matched to claimed delta size (per measurement-methodology lesson learned in CPU22 Phase 3, where a 3-rep Next-80B result showed +6.3% but converged to neutral at 5 reps):
+
+| Claimed delta | Minimum reps | Rationale |
+|---|---|---|
+| ≥10% | 3 reps | Comfortably above noise floor; 3-rep std typically <0.5% |
+| 5-10% | 5 reps | Below 3-rep stability; 5 reps to constrain CI |
+| 2-5% | 5 reps | Pure noise-floor zone for this hardware; 5 reps minimum |
+| ≤2% | 10 reps | Sub-noise; 10 reps with explicit std reporting required |
+
+Always report mean ± std alongside the delta. Never report a sub-2% claim from a 3-rep measurement. Any sub-5% claim must include the per-rep raw values in the artifact bundle so a reader can verify the std calculation.
+
+Other policies:
+1. Label each run as warm-cache, cold-cache, or steady-state (per P5a).
+2. Keep cache policy consistent within a comparison.
+3. For position-effect-sensitive measurements (warm position 1 vs 2 vs N within a sweep), randomize order across reps OR run an explicit position-confound check.
 
 ### P5a. Cold-cache vs warmed-baseline distinction (added 2026-04-26 post-L3aaN-revert)
 

@@ -1,7 +1,7 @@
 # MoE-Spec — CPU Speculative-Decoding Verification with Budgeted Expert Selection
 
-**Status**: STUB (created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; previously a research note buried in `cpu-shape-specialized-gemv-decode.md`)
-**Priority**: MEDIUM
+**Status**: STUB — **LIVE ALGORITHMIC LEVER, NOT EXHAUSTED, NOT CLOSED**. Phase 0 falsification probe NOT yet run as of 2026-04-27 evening. Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths exhausted" framing in upstream indices was incompatible with this stub's existence. Created 2026-04-27 evening as Phase 4 of closure-inflation remediation plan; previously a research note buried in `cpu-shape-specialized-gemv-decode.md`.
+**Priority**: MEDIUM (algorithmic; competes with future hardware-acceleration work for engineer-time, NOT with closed CPU kernel/runtime tracks)
 **Categories**: moe_optimization, speculative_decoding, inference_serving, hardware_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)

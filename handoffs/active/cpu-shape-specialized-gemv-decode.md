@@ -43,11 +43,11 @@ Code path located: `ggml/src/ggml-cpu/ggml-cpu.c:1774` `ggml_compute_forward_mul
 
 **Updated assessment (post-CPU24 perf-record)**: CPU24 attribution finding (compute kernels = 80% of cycles, sync = 15%) does NOT promote CPU18. The compute kernels are the GEMV inner loops, not expert-dispatch logic. CPU18 affects how many/which expert GEMVs run per token but doesn't make individual GEMV calls faster.
 
-**Recommendation**: **DEPRIORITIZE CPU18**. The expected gain (≤5% on prefill only, ≤0% on decode) doesn't justify ~50-70 hours of engineering effort to port the indexing scheme. Better leverage the same effort budget on:
+**Recommendation**: **DEPRIORITIZE CPU18 — for the current single-user-decode regime only**. This is an analysis-based deprioritization, NOT an empirical closure: no prototype was built, no microbenchmark of the indexing scheme was run on our codepath. The expected gain (≤5% on prefill only, ≤0% on decode) doesn't justify ~50-70 hours of engineering effort under current workload assumptions. Better leverage the same effort budget on:
 - CPU2 Q6_K + Q5_K SIMD kernels (compounds CPU2 SIMD wins, addresses the actual 80% compute-cycle target)
 - Per-thread BW-contention mitigations (the actual bottleneck per CPU24 perf-record)
 
-**Re-open trigger**: if we shift to a workload pattern with large batched MoE inference (e.g., agent batch processing, eval pipelines), revisit. For single-user interactive deployment, this is not a meaningful lever.
+**Re-open trigger** (workload-shift, not "exhausted"): if we shift to a workload pattern with large batched MoE inference (e.g., agent batch processing, eval pipelines, multi-tenant API, prefill-heavy pipelines), the capacity-factor padding/dropping cost becomes material and CPU18's blocked-CSR-COO + transpose indices become a real lever. For batched MoE/prefill/eval workloads the technique remains a live option that has not been tested or refuted on CPU. Track stays "deprioritized" not "closed".
 
 ## Status as of 2026-04-24
 

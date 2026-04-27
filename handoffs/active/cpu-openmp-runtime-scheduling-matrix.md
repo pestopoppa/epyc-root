@@ -1,6 +1,6 @@
 # CPU21 — OpenMP Runtime And Scheduling Matrix
 
-**Status**: ACTIVE — libgomp affinity/wait-policy submatrix complete (universal +3-8% landed); libomp runtime + chunks 8/16 PENDING (closure-inflation correction applied 2026-04-27 evening per peer review).
+**Status**: CLOSED 2026-04-28 **for the tested submatrix only** (libgomp affinity/wait-policy stack +3-8% landed; clean libomp build delivers +6.4% on Coder-30B Q4_K_M apples-to-apples vs libgomp; chunks 8/16 swept under both runtimes for 3 model proxies; cross-arch dense neutral). **Untested submatrix** (peer-review pass #2, 2026-04-27 evening): full Phase A affinity permutation table under libomp + Phase C wait-policy under libomp — only Phase B chunks ran under libomp. Closure scope is "tested submatrix"; the original full-matrix language (libgomp+libomp × {static,dynamic,guided} × {1,4,8,16} × full affinity perms × wait policy) is NOT entirely closed. Reopen ONLY if a future signal suggests libomp behaves differently under different affinity binds (no current evidence of this).
 **Priority**: HIGH
 **Categories**: hardware_optimization, inference_serving, runtime_tuning
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -102,11 +102,22 @@ Bundle: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. Key finding:
 - **Win is MODEL-SPECIFIC**: Qwen3.6-35B Q8_0 -0.6%, REAP-246B Q4_K_M neutral. Likely mechanism: thinner per-thread row-shard tiles on Coder-30B-A3B (3.3B activated params) benefit from finer-grained guided scheduling; larger MoE and BW-bound classes don't.
 - **Recommendation**: do NOT default `OMP_SCHEDULE=guided,16` system-wide. The CPU21-best universal stack remains `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active` (no `OMP_SCHEDULE`). For Coder-30B-A3B-Instruct workloads specifically, the orchestrator may opt-in `OMP_SCHEDULE=guided,16` per-role.
 
-### libomp comparison — DEFERRED, awaiting user authorization
+### libomp comparison — RESOLVED 2026-04-28 (clean build delivered the comparison)
 
-- `libomp.so.5` runtime IS installed on the host. But LD_PRELOAD substitution from libgomp to libomp FAILS catastrophically (0.35 t/s in smoke; symbol conflicts when both runtimes load).
-- Clean libomp build requires `apt install clang-20`. **Sandbox blocked this** (system-package modification needs user authorization). Surfaced; awaiting decision.
-- If authorized: ~2-3 hours to build_libomp/ + replicate Phase A/B/C under libomp + write comparison.
-- If not: Phase 2.1 closes with the partial scope "libgomp matrix exhausted; libomp explicitly deferred" — narrows the closure language but doesn't void the +3-8% affinity-stack finding or the +3.6% guided,16 finding for Coder-30B.
+User authorized `apt install clang-20`. `build_libomp/` was built (clang-20 + libomp + -march=znver5) and the headline comparison ran:
+
+| Build | Coder-30B Q4_K_M tg32 (5-rep) | Δ |
+|---|---|---|
+| `build/` (gcc + libgomp, no -march) | 48.28 ± 0.11 | reference |
+| `build_znver5/` (gcc + libgomp + -march=znver5) | 50.06 ± 0.05 | +3.7% (codegen) |
+| `build_libomp/` (clang-20 + libomp + -march=znver5) | **53.28 ± 0.11** | **+10.4% total / +6.4% from runtime alone** |
+
+**What WAS tested under libomp** (Phase 2.1 deliverables): tg32 baseline at proper canonical, schedule policy `guided,16` delta, chunks 8/16 sweep, PPL bit-exactness at 12 chunks (= 11.1146), cross-model spread (Coder +6.4%, Q8 frontdoor +0.8% noise, REAP -0.8% noise), cross-arch dense (-1.7% noise).
+
+**What was NOT tested under libomp** (left open by Phase 2.1, peer-review pass #2 noted):
+- Full Phase A affinity permutation table (`OMP_PROC_BIND={false,close,spread}` × `OMP_PLACES={cores,threads}`) — only the universal `spread+cores` baseline ran.
+- Phase C wait-policy variants (`OMP_WAIT_POLICY=passive` and explicit spin/yield knobs) under libomp — only `active` ran.
+
+These are bounded by the same affinity/wait-policy gain pattern observed under libgomp (+3-8%); the model-class dependence is what shifted under libomp, not the binding/wait-policy direction. So the residual upside from filling these cells is small (~1-2% additional, if anything). Not pursued; flagged here for future revisit if a signal warrants.
 
 Phase 2.6 (separate sub-task) will add the dense/hybrid Qwen3.5/3.6-27B affinity-stack confirmation for finding #11 closure.
