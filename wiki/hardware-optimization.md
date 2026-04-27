@@ -674,3 +674,76 @@ Production deployment should be **model-aware**: `--mmap 0 + --interleave=all` i
 2. **CPU24 attribution scope simplifies**: there's no measurable EP regression on >150B to attribute. Open question becomes "what's the proper-canonical ceiling for REAP-246B (5.94 t/s)" rather than "why does EP regress".
 3. **CPU19 Tutel 2DH motivation evaporates**: was specifically to fix the >150B EP regression, which doesn't exist on proper canonical.
 4. **Production push roadmap simplifies**: the "+17% production gain" was largely illusory; the actual gain is the canonical config change (+44% on Q8_0, +39% on gemma) which requires no code, just per-model deployment config.
+
+## 2026-04-26 late-evening — CPU21 OpenMP affinity universal lever + CPU24 perf-record correction
+
+### CPU21 OpenMP runtime/scheduling matrix sweep — universal +3-8% lever found
+
+Sweep on Coder-30B Q4_K_M (sync-bound class proxy) testing:
+- Affinity (PROC_BIND × PLACES): close/cores, close/threads, spread/cores, spread/threads, master/cores, false
+- Schedule (static/dynamic/guided × chunk 1/4)
+- Wait policy (active vs passive)
+
+**Best stack**: `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`. Schedule policy is within noise (libgomp's defaults are near-optimal). `OMP_WAIT_POLICY=passive` is a deployment trap (−81.6% on Coder due to wake-up latency at 96 threads).
+
+**Cross-model verification (full 5-model picture)**:
+
+| Model | Class | Baseline (no OMP env) | + Combined stack | Δ |
+|-------|-------|----------------------:|-----------------:|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | sync-small | 43.82 | **47.08** | **+7.4%** |
+| Qwen3.6-35B-A3B Q8_0 | BW-bound | 21.36 | **23.04** | **+7.9%** |
+| Qwen3-Next-80B-A3B Q4_K_M | sync-small/hybrid | 21.37 | **22.15** | **+3.7%** |
+| Qwen3-Coder-REAP-246B-A35B Q4_K_M | sync-large | 6.14 | **6.33** | **+3.1%** |
+| gemma-4-26B-A4B Q4_K_M | sync-small/mixed | 36.45 | **38.59** | **+5.9%** |
+
+**First universal-positive lever** identified in 2026-04 CPU work — every prior optimization had asymmetric/regressive cases on at least one model. CPU21 affinity tuning is positive on every class. Modest on REAP (+3.1%, capped by structural sync) and largest on BW-bound Q8_0 + gemma (+7.9%/+5.9%).
+
+**Updated production canonical**:
+
+```
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all --physcpubind=0-95 \
+  llama-bench -t 96 -fa 1 -p 0 -n 32 -r 3
+```
+
+### CPU24-narrow attribution corrected by perf-record
+
+Initial CPU24 perf-stat counter analysis suggested sync overhead = 96% of parallelism loss based on REAP-246B's 4.27× thread scaling (1t→96t). This was WRONG.
+
+`perf record -F 99 -g` on REAP-246B at 96t (160k samples, 25-second decode capture) shows actual cycle distribution:
+
+| Symbol | % of samples |
+|--------|-------------|
+| `ggml_gemv_q4_K_8x8_q8_K` (compute kernel) | **64.37%** |
+| `ggml_vec_dot_q6_K_q8_K` (compute kernel) | **15.64%** |
+| libgomp internal sync at offset 0x26580 | **15.50%** |
+| `ggml_compute_forward_flash_attn_ext` | 0.73% |
+
+**80% of cycles are in compute kernels; only 15% in OpenMP sync.**
+
+The 4.27× scaling deficit is **per-thread bandwidth contention INSIDE compute kernels**: 96 threads sharing 460 GB/s = 4.79 GB/s per thread vs single-thread effectively-unlimited (~30-40 GB/s on its local channel). Cores spend cycles in the gemv loop but stalled on memory loads — perf-record sees them at compute-kernel IPs, but IPC 0.39 reveals they're not retiring instructions.
+
+**Corrected attribution**: `dominant_bottleneck = compute_kernel (memory-stalled INSIDE)`. Sync is secondary at 15%.
+
+**Implications**:
+- **CPU2 SIMD kernel work is REVALIDATED priority** — 80% of cycles in compute kernels, faster SIMD = real wall-time reduction
+- CPU19 Tutel 2DH motivation FURTHER weakened — 15% sync ceiling means even halving sync gains at most 7-8%
+- CPU22 dynamic load balancing — gain ceiling bounded by 15% sync share (not 96% as previously framed)
+
+### CPU17 Sarathi-Serve closed for single-user regime
+
+Phase 0 quick probe sweep `-ub` (microbatch / chunk-prefill granularity) on Coder-30B Q4_K_M:
+
+| `-ub` | pp4096 (prefill t/s) | tg32 (decode t/s) |
+|-------|---------------------:|------------------:|
+| 128 | 243.91 | 46.50 |
+| 256 | 358.10 | 46.95 |
+| 512 (default) | 443.83 | 46.26 |
+| 1024 | 480.54 | 46.83 |
+| 2048 | 511.22 | 46.61 |
+
+**Decode speed essentially constant** (46-47 t/s) across all `-ub` values. Smaller `-ub` only damages prefill (−52% at ub=128 vs ub=2048). For single-user CPU regime: no decode-stall-during-prefill problem to solve since requests don't compete within a single iteration. CPU17 + CPU16 (NUMA disagg) both **closed**. Re-open trigger: shift to multi-tenant API.
+
+### CPU2 Session 16 — Q6_K AVX-512BW dispatcher scaffolding
+
+Given CPU24 perf-record shows `ggml_vec_dot_q6_K_q8_K` is the second-largest cycle consumer (15.64% on REAP-246B), Q6_K AVX-512BW SIMD is the highest-ROI remaining optimization. Session 16 landed dispatcher scaffolding (env-gated `GGML_Q6_K_8X8_AVX=1`, stub falls through to generic). Full SIMD algorithm design documented in handoff for follow-up session. Estimated +2-5% on Q4_K_M decode once body lands.
