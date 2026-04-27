@@ -144,6 +144,24 @@ Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-
 
 **Forward path post-revert**: Phase H (PPL gates) on NPS4. Then I → J → K → L → M. CPU16/CPU17/CPU18/CPU19 backlog (added 2026-04-26) is independent of NUMA topology and can proceed in parallel with the revert window.
 
+## ⚑ CPU25 — NUMA_MIRROR fork integration (scoped 2026-04-27, recommendation: PURSUE)
+
+After CPU24 perf-record showed compute kernels are memory-stalled INSIDE on cross-NUMA loads (80% of cycles in compute kernels with IPC 0.39, per-thread BW share at 96t = 4.79 GB/s), the largest remaining concrete throughput lever is **per-NUMA-node weight replication**. The vproxy-tools/llama.cpp fork has a working implementation (GGML_NUMA_MIRROR, ~commit `9314286`) that holds one private copy of weights per NUMA node, eliminating cross-NUMA traffic.
+
+**Reported upstream gains** (single-socket EPYC 9275F, NPS1, 2× replication):
+- QwQ-32B FP16: +62% (6.66 → 10.80 t/s)
+- DeepSeek-R1 671B Q8: +34% (7.19 → 9.67 t/s)
+
+**Memory feasibility (4× replication on our 1.1 TB host)**: all 5 production models fit. REAP-246B at 552 GB is the constraint (53% of RAM, no co-resident large models possible).
+
+**Effort**: 1.5–2.5 engineer-days for feature-flagged drop-in (accessor migration `tensor->data` → `tensor_data()` + per-node mmap path + 4-node generalization + bench).
+
+**Conflicts with current stack**: CPU1 P1.3 mbind (DIRECT — mirror supersedes; P1.3 already deprecated for instability), CPU15 EP (PARTIAL OVERLAP for MoE; pick one).
+
+**Phase 2 gate**: ≥+25% on Coder-30B over current 47.98 t/s (~60 t/s target). PPL bit-exact required.
+
+Full handoff: [`numa-mirror-integration.md`](numa-mirror-integration.md).
+
 ## Entry point hierarchy for a fresh agent session
 
 **(was "START HERE if resuming after L3aaN reboot" — superseded above; the entry list below remains accurate)**
