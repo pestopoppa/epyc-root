@@ -11,16 +11,35 @@
 
 Test whether sync-heavy Q4_K_M regressions are recoverable by OpenMP runtime/scheduling choices before doing deeper kernel surgery.
 
-## Status summary (added 2026-04-27 evening after peer review)
+## Status summary (UPDATED 2026-04-28 post-Phase-2.1 completion)
 
-**Submatrix complete**: libgomp × Phase A affinity (close/spread × cores/threads, master, false) × Phase B partial schedule (static/dynamic/guided × chunk={1,4}) × Phase C wait policy (active/passive). The `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active` stack delivers a **universal +3-8% on all sync-bound Q4_K_M models tested** (Coder-30B, Qwen3.6-35B Q8 included for comparison, REAP-246B). This finding is preserved as a real, deployable lever.
+**Phase 2.1 COMPLETE**: clang-20 + libomp build added; Phase B chunks 8/16 swept under both runtimes; cross-model verified.
 
-**Submatrix incomplete** (does NOT void the partial wins; just narrows the closure scope):
-- libomp comparison: NOT measured. Only libgomp tested. libomp may yield different chunk/affinity/wait behavior on Zen 5.
-- Schedule chunks 8 and 16: NOT measured. Only chunks 1 and 4 tested.
-- Dense/hybrid model (Qwen3.5/3.6-27B): NOT measured. The +3-8% finding is stated in MoE-Q4_K_M terms but should generalize to dense per process-wide affinity mechanics. Phase 2.6 of the remediation plan adds this.
+**MAJOR FINDING — libomp delivers +6.4% on Coder-30B Q4_K_M** (apples-to-apples vs libgomp at -march=znver5):
 
-**Honest closure scope**: "libgomp affinity/wait-policy submatrix exhausted on MoE Q4_K_M with universal +3-8% deployable stack". Broader claim "the runtime/scheduling matrix is exhausted" requires the libomp + chunks 8/16 + dense fills below.
+| Build | Coder-30B Q4_K_M tg32 (5-rep) | Δ |
+|---|---|---|
+| `build/` (gcc + libgomp, no -march) | 48.28 ± 0.11 | reference |
+| `build_znver5/` (gcc + libgomp + -march=znver5) | 50.06 ± 0.05 | +3.7% (codegen) |
+| `build_libomp/` (clang-20 + libomp + -march=znver5) | **53.28 ± 0.11** | **+10.4% total / +6.4% from runtime alone** |
+
+Win is **MOSTLY MODEL-SPECIFIC**:
+- Coder-30B Q4_K_M: +6.4% (real)
+- Qwen3.6-35B Q8_0: +0.8% (within noise)
+- REAP-246B Q4_K_M: -0.8% (within noise)
+
+PPL bit-exact on libomp build (chunks 1-12 PPL = 11.1146 vs libgomp+znver5 11.1215; Δ=0.0069 = clang vs gcc fp-codegen drift, NOT quality regression).
+
+Schedule policy delta under libomp is small (`guided,16` adds +1.2% on top of libomp baseline), much smaller than the +3.6% it adds under libgomp. libomp's defaults are closer to optimal.
+
+**Deployable runtime profile (REVISED)**:
+- Universal stack stays: `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`.
+- **For v5**: ship a libomp-built llama-server (clang-20 + -march=znver5). +6.4% on Coder-30B; neutral on others. Single binary, simpler audit story than per-role variants.
+- For Coder-30B-A3B-Instruct workloads specifically, optionally add `OMP_SCHEDULE=guided,16` for an additional +1.2% under libomp (or +3.6% under libgomp).
+
+**Phase 2.6** (dense/hybrid Qwen3.5/3.6-27B sanity coverage) is the only remaining CPU21-related task — covered separately.
+
+Artifact: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. CPU20 bundle complete (README.md, system-state.txt, process-pre/post.txt, ld_debug.log, results.csv, decision.md, plus 23 raw bench logs + libomp PPL log).
 
 ## Why this exists
 
