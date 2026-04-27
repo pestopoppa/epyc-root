@@ -20023,3 +20023,506 @@
     inner pool, closer to their regime). Phase-3 literature expansion
     skipped: immediate prior-art neighbours (xRouter / RouteLLM / Router-R1
     / BaRP / LLM Bandit) all already in index.
+- id: intake-475
+  arxiv_id: '2604.17295'
+  url: https://arxiv.org/abs/2604.17295
+  source_type: paper
+  title: 'LLaTiSA: Towards Difficulty-Stratified Time Series Reasoning from Visual Perception to Semantics'
+  authors:
+  - Yueyang Ding
+  - HaoPeng Zhang
+  - Rui Dai
+  - Yi Wang
+  - Tianyu Zong
+  - Kaikui Liu
+  - Xiangxiang Chu
+  categories:
+  - multimodal
+  - benchmark_methodology
+  - training_distillation
+  novelty: medium
+  relevance: none
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Existing time-series LLM research suffers from fragmented task definitions and ambiguous benchmarks; a four-level cognitive-complexity taxonomy is proposed.
+  - Introduces HiTSR, a hierarchical 83k-sample dataset with verified chain-of-thought reasoning trajectories stratified by difficulty.
+  - LLaTiSA fuses chart visualizations with precision-calibrated numerical tables to improve VLM temporal perception over visualization-only or numeric-only inputs.
+  - Multi-stage curriculum fine-tuning yields claimed superior in-distribution and out-of-distribution generalization across diverse time-series tasks.
+  techniques:
+  - LLaTiSA (visualization + calibrated numerical table fusion)
+  - HiTSR hierarchical difficulty-stratified dataset
+  - Multi-stage curriculum fine-tuning
+  - Chain-of-Thought trajectory supervision
+  - Vision-Language Model adaptation for time series
+  reported_results:
+  - 'No specific numerical metrics or speedups in the abstract; paper claims qualitative superior performance and robust OOD generalization without quantitative summary in fetched content.'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: New dataset (HiTSR) plus new VLM-based time-series reasoning method with a difficulty-stratification framing; not a duplicate and not obviously superseded by existing chapter coverage, but not a foundational technique either — medium novelty.
+  relevance_justification: EPYC focus is CPU LLM inference on EPYC 9655, NUMA, speculative decoding, MoE/quantization, KV-cache, routing, agent orchestration, and SSM-hybrid models. Chart-based time-series VLM reasoning + curriculum SFT on a new dataset is orthogonal to the inference-serving / hardware-optimization stack and unrelated to the active multimodal-pipeline handoff (which targets embodied/any-to-any VLMs, not chart-based time-series QA).
+  verdict_justification: not_applicable — subject matter does not intersect any active handoff or chapter; no CPU-inference / NUMA / quantization / routing / agent overlap. Flagging rather than silently rejecting per CLAUDE.md research-intake guidance; no creative-deployment-role path visible.
+- id: intake-476
+  arxiv_id: '2604.21686'
+  url: https://arxiv.org/abs/2604.21686
+  source_type: paper
+  title: 'WorldMark: A Unified Benchmark Suite for Interactive Video World Models'
+  authors:
+  - Xiaojie Xu
+  - Zhengyuan Lin
+  - Kang He
+  - Yukang Feng
+  - Xiaofeng Mao
+  - Yuanyang Yin
+  - Kaipeng Zhang
+  - Yongtao Ge
+  categories:
+  - benchmark_methodology
+  - multimodal
+  novelty: high
+  relevance: none
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - First benchmark providing a common evaluation playing field for interactive Image-to-Video world models with identical scenes, identical action sequences, and a unified control interface.
+  - Introduces a unified action-mapping layer translating a shared WASD-style action vocabulary into each model's native control format, enabling apples-to-apples comparison across six major models.
+  - Hierarchical test suite of 500 evaluation cases spanning first/third-person viewpoints, photorealistic and stylized scenes, and three difficulty tiers (Easy to Hard, 20-60s).
+  - Modular evaluation toolkit covering Visual Quality, Control Alignment, and World Consistency, designed to plug in user-defined metrics as the field evolves.
+  - Launches World Model Arena (warena.ai), an online side-by-side battle platform with a live leaderboard for interactive world models.
+  techniques:
+  - WorldMark benchmark suite
+  - Unified WASD action-mapping layer
+  - Hierarchical evaluation test suite (Easy/Medium/Hard, 20-60s)
+  - Modular evaluation toolkit (Visual Quality / Control Alignment / World Consistency)
+  - World Model Arena (warena.ai) head-to-head leaderboard
+  reported_results:
+  - 500 evaluation cases across first/third-person, photorealistic/stylized scenes, three difficulty tiers
+  - Six major interactive video world models compared on identical scenes (Genie, YUME, HY-World, Matrix-Game class)
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Self-described first unified benchmark for interactive image-to-video world models with cross-model action mapping; no prior coverage in EPYC corpus and no overlapping benchmarks indexed.
+  relevance_justification: Paper concerns interactive video generation (cs.CV) world-model evaluation. EPYC focus is CPU LLM inference, NUMA, speculative decoding, MoE/quantization, routing, and agent orchestration. Even the benchmark_methodology angle is domain-locked to video models (trajectory error, aesthetic scores, VLM judgments) and does not transfer to LLM benchmarking.
+  verdict_justification: not_applicable — outside EPYC scope; no CPU inference, no LLM serving, no quantization/KV/MoE/routing relevance. Action vocabulary, scene rendering, trajectory consistency primitives do not transfer to LLM benchmarking. No creative-repurposing path (no draft-model, router, or orchestration analog).
+- id: intake-477
+  arxiv_id: '2604.19734'
+  url: https://arxiv.org/abs/2604.19734
+  source_type: paper
+  title: 'UniT: Toward a Unified Physical Language for Human-to-Humanoid Policy Learning and World Modeling'
+  authors:
+  - Boyu Chen
+  - Yi Chen
+  - Lu Qiu
+  - Jerry Bai
+  - Yuying Ge
+  - Yixiao Ge
+  categories:
+  - multimodal
+  novelty: high
+  relevance: none
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Introduces UniT (Unified Latent Action Tokenizer via Visual Anchoring), a framework for human-to-humanoid policy transfer that uses visual outcomes as a shared physical language across heterogeneous kinematic embodiments.
+  - 'Tri-branch cross-reconstruction: actions predict vision (anchoring kinematics to physical outcomes), vision reconstructs actions (filtering visual confounders), and a fusion branch produces a shared discrete latent space of embodiment-agnostic physical intents.'
+  - VLA-UniT (Policy Learning variant) predicts unified tokens to leverage diverse human egocentric data, claiming SOTA data efficiency and robust OOD generalization on humanoid simulation benchmarks and real-world deployments, including zero-shot task transfer.
+  - WM-UniT (World Modeling variant) conditions on unified tokens to enable direct human-to-humanoid action transfer for controllable humanoid video generation.
+  - t-SNE visualizations empirically show convergence of human and humanoid features into a shared manifold, supporting the cross-embodiment alignment claim.
+  techniques:
+  - Unified Latent Action Tokenizer (UniT)
+  - Tri-branch cross-reconstruction
+  - Visual anchoring for cross-embodiment alignment
+  - Discrete latent action tokens
+  - VLA (Vision-Language-Action) policy
+  - World modeling via token conditioning
+  reported_results:
+  - 'Claimed state-of-the-art data efficiency on humanoid simulation benchmark (specific numerics not in abstract)'
+  - Robust OOD generalization on real-world humanoid deployments
+  - Zero-shot humanoid task transfer demonstrated
+  - Direct human-to-humanoid action transfer enabled in WM-UniT for video generation
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Novel framework for cross-embodiment (human-to-humanoid) action tokenization via visual anchoring — no prior art in our intake matches this approach. Tri-branch cross-reconstruction with action-predicts-vision and vision-reconstructs-action is a distinctive design.
+  relevance_justification: Subject matter (humanoid robotics policy learning, VLA for embodied agents, world modeling for humanoid video generation) is entirely outside EPYC active focus areas. EPYC research is centered on CPU LLM inference on EPYC 9655, NUMA, MoE/quantization/KV-cache/spec-decoding optimization, routing intelligence, and orchestration — none of which intersect with humanoid policy transfer.
+  verdict_justification: not_applicable — humanoid robotics policy learning and world modeling has no operational intersection with the EPYC compendium's CPU-inference, orchestration, or routing scope. Even creative-deployment-role considerations do not surface a plausible angle — techniques are tied to robot kinematics and egocentric video, not language model serving.
+- id: intake-478
+  arxiv_id: '2604.21689'
+  url: https://arxiv.org/abs/2604.21689
+  source_type: paper
+  title: 'StyleID: A Perception-Aware Dataset and Metric for Stylization-Agnostic Facial Identity Recognition'
+  authors:
+  - Kwan Yun
+  - Changmin Lee
+  - Ayeong Jeong
+  - Youngseo Kim
+  - Seungmi Lee
+  - Junyong Noh
+  categories:
+  - multimodal
+  novelty: high
+  relevance: none
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Current identity encoders trained on photographs fail under stylization, confusing texture/color changes with identity drift.
+  - A perception-aware framework is needed to evaluate identity consistency across varying styles.
+  - Fine-tuned semantic encoders calibrated on StyleBench-S outperform baseline encoders on human-judgment correlation.
+  - Approach demonstrates robustness improvements on out-of-domain artist-drawn portraits.
+  - Public release of datasets, code, and pretrained models enables reproducibility.
+  techniques:
+  - StyleBench-H dataset
+  - StyleBench-S dataset
+  - Diffusion-based stylization
+  - Flow-matching-based stylization
+  - 2AFC (two-alternative forced-choice) experiments
+  - Psychometric recognition-strength curves
+  - Semantic encoder fine-tuning
+  reported_results:
+  - 'Significantly higher correlation with human judgments vs baseline encoders (no specific numerical metrics extracted from abstract)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Topic (perception-aware facial identity under stylization) is novel within its own subfield, but the subfield itself is orthogonal to this research program — no prior or duplicate work exists in the EPYC compendium because the area has never been in scope.
+  relevance_justification: Paper concerns facial identity recognition under artistic stylization (vision/graphics, perceptual similarity for portraits). It does not touch CPU inference, NUMA, speculative decoding, MoE, KV-cache, quantization, routing, agent orchestration, or any other active EPYC focus area. Tagged multimodal only because that is the closest taxonomy bucket, but EPYC's multimodal handoff is for VLM/TTS/MedGemma serving — not identity-encoder calibration on stylized portraits.
+  verdict_justification: not_applicable — domain (perceptual face-identity metrics for stylized images) has zero overlap with EPYC inference/orchestration/CPU-optimization scope. No deployable component, no transferable technique, no methodological insight that maps to LLM serving.
+- id: intake-479
+  arxiv_id: '2604.20987'
+  url: https://arxiv.org/abs/2604.20987
+  source_type: paper
+  title: Co-Evolving LLM Decision and Skill Bank Agents for Long-Horizon Tasks
+  authors:
+  - Xiyang Wu
+  - Zongxia Li
+  - Guangyao Shi
+  - Alexander Duffy
+  - Tyler Marques
+  - Matthew Lyle Olson
+  - Tianyi Zhou
+  - Dinesh Manocha
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-27'
+  key_claims:
+  - LLMs lack a mechanism to discover, retain, and reuse structured skills for consistent long-horizon decision making.
+  - A learnable skill bank co-evolved with the decision agent improves both retrieval and action generation simultaneously.
+  - A skill pipeline can extract, refine, and update skills (with their contracts) from unlabeled rollouts continuously.
+  - Framework generalizes across single-player and multi-player game environments under delayed rewards.
+  - An 8B base LLM with COSPLAY beats four frontier LLM baselines on single-player benchmarks (+25.1% avg reward).
+  techniques:
+  - COSPLAY (co-evolution of decision agent + skill bank)
+  - Learnable skill bank with skill contracts
+  - Skill discovery / refinement pipeline from unlabeled rollouts
+  - Skill retrieval-augmented decision agent
+  reported_results:
+  - +25.1% average reward improvement (8B base) vs four frontier LLM baselines on single-player game benchmarks
+  - Evaluated across six game environments
+  - Remains competitive on multi-player social reasoning games
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 09-claude-debugger.md
+    handoffs:
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - agent-world-env-synthesis.md
+    - unified-trace-memory-service.md
+    - routing-and-optimization-index.md
+    - skillbank-distillation.md
+    experiments: []
+    intake_entries:
+    - 'intake-261 (Skill0 — RL-based skill internalization)'
+    - 'intake-262 (AgentOCR — segment-based compression)'
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  novelty_justification: 'Co-evolving a decision agent with a learnable skill bank is conceptually adjacent to our completed SkillBank distillation pipeline (which already does periodic distillation + recursive evolution of skills with confidence scoring) and to Skill0/SkillRL (intake-261). The skill-contract formulation and closed-loop refinement from unlabeled rollouts add some delta over prior art, but the macro-architecture is a recognized direction rather than a fresh idea — hence medium, not high.'
+  relevance_justification: 'EPYC orchestrator already ships a SkillBank materialized view above the EpisodicStore with recursive evolution and confidence scoring. COSPLAY''s skill-contract schema and unlabeled-rollout skill-discovery loop are directly comparable patterns that could inform extensions to skill_evolution.py and the autopilot continuous-optimization loop. Game-benchmark evaluation domain is not on critical path (CPU inference / NUMA / MoE / routing), so relevance is medium not high.'
+  verdict_justification: 'adopt_patterns — not adopting the full framework or its agents (we already have a production SkillBank with distillation), but specific patterns (skill contracts as schema upgrade; closed-loop refinement from unlabeled rollouts driven by reward delta) are worth lifting into the existing skillbank-distillation / autopilot-continuous-optimization handoffs.'
+- id: intake-480
+  arxiv_id: '2604.21931'
+  url: https://arxiv.org/abs/2604.21931
+  source_type: paper
+  title: 'Seeing Fast and Slow: Learning the Flow of Time in Videos'
+  authors:
+  - Yen-Siang Wu
+  - Rundong Luo
+  - Jingsen Zhu
+  - Tao Tu
+  - Ali Farhadi
+  - Matthew Wallingford
+  - Yu-Chiang Frank Wang
+  - Steve Marschner
+  - Wei-Chiu Ma
+  categories:
+  - multimodal
+  novelty: high
+  relevance: none
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Time can be treated as a learnable visual concept; self-supervised models trained on multimodal cues and natural temporal structure in videos can detect speed changes and estimate playback speed.
+  - These learned temporal-reasoning models enable curation of the largest slow-motion video dataset to date from noisy in-the-wild sources.
+  - Speed-conditioned video generation produces motion at a specified playback speed.
+  - Temporal super-resolution transforms low-FPS, blurry videos into high-FPS sequences with fine-grained temporal details.
+  - Frames time as a manipulable, perceptual dimension enabling temporal forensics, controllable video generation, and richer world-models of event dynamics.
+  techniques:
+  - Self-supervised speed-change detection
+  - Playback-speed estimation from multimodal cues
+  - Slow-motion dataset curation pipeline
+  - Speed-conditioned video generation
+  - Temporal super-resolution
+  reported_results:
+  - 'Curated the largest slow-motion video dataset to date (no specific quantitative metrics surfaced from abstract page)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Novel framing of time as a learnable visual concept with self-supervised speed estimation, large slow-motion dataset curation, and speed-conditioned generation/temporal super-resolution. Not a duplicate; appears to be a fresh contribution in cs.CV.
+  relevance_justification: Pure computer-vision / video-generation work (cs.CV). EPYC stack focuses on CPU LLM inference, NUMA optimization, MoE, speculative decoding, quantization, routing, and agent orchestration. No video pipeline, no LLM-inference relevance. Even under the "don't dismiss creative uses" guidance, no plausible deployment role exists for a video temporal-flow model in the current or planned stack.
+  verdict_justification: not_applicable — video temporal modeling (speed estimation, slow-mo curation, speed-conditioned generation, temporal super-resolution) does not intersect EPYC's CPU-inference, LLM-serving, routing, or agent-orchestration scope. Tagged "multimodal" only because that is the closest taxonomy bucket; multimodal in this codebase means VLM/TTS, not video generation.
+- id: intake-481
+  arxiv_id: '2604.21375'
+  url: https://arxiv.org/abs/2604.21375
+  source_type: paper
+  title: 'VLAA-GUI: Knowing When to Stop, Recover, and Search, A Modular Framework for GUI Automation'
+  authors:
+  - Qijun Han
+  - Haoqin Tu
+  - Zijun Wang
+  - Haoyue Dai
+  - Yiyang Zhou
+  - Nancy Lau
+  - Alvaro A. Cardenas
+  - Yuhui Xu
+  - Ran Xu
+  - Caiming Xiong
+  - Zeyu Zheng
+  - Huaxiu Yao
+  - Yuyin Zhou
+  - Cihang Xie
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: low
+  credibility_score: 3
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - 'Autonomous GUI agents have two failure modes: early stopping (premature success claims without evidence) and repetitive loops (cycling through failing actions without recovery).'
+  - A mandatory Completeness Verifier enforces UI-observable success criteria with an agent-level cross-examiner that rejects completion claims lacking direct visual evidence.
+  - 'A mandatory Loop Breaker provides multi-tier filtering: switching interaction mode after repeated failures, forcing strategy changes after persistent screen-state recurrence, and binding reflection signals to strategy shifts.'
+  - An on-demand Search Agent queries an external LLM with web-search ability for unfamiliar workflows; Coding and Grounding Agents are added on demand for code-intensive and precise-action tasks.
+  - 'Across five top-tier proprietary backbones (Opus 4.5/4.6, Gemini 3.1 Pro), VLAA-GUI achieves SOTA on OSWorld (77.5%) and WindowsAgentArena (61.0%); three of five backbones surpass human OSWorld performance (72.4%) single-pass.'
+  techniques:
+  - Modular GUI agentic framework (Verifier + Loop Breaker + Search/Coding/Grounding sub-agents)
+  - Completeness Verifier with agent-level cross-examination of finish steps
+  - 'Loop Breaker: interaction-mode switching, screen-state recurrence detection, reflection-to-strategy binding'
+  - On-demand sub-agent invocation (Search, Coding, Grounding)
+  - OSWorld and WindowsAgentArena evaluation harnesses
+  reported_results:
+  - 'OSWorld: 77.5% (top performance, surpasses 72.4% human baseline on 3 of 5 backbones in single pass)'
+  - 'WindowsAgentArena: 61.0% (top performance)'
+  - Loop Breaker nearly halves wasted steps for loop-prone models (per ablation)
+  - All three components consistently improve a strong backbone; weaker backbones benefit more when step budget is sufficient
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+    experiments: []
+    intake_entries:
+    - 'intake-315 (GUIWorld / Neural Computer — also GUI agent territory, marked not_applicable)'
+    - 'intake-444 (Agent-World — adjacent autonomous-agent benchmarking; explicitly flags OSWorld omission)'
+  novelty_justification: First framework to combine mandatory Completeness Verifier + multi-tier Loop Breaker + on-demand Search/Coding/Grounding sub-agents for GUI agents; SOTA-with-margin on two desktop benchmarks; introduces specific mechanisms (screen-state recurrence detection, reflection-to-strategy binding) not seen in prior intake.
+  relevance_justification: 'EPYC is CPU-inference / NUMA / quantization / local-model orchestration. VLAA-GUI is a desktop GUI automation framework that consumes proprietary cloud LLMs (Opus 4.5/4.6, Gemini 3.1 Pro) as black-box backbones — no CPU-side / quantization / local-model angle. Loop Breaker and Completeness Verifier patterns are conceptually adjacent to meta-harness guard rails but are GUI/screen-state-specific (interaction-mode switching, screen-state recurrence) and do not translate to text-only LLM serving. Prior GUI-agent intake (intake-315 GUIWorld) was marked not_applicable for the same reason.'
+  verdict_justification: not_applicable — wrong stack layer (GUI desktop automation atop frontier proprietary models) for an EPYC project focused on CPU inference of local quantized models. Loop-detection / completion-verification ideas are already tracked in meta-harness and orchestrator-conversation-management at the abstract pattern level. Revisit only if EPYC adds a desktop/computer-use tier.
+- id: intake-482
+  arxiv_id: '2604.21889'
+  url: https://arxiv.org/abs/2604.21889
+  source_type: paper
+  title: 'TingIS: Real-time Risk Event Discovery from Noisy Customer Incidents at Enterprise Scale'
+  authors:
+  - Jun Wang
+  - Ziyin Zhang
+  - Rui Wang
+  - Hang Yu
+  - Peng Di
+  - Rui Wang
+  categories:
+  - routing_intelligence
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Multi-stage event linking engine combines efficient indexing with LLMs to merge diverse user-described incident reports into stable, actionable events.
+  - Cascaded routing mechanism performs precise business-line attribution of incoming customer incident messages.
+  - Multi-dimensional noise reduction pipeline integrates domain knowledge, statistical patterns, and behavioral filtering to suppress noise at high throughput.
+  - Production deployment handles >2,000 messages/minute peak (300k/day) with P90 alert latency of 3.5 minutes and 95% discovery rate for high-priority incidents.
+  - Outperforms baseline methods on routing accuracy, clustering quality, and Signal-to-Noise Ratio on real-world benchmarks.
+  techniques:
+  - Multi-stage LLM-augmented event linking / event merging
+  - Cascaded routing classifier for business-line attribution
+  - Multi-dimensional noise reduction (domain rules + statistical + behavioral filters)
+  - Efficient indexing combined with LLM decisioning for clustering
+  reported_results:
+  - 'Peak throughput >2,000 messages/minute (~300,000 messages/day)'
+  - 'P90 alert latency: 3.5 minutes'
+  - '95% discovery rate for high-priority incidents'
+  - 'Outperforms baselines on routing accuracy, clustering quality, SNR (numbers not in abstract)'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: 'LLM-augmented incident clustering and cascaded routing for enterprise observability is a novel applied-systems contribution but well outside the EPYC compendium scope; many components (LLM-as-judge clustering, hierarchical routers, hybrid rule+ML noise filters) have direct analogs in industrial AIOps literature. Medium novelty within its own domain, no novelty for our focus areas.'
+  relevance_justification: 'Topic is enterprise customer-incident triage / AIOps — not CPU inference, NUMA, speculative decoding, MoE, KV-cache, quantization, agent orchestration of inference, or any active EPYC focus area. The cascaded routing is business-line attribution, not query-difficulty/cost-aware model routing, so it does not transfer to our routing_intelligence work.'
+  verdict_justification: not_applicable — out-of-scope applied paper for cloud incident management. No reusable technique for EPYC inference, no transferable benchmark/methodology, and no architectural pattern that improves the orchestrator/routing/inference stack. Domain mismatch is clean (customer-incident text triage at Ant Group/Alibaba scale vs. local LLM inference on EPYC).
+- id: intake-483
+  arxiv_id: '2604.20244'
+  url: https://arxiv.org/abs/2604.20244
+  source_type: paper
+  title: Hybrid Policy Distillation for LLMs
+  authors:
+  - Wenhong Zhu
+  - Ruobing Xie
+  - Rui Wang
+  - Pengfei Liu
+  categories:
+  - training_distillation
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Unifies SFT, SeqKD, RKLD (MiniLLM), and JSD (GKD) as a single reweighted log-likelihood objective at the token level, parameterized by the choice of weighting estimator (constant, teacher prob, q·log(q/p), JSD form).
+  - 'Proposes Hybrid Policy Distillation (HPD): a token-level hybridization that combines forward-KL guidance on under-estimated expert tokens with reverse-KL suppression on over-estimated student-sampled tokens, using Schulman''s negative-K1 estimator on both offline and lightweight on-policy samples — retains one-hot supervision efficiency.'
+  - Introduces no additional hyperparameters; ablations show both student-sampling and the Reinforce-on-suppression operation are individually necessary.
+  - HPD-alone in pure off-policy mode beats the standard two-stage SFT+OPD pipeline; HPD as initializer for OPD adds further gains (statistically significant, p<0.01) on AIME24/25, AMC, MATH, OlympiadBench, GPQA.
+  - Validated across long-form reasoning (Qwen2.5 7B→1.5B/3B, LLaMA3 8B→1B/3B), short-form dialogue (UltraFeedback / MT-Bench / AlpacaEval / Arena-Hard), and code (Qwen2.5-Coder 7B→1.5B, DeepSeek-Coder 6.7B→1.3B on HumanEval/MBPP via EvalPlus).
+  techniques:
+  - Hybrid Policy Distillation (HPD)
+  - Token-level reweighted log-likelihood unification of KD methods
+  - Negative K1 estimator (Schulman 2020) for token-level KL gap
+  - Lightweight approximate on-policy sampling combined with off-policy data
+  - Reinforce-on-suppression weighting (redirect suppressed mass to expert tokens)
+  - DAPO (clip-higher 0.28) RL teacher training; verl framework; LLaMA-Factory DPO follow-up
+  reported_results:
+  - 'Reasoning off-policy (Qwen2.5 7B→1.5B avg.): HPD 39.83 vs JSD 36.61 vs SFT 32.67 vs SeqKD 35.55 vs RKLD 32.39'
+  - 'Reasoning on-policy (Qwen2.5 7B→1.5B): HPD+OPD avg 33.41 vs SFT+OPD 29.56 (+13% relative); LLaMA3 8B→1B: HPD+OPD 20.40 vs SFT+OPD 17.06 (+20% relative)'
+  - 'Dialogue (LLaMA3-Instruct 8B→1B on UltraFeedback): HPD wins MT-1T 13.75, MT-2T 14.25, AE-LC 21.80, AE-WR 7.23, Arena-WR 5.84 — top in all five alignment metrics'
+  - 'Coding pass@1: DS-Coder 6.7B→1.3B: HPD 66.35 avg (HEval 69.50 / MBPP 63.20) vs KD 64.60, SFT 61.45'
+  - Maintains lower KL divergence to teacher and avoids test-time entropy collapse vs SFT throughout training
+  contradicting_evidence:
+  - 'arxiv:2603.25562 (Revisiting On-Policy Distillation: Empirical Failure Modes and Simple Fixes) and arxiv:2604.13016 (Rethinking On-Policy Distillation) identify three OPD failure modes: imbalanced one-token signal, unreliable teacher guidance on student-generated prefixes (stronger teacher can fail where weaker succeeds), and tokenizer/special-token mismatch distortions.'
+  - 'Self-distillation can suppress alternative-hypothesis exploration, dropping OOD accuracy up to 40% (TechTalks 2026-04 analysis; consistent with intake-441 diversity-collapse evidence).'
+  - 'Capacity-gap caveat: large teacher-student capacity gaps can degrade or even reverse distillation gains; HPD''s reported gains are at 7B→1.5B and may invert at larger gaps.'
+  - 'Learnability gap: small models trained on long CoT from strong reasoning teachers can underperform simpler approaches when teacher complexity outstrips student capacity.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - 08-doc-to-lora-prototype.md
+    - skillbank-distillation.md
+    experiments: []
+    intake_entries:
+    - 'intake-110 (OPSDC: On-Policy Self-Distillation for Reasoning Compression)'
+    - 'intake-264 (Embarrassingly Simple Self-Distillation)'
+    - 'intake-266 (Survey of On-Policy Distillation for LLMs)'
+    - 'intake-286 (Self-Distilled RLVR / RLSD)'
+  handoffs_updated:
+  - reasoning-compression.md
+  novelty_justification: 'The unified reweighted-log-likelihood reformulation that lets SFT, SeqKD, RKLD/MiniLLM, and JSD/GKD be expressed as different weighting estimators of one objective is genuinely new — intake-266 (OPD survey) called for exactly such a unification but stopped at the f-divergence taxonomy. HPD''s token-level fusion of FKL on under-estimated expert tokens with RKL suppression on over-estimated student samples (gated by sign of K1 estimators) is a novel algorithmic contribution distinct from prior FKL+RKL mixing (which interpolated at the sequence/loss level). No additional hyperparameters and the Reinforce-on-suppression mechanism are non-obvious. Not a duplicate of any indexed entry.'
+  relevance_justification: 'training_distillation is backburner for EPYC: zero training-capable GPUs (per project_dgx_spark_target memory + Doc-to-LoRA Phase B blocker). HPD itself cannot run on the 192-thread CPU stack. However, relevance is medium (not low/none) because: (1) this paper is the natural theoretical successor to intake-266 already tracked by reasoning-compression.md; (2) the unification view is useful pedagogy when interpreting student-rollout-based methods like OPSDC (intake-110) on the roadmap; (3) if cloud-GPU access for Phase B Doc-to-LoRA / RLM training ever materializes, HPD is a strictly better default than SFT+OPD per the reported metrics.'
+  verdict_justification: 'worth_investigating rather than new_opportunity — no immediate action item exists because EPYC has no training infrastructure, but the paper materially advances a research direction (post-OPD-survey unification) already tracked via intake-110/264/266/286. Suggested action: cross-reference under reasoning-compression.md as the canonical post-survey method, and note as the preferred distillation objective if/when the cloud-GPU rental option becomes available. Not adopt_patterns because patterns (token-level reweighting, Schulman K1 estimator) require gradient access to logits which our inference-only stack does not provide.'
+- id: intake-484
+  arxiv_id: '2604.21921'
+  url: https://arxiv.org/abs/2604.21921
+  source_type: paper
+  title: Context Unrolling in Omni Models
+  authors:
+  - Ceyuan Yang
+  - Zhijie Lin
+  - Yang Zhao
+  - Fei Xiao
+  - Hao He
+  - Qi Zhao
+  - Chaorui Deng
+  - Kunchang Li
+  - Zihan Ding
+  - Yuwei Guo
+  - Fuyun Wang
+  - Fangqi Zhu
+  - Xiaonan Nie
+  - Shenhan Zhu
+  - Shanchuan Lin
+  - Hongsheng Li
+  - Weilin Huang
+  - Guang Shi
+  - Haoqi Fan
+  categories:
+  - multimodal
+  novelty: high
+  relevance: low
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-27'
+  key_claims:
+  - Unified multimodal training across text, images, videos, 3D geometry, and hidden representations enables explicit cross-modal reasoning before output generation.
+  - Context Unrolling lets the model aggregate complementary information across heterogeneous modalities prior to producing predictions.
+  - Approach better approximates a shared multimodal knowledge manifold across diverse modal inputs.
+  - Strong performance reported on both multimodal generation and understanding benchmarks (qualitative only on abstract page).
+  - Demonstrates advanced in-context generation capabilities spanning multiple modalities.
+  techniques:
+  - Context Unrolling (explicit pre-output cross-modal reasoning)
+  - Native unified omni-modal training (text + image + video + 3D + hidden representations)
+  - Shared multimodal knowledge manifold approximation
+  reported_results:
+  - 'Qualitative claim of strong performance on multimodal generation and understanding benchmarks; no specific metrics, speedups, or comparison numbers were available on the abstract page.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - 'intake-432 (Qwen3.5-Omni Technical Report, arxiv:2604.15804) — adjacent omni-modal architecture, filed as not-adopted (API-only)'
+  novelty_justification: Context Unrolling is presented as a new technique for explicit cross-modal reasoning in unified omni models; not previously indexed in our intake or chapters. Paper itself is brand new (April 23, 2026) and conceptually distinct from prior unified omni work like Qwen3.5-Omni (intake-432) which focused on streaming speech (ARIA) rather than cross-modal reasoning unrolling.
+  relevance_justification: EPYC active focus is CPU inference, NUMA optimization, speculative decoding, MoE/quantization, routing, agent architecture, and SSM-hybrid models. This paper is a generation-side multimodal architecture (text+image+video+3D) with no CPU-inference, GGUF, or open-weight signals on the abstract page. Multimodal is a listed focus area but our pipeline (multimodal-pipeline.md) is constrained to vision/audio integration via llama.cpp forks; a research-only training-time technique without weights or inference-side optimization has no path to adoption.
+  verdict_justification: 'not_applicable: (1) abstract page provides no quantitative results to evaluate, (2) no mention of open weights, GGUF, or any inference-time mechanism we could port, (3) Context Unrolling is a training/reasoning-recipe contribution at the model-architecture level rather than an inference optimization, (4) directly parallels intake-432 (Qwen3.5-Omni) where the same lab-bias / API-only / no-CPU-path pattern led to non-adoption. Worth re-checking if weights or a GGUF derivative ship later — track via the existing multimodal-pipeline.md monitoring loop alongside Qwen3-Omni-30B-A3B.'
