@@ -71,17 +71,23 @@ All runs must follow CPU20 protocol:
 - table of top 5 configurations by model
 - recommended default runtime profile (or explicit "no deployable profile")
 
-## Remediation TODO (Phase 2.1 of closure-inflation remediation plan)
+## Remediation TODO (Phase 2.1 of closure-inflation remediation plan) — IN PROGRESS
 
 User decision: **install libomp + run chunks 8/16** (full matrix completion).
 
-Phase 2.1 will deliver:
-1. Install LLVM libomp on the host (apt or aocc-bundled); confirm `LD_PRELOAD=/path/to/libomp.so` works with the experimental llama-bench binary.
-2. Re-run Phase A affinity matrix and Phase C wait-policy under libomp; comparable subset to the libgomp results.
-3. Run Phase B chunks 8 and 16 under both runtimes (libgomp + libomp).
-4. Output extended SUMMARY.md with libgomp/libomp comparison table; deployable runtime profile updated if libomp wins, otherwise "libgomp confirmed as best runtime".
-5. CPU20 artifact bundle (README.md, system-state.txt, process-pre.txt, process-post.txt, ld_debug.log, results.csv, decision.md).
+### Chunks 8/16 — DONE 2026-04-28
+
+Bundle: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. Key finding:
+
+- **`OMP_SCHEDULE=guided,16` is a real, statistically-significant (+3.6%, 3.5σ) win on Coder-30B Q4_K_M** at 5-rep verification (50.01 ± 0.38 vs 48.28 ± 0.11 CPU21-best baseline).
+- **Win is MODEL-SPECIFIC**: Qwen3.6-35B Q8_0 -0.6%, REAP-246B Q4_K_M neutral. Likely mechanism: thinner per-thread row-shard tiles on Coder-30B-A3B (3.3B activated params) benefit from finer-grained guided scheduling; larger MoE and BW-bound classes don't.
+- **Recommendation**: do NOT default `OMP_SCHEDULE=guided,16` system-wide. The CPU21-best universal stack remains `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active` (no `OMP_SCHEDULE`). For Coder-30B-A3B-Instruct workloads specifically, the orchestrator may opt-in `OMP_SCHEDULE=guided,16` per-role.
+
+### libomp comparison — DEFERRED, awaiting user authorization
+
+- `libomp.so.5` runtime IS installed on the host. But LD_PRELOAD substitution from libgomp to libomp FAILS catastrophically (0.35 t/s in smoke; symbol conflicts when both runtimes load).
+- Clean libomp build requires `apt install clang-20`. **Sandbox blocked this** (system-package modification needs user authorization). Surfaced; awaiting decision.
+- If authorized: ~2-3 hours to build_libomp/ + replicate Phase A/B/C under libomp + write comparison.
+- If not: Phase 2.1 closes with the partial scope "libgomp matrix exhausted; libomp explicitly deferred" — narrows the closure language but doesn't void the +3-8% affinity-stack finding or the +3.6% guided,16 finding for Coder-30B.
 
 Phase 2.6 (separate sub-task) will add the dense/hybrid Qwen3.5/3.6-27B affinity-stack confirmation for finding #11 closure.
-
-Output dir: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. Existing `2026-04-26-cpu21/` is kept; new dir adds the missing pieces.
