@@ -1,6 +1,17 @@
 # NUMA_MIRROR Fork Integration — vproxy-tools/llama.cpp port
 
-**Status**: SCOPED 2026-04-27 — recommendation: pursue, feature-flagged. Implementation NOT YET STARTED.
+**Status**: Phase 0a+0b COMPLETE 2026-04-27 — accessor refactor landed, ~164 refs migrated across 11 files, PPL bit-exact. Phase 1 (actual per-node mmap path) is the next work block.
+
+**Commits**:
+- `9b1dbf4dd` (Phase 0a): tensor_data()/tensor_set_data() accessor in ggml.h + 97 refs migrated in 5 read-only files (ggml.c, ggml-cpu.c, amx.cpp, mmq.cpp, kleidiai.cpp)
+- `b9920cc44` (Phase 0b): 67 refs migrated in 6 files with writes/chained-pointers (ggml-backend.cpp, ggml-alloc.c, llama-model-loader.cpp, llama-kv-cache.cpp, llama-quant.cpp, ggml-backend-meta.cpp)
+
+**Validation**: PPL = 9.8567 ± 1.23745 (bit-exact, identical to pre-migration baseline). Coder-30B Q4_K_M throughput: 48.42 ± 0.06 (within noise; slight improvement possibly from accessor inlining).
+
+**Files DEFERRED to Phase 0c**:
+- `ggml/src/ggml-opt.cpp`: type collision on `ggml_opt_dataset.data` (NOT a ggml_tensor). Blanket sed unsafe; needs per-line distinction between tensor accesses and dataset member accesses.
+
+**Phase 1 next** (actual mmap-mirror path). Implementation NOT YET STARTED.
 **Priority**: **HIGH** — largest remaining concrete throughput lever after CPU1 software exhaustion + CPU2 SIMD work + CPU21 OMP affinity. Per CPU24 perf-record finding (compute kernels memory-stalled INSIDE on cross-NUMA loads at 96 threads with 4.8 GB/s/thread BW share), per-NUMA-node weight replication is the path to lift the per-thread BW ceiling.
 **Categories**: hardware_optimization, inference_serving, numa_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
