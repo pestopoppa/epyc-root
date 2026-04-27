@@ -5,7 +5,7 @@
 **Scope boundary**: CPU decode/prefill throughput on local EPYC 9655 single-socket hardware. Excludes: GPU levers (see `gpu-acceleration-path.md`), routing/orchestration (see `routing-and-optimization-index.md`), quality/eval (see `research-evaluation-index.md`).
 
 **Created**: 2026-04-23 (after single-vs-aggregate throughput discussion revealed several uncharted single-instance levers with no tracking home)
-**Updated**: 2026-04-26 (critique-integration pass: methodology hardening gate + CPU20-CPU24 pipeline tracks + stale CPU15 framing corrections)
+**Updated**: 2026-04-27 evening (closure-inflation remediation per peer review: CPU25 NUMA_MIRROR Phase 2 gate FAILED & track CLOSED; CPU21/22/23/24 statuses corrected from premature closure to active-with-remediation; "software runway exhausted" framing narrowed; post-L3aaN-reboot block removed; MoE-Spec added as new track)
 **Parent**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 
 ## ⚑⚑⚑⚑ COMPOUNDING-MATRIX FINDINGS 2026-04-26 evening — PRIOR WINS RE-MEASURED
@@ -181,47 +181,33 @@ Phase 2 gate of ≥ +25% on Coder-30B was not met. Mirror is bit-exact PPL but d
 11. [`cpu-optimization-thesis-pause-2026-04-26.md`](cpu-optimization-thesis-pause-2026-04-26.md) — correction ledger for methodology/conclusion drift
 12. [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) — concurrent topology reference (contention point for CPU15/CPU17 decisions)
 
-**State to re-establish immediately after reboot**:
-- `numactl --hardware` → expect 12 NUMA nodes (was 4 under NPS4)
-- `cat /proc/sys/kernel/numa_balancing` → expect 0
-- `cat /sys/kernel/mm/transparent_hugepage/enabled` → expect `[always]`
-- `cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor` → expect `performance`
-- (re-apply if any drifted)
+**Current branch state** (post-NUMA_MIRROR closure 2026-04-27):
+- `llama.cpp-experimental` on branch `feature/cpu-ep-inter-process` HEAD `29a69599a` — CPU2 SIMD wins, CPU15 EP P3.2 stack, CPU2 mbind kill-switch (`GGML_NUMA_REPACK_INTERLEAVE`, default ON), all NUMA_MIRROR Phase 0a/0b/1a/1b/1c (compile-flag-gated default-OFF, Phase 2 throughput gate FAILED for the reasons in `numa-mirror-integration.md`)
+- Build: `/mnt/raid0/llm/llama.cpp-experimental/build/bin/` (default-flags, no NUMA_MIRROR), `/mnt/raid0/llm/llama.cpp-experimental/build_mirror/bin/` (`-DGGML_NUMA_MIRROR=4`), `/mnt/raid0/llm/llama.cpp-experimental/build_znver5/bin/` (`-march=znver5` non-mirror baseline)
+- `LD_LIBRARY_PATH` MUST be prepended with the chosen build's `bin/` directory before benchmarks; system path has v4 production build first → "CPU backend not loaded" error otherwise
 
-**Workspace** (untouched by reboot):
-- `llama.cpp-experimental` on branch `feature/cpu-ep-inter-process` (HEAD `8cb04da9d`) — includes:
-  - `af2e45de4` CPU2 mbind kill-switch (`GGML_NUMA_REPACK_INTERLEAVE`, default ON)
-  - `8cb04da9d` CPU1 P1.3 per-region mbind fix (process-wide leak fix; underlying instability still present so flag remains deprecated)
-  - All CPU15 EP P3.2 work through `43c65b926`
-- Build: `/mnt/raid0/llm/llama.cpp-experimental/build/bin/` — last green at HEAD `8cb04da9d`
-- `LD_LIBRARY_PATH` MUST be prepended with `/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib` for benchmarks (system path has v4 production build first → "CPU backend not loaded" error otherwise)
+**Canonical baselines** (NPS4, proper canonical = `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active taskset -c 0-95 numactl --interleave=all -t 96 -fa 1 -mmp 0`, post-CPU21):
 
-**Pre-reboot canonical baselines** (NPS4, HEAD `8cb04da9d`, `taskset -c 0-95 -t 96 -fa 1`, no env vars):
+| Model | Quant | tg128 t/s ± std |
+|-------|-------|-----------------|
+| Qwen3-Coder-30B-A3B | Q4_K_M | 47.08-48.16 ± 0.04-0.15 |
+| Qwen3.6-35B-A3B | Q8_0 | 23.04-23.30 ± 0.01-0.02 |
+| Qwen3-Next-80B-A3B | Q4_K_M | ~22.15 (post-CPU21 estimate) |
+| Qwen3-Coder-REAP-246B-A35B | Q4_K_M | 6.33 ± 0.00 |
+| gemma-4-26B-A4B-it | Q4_K_M | ~38.59 (post-CPU21 estimate) |
 
-| Model | Quant | t/s ± std |
-|-------|-------|-----------|
-| Qwen3-Coder-30B-A3B | Q4_K_M | 43.57 ± 0.10 |
-| Qwen3.6-35B-A3B | Q8_0 | 14.63 ± 0.01 |
-| Qwen3-Next-80B-A3B | Q4_K_M | 23.25 ± 0.08 |
-| REAP-246B-A35B | Q4_K_M | 6.85 ± 0.01 |
-| gemma-4-26B-A4B-it | Q4_K_M | 25.01 ± 0.08 |
+**EP frontdoor honest delta** (Qwen3.6-35B-A3B Q8_0 with `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1`): +1.6% on proper canonical (was +17% on the earlier mmap=1 warmed reference; the larger figure was a baseline artifact per compounding-matrix). Bit-exact PPL preserved.
 
-**EP frontdoor reference** (Qwen3.6-35B-A3B Q8_0 with `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1`): ≈17.18 t/s (+17%).
-
-**Post-reboot quick smoke-test command**:
+**Smoke-test command**:
 ```bash
-LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build/bin:/opt/AMD/aocc-compiler-5.0.0/lib \
-  taskset -c 0-95 /mnt/raid0/llm/llama.cpp-experimental/build/bin/llama-bench \
-  -m /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
-  -t 96 -fa 1 -p 0 -n 32 -r 2
-# Expect 43.57 ± 0.10 t/s (within ±2% acceptable post-L3aaN)
+LD_LIBRARY_PATH=/mnt/raid0/llm/llama.cpp-experimental/build_znver5/bin \
+  OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  taskset -c 0-95 numactl --interleave=all \
+  /mnt/raid0/llm/llama.cpp-experimental/build_znver5/bin/llama-bench \
+  -m /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf \
+  -t 96 -fa 1 -p 0 -n 128 -mmp 0 -r 3
+# Expect 47-48 t/s on Coder-30B Q4_K_M (proper canonical)
 ```
-
-**Decision criteria after post-reboot eval** (full plan in nps-reboot-runbook.md):
-- Each canonical baseline within ±2% of pre-reboot reference → no regression
-- Frontdoor EP improves over 17.18 t/s → L3aaN is a frontdoor win
-- Any production model regresses ≥5% → revert L3aaN
-- After decision: Phase H (PPL gates), then Phase I → J → K → L → M
 
 **Earlier session's pre-NPS4 baseline freeze** (still on disk, lower-priority reference): `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/pre-nps4-freeze/SUMMARY.md`
 
@@ -336,7 +322,7 @@ Ordered by expected single-instance decode throughput gain × feasibility, with 
 - [ ] **CPU24 — HIGH (new 2026-04-26)** REAP-class uncore/fabric counter attribution (IMC/channel/fabric/remote-miss) → see [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md). Mandatory before closing >150B EP root-cause analysis.
 - [ ] **CPU22 — HIGH (new 2026-04-26)** Dynamic MoE expert load balancing (work stealing/runtime rebalance) → see [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md). Follow-on to static-modulo sharding failures targeting structural expert-imbalance.
 - [ ] **CPU23 — MEDIUM-HIGH (new 2026-04-26)** Full context-regime matrix (2K/8K/32K + long-prompt-mid-stream interference) → see [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md). Prevents decode-only overgeneralization.
-- [ ] **CPU1 — HIGH (top, NPS4 locked, Phase 1.4 shipped, software-level levers exhausted)** Intra-process tensor-parallel decode → see `intra-process-tensor-parallel-decode.md`. **Single-instance best 48.81 ± 0.08 t/s at 48 threads with `-fa 1`** (full stack: `GGML_CCD_POOLS=1 GGML_NUMA_WEIGHTS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1`). Phase 1.4 landed and PPL-verified. Post-Phase-1.4 perf profile: barrier 28%, GEMV 33.5%, other 38%. Concurrent teardown hang non-reproducible (closed; resolved by cpuset fixes `0ade7bd4d`+`69b4c3fa4`). **Op-fusion Phase 2 reverted (2026-04-24)** — was correct (PPL bit-exact) but throughput-neutral in both fa=0 and fa=1; attention-internal fusion is already done by `ggml_flash_attn_ext` so fusion infra had no remaining leverage target. Reverted as `c34aac61b` + `138b26cd4`. **GEMV VNNI probe (2026-04-24) also net-negative** — added AVX-512VNNI path to `ggml_gemv_q4_K_8x8_q8_K` (PPL bit-exact); throughput slightly regressed because on Zen 5 VPMADDUBSW runs at 2/cycle while VPDPBUSD is only 1/cycle, so AVX2 is actually better-matched to this CPU for Q4_K GEMV. Not committed. **All CPU-general software levers now exhausted on NPS4**; next meaningful gate is the **L3-as-NUMA BIOS reboot** (item 27b).
+- [ ] **CPU1 — HIGH (top, NPS4 locked, Phase 1.4 shipped; CPU1-track-specific levers exhausted)** Intra-process tensor-parallel decode → see `intra-process-tensor-parallel-decode.md`. **Single-instance best 48.81 ± 0.08 t/s at 48 threads with `-fa 1`** (full stack: `GGML_CCD_POOLS=1 GGML_NUMA_WEIGHTS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1`). Phase 1.4 landed and PPL-verified. Post-Phase-1.4 perf profile: barrier 28%, GEMV 33.5%, other 38%. Concurrent teardown hang non-reproducible (closed; resolved by cpuset fixes `0ade7bd4d`+`69b4c3fa4`). **Op-fusion Phase 2 reverted (2026-04-24)** — was correct (PPL bit-exact) but throughput-neutral in both fa=0 and fa=1; attention-internal fusion is already done by `ggml_flash_attn_ext` so fusion infra had no remaining leverage target. Reverted as `c34aac61b` + `138b26cd4`. **GEMV VNNI probe (2026-04-24) also net-negative** — added AVX-512VNNI path to `ggml_gemv_q4_K_8x8_q8_K` (PPL bit-exact); throughput slightly regressed because on Zen 5 VPMADDUBSW runs at 2/cycle while VPDPBUSD is only 1/cycle. Not committed. **The CPU1-track-specific levers are exhausted** (per memory `project_cpu1_software_levers_exhausted.md`); broader "CPU-general software runway exhausted" framing was over-generalized — see narrowing in CPU25 row (NUMA_MIRROR closure) and the open tracks list below. Next meaningful gates were L3-as-NUMA BIOS reboot (item 27b — REJECTED) and NUMA_MIRROR (item 27f — CLOSED NEGATIVE 2026-04-27).
 - [ ] **CPU2 — AVX-512BW kernel + NUMA fix LANDED 2026-04-24, production-viable** Shape-specialized GEMV microkernels → see `cpu-shape-specialized-gemv-decode.md`. Session 15 landed (commits `1d18efce3` + `e84a5c82f` + `ba1c23900` on branch `cpu-optimization/q8-8x8-avx512bw`): AVX-512BW 8x8 Q8_0 GEMV kernel (hot loop emits `vpmaddubsw`+`vpmaddwd`, deliberately bypassing the VNNI-auto-selecting helper — Zen 5 falsified VNNI twice already), plus auto-`mbind(MPOL_INTERLEAVE)` on the CPU_REPACK buffer when `ggml_is_numa()`, plus an env-gated `gated_delta_net` S_v sub-chunking refactor (default off — a probe that disproved DeltaNet as the bottleneck). **Final performance on Qwen3.6-27B-Q8_0** at 96t = 4.39 vs baseline 4.32 (+1.6%); at 1t = 1.12 vs 0.85 (+31.8%). PPL on Wikitext-2 = 6.6985 (preserved). **The 4.4 t/s ceiling is NOT memory-bandwidth** — only 26% of theoretical 460 GB/s vs Qwen2.5-Coder-32B dense at 41% on same hardware. Real bottleneck unidentified; next session should be a `GGML_PERF=1` profile, not more kernel work. **No env gates required** — auto-mbind runs automatically on multi-NUMA systems; the `GGML_Q8_0_8X8` + `GGML_Q8_0_8X8_AVX` flags remain default OFF for rollout caution. **Follow-ups**: profile-then-fix Qwen3.6-27B decode at 96t to find the real ceiling cause, Q6_K + Q5_K 8x8 kernels (Session 14 flagged both as dispatcher-NEON-only gaps, ~2× Q8_0 complexity for bit-split unpack), upstream the `mbind` fix (general bug affecting every multi-NUMA repacked quant).
 - [ ] **CPU3 — HIGH** System-level tuning (NPS mode, hugepages, barrier, IRQ, SMT) → see `single-instance-system-tuning.md`. 15–40% alone; a prerequisite for the full CPU1 gain under NPS4/L3aaN. **Zero-reboot knobs partially applied 2026-04-23** (THP→always, numa_balancing=0, 1GB hugepages — net within noise on canonical baseline).
 - [ ] **CPU4 — COMPLETE (negative single-variant result, 2026-04-26)** Hierarchical OpenMP barrier variant tested and reverted (net-negative). Do not pursue further barrier-primitive surgery until CPU21 runtime matrix completes and confirms residual sync opportunity.
@@ -379,15 +365,17 @@ Primary active backlog is CPU20–CPU24 (wave pipeline), then CPU1/CPU2/CPU3/CPU
 | CPU13 | Prefill optimizations | deferred (from v3 rebuild) | LOW | Prefill-specific | Not decode-critical |
 | CPU14 | `--parallel` slot decode bench | not started | LOW | Aggregate only | Covered partially by `dynamic-stack-concurrency.md` |
 | CPU15 | [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) | **Phase 3 COMPLETE 2026-04-26** — EP **+100% bit-exact PPL on Qwen3.6-35B-A3B**, +6% on gemma-26B-A4B; **REAP-246B confirmed REGRESSION** at -53% even with eager-warm + all flags | **HIGH** | Phase 3.0 IPC RTT 0.73 μs; Phase 3.1 library `f47bec4`; full Phase 3.2 stack a→h all live. **Production routing (current evidence)**: frontdoor-class Q8_0 can benefit; >150B class currently regresses and stays single-instance pending deeper attribution. | Phase 1/2 intra-process EP all D3-failed; Phase 3 inter-process beats single-instance on medium MoE; **root cause for >150B still open (see CPU24)** |
-| CPU20 | [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) | **NEW 2026-04-26** | **CRITICAL** | Prevent invalid conclusions; enforce reproducible baselines | Gates all CPU tracks before new claims |
-| CPU21 | [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md) | **NEW 2026-04-26** | HIGH | Recover sync-class throughput without kernel surgery | Needs CPU20; informs CPU4/CPU22 |
-| CPU22 | [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) | **NEW 2026-04-26** | HIGH | Address structural expert imbalance left by static modulo sharding | Needs CPU21+CPU24 attribution |
-| CPU23 | [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) | **NEW 2026-04-26** | MEDIUM-HIGH | Prevent decode-only overgeneralization | Needs CPU20 harness |
-| CPU24 | [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) | **NEW 2026-04-26** | HIGH | Identify true >150B bottleneck class | Needs CPU20; informs CPU15/L3aaN decisions |
+| CPU20 | [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) | **ACTIVE — backfill policy added 2026-04-27 evening (peer review)** | **CRITICAL** | Prevent invalid conclusions; enforce reproducible baselines | Gates all CPU tracks before new claims; Phase 2.5 backfills CPU21/23/24/25 retroactive bundles |
+| CPU21 | [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md) | **ACTIVE — libgomp affinity submatrix complete (+3-8% deployable); libomp + chunks 8/16 PENDING** | HIGH | Recover sync-class throughput without kernel surgery | Phase 2.1 completes the matrix; informs CPU22 |
+| CPU22 | [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) | **ACTIVE — work-stealing prototype upcoming (Phase 3 of remediation)** | HIGH | Address structural expert imbalance left by static modulo sharding; gain bounded by CPU24's 15% sync ceiling | Earlier "closed by inference" was incorrect; binding gates require prototype run |
+| CPU23 | [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) | **ACTIVE — 3-of-4-regime × 1-of-4-metric × 2-of-5-model partial probe complete; gate NOT met** | MEDIUM-HIGH | Prevent decode-only overgeneralization | Phase 2.2 fills missing interference + metrics + dense proxy |
+| CPU24 | [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) | **ACTIVE — REAP + Q8 attribution corrected (compute-stalled, not sync); MiniMax + dense + 2-rep stability PENDING** | HIGH | Identify true >150B bottleneck class | Phase 2.3 fills missing model coverage + counter table format |
 | CPU16 | [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) | **STUB 2026-04-26** — qualified feasibility study, Tier 2b counter-evidence pre-recorded | MEDIUM (feasibility-gated) | TBD — Phase 0 falsification gate first | Likely obsoleted by CPU17 — pursue CPU17 first |
 | CPU17 | [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md) | **ACTIVE plan scaffold 2026-04-26** | MEDIUM-HIGH | Decode-stall reduction during long-prompt-mid-stream; targets CPU16 obsolescence | Feeds CPU23 regime matrix; inherits CPU20 protocol |
-| CPU18 | MegaBlocks indexing port (line item; subsection of [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) on first session) | **NEW 2026-04-26** | MEDIUM-HIGH | Padding-free CPU MoE expert dispatch; compounds with CPU2 wins | Compounds with CPU2 |
-| CPU19 | Tutel 2DH port (line item; subsection of [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) Phase 3.4 on first session) | **NEW 2026-04-26** | MEDIUM-HIGH | ~96 → ~24 sync points/token target; addresses REAP-246B / MiniMax-M2.7 regression | Compounds with CPU15 drone+shard |
+| CPU18 | MegaBlocks indexing port (line item; subsection of [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) on first session) | **PENDING — not started** | MEDIUM-HIGH | Padding-free CPU MoE expert dispatch; compounds with CPU2 wins | Compounds with CPU2 |
+| CPU19 | Tutel 2DH port (line item; subsection of [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) Phase 3.4 on first session) | **DEPRIORITIZED — sync ceiling 15% per CPU24 caps gain at ~7-8% best-case** | MEDIUM-HIGH | ~96 → ~24 sync points/token target | Reopen only if CPU22 prototype indicates sync-share above 15% on a workload |
+| CPU25 | [`numa-mirror-integration.md`](numa-mirror-integration.md) | **CLOSED 2026-04-27 — DECISIVE NEGATIVE on single-socket NPS4** | ~~HIGH~~ | Phase 1c LANDED bit-exact; Phase 2 throughput gate FAILED (-1.0% Coder-30B Q4_K_M, +0.6% Qwen3.6-35B Q8 — both noise) | Hardware is DRAM-channel-bound, not fabric-bound; reopen only on 2-socket configs |
+| MoE-Spec | [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) | **NEW 2026-04-27 — handoff stub created** | MEDIUM | Budgeted-expert spec-dec verification: 5-15% claimed on Coder/REAP per arXiv 2602.16052 | Phase 4 of remediation plan creates the handoff; falsification probe TBD |
 
 ---
 

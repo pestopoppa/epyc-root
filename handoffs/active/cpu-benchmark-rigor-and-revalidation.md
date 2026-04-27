@@ -155,3 +155,34 @@ Required files:
 1. No further benchmark claim is later invalidated by environment/process/build-path mistakes.
 2. All active CPU tracks explicitly reference protocol-compliant artifact bundles.
 3. Production decisions cite canonical comparisons only.
+
+## Artifact-bundle backfill policy (added 2026-04-27 evening per peer review)
+
+CPU20 was documented and in force from 2026-04-26 onward, but a peer review on 2026-04-27 evening identified that **closure claims for CPU21, CPU23, CPU24, and CPU25 were declared without producing the full required artifact bundle**. The seven required files per closure (per the Artifact structure section above) are:
+
+1. `README.md` — exact commands run
+2. `system-state.txt` — `numactl --hardware`, `numa_balancing`, THP setting, governor, SMT, host load summary
+3. `process-pre.txt` — pre-run `pgrep -af "llama"`
+4. `process-post.txt` — post-run `pgrep -af "llama"`
+5. `ld_debug.log` — `LD_DEBUG=libs` smoke run
+6. `results.csv` — mean/std/reps tabulated
+7. `decision.md` — explicit pass/fail/partial verdict
+
+### Backfill rule
+
+Any track marked "closed" before this policy was enforced (CPU21, CPU23, CPU24, CPU25) MUST EITHER:
+- Have its retroactive artifact bundle reconstructed from logs already in the artifact directory + a fresh system-state snapshot + a re-run smoke command for `ld_debug.log`, OR
+- Be explicitly downgraded from "closed" to "needs revalidation" with a `decision.md` stating "retroactive backfill incomplete; track downgraded".
+
+Papering over the gap (e.g., creating empty placeholder files, or fabricating a `decision.md` without supporting artifacts) is NOT acceptable.
+
+### Tracks requiring backfill
+
+| Track | Existing artifacts | Missing files | Backfill action |
+|---|---|---|---|
+| CPU21 | `data/cpu_optimization/2026-04-26-cpu21/` (16 logs + SUMMARY.md + cpu21_followup.sh) | README.md, system-state.txt, process-pre/post.txt, ld_debug.log, results.csv, decision.md | Phase 2.5 of remediation plan |
+| CPU23 | `data/cpu_optimization/2026-04-27-cpu23/` (12 raw bench logs) | README.md, system-state.txt, process-pre/post.txt, ld_debug.log, results.csv, decision.md (the existing SUMMARY.md needs to be augmented per Phase 2.2) | Phase 2.5 |
+| CPU24 | `data/cpu_optimization/2026-04-26-cpu24/` (3 perf-stat logs + perfrecord/ + scripts/) | README.md, system-state.txt, process-pre/post.txt, ld_debug.log, results.csv, decision.md (the existing perfstat logs are the underlying data; need formal extraction) | Phase 2.5 |
+| CPU25 | (no directory exists yet — NUMA_MIRROR runs were ad-hoc) | All seven | Phase 2.5 — create `data/cpu_optimization/2026-04-27-cpu25-numa-mirror/` and reconstruct from session log + re-run a smoke bench for `ld_debug.log` |
+
+Backfill is tracked in the closure-inflation remediation plan (Phase 2.5).

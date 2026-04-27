@@ -852,6 +852,28 @@ The lesson generalizes: prefetch tuning is per-kernel, not "add prefetch everywh
 
 The cumulative gain from CPU21+CPU2 work on Coder-30B: **+9.5% over plain canonical** (43.82 → 47.98).
 
+## Q6_K SIMD + prefetch — SCOPE NARROWING (2026-04-27 evening, peer review)
+
+Earlier framing in Sessions 17 and 18 above reads as "production-ready opt-in candidate". Peer review on 2026-04-27 evening narrowed this:
+
+**What's true**:
+- Q6_K AVX-512BW 8x8 SIMD body is mathematically correct (3-chunk WikiText-2 PPL bit-exact, 9.8567 ± 1.23745 on `GGML_Q6_K_8X8_AVX=0` vs `=1`).
+- Q6_K T1 prefetch (4 hints, `_MM_HINT_T1`, start-of-array) gives **+0.7% on Coder-30B Q4_K_M** at proper canonical.
+- Q6_K SIMD body alone gives **+0.4% on Coder-30B, +0.5% on REAP-246B** at proper canonical.
+- Q4_K T1 prefetch was tested and reverted (-4% regression on Coder-30B) — that revert decision is sound.
+
+**What's NOT yet validated**:
+- **Full 32-chunk WikiText-2 PPL gate** is explicitly pending (Session 17 above says "Full 32-chunk WikiText-2 PPL gate is a follow-up validation step before flipping the env default; the 3-chunk match is sufficient to confirm there's no catastrophic correctness bug"). Without the 32-chunk gate, the kernel is "promising small win" not "production-ready".
+- Throughput measured only on 2 MoE Q4_K_M models (Coder-30B and REAP-246B). Dense/hybrid (Qwen3.5/3.6-27B) coverage is missing.
+
+**Status**: PROMISING — small measured win on 2 MoE proxies, full 32-chunk PPL gate pending, dense generalization not yet measured. **NOT closed; NOT yet a v5 cherry-pick candidate.** The env flags `GGML_Q6_K_8X8_AVX` (SIMD) and the embedded prefetch path remain default-OFF until the full PPL gate clears.
+
+### Remediation TODO (Phase 2.4 + Phase 2.6 of closure-inflation remediation plan)
+
+Phase 2.4: Run full 32-chunk WikiText-2 PPL on both `GGML_Q6_K_8X8_AVX=0` and `=1` for Coder-30B Q4_K_M and Qwen3-Coder-REAP-246B Q4_K_M. Bit-exact required. If passes: flip the env default in `cpu-kernel-env-flags-inventory.md` and mark v5 cherry-pick candidate. If fails: revert the SIMD body, document the failure mode. CPU20 artifact bundle. Output dir: `data/cpu_optimization/2026-04-28-cpu2-q6k-full-ppl/`. Effort ~30-60 min.
+
+Phase 2.6: Add Qwen3.5/3.6-27B Q8_0 throughput delta for the CPU2 Q8_0 SIMD + prefetch (Q6_K kernel won't fire on Q8_0 weights — separate sub-task in Phase 2.6). Closes the cross-architecture coverage gap (peer review finding #11).
+
 ## Speculative MoE expert pruning research check — 2026-04-27
 
 User asked: have people demonstrated production gains via "speculative MoE expert pruning" (predict which experts NOT to run based on intermediate activations)?

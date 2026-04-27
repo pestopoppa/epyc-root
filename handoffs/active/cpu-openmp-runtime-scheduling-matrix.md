@@ -1,6 +1,6 @@
 # CPU21 — OpenMP Runtime And Scheduling Matrix
 
-**Status**: ACTIVE (created 2026-04-26)
+**Status**: ACTIVE — libgomp affinity/wait-policy submatrix complete (universal +3-8% landed); libomp runtime + chunks 8/16 PENDING (closure-inflation correction applied 2026-04-27 evening per peer review).
 **Priority**: HIGH
 **Categories**: hardware_optimization, inference_serving, runtime_tuning
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -10,6 +10,17 @@
 ## Objective
 
 Test whether sync-heavy Q4_K_M regressions are recoverable by OpenMP runtime/scheduling choices before doing deeper kernel surgery.
+
+## Status summary (added 2026-04-27 evening after peer review)
+
+**Submatrix complete**: libgomp × Phase A affinity (close/spread × cores/threads, master, false) × Phase B partial schedule (static/dynamic/guided × chunk={1,4}) × Phase C wait policy (active/passive). The `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active` stack delivers a **universal +3-8% on all sync-bound Q4_K_M models tested** (Coder-30B, Qwen3.6-35B Q8 included for comparison, REAP-246B). This finding is preserved as a real, deployable lever.
+
+**Submatrix incomplete** (does NOT void the partial wins; just narrows the closure scope):
+- libomp comparison: NOT measured. Only libgomp tested. libomp may yield different chunk/affinity/wait behavior on Zen 5.
+- Schedule chunks 8 and 16: NOT measured. Only chunks 1 and 4 tested.
+- Dense/hybrid model (Qwen3.5/3.6-27B): NOT measured. The +3-8% finding is stated in MoE-Q4_K_M terms but should generalize to dense per process-wide affinity mechanics. Phase 2.6 of the remediation plan adds this.
+
+**Honest closure scope**: "libgomp affinity/wait-policy submatrix exhausted on MoE Q4_K_M with universal +3-8% deployable stack". Broader claim "the runtime/scheduling matrix is exhausted" requires the libomp + chunks 8/16 + dense fills below.
 
 ## Why this exists
 
@@ -59,3 +70,18 @@ All runs must follow CPU20 protocol:
 - `data/cpu_optimization/<date>-cpu21-openmp-matrix/` artifacts
 - table of top 5 configurations by model
 - recommended default runtime profile (or explicit "no deployable profile")
+
+## Remediation TODO (Phase 2.1 of closure-inflation remediation plan)
+
+User decision: **install libomp + run chunks 8/16** (full matrix completion).
+
+Phase 2.1 will deliver:
+1. Install LLVM libomp on the host (apt or aocc-bundled); confirm `LD_PRELOAD=/path/to/libomp.so` works with the experimental llama-bench binary.
+2. Re-run Phase A affinity matrix and Phase C wait-policy under libomp; comparable subset to the libgomp results.
+3. Run Phase B chunks 8 and 16 under both runtimes (libgomp + libomp).
+4. Output extended SUMMARY.md with libgomp/libomp comparison table; deployable runtime profile updated if libomp wins, otherwise "libgomp confirmed as best runtime".
+5. CPU20 artifact bundle (README.md, system-state.txt, process-pre.txt, process-post.txt, ld_debug.log, results.csv, decision.md).
+
+Phase 2.6 (separate sub-task) will add the dense/hybrid Qwen3.5/3.6-27B affinity-stack confirmation for finding #11 closure.
+
+Output dir: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. Existing `2026-04-26-cpu21/` is kept; new dir adds the missing pieces.

@@ -146,11 +146,33 @@ The 4.27× scaling on 96 threads (vs ideal 96×) is NOT primarily sync overhead 
 ### Updated guidance for CPU15 / L3aaN / runbook
 
 - The catastrophic >150B regression narrative was a baseline artifact (compounding-matrix). On proper canonical EP is neutral.
-- The remaining open question — "what limits REAP at 6 t/s" — is answered: **sync overhead claims 96% of parallelism**, not bandwidth saturation, not memory placement. The bottleneck is the per-token sync count × per-sync latency at 96 threads.
+- The remaining open question — "what limits REAP at 6 t/s" — is answered by the corrected attribution above: **compute kernels memory-stalled INSIDE on per-thread DRAM access**, not sync (sync is only 15%), not bandwidth saturation at the system level (26% aggregate used), not memory placement. The 4.27× scaling efficiency at 96 threads (vs ideal 96×) is dominated by per-thread BW contention; the second-order contributor is sync (15% of cycles).
 - L3aaN was already rejected for unrelated reasons (regressed across all configs); CPU24 doesn't change that.
+
+> **Stale-text strikethrough (corrected 2026-04-27 evening)**: an earlier version of this section said "sync overhead claims 96% of parallelism". That sentence was leftover framing from the pre-perf-record draft (when the sync-imbalance hypothesis was active). It contradicts the corrected attribution above (compute kernels = 80%, sync = 15%) and has been removed.
 
 ### Raw data
 
 - `data/cpu_optimization/2026-04-26-cpu24/reap_canonical_perfstat.log` — REAP-246B perf stat
 - `data/cpu_optimization/2026-04-26-cpu24/q8_canonical_perfstat.log` — Q8_0 perf stat (comparison)
 - `data/cpu_optimization/2026-04-26-cpu24/reap_singlethread.log` — REAP single-thread baseline (1.41 t/s)
+- `data/cpu_optimization/2026-04-26-cpu24/perfrecord/` — perf-record hot-function profile
+
+## Remediation TODO (Phase 2.3 of closure-inflation remediation plan)
+
+The original CPU24 objective (line 12-25 of this handoff) lists IMC/channel/fabric/remote-miss/LLC/stall attribution on REAP-246B **AND MiniMax-M2.7** as primary targets, with at least 2 repetitions for counter stability. Peer review on 2026-04-27 evening identified that:
+
+1. **MiniMax-M2.7 counter run is missing.** Only REAP + Qwen3.6-35B Q8_0 (the latter as comparison) were measured.
+2. **2-rep stability pass is missing.** Each model has 1 perf-stat run.
+3. **Dense/hybrid coverage is missing** — finding #11 of the peer review. The IPC=0.39 / compute-kernel-memory-stalled finding is stated in MoE-only terms but the underlying mechanism (per-thread BW contention) is architecture-independent. A dense Qwen3.5/3.6-27B Q8_0 counter run closes this gap.
+4. **Counter table format** in this handoff is informal; the binding objective lists IMC/channel, fabric/interconnect pressure, remote miss, LLC miss intensity, stall-class indicators as discrete columns. The data is captured in the raw perf-stat logs but not formally tabulated.
+
+Phase 2.3 will deliver:
+- MiniMax-M2.7 Q8_0 perf stat counter run at proper canonical.
+- Qwen3.5/3.6-27B Q8_0 dense/hybrid counter run.
+- 2-repetition stability pass on REAP + Qwen3.6-35B + MiniMax + dense.
+- Formal counter table in the format required by the handoff (IMC/channel, fabric, remote miss, LLC, stall class) for all four models.
+- `decision.md` stating attribution class explicitly per model class (MoE vs dense).
+- CPU20 artifact bundle (README.md, system-state.txt, process-pre.txt, process-post.txt, ld_debug.log, results.csv, decision.md).
+
+Output dir: `data/cpu_optimization/2026-04-28-cpu24-minimax-and-dense/`. Existing `2026-04-26-cpu24/` artifacts are kept; the new dir adds the missing pieces.
