@@ -25,16 +25,20 @@ fi
 # Extract likely local markdown links from inline code spans.
 mapfile -t refs < <(rg -o '`[^`]+\.md`' "$FILE_PATH" | tr -d '`' | sed 's/:.*$//' | sort -u)
 
+file_dir=$(dirname "$FILE_PATH")
 missing=()
 for ref in "${refs[@]}"; do
   [[ "$ref" =~ ^https?:// ]] && continue
   [[ "$ref" == *'*'* ]] && continue
   if [[ "$ref" == /* ]]; then
-    target="$ref"
-  else
-    target="$PROJECT_DIR/$ref"
+    [[ -f "$ref" ]] || missing+=("$ref")
+    continue
   fi
-  [[ -f "$target" ]] || missing+=("$ref")
+  # Try resolution in priority order: file's own directory, then project root.
+  if [[ -f "$file_dir/$ref" ]] || [[ -f "$PROJECT_DIR/$ref" ]]; then
+    continue
+  fi
+  missing+=("$ref")
 done
 
 if ((${#missing[@]} > 0)); then
