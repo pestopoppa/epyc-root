@@ -1,12 +1,13 @@
 # NUMA_MIRROR Fork Integration — vproxy-tools/llama.cpp port
 
-**Status**: Phase 0a+0b+1a+1b COMPLETE 2026-04-27 — accessor refactor + per-node pointer plumbing + TLS setter all landed and bit-exact. Phase 1c (actual per-node anon-mmap+mbind, buffer-level) is the next work block.
+**Status**: CLOSED 2026-04-27 — Phases 0a/0b/1a/1b/1c all LANDED and bit-exact. **Phase 2 throughput gate FAILED**: −1.0% on Coder-30B Q4_K_M tg128, +0.6% on Qwen3.6-35B Q8 tg64 (both within run-to-run noise). Investigation closed as **DECISIVE NEGATIVE on single-socket NPS4** because the hardware is DRAM-channel-bound, not fabric-bound — per-thread BW share is 4.79 GB/s regardless of NUMA placement. Reopen only if a 2-socket configuration becomes relevant.
 
 **Commits**:
 - `9b1dbf4dd` (Phase 0a): tensor_data()/tensor_set_data() accessor in ggml.h + 97 refs migrated in 5 read-only files (ggml.c, ggml-cpu.c, amx.cpp, mmq.cpp, kleidiai.cpp)
 - `b9920cc44` (Phase 0b): 67 refs migrated in 6 files with writes/chained-pointers (ggml-backend.cpp, ggml-alloc.c, llama-model-loader.cpp, llama-kv-cache.cpp, llama-quant.cpp, ggml-backend-meta.cpp)
 - `ca39cb80a` (Phase 1a): `data_per_node[GGML_NUMA_MAX_NODES]` field in `struct ggml_tensor`; `tensor_data()` reads `data_per_node[ggml_current_numa_node]`; `tensor_set_data()` writes ALL N identically; new `tensor_set_data_per_node(t, node, p)` API; `ggml_new_tensor_impl` populates the array. Built with `-DGGML_NUMA_MIRROR=4`, all replicas identical = no behavior change.
 - `90a17af62` (Phase 1b): TLS setter at graph-compute entry. Each thread calls `getcpu(2)` after `set_numa_thread_affinity()` and writes the resulting node index to `ggml_current_numa_node`.
+- `29a69599a` (Phase 1c): CPU_REPACK buffer-level mirror. Per-buffer side-table tracks N anon-mmap+mbind replicas; `init_tensor` fans out `data_per_node[]`, `set_tensor` (post-repack) copies primary→replicas, `free_buffer` cleans up. Migrated `forward_mul_mat` / `forward_mul_mat_id` (5 sites) in `repack.cpp` to `tensor_data()`. Trigger decoupled from `ggml_is_numa()` — fires whenever `GGML_NUMA_MIRROR>=2` (compile flag) and buffer ≥ 1 MiB.
 
 **Validation**:
 - Phase 0a/0b: PPL = 9.8567 ± 1.23745 (bit-exact, identical to pre-migration baseline). Coder-30B Q4_K_M throughput: 48.42 ± 0.06.
@@ -16,24 +17,56 @@
 **Files DEFERRED to Phase 0c**:
 - `ggml/src/ggml-opt.cpp`: type collision on `ggml_opt_dataset.data` (NOT a ggml_tensor). Blanket sed unsafe; needs per-line distinction between tensor accesses and dataset member accesses.
 
-**Phase 1c next** — the actual per-node weight replication. Implementation NOT YET STARTED.
+**Phase 1c LANDED 2026-04-27 (commit `29a69599a`)** — but the Phase 2 throughput gate FAILED.
 
-## Phase 1c design
+## Phase 2 throughput results (proper canonical: `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active taskset -c 0-95 numactl --interleave=all -t 96 -fa 1 -mmp 0`)
 
-The naive vproxy approach mirrors only the file mmap. Our build uses CPU_REPACK heavily — for Coder-30B Q4_K_M the model is 17 GB total, **13.4 GB of which lives in the CPU_REPACK buffer** (the AVX-512BW 8x8 interleaved layout produced by CPU2's repack path), with only 4.3 GB still backed by the original mmap. A mmap-only mirror leaves 79% of weight reads cross-NUMA and would not deliver the +25% gate.
+| Model | Quant | tg128 baseline (-march=znver5) | tg128 mirror=4 | Δ |
+|---|---|---|---|---|
+| Coder-30B-A3B | Q4_K_M | 48.16 t/s | 47.66 t/s | **−1.0%** (within noise) |
+| Qwen3.6-35B-A3B | Q8_0 | 23.30 t/s | 23.45 t/s | **+0.6%** (within noise) |
 
-Phase 1c therefore needs **buffer-level** mirroring, not just mmap-level:
+PPL bit-exact at 11.1215 ± 0.62430 with mirror=4 on Coder-30B Q4_K_M (chunk1 = 7.4537, byte-identical to znver5 baseline).
 
-1. `src/llama-mmap.cpp`: when `GGML_NUMA_MIRROR=N` is set, after the primary `mmap(MAP_SHARED, fd)` succeeds, allocate N anon mmaps of the same size (each `mbind`'d to its target node, no hugepages required), and memcpy the file contents into each. Expose `llama_mmap::addr_per_node(int n)`.
-2. `ggml/src/ggml-backend.cpp` / `ggml-cpu` buffer allocation: when MIRROR is on, the CPU backend buffer ctor allocates N replicas (`mmap(MAP_ANONYMOUS) + mbind`), and after the buffer is filled (post-load + post-repack), bulk-copies the primary buffer to each replica.
-3. `src/llama-model-loader.cpp` (and CPU_REPACK fill path): for every tensor, after `tensor_set_data(cur, primary)`, also `tensor_set_data_per_node(cur, n, replica_n + offs)` for each n.
-4. KV/scratch/activation buffers stay on the single-pointer fallback (set via `tensor_set_data` which writes all N identically — effectively the non-mirrored path).
+The mirror IS firing correctly: `cpu-repack-mirror: 13.1 GiB primary on node 0 + 3 node replicas (mirror=4)`. Threads correctly distribute (per the one-shot debug log captured during testing): cores 0–23 → node 0, 24–47 → node 1, 48–71 → node 2, 72–95 → node 3, with `getcpu(2)` reporting the matching node and `ggml_current_numa_node` set per thread. Each thread reads from its node's replica via `tensor_data()`.
 
-Hugepages are NOT provisioned on this host (`HugePages_Total = 0` for both 2 MB and 1 GB sizes, all 4 nodes). Phase 1c will use `mmap(MAP_ANONYMOUS|MAP_NORESERVE) + mbind(MPOL_BIND)` on regular 4 KB pages; THP will opportunistically promote to 2 MB. This is the "no-reboot" path. A later Phase 1d can switch to 1 GB hugepages if a reboot becomes acceptable.
+**Phase 2 gate (≥ +25% on Coder-30B over 47.98 t/s): NOT MET.**
 
-Memory budget reminder: REAP-246B Q4_K_M = 138 GB × 4 = 552 GB; Coder-30B Q4_K_M = 17 GB × 4 = 68 GB. All fit.
+## Why Phase 1c does not deliver on this hardware
 
-Estimated effort for Phase 1c: ~1 engineer-day (focused). Phase 1c will land as one or two commits behind the same `GGML_NUMA_MIRROR=N` compile flag.
+Single-socket NPS4 EPYC 9655 is **DRAM-channel-bound**, not fabric-bound, at 96-thread saturation:
+
+- Total DRAM bandwidth: 460 GB/s (12 channels × DDR5-6000)
+- Per-thread share at 96t: 460 / 96 = **4.79 GB/s/thread**
+- With mirror, each NPS4 node has 3 channels (115.2 GB/s) and 24 threads → 115.2 / 24 = **4.79 GB/s/thread** — IDENTICAL
+
+Mirroring shifts cross-NUMA reads to local reads, which would help only if the **fabric** (Infinity Fabric between CCDs / NUMA domains within the package) were the binding constraint. CPU24's perf-record at 96t showed compute kernels stalled on memory loads at 4.79 GB/s/thread, but that measurement could not distinguish fabric-stall from DRAM-channel-stall. **Phase 1c cleanly rules out the fabric-stall hypothesis** — every read is now local, and throughput is unchanged.
+
+The vproxy-tools fork's reported gains (+62% QwQ-32B FP16, +34% DeepSeek-R1 671B Q8) were on **2-socket** 2× EPYC 9275F configurations where cross-SOCKET fabric (going through inter-package coherence links) IS substantially slower than DRAM channels. On single-socket NPS4 the intra-package fabric is fast enough that DRAM channels saturate first.
+
+## Phase 1c implementation notes (kept for reference / future hardware)
+
+The mirror code is correct, bit-exact, and useful infrastructure for any future hardware where fabric IS the binding constraint (2-socket EPYC, multi-package, GPU-CPU NUMA, etc.). It is left compile-time gated behind `GGML_NUMA_MIRROR=N`; default builds compile to a pure no-op.
+
+Architecture (commit `29a69599a`):
+
+1. `ggml/src/ggml-cpu/repack.cpp`: per-buffer side-table (`std::unordered_map<ggml_backend_buffer_t, cpu_repack_mirror>` under a mutex) tracks N replicas. Allocator re-mbinds primary to MPOL_BIND-node-0 (instead of MPOL_INTERLEAVE) and adds N-1 anon-mmap+mbind replicas.
+2. `init_tensor` fans out `data_per_node[0..N-1]` to `(replica_n_base + tensor_offset)` for tensors whose data lies inside the buffer.
+3. `set_tensor` (post-repack) copies the freshly-written tensor bytes from primary to each non-primary replica at the same offset.
+4. `free_buffer` munmaps replicas and `ggml_aligned_free`s the primary.
+5. `forward_mul_mat` / `forward_mul_mat_id` hot paths in `repack.cpp` (5 sites) migrated to `tensor_data()` so threads on nodes 1..3 read THEIR replica. Without this, Phase 1c regressed −45%.
+6. Trigger decoupled from `ggml_is_numa()`: fires whenever `GGML_NUMA_MIRROR>=2` AND buffer ≥ 1 MiB. Works under `numactl --interleave=all + OMP_PROC_BIND=spread` (the proper canonical) — `--numa distribute` is NOT required and actually regresses the baseline at 96t.
+
+What was NOT mirrored (deliberately, since Phase 1c results showed no win):
+- File mmap (the ~4.3 GB of non-repacked tensors). Would have needed `llama_mmap::addr_per_node()` + a post-load tensor pointer fan-out in `llama-model-loader.cpp`.
+- Plain CPU buffer (small, ~0.5–1 GB).
+- KV / scratch / wdata buffers (intentionally — they stay on the single-pointer fallback).
+
+If a future 2-socket reopen happens, those would extend the mirror. Note that hugepages are still not required: 4 KB anon pages with THP opportunistic 2 MB promotion is sufficient.
+
+## Disposition
+
+**CLOSED** as decisive negative on this hardware. Production stack should NOT enable `GGML_NUMA_MIRROR`. The accessor migration (Phase 0a/0b/1a/1b) is preserved in the codebase as zero-overhead infrastructure (`tensor_data()` compiles to direct field access in default builds). Reopen only if a 2-socket configuration becomes relevant.
 **Priority**: **HIGH** — largest remaining concrete throughput lever after CPU1 software exhaustion + CPU2 SIMD work + CPU21 OMP affinity. Per CPU24 perf-record finding (compute kernels memory-stalled INSIDE on cross-NUMA loads at 96 threads with 4.8 GB/s/thread BW share), per-NUMA-node weight replication is the path to lift the per-thread BW ceiling.
 **Categories**: hardware_optimization, inference_serving, numa_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
