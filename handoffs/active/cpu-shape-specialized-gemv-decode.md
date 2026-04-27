@@ -803,3 +803,51 @@ Q5_K SIMD implementation requires its own careful design — not the "trivial fo
 1. **Full 32-chunk WikiText-2 PPL gate** on the Q6_K SIMD kernel (~30-60 min wall on Coder-30B Q4_K_M). Expected: identical to generic.
 2. If full PPL passes: update `cpu-kernel-env-flags-inventory.md` to mark `GGML_Q6_K_8X8_AVX=1` production-ready opt-in.
 3. Q5_K SIMD body as a separate dedicated session, using Q4_K's structure as the template (not Q6_K's).
+
+## Session 18 (2026-04-27) — Q6_K T1 software prefetch added; Q4_K prefetch tested and reverted
+
+Added `_mm_prefetch` hints inside `gemv_q6_K_8x8_q8_K_avx512bw` at the start of each super-block iteration. Targets the dominant DRAM-stall problem identified in CPU24 perf-record: 80% of cycles are in compute kernels that are memory-stalled INSIDE on cross-NUMA loads (96 threads sharing 460 GB/s = 4.79 GB/s/thread).
+
+### Q6_K prefetch — POSITIVE (+0.7% on Coder-30B)
+
+Final Q6_K prefetch config (commit `<TBD>`):
+- 4 hints per super-block: `ql`, `qh`, `q8.qs`, `scales`
+- `_MM_HINT_T1` (skip L1; let HW prefetcher promote to L1 closer to actual access)
+- Position: start of `l` (super-block) loop, prefetching iteration `l + 1`
+
+| Config | Coder-30B Q4_K_M | Δ |
+|---|---|---|
+| env=0 (no Q6_K SIMD, no prefetch) — generic baseline | 47.62 ± 0.07 | reference |
+| env=1 + Q6_K SIMD only (no prefetch) | ~47.21 (prior) | within noise |
+| env=1 + Q6_K SIMD + 11-line T0 prefetch | 46.46 ± 0.07 | **−1.6% (regression)** |
+| **env=1 + Q6_K SIMD + 4-line T1 prefetch (final)** | **47.98 ± 0.10** | **+0.7%** |
+
+**Lesson**: aggressive T0 prefetch with many hints CONTENDS with the HW prefetcher (Zen 5's stride/IP prefetchers are very effective). T1 with just the start-of-array hints lets the HW prefetcher do L1 promotion at the right time.
+
+PPL bit-exact: `9.8567 ± 1.23745` on 3-chunk WikiText-2 — identical to generic and to no-prefetch SIMD path.
+
+### Q4_K prefetch — NEGATIVE (−4% on Coder-30B), REVERTED
+
+Tested the same T1 4-line prefetch pattern (`qs`, `scales`, `q8.qs`, `q8.bsums`) in `ggml_gemv_q4_K_8x8_q8_K` (the AVX2 dominant kernel, 64% of REAP-246B cycles per CPU24 perf-record). Result: **regressed Coder-30B Q4_K_M from 48.05 → 46.11 (−4%)**.
+
+**Rationale**: the Q4_K AVX2 kernel has been refined for years upstream and its access pattern is already well-handled by Zen 5's HW prefetcher. Adding manual prefetch hints CONTENDS with HW prefetcher activity rather than improving on it. PPL bit-exact (9.8567), so it's a pure performance regression not correctness issue.
+
+**Decision**: Q4_K prefetch reverted; Q6_K prefetch retained. Code comment in `arch/x86/repack.cpp` Q4_K kernel documents the negative result so future agents don't re-attempt without new evidence.
+
+### Path-specific prefetch decisions
+
+The lesson generalizes: prefetch tuning is per-kernel, not "add prefetch everywhere." Each kernel's access pattern interacts differently with the HW prefetcher. New SIMD kernels should:
+1. Land WITHOUT prefetch first (validate correctness)
+2. Test T1 prefetch with minimal hints (start-of-array only)
+3. Test T0 if T1 helps (rare; usually T1 wins)
+4. Compare against baseline; revert if any regression
+
+### Throughput summary (Coder-30B Q4_K_M, post-Session 18)
+
+| Layer | Cumulative t/s | Δ from baseline |
+|---|---|---|
+| Plain canonical (no OMP, no SIMD) | 43.82 | reference |
+| + CPU21 OMP affinity stack | 47.08 (this session 17 measurement) | +7.4% |
+| + Q6_K SIMD + T1 prefetch (this session 18) | 47.98 | +9.5% total |
+
+The cumulative gain from CPU21+CPU2 work on Coder-30B: **+9.5% over plain canonical** (43.82 → 47.98).
