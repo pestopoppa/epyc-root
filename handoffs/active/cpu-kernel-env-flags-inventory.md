@@ -122,6 +122,26 @@ All seven flags default-off. Together control inter-process Expert Parallelism:
 - CPU15 EP family `aa6476ab0` → `43c65b926` (default-off via env vars).
 - Diagnostic flags `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_*` (default-off).
 
+### Build-time toolchain choices for v5 (NEW 2026-04-28 — CPU11 + CPU12)
+
+Build-time decisions are not env-flags; they are baked into the `llama-server` binary at compile time. Two tracks land here as of 2026-04-28:
+
+| Lever | Class | v5 cherry-pick | Coder-30B | Q8 frontdoor | REAP-246B | Dense 27B | Bundle |
+|---|---|---|---|---|---|---|---|
+| **clang-20 + libomp + `-march=znver5`** | runtime + codegen | **Universal** | +6.4% baseline | +0.8% | −0.8% | (TBD) | `2026-04-28-cpu21-libomp-chunks/` |
+| **+ PGO** (`-fprofile-instr-use=merged.profdata`) | codegen | **Universal** | +3.2% | +6.6% | +1.3% | +2.4% | `2026-04-28-cpu11-pgo/` |
+| **+ BOLT** (`llvm-bolt-20 -reorder-blocks=ext-tsp ...`) | layout | **Per-role only on Coder-30B** | +2.1% (60.54 t/s) | −1.2% | −0.1% | −0.9% | `2026-04-28-cpu12-bolt/` |
+
+Total compounded gain on Coder-30B Q4_K_M tg32 vs original gcc+libgomp+no-march `build/`: **+25.4% / 60.54 t/s** with the full clang+libomp+znver5+PGO+BOLT stack. PPL bit-exact at every step (chunk-12 final estimate 11.1146 ± 0.62405 unchanged through PGO and BOLT).
+
+**v5 deployment recommendation**:
+- **Default production binary**: clang + libomp + `-march=znver5` + PGO. Universal positive on all 4 model classes; PPL bit-exact; no runtime config changes.
+- **Optional per-role binary**: PGO + BOLT for the dedicated Coder-30B-A3B-Instruct role. Adds +2.1% to 60.54 t/s ceiling. Do NOT use as universal binary (cross-model regressions).
+
+Build environment additions (one-time):
+- `apt install clang-20 libomp5-20 libclang-rt-20-dev llvm-20 linux-tools-common linux-tools-generic`
+- ~30-min PGO profile-and-rebuild cycle; ~10-min BOLT collect-and-rewrite cycle per profile
+
 ### Cherry-pick with modification
 
 - `e84a5c82f` (repack mbind): the unconditional mbind needs a kill-switch env var. Add `GGML_NUMA_REPACK_INTERLEAVE` (default ON for backward-compat with current behavior, but allow `=0` to disable). Phase H PPL gates verify correctness; if perf-neutral on the production lineup, leave default-on. If any regression observed, flip default-off.
