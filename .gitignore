@@ -41,3 +41,7 @@ coverage.json
 
 # Backup artifacts (bundles, archives — never commit binaries)
 backups/
+
+# Compiler/profiling residue (PGO instrumented runs leave these)
+*.profraw
+*.profdata
