@@ -851,3 +851,35 @@ The lesson generalizes: prefetch tuning is per-kernel, not "add prefetch everywh
 | + Q6_K SIMD + T1 prefetch (this session 18) | 47.98 | +9.5% total |
 
 The cumulative gain from CPU21+CPU2 work on Coder-30B: **+9.5% over plain canonical** (43.82 → 47.98).
+
+## Speculative MoE expert pruning research check — 2026-04-27
+
+User asked: have people demonstrated production gains via "speculative MoE expert pruning" (predict which experts NOT to run based on intermediate activations)?
+
+**Yes — MoE-Spec (arxiv:2602.16052) and OD-MoE shadow networks** are recent published wins:
+
+- **[MoE-Spec (Feb 2026)](https://arxiv.org/html/2602.16052v1)**: Training-free expert budgeting INSIDE speculative decoding's verification step. Selects a budgeted subset of top-scoring experts during draft acceptance. Reports **10-30% throughput improvement over EAGLE-3** at comparable quality. Drop-in compatible with existing spec-dec pipelines.
+- **OD-MoE shadow networks**: ~84-91% expert-prediction accuracy with single-layer lookahead; >99% with shadow networks. Used to prefetch likely experts before the routing gate decides.
+- **MoE Pathfinder (Dec 2025, arxiv:2512.18425)**: Trajectory-driven expert pruning — treats expert selection as global path-planning across the layer graph. Integrates router probs + activation strength + reconstruction error.
+- **REAP (Router-weighted Expert Activation Pruning, arxiv:2510.13999)**: ALREADY DEPLOYED — this is the technique behind our REAP-246B model (Cerebras-pruned 480B → 246B).
+- **Dynamic Skipping**: per-token, layer-calibrated `β` threshold for expert ratio comparison.
+
+### Our regime applicability
+
+Most of these are **GPU-focused** research. CPU adaptation requires:
+1. **MoE-Spec** is the most directly applicable — it operates at the spec-dec verification step, which we already do on Coder-30B and REAP-246B. Could potentially be ported as a llama-server scheduler change (NOT a kernel change). Not trivial but not multi-week either.
+2. **OD-MoE shadow networks** require training a separate small model — significant ML engineering.
+3. **MoE Pathfinder + Dynamic Skipping** are inference-time gating changes.
+
+### Recommendation
+
+**Surface MoE-Spec via research-intake** as a high-value intake item. Verdict candidate: `worth_investigating` with focus on CPU spec-dec integration. Effort: probably 1-2 days for a Phase 0 prototype that wraps the existing draft-verify path with budgeted-expert selection. Expected gain: **5-15% on Coder-30B and REAP-246B** decode (the two production spec-dec models) if it ports cleanly.
+
+NOT a CPU2-track task (no kernel changes) — belongs in a separate handoff under `inference-acceleration-index.md`. Tagged for next research-intake batch.
+
+Sources:
+- [MoE-Spec arXiv](https://arxiv.org/html/2602.16052v1)
+- [REAP arXiv](https://arxiv.org/abs/2510.13999) (already deployed)
+- [MoE Pathfinder arXiv](https://arxiv.org/abs/2512.18425)
+- [Awesome MoE Inference](https://github.com/MoE-Inf/awesome-moe-inference/) (collection)
+- [Discovering Important Experts NeurIPS 2025](https://neurips.cc/virtual/2025/poster/119676)
