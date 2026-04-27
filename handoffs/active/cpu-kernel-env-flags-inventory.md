@@ -122,15 +122,17 @@ All seven flags default-off. Together control inter-process Expert Parallelism:
 - CPU15 EP family `aa6476ab0` → `43c65b926` (default-off via env vars).
 - Diagnostic flags `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_*` (default-off).
 
-### Build-time toolchain choices for v5 (NEW 2026-04-28 — CPU11 + CPU12)
+### Build-time toolchain choices for v5 (NEW 2026-04-28 — CPU11 + CPU12, with LTO and libomp-BOLT extensions)
 
-Build-time decisions are not env-flags; they are baked into the `llama-server` binary at compile time. Two tracks land here as of 2026-04-28:
+Build-time decisions are not env-flags; they are baked into the `llama-server` binary at compile time. As of 2026-04-28:
 
 | Lever | Class | v5 cherry-pick | Coder-30B | Q8 frontdoor | REAP-246B | Dense 27B | Bundle |
 |---|---|---|---|---|---|---|---|
 | **clang-20 + libomp + `-march=znver5`** | runtime + codegen | **Universal** | +6.4% baseline | +0.8% | −0.8% | (TBD) | `2026-04-28-cpu21-libomp-chunks/` |
 | **+ PGO** (`-fprofile-instr-use=merged.profdata`) | codegen | **Universal** | +3.2% | +6.6% | +1.3% | +2.4% | `2026-04-28-cpu11-pgo/` |
-| **+ BOLT** (`llvm-bolt-20 -reorder-blocks=ext-tsp ...`) | layout | **Per-role only on Coder-30B** | +2.1% (60.54 t/s) | −1.2% | −0.1% | −0.9% | `2026-04-28-cpu12-bolt/` |
+| **+ LTO** (`-DGGML_LTO=ON`) | codegen | **NOT cherry-picked** | −1.0% within noise | n/m | n/m | n/m | `2026-04-28-cpu12-bolt-libomp/` |
+| **+ BOLT-libggml** (`llvm-bolt-20 -reorder-blocks=ext-tsp ...`) | layout | **Per-role only on Coder-30B** | +2.1% (60.54 t/s) | −1.2% | −0.1% | −0.9% | `2026-04-28-cpu12-bolt/` |
+| **+ BOLT-libomp** (custom libomp from LLVM 20.1.8 src + `llvm-bolt-20`) | layout | **NOT cherry-picked** (inconclusive under noise) | no signal | n/m | n/m | n/m | `2026-04-28-cpu12-bolt-libomp/` |
 
 Total compounded gain on Coder-30B Q4_K_M tg32 vs original gcc+libgomp+no-march `build/`: **+25.4% / 60.54 t/s** with the full clang+libomp+znver5+PGO+BOLT stack. PPL bit-exact at every step (chunk-12 final estimate 11.1146 ± 0.62405 unchanged through PGO and BOLT).
 
