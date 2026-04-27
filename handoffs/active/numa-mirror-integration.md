@@ -13,9 +13,9 @@
 
 ---
 
-## Cross-architecture coverage gap (added 2026-04-27 evening, peer review)
+## Cross-architecture coverage CLOSED 2026-04-28 (Phase 2.6)
 
-The Phase 2 throughput gate was measured on two MoE models (Coder-30B Q4_K_M MoE, Qwen3.6-35B Q8_0 MoE). Per-thread BW math says dense should fail the gate identically, but the empirical measurement is missing. **Phase 2.6 of the closure-inflation remediation plan** runs a quick mirror=4 vs baseline bench on Qwen3.5/3.6-27B (dense/hybrid SSM-Dense per memory `feedback_qwen35_27b_architecture`) to confirm or refute the universality of the negative result. Until that measurement lands, the closure language reads "DECISIVE NEGATIVE on the MoE proxies tested; dense generalization expected per per-thread-BW math but not yet empirically measured".
+Dense/hybrid Qwen3.6-27B Q8_0 measured: NUMA_MIRROR=4 vs baseline = 4.71 vs 4.77 (-1.3%, within noise). Confirms the Phase 2 negative result generalizes from MoE proxies to dense/hybrid. Hardware is DRAM-channel-bound for ALL architectures tested. **Closure language now reads**: "DECISIVE NEGATIVE on single-socket NPS4 — confirmed across MoE Q4_K_M sync-bound, MoE Q8_0 BW-bound, and dense/hybrid Q8_0 architectures." Reopen still requires 2-socket configuration. Bundle: `data/cpu_optimization/2026-04-28-cpu-cross-architecture-sanity/`.
 
 ---
 

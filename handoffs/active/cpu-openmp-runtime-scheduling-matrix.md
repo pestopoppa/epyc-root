@@ -37,7 +37,7 @@ Schedule policy delta under libomp is small (`guided,16` adds +1.2% on top of li
 - **For v5**: ship a libomp-built llama-server (clang-20 + -march=znver5). +6.4% on Coder-30B; neutral on others. Single binary, simpler audit story than per-role variants.
 - For Coder-30B-A3B-Instruct workloads specifically, optionally add `OMP_SCHEDULE=guided,16` for an additional +1.2% under libomp (or +3.6% under libgomp).
 
-**Phase 2.6** (dense/hybrid Qwen3.5/3.6-27B sanity coverage) is the only remaining CPU21-related task — covered separately.
+✅ **Phase 2.6 — DONE 2026-04-28**: Dense/hybrid Qwen3.6-27B Q8_0 sanity coverage measured. CPU21 affinity stack delta on dense = +0.2% (within noise). libomp gain on dense = -1.7% (within noise). The CPU21 +3-8% MoE-Q4_K_M finding does NOT generalize to dense; the libomp +6.4% Coder-30B finding does NOT generalize to dense. Both wins remain MoE-architecture-specific. Bundle: `data/cpu_optimization/2026-04-28-cpu-cross-architecture-sanity/`. Closure scope updated in `decision.md` of that bundle.
 
 Artifact: `data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/`. CPU20 bundle complete (README.md, system-state.txt, process-pre/post.txt, ld_debug.log, results.csv, decision.md, plus 23 raw bench logs + libomp PPL log).
 

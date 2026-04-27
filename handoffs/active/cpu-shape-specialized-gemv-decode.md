@@ -872,7 +872,7 @@ Earlier framing in Sessions 17 and 18 above reads as "production-ready opt-in ca
 
 ✅ **Phase 2.4 — DONE 2026-04-28**: Full 32-chunk WikiText-2 PPL on both `GGML_Q6_K_8X8_AVX=0` and `=1` for Coder-30B Q4_K_M and Qwen3-Coder-REAP-246B Q4_K_M. **Bit-exact PASS** on both models (chunks 1-32 byte-identical, final PPLs identical). Artifact bundle: `data/cpu_optimization/2026-04-28-cpu2-q6k-full-ppl/`. Inventory entry flipped to "production-ready opt-in".
 
-⏳ **Phase 2.6** (still pending): Add Qwen3.5/3.6-27B Q8_0 throughput delta for the CPU2 Q8_0 SIMD + prefetch (Q6_K kernel won't fire on Q8_0 weights — Phase 2.6 covers the Q8_0 path on dense/hybrid). Closes the cross-architecture coverage gap (peer review finding #11).
+✅ **Phase 2.6 — DONE 2026-04-28**: Qwen3.6-27B Q8_0 (dense/hybrid) throughput on CPU2 Q8_0 SIMD env=0 vs env=1 = 4.78 → 4.73 t/s (-1.0%, within noise). Kernel does NOT fire effectively on dense at 96t because dense is uniformly DRAM-BW-bound and the SIMD compute throughput already exceeds per-thread BW share. Q8_0 SIMD remains a production-ready opt-in based on its MoE Q8_0 ceiling (+1-3% @ 96t); the v5 cherry-pick decision is unchanged (default-OFF env flag, opt-in per role). Bundle: `data/cpu_optimization/2026-04-28-cpu-cross-architecture-sanity/`.
 
 ## Speculative MoE expert pruning research check — 2026-04-27
 
