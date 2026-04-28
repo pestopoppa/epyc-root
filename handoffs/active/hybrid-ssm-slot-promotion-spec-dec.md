@@ -1164,3 +1164,124 @@ Until that's done, the production verdict on dispatcher v1 should be:
 **works correctly, doesn't help on greedy 100%-accept canonical workload,
 unknown gain elsewhere**.
 
+---
+
+## Phase 1.1 — Divergent-tree sensitivity sweep (DONE 2026-04-30, mechanism net-negative)
+
+Bundle: `data/cpu_optimization/2026-04-30-divergent-tree-sweep/` in
+epyc-inference-research repo.
+
+### Important correction to the canonical measurement analysis
+
+The earlier conclusion that the dispatcher's K-parallel block engaged
+"zero times" on canonical workload was **incorrect** — based on a
+non-verbose log filter that suppressed DBG-level engagement messages.
+With `--verbose` enabled, the same canonical config (p_split=0.05,
+temperature=0.0) shows the dispatcher actively engaging and running
+K-parallel verify rounds.
+
+The 35% K=4 vs K=1 slowdown is therefore NOT just the thread-count
+penalty (primary at 24t vs 96t). It reflects two compounding effects:
+
+1. Thread-count penalty (primary pinned to NUMA quarter 0).
+2. **K-parallel verify is performing parallel decodes on aux paths
+   that lose to primary 97% of the time** — pure overhead.
+
+### Sweep design
+
+K=4 with --verbose, 4 (p_split, temperature) configs × 5 prompts × 1 rep:
+
+| Config | p_split | temperature | rationale |
+|---|---|---|---|
+| p005_t0 | 0.05 | 0.0 | canonical baseline |
+| p001_t0 | 0.001 | 0.0 | wide tree (low p_split) |
+| p005_t7 | 0.05 | 0.7 | non-greedy target → drafter/target divergence |
+| p001_t7 | 0.001 | 0.7 | both branch-promoting levers |
+
+Prompts: canonical 3 (binary, lru, moving) + 2 uncertain (haiku, consciousness).
+
+### Key result
+
+| Metric | Value |
+|---|---|
+| Total dispatcher K-parallel invocations | **62** |
+| Primary winner (winner_ctx=0) | **60 (97%)** |
+| Aux winner (winner_ctx=1..3) | **2 (3%)** |
+| Aux-win marginal accept | **+1 token both times** |
+
+In 60/62 rounds, K-parallel verify produces accepted prefix EQUAL to
+primary's greedy — pure parallel-decode overhead with no gain. In 2/62
+rounds, an aux ctx delivers +1 accepted token (≈ 83 ms savings at
+12 t/s baseline). Average savings = 0.03 × 83 = 2.5 ms/round, vs ~17 ms
+sync + ~5 ms per-aux sample-and-accept overhead = -20 ms/round net.
+
+### Why architectural pivot to "full-machine primary" wouldn't help
+
+The pivot was framed as: change primary's threadpool from 24t (quarter-
+pinned) to 96t (full machine), making K=4 mode no slower than K=1 when
+alt paths happen to be empty. This sweep falsifies the premise:
+
+1. Alt paths ARE typically non-empty on canonical workload (alt=2-3
+   paths is common).
+2. The dispatcher engages, runs aux work, and usually loses anyway.
+3. The deeper issue isn't threading — it's that aux paths verify the
+   same tokens primary already verifies in 97% of rounds, even at
+   p_split=0.001 + temperature=0.7.
+
+Threading reconfiguration changes per-decode wall-clock, not aux win-rate.
+Pivot would address thread-count overhead but leave the structural
+no-win property intact.
+
+### Scoped closure (revised)
+
+> "On HEAD d45126db5 on `feature/cpu-ep-inter-process`, Phase 1.1
+> dispatcher v1 K-parallel verify on Qwen3.6-35B-A3B Q8 hybrid Delta Net
+> + Qwen3-1.7B Q8 drafter at v5 PGO build engages on canonical AND
+> branch-promoting workload configurations (4 configs × 5 prompts =
+> 62 dispatcher invocations) but primary wins 60/62 (97%) of rounds. The
+> 2 aux-winning rounds yielded +1 accepted token each — far below the
+> per-round K-parallel overhead of ~22 ms.
+>
+> Mechanism is structurally net-negative for this drafter/target/workload
+> class. Does NOT generalize to 'K-parallel verify is dead'. Different
+> drafter models (larger drafter that produces alt branches more aligned
+> with target sampling), different target models, different K values,
+> and very different workload classes (long-form generation with
+> frequent ambiguity) remain unevaluated. The mechanism's failure here
+> is empirical for THIS pair on THIS workload, not a general claim.
+>
+> Architectural pivot to 'full-machine primary' would not turn a 3%
+> aux-win-rate into wins — it addresses thread-count overhead, not the
+> underlying hit-rate. Pivot is not worth doing on this workload class."
+
+### Operational recommendation
+
+- **Keep** dispatcher v1 code in tree (committed in `d45126db5`). It
+  works correctly with full test coverage of the parallel decode race
+  fix and winner-state rotation. Costs nothing at K=1 default.
+- **Default** `--spec-numa-quarters` to 1 (already is). Do NOT enable
+  K=4 for production workloads on this drafter/target pair.
+- **Re-evaluate** if/when a different drafter or target pair is
+  benchmarked. The 6.10× ceiling probe motivated this work but measured
+  AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting
+  for 4× concurrent inference), not per-request K-parallel verify gain.
+  These are two different mechanisms; the aggregate-throughput one is
+  already deployed in production via the orchestrator's 4×24t splits.
+
+### Phase 1.1 final status (after sweep)
+
+| Item | Status |
+|---|---|
+| Dispatcher v1 implementation | DONE (functional, race-free, 386 LOC) |
+| Slice B.5 state-sync gate-check | PASSED (5.8 ms/pair, well under budget) |
+| Slice G canonical 3×2 measurement | DONE (K=4 = 7.42 t/s, K=1 = 11.40 t/s; gate not met) |
+| Divergent-tree sensitivity sweep | DONE (mechanism engages but loses 97/100 rounds) |
+| Phase 1.1 ≥1.3× gate | NOT MET, mechanism net-negative on this drafter/target |
+| Architectural pivot (option 2) | NOT WORTH DOING (sweep showed it wouldn't help) |
+
+The Phase 1.1 work is **complete**. Dispatcher v1 stays in tree as a
+disabled-by-default feature; the K-parallel verify mechanism is
+empirically not the right per-request latency lever for this pair
+on this hardware.
+
+
