@@ -347,3 +347,57 @@ Per Phase 0 NO-GO: implementing the MAB selector machinery (Phase 1 spec at hand
 ### Phase 1 prototype scope estimate (still recorded for completeness)
 
 LOC + risk per file unchanged from handoff Phase 1 table (~245 LOC, LOW risk). NOT implementing per Phase 0 NO-GO. Defer indefinitely.
+
+
+---
+
+## Phase 0' — Sampling regime re-evaluation (2026-04-30, INCONCLUSIVE — POTENTIAL SIGNAL)
+
+Bundle: [`data/cpu_optimization/2026-04-30-mab-phase-0-prime-sampling/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-mab-phase-0-prime-sampling/)
+
+The Phase 0 NO-GO closure (2026-04-29) explicitly left the door open for "Higher-temperature sampling" and "Sampling-decoding configurations". This Phase 0' tests both axes.
+
+### Method
+
+Same models / drafter / build / prompts as Phase 0; only `temperature` and `seed` change:
+
+| Phase | seed | temperature | shapes | reps × prompts | models |
+|---|---|---|---|---|---|
+| Phase 0 | not set | 0.0 | linear, tree p_split=0.05 | 3 × 3 | Coder + REAP |
+| Phase 0' fixed | 4242 fixed | 0.7 | same | 3 × 3 | Coder + REAP |
+| Phase 0' random | -1 (random) | 0.7 | same | 3 × 3 | Coder only |
+
+### Result
+
+**Fixed-seed temp=0.7 NO-GO**: 18/18 reps produced BYTE-IDENTICAL output between linear and tree across Coder + REAP. Mean t/s within 0.1-0.6% (noise). Probe-design caveat: deterministic seed makes the comparison uninformative — verifier samples the same token at each step regardless of which tree branches were drafted.
+
+**Random-seed temp=0.7 POTENTIAL SIGNAL on Coder** (n=9):
+
+| Shape | Mean t/s ± std | Accept rate |
+|---|---|---|
+| linear | 37.87 ± 5.29 | 53.4% |
+| tree | 41.49 ± 7.06 | 58.1% |
+| **Δ** | **+9.6%** | **+4.7 pp** |
+
+Per-prompt: p0 binary_search +18.2%, p1 lru_cache +8.3%, p2 csv_moving_avg +1.2%.
+Per-rep variance high — p1_r0 tree LOSES -25.5% (drafter strong → tree wasted), p1_r2 tree WINS +52.6% (drafter weak at 40.6% accept → tree alt-paths exposed verifier's preferred sample).
+
+**Statistical significance**: paired t-test n=9, t≈1.23, p≈0.23. **NOT significant** at 0.05 level despite the +9.6% mean.
+
+### Mechanism observation
+
+The per-rep variance pattern is consistent with tree mechanism's intended value proposition: tree helps when drafter top-1 diverges from verifier sampling (low accept rate); tree hurts when drafter top-1 already matches (high accept rate). MAB selector's claimed value is exactly to pick the right shape per-decode-round based on drafter quality.
+
+### Phase 0' verdict: INCONCLUSIVE — do not launch Phase 1 implementation yet
+
+Recommended next cut (~2-4 hours, no code changes):
+
+1. **Coder random-seed at n≥30 reps**: replicate the +9.6% signal. If t-stat clears p<0.05, signal is real.
+2. **REAP random-seed at n≥30 reps**: extend coverage to second target.
+3. **Drafter-quality predictor sketch** (design-only, ~2 hours): identify a per-decode-round feature that distinguishes "drafter weak" from "drafter strong" rounds. Without this, context-free MAB cannot capture the per-rep variance pattern.
+
+Phase 1 implementation (~245 LOC) is justified ONLY if (1) confirms signal at p<0.05 AND (3) identifies a usable feature.
+
+### What this changes vs Phase 0 NO-GO closure
+
+The Phase 0 closure stands. Phase 0' EXTENDS scope to confirm the door was correctly left open for sampling regime, AND finds a real (if noisy) signal there. Not a retraction — an extension.
