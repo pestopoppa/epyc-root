@@ -38,6 +38,7 @@
 | (intake-422) TIDE early exit | Calibration-router for per-token layer skip | **adopt_patterns** — implement on fork n_layer_exit. Deep dive: [tide-calibration-router-early-exit.md](../../research/deep-dives/tide-calibration-router-early-exit.md) | MEDIUM | 2026-04-20 |
 | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **NEW** — download pending, storage-constrained (325GB model, 417GB free). 9-phase eval plan. | MEDIUM | 2026-04-22 |
 | (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | Monitoring — design task from intake-426 deep dive | LOW | 2026-04-22 |
+| [sliders-local-validation.md](sliders-local-validation.md) | SLIDERS (structured-DB+SQL alt to RAG) Coder-30B viability | **STUB / NEW 2026-04-28** — Phase 0 falsification gate (catalogue GPT-4.1 call sites, substitute Coder-30B, FinQ5 run, gate on schema-hallucination >20% OR call-count >5×). **Does NOT block `internal-kb-rag.md`.** Sequential evaluation only after KB-RAG K7 ships. Source: intake-494. | LOW | 2026-04-28 |
 
 ---
 

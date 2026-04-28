@@ -19,6 +19,15 @@
 
 Before proposing or revising routing/coordination architecture, read [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (intake-474, ICLR 2026, Sakana AI). Trinity is the most direct prior art for the lightweight-learned-coordinator-over-heterogeneous-pool thesis we are pursuing. The deep-dive cross-checks Trinity's choices against ours on architecture, training signal, optimizer, action space, and pool composition — and lists the portable lessons (tri-role action space, sep-CMA-ES cold-start, block-ε-separability diagnostic, SVD-FT) and the non-portable ones (penultimate-token finding, frontier-closed-pool gain numbers). Reference it explicitly when arguing for a routing-architecture change so we know which Trinity lever the change does or does not echo.
 
+**Routing/coordination design-space reference points (added 2026-04-28)**: four published systems anchor the current research landscape for learned routing and coordination heads:
+
+- **BaRP** (intake-495, arxiv:2510.07429) — bandit-feedback training + 2-D preference-vector conditioning. **EPYC adopts patterns** at DAR-3 (motivation), DAR-4b (preference vector + cost τ), and via the routing-policy lens.
+- **LLM Bandit** (intake-496, arxiv:2502.02743) — IRT score predictor + model identity vectors + IRT-stratified cold-start onboarding. **EPYC adopts patterns** at LRC P4.1.3 (P19.9, IRT feature audit), LRC P5 (P19.10, IRT-stratified cold-start), and DAR-5.
+- **Trinity** (intake-474, arxiv:2512.04695) — sep-CMA-ES on a 0.6B SLM + 10K head with tri-role `(LLM, role)` action space. **EPYC tracks selectively** — tri-role architectural change (P19.1) is a real candidate; sep-CMA-ES is the realistic CPU-feasible escalation path if DAR-3/4 underdeliver.
+- **Conductor** (intake-493, arxiv:2512.04388) — 7B GRPO-trained coordinator emitting `(worker_id, NL_subtask, access_list)`. **EPYC treats as competitive intelligence ONLY** (NOT a target architecture; OC-0.6 captures the comparison row, with explicit "what to learn from / what NOT to copy" framing). GPU-class architecture, out of CPU stack.
+
+When making a routing-architecture proposal, name which of these four (and which Trinity lever from the deep-dive) the proposal echoes — and which it deliberately does not. Closure-inflation discipline applies: do not generalize "Conductor's 7B is out of scope" into "no learned coordinator could ever work" — the four systems are distinct points, not a single architecture.
+
 ---
 
 ## Subsystem Status
@@ -223,8 +232,10 @@ Source: intake-366 deep-dive. Diagnosed pathology: difficulty signal has zero pr
 
 - [x] **DAR-1: Offline regret analysis** ✅ 2026-04-15 — Replay logged decisions, compute regret = Q(best) - Q(chosen). Result: 96% uniform Q-values (near-zero predictive spread confirmed). No code changes needed.
 - [x] **DAR-2: Contrastive Q-score update** ✅ 2026-04-15 — ~50 lines in `q_scorer.py`. Pairwise ranking loss + `_compute_contrastive_adjustment()`. Modified `_compute_reward()` + `update_q_value()`. Unit test deferred.
-- [ ] **DAR-3: SPO+ with exploration** — ~100 lines. Convex surrogate loss + 10% epsilon-greedy exploration in `retriever.py` L225-368 for counterfactual data. Blocks on DAR-2 Q-signal validation.
+- [ ] **DAR-3: SPO+ with exploration** — ~100 lines. Convex surrogate loss + 10% epsilon-greedy exploration in `retriever.py` L225-368 for counterfactual data. Blocks on DAR-2 Q-signal validation. **2026-04-28 motivation note added (intake-495)**: BaRP frames this as the train/test mismatch fix — DAR-3 adopts the bandit-feedback rationale with a convex surrogate loss instead of REINFORCE.
 - [ ] **DAR-4: Model-feature-conditioned Q** — ~200 lines. Bilinear scorer replacing per-action Q-tables. Zero cold-start for new models. New `bilinear_scorer.py` module.
+- [ ] **DAR-4b: Inference-time preference vector + cost scaling τ** (NEW 2026-04-28, from intake-495 BaRP) — ~50–100 lines, 1–2 sessions. 2-D preference vector `ω = (ω_perf, ω_cost)` modulating the trained DAR-4 bilinear scorer at inference WITHOUT retraining. Cost scaling τ as runtime knob. Per-tenant or per-task ω override. Independent of DAR-4 if DAR-4 slips — applies to existing per-action Q-table too. See `decision-aware-routing.md` DAR-4b.
+- [ ] **DAR-5: IRT-augmented prompt features + learned model identity vectors** (NEW 2026-04-28, from intake-496 LLM Bandit) — ~150 lines, 3–5 sessions, conditional on DAR-4. Replaces hard-coded model-feature specs with end-to-end learned model identity vectors; augments prompt embedding with IRT (latent_difficulty, latent_discrimination). Decision gate: ≥ 2-pt val acc improvement to promote. See `decision-aware-routing.md` DAR-5.
 - **Future routing signal (2026-04-15 deep-dive)**: intake-378 identifies branching density (Propose step ratio) as a runtime quality signal. High branching = unproductive exploration. 21pp generalization gap on Llama3.1-8B from reasoning pattern quality alone. Could feed DAR-4 bilinear scorer as a prompt/output feature: branch-heavy outputs warrant stronger models. Implementation: `quality_detector.py` branching density (see `routing-intelligence.md`). Cross-ref: `research/deep-dives/sft-generalization-reasoning-patterns.md`.
 
 ### P14 — AutoPilot Iteration Strategy Upgrade (2026-04-20 deep-dive synthesis)
@@ -285,7 +296,13 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Speculative scoping**:
 
-- [ ] **P19.8**: OC-0 in [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md). Scoping document for whether a learned-head replacement of part of the Claude-driven autopilot loop is worth pursuing. Speculative; gated until tri-role + DAR + LRC Phase 4 land. Five sub-tasks (OC-0.1–0.5) to produce a written scope before any implementation phases are even drafted.
+- [ ] **P19.8**: OC-0 in [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md). Scoping document for whether a learned-head replacement of part of the Claude-driven autopilot loop is worth pursuing. Speculative; gated until tri-role + DAR + LRC Phase 4 land. **Six sub-tasks** (OC-0.1–0.6 — OC-0.6 added 2026-04-28: design-space-reference table populating Conductor (intake-493) + Trinity (intake-474) rows as **competitive intelligence**, NOT target architectures, per user feedback) to produce a written scope before any implementation phases are even drafted.
+
+**Bandit-feedback / IRT cold-start routing (intake-495/496 derived, NEW 2026-04-28)**:
+
+- [ ] **P19.9**: LRC P4.1.3 in [`learned-routing-controller.md`](learned-routing-controller.md). Bundle an IRT-feature variant into the P4.1 feature-position audit. Train a quick IRT score predictor over BGE pooled output that emits `(latent_difficulty, latent_discrimination)` per prompt; include as a 4th variant alongside BGE-CLS / BGE-mean / BGE-last. Decision gate: ≥1 pt val-acc improvement → escalate to a separate phase plan (cross-link to DAR-5). Bundled with P4.1 — +1 session, no separate ablation infrastructure. Source: intake-496 (LLM Bandit).
+- [ ] **P19.10**: LRC Phase 5 in [`learned-routing-controller.md`](learned-routing-controller.md). IRT-stratified cold-start onboarding. P5.1 (IRT discrimination scorer, ~80–100 LoC, ~2 sessions) + P5.2 (cold-start A/B re-onboarding existing specialist with 50 IRT-stratified prompts vs on-disk full sweep, ~70 LoC harness, 1 session) + P5.3 (conditional production rollout if P5.2 passes). Decision gate: ≤ 5% relative error on each baseline feature AND ≥ 5× faster than full sweep wall-clock. **This is the most actionable single experiment from intakes 495/496** — if it passes, every future model swap compresses from a multi-hour sweep to a ~30-minute calibration. Source: intake-496 (LLM Bandit).
+- Pointer: DAR-4b and DAR-5 (intake-495/496 patterns adopted at the Q-scorer layer) are tracked at P13 above, not duplicated here.
 
 **Dependency chain summary**:
 

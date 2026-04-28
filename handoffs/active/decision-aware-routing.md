@@ -96,6 +96,8 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 
 ### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions)
 
+**Motivation note (intake-495 BaRP)**: BaRP frames this as the train/test mismatch fix — production logs only record the chosen specialist's outcome, not counterfactuals for un-routed models. DAR-3 SPO+ adopts the bandit-feedback *rationale* (don't require labels for un-chosen specialists) with a convex surrogate loss instead of REINFORCE. The 10% epsilon-greedy exploration step is what manufactures counterfactual data; SPO+ is what learns from it without REINFORCE's high-variance gradient.
+
 - [ ] Implement SPO+ (Smart Predict-then-Optimize) loss:
   ```
   L_SPO+ = sum(max(0, 2*c_hat[j] - c_true[j])) - c_hat[i*] + c_true[i*]
@@ -128,6 +130,45 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 - [ ] Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing history needed
 
 **Files**: New `bilinear_scorer.py`, `retriever.py`, `q_scorer.py` (config), `episodic_store.py`
+
+### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
+
+Source: intake-495 (BaRP) — preference-tunable inference. Modulates the trained DAR-4 bilinear scorer at inference WITHOUT retraining.
+
+- [ ] Add a 2-D preference vector `ω = (ω_perf, ω_cost)` on the simplex (`ω_perf + ω_cost = 1`) read from request metadata (default ω = (0.5, 0.5)).
+- [ ] Add calibrated cost scaling parameter τ as a runtime knob (env var `DAR_COST_TAU`, default 1.0). τ multiplies the cost feature's contribution to the bilinear score.
+- [ ] Inference-time score: `selection_score = ω_perf * Q(prompt, model) - ω_cost * τ * normalized_cost(model)`. Existing `selection_score = Q - cost_lambda * (expected_cost / cold_cost)` becomes the ω_perf=ω_cost=0.5, τ=cost_lambda special case.
+- [ ] Per-tenant or per-task ω override (e.g., interactive tasks lean ω_perf=0.8, batch jobs lean ω_perf=0.3) — wire into `routing.py`.
+- [ ] No retraining required. The bilinear scorer trained in DAR-4 remains fixed; only the inference-time blending changes.
+- [ ] Measure: routing decision distribution shift across ω sweeps; latency-quality Pareto curve.
+
+**Files**: `retriever.py` L225-368 (selection scoring), `routing.py` L48-314 (ω plumbing), `q_scorer.py` (config — `DAR_COST_TAU` knob).
+
+**Why orthogonal to DAR-4**: DAR-4 trains the bilinear scorer; DAR-4b modulates its outputs at inference. Can ship independently of DAR-4 by applying ω/τ to the existing per-action Q-table if DAR-4 slips.
+
+### DAR-5: IRT-Augmented Prompt Features + Learned Model-Identity Vectors (~150 lines, 3-5 sessions, conditional on DAR-4)
+
+Source: intake-496 (LLM Bandit) — IRT (Item Response Theory) score predictor + d-dim model identity vectors trained jointly. Replaces hard-coded model-feature specs in the bilinear scorer with end-to-end learned embeddings.
+
+- [ ] **DAR-5.1**: Implement IRT prompt-difficulty scorer over BGE prompt embeddings. Output: per-prompt `(latent_difficulty, latent_discrimination)` 2-D embedding. Trained via maximum-likelihood on existing 174K routing memories with observed model outcomes as IRT responses. Calibrated via Platt scaling.
+- [ ] **DAR-5.2**: Replace hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` in DAR-4 bilinear scorer with a learned d-dim model identity vector `v_model ∈ ℝ^d` (d=8 starting point), initialized from the hard-coded spec values, then trained jointly with the bilinear weights.
+- [ ] **DAR-5.3**: Augment `v_prompt` with the IRT 2-D output concatenated to the BGE embedding. New `v_prompt = [BGE_embedding | irt_difficulty | irt_discrimination]`.
+- [ ] **DAR-5.4**: A/B against frozen-DAR-4 (hard-coded features) on val set. Decision gate: if IRT+identity-vectors improves routing accuracy by ≥ 2 points val acc, promote to default.
+- [ ] **DAR-5.5**: Note for future onboarding — the learned model identity vector for a *new* model can be cold-started from spec features (initialization step from DAR-5.2), then refined via the LRC P5 IRT-stratified onboarding workflow.
+
+**Files**: New `irt_scorer.py`, modify `bilinear_scorer.py` from DAR-4, `q_scorer.py` (config).
+
+**Conditional on**: DAR-4 (bilinear scorer) shipping first. If DAR-4 hard-coded features prove sufficient (no measured benefit from learned features), DAR-5 closes as `not_pursued`.
+
+### Escalation Language (added 2026-04-28 from intake-495/496/474/493)
+
+If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pathology:
+
+1. **CPU-feasible escalation (Trinity, intake-474)**: sep-CMA-ES on the existing routing head (10K params, no gradient). Side-steps the credit-assignment / Q-magnitude problem entirely. CPU-feasible, no GPU budget required. See `learned-routing-controller.md` P4.4 (sep-CMA-ES cold-start spike) for the existing scoping.
+2. **GPU-class escalation (Conductor, intake-493)**: 7B end-to-end RL coordinator. Requires 2× H100 80GB minimum. Out of CPU stack. Documented as competitive intelligence in `outer-coordinator-learned-head.md` OC-0.6.
+3. **Bandit-as-such (BaRP, intake-495)**: REINFORCE on a fresh policy network, no Q-scorer at all. High-variance on small action spaces (≤5–8 specialists); LinUCB or Thompson sampling may match without policy-gradient instability. Unranked third option.
+
+The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Options 2 and 3 are recorded for completeness, not roadmap commitments.
 
 ## Dependency Graph
 
@@ -174,7 +215,7 @@ The zero-predictive-spread pathology in `difficulty_signal.py` motivated this wo
 Decision-aware routing changes the reward signal that the eval tower must evaluate. The eval tower verification framework ([eval-tower-verification.md](eval-tower-verification.md) EV-1–EV-7) must be able to assess whether the new routing reward is well-calibrated (ECE) and discriminative (AUC).
 
 ### 4. Existing RL Routing Research (R&O intake-275)
-The BaRP (arxiv:2510.08429) lightweight policy network and LLM Bandit (arxiv:2502.02743) from the 2026-04-07 research intake update are complementary approaches. DAR-2/3 operate on the existing Q-scorer; BaRP/Bandit would replace it entirely with a trained policy. If DAR-2/3 show insufficient gains, BaRP is the next escalation path.
+The BaRP (arxiv:2510.07429) lightweight policy network and LLM Bandit (arxiv:2502.02743) from the 2026-04-07 research intake update are complementary approaches. DAR-2/3 operate on the existing Q-scorer; BaRP/Bandit would replace it entirely with a trained policy. If DAR-2/3 show insufficient gains, BaRP is the next escalation path.
 
 ## Key Files
 
@@ -211,8 +252,19 @@ The BaRP (arxiv:2510.08429) lightweight policy network and LLM Bandit (arxiv:250
 ### New Related Research
 
 - **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
-  - Relevance: Conductor is Trinity's RL counterpart from the same author team — same coordination thesis, opposite optimizer choice (end-to-end RL on a 7B base vs ES on a 10K head). Directly relevant to DAR's central question "what learning objective trains the routing head". Trinity argues *side-step credit assignment with ES*; Conductor argues *do credit assignment well with RL on a much bigger head*. The two represent the two extreme points of the optimizer-design space DAR is exploring.
-  - Key technique: end-to-end RL with terminal task reward (no labelled trajectories), randomized agent-pool training, recursive self-as-worker for test-time scaling.
-  - Reported results: 7B Conductor exceeds best individual worker on LiveCodeBench and GPQA.
-  - Delta from DAR scope: DAR is reshaping the *learning objective* of the existing TD-trained Q-scorer to be decision-aware. Conductor demonstrates that with sufficient base-model capacity (7B), terminal-reward RL can recover all of (selection, topology, prompt) jointly without explicit Q-objective shaping. **Implication for DAR-2/3/4**: if predict-then-optimize loss reshaping continues to underdeliver, the next escalation is *bigger head + ES* (Trinity) rather than *bigger head + RL* (Conductor) — the latter is GPU-only and out of budget. Document this branching in the DAR phase plan.
-  - Caveats (Tier 2b): no public code/weights, single-source results, terminal-reward RL does not directly address inter-agent verification failures (MAST taxonomy, arxiv:2503.13657), OOD agent-pool generalization unverified beyond training-time randomization distribution.
+  - **Framing**: competitive intelligence on the optimizer-choice axis. NOTE: Trinity uses **sep-CMA-ES** (evolutionary strategy), not RL — earlier framing of "RL counterpart" was imprecise.
+  - Relevance: Conductor (7B + GRPO) and Trinity (0.6B + sep-CMA-ES + 10K head) are two distinct points in the published optimizer-design space, both adjacent to DAR's question of "what objective trains the routing head". They are not the two *extremes*, just two published data points; many other formulations exist (BaRP intake-495 — bandit-feedback REINFORCE; LLM Bandit intake-496 — PPO+IRT). DAR remains a TD-trained-Q-scorer-loss-reshape problem.
+  - Key technique: end-to-end GRPO with terminal task reward (no labelled trajectories), 2× H100 80GB, randomized agent-pool training, recursive self-as-worker for test-time scaling.
+  - Reported results (concrete): LCB V6 +1.03 pp vs GPT-5 (within noise); GPQA-D +2.7 pp; open-source-only inference +~10 pp vs Claude Sonnet 4 (strongest ablation).
+  - Delta from DAR scope: Conductor demonstrates that with sufficient base-model capacity (7B), terminal-reward RL can recover joint coordination decisions without explicit Q-objective shaping — this is competitive intelligence, not a target for DAR. **Implication for DAR-2/3/4**: if predict-then-optimize loss reshaping continues to underdeliver, the realistic CPU-feasible escalation is *Trinity-style sep-CMA-ES on the existing routing head* (10K params, no gradient), NOT a 7B GPU-class RL coordinator. Document this branching as one option among several in the DAR phase plan.
+  - Caveats (Tier 2b): code/weights promised in supplementary, not yet public; six-author overlap with Trinity means not independent corroboration; LCB +1.03 pp is within noise; terminal-reward RL does not directly address inter-agent verification failures (MAST, arxiv:2503.13657, 36.9% of multi-agent breakdowns).
+
+- **[intake-495] "Learning to Route LLMs from Bandit Feedback (BaRP)"** (arxiv:2510.07429 — earlier internal references at `2510.08429` are TYPOS pointing to ClauseLens)
+  - Relevance: directly named in this handoff at L177 as the next escalation path if DAR-2/3 underperform. BaRP solves the exact train/test mismatch DAR cares about: production logs only record the chosen specialist's outcome, not counterfactuals — BaRP trains under bandit feedback rather than full-information offline labels.
+  - Key pattern to lift: **bandit-feedback training** (don't require labels for un-chosen specialists) + **2-D performance-cost preference vector** dialed at inference time without retraining. Both are concrete additions to the existing learned router; do NOT replace the Phase-1 MLP wholesale.
+  - Reported results: aggregate +16.84% score and -50% monetary cost vs GraphRouter on RouterBench-derived ID; +25.99% on OOD vs offline routers.
+  - Caveat (Tier 2b): RouterBench is MMLU-skewed; OOD evaluated on public benchmarks the candidates likely saw; REINFORCE is high-variance on small pools — LinUCB / Thompson sampling may match without policy-gradient instability and the paper does not ablate this.
+- **[intake-496] "LLM Bandit"** (arxiv:2502.02743, Yang Li, Feb 2025)
+  - Relevance: companion bandit-routing paper. Direct hit on the "every model swap requires a full benchmark sweep" pain — IRT-based 20-50-prompt cold-start would compress that to hours.
+  - Key pattern to lift: **IRT score predictor** + **model identity vectors** + **stratified-by-discrimination cold-start prompt selection**. Do not adopt the full PPO+GAE apparatus; that's heavyweight for our small pool.
+  - Caveat (Tier 2b): single-author, no major-lab signal, slightly outside freshness window. Cost reductions only measured vs RouteLLM (not GraphRouter / RouterDC / BaRP). Short-output benchmarks may not transfer to autopilot multi-turn workload.

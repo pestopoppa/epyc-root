@@ -202,7 +202,7 @@ Caveats: requires the eval-tower to be wired as a fitness oracle (parallelisable
 - Intake entry: [intake-474](../intake_index.yaml)
 - Active handoffs: [decision-aware-routing.md](../../handoffs/active/decision-aware-routing.md), [learned-routing-controller.md](../../handoffs/active/learned-routing-controller.md), [routing-intelligence.md](../../handoffs/active/routing-intelligence.md), [routing-and-optimization-index.md](../../handoffs/active/routing-and-optimization-index.md), [meta-harness-optimization.md](../../handoffs/active/meta-harness-optimization.md)
 - Chapter to update: [`08-cost-aware-rewards.md`](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md)
-- Prior-art intake siblings: xRouter (arxiv:2510.08439), RouteLLM (arxiv:2406.18665), Router-R1 (arxiv:2506.09033), BaRP (arxiv:2510.08429), LLM Bandit (arxiv:2502.02743) — all already in `intake_index.yaml`
+- Prior-art intake siblings: xRouter (arxiv:2510.08439), RouteLLM (arxiv:2406.18665), Router-R1 (arxiv:2506.09033), BaRP (arxiv:2510.07429), LLM Bandit (arxiv:2502.02743) — all already in `intake_index.yaml`
 
 ---
 
