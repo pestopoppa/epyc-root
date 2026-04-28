@@ -917,3 +917,101 @@ d056c1f20  Phase 1.1 foundation v3 ROLLBACK: CLI surface only after hybrid crash
 ```
 
 Net: ~243 LOC committed across 5 commits, two pre-existing blockers fixed, foundation up through dispatcher integration point.
+
+---
+
+## Next-session pickup (verbatim prompt) — DEFERRED 2026-04-28 evening
+
+The session was wrapped up cleanly at the dispatcher v0 plateau because the remaining K-parallel mechanism is realistically 3-5 days of focused concurrent-state code. To pick this up fresh, paste the prompt below into a new session:
+
+```text
+Resume slot-promotion Phase 1.1 dispatcher implementation on
+feature/cpu-ep-inter-process at HEAD 64df7284b in
+/mnt/raid0/llm/llama.cpp-experimental.
+
+State of play:
+- Foundation v5 (K=4 NUMA-pinned aux llama_context instances) is live and
+  smoke-tested clean on Qwen3.6-35B-A3B-Q8_0 hybrid Delta Net + Qwen3-1.7B
+  Q8 drafter at v5 PGO build (build_v5_pgo_use/).
+- Both pre-existing blockers fixed (Blocker 1: ggml_threadpool +
+  llama_set_n_threads pairing; Blocker 2: speculative.cpp:1066 empty-piece
+  GGML_ASSERT relaxation).
+- Dispatcher integration point at server-context.cpp:3218-3220 is wired
+  but PASS-THROUGH (`dispatch_numa_parallel_verify` at line 72 just calls
+  common_sampler_sample_and_accept_n on numa_ctxs[0]).
+- numa_state_sync helper at server-context.cpp:45 is in place
+  (llama_state_seq_get/set_data_ext + PARTIAL_ONLY flag, with
+  llama_memory_seq_rm clearing dst seq before set).
+- Phase 1.1 ≥1.3× gate is NOT MET. K=4 vs K=1 = parity (+7.9% noise) on
+  Qwen3.6-35B-A3B Q8 hybrid because dispatcher is pass-through.
+- Phase 2 aggregate ceiling = 6.10× single-instance — gate has 4.7×
+  headroom for orchestration overhead, so the mechanism is structurally
+  justified.
+
+Remaining work (realistic 3-5 days, ~430-550 LOC across 7 sub-slices):
+1. Path-batch builder (~80 LOC): expose
+   common_speculative_get_tree(slot.spec.get())->get_paths() and
+   partition K paths into K llama_batch instances. New helper in
+   server-context.cpp; possible common/speculative.h API exposure.
+2. Skip shared-batch packing for spec-dec slots when K>1 (~30 LOC) in
+   update_slots() at server-context.cpp:~2400-2800. Currently all slots
+   merge into one global batch decoded on primary ctx.
+3. One-shot state sync at SLOT_STATE_GENERATING transition (~50 LOC):
+   primary -> K-1 aux ctxs at line ~3101. Subsequent rounds need delta
+   sync only.
+4. Parallel decode orchestrator (~80 LOC): std::thread over K
+   llama_decode calls, with proper join + error propagation. Each ctx
+   already has its own pinned threadpool; thread fan-out is at the
+   llama_decode level, not below.
+5. Per-ctx sample-and-accept reducer (~60 LOC): run
+   common_sampler_sample_and_accept_n on each ctx's path; pick winner =
+   longest accept. Edge: ties -> use lowest ctx index for determinism.
+6. State commit / winner promotion (~80-150 LOC, HIGHEST RISK): sync
+   winner ctx -> primary state via llama_state_seq_get/set_data_ext.
+   ~330 MiB at 50 GB/s = ~6.6 ms per memcpy x (K-1) losers + 1 winner
+   = ~20-25 ms per round. This is the gate-eating overhead.
+7. Edge cases (~50 LOC): K=1 fallback (already works via numa_quarters_active
+   == 1 branch), single-path tree (no p_split), empty draft, partial
+   accept rollback semantics.
+
+Critical risk: K=1 currently runs at 12.01 t/s mean on the test workload.
+The 1.3x gate is 15.6 t/s. With ~20-25 ms state sync per round eating
+into the ~83 ms per-token wall-clock, the parallel speedup must overcome
+~25-30% overhead to hit the gate. Could land as parity if state sync
+cost dominates the parallel gain. Mitigation: compute scale of per-round
+sync vs per-round decode cost EARLY (smoke 1 sub-slice at a time and
+measure end-to-end on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter at v5
+PGO build, not after all sub-slices land).
+
+Files to touch:
+- common/speculative.h (expose tree access if needed for path partition)
+- common/speculative.cpp (possibly: per-path state primitives)
+- tools/server/server-context.cpp (most of the new code)
+
+Reference reading before starting:
+- /workspace/handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md
+  sections "Phase 1.1 — foundation v1->v5 + dispatcher v0" and "Phase 2
+  ceiling probe" (lines 380-480)
+- /mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-29-numa-quarter-pin-phase-1-1a/decision.md
+- /mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-29-numa-parallel-ceiling/decision.md
+
+Test workload (canonical for this work):
+- llama-server with Qwen3.6-35B-A3B-Q8_0 + Qwen3-1.7B-Q8_0 drafter
+- Same 3 prompts as Phase 1.0 (binary_search, lru_cache,
+  csv_moving_avg) at 3 reps each; ~60 s warmup after /health OK
+- v5 PGO build at /mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/
+- numactl --interleave=all required for memory placement
+- Server flags: --spec-numa-quarters 4 (for K=4) or 1 (baseline)
+- LLAMA_ARG_SPEC_NUMA_QUARTERS env var equivalent
+
+Build + smoke first, measure after each sub-slice not just the final
+combined merge. Deliverable: K=4 mean t/s >= 1.3 x K=1 mean t/s on the
+canonical workload, OR a NO-GO closure with scoped language per
+closure-inflation policy (specifically: do NOT generalize to "K-parallel
+verify is dead on hybrid" — only that *the implemented mechanism at this
+specific overhead breakdown* doesn't beat K=1 on this specific workload
+and config; alternative cost models may still close the gap).
+
+Branch already has 5 unpushed commits ahead of fork remote. Pull them or
+not as you see fit; they're in a clean state.
+```
