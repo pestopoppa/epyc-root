@@ -480,3 +480,76 @@ Phase 1.0 GATE MET (heap-spec works on hybrid). Phase 2 ceiling probe MET WITH H
 ### CPU20 bundle
 
 `data/cpu_optimization/2026-04-29-numa-parallel-ceiling/` — 6 raw bench logs + this is a measurement-only probe.
+
+---
+
+## Phase 1.1 — Foundation IN PROGRESS (2026-04-29) — **+135 LOC committed; dispatcher pending next session**
+
+### Scope correction (vs original Phase 0 estimate)
+
+The Phase 0 estimate of "~50-100 LOC, ~2-3 days" assumed a K-candidate target verification pipeline already existed in heap-spec. Empirical survey of `common/speculative.cpp:1240-1314` falsified that:
+
+- DySpec heap-spec uses `seq_cp` on the **draft** context only (line 1271). Tree branching saves DRAFT compute, not target compute.
+- Target verify path at `tools/server/server-context.cpp:3046` runs `common_sampler_sample_and_accept_n` once on the **single greedy path** returned from `tree.get_greedy_path()`. No K-way target parallelism currently exists — it has to be built from scratch.
+- Phase 1.0 measurement (linear 6.80 t/s vs tree 6.88 t/s) confirms this — the 1.2% delta reflects drafter savings only, not target parallelism.
+
+**Revised realistic Phase 1.1 scope: ~360-510 LOC, ~1-2 weeks careful work**:
+
+| Component | Status | LOC |
+|---|---|---|
+| `--spec-numa-quarters K` flag + params | **DONE 2026-04-29** | +14 |
+| K target llama_context instances + threadpool cpumask plumbing | **DONE 2026-04-29** | +120 |
+| Dispatcher (split heap-spec paths to K ctxs, parallel decode) | **PENDING next session** | +150-250 |
+| State sync (prompt KV across K ctxs at session start) | **PENDING next session** | +50-100 |
+| Reduction (winning path → primary ctx via seq_cp) | **PENDING next session** | +50-80 |
+| Affinity-warning fix (pthread_setaffinity from spawned threads) | **PENDING next session** | +20-30 |
+| Smoke + measurement | **PENDING next session** | day 4-5 |
+
+### Foundation delivered (committed `a5c48050c` on `feature/cpu-ep-inter-process`)
+
+```
+$ llama-server -m Qwen2.5-0.5B-Instruct-f16.gguf -t 8 --spec-numa-quarters 4
+srv    load_model: Phase 1.1 NUMA-parallel verify: K=4 quarters, 2 threads/quarter
+srv    load_model: Phase 1.1: primary ctx pinned to threads [0, 2)
+srv    load_model: Phase 1.1: auxiliary ctx 1 created, pinned to threads [2, 4)
+srv    load_model: Phase 1.1: auxiliary ctx 2 created, pinned to threads [4, 6)
+srv    load_model: Phase 1.1: auxiliary ctx 3 created, pinned to threads [6, 8)
+srv    load_model: Phase 1.1 foundation active: 4 NUMA-pinned target contexts.
+                  Dispatcher not yet wired — secondary contexts idle until next phase.
+```
+
+K=1 (default) preserves single-context behavior — no regression risk for existing deployments.
+
+### Foundation files
+
+| File | Diff | Purpose |
+|---|---|---|
+| `common/common.h` | +6 | `numa_quarters` field on `common_params_speculative` |
+| `common/arg.cpp` | +8 | `--spec-numa-quarters K` flag + `LLAMA_ARG_SPEC_NUMA_QUARTERS` env |
+| `tools/server/server-context.cpp` | +120 | `numa_ctxs` / `numa_threadpools` member vectors; `destroy_numa_aux()` helper; K-context creation block after slot init |
+
+### Known issue — affinity warning
+
+Smoke test produced 3× `warn: failed to set affinity mask 0x... : Invalid argument (22)` on auxiliary context creation. Root cause likely that `sched_setaffinity` is invoked on the threadpool's thread descriptor before the thread is fully spawned, so the syscall hits an unmapped TID. Non-fatal — threadpool created, threads run — but pinning may not be applied to the worker threads. Fix in next phase.
+
+### Next session — Phase 1.1 completion plan
+
+1. **Dispatcher** in `server-context.cpp`: replace `common_sampler_sample_and_accept_n` call at line 3046 with a parallel-decode helper that:
+   - Pulls `tree = common_speculative_get_tree(slot.spec.get())`
+   - Calls `tree.get_paths()` (already exists in `common/speculative.h`)
+   - For each path p in [0, K), submits a verify-decode to `numa_ctxs[p]` via std::async or std::thread
+   - Joins all, picks longest-accepted-prefix path via standard rejection-sampling math
+2. **State sync**: at request prompt-processing time, replicate the prompt KV state across the K ctxs (via `llama_state_seq_get_data` / `llama_state_seq_set_data`). Or alternatively, only sync at spec-dec rounds and use a smaller delta-state copy.
+3. **Reduction**: after winning path is decided, copy its KV delta from winning ctx → primary ctx; mark losing-ctx state for cleanup.
+4. **Affinity fix**: thread-local cpumask application via `pthread_setaffinity_np` from inside each spawned worker thread (not from the spawning thread).
+5. **Measurement**: 5-rep proper canonical end-to-end spec-dec on Qwen3.6-35B-A3B Q8 with K=4 vs K=1; gate ≥1.3× per-request latency over Phase 1.0 single-NUMA baseline (6.80 t/s).
+6. **CPU20 bundle**: `data/cpu_optimization/2026-04-30-numa-parallel-verify-phase-1-1/`.
+
+### Wall-clock estimate
+
+3-5 days of focused work for items 1-5. Risk areas: state sync semantics on hybrid Delta Net (per-sequence state must be replicated correctly across ctxs); KV cache memory cost (K=4 × Q8 35B at default n_ctx ≈ 4× allocation — may need ctx-size reduction).
+
+### Phase 1.1 closure-inflation discipline
+
+If next-session measurement shows <1.3× per-request, scoped closure language (per `feedback_closure_inflation.md`):
+> "K=4 NUMA-parallel candidate verify on Qwen3.6-35B-A3B Q8 hybrid Delta Net under v5 PGO build at NPS4 fails to achieve ≥1.3× per-request latency over single-NUMA Phase 1.0 baseline (6.80 t/s). The DFlash-style mechanism is implemented but does not deliver on this specific model + build. Does NOT generalize to 'all NUMA-parallel verify on CPU is dead'. Different K values, different state-sync schemes, different model classes (REAP-246B EP, Coder-30B pure MoE) could still show different results."
