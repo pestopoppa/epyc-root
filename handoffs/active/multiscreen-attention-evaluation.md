@@ -201,3 +201,32 @@ No sub-quadratic attention mechanism has a llama.cpp implementation today, but *
 4. **IHA/MEA/KHA** — FlashAttention-compatible, standard inference stack preserved.
 5. **NSA** — GPU-only. Monitor.
 6. **Multiscreen** — Too early. Monitor.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-488] "Speculative Decoding with Mamba (companion to 'The Mamba in the Llama')"** (github.com/itsdaniele/speculative_mamba; arxiv:2408.15237)
+  - Relevance: Pure-Mamba target + Mamba draft spec-dec (mamba-2.8b target, mamba-130m draft). Closest existing reference for SSM-on-SSM speculation, but our hybrid SSM targets (Qwen3.5, Qwen3-Next) use Delta-Net not Mamba2.
+  - Key technique: K-step lookahead drafting with frozen recurrent state; CUDA-graph-on-draft to amortize launch overhead.
+  - Reported results: ~68% acceptance on a single English-prose example with K=3, fp16 (anecdotal, not benchmarked).
+  - Delta from current approach: CUDA-only, pure-Mamba (not Delta-Net hybrid) — no kernel ports to llama.cpp CPU. Verdict: not_applicable for current EPYC hardware.
+
+- **[intake-489] "SpecMamba: Accelerating Mamba Inference on FPGA with Speculative Decoding"** (arxiv:2509.19873)
+  - Relevance: First FPGA accelerator co-designing Mamba SSM with spec-dec; algorithmic core (memory-aware hybrid backtracking for SSM hidden-state rollback) addresses the central pain point that has blocked spec-dec on hybrid SSMs in our stack.
+  - Key technique: Memory-aware hybrid backtracking + FIFO-based tree verification with tiling + parallel-linear/serial-SSM dataflow.
+  - Reported results: 2.27× over GPU baseline, 2.85× over prior FPGA Mamba (LightMamba), 5.41× higher energy efficiency vs GPU on AMD Versal VHK158/VCK190.
+  - Delta from current approach: FPGA hardware-bound; no CPU port path. Filed for awareness — confirms SSM-rollback is the right algorithmic frame for if/when hybrid-SSM spec-dec is reopened.
+
+- **[intake-490] "Hybrid Models Meet SGLang: More than Full Attention"** (pytorch.org blog, Dec 2025)
+  - Relevance: Engineering recipe for serving hybrid SSM+attention models with prefix caching + spec-dec. Multiscreen-class architectures with linear-attention layers face the same KV-pool-vs-state-pool sizing problem that this blog catalogs. Verdict: **adopt_patterns**.
+  - Key technique: HybridReqToTokenPool, HybridLinearKVPool (skip KV alloc for linear layers), MambaRadixCache (hybrid prefix-tree), Elastic Memory Pool via CUDA VMM, EAGLE/MTP rollback over SSM state.
+  - Reported results: 324.57 tok/s with 4.231 avg acceptance length on Qwen3-Next-80B-A3B-FP8 (H200, bs=1, MTP-4 + topk=4 + draft_tokens=8).
+  - Delta from current approach: Pure CUDA-/H200-targeted; kernels do not port to llama.cpp CPU. Architectural lessons (per-layer skip-KV remap, elastic Mamba/KV pool, in-place-state rollback workaround) are directly applicable when scoping llama.cpp-side support for hybrid SSM serving.
+  - Caveats (Tier 2b): per-request memcpy cost for in-place state snapshots not benchmarked; agentic-workload cache pressure (sgl-project/sglang #20144) — Mamba states can be 1000× larger than KV states and trigger evictions; multi-tenant numbers under contention not published.
+
+- **[intake-491] "Mamba Drafters for Speculative Decoding"** (arxiv:2506.01206; Findings of EMNLP 2025)
+  - Relevance: External Mamba drafter for Transformer target — constant-memory drafter that beats Pythia drafters of equal/larger size at long context. Worth investigating whether the principle generalizes to hybrid-SSM targets in our stack.
+  - Key technique: Mamba-130M external drafter + MAB-optimized tree-shape selector for test-time tree-search drafting.
+  - Reported results: GSM-8K 149.46 tok/s (vs Pythia-410M 119.67); MT-Bench accept length 3.91 (vs EAGLE 3.85); LongBench 8k accept length 2.80 with throughput preserved while Transformer drafters degrade.
+  - Delta from current approach: SSM-drafter-for-Transformer-target principle is novel for our stack; MAB tree-shape selector is immediately applicable to existing tree spec-dec infra without the SSM piece. Caveats: Mamba hidden-state backtracking limitation; tree verification requires workarounds; hyperparameter-sensitive.

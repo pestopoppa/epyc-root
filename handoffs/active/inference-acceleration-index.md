@@ -55,7 +55,9 @@ Every agent working on inference acceleration MUST follow these protocols:
 | [`numa-orchestrator-deployment.md`](../completed/numa-orchestrator-deployment.md) | DEPLOYED | NUMA 4-way: 6.7x frontdoor, all roles multi-instance |
 | [`dflash-block-diffusion-speculation.md`](../completed/dflash-block-diffusion-speculation.md) | CONCLUDED | NOT VIABLE on Q4_K_M (27% per-token, AR wins) |
 | [`tree-speculation-numa-drafting.md`](../completed/tree-speculation-numa-drafting.md) | COMPLETE | Tree ≈ linear at 48t; NUMA 4-way is the real win |
-| [`ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) | COMPREHENSIVE | NUMA 4-way = 6.9x on MoE; all hybrid accel net negative |
+| [`ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) | COMPREHENSIVE (closed under prior assumption — see reopener) | NUMA 4-way = 6.9x on MoE; all hybrid accel net negative under pre-2026-04 single-per-context-state mechanisms |
+| [`hybrid-ssm-slot-promotion-spec-dec.md`](hybrid-ssm-slot-promotion-spec-dec.md) | **REOPENER ACTIVE 2026-04-28** — Phase 0 scheduled | Slot-promotion (intake-490) + DFlash-style NUMA-parallel verify; new mechanism, gates documented per closure-inflation policy. Pre-prod gate on MoE-Spec production registry integration. |
+| [`mab-tree-shape-selector.md`](mab-tree-shape-selector.md) | **NEW 2026-04-28** — Phase 0 falsification scheduled | intake-491 §3.2 drop-in MAB tree-shape selector over heap-spec for pure-MoE targets (Coder-30B, REAP-246B); orthogonal sibling to moe-spec/moe-dynamic-expert-selection. Pre-prod gate on MoE-Spec production registry integration. |
 | [`mtp-speculative-decoding.md`](../completed/mtp-speculative-decoding.md) | CLOSED | NOT VIABLE on hybrid (0.56x) |
 | [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md) | **246B DEPLOYED** | 82% quality, 8.0 t/s, 139 GB — replaces 480B |
 | [`nemotron-mamba2-evaluation.md`](../completed/nemotron-mamba2-evaluation.md) | CONCLUDED | 69% quality, no deployment. Mamba2 NUMA insight retained. |
@@ -132,11 +134,16 @@ At 256K context, Qwen2.5-Coder-32B KV at f16 = 64 GB. With 2x AM + 4x quant: **~
 - **Tree speculation (dense f16)** — +12.2% on Qwen2.5-Coder-32B f16 with dm=32 ps=0.05. At 48 threads per NUMA instance, tree ≈ linear (overhead negated).
 - **NUMA single-node pinning** — 1.2-2.3x for all models. Larger models (235B: 1.5x, 480B: 1.2x) benefit less.
 
-### Concluded / Exhausted
+### Concluded / Exhausted (under prior assumptions — see Reopened Tracks below)
 - **DFlash block diffusion** — C++ forward pass verified correct via HF comparison. NOT viable on Q4_K_M (27% per-token, 1.4% block). AR drafter wins.
-- **All Qwen3.5 hybrid self-acceleration** — 6 approaches tested, all net negative. NUMA parallel decode is the answer.
+- **All Qwen3.5 hybrid self-acceleration** — 6 approaches tested, all net negative under K-token-batched-verify cost model. NUMA parallel decode is the answer for aggregate throughput.
 - **MoE self-draft** — Not viable.
-- **MTP-1** — Not viable on hybrid (0.56x).
+- **MTP-1** — Not viable on hybrid (0.56x) under K-token-batched-verify cost model.
+
+### Reopened Tracks (post closure-inflation review 2026-04-28)
+
+- **Hybrid SSM spec-dec via slot-promotion** — see [`hybrid-ssm-slot-promotion-spec-dec.md`](hybrid-ssm-slot-promotion-spec-dec.md). The 6 closed approaches above falsified spec-dec under "single per-context state" + "K-token batched verify cost = K× single-token" assumptions. intake-490 (PyTorch SGLang blog Dec 2025) introduces per-candidate slot state where `S_new = S_parent + (k, v, β, g) Δ`; this is architecturally compatible with Delta Net and reduces per-candidate cost from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs. Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), this targets per-request latency on hybrid SSM models. Phase 0 falsification probe scheduled. Pre-prod gate on MoE-Spec production registry integration.
+- **MAB tree-shape selector** — see [`mab-tree-shape-selector.md`](mab-tree-shape-selector.md). intake-491 (Mamba Drafters EMNLP'25 Findings §3.2) reports MAB-optimized tree shape +22.65% over sequential / +8.5% over best fixed shape on Pythia-6.9B. Drop-in over heap-spec for pure-MoE targets (Coder-30B, REAP-246B); orthogonal compounding layer to existing [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) (verification budget) and [`moe-dynamic-expert-selection.md`](moe-dynamic-expert-selection.md) (per-token dynamic K). Phase 0 falsification probe scheduled. Pre-prod gate on MoE-Spec production registry integration.
 
 ### Memory Management
 - **Multi-model page cache optimization** — [`multi-model-page-cache.md`](multi-model-page-cache.md). ~650GB mmap'd models may cause page cache contention. 5 experiments: baseline residency, mlock for hot models, page-in verification, NUMA hard binding, cooldown tuning.
@@ -227,8 +234,9 @@ Registry entries: `epyc-inference-research/orchestration/model_registry.yaml` un
 | **Cross-instance KV sharing** | `dynamic-stack-concurrency.md` Phase F (F1-F4) | PLANNED — q4_0 offset estimation, anchor pool, ConcurrencyAwareBackend, `prefill_speedup_coder_pool` metric. **Ownership**: routing-and-optimization (primary); Phase F status mirrored in landscape table above for discoverability. |
 | Tree speculation | `completed/tree-speculation-numa-drafting.md` | COMPLETE — tree ≈ linear at 48t |
 | DFlash block diffusion | `completed/dflash-block-diffusion-speculation.md` | CONCLUDED — not viable on Q4_K_M |
-| SSM/hybrid acceleration | `completed/ssm-hybrid-acceleration.md` | COMPREHENSIVE — NUMA is the answer |
-| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | CLOSED — not viable (0.56x) |
+| SSM/hybrid acceleration | `completed/ssm-hybrid-acceleration.md` (+ active reopener `hybrid-ssm-slot-promotion-spec-dec.md`) | COMPREHENSIVE under prior assumption; reopened 2026-04-28 under per-candidate slot mechanism (intake-490) |
+| MAB tree-shape selector | `mab-tree-shape-selector.md` | NEW 2026-04-28 — intake-491 §3.2 drop-in over heap-spec for pure-MoE targets; Phase 0 scheduled |
+| MTP-1 speculation | `completed/mtp-speculative-decoding.md` | CLOSED under prior assumption (0.56x); reopener tests under per-NUMA-quarter verify cost model |
 | Nemotron Mamba2 eval | `completed/nemotron-mamba2-evaluation.md` | CONCLUDED — 69% quality, no action |
 | Page cache optimization | `completed/multi-model-page-cache.md` | RESOLVED — 361 GB footprint, mlock deployed |
 | **GPU acceleration (future)** | `gpu-acceleration-path.md` | RESEARCHED — DGX Spark target, vLLM DDTree+Dflash speculation plan added (community 91 t/s on Qwen3.5-27B AWQ). Activates on hardware acquisition. |
@@ -444,3 +452,21 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
   - Relevance: consumer-GPU (RTX 4090) reference point for spec-decoding on a freshly-released dense 27B target. Reports 5.9× vs Ollama peak (154 tok/s @ 85% acceptance) with a same-family 1.7B draft via ik_llama.cpp; 128K–192K context retains 126–159 tok/s.
   - **Non-portability**: these numbers do NOT apply to our CPU-only EPYC 9655 production stack nor to the 35B-A3B hybrid-MoE we actually run (verification-wall issue documented; thc1006 found zero net spec-dec speedup on 35B-A3B + Ampere). Tracked primarily in `gpu-acceleration-path.md`.
   - Relevance to index: (a) reinforces the same-family small-draft heuristic for future dense CPU-candidates, (b) flags **Qwen3.6-27B dense** (released 2026-04-22, Apache-2.0) as a net-new CPU model-intake candidate — see `qwen36-production-upgrade.md` update.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-487] "Adaptive hybrid speculative decoding for accelerating large language model inference"** (Yang Yong et al., Neurocomputing 2026)
+  - Relevance: applied-ML adaptive+hybrid spec-dec; paywalled, no preprint, no open code. Category dense with stronger peers (EAGLE-2, SpecBranch, AdaSD, PEARL) already in intake.
+  - Delta: not_applicable — revisit only if preprint/code surfaces.
+
+- **[intake-489] "SpecMamba: Accelerating Mamba Inference on FPGA with Speculative Decoding"** (arxiv:2509.19873)
+  - Relevance: FPGA spec-dec for Mamba; algorithmic core (memory-aware hidden-state backtracking for SSM verification) is reusable across substrates but the implementation is fundamentally FPGA-bound.
+  - Reported results: 2.27× over GPU baseline; 5.41× energy efficiency.
+  - Delta: not_applicable for EPYC CPU stack; cite as algorithmic reference for SSM-spec-dec discussion.
+
+- **[intake-491] "Mamba Drafters for Speculative Decoding"** (arxiv:2506.01206; Findings of EMNLP 2025)
+  - Relevance: New external-drafter modality (SSM drafter for Transformer target). Constant-memory draft path is well-suited to CPU-decode where draft compute competes with target for DRAM bandwidth. MAB tree-shape selector is independently useful for our heap-spec tree shape.
+  - Reported results: Mamba-130M beats Pythia-410M on Pythia-6.9B target (149.46 vs 119.67 tok/s, GSM-8K); 52GB vs 72GB total memory at 8k context vs EAGLE.
+  - Delta: worth_investigating — MAB-tree first (drop-in), SSM-drafter second (requires hand-rolled Mamba in llama.cpp fork).

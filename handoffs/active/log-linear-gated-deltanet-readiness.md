@@ -75,3 +75,24 @@ Estimated effort: 2-3 weeks from gate activation.
 - **Handoffs**: routing-intelligence.md (Delta Net constraints, line 384)
 - **Completed**: mtp-speculative-decoding.md, ssm-hybrid-acceleration.md (speculation exhausted on standard GDN)
 - **Ref impl**: github.com/HanGuo97/log-linear-attention (278 stars, Python/Triton, training-only)
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-488] "Speculative Decoding with Mamba"** (github.com/itsdaniele/speculative_mamba; arxiv:2408.15237) — Pure-Mamba target+draft spec-dec; CUDA-only; no Delta-Net coverage. Verdict: not_applicable.
+
+- **[intake-489] "SpecMamba: Accelerating Mamba Inference on FPGA with Speculative Decoding"** (arxiv:2509.19873)
+  - Relevance: Memory-aware hybrid backtracking strategy directly addresses the SSM hidden-state rollback problem that has blocked spec-dec on hybrid SSMs (chapter 10 §13). FPGA hardware-bound but algorithmic frame is reusable.
+  - Reported results: 2.27× over GPU, 2.85× over prior FPGA Mamba.
+  - Delta: FPGA-only — no CPU port path. Catalog as algorithmic reference for if/when Delta-Net spec-dec is reopened with proper rollback semantics.
+
+- **[intake-490] "Hybrid Models Meet SGLang: More than Full Attention"** (pytorch.org blog, Dec 2025) — verdict: **adopt_patterns**
+  - Relevance: SGLang's resolution of in-place SSM state updates (MambaRadixCache + HybridReqToTokenPool + EAGLE/MTP rollback over SSM state) demonstrates that "spec-dec dead on hybrid SSM" is solvable in principle on the architecture side. Direct counter-evidence for the chapter-10 §13 blocker if/when CPU-side rollback semantics are implemented in llama.cpp.
+  - Reported results: 324.57 tok/s, accept length 4.231 on Qwen3-Next-80B-A3B-FP8 (H200) with EAGLE/MTP.
+  - Delta: CUDA/H200/FP8 only — does not run on EPYC, but four named primitives (HybridReqToTokenPool, HybridLinearKVPool, MambaRadixCache, Elastic Memory Pool) form the reference design that GDN serving on llama.cpp would need to mirror.
+
+- **[intake-491] "Mamba Drafters for Speculative Decoding"** (arxiv:2506.01206; Findings of EMNLP 2025)
+  - Relevance: External SSM drafter is the inverse direction of GDN serving — uses an SSM as the cheap drafter rather than the expensive target. MAB-optimized tree-shape selector applies orthogonally.
+  - Reported results: At 8k context, Mamba 52GB total memory vs EAGLE 72GB; throughput preserved while Transformer drafters degrade.
+  - Delta: principle generalizes to GDN drafters once a small Delta-Net or hybrid is available. Track alongside readiness for log-linear GDN target inference.

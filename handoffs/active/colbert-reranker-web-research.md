@@ -341,3 +341,14 @@ S3c/S4c/S5-amend do not require AR-3. AR-3 only gates the **A/B rollout** (S5 / 
   - Delta from current approach: at ~5× smaller than Reason-ModernColBERT-150M, this is the direct CPU-latency fallback candidate the S5 plan already names. A targeted CPU-latency probe + BRIGHT-style A/B against LateOn and GTE-ModernColBERT-v1 is the cheapest next experiment. Current GTE-ONNX-INT8 is ~180 ms/call; 5× smaller backbone should drop to ~40 ms if PyLate→ONNX export path works.
   - Caveats (Tier 2b): (1) README has a **license conflict** (frontmatter Apache-2.0 vs body "CC-BY-NC-4.0 inherited from training data") — must be resolved before any commercial-adjacent deployment. (2) No ONNX INT8 variant shipped — PyLate→ONNX export is an unvalidated dependency. (3) Base mxbai-edge-colbert-v0 authors self-describe it as a "proof-of-concept baseline" (arxiv 2510.14880); architectural ceiling on symbol-dense retrieval inherited. (4) Model released 2026-04-22 — no independent third-party replication yet.
   - Action: queue S5 as A/B candidate after AR-3 web_research sentinel data lands. Treat BRIGHT 19.00 as ceiling — web_research queries are mostly natural-language, which is the model's strong suit, but verify before committing to ONNX export work.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-494] "Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets"** (arxiv:2604.22294, Stanford OVAL/Genie, Joshi/Shethia/Dao/Lam)
+  - Relevance: tangential to the reranker scope but **directly competes** at the higher level — SLIDERS argues that structured-DB extraction + SQL beats embedding-based retrieval (incl. ColBERT) for sufficiently large corpora. For this handoff (web research reranking), SLIDERS' regime is well above operating point, but it is the strongest published architectural alternative to "retrieve + rerank" we have seen this year.
+  - Key technique: LLM extraction into relational schema; SQL reasoning surface; provenance/rationale-aware reconciliation; scales to 36M tokens.
+  - Reported results: +6.6 over GPT-4.1 on three long-context QA benchmarks; +~19 / +~32 over next-best on new 3.9M / 36M-token benchmarks.
+  - Delta from current approach: web_research over BM25+ColBERT remains the right architecture at our query scale (not 36M tokens per query). SLIDERS is a "what if we had to scale 100×" reference, not a near-term pivot. Tracked here to keep the alternative architecture visible during reranker selection.
+  - Caveats (Tier 2b): schema hallucination as #1 LLM-to-SQL production failure mode; long-context relational reasoning underpredicts; single-source Stanford results, no independent replication; no CPU-cost data; references not extracted from abs page.

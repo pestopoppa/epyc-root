@@ -1,5 +1,7 @@
 # Handoff: SSM Hybrid Acceleration
 
+> **Reopened under new mechanism (2026-04-28)**: see [`/workspace/handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md`](../active/hybrid-ssm-slot-promotion-spec-dec.md). Closures below remain valid under their prior single-per-context-state + K-token-batched-verify-cost assumptions. The reopener tests a per-candidate slot mechanism (intake-490 SGLang slot-promotion) + DFlash-style NUMA-parallel single-token verify, which changes the verification cost model from K× single-token to 1× single-token per NUMA quarter. The closures here are NOT invalidated — they remain accurate under the prior cost model. The reopener handoff explicitly enumerates (gates A,B,C met under prior assumption; gate D unmet under new assumption) per closure-inflation policy.
+
 **Status**: COMPREHENSIVE (2026-03-18). S2-S5 complete. **NUMA 4-way = 6.9x on 35B-A3B MoE** (only model that benefits). All other hybrids converge to ~12 t/s (recurrent-dominated). Draft hurts on all NUMA configs. Prefill pipeline ceiling ~8% (not worth C++ cost). Q4_K_M strongly preferred (Q8 = 17-39% slower).
 **Created**: 2026-03-15
 **Updated**: 2026-03-28

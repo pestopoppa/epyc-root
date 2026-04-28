@@ -909,3 +909,14 @@ IF q4_0 offset estimation preserves >95% quality on shared codebase tasks THEN p
 - [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) — autoresearch framework
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — KV compaction (compounds with Phase F)
 - `src/backends/round_robin.py` — runtime instance routing (supports dynamic backend list)
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-490] "Hybrid Models Meet SGLang: More than Full Attention"** (pytorch.org blog, Dec 2025) — verdict: **adopt_patterns**
+  - Relevance: SGLang's elastic memory pool (CUDA VMM) dynamically rebalances Mamba state vs KV cache pools under a fixed memory budget — exactly the design pattern needed when running hybrid SSM models alongside dense Transformers in the same stack with DRAM contention. Direct architectural input for dynamic-stack-concurrency planning.
+  - Key technique: `--mamba-full-memory-ratio` runtime knob + CUDA-VMM-backed page-level elasticity + State Transfer Channel for PD-disaggregation.
+  - Reported results: pool reuses freed Mamba/KV pages without process restart; 257–325 tok/s with EAGLE/MTP on Qwen3-Next-80B-A3B-FP8 (H200, bs=1).
+  - Delta from current approach: not directly portable (CUDA VMM, FP8, TP=2), but the host-RAM accounting analogue on EPYC is straightforward — partition mlock-pinned weight pool from SSM-state pool with a configurable ratio. Track for whenever a hybrid-SSM model enters the active stack (Qwen3.5-27B / Qwen3-Next / GDN candidates).
+  - Caveats: in-place SSM state requires per-request snapshot copies; agentic workloads can cause Mamba-state cache pressure that triggers evictions (sgl-project/sglang #20144). Single-batch H200 demo; multi-tenant under contention not published.

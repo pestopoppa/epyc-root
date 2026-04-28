@@ -73,3 +73,18 @@ There is genuinely nowhere else this scope lives today. That justifies a stub.
 ## Notes
 
 This handoff exists primarily so that the outer-coordinator analogue is *not lost* as a design idea. It is explicitly speculative. Do not promote out of SCOPING status without OC-0 completion + user approval. If after OC-0 the verdict is `not_pursued`, archive this handoff with the scoping document as the closing artifact.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
+  - Relevance: **direct prior art for the question this handoff poses** — can a learned head replace Claude-driven outer-loop coordination? Conductor answers "yes, with a 7B end-to-end RL coordinator" for reasoning benchmarks. Sibling paper to Trinity (intake-474, the inner-pool analogue).
+  - Key technique: 7B LLM trained end-to-end with RL on terminal task reward; emits *both* (a) communication topology among workers and (b) targeted natural-language per-worker instructions; randomized-pool training yields agent-pool-agnostic generalization at inference; self-as-worker recursion provides a new test-time scaling axis.
+  - Reported results: 7B Conductor exceeds best individual worker on LiveCodeBench and GPQA; SOTA claim in multi-LLM coordination regime; no public code/weights.
+  - Delta from this handoff: OC-0 scoping must now treat Conductor as the *primary* peer architecture alongside Trinity. The relevant axes for OC-0 to compare against:
+    - Action space: Trinity tri-role `(LLM, role)` ⊂ Conductor `(LLM, role, topology, NL-instruction)`. Conductor's superset suggests OC-0 should consider whether topology + NL-instruction are *necessary* for Claude-driven outer-loop replacement, or whether Trinity's narrower action space is sufficient at our scale.
+    - Optimizer cost: Trinity ES on 10K params is CPU-feasible; Conductor 7B RL is GPU-only. **OC-0 must address whether GPU budget is acquirable or whether the design is bounded to ES-class optimizers**.
+    - Replication risk: neither publication releases code; Trinity's ES recipe is more reproducible from paper alone than Conductor's multi-turn RL pipeline.
+  - Caveats (Tier 2b): single-source from one author team across both Trinity + Conductor; multi-agent failure literature (MAST, arxiv:2503.13657) documents inter-agent misalignment as 36.9% of production failures — terminal-reward RL does not directly address verification failures; pool-agnostic generalization beyond the randomization distribution is unverified.
+  - Required action before OC-0 completes: add Conductor row to the OC-0 peer-comparison table; document the GPU-budget gate; cite the Tier 2b failure-mode literature as a known unknown.

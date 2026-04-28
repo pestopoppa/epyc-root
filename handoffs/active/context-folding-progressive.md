@@ -1054,3 +1054,20 @@ Map Claude Code's 5-layer pipeline against EPYC L1-L5:
     - `agent-loop.ts:248-254` — the only place transformContext + convertToLlm are invoked, every turn.
     - `types.ts:103-154` — contract docs for both hooks (must not throw, return safe fallback on failure).
   - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-494] "Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets"** (arxiv:2604.22294, Stanford OVAL/Genie, Joshi/Shethia/Dao/Lam)
+  - Relevance: SLIDERS frames the problem as an **aggregation bottleneck** — even when each chunk fits in context, the chunk-extract-then-combine pipeline must re-reason over a growing pile of intermediate evidence. This is *exactly* the failure mode progressive folding is designed to mitigate; SLIDERS argues that a relational DB + SQL working surface is a strict alternative to text-folding for large-N aggregation.
+  - Key technique: LLM-driven extraction into a relational schema; persistent structured state queried by SQL; provenance/rationale-aware reconciliation pass; scales to 36M-token corpora.
+  - Reported results: +6.6 over GPT-4.1 on three existing benchmarks; +~19 / +~32 points on two new 3.9M / 36M-token benchmarks where chunk-aggregation collapses.
+  - Delta from progressive-folding: folding compresses *the conversation history*; SLIDERS compresses *the reasoning surface itself* by replacing text concatenation with SQL. They are not exclusive — a hybrid system could fold conversational context while maintaining a side-car DB for cross-document evidence. Worth keeping on the radar for L5+ scope when folding hits aggregation-bottleneck regimes that compression alone cannot fix.
+  - Caveats (Tier 2b): schema hallucination is the #1 LLM-to-SQL production failure (web evidence); long-context relational reasoning underpredicts (arxiv:2510.03611); single-source Stanford results, no independent replication; no CPU-cost data; not directly portable to our scale (corpus << 3.9M tokens today).
+
+- **[intake-492] "Flywheel — local-first MCP memory layer for AI agents over Obsidian/Markdown vaults"** (`github.com/velvetmonkey/flywheel-memory`)
+  - Relevance: Flywheel exposes a `memory(action: brief)` tool that assembles a token-budgeted memory brief with confidence-decayed observations — a working implementation of "compressed persistent context as an explicit tool". Adjacent to progressive-folding's L4+ scope: rather than only folding *historical* turns, give the agent an explicit fold-into-persistent-memory action with a structured retrieve.
+  - Key technique: token-budgeted memory brief assembly with confidence decay; structure-preserving safe writes (SHA-256 conflict, atomic rollback, one-call undo); YAML "policies" — declarative search-then-write workflows.
+  - Delta from current approach: progressive-folding currently has no explicit "promote to persistent memory" action; folded segments are summarized into the context string, not into a queryable side-car. Flywheel's pattern is a candidate factoring for L5+ when folded summaries should outlive the session.
+  - Caveat (Tier 2b): single-author Apache-2.0 project, self-reported benchmarks with "directional" caveat, no peer review.

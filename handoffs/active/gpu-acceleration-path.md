@@ -351,3 +351,18 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
   - Caveats (Tier 2b): (1) anonymous community note, not peer-reviewed; (2) run-to-run acceptance variance **49.6%–85.2% across 3 runs** is large — 154 tok/s is a best-case peak, not typical; (3) thc1006/qwen3.6-speculative-decoding-rtx3090 (2026-04-19) tested 19 configs on Qwen3.6-**35B-A3B** + 0.8B draft on RTX 3090 post-PR-#19493 and found **no net speedup** on Ampere + A3B MoE (MoE verification-wall / hybrid SSM issue); (4) vLLM issue #36872 documents spec-dec gibberish + throughput collapse under some configs, and Qwen acceptance-rate collapse (61.3% → 0.9% → 0.0%) across consecutive requests is documented elsewhere — fragility is real.
   - Delta from current approach: no GPU acquired; this is literature-only for now. Two durable takeaways worth recording even before hardware lands — (a) same-family small-draft heuristic (smallest-draft-that-preserves-vocabulary wins on **net** throughput), (b) 27B-dense + 1.7B-draft is a concrete GPU-era candidate worth re-checking at GPU-acquisition trigger. Do not transfer the 5.9× claim to the CPU/35B-A3B production stack — hybrid-SSM verification-wall documented in `wiki/speculative-decoding.md` makes these results non-portable.
   - Action: **bookmark only**. Promote to evaluation when GPU acquired OR when Qwen3.6-27B dense is a serious CPU-inference candidate for the worker/coder slot (see `qwen36-production-upgrade.md` update for model-intake flag).
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-488] "Speculative Decoding with Mamba"** (github.com/itsdaniele/speculative_mamba; arxiv:2408.15237 Mamba-in-Llama, NeurIPS 2024)
+  - Relevance: PyTorch + CUDA + flash_attn + causal_conv1d implementation of pure-Mamba target+draft spec-dec. Direct GPU-era candidate to evaluate if/when GPUs are acquired AND a Mamba-architecture model (Falcon-Mamba, Codestral-Mamba) enters the stack.
+  - Reported results: ~68% acceptance on a single English-prose example with K=3, fp16; CUDA-graph-on-draft to amortize launch overhead. Single-prompt anecdotal numbers, no benchmark suite.
+  - Delta from current approach: bookmark-only — neither precondition (GPU + Mamba target) holds today. File alongside ik_llama.cpp / Qwen3.6-27B-RTX4090 community note as the SSM-on-SSM GPU baseline reference.
+
+- **[intake-490] "Hybrid Models Meet SGLang: More than Full Attention"** (pytorch.org blog, Dec 2025) — verdict: **adopt_patterns**
+  - Relevance: Production-grade hybrid-SSM serving on H200 with EAGLE/MTP — strongest existing reference for what GPU-era hybrid serving looks like at scale. Sets the upper-bound benchmark anchor for any future EPYC GPU port (Qwen3-Next-80B-A3B-FP8 → 324.57 tok/s with accept length 4.231).
+  - Key technique: HybridReqToTokenPool + HybridLinearKVPool + MambaRadixCache + Elastic Memory Pool via CUDA VMM + State Transfer Channel for PD-disaggregation + EAGLE/MTP rollback over SSM state.
+  - Delta from current approach: no GPU acquired, no SGLang deployment planned. Three durable takeaways: (a) per-layer KV-skip-remap for linear-attention layers is the canonical primitive; (b) elastic Mamba/KV pool partitioning under fixed memory budget is the canonical recipe; (c) EAGLE/MTP-on-hybrid is solvable on the architecture side once SSM rollback semantics are wired. Use as the design reference if/when GPUs are acquired and hybrid SSM serving is in scope.
+  - Caveats (Tier 2b): per-request snapshot copy cost for in-place SSM state; agentic-workload Mamba-state cache pressure (sgl-project/sglang #20144); single-batch H200 demo.

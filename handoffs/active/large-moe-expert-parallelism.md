@@ -814,3 +814,12 @@ After each phase:
     - **pdeath** — master crashes; workers detect via PR_SET_PDEATHSIG=SIGTERM and exit cleanly with no zombies
 
     Phase 3.2 (llama.cpp integration) is the next gate. Library is C-callable so linking should be straightforward; integration work is mostly: CLI args, master/worker model load split, GGUF expert-shard loading, and the graph executor hook in `ggml_compute_forward_mul_mat_id`.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-490] "Hybrid Models Meet SGLang: More than Full Attention"** (pytorch.org blog, Dec 2025) — verdict: **adopt_patterns**
+  - Relevance: PD-disaggregation State Transfer Channel for moving model-specific state (SSM hidden state alongside KV) across prefill/decode shards is a cousin of the EP master-worker shared-state coordination problem. The approach of separating state-class lifetime management (per-layer remap to skip allocation, request-bound pool) maps onto our planned EP-shard layer routing.
+  - Key technique: HybridLinearKVPool (logical→physical KV layer remap to skip linear layers) + State Transfer Channel.
+  - Delta from current approach: implementation is CUDA-/H200-bound; no kernel ports. The architectural pattern of "pool-per-state-class with logical→physical remap" is the take-away — already implicit in our master-worker PR_SET_PDEATHSIG design but worth keeping as a reference for the GGUF expert-shard loading path (Phase 3.2).

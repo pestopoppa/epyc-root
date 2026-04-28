@@ -621,3 +621,15 @@ This cross-cuts with P13 Decision-Aware Routing — STOP's expected-cost model f
   - Key Trinity ablation: removing the Thinker role alone costs −6.0 on Math500 and −4.57 on RLPR; removing tri-role entirely costs −5 to −8 across all benchmarks. Even *with* an existing review pipeline, if our orchestrator is collapsing the Thinker decision into "always Worker", we are leaving similar magnitude of headroom on the table.
   - Cross-handoff coordination: when [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) reaches TR-1.2 (Verifier-vs-review decision), it must consult this handoff's Phase 6 risk-aware enforcement design — the existing factual-risk scorer + review trigger should be the substrate, with Verifier as either an explicit per-call action or a renaming of the existing trigger.
   - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (especially section 2.1 on the tri-role gap and the open questions in section 6).
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
+  - Authors: Stefan Nielsen, Edoardo Cetin, Peter Schwendeman, Qi Sun, Jinglue Xu, Yujin Tang (same team as Trinity / intake-474).
+  - Relevance: fifth peer in the routing-controller landscape alongside xRouter / RouteLLM / Router-R1 / Trinity. Conductor pushes the action space from "select one model" to "design a topology and synthesize per-agent prompts", trained by end-to-end RL on a 7B base — the most expressive learned-routing prior art currently published.
+  - Key technique: 7B LLM trained end-to-end with RL on terminal task reward; emits topology + per-agent NL instructions; randomized agent-pool training; self-as-worker recursion for test-time iterative scaling.
+  - Reported results: 7B Conductor exceeds best individual worker on LiveCodeBench and GPQA; SOTA claim in the multi-LLM coordination regime; pool-agnostic generalization demonstrated by held-out worker injection at inference.
+  - Delta from current approach: this handoff's MLP routing classifier (Phase 1 done, 92% val acc per memory) is a *single-step* selection head. Conductor is multi-step + multi-action (topology, prompt). For our scale, **Trinity's sep-CMA-ES + 10K-param head remains the realistic upgrade path**; Conductor's 7B RL coordinator is a North Star but blocked by GPU budget. Add Conductor to the Research Context table as a per-call routing peer with a clear "GPU-only, no public code" caveat.
+  - Caveats (Tier 2b): no public code/weights; single-source results; multi-agent failure literature (MAST, arxiv:2503.13657) flags inter-agent misalignment as 36.9% of production multi-agent breakdowns — Conductor's terminal-reward RL does not directly address verification failures; OOD agent-pool generalization beyond training-time randomization is unverified.

@@ -20611,3 +20611,558 @@
   novelty_justification: 'Static vs dynamic PTQ taxonomy was formalized by Jacob et al. 2018 and is reproduced in every PTQ tutorial — TFLite, PyTorch eager-mode quant, LLM.int8, SmoothQuant, GPTQ, AWQ all cite or assume it. The page introduces no new technique, no new formula, and no new evaluation. Low novelty by the rubric.'
   relevance_justification: 'EPYC inference is exclusively static-PTQ (GGUF Q4_K_M / Q5_K_M / Q6_K with imatrix-based asymmetric weight calibration; Q8_0 KV cache with optional Hadamard rotation). Dynamic quantization is not deployed on CPU because llama.cpp performs decode in already-quantized form with on-the-fly dequant per K-block, not via PyTorch-style observer hooks. The static/dynamic decision is therefore a closed question for our stack. No active handoff is gated on revisiting this primitive.'
   verdict_justification: 'not_applicable: (1) zero empirical content, (2) the practical answer for our stack is fixed (static via imatrix), (3) static-vs-dynamic is upstream of every research-grade decision currently tracked (calibration-set composition, activation outlier handling via SmoothQuant/AWQ, KV-cache quant via TBQ3_0). Recording the entry because the user explicitly submitted it; not flagging for adoption or further investigation.'
+- id: intake-487
+  arxiv_id: null
+  url: https://www.sciencedirect.com/science/article/abs/pii/S0925231226011574
+  source_type: paper
+  title: Adaptive hybrid speculative decoding for accelerating large language model inference
+  authors:
+  - Yang Yong
+  - Ting Ting Yang
+  - Shao Shuai Gao
+  - Ye Hua Yin
+  categories:
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Proposes a hybrid speculative decoding scheme combining multiple drafting strategies (specific combination not recoverable from publicly accessible metadata; ScienceDirect abstract paywalled, no arXiv preprint indexed by Semantic Scholar / OpenAlex / web search as of 2026-04-28).
+  - Adds an adaptive control mechanism (likely dynamic draft length and/or acceptance-threshold adaptation), in line with the broader 2025-2026 wave of adaptive-SD work (AdaSD, SpecBranch, AdaSpec, EARS).
+  - Targets accelerated LLM inference; references Chen et al. 2023 (DeepMind speculative sampling), EAGLE-2 (Li et al. 2024), and Xia et al. 2024 survey of efficient LLM inference.
+  - Peer-reviewed publication in Neurocomputing (Elsevier), April 2026 issue, 44 references per Crossref metadata.
+  techniques:
+  - hybrid_speculative_decoding
+  - adaptive_draft_length
+  - speculative_sampling
+  reported_results:
+  - 'Quantitative results not extractable: ScienceDirect abstract paywalled, no arXiv preprint located, Semantic Scholar API rate-limited, OpenAlex returned no record for DOI 10.1016/j.neucom.2026.133760.'
+  referenced_arxiv_ids:
+  - '2302.01318'
+  - '2406.16858'
+  - '2401.07851'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments: []
+    intake_entries:
+    - Multiple existing speculative_decoding entries covering EAGLE-2, AdaSD-style adaptive thresholds, SpecBranch hybrid drafting, PEARL adaptive concurrent SD, DySpec dynamic trees — same problem space, similar solution shape.
+  handoffs_updated:
+  - inference-acceleration-index.md
+  - moe-spec-cpu-spec-dec-integration.md
+  handoffs_created: []
+  novelty_justification: Title and citation pattern place the paper squarely inside the 2025-2026 adaptive+hybrid speculative-decoding cluster (AdaSD with entropy/JS-distance thresholds, SpecBranch hybrid implicit/explicit drafting, AdaSpec, EARS, PEARL adaptive concurrent SD, EAGLE-2 dynamic trees). Without an abstract, no distinguishing mechanism is visible; combining 'adaptive' + 'hybrid' draft control is now table stakes in this sub-area. Marking low rather than duplicate because the exact mechanism is unknown — could conceivably introduce a novel hybrid (e.g. lookup+EAGLE) we do not already track.
+  relevance_justification: 'Speculative decoding (heap/tree, MoE-aware verification) is an active EPYC focus and this paper sits in that exact category. However: (1) no source code or kernel-level details accessible behind the paywall; (2) Neurocomputing applied-ML papers in this cluster typically benchmark on GPU (no mention of CPU/AVX); (3) we already have stronger peers (EAGLE-2, SpecBranch) integrated or evaluated. Medium not high — same area as current work but unlikely to outclass tracked peers; would only matter if the ''hybrid'' is a CPU-friendly combination (e.g. lookup + small draft) we have not already considered.'
+  verdict_justification: 'not_applicable for now: paper is paywalled with no preprint, abstract, or open code, so the ''hybrid'' mechanism is unverifiable. Category is dense with stronger, more-detailed peers already in intake. Recommend revisit only if (a) an arXiv preprint or open code surface, (b) the hybrid is shown to combine lookup+model drafting (CPU-relevant), or (c) a citation in a future survey highlights a non-obvious result. No action required and no handoff stub warranted at present.'
+- id: intake-488
+  arxiv_id: '2408.15237'
+  url: https://github.com/itsdaniele/speculative_mamba
+  source_type: repo
+  title: 'Speculative Decoding with Mamba (companion to ''The Mamba in the Llama: Distilling and Accelerating Hybrid Models'', NeurIPS 2024)'
+  authors:
+  - Daniele Paliotta
+  - Junxiong Wang
+  - Avner May
+  - Alexander M. Rush
+  - Tri Dao
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - training_distillation
+  - local_inference
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Implements speculative decoding where BOTH target and draft are Mamba (state-space) models — e.g. mamba-2.8b target with mamba-130m draft.
+  - Reports ~68% acceptance rate on the README's 'Italy is a country' example with K=3 lookahead, 64 tokens, fp16, top_k=50 / top_p=0.8 / T=0.8.
+  - Provides CUDA-graph-accelerated decoding path (--cg) intended primarily for the small draft model to amortize launch overhead.
+  - Companion code to the NeurIPS 2024 'Mamba in the Llama' distillation paper, which distills Llama attention layers into Mamba/hybrid recurrent layers and then accelerates them via this speculative decoding stack.
+  - 'TODO note in README: hybrid-model spec-dec examples are ''todo'' — pure-Mamba target/draft is the only fully demonstrated config.'
+  techniques:
+  - Mamba-target / Mamba-draft speculative decoding
+  - K-step lookahead drafting with full target verification
+  - CUDA graph capture for draft forward pass
+  - Mamba-in-Llama distillation (handled in companion repo MambaInLlama)
+  reported_results:
+  - Acceptance rate ~68.25% on a single English-prose prompt with mamba-2.8b target, mamba-130m draft, K=3, fp16 (single illustrative number, not a benchmark suite).
+  - Prompt-processing + decoding wall time 4364 ms for 64 generated tokens on the same example (hardware unspecified).
+  referenced_arxiv_ids:
+  - '2408.15237'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - gpu-acceleration-path.md
+    experiments:
+    - self-speculation-benchmark.md
+    intake_entries: []
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  - log-linear-gated-deltanet-readiness.md
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: The Mamba-in-Llama paper (arXiv 2408.15237) is not in our intake index, and we do not currently hold a record of pure Mamba-target / Mamba-draft speculative decoding code. Chapter 10 cites a different, later paper (SpecMamba on FPGA, arXiv 2509.19873). The underlying technique — externally-drafted spec-dec with frozen recurrent state — is conceptually well-covered in our existing handoffs (ssm-hybrid-acceleration, ssm-checkpoint-speculation) on Delta-Net hybrids; what is incrementally new here is the pure-SSM target case and the CUDA-graph-on-draft trick.
+  relevance_justification: EPYC stack is CPU-only (no GPUs); this repo is a PyTorch + CUDA + flash_attn + causal_conv1d implementation. None of the kernels port to llama.cpp CPU. We have no Mamba-architecture (state-spaces/mamba-*) models in production — our hybrid SSM targets (Qwen3.5, Qwen3-Next) use Delta-Net, not Mamba2. The 68% acceptance on a one-shot English prompt is anecdotal. The freeze-recurrent + fast-drafter pattern this paper assumes is already validated and operating in our chapter 10 on Delta-Net hybrids — this repo would not change any deployment decision. Memory feedback_qwen35_27b_architecture says Qwen3.5-27B spec-dec was declared 'dead on CPU, viable on GPU via Dflash' — this repo does not introduce a new mechanism that overturns that, since it targets pure-Mamba (not Delta-Net hybrids) and is CUDA-only.
+  verdict_justification: not_applicable for current EPYC hardware. The repo's codebase requires CUDA + flash_attn + causal_conv1d, and its target architecture (pure Mamba state-space) is not in our model registry. The technique itself (K-step lookahead with frozen recurrent draft) is already implemented and benchmarked in our llama.cpp fork on Delta-Net hybrids. Could be revisited if (a) we acquire GPUs (gpu-acceleration-path handoff) AND (b) we add a Mamba-architecture model (e.g. Falcon-Mamba, Codestral-Mamba) to the stack; until then, no integration value. Worth keeping the citation pointer on chapter 10's bibliography for completeness next to the existing SpecMamba-FPGA reference.
+- id: intake-489
+  arxiv_id: '2509.19873'
+  url: https://arxiv.org/html/2509.19873v1
+  source_type: paper
+  title: 'SpecMamba: Accelerating Mamba Inference on FPGA with Speculative Decoding'
+  authors:
+  - Linfeng Zhong
+  - Songqiang Xu
+  - Huifeng Wen
+  - Tong Xie
+  - Qingyu Guo
+  - Yuan Wang
+  - Meng Li
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-28'
+  key_claims:
+  - First FPGA accelerator co-designing Mamba SSM with speculative decoding via system+algorithm+hardware co-design.
+  - Memory-aware hybrid backtracking strategy resolves SSM hidden-state coordination across draft/verify cycles (Mamba SSM rollback is the central pain point that blocks naive spec-dec on SSMs).
+  - FIFO-based tree verification with tiling minimizes off-chip memory access during multi-token verify.
+  - Customized dataflow runs linear layers in parallel and SSM layers in series to match Mamba's compute graph.
+  - Implementation on AMD VHK158/VCK190 FPGAs delivers 2.27x over GPU baseline and 2.85x over prior FPGA Mamba accelerators with 5.41x energy efficiency vs GPU.
+  techniques:
+  - Memory-aware hybrid backtracking (SSM hidden-state rollback for spec-dec verification)
+  - FIFO-based tree verification with tiling
+  - Parallel-linear / serial-SSM dataflow
+  - Mamba+spec-dec hardware-software co-design
+  reported_results:
+  - 2.27x decode speedup vs GPU baseline.
+  - 2.85x speedup vs prior FPGA Mamba accelerator (LightMamba family).
+  - 5.41x higher energy efficiency vs GPU.
+  - 1.26x higher energy efficiency vs prior FPGA approach.
+  - Targets edge long-sequence generation; deployed on AMD Versal VHK158 and VCK190.
+  referenced_arxiv_ids:
+  - '2312.00752'
+  - '2405.21060'
+  - '2401.15077'
+  - '2406.16858'
+  - '2401.10774'
+  - '2302.01318'
+  - '2502.15260'
+  - '2502.10659'
+  - '2302.13971'
+  - '2205.01068'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - log-linear-gated-deltanet-readiness.md
+    - multiscreen-attention-evaluation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - Cross-architecture distillation Transformer→Mamba prior entry
+    - Nemotron-Cascade 2 / Mamba2 vs Delta Net benchmark prior entry
+  handoffs_updated:
+  - log-linear-gated-deltanet-readiness.md
+  - multiscreen-attention-evaluation.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: FPGA hardware-software co-design for Mamba+spec-dec is a genuinely new combination — prior FPGA Mamba work (LightMamba 2502.15260) did not handle speculative decoding, and prior spec-dec work (EAGLE/Medusa) targets Transformers, not SSMs. The hidden-state backtracking mechanism for SSM verification is a real algorithmic contribution. However, the framing is fundamentally hardware-bound and the algorithmic novelty (SSM rollback for tree verification) is narrow.
+  relevance_justification: EPYC stack is CPU-only inference on EPYC 9655 NPS4 with NO FPGA and NO GPU. The paper's contributions are inseparable from FPGA dataflow / on-chip FIFO / tiling — none of these translate to CPU AVX-512BW + DRAM memory-system. Mamba is also outside our active model set (production is Qwen3.5 Delta-Net hybrid + Transformer MoE; pure Mamba is not deployed). Speculative decoding is an active workstream but EAGLE/Medusa-on-Transformer is what's relevant, not SSM verification. The one transferable concept — that SSM hidden-state rollback is the bottleneck blocking spec-dec on SSMs — is already understood (memory feedback_qwen35_27b_architecture documents 'spec-dec dead on CPU' for hybrid SSMs). No actionable port path.
+  verdict_justification: 'not_applicable: hardware target (FPGA) is not present in the EPYC stack and cannot be acquired (CPU-only mandate). The algorithmic core (memory-aware backtracking for SSM spec-dec) is interesting but (a) Mamba is not a production architecture, (b) the implementation depends on FPGA-specific dataflow primitives, and (c) the existing Delta-Net/Mamba2 hybrid spec-dec story has been independently evaluated and parked. File for awareness in case a future SSM model becomes production-relevant.'
+- id: intake-490
+  arxiv_id: null
+  url: https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/
+  source_type: blog
+  title: 'Hybrid Models Meet SGLang: More than Full Attention'
+  authors:
+  - Yi Zhang
+  - Biao He
+  - Binyao Jiang
+  - Ke Bao
+  - Qingquan Song
+  - Hanming Lu
+  - Shangming Cai
+  - Zhangheng Huang
+  - Sicheng Pan
+  - Baizhou Zhang
+  - SGLang Team
+  - PyTorch Blog
+  categories:
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Hybrid models (Mamba/linear-attention layers interleaved with full-attention) deliver constant per-request KV cache footprint and linear prefill latency vs. quadratic for full-attention transformers.
+  - In-place SSM state updates break naive prefix caching and speculative-decoding rollback; SGLang resolves this with a hybrid radix tree (MambaRadixCache) plus a request-bound state pool (HybridReqToTokenPool) and a layer-ID remapper (HybridLinearKVPool) that skips KV allocation for linear layers.
+  - An elastic memory pool built on CUDA Virtual Memory Management dynamically rebalances allocation between Mamba state and KV cache pools under a fixed GPU memory budget, exposed via --mamba-full-memory-ratio.
+  - PD-disaggregation is extended with a dedicated State Transfer Channel that moves model-specific Mamba/SSM state alongside KV across prefill/decode shards.
+  - Speculative decoding (EAGLE/MTP) is made compatible with hybrid models by restoring rollback semantics over SSM state; up to 324.57 tok/s with 4.231 avg acceptance length on Qwen3-Next-80B-A3B-FP8 (H200, bs=1).
+  techniques:
+  - HybridReqToTokenPool (request-bound Mamba state pool)
+  - HybridLinearKVPool (logical->physical KV layer remap, skip linear layers)
+  - MambaRadixCache (hybrid radix tree for prefix caching with SSM state)
+  - Elastic Memory Pool via CUDA VMM (resizable Mamba/KV partitioning)
+  - State Transfer Channel for PD-disaggregation
+  - EAGLE / MTP speculative decoding with hybrid-state rollback
+  - Eagle-Tree attention mask
+  - --mamba-full-memory-ratio runtime knob
+  reported_results:
+  - 'MTP 2-token, topk=1: 257.20 tok/s, avg acceptance 2.709 (Qwen3-Next-80B-A3B-FP8, H200, bs=1).'
+  - 'MTP 3-token, topk=1: 306.94 tok/s, avg acceptance 3.413.'
+  - 'MTP 4-token, topk=4, draft_tokens=8: 324.57 tok/s, avg acceptance 4.231.'
+  - Constant KV cache memory per request (linear-attention layers contribute 0).
+  - Linear prefill-latency scaling vs. quadratic full-attention.
+  - Elastic memory pool reuses freed Mamba/KV pages without process restart.
+  referenced_arxiv_ids:
+  - '2401.15077'
+  contradicting_evidence:
+  - 'State copying overhead: in-place SSM state update means the matched state must be fully copied as a snapshot for each new request to prevent interference between concurrent requests sharing the same state. Per-request memcpy cost not benchmarked in the blog.'
+  - 'Cache pressure in agentic workloads: even though an agent only needs the last Mamba state, it can put many Mamba states into the cache; because a Mamba state can be as large as thousands of KV-state tokens, Mamba states cause more cache pressure than KV states and trigger evictions when an agent has a slow turn that gets preempted by other agents (sgl-project/sglang issue #20144).'
+  - Single-batch H200 demo; multi-batch and multi-tenant numbers under contention not published.
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - dynamic-stack-concurrency.md
+    - large-moe-expert-parallelism.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - SGLang serving framework (existing intake entry)
+    - DFlash block-diffusion (cross-references SGLang/vLLM dependency)
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  - log-linear-gated-deltanet-readiness.md
+  - dynamic-stack-concurrency.md
+  - large-moe-expert-parallelism.md
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: Concrete engineering recipe for serving hybrid SSM+attention models — MambaRadixCache, layer-ID remap to skip KV for linear layers, CUDA-VMM-backed elastic Mamba/KV pool, and PD-disaggregation State Transfer Channel are non-trivial named primitives we have not seen catalogued before. The benchmark numbers on Qwen3-Next-80B-A3B-FP8 with EAGLE/MTP are also fresh (Dec 2025). Not 'high' because the architectural problem (state-pool sizing, prefix caching with SSM state) is recognized in the multiscreen and Log-Linear GDN handoffs; this is a polished implementation report, not a new mechanism.
+  relevance_justification: 'Pure CUDA-/H200-targeted (TP=2, FP8 weights, CUDA VMM); none of the kernel-level wins port directly to llama.cpp CPU. However, the architectural lessons are squarely on our active research path: (1) hybrid-radix-cache logic and the per-layer skip-KV remap are equally needed if we ever serve Qwen3-Next-80B-A3B or Qwen3.5-35B-A3B (both hybrid Delta-Net) via our llama.cpp fork, and the multiscreen-attention-evaluation handoff is explicitly tracking this class; (2) the elastic Mamba/KV pool design pattern translates to host-RAM accounting on EPYC; (3) the in-place-state rollback workaround is directly relevant to prior v3-hybrid-ssm-regression and ssm-hybrid-acceleration findings that flagged speculative decoding as ''dead on CPU'' for hybrid SSM — SGLang''s solution shows it is solvable in principle on the architecture side. Per feedback_dont_dismiss_creative_uses.md and feedback_custom_llama_implementation.md, the right framing is adopt_patterns rather than not_applicable. Not ''high'' because there is no GPU stack today and Qwen3-Next is not in the active worker stack.'
+  verdict_justification: 'adopt_patterns — extract the four named primitives (HybridReqToTokenPool, HybridLinearKVPool, MambaRadixCache, Elastic Memory Pool) as a reference design that the multiscreen-attention-evaluation and log-linear-gated-deltanet-readiness handoffs can cite when scoping llama.cpp-side support for hybrid SSM serving. No code/component is portable as-is (CUDA VMM, FP8, TP=2, EAGLE), so adopt_component is not warranted. Not new_opportunity because the core thesis (hybrid SSM is the right shape for KV-bound workloads) is already represented in our chapters and handoffs; this URL upgrades the engineering vocabulary and benchmark anchor for that thesis. Credibility 5: pytorch.org official + named SGLang authors + concrete reproducible benchmark commands and version pin (SGLang v0.5.5), with a -1 vendor-bias deduction since SGLang is a serving-framework competitor pitching its own design.'
+- id: intake-491
+  arxiv_id: '2506.01206'
+  url: https://arxiv.org/abs/2506.01206
+  source_type: paper
+  title: Mamba Drafters for Speculative Decoding
+  authors:
+  - Daewon Choi
+  - Seunghyuk Oh
+  - Saket Dingliwal
+  - Jihoon Tack
+  - Kyuyoung Kim
+  - Woomin Song
+  - Seojin Kim
+  - Insu Han
+  - Jinwoo Shin
+  - Aram Galstyan
+  - Shubham Katiyar
+  - Sravan Babu Bodapati
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Mamba SSM drafters avoid Transformer KV-quadratic cost in the draft path, giving constant memory vs context length and lower decoding latency than Transformer drafters of equal/larger size.
+  - External Mamba drafters keep target-model flexibility (no retraining of the target) unlike self-speculation methods like EAGLE/Medusa.
+  - A novel test-time tree-search drafting algorithm uses a multi-armed-bandit-style optimizer to pick tree shapes adaptively, beating sequential and fixed-tree drafting.
+  - Mamba-130M drafter matches or beats much larger Pythia drafters and is competitive with EAGLE self-speculation while using significantly less memory at long context.
+  - At 8k context Mamba uses ~52GB total memory vs ~72GB for EAGLE; throughput stays high while Transformer drafters degrade as context grows.
+  techniques:
+  - Mamba-based external drafter (Mamba-130M, Pythia/Mistral variants)
+  - Test-time tree-search draft candidate generation with MAB-optimized tree shapes
+  - Standard rejection-sampling speculative-decoding verification (external drafter, target verifier)
+  reported_results:
+  - 'GSM-8K (sampling): Mamba-130M 149.46 tok/s vs Pythia-410M 119.67 tok/s on Pythia-6.9B target.'
+  - 'HumanEval: Mamba 172.38 tok/s vs Pythia-160M 109.51 tok/s.'
+  - 'MT-Bench (greedy): Mamba-130M avg accept length 3.91 vs EAGLE 3.85.'
+  - 'LongBench Single-Doc QA accept length: 2.91 (1k) -> 2.80 (8k); Multi-Doc QA throughput 47.91 tok/s @ 8k.'
+  - 'Memory @ 8k context: Mamba 52GB vs EAGLE 72GB total.'
+  - 'Tree ablation: sequential 112.69 tok/s, tree (3,2,2,1,1) 127.37, tree (3,3,2,1) 124.99, tree (2,2,2,1,1,1) 124.37, MAB-optimized 138.22.'
+  - 'Targets evaluated: Pythia-6.9B, Mistral-7B.'
+  referenced_arxiv_ids:
+  - '2401.15077'
+  - '2312.00752'
+  - '2310.06825'
+  - '2303.08774'
+  - '2401.06706'
+  - '2406.16858'
+  - '2302.01318'
+  - '2401.10774'
+  - '2402.02057'
+  - '2408.15237'
+  contradicting_evidence:
+  - 'Hidden-state backtracking limitation: Mamba discards previous hidden states after each update, complicating state recovery when draft tokens are rejected (paper itself acknowledges).'
+  - 'Tree-based verification incompatibility: SSMs'' sequential token processing precludes parallel path verification for tree-based drafts via attention masks as in Transformers, requiring workaround mechanisms that add complexity.'
+  - 'Hyperparameter sensitivity: tree-based search method''s performance depends heavily on hyperparameter settings; MAB optimizer mitigates but does not eliminate this.'
+  - 'Memory overhead: Mamba-based drafters require memory for hidden state maintenance even when ''memory-flat'' headline holds, adding non-trivial baseline cost.'
+  - Competing approach (arxiv:2512.20573 'Fail Fast, Win Big', Dec 2025) advocates diffusion-LLM drafting as alternative to autoregressive drafting (Mamba or Transformer) — orthogonal but raises question whether SSM drafting is the right long-term direction.
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - moe-spec-cpu-spec-dec-integration.md
+    - log-linear-gated-deltanet-readiness.md
+    - multiscreen-attention-evaluation.md
+    - inference-acceleration-index.md
+    experiments:
+    - self-speculation-benchmark.md
+    intake_entries: []
+  handoffs_updated:
+  - moe-spec-cpu-spec-dec-integration.md
+  - log-linear-gated-deltanet-readiness.md
+  - multiscreen-attention-evaluation.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+  novelty_justification: External SSM drafter is a non-trivial recombination of Mamba (2312.00752) with classical speculative decoding plus an MAB tree-shape selector — the long-context memory-flat property is a real architectural lever, but the core idea (cheap drafter + verifier) is a known recipe and EAGLE-2 already addresses dynamic draft trees. Medium not high.
+  relevance_justification: 'Direct hit on two active EPYC threads: speculative decoding (verification-batch gate just met on Coder-30B + REAP-246B per recent commit) and SSM-hybrid evaluation (log-linear GDN, multiscreen). On CPU-only EPYC, draft-path cost matters because draft compute competes with target decode for DRAM bandwidth — a constant-memory SSM drafter is exactly the right shape to investigate as a substitute for a small Transformer drafter, and llama.cpp fork control means we can hand-roll Mamba inference.'
+  verdict_justification: 'Worth investigating: (a) target+drafter combos here (Pythia-6.9B / Mistral-7B) are too small to map directly onto our 30B/246B stack, but the principle — SSM drafter for a Transformer target — generalizes, and we already have Mamba/Mamba2 work in flight (nemotron-mamba2 completed, log-linear GDN tracker active); (b) MAB-optimized tree shapes are immediately applicable to our existing tree speculation infra without needing the SSM piece; (c) cannot simply adopt component (no Mamba-130M tuned for our targets exists), so this is an investigation, not a drop-in adoption. Credibility 3 = recent (~10 mo, +1), Amazon AWS + KAIST authors give one major-lab signal (+1), accepted Findings of EMNLP 2025 venue (+1 conservative for known venue), no independent corroboration found in our index, mild commercial bias from AWS authorship balanced by academic co-authors — net 3/6.'
+- id: intake-492
+  arxiv_id: null
+  url: https://github.com/velvetmonkey/flywheel-memory
+  source_type: repo
+  title: 'Flywheel — local-first MCP memory layer for AI agents over Obsidian/Markdown vaults'
+  authors:
+  - velvetmonkey
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - rag_alternatives
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Local-first MCP server turning an Obsidian vault into agent-readable memory; hybrid BM25 + optional local semantic search returns section-aware snippets, frontmatter, and linked context in a single call.
+  - Safe bounded writes back into the live vault — SHA-256 conflict detection, atomic rollback, structure-preserving edits (tables/callouts/code/frontmatter/math), one-call undo, opt-in git commits.
+  - Auto-wikilink suggestions on mutation using aliases, co-occurrence, graph structure, and semantic context, with a learning loop where accepted/rejected links update a scorer and grow the graph over time.
+  - Reproducible academic-style retrieval benchmarks — HotpotQA 90.0% doc recall (50q/4,960 docs, no benchmark training); LoCoMo 81.9% evidence recall and 54.0% answer accuracy (695q); LoCoMo unit retrieval 84.8% R@5 / 90.4% R@10.
+  - Tool-tier presets (agent/power/full/auto, 13–20 tools), multi-vault support, and YAML "policies" — declarative search-then-write workflows authored in plain language with preview + atomic execute — all exposed over MCP.
+  techniques:
+  - BM25 keyword search
+  - Local semantic search (optional)
+  - Section-aware snippet retrieval
+  - Wikilink graph traversal / linked-context expansion
+  - Auto-wikilink resolution (alias + co-occurrence + graph + semantic scorer)
+  - SHA-256 content-hash conflict detection for vault writes
+  - Atomic rollback / one-call undo
+  - Structure-preserving Markdown editing
+  - Token-budgeted memory brief assembly with confidence decay
+  - GraphML graph export
+  - YAML "policies" (declarative search-then-write workflows with preview + atomic execute)
+  - MCP tool-tier presets (agent/power/full/auto)
+  - Multi-vault index sharding
+  reported_results:
+  - 'HotpotQA: 90.0% document recall on 50 questions / 4,960-doc pool (no benchmark training); $0.083/question (April 2026 artifact).'
+  - 'LoCoMo (full E2E, 695 scored questions / 272 sessions, Claude Sonnet): 81.9% overall evidence recall, 97.4% single-hop, 73.7% multi-hop, 54.0% answer accuracy (Haiku judge), token F1 0.431.'
+  - 'LoCoMo unit retrieval (1,531 queries): Recall@5 84.8%, Recall@10 90.4%; multi-hop R@5 58.1% / R@10 72.7%; temporal R@5 56.9% / R@10 67.4%.'
+  - 'Graph quality (synthetic vault, balanced mode): 50.6% precision / 66.7% recall / 57.6% F1.'
+  - 3,292 tests across 185 files (~64.4k LOC test code); CI matrix Ubuntu+Windows × Node 22/24; 100 parallel writes with zero corruption.
+  referenced_arxiv_ids:
+  - '1809.09600'
+  - '2101.00436'
+  - '2009.12756'
+  - '2308.08973'
+  contradicting_evidence:
+  - Self-reported benchmarks with explicit "directional, not apples-to-apples" caveat in the README — single-author project, no peer review or independent third-party replication.
+  - Per `feedback_credibility_from_source_not_readme.md` — README shows polished docs but git/test/contributor signals are single-author, capping credibility regardless of headline numbers.
+  - Schema/structure assumptions are tied to the Obsidian vault format; portability of the wikilink-graph + section-aware snippet design to non-Obsidian markdown corpora is asserted but not benchmarked.
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+    - knowledge-base-governance-improvements.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - internal-kb-rag.md
+  - context-folding-progressive.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: Individual primitives (BM25 + semantic hybrid, wikilink graph, MCP write tools, auto-link suggestion) are each well-explored in our chapters/handoffs. What is new-to-us is the integrated architecture — a learning-loop wikilink scorer (accept/reject feedback updates the graph), structure-preserving safe writes with SHA-256 conflict detection + one-call undo, and YAML "policies" as a declarative search-then-write atomic abstraction. The HotpotQA/LoCoMo numbers are credible-looking academic-style benchmarks for an agent memory layer — exactly the evaluation surface our internal-kb-rag handoff lacks. Medium rather than high because no novel algorithm is claimed; the contribution is integration + benchmarks.
+  relevance_justification: Direct overlap with at least three live workstreams — (a) `internal-kb-rag.md` is proposing exactly this (retrieval over our markdown KB) and Flywheel ships a working hybrid BM25+semantic indexer with section-aware chunks plus reproducible HotpotQA/LoCoMo harnesses we could borrow as evaluation templates; (b) the orchestrator-conversation-management user-modeling work currently uses a flat USER.md / episodic_store, while Flywheel's vault-as-memory model with confidence-decay observations and `memory(action=brief)` is a strict superset; (c) `context-folding-progressive.md` and `meta-harness-optimization.md` would benefit from a structured persistent memory the agent can both read and safely write during long autonomous sessions. Apache-2.0, Node/MCP, fully self-hostable — matches `feedback_opensource_only.md`. High.
+  verdict_justification: 'adopt_patterns rather than adopt_component — the runtime is Node.js / MCP over an Obsidian vault while our stack is Python orchestrator + episodic_store SQLite + (proposed) ColBERT/ONNX over our own markdown corpora; dropping Flywheel in wholesale would duplicate and conflict with internal-kb-rag''s planned ColBERT plumbing and our existing user_modeling package. The portable wins are architectural — (1) the wikilink learning-loop scorer (accept/reject -> updated link weights) for our wiki cross-references, (2) SHA-256 conflict + atomic-undo write contract for any agent that mutates handoffs/wiki/progress, (3) the YAML "policy" pattern (declarative search-then-write with preview + single-commit execute) as a model for our autopilot/meta-harness write actions, (4) the HotpotQA / LoCoMo harness as a reusable eval rig for internal-kb-rag retrieval quality. Credibility 2 (recent + reproducible benchmarks checked into repo, but single-author/independent and benchmarks are self-reported with explicit "directional, not apples-to-apples" caveat — no peer review, no major-lab corroboration). Per `feedback_credibility_from_source_not_readme.md` not scoring higher off README hype; per `feedback_dont_dismiss_creative_uses.md` not_applicable would be wrong given the three direct handoff intersections.'
+- id: intake-493
+  arxiv_id: '2512.04388'
+  url: https://arxiv.org/abs/2512.04388
+  source_type: paper
+  title: Learning to Orchestrate Agents in Natural Language with the Conductor
+  authors:
+  - Stefan Nielsen
+  - Edoardo Cetin
+  - Peter Schwendeman
+  - Qi Sun
+  - Jinglue Xu
+  - Yujin Tang
+  categories:
+  - routing_intelligence
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  key_claims:
+  - A 7B "Conductor" model trained with end-to-end RL (terminal task reward, no SFT routing labels) coordinates a heterogeneous pool of worker LLMs, jointly producing (a) a communication topology between agents and (b) targeted natural-language instructions for each worker.
+  - The 7B Conductor exceeds the performance of any individual worker in its pool on LiveCodeBench and GPQA, claiming SOTA on these reasoning benchmarks under multi-LLM coordination.
+  - Training with randomized agent pools makes the Conductor agent-pool-agnostic at inference time, adapting to arbitrary mixes of open- and closed-source workers without retraining.
+  - Allowing the Conductor to select itself as a worker yields recursive topologies, providing a new form of dynamic test-time scaling via online iterative adaptation.
+  - Coordination strategies (topology + per-agent prompt engineering) emerge purely from end-to-end reward maximization, without hand-designed protocols, demonstrating that "language-model coordination" is RL-tractable at the 7B scale.
+  techniques:
+  - Conductor architecture (7B LLM trained as coordinator)
+  - End-to-end RL with terminal task reward (no labelled routing trajectories)
+  - Learned communication topology design (agent-to-agent graph emitted in natural language)
+  - Learned per-worker prompt engineering / targeted instruction generation
+  - Randomized agent-pool training for pool-agnostic generalization
+  - Recursive self-as-worker selection enabling test-time iterative scaling
+  reported_results:
+  - 7B Conductor exceeds best individual worker on LiveCodeBench (claimed SOTA in this multi-agent regime).
+  - 7B Conductor exceeds best individual worker on GPQA.
+  - Worker pools tested include open-source models and frontier closed-source models (Sakana AI Conductor companion to Trinity, which used GPT-5 / Gemini-2.5-pro / Claude-4-Sonnet / Gemma-3-27B / DeepSeek-R1-Distill-Qwen-32B / Qwen-3-32B variants).
+  - Recursive (self-as-worker) topologies provide additional test-time scaling gains over single-pass coordination.
+  - Pool-agnostic transfer demonstrated by holding out workers at training time and adding them at inference.
+  referenced_arxiv_ids:
+  - '2512.04695'
+  - '2406.18665'
+  - '2510.08439'
+  - '2506.09033'
+  - '2510.08429'
+  - '2502.02743'
+  contradicting_evidence:
+  - No public code or weights released — Sakana keeps coordinator artefacts private as part of Sakana Fugu; results not independently reproducible.
+  - 'Multi-agent failure-mode literature (MAST taxonomy, arxiv:2503.13657) flags inter-agent misalignment as 36.9% of production multi-agent breakdowns and verification failures as 21.3% — Conductor''s terminal-reward RL does not directly address these classes, only the joint task signal.'
+  - "Multi-agent OOD generalization research notes that agent performance degrades sharply outside the domain for which it was fine-tuned or scripted; Conductor's pool-agnostic claim relies on training-time randomization but real-world pool drift may exceed that distribution."
+  - 'Single-source result: Trinity (intake-474) and Conductor share the same Sakana AI author team, so the two papers are not independent corroboration of each other''s coordination thesis.'
+  - 'Sakana AI''s prior work has been independently re-evaluated with mixed verdicts (e.g., 2502.14297 "Evaluating Sakana''s AI Scientist: Bold Claims, Mixed Results") — vendor-bias caveat applies.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 09-claude-debugger.md
+    handoffs:
+    - tri-role-coordinator-architecture.md
+    - outer-coordinator-learned-head.md
+    - meta-harness-optimization.md
+    - routing-intelligence.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - tri-role-coordinator-architecture.md
+  - outer-coordinator-learned-head.md
+  - meta-harness-optimization.md
+  - routing-intelligence.md
+  - decision-aware-routing.md
+  handoffs_created: []
+  novelty_justification: 'Same Sakana AI author team as Trinity (2512.04695, intake-474), but tackles the same coordination thesis from a complementary direction — instead of a 0.6B SLM + 10K-param head trained by sep-CMA-ES on terminal fitness (Trinity), the Conductor is a 7B model trained by end-to-end RL that synthesises both the communication topology and the per-agent natural-language instructions. Trinity emits (LLM, role) tuples; Conductor emits topology + prompts in natural language. Recursive self-as-worker is a new mechanism not present in Trinity. High-novelty under the closure-inflation discipline — it is not covered by Trinity''s intake; the action space, parameter count, training regime, and topology dimension are all distinct.'
+  relevance_justification: Direct hit on three active EPYC handoffs — outer-coordinator-learned-head.md (asks whether a learned head can replace Claude-driven outer-loop coordination — Conductor is literally that question answered with a 7B RL coordinator), tri-role-coordinator-architecture.md (Trinity's tri-role action space — Conductor extends this to topology + prompts), and meta-harness-optimization.md (the "harness era" thesis that orchestration > capability). Routing-intelligence.md and decision-aware-routing.md are also adjacent. EPYC priorities explicitly include autopilot continuous optimization and routing/coordination work — Conductor is the closest published prior art to the outer-coordinator design that exists right now.
+  verdict_justification: 'adopt_patterns rather than adopt_component because (a) no public code or weights are released (matches Trinity''s no-code stance — Sakana AI keeps coordinator artefacts private as part of Sakana Fugu), (b) training a 7B RL coordinator end-to-end on multi-turn rollouts requires GPU budget we do not currently have, and (c) the action-space design (topology + NL instructions) is the transferable insight, not the trained weights. Concrete patterns to adopt — end-to-end terminal-reward training for coordinators (vs SFT-on-Q-labels in our current MLP), randomized-agent-pool training as a generalization recipe for our routing classifier, recursive self-as-worker as a test-time scaling mechanism in autopilot, and topology-as-output as an extension of the tri-role action space. Per `feedback_dont_dismiss_creative_uses.md` and `feedback_closure_inflation.md`, listing what is gated met (relevance to existing handoffs, peer-reviewed venue, open methodology) and what is gated unmet (no code, no GPU budget, single-source results not yet independently corroborated) rather than over-generalizing. Credibility 4 — peer-reviewed ICLR 2026 venue (+2), within 12 months (+1), Sakana AI is a recognized contributor in this area (+1), single-source / vendor-bias deduction (-1), no independent corroboration as of intake date (0).'
+- id: intake-494
+  arxiv_id: '2604.22294'
+  url: https://arxiv.org/abs/2604.22294
+  source_type: paper
+  title: 'Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets'
+  authors:
+  - Harshit Joshi
+  - Priyank Shethia
+  - Jadelynn Dao
+  - Monica S. Lam
+  categories:
+  - rag_alternatives
+  - knowledge_management
+  - context_management
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Long-document QA hits an aggregation bottleneck even when individual chunks fit the context window — chunk-level extract-then-combine pipelines must still re-reason over an ever-growing pile of intermediate evidence.
+  - SLIDERS extracts salient information from documents into a relational database and replaces concatenated-text reasoning with SQL over persistent structured state, decoupling reasoning cost from raw token count.
+  - A dedicated data-reconciliation stage uses provenance, extraction rationales, and metadata to detect and repair duplicate, inconsistent, and incomplete records, making the locally-extracted DB globally coherent.
+  - SLIDERS beats all baselines on three existing long-context QA benchmarks despite all of them fitting in strong base LLMs' context windows, exceeding GPT-4.1 by +6.6 points on average.
+  - On two new benchmarks pushing 3.9M and 36M tokens, SLIDERS improves over the next-best baseline by ~19 and ~32 points respectively, where conventional context-window or chunk-aggregation approaches collapse.
+  techniques:
+  - SLIDERS framework (Structured Long-document Information & Data-reconciled Extraction-then-Reasoning System)
+  - LLM-driven information extraction into a relational schema
+  - SQL-based reasoning over persistent structured state (replaces text concatenation as the working surface)
+  - Provenance- and rationale-aware data reconciliation (deduplication, inconsistency repair, gap filling)
+  - Multi-document QA pipeline scaling to 36M-token corpora
+  - Long-context QA benchmarking (two new datasets at 3.9M / 36M tokens)
+  reported_results:
+  - +6.6 points avg over GPT-4.1 across three existing long-context QA benchmarks (all baselines fit in context window).
+  - +~19 points over next-best baseline on new 3.9M-token benchmark.
+  - +~32 points over next-best baseline on new 36M-token benchmark.
+  - Outperforms all evaluated baselines on three existing long-context benchmarks.
+  - 49 pages preprint (14 main); submitted 2026-04-24 to cs.CL / cs.AI.
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - "Schema hallucination is the #1 production failure mode for LLM-to-SQL pipelines (web evidence: production failures dominated by schema hallucinations and incorrect join paths over syntax errors); SLIDERS depends on LLM extraction into a relational schema and is exposed to this exact failure class at scale."
+  - 'Long-context relational reasoning research (arxiv:2510.03611) finds models prioritize precision at the expense of recall, leading to underprediction — SLIDERS'' aggregation step over the DB risks missing relations rather than fabricating them.'
+  - Schema drift in long-form outputs is a known issue — extraction across 36M-token corpora is exactly the long-form territory where drift accumulates.
+  - 'Single-source results: only one Stanford OVAL/Genie group, no independent replication yet (paper submitted 2026-04-24, four days before intake date).'
+  - No CPU-cost / inference-cost data published — extraction over a 36M-token corpus may require frontier LLM budget that is not described in the paper.
+  - References section not extracted from the arxiv abs page (ar5iv labs unreachable, 303 redirect chain) — a fuller literature comparison requires the PDF.
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - context-folding-progressive.md
+    - colbert-reranker-web-research.md
+    - opendataloader-pipeline-integration.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - internal-kb-rag.md
+  - context-folding-progressive.md
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  novelty_justification: Promotes a relational-DB/SQL working surface for long-document QA past the chunk-aggregation regime, with an explicit reconciliation stage built on extraction provenance and rationales — that combination is not standard RAG. The individual ingredients (LLM extraction-to-schema, SQL-over-extractions, dedup/repair) each have prior art in NL-to-SQL, OpenIE, and KG construction lines, so the contribution is the architecture and the 36M-token scaling claim more than a fundamentally new primitive. Medium, not high.
+  relevance_justification: 'Directly intersects two active EPYC handoffs — internal-kb-rag.md (ColBERT-based RAG over our own markdown KB; SLIDERS argues structured-DB extraction beats embedding+chunk retrieval at scale and is a candidate alternative or complement) and context-folding-progressive.md (the aggregation-bottleneck framing is exactly the failure mode progressive compaction is designed to mitigate). Also adjacent to knowledge-base governance / wiki compilation work and to opendataloader-pipeline-integration.md (extracted-table-to-DB upstream stage). Hits the EPYC priority of knowledge-base governance + RAG alternatives. The 36M-token regime is well above our current operating point but the technique is largely model-agnostic and runs locally on any capable LLM, including our Coder-30B / 35B-class hosts. Workflow is CPU-friendly (offline extraction, query-time SQL).'
+  verdict_justification: 'Worth-investigating, not adopt-component. Per `feedback_dont_dismiss_creative_uses.md` SLIDERS is a credible and well-aligned alternative architecture for the internal-kb-rag.md path, but adoption depends on (a) whether our wiki+handoff corpus is large/heterogeneous enough to stress chunk-aggregation (currently ~24 wiki + 70 active handoffs — far below 3.9M tokens, so the headline gain may not materialize at our scale), (b) extraction-cost amortization on CPU inference, and (c) schema-design overhead for a moving knowledge surface. Recommendation — evaluate the structured-extraction + reconciliation pattern as a possible upgrade lane for internal-kb-rag.md once base ColBERT pipeline is live, and as a reference architecture for the knowledge-base governance theme. No production adoption decision yet — flag for review per closure-inflation policy (gates met: high-relevance domain, credible authors, novel architecture; gates unmet: no independent replication, no CPU-cost data, scale gap to our corpus, references not yet extracted). Credibility 4 — Stanford OVAL/Genie major-lab signal (+1), within 12 months (+1), peer-review pending (preprint, +1 for venue submission style), no commercial bias (+1 net), no independent corroboration yet (0).'

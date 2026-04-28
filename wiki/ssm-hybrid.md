@@ -2,8 +2,8 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified
-**Last compiled**: 2026-04-14
-**Sources**: 9 documents
+**Last compiled**: 2026-04-28 (targeted update — slot-promotion reopener)
+**Sources**: 10 documents
 
 ## Summary
 
@@ -43,9 +43,17 @@ The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production
 - Multiscreen architecture preserves attention paradigm with sub-quadratic complexity -- theoretically compatible with KV cache and speculation, but no implementations exist [multiscreen-attention-evaluation.md]
 - IHA (Interleaved Head Attention) is the highest-priority watch item: FlashAttention-compatible, +112% RULER at 16K multi-key retrieval [multiscreen-attention-evaluation.md]
 
+## 2026-04-28 Update — Slot-Promotion Reopener (intake-490)
+
+The "speculation is dead for Qwen3.5 hybrid on CPU" claim is being **reopened** under a NEW mechanism, not retracted. The 6 closed handoffs (mtp-speculative-decoding, ssm-hybrid-acceleration, ssm-checkpoint-speculation, tree-speculation-numa-drafting, dflash-block-diffusion-speculation, v3-hybrid-ssm-regression) all closed under a shared assumption: "verification batch = K × single-token cost because Delta Net layers are sequential". They are accurate under that assumption.
+
+intake-490 (PyTorch SGLang blog, Dec 2025) introduces **slot promotion**: each draft token gets a private state slot computed as `S_new = S_parent + Δ(k,v,β,g)`; rejected slots are discarded, accepted slot is promoted. This is architecturally compatible with Delta Net (the recurrence is deterministic from a parent state plus new inputs). Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), the per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs, AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Closure-inflation policy compliance: gates A,B,C met under prior assumption (preserved); gate D unmet under new per-candidate-slot assumption (test target).
+
+Phase 0 falsification probe is queued for the autonomous CPU-optimization agent's next session. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands (trades aggregate-NUMA-4-way for per-request latency — right tradeoff for interactive workloads, wrong for batch).
+
 ## Actionable for EPYC
 
-- **Accept that speculation is dead for Qwen3.5 hybrid models on CPU**: Do NOT invest further effort in speculation approaches. All viable paths have been exhausted with 0.56x or worse throughput.
+- **Slot-promotion reopener is the active investigation as of 2026-04-28**: the 6 closed handoffs remain accurate under their prior cost-model assumption, but the per-candidate-slot assumption has never been tested in our fork. Phase 0 is research-only (read intake-490 + trace Delta Net state in `delta-net-base.cpp`/`qwen35moe.cpp`/`llama-context.cpp`/`cparams.h`); no code changes deferred behind Phase 0 gate. NO-GO scopes closure narrowly to "slot-promotion in our fork's ggml graph builder is HIGH risk", does NOT generalize to "hybrid spec-dec dead".
 - **Use lookup-based acceleration instead**: MoE6 lookup achieves 19.6 t/s vs 13.8 t/s baseline (+42%). This is the best acceleration available for Qwen3.5 on CPU.
 - **Do NOT apply SEAL control vectors to SSM-hybrid models**: Catastrophic failure confirmed. Only apply to MoE (works: -7.5% tokens) and dense (neutral) architectures.
 - **MTP-1 IS viable on dense attention-only models**: The 78.5% acceptance rate and ~5% MTP overhead would yield ~1.7x throughput on Llama, Mistral, standard Qwen2.5 architectures. Reuse the implementation for non-hybrid models.
@@ -85,3 +93,5 @@ The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production
 - [intake-354](https://arxiv.org/abs/2602.24281) Memory Caching: RNNs with Growing Memory -- GRM/SSC design space, O(NL) segmented caching
 - [intake-356](https://arxiv.org/abs/2506.04761) Log-Linear Attention -- ICLR 2026, O(L log L) Gated DeltaNet variant by architecture creators
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
+- [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
+- [Hybrid SSM slot-promotion reopener handoff](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md) -- Phase 0 falsification spec, Phase 1+ implementation sketch (~360-635 LOC), closure-inflation policy gate enumeration

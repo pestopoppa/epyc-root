@@ -132,3 +132,16 @@ If TR-5 produces a negative result, also update [`research/deep-dives/trinity-ev
 ## Notes
 
 This handoff isolates the *single biggest empirical lever* in Trinity's ablation set. It can ship under any optimizer choice and does not commit us to the sep-CMA-ES rewrite. Treat the existing routing controller and Q-scorer as compatible substrates — both can grow a role axis without re-architecture.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
+  - Authors: Stefan Nielsen, Edoardo Cetin, Peter Schwendeman, Qi Sun, Jinglue Xu, Yujin Tang (same team as Trinity / intake-474).
+  - Relevance: Conductor is Trinity's sibling paper from the same authors; together they bracket the design space for learned multi-LLM coordinators. Trinity = 0.6B SLM + 10K linear head trained by sep-CMA-ES emitting `(LLM, role)` per turn. Conductor = 7B model trained end-to-end by RL emitting **topology + per-agent natural-language instructions**. Conductor extends Trinity's tri-role action space along two new axes — communication topology and synthesised per-agent prompts — and adds recursive self-as-worker as a new test-time scaling mechanism.
+  - Key technique: end-to-end RL with terminal task reward (no labelled routing trajectories), randomized agent-pool training for pool-agnostic generalization, self-as-worker recursion enabling iterative test-time scaling.
+  - Reported results: 7B Conductor exceeds best individual worker on LiveCodeBench and GPQA (claimed SOTA in multi-LLM coordination regime); pool-agnostic transfer demonstrated by holding out workers at training time.
+  - Delta from this handoff: this handoff scopes a *static heuristic* tri-role classifier (TR-1.x). Conductor shows that the (role, topology, prompt) joint action space is RL-tractable at 7B scale. **Implication for TR-1.2 / TR-1.3**: when the tri-role classifier reaches steady state, the natural escalation path is *not* a more expressive heuristic — it is to make the role decision learned (Trinity-style sep-CMA-ES head) or learned + topology-aware (Conductor-style RL coordinator). The current tri-role surface is the *substrate* for either escalation; do not collapse it before that decision is made.
+  - Caveats (Tier 2b): no public code/weights released (Sakana keeps coordinator artefacts private as part of Sakana Fugu); single-source results not yet independently corroborated; multi-agent systems literature documents inter-agent misalignment as the largest production failure category (MAST taxonomy, arxiv:2503.13657 — 36.9% of breakdowns) which terminal-reward RL does not directly address; OOD agent-pool generalization beyond the randomization distribution is unverified.
+  - Action: cross-link to `outer-coordinator-learned-head.md` (OC-0 scoping must cite Conductor as primary peer alongside Trinity). No tri-role scope change here — intake informational.

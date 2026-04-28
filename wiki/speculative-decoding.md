@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-04-20
-**Sources**: 29 documents (3 deep-dives, 4 completed handoffs, 2 active handoffs, 20 intake entries)
+**Last compiled**: 2026-04-28 (targeted update — MoE-Spec deployable, MAB selector + slot-promotion reopener)
+**Sources**: 32 documents (3 deep-dives, 4 completed handoffs, 4 active handoffs, 21 intake entries)
 
 ## Summary
 
@@ -55,6 +55,16 @@ The current state of the art for our stack is not speculative decoding at all --
 
 - **Priority**: Low-to-medium on CPU (concluded). Potentially HIGH on GPU if DGX Spark is acquired — the 91 t/s community benchmark would make Dflash speculation the single most impactful GPU optimization. NUMA parallelism and KV cache optimization remain the primary CPU acceleration frontiers.
 
+## 2026-04-28 Update — MoE-Spec deployable, MAB selector + slot-promotion reopener
+
+**MoE-Spec verification-budget mechanism gate MET on pure-MoE targets** (Phase 1 prototype, autonomous CPU agent's session): `--moe-spec-budget N` aggregates routing softmax across the verification batch and shrinks the active-expert union. Phase 1 forward-pass measurements: Coder-30B Q4_K_M B=64 +7.3%, REAP-246B Q4_K_M B=40 +15.2% (both 5-rep proper canonical). Phase 2 v5 PGO end-to-end via llama-server attenuates significantly — REAP-246B end-to-end +3%, Coder-30B end-to-end +9% — because spec-dec round = drafter forward + target verification + accept-evaluation, and MoE-Spec only accelerates target verification (Amdahl ceiling). **Final verdict**: REAP-246B B=40 deployable; Coder-30B B=64 NOT deployable (varies wildly across builds + cache states + system noise). Production registry integration queued behind explicit pre-prod gate. Tracked at [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
+
+**MAB tree-shape selector (intake-491, EMNLP'25 §3.2)**: drop-in over heap-spec for pure-MoE targets, orthogonal compounding axis to MoE-Spec verification budget. Paper reports sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B (+22.65% over sequential / +8.5% over best fixed shape). UCB1-style arm pull over a fixed pool of tree shapes; reward = accept_len/draft_len. End-to-end Amdahl ceiling applies (selector operates on the same verification step). Phase 0 falsification probe queued. Tracked at [`mab-tree-shape-selector.md`](../handoffs/active/mab-tree-shape-selector.md).
+
+**Hybrid SSM spec-dec slot-promotion reopener (intake-490, PyTorch SGLang Dec 2025)**: per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; rejected slots discarded, accepted slot promoted. Architecturally compatible with Delta Net. Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Reopens the 6 closed SSM-hybrid handoffs under closure-inflation policy (gates A,B,C met under prior assumption; gate D unmet under per-candidate-slot assumption). Phase 0 research-only falsification queued. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands.
+
+Together these three handoffs add three orthogonal compounding axes to spec-dec on EPYC: verification budget (MoE-Spec, deployable), tree topology (MAB selector, Phase 0), hybrid state model (slot-promotion, Phase 0).
+
 ## Open Questions
 
 - Can NUMA-isolated concurrent verification break the sequential recurrent bottleneck on Qwen3.5? If 4 NUMA nodes give >2.5x aggregate throughput, DFlash becomes interesting again on hybrid models
@@ -93,3 +103,8 @@ The current state of the art for our stack is not speculative decoding at all --
 - [Hazy Megakernel deep-dive](../research/deep-dives/hazy-megakernel-llm-inference.md) -- 2026-04-23: methodological parent of Lucebox's megakernel component; establishes 78% memory-bandwidth utilization as the GPU roofline target for any future inference engine.
 - [Qwen3.6-27B CPU feasibility deep-dive](../research/deep-dives/qwen36-27b-dense-spec-dec-cpu-feasibility.md) -- 2026-04-24: **architecture clarification** — Qwen3.6-27B (released 2026-04-22) is NOT true dense; it is hybrid Gated-DeltaNet + Gated-Attention (3:1 GDN:attention; 64 layers = 48 GDN + 16 Gated-Attn). "Dense" refers to dense FFN (no MoE). **Same architecture class as Qwen3.5-27B → CPU spec-dec foreclosed by GDN verification wall.** Community 4090 numbers (5.9× over Ollama, 154 t/s peak) are GPU-only and do not transfer; bookmarked at `gpu-acceleration-path.md`. CPU evaluation tracked at `qwen36-27b-cpu-feasibility.md` covers throughput probe + coder A/B only, no spec-dec.
 - [intake-455](https://huggingface.co/Qwen/Qwen3.6-27B) Qwen3.6-27B community spec-dec note (RTX 4090, ik_llama.cpp) -- Same-family 1.7B draft beats 4B distilled on net throughput (154 vs 85 t/s) despite lower acceptance — durable heuristic for future GPU spec-dec on dense-FFN models. CPU non-applicable.
+- [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots; the basis for the 2026-04-28 hybrid SSM spec-dec reopener
+- [intake-491](https://arxiv.org/abs/2506.01206) Mamba Drafters for Speculative Decoding (EMNLP'25 Findings) -- §3.2 MAB tree-shape selector; +22.65% over sequential, +8.5% over best fixed shape on Pythia-6.9B; basis for the 2026-04-28 MAB selector handoff. Mamba SSM external drafter for Transformer target also documented but blocked on GPU rental for drafter training.
+- [MAB tree-shape selector handoff](../handoffs/active/mab-tree-shape-selector.md) -- intake-491 §3.2 Phase 0/1/2/3 spec; pre-prod gate on MoE-Spec production registry integration
+- [Hybrid SSM slot-promotion reopener handoff](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; closure-inflation policy gate enumeration; Phase 0 research-only falsification queued
+- [MoE-Spec handoff](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- Verification-budget mechanism deployable on REAP-246B B=40; Phase 1+2 measured 2026-04-28; pre-prod registry-integration gate active
