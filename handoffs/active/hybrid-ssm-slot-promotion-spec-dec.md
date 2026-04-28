@@ -816,3 +816,104 @@ Total: ~300-400 LOC + debugging. Realistic 3-5 days of focused dedicated work.
 ### Foundation v5 is the productive plateau for this session
 
 This session: 3 substantial commits to llama.cpp-experimental (`a5c48050c` → `d056c1f20` → `830c98c61` → `3656223eb`), 2 pre-existing bugs fixed, foundation v5 verified on production target. Good base for the dispatcher push.
+
+---
+
+## Phase 1.1 — Dispatcher v0 (pass-through) committed (DONE 2026-04-29)
+
+Commit `64df7284b` adds the dispatcher integration point and state-sync primitive:
+
+### `numa_state_sync(src_ctx, dst_ctx, seq_id)` helper
+
+Copies seq state between contexts via `llama_state_seq_get/set_data_ext` with `PARTIAL_ONLY` flag (matches existing checkpoint pattern). Clears dst seq before set to avoid conflicts. Returns true on success.
+
+### `dispatch_numa_parallel_verify(...)` integration point at server-context.cpp:3173
+
+```cpp
+auto accepted = numa_quarters_active > 1
+    ? dispatch_numa_parallel_verify(slot.smpl.get(), numa_ctxs, slot.id, slot.spec_i_batch, slot.spec_draft)
+    : common_sampler_sample_and_accept_n(slot.smpl.get(), slot.ctx, slot.spec_i_batch, slot.spec_draft);
+```
+
+v0 implementation is PASS-THROUGH — calls `common_sampler_sample_and_accept_n` on primary ctx (`numa_ctxs[0]`), identical to K=1 behavior. Aux ctxs are still idle.
+
+### Smoke test (dispatcher v0 + foundation v5 on Qwen3.6-35B-A3B Q8 hybrid)
+
+```
+$ curl /completion -d '{"prompt": "...LRU cache...", "n_predict": 64}'
+predicted_per_second: 5.99 t/s, draft_n_accepted: 33/33
+```
+
+No regression vs foundation v5 K=4 measurement (parity confirmed). The integration point and state-sync primitive are in place; the actual parallelism is the next slice.
+
+### Why dispatcher v0 is pass-through (the hard part remaining)
+
+The current server pipeline at `update_slots()` builds ONE shared `batch` containing tokens from MANY slots, then calls `llama_decode(ctx, batch_view)` ONCE on primary ctx (line 2943). For K-parallel verify to work, the per-slot per-path decode must be hoisted OUT of the shared batch:
+
+1. **Don't pack draft tokens into shared batch** — currently lines 408-422 in server-context.cpp add `slot.sampled` + `spec_draft` to the global `batch` for each spec-dec slot. For K-parallel, these tokens need to NOT be in the shared batch.
+2. **Per-slot per-path batch builder** — for each slot in spec-dec mode, get tree paths via `common_speculative_get_tree(slot.spec.get())->get_paths()` and build K `llama_batch` instances, one per path.
+3. **State sync** at request start — primary ctx has the prompt KV after prompt eval; aux ctxs need it. Use `numa_state_sync` once per request transition to GENERATING state.
+4. **Parallel decode orchestrator** — std::thread or std::async over K ctxs, each calling `llama_decode(numa_ctxs[k], path_k_batch)`.
+5. **Per-ctx sample-and-accept + reduce** — each ctx samples-and-accepts on its own logits, returning an accepted prefix; reducer picks the path with longest accepted prefix.
+6. **State commit** — winning ctx's state becomes canonical; either copy back to primary ctx OR rotate `slot.ctx` to the winning ctx for next round.
+
+Step 6 is the trickiest: maintaining KV consistency across K ctxs after each spec-dec round. Two designs:
+- **Pin slot to primary, sync winner → primary each round**: simple, but pays state-sync cost (~330 MiB × K-1 per round on 35B Q8 hybrid; ~20 ms at 50 GB/s memcpy).
+- **Rotate slot.ctx to winner**: avoids per-round sync but requires the slot's other state (sampler, prompt cache index, etc.) to be ctx-agnostic. Complicates request lifecycle.
+
+### Realistic scope of the remaining dispatcher work
+
+| Step | LOC est | Risk |
+|---|---|---|
+| 1. Skip shared-batch packing for spec-dec slots when K>1 | ~30 | LOW |
+| 2. Path-batch builder | ~80 | MEDIUM (tree path → llama_batch w/ correct positions + seq_ids) |
+| 3. One-shot state sync at request-start | ~50 | MEDIUM (hybrid Delta Net state semantics) |
+| 4. Parallel decode orchestrator | ~80 | LOW (std::thread join pattern) |
+| 5. Per-ctx sample-and-accept reducer | ~60 | LOW |
+| 6. State commit (pick a design) | ~80-150 | HIGH (per-round sync cost, slot.ctx rotation, sampler state) |
+| 7. Edge cases: partial accept, ctx_seq_rm_type, checkpoint restoration | ~50 | MEDIUM |
+| Build + smoke + measurement + bundle | day 4-5 |
+| **Total** | **~430-550 LOC** | **3-5 days focused work** |
+
+### Dispatcher v0 deliverables this session (committed 64df7284b)
+
+| Deliverable | Status |
+|---|---|
+| State sync helper API | DONE (`numa_state_sync`) |
+| Dispatcher integration point | DONE (`dispatch_numa_parallel_verify` stub) |
+| K=4 ctxs reachable from dispatch site | DONE (via `numa_ctxs` member vector) |
+| Pass-through behavior preserves K=1 functionality | DONE (smoke test) |
+| Server boots cleanly on hybrid Delta Net 35B Q8 with K=4 | DONE |
+| Actual parallel decode | NOT YET (future slice — needs steps 1-6 above) |
+
+### Phase 1.1 status post-dispatcher-v0
+
+| Item | Status |
+|---|---|
+| Phase 1.0 GATE | MET |
+| Blocker 1 fixed | DONE (`830c98c61`) |
+| Blocker 2 fixed | DONE (`830c98c61`) |
+| Foundation v5 (K aux ctxs) | DONE (`3656223eb`) |
+| Dispatcher integration point | DONE (`64df7284b`) |
+| State sync primitive | DONE (`64df7284b`) |
+| Per-slot K-path batch builder | NOT YET |
+| Parallel decode orchestrator | NOT YET |
+| Per-ctx sample-and-accept reducer | NOT YET |
+| State commit (winner → primary) | NOT YET |
+| Phase 1.1 ≥1.3× gate | NOT MET (no parallel decode yet) |
+
+### Closure-inflation guard
+
+> "On HEAD `64df7284b`, foundation v5 (K NUMA-pinned target ctxs) + dispatcher v0 (pass-through wiring + state-sync primitive) is structurally complete on Qwen3.6-35B-A3B Q8 hybrid Delta Net at v5 PGO build. Per-request gain vs K=1 is parity (foundation v4 measurement) because the dispatcher is currently pass-through. Does NOT generalize to 'NUMA-parallel verify is dead' — the actual K-parallel mechanism (split tree paths to K ctxs, parallel decode, reduction) is genuinely outstanding work, not a falsified hypothesis. Per-round state sync cost on hybrid 35B Q8 (~20 ms at 50 GB/s for ~330 MiB × 3 aux ctxs) is the binding architectural risk for the gate; alternative (slot.ctx rotation) avoids the cost but complicates lifecycle."
+
+### Session-end commit chain on `feature/cpu-ep-inter-process`
+
+```
+a5c48050c  Phase 1.1 foundation v1: --spec-numa-quarters K + K aux ctxs (+135 LOC, crashed on hybrid)
+d056c1f20  Phase 1.1 foundation v3 ROLLBACK: CLI surface only after hybrid crash (-77 LOC)
+830c98c61  Phase 1.1: fix both blockers (Blocker 1 + Blocker 2; foundation v4)
+3656223eb  Phase 1.1 foundation v5: K aux contexts active on hybrid (+60 / -28)
+64df7284b  Phase 1.1 dispatcher v0: pass-through wiring + state sync helper (+48 / -1)
+```
+
+Net: ~243 LOC committed across 5 commits, two pre-existing blockers fixed, foundation up through dispatcher integration point.
