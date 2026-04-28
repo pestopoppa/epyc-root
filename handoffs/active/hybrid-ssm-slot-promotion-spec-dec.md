@@ -753,3 +753,66 @@ Implementation now unblocked:
 5. Measurement: 5-rep proper canonical end-to-end on Q8 hybrid. Gate ≥1.3× per-request over foundation v4 K=1 baseline.
 
 Realistic wall-clock: ~3-5 days now that blockers are gone.
+
+---
+
+## Phase 1.1 — Foundation v5 LANDED: K aux contexts active on hybrid (DONE 2026-04-29)
+
+Commit `3656223eb` on `feature/cpu-ep-inter-process` re-enables K-1 auxiliary `llama_context` creation that previously crashed in v1/v2. Now stable thanks to Blocker 1 fix (`llama_set_n_threads` aligned with threadpool worker count) applied per-ctx.
+
+### Smoke test on production target
+
+```
+$ llama-server -m Qwen3.6-35B-A3B-Q8_0.gguf -md Qwen3-1.7B-Q8_0.gguf \
+              -t 96 -c 4096 -fa 1 --spec-numa-quarters 4
+
+srv  load_model: Phase 1.1 foundation v5: K=4, 24 threads/quarter — building 3 aux ctxs
+srv  load_model: Phase 1.1: ctx[0] (primary) pinned to threads [0, 24)
+srv  load_model: Phase 1.1: ctx[1] (aux)     pinned to threads [24, 48)
+srv  load_model: Phase 1.1: ctx[2] (aux)     pinned to threads [48, 72)
+srv  load_model: Phase 1.1: ctx[3] (aux)     pinned to threads [72, 96)
+srv  load_model: Phase 1.1 foundation v5 active: 4 NUMA-pinned target ctxs.
+                Dispatcher not yet wired — aux ctxs idle until next phase.
+main: server is listening on http://127.0.0.1:18099
+```
+
+Each ctx has its own KV cache (~80 MiB) + recurrent state (~251 MiB) + ggml_threadpool with 24 workers + matching `llama_set_n_threads`. /completion via primary ctx still works (15.5 t/s at 22/22 accept on a small n_predict=32 prompt). No warns, no crashes. Memory footprint ~1.3 GB extra for 3 aux ctxs; system has 800 GB free.
+
+### What's in place after foundation v5
+
+| Component | Status |
+|---|---|
+| --spec-numa-quarters CLI surface | DONE |
+| Per-ctx ggml_threadpool with quarter cpumask | DONE (K=4 quarters of 24t each) |
+| llama_set_n_threads matched to threadpool workers (Blocker 1 fix) | DONE per-ctx |
+| K=1..K llama_context instances sharing model | DONE |
+| speculative.cpp:1066 vocab assertion (Blocker 2 fix) | DONE |
+| Aux ctx memory allocation (KV + recurrent state) | DONE (~330 MiB per ctx) |
+| Aux ctx routing into spec-dec verify | NOT YET (aux ctxs idle) |
+| State sync from primary → aux ctxs | NOT YET |
+| Parallel decode dispatcher | NOT YET |
+| Reduction (longest accept → primary state) | NOT YET |
+
+### Remaining dispatcher work (next session)
+
+The actual K-parallel verify dispatcher is genuinely a multi-day implementation:
+
+1. **State sync helper** (~50 LOC): use `llama_state_seq_get/set_data_ext` to copy prompt KV from primary ctx → aux ctxs. Cost: ~250-330 MiB per aux ctx per sync (full state) or ~few MiB (delta sync).
+2. **Path-batch builder** (~50 LOC): convert tree paths from `tree.get_paths()` into K llama_batches, each with one path's tokens.
+3. **Parallel decode orchestrator** (~80 LOC): std::thread over K ctxs each calling `llama_decode(numa_ctxs[k], path_k_batch)`; join all.
+4. **Accept reducer** (~40 LOC): each ctx independently samples_and_accept_n on its path; pick path with longest accepted prefix.
+5. **State commit** (~30 LOC): copy winning ctx's KV state delta back to primary ctx; clear losing ctxs.
+6. **Pipeline integration** (~50 LOC): hook in server-context.cpp at the spec-dec verify site (line ~3160-3173).
+7. **Build, smoke test, measurement, CPU20 bundle** — day 4-5 of effort.
+
+Total: ~300-400 LOC + debugging. Realistic 3-5 days of focused dedicated work.
+
+### Architectural risk areas (called out for next session)
+
+- **Per-spec-round state sync cost**: full state for 35B Q8 hybrid ≈ 330 MiB × 3 aux = ~1 GB memcpy per round. At ~50 GB/s = 20 ms per round. Spec-dec rounds happen ~10× per request → 200 ms overhead per request. May exceed K-parallelism savings on short generations. Need delta-sync (only changed cells) for production viability.
+- **Tree path semantics on hybrid Delta Net**: each path through the tree has a different sequence of recurrent state updates. The `seq_cp` infrastructure in heap-spec works on draft ctx; for target K-parallel we need separate per-ctx state evolution — confirmed structurally feasible but untested at depth.
+- **Server pipeline batch packing**: current code packs all slot draft tokens into ONE batch shared across slots. For K-parallel, a single slot's K paths need K SEPARATE batches. May break the existing batching abstraction if multiple concurrent slots want spec-dec simultaneously.
+
+### Foundation v5 is the productive plateau for this session
+
+This session: 3 substantial commits to llama.cpp-experimental (`a5c48050c` → `d056c1f20` → `830c98c61` → `3656223eb`), 2 pre-existing bugs fixed, foundation v5 verified on production target. Good base for the dispatcher push.
