@@ -1,6 +1,6 @@
 # MoE-Spec — CPU Speculative-Decoding Verification with Budgeted Expert Selection
 
-**Status**: Phase 1 DONE on gcc+libgomp build (Coder +7.3% / REAP +15.2% pp32). Phase 2 IN PROGRESS on v5 PGO build at wrap-up time 2026-04-28 evening. v5 PGO mixed-B Phase 1 re-validation: REAP-246B B=40 = +13.5% (clean, deployable); Coder-30B B=64 ≈ parity under v5 PGO (mask overhead cancels mask savings on this smaller model post-PGO baseline shift). End-to-end spec-dec via llama-server running in background; results pending. Phase 1 commit on `feature/cpu-ep-inter-process` HEAD `0c8d05597`. Phase 0 verdict (queue Phase 1) preserved below.
+**Status**: Phase 1 + Phase 2 + v5 PGO + BOLT-Coder all measured 2026-04-28 evening. **Final verdict: REAP-246B B=40 deployable (+13-16% pp32 / +3% end-to-end, robust across all builds); Coder-30B B=64 NOT deployable (result varies wildly across builds + cache states + system noise — gcc +7.3%, PGO single-B −43%, PGO mixed-B parity-to-+84% depending on cold/warm and noise); BOLT-libggml on v5 PGO Coder NOT deployable this attempt (perf record too short, 4% function coverage, BOLT pessimized mask branch − reopen with morning's recipe of 60s × 4 model classes).** Full consolidated decision at `data/cpu_optimization/2026-04-28-moe-spec-phase-1/decision_v5_FINAL.md`. Phase 1 implementation on `feature/cpu-ep-inter-process` HEAD `0c8d05597`. v5 PGO build at `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/`. Phase 0 verdict (queue Phase 1) preserved below.
 
 ---
 
