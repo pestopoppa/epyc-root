@@ -1015,3 +1015,152 @@ and config; alternative cost models may still close the gap).
 Branch already has 5 unpushed commits ahead of fork remote. Pull them or
 not as you see fit; they're in a clean state.
 ```
+
+---
+
+## Phase 1.1 — Dispatcher v1 LANDED, GATE NOT MET on canonical workload (DONE 2026-04-30)
+
+This session drove dispatcher v0 (pass-through) to dispatcher v1 (functional
+K-parallel candidate verify). All 7 sub-slices from the resume prompt were
+implemented; the final canonical 3-prompt × 2-rep measurement was run.
+
+### What landed
+
+| Sub-slice | What | Status |
+|---|---|---|
+| A | `numa_select_top_k_alt_paths` helper + `slot.numa_alt_paths` member | DONE |
+| B | one-shot primary→aux state sync at `SLOT_STATE_GENERATING` transition + timing | DONE |
+| B.5 | gate-check measurement of state-sync cost in isolation | DONE |
+| C/D | per-round aux dispatch in `update_slots`, sequential pre-decode sync (parallel sync raced primary's decode) + parallel aux decode threads | DONE |
+| E | per-ctx sample-and-accept reducer with sampler clones, longest-accepted-prefix winner | DONE |
+| F | winner→primary state sync + `slot.smpl` and `slot.spec_draft` rotation | DONE |
+| G | canonical 3-prompt × 2-rep measurement | DONE |
+
+CPU20 bundle: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/`.
+
+### Slice B.5 gate-check (state-sync cost in isolation)
+
+| Brief estimate | Measured |
+|---|---|
+| ~330 MiB/aux ctx state | **62.81 MiB/aux ctx** (5.3× smaller than worst-case) |
+| ~20-25 ms per round | **~17.5 ms one-shot per request** for K=4 (3 aux), ~5.8 ms per primary→aux pair |
+| Per-round delta sync | Same scale, well under per-token gate budget |
+
+**Gate B.5 PASSED.** State-sync cost is NOT the binding constraint for the
+gate failure on canonical workload; the binding constraint is workload-pattern.
+
+### Slice G — canonical 3-prompt × 2-rep result
+
+n_predict=64, p_split=0.05, temperature=0.0, --draft-max=24 --draft-min=4.
+
+| Prompt | K=1 mean t/s | K=4 dispatcher v1 mean t/s | accept K=1 / K=4 | K=4 / K=1 |
+|---|---|---|---|---|
+| p0 binary_search | 20.21 | 12.65 | 55/55 / 55/55 | 0.626 |
+| p1 lru_cache     |  5.96 |  3.85 | 33/33 / 32/32 | 0.646 |
+| p2 csv_moving_avg |  8.03 |  5.76 | 14/14 / 12/12 | 0.717 |
+| **aggregate (n=6)** | **11.40** | **7.42** | 100% accept | **0.651 — K=4 is 35% SLOWER** |
+
+Gate (K=4 ≥ 1.3 × K=1 = 14.82 t/s): **NOT MET**. K=4 = 7.42 t/s.
+
+`grep -c "numa K-parallel verify" srv_final_k4.log = 0` — the dispatcher's
+K-parallel block engaged ZERO times across all K=4 reps.
+
+### Critical structural finding
+
+The canonical 3-prompt workload under `temperature=0.0` produces **single-leaf
+speculation trees**. The drafter's top-1 candidate dominates with > 95%
+probability on these simple coding prompts; in the tree builder
+(`common/speculative.cpp:1190`), the loop `if (k > 0 && cur_p->data[k].p < params.p_split) break`
+fires immediately for k=1 because the secondary candidate's probability is
+below `p_split=0.05`. Result: `tree.n_nodes = depth × 1` (linear), `get_paths()`
+returns ONE path, `numa_select_top_k_alt_paths` returns empty.
+
+With `numa_alt_paths` empty on every round, the dispatcher's K-parallel
+block is skipped (`numa_active_slot` stays nullptr; the dispatcher's
+fast-path runs `common_sampler_sample_and_accept_n` on primary only).
+
+K=4 mode then degenerates to **single-ctx decode on the primary, but with
+primary pinned to NUMA quarter 0 (24 threads) instead of full machine
+(96 threads)**. The 35% slowdown is the thread-count / DRAM-bandwidth
+penalty without any countervailing K-parallel benefit.
+
+### Closure-inflation guard (scoped wording for the gate failure)
+
+> "On HEAD post-2026-04-30 commits on `feature/cpu-ep-inter-process` in
+> `/mnt/raid0/llm/llama.cpp-experimental`, Phase 1.1 dispatcher v1
+> (per-ctx sample-and-accept reducer + sequential pre-decode aux state
+> sync + parallel aux decode + winner-state commit) on Qwen3.6-35B-A3B Q8
+> hybrid Delta Net + Qwen3-1.7B Q8 drafter at v5 PGO build delivers
+> parity-or-worse vs K=1 on the canonical 3-prompt × 2-rep workload (K=4
+> aggregate 7.42 t/s vs K=1 11.40 t/s, gate threshold 14.82 t/s). The
+> dispatcher functions correctly (build clean, no crashes, sampler state
+> and spec_draft rotation handled when winner != primary), but the
+> canonical prompts under temperature=0.0 produce single-leaf speculation
+> trees because the drafter's top-1 candidate dominates with > 95%
+> probability — so `numa_alt_paths` is empty on every round, the dispatcher
+> takes its primary-only fast path, and K=4 mode degenerates to a thread-
+> count penalty (primary pinned to 24t per NUMA quarter vs K=1's 96t
+> full-machine) without any countervailing K-parallel benefit. The
+> dispatcher's K-parallel block engaged ZERO times across all 6 K=4 reps.
+>
+> Does NOT generalize to 'K-parallel verify is dead on hybrid' or to
+> 'NUMA-parallel verify is dead'. The mechanism is structurally functional
+> and would deliver gain on workloads that actually exercise tree branching:
+> drafter divergence + lower acceptance rate + p_split low enough to keep
+> non-trivial branches + prompts where drafter is uncertain on multiple
+> positions. Different (workload, K, p_split, temperature, drafter pair)
+> configurations remain unevaluated.
+>
+> The state-sync cost (Slice B.5: 17.5 ms one-shot, ~5.8 ms per-pair-per-
+> round on Q8 hybrid) is NOT the binding constraint for this gate failure —
+> it never gets exercised on canonical workload because alt paths don't
+> populate. The binding constraint is workload-pattern: the canonical
+> prompts collapse the drafter's tree to a linear path, so there is
+> nothing for K-parallel verify to do."
+
+### Implementation notes (worth preserving for future work)
+
+1. **Race condition discovered + fixed**: a parallel aux thread doing
+   `numa_state_sync(primary, aux_k, ...)` concurrently with primary's
+   `llama_decode` produces find_slot non-consecutive position warnings + an
+   n_batch-halving cascade + 4× slowdown. Fix: do the K-1 primary→aux
+   syncs SEQUENTIALLY on the main thread BEFORE primary decode begins,
+   then spawn aux decode threads (which run in parallel with primary
+   decode safely, since they only touch their own ctx's KV).
+
+2. **Position math for aux batches**: each aux decodes a batch of
+   `[sampled, alt_path_tokens...]` at positions `[spec_pos0, spec_pos0+1, ...]`,
+   matching the primary's shared-batch positions for the same slot.
+   `slot.spec_pos0` was added to `server_slot` to capture the position of
+   `sampled` at the moment of `update_batch` so it survives the subsequent
+   `prompt.tokens.push_back / insert` advances.
+
+3. **Winner-state rotation**: when winner is an aux ctx, `slot.spec_draft`
+   must be replaced with the winner's path BEFORE the upstream
+   partial-acceptance check at `server-context.cpp:~3539`, otherwise the
+   `keep_first(n - n_draft)` math uses stale n_draft from greedy.
+   Implemented inside `dispatch_numa_parallel_verify`.
+
+4. **End-of-round alt-path clear**: `numa_active_slot->numa_alt_paths.clear()`
+   at end of `run_slots` ensures the next round re-populates from a fresh
+   tree. Without this, stale alt-paths from a previous round could route
+   wrong-path verifies.
+
+### Recommended next direction (NOT in scope of this session)
+
+To characterize where dispatcher v1 actually wins, measure on a workload
+designed to exercise tree branching:
+
+- p_split lowered to 0.001-0.01 (keep more branch candidates).
+- Drafter top_k raised from default 10.
+- Prompts where drafter is uncertain (creative writing, ambiguous coding
+  problems, harder math).
+- Drafter at higher temperature.
+- Larger K with sub-quarter pinning (K=8 or K=16).
+
+A separate "dispatcher v1 sensitivity sweep" probe would scan these axes
+to find the workload regime where the mechanism delivers measurable gain.
+Until that's done, the production verdict on dispatcher v1 should be:
+**works correctly, doesn't help on greedy 100%-accept canonical workload,
+unknown gain elsewhere**.
+
