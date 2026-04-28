@@ -114,3 +114,62 @@ Compatibility with CPU15 EP: same as MoE-Spec — modifications happen at the ma
 - `entropy_histogram.csv` — per-layer per-token routing entropy on sample workload
 - `od_moe_accuracy.csv` — layer-N-1 → layer-N routing prediction accuracy
 - `decision.md` — which (if any) of 4 candidates progresses to Phase 1 prototype
+
+---
+
+## Phase 0 — RESULTS (DONE 2026-04-29) — **NEGATIVE for Entropy-gated K**
+
+### Method (analytical proxy, no source mod)
+
+Used existing MoE-Spec PPL drift data (from `data/cpu_optimization/2026-04-28-moe-spec-phase-1/`) as diagnostic proxy for routing distribution shape. The MoE-Spec budget B masks the bottom (n_expert - B) experts to -INFINITY; PPL drift as B decreases reveals routing concentration:
+
+- High-entropy routing: drift scales smoothly with B reduction
+- Low-entropy routing: drift near-zero until B drops below the "important" expert count, then catastrophic
+
+### Data
+
+**Coder-30B Q4_K_M (n_expert=128, n_expert_used=8):**
+
+| B | B/n_expert | PPL chunk-3 | Drift |
+|---|---|---|---|
+| 128 (gate-skip) | 100% | 9.86 | bit-exact ✓ |
+| 96 | 75% | 9.75 | -1.1% (essentially preserved) |
+| 64 | 50% | 10.52 | **+6.7%** (first material drift) |
+| 32 | 25% | severe (documented) | catastrophic |
+
+**REAP-246B Q4_K_M (n_expert=80, n_expert_used=8):**
+
+| B | B/n_expert | PPL chunk-3 | Drift |
+|---|---|---|---|
+| 80 (gate-skip) | 100% | 9.30 | bit-exact ✓ |
+| 60 | 75% | 9.36 | +0.6% (preserved) |
+| 40 | 50% | 11.44 | **+23%** |
+| 20 | 25% | 15.79 | **+70% catastrophic** |
+
+### Pattern
+
+Both Coder and REAP show **structurally bimodal routing**: top ~75% of experts carry 99%+ of contribution; bottom ~25% are noise-level. This is NOT a uniform (high-entropy) distribution — drift is near-zero down to ~75% then sharply non-linear.
+
+### Phase 0 GATE verdict: **NEGATIVE for Entropy-gated K**
+
+Entropy-gated K mechanisms (use lower K when entropy is high) would NOT deliver on greedy-temp inference for these models — routing is consistently concentrated; no high-entropy regime to exploit by reducing K.
+
+### Phase 1 candidates re-evaluated
+
+| Candidate | Status |
+|---|---|
+| 1. Dynamic Skipping (per-token threshold) | Testable, ~100 LOC, MEDIUM risk; may still be worth probing but probably marginal given concentrated routing |
+| 2. OD-MoE single-layer lookahead | Saves routing compute (cheap layer) only; marginal benefit; still possible |
+| 3. MoE Pathfinder | DEPRIORITIZED (online runtime cost prohibitive) |
+| 4. Entropy-gated K | **NEGATIVE per this Phase 0** |
+
+### Phase 1 re-scoped: deprioritized indefinitely
+
+The structural finding (bimodal routing distribution) limits the upside of entropy-based mechanisms. Reopen criteria:
+- Production workload shifts to temperature-sampled inference (entropy may be higher there)
+- Different MoE topology (e.g., DeepSeek V3 256-expert aux-loss-free routing — distribution shape may differ)
+- Empirical workload-shape change that produces high-entropy decoding regimes
+
+### CPU20 bundle
+
+`data/cpu_optimization/2026-04-29-moe-dynamic-expert-phase-0/` — README + decision + system-state + placeholders for non-applicable artifacts (analytical-only Phase 0, no new benchmark).
