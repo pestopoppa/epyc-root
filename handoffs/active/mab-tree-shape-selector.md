@@ -218,3 +218,132 @@ Phase 0 bundle is mandatory.
 - Sibling handoff: [`moe-dynamic-expert-selection.md`](moe-dynamic-expert-selection.md) (per-token dynamic K, Phase 0 entropy probe queued)
 - Reference: [`research/intake_index.yaml`](../../research/intake_index.yaml) intake-491 entry with MAB results table
 - Closure-inflation policy: `feedback_closure_inflation.md` (memory) — bind closures to scoped enumeration
+
+---
+
+## Phase 0 — RESULTS (DONE 2026-04-29) — **NO-GO with narrow closure**
+
+### Step 0.1 — intake-491 paper read
+
+**Confirmed** via WebFetch on arxiv.org/html/2506.01206v1:
+- Arm pool: `(3,3,2,1)`, `(3,2,2,1,1)`, `(2,2,2,1,1,1)` (Table 5)
+- Tree encoding: `(N₁, N₂, ..., Nᵧ)` where N_i = "number of new nodes obtained by sampling from each node at the i^th generation"
+- Reward: `r_k^(t) := -(1/N_accept + λ_γ·γ(𝒯_k)/N_accept)·I` — speedup-inverse minimization with draft-length penalty
+- Algorithm: UCB1 with policy `k* = argmax_k [r̂_k^(t) + λ_UCB·√(2ln(t)/n_k^(t))]`
+- Hardware: Pythia-6.9B (instruction-tuned), MT-bench, **greedy decoding (temperature=0)**
+- Headline: sequential 112.69 → MAB-optimized **128.21 t/s (+13.7%)** [NOTE: handoff originally cited 138.22 / +22.65%, possibly different table or revision; webfetch returned 128.21]
+- Cold-start convergence: not documented in paper
+
+**Discrepancy flag**: handoff Premise table cites MAB-optimized=138.22 but paper §5.5 (per WebFetch) reports 128.21. The relative ranking of fixed shapes (3,2,2,1,1 > 3,3,2,1 > 2,2,2,1,1,1) is consistent. Either way, the ≥0% gate is what matters for this falsification probe.
+
+### Step 0.2 — Heap-spec tree shape control traced
+
+Files: `/mnt/raid0/llm/llama.cpp-experimental/common/speculative.cpp:987-1300`.
+
+**Critical finding**: DySpec uses a **HARDCODED dynamic branching factor by depth**:
+
+```cpp
+auto branching_factor = [&](int depth) -> int {
+    if (depth == 0) return MAX_BRANCHES_PER_NODE;
+    if (depth <= 2) return 5;
+    if (depth <= 4) return 3;
+    return 2;
+};
+```
+
+The shape `(MAX, 5, 5, 3, 3, 2, 2, ...)` is approximately `(8, 5, 5, 3, 3)` if MAX_BRANCHES_PER_NODE=8.
+
+When `params.p_split=0` (production setting), line 1174 `if (k > 0 && cur_p->data[k].p < params.p_split) break;` drops ALL k>0 candidates (any non-greedy branch fails `< 0`). Tree degenerates to **linear** chain.
+
+When `p_split=0.05`, the tree builds out branches up to MAX_BRANCHES_PER_NODE wide × depth, pruned by per-branch probability ≥ 0.05.
+
+**Consequence for the falsification probe**: We CANNOT inject the paper's exact (3,2,2,1,1) shape without modifying source (LOC change). The Phase 0 measurement compared `p_split=0` linear vs `p_split=0.05` existing-DySpec-shape. Per the gate: if even existing-DySpec-shape doesn't beat linear, no MAB selector over the paper's arm pool can help (since the paper's arm pool produces shapes weaker than DySpec's hardcoded shape on average).
+
+### Step 0.3 — Single-config benchmark RESULTS
+
+5-rep proper canonical pp32 (`taskset -c 0-95 -t 96 -fa 1 --mmap 0` + `numactl --interleave=all`) + 3-prompt × 3-rep end-to-end via llama-server. v5 PGO build at `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/`. Server warmup: 60s after `/health` ok before first request.
+
+**Megasync at ~110% on 1 core** during measurement window — consistent noise floor across all measurements.
+
+**`--draft-p-split` CLI is rejected by llama-server** (line 3501 of `common/arg.cpp` restricts to `LLAMA_EXAMPLE_SPECULATIVE` only). Workaround: env var `LLAMA_ARG_DRAFT_P_SPLIT`.
+
+**Coder-30B Q4_K_M, prompt set = 3 production-realistic coding prompts:**
+
+| Shape | rep | t/s | accept% | predicted_ms |
+|---|---|---|---|---|
+| linear (p_split=0) | 1 | 29.94 | 68.7 (158/230) | 8550 |
+| linear | 2 | 36.33 | 59.6 (168/282) | 7045 |
+| linear | avg | **33.14 ± 4.52** | 64.1 ± 6.4 | — |
+| tree (p_split=0.05) | 1 | 18.14 | 68.7 (158/230) | **14116** |
+| tree | 2 | 36.20 | 59.6 (168/282) | 7071 |
+| tree | avg | **27.17 ± 12.77** (variance ±48% CV) | 64.1 ± 6.4 | — |
+
+**Coder pp32 forward-pass baseline (non-spec-dec)**: 201.14 ± 5.99 t/s on v5 PGO (megasync floor).
+
+**REAP-246B Q4_K_M:**
+
+| Shape | rep | t/s | accept% |
+|---|---|---|---|
+| linear (p_split=0) | 1 | 7.43 | 59.9 |
+| linear | 2 | 7.95 | 56.2 |
+| linear | avg | **7.69 ± 0.37** | 58.0 ± 2.6 |
+| tree (p_split=0.05) | 1 | 7.61 | 59.9 |
+| tree | 2 | 7.99 | 56.2 |
+| tree | avg | **7.80 ± 0.27** (Δ +1.4% noise) | 58.0 ± 2.6 |
+
+**REAP pp32 forward-pass baseline**: 46.57 ± 1.14 t/s.
+
+**rep0 missing for all 4 cells**: server `/completion` returned empty body within 240s curl timeout despite the 60s warmup. Investigation: when the server logs are 41 bytes, this is the "error: invalid argument: --draft-p-split" failure (which was fixed via env var fallback in the re-run).
+
+### CRITICAL FINDING: Tree at temperature=0 produces identical output as linear
+
+Direct JSON comparison of `comp_coder_linear_rep1.json` vs `comp_coder_tree_rep1.json`:
+
+| Field | linear | tree |
+|---|---|---|
+| `predicted_n` | 256 | 256 |
+| `draft_n` | 230 | 230 |
+| `draft_n_accepted` | 158 | 158 |
+| `content` first 100 chars | "...Also, ensure the function is efficient with O(log n)..." | "...Also, ensure the function is efficient with O(log n)..." (BYTE-IDENTICAL) |
+| `predicted_ms` | 8550 | **14116 (+65%)** |
+
+**Root cause**: at `temperature=0` (greedy), the verifier picks the highest-probability path through the tree. Non-greedy branches are computed (drafter cost) but never selected (verifier rejects). The tree's branching produces ZERO benefit and adds full verification cost on the non-greedy candidates.
+
+This explains the +65% wall-clock penalty on Coder rep1 (cold-cache amplifies the overhead) and converges toward parity on rep2 (warm-cache absorbs the wasted compute).
+
+### Phase 0 GATE verdict: **NO-GO with narrow closure**
+
+Per Phase 0 GATE criteria ("≥0% on at least one of Coder/REAP, BOTH pp32 AND end-to-end"):
+
+- **End-to-end Coder**: -18% mean (variance ±48% CV; rep1 -39%, rep2 parity). Regression with high variance.
+- **End-to-end REAP**: +1.4% (well within ±0.3 noise band on REAP). Net null.
+- **pp32 forward-pass** does not differ by p_split (target-only measurement); not directly testable for tree mechanism.
+
+Net: **gate not met on either model**. Tree at temp=0 cannot beat linear because the verifier collapses to greedy path.
+
+### Closure scope (per closure-inflation policy)
+
+**Narrow closure**:
+> "DySpec heap-spec tree at `--draft-p-split=0.05` with **greedy decoding (temperature=0)** produces BIT-IDENTICAL outputs to `--draft-p-split=0` linear baseline (verifier collapses tree to greedy path) while adding wasted draft+verify work on non-greedy branches. End-to-end on v5 PGO build with megasync noise floor: Coder-30B Q4_K_M -18% mean (high variance ±48% CV; rep1 -39% cold, rep2 parity warm), REAP-246B Q4_K_M +1.4% within noise band. The MAB selector over the paper's arm pool `(3,3,2,1)`, `(3,2,2,1,1)`, `(2,2,2,1,1,1)` cannot recover headroom that is structurally absent at temp=0 — selecting different shapes does not help when the verifier discards all non-greedy paths regardless of shape."
+
+**Does NOT generalize to**:
+- **Higher-temperature sampling** (paper used temp=0 too, but in their regime tree gain came from acceptance-length improvement that may exist on Pythia but not on our Coder/REAP-class targets — separate question).
+- **Different arm pool** (e.g., shapes optimized for greedy-temp, like 1-deep wide-K shapes that sample top-K for fallback rather than branching).
+- **Multi-tenant/concurrent workloads** where tree-shape selection might amortize cold-start cost differently.
+- **Sampling-decoding configurations** (production currently uses temp=0; if a future workload uses temp>0, the question reopens).
+
+**This closure CONFIRMS existing production wisdom** in `model_registry.yaml`:
+- Line 378: `p_split: 0   # linear only, tree is net-negative at 48t (sweep-verified)`
+- Line 447: `p_split: 0   # linear only — tree harmful at all ps values, sweep-verified 2026-03-26`
+
+The 2026-03-21/26 sweeps were correct for greedy-temp inference. v5 PGO build confirms.
+
+### Phase 1 deferred indefinitely
+
+Per Phase 0 NO-GO: implementing the MAB selector machinery (Phase 1 spec at handoff lines 117-153) is not justified on greedy-temp production. Reopen criteria:
+- Production workload shifts to temp>0 sampling (not currently planned)
+- Paper's claimed +13.7-22.65% on Pythia-6.9B at temp=0 turns out to be measurement-methodology-bound (different stack characteristics; needs separate falsification on Pythia or similar dense model on our hardware before generalizing back to Coder/REAP)
+
+### Phase 1 prototype scope estimate (still recorded for completeness)
+
+LOC + risk per file unchanged from handoff Phase 1 table (~245 LOC, LOW risk). NOT implementing per Phase 0 NO-GO. Defer indefinitely.

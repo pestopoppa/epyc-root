@@ -262,3 +262,112 @@ Phase 0 bundle is mandatory even with no benchmark.
 - Sibling reopener handoff: [`mab-tree-shape-selector.md`](mab-tree-shape-selector.md) (orthogonal axis, applies to pure-MoE)
 - Closure-inflation policy: `feedback_closure_inflation.md` (memory)
 - Reference: [`research/intake_index.yaml`](../../research/intake_index.yaml) intake-490 entry with verbatim mechanism quotes
+
+---
+
+## Phase 0 — RESULTS (DONE 2026-04-29)
+
+### Step 0.1 — intake-490 mechanism summary (read)
+
+URL fetched: https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/
+
+The blog post intentionally simplifies the recurrence to `S_t = S_{t-1} + v_t k_t^T` and notes "in real systems, the update is a bit more complex." The full Delta Net update with (k, v, β, g) inputs is not disclosed in the blog itself; SGLang source would be needed for the full formula.
+
+Key mechanism components:
+- **HybridReqToTokenPool**: per-request state pool. Lifespan of a request is bound to its Mamba state.
+- **HybridLinearKVPool**: layer-id remap that skips KV-cache allocation for linear-attention layers.
+- **MambaRadixCache**: prefix-tree of state SNAPSHOTS (not live sharing). Match → copy state from radix tree; insert → fork checkpoint of state from a request; evict → separate LRU lists for states and KV cache.
+- **EAGLE-Tree compatibility**: Top-K > 1 supported. Each drafted token traces its parent via precomputed indices and applies `S_new = S_parent + Δ`.
+- Slot promotion example (verbatim): "After accepting 'the streets are', slot 3 (which holds 'are' state) becomes the main SSM state."
+- Tested architecture: Qwen3-Next-80B-A3B-Instruct-FP8 (the only example given). Mamba2 / general Delta Net / gated linear attention support not explicitly stated but architecturally compatible by construction.
+
+### Step 0.2 — Delta Net state in our fork (traced)
+
+**Critical finding**: our fork ALREADY has the structural primitives required for slot-promotion. Specifically:
+
+1. **Per-sequence Delta Net state allocation**: `src/models/qwen35moe.cpp:285` calls `build_rs(inp, ssm_states_all, hparams.n_embd_s(), n_seqs)` — `build_rs` ("build recurrent state") loads per-sequence state into the graph. State is dimensioned by `n_seqs`, not a single canonical pointer.
+
+2. **Per-sequence convolution state**: `src/models/qwen35moe.cpp:254` similarly loads `conv_states = build_rs(inp, conv_states_all, hparams.n_embd_r(), n_seqs)` per-sequence.
+
+3. **Lazy seq_cp via metadata**: `src/llama-memory-recurrent.cpp:214-249` — `llama_memory_recurrent::seq_cp(src, dst, p0, p1)` does NOT memcpy state. It just adds `seq_id_dst` to the cell's `seq_id` set, marking the same physical state cell as belonging to multiple sequences. Real state divergence happens lazily when both sequences progress (via separate decodes producing new state cells). Effectively COW state sharing.
+
+4. **DySpec heap-spec already uses `seq_cp` for tree branching**: `common/speculative.cpp:1271` calls `llama_memory_seq_cp(mem_dft, fn.seq_id, child_seq, 0, -1)` to fork state for each tree branch. After a wave of K candidates, line 1294-1297 cleans up: `llama_memory_seq_rm(mem_dft, 0, n_past + 1, -1)` clears the canonical state's tail; rejected sequences are removed via `llama_memory_seq_rm(mem_dft, s, 0, -1)`.
+
+**Implication**: the slot-promotion semantics (S_new = S_parent + Δ; promote winning slot to canonical; discard rejected slots) are ALREADY IMPLEMENTED in our fork via `llama_memory_seq_cp` + `llama_memory_seq_rm`. The 450MB clone-cell cost cited in `ssm-checkpoint-speculation.md` was a different mechanism (explicit memcpy of the state buffer); the heap-spec PR uses the lightweight metadata-only `seq_cp` instead.
+
+**What's actually new in intake-490**:
+- The MambaRadixCache cross-request state-snapshot prefix tree (not in our fork; our heap-spec is single-request)
+- DFlash-style NUMA-parallel verification (each candidate verified on a different NUMA quarter as a single-token decode)
+
+The MambaRadixCache is multi-request infrastructure — out of scope for our single-user CPU regime. The DFlash-style NUMA-parallel verification IS in scope and is the actual lever.
+
+### Step 0.3 — Qwen3.6-35B-A3B architecture (verified)
+
+GGUF metadata for `/mnt/raid0/llm/models/Qwen3.6-35B-A3B-Q8_0.gguf`:
+```
+general.architecture = qwen35moe
+general.tags = qwen3_5_moe, image-text-to-text
+qwen35moe.block_count = ...
+qwen35moe.embedding_length = ...
+```
+
+`qwen35moe` is the same architecture handler as Qwen3.5-35B-A3B (`src/models/qwen35moe.cpp`), which IS hybrid Delta Net (per Step 0.2 trace; line 285 calls build_rs for delta-net state). **Therefore Qwen3.6-35B-A3B IS hybrid Delta Net**, not pure MoE. Workstream B applies to this model.
+
+Note: `general.basename = Qwen3.6-35B-A3B`, `general.tags = qwen3_5_moe` — the tags reflect the underlying architecture lineage (Qwen3.5 family hybrid).
+
+### Step 0.4 — Phase 1 prototype scope estimate (REVISED downward)
+
+Per Step 0.2, the slot-promotion mechanism is already implemented via `llama_memory_seq_cp`. The Phase 1 LOC table in this handoff (originally projecting 360-635 LOC) was based on the assumption that per-context state allocation would need re-engineering. That assumption is **wrong** — per-sequence state is already allocated by `n_seq_max` in `llama_memory_recurrent`, and `seq_cp` already provides the lazy COW fork.
+
+**Revised Phase 1 scope**:
+
+| File | Original LOC est | REVISED LOC est | Risk | Why revised |
+|---|---|---|---|---|
+| `src/llama-context.cpp` | +80 to +150 | **0** | LOW | Per-sequence state alloc already exists |
+| `src/llama-cparams.h` | +8 to +15 | **0** | LOW | No new params needed (n_seq_max already covers slot count) |
+| `src/models/delta-net-base.cpp` | +60 to +120 | **0** | LOW | Already reads per-seq state via build_rs |
+| `src/models/qwen35moe.cpp` | +20 to +40 | **0** | LOW | Already passes per-seq state |
+| `common/speculative.cpp` | +120 to +200 | **0** (DySpec already does seq_cp) | LOW | Heap-spec already uses seq_cp for tree branching |
+| `common/arg.cpp` + `common/common.{h,cpp}` | +30 | **0** | LOW | No new flags needed |
+| `tools/server/server-context.cpp` | +40 to +80 | **+50 to +100** | MEDIUM | The actual NEW work: NUMA-pin per-candidate verify pass to a different NUMA quarter |
+| **Total** | **~360 to ~635** | **~50 to ~100** | **LOW-MEDIUM** | Most "implementation" was already done; only NUMA-parallel scheduling is new |
+
+**Critical question**: does the existing seq_cp + DySpec heap-spec on Qwen3.5-35B-A3B (hybrid Delta Net) actually work in production today? Untested in our fork (the 6 closed handoffs predate this measurement). The Phase 0 verdict needs an empirical confirmation that single-NUMA heap-spec on Qwen3.5/3.6-35B-A3B produces ≥30% acceptance and ≥0% throughput vs `p_split=0` linear baseline.
+
+### Phase 0 GATE verdict: **GO with revised scope**
+
+Per the Phase 0 GATE criteria ("LOW or MEDIUM risk + ≤800 LOC + ≤2 weeks wall-clock"):
+
+- Risk: **LOW-MEDIUM** (only the server-side NUMA-pinning scheduler change is new; mechanism is already implemented)
+- LOC: **~50-100** (well below 800)
+- Wall-clock: **1-3 days** for Phase 1 (single-NUMA verify confirmation) + **2-5 days** for Phase 2 (NUMA-parallel verify scheduler). Total ~1 week, well below 2 weeks.
+
+**PROCEED to Phase 1**. The closure-inflation policy framework documented in this handoff (gates A,B,C met under prior assumption; gate D unmet under new assumption) is correctly framed BUT the gate D actually flips:
+
+- **Original gate D**: "Per-candidate Delta Net state allocation (slot promotion) is feasible in our llama.cpp fork without re-engineering ggml graph" — NEVER TESTED → Phase 0 verdict
+- **Revised gate D**: **MET in principle by existing infrastructure**. Per-sequence Delta Net state exists; seq_cp exists; heap-spec already uses it. What needs testing in Phase 1 is whether this works on production Qwen3.5/3.6-35B-A3B end-to-end.
+
+### Reframed Phase 1 plan
+
+1. **Phase 1.0** (~half a day): empirically confirm that DySpec heap-spec works on Qwen3.5-35B-A3B Q4_K_M with `--draft-p-split=0.05 --draft-max=N` for various N. Measure acceptance rate + end-to-end throughput vs `p_split=0` linear baseline. CPU20 bundle.
+
+2. **Phase 1.1** (~2-3 days): If Phase 1.0 shows ≥30% acceptance + ≥0% end-to-end gain, implement DFlash-style NUMA-parallel verification. Modify `tools/server/server-context.cpp` to dispatch each candidate verify to a different NUMA quarter via taskset / numactl. Measure aggregate gain vs single-NUMA Phase 1.0.
+
+3. **Phase 2** (existing in handoff): Production decision based on Phase 1 results.
+
+### Closure-inflation compliance
+
+If Phase 1.0 measures show DySpec heap-spec on Qwen3.5/3.6-35B-A3B regresses or has acceptance <30%, the closure scope is:
+> "DySpec heap-spec on Qwen3.5/3.6-35B-A3B-Q4_K_M at v5 PGO build under our current NUMA single-instance regime fails to achieve ≥30% acceptance / ≥0% end-to-end gain. The slot-promotion mechanism (seq_cp + heap-spec) IS structurally implemented but does not deliver on this specific model class at this build. Does NOT generalize to: 'all hybrid spec-dec on CPU is dead'. The DFlash-style NUMA-parallel verification (Phase 1.1) is gated on Phase 1.0 success and was not tested. Other hybrid models (Qwen3-Next-80B) and other build configurations could still produce different results."
+
+**Key reopener vs original handoff**: the 6 closed SSM-hybrid handoffs all closed under the assumption that "verification batch = N × single-token cost" implies multi-token spec-dec is bandwidth-bound. This is true for K-token batched verify, but DySpec heap-spec already does NOT use K-token batched verify on hybrid Delta Net — each tree node is verified via separate `llama_decode` call with seq_cp'd state, which is the very mechanism intake-490 advocates. **The 6 closed handoffs may already be partially superseded by the existing DySpec heap-spec on hybrid models — but this has not been empirically tested in our fork**. Phase 1.0 is the first such empirical test.
+
+### CPU20 bundle
+
+Path: `data/cpu_optimization/2026-04-29-hybrid-ssm-slot-promotion-phase-0/`
+- `README.md` — phase purpose, mechanism summary, gate criteria
+- `system-state.txt` — `numactl --hardware`, `nproc`, branch HEAD `0c8d05597`
+- `process-pre.txt` / `process-post.txt` — read-only research; no benchmark = empty placeholders OK
+- `ld_debug.txt` — placeholder
+- `results.csv` — placeholder ("no benchmark in Phase 0; see Phase 1.0 for actual measurements")
+- `decision.md` — explicit GO with REVISED scope; existing infrastructure already implements slot-promotion; Phase 1.0 measurement gate is the next falsification step
