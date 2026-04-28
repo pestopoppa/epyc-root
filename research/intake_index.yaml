@@ -21503,3 +21503,67 @@
   novelty_justification: 'Low. The technique (cache-type-k/v q4_0 for context extension on hybrid models) is already in production for our hybrid SSM stack and was the conclusion of completed handoff kv-cache-quantization.md (2026-03-28). The accompanying upstream Hadamard PR (#21038) landed 2026-04-01 and is auto-enabled in our v3 build. The post adds no new techniques, no new measurements, and notably omits the Hadamard rotation that makes q4_0 KV robust on more architectures. Zero-novelty popularization of existing knowledge.'
   relevance_justification: 'Low. EPYC stack is CPU-only (1.1 TB RAM, no 24 GB constraint per project_dgx_spark_target — DGX Spark not yet acquired). The 24 GB consumer-GPU framing is the entire structuring premise of the post and does not map to our deployment. Our orchestrator already runs Qwen3.6-27B Q4_K_M in production with type_k=q8_0 / type_v=q8_0 (qwen36_27b_q4km in model_registry.yaml) — chosen on CPU for throughput vs memory tradeoff, not VRAM constraints. The single thin signal of relevance is third-party reaffirmation that the q4_0/q4_0-on-hybrid choice we made for SSM architectures is widely-recognized as correct, but we already had stronger first-party evidence for that.'
   verdict_justification: 'already_integrated. The exact recommended config (-fa on, --cache-type-k q4_0 --cache-type-v q4_0) is already validated in production for hybrid SSM models (kv-cache-quantization.md completed 2026-03-28; Hadamard PR #21038 auto-enabled in production-consolidated-v3). Post adds no novel measurement, contradicts our own dense-attention-at-long-context measurements (q4_0/q4_0 → garbage at 32K on Qwen2.5-7B), and includes at least one architecture mischaracterization (calls Qwen 3.6 27B "dense"; it is hybrid SSM). No handoff update — both kv-cache-quantization (completed) and tq3-quantization-evaluation (active) already cover this ground at higher technical fidelity. No stub created — verdict is not new_opportunity. Credibility scored 0 (no URL, no author, no methodology, two factual issues — architecture and the unsupported 3x speed claim). Recorded only because user explicitly submitted; intake should reflect submission, not endorse content.'
+- id: intake-500
+  arxiv_id: null
+  url: https://github.com/mlc-ai/mlc-llm
+  source_type: repo
+  title: 'MLC LLM — Universal LLM Deployment Engine With ML Compilation (mlc-ai/mlc-llm + llm.mlc.ai docs)'
+  authors:
+  - mlc-ai (Apache TVM community lineage)
+  - Tianqi Chen (CMU / OctoAI / Apache TVM PMC, project lead)
+  - MLC LLM contributors
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-28'
+  key_claims:
+  - 'Compiler-based universal deployment: models are compiled once via Apache TVM Unity / TensorIR / Relax to a single MLCEngine runtime, which executes the same compiled artifact across NVIDIA CUDA, AMD ROCm, Vulkan (cross-platform GPU), Apple Metal, Intel Vulkan, WebGPU+WASM (browser), iOS Metal, and Android OpenCL (Adreno/Mali). One toolchain, many backends — distinct from hand-tuned-per-backend stacks (vLLM CUDA-first, llama.cpp ggml).'
+  - 'OpenAI-compatible API surface: mlc_llm.MLCEngine Python class is API-compatible with the openai package (chat.completions.create, streaming, tools); also ships a REST server at /v1/chat/completions, a chat CLI, plus WebLLM (JavaScript/browser), iOS Swift SDK, and Android SDK.'
+  - 'Quantization formats include q0f16 (no quant), q4f16_1 (4-bit group), q4f16_ft (4-bit FasterTransformer); full list maintained in repo per official docs. No GGUF compatibility — compiled artifacts are the deployment unit, not GGUF files.'
+  - 'Positioned strategically as the cross-platform-mobile-and-browser specialist, not the H100-peak-throughput leader. WebLLM (sister project) is the canonical browser-based LLM stack. iOS/Android are first-class targets, unique among production inference engines.'
+  - 'Project lineage gives it Apache TVM and TensorIR provenance — same compiler stack that underpins BitBLAS (low-bit GEMM, see intake-497 TileLang puzzles deep-dive) and would be the natural authoring path for any custom AMD/Vulkan kernels we''d need on a non-NVIDIA GPU acquisition path.'
+  techniques:
+  - Apache TVM Unity / Relax compilation pipeline (graph-level optimization)
+  - TensorIR tensor program optimization (kernel-level scheduling)
+  - MLCEngine unified inference runtime
+  - q4f16_1 group quantization, q4f16_ft FasterTransformer quant format
+  - Multi-backend dispatch (CUDA / ROCm / Vulkan / Metal / WebGPU / OpenCL)
+  - OpenAI-compatible serving + WebLLM browser deployment
+  reported_results:
+  - 'No empirical benchmarks in the README or introductory docs that I fetched. README is feature-list / target-platform descriptive; docs intro covers API ergonomics, not throughput numbers.'
+  - 'Per 2026 inference-engine benchmark landscape (web search, see contradicting_evidence): SGLang and LMDeploy lead H100 raw throughput at ~16,200 t/s, vLLM at ~12,500 t/s. MLC-LLM is not in that throughput-leader cohort — it is positioned in the mobile / on-device / cross-platform niche.'
+  - 'Apache TVM lineage: project lead Tianqi Chen has the strongest possible compiler-stack credibility for the underlying technology. Field-wide adoption (BitBLAS uses TVM lineage; WebLLM is widely deployed in browsers).'
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'Throughput trade-off: 2026 benchmarks (Spheron, particula.tech, kanerika, Local AI Master, premai.io) consistently exclude MLC-LLM from their head-to-head H100 throughput tables — the comparison set is vLLM / SGLang / TensorRT-LLM / LMDeploy. MLC-LLM''s value proposition is portability (CUDA + ROCm + Vulkan + Metal + WebGPU + Mobile from one compile pipeline), not peak server throughput. If your acquisition target is an H100 / DGX Spark serving box and the workload is server-side throughput, vLLM (intake-462) or SGLang (intake-461) likely dominate.'
+  - 'Compile-step friction: unlike llama.cpp (point at GGUF, run) or vLLM (point at HF model, run), MLC-LLM requires a compilation step per model + per target backend. For a fast-moving model lineup (we re-quant frequently — see model_registry quant tracker), this is real overhead. Acceptable for production deployment of stable models, less acceptable for research-grade rapid iteration.'
+  - 'No GGUF compatibility: our entire model storage is GGUF (per /mnt/raid0/llm/models/*.gguf and model_registry paths). Adopting MLC-LLM means parallel artifacts in a different format. Llama.cpp + GGUF remains canonical for our stack.'
+  - 'CPU backend not competitive: project explicitly targets GPUs (NVIDIA / AMD / Apple / Vulkan / WebGPU); no CPU-AVX-512BW kernel story. Our production CPU path (NPS4 EPYC 9655, AVX-512BW Q8_0 kernel — see project_q8_8x8_avx512bw_outcome) is irrelevant to MLC-LLM. This is a GPU-only contender.'
+  - 'Hybrid SSM / Delta Net support: docs intro names Llama-3 and Phi-2 as examples and does not enumerate Qwen3.5/3.6 hybrid SSM. Given MLC-LLM is compiler-based, adding Delta Net + chunkwise scan likely requires upstream model definition work — non-trivial relative to llama.cpp''s existing Qwen3.5/3.6 hybrid path. Confirm support before assuming the production stack ports cleanly.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-458 (FlashInfer — production attention backend, used by vLLM/SGLang/MLC)
+    - intake-461 (SGLang repo — H100 throughput leader, decoder-only)
+    - intake-462 (vLLM repo — broadest hardware support, encoder-decoder)
+    - intake-463 (TensorRT-LLM repo — NVIDIA peak stack)
+    - intake-464 (FlashAttention-3 — Hopper-era kernel)
+    - intake-465 (CUTLASS repo — NVIDIA Tensor Core GEMM)
+    - intake-466 (Triton repo — kernel DSL)
+    - intake-497 (TileLang puzzles + parent BitBLAS — TVM-lineage low-bit GEMM, natural AMD authoring DSL)
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: 'Medium. MLC-LLM is the first compiler-based ML deployment stack we have ingested (no prior TVM, Relax, IREE, or WebLLM entries — confirmed by grep on intake_index). The compile-once / dispatch-many-backends paradigm is materially different from the seven GPU runtime/engine entries we already have (intake-458/461/462/463/464/465/466), all of which are hand-tuned-per-backend. Specifically novel: (a) WebGPU / browser deployment via WebLLM sister project — no other intake entry covers browser-based LLM serving; (b) Vulkan as a portable AMD path (intake-303-306 are ROCm-specific); (c) iOS / Android as first-class targets; (d) Apache TVM lineage shared with BitBLAS (intake-497) — same authoring DSL would be reusable.'
+  relevance_justification: 'Medium. EPYC stack is CPU-only and MLC-LLM has no competitive CPU backend, so zero immediate-actionable content. However, gpu-acceleration-path.md is the umbrella tracker for GPU-acquisition-prep references and already bundles intake-458/461/462/463/464/465/466 — MLC-LLM completes that bundle for two specific scenarios: (1) AMD RX 7900 XTX path using Vulkan (avoids ROCm/HIP build complexity flagged in the handoff''s build configuration section), (2) consumer-multi-platform deployment if EPYC stack ever exposes a public WebGPU demo. The DGX Spark Blackwell target is better served by vLLM + DDTree/Dflash per the existing handoff Section "vLLM + Speculative Decoding on DGX Spark", so MLC-LLM is a plan-B not plan-A for that specific target.'
+  verdict_justification: 'worth_investigating, with concrete activation triggers: (1) if the GPU acquisition lands on consumer AMD (RX 7900 XTX) instead of DGX Spark, MLC-LLM Vulkan backend becomes the simpler alternative to llama.cpp HIP build (handoff''s -DGGML_HIP=ON path), (2) if a browser-based WebGPU demo of EPYC routing/orchestration is ever desired, MLC-LLM via WebLLM is the canonical path, (3) if mobile (iOS/Android) demos or edge deployment are scoped, MLC-LLM is the strongest option in the intake — no other entry covers mobile. NOT activated by: peak H100 throughput needs (use SGLang/vLLM), CPU-only research (use llama.cpp), MoE expert-offloading (use llama.cpp -ot "exps=CPU" or vLLM Wide-EP per intake-463). Credibility scored null per workflow rule (repo with no empirical claims in README/docs intro). Updating gpu-acceleration-path.md to add MLC-LLM to the GPU-prep bundle alongside intake-458/461-466.'
