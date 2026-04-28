@@ -553,3 +553,120 @@ Smoke test produced 3× `warn: failed to set affinity mask 0x... : Invalid argum
 
 If next-session measurement shows <1.3× per-request, scoped closure language (per `feedback_closure_inflation.md`):
 > "K=4 NUMA-parallel candidate verify on Qwen3.6-35B-A3B Q8 hybrid Delta Net under v5 PGO build at NPS4 fails to achieve ≥1.3× per-request latency over single-NUMA Phase 1.0 baseline (6.80 t/s). The DFlash-style mechanism is implemented but does not deliver on this specific model + build. Does NOT generalize to 'all NUMA-parallel verify on CPU is dead'. Different K values, different state-sync schemes, different model classes (REAP-246B EP, Coder-30B pure MoE) could still show different results."
+
+---
+
+## Phase 1.1 — Foundation v3 ROLLBACK after hybrid Delta Net crash (DONE 2026-04-29)
+
+### Discovery
+
+When attempting to drive end-to-end measurement on Qwen3.6-35B-A3B Q8_0 (hybrid Delta Net, the actual production target), foundation v1 (4 K-contexts) and v2 (single threadpool attached to primary ctx) BOTH crashed during/after slot init. Crash signature:
+
+```
+srv    load_model: Phase 1.1: auxiliary ctx 3 created, pinned to threads [72, 96)
+srv    load_model: Phase 1.1 foundation active: 4 NUMA-pinned target contexts.
+warn: failed to set affinity mask 0x... : Invalid argument (22)
+warn: failed to set affinity mask 0x... : Invalid argument (22)
+[... 17+ identical warns ...]
+[Segmentation fault]
+```
+
+Same code worked fine on dense Qwen2.5-0.5B-Instruct (smoke-tested in foundation v1). Hybrid Delta Net + ggml_threadpool sched_setaffinity has an interaction not yet understood.
+
+### Foundation v3 rollback (committed `d056c1f20` on `feature/cpu-ep-inter-process`)
+
+| File | Net diff after rollback | Status |
+|---|---|---|
+| `common/common.h` | +6 | KEPT (numa_quarters param) |
+| `common/arg.cpp` | +8 | KEPT (--spec-numa-quarters flag + env) |
+| `tools/server/server-context.cpp` | **+~16 (down from +120)** | ROLLED BACK to CLI-surface-only — K>=2 parses but takes no effect |
+
+CLI surface preserved so registry/launcher staging + future dispatcher work is unblocked. K=1 default path identical to pre-Phase-1.1 binary.
+
+### What this means for the next-session work
+
+Original "+120 LOC of K-context+threadpool plumbing" → must be redesigned. The dispatcher session must investigate:
+
+1. **Why does ggml_threadpool's sched_setaffinity reject the cpumask** on hybrid Delta Net but not on dense models? Possible angles:
+   - The recurrent-state allocator (`llama_memory_recurrent`) may be claiming threads at a stage that conflicts with my threadpool's worker spawning.
+   - The hybrid model's compute graph spawns extra threads via OpenMP that interact with the threadpool's affinity mask.
+   - Some thread setup happens between `llama_init_from_model` and slot init that consumes the cpumask budget.
+
+2. **Can K aux contexts share a model and each load successfully** without crashing the primary ctx's slot init? Empirically smoke-tested OK on small dense models, fails on 35B Q8 hybrid.
+
+3. **Should the threadpool-affinity scheme be replaced** with a different mechanism — e.g., per-decode-call thread-local `pthread_setaffinity_np` from inside the verify worker, rather than at threadpool creation time?
+
+### Next session is now scope-corrected
+
+| Phase 1.1 component | Status (post-2026-04-29) |
+|---|---|
+| Param + flag CLI surface | DONE |
+| K aux context creation | NEEDS REDESIGN (crashes on hybrid; investigation required) |
+| Threadpool quarter pinning | NEEDS REDESIGN (Invalid argument 22) |
+| Dispatcher (parallel decode + reduce) | DEFERRED behind redesign |
+| State sync across K ctxs | DEFERRED behind redesign |
+| Affinity fix | NOW PRECONDITION, not optional |
+| Measurement on Q8 hybrid | DEFERRED until above unblocked |
+
+Realistic wall-clock revised UP: ~2 weeks dedicated focused work, with a real risk that hybrid-model NUMA-parallel verify on this fork's threading stack is fundamentally hard.
+
+### Closure-inflation guard
+
+The crash discovery does NOT close Phase 1.1. Scoped wording for the discovery alone:
+> "Foundation v2's threadpool-attach scheme crashes on Qwen3.6-35B-A3B Q8 (hybrid Delta Net) at v5 PGO build during slot init, with repeated `sched_setaffinity` EINVAL. Same code is stable on dense Qwen2.5-0.5B. Does NOT generalize to 'NUMA-parallel verify is dead on hybrid models' — only that *this specific implementation path* hits an interaction with the recurrent-state allocator. Alternative implementations (in-decode pthread_setaffinity, model-graph-internal NUMA scheduler, K SEPARATE PROCESSES coordinated via shared mem) remain unevaluated."
+
+---
+
+## Phase 1.1 — Second discovery: speculative.cpp:1066 vocab assertion (DONE 2026-04-29)
+
+### Symptom
+
+Attempted K=1 baseline reconfirm on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter (the same pair Phase 1.0 used). Server aborted mid-completion with:
+
+```
+slot update_batch: id  2 | task 14 | draft size 10 exceeds max 9, truncating
+/mnt/raid0/llm/llama.cpp-experimental/common/speculative.cpp:1066:
+  GGML_ASSERT(n_chars < 0) failed
+[backtrace through common_speculative_state_tree::draft]
+```
+
+### Pre-existing bug, NOT caused by Phase 1.1 code
+
+Line 1066 is in the `vocab_cmpt = false` (vocab-incompatible drafter) path of `common_speculative_state_tree::draft`. The probe call `llama_detokenize(vocab_tgt, &id_last, 1, nullptr, 0, false, false)` is expected to return `-length` (negative) but returned non-negative — likely because `id_last` decoded to an empty piece (special token, BOS, etc.). Assertion fires.
+
+This bug is in HEAD `0c8d05597` from before Phase 1.1 work. Phase 1.0 measurement (committed in `data/cpu_optimization/2026-04-29-slot-promotion-phase-1/`) presumably did not happen to hit a token that triggers this assertion. The Phase 1.0 README claim "Drafter: Qwen3-1.7B-Q8_0 (vocab-compatible)" is likely incorrect — the assertion would be skipped if vocab were truly compatible.
+
+### Implication for next session
+
+Phase 1.1 next-session work has TWO blockers, not one:
+
+1. (Already documented) ggml_threadpool sched_setaffinity EINVAL on hybrid model.
+2. (NEW) `speculative.cpp:1066` assertion needs investigation — either the drafter pair must be true vocab-compatible (one model, two quants?) or the assertion needs to be relaxed when `n_chars == 0` (empty piece is a valid case).
+
+Either fix unblocks running spec-dec end-to-end on this target/drafter pair without crashes.
+
+### Closure-inflation guard
+
+> "On HEAD `0c8d05597`, Qwen3.6-35B-A3B-Q8 + Qwen3-1.7B-Q8 spec-dec hits a pre-existing `GGML_ASSERT(n_chars < 0)` failure in `common_speculative_state_tree::draft` at speculative.cpp:1066, in the vocab-incompatible code path. Does NOT generalize to 'spec-dec is broken on this fork' — only that this specific drafter+target pair hits a vocab-edge-case assertion. The 6-prompt Phase 1.0 measurement likely succeeded by happening to never invoke `id_last` on an empty-piece token. Phase 1.1 measurement needs either a vocab-compatible drafter or an assertion fix."
+
+### Phase 1.1 status as of session-end 2026-04-29
+
+| Component | Status |
+|---|---|
+| --spec-numa-quarters CLI surface (param + flag) | DONE (`a5c48050c` foundation v1 → `d056c1f20` foundation v3 rollback) |
+| K aux contexts + threadpool quarter pinning | NEEDS REDESIGN (crashes on hybrid Delta Net) |
+| Dispatcher | DEFERRED behind redesign + assertion fix |
+| State sync, reduction | DEFERRED behind dispatcher |
+| Affinity-warning fix | NOW REQUIRED PRECONDITION |
+| `speculative.cpp:1066` assertion | NEEDS FIX (pre-existing) |
+| Measurement | DEFERRED behind above |
+
+### CPU20 bundle for this session
+
+`data/cpu_optimization/2026-04-29-numa-quarter-pin-phase-1-1a/`:
+- `README.md` — phase purpose, foundation v1/v2/v3 progression, two crash discoveries
+- `decision.md` — explicit "FOUNDATION ONLY; redesign required for hybrid; no measurement"
+- `system-state.txt`, `process-pre.txt` — system snapshots
+- `srv_*.log` — server logs showing the two crash signatures
+- `comp_k1_baseline_p*_r*.json` — 9 partial completions captured before assertion fired
+- `run_phase11a.sh`, `run_baseline_reconfirm.sh` — bench scripts
