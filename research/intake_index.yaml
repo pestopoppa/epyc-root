@@ -16851,7 +16851,7 @@
   novelty: high
   relevance: high
   credibility_score: 5
-  verdict: reference_only
+  verdict: not_applicable
   adoption_blocker: closed_source_api_only
   trigger_to_reactivate: Alibaba releases open weights for Qwen3.5-Omni OR Qwen3-Omni-30B-A3B (Apache 2.0 sibling) proves CPU-viable
   ingested_date: '2026-04-22'
@@ -20968,7 +20968,7 @@
   - tool_implementation
   novelty: medium
   relevance: high
-  credibility_score: 2
+  credibility_score: 3
   discovered_via: input
   verdict: adopt_patterns
   ingested_date: '2026-04-28'
@@ -20993,20 +20993,23 @@
   - MCP tool-tier presets (agent/power/full/auto)
   - Multi-vault index sharding
   reported_results:
-  - 'HotpotQA: 90.0% document recall on 50 questions / 4,960-doc pool (no benchmark training); $0.083/question (April 2026 artifact).'
+  - 'HotpotQA: 90.0% document recall on 50 questions / 4,960-doc pool (no benchmark training). NOTE: 4,960-doc pool is sui generis — neither standard distractor (10 docs) nor fullwiki, so cross-paper comparison is not direct. Per-question cost figure ($0.083) cited in some artifacts but not confirmed in current README.'
   - 'LoCoMo (full E2E, 695 scored questions / 272 sessions, Claude Sonnet): 81.9% overall evidence recall, 97.4% single-hop, 73.7% multi-hop, 54.0% answer accuracy (Haiku judge), token F1 0.431.'
   - 'LoCoMo unit retrieval (1,531 queries): Recall@5 84.8%, Recall@10 90.4%; multi-hop R@5 58.1% / R@10 72.7%; temporal R@5 56.9% / R@10 67.4%.'
   - 'Graph quality (synthetic vault, balanced mode): 50.6% precision / 66.7% recall / 57.6% F1.'
-  - 3,292 tests across 185 files (~64.4k LOC test code); CI matrix Ubuntu+Windows × Node 22/24; 100 parallel writes with zero corruption.
+  - 3,292 tests across 185 files (~64.4k LOC test code); CI matrix Ubuntu+Windows × Node 22/24; parallel-write corruption-free under repo write-stress tests.
+  - "README declares ~1pp run-to-run variance from LLM non-determinism — any cross-paper delta under ~2pp is within noise."
   referenced_arxiv_ids:
   - '1809.09600'
   - '2101.00436'
   - '2009.12756'
   - '2308.08973'
   contradicting_evidence:
-  - Self-reported benchmarks with explicit "directional, not apples-to-apples" caveat in the README — single-author project, no peer review or independent third-party replication.
-  - Per `feedback_credibility_from_source_not_readme.md` — README shows polished docs but git/test/contributor signals are single-author, capping credibility regardless of headline numbers.
-  - Schema/structure assumptions are tied to the Obsidian vault format; portability of the wikilink-graph + section-aware snippet design to non-Obsidian markdown corpora is asserted but not benchmarked.
+  - Self-reported benchmarks with explicit "directional, not apples-to-apples" caveat in the README — no peer review or independent third-party replication.
+  - HotpotQA 4,960-doc pool is sui generis (neither standard 10-doc distractor nor fullwiki) — comparison to published HotpotQA numbers is not direct.
+  - Graph-quality 50.6/66.7/57.6 is on a synthetic vault, not real-world markdown corpora.
+  - Schema/structure assumptions tied to the Obsidian vault format; portability of wikilink-graph + section-aware snippets to non-Obsidian markdown asserted but not benchmarked.
+  - Repo signals (1,092 commits, 3,292 tests, 385 releases, dual-OS dual-Node CI) indicate engineering rigor above hobby-project norms, but contributor graph could not be confirmed to definitively rule out single-author-status.
   cross_references:
     chapters: []
     handoffs:
@@ -21024,7 +21027,7 @@
   handoffs_created: []
   novelty_justification: Individual primitives (BM25 + semantic hybrid, wikilink graph, MCP write tools, auto-link suggestion) are each well-explored in our chapters/handoffs. What is new-to-us is the integrated architecture — a learning-loop wikilink scorer (accept/reject feedback updates the graph), structure-preserving safe writes with SHA-256 conflict detection + one-call undo, and YAML "policies" as a declarative search-then-write atomic abstraction. The HotpotQA/LoCoMo numbers are credible-looking academic-style benchmarks for an agent memory layer — exactly the evaluation surface our internal-kb-rag handoff lacks. Medium rather than high because no novel algorithm is claimed; the contribution is integration + benchmarks.
   relevance_justification: Direct overlap with at least three live workstreams — (a) `internal-kb-rag.md` is proposing exactly this (retrieval over our markdown KB) and Flywheel ships a working hybrid BM25+semantic indexer with section-aware chunks plus reproducible HotpotQA/LoCoMo harnesses we could borrow as evaluation templates; (b) the orchestrator-conversation-management user-modeling work currently uses a flat USER.md / episodic_store, while Flywheel's vault-as-memory model with confidence-decay observations and `memory(action=brief)` is a strict superset; (c) `context-folding-progressive.md` and `meta-harness-optimization.md` would benefit from a structured persistent memory the agent can both read and safely write during long autonomous sessions. Apache-2.0, Node/MCP, fully self-hostable — matches `feedback_opensource_only.md`. High.
-  verdict_justification: 'adopt_patterns rather than adopt_component — the runtime is Node.js / MCP over an Obsidian vault while our stack is Python orchestrator + episodic_store SQLite + (proposed) ColBERT/ONNX over our own markdown corpora; dropping Flywheel in wholesale would duplicate and conflict with internal-kb-rag''s planned ColBERT plumbing and our existing user_modeling package. The portable wins are architectural — (1) the wikilink learning-loop scorer (accept/reject -> updated link weights) for our wiki cross-references, (2) SHA-256 conflict + atomic-undo write contract for any agent that mutates handoffs/wiki/progress, (3) the YAML "policy" pattern (declarative search-then-write with preview + single-commit execute) as a model for our autopilot/meta-harness write actions, (4) the HotpotQA / LoCoMo harness as a reusable eval rig for internal-kb-rag retrieval quality. Credibility 2 (recent + reproducible benchmarks checked into repo, but single-author/independent and benchmarks are self-reported with explicit "directional, not apples-to-apples" caveat — no peer review, no major-lab corroboration). Per `feedback_credibility_from_source_not_readme.md` not scoring higher off README hype; per `feedback_dont_dismiss_creative_uses.md` not_applicable would be wrong given the three direct handoff intersections.'
+  verdict_justification: 'adopt_patterns rather than adopt_component — the runtime is Node.js / MCP over an Obsidian vault while our stack is Python orchestrator + episodic_store SQLite + (proposed) ColBERT/ONNX over our own markdown corpora; dropping Flywheel in wholesale would duplicate and conflict with internal-kb-rag''s planned ColBERT plumbing and our existing user_modeling package. The portable wins are architectural — (1) the wikilink learning-loop scorer (accept/reject -> updated link weights) for our wiki cross-references, (2) SHA-256 hash-before-write + single-step undo log as a portable abstract contract (the Node/Obsidian implementation itself is not lift-and-shift), (3) the YAML "policy" pattern (declarative search-then-write with preview + single-commit execute) as a model for our autopilot/meta-harness write actions, (4) the HotpotQA / LoCoMo eval **methodology** (4,960-doc pool, 695q LoCoMo split, ~1pp variance band) as a reusable template — harness code itself is Node/MCP/Obsidian-coupled and must be re-implemented in Python. Credibility 3 (1,092 commits + 3,292 tests + 64.4k LOC test code + 385 releases + dual-OS dual-Node CI = quantitative engineering rigor; ceiling 3 because still no peer review, no independent third-party replication, contributor-graph confirmation not obtained). Per `feedback_credibility_from_source_not_readme.md` upgraded above 2 only on the basis of git/test/release signals, not README polish. Per `feedback_dont_dismiss_creative_uses.md` not_applicable would be wrong given the three direct handoff intersections.'
 - id: intake-493
   arxiv_id: '2512.04388'
   url: https://arxiv.org/abs/2512.04388
@@ -21055,29 +21058,31 @@
   - Coordination strategies (topology + per-agent prompt engineering) emerge purely from end-to-end reward maximization, without hand-designed protocols, demonstrating that "language-model coordination" is RL-tractable at the 7B scale.
   techniques:
   - Conductor architecture (7B LLM trained as coordinator)
-  - End-to-end RL with terminal task reward (no labelled routing trajectories)
-  - Learned communication topology design (agent-to-agent graph emitted in natural language)
-  - Learned per-worker prompt engineering / targeted instruction generation
+  - End-to-end RL via GRPO with terminal task reward (no labelled routing trajectories), 200 iterations × batch 256 (4 samples × 64 rollouts), 2× H100 80GB
+  - 'Action space per coordination step: (worker_id, NL_subtask, access_list) — communication topology emerges as a derived consequence of access_list selections, not a separately emitted object; "role" is not a Conductor primitive (Trinity-only concept)'
+  - Learned per-worker NL subtask synthesis (worker-targeted prompts)
   - Randomized agent-pool training for pool-agnostic generalization
   - Recursive self-as-worker selection enabling test-time iterative scaling
   reported_results:
-  - 7B Conductor exceeds best individual worker on LiveCodeBench (claimed SOTA in this multi-agent regime).
-  - 7B Conductor exceeds best individual worker on GPQA.
-  - Worker pools tested include open-source models and frontier closed-source models (Sakana AI Conductor companion to Trinity, which used GPT-5 / Gemini-2.5-pro / Claude-4-Sonnet / Gemma-3-27B / DeepSeek-R1-Distill-Qwen-32B / Qwen-3-32B variants).
-  - Recursive (self-as-worker) topologies provide additional test-time scaling gains over single-pass coordination.
-  - Pool-agnostic transfer demonstrated by holding out workers at training time and adding them at inference.
+  - 'LiveCodeBench V6: Conductor 83.93% vs best individual worker GPT-5 82.90% (+1.03 pp — within typical pass@1 noise band).'
+  - 'GPQA-Diamond: Conductor 87.5% vs Gemini-2.5-Pro 84.8% (+2.7 pp).'
+  - 'Open-source-only inference (after randomized-pool finetune): beats Claude Sonnet 4 by ~10 pp — strongest ablation result.'
+  - 'Recursive self-as-worker: BigCodeBench 40.0% vs 37.8% non-recursive (+2.2 pp); GPQA-D 82.32% vs 81.31% (+1.0 pp).'
+  - 'Worker pool: GPT-5, Claude Sonnet 4, Gemini 2.5 Pro, Gemma3-27B-instruct, DeepSeek-R1-Distill-Qwen-32B, Qwen3-32B (thinking + non-thinking) — same 7-model pool as Trinity (intake-474).'
+  - 'Pool-agnostic transfer is an actual ablation (Section 4.4 / Figure 6), not just a claim.'
   referenced_arxiv_ids:
   - '2512.04695'
   - '2406.18665'
   - '2510.08439'
   - '2506.09033'
-  - '2510.08429'
+  - '2510.07429'
   - '2502.02743'
   contradicting_evidence:
-  - No public code or weights released — Sakana keeps coordinator artefacts private as part of Sakana Fugu; results not independently reproducible.
+  - 'No public code or weights at intake date (2026-04-28); paper promises supplementary release post-anonymization but Sakana Fugu commercialization may delay or prevent it. The real public-artefact blocker is commercial productization (Sakana Fugu), NOT GPU budget — training cost is 2× H100 80GB, low-three-digit-dollars rentable.'
+  - 'LCB headline gain is +1.03 pp — within typical pass@1 noise. The "SOTA in multi-LLM coordination regime" framing should not be read as a Trinity-style margin.'
   - 'Multi-agent failure-mode literature (MAST taxonomy, arxiv:2503.13657) flags inter-agent misalignment as 36.9% of production multi-agent breakdowns and verification failures as 21.3% — Conductor''s terminal-reward RL does not directly address these classes, only the joint task signal.'
   - "Multi-agent OOD generalization research notes that agent performance degrades sharply outside the domain for which it was fine-tuned or scripted; Conductor's pool-agnostic claim relies on training-time randomization but real-world pool drift may exceed that distribution."
-  - 'Single-source result: Trinity (intake-474) and Conductor share the same Sakana AI author team, so the two papers are not independent corroboration of each other''s coordination thesis.'
+  - 'Six-author overlap with Trinity (intake-474): Nielsen, Cetin, Schwendeman, Sun, Xu, Tang on both — the two papers are sibling design-space probes, NOT independent corroboration of each other''s coordination thesis.'
   - 'Sakana AI''s prior work has been independently re-evaluated with mixed verdicts (e.g., 2502.14297 "Evaluating Sakana''s AI Scientist: Bold Claims, Mixed Results") — vendor-bias caveat applies.'
   cross_references:
     chapters:
@@ -21100,7 +21105,7 @@
   handoffs_created: []
   novelty_justification: 'Same Sakana AI author team as Trinity (2512.04695, intake-474), but tackles the same coordination thesis from a complementary direction — instead of a 0.6B SLM + 10K-param head trained by sep-CMA-ES on terminal fitness (Trinity), the Conductor is a 7B model trained by end-to-end RL that synthesises both the communication topology and the per-agent natural-language instructions. Trinity emits (LLM, role) tuples; Conductor emits topology + prompts in natural language. Recursive self-as-worker is a new mechanism not present in Trinity. High-novelty under the closure-inflation discipline — it is not covered by Trinity''s intake; the action space, parameter count, training regime, and topology dimension are all distinct.'
   relevance_justification: Direct hit on three active EPYC handoffs — outer-coordinator-learned-head.md (asks whether a learned head can replace Claude-driven outer-loop coordination — Conductor is literally that question answered with a 7B RL coordinator), tri-role-coordinator-architecture.md (Trinity's tri-role action space — Conductor extends this to topology + prompts), and meta-harness-optimization.md (the "harness era" thesis that orchestration > capability). Routing-intelligence.md and decision-aware-routing.md are also adjacent. EPYC priorities explicitly include autopilot continuous optimization and routing/coordination work — Conductor is the closest published prior art to the outer-coordinator design that exists right now.
-  verdict_justification: 'adopt_patterns rather than adopt_component because (a) no public code or weights are released (matches Trinity''s no-code stance — Sakana AI keeps coordinator artefacts private as part of Sakana Fugu), (b) training a 7B RL coordinator end-to-end on multi-turn rollouts requires GPU budget we do not currently have, and (c) the action-space design (topology + NL instructions) is the transferable insight, not the trained weights. Concrete patterns to adopt — end-to-end terminal-reward training for coordinators (vs SFT-on-Q-labels in our current MLP), randomized-agent-pool training as a generalization recipe for our routing classifier, recursive self-as-worker as a test-time scaling mechanism in autopilot, and topology-as-output as an extension of the tri-role action space. Per `feedback_dont_dismiss_creative_uses.md` and `feedback_closure_inflation.md`, listing what is gated met (relevance to existing handoffs, peer-reviewed venue, open methodology) and what is gated unmet (no code, no GPU budget, single-source results not yet independently corroborated) rather than over-generalizing. Credibility 4 — peer-reviewed ICLR 2026 venue (+2), within 12 months (+1), Sakana AI is a recognized contributor in this area (+1), single-source / vendor-bias deduction (-1), no independent corroboration as of intake date (0).'
+  verdict_justification: 'adopt_patterns rather than adopt_component because (a) public code/weights are promised in supplementary but not yet visible at intake date, with Sakana Fugu commercialization as the real blocker (NOT GPU compute — paper used 2× H100), (b) the action-space design ((worker_id, NL_subtask, access_list) with derived topology) is the transferable insight, not the trained weights, and (c) Conductor is competitive intelligence for the EPYC outer-coordinator question — what others are publishing in the design space — NOT a target architecture EPYC is committing to copy. Concrete patterns worth tracking: end-to-end terminal-reward training for coordinators (vs SFT-on-Q-labels in our current MLP), randomized-agent-pool training as a generalization recipe for our routing classifier, recursive self-as-worker as a test-time scaling mechanism. The +1.03 pp LCB margin is within noise; do not over-weight the "SOTA" framing. Per `feedback_dont_dismiss_creative_uses.md` and `feedback_closure_inflation.md`, listing what is gated met (relevance to existing handoffs, peer-reviewed venue, open methodology, real ablations on randomized pools) and what is gated unmet (no public code/weights yet, headline LCB delta within noise, single-source not independently corroborated, six-author overlap with Trinity) rather than over-generalizing. Credibility 4 — peer-reviewed ICLR 2026 venue (+2), within 12 months (+1), Sakana AI is a recognized contributor (+1), single-source / vendor-bias deduction (-1), no independent corroboration as of intake date (0).'
 - id: intake-494
   arxiv_id: '2604.22294'
   url: https://arxiv.org/abs/2604.22294
@@ -21129,25 +21134,30 @@
   - On two new benchmarks pushing 3.9M and 36M tokens, SLIDERS improves over the next-best baseline by ~19 and ~32 points respectively, where conventional context-window or chunk-aggregation approaches collapse.
   techniques:
   - SLIDERS framework (Structured Long-document Information & Data-reconciled Extraction-then-Reasoning System)
-  - LLM-driven information extraction into a relational schema
+  - 'Per-question schema induction from a fixed library of taxonomy guidelines (sliders_taxonomy.json) keyed by query-type (Ordering / Multiple Choice / Other) × document-type (Narration / Policy / Dataset / Other) — schema is NOT free-form and NOT fixed up-front; users may also pin a schema'
   - SQL-based reasoning over persistent structured state (replaces text concatenation as the working surface)
-  - Provenance- and rationale-aware data reconciliation (deduplication, inconsistency repair, gap filling)
-  - Multi-document QA pipeline scaling to 36M-token corpora
-  - Long-context QA benchmarking (two new datasets at 3.9M / 36M tokens)
+  - 'Provenance and rationale columns (`_quote`, `_rationale`, `_confidence`) feed into a controller_executor_loop reconciliation stage with up to 5 controller iterations × 5 SQL attempts × 3 retries × 20 inspections; primary-key selector, row-grouping, non_pk_canonicalization two-pass mode, null_handling with placeholder_text=UNKNOWN'
+  - 'GPT-4.1 / GPT-4.1-mini hard-wired via Azure OpenAI / OpenAI public API for ALL stages (schema induction, relevance gating, extraction, primary-key selection, reconciliation controller+executor, SQL generation, answer synthesis, citation generation) — no local-model code path in the released repo'
+  - Multi-document QA pipeline scaling to 36M-token corpora (FinQ100 benchmark, SEC 10-Q derived)
+  - Two new long-context QA benchmarks introduced — WikiCeleb100 (3.9M tokens) and FinQ100 (36M tokens, SEC 10-Q derived)
   reported_results:
-  - +6.6 points avg over GPT-4.1 across three existing long-context QA benchmarks (all baselines fit in context window).
-  - +~19 points over next-best baseline on new 3.9M-token benchmark.
-  - +~32 points over next-best baseline on new 36M-token benchmark.
-  - Outperforms all evaluated baselines on three existing long-context benchmarks.
+  - 'Average improvement of +6.6 points (LLM-judge metric, soft/hard evaluator prompts) across the existing FinanceBench / Loong / Oolong long-context QA benchmarks, against the union of baselines (RAG, base GPT-4.1, DocETL, Chain-of-Agents (CoA), RLM); abstract phrasing "exceeds GPT-4.1 by 6.6 pts on average" averages across the baseline family rather than only the GPT-4.1 long-context baseline.'
+  - 'WikiCeleb100 (3.9M tokens, new benchmark): +~19 points over next-best baseline.'
+  - 'FinQ100 (36M tokens, SEC 10-Q derived, new benchmark): abstract reports +~32 points over next-best baseline; repo README reports +~50 points — unresolved discrepancy at intake date, prefer the README figure for adoption-realism only after confirming.'
+  - 'Baselines actually evaluated: RAG, base GPT-4.1, DocETL, Chain-of-Agents (CoA), RLM. Only CoA + RLM are reimplemented in the repo; RAG / LongRAG / GraphRAG / DocETL numbers were run externally and are harder to replicate.'
+  - 'Code released: github.com/stanford-oval/sliders (MIT, Python, also on PyPI as sliders-genie).'
+  - 'Datasets NOT shipped — repo provides eval-ID CSVs but expects the user to download FinanceBench / Loong / Oolong externally and to regenerate WikiCeleb100 / FinQ100 from Wikipedia / SEC EDGAR via experiments/wiki_celeb.py and experiments/sec_10q.py.'
   - 49 pages preprint (14 main); submitted 2026-04-24 to cs.CL / cs.AI.
-  referenced_arxiv_ids: []
+  referenced_arxiv_ids: []  # PDF references list still unresolved at intake date; baseline names captured (RLM, CoA, DocETL, RAG, GraphRAG, LongRAG, Loong, Oolong, FinanceBench, Docling) but most lack confirmed arxiv IDs in our index.
   contradicting_evidence:
-  - "Schema hallucination is the #1 production failure mode for LLM-to-SQL pipelines (web evidence: production failures dominated by schema hallucinations and incorrect join paths over syntax errors); SLIDERS depends on LLM extraction into a relational schema and is exposed to this exact failure class at scale."
+  - 'Frontier-API-only architecture: code paths hard-wired to OpenAI / Azure OpenAI GPT-4.1 + GPT-4.1-mini at every stage. Local-model adoption requires both endpoint substitution AND SQL-agent-loop revalidation on a Coder-30B/35B-class local model — controller/executor with 5 iter × 5 SQL × 3 retries × 20 max_inspections is brittle to small-model SQL quality. The earlier "runs locally on any capable LLM" intake claim was unsupported.'
+  - 'Headline numbers in arxiv abstract (~32 pp on 36M-token benchmark) and repo README (~50 pp) disagree at intake date; full table not yet verified.'
+  - 'The +6.6 average on existing benchmarks is over the union of baseline families (RAG / base GPT-4.1 / DocETL / CoA / RLM), not specifically vs GPT-4.1 long-context baseline — abstract phrasing can be misread.'
+  - "Schema hallucination is the #1 production failure mode for LLM-to-SQL pipelines (web evidence: production failures dominated by schema hallucinations and incorrect join paths over syntax errors); SLIDERS' per-question schema induction is exposed to this failure class at scale, partly mitigated by the fixed taxonomy library but still LLM-driven."
   - 'Long-context relational reasoning research (arxiv:2510.03611) finds models prioritize precision at the expense of recall, leading to underprediction — SLIDERS'' aggregation step over the DB risks missing relations rather than fabricating them.'
-  - Schema drift in long-form outputs is a known issue — extraction across 36M-token corpora is exactly the long-form territory where drift accumulates.
   - 'Single-source results: only one Stanford OVAL/Genie group, no independent replication yet (paper submitted 2026-04-24, four days before intake date).'
-  - No CPU-cost / inference-cost data published — extraction over a 36M-token corpus may require frontier LLM budget that is not described in the paper.
-  - References section not extracted from the arxiv abs page (ar5iv labs unreachable, 303 redirect chain) — a fuller literature comparison requires the PDF.
+  - 'Per-document amortization helps (extraction populates a persistent DB reused across queries on the same corpus) but schema-induction → reconcile chain partially re-runs per question; cost still scales with question diversity.'
+  - 'Reconciliation algorithm includes: primary_key_selector (LLM, up to 10 candidates × 10 inspections), row-grouping by PK, controller_executor_loop (5 iter × 5 SQL × 3 retries), non_pk_canonicalization two-pass mode, null_handling with UNKNOWN placeholder. Cost-heavy by construction.'
   cross_references:
     chapters: []
     handoffs:
@@ -21164,5 +21174,332 @@
   - colbert-reranker-web-research.md
   handoffs_created: []
   novelty_justification: Promotes a relational-DB/SQL working surface for long-document QA past the chunk-aggregation regime, with an explicit reconciliation stage built on extraction provenance and rationales — that combination is not standard RAG. The individual ingredients (LLM extraction-to-schema, SQL-over-extractions, dedup/repair) each have prior art in NL-to-SQL, OpenIE, and KG construction lines, so the contribution is the architecture and the 36M-token scaling claim more than a fundamentally new primitive. Medium, not high.
-  relevance_justification: 'Directly intersects two active EPYC handoffs — internal-kb-rag.md (ColBERT-based RAG over our own markdown KB; SLIDERS argues structured-DB extraction beats embedding+chunk retrieval at scale and is a candidate alternative or complement) and context-folding-progressive.md (the aggregation-bottleneck framing is exactly the failure mode progressive compaction is designed to mitigate). Also adjacent to knowledge-base governance / wiki compilation work and to opendataloader-pipeline-integration.md (extracted-table-to-DB upstream stage). Hits the EPYC priority of knowledge-base governance + RAG alternatives. The 36M-token regime is well above our current operating point but the technique is largely model-agnostic and runs locally on any capable LLM, including our Coder-30B / 35B-class hosts. Workflow is CPU-friendly (offline extraction, query-time SQL).'
-  verdict_justification: 'Worth-investigating, not adopt-component. Per `feedback_dont_dismiss_creative_uses.md` SLIDERS is a credible and well-aligned alternative architecture for the internal-kb-rag.md path, but adoption depends on (a) whether our wiki+handoff corpus is large/heterogeneous enough to stress chunk-aggregation (currently ~24 wiki + 70 active handoffs — far below 3.9M tokens, so the headline gain may not materialize at our scale), (b) extraction-cost amortization on CPU inference, and (c) schema-design overhead for a moving knowledge surface. Recommendation — evaluate the structured-extraction + reconciliation pattern as a possible upgrade lane for internal-kb-rag.md once base ColBERT pipeline is live, and as a reference architecture for the knowledge-base governance theme. No production adoption decision yet — flag for review per closure-inflation policy (gates met: high-relevance domain, credible authors, novel architecture; gates unmet: no independent replication, no CPU-cost data, scale gap to our corpus, references not yet extracted). Credibility 4 — Stanford OVAL/Genie major-lab signal (+1), within 12 months (+1), peer-review pending (preprint, +1 for venue submission style), no commercial bias (+1 net), no independent corroboration yet (0).'
+  relevance_justification: 'Directly intersects two active EPYC handoffs — internal-kb-rag.md (ColBERT-based RAG over our own markdown KB; SLIDERS is an alternative architecture that REPLACES retrieval with persistent SQL state, NOT an upgrade lane for ColBERT) and context-folding-progressive.md (shared problem framing: cross-source aggregation bottleneck — disjoint mechanism: DB+SQL vs text-folding). Hits the EPYC priority of knowledge-base governance + RAG alternatives. The 36M-token regime is well above our current operating point. CRITICAL CAVEAT: workflow is NOT CPU-friendly as initially claimed — the released code is GPT-4.1-only via Azure/OpenAI; local-model adoption is a non-trivial validation experiment, not a drop-in.'
+  verdict_justification: 'Worth-investigating, not adopt-component. Per `feedback_dont_dismiss_creative_uses.md` SLIDERS is a credible and well-aligned alternative architecture for the internal-kb-rag.md path. Adoption blockers: (a) GPT-4.1-only code path requires endpoint substitution + SQL-agent-loop revalidation on local models, (b) wiki+handoff corpus (~24 wiki + 70 active handoffs) is far below 3.9M tokens — headline gain may not materialize at our scale, (c) per-question reconciliation cost is heavy (5 controller iter × 5 SQL × 3 retries × 20 inspections × LLM calls per stage). Recommendation — evaluate structured-extraction + reconciliation pattern as an ALTERNATIVE architecture for internal-kb-rag.md (NOT an upgrade lane on the ColBERT path), AFTER base ColBERT ships and AFTER a separate validation experiment confirms a Coder-30B-class local model can drive the controller/executor loop. Code IS released (github.com/stanford-oval/sliders, MIT, also on PyPI), so independent replication is now achievable — the gate shifts from "external code missing" to "local-LLM substitution + cost amortization on our corpus scale". Credibility 4 — Stanford OVAL/Genie major-lab signal (+1), within 12 months (+1), code released (+1), no commercial bias (+1 net), no independent corroboration yet (0), single-source / abstract-vs-README number discrepancy (-0).'
+- id: intake-495
+  arxiv_id: '2510.07429'
+  url: https://arxiv.org/abs/2510.07429
+  source_type: paper
+  title: 'Learning to Route LLMs from Bandit Feedback: One Policy, Many Trade-offs (BaRP)'
+  authors:
+  - Wang Wei
+  - Tiankai Yang
+  - Hongjie Chen
+  - Yue Zhao
+  - Franck Dernoncourt
+  - Ryan A. Rossi
+  - Hoda Eldardiry
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  - training_distillation
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Existing routers train on full-information offline labels (every prompt scored on every candidate model), which mismatches deployment where only the chosen model's outcome is observed; BaRP closes this train/test gap by training under bandit feedback.
+  - 'A single policy supports preference-tunable inference: operators dial a 2-D performance-cost trade-off vector at test time without retraining (one policy, many trade-offs).'
+  - Beats the strongest offline router (GraphRouter) by +16.84% average score while cutting monetary cost by 50.00%, and beats the largest LLM by +2.45% on out-of-distribution tasks.
+  - Generalizes robustly to unseen tasks (+25.99% on OOD vs. +12.46% on in-distribution over offline routers), suggesting bandit-feedback training reduces overfitting to the offline label distribution.
+  - Removes the requirement to label every prompt on every candidate model during training, materially reducing data-collection cost for new pools.
+  techniques:
+  - Multi-objective contextual bandit formulation over (prompt features, preference vector)
+  - 'Preference vector conditioning (2-D simplex: performance weight vs cost weight)'
+  - REINFORCE policy-gradient updates with entropy regularization for exploration
+  - Calibrated cost scaling via normalization parameter tau
+  - Bandit-feedback simulation on offline logs (only the sampled arm's reward is revealed)
+  - Lightweight policy network on top of frozen prompt encoder
+  reported_results:
+  - In-distribution average score 73.57% vs. GraphRouter 65.42% (+12.46% relative).
+  - Out-of-distribution average score 66.08% vs. largest-LLM oracle 64.50% (+2.45% relative).
+  - 'Aggregate: +16.84% score and -50.00% monetary cost vs. GraphRouter.'
+  - 'Datasets ID: RouterBench-derived (GSM8K, MMLU, ARC-C, Winogrande, NaturalQuestions).'
+  - 'Datasets OOD: MBPP, HellaSwag, HotpotQA.'
+  - 'Baselines: smallest-LLM, largest-LLM, RouterDC, GraphRouter.'
+  referenced_arxiv_ids:
+  - '2410.03834'
+  - '2406.18665'
+  - '2502.02743'
+  - '2305.05176'
+  - '2510.08439'
+  - '2506.09033'
+  contradicting_evidence:
+  - 'BaRP''s headline +16.84% gain is measured against GraphRouter on the RouterBench-derived ID split, but RouterBench prompts are heavily skewed toward MMLU-style multiple-choice; gains may not transfer to our autopilot/coder workload mix where output tokens dominate cost. Re-evaluation on EPYC Package A logs is mandatory before any production cutover.'
+  - '"Generalizes to OOD" is shown on MBPP / HellaSwag / HotpotQA — all still public web-scale benchmarks the candidate models were probably exposed to during training. True OOD for our stack means in-house specialist roles (worker_explore, architect_general, frontdoor) whose performance distribution is not in any public dataset; BaRP''s OOD claim does not transfer mechanically.'
+  - 'REINFORCE with entropy regularization is sample-inefficient and high-variance; with only ~5 candidate specialists in our stack and a small-cardinality bandit, simpler LinUCB-style approaches (as in companion intake-496 LLM Bandit) may match BaRP''s performance with materially less training data and no policy-gradient instability. The paper does not ablate against LinUCB / Thompson sampling on its own benchmark.'
+  - 'The claim of beating largest-LLM oracle by +2.45% OOD is suspicious — a perfect router cannot exceed always-route-to-largest unless the largest model is sometimes wrong where a smaller specialist is right; this implies the "largest LLM" baseline is itself imperfect and the headline gap is partially an artifact of model-pool composition, not router quality.'
+  - 'Single-paper, single-author affiliation cluster (Adobe Research + Virginia Tech + USC + Dolby) with no independent reproduction yet (Oct 2025). Credibility floor of 4 reflects the venue/author signal, not corroborated results.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - routing-intelligence.md
+    - routing-and-optimization-index.md
+    - learned-routing-controller.md
+    - outer-coordinator-learned-head.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-474 (Trinity 2512.04695)
+    - intake-493 (Conductor 2512.04388)
+    - intake-496 (LLM Bandit 2502.02743, companion)
+  handoffs_updated:
+  - routing-intelligence.md
+  - decision-aware-routing.md
+  handoffs_created: []
+  novelty_justification: Bandit-feedback training for LLM routers is novel relative to the GraphRouter / RouterDC / RouteLLM line which all assume full-information offline supervision; preference-tunable inference (one policy, many trade-offs) is also a meaningful step beyond xRouter's discrete lambda variants (xRouter-7B-1/2/3). However, both the contextual-bandit formulation and preference conditioning have direct precedents (LinUCB, MORL, PD-MORL, and the companion LLM Bandit paper), so this is incremental rather than paradigm-shifting — medium novelty.
+  relevance_justification: 'Highly relevant: BaRP is already named in routing-and-optimization-index.md (line 511) as "most directly applicable to our stack" and in decision-aware-routing.md (line 177) as "the next escalation path" if DAR-2/3 underperform. The bandit-feedback training assumption matches our deployment reality — production logs only record the chosen specialist''s outcome, not counterfactual outcomes for un-routed models — which is exactly the train/test mismatch BaRP solves. Preference-tunable inference also lines up with our latency-vs-quality lambda knobs in chapter 08 (cost-aware rewards) and the tri-role coordinator''s per-tenant policy hooks.'
+  verdict_justification: 'adopt_patterns — not adopt_component because BaRP is an offline-trained policy network and our learned-routing-controller already shipped a Phase-1 MLP at 92% val acc; wholesale replacement would discard sunk training infra. Adopt the bandit-feedback training pattern (don''t require labels for un-chosen specialists), the 2-D preference-vector conditioning, and calibrated cost scaling τ as specific upgrades to the existing learned router. Cross-paper note: prior internal references to BaRP at arxiv:2510.08429 are TYPOS — that ID resolves to ClauseLens (insurance pricing). Correct ID confirmed at intake-495 ingestion: 2510.07429.'
+- id: intake-496
+  arxiv_id: '2502.02743'
+  url: https://arxiv.org/abs/2502.02743
+  source_type: paper
+  title: 'LLM Bandit: Cost-Efficient LLM Generation via Preference-Conditioned Dynamic Routing'
+  authors:
+  - Yang Li
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  - training_distillation
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  key_claims:
+  - Formulates LLM selection as a multi-armed (contextual) bandit with a stochastic policy conditioned on a user-supplied preference vector ω, allowing inference-time tuning of the cost-quality trade-off without retraining.
+  - 'Generalizes to unseen LLMs via "model identity vectors" — compact d-dimensional embeddings that summarize a candidate model''s capability profile — so adding a new model requires only 20-50 carefully selected calibration prompts (≥90% reduction vs full eval).'
+  - Achieves up to 27% cost reduction at iso-accuracy on HELM-MMLU vs. RouteLLM, and 11% cost reduction at iso-accuracy on AlpacaEval 2.0 (GPT-4 / Mixtral-8x7B pool).
+  - Item-Response-Theory (IRT) score predictor over pretrained prompt embeddings provides a calibrated per-prompt quality estimate that the policy consumes alongside cost.
+  - Trained via PPO with Generalized Advantage Estimation, multi-objective policy gradient, and on-manifold mixup regularization; cold-start to a new model uses stratified sampling on IRT discrimination scores.
+  techniques:
+  - Item Response Theory (IRT) prompt-embedding score predictor with Platt scaling
+  - Model identity vectors (d-dim capability embeddings) for unseen-model generalization
+  - 'Preference-conditioned stochastic policy π(a | x, ω)'
+  - Multi-objective policy gradient (MORL-style) trained with PPO + GAE
+  - On-manifold mixup regularization on neighborhood-interpolated embeddings
+  - Variational inference / KL-divergence regularization for cross-model generalization
+  - Stratified sampling on IRT discrimination for cold-start prompt selection
+  reported_results:
+  - 'AlpacaEval 2.0 (GPT-4 + Mixtral-8x7B pool): 46.35% accuracy at $31 vs RouteLLM at ~$35 (≈11% cost reduction at iso-accuracy).'
+  - 'HELM-MMLU (GPT-4 + Mixtral-8x7B pool): 80% accuracy at $24 vs RouteLLM at $33 (≈27% cost reduction).'
+  - 'Cold-start (Cohere/Qwen2.5 on OpenLLMv2): near-parity with full-PPO retraining using 20-50 prompts.'
+  - 'Datasets: HELM-Lite, HELM-MMLU, HuggingFace OpenLLM Leaderboard v1+v2, AlpacaEval 2.0.'
+  - 'Training data: Chatbot Arena, Nectar, RouteLLM synthetic.'
+  - 'Baselines: RouteLLM, score-based Predictor, Random, Oracle, scalarized PPO.'
+  - 'Model pool covered: GPT-4, Mixtral-8x7B, Claude family, Mistral family, LLaMA3, Yi1.5, Qwen2.'
+  referenced_arxiv_ids:
+  - '2406.18665'
+  - '2305.05176'
+  - '2211.09110'
+  - '2510.07429'
+  contradicting_evidence:
+  - 'Single-author submission (Yang Li, no listed affiliation in arxiv abstract) with no second-pair-of-eyes reproduction; major-lab credibility bonus does not apply. February 2025 timestamp also puts it ~14 months out, slightly past the 12-month freshness window.'
+  - 'Reported cost reductions (11-27%) are computed against RouteLLM only; the paper does not benchmark against GraphRouter, RouterDC, or BaRP, all of which are newer and stronger. Iso-accuracy curves vs. those baselines may shrink the gap substantially.'
+  - 'Cold-start claim of 20-50 prompts assumes the IRT discrimination scores generalize from the training-pool models to the new model — but if a new model has a fundamentally different capability shape (e.g., reasoning specialist vs general chat), discrimination ranking estimated from old models may not select informative calibration prompts for the new one. Paper''s cold-start eval uses Cohere / Qwen2.5 which are similar-class to training pool; an honest test would be onboarding a coder-only or vision-language model.'
+  - 'HELM-MMLU and AlpacaEval are both single-turn, short-output benchmarks. EPYC''s autopilot workload is heavy on multi-turn tool use and long-output coder tasks where the cost-quality curve is shaped by output-token economics, not prompt selection. The 27%-cost-reduction headline is unlikely to transfer linearly.'
+  - 'PPO with multi-objective policy gradient on a small action space (5-10 candidate models) is overpowered and high-variance; the Trinity (intake-474) and BaRP (intake-495) ablations both suggest simpler bandit baselines often match within noise. No ablation in this paper isolates the contribution of PPO vs. plain LinUCB.'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - routing-intelligence.md
+    - routing-and-optimization-index.md
+    - learned-routing-controller.md
+    - outer-coordinator-learned-head.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-474 (Trinity 2512.04695)
+    - intake-493 (Conductor 2512.04388)
+    - intake-495 (BaRP 2510.07429, companion)
+  handoffs_updated:
+  - routing-intelligence.md
+  - decision-aware-routing.md
+  handoffs_created: []
+  novelty_justification: Preference-conditioned routing and multi-objective policy gradient have been explored in MORL (PD-MORL, Pareto-set MOCRL), and bandit-formulation-of-routing has at least the parallel BaRP submission and earlier Hybrid LLM / FrugalGPT work. The genuinely novel contributions are (1) IRT-based per-prompt difficulty/discrimination scoring as the policy's quality input, and (2) model identity vectors enabling 20-50-prompt onboarding of new candidates. These directly attack our "each new specialist requires full benchmark sweep" pain — medium novelty.
+  relevance_justification: 'High relevance: cold-start / unseen-model generalization is a real EPYC bottleneck — every model swap (e.g., 30B-A3B replacing previous worker, Q4KM coder calibration) currently triggers a full sweep against the q-scorer baselines. The 20-50-prompt calibration claim, if reproducible, would compress that to hours. IRT scoring also overlaps with the q-scorer baseline_tps / difficulty estimation work in routing-intelligence.md. Direct line-item match in routing-and-optimization-index.md L513 ("online bandit that transfers across unseen models").'
+  verdict_justification: 'adopt_patterns: extract IRT scoring, model identity vectors, and stratified-by-discrimination cold-start prompt selection as concrete additions to the q-scorer / learned-routing-controller. Do not adopt the full PPO+GAE training apparatus wholesale — it is heavyweight relative to our current MLP classifier and probably overfits given our small (≤8) candidate pool. Cold-start workflow alone could justify a focused experiment: re-onboard an existing specialist using 50 IRT-stratified prompts and compare to the full sweep we already have on disk. Credibility 3 — peer-review-pending preprint (+1), >12mo (-0 borderline), no major-lab signal (0), no commercial bias (+1), no independent corroboration (0); single-author (0).'
+- id: intake-497
+  arxiv_id: null
+  url: https://github.com/tile-ai/tilelang-puzzles
+  source_type: repo
+  title: 'tile-ai/tilelang-puzzles — Learning TileLang with 10 puzzles'
+  authors:
+  - tile-ai (organization)
+  categories:
+  - hardware_optimization
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-28'
+  deep_dive: research/deep-dives/tilelang-puzzles-kernel-dsl.md
+  deep_dive_findings:
+  - 'Parent tile-ai/tilelang (5.8k★) is the Peking U + Microsoft Research kernel DSL underlying BitBLAS (low-bit GEMM) and AttentionEngine — credibility-from-source signal is strong for the substrate even though the puzzles fork is weak.'
+  - 'BitBLAS connection is the strongest pull: it is a TileLang-native low-bit GEMM library with FP16/FP8 × INT4/INT8 and Q4F16 modes — natural GPU successor to our Q4_K_M / Q6_K / Q8_0 ggml CPU path. Open question: does BitBLAS load GGUF directly or need a thin K-grouped quant adapter?'
+  - 'Strongest unique advantage is the AMD path — parent README claims FlashMLA-MI300X parity vs hand-tuned assembly. If GPU-day path is RX 7900 XTX or MI300X (gpu-acceleration-path.md AMD branch), TileLang is the differentiated kernel DSL. On NVIDIA Spark, FlashInfer+CUTLASS+TRT-LLM dominate.'
+  - 'CuTeDSL backend (Dec 2025) lowers TileLang to CUTLASS — implicit concession that for NVIDIA peak, CUTLASS is the substrate. TileLang-on-CuTeDSL is a productivity layer, not a peak differentiator on NVIDIA.'
+  - 'Inspired by srush/Triton-Puzzles + SiriusNEO/Triton-Puzzles-Lite + LeetGPU. Curriculum: Copy → element-wise → reductions → softmax → GEMM → FlashAttention (puzzle 10). ~4-hour walkthrough.'
+  - 'CPU backend claim is unsubstantiated for our Zen 5 / AVX-512BW / NUMA-4-way use case. Hand-tuned ggml + AVX-512BW remains the production CPU path; do not author CPU kernels in TileLang.'
+  key_claims:
+  - Educational repo of 10 progressive puzzle scripts teaching TileLang, the GPU/CPU/NPU kernel DSL maintained by tile-ai (parent repo 5.8k stars).
+  - Curriculum advances Copy → GEMM → FlashAttention with reference solutions in answers/ and an environment validation script for GPU configuration.
+  - Implicitly positions TileLang as a Triton alternative built on TVM with Pythonic syntax, layout annotations, L2-cache swizzling, pipelining, and rasterization (parent repo).
+  - Parent TileLang supports NVIDIA H100/A100/V100/RTX, AMD MI250/MI300X, Apple Metal, Huawei Ascend NPU, WebGPU, and "generic CPU targets".
+  techniques:
+  - Tile-level GPU kernel DSL (TileLang)
+  - Layout annotation + swizzling + pipelining + rasterization (compiler-controlled hints)
+  - Z3 symbolic reasoning for kernel optimization (parent project)
+  - 2:4 sparse tensor cores + async copy operations (parent project)
+  reported_results:
+  - 'Repo metadata (2026-04-28): 215 stars, 26 forks, 7 commits in main, 1 watcher, 2 open issues, 1 open PR; created 2025-12-11, last push 2026-03-31 (5 weeks idle).'
+  - Parent tile-ai/tilelang at 5.8k stars; lists kernel coverage including MLA Decoding, FlashAttention, Matrix Multiplication, Dequantization GEMM, Linear Attention, Native Sparse Attention, Convolution.
+  - No empirical benchmarks reported in the puzzles repo itself — purely educational.
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - Per-credibility-from-source-not-readme memory — credibility signal is mediocre on the puzzles repo itself (7 commits, 1 watcher, idle since 2026-03-31). The parent project carries the technical weight, not this educational fork.
+  - Multiple competing GPU kernel DSLs exist (Triton, CUTLASS Python, ThunderKittens, Mojo, Pallas/JAX). TileLang is one alternative among several; choosing it presupposes commitment that we have not made.
+  - TileLang's "generic CPU targets" support is not validated for AVX-512BW Zen 5 — the kernel families we actually need (k-quant repack, MoE GEMV) per project_x86_kquant_repack_gaps and project_q8_8x8_avx512bw_outcome are hand-tuned in llama.cpp ggml; no evidence TileLang would emit competitive code there.
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Low novelty. Tutorial repos for GPU kernel DSLs are an established genre (Triton-puzzles, srush/triton-puzzles, gpu-mode/lectures). The puzzle structure (Copy → GEMM → FlashAttention) is conventional. The repo itself is not a research artifact — it packages an existing DSL for onboarding.'
+  relevance_justification: 'Bumped from low to medium after deep-dive (2026-04-28). The puzzles repo itself is low-relevance (tutorial), but the parent project + BitBLAS connection is medium-relevance for GPU-day: BitBLAS is a TileLang-native low-bit GEMM library and is the natural GPU successor to our Q4_K_M / Q6_K / Q8_0 ggml CPU path, which makes TileLang the right authoring DSL for any custom quant adapters we''d need. Also strongest available AMD authoring DSL story — parent README claims FlashMLA-MI300X parity if AMD is the GPU path. EPYC stack is still CPU-bound and GPU-acquisition is gated, but the value-on-acquisition is now concrete (BitBLAS adapter + AMD kernels), not speculative.'
+  verdict_justification: 'worth_investigating, with concrete GPU-day action queue per deep-dive Section 8: (1) puzzles 1-10 in 4 hours as Day-0 onboarding, (2) BitBLAS GGUF compatibility evaluation as Day-2 critical path, (3) Triton-vs-TileLang FA decision matrix as Day-1 NVIDIA decision, (4) FlashMLA reproduction as Day-1 AMD decision. Not creating a stub handoff — the actions are all already gated under gpu-acceleration-path.md and the deep-dive reads as the supplementary kernel-DSL section for that handoff. Credibility scoring null — repo with no empirical claims. Re-evaluate at GPU acquisition.'
+- id: intake-498
+  arxiv_id: '2604.22748'
+  url: https://arxiv.org/abs/2604.22748
+  source_type: paper
+  title: 'Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond'
+  authors:
+  - Meng Chu
+  - Xuan Billy Zhang
+  - Kevin Qinghong Lin
+  - '+39 co-authors (Philip Torr, Jiaya Jia among them)'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-28'
+  deep_dive: research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md
+  deep_dive_findings:
+  - 'L3 governance recipe (Section 5.4: "regression and robustness gates including rollback and canary policies") maps line-for-line onto autopilot SafetyGate + per-suite guard + Pareto-archive replacement + T0/T1/T2 tiered eval tower. Vocabulary alignment is essentially free.'
+  - 'Four evaluation principles (Section 6.1) are testable in existing AR-3 infra today — long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use. Adoption cost is rubric documentation + per-cycle reporting; value is identifying intervention-sensitivity gaps in the species framework.'
+  - 'Paper''s "Beyond L3" framing (Section 8.2-8.3, governing laws themselves become learnable) is the natural framing for autopilot Species 3 (StructuralLab) modifying flags + routing model lifecycle. But: do not over-claim — we have one species hooking the operating rules, not a principled meta-learning loop. Stay honest per closure-inflation feedback.'
+  - 'EPYC stack mapping onto L×R grid: autopilot species loop = L3-Evolver/Digital, agent-world ETD = L2-Simulator → L3-Evolver bridge / Digital, meta-harness = L3-Evolver/Digital, q-scorer + learned-routing = L1-Predictor/Digital. Three of our handoffs are L3-Digital instances and should share an evaluation rubric — the four principles are that rubric.'
+  - 'MREP (Minimal Reproducible Evaluation Package, Section E.6) is PROPOSED, NOT RELEASED. Companion repo matrix-agent/awesome-agentic-world-modeling (105★) is a bibliography, not an eval package. Set watch on arxiv abs page and companion repo for MREP shipment; if released, run autopilot through it.'
+  - 'Field is fragmented (3+ competing 2025-2026 surveys); Levels × Laws is unlikely to become canonical field-wide. Local adoption is useful regardless. Critique paper exists (arxiv:2507.05169) arguing actionability axis is underweighted — partly addressed by our Pareto archive structure.'
+  key_claims:
+  - 'Introduces a "Levels × Laws" taxonomy along two axes: three capability levels (L1 Predictor — one-step local transition operators; L2 Simulator — multi-step action-conditioned rollouts respecting domain laws; L3 Evolver — autonomous self-revision when predictions fail) × four governing-law regimes (physical, digital, social, scientific).'
+  - 'Synthesizes >400 works and >100 representative systems across model-based RL, video generation, web/GUI agents, multi-agent social simulation, and AI-driven scientific discovery, mapped onto the level-regime grid.'
+  - Argues L1→L2→L3 is the missing axis in prior modality-centric or domain-centric taxonomies — capability progression cuts across modalities and domains.
+  - 'Proposes "decision-centric evaluation principles" and a (forthcoming?) "minimal reproducible evaluation package" for cross-system world-model comparison.'
+  - Outlines architectural guidance, open problems, and governance challenges; positions agentic world modeling as the central bottleneck for goal-directed AI moving beyond text generation.
+  techniques:
+  - 'Levels × Laws taxonomy (organizational framework, not an algorithm)'
+  - L1 Predictor / L2 Simulator / L3 Evolver capability classification
+  - Physical / digital / social / scientific governing-law regime classification
+  - Decision-centric evaluation principles (proposed, details in paper body)
+  - Minimal reproducible evaluation package (proposed)
+  reported_results:
+  - No original empirical results — this is a survey / position paper.
+  - Synthesis scope: 400+ cited works, 100+ representative systems characterized on the L×R grid.
+  - Submitted 2026-04-24 to cs.AI; 42-author multi-institutional roster.
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'Field is fragmented: at least three competing 2025-2026 surveys cover overlapping ground (arxiv:2503.23037 "Agentic LLM survey", arxiv:2601.12560 "Agentic AI Architectures and Taxonomies", arxiv:2601.01743 "AI Agent Systems"). Convergence on Levels × Laws as the canonical taxonomy is unlikely; this is one framing among several competitors.'
+  - 'Critiques of World Models literature exists (arxiv:2507.05169) arguing primary goal should be "simulating all actionable possibilities of the real world for purposeful reasoning" — i.e. Levels × Laws may underweight the actionability axis.'
+  - 'No original experiments — value is purely framing / referee taxonomy. The "decision-centric evaluation principles" and "minimal reproducible evaluation package" are proposed but not validated. Without an accompanying benchmark release, the framework is descriptive, not prescriptive.'
+  - 'For EPYC specifically: agentic world modeling at the L1 Predictor / L2 Simulator level is not where our autonomous-research bottleneck sits — autopilot species loop is firmly in L3 Evolver / digital-laws regime, and the taxonomy doesn''t shorten the path to better species design.'
+  - '42-author surveys with no first-author single point of accountability tend to dilute responsibility for taxonomic precision; sections may have been written by different sub-teams and reconciled rather than co-developed.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-444 (Agent-World, primary subject of agent-world-env-synthesis)
+    - intake-411 (MCP singleton — digital-regime tooling)
+    - intake-412 (DeepPlanning — multi-agent simulation example)
+  handoffs_updated:
+  - agent-world-env-synthesis.md
+  - autopilot-continuous-optimization.md
+  - gpu-acceleration-path.md
+  handoffs_created: []
+  novelty_justification: 'Medium novelty. The L1/L2/L3 capability progression is a genuinely new framing axis — prior agentic-AI surveys group by modality (text/image/video) or domain (web/robotics/code). The four-regime axis (physical/digital/social/scientific) is reasonable but not unprecedented. The combined L×R grid is the concrete novel contribution. The 400+ works synthesized are individually mostly already covered in the intake index or chapters, so synthesis is the value-add, not new primitives.'
+  relevance_justification: 'Bumped from medium to high after deep-dive (2026-04-28). Section 5.4 (L3 governance) and Section 6.1 (decision-centric evaluation principles) yield two directly-actionable artifacts: (1) the L3 governance recipe that maps line-for-line onto autopilot SafetyGate, and (2) four evaluation principles (long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use) testable in existing AR-3 infra. Three EPYC handoffs (autopilot, agent-world ETD, meta-harness) are L3-Evolver-on-Digital-laws instances that should share this evaluation rubric. Adoption cost is documentation + per-cycle reporting; value is shared vocabulary across handoffs and exposure of intervention-sensitivity gaps.'
+  verdict_justification: 'Bumped from worth_investigating to adopt_patterns. Specific patterns to adopt: (1) L1/L2/L3 + four-regime vocabulary in wiki/autonomous-research and across all three L3-Digital handoffs, (2) the four evaluation principles as AR-3 reporting rubric, (3) the L3-governance prescription as completeness check on autopilot SafetyGate (verify all four prescriptions — regression gate, robustness gate, rollback policy, canary policy — are implemented and reported per cycle). NOT adopting: (a) the full survey scope, (b) any claim that EPYC has solved L3-Evolver/Digital, (c) the MREP (not released yet — set watch). Credibility 4: peer-review-pending preprint (+1 fresh, submitted 4 days ago), 42-author multi-institutional roster including Philip Torr (Oxford) and Jiaya Jia (CUHK/HKUST/SmartMore) earns +1 major-lab, no commercial bias (+1), 400+ source synthesis counts as +1 multi-source corroboration of the framing axis (though not of any specific empirical claim). Updated handoffs: agent-world-env-synthesis (deep-dive linked), autopilot-continuous-optimization (L3-Evolver vocabulary + four-principles AR-3 reporting), gpu-acceleration-path (Phase 2 GPU-gated framing for cross-rubric eval).'
+- id: intake-499
+  arxiv_id: null
+  url: null
+  source_type: blog
+  title: 'Social-media post: "How to fit Qwen 3.6 27B Q4 on 24GB at 262K context — q4_0 KV cache as the unlock"'
+  authors:
+  - unattributed (anonymous social-media post submitted by user, no source URL provided)
+  categories:
+  - kv_cache
+  - quantization
+  - local_inference
+  - context_extension
+  novelty: low
+  relevance: low
+  credibility_score: 0
+  discovered_via: input
+  verdict: already_integrated
+  ingested_date: '2026-04-28'
+  key_claims:
+  - 'Memory math: Qwen3.6-27B Q4_K_M (16 GB model) + 5 GB q4_0/q4_0 KV at 262K context = 21 GB on 24 GB consumer card, leaving 3 GB headroom.'
+  - 'KV cache type is the dominant unlock: f16 does not fit at 262K, q8 fits at 23 GB but allegedly runs 3x slower than q4_0, q4_0 fits at 21 GB at "full speed" (claimed 40 tok/s flat from 4K to 262K).'
+  - 'Recommended llama-server flags: -m Qwen3.6-27B-Q4_K_M.gguf -ngl 99 -c 262144 -np 1 -fa on --cache-type-k q4_0 --cache-type-v q4_0.'
+  - 'Recommends -np 1 (single user slot) to preserve VRAM headroom; warns against multi-slot serving on consumer 24 GB.'
+  - 'Strong opinion: "q4 is not a compromise on consumer hardware, it is the right call" — positioned as the default config most builders miss because tutorials default to f16 KV.'
+  techniques:
+  - q4_0 K cache + q4_0 V cache via --cache-type-k / --cache-type-v
+  - Full GPU offload (-ngl 99) for 24 GB consumer single-card serving
+  - Flash attention enabled (-fa on) for memory + speed
+  - Single-slot serving (-np 1) to preserve headroom
+  - 262144-token context window on 24 GB
+  reported_results:
+  - '"40 tok/s flat curve, same speed at 4K or 262K" — single anecdotal datapoint, no hardware/measurement methodology stated.'
+  - 'q8 KV cache claimed "fits at 23 GB but runs 3x slower" — specific multiplier with no benchmark reference.'
+  - 'No PPL / quality measurements reported. No A/B comparison protocol stated. No GPU model identified.'
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'Architecture mischaracterization: post calls Qwen 3.6 27B "dense", but our model_registry.yaml entry (qwen36_27b_q4km) confirms it is dense hybrid SSM (Delta Net + attention, GGUF arch=qwen35) per memory feedback_qwen35_27b_architecture. The hybrid SSM share is precisely *why* q4_0 KV remains lossless — most context lives in SSM state, not attention. The post sells a hybrid-specific result as a generic dense-27B result.'
+  - 'q4_0 KV is NOT generally safe at long context on dense-attention models. Our completed handoff kv-cache-quantization.md (commit b51c905, 2026-03-28) measured Qwen2.5-7B at 32K with -ctk q4_0 -ctv q4_0 producing GARBAGE output (vs q8_0/q4_0 still correct, +9% wall). The post overgeneralizes from a hybrid result.'
+  - 'The "q8 KV runs 3x slower than q4_0" claim contradicts mainstream llama.cpp benchmarks. NVIDIA Developer Forum DGX Spark benchmarks (Nemotron 30B, 128K) and the smcleod.net Ollama write-up show q4_0 generation throughput is *worse* than q8_0 at long context due to per-token dequant overhead (-37% vs f16 at 110K for q4_0). The most plausible mechanism for the post''s number is VRAM-pressure-induced driver swapping at ~95% utilization, not an inherent kernel cost — but the post does not investigate or attribute the slowdown.'
+  - 'Hadamard rotation (PR #21038, merged 2026-04-01 as commit 744c0c731) auto-applies Walsh-Hadamard rotation when KV is quantized, materially improving q4_0 KV quality (25-77% PPL improvement on small models). The post does not reference Hadamard, suggesting its "q4_0 = full speed at full quality" framing predates or ignores this critical accompanying technique.'
+  - 'GitHub issue #21385 ("Per-head adaptive KV cache quantization: lossless q4_0 on hybrid models") empirically confirms the hybrid-model lossless claim (BLEU 1.000 vs f16, 0.1-2.6% slower) — but it does NOT compare q4_0 to q8_0, so the post''s 3x speed claim remains unsupported by the literature this post most closely resembles.'
+  - 'Source verification: no URL provided, no author attribution, no measurement protocol, no GPU model named. By feedback_credibility_from_source_not_readme this scores at the floor (0). The user submitted it because the question lands "5 times a week" in their DMs — the social signal is real, the technical novelty is not.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-cache-quantization.md
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Low. The technique (cache-type-k/v q4_0 for context extension on hybrid models) is already in production for our hybrid SSM stack and was the conclusion of completed handoff kv-cache-quantization.md (2026-03-28). The accompanying upstream Hadamard PR (#21038) landed 2026-04-01 and is auto-enabled in our v3 build. The post adds no new techniques, no new measurements, and notably omits the Hadamard rotation that makes q4_0 KV robust on more architectures. Zero-novelty popularization of existing knowledge.'
+  relevance_justification: 'Low. EPYC stack is CPU-only (1.1 TB RAM, no 24 GB constraint per project_dgx_spark_target — DGX Spark not yet acquired). The 24 GB consumer-GPU framing is the entire structuring premise of the post and does not map to our deployment. Our orchestrator already runs Qwen3.6-27B Q4_K_M in production with type_k=q8_0 / type_v=q8_0 (qwen36_27b_q4km in model_registry.yaml) — chosen on CPU for throughput vs memory tradeoff, not VRAM constraints. The single thin signal of relevance is third-party reaffirmation that the q4_0/q4_0-on-hybrid choice we made for SSM architectures is widely-recognized as correct, but we already had stronger first-party evidence for that.'
+  verdict_justification: 'already_integrated. The exact recommended config (-fa on, --cache-type-k q4_0 --cache-type-v q4_0) is already validated in production for hybrid SSM models (kv-cache-quantization.md completed 2026-03-28; Hadamard PR #21038 auto-enabled in production-consolidated-v3). Post adds no novel measurement, contradicts our own dense-attention-at-long-context measurements (q4_0/q4_0 → garbage at 32K on Qwen2.5-7B), and includes at least one architecture mischaracterization (calls Qwen 3.6 27B "dense"; it is hybrid SSM). No handoff update — both kv-cache-quantization (completed) and tq3-quantization-evaluation (active) already cover this ground at higher technical fidelity. No stub created — verdict is not new_opportunity. Credibility scored 0 (no URL, no author, no methodology, two factual issues — architecture and the unsupported 3x speed claim). Recorded only because user explicitly submitted; intake should reflect submission, not endorse content.'

@@ -766,3 +766,40 @@ Phase 0 quick probe sweep `-ub` (microbatch / chunk-prefill granularity) on Code
 ### CPU2 Session 16 — Q6_K AVX-512BW dispatcher scaffolding
 
 Given CPU24 perf-record shows `ggml_vec_dot_q6_K_q8_K` is the second-largest cycle consumer (15.64% on REAP-246B), Q6_K AVX-512BW SIMD is the highest-ROI remaining optimization. Session 16 landed dispatcher scaffolding (env-gated `GGML_Q6_K_8X8_AVX=1`, stub falls through to generic). Full SIMD algorithm design documented in handoff for follow-up session. Estimated +2-5% on Q4_K_M decode once body lands.
+
+## 2026-04-28 — GPU-day kernel-DSL primer (intake-497, TileLang puzzles + parent project)
+
+Forward-looking entry, not actionable on current CPU stack. Compiled so the GPU-acquisition wave starts with a kernel-DSL evaluation matrix already in place.
+
+**Context**: `tile-ai/tilelang-puzzles` (215★ tutorial repo) is the recommended on-ramp to **`tile-ai/tilelang`** (5.8k★), the Peking U + Microsoft Research kernel DSL underlying **BitBLAS** (low-bit GEMM library, FP16/FP8 × INT4/INT8/INT2/INT1) and **AttentionEngine**. TileLang is built on TVM, exposes layout annotations / L2-cache swizzling / pipelining / rasterization / 2:4 sparse tensor cores as primitives, and supports NVIDIA / AMD (CDNA3 + RDNA3) / Apple Metal / Huawei Ascend / WebGPU + a December 2025 CuTeDSL backend that lowers to NVIDIA CUTLASS.
+
+**Why it matters for the GPU-gated EPYC backlog**:
+- **BitBLAS as natural GPU successor to ggml CPU quant path** — BitBLAS is the production GPU equivalent of our hand-tuned Q4_K_M / Q6_K / Q8_0 ggml CPU kernels (see `project_q8_8x8_avx512bw_outcome` and `project_x86_kquant_repack_gaps` memories). BitBLAS is TileLang-native, which makes TileLang the right authoring DSL for any GGUF→GPU quant adapters we'd need.
+- **AMD MI300X parity claim** — parent README claims FlashMLA-MI300X parity vs hand-tuned assembly. If our GPU-day path is RX 7900 XTX or MI300X (`gpu-acceleration-path.md` AMD branch), TileLang is the differentiated kernel DSL; on NVIDIA Spark, FlashInfer + CUTLASS + TRT-LLM (intake-458/465/463) dominate.
+- **Curriculum lineage** — inspired by srush/Triton-Puzzles, SiriusNEO/Triton-Puzzles-Lite, LeetGPU. ~4-hour walkthrough Copy → reductions → softmax → GEMM → FlashAttention.
+
+**Kernel DSL evaluation matrix** (excerpt; full matrix in deep-dive):
+
+| Kernel family | Triton | TileLang | CUTLASS / CuTe | Production picks |
+|--------------|--------|----------|----------------|------------------|
+| Vanilla GEMM | yes | yes | yes (peak) | cuBLAS / hipBLASLt — no DSL |
+| FlashAttention | reference impls | yes | yes (FA3) | flash-attn library; DSL only for custom variants |
+| Low-bit GEMM (Q4/Q6) | possible | **native (BitBLAS = TileLang)** | yes | BitBLAS — and BitBLAS *is* TileLang |
+| FlashMLA on AMD | lagging triton-amd | parity claim vs hand-tuned (MI300X) | no | TileLang iff AMD path |
+| MoE expert grouping | yes | possible | yes (grouped GEMM) | TRT-LLM iff NVIDIA Spark; otherwise Triton/TileLang |
+
+**GPU-day action queue** (gated on hardware acquisition):
+1. Day-0: tilelang-puzzles 1-10 in 4 hours as engineer onboarding.
+2. Day-1 NVIDIA: TileLang FA puzzle output vs Triton FA reference vs FlashInfer vs FA3 on actual GPU → DSL decision matrix.
+3. Day-1 AMD: reproduce FlashMLA-MI300X parity claim on RX 7900 XTX (RDNA3) or MI300X (CDNA3).
+4. **Day-2 (critical path)**: BitBLAS GGUF compatibility — does it load Q4_K_M / Q6_K directly, or do we need a thin K-grouped quant adapter?
+
+**Non-actions**: do NOT author CPU kernels in TileLang (Zen 5 / AVX-512BW / NUMA-4-way path remains hand-tuned ggml — TileLang's "generic CPU targets" claim is unsubstantiated for our use case). Do NOT pre-commit to TileLang before GPU lands. Triton literacy remains mandatory regardless of authoring choice (most modern inference papers ship Triton reference impls).
+
+**Risks**: educational fork has weak signals (7 commits, idle 5 weeks at 2026-04-28); no peer-reviewed paper for the parent DSL itself; CuTeDSL backend lowering implicitly concedes that for NVIDIA peak performance, CUTLASS is the substrate; multi-backend portability claims always degrade in production.
+
+**Sources**:
+- [intake-497](https://github.com/tile-ai/tilelang-puzzles) — tile-ai/tilelang-puzzles (medium relevance, worth_investigating)
+- [tilelang-puzzles-kernel-dsl.md](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — full deep-dive with kernel-family matrix, AMD path, BitBLAS connection, risk register
+- [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — parent GPU-gated handoff (2026-04-28 deep-dive integration section)
+- intake-458 (FlashInfer), intake-465 (CUTLASS), intake-466 (Triton), intake-464 (FA3) — adjacent GPU-day kernel-DSL entries from 2026-04-26 curriculum batch

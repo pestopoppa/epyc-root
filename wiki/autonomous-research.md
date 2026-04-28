@@ -144,3 +144,55 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [autopilot-iteration-strategy-synthesis.md](../research/deep-dives/autopilot-iteration-strategy-synthesis.md) -- synthesizes HCC + Token Savior + Context Mode into P14 (AP-28–31): strategy memory upgrade, knowledge distillation pipeline, controller context budget, mutation knowledge graph
 - [intake-421](https://github.com/davebcn87/pi-autoresearch) pi-autoresearch -- Extends karpathy/autoresearch with MAD confidence scoring, JSONL persistence, git branching. Verdict upgraded to adopt_component: MAD noise filter missing from safety_gate.py.
 - [pi-autoresearch-mad-scoring.md](../research/deep-dives/pi-autoresearch-mad-scoring.md) -- Deep dive: MAD-based significance testing (~20 lines) prevents false-positive improvements from wasting eval budget. Implementation sketch for safety_gate.py with persistence hook.
+
+## 2026-04-28 — L1/L2/L3 + Laws vocabulary for autopilot, agent-world ETD, meta-harness (intake-498)
+
+The Agentic World Modeling survey (arxiv:2604.22748, Chu et al., 42 authors) introduces a **Levels × Laws** taxonomy that unifies prior modality-centric and domain-centric agent surveys. Adopting the vocabulary across the three EPYC L3-Digital handoffs — `autopilot-continuous-optimization.md`, `agent-world-env-synthesis.md`, `meta-harness-optimization.md` — gives them a shared evaluation rubric without redesign.
+
+**Capability levels**:
+- **L1 Predictor** — learns one-step local transition operators p(s_{t+1} | s_t, a_t). One-line test: "Given current state and action, predict next state."
+- **L2 Simulator** — composes L1 operators into multi-step, action-conditioned rollouts that respect domain laws. Test: "Given a plan, generate a coherent trajectory long enough to act on."
+- **L3 Evolver** — autonomously revises its own model when predictions fail against new evidence. Test: "When the model is wrong, the model fixes itself."
+
+**Governing-law regimes**: physical / digital / social / scientific. Each defines what constraints the world model must satisfy.
+
+**EPYC stack mapping onto the L×R grid**:
+
+| EPYC subsystem | Level | Regime |
+|----------------|-------|--------|
+| Autopilot species loop (`autopilot-continuous-optimization.md`) | **L3 Evolver** | Digital (software-contract constraints: Pareto-archive validity, eval-suite invariance, llama-server stability) |
+| Agent-World ETD species (Phase 1, `agent-world-env-synthesis.md`) | **L2 Simulator → L3 Evolver bridge** | Digital (MCP tools = state, verifiers = constraint checks) |
+| Meta-harness search (Tier 3, `meta-harness-optimization.md`) | **L3 Evolver** | Digital (revises tool definitions, prompt templates, routing) |
+| Q-scorer + learned-routing-controller (`routing-intelligence.md`) | **L1 Predictor** | Digital (per-prompt difficulty + delegation, no rollout, no revision) |
+
+Three of these subsystems are L3-Evolver / Digital instances and should share a common evaluation rubric. The paper's Section 6.1 supplies that rubric:
+
+**Four evaluation principles** (testable in existing AR-3 infrastructure):
+1. **Long-horizon coherence** — rollouts remain usable over H steps without compounding-error collapse. EPYC instance: autopilot must maintain Pareto-archive validity over ≥100 mutation rounds without quality collapse.
+2. **Intervention sensitivity** — counterfactual edits induce stable, directionally meaningful trajectory changes. EPYC instance: disabling species 0/1/2/3 individually should produce predictable Pareto-front shifts; if not, the species is collinear with another or malfunctioning.
+3. **Constraint consistency** — generated futures respect the regime's governing laws. EPYC instance: every Pareto-frontier point must satisfy quality-floor + per-suite guard + routing-diversity gates; any frontier point that violates a gate is a mis-categorized data point.
+4. **Closed-loop use** — planning, acting, self-improvement through interaction. EPYC instance: species loop must measurably improve T2-suite scores over runs; if not, the loop is an open-loop randomizer.
+
+**L3 governance recipe** (Section 5.4) maps line-for-line onto autopilot SafetyGate:
+
+| Paper's L3 governance prescription | Autopilot equivalent |
+|------------------------------------|--------------------|
+| Regression gate | Quality floor (per-T2-suite) — autopilot SafetyGate |
+| Robustness gate | Per-suite guard (no-suite-falls-below threshold) |
+| Rollback policy | Hot-swap reversal on quality regression (Pareto archive provides previous configurations) — open question whether this counts as explicit rollback or just front-replacement |
+| Canary policy | T0 (10q/30s) → T1 (100q/5m) → T2 (500+q/30m) tiered evaluation tower |
+
+**Adoption status (CPU-feasible, no GPU required)**: vocabulary added to autopilot-continuous-optimization.md and agent-world-env-synthesis.md as 2026-04-28 Research Intake Updates. Open follow-ups: (1) extend AR-3 reporting to label scores by the four principles, (2) one-pager resolving Pareto-front-replacement ↔ explicit-rollback-semantics equivalence question.
+
+**Beyond-L3 framing** (Section 8.2-8.3): paper introduces "governing laws themselves become learnable" as an open direction. Autopilot Species 3 (StructuralLab) modifying flags + routing model lifecycle is the closest EPYC instance, but **closure-inflation guard applies**: we have one species hooking the operating rules of the others, not a principled meta-learning loop. Cite Beyond-L3 as motivation for keeping StructuralLab safety gates strict, NOT as evidence that we have already solved meta-world-modeling.
+
+**MREP watch**: paper Section E.6 proposes a "Minimal Reproducible Evaluation Package" with long-horizon coherence metrics, intervention sensitivity tests, constraint-violation detection, capability coverage matrix. As of 2026-04-28 it is **proposed, not released**. Companion repo `matrix-agent/awesome-agentic-world-modeling` (105★) is a bibliography aligned to the L×R grid, not an eval package. Set watch on arxiv:2604.22748 and the companion repo for shipment; if released, run autopilot through it as external sanity check.
+
+**Sources**:
+- [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (high relevance, adopt_patterns, credibility 4)
+- [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy + EPYC-stack mapping + governance-recipe alignment + four-principle rubric + risk register
+- [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) — L3-Evolver / Digital instance with 2026-04-28 vocabulary adoption
+- [agent-world-env-synthesis.md](../handoffs/active/agent-world-env-synthesis.md) — L2-Simulator → L3-Evolver bridge / Digital
+- [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md) — third L3-Evolver / Digital instance
+- Critique: arxiv.org/abs/2507.05169 — "Critiques of World Models" (actionability axis underweighted by L×R taxonomy)
+- Competing surveys: arxiv:2503.23037, 2601.12560, 2601.01743 — field is fragmented, Levels × Laws unlikely to become canonical field-wide
