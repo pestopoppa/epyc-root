@@ -2,7 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
+**Last compiled**: 2026-04-30
 **Sources**: 10 documents
 
 ## Summary
@@ -49,7 +49,23 @@ The "speculation is dead for Qwen3.5 hybrid on CPU" claim is being **reopened** 
 
 intake-490 (PyTorch SGLang blog, Dec 2025) introduces **slot promotion**: each draft token gets a private state slot computed as `S_new = S_parent + Δ(k,v,β,g)`; rejected slots are discarded, accepted slot is promoted. This is architecturally compatible with Delta Net (the recurrence is deterministic from a parent state plus new inputs). Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), the per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs, AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Closure-inflation policy compliance: gates A,B,C met under prior assumption (preserved); gate D unmet under new per-candidate-slot assumption (test target).
 
-Phase 0 falsification probe is queued for the autonomous CPU-optimization agent's next session. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands (trades aggregate-NUMA-4-way for per-request latency — right tradeoff for interactive workloads, wrong for batch).
+Phase 0 falsification probe is queued for the autonomous CPU-optimization agent's next session. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands (trades aggregate-NUMA-4-way for per-request latency — right tradeoff for interactive workloads, wrong for batch).
+
+### Slot-promotion outcome (CLOSED 2026-04-30)
+
+Phase 1.0 GATE MET. Phase 1.1 dispatcher v1 LANDED (commit `d45126db5` on `feature/cpu-ep-inter-process` in llama.cpp-experimental, +386 LOC: alt-path selection, sequential pre-decode aux state sync, parallel aux decode threads, per-ctx sample-and-accept reducer, winner-state commit).
+
+**Phase 1.1 ≥1.3× gate NOT MET on Qwen3.6-35B-A3B-Q8_0 + Qwen3-1.7B-Q8_0 drafter**. Canonical 3-prompt × 2-rep result: K=1 = 11.40 t/s mean vs K=4 dispatcher v1 = 7.42 t/s mean (K=4 is 35% slower). Divergent-tree sensitivity sweep across 4 (p_split, temperature) configs × 5 prompts (canonical 3 + creative haiku + open-ended consciousness) confirmed dispatcher engages 62 times — but **primary wins 60/62 (97%)**, with the 2 aux-winning rounds delivering just +1 marginal accepted token each. Per-round economics: ~22 ms K-parallel overhead vs ~2.5 ms expected savings = -20 ms/round net loss.
+
+The cost-model projection (1.4× single-instance per-request latency, "trades aggregate-NUMA-4-way for per-request latency") was based on the assumption that K-parallel verify would deliver gain via aggregate decode parallelism. That assumption fails for this drafter/target pair: aux paths verify the SAME tokens primary already verifies in 97% of rounds, even at p_split=0.001 + temperature=0.7. The deeper issue is win-rate, not threading.
+
+**Closure scope (per closure-inflation policy)**: mechanism is structurally net-negative for THIS drafter/target/workload class. Does NOT generalize to "K-parallel verify is dead" — different drafter models (larger drafter that produces alt branches more aligned with target sampling), different target models, different K values, and very different workload classes (long-form generation with frequent ambiguity) remain unevaluated.
+
+**Disposition**: dispatcher v1 stays in tree as disabled-by-default (`--spec-numa-quarters` defaults to 1; `LLAMA_ARG_SPEC_NUMA_QUARTERS` env equivalent). The implementation is correct, race-free (parallel-aux-sync race condition was discovered + fixed by switching to sequential pre-decode sync), and costs nothing at K=1. Re-evaluate on different drafter/target pairs.
+
+The 6.10× ceiling probe that motivated the reopener measured AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting for 4× concurrent inference), not per-request K-parallel verify gain. These are two different mechanisms; the aggregate-throughput one is already deployed in production via the orchestrator's 4×24t splits.
+
+CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
 
 ## Updates — 2026-04-28
 
@@ -98,7 +114,7 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 
 ## Actionable for EPYC
 
-- **Slot-promotion reopener is the active investigation as of 2026-04-28**: the 6 closed handoffs remain accurate under their prior cost-model assumption, but the per-candidate-slot assumption has never been tested in our fork. Phase 0 is research-only (read intake-490 + trace Delta Net state in `delta-net-base.cpp`/`qwen35moe.cpp`/`llama-context.cpp`/`cparams.h`); no code changes deferred behind Phase 0 gate. NO-GO scopes closure narrowly to "slot-promotion in our fork's ggml graph builder is HIGH risk", does NOT generalize to "hybrid spec-dec dead".
+- **Slot-promotion reopener CLOSED 2026-04-30**: the 6 prior closed handoffs remain accurate under their prior cost-model assumption (preserved). The per-candidate-slot assumption was tested end-to-end through Phase 1.1 dispatcher v1 (commit `d45126db5`, +386 LOC). Result: mechanism is functional and race-free, but **net-negative on Qwen3.6-35B-A3B + Qwen3-1.7B drafter** because primary wins 60/62 (97%) of K-parallel rounds across 4 (p_split, temperature) configs × 5 prompts. K=4 = 7.42 t/s vs K=1 = 11.40 t/s on canonical 3×2. Closure narrowly scopes to THIS drafter/target/workload class; does NOT generalize to "hybrid spec-dec dead" or "K-parallel verify is dead". Different drafters, targets, K values, and workload classes (long-form generation with frequent ambiguity) remain unevaluated.
 - **Use lookup-based acceleration instead**: MoE6 lookup achieves 19.6 t/s vs 13.8 t/s baseline (+42%). This is the best acceleration available for Qwen3.5 on CPU.
 - **Do NOT apply SEAL control vectors to SSM-hybrid models**: Catastrophic failure confirmed. Only apply to MoE (works: -7.5% tokens) and dense (neutral) architectures.
 - **MTP-1 IS viable on dense attention-only models**: The 78.5% acceptance rate and ~5% MTP overhead would yield ~1.7x throughput on Llama, Mistral, standard Qwen2.5 architectures. Reuse the implementation for non-hybrid models.
@@ -139,4 +155,4 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-356](https://arxiv.org/abs/2506.04761) Log-Linear Attention -- ICLR 2026, O(L log L) Gated DeltaNet variant by architecture creators
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
-- [Hybrid SSM slot-promotion reopener handoff](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md) -- Phase 0 falsification spec, Phase 1+ implementation sketch (~360-635 LOC), closure-inflation policy gate enumeration
+- [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default

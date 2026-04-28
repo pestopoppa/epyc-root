@@ -1,7 +1,7 @@
-# CPU Kernel Env-Flag Inventory — 2026-04-26
+# CPU Kernel Env-Flag Inventory — 2026-04-26 (updated 2026-04-30)
 
-**Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `43c65b926`)
-**Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15 work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
+**Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `aed8c1e` post-2026-04-30 wrap-up; experimental branch HEAD `d45126db5` includes Phase 1.1 dispatcher v1)
+**Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15, slot-promotion work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
 
 ## Inventory at a glance
 
@@ -23,6 +23,7 @@
 | `GGML_Q6_K_8X8_AVX` | off | **production-ready opt-in (PPL bit-exact 32-chunk on Coder-30B + REAP-246B, 2026-04-28)** | arch/x86/repack.cpp:1789 |
 | **`GGML_NUMA_REPACK_INTERLEAVE`** | **on** | **kill-switch (CPU2 mbind)** | repack.cpp:5024 |
 | `GGML_NUMA_MIRROR` (compile flag, not env) | off (compile-time) | research/decisive-negative on single-socket NPS4 (CPU25) | ggml.h:733, repack.cpp guarded sections |
+| `LLAMA_ARG_SPEC_NUMA_QUARTERS` (CLI: `--spec-numa-quarters K`) | 1 (off) | **closed via test 2026-04-30 — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default** | common/arg.cpp + tools/server/server-context.cpp |
 | `GGML_EP_ROLE` | off | EP control plane | ggml-ep-bootstrap.cpp:114 |
 | `GGML_EP_N_INSTANCES` | off | EP control plane | ggml-ep-bootstrap.cpp:124 |
 | `GGML_EP_NUMA_PIN` | off | EP control plane | ggml-ep-bootstrap.cpp:177 |
@@ -115,12 +116,36 @@ All seven flags default-off. Together control inter-process Expert Parallelism:
 
 ## Cherry-pick plan for v5 (refines plan Phase I)
 
+### Status of whitelisted tracks (2026-04-30 wrap-up)
+
+Production-push readiness across the whitelisted experimental kernel work, ranked by status:
+
+| Track | Whitelist status | Latest measurement | Production posture for v5 |
+|---|---|---|---|
+| **CPU1 stack (CCD_POOLS, CCD_WORK_DIST, BARRIER_LOCAL_BETWEEN_OPS)** | ✅ whitelisted (default-off) | +1.8% Coder-30B Q4_K_M; parity Q8 (P3 isolation 2026-04-26) | Cherry-pick all 12 commits gated default-off; NUMA_WEIGHTS DEPRECATED separately |
+| **CPU2 AVX-512BW Q8_0 8x8 kernel** | ✅ whitelisted opt-in | +31.8% @ 1t; +1-3% @ 12-96t (BW-saturated) | Cherry-pick `1d18efce3` default-off via `GGML_Q8_0_8X8_AVX` |
+| **CPU2 AVX-512BW Q6_K 8x8 kernel** | ✅ whitelisted opt-in | PPL bit-exact 32-chunk on Coder-30B + REAP-246B (2026-04-28) | Cherry-pick default-off via `GGML_Q6_K_8X8_AVX`; production-ready when activated |
+| **CPU2 NUMA_REPACK_INTERLEAVE auto-mbind** | ✅ whitelisted **default-on** with kill-switch | +6% AND stabilizing on Q8; -0.9% on Q4_K_M (kill-switch isolation 2026-04-26) | Cherry-pick `e84a5c82f` modified to add `GGML_NUMA_REPACK_INTERLEAVE=0` kill-switch |
+| **CPU15 inter-process EP (7 flags)** | ✅ whitelisted (default-off, orchestrator-wired for frontdoor) | Qwen3.6-35B-A3B Q8 +17% honest baseline (g.1 = drone+shard, N=2); REAP-246B regresses (-53%) | Cherry-pick `aa6476ab0` → `43c65b926`; production routing wires on for frontdoor only |
+| **CPU11 PGO** (clang-20+libomp+znver5+PGO) | ✅ whitelisted **universal** | +1.3-6.6% across all 4 production model classes; PPL bit-exact | Default v5 production binary toolchain |
+| **CPU12 BOLT-libggml** | ✅ whitelisted **per-role only** (Coder-30B) | +2.1% Coder-30B (60.54 t/s); -0.9 to -1.2% on Q8/dense | Per-role opt-in binary for Coder-30B-A3B-Instruct |
+| **CPU12 BOLT-libomp** | ❌ NOT whitelisted (inconclusive under noise) | PPL bit-exact pipeline works; no throughput signal | Skip; reopen if noise floor improves |
+| **CPU11 LTO** (`-DGGML_LTO=ON`) | ❌ NOT whitelisted | -1.0% within noise on Coder | Skip |
+| **MoE-Spec verification budget (REAP=40)** | ✅ whitelisted (per-role opt-in) | REAP-246B B=40 +13-16% pp32 / +3% end-to-end (robust); Coder=NOT deployable (varies wildly) | Per-role registry integration RELEASED 2026-04-30 (slot-promotion gate cleared); MAB selector Phase 0 still pending for full release |
+| **MAB tree-shape selector** | ⚠️ Phase 1 prototype not yet started | Phase 0 verdict written (intake-491 §3.2) | Drop-in over heap-spec for pure-MoE targets; pre-prod gate still blocks production push |
+| **Slot-promotion dispatcher v1 (`--spec-numa-quarters K`)** | ❌ **NOT whitelisted; closed via test 2026-04-30** — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (engaged 62× across sweep but primary won 60/62 = 97%; aux wins delivered just +1 marginal token; K=4=7.42 t/s vs K=1=11.40 t/s on canonical 3×2) | n/a | Stays in tree disabled-by-default; do NOT enable for production on this drafter/target pair; re-evaluate if drafter or target changes (handoff in `completed/`) |
+| **CPU22 dynamic MoE load-balancing** | ❌ closed via test 2026-04-28 (gate FAILED) | -2.3% Coder, -0.3% Next-80B, -0.8% REAP at 5-rep proper canonical | Skip global-tile-queue design; reopen criteria documented (token-to-expert rebalance + hybrid static+dynamic spillover designs untested) |
+| **CPU25 NUMA_MIRROR** | ❌ closed via test 2026-04-27 (DECISIVE NEGATIVE on single-socket NPS4) | -1.0% Coder, +0.6% Q8 (Phase 2 throughput gate) | Compile flag default-OFF; reopen ONLY for 2-socket configs |
+
+**v5 cherry-pick scope summary (post-2026-04-30)**: 12 CPU1 commits + 1 CPU2 ukernel commit + 7 CPU15 EP commits + 1 CPU2 mbind commit (modified to add kill-switch) + dispatcher v1 commit + diagnostic flags, all default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch). Toolchain: clang-20+libomp+znver5+PGO universal binary; per-role BOLT-libggml binary for Coder-30B. Dispatcher v1 stays in tree but gated to K=1 default — no behavioral change for production.
+
 ### Definitely cherry-pick
 
 - All CPU1 commits **(default-off, NOT default-on)**: `a64d27dee`, `218325a14`, `61b00eb53`, `4f7f8bac4`, `04abecd13`, `d922314cc`, `0ade7bd4d`, `69b4c3fa4`, `9407a167e`, `315f891b0`, `c24a6c801`, `acb1bbdd7`. Stack remains gated for opt-in research/future work.
 - CPU2 AVX-512BW kernel `1d18efce3` (default-off via `GGML_Q8_0_8X8_AVX`).
 - CPU15 EP family `aa6476ab0` → `43c65b926` (default-off via env vars).
 - Diagnostic flags `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_*` (default-off).
+- **NEW 2026-04-30**: Slot-promotion dispatcher v1 commit `d45126db5` (default-off via `--spec-numa-quarters` defaulting to 1; mechanism net-negative but the implementation is correct, race-free, and costs nothing at K=1; keep in tree for future drafter/target re-evaluation).
 
 ### Build-time toolchain choices for v5 (NEW 2026-04-28 — CPU11 + CPU12, with LTO and libomp-BOLT extensions)
 

@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
+**Last compiled**: 2026-04-30
 **Sources**: 32 documents (3 deep-dives, 4 completed handoffs, 4 active handoffs, 21 intake entries)
 
 ## Summary
@@ -86,16 +86,27 @@ Phase 2 end-to-end via llama-server (v5 PGO build, mixed-batch regimen): REAP-24
 
 The cause for the measured-vs-predicted gain is geometric: EPYC's L3 (~32 MB per CCD × 12 = 384 MB) is far below total expert-weight footprint (Coder 17 GB, REAP 138 GB at Q4_K_M). Cutting expert-union size directly reduces DRAM traffic. Larger models therefore have more headroom — REAP at +15.2% vs Coder at +7.3% is consistent with this attribution.
 
-### Hybrid SSM slot-promotion reopener (intake-490)
+### Hybrid SSM slot-promotion reopener (intake-490) — CLOSED 2026-04-30, mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter
 
-Per [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). **Closure-inflation correction**: the prior "speculation dead on hybrid SSM" claim was valid under the K-token-batched-verify cost model and is preserved as accurate in [`completed/ssm-hybrid-acceleration.md`](../handoffs/completed/ssm-hybrid-acceleration.md) for all 7 closed approaches (clone_cell, K-token-batch, MoE self-draft, attention-only draft, prefix prefetch, per-token speculation, multi-context replay). The reopener does NOT retract the prior closure — it tests a fundamentally different cost model.
+Handoff moved to [`completed/hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md). **Closure-inflation correction (preserved)**: the prior "speculation dead on hybrid SSM" claim was valid under the K-token-batched-verify cost model and is preserved as accurate in [`completed/ssm-hybrid-acceleration.md`](../handoffs/completed/ssm-hybrid-acceleration.md) for all 7 closed approaches (clone_cell, K-token-batch, MoE self-draft, attention-only draft, prefix prefetch, per-token speculation, multi-context replay). The reopener tested a fundamentally different cost model.
 
-New mechanism from SGLang (PyTorch blog, Dec 2025): per-candidate state slots `S_new = S_parent + Δ(k,v,β,g)`, plus DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter). Two cost-model differences from the prior assumption:
+New mechanism from SGLang (PyTorch blog, Dec 2025): per-candidate state slots `S_new = S_parent + Δ(k,v,β,g)`, plus DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter). The reopener implementation took dispatcher v0 (pass-through) to dispatcher v1 (functional K-parallel candidate verify) in commit `d45126db5` on `feature/cpu-ep-inter-process` (+386 LOC). All 7 sub-slices landed: alt-path selection from `speculation_tree::get_paths()`, one-shot primary→aux state sync at `SLOT_STATE_GENERATING`, sequential pre-decode aux state sync (race-free), parallel aux decode threads, per-ctx sample-and-accept reducer, winner-state commit with `slot.smpl` + `slot.spec_draft` rotation.
 
-1. Per-candidate cost drops from ~450 MB clone (our prior `clone_cell` failure mode) to ~KB staged inputs. Slot promotion uses the deterministic recurrence-from-parent property of Delta Net: `S_new` is a delta on `S_parent` plus new `(k,v,β,g)` inputs. No clone of the full state needed.
-2. Verification wall-clock for K candidates: from `K × single-token` (sequential under prior assumption) to `1 × single-token` per NUMA quarter under parallel regime.
+**Slice B.5 gate-check PASSED**: state-sync cost is 62.81 MiB/aux ctx (5.3× smaller than the brief's 330 MiB worst-case), 17.5 ms one-shot per request, ~5.8 ms per primary→aux pair on Q8 hybrid — well under per-token gate budget.
 
-Phase 0 GO results documented; Phase 1.0 GATE MET; Phase 1.1 dispatcher v0 in progress. Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M — trades aggregate-NUMA-4 throughput for interactive-latency, which is the right tradeoff for interactive workloads but wrong for batch.
+**Slice G canonical 3-prompt × 2-rep result on Qwen3.6-35B-A3B-Q8_0 + Qwen3-1.7B-Q8_0 drafter at v5 PGO build**: K=1 = 11.40 t/s mean, K=4 dispatcher v1 = 7.42 t/s mean — **K=4 is 35% slower**. Gate (≥1.3×) NOT MET.
+
+**Slice G divergent-tree sensitivity sweep (4 (p_split, temp) configs × 5 prompts including creative + open-ended)**: dispatcher engages 62 times, but **primary wins 60/62 (97%)**. The 2 aux-winning rounds delivered just +1 marginal accepted token each. Per-round economics: ~22 ms K-parallel overhead vs 0.03 × 83 = 2.5 ms expected savings = **−20 ms/round net loss**.
+
+**Important correction to canonical analysis**: the early "K-parallel verify hit count = 0" claim was an artifact of non-verbose log filter that suppressed DBG-level engagement messages. The dispatcher actively engages on canonical workload — it just loses 97% of the time.
+
+**Why architectural pivot was abandoned**: pre-sweep, the 35% slowdown was attributed to thread-count penalty (primary 24t vs 96t). The sweep falsified that — the deeper issue is that aux paths verify the SAME tokens primary already verifies in 97% of rounds, even at p_split=0.001 + temperature=0.7. Threading reconfiguration would not change aux win-rate.
+
+**Closure scope (per closure-inflation policy)**: mechanism is structurally net-negative for THIS drafter/target/workload class. Does NOT generalize to "K-parallel verify is dead" — different drafter models (larger drafter that produces alt branches more aligned with target sampling), different target models, different K values, and very different workload classes (long-form generation with frequent ambiguity) remain unevaluated.
+
+**Operational disposition**: dispatcher v1 stays in tree as disabled-by-default (`--spec-numa-quarters` defaults to 1; `LLAMA_ARG_SPEC_NUMA_QUARTERS` env equivalent). Re-evaluate on different drafter/target pairs. The 6.10× ceiling probe that motivated this work measured AGGREGATE THROUGHPUT across independent slots (NUMA-quarter splitting for 4× concurrent inference), not per-request K-parallel verify gain — these are two different mechanisms; the aggregate-throughput one is already deployed in production via the orchestrator's 4×24t splits.
+
+CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
 
 ### MAB tree-shape selector Phase 0 NO-GO (intake-491 §3.2)
 
@@ -166,5 +177,5 @@ Verdict: worth_investigating. The principle (SSM drafter for Transformer target)
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots; the basis for the 2026-04-28 hybrid SSM spec-dec reopener
 - [intake-491](https://arxiv.org/abs/2506.01206) Mamba Drafters for Speculative Decoding (EMNLP'25 Findings) -- §3.2 MAB tree-shape selector; +22.65% over sequential, +8.5% over best fixed shape on Pythia-6.9B; basis for the 2026-04-28 MAB selector handoff. Mamba SSM external drafter for Transformer target also documented but blocked on GPU rental for drafter training.
 - [MAB tree-shape selector handoff](../handoffs/active/mab-tree-shape-selector.md) -- intake-491 §3.2 Phase 0/1/2/3 spec; pre-prod gate on MoE-Spec production registry integration
-- [Hybrid SSM slot-promotion reopener handoff](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; closure-inflation policy gate enumeration; Phase 0 research-only falsification queued
+- [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; CLOSED 2026-04-30 (mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default; canonical 3×2 + 4-config × 5-prompt sweep showed primary wins 60/62 = 97% of K-parallel rounds)
 - [MoE-Spec handoff](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- Verification-budget mechanism deployable on REAP-246B B=40; Phase 1+2 measured 2026-04-28; pre-prod registry-integration gate active
