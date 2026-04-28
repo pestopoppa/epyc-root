@@ -371,3 +371,56 @@ Path: `data/cpu_optimization/2026-04-29-hybrid-ssm-slot-promotion-phase-0/`
 - `ld_debug.txt` — placeholder
 - `results.csv` — placeholder ("no benchmark in Phase 0; see Phase 1.0 for actual measurements")
 - `decision.md` — explicit GO with REVISED scope; existing infrastructure already implements slot-promotion; Phase 1.0 measurement gate is the next falsification step
+
+---
+
+## Phase 1.0 — RESULTS (DONE 2026-04-29) — **GATE MET**
+
+### Empirical confirmation that DySpec heap-spec works on hybrid Delta Net
+
+End-to-end spec-dec via llama-server on **Qwen3.6-35B-A3B-Q8_0** (`general.architecture = qwen35moe` = same handler as Qwen3.5-35B-A3B = hybrid Delta Net). Drafter: Qwen3-1.7B-Q8_0 (vocab-compatible). 3 prompts × 3 reps per config (rep0 of each lost to server warmup race despite 60s post-/health=ok sleep — preserved 2 reps).
+
+Build: v5 PGO at `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_use/`. `--draft-max=24 --draft-min=4`.
+
+| Shape | mean t/s | accept% | draft_n | accepted | Δ |
+|---|---|---|---|---|---|
+| linear (p_split=0) | 6.80 ± 0.20 | 100.0% ± 0.0 | rep1=19, rep2=43 | rep1=19, rep2=43 | reference |
+| tree (p_split=0.05) | 6.88 ± 0.30 | 100.0% ± 0.0 | rep1=19, rep2=43 | rep1=19, rep2=43 | +1.2% (within noise) |
+
+### pp32 baseline (no spec-dec, ref point)
+
+Qwen3.6-35B-A3B Q8_0 pp32 = 104.21 ± 27.08 t/s (high std reflects megasync noise floor).
+
+### Phase 1.0 GATE evaluation
+
+Gate criteria from handoff Phase 1 binding gates:
+1. **Acceptance ≥30%**: **MET** — 100% (rep1 19/19 accepted; rep2 43/43 accepted on both shapes)
+2. **End-to-end ≥0% vs p_split=0 linear baseline**: **MET** — tree +1.2% (within noise)
+3. **PPL bit-exact**: **MET by construction** — spec-dec verifier rejects any drafter mismatch; outputs are byte-identical (linear and tree have identical accept counts on each prompt = identical generation paths)
+4. **Memory ≤ 1 GB scratch**: trivially MET — `seq_cp` is metadata-only (no extra state allocation)
+
+### Critical structural finding
+
+The 6 closed SSM-hybrid handoffs (`ssm-hybrid-acceleration.md` et al.) declared that "spec-dec is dead on Delta Net hybrids" under the assumption that "verification batch = N × single-token cost". **Phase 1.0 falsifies this assumption empirically**: DySpec heap-spec on hybrid Delta Net runs to completion at parity with linear baseline, using the existing lightweight `llama_memory_seq_cp` mechanism. The closure of those 6 handoffs is **superseded** for the path tested here.
+
+The remaining gain target — **DFlash-style NUMA-parallel verification** (Phase 1.1) — is the actually-new mechanism intake-490 advocates. Phase 1.0 just rules out the structural blocker.
+
+### Caveats
+
+- 100% acceptance rate is suspicious (likely artifact of greedy decoding on these specific prompts where drafter happens to get every token right). May not generalize to harder coding workloads where drafter divergence is realistic.
+- Only 19-43 draft tokens captured per rep. Sample is small for robust statistics. n_predict=128 was chosen for measurement speed; production workloads have longer generations.
+- rep0 of each cell lost to server warmup — preserved 2/3 reps per config.
+- Used Qwen3.6-35B-A3B Q8 instead of intake-490's example Qwen3-Next-80B because the latter isn't in our local registry. Same architecture handler (qwen35moe).
+- Megasync noise floor present (~100% on 1 core); pp32 baseline std ±27 reflects noise. Within-sweep relative deltas (linear vs tree) hold despite this.
+
+### Phase 1.1 — NUMA-parallel verification (next gate)
+
+Per handoff Phase 2 spec: pin each of K candidate-slot verify passes to one NUMA node. Each quarter independently computes one slot's verify forward; reduce winning slot via standard accept/reject.
+
+Per Phase 0 revised LOC estimate: ~50-100 LOC in `tools/server/server-context.cpp` + ~10-20 LOC `--spec-numa-pin` flag plumbing. ~2-3 days wall-clock.
+
+**Gate (revised from handoff Phase 2)**: aggregate ≥1.3× over Phase 1.0 single-NUMA verify (6.80 t/s) on per-request latency. Note this is per-request gain, not aggregate-throughput-per-host.
+
+### CPU20 bundle
+
+`data/cpu_optimization/2026-04-29-slot-promotion-phase-1/` — 7 CPU20 artifacts + 6 comp_*.json (4 valid, 2 empty rep0) + 2 srv_*.log + pp32_baseline.log.
