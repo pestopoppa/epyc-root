@@ -1,6 +1,6 @@
 # MoE-Spec — CPU Speculative-Decoding Verification with Budgeted Expert Selection
 
-**Status**: Phase 1 prototype DONE 2026-04-28 — **WIN: mechanism gate MET on verification-batch shape; Coder-30B +7.3% at B=64, REAP-246B +15.2% at B=40 (5-rep proper canonical)**. Bundle: `data/cpu_optimization/2026-04-28-moe-spec-phase-1/`. Phase 2 (end-to-end spec-dec acceptance + speedup measurement) queued. Phase 1 implementation is on `feature/cpu-ep-inter-process` branch (uncommitted as of decision-write; will commit after handoff persistence). Phase 0 verdict (queue Phase 1) preserved below.
+**Status**: Phase 1 DONE on gcc+libgomp build (Coder +7.3% / REAP +15.2% pp32). Phase 2 IN PROGRESS on v5 PGO build at wrap-up time 2026-04-28 evening. v5 PGO mixed-B Phase 1 re-validation: REAP-246B B=40 = +13.5% (clean, deployable); Coder-30B B=64 ≈ parity under v5 PGO (mask overhead cancels mask savings on this smaller model post-PGO baseline shift). End-to-end spec-dec via llama-server running in background; results pending. Phase 1 commit on `feature/cpu-ep-inter-process` HEAD `0c8d05597`. Phase 0 verdict (queue Phase 1) preserved below.
 
 ---
 
@@ -273,3 +273,72 @@ Multi-week effort overall. Prioritize against CPU22 work-stealing during Phase 4
 - [Awesome MoE Inference](https://github.com/MoE-Inf/awesome-moe-inference/) — collection
 - [Discovering Important Experts NeurIPS 2025](https://neurips.cc/virtual/2025/poster/119676)
 - Surfaced in: `cpu-shape-specialized-gemv-decode.md` (Session 2026-04-27 research check)
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-487] "Adaptive hybrid speculative decoding for accelerating large language model inference"** (Yang Yong et al., Neurocomputing 2026, peer-reviewed, paywalled)
+  - Relevance: Same problem space as Phase 1's verification-batch mechanism — adaptive draft length + hybrid drafting. Mechanism unverifiable (no preprint, no abstract accessible).
+  - Delta: catalog only; revisit if a preprint or open code surfaces. No action — Phase 1 gate already met by our heap-spec mechanism on Coder-30B + REAP-246B.
+
+- **[intake-491] "Mamba Drafters for Speculative Decoding"** (arxiv:2506.01206; Findings of EMNLP 2025) — verdict: **worth_investigating**
+  - Relevance: SSM-drafter-for-Transformer-target principle is directly applicable to our 30B-A3B + REAP-246B verification stack. Constant-memory drafter avoids the draft-path DRAM-bandwidth competition that limits speedup at large target sizes on EPYC.
+  - Key technique: Mamba-130M external drafter + MAB-optimized tree-shape selector.
+  - Reported results: GSM-8K 149.46 tok/s vs Pythia-410M 119.67 (Pythia-6.9B target); MT-Bench accept length 3.91 vs EAGLE 3.85.
+  - Delta from current approach: (a) MAB tree-shape selector is a drop-in upgrade for our heap-spec tree shape independent of the SSM piece — investigate first; (b) SSM drafter for Coder-30B target requires hand-rolled Mamba inference in our llama.cpp fork, with no off-the-shelf small Mamba model tuned for our target's vocabulary — investigation, not adoption.
+  - Caveats (Tier 2b): hidden-state backtracking limitation, tree verification incompatibility with sequential SSM, hyperparameter sensitivity. Competing approach (arxiv:2512.20573 diffusion-LLM drafting, Dec 2025) raises directional question whether SSM drafting is the long-term winner.
+
+## Phase 2 — IN PROGRESS as of 2026-04-28 evening (wrap-up snapshot)
+
+### v5 PGO build with MoE-Spec patch baked in
+
+**Build dirs** (at `/mnt/raid0/llm/llama.cpp-experimental/`):
+- `build_v5_pgo_gen/` — PGO instrumented (clang-20 + libomp + -march=znver5 + `-fprofile-instr-generate`)
+- `build_v5_pgo_gen/merged.profdata` (2 MB) — merged from coder + q8 + reap profile runs (B=0 + B=64 Coder + B=40 REAP for mixed coverage; dense killed at 22 min wall)
+- `build_v5_pgo_use/` — PGO-use rebuilt with `-fprofile-instr-use=...` from mixed merged.profdata; `--emit-relocs` linker flag for downstream BOLT
+
+**Key insight from PGO single-B vs mixed-B**: under single-B (B=0 only) profile, the v5 build pessimized the MoE-Spec mask branch — Coder-30B B=64 dropped to **−43%** vs B=0 (mask overhead unprofiled, branch slow). After adding B=64 Coder + B=40 REAP profile runs to merged.profdata and rebuilding, Coder-30B B=64 returns to **parity (−2.6%)**. REAP-246B B=40 unaffected by either build (consistent +15% in both single-B and mixed-B PGO) because REAP's mask-overhead/total-compute ratio is small.
+
+**Lesson for future PGO builds with MoE-Spec deployed**: profile workload MUST exercise B>0 path or PGO will pessimize it.
+
+### Phase 1 mechanism re-validation under v5 PGO mixed-B (5-rep proper canonical)
+
+Megasync at 100% on 1 core during measurement window depressed absolute numbers ~50% (clean Coder pp32 B=0 ~379 t/s; under noise ~198 t/s). Relative deltas within sweep are noise-tolerant.
+
+**Coder-30B Q4_K_M pp32:**
+| B | mean ± std | Δ vs B=0 |
+|---|---|---|
+| 0 | 198.57 ± 5.55 | reference |
+| 96 | 144.79 ± 6.54 | −27.0% (mask overhead at light budget exceeds savings) |
+| 64 | 193.34 ± 10.64 | **−2.6% (parity)** |
+| 32 | 249.60 ± 3.24 | +25.7% (severe quality cost — see Phase 1 PPL data) |
+
+**REAP-246B Q4_K_M pp32:**
+| B | mean ± std | Δ vs B=0 |
+|---|---|---|
+| 0 | 51.14 ± 1.11 | reference |
+| 60 | 52.05 ± 0.99 | +1.8% (within noise) |
+| 40 | 58.06 ± 0.59 | **+13.5% (clean signal)** |
+| 20 | 74.45 ± 0.08 | +45.6% (quality unusable per Phase 1 PPL) |
+
+### Phase 2 end-to-end spec-dec via llama-server (IN PROGRESS)
+
+Background task `b4bk8cu9g` running. Per-config: 3 prompts × n_predict=256 × spec-dec config matching production (`--draft-max 32 --p-split 0` linear). Captures `predicted_per_second` + `draft_n_accepted/draft_n` from /completion timing.
+
+REAP-246B partial:
+- B=0 (3 reps): rep0 server-not-ready JSON empty; rep1=7.27 t/s 59.9%; rep2=7.90 t/s 56.2%
+- B=60 in progress at wrap-up
+- B=40 + Coder B=0/64/32 queued (~25 min remaining)
+
+Production registry reference: REAP-246B = 8.0 t/s spec-dec, 74-82% accept on coding workloads (we're testing on general prompts so accept rate is lower).
+
+### Phase 2 deferred items (post-end-to-end completion)
+
+1. **BOLT-libggml on v5 PGO for Coder-30B role**: morning's `libggml-cpu.so.0.coder.fdata` likely incompatible with v5 binary layout; needs fresh perf-record + perf2bolt + llvm-bolt cycle.
+2. **Production registry integration** (`/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`):
+   - Per-role binary_path: REAP-246B + Q8 frontdoor + dense → universal v5 PGO binary; Coder-30B → v5 PGO + BOLT-libggml binary
+   - Per-role moe_spec_budget config: REAP-246B → 40; Coder-30B → 0 (skip; quality+throughput tradeoff doesn't pencil out under v5 PGO for B=64 parity); other models → 0
+3. **Orchestrator launch path** (`orchestrator_stack.py`): read per-role binary_path + env-pass MoE-Spec budget
+4. **production-consolidated-v5 branch** in `/mnt/raid0/llm/llama.cpp`: git history paperwork — cherry-pick from `feature/cpu-ep-inter-process` HEAD `0c8d05597` onto `production-consolidated-v4`. Optional; the binary built from experimental HEAD is functionally equivalent.
+5. **Full 32-chunk PPL gate on v5 PGO build**: 3-chunk diagnostic suffices for Phase 1; production routing decisions need full PPL.
