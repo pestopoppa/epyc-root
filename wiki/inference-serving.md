@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-04-26
+**Last compiled**: 2026-04-28
 **Sources**: 19 documents
 
 ## Summary
@@ -151,3 +151,43 @@ Serving-side CPU optimization now follows a strict wave pipeline:
 4. CPU23 regime matrix (2K/8K/32K + interference), including this Sarathi-serving path
 
 Implication for serving decisions: treat any decode-only or single-regime conclusion as provisional until CPU23 coverage completes.
+
+## Updates — 2026-04-28
+
+This update consolidates dynamic stack concurrency Phases B–D status, revisits the 2026-04-24 concurrent-split throughput finding through the lens of dynamic stack assembly, and indexes SGLang's slot-promotion serving primitives (intake-490) as architectural lessons for hybrid SSM serving on CPU.
+
+### Dynamic stack concurrency Phases B–D done (2026-04-26)
+
+Per [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md):
+
+- **Phase B (orchestrator pre-warm) — done.** Orchestrator detects upcoming role demand and spawns instances ahead of first request, hiding cold-start (~30-90s for large models).
+- **Phase C (KV migration) — done.** Validated the path for migrating KV state across instance boundaries when concurrent split mode is reconfigured. Used by Phase D under load to avoid full prompt re-prefill.
+- **Phase D (load-aware mode switching) — done.** Pre-warm + KV migration validated together; the orchestrator can switch between single-session (1×48t / 1×96t) and concurrent-split (48×4t) modes based on real-time queue depth without dropping in-flight sessions.
+- **Phase E (autoresearch exploration) — ready.** Exploration of the mode-switching policy space (which thresholds, which quality gates) is queued. Folds into AR-3 Package D as a NumericSwarm parameter sweep.
+- **Phase F1 (cross-NUMA anchor pool) — blocked on AM compaction P2 → KVCOMM dependency.** F1 requires KV-compaction-aware migration across NUMA boundaries; AM compaction P2 must land first.
+
+### Concurrent-split throughput +110% gain (2026-04-24 finding)
+
+Recorded earlier in this wiki at the 2026-04-24 section; reframed here through the dynamic-stack lens:
+
+- Qwen3.6-35B-A3B Q8 at 48×4t = **135.1 t/s aggregate** (+110% vs 4×48t baseline 64.3 t/s), saturating ~100% of the 460 GB/s BW socket roofline.
+- **Configuration-only change** to `orchestrator_stack.py`; no kernel work, no model change. Routes to concurrent workloads only.
+- Single-session interactive routes stay on 1×48t or 1×96t (single-user latency floor). Mode switching is per-role.
+- **Implication**: dynamic stack assembly should switch modes based on real-time load, validated empirically by Phase D pre-warm + KV migration. The autopilot's `project_autopilot_stack_assembly.md` predicted dynamic mode switching would matter; today validated with hard numbers and production-deployed via Phases B–D.
+
+### SGLang slot-promotion serving framework (intake-490)
+
+Per intake-490, SGLang ships hybrid Mamba+Attention slot-promotion serving primitives. Indexed as **architectural-lessons reference**, NOT a target adoption:
+
+- **Primitives**: MambaRadixCache (radix-tree cache for Mamba state), layer-ID remap to skip KV for linear layers, CUDA-VMM-backed elastic Mamba/KV pool, PD-disaggregation State Transfer Channel (cross-instance state migration).
+- **CUDA / H200 targeted.** TP=2, FP8 weights, CUDA VMM. **None of the kernel-level wins port directly to llama.cpp CPU.**
+- **Architectural lessons that translate**: host-RAM accounting on EPYC for hybrid SSM serving (Mamba state has different lifecycle than attention KV; conflating the two in `mlock` accounting causes either over-allocation or false-positive OOM under load). Cross-link to `wiki/ssm-hybrid.md` for hybrid-model serving notes.
+- **EPYC verdict**: `adopt_patterns` (extract HybridReqToTokenPool, HybridLinearKVPool, MambaRadixCache, Elastic Memory Pool as **reference design** for host-RAM accounting); NOT `adopt_component`. The CUDA-VMM-backed pool has no CPU equivalent (mmap + numactl is the closest analogue, but the elasticity story is different).
+- **Closure-inflation guard**: SGLang validates that hybrid-model serving needs explicit per-state-class accounting. We are extracting the design pattern, not claiming we have a SGLang-class serving framework.
+
+### Sources
+
+- [`handoffs/active/dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md) — Phases B–D done, Phase E ready, Phase F1 blocked on AM compaction P2 → KVCOMM
+- 2026-04-24 concurrent-split sweep deep-dive: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`
+- Auto-memory: `project_concurrent_split_throughput.md`
+- intake-490 (SGLang slot-promotion serving) — architectural-lessons reference, NOT adopt_component; cross-link to `wiki/ssm-hybrid.md`

@@ -2,7 +2,7 @@
 
 **Category**: `reinforcement_learning`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
+**Last compiled**: 2026-04-28
 **Sources**: 16 documents
 
 ## Summary
@@ -77,6 +77,34 @@ The Scoring Verifiers benchmark (intake-367, COLM 2025) establishes a 4-metric e
 AP-27 in the autopilot continuous optimization handoff formalizes the eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier. The implementation plan is now fully specified in the eval-tower-verification handoff (EV-1 through EV-7). EV-7 depends on all preceding phases plus Ouro P7 results, and will export eval environments for actual RL model training when DGX Spark becomes available. The three metrics (quality + ECE + AUC) form the minimal signal for RLVR reward design.
 
 > Source: [autopilot-continuous-optimization.md](/workspace/handoffs/active/autopilot-continuous-optimization.md) AP-27; [eval-tower-verification.md](/workspace/handoffs/active/eval-tower-verification.md) EV-7
+
+## Updates — 2026-04-28
+
+### Optimizer-design-space findings (Trinity + BaRP + LLM Bandit + Conductor)
+
+- **Evolutionary strategies (sep-CMA-ES) are optimizer-competitive on block-ε-separable surfaces (Trinity, intake-474, ICLR 2026 Sakana AI).** Trinity trains a 10K-parameter routing head on top of Qwen3-0.6B (with SVD-scale FT, ~9K extra params) using sep-CMA-ES against terminal binary task reward — no labels, no gradients. Population λ≈32, replication m=16, total budget 1.5k–40k evaluations. Empirical: REINFORCE collapses to 0.253 LCB at the same budget where sep-CMA-ES achieves 0.615. 21.9% mean relative-error reduction over 2nd-best multi-agent baseline. The block-ε-separability of the loss surface is the critical mechanism (paper Definition 1 / Proposition 2). Diagnostic trainable on EPYC's own 175K-label episodic dataset (LRC P4.2: train identical heads with full-rank vs rank-10 vs diagonal weight regularization). CPU-feasible at our scale: ~10h overnight at 32-way concurrency for the LRC P4.4 feasibility-test spike on a 200K-param head. Source: [`learned-routing-controller.md`](/workspace/handoffs/active/learned-routing-controller.md) P4.2 / P4.4; [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](/workspace/research/deep-dives/trinity-evolved-llm-coordinator-methodology.md); intake-474.
+
+- **Bandit-feedback training requires no counterfactual labels (BaRP, intake-495, arxiv:2510.07429).** Production logs only record the chosen specialist's outcome; BaRP solves via REINFORCE on bandit feedback. For EPYC, the rationale informs DAR-3 SPO+ design: 10% epsilon-greedy exploration manufactures counterfactuals; the SPO+ convex surrogate avoids REINFORCE's high-variance gradient pathology. SPO+ gradient is zero when the routing decision is already correct — learning signal flows only when prediction would lead to a wrong decision. ~100 LoC implementation. Source: [`decision-aware-routing.md`](/workspace/handoffs/active/decision-aware-routing.md) DAR-3.
+
+- **Item Response Theory scoring for fast model onboarding (LLM Bandit, intake-496, arxiv:2502.02743).** 20–50 IRT-stratified prompts compress model-onboarding latency from multi-hour benchmark sweeps to ~30 min, with baselines agreeing within ~2 points. EPYC's most actionable single experiment from intake-495/496: LRC **P5.2 cold-start A/B** vs on-disk full sweep. Reuse the same IRT scorer for DAR-5 prompt features (`(latent_difficulty, latent_discrimination)` over BGE pooled output, Platt-calibrated) and LRC P4.1.3 feature audit. Source: [`learned-routing-controller.md`](/workspace/handoffs/active/learned-routing-controller.md) Phase 5; intake-496.
+
+- **GRPO with terminal task reward at 7B scale (Conductor, intake-493, arxiv:2512.04388, ICLR 2026 Sakana AI).** 200 iterations × batch 256 × 2× H100 80GB, randomized agent pool. Action space `(worker_id, NL_subtask, access_list)`; topology emerges from `access_list` emissions; **role is NOT a Conductor primitive**. Reported deltas: +1.03 pp LCB vs GPT-5 (within pass@1 noise), +2.7 pp GPQA-Diamond, +~10 pp open-source-only inference vs Claude Sonnet 4 (the strongest ablation). **Not a target architecture for EPYC** (GPU-required, 2× H100 80GB out of CPU stack) — competitive intelligence only. Cited in OC-0.6 design-space comparison table inside the outer-coordinator scoping handoff. Source: [`outer-coordinator-learned-head.md`](/workspace/handoffs/active/outer-coordinator-learned-head.md) OC-0.6; intake-493.
+
+- **REINFORCE pathology on block-ε-separable losses (DAR-1.5 audit, pending).** Trinity's REINFORCE collapse raises the question whether DAR-3 (SPO+) and DAR-4 (bilinear) gradients share the off-block-noise weakness. Analytical-only audit (no code, no rerun) — 1 session. Cross-references LRC P4.2 (empirical block-ε diagnostic). If our landscape IS block-ε-separable AND DAR-3/4 gradients couple across blocks, mitigation options are: (a) regularise the bilinear scorer toward block-diagonal weights, (b) add a population-style outer loop around the closed-form gradient, (c) re-weight by an inverse off-block coupling estimate, or (d) explicitly accept the risk and characterise downstream impact. Source: [`decision-aware-routing.md`](/workspace/handoffs/active/decision-aware-routing.md) DAR-1.5.
+
+- **Closure-inflation discipline (2026-04-28).** Do NOT generalize "Conductor 7B GRPO is out of CPU stack" to "no learned coordinator could ever work". Trinity's sep-CMA-ES on a 10K-param head is the CPU-feasible counterexample that falsifies the generalization. Each system is a distinct point in optimizer-design space, **not a class**: BaRP (REINFORCE on bandit feedback), LLM Bandit (joint-trained bilinear + IRT features), Trinity (sep-CMA-ES on terminal reward), Conductor (GRPO on 7B with NL action space). The compute-mismatch argument that retired AReaL (6 orders of magnitude beyond routing-classifier needs) does not extend to all RL-trained routing — it applies only to the policy-gradient-on-billion-parameter-policy class.
+
+### New source pointers
+
+- intake-474 (Trinity, ICLR 2026 Sakana AI, arxiv:2512.04695) — sep-CMA-ES + 10K head + tri-role action space; class-4 black-box ES; LRC P4.2/P4.4 + DAR-1.5 cross-reference.
+- intake-491 (Mamba Drafters) — referenced for cross-architecture optimizer context.
+- intake-493 (Conductor, ICLR 2026 Sakana AI, arxiv:2512.04388) — 7B GRPO; competitive intelligence only; OC-0.6 reference.
+- intake-495 (BaRP, arxiv:2510.07429) — bandit-feedback training rationale for DAR-3.
+- intake-496 (LLM Bandit, arxiv:2502.02743) — IRT prompt scorer + learned model identity vectors; DAR-5 + LRC P5.
+
+### Cross-references
+
+For routing-architecture adoption (tri-role axis, DAR phase plan extension, design-space landscape) see [Routing Intelligence](routing-intelligence.md). For cost-side adoption rationale (2-D ω preference vector, cost τ, IRT prompt features) see [Cost-Aware Routing](cost-aware-routing.md).
 
 ## Actionable for EPYC
 

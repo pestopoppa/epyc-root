@@ -2,7 +2,7 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
+**Last compiled**: 2026-04-28
 **Sources**: 24 documents (6 deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
@@ -154,3 +154,51 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-418](https://arxiv.org/abs/2604.08224) Externalization in LLM Agents -- survey: weights→context→harness era progression; validates meta-harness optimization thesis (worth_investigating)
 - [intake-425](https://arxiv.org/abs/2604.14004) Memory Transfer Learning -- simple embedding retrieval (cosine, N=3) outperforms LLM reranking; 431 curated insight-format memories beat 5,899 raw memories; validates FAISS-based strategy_store approach
 - [intake-426](https://arxiv.org/abs/2604.14228) Dive into Claude Code -- five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact); Budget Reduction gap identified for EPYC; "context as scarce resource" design principle
+
+## Updates — 2026-04-28
+
+This update consolidates progressive folding L1–L4 status, corrects two earlier framings (SLIDERS as parallel architecture not folding evolution; Flywheel `memory(action=brief)` as read-side assembler not promote-to-persistent), and confirms pi-agent-core's `transformContext` / `convertToLlm` two-stage pattern as the boundary where progressive folding belongs.
+
+### Progressive folding L1–L4 status (consolidated)
+
+Per [`context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md), the consolidated status as of 2026-04-28:
+
+- **Phase 0 (compaction trigger raised to 75%) — done.** Configurable via `ORCHESTRATOR_SESSION_COMPACTION_TRIGGER_RATIO`. Validated by ReSum 70-80% optimal range and AgentFold delay-preserves-context evidence.
+- **Phase 1 (two-level condensation) — done.** Granular per-turn blocks (deterministic formatting, no LLM) plus deep consolidation at boundaries (single bounded-window LLM call). Feature-flagged `two_level_condensation`.
+- **Phase 1+ (segment dedup) — code complete.** Cosine-similarity dedup on consolidated segments; gated behind feature flag pending production rollout decision.
+- **Phase 2c (quality evaluation) — done.** 30B-A3B validated as minimum viable summarizer (3.0/3.0 retention). 5-level compression ladder tested; L3 sweet spot at 82% compression with 2.84/3 retention.
+- **Phase 3a/3b — code done.** Maturity tiers (draft/validated/core), importance scoring with decay, demotion thresholds.
+- **L5+ scope deferred.** L5 (cross-session synthesis) and L6+ are out of scope until L4 production data emerges.
+- **Phase 3c (process reward signals) — deferred.** FoldGRPO-style penalties for unfolded tokens, out-of-scope branching, tool-call failures. Requires RL infrastructure not yet in production.
+
+### SLIDERS as parallel architecture, NOT folding evolution (intake-494)
+
+Earlier intake framing positioned SLIDERS as a "L5+ candidate" for the progressive-folding pipeline. **This was inaccurate.**
+
+- **SLIDERS targets cross-document aggregation** via DB+SQL — the workload is "aggregate facts across N documents into a single answer" (typical N = 3.9M-36M tokens per corpus).
+- **Progressive folding targets cross-turn compression** — the workload is "fit M turns of conversation into a fixed context budget."
+- The two share the *aggregation bottleneck framing* but the **failure regimes are different**. Folding fails on summarizer drift and context-rot under semantic similarity. SLIDERS fails on schema mismatch and join cost.
+- **Track SLIDERS as parallel architecture** for the cross-source aggregation problem (cross-link to `wiki/rag-alternatives.md`). NOT as a folding-pipeline upgrade. Closure-inflation note: the earlier "L5+ candidate" framing would have absorbed an unrelated architecture into the folding category, hiding the actual cross-source aggregation gap from the project map.
+
+### Flywheel `memory(action=brief)` correctly framed as read-side assembler (intake-492)
+
+Earlier intake framing positioned Flywheel's `memory(action=brief)` as a "promote to persistent memory" action. **This was inaccurate.**
+
+- `memory(action=brief)` is **read-side**: token-budgeted brief assembly with confidence decay, over already-persisted vault content. It assembles a query-scoped brief from existing storage; it does NOT write anything new.
+- Persistence in Flywheel happens via separate write tools (vault append, atomic-undo write contract). The `brief` action consumes those persisted entries.
+- **Portable pattern for progressive-folding**: token-budgeted brief-assembly with confidence decay, applied as a *read-side query API over already-folded summaries*. NOT a promotion primitive. Useful as design reference for how a folded-summary side-car could be queried by per-turn `transformContext` (see next).
+
+### Pi-agent-core `transformContext` / `convertToLlm` two-stage pattern (intake-473)
+
+Per the pi-agent-core deep-dive, the two-stage message pipeline is exactly the boundary where progressive folding belongs:
+
+- **`transformContext`** runs every turn at the **agent-message level**. Custom types are still in scope here (TaskState, ConsolidatedSegment, ToolResultMetadata). This is where folding/condensation logic should sit — it has access to typed segment objects, importance scores, and maturity tiers.
+- **`convertToLlm`** runs after `transformContext` and produces the **LLM-strict** `user|assistant|toolResult` payload. By this point, all custom typing has been collapsed into the strict three-role schema. Folding decisions cannot be made here without losing fidelity.
+- **Boundary lift, not code port.** The factoring is the value: separating *decide what context to keep* (typed, agent-level) from *coerce to LLM payload* (strict, prompt-level) prevents the bug class where folding logic accidentally reads strings that have already lost their provenance metadata. Naming + factoring lift; no TypeScript code is being ported.
+
+### Sources
+
+- [`handoffs/active/context-folding-progressive.md`](../handoffs/active/context-folding-progressive.md) — L1-L4 status consolidated, L5+ deferred, Phase 3c deferred
+- intake-494 (SLIDERS) — parallel architecture, cross-link to `wiki/rag-alternatives.md`
+- intake-492 (Flywheel) — read-side `memory(action=brief)` token-budgeted assembler with confidence decay; corrected from earlier "promote-to-persistent" framing
+- [intake-473](https://github.com/badlogic/pi-mono/tree/main/packages/agent) pi-agent-core — `transformContext` / `convertToLlm` two-stage pattern as boundary for folding logic

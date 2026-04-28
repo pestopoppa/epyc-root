@@ -2,7 +2,7 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-04-28 (targeted update — MoE-Spec deployable, MAB selector + slot-promotion reopener)
+**Last compiled**: 2026-04-28
 **Sources**: 32 documents (3 deep-dives, 4 completed handoffs, 4 active handoffs, 21 intake entries)
 
 ## Summary
@@ -64,6 +64,66 @@ The current state of the art for our stack is not speculative decoding at all --
 **Hybrid SSM spec-dec slot-promotion reopener (intake-490, PyTorch SGLang Dec 2025)**: per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; rejected slots discarded, accepted slot promoted. Architecturally compatible with Delta Net. Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Reopens the 6 closed SSM-hybrid handoffs under closure-inflation policy (gates A,B,C met under prior assumption; gate D unmet under per-candidate-slot assumption). Phase 0 research-only falsification queued. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands.
 
 Together these three handoffs add three orthogonal compounding axes to spec-dec on EPYC: verification budget (MoE-Spec, deployable), tree topology (MAB selector, Phase 0), hybrid state model (slot-promotion, Phase 0).
+
+## Updates — 2026-04-28
+
+### MoE-Spec verification-batch mechanism (Phase 1+2 v5 PGO)
+
+The `--moe-spec-budget N` mechanism — see [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) — aggregates routing softmax across the K-token verification batch, takes top-B over the aggregated distribution, and masks out-of-budget experts before `argsort_top_k`. Mechanism rationale: in a verification batch, the union of distinct experts selected across K tokens is a routing-policy-dependent superset of any single token's top-K. Reducing that union directly reduces DRAM expert-weight reads — the dominant decode cost on EPYC per CPU24 attribution.
+
+Phase 1 forward-pass measurements (5-rep canonical, autonomous CPU agent's session):
+
+| Model | Quant | Budget | pp32 baseline | pp32 MoE-Spec | Δ verify |
+|-------|-------|--------|---------------|---------------|----------|
+| Coder-30B | Q4_K_M | B=64 | 321.35 t/s | 344.70 t/s | +7.3% |
+| REAP-246B | Q4_K_M | B=40 | 45.23 t/s | 52.11 t/s | +15.2% |
+
+PPL drift (3-chunk WikiText-2 spot check): Coder-30B +6.7%, REAP-246B +23%. Drift is bounded by the assumption that out-of-budget experts contribute negligibly per-token; larger models have more diffuse routing and larger drift.
+
+Phase 2 end-to-end via llama-server (v5 PGO build, mixed-batch regimen): REAP-246B B=40 +3.3% e2e, Coder-30B B=64 −2.6% e2e (within build/cache-state noise). The end-to-end attenuation is Amdahl-determined: a spec-dec round = drafter forward + target verification + accept-evaluation, and MoE-Spec only accelerates target verification. Drafter and accept-eval are unchanged.
+
+**Final verdict**: REAP-246B B=40 deployable behind explicit env-gate `LLAMA_ARG_MOE_SPEC_BUDGET=40` for the REAP role only. Coder-30B B=64 NOT deployable — the mask-overhead vs total-compute ratio is marginal, and end-to-end measurements vary across builds and cache states beyond the gain margin. Defer Coder-30B to Phase 3 cleaner re-measurement after MAB selector lands.
+
+The cause for the measured-vs-predicted gain is geometric: EPYC's L3 (~32 MB per CCD × 12 = 384 MB) is far below total expert-weight footprint (Coder 17 GB, REAP 138 GB at Q4_K_M). Cutting expert-union size directly reduces DRAM traffic. Larger models therefore have more headroom — REAP at +15.2% vs Coder at +7.3% is consistent with this attribution.
+
+### Hybrid SSM slot-promotion reopener (intake-490)
+
+Per [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). **Closure-inflation correction**: the prior "speculation dead on hybrid SSM" claim was valid under the K-token-batched-verify cost model and is preserved as accurate in [`completed/ssm-hybrid-acceleration.md`](../handoffs/completed/ssm-hybrid-acceleration.md) for all 7 closed approaches (clone_cell, K-token-batch, MoE self-draft, attention-only draft, prefix prefetch, per-token speculation, multi-context replay). The reopener does NOT retract the prior closure — it tests a fundamentally different cost model.
+
+New mechanism from SGLang (PyTorch blog, Dec 2025): per-candidate state slots `S_new = S_parent + Δ(k,v,β,g)`, plus DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter). Two cost-model differences from the prior assumption:
+
+1. Per-candidate cost drops from ~450 MB clone (our prior `clone_cell` failure mode) to ~KB staged inputs. Slot promotion uses the deterministic recurrence-from-parent property of Delta Net: `S_new` is a delta on `S_parent` plus new `(k,v,β,g)` inputs. No clone of the full state needed.
+2. Verification wall-clock for K candidates: from `K × single-token` (sequential under prior assumption) to `1 × single-token` per NUMA quarter under parallel regime.
+
+Phase 0 GO results documented; Phase 1.0 GATE MET; Phase 1.1 dispatcher v0 in progress. Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M — trades aggregate-NUMA-4 throughput for interactive-latency, which is the right tradeoff for interactive workloads but wrong for batch.
+
+### MAB tree-shape selector Phase 0 NO-GO (intake-491 §3.2)
+
+Per [`mab-tree-shape-selector.md`](../handoffs/active/mab-tree-shape-selector.md). The paper-claimed +13.7% sequential→MAB-optimized result was falsified on EPYC at temperature=0 greedy: tree at p_split=0.05 produces BYTE-IDENTICAL outputs to linear p_split=0 (verifier collapses to greedy path) while adding wasted draft+verify overhead. End-to-end: Coder −18% mean (high variance ±48% CV), REAP +1.4% (within noise).
+
+**Narrow closure scope**: MAB selector over the paper's arm pool cannot recover headroom that is structurally absent when the greedy verifier discards non-greedy branches. The closure does NOT generalize to:
+- Sampling-temperature regime (where non-greedy branches might be accepted)
+- Different arm pools (the paper's pool is heap-spec-derived; an arm pool tuned to EPYC's 96-core verifier could differ)
+- Non-MoE targets (this was tested on Coder-30B and REAP-246B only)
+
+This is a closure-inflation-policy-compliant gate enumeration: the paper's specific arm pool × greedy regime is closed. The general MAB selector technique remains open under different conditions.
+
+### Amdahl ceiling for spec-dec end-to-end gain (cross-cutting)
+
+Spec-dec round decomposes as: drafter forward + target verification + accept-evaluation. All three orthogonal axes added in 2026-04-28 (MoE-Spec budget, MAB tree topology, slot-promotion) target the verification step only, and inherit the same Amdahl ceiling. REAP +13.5% pp32 verify → +3% e2e because drafter+accept-eval are unchanged.
+
+This means NUMA-4-way concurrent serving (~6.7× frontdoor aggregate, see [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md)) remains the primary CPU acceleration lever. Spec-dec axes are stacking incremental gains on top of an already-saturated verification-step budget. To push past the Amdahl ceiling, future work would need to accelerate the drafter forward or accept-evaluation steps independently.
+
+### Mamba Drafters EMNLP'25 Findings (intake-491)
+
+External SSM drafter for Transformer target: Mamba-130M matches/beats much larger Pythia drafters at constant memory vs context length. Memory at 8k context: Mamba 52 GB vs EAGLE 72 GB total. The accompanying tree-based MAB optimizer (the §3.2 result above): sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B / GSM-8K (paper).
+
+Acceptance limitations (per the paper):
+- Hidden-state backtracking: Mamba discards previous hidden states, complicating rejection recovery
+- Tree-verification incompatibility: SSM sequential token processing precludes parallel path verification on the drafter side
+- Hyperparameter sensitivity
+
+Verdict: worth_investigating. The principle (SSM drafter for Transformer target) generalizes, but Pythia-6.9B / Mistral-7B target+drafter combos in the paper are too small to map directly onto our 30B / 246B stack. Bookmarked for future investigation when a larger SSM drafter checkpoint becomes available.
 
 ## Open Questions
 

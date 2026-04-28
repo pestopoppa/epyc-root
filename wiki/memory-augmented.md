@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-04-21
+**Last compiled**: 2026-04-28
 **Sources**: 21 documents (1 deep-dive, 16 intake entries, 2 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
@@ -102,3 +102,28 @@ The connection between memory and the autopilot is especially significant. Befor
 - [intake-316](https://x.com/chrysb/status/2043020014035570784) Long-Term Memory survey -- nine-axis design space, raw vs derived tension, unsolved forgetting policies (worth_investigating, high relevance)
 - [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval R@5, palace hierarchical architecture (wings/rooms/drawers), +34% from metadata filtering (new_opportunity, high relevance)
 - [intake-346](https://mem0.ai/blog/state-of-ai-agent-memory-2026) Mem0 -- $24M cloud memory platform, ~85% LongMemEval, LLM-based extraction (worth_investigating)
+
+## Updates — 2026-04-28
+
+This update records two Flywheel patterns from intake-492 — the wikilink learning-loop scorer (deferred) and the read-side `memory(action=brief)` token-budgeted assembler — both as design references, not adopt_component.
+
+### Flywheel wikilink learning-loop scorer pattern (intake-492, K8 deferred)
+
+Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) K8:
+
+- **Pattern**: auto-wikilink suggestion uses accept/reject feedback to update a graph-edge scorer over time. Scorer combines alias matching + co-occurrence statistics + graph topology + semantic context. Each accepted suggestion increments the edge weight; each rejected suggestion decrements. Over time the scorer learns the project's actual link conventions.
+- **Adapted use**: for `wiki/INDEX.md` compilation pipeline, weight cross-document links by validation feedback. When the linter or user rejects a cross-link suggestion, the scorer learns to suppress similar suggestions; when accepted, it learns to surface them.
+- **Deferred** until KB-RAG K1–K7 ships and measured wiki-cross-link quality gaps emerge. No point training a scorer when the underlying retrieval pipeline is in flux.
+- **Harness is Node/MCP-specific.** Python re-implementation non-trivial: Flywheel's scorer lives inside the Obsidian-coupled MCP runtime. The pattern is portable; the code is not.
+
+### Flywheel `memory(action=brief)` token-budgeted assembler with confidence decay (intake-492)
+
+- **Read-side**, NOT promote-to-persistent. Earlier framing was inaccurate (corrected in `wiki/context-management.md` 2026-04-28 Updates).
+- **What it does**: assembles a query-scoped brief from already-persisted vault content within a token budget. Confidence decay weights older entries lower; budget cap prevents unbounded growth.
+- **Why useful as design reference for memory-augmented systems**: shows how a folded-summary side-car *should be queried*. Not "give me everything tagged X"; instead "give me the highest-confidence brief for query Q within token budget B." This shape applies to the EPYC strategy-store and skill-bank as a future query-API upgrade.
+- **NOT a write primitive.** Persistence in Flywheel happens via separate write tools.
+
+### Sources
+
+- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K8 wikilink learning-loop scorer (deferred)
+- intake-492 (Flywheel) — wikilink scorer pattern + read-side `memory(action=brief)` assembler

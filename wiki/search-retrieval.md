@@ -2,7 +2,7 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
+**Last compiled**: 2026-04-28
 **Sources**: 25 documents (added intake-428/430/431 LightOn DenseOn/LateOn)
 
 ## Summary
@@ -122,3 +122,55 @@ Research intake evaluated two page-scraping tools complementary to SearXNG (whic
 - [intake-407](https://arxiv.org/abs/2304.01982) XTR: Rethinking the Role of Token Retrieval in Multi-Vector Retrieval -- Google DeepMind; token-subset scoring claims 100–1000x cheaper inference vs full MaxSim, confirmed by Witchcraft accuracy/speed profile
 - [Reason-mxbai-colbert-32m deep-dive](../research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md) -- 2026-04-24: 32M-param edge-scale ColBERT fine-tuned for reasoning retrieval (BGE-reasoner + ReasonIR-HQ). On BRIGHT natural-language splits (biology 32.71, earth_science 43.88, sustainable_living 20.77, pony 20.73) it matches or beats the 150M Reason-ModernColBERT sibling — those are exactly our web_research workload pattern. The −3.6 BRIGHT full-mean gap is entirely from symbol-dense splits (leetcode, aops, theoremqa) due to case-insensitive tokenizer + sans_pos + 10-layer base depth. Extrapolated CPU latency ~40–50 ms p50 per 10-snippet call vs 180 ms for deployed 150M GTE. Targeted as the **3-slot operating-point fallback** in `colbert-reranker-web-research.md` S5 (GTE baseline / LateOn primary / Reason-mxbai fallback), conditional on ONNX INT8 parity + ≤80 ms p50 latency probe + A/B within 1pp of LateOn.
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m -- 2026-04-22 release; widened projection head 64→128 dim preserving first 64; two-stage curriculum (VL warmup → BGE-reasoner/ReasonIR-HQ hard negatives); CachedContrastive loss; 8×H100 training on PyLate.
+
+## Updates — 2026-04-28
+
+This update records the internal KB-RAG architecture extension (K1–K8 plan), confirms LateOn drop-in upgrade readiness, captures Reason-mxbai-colbert-v0-32m as edge-scale fallback candidate with explicit Tier 2b caveats, and points at SLIDERS as a parallel architecture for cross-source aggregation.
+
+### Internal KB-RAG architecture extension (2026-04-28)
+
+Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md):
+
+- ColBERT-based RAG over the project's own wiki + handoffs + research + progress logs. Same multi-vector late-interaction architecture as web_research reranking; corpus is internal documents.
+- **K1**: extracts shared encoder module from web_research path. Avoids duplicating ONNX runtime + tokenizer + MaxSim scoring code; single import surface for any reranking call site.
+- **K7**: adopts Flywheel's HotpotQA + LoCoMo eval methodology. Python re-implementation of the eval harness; the harness *code* is Node/MCP/Obsidian-coupled and is NOT lifted.
+- **K8** (wikilink learning-loop scorer) is deferred — see `wiki/memory-augmented.md` 2026-04-28 Updates.
+
+### LateOn drop-in upgrade ready (NIB2-47, 2026-04-22)
+
+Per [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) S3b/S5-amend:
+
+- **Code complete.** PyLate parity script, `LATEON_MODEL_PATH` env var override, 13/13 tests landed.
+- **Execution run deferred** pending `colbert-export` extras install (PyLate has a colbert-export optional extra needed for ONNX export of the LateOn checkpoint).
+- **A/B gated on AR-3 Package D web_research data.** Comparison is LateOn (BEIR 57.22) vs deployed GTE-ModernColBERT-v1 (BEIR 54.67). Decision criterion: LateOn must show at least parity on EPYC's web_research workload before swap.
+
+### Reason-mxbai-colbert-v0-32m edge-scale fallback candidate (intake-453)
+
+- **Target use case**: 32M-param CPU-latency-budget candidate for ~40-50ms p50 per 10-snippet rerank, vs 180ms for the deployed 150M GTE.
+- **BRIGHT performance**: 19.00 full-mean (−3.6 vs Reason-150M sibling). Matches or beats 150M sibling on the natural-language splits that resemble web_research traffic: biology 32.71, earth_science 43.88, sustainable_living 20.77, pony 20.73. The accuracy gap is concentrated in symbol-dense splits (leetcode, aops, theoremqa) due to case-insensitive tokenizer + sans_pos + 10-layer base depth.
+- **ONNX INT8 export unvalidated.** PyLate→ONNX export path exists but has not been measured on this checkpoint.
+- **Apache-2.0 frontmatter but CC-BY-NC-4.0 body license conflict** noted in README. Has to be resolved before any commercial-adjacent deployment.
+
+**Caveats (Tier 2b)**:
+
+1. README license conflict (Apache-2.0 frontmatter vs CC-BY-NC-4.0 body) must be resolved before any commercial-adjacent deployment. For our open-source-only self-hosted use this is a documentation issue, not a deployment blocker, but should be confirmed with the model authors.
+2. **No ONNX INT8 variant shipped.** PyLate→ONNX export is an unvalidated dependency for our pipeline (pipeline expects `model_int8.onnx` style artifacts).
+3. Base mxbai-edge-colbert-v0 authors self-describe as "proof-of-concept baseline." Reason fine-tune inherits this framing.
+4. Released 2026-04-22; **no third-party replication yet**. Numbers are author-reported only.
+
+**Action**: queue S5 as A/B candidate after AR-3 web_research sentinel data lands. Current operating-point fallback chain: GTE baseline → LateOn primary → Reason-mxbai 32M edge-scale fallback (latency-budget routes only).
+
+### SLIDERS as alternative architecture (intake-494)
+
+- **Cross-link to `wiki/rag-alternatives.md`.** SLIDERS targets cross-document aggregation via DB+SQL (3.9M-36M tokens per corpus); web_research reranking targets snippet selection from ~10-100 docs per query.
+- **Not on the same scaling axis** as web_research reranking. Listing here as one-line pointer for index completeness only.
+- Closure-inflation note: SLIDERS is a parallel architecture, not a competitor or upgrade path for ColBERT-family rerankers.
+
+### Sources
+
+- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K1–K8 plan, K7 Flywheel methodology
+- [`handoffs/active/colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — S3b/S5-amend LateOn drop-in upgrade
+- [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — edge-scale fallback candidate (Tier 2b caveats)
+- [`research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md`](../research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md) — full deep-dive
+- intake-492 (Flywheel) — HotpotQA + LoCoMo eval methodology lifted (Python re-implementation, NOT Node/MCP runtime)
+- intake-494 (SLIDERS) — parallel architecture, cross-link to `wiki/rag-alternatives.md`

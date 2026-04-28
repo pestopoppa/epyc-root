@@ -2,7 +2,7 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-26
+**Last compiled**: 2026-04-28
 **Sources**: 25 documents (2 deep-dives, 4 handoffs, 19 intake entries)
 
 ## Summary
@@ -129,6 +129,69 @@ The IPC machinery (`ep_dispatcher` 0.73 μs RTT, env-var bootstrap, NUMA pinning
 - **FlashMoE SSD offloading (intake-167)**: ML-based cache replacement for SSD-offloaded experts. Not directly applicable (our models fit in RAM) but relevant if we need to run models exceeding 768 GB. Cache replacement strategies for hot/cold experts could inform NUMA-aware expert placement. [intake-167](https://arxiv.org/abs/2601.17063)
 
 - **SpecMoEOff (intake-168)**: Hides offloading latency by overlapping expert loading with speculative decoding. Interesting architecture but not applicable -- our models are fully RAM-resident. The principle of overlapping expert loading with drafting could be relevant for future ultra-large models. [intake-168](https://arxiv.org/abs/2508.21706)
+
+## Updates — 2026-04-28
+
+### Large-MoE as primary CPU target (2026-04-26 reframe)
+
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). The single-instance vs concurrent gap on Coder-30B-A3B Q4_K_M is 2.13×: single-instance NPS4 best is 48.81 t/s vs concurrent 48×4t aggregate ~104 t/s. REAP-246B single-instance is 5.94 t/s and has no viable concurrent serving path due to NUMA memory contention.
+
+Strategic reframe: shift the CPU-optimization target from 30B-class models (where concurrent NUMA-4-way already wins) to ≥100B sparse MoE where total params fit RAM but only a fraction are activated per token. Expert parallelism (EP) exploits the 4-way NUMA + 12-CCD topology to convert aggregate bandwidth to single-stream throughput — turning an aggregate-only win into a per-stream win.
+
+### Inter-process EP Phase 3 results — honest baselines (2026-04-26)
+
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). 13 commits on `feature/cpu-ep-inter-process` during the 2026-04-26 session, with honest `--mmap 0` canonical baselines that supersede the earlier warmed-baseline artifact (which had inflated Qwen3.6-35B-A3B to +100%):
+
+| Model | Class | Honest baseline | EP best | Δ |
+|-------|-------|-----------------|---------|---|
+| Qwen3.6-35B-A3B Q8_0 | frontdoor | 17.0 t/s | 19.90 t/s | **+17%** |
+| Gemma-4-26B-A4B Q4_K_M | medium | 28.5 t/s | 30.3 t/s | **+6%** |
+| REAP-246B Q4_K_M | large | 6.89 t/s | regress | neutral / regress |
+| MiniMax-M2.7 Q8_0 | large | 9.98 t/s | regress | neutral / regress |
+
+The earlier +100% Qwen3.6-35B-A3B result was a measurement artifact — warmed page cache on the EP run vs cold on the baseline. The honest +17% is bit-identical PPL (32-chunk WikiText-2 verified).
+
+REAP-246B and MiniMax-M2.7 (>150B) attribution is **open** pending CPU24 uncore counters. Not bandwidth-saturation-closed — earlier "exhausted" framing was closure-inflation. The leading hypothesis is thread oversubscription in master-all-nodes configs (96 + 24×3 threads on 96 physical cores) plus unresolved sync/imbalance effects.
+
+**Drone mode**: workers skip non-MoE ops and receive src1+ids from master at each MoE op. PPL bit-identical on Qwen3.6-35B-A3B Q8_0 (32-chunk WikiText-2 verified).
+
+**Production routing decision**:
+
+| Total params | Mode | Reason |
+|--------------|------|--------|
+| < 50B MoE | EP N=2 drone+shard, 48t per instance | Compute-bound, parallelism wins |
+| 50–150B MoE | EP N=2 drone+shard (validate first) | Likely benefits, bandwidth-edge |
+| > 150B MoE | single-instance --numa distribute 96t | EP regresses; attribution open |
+
+### MoE-Spec verification-batch CPU mechanism
+
+Per [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) — see [speculative-decoding.md](speculative-decoding.md) for full mechanism description. The MoE-relevant points:
+
+- Cache-aware, BW-bound mechanism: `--moe-spec-budget N` aggregates routing softmax across the verification batch and shrinks the active-expert union before `argsort_top_k`
+- Verified +15.2% pp32 on REAP-246B Q4_K_M B=40 (Phase 1 forward-pass)
+- End-to-end +3.3% on REAP-246B (Phase 2 v5 PGO; Amdahl-attenuated because drafter+accept-eval are unchanged)
+- Mechanism rationale on EPYC: L3 (~32 MB per CCD × 12 = 384 MB) is far below total expert-weight footprint (REAP 138 GB at Q4_K_M). Per-batch top-B shortlist directly cuts DRAM expert-weight reads, the dominant cost per CPU24 attribution
+- Final verdict: REAP-246B B=40 deployable behind env-gate; Coder-30B B=64 NOT deployable (mask-overhead/total-compute marginal, defer to Phase 3)
+
+### Dynamic expert selection Phase 0 entropy probe NEGATIVE
+
+Per [`moe-dynamic-expert-selection.md`](../handoffs/active/moe-dynamic-expert-selection.md). The entropy-gated K candidate (vary number of active experts per token based on routing entropy) was falsified at Phase 0: routing distribution on Coder-30B is bimodal, not high-entropy-tail-distributed, so an entropy threshold cannot select a low-K vs high-K regime cleanly. Pathfinder deprioritized as offline.
+
+Other candidates remain queued for Phase 0 diagnostic-only probes (~3–4 hours total):
+- **Dynamic-skipping**: per-token β threshold (skip expert evaluation when gate weight is below threshold)
+- **OD-MoE lookahead**: 84–91% prediction accuracy for next-token expert set, enabling prefetch
+
+Both Phase 0 are diagnostic — measure prediction accuracy / threshold curves, then decide whether to invest in implementation.
+
+### Per-CCD / per-process expert sharding variants (Phase 1+)
+
+Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md). Two variants tracked under the EP umbrella:
+
+- **Variant 1 — intra-process per-CCD**: reuses the CPU1 substrate (NPS4 + GGML_NUMA_WEIGHTS=1). Expert weights reorganized per-CCD so each CCD's threads pull from L3-local expert ranges. Composes with existing single-instance bandwidth wins.
+
+- **Variant 2 — inter-process**: 4 instances (one per NUMA), with replicated attention/dense weights and expert dispatch via shared-memory IPC. This is the Phase 3 path that landed +17% on Qwen3.6-35B-A3B (above). Still has open attribution on >150B.
+
+**Phase 3.4 candidate — 2DH ring-buffer**: port Tutel's 2DH (two-dimensional hierarchical) all-to-all (arxiv:2206.03382) to the CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing the measured REAP-246B (-53% earlier baseline, neutral-regress now) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open.
 
 ## Actionable for EPYC
 

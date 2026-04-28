@@ -68,7 +68,9 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 gated on post-AR-3 analysis |
+| [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
+| [Knowledge Management](knowledge-management.md) | 6 | KB-RAG ColBERT architecture (K1–K8); Flywheel HotpotQA+LoCoMo eval methodology adopted for K7; wiki compilation governance |
+| [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
 | [Tool Implementation](tool-implementation.md) | 12 | GitNexus: context injection outperforms tools; "real REPL, mock LLM" integration test pattern; risk-weighted coverage methodology |
 
 ## Research & Analysis
@@ -90,9 +92,9 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 | Category | Intake Entries | Notes |
 |----------|---------------|-------|
 | `emotion_psychology` | 18 | Persona, cognitive science of LLMs — not central to inference optimization |
-| `knowledge_management` | 10 | Meta-category about this wiki and KB governance patterns |
+| ~~`knowledge_management`~~ | — | Promoted to full article 2026-04-28 → [Knowledge Management](knowledge-management.md) |
 | `mechanistic_interpretability` | 23 | Sparse autoencoders, circuit analysis — tangential to production stack |
-| `rag_alternatives` | 2 | Covered by [Search & Retrieval](search-retrieval.md) |
+| ~~`rag_alternatives`~~ | — | Promoted to full article 2026-04-28 → [RAG Alternatives](rag-alternatives.md) |
 | `safety` | 4 | Covered by [LLM Prompting](llm-prompting.md) CoT monitorability findings |
 | `swarm_techniques` | 7 | Partially covered by [Agent Architecture](agent-architecture.md) and [Autonomous Research](autonomous-research.md) |
 

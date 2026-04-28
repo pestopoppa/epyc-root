@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-04-27
+**Last compiled**: 2026-04-28
 **Sources**: 23 documents (1 dedicated deep-dive, 18 intake entries, 5 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
@@ -64,6 +64,43 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **Singular-value fine-tuning (SVD-FT) is a parameter-efficient adaptation cheaper than LoRA, with measured +3-4 point gains.** Trinity learns only singular-value scales while keeping orthogonal matrices fixed (~9K extra params on the backbone, on top of the 10K head). Their ablation: removing SVD-FT costs −3 to −4 points across all four benchmarks. Applicable to whatever backbone we use as a routing-head feature extractor. We currently treat BGE as fully frozen — a free-money trial. [intake-474, learned-routing-controller P4.3]
 
 - **Pool-homogeneity caveat is layer-specific.** Trinity's 21.9% mean error reduction comes from a heterogeneous 7-LLM pool with massive quality variance (GPT-5 vs Gemma-3-27B). Our open-source-only **inner inference pool** is narrower — projected gain magnitudes should be discounted 2–5×. But our **outer Claude-driven coordination layer** (autopilot, Claude Code) IS heterogeneous: Claude vs cheap-frontdoor vs specialist-coder is a wider quality gradient than the inner pool, closer to Trinity's regime. The deep-dive's revised reading is that *the outer layer is the closer Trinity match*, which led to a separate scoping handoff [`outer-coordinator-learned-head.md`](../handoffs/active/outer-coordinator-learned-head.md) (Phase OC-0 only, gated until tri-role + DAR + LRC Phase 4 land). [intake-474, deep-dive section 2.3]
+
+### New Findings (2026-04-28 — BaRP + LLM Bandit + design-space landscape)
+
+- **Decision-Aware Routing (DAR) phase plan extension.** Per [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md), DAR-1 (offline regret analysis on 7,211 routing decisions, 96% uniform Q-values) and DAR-2 (contrastive Q-update, ~65 LoC, flag `CONTRASTIVE_Q_UPDATES` ON by default) landed 2026-04-15. New phases scoped: DAR-3 SPO+ with epsilon-greedy exploration (~100 LoC, pending), DAR-4 bilinear `Q(prompt, model) = sigmoid(v_model^T W v_prompt + b)` (~200 LoC, pending), **NEW DAR-4b** inference-time 2-D performance/cost preference vector + cost scaling τ (~50–100 LoC, no retraining required), **NEW DAR-5** IRT-augmented prompt features + learned model identity vectors replacing hard-coded model specs (~150 LoC, conditional on DAR-4). Sources: intake-495 (BaRP, arxiv:2510.07429) for DAR-3 motivation + DAR-4b; intake-496 (LLM Bandit, arxiv:2502.02743) for DAR-5.
+
+- **Tri-role coordinator architecture (Trinity-derived).** Per [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md), add per-call role axis (Thinker/Worker/Verifier) orthogonal to model selection. Trinity ablation: removing tri-role costs −5 to −8 points; second-largest empirical lever after feature-position. Optimizer-independent — can ship under SFT, contrastive Q-update, or sep-CMA-ES alike. [intake-474]
+
+- **Learned-routing controller Phase 4 audits + Phase 5 (intake-496-derived).** Per [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md). P4.1 feature-position audit (BGE CLS vs mean vs last-layer; Trinity penalty >10 pts reminder); **NEW P4.1.3** IRT-feature variant bundled into P4.1 (+1 session); P4.2 block-ε-separability diagnostic; P4.3 SVD-FT trial (+3–4 pts expected); P4.4 sep-CMA-ES cold-start spike (10h overnight at 32-way concurrency, gated on P4.2 favourable); **NEW Phase 5** IRT-stratified cold-start onboarding (P5.1 IRT scorer + P5.2 cold-start A/B vs on-disk full sweep + P5.3 production rollout). **Most actionable single experiment from intake-495/496**: P5.2 — every model swap currently triggers a multi-hour benchmark sweep; if the IRT-stratified 50-prompt onboarding agrees within ≤5% on each baseline feature with ≥5× wall-clock advantage, future swaps compress to ~30 minutes. [intake-496, learned-routing-controller P4.1.3 / P5]
+
+- **Four published reference points — design-space landscape (2026-04-28).** The learned-coordinator literature now exhibits four distinct, well-documented points; tracking them explicitly so design discussions can place new proposals on the map:
+  - **BaRP** (intake-495, arxiv:2510.07429): bandit-feedback training + 2-D performance/cost preference vector at inference time.
+  - **LLM Bandit** (intake-496, arxiv:2502.02743): IRT scorer for prompts + learned model identity vectors + IRT-stratified cold-start onboarding.
+  - **Trinity** (intake-474, arxiv:2512.04695, ICLR 2026 Sakana AI): sep-CMA-ES on 0.6B backbone + 10K head + tri-role action space.
+  - **Conductor** (intake-493, arxiv:2512.04388, ICLR 2026 Sakana AI): 7B GRPO + `(worker_id, NL_subtask, access_list)` action space; 2× H100 80GB; topology emerges from access-list, "role" is NOT a Conductor primitive.
+
+  EPYC adopts patterns from BaRP + LLM Bandit (DAR-3/4b/5, LRC P4.1.3/P5); tracks Trinity selectively (tri-role architectural change is a real candidate; sep-CMA-ES is the realistic CPU-feasible escalation gated on LRC P4.2); treats Conductor as **competitive intelligence ONLY** (NOT a target — GPU-class architecture out of CPU stack). Closure-inflation discipline: do not generalize "Conductor 7B GPU is out of scope" to "no learned coordinator could ever work" — Trinity's sep-CMA-ES on a 10K-param head is the CPU-feasible counterexample that falsifies the generalization. [intake-474, intake-493, intake-495, intake-496]
+
+- **Outer-coordinator OC-0 scoping (speculative, gated).** Per [`outer-coordinator-learned-head.md`](../handoffs/active/outer-coordinator-learned-head.md). OC-0.1–0.5 scoping (Claude-driven autopilot loop decision inventory + fitness signal + cost-benefit + escalate-or-close). **NEW OC-0.6** populate Trinity + Conductor design-space-reference comparison table inside the OC-0 deliverable (action space, optimizer + cost, replication risk, code/weights status, what to learn from / what NOT to copy) — explicit framing as competitive intelligence per user direction. [outer-coordinator-learned-head.md OC-0.6]
+
+## Updates — 2026-04-28
+
+### Source pointers added
+
+- [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — DAR-1/2 done (2026-04-15), DAR-3 SPO+ pending, DAR-4 bilinear scorer pending, DAR-4b 2-D preference vector NEW (BaRP-derived), DAR-5 IRT prompt features + learned model identity NEW (LLM-Bandit-derived).
+- [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) — Phase 1 92% val acc landed; P4.1–P4.4 Trinity audits scoped; P4.1.3 IRT-feature variant added (+1 session inside P4.1); Phase 5 IRT-stratified cold-start onboarding NEW (P5.1 scorer / P5.2 A/B vs on-disk full sweep / P5.3 production rollout).
+- [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) — Trinity-derived role axis (Thinker/Worker/Verifier), TR-1..TR-5 phase plan; optimizer-independent.
+- [`outer-coordinator-learned-head.md`](../handoffs/active/outer-coordinator-learned-head.md) — OC-0 scoping handoff with NEW OC-0.6 design-space comparison table (Trinity + Conductor as competitive intelligence reference).
+- [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — Trinity methodology cross-check, portable-vs-not split, replication budget estimate.
+- intake-474 (Trinity, ICLR 2026 Sakana AI) — sep-CMA-ES + 10K head + tri-role.
+- intake-491 (Mamba Drafters) — referenced for cross-architecture context.
+- intake-493 (Conductor, ICLR 2026 Sakana AI) — 7B GRPO; competitive intelligence only.
+- intake-495 (BaRP, arxiv:2510.07429) — bandit-feedback training + 2-D ω preference vector.
+- intake-496 (LLM Bandit, arxiv:2502.02743) — IRT prompt scorer + learned model identity + cold-start.
+
+### Cross-references
+
+For the cost-side adoption rationale for DAR-4b ω preference vector and DAR-5 IRT prompt features see [Cost-Aware Routing](cost-aware-routing.md). For the optimizer-design-space methodology — ES vs REINFORCE on block-ε-separable surfaces, REINFORCE collapse pathology, GRPO at 7B — see [Reinforcement Learning](reinforcement-learning.md).
 
 ## Actionable for EPYC
 

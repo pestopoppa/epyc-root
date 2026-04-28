@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-04-27
+**Last compiled**: 2026-04-28
 **Sources**: 33 documents (10 deep-dives, 20 intake entries, 6 handoffs)
 
 ## Summary
@@ -195,3 +195,73 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [Trinity deep-dive](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — methodology cross-check vs our stack, portable-vs-not split, replication budget estimate, 9 refined recommended actions.
 - [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (Chu et al., 42 authors HKUST/NUS/Oxford/CUHK/NTU/HKU/UW; cs.AI 2026-04-24). Survey introducing **Levels × Laws** taxonomy: capability levels L1 Predictor / L2 Simulator / L3 Evolver × four governing-law regimes physical/digital/social/scientific. Synthesizes 400+ works, 100+ representative systems. Verdict: `adopt_patterns` (vocabulary + four-principle rubric, NOT full framework). EPYC stack mapping: autopilot = L3-Evolver / Digital, agent-world ETD = L2-Simulator → L3-Evolver bridge / Digital, meta-harness = L3-Evolver / Digital, q-scorer = L1-Predictor / Digital. Section 5.4 governance recipe (regression / robustness / rollback / canary gates) maps line-for-line onto autopilot SafetyGate. Section 6.1 four evaluation principles (long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use) testable in existing AR-3 today. MREP (Section E.6) proposed but not released; companion repo `matrix-agent/awesome-agentic-world-modeling` is bibliography-only.
 - [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy with EPYC-stack mapping, governance recipe alignment, four-principle rubric, Beyond-L3 framing for Species 3 with closure-inflation guard, MREP watch.
+
+## Updates — 2026-04-28
+
+This update consolidates the Trinity-derived tri-role architecture (intake-474), defines the Conductor + Flywheel "design-space-reference" pattern as competitive intelligence (intake-492, intake-493), scopes the outer-coordinator OC-0 deliverable, situates meta-harness Tier 3's deferred outer-loop rebuild relative to Conductor, and confirms the pi-agent-core five-primitives cross-link.
+
+### Trinity-derived tri-role architecture (intake-474)
+
+Per [`tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) and the Trinity deep-dive (`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`, intake-474, ICLR 2026, Sakana AI):
+
+- **Decouple role from model.** Today every EPYC role (`frontdoor`, `architect_general`, `coder`, `reviewer`, `worker`) is *attached to a model* — a model permanently has a role. Trinity's insight: role is a *per-turn property of the dispatch*. The same model can serve as Thinker on turn 1, Worker on turn 3, Verifier on turn 5. The dispatch policy decides per-turn role assignment, independent of which weights run that turn.
+- **Empirical evidence.** Trinity ablation: removing the tri-role decomposition costs −5 to −8 points across all four benchmarks (LCB / Math500 / MMLU / RLPR). Removing Thinker alone costs −6.0 on Math500 and −4.57 on RLPR. The tri-role lever is the **second-largest empirical effect** in the paper after feature-position. This is the single most surprising finding: an architectural split below the model layer can dominate model selection.
+- **Trinity itself uses 0.6B coordinator + 10K-parameter linear head trained via sep-CMA-ES against terminal binary task fitness.** EPYC's learned routing controller would apply the same tri-role dispatch *post-coordination*: the routing classifier picks model + role per turn.
+- **Closure-inflation note.** Trinity is **NOT a target architecture**, it is a validated design-space reference. We do not plan to replicate Trinity's CMA-ES training, the 7-LLM heterogeneous pool with massive quality variance, or the 0.6B coordinator. We are taking the **architectural axis** (tri-role decomposition) and the **falsification value** (the −5 to −8 ablation gap) as standing comparative context for orchestrator and routing work.
+
+### Conductor + Flywheel as design-space-reference pattern (intake-493, intake-492)
+
+Both Conductor and Flywheel appear in [`meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) as **competitive intelligence references**, NOT target adoptions:
+
+- **Conductor (intake-493)** = scheduler + cache-aware routing. 7B GRPO on 2× H100. Out of CPU stack — we cannot replicate the GRPO training, and a 2× H100 hardware target is GPU-gated. Reference value: validates that learned scheduling + cache-aware routing as joint optimization target is a legitimate design choice. Our learned-routing controller is a Conductor analogue at the model-selection layer; Conductor's scheduling layer is what our `dynamic-stack-concurrency.md` would converge toward at scale.
+- **Flywheel (intake-492)** = durable memory + atomic-undo write contract. Node/MCP/Obsidian runtime. Lift-and-shift is not viable (Node-specific runtime, Obsidian-coupled). Reference value: the **abstract write contract** (atomic undo + content-addressed persistence) IS portable — applicable to `internal-kb-rag.md` K8 and `repl-turn-efficiency.md` durable-workflow patterns. The runtime is not.
+
+**Pattern: design-space-reference table.** When recording an external system as competitive intelligence rather than a target, document:
+
+| Field | Purpose |
+|-------|---------|
+| Roles | What the external system does |
+| Key differences from EPYC | Where the architectural axes diverge |
+| Why we reference | Validation of design trade-offs, NOT prescriptive target |
+| Portable subset | Specific patterns/contracts that lift cleanly |
+| Non-portable subset | Hardware/runtime/license constraints |
+
+This is a deliberate anti-closure-inflation pattern: it forces a record of *what we are NOT adopting*, preventing the "we considered Trinity therefore we have a Trinity-class system" failure mode.
+
+### Outer-coordinator OC-0 scoping (gated)
+
+Per [`outer-coordinator-learned-head.md`](../handoffs/active/outer-coordinator-learned-head.md):
+
+- **Speculative; gated until tri-role + DAR + LRC Phase 4 land.** OC-0 is a scoping document only — no implementation work has started. The phase order matters: until tri-role decoupling exists in the inner orchestrator, an outer coordinator has no per-turn role to dispatch over.
+- **OC-0.6 NEW (2026-04-28)** populates the Trinity + Conductor design-space-reference comparison table inside the OC-0 deliverable, framed as competitive intelligence per user direction. The table follows the design-space-reference pattern above: roles, key differences from EPYC, why we reference, portable/non-portable splits. Trinity columns reference the deep-dive's revised reading that the *outer Claude-driven coordination layer* is the closer Trinity match than the inner inference pool (Claude vs cheap-frontdoor vs specialist-coder is a wider quality gradient than the inner pool).
+
+### Meta-harness Tier 3 deferred outer-loop rebuild
+
+Per [`meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md):
+
+- **Tier 1+2 done.** PromptForge integrated, GEPA folded into AR-3 Package D at 30% of mutation trials.
+- **Tier 3 deferred.** "Outer-loop rebuild" is the design-space target where the harness searches over its own optimisation procedure (not just prompts/code). Phase 2 of env_synth (Agent-World GRPO) would be the first Tier 3 implementation; currently GPU-gated.
+- **Conductor analogue for Tier 3.** A Conductor-style scheduler dispatching INTO meta-harness's optimised configurations is **compositional, not competitive** — Conductor would consume meta-harness Tier 2 output (validated harness configurations) and select per-request. This composition is hypothetical and tracked as design-space reference, not as scheduled work.
+
+### pi-agent-core five primitives (cross-link confirmed)
+
+The five named primitives from intake-473's pi-agent-core deep-dive remain in scope as naming/factoring lift, no code port:
+
+1. Two-stage message pipeline (`transformContext` per turn at agent-message level, `convertToLlm` filter to LLM-strict payload).
+2. `beforeToolCall` / `afterToolCall` hooks with field-replace-only semantics and per-call throw-isolation.
+3. Steering-vs-followup queue split with `one-at-a-time` (default backpressure) vs `all` (drain-everything) drain modes.
+4. Per-tool `executionMode` override with batch-falls-back-to-sequential rule.
+5. Terminate-unanimous-batch rule — early stop only fires when *every* tool result in the batch sets `terminate: true`.
+
+Cross-links to current handoffs (`hermes-outer-shell.md`, `meta-harness-optimization.md`, `repl-turn-efficiency.md`, `tool-output-compression.md`, `context-folding-progressive.md`) remain active as of 2026-04-28; no new cross-references added.
+
+### Sources
+
+- [intake-474](https://arxiv.org/abs/2512.04695) TRINITY: An Evolved LLM Coordinator (ICLR 2026, Sakana AI)
+- [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
+- [`handoffs/active/tri-role-coordinator-architecture.md`](../handoffs/active/tri-role-coordinator-architecture.md) — TR-1..TR-5
+- [`handoffs/active/outer-coordinator-learned-head.md`](../handoffs/active/outer-coordinator-learned-head.md) — OC-0.6 design-space reference
+- [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) — Conductor/Flywheel competitive intelligence, Tier 3 deferred
+- intake-492 (Flywheel — durable memory + atomic-undo write contract; Node/MCP/Obsidian runtime non-portable, abstract contract portable)
+- intake-493 (Conductor — 7B GRPO on 2× H100; reference value only, GPU-gated)
+- [intake-473](https://github.com/badlogic/pi-mono/tree/main/packages/agent) `@mariozechner/pi-agent-core` — five-primitives cross-link confirmed

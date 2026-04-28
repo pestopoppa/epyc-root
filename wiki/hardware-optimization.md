@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-28 evening (CPU11 LTO + CPU12 BOLT-libomp extensions added)
+**Last compiled**: 2026-04-28
 **Sources**: 38 documents
 
 ## Summary
@@ -803,3 +803,112 @@ Forward-looking entry, not actionable on current CPU stack. Compiled so the GPU-
 - [tilelang-puzzles-kernel-dsl.md](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — full deep-dive with kernel-family matrix, AMD path, BitBLAS connection, risk register
 - [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md) — parent GPU-gated handoff (2026-04-28 deep-dive integration section)
 - intake-458 (FlashInfer), intake-465 (CUTLASS), intake-466 (Triton), intake-464 (FA3) — adjacent GPU-day kernel-DSL entries from 2026-04-26 curriculum batch
+
+## Updates — 2026-04-28
+
+Consolidation pass over the CPU20→CPU25 rigor-and-attribution wave plus toolchain (CPU11/CPU12) and runtime (CPU21) finalization. Closure scope is narrowed throughout: low-level levers are exhausted **for the single-user single-socket NPS4 decode regime**, not globally.
+
+### Canonical CPU baseline (post-CPU20)
+
+The replication-grade baseline as of 2026-04-26 post-CPU21:
+
+```
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all --physcpubind=0-95 \
+  llama-bench -t 96 -fa 1 -p 0 -n 32 -r 3
+```
+
+Cold-cache reference numbers under this protocol: Coder-30B Q4_K_M = 47.08 ± 0.15 t/s; Qwen3.6-35B Q8_0 = 23.04 ± 0.01 t/s; REAP-246B Q4_K_M = 6.33 ± 0.00 t/s. The 48-thread NPS4 single-instance peak on Coder-30B Q4 stays 46.6 t/s (per `project_cpu1_48t_new_best`). 4×48t → 32×6t / 48×4t concurrent-split aggregate gains (+44–58%, up to +110% on Qwen3.6-35B-A3B Q8 = 135.1 t/s vs 64.3 baseline) reproduce under this baseline.
+
+CPU20 rigor gates are now binding for any compounding claim:
+- Rep counts scale with delta size: ≥10% = 3 reps; 5–10% = 5 reps; 2–5% = 5 reps; ≤2% = 10 reps.
+- Pre/post pgrep zombie-check on every run.
+- System-state capture: `numactl --hardware`, `kernel.numa_balancing`, THP state, scaling governor.
+- LD path identity smoke run via `LD_DEBUG=libs` to confirm libomp vs libgomp resolution.
+
+### CPU decode mechanism — DRAM-wait dominated
+
+CPU decode on EPYC 9655 NPS4 is DRAM-wait dominated, not ALU-bound (`feedback_cpu_decode_bw_bound`). Perf cycles inside dot loops are stalled on memory. Implication: do not write compute-focused ukernels for quantized decode without a bandwidth roofline check first. Two empirical confirmations:
+
+- **CPU2 Q8_0 8x8 AVX-512BW kernel**: single-thread +31.8% (1.12 vs 0.84 t/s, Qwen3.6-27B Q8_0); multi-thread plateau +1–3% at 12–96t. Both baseline and tuned kernel hit ~26% of the 460 GB/s socket roofline at 96t — same wall, different paths to it. PPL bit-exact (6.6985 ± 0.708). Production-viable, env-gated default-OFF (`GGML_Q8_0_8X8_AVX=1`).
+- **NUMA auto-mbind fix (commit `e84a5c82f`) was load-bearing**: without it the kernel regressed −2.8× at 96t because first-touch placement pinned all CPU_REPACK pages on NUMA node 0. `GGML_NUMA_REPACK_INTERLEAVE` (default ON) auto-mbinds CPU_REPACK ≥ 1 MiB; for Q8_0, mbind ON = +6% AND stabilizes variance. Default ON is correct.
+
+Zen 5 microarchitecture nuance preserved (`project_zen5_vnni_vs_maddubs`): VPMADDUBSW runs 2/cycle, VPDPBUSD runs 1/cycle, so the 8x8 kernel deliberately avoids VNNI.
+
+### NUMA / topology — closures
+
+- **L3aaN (BIOS L3-as-NUMA) — DECISIVE NEGATIVE, do not reactivate**. All 5 production models regressed −30 to −52% under `GGML_NUMA_MIRROR` (Coder-30B, Next-80B, REAP-246B, gemma-26B, Qwen3.6-35B). Reverted 2026-04-26. Per `project_l3aan_reverted`.
+- **GGML_NUMA_WEIGHTS=1 — DEPRECATED**. Process-wide `set_mempolicy(MPOL_INTERLEAVE)` is unstable on shared file-cache multi-NUMA hosts; per-region `mbind()` improved but the underlying mechanism remains unstable. CPU1 P3 isolation: `NW=1` alone = 20–33 ± 19–22 t/s (unstable; baseline 43.37); 3-flag stack without NW = 44.15 ± 0.13 (+1.8%, stable); full 4-flag stack with NW = broken. **Recommended CPU1 stack post-P3** (default-OFF until v5 audit confirms PPL bit-identical): `GGML_CCD_POOLS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1` — no NUMA_WEIGHTS.
+- **NUMA_MIRROR investigation closed DECISIVE NEGATIVE on single-socket NPS4** (CPU25, 2026-04-27). Hardware is DRAM-channel-bound, not fabric-bound. Compile flag `GGML_NUMA_MIRROR` stays default-OFF; production stack must NOT enable it. Reopen ONLY for 2-socket configs.
+
+### CPU runtime stack — libomp (CPU21)
+
+Apples-to-apples vs libgomp at fixed `-march=znver5`: Coder-30B Q4_K_M = +6.4% real (53.28 vs 50.06); Qwen3.6-35B Q8_0 = +0.8% (noise); REAP-246B Q4_K_M = −0.8% (noise). Model-specific win, not universal. Mechanism hypothesis: thinner per-thread row-shard tiles on Coder-30B (3.3B active params) benefit from libomp's scheduling and barrier heuristics; larger MoE and BW-bound classes saturate before runtime overhead matters.
+
+Universal affinity stack (adds +3–8% across model classes): `OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`. Trap to avoid: `OMP_WAIT_POLICY=passive` = −81.6% regression. `OMP_SCHEDULE=guided,16` is per-role opt-in only (+3.6% libgomp / +1.2% libomp on Coder-30B; neutral elsewhere).
+
+v5 deployment: clang-20 + libomp + `-march=znver5` as the universal binary — single audit story, +6.4% on Coder-30B, neutral elsewhere.
+
+### Build-time toolchain (PGO, BOLT, LTO) — compounding
+
+| Lever | v5 cherry-pick | Coder-30B Q4_K_M | Frontdoor Q8_0 | Compounds with stack |
+|-------|---|---|---|---|
+| clang-20 + libomp + `-march=znver5` | Universal | +6.4% baseline | +0.8% | YES |
+| + PGO (mixed-B profile) | Universal | +3.2% | +6.6% | YES |
+| + BOLT-libggml | Per-role (Coder only) | +2.1% (60.54 t/s) | −1.2% | NO (cross-model regressions) |
+| + LTO on top of PGO | Reject | −1.0% | — | NO (neutral; do not add) |
+
+Total compounded on Coder-30B: clang+libomp+znver5+PGO = +25.4% / 60.54 t/s vs original gcc+libgomp+no-march. PPL bit-exact at every step. v5 default = clang+libomp+znver5+PGO universal; per-role binary = + BOLT for Coder-30B-A3B-Instruct only.
+
+### Multi-tenant / context-regime (CPU23 Phase 2.2)
+
+Long-context TTFT on canonical 96-thread:
+
+| Model | TTFT @ 2K | TTFT @ 8K | TTFT @ 32K |
+|-------|---|---|---|
+| Coder-30B Q4_K_M | 4.2s | 24.6s | 262.4s |
+| Qwen3.6-35B Q8_0 | 5.2s | 22.0s | 146.8s |
+| Qwen3.6-27B dense Q8 | 18.8s | 78.0s | **403.6s** |
+
+Concurrent long-prompt-mid-stream interference (30K prefill + 10 sequential decode-32): Coder-30B (sync-bound MoE) shows **9.6× rep-1 TTFT amplification** (4.77 vs baseline 47.99 t/s); Qwen3.6-35B Q8_0 (BW-bound) 1.15× mild; Qwen3.6-27B dense 1.08× mild. Steady-state continuous batching (rep 2+) is within ±2% of baseline on all 3 classes — the spike is rep-1 only.
+
+### Closure-inflation accounting — exhaustion map
+
+Low-level CPU kernel/runtime/NUMA paths for **single-user single-socket NPS4 decode** are now mostly closed. Explicit scoping per `feedback_closure_inflation`:
+
+- **Exhausted in this regime**: CPU1 NUMA interleave (deprecated, unstable); CPU4 hierarchical barrier (one variant net-negative); CPU22 dynamic MoE work-stealing (−2.3% Coder; single-atomic contention dominates 15% sync-share ceiling); L3aaN (−30 to −52%); LTO-on-PGO (neutral).
+- **Narrow v5-ready wins**: CPU21 libomp+clang (+6.4% Coder-only); CPU21 affinity stack (+3–8% MoE Q4_K_M); CPU2 Q8_0 8x8 AVX-512BW (+31.8% at 1t, +1–3% at 96t); CPU11 PGO universal (+3.2 to +6.6%); CPU12 BOLT per-role Coder (+2.1%).
+- **Re-openable on workload shift**: Sarathi-Serve chunked prefill (deprioritized single-user; the 9.6× TTFT amplification under concurrent prefill invites re-promotion on multi-tenant API). CPU18 MegaBlocks (if batched-MoE / prefill workload shifts). CPU24 root-cause work (sync+compute bottleneck at 80–15% split).
+
+Broader claims ("software runway exhausted") are not made.
+
+### GPU path (parked behind hardware acquisition)
+
+vLLM DDTree+Dflash plan activates on GPU acquisition; community benchmark shows 91 tok/s accepted on Qwen3.5-27B AWQ + GB10 (DGX Spark). TileLang puzzles (intake-497) → BitBLAS path is the natural GPU successor to ggml's Q4_K_M / Q6_K / Q8_0 CPU kernels (low-bit GEMM in INT4/INT8/INT2). AMD MI300X parity reproduction (FlashMLA-MI300X) is potentially the cheapest GPU path; DGX Spark Blackwell at $4,699 (~70 t/s MoE decode) remains the most cost-effective NVIDIA option.
+
+### PPL bit-exactness gate (consolidated)
+
+v5 cherry-pick candidates have all passed PPL bit-exactness:
+
+| Lever | PPL (Coder-30B Q4_K_M unless noted) | Status |
+|------|---|---|
+| CPU1 3-flag stack (no NUMA_WEIGHTS) | 11.1146 ± 0.62405 | bit-exact vs baseline |
+| CPU15 EP (N=2 drone+shard, Qwen3.6-35B Q8_0) | bit-identical | shipped |
+| CPU21 libomp build | 11.1146 vs libgomp 11.1215 (Δ 0.0069 = clang-vs-gcc fp-codegen drift) | acceptable |
+| CPU22 work-stealing | byte-identical env=0 vs env=1 | failed throughput, code preserved |
+| CPU2 Q8_0 8x8 AVX-512BW | 6.6985 ± 0.708 | shipped, env-gated |
+| CPU11 PGO | 11.1146 byte-identical to pre-PGO | shipped universal |
+| CPU12 BOLT | bit-exact (block layout / function reordering only) | per-role only |
+
+### Sources
+
+- [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — env-flag catalogue, P3 stability verdict, NUMA_WEIGHTS deprecation
+- [`handoffs/active/cpu-benchmark-rigor-and-revalidation.md`](../handoffs/active/cpu-benchmark-rigor-and-revalidation.md) — CPU20 protocol, canonical baseline config, replication rules
+- [`handoffs/active/cpu-openmp-runtime-scheduling-matrix.md`](../handoffs/active/cpu-openmp-runtime-scheduling-matrix.md) — CPU21 libomp +6.4% Coder, affinity stack +3–8%, schedule per-role opt-in
+- [`handoffs/active/cpu-context-regime-coverage.md`](../handoffs/active/cpu-context-regime-coverage.md) — CPU23 Phase 2.2 TTFT / interference findings
+- [`handoffs/active/cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — CPU2 Q8_0 8x8 AVX-512BW kernel +31.8% at 1t
+- [`handoffs/active/cpu-dynamic-moe-load-balancing.md`](../handoffs/active/cpu-dynamic-moe-load-balancing.md) — CPU22 work-stealing falsified (5-rep)
+- [`handoffs/active/sarathi-serve-cpu-evaluation.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md) — CPU17 chunked-prefill deprioritized single-user; re-promote on multi-tenant
+- [`handoffs/active/gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — GPU parked, vLLM+Dflash, DGX Spark cost-effective, TileLang/BitBLAS GPU-day
+- [`research/deep-dives/tilelang-puzzles-kernel-dsl.md`](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — kernel-DSL evaluation matrix, BitBLAS path, AMD MI300X relevance
+- intake-497 — TileLang puzzles (medium relevance, worth_investigating)

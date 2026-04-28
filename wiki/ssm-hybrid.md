@@ -2,7 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified
-**Last compiled**: 2026-04-28 (targeted update — slot-promotion reopener)
+**Last compiled**: 2026-04-28
 **Sources**: 10 documents
 
 ## Summary
@@ -50,6 +50,51 @@ The "speculation is dead for Qwen3.5 hybrid on CPU" claim is being **reopened** 
 intake-490 (PyTorch SGLang blog, Dec 2025) introduces **slot promotion**: each draft token gets a private state slot computed as `S_new = S_parent + Δ(k,v,β,g)`; rejected slots are discarded, accepted slot is promoted. This is architecturally compatible with Delta Net (the recurrence is deterministic from a parent state plus new inputs). Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), the per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs, AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Closure-inflation policy compliance: gates A,B,C met under prior assumption (preserved); gate D unmet under new per-candidate-slot assumption (test target).
 
 Phase 0 falsification probe is queued for the autonomous CPU-optimization agent's next session. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands (trades aggregate-NUMA-4-way for per-request latency — right tradeoff for interactive workloads, wrong for batch).
+
+## Updates — 2026-04-28
+
+### Closure-inflation correction on the 7 prior approaches
+
+The 7 approaches catalogued in [`completed/ssm-hybrid-acceleration.md`](../handoffs/completed/ssm-hybrid-acceleration.md) — clone_cell, K-token-batch, MoE self-draft, attention-only draft, prefix prefetch, per-token speculation, multi-context replay — closed under a single shared assumption: **"verification batch = K × single-token cost because Delta Net layers are sequential, and per-candidate state cost is borne by full-state cloning"**. All 7 closures are preserved as accurate under that cost model. The slot-promotion reopener does NOT retract them; it tests a different cost model. This is a closure-inflation-policy-compliant correction: prior gates A/B/C met under prior assumption, gate D unmet under per-candidate-slot assumption.
+
+### Per-candidate state slot mechanism
+
+The core mechanism is the architectural fact that Delta Net's recurrence is deterministic from parent state plus new inputs:
+
+```
+S_new = S_parent + Δ(k, v, β, g)
+```
+
+This means a candidate token's state can be staged as ~KB of `(k, v, β, g)` inputs plus a pointer to `S_parent`, rather than as a ~450 MB clone of the full state (the failure mode of our prior `clone_cell` attempt). On rejection, the slot is discarded; on acceptance, the slot is promoted (`S_parent ← S_new` for the accepted branch).
+
+This works because:
+- Delta Net stores its state as a fixed-size matrix (not a growing KV cache)
+- The `Δ` function is a small matrix-vector update parameterised by `(k, v, β, g)` that we already compute per-token in the standard non-speculative path
+- Forking in the parent state is the same operation regardless of how many candidates fork from it
+
+### DFlash-style NUMA-parallel single-token verify
+
+Combined with the slot mechanism: one candidate per NUMA quarter processes its drafted token independently on isolated DRAM + L3 capacity. Each NUMA node holds its own `S_parent` snapshot and processes its candidate's `Δ` to produce the candidate `S_new`, then evaluates the verification logits.
+
+This avoids the 3–4× batch-cost multiplication that plagued sequential recurrent replay on hybrid models in the K-token-batch approach (closed). Wall-clock for K candidates is `1 × single-token` per quarter rather than `K × single-token` sequential.
+
+### Targets and projected operating point
+
+Slot-promotion Phase 1 testing candidates: Qwen3.5-35B-A3B (75% Delta Net + 25% standard attention) and Qwen3-Next-80B-A3B (same hybrid topology, larger). Cost model projects ~1.4× single-instance per-request latency. This is a per-request gain, not aggregate — it trades the 6.7× NUMA-4-way aggregate for interactive-latency. Right tradeoff for interactive coding workloads, wrong for batch eval.
+
+### Log-Linear Gated DeltaNet readiness (monitoring)
+
+Per [`log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md). Monitoring target (intake-356, ICLR 2026, by Songlin Yang + Tri Dao + Yoon Kim — the architecture creators). Gate criteria: pretrained checkpoint public + reference inference code available.
+
+The strategic appeal of Log-Linear Gated DeltaNet is direct: the O(L log L) hidden state size is 4–10× smaller at 262K context (~2 GB → ~200–500 MB) and 20–25× smaller at 1M context. If state replay cost drops by the same factor, the verification-wall cost model assumption that closed the 7 prior approaches is fundamentally weakened — slot-promotion + Log-Linear could compound, or Log-Linear alone could unblock the K-token-batch approach. Currently blocked on pretrained models. Highest strategic priority for the SSM-hybrid stack independent of slot-promotion outcome.
+
+### Multiscreen attention survey (cluster expansion)
+
+Per [`multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md). The sub-quadratic attention cluster has expanded beyond the original Multiscreen mechanism (replaces softmax with screening; 40% params; 2.3–3.2× latency at 100K context).
+
+Highest-priority watch item: **IHA (Interleaved Head Attention)** — +112% RULER at 16K multi-key retrieval, FlashAttention-compatible. None of the cluster have GGUF implementations, and all are pretraining-required architectures (no retrofit possible to existing weights). Monitor for community reproductions and pretrained checkpoints.
+
+The reason these are tracked under SSM-hybrid (and not under speculative-decoding or KV-cache) is that they preserve the standard-attention paradigm with sub-quadratic cost, which would theoretically be compatible with KV cache and speculation infrastructure — they are an alternative to Delta Net rather than to attention itself.
 
 ## Actionable for EPYC
 

@@ -2,7 +2,7 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-04-27
+**Last compiled**: 2026-04-28
 **Sources**: 24 documents (2 deep-dives, 7 active handoffs, 17 intake entries)
 
 ## Summary
@@ -71,6 +71,42 @@ The cost-aware-routing literature now divides cleanly into **four methodological
 | **Black-box ES against task fitness** (NEW 2026-04-26) | **Trinity (arxiv:2512.04695, ICLR 2026, Sakana AI)** | sep-CMA-ES on terminal binary reward; no labels, no gradients | (model, role) decoupled | When labels do not yet exist (cold-start); when loss is block-ε-separable; CPU-feasible at 10K-param head |
 
 **Trinity (intake-474)** is the canonical example of class 4. Reports 86.2% on LiveCodeBench v6 (claimed coordinator-system record), 21.9% mean relative-error reduction over 2nd-best multi-agent baseline. **Crucial for class-3 vs class-4 choice**: Trinity's REINFORCE ablation collapses to 0.253 LCB vs 0.615 for sep-CMA-ES at the same budget — pure policy gradients drown in off-block noise on block-ε-separable losses. The block-ε-separability of *our* routing landscape is testable (LRC P4.2) and gates whether class-4 ES becomes a viable cold-start trainer for our setup. Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md). [intake-474]
+
+## Updates — 2026-04-28
+
+### New findings (BaRP + LLM Bandit + design-space landscape)
+
+- **Bandit-feedback training pattern (BaRP, intake-495, arxiv:2510.07429).** Production logs only record the chosen specialist's outcome, not counterfactuals — closes a real train/test mismatch in EPYC's routing data. BaRP solves this with REINFORCE on bandit feedback. For the EPYC stack the rationale is adopted into DAR-3 SPO+ design: convex surrogate loss with 10% epsilon-greedy exploration manufactures counterfactual data; the SPO+ surrogate avoids REINFORCE's high-variance gradient. Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-3.
+
+- **2-D performance-cost preference vector at inference time (BaRP).** Trained router can be modulated at test time via `ω = (ω_perf, ω_cost)` on the simplex, shifting the routing decision distribution **without retraining**. Per-tenant or per-task ω override (e.g., interactive ω_perf=0.8, batch ω_perf=0.3). Calibrated cost scaling τ exposed as a runtime knob (env var `DAR_COST_TAU`). Implementation footprint: ~50–100 LoC across `retriever.py` selection scoring + `routing.py` ω plumbing. Adopted as **DAR-4b** — orthogonal to DAR-4 bilinear scorer; can ship independently if DAR-4 slips. Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-4b; intake-495.
+
+- **IRT score predictor for prompt features (LLM Bandit, intake-496, arxiv:2502.02743).** Per-prompt `(latent_difficulty, latent_discrimination)` over BGE pooled output, fitted to observed model outcomes. Discrimination scores stratify prompt selection — high-discrimination prompts separate model abilities; low-discrimination prompts are uninformative. Feeds DAR-5 (Q-value feature engineering) and LRC P4.1.3 (feature-position audit). Calibrated via Platt scaling. Source: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) P4.1.3 / P5.1; intake-496.
+
+- **Model identity vectors (LLM Bandit).** Replace the hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` with a learned d-dim model identity vector trained jointly with the bilinear scorer. Initialized from spec features so cold-start is preserved. Adopted as **DAR-5** (~150 LoC, conditional on DAR-4). Source: [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) DAR-5; intake-496.
+
+- **Methodological taxonomy of learned routers extended to four published reference points.** The class table above (RL-trained end-to-end / preference-MF / contrastive-DA / black-box ES) now has named representatives at each point: BaRP (intake-495) is the canonical bandit-feedback class-1 with 2-D ω knob; LLM Bandit (intake-496) sits at the class-3 boundary with IRT prompt features + learned model identity; Trinity (intake-474) anchors class-4; Conductor (intake-493, arxiv:2512.04388, ICLR 2026 Sakana AI) sits at class-1 with `(worker_id, NL_subtask, access_list)` action space and 7B GRPO on 2× H100 80GB. Conductor is **competitive intelligence only** — GPU-required, out of CPU stack — and informs OC-0.6 design-space comparison but is not a target architecture. Source: intake-474, intake-493, intake-495, intake-496.
+
+- **Class-4 black-box ES is the new methodological insight.** When the routing loss is block-ε-separable and labels do not yet exist, ES outperforms REINFORCE at our scale (Trinity: 0.615 vs 0.253 LCB at matched budget). This is the unique class-4 lever and the realistic cold-start trainer for new role surfaces lacking episodic labels. Empirical block-ε-separability of EPYC's routing landscape is **testable on our own 175K-label episodic dataset** (LRC P4.2 diagnostic: full-rank vs rank-10 vs diagonal weight regularization). The diagnostic gates whether sep-CMA-ES ever becomes a viable trainer for our setup. Source: [`learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md) P4.2 / P4.4.
+
+- **Closure-inflation discipline (2026-04-28).** Do not generalize "Conductor 7B GRPO is out of CPU stack" to "no learned coordinator could ever work". The four published reference points (BaRP, LLM Bandit, Trinity, Conductor) occupy distinct positions in (action-space × optimizer × scale × hardware) space; only Conductor is GPU-bound at our review-pass-quality threshold. BaRP, LLM Bandit, and Trinity are each individually CPU-feasible at the head-size scales we operate.
+
+### Cost-side actionables added
+
+- **DAR-3 (SPO+ + 10% epsilon-greedy)** → ~100 LoC; cost-side rationale for the convex surrogate is "no high-variance REINFORCE gradient on bandit-feedback data".
+- **DAR-4b (2-D ω preference vector + cost τ)** → ~50–100 LoC; pure runtime knob, no retraining; immediate per-tenant cost steering.
+- **DAR-5 (IRT prompt features + learned model identity)** → ~150 LoC; conditional on DAR-4 land.
+- **LRC P4.1.3 (IRT-feature variant inside P4.1 audit)** → +1 session.
+- **LRC P5.2 (cold-start IRT-stratified A/B vs on-disk full sweep)** → highest-leverage single experiment from intake-495/496; if validated, every model swap compresses from a multi-hour sweep to ~30 min.
+
+### Open questions added
+
+- Empirical block-ε-separability of EPYC's routing loss surface — gates whether sep-CMA-ES (Trinity-class) becomes a viable cold-start trainer for new role surfaces (LRC P4.2).
+- Optimal exposure of `ω = (ω_perf, ω_cost)` and `τ` to autopilot vs production traffic — should ω be a per-request knob, a per-tenant default, or an autopilot-tuned Pareto-archive coordinate?
+- Does IRT-stratified onboarding (50 prompts) actually agree with on-disk full benchmark sweeps within ≤5% on every baseline feature? If yes, model-onboarding latency drops from hours to ~30 min; if no, the onboarding pipeline must keep the full sweep.
+
+### Cross-references
+
+For the routing-architecture impact (tri-role axis, DAR phase plan, design-space comparison table) see [Routing Intelligence](routing-intelligence.md). For the optimizer-design-space (sep-CMA-ES vs REINFORCE vs GRPO; class-4 ES) see [Reinforcement Learning](reinforcement-learning.md).
 
 ## Actionable for EPYC
 

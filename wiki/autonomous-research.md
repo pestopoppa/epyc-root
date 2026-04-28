@@ -2,7 +2,7 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
+**Last compiled**: 2026-04-28
 **Sources**: 30 documents (added intake-438 MindDR + intake-444 Agent-World; 4 deep-dives, 19 intake entries, 10 handoffs)
 
 ## Summary
@@ -196,3 +196,56 @@ Three of these subsystems are L3-Evolver / Digital instances and should share a 
 - [meta-harness-optimization.md](../handoffs/active/meta-harness-optimization.md) — third L3-Evolver / Digital instance
 - Critique: arxiv.org/abs/2507.05169 — "Critiques of World Models" (actionability axis underweighted by L×R taxonomy)
 - Competing surveys: arxiv:2503.23037, 2601.12560, 2601.01743 — field is fragmented, Levels × Laws unlikely to become canonical field-wide
+
+## Updates — 2026-04-28
+
+This update consolidates the L1/L2/L3-Evolver vocabulary across the three EPYC L3-Digital handoffs, aligns Section 5.4's governance recipe with autopilot SafetyGate (open question flagged), captures the Section 6.1 four evaluation principles for AR-3 reporting, and confirms the 5th autopilot species (env_synth) Phase 1 scaffolding from intake-444.
+
+### Vocabulary adoption: L1 / L2 / L3-Evolver across the autopilot ecosystem
+
+Per the Agentic World Modeling deep-dive ([`research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md`](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md), intake-498), three EPYC autonomous-research subsystems map onto the L×R taxonomy in the *Digital* governing-law regime:
+
+- **L1 Predictor** — q-scorer + learned-routing controller. Per-prompt difficulty + delegation predictions; one-step, no rollout, no self-revision. Single-turn classifier, exactly the L1 definition. Tracked under `routing-intelligence.md` and `learned-routing-controller.md` Phase 4.
+- **L2 Simulator → L3 Evolver bridge** — Agent-World ETD (Environment-Task Discovery, intake-444). Composes L1 operators into multi-step task synthesis respecting MCP tool contracts. The bridge framing is intentional: Phase 1 (training-free scaffolding) is L2-Simulator territory; Phase 2 multi-environment GRPO promotes ETD to a proper L3-Evolver, currently GPU-gated.
+- **L3 Evolver** — autopilot species loop, meta-harness Tier 3, StructuralLab. All three autonomously revise prompt/code/routing when trial results diverge from predictions.
+
+The autopilot, agent-world ETD, and meta-harness are **three independent L3-Evolver / Digital instances inside the same evaluation framework**. Adopting the L1/L2/L3 vocabulary instruments cross-instance comparison; it does NOT claim "L3 is solved." Closure-inflation guard: external survey vocabulary is a measurement aid, not evidence of capability.
+
+### Section 5.4 governance recipe: alignment with autopilot SafetyGate
+
+The paper's four L3 governance prescriptions map onto existing autopilot SafetyGate machinery:
+
+1. **Regression gate** — quality floor per T2 suite — **implemented** (autopilot SafetyGate `quality_floor` per-suite check).
+2. **Robustness gate** — per-suite no-below guard — **implemented** (`per_suite_guard` in SafetyGate; trial rejected if any T2 suite falls below threshold).
+3. **Rollback policy** — Pareto archive provides prior configurations — **implemented**, but **open question**: is Pareto-front-replacement equivalent to explicit-rollback-semantics? When a regression flips a Pareto-frontier point, the prior point remains in the archive and is auto-selected on the next mutation. This is functionally a rollback. The paper's framing of rollback assumes explicit "revert to last-known-good"; ours is "select from archive based on dominance." A one-pager investigation is flagged in [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) 2026-04-28 update; not blocking for AR-3 continuation.
+4. **Canary policy** — T0 (10q/30s) → T1 (100q/5m) → T2 (500+q/30m) tiered evaluation tower — **implemented**.
+
+All four prescriptions therefore have an existing autopilot equivalent. The mapping is line-for-line, not analogical.
+
+### Section 6.1 four evaluation principles for AR-3 reporting
+
+The paper's evaluation rubric is testable in existing AR-3 infrastructure today. AR-3 reporting will compute per-principle metrics after each trial batch:
+
+1. **Long-horizon coherence** — Pareto archive remains valid over ≥100 mutation rounds without quality collapse. Metric: rolling 100-trial Pareto-frontier displacement; alert if frontier collapses by >15% on any dimension. Implementation lives in autopilot controller — read existing journal, compute frontier displacement.
+2. **Intervention sensitivity** — disabling any single species produces predictable directional Pareto-front shifts. Metric: counterfactual ablation (run autopilot for 20 trials with species N disabled, compare Pareto-frontier shift to baseline). If disabling species N produces no shift, the species is collinear with another or malfunctioning.
+3. **Constraint consistency** — every Pareto-frontier point satisfies all safety gates (quality floor + per-suite guard + routing-diversity gate). Metric: count frontier points that violate any gate; expected = 0. Any violation indicates mis-categorized data or stale archive.
+4. **Closed-loop use** — species loop demonstrably improves T2-suite scores. Metric: T2-aggregate slope over rolling 50-trial window; if zero or negative, the loop is open-loop randomization rather than closed-loop optimization.
+
+Add a **reporting subsection in autopilot controller** that computes these four metrics after each trial batch and logs them to the experiment journal under a `worldmodel_principles` field. Closure-inflation note: principle #4 (closed-loop use) is the strongest sanity check — the others can pass while the loop still does nothing. Alert thresholds will be tuned after first 100 trials produce baseline distributions.
+
+### 5th autopilot species: env_synth (Phase 1 scaffolding landed)
+
+Per [`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) and intake-444 deep-dive (`research/deep-dives/agent-world-environment-synthesis.md`):
+
+- **Phase 1 training-free scaffolding complete** (NIB2-44, 2026-04-22): ETD agent (`etd_agent.py`), task synthesizer, verifier builder, MCP tool registry, SolvabilityGate (reference-model check), eval-tower integration via arena JSONL → T1 entries with provenance + bad-task flagging. EnvSynth registered as 5th species in `species/__init__.py`. 19/19 unit tests + 104/104 across plan scope.
+- **Phase 2 multi-environment GRPO training is GPU-gated**; deferred post-DGX-Spark. AW-6 (48h bootstrap), AW-7 (MCP adoption), AW-8 (corroboration probe), AW-9 (GRPO training) remain release-/inference-gated.
+- This concretizes meta-harness Tier 3's "outer-loop rebuild" as a Phase 2 target. Tier 3 is currently deferred; env_synth Phase 2 would constitute the first Tier 3 implementation.
+
+### Sources
+
+- [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling — L1/L2/L3 + Laws taxonomy
+- [`research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md`](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy with EPYC-stack mapping
+- [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — L3-Evolver instance, SafetyGate alignment, Pareto-rollback open question
+- [`handoffs/active/agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — L2-Simulator → L3-Evolver bridge, 5th species Phase 1 scaffolding
+- [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) — third L3-Evolver / Digital instance, Tier 3 deferred
+- intake-444 — Agent-World env synthesis, training-free Phase 1 + GPU-gated Phase 2
