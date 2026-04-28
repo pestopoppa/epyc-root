@@ -670,3 +670,86 @@ Either fix unblocks running spec-dec end-to-end on this target/drafter pair with
 - `srv_*.log` — server logs showing the two crash signatures
 - `comp_k1_baseline_p*_r*.json` — 9 partial completions captured before assertion fired
 - `run_phase11a.sh`, `run_baseline_reconfirm.sh` — bench scripts
+
+---
+
+## Phase 1.1 — BOTH BLOCKERS FIXED, foundation v4 active (DONE 2026-04-29)
+
+After identifying the two blockers, both root-caused and fixed in commit `830c98c61`:
+
+### Blocker 1 root cause + fix
+
+`ggml_threadpool` workers[] array is sized to `tpp->n_threads`. When OpenMP runs the parallel region, it spawns `cplan->n_threads` (from `llama_context`'s default = `params.cpuparams.n_threads`, e.g. 96) threads. Each accesses `threadpool->workers[ith].cpumask`. If OpenMP thread count > threadpool worker count, ith=24..95 reads OOB garbage from workers[].cpumask → 17+ "warn: failed to set affinity mask : Invalid argument (22)" → segfault.
+
+Fix: `llama_set_n_threads(ctx, per_quarter, per_quarter)` after `llama_attach_threadpool` to align OpenMP thread count with threadpool's worker count.
+
+### Blocker 2 root cause + fix
+
+Pre-existing assertion `GGML_ASSERT(n_chars < 0)` at `common/speculative.cpp:1066` fires when `id_last` decodes to an empty piece (special token etc.) and `llama_detokenize` returns 0 — not the assumed-negative buffer-size-needed.
+
+Fix: relax to `GGML_ASSERT(n_chars <= 0)` + early-return when `n_chars == 0` (or when re-tokenization in draft vocab yields empty list). Spec-dec falls back to greedy on this round.
+
+### Foundation v4 verified on production target
+
+Smoke test on Qwen3.6-35B-A3B Q8 + Qwen3-1.7B Q8 drafter at `--spec-numa-quarters 4`:
+```
+srv    load_model: Phase 1.1 foundation v4 active: primary ctx pinned to threads [0, 24)
+                  (K=4, 24 threads/quarter). Aux ctxs + K-parallel dispatcher = next session.
+main: server is listening on http://127.0.0.1:18099
+```
+
+No affinity warns. Spec-dec /completion calls succeed. 100% accept rate maintained where applicable.
+
+### Phase 1.1 measurement: foundation v4 (K=4 single-ctx pin) vs K=1 baseline
+
+3 prompts × 3 reps each (some null due to server-warmup-race; preserved valid reps):
+
+| Config | Prompt | Mean t/s (valid reps) | Accept |
+|---|---|---|---|
+| K=1 (no pinning, 96t) | p0 (binary search) | 5.95 (1 rep) | mixed |
+| K=1 | p1 (LRU cache) | 20.12 (3 reps) | 55/55 |
+| K=1 | p2 (moving avg) | 5.93 (3 reps) | 33/33 |
+| K=4 (primary pinned to quarter 0, 24t) | p0 | 13.22 (2 reps) | mixed |
+| K=4 | p1 | 19.65 (3 reps) | 55/55 |
+| K=4 | p2 | 6.11 (3 reps) | 33/33 |
+
+**Aggregate**: K=4 mean = 12.96 t/s (n=8); K=1 mean = 12.01 t/s (n=7); Δ = **+7.9%** within prompt-variance noise band.
+
+### Phase 1.1 GATE evaluation: foundation alone ≠ gate met
+
+Gate: ≥1.3× per-request latency over Phase 1.0 single-NUMA baseline (6.80 t/s).
+
+**NOT MET on foundation v4 alone.** K=4 quarter-pinning of PRIMARY ctx (without aux ctxs and without parallel dispatcher) yields parity with K=1. The K-parallel candidate verify dispatcher remains needed for true per-request gain.
+
+What's notable in the data:
+- p1 (LRU cache) hits 100% accept and ~20 t/s on BOTH K=1 and K=4 — drafter aligns well with target on this prompt.
+- p2 (moving avg) hits 100% accept of fewer drafts (33 vs 55) and only 6 t/s — drafter under-produces or target over-decodes.
+- The 6.80 t/s Phase 1.0 baseline was closer to p2-like prompts; current measurement reveals strong prompt-dependent variance not captured in the original 3-prompt mean.
+
+### Closure-inflation guard
+
+> "On HEAD `830c98c61`, foundation v4 (single primary-ctx quarter pin via threadpool + llama_set_n_threads) on Qwen3.6-35B-A3B Q8 hybrid Delta Net + Qwen3-1.7B Q8 drafter at v5 PGO build delivers parity (+7.9% within noise) vs K=1 baseline. Spec-dec gain is heavily prompt-dependent (p1 ~20 t/s, p2 ~6 t/s). Foundation alone does NOT meet the ≥1.3× gate; the true K-parallel target verification dispatcher (separate aux contexts + parallel decode + reduction across NUMA quarters) is still required. Does NOT generalize to 'NUMA-parallel verify is dead on hybrid' — only that *primary-ctx quarter-pin alone* is insufficient at this configuration. The dispatcher path remains structurally justified by the 6.10× ceiling probe."
+
+### Phase 1.1 status post-fixes
+
+| Item | Status |
+|---|---|
+| Phase 1.0 GATE | MET (Phase 1.0 result holds) |
+| Phase 1.1 CLI surface | DONE (`d056c1f20`) |
+| Phase 1.1 Blocker 1 (threadpool affinity EINVAL) | **FIXED** at `830c98c61` |
+| Phase 1.1 Blocker 2 (speculative.cpp:1066 assertion) | **FIXED** at `830c98c61` |
+| Phase 1.1 foundation v4 (primary ctx quarter pin) | DONE; measurement = parity with K=1 |
+| Phase 1.1 GATE (≥1.3× per-request) | NOT MET on foundation alone |
+| Phase 1.1 K-parallel dispatcher | NEXT SESSION (mechanism still required for gate) |
+| Phase 1.1 measurement on hybrid Q8 | DONE this session — foundation alone insufficient |
+
+### Next session — true K-parallel dispatcher
+
+Implementation now unblocked:
+1. Create K-1 auxiliary `llama_context` instances at server load (foundation v4 already validates the quarter-pinning + threadpool primitive on hybrid).
+2. State sync prompt KV across K ctxs at request start (`llama_state_seq_get/set_data`).
+3. Dispatcher: split `tree.get_paths()` to K ctxs, parallel `llama_decode`, reduce by longest-accepted-prefix.
+4. KV cache memory cost: K=4 × Qwen3.6-35B-A3B Q8 KV ≈ 4× slot KV. May need ctx-size reduction.
+5. Measurement: 5-rep proper canonical end-to-end on Q8 hybrid. Gate ≥1.3× per-request over foundation v4 K=1 baseline.
+
+Realistic wall-clock: ~3-5 days now that blockers are gone.
