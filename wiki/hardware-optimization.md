@@ -915,7 +915,7 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 
 ## 2026-04-29 Update — CPU4 Phase 1 op-coalesced barriers + Phase 0 design pause
 
-### CPU4 op-coalesced barriers (Phase 1) — TESTED, NO-GO
+### CPU4 op-coalesced barriers (Phase 1) — TESTED, NO-GO (framing revised 2026-04-29 evening — Remediation Phase A)
 
 The CPU4 sync-primitive track was reopened on 2026-04-29 after the user direction "CPU4 sync primitive" — but the original 2-level CCD-aware barrier variant (CLOSED 2026-04-26 negative) and the lock-free expert dispatch variant (= CPU22 #1, CLOSED 2026-04-28 at -2.3% Coder) were already falsified.
 
@@ -923,15 +923,17 @@ A new design — **op-coalesced barriers** — was advanced through Phase 0 manu
 
 **Critical Phase 1 discovery**: smoke test at COALESCE=1 with MUL_MAT/MUL_MAT_ID in the coalescable allowlist produced GARBLED output. Root cause: `ggml_compute_forward_mul_mat` writes src1 quantization to the shared `params->wdata` buffer BEFORE its internal barrier (`ggml-cpu.c:1467-1487`). Coalescing two MUL_MATs lets op N+1 clobber wdata while op N's chunk-loop still reads it. **Phase 0 manual analysis missed this constraint** — only checked dependency-graph independence, not buffer-sharing.
 
-After tightening the allowlist to exclude MUL_MAT/MUL_MAT_ID, smoke passes bit-exact and PPL chunk-3 is identical between COALESCE=0/1 on Coder-30B + REAP-246B. But the achievable per-token barrier-count reduction drops from 24-29% to ~5% (only ROPE-Q → RMS_NORM-K is coalescable per layer). Throughput measurement:
+After tightening the allowlist to exclude MUL_MAT/MUL_MAT_ID, smoke passes bit-exact and PPL chunk-3 is identical between COALESCE=0/1 on Coder-30B + REAP-246B. But the achievable per-token barrier-count reduction drops from 24-29% to ~5% (only ROPE-Q → RMS_NORM-K is coalescable per layer).
 
-| Model | n_total | Δ_pct |
+**Throughput measurement (REVISED 2026-04-29 evening — Remediation Phase A)**: original Phase 1 measurement showed -19.7% Coder regression, but was POISONED by missing OMP env stack (`OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`). Re-measured under FULL CANONICAL recipe (bundle [`2026-04-29-remediation-phase-A-cpu4/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-remediation-phase-A-cpu4/)):
+
+| Model | Original (broken OMP) | Phase A re-test (canonical) |
 |---|---|---|
-| Coder-30B Q4_K_M | 20 reps (5 + 15 alternated trials) | -10 to -20% (high CV; aggregate -19.7%) |
-| Next-80B Q4_K_M  | 5 reps | -6.2% (noisy) |
-| REAP-246B Q4_K_M | 5 reps | -2.3% (clean signal) |
+| Coder-30B Q4_K_M | -19.7% (POISONED) | **+0.19% NEUTRAL** (5-rep canonical, c0=46.96, c1=47.05, c0_recheck=47.00) |
 
-Gate (≥+5% on 2 of 3 sync-bound Q4_K_M models): NOT MET. Patch stays in tree disabled-by-default. Mirrors slot-promotion dispatcher v1 treatment.
+Original "definitive negative" framing was a measurement artifact: under broken OMP, sleeping barriers were unusually expensive, and the coalesce code's barrier-skipping interacted asymmetrically. Under proper canonical, both arms behave well and coalescing is essentially a no-op for throughput on this conservative allowlist.
+
+Gate (≥+5%): NOT MET (was actually NEUTRAL, not regression). Patch stays in tree disabled-by-default. The MUL_MAT wdata race finding stands (correctness, independent of perf). Future work: expanding the coalesce allowlist (e.g., adding RMS_NORM+ATTENTION pairs) is now a cleaner exploration since the conservative path is verified neutral, not destructive.
 
 ### Lesson preserved for future Phase 0 analyses
 
@@ -949,7 +951,7 @@ Both have similar gain-per-LOC (~0.01-0.03% per LOC). Neither strongly compellin
 
 ### Pattern: structural ceilings dominate the remaining CPU-optimization design space
 
-After 5 closed-via-test mechanisms in this design space (CPU4 original 2026-04-26, CPU22 #1 2026-04-28, slot-promotion + MAB selector 2026-04-29, CPU4 Phase 1 2026-04-29), the pattern is clear: **the remaining CPU-optimization design space has structural gain ceilings (15% sync, ~10% barrier reduction) that implementation overhead consumes.**
+After 5 closed-via-test mechanisms in this design space (CPU4 original 2026-04-26, CPU22 #1 2026-04-28, slot-promotion + MAB selector 2026-04-29, CPU4 Phase 1 2026-04-29 — note: Remediation Phases A/C 2026-04-29 evening revised some "decisive negative" framing to "neutral / within-noise" but did NOT flip any closure to GO), the pattern is clear: **the remaining CPU-optimization design space has structural gain ceilings (15% sync, ~10% barrier reduction) that implementation overhead consumes.**
 
 Recommended pivot to higher-leverage activities:
 1. **Multi-arch coverage** — test existing v5 PGO + CPU2 mbind + CPU1 stack on dense / hybrid SSM / attention-only models

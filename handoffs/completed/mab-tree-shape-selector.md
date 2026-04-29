@@ -411,16 +411,29 @@ Bundle: [`data/cpu_optimization/2026-04-29-mab-phase-0-prime-prime-replication/`
 
 Phase 0' (2026-04-30) flagged a +9.6% mean signal on Coder at n=9 random-seed temp=0.7 (p≈0.23, NOT significant). Phase 0'' replicates at n=30 per cell (n=90 paired per model) on both Coder + REAP under the same regime.
 
-### Final result
+### Final result (REVISED 2026-04-29 evening — Remediation Phase C)
+
+> **2026-04-29 EVENING UPDATE — Remediation Phase C**: the original Phase 0'' measurement below was POISONED by a missing OMP env stack (`OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`). Re-measured under FULL canonical recipe (bundle [`2026-04-29-remediation-phase-C-mab/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-remediation-phase-C-mab/)):
+>
+> | Model | n_paired (canonical) | linear t/s | tree t/s | Δ_pct | p-value |
+> |---|---|---|---|---|---|
+> | Coder-30B Q4_K_M | **180** (n=90 + n=90 ext) | 45.73 | 45.12 | **-1.34%** | **0.36 (NS)** |
+> | REAP-246B Q4_K_M | **90** | 8.27 | 7.60 | **-8.20%** | **0.0003 (highly significant)** |
+>
+> Phase C n=90 first-pass showed a direction flip on Coder (+2.72%, p=0.24); extended to n=180 confirmed Coder is within noise (-1.34%, NS). REAP shows tree IS reliably worse with high significance.
+>
+> **Disposition unchanged** (NO-GO across both targets), but FRAMING materially revised: original "definitive negative on Coder" was overstated; Coder is actually neutral under canonical recipe. REAP remains clearly negative. Neither model justifies Phase 1 implementation. Closure does NOT generalize beyond these two targets at the tested (drafter, temp, top_k, top_p) settings.
+
+### Original Phase 0'' result (2026-04-29 morning — POISONED by broken OMP env)
 
 | Model | n_paired | linear mean t/s | tree mean t/s | Δ_pct | p-value |
 |---|---|---|---|---|---|
-| Coder-30B Q4_K_M | 90 | 40.58 | 38.97 | **-3.97%** | **0.0125 (significant — tree LOSES)** |
+| Coder-30B Q4_K_M | 90 | 40.58 | 38.97 | -3.97% | 0.0125 |
 | REAP-246B Q4_K_M | 90 | 7.64 | 7.66 | +0.34% | 0.8685 (null) |
 
 Per-prompt on Coder: p0 -6.07%, p1 -3.64%, p2 -2.01% (all losing).
 
-**The Phase 0' "+9.6%" signal was a low-n type-I error.** At proper n=90, the true effect on Coder is a small significant regression; REAP is null.
+The original "Phase 0' +9.6% type-I error" framing remains accurate for that intermediate finding. But the Phase 0'' "tree -3.97% definitive negative on Coder" claim was itself a measurement artifact — under canonical OMP recipe, Coder shows -1.34% NS at twice the sample size.
 
 ### Combined evidence across all 3 tested regimes
 
@@ -430,9 +443,14 @@ Per-prompt on Coder: p0 -6.07%, p1 -3.64%, p2 -2.01% (all losing).
 | Phase 0' fixed-seed sampling (temp=0.7) | byte-identical to linear | same | NO-GO |
 | Phase 0'' random-seed sampling (temp=0.7, n=90) | tree -3.97% (p=0.012) | tree +0.34% (p=0.87) | NO-GO |
 
-### Track closure (per closure-inflation policy)
+### Track closure (per closure-inflation policy — REVISED 2026-04-29 evening)
 
-> "MAB tree-shape selector mechanism, tested on Qwen3-Coder-30B-A3B-Q4_K_M + Qwen3-Coder-REAP-246B-A35B-Q4_K_M targets with the Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0 drafter at v5 PGO build, is structurally net-negative or null across all three tested verification regimes. At n=90 paired in the most favorable regime (random-seed sampling temp=0.7), Coder shows tree -3.97% (p=0.012); REAP shows tree +0.34% (p=0.87). Phase 1 implementation (~245 LOC) is not justified.
+> "MAB tree-shape selector mechanism, tested on Qwen3-Coder-30B-A3B-Q4_K_M + Qwen3-Coder-REAP-246B-A35B-Q4_K_M targets with the Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0 drafter at v5 PGO build under FULL CANONICAL recipe (`OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active numactl --interleave=all -- taskset -c 0-95 ... -fa 1 --mmap 0`), does NOT deliver a positive throughput signal in the random-seed sampling regime (temp=0.7, top_k=40, top_p=0.95):
+>
+> - Coder-30B: tree -1.34% vs linear (n=180 paired, p=0.36, NOT significant)
+> - REAP-246B: tree -8.20% vs linear (n=90 paired, p=0.0003, HIGHLY significant)
+>
+> Phase 1 implementation (~245 LOC) is not justified. Coder is within noise (no positive or negative signal), REAP shows tree reliably hurts.
 >
 > Does NOT generalize to: different drafter (Pythia has different uncertainty profile), different arm pool (paper-shapes tuned for Pythia), multi-tenant / batched / concurrent-slot workloads, architecturally different targets (dense, hybrid SSM — only MoE Q4_K_M tested at scale)."
 
@@ -449,6 +467,7 @@ Per-prompt on Coder: p0 -6.07%, p1 -3.64%, p2 -2.01% (all losing).
 | Phase 0 | 2026-04-29 | 3 | NO-GO greedy temp=0 (verifier collapses) |
 | Phase 0' fixed-seed | 2026-04-30 | 9 | NO-GO temp=0.7 fixed (verifier deterministic via seed) |
 | Phase 0' random-seed | 2026-04-30 | 9 | INCONCLUSIVE (+9.6% noise) |
-| **Phase 0''** | **2026-04-29** | **90** | **NO-GO definitive** (-3.97% p=0.012 Coder, +0.34% p=0.87 REAP) |
+| Phase 0'' (broken OMP env) | 2026-04-29 morning | 90 | NO-GO (-3.97% p=0.012 Coder, +0.34% p=0.87 REAP) — *later flagged as poisoned baseline* |
+| **Phase 0''-canonical (Phase C)** | **2026-04-29 evening** | **180 Coder + 90 REAP** | **NO-GO (-1.34% NS Coder, -8.20% p<0.001 REAP) under canonical OMP recipe** |
 
 Final commit: pending after this closure.

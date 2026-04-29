@@ -150,7 +150,13 @@ CPU20 bundle: [`data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phas
 
 ---
 
-## Phase 1 RESULT (2026-04-29) — NO-GO via test
+## Phase 1 RESULT (2026-04-29) — NO-GO via test (REVISED 2026-04-29 evening — Remediation Phase A)
+
+> **2026-04-29 EVENING UPDATE — Remediation Phase A**: the original measurement below was POISONED by a missing OMP env stack (`OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active`). Re-measured under FULL canonical recipe (bundle [`2026-04-29-remediation-phase-A-cpu4/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-remediation-phase-A-cpu4/)): Coder-30B Q4_K_M tg64 5-rep COALESCE=0 = **46.96 ± 0.16**, COALESCE=1 = **47.05 ± 0.16**, COALESCE=0 recheck = **47.00 ± 0.09**. **Δ = +0.19% (NEUTRAL, within noise)**. The original "-19.7%" finding was a measurement artifact: under broken-OMP, sleeping barriers were unusually expensive and the coalesce code's barrier-skipping interacted asymmetrically. Under proper canonical, both arms behave well and coalescing is essentially a no-op for throughput on this allowlist.
+>
+> **Disposition unchanged**: gate criterion was ≥+5% (or ≥10% per binding spec); +0.19% doesn't meet the bar, so still NO-GO for shipping. But the FRAMING materially changes: the patch is **HARMLESS** (not a regression). MUL_MAT wdata race finding stands (correctness, independent of perf). Future work — expanding the coalesce allowlist beyond the conservative MUL_MAT-excluded set — is now a cleaner exploration since the conservative path is verified neutral, not destructive.
+
+### Original Phase 1 measurement (2026-04-29 morning — POISONED by broken OMP env)
 
 Bundle: [`data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase1/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase1/)
 
