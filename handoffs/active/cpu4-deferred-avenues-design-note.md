@@ -111,3 +111,38 @@ If Phase 1 closes via prototype regression:
 - Sibling (already-tested adjacent design): [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) — work-stealing + 2 untested designs
 - CPU24 sync ceiling: [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md)
 - v5 toolchain: [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) Build-time toolchain section
+
+
+---
+
+## Phase 0 RESULT (2026-04-29) — GATE PASSED
+
+Manual op-chain analysis on Qwen3 MoE architecture (Coder-30B-A3B + REAP-246B-A35B targets) at v5 PGO build identifies **24-29% per-token barrier-count reduction** under the conservative op-coalescing rule. Well above the 10% Phase 0 gate threshold.
+
+### Per-layer breakdown
+
+- **Attention block: 11 barriers, 5 skippable (45%)** — Q/K/V projections collapse from 3 to 1, Q-norm/K-norm collapse from 2 to 1, RoPE-Q/RoPE-K collapse from 2 to 1.
+- **MoE FFN block: 10 barriers, 0-1 skippable (~5%)** — mostly serialized (each op consumes prior op's output).
+- **Per-layer aggregate: 21 barriers, 5-6 skippable (24-29%)**.
+- **Per-token (Coder 48 layers + final): ~1012 total barriers, 240-288 skippable**.
+
+### Why it's sound
+
+1. ggml MUL_MAT writes to fresh dst tensor (not in-place) → Q/K/V reading same input is race-free.
+2. MUL_MAT internal barrier at ggml-cpu.c:1487 is PRESERVED by coalescing — per-op thread-coordination sync point remains.
+3. Existing Phase 1.4 (`GGML_BARRIER_LOCAL_BETWEEN_OPS`) only downgrades partitioned→elementwise pairs; coalescing catches MUL_MAT→MUL_MAT pairs Phase 1.4 misses. Gain is INCREMENTAL over Phase 1.4.
+
+### Recommended Phase 1
+
+~150 LOC, 1-2 days implementation + 1 day measurement:
+- Graph-setup-time dependency pass marking `coalesce_with_next` per node
+- Compute-loop skip at ggml-cpu.c:3709-3782 when `coalesce_with_next` is true
+- `GGML_BARRIER_COALESCE=1` env gate (default off)
+
+Phase 1 gates (binding):
+- PPL bit-exact 32-chunk WikiText-2 on Coder-30B + REAP-246B Q4_K_M.
+- 5-rep canonical t/s ≥ +5% on at least 2 of 3 sync-bound Q4_K_M models.
+
+CPU20 bundle: [`data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase0/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase0/) (analysis + Phase 0 GO decision).
+
+**Status**: Phase 0 GO. Phase 1 implementation pending user pick.

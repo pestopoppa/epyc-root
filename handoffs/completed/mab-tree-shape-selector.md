@@ -401,3 +401,54 @@ Phase 1 implementation (~245 LOC) is justified ONLY if (1) confirms signal at p<
 ### What this changes vs Phase 0 NO-GO closure
 
 The Phase 0 closure stands. Phase 0' EXTENDS scope to confirm the door was correctly left open for sampling regime, AND finds a real (if noisy) signal there. Not a retraction — an extension.
+
+
+---
+
+## Phase 0'' RESULT (2026-04-29) — NO-GO ACROSS BOTH TARGETS — TRACK CLOSED
+
+Bundle: [`data/cpu_optimization/2026-04-29-mab-phase-0-prime-prime-replication/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-mab-phase-0-prime-prime-replication/)
+
+Phase 0' (2026-04-30) flagged a +9.6% mean signal on Coder at n=9 random-seed temp=0.7 (p≈0.23, NOT significant). Phase 0'' replicates at n=30 per cell (n=90 paired per model) on both Coder + REAP under the same regime.
+
+### Final result
+
+| Model | n_paired | linear mean t/s | tree mean t/s | Δ_pct | p-value |
+|---|---|---|---|---|---|
+| Coder-30B Q4_K_M | 90 | 40.58 | 38.97 | **-3.97%** | **0.0125 (significant — tree LOSES)** |
+| REAP-246B Q4_K_M | 90 | 7.64 | 7.66 | +0.34% | 0.8685 (null) |
+
+Per-prompt on Coder: p0 -6.07%, p1 -3.64%, p2 -2.01% (all losing).
+
+**The Phase 0' "+9.6%" signal was a low-n type-I error.** At proper n=90, the true effect on Coder is a small significant regression; REAP is null.
+
+### Combined evidence across all 3 tested regimes
+
+| Regime | Coder result | REAP result | Verdict |
+|---|---|---|---|
+| Phase 0 greedy (temp=0) | byte-identical to linear | same | NO-GO |
+| Phase 0' fixed-seed sampling (temp=0.7) | byte-identical to linear | same | NO-GO |
+| Phase 0'' random-seed sampling (temp=0.7, n=90) | tree -3.97% (p=0.012) | tree +0.34% (p=0.87) | NO-GO |
+
+### Track closure (per closure-inflation policy)
+
+> "MAB tree-shape selector mechanism, tested on Qwen3-Coder-30B-A3B-Q4_K_M + Qwen3-Coder-REAP-246B-A35B-Q4_K_M targets with the Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0 drafter at v5 PGO build, is structurally net-negative or null across all three tested verification regimes. At n=90 paired in the most favorable regime (random-seed sampling temp=0.7), Coder shows tree -3.97% (p=0.012); REAP shows tree +0.34% (p=0.87). Phase 1 implementation (~245 LOC) is not justified.
+>
+> Does NOT generalize to: different drafter (Pythia has different uncertainty profile), different arm pool (paper-shapes tuned for Pythia), multi-tenant / batched / concurrent-slot workloads, architecturally different targets (dense, hybrid SSM — only MoE Q4_K_M tested at scale)."
+
+### Operational disposition
+
+- Track CLOSED. Handoff moves to `handoffs/completed/`.
+- Pre-production gate on MoE-Spec production registry integration condition (a) "MAB Phase 0 falsification probe completes with explicit GO or NO-GO" is RESOLVED via NO-GO at extended scope.
+- No code in tree changes — MAB Phase 1 was never implemented.
+
+### Phase progression
+
+| Phase | Date | n | Verdict |
+|---|---|---|---|
+| Phase 0 | 2026-04-29 | 3 | NO-GO greedy temp=0 (verifier collapses) |
+| Phase 0' fixed-seed | 2026-04-30 | 9 | NO-GO temp=0.7 fixed (verifier deterministic via seed) |
+| Phase 0' random-seed | 2026-04-30 | 9 | INCONCLUSIVE (+9.6% noise) |
+| **Phase 0''** | **2026-04-29** | **90** | **NO-GO definitive** (-3.97% p=0.012 Coder, +0.34% p=0.87 REAP) |
+
+Final commit: pending after this closure.
