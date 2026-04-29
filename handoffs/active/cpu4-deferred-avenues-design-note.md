@@ -21,7 +21,7 @@ Before committing 1-3 days to prototype work, this note enumerates the actual de
 | 4 | Hybrid static+dynamic spillover (coarse static partition + dynamic correction tail) | CPU22 design #3 | **UNTESTED** | Lower atomic contention than #2 (only spillover hits the queue); preserves static cache locality |
 | 5 | Cross-CCD work migration | CPU4 deferred | **UNTESTED** | Migrate work from idle CCDs to busy ones; requires runtime profiling per op |
 | 6 | MoE quant layout rebalance (offline) | CPU4 deferred | **UNTESTED, OUT OF SCOPE** for in-tree change | Pre-shuffle experts so each CCD's assigned slice has balanced compute; offline tooling, not a sync primitive |
-| 7 | Op-coalesced barriers (Lever B ext.) | CPU4 deferred | **UNTESTED** | Reduce the COUNT of barriers per op-graph by merging sync points across consecutive non-dependent ops; orthogonal to barrier IMPLEMENTATION |
+| 7 | Op-coalesced barriers (Lever B ext.) | CPU4 deferred | **TESTED — FAILED 2026-04-29** | Phase 0 estimated 24-29% barrier-count reduction. Phase 1 implementation (smoke discovered MUL_MAT wdata race, allowlist tightened) measured net-negative on all 3 sync-bound Q4_K_M models (Coder -10 to -20%, Next-80B -6.2%, REAP -2.3%). Phase 0 was empirically WRONG due to missed wdata-shared-buffer hazard. Code stays in tree disabled-by-default. |
 
 ## Constraint envelope
 
@@ -146,3 +146,56 @@ Phase 1 gates (binding):
 CPU20 bundle: [`data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase0/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase0/) (analysis + Phase 0 GO decision).
 
 **Status**: Phase 0 GO. Phase 1 implementation pending user pick.
+
+
+---
+
+## Phase 1 RESULT (2026-04-29) — NO-GO via test
+
+Bundle: [`data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase1/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-cpu4-op-coalesced-barriers-phase1/)
+
+### Implementation
+
+~80 LOC patch in `ggml-cpu.c` (compute-loop op-iteration), env-gated `GGML_BARRIER_COALESCE=1` (default off). Logic: for each adjacent op pair (N, N+1), skip the between-op barrier when (a) next op's `src[]` does NOT contain cur node, AND (b) both ops are in the safe allowlist.
+
+### Critical discovery: MUL_MAT wdata race
+
+Smoke test at COALESCE=1 with MUL_MAT in the allowlist produced **garbled output**: "Failed to parse input at pos 0: GD Sw\n…\nCompatibility几..."
+
+Root cause: `ggml_compute_forward_mul_mat` writes src1 quantization to the shared `params->wdata` buffer BEFORE its internal barrier (`ggml-cpu.c:1467-1487`). Coalescing two MUL_MATs lets op N+1 clobber wdata while op N's chunk-loop still reads it. Phase 0 static analysis missed this constraint.
+
+**Allowlist tightened to exclude MUL_MAT/MUL_MAT_ID**: `RMS_NORM`, `NORM`, `ROPE`, `MUL`, `ADD`, `SCALE`, `UNARY`, `GLU`. Smoke at this allowlist passes bit-exact (Coder PPL chunk-3 = 9.8567 ± 1.23745 identical).
+
+### Phase 0 was 5× over-estimated
+
+After excluding MUL_MAT, the achievable per-token barrier-count reduction drops from Phase 0's 24-29% to **~5%** (1 skippable barrier per layer in attention block: ROPE-Q → RMS_NORM-K is the only IND pair under safe allowlist; MoE FFN block has 0 skippable). The mechanism's gain ceiling is structurally bounded below the +5% gate.
+
+### Measurement
+
+| Model | n_total | Δ_pct | Note |
+|---|---|---|---|
+| Coder-30B Q4_K_M | 20 reps (5 first-pass + 15 replication) | -10 to -20% (high CV) | Mean -19.7% across 3 alternated trials × 5 reps |
+| Next-80B Q4_K_M | 5 reps | -6.2% | High noise (CV 30%) |
+| REAP-246B Q4_K_M | 5 reps | -2.3% | Clean signal (CV <1%) |
+
+PPL bit-exact verified on Coder + REAP. Throughput gate (≥+5% on 2 of 3 sync-bound models) NOT MET.
+
+### Why net-negative (theories)
+
+1. Phase 0 over-estimated coalesce potential by 5× (wdata constraint missed).
+2. Skipped barriers are CHEAP barriers (ROPE/RMS_NORM are tiny; cross-CCD sync cost is small).
+3. Per-thread overhead from the per-iteration dependency check (10 pointer comparisons × 1000 ops × 96 threads).
+4. Memory-ordering / cache effects when threads desync across op boundaries.
+
+### Operational disposition
+
+- Patch stays in tree disabled-by-default. Same treatment as slot-promotion dispatcher v1. Costs nothing at default.
+- Re-evaluate only if: (a) different barrier implementation makes per-iteration check cost-free, (b) a **wdata-aware MUL_MAT coalescing variant** (per-op wdata segments) is designed and unlocks Q/K/V chain coalescing, (c) a different model architecture with different op-chain shape is benchmarked.
+
+### Lesson for future Phase 0 analyses
+
+**Phase 0 manual op-chain analyses MUST check buffer-sharing constraints, not just dependency-graph independence.** Specifically: does cur op write to a shared mutable buffer (params->wdata, params->wsize, threadpool state)? Does next op read from the same buffer? If yes, coalescing is unsafe even when direct src/dst dependency is absent. This gate was missed in the original Phase 0 design note.
+
+### Other deferred avenues remain open
+
+The 5 other designs in this note's design space (token-to-expert rebalance, hybrid static+dynamic spillover, cross-CCD work migration, MoE quant layout rebalance, **plus the new wdata-aware MUL_MAT coalescing variant** introduced by this Phase 1 finding) are still UNTESTED and could be advanced in future sessions.
