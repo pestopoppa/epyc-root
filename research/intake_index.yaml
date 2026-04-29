@@ -21545,7 +21545,7 @@
   - 'Throughput trade-off: 2026 benchmarks (Spheron, particula.tech, kanerika, Local AI Master, premai.io) consistently exclude MLC-LLM from their head-to-head H100 throughput tables — the comparison set is vLLM / SGLang / TensorRT-LLM / LMDeploy. MLC-LLM''s value proposition is portability (CUDA + ROCm + Vulkan + Metal + WebGPU + Mobile from one compile pipeline), not peak server throughput. If your acquisition target is an H100 / DGX Spark serving box and the workload is server-side throughput, vLLM (intake-462) or SGLang (intake-461) likely dominate.'
   - 'Compile-step friction: unlike llama.cpp (point at GGUF, run) or vLLM (point at HF model, run), MLC-LLM requires a compilation step per model + per target backend. For a fast-moving model lineup (we re-quant frequently — see model_registry quant tracker), this is real overhead. Acceptable for production deployment of stable models, less acceptable for research-grade rapid iteration.'
   - 'No GGUF compatibility: our entire model storage is GGUF (per /mnt/raid0/llm/models/*.gguf and model_registry paths). Adopting MLC-LLM means parallel artifacts in a different format. Llama.cpp + GGUF remains canonical for our stack.'
-  - 'CPU backend not competitive: project explicitly targets GPUs (NVIDIA / AMD / Apple / Vulkan / WebGPU); no CPU-AVX-512BW kernel story. Our production CPU path (NPS4 EPYC 9655, AVX-512BW Q8_0 kernel — see project_q8_8x8_avx512bw_outcome) is irrelevant to MLC-LLM. This is a GPU-only contender.'
+  - 'CPU backend exists but unlikely competitive on EPYC 9655 (CORRECTED 2026-04-28 after user pushback): MLC-LLM/TVM ships a CPU LLVM backend (prebuilt mlc-ai-nightly-cpu wheel; github.com/mlc-ai/mlc-llm/issues/795 confirms users do CPU inference). README lists only GPU/mobile backends, which I incorrectly took as exhaustive. The defensible claim is *non-competitiveness* on our specific stack: TVM-LLVM autoscheduling/autotuning is unlikely to match our hand-tuned ggml path which encodes Zen 5 specifics — AVX-512BW 8x8 Q8_0 kernel (project_q8_8x8_avx512bw_outcome +31.8% at 1t), Zen 5 VPMADDUBSW > VPDPBUSD (project_zen5_vnni_vs_maddubs — VNNI does NOT always win), NUMA-4-way mlock + membind mmap (feedback_mmap_numa_sharing), K-quant repack dispatcher (project_x86_kquant_repack_gaps). Prior is low but unverified — would need actual measurement on Qwen3.6-27B Q4 to confirm. Per CLAUDE.md "never dismiss as not applicable without asking the user first".'
   - 'Hybrid SSM / Delta Net support: docs intro names Llama-3 and Phi-2 as examples and does not enumerate Qwen3.5/3.6 hybrid SSM. Given MLC-LLM is compiler-based, adding Delta Net + chunkwise scan likely requires upstream model definition work — non-trivial relative to llama.cpp''s existing Qwen3.5/3.6 hybrid path. Confirm support before assuming the production stack ports cleanly.'
   cross_references:
     chapters: []
@@ -21567,3 +21567,585 @@
   novelty_justification: 'Medium. MLC-LLM is the first compiler-based ML deployment stack we have ingested (no prior TVM, Relax, IREE, or WebLLM entries — confirmed by grep on intake_index). The compile-once / dispatch-many-backends paradigm is materially different from the seven GPU runtime/engine entries we already have (intake-458/461/462/463/464/465/466), all of which are hand-tuned-per-backend. Specifically novel: (a) WebGPU / browser deployment via WebLLM sister project — no other intake entry covers browser-based LLM serving; (b) Vulkan as a portable AMD path (intake-303-306 are ROCm-specific); (c) iOS / Android as first-class targets; (d) Apache TVM lineage shared with BitBLAS (intake-497) — same authoring DSL would be reusable.'
   relevance_justification: 'Medium. EPYC stack is CPU-only and MLC-LLM has no competitive CPU backend, so zero immediate-actionable content. However, gpu-acceleration-path.md is the umbrella tracker for GPU-acquisition-prep references and already bundles intake-458/461/462/463/464/465/466 — MLC-LLM completes that bundle for two specific scenarios: (1) AMD RX 7900 XTX path using Vulkan (avoids ROCm/HIP build complexity flagged in the handoff''s build configuration section), (2) consumer-multi-platform deployment if EPYC stack ever exposes a public WebGPU demo. The DGX Spark Blackwell target is better served by vLLM + DDTree/Dflash per the existing handoff Section "vLLM + Speculative Decoding on DGX Spark", so MLC-LLM is a plan-B not plan-A for that specific target.'
   verdict_justification: 'worth_investigating, with concrete activation triggers: (1) if the GPU acquisition lands on consumer AMD (RX 7900 XTX) instead of DGX Spark, MLC-LLM Vulkan backend becomes the simpler alternative to llama.cpp HIP build (handoff''s -DGGML_HIP=ON path), (2) if a browser-based WebGPU demo of EPYC routing/orchestration is ever desired, MLC-LLM via WebLLM is the canonical path, (3) if mobile (iOS/Android) demos or edge deployment are scoped, MLC-LLM is the strongest option in the intake — no other entry covers mobile. NOT activated by: peak H100 throughput needs (use SGLang/vLLM), CPU-only research (use llama.cpp), MoE expert-offloading (use llama.cpp -ot "exps=CPU" or vLLM Wide-EP per intake-463). Credibility scored null per workflow rule (repo with no empirical claims in README/docs intro). Updating gpu-acceleration-path.md to add MLC-LLM to the GPU-prep bundle alongside intake-458/461-466.'
+
+- id: intake-501
+  arxiv_id: null
+  url: https://rits.shanghai.nyu.edu/ai/luce-dflash-brings-2x-speculative-decoding-to-qwen3-6-27b-on-a-single-rtx-3090/
+  source_type: blog
+  title: 'Luce DFlash Brings 2x Speculative Decoding to Qwen3.6-27B on a Single RTX 3090'
+  authors:
+  - Utku Ege Tuluk (writeup)
+  - Z Lab (DFlash method — Jian Chen, Yesheng Liang, Zhijian Liu)
+  - Luce-Org (llama.cpp port)
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - ssm_hybrid
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-28'
+  key_claims:
+  - 'First published llama.cpp port of DFlash speculative decoding targeting Qwen3.6-27B (released 2026-04-22) on a single 24GB consumer GPU (RTX 3090). Llama.cpp fork at Luce-Org/llama.cpp@luce-dflash. Backend support: Ampere (RTX 3090), Ada (RTX 4090), Blackwell (RTX 5090), DGX Spark sm_121, Jetson AGX Thor sm_110.'
+  - 'Architectural compatibility: Qwen3.5-27B-DFlash drafter (HuggingFace z-lab/Qwen3.5-27B-DFlash) loads on Qwen3.6-27B unchanged — identical Qwen35 architecture identifier, layer/head dimensions. No drafter retraining required for the 3.5 → 3.6 upgrade. Establishes drafter portability across point-version model upgrades within the dense-FFN hybrid family.'
+  - 'Speedup mechanism is GPU-native: block-diffusion drafter (parallel block generation, not autoregressive), DDTree tree verification (budget tuned to 22), 3 custom CUDA kernels for tree-aware SSM state rollback over Gated-DeltaNet state, TurboQuant TQ3_0 KV cache for extended context. Architecturally foreclosed on EPYC CPU sequential decode (no parallel scan, no tree-aware kernels).'
+  - '"Practical envelope of what fits on one 3090 has expanded substantially in the last month" — quantized consumer hardware delivers multi-x speedups historically reserved for datacenter approaches, when speculation pipeline is GPU-aware.'
+  techniques:
+  - DFlash block-diffusion drafter (target hidden-state conditioned, parallel block generation, block size 16)
+  - DDTree tree-structured verification (budget=22, surpasses chain verification)
+  - Custom CUDA kernels for tree-aware Gated-DeltaNet SSM state rollback (3 kernels)
+  - TurboQuant TQ3_0 KV cache quantization for 128K-context support
+  - Llama.cpp fork integration with tree-mode + GGUF Q4_K_M / Q4_0 quant targeting (Luce-Org/llama.cpp@luce-dflash)
+  reported_results:
+  - 'Qwen3.6-27B Q4_K_M peak throughput on RTX 3090: 207.6 tok/s vs 38.0 autoregressive (5.46×)'
+  - 'HumanEval mean: 129.5 tok/s (3.43× speedup)'
+  - 'Math500: 110.5 tok/s; GSM8K: 96.2 tok/s'
+  - '128K context Q4_0 sustained: 134.78 tok/s — long-context anchor'
+  - 'Cross-version drafter acceptance length: 9.18 (3.5-drafter on 3.5) vs 5.05 (3.5-drafter on 3.6 release-day) — ~2× speedup on 3.6 even without retraining'
+  - 'Drafter VRAM footprint: 5-layer transformer with shared embed/LM head, 0.5B params, ~300MB Q4_K_M (per intake-158 deep-dive)'
+  referenced_arxiv_ids:
+  - '2602.06036'
+  contradicting_evidence:
+  - 'Single-author blog writeup (Utku Ege Tuluk) on a university research-group page (NYU Shanghai RITS) — not peer-reviewed. Numbers are self-reported on a single RTX 3090 with no third-party replication of the Qwen3.6-specific data points yet.'
+  - 'Acceptance length 5.05 on a release-day cross-version drafter is below steady-state — Z Lab has not yet published a 3.6-native drafter. The 5.46× peak number assumes throughput without quality regression, which the post does not validate against a quality eval (only HumanEval throughput, not pass@1).'
+  - 'Commercial bias risk: post promotes a specific Luce-Org product (lucebox-hub + llama.cpp fork). Reported 207.6 tok/s peak is a synthetic best-case, not an end-to-end production workload measurement.'
+  - 'GPU-only result; does NOT transfer to EPYC CPU stack (DeltaNet verification wall, see project memory feedback_qwen35_27b_architecture and handoffs/completed/dflash-block-diffusion-speculation.md).'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - qwen36-27b-cpu-feasibility.md
+    experiments: []
+    intake_entries:
+    - intake-158 (DFlash paper, arxiv:2602.06036 — parent technique)
+    - intake-296 (DFlash HuggingFace collection — sibling reference)
+    - intake-297 (DFlash GitHub repo — sibling reference)
+    - intake-298 (DFlash project page — sibling reference, additional benchmark detail)
+    - intake-447 (Lucebox Hub — parent llama.cpp port story for Qwen3.5)
+    - intake-455 (Qwen3.6-27B RTX 4090 community note — sibling Qwen3.6 GPU data point)
+  implementation_urls:
+  - https://github.com/Luce-Org/lucebox-hub
+  - https://github.com/Luce-Org/llama.cpp/tree/luce-dflash
+  - https://huggingface.co/z-lab/Qwen3.5-27B-DFlash
+  - https://huggingface.co/Qwen/Qwen3.6-27B
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - qwen36-27b-cpu-feasibility.md
+  handoffs_created: []
+  novelty_justification: 'Medium. Technique itself (DFlash + DDTree + tree-aware SSM rollback) is well-covered by intake-158/296/297/298/447. New contributions: (a) Qwen3.6-27B as the target — released 2026-04-22, not previously benchmarked under this stack; (b) cross-version drafter portability finding (3.5 drafter loads on 3.6 unchanged — identifies the dense-FFN-hybrid family compatibility); (c) RTX 3090-specific data points (207.6 tok/s peak, 134.78 tok/s sustained at 128K context Q4_0) extending intake-447 which focused on Qwen3.5-27B; (d) cross-version acceptance-length comparison (9.18 → 5.05). Distinct enough to track separately from intake-447 but shares the same GPU activation gate.'
+  relevance_justification: 'High. Directly cross-references active gpu-acceleration-path.md (DFlash + DDTree + Lucebox path tracked there) and qwen36-27b-cpu-feasibility.md (GPU-only data points get bookmarked in CPU-foreclosure handoffs). DGX Spark target (project_dgx_spark_target memory) supports sm_121, which the post explicitly calls out as a backend. When/if DGX Spark is acquired, this writeup is part of the integration reference set alongside intake-447 (parent llama.cpp port) and intake-455 (4090 sibling).'
+  verdict_justification: 'worth_investigating, not new_opportunity — the underlying integration target (Luce-Org/llama.cpp@luce-dflash) is already tracked via intake-447, so no new handoff stub is warranted. This entry adds external corroboration + Qwen3.6-specific data + drafter-portability finding to the existing GPU-acceleration plan. Activation gate (GPU acquisition) is unchanged; once gated, this is the canonical Qwen3.6-27B reference. Credibility scored 1 (low tier): published today (+1), commercial bias (-1), corroborates DFlash arxiv:2602.06036 (+1), no peer review (0), unknown writeup-author authority (0). No new handoff stub created — appended to gpu-acceleration-path.md and qwen36-27b-cpu-feasibility.md.'
+
+- id: intake-502
+  arxiv_id: '2604.24432'
+  url: https://arxiv.org/abs/2604.24432
+  source_type: paper
+  title: 'Kwai Summary Attention Technical Report'
+  authors:
+  - 'Kuaishou OneRec Team (38 authors total)'
+  - Chenglong Chu
+  - Guorui Zhou
+  - Guowang Zhang
+  - Han Li
+  - Hao Peng
+  - Hongtao Cheng
+  - Jian Liang
+  - Jiangxia Cao
+  - Kun Gai
+  - Lingzhi Zhou
+  - Lu Ren
+  - Qi Zhang
+  - Ruiming Tang
+  - Ruitao Wang
+  - Xinchen Luo
+  - Yi Su
+  - Zhiyuan Liang
+  - Ziqi Wang
+  - 'and 20 additional contributors at Kwai/Kuaishou'
+  categories:
+  - kv_cache
+  - context_extension
+  - inference_serving
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-29'
+  key_claims:
+  - 'Proposes an "intermediate path" between standard softmax attention (quadratic compute, linear KV growth) and minimal-KV linear-attention variants — KSA keeps linear KV growth but performs semantic-level compression at a tunable ratio k, achieving O(n/k) complexity. Authors frame: "Maintaining a linear relationship between the KV cache and sequence length, but performing semantic-level compression through a specific ratio k. This O(n/k) path does not pursue a `minimum KV cache`, but rather trades acceptable memory costs for complete, referential, and interpretable retention of long distant dependency."'
+  - 'Introduces Kwai Summary Attention (KSA): summary tokens injected at chunk boundaries (chunk size k=8 default). Summary tokens see only their own chunk; text tokens see local sliding-chunk text + distant summary tokens. Sliding Chunk Attention (SCA, not regular SWA) aligns window with chunk boundaries to avoid information loss at chunk edges.'
+  - 'Hybrid-KSA architecture: 3:1 KSA-to-Full attention layer ratio. Default config: chunk number N=128, chunk size S=8. Both N and S are ablation-swept (Table 7).'
+  - 'Three-stage CPT training recipe (genuinely actionable): (1) summary token adaptation — independent W_S^Q/K/V matrices, MSE+KL distillation from full-attention teacher; (2) parameter annealing — linearly interpolate independent summary weights into shared LLM weights via λ schedule, then drop independent params; (3) sequence length extension — staged 32K→64K→128K. Removes inference-time parameter overhead.'
+  - 'Open-sourced training scripts: github.com/Kuaishou-OneRec/KSA (per paper page 3 footnote 1).'
+  - 'Marked "Work in progress"; submitted 2026-04-27. No public model checkpoints linked yet (only training scripts). DeepSeek V4 cited as following same first-principle of sequence-level KV compression — external corroboration of the design direction.'
+  techniques:
+  - Kwai Summary Attention (KSA) — learnable summary tokens injected at chunk boundaries
+  - Sliding Chunk Attention (SCA) — window aligned with chunk boundaries, distinct from standard SWA
+  - Hybrid-KSA — 3:1 KSA-to-Full layer ratio (interleaving)
+  - Three-stage CPT training recipe — summary token adaptation (with MSE + KL distillation), parameter annealing (linear interpolation λ schedule), sequence length extension
+  - Block-sparse attention kernel for training/prefill (loads only non-zero block pairs HBM→SRAM)
+  - Summary KV cache layout — three contiguous regions (Current Chunk + Sliding Chunk Text + Summary Token Buffer), ring-buffer eviction, single-slice memory access during decode without concatenation
+  - Composability: KSA stacks with GQA (1/k · g/h compression) and MLA (1/k · (d_c+d_r)/(2hd) compression) — orthogonal compression dimensions
+  reported_results:
+  - 'CPT setting (continual pretraining from Qwen3-4B-base, 85B tokens). RULER long-context retrieval: Hybrid-KSA wins at all lengths — RULER-4K: 92.97; RULER-32K: 86.65; RULER-128K: 71.67. At 128K, Hybrid-KSA beats Full attention by +5.81 points and beats Hybrid-SWA (strongest hybrid baseline) by +5.40 points. Reference: Section 4.2.1, Table 4.'
+  - 'CPT general benchmarks: KSA full model achieves MMLU 70.73 / CMMLU 73.29 (Full: 71.83 / 75.00; Hybrid-Linear: 64.33 / 68.41). CMath: KSA 84.58 vs Full 83.41. GSM8K: KSA 81.09 vs Full 82.75. MBPP: Hybrid-KSA 62.20 — best across all configurations including Full attention.'
+  - 'Train-from-scratch (1.9B params, 400B tokens, sequence schedule 8K→32K→64K→128K). RULER-128K: Hybrid-KSA = 65.35 vs Full = 48.75 (+16.60 over Full); vs Hybrid-GDN = 59.87 (+5.48); vs Hybrid-SWA = 56.64 (+8.71); vs Hybrid-SCA = 58.01 (+7.34). Average across all benchmarks: Hybrid-KSA = 54.80, Full = 49.44 (Table 5).'
+  - 'From-scratch math/code performance: Hybrid-KSA wins GSM8K (59.14 vs Full 48.29, +10.85), MATH (36.92 vs Full 23.38, +13.54), MBPP (36.40 vs Full 30.60), HumanEval (31.71 vs Full 25.61).'
+  - 'KV cache memory at 128K context: Hybrid-KSA = 7.5 GB vs Full attention = 18.6 GB → 2.5× reduction (Figure 10). Decode throughput at 16K: Hybrid-KSA = 1.06× Full; Hybrid-SWA = 0.73× Full; Hybrid-Ring-Linear = 0.81× Full — KSA is the only sub-quadratic baseline that DOES NOT lose decode speed.'
+  - 'Per-token KV cache cost analysis (Table 1) at h=128, d=128, g=8, d_c=512, d_r=64: KSA at k=8 → ~12.5% of MHA size (8× compression); KSA + GQA → 0.78% of MHA (~128× compression); KSA + MLA → 0.22% of MHA (~455× compression). Composability with GQA/MLA is fully orthogonal.'
+  - 'Needle-in-a-Haystack (NIAH) at 128K (CPT, Table 6): NIAH-Multivalue 98.75 vs Full 88.12 (+10.63); NIAH-Multiquery 98.12 (Full 95.62); VT (Variable Tracking) 90.50 vs Full 60.50 (+30.00); FWE (Frequent Words Extraction) 65.84 vs Full 51.66 (+14.18); SQuAD 42.50 vs Full 30.00 (+12.50).'
+  - 'Training loss (from-scratch, end of training): Hybrid-KSA = 1.524, Hybrid-GDN = 1.534, Hybrid-SWA = 1.550, Full = 1.572. KSA achieves the lowest loss with a stable margin in the long-tail regime (>41.9B tokens).'
+  - 'Ablations (Table 7, default N=128, S=8, KSA:Full=3:1): chunk number sweep N∈{32,64,128,256} — N=128 balances long-context (RULER avg 82.97) and general (knowledge avg 71.17). Chunk size sweep S∈{8,16,32} — S=8 best long-context (RULER avg 82.97), S=32 best reasoning (avg 75.23).'
+  - 'Architecture (Table 2): from-scratch 1.9B (24 layers, hidden 2048, intermediate 6144, 16/16 Q/KV heads MHA), CPT 4B initialized from Qwen3-4B-base (36 layers, hidden 2560, intermediate 9728, 32/8 Q/KV heads GQA). Tied embeddings only in CPT.'
+  - 'Training hyperparameters (Table 3): WSD LR schedule, AdamW (β1=0.9, β2=0.95), weight decay 0.01, gradient clip 1.0. RoPE theta 10^4 at 8K stage, switched to 10^6 at ≥32K. Max LR 4e-4 at 8K, 1e-5 at ≥32K (scratch); 1e-4 all stages (CPT).'
+  - 'Pretraining corpus (Figure 6): six categories — Common Knowledge, Math, Code, STEM, General Reasoning, Long Context. Long Context is a primary class.'
+  - 'Comparison baselines (full set): Full attention, Hybrid-SWA, Hybrid-SCA, Hybrid-GDN (Gated DeltaNet), Hybrid-Linear, Hybrid-Ring-Linear, full KSA, Hybrid-KSA.'
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'No peer review (technical report, marked "Work in progress"). No third-party reproductions of the headline numbers (paper is 2 days old as of intake, 2026-04-29). Numbers reported are entirely self-claimed by the Kwai team.'
+  - 'No public model checkpoints released — only training scripts at github.com/Kuaishou-OneRec/KSA. Activation gate (running KSA on our stack) requires either (a) running their CPT recipe ourselves on a Qwen3-4B-base — needs ~85B tokens of compute, infeasible on CPU-only EPYC, or (b) waiting for Kuaishou to release a checkpoint, or (c) waiting for community to port to llama.cpp.'
+  - 'Selected ablation drawbacks documented by authors themselves: (a) chunk number N=256 degrades RULER-64K to 65.73 (vs 76.35 at N=128) — diminishing returns from finer-grained summarization; (b) chunk size S=32 best for general-task reasoning (75.23 avg) but loses long-context performance — there is a trade-off between local receptive field and long-range fidelity that depends on workload mix.'
+  - 'Hybrid-Linear baseline degrades MMLU/CMMLU heavily (64.33 / 68.41 in CPT vs Full 71.83 / 75.00) — confirms general criticism in the broader literature that fixed-size linear-attention state loses general capability. KSA is in the same general lineage but uses growing summary state to mitigate this. Generalization across non-RULER long-context tasks (LongBench-v2, etc.) is NOT reported.'
+  - 'General criticisms of summary-token / learnable-compression attention from broader 2025-2026 literature: (a) static compression rate fixed by ratio k regardless of input complexity — see "When Tokens Talk Too Much" survey (arxiv:2507.20198); (b) information loss accelerates on info-dense content at high compression — matches our Phase-2 AM-compaction finding (Qwen2.5-7B: 0.807 cosine at 10x on deep layers), see attention-matching-kv-compaction.md; (c) performance gap vs pure self-attention persists in summary-token approaches when measured outside training distribution.'
+  - 'Architectural-change blocker class same as Multiscreen (intake-256), MoBA, NSA, Diff Attn V2: requires pretraining or full CPT — no zero-shot retrofit path for our existing Qwen3.5/3.6/2.5 production stack. CPT is feasible with the released training scripts but compute-bound (no CPU path).'
+  - 'No GGUF support, no llama.cpp implementation. The custom block-sparse attention kernel + summary KV cache layout would need a non-trivial ggml port (new mask construction, new decode-time KV layout, parameter annealing logic).'
+  - 'Comparison baselines do NOT include MoBA, NSA, Diff Attn V2, Log-Linear GDN — direct head-to-head against the strongest 2025-2026 sub-quadratic alternatives is missing. Hybrid-GDN as the GDN baseline is reasonable but Log-Linear GDN (intake-356) likely outperforms standard GDN.'
+  - 'Credibility scored 3 (Medium tier): no peer review (0), submitted within 12 months (+1), major-lab authorship — Kuaishou OneRec includes Kun Gai, Guorui Zhou, Ruiming Tang who are recognized industrial researchers (+1), training scripts released as open source (+1), no commercial bias deduction (technical report, not product promotion), no independent corroboration yet (paper too new). DeepSeek V4 cited by authors as following same first-principle of sequence-level KV compression provides weak external support for the design direction.'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    - log-linear-gated-deltanet-readiness.md
+    experiments: []
+    intake_entries:
+    - intake-256 (Multiscreen architecture — closest sub-quadratic-attention cluster member, same gating criteria)
+    - intake-288 (Expected Attention — retrofit alternative for KV cache reduction on existing models)
+    - intake-351 (Attention Matching compaction — retrofit alternative, deployed in production-consolidated-v3)
+    - intake-356 (Log-Linear Attention — closest "intermediate path" architectural cousin, sub-linear state growth)
+    - intake-354 (Memory Caching: RNNs with Growing Memory — bridges fixed-state RNNs and quadratic attention, similar design-space framing)
+  implementation_urls:
+  - https://github.com/Kuaishou-OneRec/KSA
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'Medium. The "summary token" / learnable-context-compression paradigm is well-explored — Memorizing Transformers (2022), Compressive Transformer (2019), Landmark Attention (2023), AutoCompressors (2023), Gisting (2023) all explored related ideas. KSA''s specific contributions: (a) framing as an "intermediate path" with ratio k as an architectural hyperparameter (O(n/k) vs O(1)/O(n²)), (b) Sliding Chunk Attention (SCA) — chunk-aligned sliding window distinct from standard token-level SWA, addressing chunk-boundary information loss, (c) the three-stage CPT distillation recipe (summary token adaptation with MSE+KL distillation from a full-attention teacher, parameter annealing via λ schedule, sequence length extension) which makes a Qwen3-4B-base retrofittable in 85B tokens — this CPT pathway is genuinely novel and independently informative, (d) the contiguous-tensor decode KV cache layout (Current Chunk + Sliding Chunk Text + Summary Token Buffer) that avoids gather/concatenation in the hot path. Closest 2025-2026 cluster members: Multiscreen (intake-256), MoBA, NSA, Log-Linear GDN (intake-356). KSA does not displace any existing entry but adds a fresh data point on the linear-KV + semantic-compression design axis with a working open-source training recipe.'
+  relevance_justification: 'Medium. Architectural change requires either pretraining from scratch or CPT (~85B tokens for Qwen3-4B-base). Our EPYC stack is CPU-only — no path to run the CPT recipe ourselves. Same blocker class as Multiscreen/MoBA/NSA which we track as monitor-only. However, relevance is NOT downgraded to low because: (1) training scripts ARE released (github.com/Kuaishou-OneRec/KSA) — actionable IF GPU is acquired (cross-ref project_dgx_spark_target memory); (2) KSA composability with GQA is fully orthogonal — Hybrid-KSA + GQA gives ~128× KV cache reduction at h=128 d=128 g=8 k=8, with 1.06× decode latency vs Full attention (KSA is the only sub-quadratic baseline that does NOT lose decode speed in the comparison set); (3) the CPT distillation recipe is independently informative for any future continual-pretraining work we do — even decoupled from KSA itself, the layer-wise MSE + distribution-wise KL + parameter-annealing pattern is reusable; (4) DeepSeek V4 cited by authors as following the same first-principle of sequence-level KV compression — if V4 ships GGUF-compatible weights, KSA-style architecture lands in our stack indirectly. Why not high: no actionable path on EPYC today, gating identical to Multiscreen (pretrained checkpoints + llama.cpp port).'
+  verdict_justification: 'worth_investigating — substantially upgraded after full-PDF extraction via local LightOnOCR pipeline (2026-04-29 same day). Now confirmed: (a) headline numbers materially better than community-summary stub: +5.81 over Full at RULER-128K (CPT) and +16.60 (from-scratch); (b) open-source training scripts released at github.com/Kuaishou-OneRec/KSA; (c) decode throughput at 16K is 1.06× Full (vs 0.73× Hybrid-SWA, 0.81× Hybrid-Ring-Linear) — KSA is the only sub-quadratic baseline that does NOT lose decode speed; (d) NIAH performance is dramatic (+30.0 on Variable Tracking, +14.18 on FWE, +10.63 on NIAH-Multivalue at 128K); (e) ablation tables published showing N=128, S=8, KSA:Full=3:1 as the trade-off-optimal config. Action set expanded: now includes "read CPT distillation recipe for our own future continual-pretraining work" alongside the original "monitor for pretrained checkpoints + llama.cpp port" gating. No new handoff stub warranted (relevance is medium not high, no immediate EPYC actionability), but the multiscreen-attention-evaluation.md update is now substantive (full benchmark tables, not just architecture summary). Closest analog from literature search — arxiv:2604.20920 "Forget, Then Recall: Learnable Compression and Selective Unfolding via Gist Sparse Attention" — remains recommended for separate intake invocation. Credibility upgraded 2→3 due to released training scripts (+1 reproducibility signal).'
+
+- id: intake-503
+  arxiv_id: '2510.19338'
+  url: https://arxiv.org/abs/2510.19338
+  source_type: paper
+  title: 'Every Attention Matters: An Efficient Hybrid Architecture for Long-Context Reasoning'
+  authors:
+  - 'Ling Team (Ant Group)'
+  - Bin Han
+  - Caizhi Tang
+  - Chen Liang
+  - Donghao Zhang
+  - Fan Yuan
+  - Feng Zhu
+  - Jie Gao
+  - Jingyu Hu
+  - Longfei Li
+  - 'and additional Ant Group authors'
+  categories:
+  - ssm_hybrid
+  - context_extension
+  - kv_cache
+  - moe_optimization
+  - training_distillation
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-502
+  verdict: worth_investigating
+  ingested_date: '2026-04-29'
+  key_claims:
+  - 'Hybrid architecture combining Lightning Attention (linear, fixed-decay) with softmax attention reduces inference cost to ~1/10 of a 32B dense baseline and 50%+ vs original Ring series.'
+  - 'Optimal linear:softmax layer ratios identified via scaling-law sweep: M=4 (Ring-mini-linear-2.0, 16B/957M-1.6B active) and M=7 (Ring-flash-linear-2.0, 104B/6.1B-7.4B active).'
+  - 'FP8 fused-kernel library "LingHe" yields ~50% training-efficiency gain and aligns training and inference engine operators to avoid precision drift.'
+  - 'Near-linear time and constant-space complexity in long-context decode while matching SOTA reasoning benchmarks (AIME-25 86.51%, GPQA-D 74.49% for Ring-flash-linear-2.0).'
+  - 'Continued pretraining converted from Ling-mini-base-2.0 with +600B tokens; MoE 1/32 activation ratio with MTP layers preserved from Ling 2.0.'
+  techniques:
+  - Lightning Attention (Qin et al. arxiv:2401.04658) as linear backbone with fixed power-law decay
+  - Hybrid linear/softmax interleaving with empirically-tuned ratio M (4 or 7)
+  - FP8 fused-kernel operator library "LingHe" (open-sourced)
+  - Train/infer operator alignment to prevent BF16 KV-state precision drift in linear recurrence
+  - MoE 1/32 activation ratio + MTP layers retained from Ling 2.0
+  - Flood inference acceleration framework (alipay/PainlessInferenceAcceleration)
+  reported_results:
+  - 'Inference cost ≈ 1/10 of 32B dense in deep-reasoning scenarios; ≥50% inference cost reduction vs original Ring series.'
+  - 'Training efficiency +50% via FP8 LingHe kernels.'
+  - 'Ring-mini-linear-2.0: AIME-25 73.65%, GPQA-Diamond 65.69%.'
+  - 'Ring-flash-linear-2.0: AIME-25 86.51%, GPQA-Diamond 74.49%.'
+  - 'Ring-mini: 16.4B total / 957M-1.6B active params, M=4 (4 linear : 1 softmax).'
+  - 'Ring-flash: 104B total / 6.1B-7.4B active, M=7 (7 linear : 1 softmax).'
+  - 'RULER / NIAH / LongBench scores not reported in the paper — long-context retrieval claims rest on indirect reasoning benchmarks.'
+  referenced_arxiv_ids:
+  - '2401.04658'
+  - '2312.06635'
+  - '2307.14995'
+  - '2501.08313'
+  - '2408.03314'
+  - '2501.12948'
+  - '2507.06261'
+  - '2505.09388'
+  - '2404.06395'
+  - '2403.08763'
+  - '2405.17381'
+  contradicting_evidence:
+  - 'Pure linear attention is documented to underperform on recall-intensive / in-context-learning tasks; the Ring-linear paper itself acknowledges Q/K/V identical head counts add memory overhead and that residual softmax layers remain a compute bottleneck (Section 7).'
+  - 'Hybrid Lightning-Attention models are sensitive to KV-state precision: BF16 KVCache accumulates error in the recurrent path, requiring FP32 accumulation — non-trivial to replicate in llama.cpp''s quantized KV path.'
+  - 'Performance is highly sensitive to the linear-attention decay coefficient (power-law vs linear decay swings training loss ~0.04 and downstream scores materially), implying brittle reproduction without exact kernel parity.'
+  - 'No RULER / NIAH / LongBench-Long results published — long-context retrieval claims rest on indirect reasoning benchmarks, not standard recall stress tests (Tier 2b caveat for the "every attention matters" framing).'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - qwen36-27b-cpu-feasibility.md
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-502 (KSA — same expansion run, sibling sub-quadratic-attention paper from a different industrial lab)
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'Lightning Attention itself dates to 2024 (arxiv:2401.04658); Minimax-01 (2501.08313) already shipped a 7:1 hybrid in early 2025. Ring-linear''s contribution is mostly engineering (FP8 LingHe kernels, train/infer operator alignment, scaling-law sweep over M) plus open-sourced 16B/104B MoE checkpoints — incremental over Minimax-01 and Ling 2.0, not a new architectural primitive. Medium novelty.'
+  relevance_justification: 'CORRECTED 2026-04-29 PM: prior framing assumed multi-week llama.cpp port effort. Reality: `GGML_OP_GATED_LINEAR_ATTN` already exists in our experimental fork (`ggml/src/ggml-cpu/ops.cpp:10605`); Lightning Attention is mechanically a constant-`g` GLA. v1 port is 3-5 days using existing infrastructure. Directly intersects two active EPYC tracks: (a) sub-quadratic attention survey in multiscreen-attention-evaluation; (b) Qwen3.5/3.6 hybrid SSM stack already in production. Open weights on HF (Ring-mini 16B/957M-active) make it a CPU-feasibility candidate AND drafter candidate alongside Qwen3.6-27B. FP8 LingHe is GPU-only but our v1 port uses F16/F32 throughout (correctness first, optimization later). BF16-KV precision drift constraint applies to recurrent path but our F32 GLA implementation handles this. Tracked as ACTIVE PORT in lightning-attention-port.md.'
+  verdict_justification: 'worth_investigating — CORRECTED 2026-04-29 PM after audit of `llama.cpp-experimental` (HEAD `9f6191581`): the GLA-op finding makes us the volunteer for the port, not the waiter. Tracked at lightning-attention-port.md with phases L1 scoping (~1 day) → L2 GGUF converter (~1 day, ~50 LOC) → L3 model variant (~1-2 days, ~150 LOC) → L4 test (~1 day, GATED on user inference approval per feedback_no_concurrent_inference.md) → L5 optional dedicated op (~1 week if v1 prefill profile shows need). Total v1 = 3-5 days of focused work using existing infrastructure. Ring-mini 16B/957M-active is Q-scorer-territory and a viable candidate small drafter for spec-dec experiments (architecture mismatch with Qwen-GDN target is a research question, not a default-yes). The corrected deep-dive at /workspace/research/deep-dives/ling-linear-lightning-attention-hybrid.md documents the audit findings + GLA-op evidence. Lesson recorded: before claiming an implementation effort is multi-week, audit the existing op space — `grep -nE "(GGML_OP_GATED_LINEAR_ATTN|llm_build_delta_net_base)"` would have caught this in 30 seconds. Credibility 4: peer-review 0, recent +1, major lab Ant Group +1, no commercial bias 0, independent corroboration via KSA (intake-502) citing Lightning Attention as comparable hybrid baseline +1, open weights on HuggingFace +1.'
+
+- id: intake-504
+  arxiv_id: '2601.16725'
+  url: https://arxiv.org/abs/2601.16725
+  source_type: paper
+  title: 'LongCat-Flash-Thinking-2601 Technical Report'
+  authors:
+  - 'Meituan LongCat Team (165+ co-authors)'
+  - Anchun Gui
+  - Bei Li
+  - Bingyang Tao
+  categories:
+  - moe_optimization
+  - agent_architecture
+  - training_distillation
+  - context_extension
+  - benchmark_methodology
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-502
+  verdict: not_applicable
+  ingested_date: '2026-04-29'
+  key_claims:
+  - '560B-parameter open-source MoE reasoning model with ~27B active parameters/token; SOTA among open-source on agentic benchmarks (search, tool-use, tool-integrated reasoning).'
+  - 'Domain-parallel expert training with subsequent fusion (separate experts trained per domain, then merged) as a unified post-training recipe.'
+  - 'Extended asynchronous RL framework (DORA) scaling across 10,000+ environments spanning 20+ domains.'
+  - 'Heavy Thinking mode: parallel reasoning expansion at test-time delivering large lifts (e.g. AIME-25 99.6 → 100.0; HMMT-25 93.4 → 97.5; GPQA-D 80.5 → 85.2).'
+  - '256K context window with explicit context-management for agentic search; reproducibility via determinism enforced across compute and communication operators.'
+  techniques:
+  - Domain-parallel expert training with fusion
+  - DORA — extended async RL framework
+  - Heavy Thinking — test-time parallel reasoning expansion
+  - Agentic context-management for tool use over long contexts
+  - Deterministic compute/communication for reproducibility
+  reported_results:
+  - 'AIME-25: 99.6% (single) / 100.0% (Heavy Thinking).'
+  - 'HMMT-25: 93.4% / 97.5% (HT).'
+  - 'IMO-AnswerBench: 78.6% / 86.8% (HT).'
+  - 'AMO-Bench EN: 61.6% / 66.0%; CH: 56.8% / 67.5%.'
+  - 'GPQA-Diamond: 80.5% / 85.2% (HT).'
+  - 'LiveCodeBench: 82.8%; OJBench: 42.2%.'
+  - 'BrowseComp: 56.6% / 73.1% (with ctx mgmt); BrowseComp-zh: 69.0% / 77.7%; RWSearch: 79.5%.'
+  - 'τ²-Bench avg: 88.2%; τ²-Noise: 67.1%; VitaBench: 29.3%; VitaBench-Noise: 20.5%.'
+  - '560B total / ~27B active per token MoE; 256K context window.'
+  referenced_arxiv_ids:
+  - '2509.01322'
+  - '2509.18883'
+  contradicting_evidence:
+  - 'Recency bias acknowledged at 256K context: model does not weigh tokens equally; long-context retrieval skewed toward end-of-prompt.'
+  - 'Heavy Thinking implementation details largely undisclosed in frontier models, limiting third-party reproducibility / systematic study.'
+  - 'Several comparison numbers in the report are taken from public reports rather than re-run; authors caveat that real effect depends on user data/prompts/proxy framework.'
+  - 'Engram layer (related LongCat-Flash-Lite work) lacks published accuracy tests; vLLM issues report memory overhead loading 31.4B n-gram embedding params alongside main model — may signal serving-side fragility for the family.'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-502 (sibling expansion candidate, same intake run)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Domain-parallel expert training with fusion plus DORA''s 10k-environment async RL is a non-trivial recipe; Heavy Thinking is a known idea but the systems integration is new. Architectural novelty is moderate — still a vanilla 560B MoE (no MLA/SSM/log-linear claims surfaced), and key reproducibility ingredients are undisclosed.'
+  relevance_justification: '560B MoE at 27B active is far outside the EPYC stack envelope (Qwen3.6-35B-A3B / Coder-30B-A3B / 32B dense are the upper bound that fits 1.1 TB RAM with usable t/s on llama.cpp CPU). No GGUF release surfaced; HF release is FP weights only. Heavy Thinking and DORA are training-side techniques, not inference levers. No KV-cache, speculative-decoding, or quantization contribution that would compose with the deployed CPU stack. Agentic context-management is conceptually adjacent to our agent stack but tied to the model''s own training, not portable.'
+  verdict_justification: 'not_applicable for the EPYC inference stack: (a) 560B params is too large to serve usefully on 1.1 TB CPU even at 27B active; (b) no quantization/kernel/serving contribution; (c) techniques (DORA, domain-parallel training, Heavy Thinking) live on the training side and are not integrable into our llama.cpp/CPU production path. Mark as not_applicable; no handoff stub warranted. Keep on file as a reference benchmark target should an open-weights distilled small variant ever ship. Credibility 2: peer-review 0, recent +1, major lab Meituan +1, no commercial bias 0, no independent corroboration 0.'
+
+- id: intake-505
+  arxiv_id: '2601.02780'
+  url: https://arxiv.org/abs/2601.02780
+  source_type: paper
+  title: 'MiMo-V2-Flash Technical Report'
+  authors:
+  - 'Xiaomi LLM-Core Team'
+  - Bangjun Xiao
+  - Bingquan Xia
+  - Bo Yang
+  categories:
+  - kv_cache
+  - speculative_decoding
+  - moe_optimization
+  - context_extension
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-502
+  verdict: worth_investigating
+  ingested_date: '2026-04-29'
+  key_claims:
+  - '309B total / 15B active MoE achieves performance comparable to DeepSeek-V3.2 and Kimi-K2 with 1/2 to 1/3 of their parameters.'
+  - 'Hybrid SWA (128-token window, 5:1 SWA:global ratio) with learnable attention-sink bias delivers ~6× KV-cache and attention-compute reduction while sustaining ~100% NIAH-Multi success across 32K-256K.'
+  - 'Multi-Token Prediction with a 0.33B dense FFN+SWA head yields 3.6 acceptance length and 2.6× decoding speedup (dual-use: training stability + spec-decoding head).'
+  - 'Multi-Teacher On-Policy Distillation (MOPD): three-stage SFT → domain-specialized RL → token-level distillation, mixing dense teacher reward with outcome reward.'
+  - '73.4% SWE-Bench Verified / 71.7% Multilingual; leads open-weight class on agentic+coding while running 256K context.'
+  techniques:
+  - Hybrid Sliding-Window Attention (5 SWA layers : 1 Global, 128-token window)
+  - Learnable attention-sink bias (sink-attention adaptation a la GPT-OSS / StreamingLLM lineage)
+  - Grouped-Query Attention split per layer type (64Q/8KV SWA, 64Q/4KV global)
+  - 48-layer MoE with 256 routed experts, top-8 routing
+  - Multi-Token Prediction head (0.33B dense FFN + SWA) doubling as spec-decoding drafter
+  - Mixed FP8 precision training
+  - Multi-Teacher On-Policy Distillation (MOPD) post-training pipeline
+  - 27T-token 3-stage curriculum with 256K context-extension stage
+  reported_results:
+  - 'MMLU 86.7%; AIME 24&25 35.3%; LiveCodeBench 85.1%; SWE-Bench Verified 73.4%; SWE-Bench Multilingual 71.7%; NIAH-Multi @256K 96.7%.'
+  - 'MTP head: 3.6 average acceptance length, 2.6× end-to-end decoding speedup.'
+  - '~6× reduction in KV-cache + attention compute vs full-attention baseline at matched quality.'
+  referenced_arxiv_ids:
+  - '2004.05150'
+  - '2305.13245'
+  - '1701.06538'
+  - '2404.19737'
+  - '2412.19437'
+  - '2309.17453'
+  contradicting_evidence:
+  - 'Community reports (medium / dev.to / bind-ai reviews) flag inconsistent instruction-following and unreliable tool-calling despite strong benchmark numbers.'
+  - 'Aggressive 128-token SWA window trades global-context awareness for efficiency; reviewers note degradation on nuanced creative writing and multi-step agentic workflows.'
+  - 'Knowledge-capacity ceiling at 15B active params vs DeepSeek-V3.2/Kimi-K2 reported on broad-knowledge prompts.'
+  - 'Authors themselves caveat that architectural exploration "remains preliminary" with limited design-trade-off analysis; Appendix B documents reward-hacking on SWE-Bench.'
+  implementation_urls:
+  - https://github.com/XiaomiMiMo/MiMo-V2-Flash
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    - log-linear-gated-deltanet-readiness.md
+    - long-context-eval-datasets.md
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-502 (sibling expansion, same intake run)
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'The architectural recipe (5:1 SWA+GA hybrid with attention sinks, MTP-as-drafter, MOPD distillation) is a competent integration of known components (Longformer SWA, StreamingLLM sinks, DeepSeek MTP, GQA) rather than a fundamentally new mechanism; the 5:1 ratio + sink-bias learning + MTP-doubling-as-drafter combination is not published elsewhere as a single recipe, but each ingredient has prior art. Hence medium, not high.'
+  relevance_justification: 'CORRECTED 2026-04-29 deep-dive: llama.cpp PR #18328 (merged 2025-12-24 by ngxson) DOES support MiMo-V2-Flash architecture; tool-call XML parser extended to MiMo via PR #16932. PR #22493 (opened 2026-04-29 by AesSedai) adds MiMo V2.5 support. Earlier framing "llama.cpp does not yet support the 5:1 hybrid SWA+sink-bias scheme" was WRONG. The genuine blockers are now sizing and role-mix, not architectural support: 309B/15B-active Q4_K_M ~155 GB fits comfortably in 1.1 TB EPYC RAM, but estimated 10 t/s decode on 96-thread bind (extrapolating from 49.1 t/s for 30B-A3B at 3B active) is below the 40+ t/s threshold needed to displace any deployed role. MTP-as-drafter pattern (0.33B FFN+SWA, 3.6 acceptance length, 2.6× speedup) is the most directly transferable finding. Medium relevance — useful as architecture reference and MTP-drafter pattern; deployment is sizing-blocked, not architecture-blocked.'
+  verdict_justification: 'worth_investigating — CORRECTED 2026-04-29: previous framing wrongly assumed no llama.cpp support. Reality: PR #18328 merged Dec 2025; full architecture (5:1 SWA + learnable sink-bias + MTP head) is loadable in upstream llama.cpp. Three concrete actions: (1) potentially benchmark Q4_K_M MiMo on EPYC for the data point (registry calibration), (2) investigate whether the standalone MTP head (0.33B params, 3-layer MTP weights publicly released) can be loaded as a drafter for ANOTHER target — likely no due to MTP-target weight tying, but worth confirming, (3) read MOPD post-training recipe for ideas applicable to our LoRA / continual-pretraining work. Track PR #22493 (V2.5) as signal of architecture maturation; if V2.5 ships smaller (e.g., 30B-active variant), becomes immediately deployable. Deep-dive at /workspace/research/deep-dives/mimo-v2-flash-architecture-and-cpu-feasibility.md. Credibility 3: peer-review 0, recent +1, major lab Xiaomi +1, open-weight release +1, mild commercial bias 0, no independent corroboration 0.'
+
+- id: intake-506
+  arxiv_id: '2512.02556'
+  url: https://arxiv.org/abs/2512.02556
+  source_type: paper
+  title: 'DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models'
+  authors:
+  - DeepSeek-AI
+  - Aixin Liu
+  - Aoxue Mei
+  - Bangcai Lin
+  - Bing Xue
+  - Bingxuan Wang
+  - 'and 258 additional contributors'
+  categories:
+  - kv_cache
+  - moe_optimization
+  - context_extension
+  - training_distillation
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: expansion
+  expanded_from: intake-502
+  verdict: worth_investigating
+  ingested_date: '2026-04-29'
+  key_claims:
+  - 'Introduces DeepSeek Sparse Attention (DSA): two-stage attention combining a Lightning Indexer (FP8, head-weighted scoring) with fine-grained top-k=2048 token selection on top of MLA, changing core attention cost from O(L^2) to ~O(L*k) while preserving downstream quality (V3.2-Exp matches V3.1-Terminus on GSM8K/GPQA-Diamond).'
+  - 'Scalable RL post-training pipeline produces a high-compute variant (DeepSeek-V3.2-Speciale) reported to surpass GPT-5 and match Gemini-3.0-Pro on reasoning, including gold-medal results at IMO 2025 and IOI 2025.'
+  - 'Agentic task synthesis pipeline systematically generates tool-use training data, claimed to drive improved agent generalization.'
+  - 'DSA is positioned as the same first-principle of sequence-level KV-cache compression that KSA (intake-502) cites — i.e. linear KV growth + semantic compression at a tunable ratio (here, fixed top-k indexer rather than learned summary tokens).'
+  - 'Released open-weights at huggingface.co/deepseek-ai/DeepSeek-V3.2 and DeepSeek-V3.2-Exp; reference inference code under HF tree/main/inference. Architecture continues V3 lineage: 671B-class MoE with MLA + DSA replacing dense MLA attention.'
+  techniques:
+  - DeepSeek Sparse Attention (DSA) — Lightning Indexer + top-k=2048 token selection layered on MLA
+  - Lightning Indexer with FP8 per-block quantized key cache (block size 64), separate from MLA KV cache
+  - MLA + DSA composition (MLA-DSA) — orthogonal compression: MLA compresses per-token KV dim, DSA selects which tokens to attend
+  - Scalable RL post-training framework producing Speciale (high-compute) variant
+  - Agentic task synthesis for tool-use training data generation
+  - V3.2 chat template / parser (already partially upstreamed in our llama.cpp fork commit 1c0d9081f per llama-cpp-fork-rebase.md)
+  reported_results:
+  - 'V3.2-Exp matches V3.1-Terminus on GSM8K and GPQA-Diamond per vLLM validation; DSA preserves quality at substantially reduced attention compute on long context.'
+  - 'DeepSeek-V3.2-Speciale: gold-medal at IMO 2025 and IOI 2025; reasoning capability claimed comparable to GPT-5 and on par with Gemini-3.0-Pro.'
+  - 'DSA core attention cost ~O(L*k) with k=2048 vs full O(L^2); enables long-context inference at substantially reduced FLOPs vs dense MLA.'
+  - 'Slight regression vs V3.1 on some benchmarks (Humanity''s Last Exam reported lower per third-party analysis) — DSA quality is near-parity, not strict dominance, on every task.'
+  referenced_arxiv_ids:
+  - '2502.11089'
+  - '2412.19437'
+  - '2405.04434'
+  - '2401.06066'
+  contradicting_evidence:
+  - 'DSA''s lightning indexer + per-query top-k makes continuous batching and paged attention non-trivial — vLLM blog flags expert-parallelism bugs and ongoing implementation verification at release time.'
+  - 'RoPE-in-indexer implementation discrepancy was identified in early versions of llama.cpp PR #21149 and reportedly degraded model quality until patched. Now fixed.'
+  - 'V3.2-Exp slightly regresses vs V3.1 on Humanity''s Last Exam per third-party analysis — DSA is not pure pareto improvement.'
+  - 'DSA top-k=2048 is a fixed hyperparameter (same workload-dependence concern called out for GLM-5.1 DSA); generalization to short-context or non-retrieval workloads not separately characterized.'
+  - 'PR #21149 author''s own caveat (paraphrased): "Due to the way it''s currently implemented it doesn''t improve long context performance yet." The plumbing is in place across CPU/CUDA/Vulkan but the theoretical O(L·k) speed-up is not yet realized at long context. Expect further optimization passes before the headline benefit lands.'
+  - 'FP8 lightning indexer on CPU is unmeasured — claimed to work in PR #21149 but no CPU-only benchmarks published. Real risk: indexer FP8 emulation overhead dominates EPYC decode and erases the O(L·k) advantage. Hypothesis to falsify when we test.'
+  implementation_urls:
+  - https://huggingface.co/deepseek-ai/DeepSeek-V3.2
+  - https://huggingface.co/deepseek-ai/DeepSeek-V3.2-Exp
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 04-radix-attention.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - triattention-kv-selection.md
+    - attention-matching-kv-compaction.md
+    - large-moe-expert-parallelism.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - glm51-reap-cpu-evaluation.md
+    - inference-acceleration-index.md
+    - llama-cpp-fork-rebase.md
+    experiments: []
+    intake_entries:
+    - intake-502 (KSA — explicitly cites DSA as same first-principle of sequence-level KV compression)
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  - triattention-kv-selection.md
+  - glm51-reap-cpu-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'DSA itself is an evolution of NSA (arxiv:2502.11089) lineage rather than a fundamentally new mechanism: it operationalizes the NSA idea (top-k token selection) on top of MLA at a 671B-class MoE production scale, with engineering refinements (FP8 lightning indexer, block-64 quantized index cache, MLA composition). The first-principle is shared with KSA (intake-502, sequence-level KV compression) but uses a learned indexer rather than learned summary tokens. Speciale''s IMO/IOI gold and RL recipe details are likely the most novel contributions; the attention design is incremental over NSA but is the first reference-scale (671B-class MoE) deployment of NSA-family sparse attention with public weights.'
+  relevance_justification: 'CORRECTED 2026-04-29 deep-dive: previous framing wrongly assumed no llama.cpp DSA forward pass exists. Reality: llama.cpp PR #21149 by fairydreaming is an ACTIVE DRAFT (opened 2026-03-29, last commit 2026-04-28) implementing full DSA support across CPU + CUDA + Vulkan backends. New ggml ops introduced (GGML_OP_HADAMARD, GGML_OP_LIGHTNING_INDEXER), new KV cache classes (llama_kv_cache_dsa, llama_ik_cache), specialized flash-attention MMA kernel sparse path. Status: draft, awaiting architectural confirmation and code review; author caveat that long-context speedup not yet realized. Relevance is medium because: (a) Q4_K_M ~380 GB fits comfortably in 1.1 TB EPYC RAM; (b) the patch is being built by a respected DeepSeek-series llama.cpp contributor (high credibility for landing); (c) any DSA stabilization simultaneously unlocks GLM-5/5.1 (same indexer infrastructure); (d) chat template already upstreamed in our fork (llama-cpp-fork-rebase.md commit 1c0d9081f). Action shifted from "track llama.cpp DSA implementation gap" to "track PR #21149 stabilization → pull and test on EPYC."'
+  verdict_justification: 'worth_investigating — CORRECTED 2026-04-29: prior framing assumed missing infrastructure that doesn''t actually exist. Genuine state: (1) PR #21149 (draft, fairydreaming) implements full DSA with CPU/CUDA/Vulkan backends; ~30 days open with active commits; (2) Q4_K_M ~380 GB fits in 1.1 TB EPYC RAM with substantial headroom; (3) one stabilized PR unlocks BOTH V3.2 and GLM-5/5.1 simultaneously. Action items (deep-dive at /workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md): (a) watch PR #21149 weekly for "long-context performance not improved" caveat to be lifted; (b) when ready, pull as feature branch in llama.cpp-experimental, build on EPYC, smoke test V3.2-Exp Q4_K_M [GATED on user approval per feedback_no_concurrent_inference.md]; (c) quality gate: replicate V3.2-Exp ≈ V3.1-Terminus on GSM8K + GPQA-Diamond at 32K context [GATED]; (d) decode throughput gate: measure t/s at 16K/64K/128K on EPYC 96-thread bind, falsify hypothesis that indexer FP8 emulation kills CPU advantage [GATED]; (e) optional upstream contribution: post EPYC CPU benchmarks as comment on PR #21149 (currently CUDA-dominated, our hardware is a useful CPU data point) [GATED on b/c/d completing first]; (f) GLM-5.1 follow-on tests once V3.2 path validated [GATED]. Credibility 5: peer-review 0, recent +1, major lab DeepSeek +1, open-weights +1, KSA cites +1, GLM-5 also cites +1, no commercial bias deduction. Lesson recorded: when claiming "no upstream support exists," verify via gh pr list / gh issue list against ggml-org/llama.cpp before committing to the framing.'
+
+- id: intake-507
+  arxiv_id: '2604.20920'
+  url: https://arxiv.org/abs/2604.20920
+  source_type: paper
+  title: 'Forget, Then Recall: Learnable Compression and Selective Unfolding via Gist Sparse Attention'
+  authors:
+  - Yuzhen Mao
+  - Michael Y. Li
+  - Emily B. Fox
+  - 'Stanford University'
+  categories:
+  - kv_cache
+  - context_extension
+  - context_management
+  - inference_serving
+  - training_distillation
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-502
+  verdict: worth_investigating
+  ingested_date: '2026-04-29'
+  key_claims:
+  - 'Proposes Gist Sparse Attention (GSA): an end-to-end learnable bridge between KV-cache compression and KV-cache selection that requires no architectural modification, no external indexer, and no non-differentiable gates. Core insight: interleaved learnable gist tokens (one per chunk of length L) double as both compressed chunk summaries AND learned routing signals — the dot product q_t^T · k_{g_m} acts as a chunk-relevance score, replacing NSA''s MLP-summary routing and MoBA''s mean-pooled non-differentiable gates.'
+  - 'Selective Unfolding (the mechanism that distinguishes GSA from KSA / append-only gist methods): at each decoding step, select top-k chunks by gist-relevance score, then "unfold" those chunks by restoring the original raw KV pairs of the selected chunks alongside their gist tokens (SG+SR variant — selected gists + selected raw). Unselected chunks are NOT visible at all (not even via their gist) — this is a hard top-k, in contrast to KSA where ALL summary tokens remain visible to text tokens. Bounded context size at decode = k·(1+L)+M gists.'
+  - 'Hierarchical extension (H-GSA): gist-of-gist construction. Recursive compression yields meta-gist tokens at level ℓ summarizing groups of level-(ℓ-1) gists. Coarse-to-fine selection at decode: route from highest-abstraction meta-gists down to raw chunks. Achieves O(M + kL) per-step single-level → log-linear decoding complexity in the hierarchical variant. Top-level memory footprint stays fixed regardless of total context length.'
+  - 'Two-stage training recipe: Stage 1 = Continued Pretraining (REQUIRED) with interleaved gist tokens + the gist causal mask M_gist (each chunk''s tokens see only their chunk + preceding gists; tokens after g_m can see g_m only, not C_m''s raw tokens — information bottleneck forces gist to compress). Stage 2 = Selective Finetuning (OPTIONAL) — exposes the model to selective-unfolding attention masks during training. Authors emphasize Stage 1 alone already supports inference-time selective unfolding.'
+  - 'Wins at high compression ratios. LongBench at 32×: GSA 44.07 vs ActivationBeacon 38.30, UniGist 38.16 (+5.77/+5.91). RAG with KV-cache reuse (Llama3.2-1B) at 8×: GSA 48.07 avg vs KVLink 41.20, UniGist 40.35. With finetuning at 8×: GSA 54.24 actually surpasses Full-FT (50.33) on some individual tasks — selective unfolding acts as a beneficial inductive bias filtering out distractor passages.'
+  - 'Code released at github.com/yuzhenmao/gist-sparse-attention/. Tested on Qwen2-7B-Instruct (because ActivationBeacon evaluates on it) and Llama3.2-1B (because KVLink evaluates on it). Continued pretraining used RedPajama, sequence lengths 7K-20K. Passkey retrieval at 128K shows position-unbiased recovery on both model families.'
+  techniques:
+  - Interleaved gist tokens at chunk boundary (chunk size L) — same family as ActivationBeacon / GistPool / UniGist / KSA
+  - Gist causal mask M_gist — information bottleneck forcing each gist to compress its chunk; tokens following g_m cannot see raw C_m tokens
+  - Gist-Based Relevance Scoring — chunk relevance = q_t · k_{g_m} (reuses standard attention machinery; no auxiliary scoring network)
+  - Selective Unfolding — hard top-k chunk selection; restore raw KV pairs only for selected chunks; UNSELECTED chunks are invisible (key differentiator vs KSA where all summary tokens remain visible)
+  - Hybrid attention context variants ablated — SR-only (raw only), AG+SR (all gists + selected raw), SG+SR (selected gists + selected raw — default, best on HotpotQA suite)
+  - Grouped Unfolding for GQA — handles GQA-grouped query heads at unfold time
+  - Hierarchical gist-of-gist (H-GSA) — meta-gist tokens recursively compress level-(ℓ-1) gists; coarse-to-fine selective unfolding from top level downward
+  - Two-stage training — Stage 1 continued pretraining with gist mask (required); Stage 2 selective finetuning with top-k mask exposure (optional)
+  - Adaptive Top-k (Top-k vs Top-p ablation) — adaptive p-mass selection vs fixed-k
+  - KV-cache reuse via KVLink protocol — link tokens between documents attend only to gist+meta-gist of preceding documents
+  reported_results:
+  - 'LongBench at 32× compression: GSA 44.07 vs ActivationBeacon 38.30, UniGist 38.16 (+5.77/+5.91). At 8× with finetuning: GSA 46.74 vs ActivationBeacon 42.67, UniGist 43.33; Full-FT model = 47.32 (gap closed to 0.58).'
+  - 'RAG benchmarks (HotpotQA/TriviaQA/2WikiMQA/MuSiQue/NQ avg, Llama3.2-1B, KV-cache reuse, 8×): GSA 48.07 vs KVLink 41.20 vs UniGist 40.35; Full-FT 57.76 (gap 9.69). At 16×: GSA 41.59, H-GSA 46.34, KVLink 38.48, UniGist 37.19.'
+  - 'Hierarchical scaling: H-GSA at 16× (46.48) > single-level GSA (45.26); at 32× the H-GSA advantage widens — hierarchy mitigates the routing-cost overhead that hurts single-level at very high compression.'
+  - 'Passkey retrieval @ 128K (Qwen2-7B-Instruct + Llama3.2-1B, both GSA and H-GSA variants): position-unbiased recovery across all tested depths and insertion positions; generalizes far beyond continued-pretraining lengths (7K-20K).'
+  - 'Single-level decoding complexity: O(M + kL) per step where M = ⌈n/L⌉. Hierarchical variant: log-linear per-step decoding complexity.'
+  - 'Ablation — Selective Rules (HotpotQA suite avg): SG+SR 53.39 (default) > AG+SR 53.27 > SR-only 52.76. Confirms retaining ONLY selected gists alongside selected raw beats retaining all gists or dropping gists entirely.'
+  referenced_arxiv_ids:
+  - '1904.10509'
+  - '2004.05150'
+  - '2111.00396'
+  - '2309.12307'
+  - '2309.17453'
+  - '2310.06839'
+  - '2312.00752'
+  - '2401.03462'
+  - '2406.10774'
+  - '2407.10671'
+  - '2412.06464'
+  - '2501.12948'
+  - '2502.13189'
+  - '2502.16002'
+  - '2504.08934'
+  - '2509.15763'
+  - '2512.02556'
+  contradicting_evidence:
+  - 'Same architectural-change blocker class as KSA / Multiscreen / NSA / MoBA / Diff Attn V2: GSA REQUIRES Stage 1 continued pretraining (the authors explicitly mark it as "Required"). No zero-shot retrofit path exists for Qwen3.5/3.6/2.5 production stack — gist tokens must be trained into the model via causal-mask CPT. On EPYC 9655 CPU-only, 85B-token-class CPT is infeasible. Activation gates: (a) wait for community to release a GSA checkpoint of a model we already serve, (b) port the gist-mask + selective-unfolding kernel to llama.cpp/ggml and run CPT externally.'
+  - 'No GGUF support, no llama.cpp implementation. Selective Unfolding requires non-trivial mask construction at each decode step (hard top-k chunk gating + dynamic restoration of raw KV pairs into the active context window) — not in any current ggml attention kernel. The hierarchical H-GSA variant adds further coarse-to-fine routing across log-many summary levels, magnifying integration cost.'
+  - 'Evaluation scale is small relative to KSA (intake-502): tested on Qwen2-7B and Llama3.2-1B — NOT on production-scale targets (no 30B+, no MoE, no GQA-heavy modern architectures). KSA includes 4B CPT on Qwen3-4B-base and 1.9B from-scratch with explicit RULER-128K numbers; GSA does not report RULER head-to-head against KSA''s table — the two papers cannot be directly compared on identical metrics.'
+  - 'No third-party reproductions yet (paper submitted 2026-04-22, code repo public but unvetted as of intake date 2026-04-29). Numbers are entirely self-reported.'
+  - 'Selective Unfolding''s hard top-k unselected-chunk-invisible design is a double-edged blade vs KSA''s all-summaries-always-visible design: GSA wins LongBench/RAG cleanly under same token budget, but if a query needs information from MANY chunks weakly (rather than k chunks strongly), the hard top-k will starve the model. KSA''s persistent summary visibility provides a softer fallback. Neither paper measures this failure mode directly.'
+  - 'Hardware-efficiency criticism from broader sparse-attention literature: irregular memory access from dynamic per-step top-k chunk selection erases theoretical FLOP savings on real GPUs; the situation is even worse on CPU where the gather+rebuild of the active KV slice has no equivalent of the contiguous-tensor decode layout that KSA explicitly engineered. GSA paper does NOT publish wall-clock decode latency vs Full attention — only per-step complexity in big-O.'
+  - 'Authors do not report RULER beyond passkey retrieval — passkey is the EASIEST long-context retrieval task. Variable Tracking, FWE, SQuAD-style RULER subtasks where KSA shows large wins are not measured by GSA.'
+  - 'Credibility 3 (Medium tier): no peer review (technical report on arXiv, +0), submitted within 12 months (+1), Stanford / Emily Fox lab — recognized academic authorship (+1), code released as open source (+1), no commercial bias deduction (academic), no independent corroboration yet.'
+  implementation_urls:
+  - https://github.com/yuzhenmao/gist-sparse-attention
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    - yarn-context-extension-research.md
+    - qwen36-27b-cpu-feasibility.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries:
+    - intake-502 (KSA — closest paradigm sibling, both use gist/summary tokens for sequence-level compression but differ on selective-unfolding vs persistent-summary visibility)
+    - intake-506 (DeepSeek-V3.2 DSA — uses learned indexer for top-k selection; GSA uses gist tokens themselves as routing signals — same first-principle, different mechanism)
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'High — but specifically because of the Selective Unfolding mechanism, not the gist tokens themselves. Gist tokens are the dominant 2025-2026 paradigm (Mu 2023, ActivationBeacon 2024, GistPool 2025, UniGist 2025, KSA 2026 = intake-502, KVLink 2025). What is genuinely new in GSA: (1) using gist tokens as LEARNED ROUTING SIGNALS for hard top-k selection — a unification of compression and selection that prior gist work treated separately and prior sparse-attention work (NSA, DSA, MoBA) handled via dedicated routing modules; (2) Selective Unfolding — restoring raw KV pairs for selected chunks; KSA never restores raw tokens, distant text is ALWAYS seen only through summaries; (3) Hierarchical gist-of-gist with log-linear decode — this is structurally novel and absent from KSA. Position vs intake-502: same April-2026 cluster, same gist-token primitive, but the unfolding mechanism is a clean differentiator that solves a different point in the compression / fidelity / cost trade-off.'
+  relevance_justification: 'Medium — gated by the same architectural-CPT blocker that holds intake-502, but ranks slightly above KSA on EPYC-relevance for two reasons: (1) the simpler "Stage 1 only" inference-time deployment path means a community-released GSA checkpoint (or our own port + community CPT) could be plugged in WITHOUT the parameter-annealing dance KSA''s three-stage recipe requires — lower implementation surface for llama.cpp; (2) hierarchical variant''s log-linear decode is the only mechanism in this cluster that scales naturally to 1M+ context on EPYC''s RAM headroom (1.1 TB), aligning with the Qwen3.5-256K / YaRN-extension / multiscreen long-context thesis. Demoted from High because: no GGUF / no checkpoint of any production model / dynamic top-k incompatible with current ggml attention kernels / passkey-only long-context evaluation / smaller model scale than KSA. Stays in the active monitoring queue alongside KSA.'
+  verdict_justification: 'worth_investigating — log this as the second-strongest summary-token-cluster paper from April 2026 (alongside KSA) in the multiscreen-attention-evaluation handoff. The Selective Unfolding mechanism is a real conceptual addition over KSA and merits being recorded with full mechanism notes for when the cluster activates. Activation gates identical to intake-502: (a) someone releases a checkpoint on a model we serve, OR (b) we get a non-CPU compute path for CPT, OR (c) llama.cpp gains general support for dynamic top-k chunk masking + dynamic raw-KV restoration. Until then, monitor only. Not new_opportunity (no near-term EPYC CPU action), not adopt_patterns (mechanism not retrofittable), not superseded (genuinely advances over KSA on a different mechanism axis).'

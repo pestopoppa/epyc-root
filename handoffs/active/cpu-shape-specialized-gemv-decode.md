@@ -49,6 +49,33 @@ Code path located: `ggml/src/ggml-cpu/ggml-cpu.c:1774` `ggml_compute_forward_mul
 
 **Re-open trigger** (workload-shift, not "exhausted"): if we shift to a workload pattern with large batched MoE inference (e.g., agent batch processing, eval pipelines, multi-tenant API, prefill-heavy pipelines), the capacity-factor padding/dropping cost becomes material and CPU18's blocked-CSR-COO + transpose indices become a real lever. For batched MoE/prefill/eval workloads the technique remains a live option that has not been tested or refuted on CPU. Track stays "deprioritized" not "closed".
 
+## Phase 5 candidate (CPU26, added 2026-04-29 from PR #21149 audit)
+
+**AVX-512BW Lightning Indexer kernel for `GGML_OP_LIGHTNING_INDEXER` on Zen 5**
+
+- Source: [llama.cpp PR #21149](https://github.com/ggml-org/llama.cpp/pull/21149) by fairydreaming — DeepSeek V3.2 + DSA support. PR adds `GGML_OP_LIGHTNING_INDEXER` (FP8 head-weighted scoring with block-64 quantized key cache; per-query top-k=2048 token selection over MLA's compressed KV cache). Author commit (2026-04-28): "ggml : optimized GGML_OP_LIGHTNING_INDEXER (added WMMA kernel >= Ampere)" — CUDA path got Ampere WMMA optimization. CPU path is presumably scalar.
+- Transferable artifact: the **AVX-512BW SIMD kernel** for the indexer's dot-product + top-k selection inner loop. Template from existing `gemv_q8_0_8x8_q8_0_avx512bw` in `arch/x86/repack.cpp` (Session 15 work).
+- Why this matters on CPU: PR #21149's author explicitly flagged "long-context performance not yet improved" as the open issue; one of two suspects is the indexer overhead on non-CUDA backends. Our Zen 5 SIMD expertise (per `project_zen5_vnni_vs_maddubs` and `project_q8_8x8_avx512bw_outcome` memories — VPMADDUBSW 2/cycle beats VPDPBUSD 1/cycle on Zen 5) directly applies. **2-models-for-1 leverage**: any DSA infrastructure improvement helps GLM-5.1-555B-A14B on the same kernel path.
+- Compounds with: just-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) Q8_0 8x8 wins (same ZMM-level approach), AND with the auto-mbind(MPOL_INTERLEAVE) NUMA fix from Session 15 (Lightning Indexer's separate `llama_ik_cache` allocation will likely need the same NUMA-interleaving treatment per `feedback_repack_buffer_numa_mbind`).
+- Does NOT require BIOS reboot or env var. Pure software change inside `ggml/src/ggml-cpu/arch/x86/`.
+- Open questions before starting: (1) is `GGML_OP_LIGHTNING_INDEXER` compute-bound or BW-bound on CPU? Per `feedback_cpu_decode_bw_bound`, BW-bound work doesn't benefit from SIMD. **Profile-first gate is mandatory.** (2) does the indexer's per-block FP8 quantization map cleanly to AVX-512BW i8-pair multiplication (similar to Q8_0 8x8 kernel structure)? (3) does the existing token-generation sparse path benefit, or is the optimization only impactful in the (deferred) prompt-processing sparse path?
+- Suggested first step: pull PR #21149 into `llama.cpp-experimental` as a feature branch (D1.2 in `llama-cpp-dsa-contribution.md`); profile current CPU `GGML_OP_LIGHTNING_INDEXER` with `perf record` on V3.2-Exp Q4_K_M (or any DSA-architecture model) to confirm whether SIMD optimization will move the needle. If compute-bound → write kernel; if BW-bound → redirect effort to D2 (prompt-processing sparse path follow-on).
+- Strategic context: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) D3 sub-track — full work-item list with explicit `[GATED on user inference approval]` markers per `feedback_no_concurrent_inference.md`.
+- Cross-reference: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) ⚑⚑⚑⚑⚑ Lowest-Hanging Fruit block + CPU26 entry in Pickup Sequence.
+
+### Recommended ordering
+
+CPU26 should go AFTER D1 (pull/build/smoke test) — we need to confirm V3.2 quality holds on CPU before optimizing the indexer kernel. Otherwise we're optimizing a broken path.
+
+```
+PR #21149 D1 (smoke test, ~1 day)
+  ↓
+CPU26.D3.1 (perf record profile, ~few hours)
+  ↓ compute-bound?
+  ├─ YES → CPU26.D3.2-D3.7 (SIMD kernel work, ~1 week)
+  └─ NO  → redirect to D2 (prompt-processing sparse path, ~1-2 weeks upstream contribution)
+```
+
 ## Status as of 2026-04-24
 
 ### Session 15 — AVX-512BW 8x8 GEMV kernel LANDED, scaffold validated, multi-thread regression identified

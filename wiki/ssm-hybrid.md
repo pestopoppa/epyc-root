@@ -156,3 +156,17 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
+
+## Updates — 2026-04-29 (PM)
+
+**Lightning Attention port unblocked via existing GLA op (intake-503)** — Audit of `llama.cpp-experimental` reveals `GGML_OP_GATED_LINEAR_ATTN` is already implemented (`ggml/src/ggml-cpu/ops.cpp:10605`), with `llm_build_delta_net_base` (`src/models/models.h:23`) hosting Qwen3.5/3.6/kimi-linear/qwen3next variants. Lightning Attention's only meaningful difference from GLA is fixed power-law decay vs learned per-token gating — feed `g` as a constant tensor, done. v1 port is **3-5 days using existing infrastructure**, not multi-week from scratch as initially framed.
+
+Ant Group Ling-Linear-2.0 family (intake-503, arxiv:2510.19338): Ring-mini-linear-2.0 (16B/957M-active, M=4 hybrid ratio), Ring-flash-linear-2.0 (104B/6.1B-active, M=7). Reports ~1/10 inference cost vs 32B dense, AIME-25 86.51% Ring-flash. Open weights on HuggingFace. **No RULER/NIAH/LongBench published** — long-context claim rests on indirect reasoning benchmarks (yellow flag).
+
+Ring-mini at 957M active is genuinely Q-scorer / drafter territory. A working port unlocks a candidate small drafter for spec-dec experiments — architecture mismatch with Qwen-GDN target (Ring uses Lightning Attention; Qwen uses Gated DeltaNet) is a research question, not a default-yes, but the size + reasoning quality combination is unusual.
+
+Tracked at [`lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — phases L1 scoping → L2 GGUF converter (~50 LOC) → L3 model variant (~150 LOC, derive `llm_build_ring_linear` from `llm_build_delta_net_base`, mirror `llm_build_kimi_linear` template) → L4 test (gated on inference approval) → L5 optional dedicated `GGML_OP_LIGHTNING_ATTN` op exploiting constant `g` for prefill speedup.
+
+- [intake-503](https://arxiv.org/abs/2510.19338) Every Attention Matters — Ling-Linear-2.0 hybrid (M=4 / M=7) with Lightning Attention, FP8 LingHe kernels, MTP layers retained from Ling 2.0; open weights for Ring-mini (16B/957M-active) + Ring-flash (104B/6.1B-active)
+- [Ling-Linear / Lightning Attention deep-dive](../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — corrected effort estimate after GLA-op audit
+- [Lightning Attention port handoff](../handoffs/active/lightning-attention-port.md) — active port via existing GLA op, L1-L5 phases

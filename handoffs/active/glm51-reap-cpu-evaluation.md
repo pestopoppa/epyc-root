@@ -6,7 +6,7 @@
 **Categories**: moe_optimization, local_inference, model_evaluation
 **Priority**: MEDIUM (stack simplification candidate, storage-constrained)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md), [`gpu-acceleration-path.md`](gpu-acceleration-path.md)
+**Related**: [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md), [`gpu-acceleration-path.md`](gpu-acceleration-path.md), [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (**2-models-for-1 leverage** — DSA infrastructure work for V3.2 unlocks GLM-5.1 simultaneously; DSA forward-pass implementation tracked there, not here)
 
 ## Objective
 
@@ -137,3 +137,15 @@ Evaluate GLM-5.1-555B-A14B-REAP Q4_K_M GGUF as a potential single-model replacem
 - [ ] NUMA config: 325GB requires 2x96t minimum — what are the cross-NUMA latency characteristics for a model this large?
 - [ ] Context length: Can we validate the 131K context claim on EPYC hardware with dense MLA fallback?
 - [ ] Spec decode: Is there a draft model compatible with GLM-5.1 architecture?
+
+
+## Research Intake Update — 2026-04-29
+
+### New Related Research
+
+- **[intake-506] "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models"** (arxiv:2512.02556, DeepSeek-AI, December 2025)
+  - Relevance: **V3.2 ships the same DSA (DeepSeek Sparse Attention) mechanism that GLM-5.1 inherits.** Any llama.cpp DSA forward-pass implementation effort to unblock GLM-5.1 simultaneously unlocks V3.2 (and vice versa). This entry is the canonical DSA reference paper.
+  - Architecture details: Lightning Indexer (FP8, head-weighted scorer, block-64 quantized key cache, separate from MLA KV cache) → top-k=2048 token selection → MLA forward pass on selected tokens. Composition is orthogonal: MLA compresses per-token KV dim, DSA selects which tokens to attend.
+  - V3.2 vs GLM-5.1 size: V3.2 is 671B-class (Q4_K_M ~380 GB local) vs GLM-5.1 555B-A14B (Q4_K_M ~325 GB). Both share the indexer-falls-back-to-dense-MLA blocker on llama.cpp PR#19460.
+  - V3.2-Exp validation point: matches V3.1-Terminus on GSM8K/GPQA-Diamond (per vLLM blog). Useful sanity-check baseline if/when we run quality comparisons on a DSA-enabled fork.
+  - Verdict: **worth_investigating** — track upstream llama.cpp DSA indexer PR as the highest-leverage external event for both V3.2 AND GLM-5.1. Consider opening a fork patch ourselves if community PR stalls — this is now a 2-models-for-1-effort proposition.

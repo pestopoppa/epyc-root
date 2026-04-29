@@ -189,3 +189,15 @@ See `research/deep-dives/triattention-kv-selection-cluster.md` for full analysis
 ## Notes
 
 Complementarity with our stack: `--kv-hadamard` reduces per-token KV size. Selection reduces token count. Combined: 10.7x (selection) x 2x (q8/q4 quant) = ~21x potential KV memory reduction. Needs empirical validation — quality cliff may hit earlier when both are active.
+
+## Research Intake Update — 2026-04-29
+
+### New Related Research
+
+- **[intake-506] "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models"** (arxiv:2512.02556, DeepSeek-AI, December 2025)
+  - Relevance: **DSA (DeepSeek Sparse Attention)** is functionally a top-k token-selection mechanism (k=2048) — same paradigm as TriAttention / Expected Attention but at architecture-time (production-trained model), not retrofit. The Lightning Indexer + top-k selection composes with MLA exactly the way our handoff frames TriAttention/EA composing with Hadamard q4_0 KV quantization (orthogonal axes). MLA-DSA is the reference at-scale deployment of the NSA-family sparse attention idea (parent: arxiv:2502.11089).
+  - Key technique: Lightning Indexer (FP8 head-weighted scorer, block-64 quantized key cache, separate from MLA cache) → top-k=2048 token selection → MLA forward pass on selected tokens. Core attention cost O(L²) → ~O(L·k).
+  - Reported results: V3.2-Exp matches V3.1-Terminus on GSM8K/GPQA-Diamond (vLLM validation) — DSA preserves quality at substantially reduced attention compute on long context. V3.2-Speciale (RL post-training) claims IMO 2025 + IOI 2025 gold, GPT-5/Gemini-3.0-Pro level reasoning.
+  - Delta from current approach: Our TriAttention/EA evaluations are RETROFIT (post-hoc selection on a pretrained transformer); DSA is INTEGRATED (selection trained jointly with model weights). The integrated approach should preserve quality better at high compression ratios — a hypothesis worth testing if/when DSA lands in llama.cpp. Open question for our work: at what compression ratio does the integrated path materially outperform retrofit?
+  - Caveats (Tier 2b): RoPE-in-indexer implementation bug surfaced in early V3.2 builds; DSA top-k=2048 is fixed (workload-generalization not characterized — same concern as TriAttention 2048 budget); slight regression vs V3.1 on Humanity's Last Exam (DSA is near-parity, not strict dominance); llama.cpp DSA forward pass NOT yet implemented (PR#19460 merged dense-only, indexer tensors loaded but unused).
+  - Verdict: **worth_investigating, not new_opportunity for THIS handoff**. Decision Gate addition: if a community llama.cpp DSA implementation lands, consider re-running our S1 (PPL at 50% eviction) gate on V3.2 vs Qwen-EA selection to compare integrated-vs-retrofit selection mechanisms. No production-side action required today.

@@ -13,6 +13,30 @@
 
 Pre-production gate on MoE-Spec production registry integration is FULLY RELEASED.
 
+## ⚑⚑⚑⚑⚑ LOWEST-HANGING FRUIT 2026-04-29 — PR #21149 DSA CONTRIBUTION (READ FIRST)
+
+A research-intake session on 2026-04-29 surfaced **PR #21149 (DeepSeek V3.2 + DSA)** by fairydreaming as an active draft on llama.cpp upstream (opened 2026-03-29, last commit 2026-04-28). All three backends (CPU + CUDA + Vulkan) are working. Author explicitly asked for help with benchmark verification and flagged a deferred follow-on PR (extending sparse path to prompt processing) as the path to closing the long-context-speedup gap.
+
+**This is the next pickup for the experimental-kernel agent.** Three sub-tracks at three timelines:
+
+| Sub-track | Effort | Inference gate | What it adds |
+|-----------|--------|----------------|--------------|
+| **D1 — Pull / build / smoke test** | ~1 day | YES (per `feedback_no_concurrent_inference.md`) | First CPU-only data point on a CUDA-dominated PR; quality replication of V3.2-Exp ≈ V3.1-Terminus on GSM8K + GPQA-D at 32K; throughput at 16K/64K/128K |
+| **D2 — Prompt-processing sparse path follow-on PR** | ~1-2 weeks | YES for PP throughput gates | Closes the "long context speedup not yet realized" gap (the actual root cause: sparse path applies only to token gen) |
+| **D3 — AVX-512BW Lightning Indexer** | ~1 week | YES for benchmark gates | Zen 5 SIMD on `GGML_OP_LIGHTNING_INDEXER`; falsifies "indexer FP8 kills CPU advantage" hypothesis. CPU26 in pickup sequence; lives in `cpu-shape-specialized-gemv-decode.md` Phase 5 |
+
+**2-models-for-1 leverage**: PR #21149's DSA infrastructure also unlocks GLM-5.1-555B-A14B (same DSA architecture). Effort here pays off twice.
+
+**Full strategic context + work-item lists**: [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md). Read the V3.2 deep-dive at `/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md` for the full PR audit + author quotes.
+
+**Cross-references for the experimental-kernel agent**:
+- [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (strategic tracker, all sub-tracks)
+- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (D3 lives there as Phase 5 candidate)
+- [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) (2-models-for-1 sibling)
+- [`lightning-attention-port.md`](lightning-attention-port.md) (parallel architectural-port handoff; not directly DSA-related but in same active workstream)
+
+---
+
 ## ⚑⚑⚑⚑ COMPOUNDING-MATRIX FINDINGS 2026-04-26 evening — PRIOR WINS RE-MEASURED
 
 The user-requested "verify lever compounding" methodology check (2026-04-26 evening) **falsified the central production-push hypothesis**. Most prior "wins" collapse to noise when re-measured against the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all -t 96 -fa 1`) rather than the historic warmed mmap=1 reference.
@@ -348,8 +372,11 @@ Ordered by expected single-instance decode throughput gain × feasibility, with 
 - [ ] **CPU17 — DEPRIORITIZED for single-user decode regime; NOT EXHAUSTED for multi-tenant** Sarathi-Serve / chunked-prefill evaluation → see [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md). Phase 0 quick probe: decode constant at 46-47 t/s across all `-ub` values; smaller `-ub` damages prefill -52% with no decode benefit on single-user. CPU23 Phase 2.2 found 9.6× rep-1 TTFT amplification under concurrent prefill on sync-bound MoE — non-actionable for single-user (occurs once per session) but compounds across users in multi-tenant. **Re-promote on workload shift to multi-tenant API or prefill-heavy serving**.
 - [ ] **CPU18 — DEPRIORITIZED (analysis-based, NOT empirically closed)** MegaBlocks blocked-CSR-COO + transpose-indices port to CPU2 expert-GEMM. ROI estimate ≤5% on prefill only / ≤0% on single-token decode for current single-user workload. **No prototype built, no microbenchmark run** — live option for batched MoE/prefill/eval workloads where capacity-factor padding cost becomes material.
 - [ ] **CPU19 — DEPRIORITIZED** Tutel 2DH all-to-all port to CPU15 EP. CPU24 sync share = 15% caps theoretical gain at ~7-8% best-case. Reopen only if CPU22 prototype indicates sync-share above 15% on some workload.
+- [ ] **CPU26 — NEW 2026-04-29 (active)** AVX-512BW Lightning Indexer kernel for `GGML_OP_LIGHTNING_INDEXER` on Zen 5. Lives in `cpu-shape-specialized-gemv-decode.md` Phase 5 candidate; tracked strategically in `llama-cpp-dsa-contribution.md` D3 sub-track. Falsifies "indexer FP8 emulation kills CPU advantage" hypothesis on PR #21149 (DeepSeek V3.2 + DSA). Effort ~1 week. **Profile gate first** (`perf record` to confirm compute-bound, not BW-bound) — if BW-bound, deprioritize and redirect to D2 (prompt-processing sparse path follow-on PR).
 
-Wave pipeline (CPU20-CPU25) is closed for tested scopes (see partial-closure caveats above). Primary remaining open backlog: **MoE-Spec** (algorithmic, Phase 0 not run), **CPU1/CPU2/CPU3** (kernel/system levers), **CPU15** (large-MoE EP), **CPU16–CPU19** (workload-shift branches deprioritized for current single-user decode regime — see Phase 4 future-track triage). CPU9–CPU14 remain watchlist items per Phase 4 triage.
+Wave pipeline (CPU20-CPU25) is closed for tested scopes (see partial-closure caveats above). Primary remaining open backlog: **DSA contribution D1/D2/D3 + CPU26** (top — see Lowest-Hanging Fruit section above, llama-cpp-dsa-contribution.md), **MoE-Spec** (algorithmic, Phase 0 not run), **CPU1/CPU2/CPU3** (kernel/system levers), **CPU15** (large-MoE EP), **CPU16–CPU19** (workload-shift branches deprioritized for current single-user decode regime — see Phase 4 future-track triage). CPU9–CPU14 remain watchlist items per Phase 4 triage.
+
+Parallel **architectural-port** workstream (not in CPU pickup sequence; tracked via `inference-acceleration-index.md`): [`lightning-attention-port.md`](lightning-attention-port.md) — Ant Group Ring-mini-linear-2.0 via existing `GGML_OP_GATED_LINEAR_ATTN`. v1 = 3-5 days. Independent of DSA work.
 
 ---
 
