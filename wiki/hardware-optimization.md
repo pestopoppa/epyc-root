@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 38 documents
+**Last compiled**: 2026-04-29
+**Sources**: 39 documents
 
 ## Summary
 
@@ -912,3 +912,49 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 - [`handoffs/active/gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — GPU parked, vLLM+Dflash, DGX Spark cost-effective, TileLang/BitBLAS GPU-day
 - [`research/deep-dives/tilelang-puzzles-kernel-dsl.md`](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — kernel-DSL evaluation matrix, BitBLAS path, AMD MI300X relevance
 - intake-497 — TileLang puzzles (medium relevance, worth_investigating)
+
+## 2026-04-29 Update — CPU4 Phase 1 op-coalesced barriers + Phase 0 design pause
+
+### CPU4 op-coalesced barriers (Phase 1) — TESTED, NO-GO
+
+The CPU4 sync-primitive track was reopened on 2026-04-29 after the user direction "CPU4 sync primitive" — but the original 2-level CCD-aware barrier variant (CLOSED 2026-04-26 negative) and the lock-free expert dispatch variant (= CPU22 #1, CLOSED 2026-04-28 at -2.3% Coder) were already falsified.
+
+A new design — **op-coalesced barriers** — was advanced through Phase 0 manual op-chain analysis (estimated 24-29% per-token barrier-count reduction on Qwen3 MoE) and Phase 1 prototype (~80 LOC env-gated `GGML_BARRIER_COALESCE=1` default off, committed `9f6191581` in llama.cpp-experimental).
+
+**Critical Phase 1 discovery**: smoke test at COALESCE=1 with MUL_MAT/MUL_MAT_ID in the coalescable allowlist produced GARBLED output. Root cause: `ggml_compute_forward_mul_mat` writes src1 quantization to the shared `params->wdata` buffer BEFORE its internal barrier (`ggml-cpu.c:1467-1487`). Coalescing two MUL_MATs lets op N+1 clobber wdata while op N's chunk-loop still reads it. **Phase 0 manual analysis missed this constraint** — only checked dependency-graph independence, not buffer-sharing.
+
+After tightening the allowlist to exclude MUL_MAT/MUL_MAT_ID, smoke passes bit-exact and PPL chunk-3 is identical between COALESCE=0/1 on Coder-30B + REAP-246B. But the achievable per-token barrier-count reduction drops from 24-29% to ~5% (only ROPE-Q → RMS_NORM-K is coalescable per layer). Throughput measurement:
+
+| Model | n_total | Δ_pct |
+|---|---|---|
+| Coder-30B Q4_K_M | 20 reps (5 + 15 alternated trials) | -10 to -20% (high CV; aggregate -19.7%) |
+| Next-80B Q4_K_M  | 5 reps | -6.2% (noisy) |
+| REAP-246B Q4_K_M | 5 reps | -2.3% (clean signal) |
+
+Gate (≥+5% on 2 of 3 sync-bound Q4_K_M models): NOT MET. Patch stays in tree disabled-by-default. Mirrors slot-promotion dispatcher v1 treatment.
+
+### Lesson preserved for future Phase 0 analyses
+
+**Manual op-chain analyses MUST check buffer-sharing constraints** (`params->wdata`, `params->wsize`, threadpool atomics), not just dependency-graph (src/dst) independence. The wdata-shared-buffer hazard caused the 5× overestimate of coalescing potential. Future Phase 0 analyses should add this as a binding gate.
+
+### Phase 0 design notes for remaining design-space candidates (paper-only)
+
+Two new design notes landed on 2026-04-29 enumerating the still-open CPU4 + CPU22 deferred avenues:
+
+- [`cpu22-hybrid-spillover-design.md`](../handoffs/active/cpu22-hybrid-spillover-design.md) — 3 variants of hybrid static+dynamic work distribution. Gain ceilings 1-7% (capped by CPU24's 15% sync share, mostly already captured by existing per-expert dynamic chunk-stealing). LOC 100-300. Single-atomic contention risk class same as failed CPU22 #1.
+
+- [`wdata-aware-mul-mat-coalescing-design.md`](../handoffs/active/wdata-aware-mul-mat-coalescing-design.md) — architectural change to `ggml_cplan` (per-op wdata segments instead of shared `work_data`). Allows MUL_MAT pairs to coalesce safely. LOC 260-410. ABI implications. Gain ceiling 9.5-14% barrier reduction → 2-7% t/s estimate (universal across architectures).
+
+Both have similar gain-per-LOC (~0.01-0.03% per LOC). Neither strongly compelling for Phase 1.
+
+### Pattern: structural ceilings dominate the remaining CPU-optimization design space
+
+After 5 closed-via-test mechanisms in this design space (CPU4 original 2026-04-26, CPU22 #1 2026-04-28, slot-promotion + MAB selector 2026-04-29, CPU4 Phase 1 2026-04-29), the pattern is clear: **the remaining CPU-optimization design space has structural gain ceilings (15% sync, ~10% barrier reduction) that implementation overhead consumes.**
+
+Recommended pivot to higher-leverage activities:
+1. **Multi-arch coverage** — test existing v5 PGO + CPU2 mbind + CPU1 stack on dense / hybrid SSM / attention-only models
+2. **Workload-shape coverage** — prefill, multi-tenant batching, long-context (32K+)
+3. **Different toolchain frontier** — newer compiler versions, AMX
+4. **Higher-level mechanism research** — model-level fusions, quant layouts
+
+This represents an honest acknowledgment that the within-ggml CPU-optimization design space is largely exhausted at the current hardware, and pivoting research direction is more productive than further squeezing existing levers.

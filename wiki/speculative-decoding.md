@@ -59,7 +59,7 @@ The current state of the art for our stack is not speculative decoding at all --
 
 **MoE-Spec verification-budget mechanism gate MET on pure-MoE targets** (Phase 1 prototype, autonomous CPU agent's session): `--moe-spec-budget N` aggregates routing softmax across the verification batch and shrinks the active-expert union. Phase 1 forward-pass measurements: Coder-30B Q4_K_M B=64 +7.3%, REAP-246B Q4_K_M B=40 +15.2% (both 5-rep proper canonical). Phase 2 v5 PGO end-to-end via llama-server attenuates significantly — REAP-246B end-to-end +3%, Coder-30B end-to-end +9% — because spec-dec round = drafter forward + target verification + accept-evaluation, and MoE-Spec only accelerates target verification (Amdahl ceiling). **Final verdict**: REAP-246B B=40 deployable; Coder-30B B=64 NOT deployable (varies wildly across builds + cache states + system noise). Production registry integration queued behind explicit pre-prod gate. Tracked at [`moe-spec-cpu-spec-dec-integration.md`](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
 
-**MAB tree-shape selector (intake-491, EMNLP'25 §3.2)**: drop-in over heap-spec for pure-MoE targets, orthogonal compounding axis to MoE-Spec verification budget. Paper reports sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B (+22.65% over sequential / +8.5% over best fixed shape). UCB1-style arm pull over a fixed pool of tree shapes; reward = accept_len/draft_len. End-to-end Amdahl ceiling applies (selector operates on the same verification step). Phase 0 falsification probe queued. Tracked at [`mab-tree-shape-selector.md`](../handoffs/active/mab-tree-shape-selector.md).
+**MAB tree-shape selector (intake-491, EMNLP'25 §3.2)** — **CLOSED 2026-04-29 with definitive NO-GO at n=90 paired** (see Phase 0'' section below). Tested as drop-in over heap-spec for pure-MoE targets, orthogonal compounding axis to MoE-Spec verification budget. Paper reports sequential 112.69 → MAB-optimized 138.22 t/s on Pythia-6.9B; this falsified on Qwen3-Coder-30B + DRAFT-0.75B drafter at v5 PGO build across 3 verification regimes (greedy / fixed-seed sampling / random-seed sampling). At n=90: Coder tree -3.97% (p=0.0125), REAP +0.34% (p=0.87 null). Tracked at [`completed/mab-tree-shape-selector.md`](../handoffs/completed/mab-tree-shape-selector.md).
 
 **Hybrid SSM spec-dec slot-promotion reopener (intake-490, PyTorch SGLang Dec 2025)**: per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; rejected slots discarded, accepted slot promoted. Architecturally compatible with Delta Net. Combined with DFlash-style NUMA-parallel single-token verify (one candidate per NUMA quarter), per-candidate cost drops from 450 MB clone (our prior `clone_cell` failure) to ~KB staged inputs AND verification wall-clock for K candidates drops from `K × single-token` to `1 × single-token` per quarter. Reopens the 6 closed SSM-hybrid handoffs under closure-inflation policy (gates A,B,C met under prior assumption; gate D unmet under per-candidate-slot assumption). Phase 0 research-only falsification queued. Tracked at [`hybrid-ssm-slot-promotion-spec-dec.md`](../handoffs/active/hybrid-ssm-slot-promotion-spec-dec.md). Cost model projects ~1.4× single-instance per-request latency on Qwen3.5-35B-A3B Q4_K_M if Phase 1 lands.
 
@@ -108,16 +108,22 @@ New mechanism from SGLang (PyTorch blog, Dec 2025): per-candidate state slots `S
 
 CPU20 bundles: [`2026-04-30-state-sync-cost-probe/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-state-sync-cost-probe/) (canonical 3×2 + state-sync probe), [`2026-04-30-divergent-tree-sweep/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-divergent-tree-sweep/) (4 configs × 5 prompts engagement probe).
 
-### MAB tree-shape selector Phase 0 NO-GO (intake-491 §3.2)
+### MAB tree-shape selector — DEFINITIVE NO-GO (intake-491 §3.2, CLOSED 2026-04-29)
 
-Per [`mab-tree-shape-selector.md`](../handoffs/active/mab-tree-shape-selector.md). The paper-claimed +13.7% sequential→MAB-optimized result was falsified on EPYC at temperature=0 greedy: tree at p_split=0.05 produces BYTE-IDENTICAL outputs to linear p_split=0 (verifier collapses to greedy path) while adding wasted draft+verify overhead. End-to-end: Coder −18% mean (high variance ±48% CV), REAP +1.4% (within noise).
+Handoff moved to [`completed/mab-tree-shape-selector.md`](../handoffs/completed/mab-tree-shape-selector.md). Phase progression:
 
-**Narrow closure scope**: MAB selector over the paper's arm pool cannot recover headroom that is structurally absent when the greedy verifier discards non-greedy branches. The closure does NOT generalize to:
-- Sampling-temperature regime (where non-greedy branches might be accepted)
-- Different arm pools (the paper's pool is heap-spec-derived; an arm pool tuned to EPYC's 96-core verifier could differ)
-- Non-MoE targets (this was tested on Coder-30B and REAP-246B only)
+| Phase | Date | n | Verdict |
+|---|---|---|---|
+| Phase 0 | 2026-04-29 | 3 | NO-GO greedy temp=0 — verifier collapses tree to greedy (byte-identical output linear vs tree) |
+| Phase 0' fixed-seed | 2026-04-30 | 9 | NO-GO temp=0.7 — fixed seed makes verifier deterministic (byte-identical output) |
+| Phase 0' random-seed | 2026-04-30 | 9 | INCONCLUSIVE — Coder tree +9.6% vs linear, p≈0.23 (NS, low n) |
+| **Phase 0''** | **2026-04-29** | **90 paired** | **NO-GO definitive** — Coder tree -3.97% (p=0.0125, real regression); REAP tree +0.34% (p=0.87, null) |
 
-This is a closure-inflation-policy-compliant gate enumeration: the paper's specific arm pool × greedy regime is closed. The general MAB selector technique remains open under different conditions.
+The Phase 0' "+9.6%" was a low-n type-I error. At proper n=90 paired across both targets, MAB selector is NO-GO under all 3 tested verification regimes. Per-prompt on Coder all losing (p0 -6.07%, p1 -3.64%, p2 -2.01%). Phase 1 implementation (~245 LOC) NOT justified. Mechanism falsified on Qwen3-Coder-30B + Qwen3-Coder-DRAFT-0.75B + v5 PGO build.
+
+**Closure scope** does NOT generalize to: different drafter (Pythia uncertainty profile differs), different arm pool (paper-shapes tuned for Pythia), multi-tenant/concurrent-slot workloads, architecturally different targets (dense, hybrid SSM — only MoE Q4_K_M tested at scale).
+
+CPU20 bundles: [`2026-04-29-mab-tree-selector-phase-0/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-mab-tree-selector-phase-0/) (Phase 0 greedy), [`2026-04-30-mab-phase-0-prime-sampling/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-mab-phase-0-prime-sampling/) (Phase 0' fixed + random n=9), [`2026-04-29-mab-phase-0-prime-prime-replication/`](../../epyc-inference-research/data/cpu_optimization/2026-04-29-mab-phase-0-prime-prime-replication/) (Phase 0'' n=90 definitive).
 
 ### Amdahl ceiling for spec-dec end-to-end gain (cross-cutting)
 
