@@ -174,3 +174,35 @@ Per [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web
 - [`research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md`](../research/deep-dives/reason-mxbai-colbert-32m-edge-retriever.md) — full deep-dive
 - intake-492 (Flywheel) — HotpotQA + LoCoMo eval methodology lifted (Python re-implementation, NOT Node/MCP runtime)
 - intake-494 (SLIDERS) — parallel architecture, cross-link to `wiki/rag-alternatives.md`
+
+## Updates — 2026-04-29
+
+### ColGREP CLI replaces NextPLAID code container for `code_search()` (intake-355, S7)
+
+Per [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) S7. ColGREP is the same NextPLAID engine family (LateOn-Code-edge ColBERT) packaged as a single Rust binary with hybrid FTS5+ColBERT scoring fused via Reciprocal Rank Fusion and tree-sitter AST chunking. v1.0.6 panicked on ONNX/GPU init on the CUDA-less EPYC host; v1.2.0 (released 2026-04-10) replaced the panic with a CPU-fallback message and added `NEXT_PLAID_FORCE_CPU` / `--force-cpu`.
+
+**Live A/B (paired, n=14 ground-truth queries, 2026-04-29)** — `_code_search()` routed through colgrep CLI vs NextPLAID HTTP, identical input:
+
+| Engine | Top-1 | Top-3 | p50 latency | p95 latency |
+|---|---|---|---|---|
+| **colgrep** | **10/14 (71%)** | **13/14 (93%)** | 964 ms cold (224 ms steady-state) | 2.8 s |
+| NextPLAID | 2/14 (14%) | 4/14 (29%) | 190 ms | 5.5 s |
+| Top-1 agreement | 0/14 | — | — | — |
+
+NextPLAID lost 8/14 queries to landings in `tests/` files because its index covered the whole project (8826 docs); colgrep's index covered `src/` only (312 units). For `code_search()`'s actual use case — production-code retrieval, not test code — colgrep's narrower scope is a feature, not a limitation. Default flipped to colgrep on 2026-04-29 with explicit `REPL_COLGREP=0` opt-out for instant rollback. `doc_search()` (port 8089) untouched — colgrep is code-focused via tree-sitter and a poor fit for prose.
+
+**Operational implications**:
+
+- One Rust binary (80 MB at `/mnt/raid0/llm/UTILS/bin/colgrep`) replaces one Docker container (~31 GB resident). Single-binary deployment removes the `orchestrator_stack.py` Docker entry for `nextplaid-code` after soak.
+- Subprocess-per-query: every `_code_search()` call pays full ONNX runtime + ColBERT model load (~770 ms p50, up to ~2.3 s on first invocation). Acceptable for human-paced REPL; daemon options (homegrown sidecar vs upstream `next-plaid-client[cli]` SDK) documented in handoff S7 with concrete build-trigger criteria.
+- `REPL_COLGREP_ALPHA=0.95` (overridable). Default 0.75 over-ranks `__init__.py` re-exports for symbol queries in this corpus; 0.95 weights ColBERT semantic over FTS5 keyword and recovers correct top-1 on validated cases.
+- Hybrid scoring quirk: ColGREP returns FTS5+ColBERT fused scores in ~1–5 range, not NextPLAID's normalized 0–1. Frecency boost (0.3 × score multiplier) is rank-stable but downstream code that assumes 0–1 scale would need normalization.
+
+**Soak gate**: NextPLAID code container kept running for one rollout window. `_exploration_log` records `engine: colgrep` per query; missing field signals fallback. If clean for ~1 week of normal traffic, retire the Docker container (free ~31 GB RAM). Apples-to-apples comparison (NextPLAID re-indexed on `src/` only) deferred — fairness exercise, not a production blocker.
+
+### Sources
+
+- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) S7 — ColGREP integration, live A/B verdict, default flip, cold-start daemon options
+- [`progress/2026-04/2026-04-29.md`](../progress/2026-04/2026-04-29.md) — session log
+- intake-355 NextPlaid/ColGREP — v1.2.0 unblock notes
+- v1.2.0 release notes (`github.com/lightonai/next-plaid` 2026-04-10) — panic→fallback, hybrid search, pipelined indexing

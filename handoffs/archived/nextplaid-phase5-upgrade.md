@@ -82,7 +82,9 @@ make gates
 
 - [x] tree-sitter + tree-sitter-python installed in pace-env
 - [x] colgrep binary installed (v1.0.6) — **BLOCKED**: upstream Rust panic on ONNX model loading
+  - **RESOLVED 2026-04-29**: upgraded to v1.2.0 (release 2026-04-10). Changelog: "panic-based error output during GPU initialization is replaced with clear fallback messages" + new `--force-cpu` / `NEXT_PLAID_FORCE_CPU` knob. Binary at `/mnt/raid0/llm/UTILS/bin/colgrep`. Validated `init` + `search` on small sample — falls back to CPU cleanly, returns ranked results.
 - [x] ColGrep storage paths on RAID (symlink ~/.config/colgrep → RAID)
+  - **Note 2026-04-29**: v1.2.0 default index path is `~/.local/share/colgrep/indices/` (data), `~/.config/colgrep` (config). Re-symlink to RAID before any orchestrator-scale index run.
 - [x] orchestrator_stack.py updated with LateOn-Code model name
 - [x] model_registry.yaml nextplaid_code entry updated
 - [x] ast_chunker.py created with PythonChunker + FallbackChunker
@@ -92,7 +94,7 @@ make gates
 - [x] test_code_search.py updated with new mock metadata + new tests
 - [x] Containers restarted with LateOn-Code 130M (128-dim, ~31GB RAM)
 - [x] Full reindex with AST chunks complete (6583 code + 1379 docs = 7962 chunks)
-- [ ] ColGrep indexed codebase — **BLOCKED**: colgrep v1.0.6 panics on ONNX load
+- [ ] ColGrep indexed codebase — was BLOCKED on colgrep v1.0.6 panic; **unblocked 2026-04-29** by v1.2.0 upgrade. Full-codebase index not yet run — deferred pending REPL-integration decision (additive new tool vs replacement for existing `code_search()`/`doc_search()`). See `handoffs/active/repl-turn-efficiency.md` intake-355 entry.
 - [x] pytest tests pass (20/20)
 - [x] CHANGELOG.md updated
 - [x] nextplaid-code-retrieval.md updated with Phase 5

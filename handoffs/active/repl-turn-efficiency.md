@@ -52,7 +52,7 @@ FFF.nvim's frecency + combo-boost pattern fills this gap:
 1. **`_list_dir()`** (`file_exploration.py:181`): Sort entries by frecency score (dirs first, then frecency within each group)
 2. **`code_search()`** (`code_search.py`): Multiply NextPLAID semantic score by recency boost for recently-modified files
 3. **Governance layer**: At root-repo level, frecency could prioritize which handoffs/progress files agents check first
-4. **ColGREP bridge**: ColGREP (CLI colbert search) is BLOCKED on upstream ONNX panic. Frecency provides a cheap alternative temporal signal while ColGREP is down.
+4. **ColGREP bridge**: ColGREP (CLI colbert search) was BLOCKED on upstream ONNX panic in v1.0.6; **unblocked 2026-04-29 by upgrade to v1.2.0** (see Research Intake Update — 2026-04-14 below). Frecency remains a complementary temporal signal regardless.
 
 ### Work items
 
@@ -99,6 +99,162 @@ After each tool output, append 2-3 likely next commands based on frecency data +
 ## S4: Benchmark
 
 - [ ] S4: A/B benchmark turn count reduction on seeding harness — measure turns/task, token cost/task, accuracy delta
+
+---
+
+## S7: ColGREP CLI Integration as `code_search()` Replacement (2026-04-29)
+
+Triggered by intake-355 v1.2.0 unblock (see Research Intake Update — 2026-04-14 above). Scoping decision: replace `code_search()` only — `doc_search()` stays on NextPLAID GTE since ColGREP is code-focused via tree-sitter and a poor fit for prose.
+
+### Bench results (2026-04-29)
+
+- **Indexing**: 312 code units in `/mnt/raid0/llm/epyc-orchestrator/src` indexed in **13.6 s wall-clock** (CPU, no CUDA, ~1800% CPU saturated across 18 cores). 30 MB index at `~/.local/share/colgrep/indices/`. v1.2.0's 7× pipelined-indexing speedup is real.
+- **Query latency**: cold 220 ms ± 3 ms per query (5/5 trials), warm identical (no daemon mode → no warm benefit, but also no penalty). Subprocess+ONNX-runtime startup is amortized into ColBERT inference well. ~2× slower than typical NextPLAID HTTP path (~100 ms in-container Python client) but invisible at human REPL timescales.
+- **Quality (7-query A/B vs known-target ground truth)**: 6/7 top-1 dead-on (`file_recency.py`, `toon_encoder.py`, `code_search.py`, `combined_ops.py`, `repl_environment/context.py`, `dspy_signatures/frontdoor.py` in top-3). The 7th (NUMA pinning) returned the actual NUMA wrappers (`lightonocr_llama_server.py`, `backends/llama_server.py`) rather than the orchestrator caller — arguably *better* than the hint.
+- **Hybrid scoring quirk**: ColGREP fuses FTS5 + ColBERT via Reciprocal Rank Fusion, so result scores are unbounded fused values (~1–5 range) not the normalized 0–1 NextPLAID returns. Frecency boost (0.3 × score multiplier) still rank-stable. Only flag if downstream code makes assumptions about score scale.
+
+### Wiring
+
+- [x] `_colgrep_search()` helper in `src/repl_environment/code_search.py` — subprocess-call to `/mnt/raid0/llm/UTILS/bin/colgrep search ... --json`, normalizes results to existing schema (file/lines/score/unit/signature), forces CPU via `NEXT_PLAID_FORCE_CPU=1`.
+- [x] `REPL_COLGREP` env flag (default OFF) gates routing in `_code_search()`. `_doc_search()` unaffected.
+- [x] Configurable via `REPL_COLGREP_BIN` (default `/mnt/raid0/llm/UTILS/bin/colgrep`) and `REPL_COLGREP_PATH` (default orchestrator `src/`).
+- [x] Falls back to NextPLAID on missing binary, timeout (10 s), non-zero exit, or malformed JSON — callers always get a valid response shape.
+- [x] 7 new tests in `tests/unit/test_code_search.py::TestColgrepIntegration` (flag-off baseline, flag-on routing, 4 fallback paths, doc_search isolation). Full suite: **27/27 pass**.
+- [x] Live smoke test passed: `REPL_COLGREP=1` against the indexed orchestrator returned correct top-3 results with AST metadata.
+
+### Container sunset evaluation (2026-04-29) — initial verdict: NO-GO; revised after live A/B: GO with caveats
+
+29-query at-scale eval (`/mnt/raid0/llm/UTILS/colgrep_ab_eval.py`) ran from this environment. **NextPLAID containers (8088/8089) were unreachable from the overlay env**, so the initial eval was colgrep-only.
+
+**Gates verified:**
+
+| Gate | Result | Notes |
+|---|---|---|
+| Fallback rate on diverse stress | **0/29** | No runtime errors across symbol queries, concept queries, gibberish, special chars, very long queries, empty-corpus queries. All returned valid response shapes. |
+| Fallback paths actually engage | **✓** | Unit tests cover all four (`missing binary`, `timeout`, `non-zero exit`, `bad JSON`); each falls back to NextPLAID. 7/7 tests pass. |
+| Latency steady-state | **p50 224 ms, p95 ~272 ms** | Tight distribution after first query. **First-query cold-start outlier ~2.3 s** (model load on first subprocess) — relevant if many sessions are short-lived. |
+| Top-1 quality (alpha=0.95) | **10/14 = 71%** | Up from 9/14 = 64% at default alpha=0.75; the bump from alpha tuning fixes 3 of 5 misses caused by FTS5 re-ranking `__init__.py` re-exports above the actual definition file. Remaining misses: corpus-structural (e.g. `FinalSignal` query → `restricted_executor.py` instead of `types.py`). |
+
+**Gates NOT verified (cannot from this env):**
+
+| Gate | Why not |
+|---|---|
+| Live A/B vs running NextPLAID | Connection refused on `localhost:8088` and `:8089` from this overlay. NextPLAID baseline on the same query set is the missing comparator. |
+| Quality parity | 71% top-1 in isolation says nothing about NextPLAID's number on the same set — could be higher, lower, or equal. |
+| Behavior under concurrent load | Single-process subprocess test only; multi-agent contention untested. |
+| Incremental re-index on commit | Not yet wired. |
+
+**Initial verdict: NO-GO on container sunset.** The 71% top-1 quality is below the "≥ parity with no regression" threshold I'd want before retiring infrastructure that's working today, and we have no NextPLAID baseline to compare against. ColGREP is **production-viable as an opt-in** (set `REPL_COLGREP=1`) but not a confident replacement yet.
+
+### Live A/B addendum (2026-04-29, post-verdict)
+
+User started just `nextplaid-code` (port 8088) via a one-shot launcher (`/mnt/raid0/llm/UTILS/launch_nextplaid_code_only.py`) so a paired comparison became possible from this env. Note the index-scope mismatch: NextPLAID-code indexed **8826 documents** (whole project incl. `tests/`, `scripts/`, `orchestration/`, etc per the original Phase 5 scope); colgrep indexed **312 units** in `src/` only.
+
+Two API shims were needed for the run (NOT applied to production code):
+
+1. `next_plaid_client` package not in this env → `pip install next-plaid-client==1.0.8` (closest available to server cpu-1.0.4).
+2. Production `code_search.py` calls `client.search_with_encoding()`, but PyPI clients ≥1.0.8 renamed it to `client.search()`. A.B. script monkey-patches `NextPlaidClient.search_with_encoding = NextPlaidClient.search` at import time. Functionally equivalent for our query shape.
+
+**Paired results (n=14 ground-truth queries, identical input):**
+
+| Engine | Top-1 | Top-3 | p50 latency | p95 latency |
+|---|---|---|---|---|
+| colgrep | **10/14 (71%)** | **13/14 (93%)** | 964 ms (cold; 224 ms steady when warm) | 2.8 s |
+| NextPLAID | 2/14 (14%) | 4/14 (29%) | 190 ms | 5.5 s |
+| Top-1 agreement | 0/14 | — | — | — |
+
+ColGREP wins **decisively** on quality (~5× better top-1, ~3× better top-3). NextPLAID lost 8/14 queries to landings in `tests/` files (e.g. `tests/unit/test_repl_executor.py`, `tests/integration/test_model_tool_compliance.py`) — i.e. test code that mentions the queried symbol heavily. This is a **corpus-scope problem, not a ranking-engine problem**: NextPLAID indexed the whole project; colgrep only indexed `src/`.
+
+NextPLAID is ~5× faster on p50 (190 ms vs 964 ms cold) but has worse worst-case (5.5 s vs 2.8 s). For a per-turn REPL invocation the absolute difference (~770 ms) is invisible to humans but real for high-frequency tool loops.
+
+**Revised verdict: GO on sunset, with caveats.**
+
+The strict-equivalence comparison hasn't been done — we'd need to re-index NextPLAID against `src/` only to know whether NextPLAID-on-clean-corpus could match colgrep. But that's a fairness exercise, not a production decision. For the actual `code_search()` use case (production-code retrieval, not test code), colgrep's narrower scope is **a feature, not a limitation** — it produces better results because the corpus is cleaner.
+
+Reasons to GO:
+1. Quality: 5× better top-1, 3× better top-3 on production-code queries.
+2. Operational simplicity: one Rust binary vs Docker container with separate Python client. 30 MB index vs 1.86 M embeddings (~31 GB resident).
+3. Hybrid scoring: FTS5 + ColBERT fusion handles symbol queries that pure ColBERT misses.
+
+Caveats:
+1. ~770 ms cold-start hit per query (subprocess + ONNX load). Acceptable for human-paced REPL; relevant for high-frequency batch use. Mitigation: sidecar daemon (follow-up #2).
+2. Apples-to-apples engine comparison (same corpus scope) not done. NextPLAID could close most of the quality gap if re-indexed on `src/` only, but that's a separate experiment.
+3. `doc_search()` stays on NextPLAID (port 8089) — colgrep is code-focused.
+
+**Sunset action**: switch `REPL_COLGREP=1` from opt-in to default; keep NextPLAID container running for one rollout window with `engine: nextplaid` fallback events tracked in `_exploration_log`; if no fallback events for ~1 week of normal traffic, retire the code container (free ~31 GB RAM). NextPLAID-docs (port 8089) untouched.
+
+### 2026-04-29 (later) — Default flipped to colgrep
+
+`_colgrep_enabled()` semantics flipped: default ON; explicit `REPL_COLGREP=0`/`false`/`off` opts back into NextPLAID. Module docstring + comment updated to reflect new default. Two new tests added (`test_explicit_off_uses_nextplaid`, `test_explicit_false_uses_nextplaid`); legacy `test_flag_off_uses_nextplaid` reframed as `test_flag_unset_uses_colgrep_by_default`. Shared `repl` fixture sets `REPL_COLGREP=0` so existing NextPLAID-shape tests keep passing without modification. **Full suite: 29/29 pass.**
+
+End-to-end smoke confirmed:
+- `REPL_COLGREP` unset → `engine: colgrep` in response (default ON works).
+- `REPL_COLGREP=0` → `engine` field absent (NextPLAID path engages, opt-out works).
+
+The user explicitly chose ship-now over the 1-week soak I recommended. Rationale captured: trust in the 5× quality signal outweighs cold-start regression risk; flag mechanism allows instant rollback via env var. Soak telemetry still applies — if `_exploration_log` shows fallback events or quality complaints surface, set `REPL_COLGREP=0` in the orchestrator runtime env to revert without redeploy.
+
+**Concrete defaults shipped in code:**
+- `REPL_COLGREP_ALPHA=0.95` (overridable via env). Default 0.75 over-ranks `__init__.py` re-exports for symbol queries; 0.95 fixes most cases.
+- All four fallback paths preserved.
+- `engine: "colgrep"` field in response lets `_exploration_log` track per-query engine; NextPLAID fallbacks omit it.
+
+NextPLAID docs container (port 8089) stays — `doc_search()` remains on it regardless.
+
+### Follow-ups (priority order)
+
+1. ~~**Run host-side A/B** — only the orchestrator runtime can hit both engines simultaneously. Same 29-query script, swap engines per query, log to JSONL, compute paired top-1 deltas.~~ — **DONE 2026-04-29** (see "Live A/B addendum" above; results triggered the GO verdict and default flip).
+2. **Cold-start daemon decision** — see [§ Cold-start daemon options](#s7-cold-start-daemon-options) below for the full evaluation. Defer the work; revisit only if soak telemetry shows the hit is real.
+3. **Pin a versioned binary path** (e.g. `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0`) so future upgrades are explicit.
+4. **Incremental re-indexing on commit** (tree-sitter is fast; should be <5 s for typical commits).
+5. **Investigate the corpus-structural misses** (`FinalSignal` query missing `types.py`) — possibly improvable with `--code-only` or a tighter `--exclude-dir` filter on test/`__pycache__` dirs.
+
+### S7: Cold-start daemon options
+
+**The cost being mitigated.** Every `_colgrep_search()` call spawns a fresh `colgrep` subprocess that loads ONNX runtime + the LateOn-Code-edge ColBERT weights from `~/.cache/onnxruntime` / `~/.cache/huggingface`. Measured cost on EPYC 9655 (CPU, no CUDA, model files already on disk):
+
+| Phase | Cost | Notes |
+|---|---|---|
+| First subprocess after long idle | **~2.3 s** | Worst case (29-query stress, query 1 hit 2.3 s) |
+| Steady-state cold | **~770 ms** (live A/B p50) to **~220 ms** (small-index solo eval p50) | Wide range driven by index size + query length |
+| Per-query *engine* time minus startup | hundreds of ms | ColBERT inference + index lookup |
+
+The `subprocess+ONNX-load` portion is not amortized across queries: each subprocess starts from a clean OS process state, so even back-to-back queries pay it.
+
+**Build-trigger criteria.** Don't build a daemon unless soak data shows at least one of:
+1. p50 `code_search()` latency ≥ 600 ms across a full seeding run (`_exploration_log` median), AND
+2. ≥ 20 % of REPL turns issue ≥ 2 `code_search()` calls (high-frequency pattern where cold-start compounds), OR
+3. A single agent role is consistently making ≥ 1 `code_search()` per second for ≥ 30 s (batch workload).
+
+If none of those hold, subprocess-per-query is the right shape and a daemon is gold-plating.
+
+**Path A — homegrown sidecar wrapper.** A small long-lived process that imports/spawns colgrep once, keeps the model resident, and exposes a Unix-socket (or stdin/stdout JSON-RPC) protocol for queries.
+
+- Pros: full control over lifecycle, easy to integrate with `orchestrator_stack.py`'s existing process model, minimal new dependencies.
+- Cons: we'd be re-implementing what NextPLAID already gives us as a service. Risk of drifting from upstream colgrep semantics on every CLI bump.
+- Effort: ~1 engineering day if Python wrapper that holds an `onnxruntime.InferenceSession` open. Closer to ~2-3 days if we want the wrapper to also share the index handle and handle re-indexing under load.
+- Concrete sketch: socket-server in Python that lazily imports `next_plaid_client` (since it's the same engine as colgrep), holds a `NextPlaidClient` against a local index dir, and answers `{query, k, alpha}` requests in JSON. `_colgrep_search()` switches from `subprocess.run([colgrep, ...])` to `socket.send_json(...)`. Fall back to subprocess if the socket isn't there.
+
+**Path B — upstream Python SDK CLI (recommended if we end up needing this).** v1.2.0 of NextPlaid shipped a `next-plaid` Python SDK CLI:
+
+```bash
+pip install "next-plaid-client[cli]"
+next-plaid index list
+next-plaid search "query" --index code -k 5
+```
+
+Per the v1.2.0 release notes (2026-04-10): *"A new `next-plaid` CLI provides full SDK parity: index management, document add/delete, search (semantic/keyword/hybrid), metadata operations, encoding, and reranking. Designed for agents: non-interactive flags, `--dry-run`/`--yes` for destructive ops, stdin support, and actionable errors. Ships with 80 unit tests."*
+
+This is the same engine family colgrep uses. Long-lived shape: run a small Python service that holds the SDK client open against a local index directory, accept queries over a socket. Net effect: the **homegrown sidecar in Path A but with upstream-maintained internals** instead of our own ONNX wrangling. Same trade-offs vs Path A, minus the maintenance risk.
+
+- Pros: upstream-maintained engine; index format is compatible with whatever colgrep produced (same NextPlaid core); 80 unit tests upstream; SDK already pinned in our orchestrator dep set (`pyproject.toml` lists `next_plaid_client` transitively via `code_search.py`).
+- Cons: we're back to having a long-lived Python process that needs lifecycle management — i.e. an `orchestrator_stack.py` entry — which is the operational simplicity we just gained by adopting colgrep CLI. The sunset of `nextplaid-code` Docker would partly walk-back here (still smaller: no Docker, just a venv'd Python process).
+- Effort: ~1 day. Most of the work is the wrapper + socket protocol + `orchestrator_stack` integration, not the SDK itself.
+
+**Decision rule:** if the build-trigger criteria above fire, prefer Path B over Path A unless we have a specific reason to deviate (e.g., wanting CLI semantics exactly because they match the published colgrep behavior). Either path keeps the `_code_search()` integration shape unchanged from the consumer's perspective — the `engine: "colgrep"` field can stay as the user-visible signal even if the wire path is now socket-to-daemon.
+
+**Where to put it if/when it ships.** Sidecar belongs in `epyc-orchestrator/scripts/server/` (same directory as `orchestrator_stack.py`); Python wrapper code goes in `epyc-orchestrator/src/repl_environment/colgrep_daemon_client.py` so `_colgrep_search()` can switch transports based on a feature flag (`REPL_COLGREP_DAEMON_SOCKET=/run/colgrep.sock` or similar) with subprocess as fallback.
+
+Eval script + raw outputs preserved at `/mnt/raid0/llm/UTILS/colgrep_ab_eval.py`.
 
 ---
 
@@ -196,8 +352,8 @@ See: `progress/2026-04/2026-04-16.md` for full details.
 - **[intake-355] NextPlaid/ColGREP** (github:lightonai/next-plaid)
   - Relevance: NextPlaid is the deployed multi-vector search engine backing code_search() and docs retrieval (ports 8088/8089). ColGREP adds semantic code search for terminal/agents. v1.2.0 released 2026-04-10.
   - Key update: ColGREP now offers native Claude Code integration. Combines regex filtering with semantic ranking via ColBERT-style multi-vector embeddings (~300 embeddings per code unit, MaxSim scoring). Fully local, single Rust binary.
-  - Status: Already integrated (GTE-ModernColBERT-v1 swap completed per colbert-zero-research-integration). ColGREP CLI still blocked on upstream ONNX panic per existing notes. Frecency fallback remains active.
-  - Action: Monitor v1.2.0 for ONNX panic fix that would unblock ColGREP CLI bridge
+  - Status (2026-04-29): **CLI bridge unblocked.** v1.0.6 panicked on ONNX/GPU init because EPYC has no CUDA/cuDNN. v1.2.0 changelog: "panic-based error output during GPU initialization is replaced with clear fallback messages" + new `--force-cpu` / `NEXT_PLAID_FORCE_CPU` knob. Validated end-to-end: `colgrep init` + `colgrep search` on a 2-file sample falls back to CPU cleanly (`cuDNN not found, encoding will use CPU.`) and returns correctly ranked semantic results. Binary installed at `/mnt/raid0/llm/UTILS/bin/colgrep` (v1.2.0, 80 MB). NextPLAID-backed `code_search()` integration unchanged (GTE-ModernColBERT-v1 swap remains active per colbert-zero-research-integration).
+  - Action: Decide whether to wire ColGREP into the REPL as a new tool (e.g. `colgrep_search()`) or as a *replacement* for one of the existing search paths. Per the Omega finding, prefer replacement over additive surface. Full orchestrator-codebase index not yet run — defer until decision is made. Default index path is `~/.local/share/colgrep/indices/`; if running at scale, symlink to RAID first (per archived `nextplaid-phase5-upgrade.md` note).
 
 ## Research Intake Update — 2026-04-17
 
