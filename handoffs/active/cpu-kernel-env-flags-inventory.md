@@ -3,6 +3,45 @@
 **Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `aed8c1e` post-2026-04-30 wrap-up; experimental branch HEAD `d45126db5` includes Phase 1.1 dispatcher v1)
 **Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15, slot-promotion work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
 
+---
+
+## ⚑ CANONICAL PREREQUISITES (read before any env-flag is interpreted)
+
+**Every recommendation in this document assumes the FULL canonical recipe is applied.** These are NOT per-knob opt-ins — they are the baseline runtime context that makes any other measurement meaningful. Without them, post-reboot inference is 3-4× degraded with high variance and ANY env-flag comparison below is poisoned.
+
+```bash
+# Mandatory env (lost on every reboot — re-apply per session)
+sudo sysctl kernel.numa_balancing=0
+echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
+
+# Mandatory bench/server invocation prefix
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all -- taskset -c 0-95 \
+  llama-bench -t 96 -fa 1 --mmap 0 [...]
+```
+
+**Why each piece is mandatory:**
+
+| Knob | What breaks without it |
+|---|---|
+| `OMP_PROC_BIND=spread` | libomp threads cluster on a few cores or migrate; freq oscillation; barrier latency explodes |
+| `OMP_PLACES=cores` | threads bind to logical CPUs (SMT siblings) instead of physical cores → 2 threads per core fight for execution units |
+| `OMP_WAIT_POLICY=active` | threads sleep at OMP barriers → amd-pstate-epp demotes freq → re-wake latency on next op kills throughput. **Without this alone**: Coder-30B Q4_K_M post-reboot drops 17 → 48.8 t/s |
+| `numactl --interleave=all` | `--mmap 0` reads model into one node's memory (first-touch by main thread). 96 threads then hammer 1 NUMA node's 3 DRAM channels (~85 GB/s peak under NPS4) instead of 4 nodes' 12 channels |
+| `--mmap 0` | mmap=1 page-faults during decode on cold model memory; freq driver demotes during stalls. Confirmed ~3× slower than `--mmap 0` post-reboot. Note: `OMP_WAIT_POLICY=passive` is a deployment trap (-81.6% Coder-30B at 96 threads). |
+| `numa_balancing=0` | kernel migrates pages mid-decode based on access patterns, thrashing under heavy multi-thread workload. Self-resets to default on each reboot — verify with `cat /proc/sys/kernel/numa_balancing` per session, do not trust the sysctl.d file. |
+| `THP=always` (both `enabled` + `defrag`) | madvise mode (default) leaves model on 4 KB pages → TLB misses dominate → throughput tanks |
+
+**Discovery context (2026-04-29)**: a post-reboot session showed apparent 3-4× regression vs warmed canonical 58.65 t/s. ~30 min were spent diagnosing thermal throttle / hardware degradation before identifying that the OMP env stack had been omitted. The canonical baseline-protocol memory documented this recipe; the inventory now reflects it as a hard prerequisite. Memory: `feedback_omp_env_stack_required.md`, `feedback_canonical_baseline_protocol.md`. Bundle: `data/cpu_optimization/2026-04-29-post-reboot-tripwire/`.
+
+**Cold-boot canonical reference** (taskset -c 0-95 -t 96 -fa 1 --mmap 0 + OMP env + interleave=all):
+- Coder-30B Q4_K_M tg32: ~47-49 t/s (canonical recovery; 58.65 reference is warmed-state after hours-to-days of uptime)
+- Qwen3.6-35B Q8 tg32: ~23 t/s
+- REAP-246B Q4 tg32: ~6.3 t/s
+
+---
+
 ## Inventory at a glance
 
 | Flag | Default | Class | File:line |
@@ -114,6 +153,67 @@ All seven flags default-off. Together control inter-process Expert Parallelism:
 
 **Recommendation**: cherry-pick all 7 flags into v5 default-off. Production routing wires them on for the frontdoor (Qwen3.6-35B-A3B) only, via orchestrator config (Phase L).
 
+## Per-Arch Deployment Matrix (2026-04-29/30 measurements)
+
+> **Authoritative table** for "what env should I set for arch X?" Read by the v5 push agent when populating per-role config in `model_registry.yaml`. All measurements under FULL CANONICAL recipe (see Canonical Prerequisites section above) — adding any of the per-arch knobs below ON TOP of the canonical baseline.
+
+Configs reference (env stack relative to canonical baseline):
+- **c0** = canonical baseline (no extra env)
+- **c1** = `GGML_CCD_POOLS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1` (CPU1 stack)
+- **c2** = `GGML_NUMA_REPACK_INTERLEAVE=0` (kill auto-mbind)
+- **c3** = c1 + c2 combined
+
+| Arch class | Production model | Best config (decode) | Best config (prefill) | Notes | Source bundle |
+|---|---|---|---|---|---|
+| **MoE Q4_K_M (sync-bound)** | Coder-30B-A3B | c1 (CPU1 stack) +1.8% | not tested | CPU21 finding 2026-04-26; +1.8% on tg32. CPU22 work-stealing gate FAILED (-2.3%). | `2026-04-28-cpu21-libomp-chunks/` |
+| **MoE Q4_K_M (DRAM-bound)** | REAP-246B-A35B | default v5 (no opt-in) | not tested | DRAM-saturated; CPU2 AVX-512BW Q6_K at +6% pp32 if quantized; CPU22 -0.8% (noise) | `2026-04-28-cpu22-work-stealing/` |
+| **MoE Q8_0 (BW-bound frontdoor)** | Qwen3.6-35B-A3B | EP stack (per orchestrator wiring) | not tested | EP +17% honest baseline (g.1 = drone+shard, N=2); CPU22 -0.3% (noise) | `2026-04-26-asymmetry/` + EP bundles |
+| **Hybrid SSM (dense, Mamba2+attn)** | Nemotron-9B-v2 | c2 (mbind off) +1.78% | **c3 +8.9% pp512** / +3.7% pp2048 | Strongest robust signal in re-validation campaign. **Worth opt-in for prefill-heavy workload.** | `2026-04-29-multi-arch-coverage-canonical/` + `2026-04-29-workload-shape-canonical/` |
+| **Hybrid SSM (MoE)** | Qwen3-Next-80B-A3B | default v5 (no opt-in) | c3 +1.7% pp512 (within noise floor) | MoE structure (`mul_mat_id` per-token-varying expert subset) defeats CPU1's CCD-aware partitioning; +8.9% on Nemotron does NOT generalize | `2026-04-30-hybrid-ssm-next80b-followup/` |
+| **Dense Q8** | Qwen3.6-27B Q8 | default v5 (CPU1 actively HURTS) | default v5 | All probed configs negative: c1=-4.7%, c2=-3.3%, c3=-1.6%. Do NOT enable CPU1 or mbind-off. | `2026-04-29-multi-arch-coverage-canonical/` |
+| **Dense Q4_K_M** | gemma-4-31B Q4_K_M | default v5 (within noise) | default v5 | All probed configs within ±2% under tight Probe B measurement; "+3.9% c2" from multi-arch n=15 was baseline-drift artifact (gemma c0 std 6.4% CV) | `2026-04-29-multi-arch-coverage-canonical/` + `2026-04-29-workload-shape-canonical/` |
+
+### Per-role v5 deployment recommendation (read by push-rebase agent)
+
+When v5 ships and `model_registry.yaml` is updated, populate per-role env as follows:
+
+```yaml
+# Sketch — not yet committed to model_registry until v5 lands
+roles:
+  coder_explore:        # Coder-30B-A3B Q4_K_M
+    binary_path: build_libomp_pgo_bolt/  # per-role BOLT (CPU12)
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+  frontdoor:            # Qwen3.6-35B-A3B Q8_0
+    binary_path: build_libomp_pgo_use/   # universal PGO
+    env:
+      GGML_EP_N_INSTANCES: 2
+      GGML_EP_NUMA_PIN: 1
+      GGML_EP_MASTER_ALL_NODES: 1
+      GGML_EP_WORKER_DRONE: 1
+      GGML_EP_SHARD: 1
+  architect_coding:     # REAP-246B-A35B Q4_K_M
+    binary_path: build_libomp_pgo_use/
+    moe_spec_budget: 40             # MoE-Spec validated for REAP at +13-16% pp32
+  hybrid_dense_ssm:     # Nemotron-9B-v2 (if added to roster)
+    binary_path: build_libomp_pgo_use/
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+      GGML_NUMA_REPACK_INTERLEAVE: 0  # mbind off
+  # NO opt-in env for: Qwen3-Next-80B-A3B, Qwen3.6-27B Q8, gemma-31B Q4
+  # All three perform best (or tie) at default v5 stack.
+```
+
+**ALL roles inherit the canonical prerequisites** (OMP env stack + numa_balancing=0 + THP=always + numactl --interleave=all + --mmap 0). Those are NOT per-role — they're host-level prereqs that orchestrator_stack.py must enforce on every llama-server launch.
+
+**Status of the model_registry update**: NOT YET. Wait until kernel is pushed to `production-consolidated-v5`. Until then, this matrix IS the deployment intent. The push-rebase handoff (`llama-cpp-kernel-push-rebase.md`) will use this as input when wiring the registry.
+
+---
+
 ## Cherry-pick plan for v5 (refines plan Phase I)
 
 ### Status of whitelisted tracks (2026-04-30 wrap-up)
@@ -134,7 +234,8 @@ Production-push readiness across the whitelisted experimental kernel work, ranke
 | **MoE-Spec verification budget (REAP=40)** | ✅ whitelisted (per-role opt-in) | REAP-246B B=40 +13-16% pp32 / +3% end-to-end (robust); Coder=NOT deployable (varies wildly) | Per-role registry integration RELEASED 2026-04-30 (slot-promotion gate cleared); MAB selector Phase 0 still pending for full release |
 | **MAB tree-shape selector** | ⚠️ Phase 1 prototype not yet started | Phase 0 verdict written (intake-491 §3.2) | Drop-in over heap-spec for pure-MoE targets; pre-prod gate still blocks production push |
 | **Slot-promotion dispatcher v1 (`--spec-numa-quarters K`)** | ❌ **NOT whitelisted; closed via test 2026-04-30** — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (engaged 62× across sweep but primary won 60/62 = 97%; aux wins delivered just +1 marginal token; K=4=7.42 t/s vs K=1=11.40 t/s on canonical 3×2) | n/a | Stays in tree disabled-by-default; do NOT enable for production on this drafter/target pair; re-evaluate if drafter or target changes (handoff in `completed/`) |
-| **CPU22 dynamic MoE load-balancing** | ❌ closed via test 2026-04-28 (gate FAILED) | -2.3% Coder, -0.3% Next-80B, -0.8% REAP at 5-rep proper canonical | Skip global-tile-queue design; reopen criteria documented (token-to-expert rebalance + hybrid static+dynamic spillover designs untested) |
+| **CPU22 dynamic MoE load-balancing** | ❌ closed via test 2026-04-28 (gate FAILED) | -2.3% Coder, -0.3% Next-80B, -0.8% REAP at 5-rep proper canonical (verified 2026-04-29 evening Phase D under canonical: -0.89% Coder, +0.18% Next, -0.32% REAP — closure stands) | Skip global-tile-queue design; reopen criteria documented (token-to-expert rebalance + hybrid static+dynamic spillover designs untested) |
+| **CPU4 op-coalesced barriers** | ❌ closed via test 2026-04-29 (gate not met) | Original "−19.7% Coder" was POISONED by missing OMP env baseline. Phase A re-test 2026-04-29 evening under canonical: **+0.19% NEUTRAL** on Coder. Patch is harmless, not regressive — gate ≥+5% still not met. MUL_MAT wdata race finding stands (correctness). | Stays in tree env-gated default-OFF (`GGML_BARRIER_COALESCE`). Allowlist excludes MUL_MAT/MUL_MAT_ID. Future work: extend allowlist beyond conservative set. |
 | **CPU25 NUMA_MIRROR** | ❌ closed via test 2026-04-27 (DECISIVE NEGATIVE on single-socket NPS4) | -1.0% Coder, +0.6% Q8 (Phase 2 throughput gate) | Compile flag default-OFF; reopen ONLY for 2-socket configs |
 
 **v5 cherry-pick scope summary (post-2026-04-30)**: 12 CPU1 commits + 1 CPU2 ukernel commit + 7 CPU15 EP commits + 1 CPU2 mbind commit (modified to add kill-switch) + dispatcher v1 commit + diagnostic flags, all default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch). Toolchain: clang-20+libomp+znver5+PGO universal binary; per-role BOLT-libggml binary for Coder-30B. Dispatcher v1 stays in tree but gated to K=1 default — no behavioral change for production.
