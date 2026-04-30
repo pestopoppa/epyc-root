@@ -960,3 +960,70 @@ Recommended pivot to higher-leverage activities:
 4. **Higher-level mechanism research** — model-level fusions, quant layouts
 
 This represents an honest acknowledgment that the within-ggml CPU-optimization design space is largely exhausted at the current hardware, and pivoting research direction is more productive than further squeezing existing levers.
+
+## 2026-04-30 Update — v5 Cleanup Audit COMPLETE
+
+### `production-consolidated-v5` branch ready
+
+Single-session cleanup audit (~90 min wall-clock) producing a clean, minimal v5 branch from the experimental kernel. Branch state: 59 commits ahead of v4 = 50 cherry-picks (clean, zero conflicts) + 9 strip/refactor commits, ~−940 LOC of dead-by-default deprecated code stripped.
+
+Audit handoff: [`v5-push-cleanup-audit.md`](../handoffs/completed/v5-push-cleanup-audit.md). Bundle: [`2026-04-30-v5-cleanup-audit/`](../../epyc-inference-research/data/cpu_optimization/2026-04-30-v5-cleanup-audit/).
+
+### Decisions resolved
+
+| Q | Decision | Note |
+|---|---|---|
+| CPU22 work-stealing | **STRIP** | Closure-via-test failed (-0.89% Coder, +0.18% Next, -0.32% REAP under canonical). No reopen workload identified. |
+| Legacy `GGML_Q8_0_8X8` vs `_AVX` | **REFACTOR-AND-KEEP both** | Different layers (gateway flag at repack.cpp:5031 vs SIMD path selector at arch/x86/repack.cpp:1550) — complementary, not redundant. |
+| `GGML_NUMA_WEIGHTS` family | **STRIP code + research deep-dive** | See [`numa-weights-deep-dive.md`](../../epyc-inference-research/research/numa-weights-deep-dive.md). |
+| v4 baseline location | In-place workflow in experimental repo (both repos at SHA `e734a6828`) | |
+| Toolchain ordering | AFTER cherry-picks, no CMake source change | Operator-applied at build via `-DCMAKE_C_COMPILER=clang-20 ...`. |
+
+### Stripped (LOC removed)
+
+- CPU22 work-stealing (`GGML_EP_WORK_STEALING`): −114
+- `GGML_RMS_NORM_PARALLEL`: −80 (net-negative −9% per inline measurement)
+- `GGML_GDN_K_PER_HEAD`: −55 (no current effect)
+- CPU15 Phase 1+2 in `mul_mat_id`: −84 (superseded by Phase 3.2 inter-process EP)
+- CPU15 Phase 2 anon-copies producer (loader): −211
+- `GGML_NUMA_WEIGHTS` family soft strip: −90
+- `GGML_NUMA_WEIGHTS` family hard-strip follow-up: −337 (deletes `if (false)` blocks + Lever A' consumer in ggml-cpu.c)
+
+**Total stripped: ~940 LOC of dead-by-default code.**
+
+### Refactors (KEEP commits cleaned up)
+
+- `GGML_EP_VERBOSE` env flag introduced — gates 5 unconditional INFO `fprintf` lines in `ggml-ep-bootstrap.cpp` + 2 in `ggml-ep-shard.cpp`. Error-path fprintf untouched.
+- `GGML_MUL_MAT_BLOCK` macro — replaces 6 bare `16` constants in mul_mat / mul_mat_id block-tile dimensions. Documented as Zen 4/5 AVX-512 register pressure × cache-line tuning.
+
+### Validation gates (ALL PASS)
+
+| Gate | Result | Threshold |
+|---|---|---|
+| Build (clang-20 + libomp 5.1 + `-march=znver5`) | 0 errors / 1 pre-existing test-code warning | 0 errors |
+| Tripwire — Coder-30B Q4_K_M tg32 r=5 canonical | 47.13 ± 0.74 t/s | ≥47 cold-boot |
+| **PPL bit-exact** — Coder-30B Q4_K_M chunks 1-12 | **11.1146 ± 0.62405** (exact match v4) | byte-identical |
+| Bench Coder-30B Q4_K_M tg32 r=5 | 47.49 ± 0.17 t/s | ≥46.0 |
+| Bench Qwen3.6-35B Q8_0 tg32 r=5 | 22.79 ± 0.04 t/s | ≥22.5 |
+| Bench REAP-246B Q4_K_M tg32 r=5 | 6.25 ± 0.01 t/s | ≥6.15 |
+| Bench gemma-31B Q4_K_M tg64 r=5 | 7.11 ± 0.01 t/s | ≥6.25 |
+
+All bench σ ≤ 1%. Phase 4 wall-clock: ~5 min (PPL on default n_ctx=512 + bench r=5).
+
+### Lesson preserved for future audits
+
+**Inventory SHAs go stale after rebase.** The handoff inventory had cherry-pick hashes from a pre-rebase history snapshot. Only 2 of 22 hashes were findable in the current branch. Phase 0 reconciliation is mandatory for any "cherry-pick from another branch" workflow. Procedure: enumerate `v4..feature/X` actual commits, match by commit message + scope keyword, persist the verified-current SHA list in the inventory before any cherry-pick runs.
+
+**C++11 static-lambda init = static-cached pattern.** The inventory flagged `repack.cpp` `static const bool x = []() { ... }();` as "uncached getenv". This is a wrong-classification; the lambda runs once at static initialization, semantically equivalent to the `static int s = -1; if (s < 0)` C-idiom. Future audits should not flag this idiom as a refactor target.
+
+**Instruction-tuned model PPL on raw text is anomalous, not a regression.** PPL on `gemma-4-31B-it Q4_K_M` chunks 1-12 with default `--chunks 12` returned ~13357 — three orders of magnitude above expected. Root cause: instruction-tuned models expect chat-template wrapping; raw wiki.test plain-text is OOD. Same behavior occurs on v4 binary. Don't gate v5 on this number — use chat-template-wrapped eval or skip raw-text PPL for `-it` models.
+
+### Pivot — v5 audit confirms structural ceiling pattern
+
+The v5 audit produced no new throughput findings (validation was bit-exact + no-regression by design). It validates the prior conclusion (2026-04-29 entry above) that the within-ggml CPU-optimization design space is largely exhausted at this hardware. The audit's main value is **branch hygiene** — eliminating ~940 LOC of falsified-mechanism dead code from the production-bound branch — not new perf wins.
+
+### Out of scope (deferred to follow-up)
+
+- **Orchestrator-stack rollout**: per-role `binary_path` + `env` wiring per [`model-registry-v5-deployment-draft.yaml`](../handoffs/active/model-registry-v5-deployment-draft.yaml). User explicitly out of scope ("nowhere close to altering the orchestrator stack"). Deployment-draft stays in `handoffs/active/` as future-work staging.
+- **PGO + per-role BOLT-libggml binary builds**: operator-applied at deployment time via `v5_pgo_profile.sh` + `v5_bolt_coder.sh` (host-specific scripts in working copy of llama.cpp-experimental).
+- **Per-role smoke gate (Batch 5)**: requires orchestrator integration first.
