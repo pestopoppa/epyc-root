@@ -238,15 +238,143 @@ Production-push readiness across the whitelisted experimental kernel work, ranke
 | **CPU4 op-coalesced barriers** | ❌ closed via test 2026-04-29 (gate not met) | Original "−19.7% Coder" was POISONED by missing OMP env baseline. Phase A re-test 2026-04-29 evening under canonical: **+0.19% NEUTRAL** on Coder. Patch is harmless, not regressive — gate ≥+5% still not met. MUL_MAT wdata race finding stands (correctness). | Stays in tree env-gated default-OFF (`GGML_BARRIER_COALESCE`). Allowlist excludes MUL_MAT/MUL_MAT_ID. Future work: extend allowlist beyond conservative set. |
 | **CPU25 NUMA_MIRROR** | ❌ closed via test 2026-04-27 (DECISIVE NEGATIVE on single-socket NPS4) | -1.0% Coder, +0.6% Q8 (Phase 2 throughput gate) | Compile flag default-OFF; reopen ONLY for 2-socket configs |
 
-**v5 cherry-pick scope summary (post-2026-04-30)**: 12 CPU1 commits + 1 CPU2 ukernel commit + 7 CPU15 EP commits + 1 CPU2 mbind commit (modified to add kill-switch) + dispatcher v1 commit + diagnostic flags, all default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch). Toolchain: clang-20+libomp+znver5+PGO universal binary; per-role BOLT-libggml binary for Coder-30B. Dispatcher v1 stays in tree but gated to K=1 default — no behavioral change for production.
+**v5 cherry-pick scope summary (reconciled 2026-04-30 audit Phase 0)**: 8 CPU1 commits (KEEP) + 5 CPU1 commits STRIPPED with NUMA_WEIGHTS deletion; 1 CPU2 mbind kill-switch (already includes kill-switch — no modification); 2 CPU2 Q8_0 ukernel commits; 3 CPU2 Q6_K ukernel commits; 13 CPU15 EP family commits; 6 slot-promotion commits; 1 MoE-Spec budget commit; 1 CPU4 op-coalesced barriers commit. **Total KEEP = 35 commits**. Plus build-system commit (toolchain switch to clang-20+libomp+znver5+PGO) appended last. STRIPPED in addition to NUMA_WEIGHTS family: CPU22 work-stealing (`0bc793637`), rms_norm parallel (`383ec7345`), gated_delta_net (`c36e6ce3a`), CPU15 Phase 1+2 superseded (`ad97bef09`,`80b5da0e5`,`b0c0b3301`). All KEEP commits land default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch). See "Cherry-pick scope — reconciled 2026-04-30" section below for full per-commit table.
 
-### Definitely cherry-pick
+### Cherry-pick scope — reconciled 2026-04-30 (v5 audit Phase 0)
 
-- All CPU1 commits **(default-off, NOT default-on)**: `a64d27dee`, `218325a14`, `61b00eb53`, `4f7f8bac4`, `04abecd13`, `d922314cc`, `0ade7bd4d`, `69b4c3fa4`, `9407a167e`, `315f891b0`, `c24a6c801`, `acb1bbdd7`. Stack remains gated for opt-in research/future work.
-- CPU2 AVX-512BW kernel `1d18efce3` (default-off via `GGML_Q8_0_8X8_AVX`).
-- CPU15 EP family `aa6476ab0` → `43c65b926` (default-off via env vars).
-- Diagnostic flags `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_*` (default-off).
-- **NEW 2026-04-30**: Slot-promotion dispatcher v1 commit `d45126db5` (default-off via `--spec-numa-quarters` defaulting to 1; mechanism net-negative but the implementation is correct, race-free, and costs nothing at K=1; keep in tree for future drafter/target re-evaluation).
+**Reconciliation note**: the SHA list previously in this section was from a pre-rebase history snapshot and did not match the current `feature/cpu-ep-inter-process` branch. Below are the **verified current SHAs** present in `production-consolidated-v4..feature/cpu-ep-inter-process` (55 commits total, of which 4 are op-fusion + reverts that cancel out).
+
+#### KEEP (cherry-pick into v5 in this dependency order)
+
+**CPU1 stack** (gated default-off via `GGML_CCD_POOLS`, `GGML_CCD_WORK_DIST`, `GGML_BARRIER_LOCAL_BETWEEN_OPS`):
+
+| Order | SHA | Description |
+|---|---|---|
+| 1 | `ea12c016b` | CPU1 P1.0+1.1: per-CCD 2-level barrier + CCD-aware cpumask |
+| 2 | `dc99062fd` | CPU1 fix: CCD pinning respects process cpuset (was hanging under taskset) |
+| 3 | `bcaa9f3cf` | CPU1 fix: tighten cpuset validation for CCD pinning |
+| 4 | `06571e884` | CPU1 Lever A: ggml_barrier memory-order tightening |
+| 5 | `4f07d701b` | CPU1 Lever B v1: CCD-local between-op barrier (env-gated) |
+| 6 | `abc6c651f` | CPU1 Lever B revert: PPL-corrupting graph-level downgrade undone (keep cpuset fix) |
+| 7 | `03a1c34f4` | CPU1 Phase 1.4 attempt complete: graph-level Lever B ruled out as unsafe |
+| 8 | `40aa61a6a` | CPU1 Phase 1.4: axis-0-aligned element-wise ops + safe CCD-local barrier |
+
+(8 commits — note the inventory's previous "12" overcounted by including 4 op-fusion + reverts that cancel.)
+
+**CPU2 mbind kill-switch** (default-ON with `GGML_NUMA_REPACK_INTERLEAVE=0` to disable):
+
+| Order | SHA | Description |
+|---|---|---|
+| 9 | `cb046ff58` | CPU2 kill-switch: GGML_NUMA_REPACK_INTERLEAVE=0 disables CPU_REPACK mbind |
+
+(Replaces the prior `e84a5c82f` reference which was the pre-rebase SHA. The kill-switch is already in this commit; no further modification needed.)
+
+**CPU2 Q8_0 8x8 AVX-512BW ukernel** (default-off via `GGML_Q8_0_8X8` + `GGML_Q8_0_8X8_AVX`):
+
+| Order | SHA | Description |
+|---|---|---|
+| 10 | `1f8868307` | CPU2 Session 15: AVX-512BW 8x8 Q8_0 GEMV kernel |
+| 11 | `af6701d00` | CPU2 Session 15 follow-up: NUMA interleave of CPU_REPACK + K-parallel activation quant |
+
+(Replaces the prior `1d18efce3` reference. Both `GGML_Q8_0_8X8` (gateway) and `GGML_Q8_0_8X8_AVX` (SIMD path) flags are kept — they are at different layers, NOT redundant. See repack.cpp:5031 + arch/x86/repack.cpp:1550.)
+
+**CPU2 Q6_K 8x8 AVX-512BW ukernel** (default-off via `GGML_Q6_K_8X8_AVX`):
+
+| Order | SHA | Description |
+|---|---|---|
+| 12 | `a822d76b1` | CPU2 Session 16: Q6_K 8x8 AVX-512BW dispatcher scaffolding |
+| 13 | `8d27e555f` | CPU2 Session 17: Q6_K 8x8 AVX-512BW SIMD body (PPL bit-exact 32-chunk on Coder-30B + REAP-246B) |
+| 14 | `ba84ca407` | CPU2 Session 18: Q6_K T1 prefetch (+0.7%) |
+
+**CPU15 inter-process EP family** (default-off via 7 env flags; orchestrator wires on for frontdoor only):
+
+| Order | SHA | Description |
+|---|---|---|
+| 15 | `2e6709e66` | CPU15 P3.2(a): import ep_dispatcher into ggml-cpu |
+| 16 | `486f8dbb2` | CPU15 P3.2(b+c): env-var-driven master/worker fork at ggml_cpu_init |
+| 17 | `1e4524165` | CPU15 P3.2(d.0): wire IPC harness around ggml_compute_forward_mul_mat_id |
+| 18 | `e86029a4d` | CPU15 P3.2(d.1.a): workers exit passive loop, sync in mul_mat_id |
+| 19 | `9985bda65` | CPU15 P3.2(d.1.b): expert slicing + gather + sum-reduce + broadcast |
+| 20 | `b424213cc` | CPU15 P3.2(d.1.c): NUMA-pin EP instances, one per node |
+| 21 | `0ba338313` | CPU15 P3.2(e.0): worker drone mode — skip non-MoE ops, broadcast src1+ids |
+| 22 | `ab622e898` | CPU15 P3.2(e.2): multi-node NUMA pinning per EP instance |
+| 23 | `90b243198` | CPU15 P3.2(e.1) attempt: critical OPENMP-guard fix + shard manager |
+| 24 | `b1248227d` | CPU15 P3.2(e.1) FIXED: move EP top block before src1 quantization |
+| 25 | `93f97079e` | CPU15 P3.2(g.0): GGML_EP_MASTER_ALL_NODES — master keeps full bandwidth |
+| 26 | `881f69681` | CPU15 P3.2(h): master phase-aware threading (env-gated) |
+| 27 | `48650c5a8` | CPU15 P3.2(g.1): eager parallel shard warm-up |
+
+(Replaces the prior `aa6476ab0` → `43c65b926` range which was pre-rebase.)
+
+**CPU1 P1.3 fix** (per-region mbind correctness fix that landed AFTER the rest of the CPU1 stack — but since `GGML_NUMA_WEIGHTS` is being STRIPPED in v5 audit Phase 1, this commit is also dropped):
+
+| ~~Order~~ | SHA | Description | Disposition |
+|---|---|---|---|
+| — | `ed77d5220` | CPU1 P1.3 fix: per-region mbind instead of process-wide set_mempolicy | **STRIPPED with NUMA_WEIGHTS code path** |
+
+**Slot-promotion dispatcher** (default-off via CLI `--spec-numa-quarters K=1`):
+
+| Order | SHA | Description |
+|---|---|---|
+| 28 | `a5c48050c` | slot-promotion P1.1 foundation: --spec-numa-quarters K + K target ctxs |
+| 29 | `d056c1f20` | slot-promotion P1.1 foundation v3: CLI-surface-only after hybrid crash |
+| 30 | `830c98c61` | slot-promotion P1.1: fix both blockers — foundation v4 active on hybrid |
+| 31 | `3656223eb` | slot-promotion P1.1 foundation v5: K aux contexts active on hybrid |
+| 32 | `64df7284b` | slot-promotion P1.1 dispatcher v0: pass-through wiring + state sync helper |
+| 33 | `d45126db5` | slot-promotion P1.1 dispatcher v1: K-parallel verify functional, gate not met |
+
+**MoE-Spec verification budget** (default-off via CLI `--moe-spec-budget`):
+
+| Order | SHA | Description |
+|---|---|---|
+| 34 | `9db284ed7` | MoE-Spec (arXiv:2602.16052): per-batch top-B expert budget at MoE routing |
+
+**CPU4 op-coalesced barriers** (default-off via `GGML_BARRIER_COALESCE`; allowlist excludes MUL_MAT/MUL_MAT_ID):
+
+| Order | SHA | Description |
+|---|---|---|
+| 35 | `9f6191581` | CPU4 op-coalesced barriers (GGML_BARRIER_COALESCE) — gate not met but harmless |
+
+**Diagnostic flags** (default-off): `GGML_BARRIER_STRICT`, `GGML_NUMA_WARMUP_CCD`, `GGML_NUMA_WARMUP_PHYS_PER_CCD`, `GGML_NUMA_WARMUP_MIN_BYTES`. These are part of the CPU1 commits above (no separate commits).
+
+#### STRIP (delete code path entirely; do NOT cherry-pick)
+
+| SHA | Description | Reason |
+|---|---|---|
+| `ed77d5220` | CPU1 P1.3 fix: per-region mbind | Underlying mechanism is `GGML_NUMA_WEIGHTS` — DEPRECATED unstable |
+| `1fcc16d39` | CPU1 Lever A': per-NUMA-node weight replication (env-gated) | Same NUMA_WEIGHTS family — deprecated |
+| `6efe765f9` | CPU1 P1.3 v2: per-CCD warmup touch pass | Same NUMA_WEIGHTS family — deprecated |
+| `88d3d6dc5` | CPU1 P1.2 + P1.3 'local' mode scaffolding | Same NUMA_WEIGHTS family — deprecated |
+| `e249ed5f1` | CPU1 P1.3 v1: set_mempolicy(MPOL_INTERLEAVE) | Original NUMA_WEIGHTS commit — deprecated |
+| `383ec7345` | rms_norm: env-gated parallel inner-axis reduction | Net-negative, no reopen path |
+| `c36e6ce3a` | gated_delta_net: env-gated S_v sub-chunking | "No current effect" |
+| `ad97bef09` | CPU15 Phase 1a: per-CCD expert sharding work distribution | Superseded by Phase 3.2 inter-process EP |
+| `80b5da0e5` | CPU15 Phase 1b: per-expert mbind to CCD-local NUMA node | Superseded by Phase 3.2 |
+| `b0c0b3301` | CPU15 Phase 2: anonymous-mmap'd expert NUMA copies + mul_mat_id redirect | Superseded by Phase 3.2 |
+| `0bc793637` | CPU22 work-stealing prototype | Closure-via-test failed (Phase D 2026-04-29 verified -0.89% Coder, +0.18% Next, -0.32% REAP under canonical) |
+
+#### SKIP (revert chain — cancels out, do not carry)
+
+| Pair | Description |
+|---|---|
+| `b980f1585` + `e104502f3` | CPU1 op-fusion infrastructure + revert |
+| `bfd46e795` + `cd767ceb5` | CPU1 op-fusion Phase 2 + revert |
+
+#### SKIP (closed via test 2026-04-27, decisive negative on single-socket NPS4)
+
+| SHA | Description |
+|---|---|
+| `5becfd9ca` | NUMA_MIRROR Phase 0a: tensor_data() accessor + 97-ref migration |
+| `b1baa6862` | NUMA_MIRROR Phase 0b: extend accessor migration to backend + loader |
+| `61d2dedae` | NUMA_MIRROR Phase 1a: per-node pointer plumbing + TLS framework |
+| `46733d078` | NUMA_MIRROR Phase 1b: TLS setter at graph-compute entry |
+| `b7e0250f4` | NUMA_MIRROR Phase 1c: CPU_REPACK buffer mirror — DECISIVE NEGATIVE |
+
+(Reopen criteria: 2-socket configs only. See `project_numa_mirror_scoped.md` memory.)
+
+#### Cherry-pick total
+
+**35 KEEP commits** + 11 STRIP (path deleted, not cherry-picked) + 4 op-fusion canceling + 5 NUMA_MIRROR skipped = **55** matches `production-consolidated-v4..feature/cpu-ep-inter-process` ✓
 
 ### Build-time toolchain choices for v5 (NEW 2026-04-28 — CPU11 + CPU12, with LTO and libomp-BOLT extensions)
 
@@ -270,22 +398,18 @@ Build environment additions (one-time):
 - `apt install clang-20 libomp5-20 libclang-rt-20-dev llvm-20 linux-tools-common linux-tools-generic`
 - ~30-min PGO profile-and-rebuild cycle; ~10-min BOLT collect-and-rewrite cycle per profile
 
-### Cherry-pick with modification
+### Pre-rebase SHA → reconciled SHA mapping (for archival readers of older docs)
 
-- `e84a5c82f` (repack mbind): the unconditional mbind needs a kill-switch env var. Add `GGML_NUMA_REPACK_INTERLEAVE` (default ON for backward-compat with current behavior, but allow `=0` to disable). Phase H PPL gates verify correctness; if perf-neutral on the production lineup, leave default-on. If any regression observed, flip default-off.
-
-### Skip (revert chain)
-
-- `b2154f3f3`, `9ea5b40e8` (CPU1 op-fusion infra + Phase 2) — already reverted on the experimental branch by `138b26cd4`, `c34aac61b`. Skip the original commits AND their reverts; they cancel out.
-
-### Skip (research-only, default-off)
-
-- `ba1c23900` (gated_delta_net sub-chunking) — no current effect; not worth carrying.
-- `0467a5c17` (rms_norm parallel) — net-negative; not worth carrying.
-
-### Skip (superseded)
-
-- CPU15 Phase 1+2 intra-process: `8d0428a97`, `c98c0123c`, `9ccb00245` — superseded by Phase 3.2 inter-process EP.
+| Inventory's pre-rebase SHA | Reconciled current SHA(s) | Track |
+|---|---|---|
+| 12 CPU1 (`a64d27dee`…`acb1bbdd7`) | 8 KEEP + 5 STRIP listed above | CPU1 stack |
+| `1d18efce3` | `1f8868307` + `af6701d00` | CPU2 Q8_0 8x8 ukernel |
+| `e84a5c82f` | `cb046ff58` | CPU2 mbind kill-switch (already includes the kill-switch — no separate "modify" step needed) |
+| `aa6476ab0` → `43c65b926` | `2e6709e66` … `48650c5a8` (13 commits) | CPU15 inter-process EP |
+| `8d0428a97`, `c98c0123c`, `9ccb00245` | `ad97bef09`, `80b5da0e5`, `b0c0b3301` | CPU15 Phase 1+2 (STRIP) |
+| `b2154f3f3` + `138b26cd4` revert; `9ea5b40e8` + `c34aac61b` revert | `b980f1585` + `e104502f3` revert; `bfd46e795` + `cd767ceb5` revert | CPU1 op-fusion (canceling) |
+| `0467a5c17` | `383ec7345` | rms_norm parallel (STRIP) |
+| `ba1c23900` | `c36e6ce3a` | gated_delta_net sub-chunking (STRIP) |
 
 ## Open questions for the audit gate
 

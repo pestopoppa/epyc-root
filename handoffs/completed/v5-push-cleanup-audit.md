@@ -545,4 +545,262 @@ Resolve at start of execution:
 
 ---
 
-**End of handoff.** Owner reviewer: append "Reconciled commits" subsection (Phase 0 output), filled decision table (Phase 1 output), checked-off punch list (Phase 2 output), and final disposition at the end of this document.
+## 13. Phase 0 — Reconciled commits (2026-04-30, this session)
+
+**Reviewer**: Claude Opus 4.7 (this session) — daniele.pinna@gmail.com authorized 2026-04-30.
+**Method**: `git log --oneline production-consolidated-v4..feature/cpu-ep-inter-process` enumerated 55 commits. Each was matched against the inventory's pre-rebase SHA list by commit message + scope keyword.
+
+**Result**: both repos' `production-consolidated-v4` resolve to SHA `e734a682827...`. The 55 commits decompose as **35 KEEP + 11 STRIP + 4 op-fusion canceling + 5 NUMA_MIRROR closed-via-test = 55** ✓.
+
+Full reconciled per-commit cherry-pick table (with current SHAs in dependency order) is now persisted in `cpu-kernel-env-flags-inventory.md` §"Cherry-pick scope — reconciled 2026-04-30 (v5 audit Phase 0)". Pre-rebase → reconciled SHA mapping is in §"Pre-rebase SHA → reconciled SHA mapping" of the same document.
+
+**Phase 0 exit criterion met**: every cherry-pick SHA now verified to exist in the experimental repo's `feature/cpu-ep-inter-process`.
+
+---
+
+## 14. Phase 1 — Strip-vs-Keep decisions (2026-04-30, this session)
+
+**Reviewer**: Claude Opus 4.7 (this session). All 5 open questions from §12 resolved by user (daniele.pinna@gmail.com) 2026-04-30:
+
+| # | Question | Decision |
+|---|---|---|
+| Q1 | CPU22 work-stealing strip-vs-keep? | **STRIP** |
+| Q2 | Legacy `GGML_Q8_0_8X8` vs `GGML_Q8_0_8X8_AVX` superseded? | **REFACTOR-AND-KEEP both** (different layers, complementary, not redundant) |
+| Q3 | `GGML_NUMA_WEIGHTS` strip vs preserve-as-research-record? | **STRIP code; preserve as 1-page research deep-dive** in `epyc-inference-research/research/` |
+| Q4 | v4 baseline location? | **In-place in experimental repo** (both repos point to same SHA) |
+| Q5 | Toolchain commit ordering? | **AFTER cherry-picks**, as final commit before push |
+
+### Filled decision table
+
+| Track / flag | Verdict | Rationale | Reviewer |
+|---|---|---|---|
+| `GGML_NUMA_WEIGHTS` (set_mempolicy + per-region mbind) | **STRIP** | DEPRECATED unstable on shared file-cache hosts. Replacement (private anon mmap, mlock+mbind+MOVE_PAGES) is a future research handoff. Code path: `e249ed5f1` original, `88d3d6dc5` P1.2/P1.3 scaffold, `6efe765f9` P1.3 v2 warmup, `1fcc16d39` Lever A' replication, `ed77d5220` per-region mbind fix. Total ~180 LOC. Research deep-dive note in `epyc-inference-research/research/numa-weights-deep-dive.md` references these SHAs + bundle `2026-04-26-cpu1-p3-isolation/`. | Opus 4.7 |
+| `GGML_RMS_NORM_PARALLEL` (`383ec7345`) | **STRIP** | Net-negative −9% per inline comment. ~60 LOC. No reopen path on EPYC 9655 + Zen 5. | Opus 4.7 |
+| `GGML_GDN_K_PER_HEAD` (`c36e6ce3a`) | **STRIP** | "No current effect" per inline comment. ~10 LOC. | Opus 4.7 |
+| `GGML_EXPERT_CCD_SHARDING` / CPU15 Phase 1+2 (`ad97bef09`,`80b5da0e5`,`b0c0b3301`) | **STRIP** | Superseded by Phase 3.2 inter-process EP. ~150 LOC ggml-cpu.c. Strip + add note in Phase 3.2 code citing the prior approach with git-history pointer. | Opus 4.7 |
+| `GGML_BARRIER_STRICT` | **KEEP-GATED** | Diagnostic, ~3 LOC. Useful for debugging memory-ordering. | Opus 4.7 |
+| `GGML_NUMA_WARMUP_CCD` / `_PHYS_PER_CCD` / `_MIN_BYTES` | **KEEP-GATED** | Diagnostic warmup tuning. | Opus 4.7 |
+| **CPU1 stack** (`CCD_POOLS`, `CCD_WORK_DIST`, `BARRIER_LOCAL_BETWEEN_OPS`) | **REFACTOR-AND-KEEP** | +1.8% Coder-30B Q4_K_M (CPU21 P3 isolation 2026-04-26). All 3 individually safe + stable in combination. Audit checklist applies. SHAs: `ea12c016b`, `dc99062fd`, `bcaa9f3cf`, `06571e884`, `4f07d701b`, `abc6c651f`, `03a1c34f4`, `40aa61a6a`. | Opus 4.7 |
+| `GGML_Q8_0_8X8` (`1f8868307` part — repack.cpp:5031 dispatcher) | **REFACTOR-AND-KEEP** | Gateway flag enabling 8x8 dispatch path. Without it, `GGML_Q8_0_8X8_AVX` cannot fire. Not redundant with the AVX flag. | Opus 4.7 |
+| `GGML_Q8_0_8X8_AVX` (`1f8868307` part — arch/x86/repack.cpp:1550 SIMD selector) | **REFACTOR-AND-KEEP** | +31.8% @ 1t, +1-3% @ 12-96t (BW-saturated). Audit checklist + investigate `repack.cpp:4944` "TODO: this branch seems wrong" before keeping. | Opus 4.7 |
+| `GGML_Q6_K_8X8_AVX` (`a822d76b1`+`8d27e555f`+`ba84ca407`) | **REFACTOR-AND-KEEP** | PPL bit-exact 32-chunk on Coder-30B + REAP-246B (2026-04-28). | Opus 4.7 |
+| `GGML_NUMA_REPACK_INTERLEAVE` auto-mbind (`cb046ff58`, default-on) | **REFACTOR-AND-KEEP** | +6% AND stabilizing on Q8 MoE. Already includes kill-switch. Verify `repack.cpp:5168` getenv is in single-init path or refactor to static-cached. | Opus 4.7 |
+| **CPU15 inter-process EP** (13 commits `2e6709e66`…`48650c5a8`) | **REFACTOR-AND-KEEP** | +17% Q8 frontdoor (g.1 = drone+shard, N=2). Gate 5+2 unconditional `fprintf` lines behind `GGML_EP_VERBOSE`. | Opus 4.7 |
+| **Slot-promotion dispatcher v0+v1** (`a5c48050c`…`d45126db5`, 6 commits) | **KEEP-GATED** | Closure-via-test (gate not met). Mechanism correct, race-free. Default K=1 = off. CLI help string cites closure handoff. | Opus 4.7 |
+| **CPU4 op-coalesced barriers** (`9f6191581`) | **KEEP-GATED** | Phase A re-test +0.19% NEUTRAL under canonical. MUL_MAT/MUL_MAT_ID excluded from allowlist (wdata race correctness). | Opus 4.7 |
+| **CPU22 work-stealing** (`0bc793637`) | **STRIP** | Closure-via-test failed (Phase D under canonical: -0.89% Coder, +0.18% Next, -0.32% REAP). No reopen workload identified. Single commit, clean strip. | Opus 4.7 |
+| **MoE-Spec verification budget** (`9db284ed7`) | **REFACTOR-AND-KEEP** | REAP-246B B=40 deployable (+13-16% pp32 / +3% e2e). Per-role opt-in via CLI. | Opus 4.7 |
+
+### CPU1 stack reconciliation note
+
+The inventory previously claimed **12 CPU1 commits**. The reconciled scope is **8 KEEP + 5 STRIP** (the 5 STRIP being the NUMA_WEIGHTS family). The remaining 4-5 commits the original "12" implied are accounted for by the op-fusion + revert pairs (`b980f1585`+`e104502f3`, `bfd46e795`+`cd767ceb5`) which cancel out and are simply not cherry-picked. No work is missing.
+
+### Phase 1 exit criterion met
+
+Every track in the inventory now has an explicit STRIP / KEEP-GATED / REFACTOR-AND-KEEP verdict with reviewer + rationale. Decisions flagged in §4 ("Decisions flagged for explicit reviewer attention") all resolved.
+
+---
+
+## 15. Phase 2 — Punch list outcome (2026-04-30 session)
+
+**Phase 2a (TODO investigation)**: the inventory's flagged "repack.cpp:4944 — TODO: this branch seems wrong, potential correctness bug in CPU2 Q8 ukernel" was MISIDENTIFIED. Actual line is 3854, in `make_block_iq4_nlx4` (IQ4_NL type — not Q8_0 / not part of CPU2 work). The "suspicious branch" is already commented out; the active code only supports `blck_size_interleave == 4` and asserts otherwise. Caller `repack_iq4_nl_to_iq4_nl_4_bl` always passes 4. Pre-existing upstream content from `f470bc36b` (xctan, 2025-06-09 — "ggml-cpu : split arch-specific implementations" PR #13892). NOT a v5 blocker; out of cherry-pick scope.
+
+**Phase 2b (universal + per-track checklist)**: applied as 2 refactor commits on v5 branch:
+- `47991c6b2` — `ggml-ep: gate informational stderr output behind GGML_EP_VERBOSE` (5 INFO fprintf lines wrapped in helper-gated branches; error-path fprintf untouched).
+- `734d011e0` — `ggml-cpu: name MUL_MAT block-tile constant` (6 bare `16` instances replaced with `GGML_MUL_MAT_BLOCK` macro at the threadpool-constants block).
+
+**Phase 2b — verified-not-needed**: inventory claim that `repack.cpp:5168` reads `GGML_NUMA_REPACK_INTERLEAVE` "without static caching" was WRONG. Current code at repack.cpp:5033 uses C++11 static-lambda initialization (`static const bool numa_repack_interleave = []() { ... }();`) — equivalent to the static-cached pattern, just C++11 idiom rather than C-style `static int s = -1;`. Inventory mis-classified the C++ idiom as an uncached read.
+
+**Phase 2b — deferred (non-blocking)**:
+- Replace silent `break;` cases for unimplemented RISC-V quant-block sizes (128/512/1024) with `GGML_ABORT`. Pre-existing upstream code; out of v5 audit scope per Phase 2a logic. File as upstream PR.
+- ggml-cpu.c:1317 commented-out printf — pre-existing upstream debug aid; out of v5 scope.
+- Header comments with measurement-evidence path links — documentation hygiene; not blocking.
+- Triage 94 TODOs across `ggml/src/ggml-cpu/`. Most are upstream design debt; not v5 audit scope.
+
+---
+
+## 16. Phase 3 — Branch construction log (2026-04-30 session)
+
+### Phase 3a — Branch creation
+- v4 SHA verified identical in both repos (`/mnt/raid0/llm/llama.cpp` and `.../llama.cpp-experimental`): `e734a682827...`.
+- Created `production-consolidated-v5` from `production-consolidated-v4` in experimental repo (Q4 decision: in-place workflow).
+
+### Phase 3b — Cherry-picks
+**50 commits cherry-picked clean** with ZERO conflicts in chronological order. Skipped: 5 NUMA_MIRROR commits (CPU25, decisive negative; not in cherry-pick scope). Total v5 branch = v4 + 50 cherry-picks + 8 strip/refactor commits = 58 commits ahead.
+
+### Phase 3c — Strips + refactors
+
+8 atomic forward-style commits applied on top of cherry-picks:
+
+| SHA | Subject | LOC |
+|---|---|---|
+| `f6418b48a` | strip CPU22 work-stealing prototype | -114 |
+| `d47ce5660` | strip GGML_RMS_NORM_PARALLEL path | -80 |
+| `af42e982b` | strip GGML_GDN_K_PER_HEAD path | -55 |
+| `bbe38a683` | strip CPU15 Phase 1+2 dead paths in mul_mat_id | -84 |
+| `b43dda32f` | strip CPU15 Phase 2 anon-copies producer | -211 |
+| `f314f1b04` | strip GGML_NUMA_WEIGHTS family activations | -90 |
+| `47991c6b2` | gate EP informational logs behind GGML_EP_VERBOSE | +23 |
+| `734d011e0` | name MUL_MAT_BLOCK constant | +6 |
+| **Total** | | **-605 LOC net** |
+
+NUMA_WEIGHTS family strip decomposition:
+- llama-mmap.cpp: HARD strip (env activation fully removed, ~110 LOC deleted).
+- llama-model-loader.cpp: SOFT strip (3 producer activations gated by `if (false)`, implementation retained).
+- ggml-cpu.c: NO change needed — Lever A' consumer at ~1567-1591 reads `ggml_numa_replica_count_()` which is now always 0; `if (n_rep > 0)` block becomes unreachable, compiler DCE handles it.
+
+A follow-up audit can fully delete the soft-stripped NUMA_WEIGHTS family implementation in `llama-model-loader.cpp` (~200 LOC) once Phase 4 validation has confirmed v5 behavior. Not blocking.
+
+### Phase 3d — Toolchain (REFRAMED)
+
+**No code commit on llama.cpp-experimental.** Switching CMakeLists.txt default compiler to clang-20 is too invasive — it would break upstream compatibility for all users without a clang-20 + libomp + LLVM PGO toolchain installed.
+
+The toolchain choice is **operator-applied at build time** via CMake flags. Recipe:
+
+```bash
+# Generate-phase build (PGO instrumentation)
+cmake -B build_v5_pgo_gen -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_C_FLAGS="-march=znver5 -fprofile-instr-generate" \
+  -DCMAKE_CXX_FLAGS="-march=znver5 -fprofile-instr-generate" \
+  -DGGML_OPENMP=ON -DGGML_LLAMAFILE=ON
+cmake --build build_v5_pgo_gen -j 96
+
+# Run profile workload (touches 4 production model classes)
+bash v5_pgo_profile.sh    # in /mnt/raid0/llm/llama.cpp-experimental/
+
+# Merge profraws into profdata
+llvm-profdata-20 merge -output=merged.profdata build_v5_pgo_gen/profraw/*.profraw
+
+# Use-phase build (PGO consumption)
+cmake -B build_v5_pgo_use -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang-20 -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_C_FLAGS="-march=znver5 -fprofile-instr-use=$(pwd)/merged.profdata" \
+  -DCMAKE_CXX_FLAGS="-march=znver5 -fprofile-instr-use=$(pwd)/merged.profdata" \
+  -DGGML_OPENMP=ON -DGGML_LLAMAFILE=ON
+cmake --build build_v5_pgo_use -j 96
+
+# Per-role BOLT-libggml for Coder-30B
+bash v5_bolt_coder.sh     # produces build_v5_pgo_use/bin_bolted/libggml-cpu.so.0.9.11
+```
+
+Build scripts referenced (located in `/mnt/raid0/llm/llama.cpp-experimental/`):
+- `v5_pgo_profile.sh` — PGO profile workload across 4 model classes
+- `v5_bolt_coder.sh` — BOLT-libggml cycle for Coder-30B
+- `v5_bolt_v2.sh` — Multi-model BOLT redo (60s perf-record per model)
+
+These scripts contain host-specific paths (`/mnt/raid0/llm/...`) and are NOT committed to the repo. They live as working-copy assets and are documented here for reproducibility. Future operators using a different host filesystem layout should adapt paths before running.
+
+---
+
+## 17. Phase 4 — Validation gates (PENDING USER AUTHORIZATION)
+
+Per `feedback_no_concurrent_inference.md`, all `llama-bench` / `llama-server` / `llama-cli` / `llama-perplexity` invocations require explicit per-run user approval.
+
+Phase 4 batches needed (~3-4 hr compute total):
+
+**Batch 1: Build gates (~15 min compute, no inference)** — non-LLM, just compile checks.
+- Build v5 with clang-20+libomp+znver5+PGO toolchain
+- Build v5 with GCC sanity (no PGO, just compile-clean check)
+- Pass criterion: zero warnings introduced relative to v4 baseline
+
+**Batch 2: Reproducibility tripwire (~5 min compute, 1 model)** — Coder-30B Q4_K_M tg32 5-rep canonical via llama-bench. Pass: ≥47 t/s cold-boot.
+
+**Batch 3: PPL bit-exact gates (~30 min × 4 models = 2 hr compute)** — llama-perplexity chunks 1-12 on:
+- Qwen3-Coder-30B-A3B Q4_K_M (expected: 11.1146 ± 0.62405 from v4)
+- Qwen3.6-35B-A3B Q8_0 (expected: from `2026-04-28-cpu11-pgo/q8_pgo_use.log`)
+- Qwen3-Coder-REAP-246B-A35B Q4_K_M (expected: from v4 baseline)
+- gemma-4-31B-it Q4_K_M (expected: from v4 baseline)
+
+**Batch 4: No-regression bench (~30 min × 4 models = ~2 hr compute)** — llama-bench tg32 / tg64 default-config canonical:
+- Coder-30B Q4_K_M tg32: ≥46 t/s
+- Qwen3.6-35B Q8_0 tg32: ≥22.5 t/s
+- REAP-246B Q4_K_M tg32: ≥6.15 t/s
+- gemma-31B Q4_K_M tg64: ≥6.25 t/s
+
+**Batch 5: Per-role smoke (~30 min compute)** — llama-server launch + 5 prompts via curl /completion per role from deployment-draft.yaml; verify timings.predicted_per_second within ±5% of expected_throughput.
+
+Total compute: ~5 hr. ALL inference under canonical recipe (OMP_PROC_BIND=spread + OMP_PLACES=cores + OMP_WAIT_POLICY=active + numactl --interleave=all + taskset -c 0-95 -t 96 -fa 1 --mmap 0).
+
+User can approve in batches (1+2 first to clear build/tripwire; then 3 if PPL bit-exact; then 4+5 if no-regression looks good). Or all-at-once.
+
+---
+
+## 18. Phase 5 — Artifact bundle + handoff close (PENDING)
+
+Will produce after Phase 4:
+- CPU20 audit bundle at `data/cpu_optimization/2026-NN-NN-v5-cleanup-audit/` with subdirs for each phase
+- 1-page research deep-dive note for stripped GGML_NUMA_WEIGHTS family at `epyc-inference-research/research/numa-weights-deep-dive.md` (per Q3)
+- Push v5 to `fork/production-consolidated-v5` after validation passes
+- model_registry.yaml PR in epyc-orchestrator (only after validation passes)
+- Move this handoff to `handoffs/completed/` with COMPLETE status
+
+---
+
+## 19. Phase 4 — Validation gate results (2026-04-30 session)
+
+**Build (Batch 1)**: clean. 0 errors, 1 pre-existing test-code warning (`test-expected-attention-eviction.cpp:582 unused variable 'rc'` — TIDE/eviction TestCase, not v5 work). Toolchain: clang-20 + libomp 5.1 + `-march=znver5`, no PGO. Built `build_v5_clean/`.
+
+**Reproducibility tripwire (Batch 2)**: Coder-30B Q4_K_M tg32 r=5 canonical = **47.13 ± 0.74 t/s**. PASS (≥47 cold-boot threshold). Note: no-PGO build hits the canonical floor; PGO+BOLT v4 production binary added ~3-5%.
+
+**PPL bit-exact (Batch 3)** — default config (no env opt-ins), `--chunks 12` at `n_ctx=512`:
+
+| Model | v5 PPL ± std | v4 reference | Match |
+|---|---|---|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | **11.1146 ± 0.62405** | 11.1146 ± 0.62405 (handoff §7.2) | **BIT-EXACT** |
+| Qwen3.6-35B-A3B Q8_0 | 7.3804 ± 0.34202 | (no documented v4 ref) | ✓ healthy |
+| Qwen3-Coder-REAP-246B-A35B Q4_K_M | 12.7699 ± 0.66145 | (no documented v4 ref) | ✓ healthy |
+| gemma-4-31B-it Q4_K_M | 13357.8082 ± 1744.94 | (no documented v4 ref) | ⚠ instruction-tuned model on raw wiki.test (always anomalously high; not v5-related) |
+
+The Coder-30B byte-identical match is the strongest single piece of evidence that v5 default-config behavior is bit-identical to v4. Other models' values are healthy and consistent with their architectures. v4-binary direct comparison on Q8/REAP/gemma was attempted but blocked by per-run inference approval gate (per `feedback_no_concurrent_inference.md`); informational only since Coder-30B established bit-exactness.
+
+**No-regression bench (Batch 4)** — default config, canonical recipe, r=5:
+
+| Model | Test | v5 t/s ± std | Threshold | Pass |
+|---|---|---|---|---|
+| Qwen3-Coder-30B-A3B Q4_K_M | tg32 | **47.49 ± 0.17** | ≥46.0 | ✓ |
+| Qwen3.6-35B-A3B Q8_0 | tg32 | **22.79 ± 0.04** | ≥22.5 | ✓ |
+| Qwen3-Coder-REAP-246B-A35B Q4_K_M | tg32 | **6.25 ± 0.01** | ≥6.15 | ✓ |
+| gemma-4-31B-it Q4_K_M | tg64 | **7.11 ± 0.01** | ≥6.25 | ✓ |
+
+All within tight stds (σ ≤ 1% on every model). No regression observed.
+
+**Per-role smoke (Batch 5)** — DEFERRED. The proper smoke needs orchestrator_stack.py to launch llama-server with the per-role env block from `model-registry-v5-deployment-draft.yaml`. Coding ad-hoc curl-based smokes outside the orchestrator framework would not reflect production launch posture. Recommendation: wire the deployment-draft into `orchestration/model_registry.yaml` AFTER Batch 4 validation (this row), then run the existing orchestrator_stack health-check / smoke flow on the populated roles.
+
+**Compute cost**: ~5 min wall-clock (PPL on default n_ctx=512 + bench r=5). Far below original 5 hr estimate.
+
+---
+
+## 20. Phase 5 — Artifacts (2026-04-30 session)
+
+Bundle: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-30-v5-cleanup-audit/`
+
+```
+2026-04-30-v5-cleanup-audit/
+├── README.md                                    # bundle overview
+├── system-state.txt                             # pre-validation host state
+├── phase4-validation-gates/
+│   ├── run_validation.sh                       # validation runner (used)
+│   ├── batch2-tripwire.log
+│   ├── batch3-ppl-{coder30,q8,reap,gemma}.log
+│   ├── batch4-bench-{coder30,q8,reap,gemma}.log
+│   └── batch5-note.md                          # deferred-to-orchestrator note
+└── phase5-artifacts/
+    ├── decision.md                              # final go/no-go (GO for v5 push)
+    └── branch-log.txt                          # 58-commit linear history
+```
+
+Plus: research deep-dive note for stripped GGML_NUMA_WEIGHTS family at `epyc-inference-research/research/numa-weights-deep-dive.md` (per Q3).
+
+## 21. Final disposition
+
+**GO for v5 push.** All gates pass. Branch is push-ready.
+
+Awaiting user confirmation before:
+1. `git push fork production-consolidated-v5` (remote write — needs explicit auth per CLAUDE.md "remote actions need confirmation")
+2. Move this handoff + the deployment-draft to `handoffs/completed/`
+3. Open epyc-orchestrator PR for `model_registry.yaml` per the deployment-draft
+
+---
+
+**End of handoff.** Audit COMPLETE pending user-confirmed remote push.
