@@ -22470,8 +22470,8 @@
   - multimodal-pipeline.md
   handoffs_created: []
   novelty_justification: 'Tandem oracle-guided architecture is a reasonably novel research direction for real-time S2S — pairs a streaming Moshi-style speech model with an out-of-band knowledge oracle to overcome the knowledge limitations of small streaming dialogue models. README provides no empirical numbers; the novelty claims live in the linked arXiv paper, not the repo itself. Treated as medium novelty.'
-  relevance_justification: 'Implementation is GPU-only (--device cuda example, derived from Moshi which targets GPU streaming inference). Hard runtime dependencies on OpenAI Chat Completions API and Google Cloud Speech-to-Text violate the open-source-only / self-hosted constraint. No GGUF, no llama.cpp path, no CPU inference path. Single-WebSocket-session limit makes it unsuitable as production infra. Audio codec components (Mimi) are exactly the class of non-llama.cpp components flagged in multimodal-pipeline handoff as blockers.'
-  verdict_justification: 'not_applicable for direct adoption: (1) cloud-API dependencies (OpenAI + Google STT) disqualifying under open-source-only constraint, (2) GPU-only inference path with no CPU/llama.cpp/GGUF support, (3) inherits Moshi non-GGUF audio codec stack already flagged as a blocker, (4) target use case is real-time interactive spoken dialogue, not on the EPYC roadmap. Per feedback_dont_dismiss_creative_uses, the abstract pattern of tandem (fast-local + slow-knowledge-oracle) is worth noting as competitive intel, but the repo itself is not actionable for EPYC. Credibility null per rubric: README has no empirical claims; credibility scoring attaches to the paper.'
+  relevance_justification: 'Implementation is GPU-only (--device cuda example, derived from Moshi which targets GPU streaming inference). No GGUF, no llama.cpp path, no CPU inference path. Single-WebSocket-session limit makes it unsuitable as production infra. Audio codec components (Mimi) are exactly the class of non-llama.cpp components flagged in multimodal-pipeline handoff as blockers. **Correction (deep-dive 2026-04-30)**: an earlier draft cited cloud-API dependencies (OpenAI + Google STT) as a verdict driver. Direct repo audit shows `src/kame/server_oracle.py` instantiates `AsyncOpenAI()` with no args and therefore honors `OPENAI_BASE_URL` — the OpenAI dependency is a *convenience default*, not architectural. Backend swap to a self-hosted llama-server is one env var. Google STT is similarly a swappable component. The real adoption blocker is the front-end (Moshi 4-stream joint transformer with KAME-specific simulated-oracle retraining) plus the absence of a CPU audio-codec stack — not the backend.'
+  verdict_justification: 'not_applicable for direct adoption — but the reasoning is corrected per the deep-dive: (1) GPU-only inference path with no CPU/llama.cpp/GGUF support, (2) inherits Moshi non-GGUF audio codec stack already flagged as a blocker, (3) front-end weights are tied to a specific Moshi base + KAME-specific simulated-oracle retraining recipe, (4) target use case is real-time interactive spoken dialogue, not on the EPYC roadmap. The OAI/Google API dependencies, while present in the reference impl, are NOT architectural blockers (env-var swap to local llama-server). Per feedback_dont_dismiss_creative_uses, the abstract pattern of tandem (fast-local + slow-knowledge-oracle) is worth noting as competitive intel — see deep-dive for transferable-pattern audit (KAME oracle-stream-as-fourth-autoregressive-stream is genuinely distinct from drafter/verifier and worker_explore). Credibility null per rubric: README has no empirical claims; credibility scoring attaches to the paper. Deep-dive: `/workspace/research/deep-dives/kame-tandem-s2s-architecture.md`.'
 - id: intake-514
   arxiv_id: null
   url: https://github.com/SakanaAI/kame_finetune
@@ -22808,3 +22808,61 @@
   novelty_justification: 'Embedding models are a mature category; novelty here is engineering composition rather than a new mechanism. The combination of (a) ModernBERT backbone in a sub-100M multilingual encoder, (b) 32K context (64x R1 512-tok ceiling) at this scale, (c) explicit prune-then-distill recipe from a 311M sibling, and (d) 180K purpose-trained multilingual tokenizer is a non-trivial recipe and the highest reported open <100M MTEB-ML-Retrieval score. No new architecture or training-objective invention, but a defensible state-of-the-art point on the size-vs-quality Pareto for multilingual retrieval.'
   relevance_justification: 'EPYC has active retrieval/RAG infrastructure work (colbert-reranker-web-research, internal-kb-rag, searxng-*), and the production stack lacks a primary dense multilingual embedder. At 97M params with 32K context this fits trivially on the EPYC 9655 CPU (sub-millisecond per doc; 2,894 docs/s on reference HW), is ONNX/OpenVINO/GGUF-deployable, and is orthogonal to the ColBERT reranker (it would feed candidates into rerank). Multilingual coverage matters for any web-search ingest path (SearXNG returns mixed-language snippets). Not a slam-dunk because: (1) for English-dominant code-heavy workloads BGE/E5/jina/snowflake variants compete tightly, (2) project is currently invested in late-interaction (ColBERT) for reranking, where dense embedding is upstream not replacement, and (3) no GGUF was released so quantized CPU deployment requires our own conversion path.'
   verdict_justification: 'worth_investigating: lightweight, Apache 2.0, CPU-friendly multilingual embedder that plausibly fits as the dense first-stage retriever in front of the planned ColBERT reranker for internal-kb-rag and SearXNG-bridge web research, with reported MTEB-ML-Retrieval SOTA in <100M class. Recommend a small evaluation: (1) bench on EPYC CPU via Sentence-Transformers + ONNX/OpenVINO INT8; verify 2-3k docs/s claim and measure 32K-context encode latency; (2) compare nDCG@10 against multilingual-e5-base/large and BGE-m3 on a representative slice from the active KB / SearXNG corpus; (3) decide whether to adopt as the dense retrieval model in colbert-reranker-web-research / internal-kb-rag pipelines. Not new_opportunity yet because retrieval architecture decisions in the active handoffs are still in flight; not adopt_component until benchmarked head-to-head with BGE-m3 (the de-facto multilingual incumbent), which the model card does not include.'
+- id: intake-520
+  arxiv_id: null
+  url: https://github.com/subramanya1997/markdownfs
+  source_type: repo
+  title: 'markdownfs (mdfs): high-performance concurrent in-memory markdown VFS in Rust with MCP server, Git-style versioning, and multi-user permissions'
+  authors:
+  - subramanya1997
+  categories:
+  - tool_implementation
+  - agent_architecture
+  - memory_augmented
+  - knowledge_management
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'In-memory virtual filesystem restricted to .md files, exposed via three access methods that share a single concurrent core: CLI/REPL (markdownfs), HTTP/REST API (mdfs-server), and MCP server (mdfs-mcp).'
+  - 'Git-style versioning with content-addressable object store, commit/log/revert/status semantics, and atomic bincode disk persistence.'
+  - 'Multi-user/agent permissioning model with users + groups + chmod/chown; explicit `addagent` user class enabling user-to-agent permission delegation so mdfs is treated as shared durable memory across agents.'
+  - 'MCP server exposes ten tools covering file ops (read/write/delete/move), directory ops (list/create), search (grep/glob), and version control (commit/history/revert) — designed for Claude Code / Cursor / general MCP-aware agents.'
+  - 'Concurrent core uses Arc<RwLock<DbInner>> over tokio for safe multi-reader/single-writer access; FUSE mount support listed as planned.'
+  - '239 tests across integration / permissions / performance benchmarks; MIT license; small project (169 GitHub stars at time of intake).'
+  techniques:
+  - In-memory virtual filesystem with single concurrent core fronted by CLI / REST / MCP
+  - Content-addressable object store + Git-style commit/revert with bincode disk persistence
+  - User/group/agent permissioning (chmod/chown/su, dedicated `addagent` user class)
+  - MCP-tool-shaped agent workspace (10 tools mapped to FS + VCS operations)
+  - tokio Arc<RwLock> concurrency model for shared mutable agent state
+  reported_results:
+  - 'Self-reported "~102.8x average speedup over native filesystem" — almost certainly an in-memory-vs-NVMe comparison rather than an apples-to-apples benchmark; the README does not publish methodology.'
+  - '239 tests passing via cargo test'
+  - 'Repo activity: 169 stars, MIT license, no published releases at time of intake'
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - 'The 102.8x speedup claim has no published methodology or workload definition on the repo page; it is most plausibly a comparison against cold-cache disk reads, not against EPYC''s actual baseline (warm tmpfs + page cache + Git). Treat as unverified marketing number.'
+  - 'EPYC already obtains "in-memory FS" semantics for hot paths via Linux page cache + tmpfs; the value-add of mdfs is the MCP+VCS+permissions layer, not raw IO speed.'
+  - 'Project is small (169 stars, no releases) and single-author — adoption-risk profile is materially worse than git itself for the versioning-of-markdown use case the EPYC stack already solves with `git` + the existing PostToolUse-on-commit hook.'
+  - 'Markdown-only restriction excludes the orchestrator''s actual durable-state surfaces (JSONL journals, npz/parquet retrieval indices, sqlite catalogs) — so it cannot replace those, only sit alongside them.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - hermes-outer-shell.md
+    - internal-kb-rag.md
+    - knowledge-base-governance-improvements.md
+    experiments: []
+    intake_entries:
+    - intake-411 (Qwen-Agent MCP singleton manager — adjacent MCP-tool integration pattern)
+    - intake-444 (Agent-World ETD — exact category of MCP tool ETD agent could discover)
+  handoffs_updated:
+  - agent-world-env-synthesis.md
+  handoffs_created: []
+  novelty_justification: 'The component pieces — in-memory VFS, content-addressable store, Git-style versioning, MCP-served tool surface, multi-user permissions — are all individually well-trodden territory. The combination as a single Rust crate scoped specifically to .md files for agent workspace use is a genuinely novel packaging choice (no other intake entry presents the same composition), and the explicit `addagent` user class plus user-to-agent permission delegation is a small but distinct design idea worth tracking. Not high novelty because no underlying mechanism is new and the project is early/small.'
+  relevance_justification: 'EPYC''s active markdown-handling stack already solves the same problems via different primitives: (1) versioning via real Git + PostToolUse-on-commit hooks, (2) retrieval via the planned ColBERT KB-RAG (internal-kb-rag.md) over the same on-disk corpus, (3) code intelligence via GitNexus, (4) governance via the project-wiki skill. Inserting an in-memory mdfs layer on top would duplicate VCS semantics rather than add capability. The genuine relevance is narrower: as one candidate MCP tool the Agent-World ETD species (agent-world-env-synthesis.md) could discover and exercise during environment synthesis, and as a reference design for any future shared-state agent workspace where Git-on-disk is too coarse-grained. Not high or medium because no active handoff has an unmet need that markdownfs uniquely fills.'
+  verdict_justification: 'worth_investigating, not adopt_component or new_opportunity. Concrete next steps if revisited: (a) verify the 102.8x speedup claim by reading the repo''s actual benchmark code and comparing against EPYC''s real baseline (tmpfs + git over the wiki/handoffs corpus) before treating the perf claim as load-bearing; (b) catalogue the MCP tool surface in the Agent-World env-synth tool registry as a candidate environment for ETD exploration; (c) evaluate whether the addagent permissioning model offers anything beyond what Claude Code''s existing permission/skill model provides for our orchestrator. Do NOT adopt as the markdown KB substrate — that role is already filled by Git + KB-RAG and migrating would be net-negative governance churn. Reopen to higher relevance only if EPYC builds a multi-agent shared mutable workspace where atomic commit/revert across agents becomes a real requirement (currently solved via JSONL journals).'
