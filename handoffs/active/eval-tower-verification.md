@@ -318,3 +318,21 @@ ThinkPRM-1.5B at T2 requires loading a separate model. Per memory note (feedback
 - **AA-LCR** (`aa_lcr` suite) — 100 long-context multi-document reasoning questions (~100K tokens each). Requires one-time `download_aa_lcr.py` to fetch 173 source PDFs via pdf_router OCR pipeline. Wired into architect/ingest/long_context roles. `AALCRAdapter` reads from cached JSONL at `/mnt/raid0/llm/data/eval/aa_lcr/aa_lcr.jsonl`.
 
 - **Relevance to EV-4**: AA-Omniscience provides ground-truth calibration data for ECE/AUC measurements. Run omniscience suite through eval tower to measure hallucination-specific calibration alongside existing quality suites.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-516] "HALO-Gemini-3-Flash-AppWorld — Gemini-3-Flash agent traces on AppWorld test-normal in HALO span schema"** (HF dataset `inference-net/HALO-Gemini-3-Flash-AppWorld`, MIT)
+  - Relevance to eval tower: AppWorld is a deterministic long-horizon multi-app tool-use simulator with verifiable success metrics (SGC = Sub-Goal Completion). The dataset releases 168 traces / 3,438 spans of Gemini 3 Flash on test-normal split as a public commercial-teacher baseline. Relevant to EV-4/5/7 if the eval tower extends to agent benchmarks beyond AA-Omniscience.
+  - Two concrete uses: (a) **commercial-baseline benchmark** — run our local stack (Hermes + Qwen3.6 worker + 30B-A3B coder) on the same AppWorld split for apples-to-apples SGC comparison against published Gemini 3 Flash numbers (37.5% test_normal SGC vanilla / 48.2% with HALO trace-loop optimization); (b) **eval-as-corpus** — span-tree format may be a useful logging target if we standardize agent trace observability across the orchestrator (cross-ref `meta-harness-optimization.md` 2026-04-30 update).
+  - Constraint: the 168-trace dataset alone is small — value is access to AppWorld as the eval substrate, not the trace count. Pair with the AppWorld benchmark proper at appworld.dev before acting.
+  - Verdict: `worth_investigating`. Action: when EV-4/5/7 advance and agent-eval scope is on the table, scope AppWorld setup cost on EPYC.
+
+#### Deep-dive refinement (2026-04-30) — AppWorld DEFER, dev/test_normal split adopted
+
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md).
+
+**AppWorld dataset**: defer (and skip the 168-trace dataset). Same rationale as `agent-world-env-synthesis.md` 2026-04-30 deep-dive refinement — feasible hardware, no current eval gap demanding 3–5 days integration. Revisit only when EV-4/5/7 explicitly demand a long-horizon multi-tool external benchmark.
+
+**dev/test_normal split discipline (worth adopting in eval tower regardless)**: AppWorld's convention separates a held-out test_normal split from dev. The pattern is generic and transferable to our existing eval suites (AA-Omniscience, KO-Bench, MathBench): every harness or model candidate must show improvement on BOTH splits before promotion. This guards against the autopilot frontier accidentally selecting harnesses that overfit dev. Will be lifted into the `halo-trace-loop-spike.md` HALO-4 work; reference here so EV-4/5/7 can plan to honor the convention.

@@ -347,3 +347,27 @@ S3c/S4c/S5-amend do not require AR-3. AR-3 only gates the **A/B rollout** (S5 / 
 ### New Related Research
 
 - **[intake-494] "Contexts are Never Long Enough: Structured Reasoning for Scalable Question Answering over Long Document Sets"** (arxiv:2604.22294, Stanford OVAL/Genie) — **out of scope for this handoff**. SLIDERS targets 3.9M–36M-token *corpus-level* QA via DB+SQL extraction; this handoff scopes web-research reranking at single-query scale (~10–100 docs). Different scaling axis. See `internal-kb-rag.md` 2026-04-28 section for the SLIDERS context relevant to KB retrieval. Cross-reference left in for index completeness only.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-519] "Granite-Embedding-97M-Multilingual-R2"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)
+  - Relevance to web-research pipeline: **MEDIUM**. Candidate dense first-stage retriever feeding the ColBERT reranker. 97M params (sub-100M class), ModernBERT backbone, 32K context, 384-dim embeddings, claimed 2,894 docs/s on reference HW (≈3× gte-multilingual-base 305M at matched quality). MTEB Multilingual Retrieval (18 tasks) = 59.6 — claimed best open <100M-param multilingual score (vs multilingual-e5-small 50.9, +8.7 pts). Apache 2.0, ONNX/OpenVINO INT8 ship targets, GGUF convertible (no native release).
+  - Why it matters here: SearXNG returns mixed-language snippets and our ColBERT pipeline currently has no production-grade dense first stage. Granite-97M-r2 is small enough (97M / ~370 MB FP32) to run on CPU with sub-millisecond per-doc latency — fits trivially on EPYC 9655 alongside the reranker.
+  - Tier 2b: BGE-M3 (305M-class, ~63.0 MTEB) outscores Granite-97M-r2 in raw retrieval quality but is 3× larger; the trade is throughput-vs-quality. The 59.6 vs 50.9 vs e5-small claim is on the IBM card and not yet independently verified outside of the HF leaderboard. No GGUF native release — quantized CPU deployment requires our own ONNX→GGUF or direct OpenVINO INT8 path.
+  - Action: small bench when S5 unblocks — measure Granite-97M-r2 vs multilingual-e5-base (current implicit baseline if any) on a representative slice from active SearXNG corpus, encode latency at 32K-context, decide whether to adopt as the dense retriever before ColBERT. Cross-ref `internal-kb-rag.md` 2026-04-30 update where the same model is evaluated for the KB-retrieval side.
+  - Verdict: `worth_investigating`. Not new_opportunity — retrieval architecture decisions for this handoff still in flight pending S5 data.
+
+#### Deep-dive refinement (2026-04-30) — bench plan persisted
+
+Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) — gated on K2 chunker activation (currently STUB in `internal-kb-rag.md`).
+
+**Two corrections to the intake-update notes above**:
+
+1. **ModernBERT IS supported in llama.cpp** — `convert_hf_to_gguf.py:12452` registers `ModernBertModel(BertModel)` with `MODEL_ARCH.MODERN_BERT`. The "Ollama unsupported" note refers ONLY to Ollama's wrapper. GGUF + `llama-embedding` HTTP server on port `:8096` is the recommended deployment path (matches existing BGE-large `:8090–:8095` pattern).
+2. **2,894 docs/s is GPU (H100), NOT CPU.** Reset CPU expectations before benching.
+
+**Bench scope expanded** vs the original "1-day" framing: 2-3 inference-free engineering days (Phase A: GGUF conversion + comparator deployment + corpus build) + 1 inference day (Phase B: throughput + nDCG@10 + 32K context probe). Comparators: granite-97m-r2 Q8_0 + Q4_K_M, multilingual-e5-base, BGE-M3 (dense path only), BGE-large-en (reference). Eval corpus is the binding prerequisite — likely 100 code snippets + 30 NL queries with manual labels until a K2-produced KB slice exists.
+
+For S5 specifically: the dense first-stage choice in front of ColBERT will come out of this bench; defer S5 architecture decisions until Phase B completes.

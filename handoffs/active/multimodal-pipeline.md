@@ -359,3 +359,28 @@ Alibaba broke its Apache-2.0 tradition and released Qwen3.5-Omni on 2026-03-30 a
 - `/workspace/research/deep-dives/qwen35-omni-tts-unblock.md` (full analysis)
 - `/workspace/research/deep-dives/luxtts-cpu-tts-candidate.md` (Path D baseline)
 - `inference-acceleration-index.md` — Qwen3.5-Omni cross-ref row added 2026-04-22
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-511] "KAME: Tandem Architecture for Enhancing Knowledge in Real-Time Speech-to-Speech Conversational AI"** (arxiv:2510.02327, Sakana AI, ICASSP 2026)
+  - Companion artifacts processed in same intake batch: blog [intake-512], main inference repo [intake-513], finetune repo [intake-514], HF model card [intake-515].
+  - Relevance: **low** to current EPYC scope. Tandem architecture pairs a Moshi-based real-time S2S front-end with an asynchronous text-LLM "oracle" stream that injects gradually-refined knowledge mid-utterance. MT-Bench-speech 2.05 (Moshi) → 6.43 (KAME). All five entries verdict = `not_applicable` because: (a) Moshi audio-codec stack (Mimi, dual-stream semantic+acoustic) has no GGUF/llama.cpp support — same blocker class as existing Path D / Path E TTS work; (b) reference impl uses OpenAI Chat Completions + Google STT, violating open-source-only policy; (c) GPU-only inference path; (d) no text-LLM contribution.
+  - Transferable pattern (file-for-awareness only): **fast-S2S frontline + slow-LLM oracle** topology is the speech-domain analogue of our drafter/verifier and worker_explore/coder split. "Oracle stream injecting partial-LLM tokens into an in-flight speech generator" is the speech-streaming variant of speculative decoding's accept-and-rewrite.
+  - Tier 2b: SHANKS (arxiv:2510.06917, "Simultaneous Hearing and Thinking for Spoken Language Models") is an adjacent same-quarter paper exploring similar simultaneous speak-while-thinking territory; not ingested separately, noted for future watch.
+  - Action: none. Maintain awareness via this cross-ref; revisit only if Path D/E TTS unblock revives.
+
+#### Deep-dive refinement (2026-04-30)
+
+Deep-dive at [`/workspace/research/deep-dives/kame-tandem-s2s-architecture.md`](../../research/deep-dives/kame-tandem-s2s-architecture.md). Two corrections to the intake notes above:
+
+1. **Closed-API claim was wrong.** `src/kame/server_oracle.py` instantiates `AsyncOpenAI()` with no args → honors `OPENAI_BASE_URL`. Backend swap to a self-hosted llama-server is one env var. The OpenAI/Google STT dependencies are *convenience defaults*, not architectural blockers. The real adoption blocker is the front-end (Moshi 4-stream joint transformer with KAME-specific simulated-oracle retraining) plus absence of CPU audio-codec stack. Intake-513 entry corrected.
+2. **Genuinely transferable pattern identified**: oracle-stream-as-fourth-autoregressive-stream with most-recent-wins semantics, mid-decode update from a parallel slow path. Distinct from drafter/verifier (no token-level accept/reject), worker_explore (sequential), Hermes outer-shell (request-boundary), Trinity coordinator (per-turn dispatch). Worth recording as competitive intel; **not worth a stub** (no implementation path on EPYC text-domain stack).
+
+Three concrete revival gates (any of these flips the verdict):
+- (a) Mimi/Moshi-class neural codec lands in llama.cpp (this also unblocks Paths A/D/E together)
+- (b) Sakana ships open-weight KAME checkpoint
+- (c) An EPYC voice-interface use case appears
+
+Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different problem (interruption + tool-call-during-listen vs knowledge-grounded response).

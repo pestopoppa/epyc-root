@@ -180,6 +180,26 @@ Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scori
 - [x] **Action 15**: TALE eval — ✅ 2026-04-11 (Package C). Static limits (Action 12) outperform TALE on OAA (baseline 95%, static 75%, TALE 72.5%). TALE matches baseline on math but hurts general. **Decision: keep static limits, TALE deferred.**
 - [x] Upstream linter + templates to root-archetype — ✅ 2026-04-09. Generalized `lint_wiki.py` (dynamic root, configurable paths). 4 brevity templates in `_templates/prompts/`. Companion handoff: [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md).
 
+### P9 — Granite-97m-r2 Multilingual Embedder Bench (2026-04-30 deep-dive integration)
+
+Pointer — full plan tracked in [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md). Source: intake-519 deep-dive at [`research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md).
+
+**Phase A (2-3 inference-free engineering days)**: GGUF conversion + Q8_0/Q4_K_M quantization (ModernBERT supported in llama.cpp `convert_hf_to_gguf.py:12452`); deploy granite-97m-r2 on `:8096` (matches existing BGE-large `:8090–:8095` pattern); parallel-deploy multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`; build minimal eval corpus (cheapest: 100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day).
+
+**Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy), end-to-end with ColBERT reranker.
+
+**Gate**: K2 chunker activation in `internal-kb-rag.md` (currently STUB). Fallback corpus path (code snippets) is available without K2.
+
+**Outcome decides**: dense first-stage retriever for KB-RAG, web-research, SearXNG. Three branches — adopt granite, adopt BGE-M3, or defer both pending K2-produced multilingual corpus. Code-search angle (60.5 MTEB Code, 9 training languages) is a deferred sub-track.
+
+- [ ] **P9.1**: Phase A-1 GGUF + quantization
+- [ ] **P9.2**: Phase A-2 comparator deployments
+- [ ] **P9.3**: Phase A-3 server registry update
+- [ ] **P9.4**: Phase A-4 eval corpus build
+- [ ] **P9.5**: Phase A-5 bench script
+- [ ] **P9.6**: Phase B-1/B-2/B-3 bench execution (gated, requires per-run inference approval)
+- [ ] **P9.7**: Phase C decision + deployment recommendation; update consuming handoffs
+
 ### Monitoring (no action unless triggered)
 
 - [ ] **TQ3**: Watch PR #21038 for merge, evaluate PR #21089 when merged, read ChunkKV paper

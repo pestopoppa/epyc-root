@@ -647,3 +647,28 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
   - Cross-cutting: also relevant to `agent-world-env-synthesis.md` (L2-Simulator → L3-Evolver bridge) and `meta-harness-optimization.md` (Tier 3 = another L3-Evolver / Digital instance); the three handoffs should share the four-principle evaluation rubric.
   - MREP (Minimal Reproducible Evaluation Package, Section E.6) is **proposed but not released**. Set watch on matrix-agent/awesome-agentic-world-modeling and arxiv:2604.22748 for shipment; if released, run autopilot through it as external sanity check.
   - Verdict: `adopt_patterns` (vocabulary + four-principle rubric + governance completeness check), NOT full framework adoption.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-517] "HALO — Hierarchical Agent Loop Optimizer"** (`github.com/context-labs/halo`, MIT, by inference.net / Context Labs) and **[intake-518] halo-engine PyPI** (pip-installable wrapper, MIT, v0.1.2 released 2026-04-29)
+  - Relevance: **HIGH**. Verdict: `adopt_patterns`. HALO is the closest external analogue to autopilot's closed-loop trace → analysis → harness-mutation → re-evaluate cycle. Reported deltas on AppWorld test_normal SGC: Sonnet 4.6 62.5% → 73.2% (+10.7 pts), Gemini 3 Flash 37.5% → 48.2% (+10.7 pts). Findings independently verified against source traces. Built on the foundational RLM paper Zhang/Kraska/Khattab arxiv:2512.24601 (already in our index as **intake-153**).
+  - Three concrete patterns worth lifting into autopilot (NOT framework adoption):
+    1. **General-harness-overfits-single-trace observation as a design constraint** — argues against using a generic Claude-Code-style coding agent for trace analysis at scale; favors a specialized analyzer (RLM-style, or our own custom).
+    2. **dev/test_normal split discipline** — explicit unseen split is a stronger overfitting guard than autopilot's Pareto-archive replacement alone. Cross-ref `feedback_checkpoint_pareto_state.md`.
+    3. **Concrete failure-mode taxonomy** (hallucinated tool calls, redundant args, refusal loops, semantic correctness) as **seed labels** for autopilot's trace-clustering pass.
+  - Tier 2b contradicting evidence (from RLM literature, applies transitively): production deployment of RLM-based loops faces latency spikes, cost variance, "format collapse"; many OSS RLM implementations pin max_depth=1; recursive-depth claim harder to operationalize than paper implies. Apply skeptically when sizing the analysis-loop budget.
+  - Cross-ref intake-153 (RLM foundational paper) — already in index, already verdict `already_integrated` with ~80% pattern coverage. HALO is an applied implementation of those patterns, not a new technique.
+  - Action: when an AP-35-class species iteration considers a "trace analyzer" role, evaluate the halo-engine package as a reference implementation (MIT, 2.5 MB, single CLI). Defer adopt_component until a small spike confirms report quality on EPYC orchestrator traces, not just AppWorld.
+
+#### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
+
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — ready to claim.
+
+The 1-day spike has a 4-criterion go/no-go gate at end of Day 1 PM. Conditional Day 2 lifts patterns into existing scoped work; **no halo-engine vendoring**. Patterns that affect autopilot specifically:
+
+- **dev/test_normal split discipline** as an anti-overfitting guard for the Pareto frontier — explicit unseen-split is stronger than Pareto-archive replacement alone (per `feedback_checkpoint_pareto_state.md`).
+- **Failure-mode taxonomy seed labels** (hallucinated tool calls, redundant args, refusal loops, semantic correctness) for autopilot's trace-clustering pass.
+
+Most autopilot infrastructure that HALO would build is already done: `telemetry.py:to_otlp_span` (OTLP emission since 2026-04-12), trace-driven mutator (Tier-1 done), code-mutation search (Tier-2 done), GEPA evolution (intake-345 done), RLM REPL recursion (intake-153 R1-R6 done at ~80% pattern coverage). The spike specifically tests whether HALO's *analyzer* surface produces actionable findings against our autopilot trial telemetry — it is NOT a wholesale autopilot rewrite.

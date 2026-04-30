@@ -154,3 +154,37 @@ Before committing to Phase 2 training, run WebSearch for "Agent-World reproducti
   - Delta from current approach: zero implementation impact. Value is purely framing. The paper's "decision-centric evaluation principles" and "minimal reproducible evaluation package" are worth tracking if/when a companion artifact is released — could inform AR-3 evaluation gates.
   - Cross-cutting: also relevant to `autopilot-continuous-optimization.md` (the L3 Evolver framing maps directly onto the species loop) and `meta-harness-optimization.md` (the survey's "world model that autonomously revises itself" overlaps conceptually with the Tier 3 harness-search outer loop).
   - **Deep-dive**: [`research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md`](../../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full read identifies L3 governance recipe (Section 5.4) maps line-for-line onto autopilot SafetyGate, and four evaluation principles (Section 6.1) are testable in existing AR-3 infra today. Relevance bumped to high, verdict to adopt_patterns. Concrete actions: (a) adopt L1/L2/L3 + four-regime vocabulary in this handoff and the wiki, (b) restate ETD species as L2-Simulator → L3-Evolver bridge / Digital regime, (c) when GPU lands and Phase 2 RL training runs, evaluate Agent-World-trained policy vs autopilot-evolved policy on the four principles to test cross-rubric transfer. MREP (Minimal Reproducible Evaluation Package) is proposed-not-released — set watch on matrix-agent/awesome-agentic-world-modeling and arxiv:2604.22748 for shipment.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-516] "HALO-Gemini-3-Flash-AppWorld — 168 Gemini-3-Flash agent traces on AppWorld test-normal in HALO span schema"** (HF dataset `inference-net/HALO-Gemini-3-Flash-AppWorld`, MIT)
+  - Relevance: **medium**. AppWorld is a deterministic long-horizon multi-app tool-use simulator (email/calendar/banking/messaging/file-storage) — exactly the controllable agent-environment class this handoff envisions for L2-Simulator data and L3-Evolver evaluation. The dataset releases hierarchical span trees of a strong commercial teacher (Gemini 3 Flash) over the test-normal split, 3,438 spans / 168 episodes.
+  - Two concrete uses for this handoff: (a) **environment-readiness signal** — AppWorld validated as a real benchmark by an external group with full traces published; consider AppWorld in the L2-Simulator candidate list alongside any internal env synthesis, especially for the multi-tool / multi-step / verifiable-reward axis; (b) **demonstration corpus** — Gemini-3-Flash spans are a candidate distillation seed when GPU Phase 2 lands, complementary to autopilot-generated rollouts.
+  - Cross-cutting: also referenced from `eval-tower-verification.md` (eval-side use), `meta-harness-optimization.md` (HALO trace-schema family), and `research-evaluation-index.md`. The schema-name collision with `context-labs/halo` (intake-517/518) is unresolved — both projects use the "HALO" name but appear to be separate orgs sharing a span-tree concept.
+  - Caveat: scale is small (168 traces); not enough for SFT alone, but workable as a calibration set or as Gemini-vs-EPYC-stack baseline pair.
+  - Verdict: `worth_investigating`. Action: when env synthesis or eval tower work activates, evaluate AppWorld setup cost on EPYC and decide whether to ingest these traces as a comparison baseline.
+
+#### Deep-dive refinement (2026-04-30) — AppWorld DEFER
+
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md) (HALO trio analysis includes AppWorld feasibility audit).
+
+**Decision**: defer AppWorld eval setup AND skip the 168-trace dataset for this handoff's scope.
+
+- Hardware-feasible (no GPU/Docker; FastAPI in-process; ~5s first task / <0.5s subsequent).
+- But integration cost is **3–5 days** (orchestrator wiring, SGC scorer, dev/test_normal split runs, baseline runs).
+- **No current eval gap demanding it** — Phase 1 (training-free env discovery) doesn't yet need AppWorld; Phase 2 (GPU-gated GRPO training) is also blocked on hardware.
+- 168 traces is reference-scale, not training-scale.
+
+Revisit AppWorld if: (a) Phase 2 lands and we want a multi-app simulator with verifiable rewards as one of the ETD environments, OR (b) meta-harness Tier 3 needs an external long-horizon benchmark for the dev/test_normal split discipline. If the decision flips, scope as a separate handoff (`appworld-eval-integration.md`), not as a sub-task of this one.
+
+### New Related Research — 2026-04-30 (markdownfs)
+
+- **[intake-520] "markdownfs (mdfs): in-memory concurrent markdown VFS in Rust with MCP server, Git-style versioning, and multi-user permissions"** (https://github.com/subramanya1997/markdownfs, MIT)
+  - Relevance: **low–medium / candidate ETD environment**. Not a substrate change for the EPYC stack (we already have Git + KB-RAG + GitNexus over the same markdown corpus), but it is exactly the shape of MCP-tool ecosystem the AW-1 ETD agent is meant to discover. Ten MCP tools span FS ops (read/write/delete/move), directory ops (list/create), search (grep/glob), and version control (commit/log/revert/status) — a complete tool surface with a clear verifiable-reward axis (versioned state + permission checks).
+  - Key technique: agent-shaped MCP workspace with content-addressable Git semantics and explicit `addagent` user class for user-to-agent permission delegation; tokio Arc<RwLock<DbInner>> single concurrent core fronted by CLI / REST / MCP. Atomic bincode persistence.
+  - Reported results: self-reported "~102.8x speedup over native FS" (no methodology — treat as unverified marketing); 239 tests; 169 stars; no releases. The perf claim is not load-bearing for our use.
+  - Delta from current approach: orthogonal — markdownfs targets the agent-workspace layer (where we currently use JSONL journals + on-disk Git), not the inference / orchestrator-routing layer this handoff actually optimizes. The interesting integration is as **one MCP tool the ETD species exercises during environment synthesis**, not as a replacement for any current substrate.
+  - Concrete (non-blocking) action: when AW-6 bootstrap runs the 48-hour discovery sweep, include markdownfs's `mdfs-mcp` server as a candidate MCP endpoint. Tasks against a versioned markdown VFS with permissions are inherently verifiable (commit hashes + permission errors are deterministic ground truth) — well suited to AW-3 difficulty-band tagging.
+  - Do NOT adopt as substrate for `wiki/` or `handoffs/` corpus — that role is already filled by Git + the planned ColBERT KB-RAG (`internal-kb-rag.md`); migrating would be net-negative governance churn.

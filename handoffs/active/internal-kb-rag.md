@@ -135,3 +135,24 @@ ColBERT encoder (shared)                           │
   - Key patterns: (a) wikilink learning-loop scorer (accept/reject feedback updates link weights) for our wiki cross-references; (b) hash-before-write + single-step undo log as a **portable abstract contract** for agent mutations (Node/Obsidian implementation is NOT lift-and-shift); (c) HotpotQA / LoCoMo eval methodology as a reusable template for K4 retrieval-quality measurement.
   - Caveat (Tier 2b): credibility 3 (1,092 commits + 3,292 tests + 385 releases + dual-OS dual-Node CI as engineering-rigor signals; capped at 3 by no peer review, no independent replication, contributor-graph confirmation not obtained). Self-reported benchmarks with ~1pp variance band — any cross-paper delta under ~2pp is within noise.
   - Action: borrow Flywheel's HotpotQA/LoCoMo eval **methodology** (4,960-doc pool, 695q LoCoMo split, ~1pp variance band) as a Python template for K4 retrieval-quality eval — harness code is Node/MCP/Obsidian-coupled and must be re-implemented. Evaluate the learning-loop wikilink scorer separately as an enhancement to the wiki-governance work.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-519] "Granite-Embedding-97M-Multilingual-R2"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)
+  - Relevance to KB RAG: **MEDIUM**. Candidate dense embedder for K-track retrieval. 97M params, ModernBERT backbone, 32K context, 384-dim embeddings, 200+ languages with 8 programming languages (code retrieval @ 60.5). MTEB Multilingual Retrieval 59.6 — claimed best open <100M-class multilingual score. Apache 2.0; ONNX, OpenVINO (incl. INT8), Sentence Transformers, vLLM-embedding endpoint; GGUF convertible (no native release).
+  - Why it matters here: KB content is heavy on code + English + occasional multilingual; the 32K context is unusual at this scale and would let a single embedding cover entire CLAUDE.md / handoff files without chunking — directly relevant to K2/K3 indexing decisions. Throughput claim ~3× gte-multilingual-base 305M on reference HW makes ingestion-side cost low.
+  - Tier 2b: BGE-M3 (~305M, ~63.0 MTEB) wins on raw quality but is 3× larger; retrieval-quality gap likely narrows on EPYC's English-heavy KB workload. The 59.6 / +8.7-vs-e5-small claim is self-reported on the model card; corroboration limited to the HF leaderboard and the Granite-R2 paper (arxiv:2508.21085, "Granite Embedding R2 Models"). No native GGUF — for CPU-quantized deployment plan to use OpenVINO INT8 path or our own ONNX→GGUF pipeline.
+  - Action: when the K-track moves from stub to design phase, A/B Granite-97M-r2 vs (a) BGE-M3 (quality ceiling), (b) multilingual-e5-base (size-matched competitor), on a curated slice of CLAUDE.md + handoff content. Measure NDCG@10 + per-doc encode latency on EPYC.
+  - Verdict: `worth_investigating`. Cross-ref `colbert-reranker-web-research.md` 2026-04-30 update — same model, evaluated for the web-research side of the dense-then-rerank stack.
+
+#### Deep-dive refinement (2026-04-30) — bench plan persisted, K2 is the gate
+
+Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md). Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md).
+
+**Critical infra finding**: there is **no production multilingual retrieval today** — only English-only BGE-large-en-v1.5 routing pool on `:8090–:8095` (`/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/parallel_embedder.py`). Granite-97m-r2 (or any multilingual embedder) would be **net-new infrastructure**, not a swap-in.
+
+**The bench cannot run with "K-track activation" as the gate** — it needs the **K2 chunker output** specifically, since the eval corpus depends on having chunked KB content. The bench handoff includes a fallback eval-corpus path (100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day) that does NOT require K2, so the bench can run earlier if a K2-blocked K-track scope is undesirable. Decide which path to take when this handoff exits stub status.
+
+**Other corrections**: ModernBERT IS supported in llama.cpp; the "Ollama unsupported" note refers only to Ollama's wrapper. 2,894 docs/s is GPU not CPU — calibrate expectations before benching. BGE-M3 ~63.0 figure is from MMTEB 131-task aggregation, NOT apples-to-apples with IBM's 18-task 59.6 — the bench needs to produce same-corpus same-metric numbers to settle the comparison.

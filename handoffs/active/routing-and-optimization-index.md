@@ -328,6 +328,20 @@ P19.8 (outer-coord scoping) ──gated until tri-role + DAR + LRC Phase 4 all l
 8. Long-term: P19.1 TR-2..5 (after TR-1 review)
 9. Speculative: P19.8 (only after the above land and reveal pain points)
 
+### P20 — HALO Trace-Loop Spike (2026-04-30 deep-dive integration)
+
+Pointer — full plan tracked in [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md). Source: intake-517/518 deep-dive at [`research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). 1-day spike + 4-criterion go/no-go gate; conditional Day 2 manual lift of three net-new patterns into existing scoped work (do NOT vendor halo-engine).
+
+Touches autopilot directly: lifted patterns land in `autopilot-continuous-optimization.md` (dev/test_normal split as anti-overfitting guard for Pareto frontier; failure-mode taxonomy seed labels for trace-clustering) and `meta-harness-optimization.md` Tier 3 (six-tool trace-query analyzer surface + two-file JSONL+byte-offset trace store, ~230 LoC into `unified-trace-memory-service.md` T1+T5).
+
+- [ ] **P20.1**: HALO-1 pre-flight install + local-llama-server backend swap (~30 min)
+- [ ] **P20.2**: HALO-2 OTel converter for autopilot telemetry (~30 LoC, 4h)
+- [ ] **P20.3**: HALO-3 4-criterion go/no-go gate (4h, end of Day 1)
+- [ ] **P20.4**: (conditional) HALO-4 manual pattern lift into autopilot/meta-harness/unified-trace-memory-service
+- [ ] **P20.5**: HALO-5 spike close-out doc
+
+AppWorld dataset (intake-516) DEFERRED. Already emits OTLP-shaped spans via `scripts/autopilot/telemetry.py:to_otlp_span` since 2026-04-12 — no new emission infra required.
+
 ### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
 
 Independent workstream — 2× AR-3 throughput by running 2 concurrent eval streams on dedicated port sets. No contention, no changes to existing seeding scripts, no inference dependency on implementation side. **Cross-ref**: `non-inference-backlog.md` NIB2-12 (implementation) and NIB2-29 (port-doc update).

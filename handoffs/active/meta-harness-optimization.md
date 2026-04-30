@@ -395,3 +395,21 @@ Files touched:
   - Tier 2b: production RLM loops face latency spikes, cost variance, format collapse; many OSS RLM impls pin max_depth=1; recursive-depth claim harder to operationalize than paper implies. Apply skeptically when sizing the analyzer's budget.
   - Caveat (schema-name collision): `inference-net/HALO-Gemini-3-Flash-AppWorld` (HF dataset) and `context-labs/halo` (GitHub) appear to be SEPARATE orgs sharing the HALO name and a span-tree concept. Confirmed both reference AppWorld + RLM substrate; assume same project family pending clarification.
   - Action: when Meta-Harness Tier 3 design solidifies, evaluate halo-engine (MIT, 2.5 MB pip install) as a reference implementation. Cross-ref `autopilot-continuous-optimization.md` 2026-04-30 update where the same patterns are tracked for the autopilot loop.
+
+#### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
+
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — ready to claim.
+
+**Key finding that changes Tier 3 scope**: `scripts/autopilot/telemetry.py:to_otlp_span` already produces OTLP-shaped JSON (since 2026-04-12). The HALO OTel converter is **~30 LoC** for autopilot telemetry, ~120 LoC for inference-tap. Total spike code including tests: ~200 LoC. This is cheap to validate.
+
+**Net-new patterns from HALO worth lifting into Tier 3** (if spike passes 4-criterion gate):
+
+1. **Six-tool trace-query analyzer surface** (`get_dataset_overview`, `query_traces`, `count_traces`, `view_trace`, `search_trace`, `view_spans`) backed by a two-file JSONL+byte-offset trace store — lands in `unified-trace-memory-service.md` T1+T5 (~230 LoC).
+2. **dev/test_normal split discipline** — Tier 3 anti-overfit guard. Mostly methodology + script glue (~50 LoC).
+3. **Failure-mode taxonomy** (4 labels: hallucinated tool calls / redundant args / refusal loops / semantic correctness) — complements intake-509 Pocock taxonomy already in scope; serves as seed labels for trace-clustering.
+
+**Patterns that are duplicate of existing coverage** (do NOT re-implement): OTel span emission (intake-338 done), trace-driven mutator (intake-244 Tier-1 done), code-mutation search (Tier-2 done), GEPA evolution (intake-345 done), RLM REPL recursion (intake-153 R1-R6 done).
+
+**AppWorld dataset (intake-516)**: deferred. See `eval-tower-verification.md` and `agent-world-env-synthesis.md` 2026-04-30 deep-dive refinement sections.
+
+**Risk**: HALO `0.1.2` pre-1.0 churn; default `max_depth=1` matches Tier-2b warning; report is free-text markdown not structured JSON; default analyzer model is gpt-5.4-mini → spike must validate small-model coherence on local 30B-A3B coder before committing.

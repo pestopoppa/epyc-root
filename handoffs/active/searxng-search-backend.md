@@ -207,3 +207,16 @@ AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution
 - **[intake-453] "Reason-mxbai-colbert-v0-32m: Edge-Scale Reasoning ColBERT (32M params)"** (`huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m`)
   - Relevance: candidate CPU-latency-friendly reranker over SearXNG top-K results. 32M params ≈ 5× smaller than current 150M GTE-ModernColBERT-v1 on :8089; could drop reranker call from ~180 ms → ~40 ms if PyLate→ONNX export path works.
   - Delta: this sharpens the reranker choice behind SearXNG output but does not change the search-engine tuning or SX-5/6 work items. Tracked primarily in `colbert-reranker-web-research.md` — flagged here so SX-5 analysis factors in the latency/quality trade.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-519] "Granite-Embedding-97M-Multilingual-R2"** (HF `ibm-granite/granite-embedding-97m-multilingual-r2`, Apache 2.0, IBM, released 2026-04-29)
+  - Relevance to SearXNG backend: **MEDIUM**, primarily as the candidate dense first-stage retriever for a SearXNG → dense-rerank → ColBERT-rerank pipeline. SearXNG returns mixed-language web snippets; a 200+-language 97M ModernBERT encoder with 32K context (vs e5-small's 512) handles longer snippets without chunking and runs CPU-fast (~2.9k docs/s claimed).
+  - Delta to current SearXNG work: no change to SX-5/6 items, but if the team chooses a dense first stage to bound the candidate set fed to ColBERT, Granite-97M-r2 is the new size-class baseline to beat — replaces or supersedes any implicit multilingual-e5-small assumption.
+  - Tracked primarily in `colbert-reranker-web-research.md` and `internal-kb-rag.md` 2026-04-30 updates. Flagged here so SX-5 analysis factors in dense-stage latency/quality trade.
+
+#### Deep-dive refinement (2026-04-30) — bench owned by granite-97m-r2-bench-plan
+
+Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md). For SearXNG SX-5/6 specifically: the dense first-stage choice (granite-97m-r2 vs BGE-M3 vs multilingual-e5-base) will come out of that bench. Defer SX-5 dense-stage decisions until Phase B completes. Note that the bench's eval corpus is currently planned as code-snippets-plus-handoffs, NOT mixed-language web snippets — if SearXNG-specific quality matters, add a SearXNG-output slice to the bench's eval-corpus engineering (Phase A-4).
