@@ -156,3 +156,22 @@ Deep-dive at [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluatio
 **The bench cannot run with "K-track activation" as the gate** — it needs the **K2 chunker output** specifically, since the eval corpus depends on having chunked KB content. The bench handoff includes a fallback eval-corpus path (100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day) that does NOT require K2, so the bench can run earlier if a K2-blocked K-track scope is undesirable. Decide which path to take when this handoff exits stub status.
 
 **Other corrections**: ModernBERT IS supported in llama.cpp; the "Ollama unsupported" note refers only to Ollama's wrapper. 2,894 docs/s is GPU not CPU — calibrate expectations before benching. BGE-M3 ~63.0 figure is from MMTEB 131-task aggregation, NOT apples-to-apples with IBM's 18-task 59.6 — the bench needs to produce same-corpus same-metric numbers to settle the comparison.
+
+### Architectural corroboration from intake-520 (2026-04-30)
+
+- **[intake-520] "markdownfs (mdfs)"** (https://github.com/subramanya1997/markdownfs, MIT) — deep dive at [`/workspace/research/deep-dives/markdownfs-rust-mcp-vfs.md`](../../research/deep-dives/markdownfs-rust-mcp-vfs.md).
+  - Relevance to this handoff: **architectural validation only — no code dependency, no plan change**.
+  - The mdfs project ships a forward-looking design doc, `docs/semantic-index.md`, that independently arrives at the same architecture as K1–K7 here:
+
+    | mdfs `semantic-index.md` | This handoff (K1–K7) |
+    |---|---|
+    | FS canonical, vector DB derived | git + filesystem canonical, FAISS/.npz derived |
+    | Heading-aware chunking (title / heading / subsection) | Heading-aware split at `^#{1,3}` with max-chars cap (K2) |
+    | Metadata: file_path, heading_path, commit_hash, author, perms | Metadata: file_path, heading_path, line_range, mtime, content_hash (K3) |
+    | Index update: on write / on commit / on revert | PostToolUse-on-commit hook + content_hash diff (K5) |
+    | Result shape: `{path, heading, score, excerpt}` | `{file, heading_path, line_range, snippet, score}` (K4) |
+    | Principle: vector layer accelerates retrieval, FS remains truth | Same — FS is canonical, retrieval is derived |
+
+  - Reading: this is independent corroboration that "FS-truth + derived vector index + heading-aware chunking + on-commit reindex" is the convergent architectural shape for markdown-agent-workspace retrieval, not a private design choice. Useful as design-risk reduction for K1–K7.
+  - Caveats from the deep dive that do NOT change our plan: mdfs itself is 17-day-old / single-author / just-pivoted / MCP-runs-as-root / single-writer-per-state.bin and is **not adopt-as-substrate** material. The architectural pattern is portable; mdfs's own implementation is not.
+  - No work-item delta. Pattern B is a confirmation, not a new K-task.

@@ -138,20 +138,44 @@ Complete tool surface with a clear verifiable-reward axis: versioned state + per
 
 Agent-shaped MCP workspace with content-addressable Git semantics and explicit `addagent` user class for user-to-agent permission delegation. `tokio Arc<RwLock<DbInner>>` single concurrent core fronted by CLI / REST / MCP. Atomic bincode persistence.
 
-### Caveats
+### Caveats (revised post-deep-dive 2026-04-30)
 
-- Self-reported "~102.8x speedup over native FS" — no methodology, treat as unverified marketing. Performance claim is **not load-bearing** for our use.
-- 239 tests, 169 stars, no releases — pre-1.0 maturity.
-- **Do NOT adopt as substrate for `wiki/` or `handoffs/` corpus** — that role is already filled by Git + the planned ColBERT KB-RAG (`internal-kb-rag.md`). Migrating would be net-negative governance churn.
+- **MCP server runs as `uid=0` root with NO per-user authentication** (documented in the project's own `docs/mcp-guide.md`: *"All MCP operations run as root (uid=0, gid=0). There is no per-user authentication within the MCP protocol — the agent has full access"*). The wheel/agent-token/chmod permission model is HTTP-only. The "user-to-agent permission delegation" framing in the project README is aspirational at the MCP boundary; the project's own `docs/demo-readiness.md` lists "agent-scoped MCP auth" as a known follow-up, not a feature.
+- **Single-writer per `state.bin`**: CLI + HTTP + MCP cannot share a workspace concurrently — multi-process must funnel through the HTTP server. The "shared durable memory across agents" framing is not implemented as advertised.
+- **The "~102.8× speedup over native FS" headline IS reproducible** (real 1,035-line `tests/perf_comparison.rs`) but methodologically biased: native FS in the bench uses `std::env::temp_dir()` which is `/tmp` = tmpfs (RAM) on Linux, so both sides are RAM. The number measures kernel VFS + syscall overhead saved (per-call dentry/inode/syscall round-trip vs in-process `BTreeMap` mutation), NOT in-memory-vs-disk. Per-op character: hot-cat 100–1000×, touch/stat 50–500×, large writes 2–5×, grep/find 3–20×. **Irrelevant for any LLM-inference-bound workload** — FS syscalls are nowhere near saturated at agentic cadence.
+- **Pivot history visible in commit log**: 2026-04-29 commits removed the "remote workspace stack" and "Cloudflare deployment path" 24h after they landed. 8 commits total, 17 days old, single author, no published releases, MIT in README but absent from `Cargo.toml`. Active scope-finding from cloud product to local agent workspace.
+- Hard ceilings: 10 MB max file, 1 M max inodes, 256 max depth, 5 s / 100-write auto-save crash window.
+- Engineering quality is unusually HIGH for a 17-day single-author project — 239 tests, 4.76 s release-mode perf suite, 17.5 KB self-audit doc (`docs/verification-report.md`) caught 1 bug + 6 doc/reality mismatches and fixed each in-tree. Above the typical solo Rust toy quality bar; not enough on its own to flip adoption-risk.
 
-### Concrete (non-blocking) action
+### Patterns worth borrowing — independent of mdfs adoption
 
-When `agent-world-env-synthesis.md` AW-6 bootstrap runs the 48-hour discovery sweep, include markdownfs's `mdfs-mcp` server as a candidate MCP endpoint.
+The deep-dive surfaced three patterns from `mdfs/docs/` that have value for EPYC even though we will not adopt mdfs as a dependency.
+
+- **Pattern A — `/runs/<run-id>/` markdown artifact bundle** (from `docs/execution-roadmap.md`): per-run reserved directory of `prompt.md` / `command.md` / `stdout.md` / `stderr.md` / `result.md` / `metadata.md` / `artifacts/`. Clean human-reviewable companion to our JSONL journals for autopilot AR-3 trial bundles, env-synth-coordinator outputs, or HALO trace artifacts. Schema-only borrow.
+- **Pattern B — "filesystem truth + derived vector index" with on-write/on-commit/on-revert reindex** (from `docs/semantic-index.md`): independently corroborates `internal-kb-rag.md` K1–K7 architecture. Heading-aware chunking, FS-canonical with derived vector DB, breadcrumb-shaped retrieval results. De-risks our retrieval design — we are not on a private architectural branch.
+- **Pattern D — typed Agent identity with `addagent` + token-once-shown-then-SHA256-hashed**: cleaner identity model than our current implicit-trust pattern. Note that mdfs's own implementation of this is incomplete (does not extend to MCP); the pattern is portable, the implementation is not.
+
+### Do NOT do
+
+- **Do NOT adopt as substrate** for `wiki/` or `handoffs/` corpus — that role is already filled by Git + the planned ColBERT KB-RAG (`internal-kb-rag.md`). Single-writer constraint + single-author project + just-pivoted scope make adoption strictly net-negative.
+- **Do NOT cite the 102.8× number as a perf prop** for EPYC use cases — the framing is misleading for any LLM-inference-bound workload.
+
+### Concrete (non-blocking) actions
+
+- When `agent-world-env-synthesis.md` AW-6 bootstrap runs the 48-hour discovery sweep, include `mdfs-mcp` as a candidate MCP endpoint. Tasks against a versioned markdown VFS with permissions are inherently verifiable (commit hashes are deterministic ground truth) — well suited to AW-3 difficulty-band tagging. Note the MCP-as-root caveat in AW-4 SafetyGate scoring.
+- Treat `docs/semantic-index.md` as Pattern B corroboration in `internal-kb-rag.md` design notes.
+
+### Watch signals (would lift relevance)
+
+- Per-user MCP auth landing in mdfs (the project's own demo-readiness doc lists it as imminent) → relevance to medium.
+- AWS S3 Files / mdfs / similar tools consolidating into a recognizable "agent workspace" product category → implications for `hermes-outer-shell.md` positioning.
+- First published release / second contributor / run-records phase landing → adoption-risk improves.
 
 ### Sources
 
-- [intake-520](https://github.com/subramanya1997/markdownfs) markdownfs (mdfs) — Rust, MIT
-- [`handoffs/active/agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) Research Intake Update 2026-04-30 (markdownfs)
+- [intake-520](https://github.com/subramanya1997/markdownfs) markdownfs (mdfs) — Rust, MIT, v0.2.0, 17 days old
+- [Deep dive](../research/deep-dives/markdownfs-rust-mcp-vfs.md) — full source-and-docs read with corrections
+- [`handoffs/active/agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — Research Intake Update 2026-04-30 (markdownfs) and deep-dive integration
 
 ## DeepSeek-TUI snapshot store — subprocess-only git port recipe (2026-04-30)
 
