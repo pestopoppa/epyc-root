@@ -261,3 +261,22 @@ After completing any task:
     - **`streamFn` injection point + `streamProxy()` delta-only wire format** → hermes-outer-shell (drop-in candidate for Package E streaming).
   - Source credibility: 80+ contributors (Mario Zechner / badlogic primary, **Armin Ronacher top-5**), 3,805 commits since 2025-08-09, ~70 versions, formal CHANGELOG with `closes #N`, ~1:1 test/source ratio. Not an indie project. Initial intake estimate (single-author indie) was wrong.
   - Delta: no immediate cross-cutting action at the index level — concrete adoption decisions belong in each child handoff. This entry exists so a future agent landing on the index sees that pi-agent-core has cross-handoff implications and that the per-handoff lifts share a single deep-dive document (`research/deep-dives/pi-agent-core-stateful-ts-runtime.md`).
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-509] "Skills For Real Engineers — Matt Pocock's Claude Code skills collection"** (`github.com/mattpocock/skills`)
+  - Index-level relevance: a second cross-runtime SKILL.md installer pattern in our intake (sibling to intake-450 veniceai/skills via the same `npx skills@latest add ...` distribution channel). Both target multiple coding-agent runtimes from one source repo. For the hermes-agent index this is a packaging-layer datapoint — it confirms that an externally-authored, single-author-curated skills bundle is the going pattern in the ecosystem, not just a one-off (veniceai). Worth tracking as we plan `scripts/hermes/skills/` packaging conventions.
+  - Per-child-handoff lifts (concrete patterns harvested per child):
+    - **meta-harness-optimization** → four-failure-mode taxonomy as harness-evaluation gates; `CONTEXT.md`/ADR maintenance as a search axis on the shared-language artifact (complements Flywheel intake-492's write-contract).
+    - **tool-output-compression** → `/caveman` token-compression skill as a baseline-to-beat for our compressors (self-reported ~75% reduction; no methodology — anecdotal until we measure).
+    - **repl-turn-efficiency** → `/caveman` and the explicit *verbosity* failure-mode framing pair with the queue-mode work (steer / follow-up).
+    - **hermes-outer-shell** → SKILL.md cross-runtime installer pattern + `/setup-matt-pocock-skills` per-repo bootstrap config skill.
+  - Source credibility: known TypeScript-community practitioner (Matt Pocock); MIT-licensed; no empirical claims (credibility_score null). Pattern adoption only — nothing to fork or cherry-pick.
+  - Delta from prior pi-agent-core (intake-473) entry: pi-agent-core lives at the *runtime layer* (Agent class, tool execution, streaming); Pocock's collection lives at the *skill / prompt layer* upstream of that. They compose — pi-agent-core would *execute* skills shaped like Pocock's. Useful pair for outer-shell design discussions.
+
+- **[intake-508] "DeepSeek TUI — Terminal-native coding agent for DeepSeek V4"** (`github.com/Hmbown/DeepSeek-TUI`)
+  - Index-level relevance: low. Closed DeepSeek-API-only Rust TUI shell — no offline / GGUF / llama.cpp path. UX-pattern overlap only.
+  - Per-child-handoff lift: **hermes-outer-shell** picks up the only meaningful overlap (Plan/Agent/YOLO three-tier approval gating + side-git snapshot rollback as a session-checkpoint reference). All other patterns (rlm_query parallel sub-agent fan-out, MCP server interop, paste-burst CRLF normalization) are already covered by Claude Code, hermes-agent v0.11.0, and pi-agent-core (intake-473) — not lifted into other child handoffs to avoid noise.
+  - Delta: not a runtime candidate, not a fork target — recorded primarily to mark the URL seen and the pattern-coverage as already saturated.

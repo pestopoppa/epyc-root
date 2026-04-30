@@ -399,3 +399,17 @@ See: `progress/2026-04/2026-04-16.md` for full details.
     - `agent.ts:252-280` — `steer` / `followUp` / `clearSteeringQueue` / `clearFollowUpQueue` / `hasQueuedMessages` API surface.
     - `agent-loop.ts:165, 218, 222` — twice-per-turn polling pattern that lets steer arrive without losing the in-flight tool batch.
   - Deep-dive: `research/deep-dives/pi-agent-core-stateful-ts-runtime.md`
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-509] "Skills For Real Engineers — Matt Pocock's Claude Code skills collection"** (`github.com/mattpocock/skills`)
+  - Relevance: Pocock names **verbosity** as one of four canonical coding-agent failure modes — the same axis this handoff addresses with its assistant-output / tool-output trim work and the suggestion-injection feature flag. The collection ships two related primitives:
+    1. **`/caveman`** — a system-prompt-side style rider claiming ~75% token reduction by dropping filler from agent output. The leanest possible mechanism: no compressor call, no extra latency, no fallback path. Different mechanism class from anything in this handoff's current toolkit.
+    2. **`CONTEXT.md` + ADR maintenance** baked into `/grill-with-docs` — keeps the agent's *upstream* context consistent so each turn doesn't have to re-derive shared vocabulary, indirectly reducing per-turn output bloat.
+  - Key pattern (vocabulary alignment with pi-agent-core intake-473): Pocock's `/caveman` is a steady-state *style* rider; pi-agent-core's steer / follow-up queue is a *control-flow* primitive. They are orthogonal — `/caveman` constrains *what* gets emitted, queue mode constrains *when* user input drains. Both belong in the repl-turn vocabulary the orchestrator's request-handling layer is converging on.
+  - Reported results (with caveat): `/caveman`'s ~75% reduction is self-reported with no methodology — anecdotal until measured. Apply the same Omega-aware caution that already gates S3 contextual-suggestions: a verbosity-cutting prompt rider could plausibly worsen Omega if it suppresses intermediate planning text the model needs.
+  - Delta from current approach: this handoff's S3 work feature-flags suggestion *injection* on Omega risk; `/caveman` would be a complementary *suppression* lever — different sign, same Omega-gate requirement. Recorded as a Phase-4+ companion to the current scope; not lifted into Phase 3d.
+  - **Persistence-clause caveat (added 2026-04-30 post deep-dive)**: `/caveman`'s prompt body says verbatim **"ACTIVE EVERY RESPONSE once triggered. No revert after many turns. No filler drift. Still active if unsure. Off only when user says 'stop caveman' or 'normal mode'."** This is a **session-scoped, NOT turn-scoped** contract — once turned on, the agent stays in caveman mode for the remainder of the session. If we wire this into REPL-turn machinery as a queue-mode-style API knob, the `setCaveman(on|off)` setter must be **session-level state** and the steer / follow-up queues must NOT be allowed to flip it implicitly. The matching control-flow pairing therefore is: queue mode = per-turn drain semantics (`one-at-a-time` / `all`) + caveman mode = session-level prose style, on/off only via explicit user (or orchestrator) setter — they live at different timescales and must not be conflated.
+  - Caveat: no empirical claims with methodology (credibility_score null). Pattern adoption only; runtime calibration is for TypeScript app development, not CPU inference.

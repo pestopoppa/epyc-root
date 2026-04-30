@@ -22149,3 +22149,662 @@
   novelty_justification: 'High — but specifically because of the Selective Unfolding mechanism, not the gist tokens themselves. Gist tokens are the dominant 2025-2026 paradigm (Mu 2023, ActivationBeacon 2024, GistPool 2025, UniGist 2025, KSA 2026 = intake-502, KVLink 2025). What is genuinely new in GSA: (1) using gist tokens as LEARNED ROUTING SIGNALS for hard top-k selection — a unification of compression and selection that prior gist work treated separately and prior sparse-attention work (NSA, DSA, MoBA) handled via dedicated routing modules; (2) Selective Unfolding — restoring raw KV pairs for selected chunks; KSA never restores raw tokens, distant text is ALWAYS seen only through summaries; (3) Hierarchical gist-of-gist with log-linear decode — this is structurally novel and absent from KSA. Position vs intake-502: same April-2026 cluster, same gist-token primitive, but the unfolding mechanism is a clean differentiator that solves a different point in the compression / fidelity / cost trade-off.'
   relevance_justification: 'Medium — gated by the same architectural-CPT blocker that holds intake-502, but ranks slightly above KSA on EPYC-relevance for two reasons: (1) the simpler "Stage 1 only" inference-time deployment path means a community-released GSA checkpoint (or our own port + community CPT) could be plugged in WITHOUT the parameter-annealing dance KSA''s three-stage recipe requires — lower implementation surface for llama.cpp; (2) hierarchical variant''s log-linear decode is the only mechanism in this cluster that scales naturally to 1M+ context on EPYC''s RAM headroom (1.1 TB), aligning with the Qwen3.5-256K / YaRN-extension / multiscreen long-context thesis. Demoted from High because: no GGUF / no checkpoint of any production model / dynamic top-k incompatible with current ggml attention kernels / passkey-only long-context evaluation / smaller model scale than KSA. Stays in the active monitoring queue alongside KSA.'
   verdict_justification: 'worth_investigating — log this as the second-strongest summary-token-cluster paper from April 2026 (alongside KSA) in the multiscreen-attention-evaluation handoff. The Selective Unfolding mechanism is a real conceptual addition over KSA and merits being recorded with full mechanism notes for when the cluster activates. Activation gates identical to intake-502: (a) someone releases a checkpoint on a model we serve, OR (b) we get a non-CPU compute path for CPT, OR (c) llama.cpp gains general support for dynamic top-k chunk masking + dynamic raw-KV restoration. Until then, monitor only. Not new_opportunity (no near-term EPYC CPU action), not adopt_patterns (mechanism not retrofittable), not superseded (genuinely advances over KSA on a different mechanism axis).'
+- 'id': 'intake-508'
+  'arxiv_id': null
+  'url': 'https://github.com/Hmbown/DeepSeek-TUI'
+  'source_type': 'repo'
+  'title': 'DeepSeek TUI — Terminal-native coding agent for DeepSeek V4'
+  'authors':
+  - 'Hmbown (GitHub)'
+  'categories':
+  - 'agent_architecture'
+  - 'tool_implementation'
+  - 'context_management'
+  'novelty': 'low'
+  'relevance': 'low'
+  'credibility_score': null
+  'discovered_via': 'input'
+  'verdict': 'adopt_patterns'
+  'ingested_date': '2026-04-30'
+  'key_claims':
+  - 'Terminal-native (Rust TUI) coding agent targeting DeepSeek V4 (pro/flash) via closed-API endpoints — DeepSeek platform, NVIDIA NIM, Fireworks, SGLang. Claims 1M-token context window with thinking-mode reasoning surfaced through the TUI.'
+  - 'Native rlm_query tool that spawns up to 16 parallel deepseek-v4-flash child agents for decomposition / fan-out reasoning workflows.'
+  - 'Three interaction modes: Plan (read-only exploration), Agent (interactive approval per tool call), YOLO (auto-approve all). Workspace rollback implemented via side-git snapshot directories that allow checkpoint-resume sessions.'
+  - 'Exposes both an HTTP/SSE runtime API for headless use and an MCP (Model Context Protocol) server for pluggable tool surfaces.'
+  - 'Decomposition-first system prompts wired to checklist_write / update_plan tools; built-in context caching and intelligent compaction tuned for the DeepSeek 1M window with live cost / cache-hit-miss tracking per turn.'
+  'techniques':
+  - 'Parallel sub-agent fan-out via rlm_query (RLM-style decomposition)'
+  - 'Plan / Agent / YOLO three-tier approval mode for tool execution gating'
+  - 'Side-git snapshot workspace rollback / checkpoint-resume sessions'
+  - 'Context caching + compaction tuned for DeepSeek 1M window'
+  - 'MCP server interop and HTTP/SSE runtime API'
+  - 'Paste-burst detection with CRLF normalization (terminal UX detail)'
+  'reported_results':
+  - 'No empirical benchmarks; only vendor pricing tiers cited (V4-Pro $0.435/1M cache-miss input, V4-Flash $0.14/1M).'
+  'referenced_arxiv_ids': []
+  'implementation_urls':
+  - 'https://github.com/Hmbown/DeepSeek-TUI'
+  'cross_references':
+    'chapters':
+    - '09-claude-debugger.md'
+    'handoffs':
+    - 'hermes-agent-index.md'
+    - 'hermes-outer-shell.md'
+    - 'meta-harness-optimization.md'
+    - 'repl-turn-efficiency.md'
+    - 'tool-output-compression.md'
+    - 'context-folding-progressive.md'
+    - 'orchestrator-conversation-management.md'
+    'experiments': []
+    'intake_entries': []
+  'handoffs_updated':
+  - 'hermes-outer-shell.md'
+  'handoffs_created': []
+  'novelty_justification': 'Low. Rust TUI shell over closed DeepSeek V4 API endpoints — no novel inference, kernel, or algorithmic contribution. Plan/Agent/YOLO approval modes, MCP server hookup, side-git rollback, and parallel sub-agent fan-out are all well-trodden patterns in the contemporary coding-agent ecosystem (Claude Code, OpenCode, Aider, Codex CLI, hermes-agent). The 1M-context and parallel-flash-fanout claims are model-vendor capabilities surfaced through a thin client, not repo-level innovations.'
+  'relevance_justification': 'Low. Closed DeepSeek API only; no GGUF, no llama.cpp, no offline / CPU path — cannot run against the EPYC stack. No quantization, MoE, KV-cache, speculative-decoding, or routing-intelligence touchpoint. Some incidental UX-pattern overlap with hermes-outer-shell (Plan/Agent/YOLO approval gating, side-git rollback) and meta-harness (rlm_query parallel fan-out), but EPYC already tracks these patterns through Claude Code, hermes-agent, and pi-agent-core (intake-473). Marked low rather than none because the side-git snapshot-rollback model is a concrete reference for outer-shell session checkpointing if we ever need it.'
+  'verdict_justification': 'adopt_patterns. Worth a brief look ONLY for UX/agent-shell ergonomics — specifically the side-git snapshot rollback model and the three-tier Plan/Agent/YOLO approval gating for hermes-outer-shell, plus rlm_query as a reference implementation for meta-harness/repl-turn-efficiency parallel fan-out. No code or component to import (Rust + DeepSeek-API-only; not lift-and-shift to our Python/llama.cpp stack). Not new_opportunity (no new technique), not not_applicable (UX patterns are transferable). Single-handoff update (hermes-outer-shell) chosen over a broader sweep because relevance is low and most overlap is already covered by intake-473 (pi-agent-core).'
+- 'id': 'intake-509'
+  'arxiv_id': null
+  'url': 'https://github.com/mattpocock/skills'
+  'source_type': 'repo'
+  'title': 'Skills For Real Engineers — Matt Pocock''s daily-use Claude Code skills collection'
+  'authors':
+  - 'Matt Pocock'
+  'categories':
+  - 'agent_architecture'
+  - 'tool_implementation'
+  - 'knowledge_management'
+  'novelty': 'medium'
+  'relevance': 'high'
+  'credibility_score': null
+  'discovered_via': 'input'
+  'verdict': 'adopt_patterns'
+  'ingested_date': '2026-04-30'
+  'key_claims':
+  - 'Curated set of ~16 SKILL.md-format Claude Code skills (engineering, productivity, misc) authored from a working TypeScript educator''s daily flow; emphasises small composable model-agnostic skills over heavyweight agentic frameworks (GSD / BMAD / Spec-Kit).'
+  - 'Codifies four named failure modes of coding agents and one skill-shaped fix for each: (1) misalignment → /grill-me, /grill-with-docs (Socratic interrogation before coding); (2) verbosity → CONTEXT.md shared-language doc maintained inline by /grill-with-docs; (3) broken code → /tdd red-green-refactor + /diagnose disciplined bug loop; (4) ball-of-mud → /to-prd, /zoom-out, /improve-codebase-architecture for ongoing design hygiene.'
+  - 'Ships /caveman skill claiming ~75% token reduction by dropping filler from agent output while preserving technical accuracy — a directly-relevant precedent for tool-output-compression and repl-turn-efficiency work.'
+  - 'Ships /write-a-skill meta-skill that codifies progressive disclosure and bundled-resource conventions for new skills; /setup-matt-pocock-skills is a per-repo bootstrapper that records issue-tracker, label vocabulary, and docs paths the other skills consume.'
+  - 'Distribution channel is npx skills@latest add mattpocock/skills — third-party skills.sh installer pattern (same family as veniceai/skills cross-runtime install) targeting multiple coding-agent runtimes from one source repo.'
+  'techniques':
+  - 'Grill-before-code Socratic interrogation skills (/grill-me, /grill-with-docs) to surface implicit requirements before any code is written'
+  - 'Shared-language CONTEXT.md + ADR maintenance baked into the grill skill (DDD ubiquitous-language pattern in skill form)'
+  - 'Red-green-refactor TDD loop encoded as a skill prompt (/tdd) with bad-test heuristics'
+  - 'Disciplined diagnosis loop: reproduce → minimise → hypothesise → instrument → fix → regression-test (/diagnose)'
+  - 'Vertical-slice issue decomposition (/to-issues) and conversation-to-PRD synthesis (/to-prd)'
+  - 'Architecture zoom-out and find-deepening-opportunities refactor skills informed by CONTEXT.md + ADRs'
+  - 'Token-compression communication mode (/caveman) — drop filler keep facts'
+  - 'Skill-authoring meta-skill (/write-a-skill) with progressive disclosure and bundled resources'
+  - 'Per-repo skill-bootstrap config skill (/setup-matt-pocock-skills) capturing issue-tracker + label vocabulary + docs layout'
+  - 'Git-guardrails Claude Code hooks blocking destructive git operations'
+  'reported_results':
+  - 'No empirical benchmarks. /caveman cites a self-reported ~75% token-reduction figure with no methodology disclosed — treat as anecdotal pending independent measurement.'
+  'referenced_arxiv_ids': []
+  'implementation_urls':
+  - 'https://github.com/mattpocock/skills'
+  'cross_references':
+    'chapters': []
+    'handoffs':
+    - 'meta-harness-optimization.md'
+    - 'hermes-agent-index.md'
+    - 'hermes-outer-shell.md'
+    - 'tool-output-compression.md'
+    - 'repl-turn-efficiency.md'
+    - 'knowledge-base-governance-improvements.md'
+    'experiments': []
+    'intake_entries':
+    - 'intake-450 (veniceai/skills — sibling cross-runtime SKILL.md collection; same packaging format, different domain coverage)'
+    - 'intake-473 (pi-agent-core — also lands UX/agent-shell patterns; Pocock''s collection is upstream of the agent loop, pi-agent-core is the runtime)'
+  'handoffs_updated':
+  - 'meta-harness-optimization.md'
+  - 'hermes-agent-index.md'
+  - 'hermes-outer-shell.md'
+  - 'tool-output-compression.md'
+  - 'repl-turn-efficiency.md'
+  'handoffs_created':
+  - 'agent-file-prose-compression.md'
+  'novelty_justification': 'Medium. SKILL.md format itself is the Anthropic-originated spec already used in /workspace/.claude/skills/, so as a packaging exercise this is low novelty (same as intake-450 veniceai/skills). What pushes it to medium is the specific failure-mode → skill-shape mapping (grill-before-code, CONTEXT.md as ubiquitous-language artifact, /caveman token-compression prompt, /write-a-skill meta-skill), and the explicit fix-common-Claude-Code-failure-modes-with-small-composable-skills thesis backed by a known practitioner with broad reach. Not a novel technique class, but a novel practitioner synthesis worth mining for patterns. Not high because none of the individual skills introduce a fundamentally new agent primitive.'
+  'relevance_justification': 'High. Direct hits on multiple active handoffs: (a) meta-harness-optimization — grill-with-docs''s CONTEXT.md/ADR-as-shared-language pattern and /improve-codebase-architecture map to harness components the meta-harness search would mutate; the four-failure-mode taxonomy is directly re-usable as harness gate definitions. (b) tool-output-compression / repl-turn-efficiency — /caveman is a concrete reference implementation of the agent-output compression pattern these handoffs are pursuing. (c) hermes-agent-index / hermes-outer-shell — same SKILL.md cross-runtime install pattern as veniceai/skills (intake-450) and a candidate to mirror into scripts/hermes/skills/. (d) knowledge-base-governance-improvements (now in completed/) — /write-a-skill''s progressive-disclosure conventions and /setup-matt-pocock-skills config-bootstrap pattern inform our own skill-template + governance work. EPYC stack heavily uses .claude/skills/, so an externally-authored daily-driven collection from a known practitioner is high signal even with no empirical claims.'
+  'verdict_justification': 'adopt_patterns. Nothing to import as a runtime component (it is prose skills calibrated to TypeScript app development, not CPU inference), and licensing is MIT so no blocker. Concrete patterns to harvest: (1) the four-failure-mode taxonomy as gates for meta-harness evaluation; (2) /caveman token-compression prompt as a baseline to compare against our current tool-output-compression heuristics; (3) /grill-with-docs CONTEXT.md + ADR maintenance loop as a model for shared-language doc enforcement in agent-file-architecture; (4) /write-a-skill conventions to merge with veniceai''s authoring rubric for a unified SKILL TEMPLATE.md called for in intake-450 follow-ups; (5) /setup-matt-pocock-skills per-repo config-bootstrap pattern for our own multi-skill installer flows. No empirical claims to corroborate (credibility_score null), but the implementation patterns themselves are the deliverable.'
+- 'id': 'intake-510'
+  'arxiv_id': null
+  'url': 'https://github.com/ivanleomk/gil'
+  'source_type': 'repo'
+  'title': 'gil — Zero-ceremony, ergonomic HTTP client for Zig 0.16.0'
+  'authors':
+  - 'Ivan Leo (ivanleomk)'
+  'categories':
+  - 'tool_implementation'
+  'novelty': 'low'
+  'relevance': 'none'
+  'credibility_score': null
+  'discovered_via': 'input'
+  'verdict': 'not_applicable'
+  'ingested_date': '2026-04-30'
+  'key_claims':
+  - 'One-liner gil.get() / gil.post() API replaces ~20 lines of std.http.Client boilerplate in Zig 0.16.0.'
+  - 'Seamless JSON serialization / deserialization — pass any Zig struct as payload, decode response into struct or std.json.Value.'
+  - 'Automatic transparent decompression for gzip, deflate, and zstd response bodies.'
+  - 'Ergonomic header syntax: tuple shorthand .{ "Name", "Value" } in addition to explicit struct fields.'
+  - 'Built specifically for Zig 0.16.0 std.process.Init / std.Io interface; new repo (created 2026-04-28, ~31 stars at intake date).'
+  'techniques':
+  - 'Zig 0.16.0 std.process.Init based environment access'
+  - 'High-level wrapper over std.http.Client'
+  - 'Compile-time generic JSON struct encoding / decoding'
+  'reported_results': []
+  'referenced_arxiv_ids': []
+  'implementation_urls':
+  - 'https://github.com/ivanleomk/gil'
+  'cross_references':
+    'chapters': []
+    'handoffs': []
+    'experiments': []
+    'intake_entries': []
+  'handoffs_updated': []
+  'handoffs_created': []
+  'novelty_justification': 'Low. Thin ergonomic wrapper around Zig''s std.http.Client — useful as developer ergonomics for Zig but not a research contribution. No novel technique beyond API shape (one-liner GET/POST, tuple-shorthand headers, struct-typed JSON) that has direct counterparts in every other language''s HTTP client ecosystem (Python requests, Go resty, Rust reqwest).'
+  'relevance_justification': 'None. EPYC stack is C++ (llama.cpp) + Python (orchestrator / seeders / autopilot) on Linux EPYC 9655. No Zig in tree, no plans for Zig. The ''gil'' name is unrelated to Python''s GIL — it is the author''s nickname-style library name for a Zig HTTP client. Nothing maps to inference, routing, structured output, agents, or benchmarking. Despite Ivan Leo''s authority in the structured-output / instructor ecosystem, this specific repo is a personal Zig side-project (created 2026-04-28, 31 stars, no Python/ML dependencies).'
+  'verdict_justification': 'not_applicable. Zig-language HTTP client unrelated to LLM inference, agent orchestration, structured output, or any EPYC research category. No follow-up needed — not even a handoff annotation. Recorded for completeness so the URL is recognized as a duplicate on any future re-submission, and so the negative determination is auditable.'
+- id: intake-511
+  arxiv_id: '2510.02327'
+  url: https://arxiv.org/abs/2510.02327
+  source_type: paper
+  title: 'KAME: Tandem Architecture for Enhancing Knowledge in Real-Time Speech-to-Speech Conversational AI'
+  authors:
+  - So Kuroki
+  - Yotaro Kubo
+  - Takuya Akiba
+  - Yujin Tang
+  - Sakana AI
+  categories:
+  - agent_architecture
+  - multimodal
+  - cost_aware_routing
+  novelty: high
+  relevance: low
+  credibility_score: 3
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Real-time S2S models are responsive but knowledge-shallow; cascaded ASR->LLM->TTS pipelines are knowledge-rich but high-latency. KAME proposes a tandem architecture that gets both.'
+  - 'An always-on S2S transformer (Moshi-class) produces immediate speech responses while a backend LLM is queried in parallel; the LLM''s text output is injected as a fourth oracle stream to guide the S2S model''s ongoing speech generation in real time.'
+  - 'On a speech-synthesized MT-Bench multi-turn variant, KAME substantially outperforms a vanilla S2S baseline (MT-Bench 2.05 -> 6.43) approaching cascaded-system quality at baseline-S2S latency.'
+  - 'The backend LLM is hot-swappable across GPT-4.1 / Claude Opus 4.1 / Gemini 2.5 Flash, allowing per-task tradeoff of reasoning depth, cost, and speed.'
+  - 'Accepted to ICASSP 2026; code, finetuning recipe, and weights released open-source.'
+  techniques:
+  - Tandem fast-slow inference (S2S as fast path, LLM as knowledge oracle running concurrently)
+  - Mid-generation conditioning of speech tokens on partial LLM text output (oracle stream)
+  - Multi-turn speech-conversation evaluation via TTS-rendered MT-Bench
+  - Latency/quality co-optimization without full ASR->LLM->TTS serialization
+  - Hot-swappable backend LLM
+  reported_results:
+  - 'Quality: substantially > S2S baseline (Moshi MT-Bench 2.05 -> KAME 6.43); approaches cascaded ASR->LLM->TTS on MT-Bench-speech'
+  - 'Latency: on par with vanilla S2S baseline (no cascading penalty)'
+  - 'Reasoning quality (qualitative head-to-head): KAME 8 vs Moshi 1; STEM 9 vs 2; humanities 9 vs 4'
+  - 'Eval medium: TTS-synthesized MT-Bench multi-turn QA'
+  referenced_arxiv_ids:
+  - '2410.00037'
+  contradicting_evidence:
+  - 'In comparison with cascaded systems (Unmute), KAME is significantly faster but the MT-Bench score is degraded because the method starts responding with significantly less information available; correction-after-oracle behavior produces redundant expressions in written text that affect evaluation scoring.'
+  - 'SHANKS (arxiv:2510.06917, "Simultaneous Hearing and Thinking for Spoken Language Models") is an adjacent same-quarter paper exploring similar simultaneous-thinking territory — KAME is not yet positioned as the canonical solution in this design space.'
+  - 'Backend LLMs in reference impl are closed cloud APIs (GPT-4.1, Claude Opus, Gemini 2.5 Flash) — open-source replacement not validated by authors.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-432 (qwen35-omni-tts-unblock — closest TTS/Omni pattern in our intake history)
+    - intake-512 (KAME blog post — same project)
+    - intake-513 (KAME inference repo — same project)
+    - intake-514 (KAME finetune repo — same project)
+    - intake-515 (KAME HF model card — same project)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Concurrent fast-S2S + slow-LLM tandem with mid-stream knowledge injection is a genuinely new architectural pattern for speech conversation, distinct from both end-to-end S2S and serial cascades. The fast-path/slow-path concept rhymes with speculative decoding and two-tier routing but applies it to streaming speech generation rather than token decoding.'
+  relevance_justification: 'EPYC TTS pipeline (multimodal-pipeline handoff, Path D ZipVoice-Distill) is a single-component unblock effort, not a real-time S2S deployment. We have no S2S transformer in stack and no real-time conversational-voice product target. Moshi audio codec stack has no GGUF/llama.cpp support — same blocker class as existing Path D/E TTS work. The "tandem fast/slow" generalization is interesting but our existing routing/specdec work already covers the analogous pattern in the text domain.'
+  verdict_justification: 'not_applicable to EPYC current optimization focus: paper is squarely about real-time speech conversation with an S2S backbone we do not run. TTS unblock work is text->speech (one-shot per response), not bidirectional streaming. Reference impl uses closed APIs (OpenAI/Google) violating open-source-only policy. Architectural insight (parallel fast-shallow + slow-deep with mid-stream injection) could weakly inform future agent-orchestration patterns, but no near-term implementation hook. File for awareness via the multimodal-pipeline handoff cross-reference; do not open a new handoff.'
+- id: intake-512
+  arxiv_id: null
+  url: https://pub.sakana.ai/kame/
+  source_type: blog
+  title: 'KAME: Two Heads Are Better Than One — Async Knowledge Injection for Speech AI with Tandem Architecture'
+  authors:
+  - Sakana AI
+  categories:
+  - multimodal
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Conversational speech AI faces a latency/knowledge trade-off: faster responses leave less time to think, capping knowledge depth in replies.'
+  - 'Tandem architecture pairs a Moshi-based speech-to-speech (S2S) front-end with an asynchronous backend LLM that is repeatedly invoked on expanding partial transcripts, producing progressively refined oracle signals the front-end can splice in mid-utterance.'
+  - 'Backend LLM is hot-swappable (GPT-4.1, Claude Opus 4.1, Gemini 2.5 Flash) so users can trade reasoning depth, cost, and speed per task.'
+  - 'Qualitative head-to-head with vanilla Moshi: reasoning 8 vs 1, STEM 9 vs 2, humanities 9 vs 4.'
+  - 'Inference + finetuning code and model weights released; paper accepted to ICASSP 2026.'
+  techniques:
+  - tandem_architecture_speech_plus_llm
+  - async_knowledge_injection
+  - speak_while_thinking
+  - moshi_s2s_frontend
+  - oracle_signal_streaming
+  - hot_swappable_backend_llm
+  reported_results:
+  - 'Reasoning quality: KAME 8 / Moshi 1'
+  - 'STEM quality: KAME 9 / Moshi 2'
+  - 'Humanities quality: KAME 9 / Moshi 4'
+  - 'Backend swappable across GPT-4.1, Claude Opus 4.1, Gemini 2.5 Flash'
+  referenced_arxiv_ids:
+  - '2510.02327'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-511 (KAME paper — same project, full citation)
+    - intake-513 (KAME repo — same project)
+    - intake-514 (KAME finetune repo — same project)
+    - intake-515 (KAME HF — same project)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Async-backend-LLM-injecting-tokens-into-a-streaming-S2S-frontend is a genuinely new system pattern in conversational speech AI — the speak-while-thinking framing is distinct from cascaded ASR->LLM->TTS pipelines and from purely end-to-end S2S models. Architectural pattern is novel; individual components (Moshi, frontier API LLMs) are off-the-shelf, so not high.'
+  relevance_justification: 'EPYC stack is text-only CPU inference (Qwen3 MoE/dense, llama.cpp, EPYC 9655). KAME is GPU-trained speech-to-speech with proprietary frontier LLMs as the reasoning backend — neither half maps onto our hardware or model fleet. Abstract pattern of fast front-end emitting tokens while slower backend refines them is conceptually adjacent to spec decoding and to a fast-responder + heavy-reasoner orchestrator stack, but the speech-streaming substrate, training recipe, and dependence on closed-API backends make direct adoption a poor fit.'
+  verdict_justification: 'not_applicable to current EPYC priorities: no speech modality in the stack, no training pipeline for Moshi-class S2S, and the backend uses closed cloud APIs (violates open-source-only policy). Marking not_applicable rather than worth_investigating because reopening would require both a voice-interface program AND a self-hosted-reasoner integration — neither is on the active roadmap. If multimodal-pipeline is revived, the expanding-partial-transcript -> oracle-signal control loop is the one transferable idea worth revisiting.'
+- id: intake-513
+  arxiv_id: null
+  url: https://github.com/SakanaAI/kame
+  source_type: repo
+  title: 'KAME — Tandem Speech-to-Speech Inference Stack (Sakana AI reference implementation)'
+  authors:
+  - So Kuroki
+  - Yotaro Kubo
+  - Takuya Akiba
+  - Yujin Tang
+  - Sakana AI
+  categories:
+  - multimodal
+  - agent_architecture
+  - knowledge_management
+  - tool_implementation
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Oracle-guided spoken dialogue system built on top of Kyutai Moshi codebase.'
+  - 'Tandem architecture: real-time S2S model receives knowledge augmentation from an external oracle (OpenAI Chat Completions) running in parallel during conversation.'
+  - 'Public Python inference stack with browser UI; primary entrypoint kame.server_oracle.'
+  - 'ASR via Google Cloud Speech-to-Text (en-US); TTS/audio synthesis inherited from Moshi (Mimi codec).'
+  - 'Single-WebSocket-session server (rejects concurrent sessions with 503); intended as research demo, not multi-tenant infra.'
+  techniques:
+  - Tandem dual-track inference (real-time S2S model + oracle LLM in parallel)
+  - Oracle-guided dialogue augmentation
+  - Mimi neural audio codec (inherited from Moshi)
+  - Dual-stream speech tokenization (semantic + acoustic, inherited from Moshi)
+  - Hugging Face checkpoint loading (SakanaAI/kame)
+  - WebSocket browser UI for streaming dialogue
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2510.02327'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-511 (KAME paper)
+    - intake-512 (KAME blog)
+    - intake-514 (KAME finetune repo)
+    - intake-515 (KAME HF model)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Tandem oracle-guided architecture is a reasonably novel research direction for real-time S2S — pairs a streaming Moshi-style speech model with an out-of-band knowledge oracle to overcome the knowledge limitations of small streaming dialogue models. README provides no empirical numbers; the novelty claims live in the linked arXiv paper, not the repo itself. Treated as medium novelty.'
+  relevance_justification: 'Implementation is GPU-only (--device cuda example, derived from Moshi which targets GPU streaming inference). Hard runtime dependencies on OpenAI Chat Completions API and Google Cloud Speech-to-Text violate the open-source-only / self-hosted constraint. No GGUF, no llama.cpp path, no CPU inference path. Single-WebSocket-session limit makes it unsuitable as production infra. Audio codec components (Mimi) are exactly the class of non-llama.cpp components flagged in multimodal-pipeline handoff as blockers.'
+  verdict_justification: 'not_applicable for direct adoption: (1) cloud-API dependencies (OpenAI + Google STT) disqualifying under open-source-only constraint, (2) GPU-only inference path with no CPU/llama.cpp/GGUF support, (3) inherits Moshi non-GGUF audio codec stack already flagged as a blocker, (4) target use case is real-time interactive spoken dialogue, not on the EPYC roadmap. Per feedback_dont_dismiss_creative_uses, the abstract pattern of tandem (fast-local + slow-knowledge-oracle) is worth noting as competitive intel, but the repo itself is not actionable for EPYC. Credibility null per rubric: README has no empirical claims; credibility scoring attaches to the paper.'
+- id: intake-514
+  arxiv_id: null
+  url: https://github.com/SakanaAI/kame_finetune
+  source_type: repo
+  title: 'Kame Finetuning Workflow (Moshi-finetune fork for KAME oracle-augmented S2S)'
+  authors:
+  - So Kuroki
+  - Yotaro Kubo
+  - Takuya Akiba
+  - Yujin Tang
+  - Sakana AI
+  categories:
+  - multimodal
+  - training_distillation
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Provides preprocessing, finetuning, checkpoint conversion, and inference workflow for KAME — an oracle-enabled extension of Moshi for full-duplex spoken dialogue.'
+  - 'Canonical dataset layout uses stereo audio (speaker A left / B right channels), word-level timestamped transcripts, and optional oracle predictions generated via OpenAI API.'
+  - 'Audio is tokenized into discrete Mimi tokens; text into frame-level streams; oracle records into event-level tokens; all concatenated into parquet for finetuning.'
+  - 'Training requires DeepSpeed via Accelerate; provides CPU-offload smoke-test config and full-DeepSpeed reference script (multi-GPU likely required).'
+  - 'Inference path: convert DeepSpeed zero checkpoints to fp32 safetensors, then clean for inference, then serve via kame.server_oracle.'
+  techniques:
+  - Moshi-based full-duplex speech-to-speech finetuning
+  - Mimi audio tokenizer (discrete acoustic tokens)
+  - Oracle-context conditioning (LLM-generated knowledge hints injected into spoken-dialogue stream)
+  - DeepSpeed ZeRO + Accelerate training with optional CPU offload
+  - Stereo channel-per-speaker dataset format with word-level alignment
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2510.02327'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-511 (KAME paper)
+    - intake-513 (sister repo — inference stack)
+    - intake-515 (KAME HF model)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'KAME tandem oracle-injection architecture for speech-to-speech is a novel pattern, but the finetune repo itself is largely a thin adaptation of moshi-finetune — the workflow novelty is medium, not high.'
+  relevance_justification: 'Repo is GPU-only finetuning (DeepSpeed required) for a speech-dialogue model. EPYC stack is CPU-only LLM inference; we have no Moshi/Mimi inference path, no STS use case, and no GPU training infrastructure. The finetuning workflow does not produce a model deployable in our text-LLM stack.'
+  verdict_justification: 'not_applicable: training-side workflow for a speech model on a stack we do not run. No CPU inference, MoE, spec-decoding, KV-cache, quantization, routing, or agent-architecture content. The oracle-injection pattern lives in the sister repo intake-513; this is purely the data/training plumbing.'
+- id: intake-515
+  arxiv_id: null
+  url: https://huggingface.co/SakanaAI/kame
+  source_type: repo
+  title: 'KAME — HuggingFace Model Card (Hybrid S2S Model with Real-Time LLM Knowledge Injection)'
+  authors:
+  - SakanaAI
+  categories:
+  - multimodal
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Hybrid S2S architecture: Moshi-based speech-to-speech transformer front-end runs in real time while a powerful back-end text LLM is concurrently queried for knowledge injection.'
+  - 'Real-time guidance injection from back-end LLM into the S2S speech generator avoids the full latency penalty of cascaded ASR->LLM->TTS systems.'
+  - 'Substantially outperforms baseline S2S in response correctness, approaches cascaded-system quality while keeping latency on par with the baseline S2S.'
+  - 'Evaluated on a speech-synthesized variant of MT-Bench (multi-turn QA).'
+  techniques:
+  - hybrid_speech_to_speech
+  - moshi_full_duplex_s2s
+  - llm_knowledge_injection
+  - real_time_dialogue
+  - cascaded_vs_e2e_latency_tradeoff
+  reported_results:
+  - 'Outperforms baseline S2S model in response correctness on speech-MT-Bench'
+  - 'Approaches cascaded ASR->LLM->TTS quality at S2S-level latency'
+  - 'Latency on par with baseline S2S front-end'
+  referenced_arxiv_ids:
+  - '2510.02327'
+  - '2410.00037'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-511 (KAME paper)
+    - intake-512 (KAME blog)
+    - intake-513 (KAME inference repo)
+    - intake-514 (KAME finetune repo)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Hybrid S2S+LLM with real-time knowledge injection is a novel pattern relative to pure cascaded or pure E2E S2S systems, but it is a domain-specific architecture (full-duplex speech dialogue) rather than a general inference technique. ICASSP 2026 paper.'
+  relevance_justification: 'EPYC stack is CPU-only text inference (MoE, spec decode, long-context, routing). KAME requires Moshi (full-duplex audio codec + transformer) which has no GGUF/llama.cpp support and is a real-time speech model not aligned with our text-LLM pipeline. The two-tier real-time + knowledge LLM pattern faintly echoes drafter+verifier or fast-frontdoor+slow-expert routing, but the analogy is weak and components are not reusable.'
+  verdict_justification: 'not_applicable: model is a Moshi-based speech-to-speech system with no GGUF release, no llama.cpp support, and not a text LLM. CPU-only EPYC inference cannot run Moshi audio codec stack at the latencies required, and we have no audio I/O surface in the orchestrator. Architectural pattern is mildly interesting but already mirrored by our drafter/verifier and worker_explore/coder patterns. Logged for awareness; no follow-up action.'
+- id: intake-516
+  arxiv_id: null
+  url: https://huggingface.co/datasets/inference-net/HALO-Gemini-3-Flash-AppWorld
+  source_type: repo
+  title: 'HALO-Gemini-3-Flash-AppWorld: Gemini 3 Flash Agent Traces on AppWorld test-normal (HALO format)'
+  authors:
+  - inference.net (publishing org)
+  categories:
+  - agent_architecture
+  - benchmark_methodology
+  - tool_implementation
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-30'
+  key_claims:
+  - '168 agent execution traces of Gemini 3 Flash on AppWorld test-normal split, 3,438 hierarchical spans total.'
+  - 'Traces collected with OpenAI Agents SDK then re-serialized to inference.net HALO (Hierarchical Agent Latency & Observation) span-tree schema.'
+  - 'Trace files are directly ingestible by the HALO engine for RLM (Reward/Reasoning Language Model) scoring and behavioral analysis.'
+  - 'AppWorld is positioned as a controllable, deterministic, long-horizon, multi-app tool-use benchmark (email/calendar/banking/messaging/file-storage simulated apps).'
+  - 'Intended uses: RLM analysis, tool-use failure-mode study, demonstrations / reward modeling for agent fine-tuning.'
+  - 'Released under MIT license; size 1K<n<10K (single traces.jsonl).'
+  techniques:
+  - Span-tree agent trace schema (HALO) capturing inputs, outputs, tool calls, latencies hierarchically per task episode
+  - Reward/Reasoning Language Model (RLM) post-hoc scoring of agent trajectories
+  - Trace re-serialization from OpenAI Agents SDK -> HALO format
+  - Distillation/demonstration corpus from a strong teacher (Gemini 3 Flash) on a sandboxed agent benchmark
+  reported_results:
+  - '168 traces / 3,438 spans on AppWorld test-normal (no success rate / latency / token-count statistics published in the dataset card)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - meta-harness-optimization.md
+    - eval-tower-verification.md
+    - tool-output-compression.md
+    - research-evaluation-index.md
+    - hermes-agent-index.md
+    experiments: []
+    intake_entries:
+    - intake-517 (context-labs/halo — sibling URL in batch, same HALO trace-schema family, different org)
+    - intake-518 (halo-engine PyPI — engine that consumes these traces)
+    - intake-153 (RLM foundational paper — trace-schema lineage)
+  handoffs_updated:
+  - agent-world-env-synthesis.md
+  - eval-tower-verification.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: 'Combination is fresh: a teacher-grade frontier model (Gemini 3 Flash) executed on AppWorld with full hierarchical span traces released under MIT is uncommon — most public AppWorld traces are smaller or schema-incompatible. Underlying ideas (agent traces, RLM scoring, distillation corpora) are well-established, so not high. Schema (HALO) is proprietary to inference.net but openly documented enough to ingest.'
+  relevance_justification: 'Three concrete EPYC ties: (a) AppWorld is exactly the long-horizon multi-tool eval the agent_architecture / meta-harness-optimization / eval-tower workstreams want for evaluating our local stack (Hermes + Qwen3.6 worker + 30B-A3B coder); (b) Gemini-distilled span trees could serve as SFT/preference data for a smaller local agent; (c) HALO span schema is a candidate observability target if we standardize agent trace logging across the orchestrator. Not directly relevant to CPU/MoE/spec-decode/quantization core work, hence medium rather than high. Note: inference-net (HF org) is distinct from context-labs/halo on GitHub — both use the HALO name but appear to be separate projects/orgs sharing a trace-schema concept.'
+  verdict_justification: 'worth_investigating: the dataset is small (168 traces / 3.4K spans) on a single split, so not immediately deployable as a primary eval, but it is (i) the cheapest path to standing up an AppWorld evaluation harness for our local stack against a strong commercial baseline, and (ii) a candidate fine-tune corpus for a tool-use specialist LoRA. Action: pair with the AppWorld benchmark proper (appworld.dev) before integrating; verify HALO schema is open enough to log local-stack traces in the same format. Not adopt_component yet — need to validate AppWorld setup cost on EPYC and confirm whether the 168 traces are sufficient signal vs noise.'
+- id: intake-517
+  arxiv_id: null
+  url: https://github.com/context-labs/halo
+  source_type: repo
+  title: 'HALO — Hierarchical Agent Loop Optimizer (RLM-based Automatic Agent Optimization Loop)'
+  authors:
+  - Context Labs / inference.net (org context-labs)
+  - declanatinference (171 commits)
+  - francescov1 (105 commits)
+  - samheutmaker (19 commits)
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Recursively self-improving agent harnesses by feeding OpenTelemetry execution traces into a specialized Reasoning-Language-Model (RLM) that decomposes traces, identifies systemic failure modes, and emits a report consumed by a coding agent (Cursor / Claude Code) to apply harness edits.'
+  - 'General-purpose harnesses (Claude Code) overfit to single-trace errors and fail to generalize harness-level failure modes; a domain-specialized RLM is required for trace analysis at scale.'
+  - 'Reports cleanly map to direct prompt edits — surfaces hallucinated tool calls, redundant args, refusal loops, semantic correctness errors.'
+  - 'Findings independently verified against source trace files.'
+  techniques:
+  - OpenTelemetry-compatible trace collection from production agent harnesses
+  - Specialized RLM (built on alexzhang13/rlm) for trace decomposition and failure-mode clustering
+  - Closed-loop harness optimization (traces -> RLM report -> coding-agent edits -> redeploy)
+  - Use of dev/test_normal split to detect harness-level overfitting (AppWorld methodology)
+  - OpenAI Agents SDK integration as reference harness
+  reported_results:
+  - 'AppWorld benchmark, Gemini 3 Flash: dev SGC 36.8% -> 52.6% (+15.8 pts); test_normal SGC 37.5% -> 48.2% (+10.7 pts)'
+  - 'AppWorld benchmark, Sonnet 4.6: dev SGC 73.7% -> 89.5% (+15.8 pts); test_normal SGC 62.5% -> 73.2% (+10.7 pts)'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  contradicting_evidence:
+  - 'Production deployment of RLM-based loops faces latency spikes, cost variance, and "format collapse" issues (getmaxim.ai breakdown, 2026-03).'
+  - 'Several open-source RLM implementations (e.g. viplismism/rlm-cli) pin max_depth=1 and only do flat paper-style sub-calls, not nested recursion — suggests the recursive-depth claim is harder to operationalize than the paper implies.'
+  - 'Independent long-context studies report 40-80% accuracy degradation with input length even for frontier models, applicable transitively to RLM sub-call models.'
+  - 'Repo is ~9 days old at intake date (179 stars, real momentum) but no peer review and benchmark scope is single-bench (AppWorld); methodology details (n_trials, variance bands) absent from README.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-153 (RLM foundational paper, arxiv:2512.24601 — already_integrated, ~80% pattern coverage; HALO is an applied implementation)
+    - intake-516 (HALO HF dataset — companion, same project family)
+    - intake-518 (halo-engine PyPI — companion, deployable artifact)
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: 'Closed-loop pattern (trace -> RLM analysis -> coding-agent edit -> redeploy) is conceptually similar to our autopilot-continuous-optimization and meta-harness-optimization handoffs — we already independently scope this. Novel contributions worth adopting: (a) explicit argument that a specialized RLM beats a general harness for trace analysis (anti-overfitting evidence), (b) AppWorld dev/test_normal split methodology to detect harness-level overfitting, (c) concrete failure-mode taxonomy (hallucinated tool calls, redundant args, refusal loops). Not novel: the loop topology itself, OpenTelemetry tracing. Net: medium.'
+  relevance_justification: 'Directly aligned with rlm-orchestrator-roadmap (completed) and meta-harness-optimization (active). Our autopilot-continuous-optimization handoff already targets this exact problem class. The dev/test_normal anti-overfitting split is methodologically valuable for our autopilot frontier evaluation. No CPU-inference content — irrelevant to EPYC hardware optimization, MoE, spec-dec, KV cache, quant. But agent architecture is a first-class EPYC focus area, so high overall.'
+  verdict_justification: 'adopt_patterns. The core RLM-loop pattern is what we are independently building, so this is not a drop-in component to vendor. But three concrete patterns are worth lifting: (1) general-harness-overfits-single-trace observation as a design constraint for our autopilot trace analyzer, (2) dev/test_normal split to verify harness improvements generalize, (3) failure-mode taxonomy as seed labels for our trace-clustering pass. The halo-engine PyPI may be worth a closer look as a reference implementation but probably not as a runtime dependency (it calls OpenAI API by default). Credibility 4: real org, 5 contributors with 2 dominant authors, active (last push within 24h), 179 stars on ~9-day-old repo signals real momentum, concrete numbers with independent verification claim, but no peer review and single-bench scope.'
+- id: intake-518
+  arxiv_id: null
+  url: https://pypi.org/project/halo-engine/
+  source_type: repo
+  title: 'halo-engine 0.1.2 — HALO engine: LLM agent runtime over OTel trace data, with bundled CLI'
+  authors:
+  - inference.net (PyPI verified org owner)
+  - context-labs/HALO (GitHub source)
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-30'
+  key_claims:
+  - 'Pip-installable Python package (pip install halo-engine) bundling the HALO-RLM engine plus a halo CLI.'
+  - 'Consumes OpenTelemetry-compatible agent execution traces (JSONL) and emits a diagnostic report identifying systemic harness failure modes (hallucinated tool calls, redundant tool args, refusal loops, semantic correctness issues).'
+  - 'Designed to feed its report into a coding agent (Cursor / Claude Code) to auto-edit the harness, then re-trace — a recursively self-improving harness loop.'
+  - 'AppWorld benchmark results (same as GitHub repo): Gemini 3 Flash dev SGC 36.8 -> 52.6 (+15.8 pts), test_normal 37.5 -> 48.2 (+10.7 pts); Sonnet 4.6 dev 73.7 -> 89.5 (+15.8), test_normal 62.5 -> 73.2 (+10.7).'
+  - 'Argues a general-purpose harness like Claude Code overfits to single-trace errors; a specialized RLM is required for harness-level generalization.'
+  techniques:
+  - OpenTelemetry trace ingestion as agent telemetry substrate
+  - Recursive Language Model (RLM) decomposition of long traces
+  - Trace-driven harness mutation via external coding agent
+  - CLI-driven workflow (halo path_to_traces.jsonl -p '<diagnose prompt>')
+  - Closed-loop dev/test_normal split discipline to guard against overfitting
+  reported_results:
+  - 'AppWorld SGC gains of +10.7 to +15.8 percentage points on Gemini 3 Flash and Sonnet 4.6 (verified against source traces, dev vs test_normal split).'
+  - 'Package size 2.5 MB sdist; Python >=3.10; MIT license.'
+  - 'Versions 0.1.1 and 0.1.2 released 2026-04-29 (~1 day before this intake).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-517 (context-labs/halo GitHub repo — same project; this PyPI is the deployable artifact)
+    - intake-516 (HF HALO dataset — same project family)
+    - intake-153 (RLM foundational paper)
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: 'Content is essentially the README of context-labs/halo packaged for pip install — same AppWorld numbers, same RLM-loop description. Only package-level deltas: org owner = inference.net (PyPI verified), MIT license, Python >=3.10, 2.5 MB sdist, two releases on 2026-04-29 (0.1.1 / 0.1.2), CLI entrypoint halo. Nothing technically new beyond the GitHub entry.'
+  relevance_justification: 'Direct fit to meta-harness-optimization and autopilot-continuous-optimization: a published pip install path means we can prototype the HALO loop against our own orchestrator traces without vendoring the repo. OpenTelemetry trace input is a clean integration seam — the orchestrator already emits structured logs that could be adapted. Not relevant to CPU/EPYC inference performance directly; relevance is at the agent-architecture / autopilot layer.'
+  verdict_justification: 'worth_investigating — concrete next step is a small spike: install halo-engine in an isolated venv, instrument one orchestrator harness path with OTel, run halo traces.jsonl against a benign prompt, and inspect the report quality on our own failure modes. Cheap to evaluate (2.5 MB, MIT, single CLI invocation, requires only OPENAI_API_KEY which can be swapped for a local OpenAI-compatible endpoint). Defer adopt_component until that spike confirms report quality on non-AppWorld traces. Cross-reference with the GitHub repo intake entry (intake-517) to avoid duplicating the methodology audit.'
+- id: intake-519
+  arxiv_id: null
+  url: https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2
+  source_type: repo
+  title: 'Granite-Embedding-97M-Multilingual-R2 (IBM, ModernBERT-based, 97M, 32K context, MTEB-ML-Retrieval 59.6)'
+  authors:
+  - IBM Granite Embedding Team
+  categories:
+  - search_retrieval
+  - knowledge_management
+  - rag_alternatives
+  - local_inference
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-04-30'
+  key_claims:
+  - '97M-parameter ModernBERT-based multilingual encoder achieves 59.6 on MTEB Multilingual Retrieval (18 tasks), highest open <100M-param multilingual embedding score, beating multilingual-e5-small (50.9) by +8.7 points.'
+  - 'Matches retrieval quality of gte-multilingual-base (305M) at ~3x encoding speed (2,894 docs/s).'
+  - 'Architecture migration R1 -> R2: XLM-RoBERTa 512-tok -> ModernBERT 32,768-tok context with rotary positions, alternating attention, Flash Attention 2.0; +14.5 avg-points over R1 granite-embedding-107m.'
+  - 'Built by layer-pruning the 311M R2 (22 -> 12 layers) followed by knowledge distillation from multiple teachers + contrastive fine-tuning.'
+  - 'Purpose-trained 180K multilingual tokenizer; 200+ languages with 52 enhanced + 8 programming languages (code retrieval @ 60.5).'
+  - 'Apache 2.0; ships ONNX, OpenVINO (incl. INT8), Sentence Transformers, vLLM-embedding endpoint, GGUF-convertible (Ollama unsupported - ModernBERT).'
+  - 'Embedding dim 384; CLS pooling.'
+  techniques:
+  - ModernBERT encoder backbone
+  - Layer pruning from a larger sibling (22 -> 12)
+  - Multi-teacher knowledge distillation
+  - Contrastive fine-tuning on retrieval pairs (incl. cross-lingual)
+  - Purpose-trained 180K multilingual+code tokenizer
+  - Rotary position embeddings + alternating-attention + Flash Attention 2.0
+  - INT8 OpenVINO quantization for edge deployment
+  reported_results:
+  - 'MTEB Multilingual Retrieval (18): 59.6'
+  - 'MTEB Retrieval (eng v2): 50.1'
+  - 'Code (v1): 60.5'
+  - 'LongEmbed (6): 65.5'
+  - 'RaR-b (17): 24.9'
+  - 'AVG: 52.1'
+  - 'Throughput: 2,894 docs/s (~3x gte-multilingual-base 305M)'
+  - '+14.5 avg pts vs granite-embedding-107m-multilingual R1'
+  - '+8.7 pts MTEB-ML-Retrieval vs multilingual-e5-small'
+  referenced_arxiv_ids:
+  - '2502.20204'
+  - '2508.21085'
+  contradicting_evidence:
+  - 'BGE-M3 (~305M-class) scores ~63.0 MTEB (vs Granite-97M-r2 AVG 52.1) — wins on raw quality but is 3x larger; the trade is throughput-vs-quality, not a clean win for Granite.'
+  - 'Direct head-to-head with BGE-M3 not published on the model card; the 59.6 / +8.7-vs-e5-small claim is self-reported. Independent verification limited to the HF leaderboard.'
+  - 'No native GGUF release — quantized CPU deployment requires our own ONNX->GGUF or direct OpenVINO INT8 path; Ollama unsupported flag confirms ModernBERT compatibility friction.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    - internal-kb-rag.md
+    - searxng-search-backend.md
+    - minddr-deep-research-mode.md
+    - searxng-bash-websearch-bridge.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  - internal-kb-rag.md
+  - searxng-search-backend.md
+  handoffs_created: []
+  novelty_justification: 'Embedding models are a mature category; novelty here is engineering composition rather than a new mechanism. The combination of (a) ModernBERT backbone in a sub-100M multilingual encoder, (b) 32K context (64x R1 512-tok ceiling) at this scale, (c) explicit prune-then-distill recipe from a 311M sibling, and (d) 180K purpose-trained multilingual tokenizer is a non-trivial recipe and the highest reported open <100M MTEB-ML-Retrieval score. No new architecture or training-objective invention, but a defensible state-of-the-art point on the size-vs-quality Pareto for multilingual retrieval.'
+  relevance_justification: 'EPYC has active retrieval/RAG infrastructure work (colbert-reranker-web-research, internal-kb-rag, searxng-*), and the production stack lacks a primary dense multilingual embedder. At 97M params with 32K context this fits trivially on the EPYC 9655 CPU (sub-millisecond per doc; 2,894 docs/s on reference HW), is ONNX/OpenVINO/GGUF-deployable, and is orthogonal to the ColBERT reranker (it would feed candidates into rerank). Multilingual coverage matters for any web-search ingest path (SearXNG returns mixed-language snippets). Not a slam-dunk because: (1) for English-dominant code-heavy workloads BGE/E5/jina/snowflake variants compete tightly, (2) project is currently invested in late-interaction (ColBERT) for reranking, where dense embedding is upstream not replacement, and (3) no GGUF was released so quantized CPU deployment requires our own conversion path.'
+  verdict_justification: 'worth_investigating: lightweight, Apache 2.0, CPU-friendly multilingual embedder that plausibly fits as the dense first-stage retriever in front of the planned ColBERT reranker for internal-kb-rag and SearXNG-bridge web research, with reported MTEB-ML-Retrieval SOTA in <100M class. Recommend a small evaluation: (1) bench on EPYC CPU via Sentence-Transformers + ONNX/OpenVINO INT8; verify 2-3k docs/s claim and measure 32K-context encode latency; (2) compare nDCG@10 against multilingual-e5-base/large and BGE-m3 on a representative slice from the active KB / SearXNG corpus; (3) decide whether to adopt as the dense retrieval model in colbert-reranker-web-research / internal-kb-rag pipelines. Not new_opportunity yet because retrieval architecture decisions in the active handoffs are still in flight; not adopt_component until benchmarked head-to-head with BGE-m3 (the de-facto multilingual incumbent), which the model card does not include.'

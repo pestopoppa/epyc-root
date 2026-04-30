@@ -369,3 +369,29 @@ Files touched:
   - Key pattern: YAML "policies" — declarative search-then-write workflows with preview + atomic execute. The abstraction is the takeaway, not the Node/MCP/Obsidian runtime.
   - Delta from current approach: today our autopilot/meta-harness side-effects on markdown files have no formal write contract. Adopt the pattern (hash, preview, atomic, undo); do not adopt the runtime.
   - Caveat (Tier 2b): credibility 3 — 1,092 commits, 3,292 tests, 385 releases, dual-OS dual-Node CI as engineering rigor signals; no peer review, no independent replication. Self-reported HotpotQA / LoCoMo benchmarks with ~1pp LLM-non-determinism variance band. Adopt patterns, not the runtime.
+
+## Research Intake Update — 2026-04-30
+
+### New Related Research
+
+- **[intake-509] "Skills For Real Engineers — Matt Pocock's Claude Code skills collection"** (`github.com/mattpocock/skills`)
+  - Relevance: Pocock codifies a four-failure-mode taxonomy that maps directly to gates the meta-harness search would mutate or evaluate against:
+    1. **Misalignment** → `/grill-me`, `/grill-with-docs` Socratic interrogation skills before any code is written.
+    2. **Verbosity** → `CONTEXT.md` shared-language doc maintained inline by `/grill-with-docs` (DDD ubiquitous-language pattern in skill form).
+    3. **Broken code** → `/tdd` red-green-refactor + `/diagnose` disciplined bug loop.
+    4. **Ball-of-mud** → `/to-prd`, `/zoom-out`, `/improve-codebase-architecture` for ongoing design hygiene.
+  - Key pattern: `/improve-codebase-architecture` and `/grill-with-docs` both treat a maintained `CONTEXT.md` + ADR set as a *first-class harness component*. For the Meta-Harness search this is a candidate harness module — the search could mutate (a) which docs the agent must consult, (b) when `CONTEXT.md` is forced to be re-read, (c) whether ADRs are appended after architecture decisions. Same idea-shape as Flywheel (intake-492) but expressed as prose/skill rather than write-contract.
+  - Delta from current approach: the meta-harness today mutates prompts and tool-output handling. Pocock's skills suggest mutating the *shared-language artifact itself* as a search axis. Combined with Flywheel's hash-before-write contract, the harness has two complementary handles on the markdown corpus: write-time invariants (Flywheel) and read-time consultation policy (Pocock-style).
+  - Caveat (Tier 2b): no empirical claims (credibility_score null). Pattern adoption only — no runtime component to import; calibration is for TypeScript app development, not CPU inference. The `/caveman` ~75% token-reduction figure is self-reported with no methodology — useful only as a baseline-to-beat for our own measured tool-output-compression numbers, not as evidence of efficacy.
+
+- **[intake-516] "HALO-Gemini-3-Flash-AppWorld dataset"** + **[intake-517] context-labs/HALO** + **[intake-518] halo-engine PyPI** (HALO project trio — same intake batch)
+  - Relevance to Meta-Harness: **HIGH**. HALO directly implements the loop class Meta-Harness Tier 3 envisions — OpenTelemetry trace ingestion → specialized RLM trace analyzer → coding agent applies harness edits → redeploy → re-trace. Reported deltas: AppWorld test_normal SGC for Sonnet 4.6 62.5% → 73.2% (+10.7 pts), Gemini 3 Flash 37.5% → 48.2% (+10.7 pts). Built on the foundational RLM paper (intake-153, Zhang/Kraska/Khattab arxiv:2512.24601), already in our index with verdict `already_integrated` and ~80% pattern coverage.
+  - Three concrete patterns to lift into Meta-Harness (NOT framework adoption — we already build the same scaffolding):
+    1. **Anti-overfitting argument**: a generic coding harness (Claude Code) overfits to a single-trace error and fails to generalize harness-level failure modes; a *specialized* trace-analysis RLM is needed. Encodes as a Meta-Harness search constraint: when mutating prompt/tool axes, evaluate the mutation on a held-out trace cluster, not the trace that motivated the mutation. Prevents Meta-Harness from learning trace-specific overfits.
+    2. **dev/test_normal split methodology**: AppWorld convention separates a hold-out test_normal split from dev. Adopt as a Meta-Harness convention — every harness candidate must show improvement on BOTH splits before promotion.
+    3. **Concrete failure-mode taxonomy**: hallucinated tool calls, redundant args, refusal loops, semantic correctness errors. Use as labelled categories for Tier 3's trace-clustering pass (complements Pocock's misalignment/verbosity/broken-code/ball-of-mud taxonomy from intake-509).
+  - HALO dataset (intake-516) is a small public corpus (168 traces) — primarily a benchmarking convenience, not training data. Useful as a comparison baseline if Meta-Harness ever evaluates on AppWorld.
+  - **Schema observation**: HALO span-tree format is a candidate for Meta-Harness's own trace observability layer — the orchestrator already emits structured logs that could be adapted. OpenTelemetry-compatible substrate is a clean integration seam.
+  - Tier 2b: production RLM loops face latency spikes, cost variance, format collapse; many OSS RLM impls pin max_depth=1; recursive-depth claim harder to operationalize than paper implies. Apply skeptically when sizing the analyzer's budget.
+  - Caveat (schema-name collision): `inference-net/HALO-Gemini-3-Flash-AppWorld` (HF dataset) and `context-labs/halo` (GitHub) appear to be SEPARATE orgs sharing the HALO name and a span-tree concept. Confirmed both reference AppWorld + RLM substrate; assume same project family pending clarification.
+  - Action: when Meta-Harness Tier 3 design solidifies, evaluate halo-engine (MIT, 2.5 MB pip install) as a reference implementation. Cross-ref `autopilot-continuous-optimization.md` 2026-04-30 update where the same patterns are tracked for the autopilot loop.
