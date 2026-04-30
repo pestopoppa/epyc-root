@@ -95,3 +95,13 @@ After P1 completes, append measured numbers + comparison to baselines under a "R
 - Inference-blocked: P1 and P2 cannot run without a healthy llama-server. Queue accordingly.
 - P3 is a non-action recording an architectural foreclosure for future agents who might attempt it.
 - This handoff is intentionally separate from `qwen36-production-upgrade.md` (which targets the 35B-A3B MoE — different model, different role). Do not conflate.
+
+## Research Intake Update — 2026-04-28
+
+### New Related Research
+
+- **[intake-501] "Luce DFlash Brings 2x Speculative Decoding to Qwen3.6-27B on a Single RTX 3090"** (NYU Shanghai RITS blog, 2026-04-28)
+  - Relevance to this handoff: **GPU-only data point**, bookmarked here because it is the first published Qwen3.6-27B-specific spec-dec measurement (intake-455 was a community note pre-3.6-DFlash-port). Reinforces P3's CPU-foreclosure: speedup is GPU-native (DDTree + 3 custom CUDA kernels for tree-aware SSM state rollback) — none of those primitives port to CPU sequential decode.
+  - Key external finding: Qwen3.5-27B-DFlash drafter loads on Qwen3.6-27B unchanged (identical `Qwen35` identifier, layer/head dims). Cross-version drafter portability across the dense-FFN hybrid family.
+  - Reported results (RTX 3090): 207.6 tok/s peak Q4_K_M (5.46× vs autoregressive); 128K context Q4_0 sustained 134.78 tok/s; cross-version acceptance length 5.05 (3.5-drafter on 3.6) vs 9.18 (3.5-drafter on 3.5).
+  - Delta from current approach: **no change to this handoff's CPU plan**. Bookmarked alongside intake-455 in `gpu-acceleration-path.md`. Promotes only when GPU hardware arrives. Reinforces the architectural-foreclosure note in §"Architecture clarification" — speedup mechanism is parallel-scan + tree verification, neither available on EPYC CPU decode.

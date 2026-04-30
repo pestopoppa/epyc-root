@@ -41,6 +41,23 @@ Applies to all CPU tracks (CPU1-CPU24). No track is allowed to claim "win", "exh
 2. If any benchmark-related process remains, terminate and re-check.
 3. Store pre-run and post-run process snapshots in artifacts.
 
+**MANDATORY: scrub credentials from process snapshots.** `pgrep -af` prints the full argv of each PID, which may include sensitive env vars (e.g., `AWS_*`, `*_TOKEN`, `*_KEY`, `*_PASSWORD`, `*_SECRET`) passed via `docker exec -e ...` or any `cmd VAR=value`. Pipe through a scrubber before writing the artifact:
+
+```bash
+SCRUB='s/(AWS_[A-Z_]+|[A-Z_]*(TOKEN|KEY|SECRET|PASSWORD|PASSWD|CREDENTIAL)[A-Z_]*)=[^ ]+/\1=<redacted>/g'
+pgrep -af "llama" | sed -E "$SCRUB" > "$DIR/process-pre.txt"
+# (same for process-post.txt)
+```
+
+Pattern guidance: keep the pgrep regex narrow (`llama` only, plus exact daemon names) — avoid greedy patterns like `"llama|claude|firefox|megasync"` that match arbitrary shell command lines unrelated to llama and increase the surface for credential capture. If interference detection from non-llama processes is needed, use a separate `ps` snapshot scrubbed identically.
+
+**Pre-commit gate**: before staging any `process-*.txt` artifact, grep it for credential patterns:
+
+```bash
+grep -E '(AWS_[A-Z_]+|[A-Z_]*(TOKEN|KEY|SECRET|PASSWORD|PASSWD|CREDENTIAL)[A-Z_]*)=[^ <]' \
+  "$DIR/process-"*.txt && { echo "REFUSE COMMIT: unscrubbed credentials"; exit 1; }
+```
+
 ### P2. System-state snapshot
 
 Capture before each batch:
@@ -174,8 +191,8 @@ CPU20 was documented and in force from 2026-04-26 onward, but a peer review on 2
 
 1. `README.md` — exact commands run
 2. `system-state.txt` — `numactl --hardware`, `numa_balancing`, THP setting, governor, SMT, host load summary
-3. `process-pre.txt` — pre-run `pgrep -af "llama"`
-4. `process-post.txt` — post-run `pgrep -af "llama"`
+3. `process-pre.txt` — pre-run `pgrep -af "llama"` **piped through credential scrubber (see P1)**
+4. `process-post.txt` — post-run `pgrep -af "llama"` **piped through credential scrubber (see P1)**
 5. `ld_debug.log` — `LD_DEBUG=libs` smoke run
 6. `results.csv` — mean/std/reps tabulated
 7. `decision.md` — explicit pass/fail/partial verdict

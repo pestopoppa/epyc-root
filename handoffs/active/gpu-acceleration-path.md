@@ -393,7 +393,23 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
     3. **Mobile demos (iOS / Android)**: only intake entry with first-class mobile-runtime support.
   - **NOT** activated by:
     - DGX Spark Blackwell / H100-server peak throughput targets — vLLM (intake-462, with DDTree+Dflash spec dec section above) and SGLang (intake-461) consistently lead 2026 H100 throughput tables; MLC-LLM is excluded from those head-to-head benchmarks. Use the existing vLLM plan for Spark.
-    - CPU-only research — MLC-LLM has no competitive CPU-AVX-512BW backend; production CPU path remains hand-tuned llama.cpp ggml per `project_q8_8x8_avx512bw_outcome`.
+    - CPU-only research as a *replacement* for llama.cpp — MLC-LLM **does** ship a CPU LLVM backend (prebuilt `mlc-ai-nightly-cpu` wheel; mlc-ai/mlc-llm#795), but it is unlikely to match our hand-tuned ggml path that encodes Zen 5 specifics (`project_q8_8x8_avx512bw_outcome` 8x8 AVX-512BW Q8_0, `project_zen5_vnni_vs_maddubs` MADDUBSW > VPDPBUSD, NUMA-4-way mmap layout). Worth a measurement rather than an assumption if the question becomes load-bearing. Production CPU path stays llama.cpp ggml.
     - MoE expert-offloading via `-ot "exps=CPU"` — that's a llama.cpp-specific lever; MLC-LLM has no analogous mechanism documented.
   - **Compile-step friction** (caveat): unlike GGUF point-and-run, MLC-LLM requires a per-model + per-target compilation step, and uses its own quant formats (q4f16_1, q4f16_ft) — not GGUF compatible. Dual-artifact storage cost if adopted alongside llama.cpp. Acceptable for stable production deployment, costly for rapid model-quant iteration.
   - **Hybrid SSM verification needed**: docs intro names Llama-3 and Phi-2; Qwen3.5/3.6 hybrid (Delta Net) support is not enumerated. Confirm before assuming production stack ports cleanly. TileLang/BitBLAS connection (intake-497) is relevant: same Apache TVM lineage, so any custom Delta Net kernel work would be authored in compatible DSLs.
+
+## Research Intake Update — 2026-04-28 (Luce-DFlash Qwen3.6-27B writeup)
+
+### New Related Research
+
+- **[intake-501] "Luce DFlash Brings 2x Speculative Decoding to Qwen3.6-27B on a Single RTX 3090"** (NYU Shanghai RITS blog, 2026-04-28; writeup by Utku Ege Tuluk; method by Z Lab — Jian Chen, Yesheng Liang, Zhijian Liu)
+  - Relevance: third-party writeup that extends intake-447 (Lucebox Hub) and intake-455 (RTX 4090 Qwen3.6-27B community note) with **Qwen3.6-27B specific data on a single RTX 3090** — the consumer-GPU lower bound for our gated-DeltaNet GPU path. Confirms Lucebox-style llama.cpp port (`Luce-Org/llama.cpp@luce-dflash`) is the integration reference for consumer-Ampere through Blackwell (sm_86 → sm_121 = DGX Spark); Compatible with: Ada (RTX 4090), Blackwell (RTX 5090), DGX Spark/Jetson AGX Thor (sm_121, sm_110).
+  - Key technique: same DFlash block-diffusion drafter + DDTree (budget=22) + 3 custom CUDA kernels for tree-aware SSM state rollback as intake-447. **New external finding: Qwen3.5-27B-DFlash drafter loads on Qwen3.6-27B unchanged** (identical `Qwen35` identifier, layer/head dims) — drafter portability across point-version model upgrades.
+  - Reported results (RTX 3090):
+    - Qwen3.6-27B Q4_K_M peak **207.6 tok/s vs 38.0 autoregressive (5.46×)**
+    - HumanEval mean **129.5 tok/s (3.43×)**, Math500 110.5, GSM8K 96.2
+    - 128K context Q4_0 sustained **134.78 tok/s** — useful long-context anchor
+    - Cross-version drafter penalty: acceptance length **9.18 (3.5)** vs **5.05 (3.6 with 3.5 drafter)** → ~2× speedup on 3.6 even without retraining
+  - Delta from current approach: corroborates intake-447 with external data + new model target (Qwen3.6, released 2026-04-22). Does NOT change the GPU-acquisition gate. Adds a concrete drafter-portability data point (3.5 → 3.6) that reduces the "wait for new drafter at every model upgrade" risk in any future GPU port plan.
+  - Caveats (Tier 2b not formally run; flagged inline): self-reported single-author writeup, commercial-product promotion (Luce-Org), no third-party replication of the 3.6-specific numbers. Acceptance length 5.05 on a release-day cross-version drafter is not the steady-state figure — a 3.6-native drafter when published should restore the ~9 acceptance-length range.
+  - Action: **track, do not activate**. Keep `Luce-Org/llama.cpp@luce-dflash` pinned as the integration reference. At GPU-acquisition trigger, prefer the 3.6-native DFlash drafter once Z Lab publishes one; until then, the 3.5 drafter is a usable fallback.
