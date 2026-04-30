@@ -210,7 +210,14 @@ roles:
 
 **ALL roles inherit the canonical prerequisites** (OMP env stack + numa_balancing=0 + THP=always + numactl --interleave=all + --mmap 0). Those are NOT per-role — they're host-level prereqs that orchestrator_stack.py must enforce on every llama-server launch.
 
-**Status of the model_registry update**: NOT YET. Wait until kernel is pushed to `production-consolidated-v5`. Until then, this matrix IS the deployment intent. The push-rebase handoff (`llama-cpp-kernel-push-rebase.md`) will use this as input when wiring the registry.
+**Status of the model_registry update**: **KERNEL PUSHED** — `production-consolidated-v5` tip `23bcd6aaf` pushed to GitHub on 2026-04-30. Production PGO and BOLT binaries built in `/mnt/raid0/llm/llama.cpp/` (see below). Model registry wiring (`binary_path` + env) is the next step; blocked on orchestrator-stack integration (not yet started). The push-rebase handoff (`llama-cpp-kernel-push-rebase.md`) will drive that phase.
+
+**PGO/BOLT binary locations** (built 2026-04-30, `/mnt/raid0/llm/llama.cpp/`):
+
+| Directory | Role | Key artifact |
+|---|---|---|
+| `build_libomp_pgo_use/` | Universal PGO — all roles except Coder-30B | `bin/llama-server`, `bin/libggml-cpu.so.0.9.11` |
+| `build_libomp_pgo_bolt/bin_bolted/libggml-cpu.so.0.bolt` | Coder-30B per-role BOLT | Drop-in replacement for `libggml-cpu.so.0.9.11`; apply via `LD_PRELOAD` at launch |
 
 ---
 

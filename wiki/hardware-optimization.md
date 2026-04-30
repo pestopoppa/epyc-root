@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-29
-**Sources**: 39 documents
+**Last compiled**: 2026-04-30
+**Sources**: 42 documents
 
 ## Summary
 
@@ -1025,5 +1025,32 @@ The v5 audit produced no new throughput findings (validation was bit-exact + no-
 ### Out of scope (deferred to follow-up)
 
 - **Orchestrator-stack rollout**: per-role `binary_path` + `env` wiring per [`model-registry-v5-deployment-draft.yaml`](../handoffs/active/model-registry-v5-deployment-draft.yaml). User explicitly out of scope ("nowhere close to altering the orchestrator stack"). Deployment-draft stays in `handoffs/active/` as future-work staging.
-- **PGO + per-role BOLT-libggml binary builds**: operator-applied at deployment time via `v5_pgo_profile.sh` + `v5_bolt_coder.sh` (host-specific scripts in working copy of llama.cpp-experimental).
 - **Per-role smoke gate (Batch 5)**: requires orchestrator integration first.
+
+### 2026-04-30 PM — v5 push + PGO/BOLT production binaries COMPLETE
+
+`production-consolidated-v5` branch (tip `23bcd6aaf`, 59 commits) was pushed to GitHub. PGO and BOLT production binaries were built in `/mnt/raid0/llm/llama.cpp` (main fork, NOT the experimental dev tree).
+
+**Build artifacts**:
+
+| Directory | Purpose | Key output |
+|---|---|---|
+| `build_libomp_pgo_use/` | Universal PGO — all roles | `bin/llama-server` (11 MB), `bin/libggml-cpu.so.0.9.11` (1.4 MB) |
+| `build_libomp_pgo_bolt/` | BOLT-ready build (relocs preserved) | `bin/llama-server` (13 MB), `bin/libggml-cpu.so.0.9.11` (1.8 MB) |
+| `build_libomp_pgo_bolt/bin_bolted/` | Per-role BOLT lib (Coder-30B only) | `libggml-cpu.so.0.bolt` (6.3 MB) |
+
+PGO profile: `/mnt/raid0/llm/llama.cpp-experimental/build_v5_pgo_gen/merged.profdata` (2 MB, collected April 28).
+BOLT profile: collected from a DeepSeek-R1-1.5B instrumented run (~1 min; covers same ggml kernel code paths as production models; instrumentation overhead scales with model size, not kernel coverage).
+
+**Key build engineering findings** (validated for future reference):
+
+- `clang-20` cmake configure requires `-L/usr/lib/gcc/x86_64-linux-gnu/13` in linker flags to find `libstdc++`. Omit this path for the actual build (bake it only during configure).
+- `-fprofile-instr-use` cannot be set at cmake configure time — cmake's compiler test rebuilds with those flags and the linker fails. Fix: configure without PGO flags, patch `CMakeCache.txt` directly after configure, then `touch CMakeFiles/cmake.check_cache` to freeze the check timestamp.
+- BOLT fdata is binary-specific (counter IDs tied to specific binary layout). Cannot reuse fdata from a previous build — must re-collect from the new binary.
+- For BOLT profiling, small models (~1.5B) cover identical kernel code paths as production models. Do NOT use large models (24 GB+) for BOLT profiling — instrumentation overhead is ~25× and wall time is ~90 min.
+- `libstdc++-14-dev` required on this host for clang-20's GCC 14 toolchain detection (`apt install libstdc++-14-dev`).
+- `bolt-20` package provides `llvm-bolt-20` binary (`apt install bolt-20`).
+
+**Next gate**: orchestrator wiring (binary_path + env per role in model_registry.yaml). Blocked on user authorization; deployment-draft at `handoffs/active/model-registry-v5-deployment-draft.yaml` is the staging document.
+
+Source: [progress/2026-04/2026-04-30.md section "v5 kernel push + PGO/BOLT production binaries"](../progress/2026-04/2026-04-30.md)

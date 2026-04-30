@@ -3,7 +3,7 @@
 **Category**: `ssm_hybrid`
 **Confidence**: verified
 **Last compiled**: 2026-04-30
-**Sources**: 10 documents
+**Sources**: 12 documents
 
 ## Summary
 
@@ -156,6 +156,39 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
+
+## Lightning Attention port — L2 + L3 COMPLETE, compile gate PASSED (2026-04-30 PM)
+
+The port advanced from L1 scoping to a working compile-tested implementation across L2 (converter) and L3 (model variant).
+
+### L2: GGUF converter (convert_hf_to_gguf.py) — +148 lines
+
+- `BailingMoeLinearV2ForCausalLM` arch handler added with 17 tensor paths (verified by Python smoke test — all expected tensor paths resolve correctly)
+- Token embeddings, QKV/gate/output per linear-layer (shape-dependent paths for linear vs softmax layers), attn_gate/attn_output_norm, MoE FFN family (`ffn_up_exps`/`ffn_down_exps`/`ffn_up_shexp`/`ffn_down_shexp`/router)
+- Files: `convert_hf_to_gguf.py` (+21), `gguf-py/gguf/constants.py` (+26), `gguf-py/gguf/tensor_mapping.py` (+2), `src/llama-arch.cpp` (+3), `src/llama-arch.h` (+1), `src/llama-model.cpp` (+95)
+
+### L3: Model variant (`src/models/ring-linear.cpp`) — ~205 LOC
+
+- Derives directly from `llm_graph_context` (NOT from `llm_build_delta_net_base` — see L1 template strategy correction)
+- Forward: `build_qkv → Q/K norm → partial NeoX RoPE → ggml_cont → arange/exp/repeat decay tensor g → ggml_gated_linear_attn(K,V,Q,g,state,scale) → state cpy → ggml_group_norm + per-channel mul → sigmoid gate from g_proj(input) → output proj`
+- Softmax-layer branch reuses standard `build_attn()` — no new code
+- Wired via: forward decl in `models.h`, `build_graph` dispatch after `KIMI_LINEAR`, RoPE type added to NEOX group, CMakeLists auto-glob via `file(GLOB models/*.cpp)`
+
+### Compile gate PASSED (L3.7)
+
+Build in `build_lightning/` on `llama.cpp-experimental` HEAD `23bcd6aaf`. Used low parallelism (`-j 4`) to leave EPYC headroom for parallel inference benchmarks. One compile error fixed in flight (`hparams.n_embd_head_k` → method-call form). 66 binaries built clean. `nm -D libllama.so` confirms `llm_build_ring_linear` constructor symbol present.
+
+**Branch state on `feature/lightning-attention-port`**: 7 modified + 1 new file, ~366 LOC net. **No commits yet — working tree only.**
+
+### Threading caveat (flag for L4)
+
+GLA kernel partitions heads across threads. Ring-mini has H=16 heads. On EPYC 96-thread bind, only 16 of 96 threads do work per GLA call → severe underutilization on linear-attn layers. Investigate H-replication or chunked per-head dispatch at L4.
+
+### Next gate
+
+L4 inference smoke decode requires user approval per `feedback_no_concurrent_inference.md` AND a quiet inference window on EPYC.
+
+Sources: [lightning-attention-port.md L2/L3 findings](../handoffs/active/lightning-attention-port.md), [progress/2026-04/2026-04-30.md PM section](../progress/2026-04/2026-04-30.md)
 
 ## Updates — 2026-04-29 (PM)
 
