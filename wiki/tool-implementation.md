@@ -116,3 +116,73 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 - [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-372 Crawl4AI (self-hosted web crawler, Apache-2.0, Docker deployment, MCP integration path), intake-364/365 Firecrawl (deferred: cloud-first SaaS)
 - [pi-agent-core deep-dive](../research/deep-dives/pi-agent-core-stateful-ts-runtime.md) -- 2026-04-26 (intake-473). `beforeToolCall` / `afterToolCall` hook surface with field-replace semantics and throw-isolation: composable middleware for tool-output post-processing without each layer knowing about the others. Maps to `tool-output-compression.md` Phase 3d (compression as middleware) and `meta-harness-optimization.md` (code-mutation safety gates). Per-tool `executionMode` override + batch-falls-back-to-sequential rule for mixing exclusive-access tools with concurrent ones. Terminate-unanimous-batch rule for clean early-exit semantics. Verdict: adopt_patterns.
 - [Magika deep dive](/workspace/research/deep-dives/magika-filetype-detection.md) -- intake-398; Google AI content-type detector (ICSE 2025, Apache 2.0); byte-embedding MLP architecture; 225 ms cold-start, 2.8 ms/file on EPYC; not_applicable — no pipeline stage requires generic filetype detection on EPYC's five-format corpus
+
+## markdownfs (mdfs) — agent-shaped MCP workspace as ETD candidate environment (2026-04-30)
+
+**TL;DR**: intake-520 (subramanya1997/markdownfs, MIT) ships an in-memory concurrent markdown VFS in Rust with MCP server, Git-style versioning, and multi-user permissions. **NOT a substrate change for the EPYC stack** (we already have Git + KB-RAG + GitNexus over the same markdown corpus), but it is **exactly the shape of MCP-tool ecosystem the agent-world ETD species (AW-1) is meant to discover**.
+
+### Tool surface
+
+Ten MCP tools span four categories:
+
+| Category | Tools |
+|----------|-------|
+| FS ops | `read`, `write`, `delete`, `move` |
+| Directory ops | `list`, `create` |
+| Search | `grep`, `glob` |
+| Version control | `commit`, `log`, `revert`, `status` |
+
+Complete tool surface with a clear verifiable-reward axis: versioned state + permission checks. Commit hashes + permission errors are deterministic ground truth — well suited to `agent-world-env-synthesis.md` AW-3 difficulty-band tagging.
+
+### Key technique
+
+Agent-shaped MCP workspace with content-addressable Git semantics and explicit `addagent` user class for user-to-agent permission delegation. `tokio Arc<RwLock<DbInner>>` single concurrent core fronted by CLI / REST / MCP. Atomic bincode persistence.
+
+### Caveats
+
+- Self-reported "~102.8x speedup over native FS" — no methodology, treat as unverified marketing. Performance claim is **not load-bearing** for our use.
+- 239 tests, 169 stars, no releases — pre-1.0 maturity.
+- **Do NOT adopt as substrate for `wiki/` or `handoffs/` corpus** — that role is already filled by Git + the planned ColBERT KB-RAG (`internal-kb-rag.md`). Migrating would be net-negative governance churn.
+
+### Concrete (non-blocking) action
+
+When `agent-world-env-synthesis.md` AW-6 bootstrap runs the 48-hour discovery sweep, include markdownfs's `mdfs-mcp` server as a candidate MCP endpoint.
+
+### Sources
+
+- [intake-520](https://github.com/subramanya1997/markdownfs) markdownfs (mdfs) — Rust, MIT
+- [`handoffs/active/agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) Research Intake Update 2026-04-30 (markdownfs)
+
+## DeepSeek-TUI snapshot store — subprocess-only git port recipe (2026-04-30)
+
+**TL;DR**: intake-508 (Hmbown/DeepSeek-TUI, Rust, closed-API-only) ships a snapshot/rollback mechanism worth lifting as a Python port (~30 LoC, subprocess-only). See [agent-architecture.md § DeepSeek-TUI vocabulary + snapshot-store port recipe](agent-architecture.md) for the full pattern. Highlights for tool-implementation:
+
+- **Storage layout**: `~/.deepseek/snapshots/<project_hash>/<worktree_hash>/.git`. Two-tier FNV-1a path hash strips `.worktrees/<name>` so sibling worktrees share a snapshot project while branches stay isolated.
+- **Init**: `git init --quiet <parent_dir>`. Not a clone, not a hardlink, not a worktree-add.
+- **Per-call invariant**: every `git` invocation passes both `--git-dir` and `--work-tree` → immune to cwd surprises, forecloses accidental `.git` mutation. Cleaner than a shadow clone.
+- **Workspace-only**: snapshots are workspace-files-only. Conversation/session state persists separately. If we promise users "session rollback", we MUST also serialize and restore conversation state.
+- **Port recipe**: `subprocess.run(["git", "--git-dir", g, "--work-tree", w, "add", "-A"])` then `write-tree`/`commit-tree`/`update-ref`/`checkout`. Language-agnostic.
+
+### Sources
+
+- [intake-508](https://github.com/Hmbown/DeepSeek-TUI) DeepSeek TUI (Rust)
+- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — full pattern audit
+
+## Cross-runtime SKILL.md installer pattern is the going default (2026-04-30)
+
+**TL;DR**: intake-509 (mattpocock/skills, MIT) is the second cross-runtime SKILL.md installer collection in our index after intake-450 (veniceai/skills). Both distribute via `npx skills@latest add ...` targeting multiple coding-agent runtimes from one source repo. **Confirms the pattern is the going ecosystem default, not a one-off.**
+
+### Pocock-specific patterns worth lifting
+
+- **`/setup-matt-pocock-skills`** — per-repo bootstrap config skill that records issue-tracker, label vocabulary, and docs paths the other skills consume. Concrete reference for the `scripts/hermes/skills/` per-repo configuration story.
+- **`/write-a-skill`** — meta-skill codifying progressive disclosure and bundled-resource conventions for new skills. Pairs with veniceai's authoring rubric for a unified `SKILL TEMPLATE.md` we've been planning.
+
+### Action
+
+Adopt the `/setup-X-skills` per-repo config-bootstrap shape when we wire `scripts/hermes/skills/`. Calibrated for TypeScript app development, not CPU inference — runtime guidance does not transfer; pattern shape does.
+
+### Sources
+
+- [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers
+- intake-450 — veniceai/skills (sibling cross-runtime SKILL.md authoring rubric)
+- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — installer pattern adoption note

@@ -159,3 +159,38 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 - [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, double-critic rejection sampling (sycophancy-resistant verification), calibrated Elo complexity scoring (cross-dataset difficulty stratification), taxonomy-based coverage analysis
 - [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign (M2.7, Qwen3.6, SG4-31b, SG4-26b-MM), serving infrastructure debugging, benchmark tooling upgrades
 - [Intake entries: 15 papers](/workspace/.claude/skills/project-wiki/data/) -- ARC, MMLU, GSM8K, HumanEval, MBPP, IFEval, BFCL, SpecExec, PhysReason, and others (all verdict: already_integrated)
+
+## Per-model compression-tolerance curve as model-onboarding deployment gate (2026-04-30)
+
+**TL;DR**: `agent-file-prose-compression.md` (NEW handoff, HIGH priority, per intake-509 follow-up) elevates per-model compression-tolerance from a one-off A/B into a **deployment gate baked into the `/new-model` onboarding pipeline**. A model that fails ≥95% baseline compliance at the candidate compression level is flagged before reaching production.
+
+### Why this matters as a methodology pattern
+
+Three structural advantages over runtime compression A/Bs:
+
+1. **Static, build-time, human-reviewed.** Compression is run once per agent file, the diff is reviewed by a human, the result is committed. Non-determinism of the compressor is replaced by a human gate. No 5-minute prompt-cache pressure, no live failure modes — the eval is reproducible.
+2. **Monolog target, not aggregation.** Agent reads agent file as instructions to itself. There is no downstream verifier comparing confidence markers across multiple authors, so the hedge-stripping failure mode that blocks runtime `/caveman` deployment does not apply here. The eval surface is therefore narrower and more tractable.
+3. **Per-model differentiation IS the eval signal.** A 1.7B drafter has less capacity to fill in caveman-style blanks than a 30B verifier. The eval explicitly measures **the compression-tolerance curve per model**, not a single binary "does it work". This makes the eval a proper deployment-gate input, not a yes/no.
+
+### Eval gate
+
+Pilot: `agents/shared/ENGINEERING_STANDARDS.md`. Compress at ladder of levels (e.g. 20% / 30% / 40% / 50% reduction). For each level, run a per-model compliance suite measuring whether the agent respects RFC 2119 directive polarity (`must`/`must not`/`never`/`always`/`MAY`/`SHOULD`), procedural ordering, and bundled examples. **Gate**: ≥95% baseline compliance at ≥30% token reduction. Models that fail at any level are tagged with their max-tolerable-compression level in the registry; orchestrator routing respects the per-model max.
+
+### Cross-model deployment-gate matrix
+
+| Model class | Expected compression tolerance |
+|-------------|-------------------------------|
+| Opus-class verifier (high-capacity, instruction-following well-trained) | 40-50% likely OK |
+| Sonnet-class worker | 30-40% likely OK |
+| Haiku-class drafter | 20-30% likely OK |
+| Local 30B-A3B coder | empirical, no priors |
+| Local 1.7B drafter | likely degrades fast |
+
+Per-model curve becomes part of the model registry and enters routing decisions: if a route requires compressed agent files but the candidate model fails the gate at the required compression level, the route is rejected at deployment time, not at runtime.
+
+### Sources
+
+- [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers — `/caveman` source
+- intake-450 — veniceai/skills (sibling SKILL.md authoring rubric)
+- intake-301 — AXI/TOON encoding (orthogonal layer)
+- [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate

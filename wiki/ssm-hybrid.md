@@ -170,3 +170,68 @@ Tracked at [`lightning-attention-port.md`](../handoffs/active/lightning-attentio
 - [intake-503](https://arxiv.org/abs/2510.19338) Every Attention Matters — Ling-Linear-2.0 hybrid (M=4 / M=7) with Lightning Attention, FP8 LingHe kernels, MTP layers retained from Ling 2.0; open weights for Ring-mini (16B/957M-active) + Ring-flash (104B/6.1B-active)
 - [Ling-Linear / Lightning Attention deep-dive](../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — corrected effort estimate after GLA-op audit
 - [Lightning Attention port handoff](../handoffs/active/lightning-attention-port.md) — active port via existing GLA op, L1-L5 phases
+
+## Lightning Attention port — L1 scoping COMPLETE, GO verdict (2026-04-30)
+
+The Ling-Linear-2.0 port advanced from "GLA-op finding" to a full L1 scoping pass. Six findings, all gates green:
+
+### Architecture confirmed (intake-503, Ring-mini-linear-2.0)
+
+- `model_type = "bailing_moe_linear"`, `architectures = ["BailingMoeLinearV2ForCausalLM"]` — NOT `"ling_linear"` as the original deep-dive guessed
+- Linear-attn class: `BailingMoeV2LinearAttention`, kernel reference: `fla.chunk_simple_gla` + `fla.fused_recurrent_simple_gla` from `flash-linear-attention v0.3.2`. **FLA "simple GLA" = scalar per-head decay GLA = exactly what `ggml_gated_linear_attn` implements.**
+- 20 layers, 16 Q heads, 4 KV heads, head_dim 128, `layer_group_size=5` (M=4 pattern: 4 linear : 1 softmax via `(layer_idx + 1) % 5 == 0`), `partial_rotary_factor=0.5` on softmax layers only, `max_position_embeddings=131072`
+- 256 experts, 8 active per token, 1 shared, `first_k_dense_replace=1`
+
+### GLA op semantics (mathematical correctness)
+
+The recurrence kernel `ggml_compute_forward_gla_f32` accepts `g[t,h,i]` with full per-token, per-head, per-key-dim resolution. To express Lightning Attention's `S_t = γ_h · S_{t-1} + k_t v_t^T` (single per-head fixed scalar), set `g[t,h,i] = γ_h` for all `t, i`. **No shape mismatch, no kernel modification needed for v1.** Constant fill is a degenerate case the kernel handles correctly.
+
+Decay formula extracted: ALiBi-style `(2^-0.5)^h` per-head, scaled by `1-(l-1)/(L-1)+1e-5` per-linear-layer, sign-flipped, exp'd at convert time.
+
+### Template strategy CORRECTED (was wrong in original handoff)
+
+The original recommendation to derive `llm_build_ring_linear` from `llm_build_delta_net_base` is **wrong**. The base class methods all dispatch to `ggml_gated_delta_net` (GDN), not `ggml_gated_linear_attn` (GLA):
+
+| Op | Recurrence | Used by |
+|----|-----------|---------|
+| `ggml_gated_delta_net` (GDN) | `S_t = S_{t-1}(g_t I − β_t k_t k_t^T) + β_t k_t v_t^T` | kimi-linear, qwen3.5, qwen3-next, qwen3.5-moe |
+| `ggml_gated_linear_attn` (GLA) | `S_t = g_t · S_{t-1} + k_t v_t^T` (element-wise per-(t,h,i)) | RWKV-6 (qrwkv mode only) |
+
+Lightning Attention is mathematically a **degenerate-`g` GLA**, not a GDN special case. L3 template must mirror `llm_build_rwkv6_base::build_rwkv6_time_mix` (the only existing GLA consumer in tree), stripped of RWKV-specific time-shift/lerp/receptance machinery. Recommended L3 inheritance: derive `llm_build_ring_linear` directly from `llm_graph_context`, NOT from `llm_build_delta_net_base` and NOT from `llm_build_rwkv6_base`.
+
+### Backend coverage (CPU-target green; pre-existing gaps elsewhere)
+
+| Backend | Status |
+|---------|--------|
+| CPU (AVX/AVX-512/SVE/NEON + scalar) | ✅ `ggml/src/ggml-cpu/ops.cpp:10524-10702` |
+| CUDA / HIP / MUSA | ✅ `ggml/src/ggml-cuda/gla.cu` (HIP+MUSA inherit via CMake glob) |
+| SYCL | ✅ `gla.cpp` (106 LOC) |
+| CANN | ✅ `aclnn_ops.cpp` |
+| BLAS / zDNN / zenDNN | ✅ falls back to CPU |
+| Metal / Vulkan / OpenCL / WebGPU / OpenVINO / Hexagon | ❌ pre-existing gaps from RWKV-6 |
+
+For v1 CPU-only EPYC port: fully covered. For upstream contribution: same backend matrix as RWKV-6 already has — adding Lightning Attention does NOT introduce a new hole.
+
+### Threading caveat
+
+GLA kernel partitions heads across threads. For Ring-mini at H=16, EPYC 96-thread bind would have only 16 of 96 threads doing work per call → underutilization on linear-attn layers. **Flag for L4 throughput analysis.**
+
+### Hybrid handling (M=4)
+
+Periodic softmax layers reuse the standard `build_attn` path — no new code needed. The `if (hparams.is_recurrent(il)) { GLA path } else { build_attn path }` pattern from kimi-linear (line 120, 206) is reusable structurally even though we don't inherit from `delta_net_base`.
+
+### Decision gate
+
+**GO** for L2 (GGUF converter, ~50 LOC) + L3 (model variant, ~150 LOC). Both cleared to start, no inference required. L4 inference test path remains GATED on user approval. **Total port estimate: 3-5 days of focused work** for working `convert_hf_to_gguf.py --arch ling_linear` + `llama-cli` decode on Ring-mini Q4_K_M.
+
+### Why this matters (activation value)
+
+Ring-mini-linear-2.0 (16B/957M-active) opens **drafter territory** — 957M active = Q-scorer-class. Ring-flash-linear-2.0 (104B/6.1B-active) opens architect-tier territory. Both are CPU-friendly intermediate paths between full softmax (Qwen3) and pure SSM (Mamba/Jamba).
+
+### Sources
+
+- [intake-503](https://arxiv.org/abs/2510.19338) Every Attention Matters — Ling-Linear-2.0 (full architecture details)
+- [`research/deep-dives/ling-linear-lightning-attention-hybrid.md`](../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — corrected effort estimate after GLA-op audit
+- [`handoffs/active/lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — L1 scoping COMPLETE block + L2/L3 cleared
+- HF source verification: https://huggingface.co/inclusionAI/Ring-mini-linear-2.0/raw/main/{config.json,modeling_bailing_moe_linear_v2.py,configuration_bailing_moe_linear_v2.py}
+- GLA reference call site: `src/models/rwkv6-base.cpp:137` (qrwkv branch)

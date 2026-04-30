@@ -89,3 +89,54 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - [intake-396] Voicebox (jamiepine/voicebox) -- Multi-engine TTS studio; patterns adopted, ROCm discredited
 - [intake-401] LuxTTS (YatharthS/LuxTTS) -- ZipVoice-Distill fine-tune with 48kHz vocoder; credibility 2/5 (fork), parent 4/5; Path D vehicle
 - [intake-402] TADA (HumeAI/tada) -- Long-form TTS via text-acoustic dual alignment; GPU-only as shipped; shelved pending long-form workload or GPU access
+
+## KAME — tandem speech-to-speech with parallel oracle injection (2026-04-30)
+
+**TL;DR**: KAME (Sakana AI, ICASSP 2026, intake-511..515) pairs a Moshi-class real-time S2S front-end with a parallel text-LLM oracle stream that injects gradually-refined knowledge mid-utterance. MT-Bench-speech 2.05 (Moshi) → 6.43 (KAME). **Verdict: not_applicable for current EPYC scope** — Moshi audio-codec stack has no GGUF/llama.cpp support (same blocker class as existing Path D / Path E TTS work) and the front-end weights are tied to a specific Moshi base + KAME-specific simulated-oracle retraining recipe.
+
+### Architecture (clarification: oracle is a fourth autoregressive stream, NOT an external API call)
+
+The oracle stream is **not** an external API call into a frozen Moshi — it is a **fourth autoregressive stream within a 4-stream Moshi-style joint transformer**, sitting alongside input-audio / output-audio / inner-monologue streams. The front-end was specifically retrained on simulated-oracle-augmented data with a 6-level hint progression (Table 1 of the paper) to handle oracle text that progressively converges to ground-truth as user speech completes.
+
+**Implication**: "back-end agnostic" is genuine — backend LLM (GPT-4.1 / Claude Opus 4.1 / Gemini 2.5 Flash in the reference impl) can be swapped via `OPENAI_BASE_URL` to a self-hosted llama-server. **But the front-end is fixed weights tied to a specific Moshi base + this specific training recipe.** You can swap Claude for GPT, but you cannot graft this onto an arbitrary Moshi without re-training.
+
+### Closed-API claim correction
+
+An earlier intake draft cited cloud-API dependencies (OpenAI Chat Completions + Google STT) as a verdict driver. Direct repo audit of `src/kame/server_oracle.py` shows `AsyncOpenAI()` instantiated with **no args**, which transparently honors `OPENAI_BASE_URL`. Backend swap to local llama-server is **one env var**. The closed-API dependency is convenience, not architecture. The real adoption blocker is (1) Moshi audio-codec stack absence in llama.cpp, (2) front-end retraining on simulated-oracle data, (3) GPU-only inference path, (4) no EPYC voice-interface use case on roadmap.
+
+### Transferable pattern (recorded as competitive intelligence)
+
+The "fourth autoregressive stream with most-recent-wins semantics, mid-decode update from a parallel slow path" is genuinely distinct from existing EPYC patterns:
+
+| Pattern | Difference from KAME oracle stream |
+|---------|-----------------------------------|
+| Drafter / verifier speculative decoding | No token-level accept/reject; KAME oracle does not vote on tokens, it conditions generation |
+| `worker_explore` → `coder` routing | Sequential, not parallel mid-stream |
+| Hermes outer-shell + worker | Request-boundary coordination, not mid-utterance |
+| Trinity learned coordinator | Per-turn dispatch, not intra-turn |
+
+**Not worth a stub** — pattern is interesting but speculative without near-term implementation path. Recorded for awareness.
+
+### Three concrete revival gates
+
+In order of likelihood:
+
+1. **CPU-only audio codec stack** lands — Mimi/Moshi-class neural codecs port to llama.cpp/GGUF, OR a credible CPU PyTorch path (AVX-512 BF16) exists. Same prerequisite as Paths A/D/E. If this resolves, multiple TTS systems unblock together and KAME becomes one of several candidates with an unusually clean backend-swap story.
+2. **Open-weight KAME checkpoint** ships from Sakana (HF model card intake-515 exists; check periodically). Without weights, training requires GPU compute we don't have plus the audio + simulated-oracle pipelines.
+3. **An EPYC voice-interface use case appears** that justifies the integration effort. Currently `multimodal-pipeline.md` is LOW priority; voice S2S has no production driver.
+
+Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack ports, KAME becomes the first TTS Path with a fully-defined adoption sequence.
+
+### Watch list
+
+- **SHANKS** (arxiv:2510.06917, "Simultaneous Hearing and Thinking for Spoken Language Models") — adjacent same-quarter paper exploring similar speak-while-thinking territory but solving a *different problem* (interruption + tool-call-during-listen vs knowledge-grounded response). Tracked as sibling, NOT supersession. Ingest separately if it gains adoption.
+
+### Sources
+
+- [intake-511](https://arxiv.org/abs/2510.02327) KAME paper — Sakana AI, ICASSP 2026
+- [intake-512](https://pub.sakana.ai/kame/) Sakana AI blog post (MT-Bench numbers, hot-swappable backends)
+- [intake-513](https://github.com/SakanaAI/kame) Reference inference repo
+- [intake-514](https://github.com/SakanaAI/kame_finetune) Finetune workflow (DeepSpeed, GPU-only)
+- [intake-515](https://huggingface.co/SakanaAI/kame) HF model card
+- [`research/deep-dives/kame-tandem-s2s-architecture.md`](../research/deep-dives/kame-tandem-s2s-architecture.md) — full deep-dive with paper analysis, oracle-mechanism audit, EPYC mapping, SHANKS comparison
+- [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Research Intake Update 2026-04-30 + deep-dive refinement

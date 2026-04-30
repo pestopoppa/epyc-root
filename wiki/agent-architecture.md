@@ -318,3 +318,86 @@ Hardware-feasible (no GPU/Docker; FastAPI in-process, ~5s first task). But integ
 - [intake-153](https://arxiv.org/abs/2512.24601) RLM foundational paper (Zhang/Kraska/Khattab) — already_integrated
 - [`research/deep-dives/halo-rlm-trace-loop-integration.md`](../research/deep-dives/halo-rlm-trace-loop-integration.md) — full spike plan + risk register
 - [`handoffs/active/halo-trace-loop-spike.md`](../handoffs/active/halo-trace-loop-spike.md) — claim-ready spike
+
+## `/caveman` prose-style rider — orthogonal compression mechanism class (2026-04-30)
+
+**TL;DR**: Pocock's `/caveman` (intake-509, MIT) is a **prompt-side prose-envelope rider** — different mechanism class from any compressor in the EPYC stack today. Operates on the agent's free-form prose generation; orthogonal (NOT substitutable) to TOON which owns structured payloads. Three handoffs converged on the same intake with three different framings:
+
+| Handoff | Stance |
+|---------|--------|
+| `tool-output-compression.md` | Reframe — `/caveman` is prose-only, NOT a generic compression alternative. Stack order: `caveman on prose wrapper → TOON on embedded structured payload`. Anything structured belongs to TOON. |
+| `repl-turn-efficiency.md` | Companion to S3 suggestion-injection — same Omega-gate requirement (suppression vs injection are different signs of the same axis). |
+| `agent-file-prose-compression.md` (NEW handoff) | A different deployment target — agent-file authoring time, not runtime. Static, build-time, human-reviewed. |
+
+### Three risks (block runtime/inter-model deployment without explicit gates)
+
+1. **Hedge-preservation**: `/caveman`'s drop-list explicitly includes "hedging". For inter-model escalation/delegation/consultation flows, hedge-stripping silently turns "this might work but..." into "this work" — a downstream verifier comparing confidence levels across models cannot tell low-confidence answers from high-confidence ones. **Lever must NOT be deployed on flows that aggregate multi-model opinions until a hedge-preservation eval (uncertainty-marker recall on a held-out set) is in place.**
+2. **Persistence-clause**: `/caveman`'s prompt body says verbatim **"ACTIVE EVERY RESPONSE once triggered. No revert after many turns."** Session-scoped, NOT turn-scoped. If wired into REPL-turn machinery, the `setCaveman(on|off)` setter must be **session-level state** and the steer/follow-up queues must NOT be allowed to flip it implicitly. Queue mode (per-turn drain) and caveman mode (session-level prose style) live at different timescales and must not be conflated.
+3. **Reasoning-fidelity**: prompt-side style riders are known to occasionally degrade reasoning on multi-step tasks (model "compresses" intermediate thinking it actually needed). Pocock's repo does not measure this; the auto-clarity exception in `/caveman` covers "multi-step sequences where fragment order risks misread" but the gate is non-deterministic.
+
+### Minimum eval gate before runtime deployment
+
+50 consultation traces, blind quality scoring by Q-scorer, target **≥95% baseline quality at ≥40% prose-only token reduction**, plus an explicit hedge-preservation recall eval on a held-out set with explicit uncertainty markers. Do NOT trust Pocock's 75% headline as either a target or a baseline — treat it as an upper bound only.
+
+### Agent-file prose compression — different beast, three structural advantages
+
+The `agent-file-prose-compression.md` handoff (NEW 2026-04-30, HIGH priority) addresses a different deployment target than runtime `/caveman`:
+
+1. **Static, build-time, human-reviewed.** Compression is run once per agent file, the diff is reviewed by a human, the result is committed. Non-determinism of the compressor is replaced by a human gate. No 5-minute prompt-cache pressure, no live failure modes.
+2. **Monolog, not aggregation.** Agent reads agent file as instructions to itself. There is no downstream verifier comparing confidence markers, so the hedge-stripping failure mode that blocks runtime `/caveman` does not apply here. Hedging in instruction prose is usually noise.
+3. **Read-many, write-once amortization.** Agent files are loaded into context every session by every agent. A 30-50% reduction at session start compounds across every session of every agent.
+
+Three new agent-file-specific risks: (a) directive polarity (`must`/`must not`/`never`/`always` and RFC 2119 vocabulary) must survive — vanilla `/caveman` does not specifically protect them; project rider MUST; (b) procedural ordering must survive (numbered procedures carry order via list structure; prose-described workflows need a preserve-clause); (c) smaller drafter models read agent files too — per-model compression-tolerance curve is the right answer; a single fixed level is wrong.
+
+**Pipeline integration**: per-model compliance gate becomes a step in the `/new-model` onboarding flow. A model that fails ≥95% baseline compliance at the candidate compression level is flagged before reaching production.
+
+### Sources
+
+- [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers — Matt Pocock's Claude Code skills collection (`/caveman`, `/grill-with-docs`, `/setup-matt-pocock-skills`, `/write-a-skill`)
+- intake-450 — veniceai/skills sibling cross-runtime SKILL.md authoring rubric
+- intake-301 — AXI: Agent eXperience Interface (TOON encoding — orthogonal layer)
+- [`handoffs/active/tool-output-compression.md`](../handoffs/active/tool-output-compression.md) Research Intake Update 2026-04-30 — TOON-orthogonality reframe + 3-risk register
+- [`handoffs/active/repl-turn-efficiency.md`](../handoffs/active/repl-turn-efficiency.md) Research Intake Update 2026-04-30 — persistence-clause caveat
+- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — Pocock skills installer pattern as per-repo bootstrap
+- [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate
+
+## DeepSeek-TUI vocabulary + snapshot-store port recipe (2026-04-30)
+
+**TL;DR**: intake-508 (Hmbown/DeepSeek-TUI) is a closed-DeepSeek-API-only Rust TUI; nothing to fork or import wholesale. Two patterns lifted with corrected framings after primary-source review.
+
+### Pattern 1 — Plan/Agent/YOLO names: keep vocabulary, drop the two-axis claim
+
+Source review confirms `AppMode` is a **flat tri-state enum** (`crates/tui/src/core/engine.rs`), NOT a clean (gate × approve) cross-product:
+
+| Mode | Mechanism | Honest framing |
+|------|-----------|----------------|
+| `Plan` | Registry-restricted: mutating tools never registered (`with_read_only_file_tools()` ~line 1450) | Strong enforcement at registry-build, not a runtime gate. Porting the *guarantee* requires committing to the same registry-shaping discipline. |
+| `Agent` | Full registry + per-call approval prompts. Approval channel exists but the "does this call need approval" predicate is woven through `Feature` flags + `session.allow_shell` + per-tool `SafetyLevel` | **No single function to lift** — porting requires a refactor. |
+| `YOLO` | Base case: short-circuit `if mode == AppMode::Yolo { return false; }` (~lines 1070-1090) | Negligible logic. |
+
+**Honest framing for outer-shell**: "Plan = registry-restricted to read-only; Agent = full registry + per-call approval prompts; YOLO = full registry, prompts skipped." Adopt names; design our own per-call gate predicate. Do **not** sell this externally as a clean two-axis (gate × approve) system — DeepSeek-TUI does not actually implement that.
+
+**Caveat (live TODO in source)**: `command_safety.rs` carries a top-of-file `// TODO(integrate): Wire command safety analysis into shell tool approval flow`. The shell-command safety classifier is **not yet wired** into the approval flow.
+
+### Pattern 2 — Side-git snapshot rollback: workspace-files-only, clean port recipe
+
+Source review (`crates/tui/src/snapshot/{repo.rs, paths.rs}`) confirms:
+
+- **Storage**: `~/.deepseek/snapshots/<project_hash>/<worktree_hash>/.git`. Both hashes are FNV-1a of the canonicalized workspace path. The two-tier hash strips `.worktrees/<name>` so sibling worktrees share a snapshot project while branches stay isolated — **worth borrowing**.
+- **Init**: `git init --quiet <parent_dir>`. Not a clone, not a hardlink, not a worktree-add.
+- **Per-call invariant**: every subsequent `git` invocation passes both `--git-dir` and `--work-tree`. Makes the store immune to cwd surprises and forecloses accidental `.git` mutation. **Cleaner than a shadow clone.**
+- **Snapshot create** (lines 113-156): `git add -A` → `git write-tree` → `git commit-tree` → `git update-ref HEAD`.
+- **Restore** (lines 161-177): `git checkout <sha> -- :/` plus `remove_paths_missing_from_target()`.
+
+**CAVEAT (leaky abstraction)**: snapshots are **workspace-files-only**. Conversation/session state is persisted separately (`session.rs`); `revert_turn` does NOT roll back the model context. A restored workspace can desync from the running conversation. If we promise users "session rollback", we must also serialize and restore the conversation state — DeepSeek-TUI does not.
+
+**Port recipe (Python, ~30 LoC)**: subprocess-only, language-agnostic. `subprocess.run(["git", "--git-dir", g, "--work-tree", w, "add", "-A"])`, then `write-tree`/`commit-tree`/`update-ref`/`checkout`. Two-tier FNV-1a path hash for the store layout. Pin this as the actionable port if/when outer-shell needs checkpointing.
+
+### MCP approval as JSON-RPC error `-32001` (informational)
+
+`mcp_server.rs` rejects unapproved tool calls with `-32001`; client resends with `"approved": true`. Tidy way to expose tri-state semantics to MCP clients without a bespoke schema. Worth recording for any future MCP-server work in this repo.
+
+### Sources
+
+- [intake-508](https://github.com/Hmbown/DeepSeek-TUI) DeepSeek TUI — Terminal-native coding agent for DeepSeek V4 (Rust, closed-API-only)
+- [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — flat-enum disclosure + snapshot port recipe
