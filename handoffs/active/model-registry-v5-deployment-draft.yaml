@@ -1,0 +1,237 @@
+# =============================================================================
+# v5 Model Registry Deployment Draft — STAGING (NOT YET LIVE)
+# =============================================================================
+#
+# Purpose:
+#   Stage per-role binary_path + env + moe_spec_budget assignments derived from
+#   the per-arch deployment matrix in cpu-kernel-env-flags-inventory.md.
+#
+# Status: NOT YET APPLIED to production model_registry.yaml.
+#   Triggered by: production-consolidated-v5 kernel push completing.
+#   Owned by: llama-cpp-kernel-push-rebase.md handoff.
+#   Validated by: per-role smoke + canonical bench under each env block before
+#   shipping to orchestrator_stack.py.
+#
+# Why this file exists:
+#   We have measured per-arch optimization quirks (CPU1 stack, mbind kill-switch,
+#   MoE-Spec budget, EP stack) that materially affect throughput, but the
+#   experimental kernel that gates them (`feature/cpu-ep-inter-process` HEAD
+#   `aed8c1e` + `d45126db5`) has NOT been merged to production-consolidated-v5
+#   yet. Persisting these quirks directly into model_registry.yaml today would
+#   reference flags that don't exist in the production kernel.
+#
+#   This file is the bridge: it captures the deployment intent so it isn't lost
+#   during the kernel-push wait. When v5 ships, the push-rebase agent reads this
+#   draft, validates each env block measures as documented, and merges into
+#   model_registry.yaml.
+#
+# Source matrix: handoffs/active/cpu-kernel-env-flags-inventory.md §"Per-Arch
+# Deployment Matrix" (revised 2026-04-30 with Phase A-D Remediation findings +
+# multi-arch + Probe B + Hybrid SSM follow-up).
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Host-level prerequisites — orchestrator_stack.py applies these BEFORE
+# launching any llama-server. Not per-role; not stored in model_registry.
+# -----------------------------------------------------------------------------
+host_prerequisites:
+  sysctls:                              # re-applied per session (lost on reboot)
+    kernel.numa_balancing: 0
+    kernel.perf_event_paranoid: 1
+  thp:
+    /sys/kernel/mm/transparent_hugepage/enabled: always
+    /sys/kernel/mm/transparent_hugepage/defrag: always
+  cpu_governor: performance
+  invocation_prefix:                    # prepend to every llama-server launch
+    - OMP_PROC_BIND=spread
+    - OMP_PLACES=cores
+    - OMP_WAIT_POLICY=active
+    - numactl
+    - --interleave=all
+    - --
+    - taskset
+    - -c
+    - 0-95
+  llama_server_flags:                   # always-on
+    -t: 96
+    -fa: 1
+    --mmap: 0
+  reproducibility_tripwire:
+    description: |
+      Run before trusting any per-role bench number. If Coder-30B Q4_K_M tg32
+      doesn't reproduce ~47-49 t/s (cold-boot canonical) or ~58.65 (warmed),
+      the host is degraded and per-role recommendations are NOT trustworthy.
+    command: >
+      OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+      numactl --interleave=all -- taskset -c 0-95
+      llama-bench -m $CODER_30B_Q4KM -t 96 -fa 1 --mmap 0
+      -p 0 -n 32 -r 5
+    expected_cold_boot: 47-49 t/s
+    expected_warmed: ~58 t/s
+
+# -----------------------------------------------------------------------------
+# Per-role bindings — DRAFT.
+#
+# Schema:
+#   roles:
+#     <role_key>:
+#       arch_class: <one of: moe_q4_sync_bound | moe_q4_dram_bound |
+#                            moe_q8_bw_bound | hybrid_ssm_dense |
+#                            hybrid_ssm_moe | dense_q8 | dense_q4>
+#       model: <model_id>
+#       binary_path: <build dir under llama.cpp-experimental>
+#       env: { ... }                        # set on llama-server launch
+#       cli_flags: { ... }                  # additional CLI args
+#       expected_throughput: { ... }        # for post-deployment validation
+#       source_bundle: <path>               # measurement evidence
+# -----------------------------------------------------------------------------
+roles:
+
+  # -- MoE Q4_K_M sync-bound (current production worker) --
+  worker:
+    arch_class: moe_q4_sync_bound
+    model: Qwen3-Coder-30B-A3B-Instruct
+    quant: Q4_K_M
+    binary_path: build_libomp_pgo_bolt/bin_bolted/   # CPU12 BOLT-libggml per-role +2.1%
+    env:
+      # CPU1 stack (CPU21 P3 +1.8% on Coder-30B Q4_K_M tg32, stable)
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+      # GGML_NUMA_REPACK_INTERLEAVE: 1 (default-on, do not need to set)
+    expected_throughput:
+      tg64_canonical: ~47-49 t/s            # cold-boot
+      tg32_warmed: ~58-60 t/s
+    source_bundle: data/cpu_optimization/2026-04-28-cpu21-libomp-chunks/
+
+  # -- MoE Q4_K_M DRAM-bound (current architect_coding) --
+  architect_coding:
+    arch_class: moe_q4_dram_bound
+    model: Qwen3-Coder-REAP-246B-A35B
+    quant: Q4_K_M
+    binary_path: build_libomp_pgo_use/bin/           # CPU11 PGO universal
+    env: {}                                          # default v5; CPU22 -0.8% (noise)
+    moe_spec_budget: 40                              # MoE-Spec REAP=40 +13-16% pp32 / +3% e2e
+    expected_throughput:
+      tg64_canonical: ~6.3 t/s                      # cold-boot
+      tg32_warmed: ~6.85 t/s
+    source_bundle: data/cpu_optimization/2026-04-28-moe-spec-phase-1/
+
+  # -- MoE Q8_0 BW-bound frontdoor --
+  frontdoor:
+    arch_class: moe_q8_bw_bound
+    model: Qwen3.6-35B-A3B-Instruct
+    quant: Q8_0
+    binary_path: build_libomp_pgo_use/bin/
+    env:
+      # EP stack +17% honest baseline (g.1 = drone+shard, N=2)
+      GGML_EP_N_INSTANCES: 2
+      GGML_EP_NUMA_PIN: 1
+      GGML_EP_MASTER_ALL_NODES: 1
+      GGML_EP_WORKER_DRONE: 1
+      GGML_EP_SHARD: 1
+    expected_throughput:
+      tg32_canonical: ~17 t/s with EP / ~14.6 t/s without EP
+      tg32_warmed_no_ep: ~27 t/s
+    source_bundle: data/cpu_optimization/2026-04-26-asymmetry/
+
+  # -- Hybrid SSM dense (NEW 2026-04-30 — if Nemotron-9B-v2 is added to roster) --
+  # Worth opt-in for prefill-heavy workload (+8.9% pp512); decode +2.1% smaller
+  hybrid_ssm_dense:
+    arch_class: hybrid_ssm_dense
+    model: NVIDIA-Nemotron-Nano-9B-v2
+    quant: Q8_0
+    binary_path: build_libomp_pgo_use/bin/
+    env:
+      # c3 = CPU1 stack + mbind off — strongest robust signal in 2026-04-29 campaign
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+      GGML_NUMA_REPACK_INTERLEAVE: 0
+    expected_throughput:
+      tg64_canonical: ~13 t/s              # +2.1% over default 12.69
+      pp512_canonical: ~345 t/s            # +8.9% over default 317
+      pp2048_canonical: ~336 t/s           # +3.7% over default 324
+    source_bundle: data/cpu_optimization/2026-04-29-workload-shape-canonical/
+    notes: >
+      Prefill-heavy regime is where the +8.9% lives — primarily attractive for
+      long-input/short-generation workload (RAG retrieval, document QA, code
+      completion with large context). Pure decode benefit is small (+2.1%).
+
+  # -- Hybrid SSM MoE — DEFAULT v5 (no opt-in) --
+  hybrid_ssm_moe:                          # placeholder for Qwen3-Next-80B if rostered
+    arch_class: hybrid_ssm_moe
+    model: Qwen3-Next-80B-A3B-Instruct
+    quant: Q4_K_M
+    binary_path: build_libomp_pgo_use/bin/
+    env: {}                                # default v5 — c3 effect only +1.7% pp512 (within practical noise floor)
+    expected_throughput:
+      tg64_canonical: ~22 t/s
+      pp512_canonical: ~283 t/s
+    source_bundle: data/cpu_optimization/2026-04-30-hybrid-ssm-next80b-followup/
+    notes: >
+      MoE structure (mul_mat_id per-token-varying expert subset) defeats CPU1's
+      CCD-aware partitioning. The +8.9% on Nemotron does NOT generalize to MoE
+      Hybrid SSM. Default v5 stack is optimal here.
+
+  # -- Dense Q8 — DEFAULT v5 (CPU1 actively HURTS) --
+  # If Qwen3.6-27B-Q8 is wired as a role, do NOT enable CPU1 or mbind-off
+  dense_q8_qwen36_27b:
+    arch_class: dense_q8
+    model: Qwen3.6-27B
+    quant: Q8_0
+    binary_path: build_libomp_pgo_use/bin/
+    env: {}                                # NO opt-in
+    expected_throughput:
+      tg64_canonical: ~4.28 t/s            # do not regress this baseline
+    source_bundle: data/cpu_optimization/2026-04-29-multi-arch-coverage-canonical/
+    warning: >
+      All probed CPU1/mbind-off configs HURT this arch class:
+      c1=-4.7%, c2=-3.3%, c3=-1.6%. Dense Q8 already saturates DRAM channels in
+      the standard --interleave=all path; CCD-aware partitioning fragments tile
+      distribution without compensating gain.
+
+  # -- Dense Q4_K_M — DEFAULT v5 (within noise) --
+  dense_q4_gemma:
+    arch_class: dense_q4
+    model: gemma-4-31B-it
+    quant: Q4_K_M
+    binary_path: build_libomp_pgo_use/bin/
+    env: {}                                # NO opt-in
+    expected_throughput:
+      tg64_canonical: ~6.75 t/s
+    source_bundle: data/cpu_optimization/2026-04-29-workload-shape-canonical/
+    notes: >
+      All probed configs within ±2% under tight Probe B measurement (n=5 with
+      σ ~0.01). Multi-arch n=15 c2 "+3.9%" was baseline-drift artifact (gemma
+      c0 std was 6.4% CV in multi-arch run).
+
+# -----------------------------------------------------------------------------
+# Roles NOT YET in this draft (need decisions or measurement)
+# -----------------------------------------------------------------------------
+todo_or_undecided:
+  - role: architect_general                  # Qwen3.5-122B-A10B Q4_K_M
+    needs: arch class measurement under canonical (no clean per-arch data)
+  - role: coder_escalation                   # Qwen2.5-Coder-32B Q4_K_M
+    needs: arch class measurement under canonical
+    note: |
+      Original measurement showed slow baseline (7 t/s) per existing
+      runtime_quirks; spec-decode acceptance ~16% (not viable).
+      May not survive v5 audit if Qwen3-Coder-30B replaces it.
+  - role: ingest_long_context
+    needs: per-arch data + 32K+ context probe
+  - role: voice_server
+    needs: separate audio-domain analysis
+
+# -----------------------------------------------------------------------------
+# Migration checklist — when v5 ships
+# -----------------------------------------------------------------------------
+migration:
+  - step: Validate canonical recipe reproduces ~47-49 t/s tripwire on production-consolidated-v5 cold-boot
+  - step: For each role above, smoke + bench under documented env block, confirm expected_throughput
+  - step: For each todo_or_undecided role, run canonical baseline + 3-config probe (c0/c2/c3) before shipping
+  - step: Merge env blocks into model_registry.yaml under each role; preserve existing runtime_quirks descriptions
+  - step: Update orchestrator_stack.py to apply host_prerequisites at session start (not per-launch)
+  - step: Add reproducibility_tripwire as a startup health-check before any role launches
+  - step: Move this file to handoffs/completed/ once production model_registry.yaml is updated
