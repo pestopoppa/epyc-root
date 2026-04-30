@@ -206,3 +206,57 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 - [`progress/2026-04/2026-04-29.md`](../progress/2026-04/2026-04-29.md) — session log
 - intake-355 NextPlaid/ColGREP — v1.2.0 unblock notes
 - v1.2.0 release notes (`github.com/lightonai/next-plaid` 2026-04-10) — panic→fallback, hybrid search, pipelined indexing
+
+## Granite-Embedding-97M-Multilingual-R2 — IBM dense retriever, ModernBERT-based (2026-04-30)
+
+**TL;DR**: IBM's `granite-embedding-97m-multilingual-r2` (Apache 2.0, 97M params, ModernBERT backbone, 32K context, claimed MTEB-ML-Retrieval 59.6 on 18 tasks) is the highest-scoring open <100M-class multilingual embedder. Worth benching as the dense first-stage retriever in front of GTE-ModernColBERT-v1 reranker for KB-RAG, web-research, and SearXNG. **No production multilingual retrieval today** — would be net-new infra (current production: English-only BGE-large-en-v1.5 routing pool on `:8090–:8095`).
+
+### Headline numbers (caveat: most claims unverified by 3rd parties at intake date)
+
+| Metric | Value | Caveat |
+|--------|-------|--------|
+| MTEB Multilingual Retrieval (18) | 59.6 | 18-task composition not enumerated; likely MIRACL (Wikipedia-only) — may not represent web snippets |
+| MTEB Retrieval (eng v2) | 50.1 | — |
+| Code (v1, 9 langs) | 60.5 | Trained languages: Python/Go/Java/JS/PHP/Ruby/SQL/C/C++ |
+| LongEmbed (6) | 65.5 | Validates 32K-context plausibility |
+| AVG | 52.1 | — |
+| Throughput | 2,894 docs/s | **GPU (H100), NOT CPU** — calibrate EPYC expectations independently |
+| vs multilingual-e5-small | +8.7 pts MTEB-ML-Retrieval | Same 18-task composition |
+| vs gte-multilingual-base (305M) | matched quality, 3× speed | GPU figure |
+
+**vs BGE-M3 (~63.0 MTEB)**: BGE-M3 is from MMTEB 131-task aggregation — **NOT apples-to-apples** with IBM's 18-task 59.6. Bench needs to produce same-corpus same-metric numbers to settle.
+
+### ModernBERT compatibility — clean across the board
+
+- **llama.cpp**: native support — `convert_hf_to_gguf.py:12452` registers `ModernBertModel(BertModel)` with `MODEL_ARCH.MODERN_BERT`, sliding-window + RoPE handling. Model card explicitly provides a `convert_hf_to_gguf.py` example.
+- **Sentence-transformers**: v3.3.0+ ships OpenVINO INT8 quantization (~4× CPU speedup); requires `transformers ≥ 4.48.0`.
+- **"Ollama unsupported - ModernBERT" line refers ONLY to Ollama's wrapper.** llama.cpp is fully supported.
+- **Recommended deployment path on EPYC**: GGUF + `llama-embedding` HTTP server on port `:8096` (matches existing BGE-large `:8090–:8095` pattern). The OpenVINO/sentence-transformers route requires cp312/cp313 venv (orchestrator currently cp314).
+
+### Bench plan (handoff-driven)
+
+`handoffs/active/granite-97m-r2-bench-plan.md` (gated on K2 chunker activation in `internal-kb-rag.md`):
+
+- **Phase A (2-3 inference-free engineering days)**: GGUF Q8_0 + Q4_K_M quantization; deploy on `:8096`; parallel-deploy multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`; build minimal eval corpus (cheapest fallback: 100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day; alternative: K2 chunker output on a slice of `/workspace/handoffs/active/*.md` + `/workspace/CLAUDE.md`).
+- **Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy: paper says 8K, card says 32K), end-to-end with GTE-ModernColBERT-v1 reranker.
+- **Phase C decision**: adopt granite (if NDCG@10 within 3pp of BGE-M3 AND ≥3× faster) / adopt BGE-M3 (if ≥5pp better, latency acceptable) / defer both (if neither beats BGE-large-en on actual EPYC corpus).
+
+### Code-search angle (deferred sub-track)
+
+Granite claims 60.5 on MTEB Code (v1) across 12 tasks with explicit training on 9 programming languages. Could serve as a NL→code-context first-stage retriever — additive to GitNexus (symbol-level static analysis, different problem) and to GTE-ModernColBERT-v1 (general retrieval, not code-specialized). Defer the code-search bench until KB-RAG bench corpus lands so eval-corpus engineering happens once.
+
+### Risks
+
+- ModernBERT in llama.cpp is functional but newer than the BERT path — verify no edge cases on first GGUF conversion.
+- 32K context claim may degrade in practice past 8K; LongEmbed (6) score 65.5 helps.
+- IBM model card may revise scores post-1-day-old release as third-party leaderboard data appears.
+- BGE-M3 sparse + multi-vector outputs are NOT used in this bench (we measure dense-only). For ColBERT-style multi-vector first-stage, BGE-M3 has a built-in path; granite does not.
+
+### Sources
+
+- [intake-519](https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2) Granite-Embedding-97M-Multilingual-R2 (HF model card)
+- [Granite Embedding R2 paper](https://arxiv.org/abs/2508.21085) (R2 family paper)
+- [Granite Embedding paper](https://arxiv.org/abs/2502.20204) (R1 family)
+- llama.cpp ModernBERT support: `convert_hf_to_gguf.py:12452`
+- [`research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../research/deep-dives/granite-embedding-97m-r2-evaluation.md) — full bench plan, alternatives Pareto, risk register
+- [`handoffs/active/granite-97m-r2-bench-plan.md`](../handoffs/active/granite-97m-r2-bench-plan.md) — claim-ready bench plan

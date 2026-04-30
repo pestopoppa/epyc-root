@@ -265,3 +265,56 @@ Cross-links to current handoffs (`hermes-outer-shell.md`, `meta-harness-optimiza
 - intake-492 (Flywheel — durable memory + atomic-undo write contract; Node/MCP/Obsidian runtime non-portable, abstract contract portable)
 - intake-493 (Conductor — 7B GRPO on 2× H100; reference value only, GPU-gated)
 - [intake-473](https://github.com/badlogic/pi-mono/tree/main/packages/agent) `@mariozechner/pi-agent-core` — five-primitives cross-link confirmed
+
+## HALO Hierarchical Agent Loop Optimizer — applied RLM, mostly already-covered (2026-04-30)
+
+**TL;DR**: HALO (Context Labs / inference.net, MIT, 2026-04 release) is an applied implementation of the foundational RLM paper (Zhang/Kraska/Khattab arxiv:2512.24601 = our intake-153, already_integrated with ~80% pattern coverage). Most of HALO's primitives duplicate existing EPYC infrastructure; three patterns are net-new and worth lifting WITHOUT vendoring halo-engine.
+
+### Reported deltas (AppWorld benchmark, dev/test_normal split)
+
+| Model | dev SGC | test_normal SGC |
+|-------|---------|-----------------|
+| Gemini 3 Flash | 36.8% → 52.6% (+15.8 pts) | 37.5% → 48.2% (+10.7 pts) |
+| Sonnet 4.6 | 73.7% → 89.5% (+15.8 pts) | 62.5% → 73.2% (+10.7 pts) |
+
+Findings independently verified against source trace files per repo claim. Single-bench scope; no peer review; pre-1.0 release (`0.1.2` at intake date).
+
+### Net-new patterns worth lifting (3)
+
+1. **Six-tool trace-query analyzer surface** (`get_dataset_overview`, `query_traces`, `count_traces`, `view_trace`, `search_trace`, `view_spans`) backed by a two-file JSONL+byte-offset trace store. Lands in [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) T1+T5 (~230 LoC).
+2. **dev/test_normal split discipline** as anti-overfitting guard. Cleaner than Pareto-archive replacement alone for both `meta-harness-optimization.md` Tier 3 and `autopilot-continuous-optimization.md` species frontier (cross-ref `feedback_checkpoint_pareto_state.md`). ~50 LoC + methodology change.
+3. **Concrete failure-mode taxonomy** (4 labels: hallucinated tool calls / redundant args / refusal loops / semantic correctness). Complementary to intake-509 Pocock 4-mode taxonomy already in meta-harness scope; serves as seed labels for trace-clustering.
+
+### Already-covered (do NOT re-implement)
+
+| HALO primitive | EPYC equivalent |
+|----------------|-----------------|
+| OTel span emission | `scripts/autopilot/telemetry.py:to_otlp_span` (since 2026-04-12, intake-338) |
+| Trace-driven mutator | meta-harness Tier 1 (intake-244 done) |
+| Code-mutation search via coding agent | meta-harness Tier 2 done |
+| GEPA evolution | autopilot AP-18-20 done (intake-345) |
+| RLM REPL recursion | intake-153 R1-R6 done (~80% pattern coverage) |
+
+### AppWorld decision: DEFER and skip the dataset
+
+Hardware-feasible (no GPU/Docker; FastAPI in-process, ~5s first task). But integration cost is 3-5 days and **no current eval gap demands it**. 168 traces is reference-scale not training-scale. Revisit only when an autopilot signal explicitly demands a long-horizon multi-tool benchmark, or when meta-harness Tier 3 needs an external dev/test_normal anchor.
+
+### Spike scoped
+
+`handoffs/active/halo-trace-loop-spike.md` (READY-TO-CLAIM as of 2026-04-30): pre-flight (30 min) + Day 1 AM converter (~30 LoC for autopilot, ~200 LoC including tests) + Day 1 PM 4-criterion go/no-go gate + conditional Day 2 manual lift. **No vendoring of halo-engine.**
+
+### Risks (carried to spike handoff)
+
+- HALO `0.1.2` is pre-1.0 — API churn likely; pin version.
+- Default `max_depth=1` in OSS RLM impls suggests recursive-depth claim is harder to operationalize than the paper implies.
+- Default analyzer model is `gpt-5.4-mini`; spike must validate small-model coherence on local 30B-A3B coder before committing.
+- Report is free-text markdown not structured JSON — adds a parse step if machine-actionable output is desired.
+
+### Sources
+
+- [intake-517](https://github.com/context-labs/halo) HALO — Hierarchical Agent Loop Optimizer (MIT, Context Labs / inference.net)
+- [intake-518](https://pypi.org/project/halo-engine/) halo-engine 0.1.2 PyPI
+- [intake-516](https://huggingface.co/datasets/inference-net/HALO-Gemini-3-Flash-AppWorld) HALO-Gemini-3-Flash-AppWorld dataset (168 traces, 3,438 spans)
+- [intake-153](https://arxiv.org/abs/2512.24601) RLM foundational paper (Zhang/Kraska/Khattab) — already_integrated
+- [`research/deep-dives/halo-rlm-trace-loop-integration.md`](../research/deep-dives/halo-rlm-trace-loop-integration.md) — full spike plan + risk register
+- [`handoffs/active/halo-trace-loop-spike.md`](../handoffs/active/halo-trace-loop-spike.md) — claim-ready spike
