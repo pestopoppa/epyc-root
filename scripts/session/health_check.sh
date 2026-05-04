@@ -125,6 +125,20 @@ check "Available RAM >100GB" "[ $MEM_AVAIL -gt 100 ]"
 CPU_GOVERNOR=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo "unknown")
 check "CPU governor is 'performance'" "[ \"$CPU_GOVERNOR\" == \"performance\" ]" "Currently: $CPU_GOVERNOR"
 
+# Canonical inference host prereqs — see docs/infrastructure/01-hardware-system.md
+# and handoffs/active/cpu-kernel-env-flags-inventory.md
+NUMA_BAL=$(cat /proc/sys/kernel/numa_balancing 2>/dev/null || echo "unknown")
+check "kernel.numa_balancing is 0" "[ \"$NUMA_BAL\" == \"0\" ]" "Currently: $NUMA_BAL — fix: sudo sysctl -w kernel.numa_balancing=0 (self-resets per session per feedback_numa_balancing_self_reset)"
+
+THP_ENABLED=$(awk -F'[][]' '{print $2}' /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null || echo "unknown")
+check "THP enabled is 'always'" "[ \"$THP_ENABLED\" == \"always\" ]" "Currently: $THP_ENABLED — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled"
+
+THP_DEFRAG=$(awk -F'[][]' '{print $2}' /sys/kernel/mm/transparent_hugepage/defrag 2>/dev/null || echo "unknown")
+check "THP defrag is 'always'" "[ \"$THP_DEFRAG\" == \"always\" ]" "Currently: $THP_DEFRAG — fix: echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag"
+
+PERF_PARANOID=$(cat /proc/sys/kernel/perf_event_paranoid 2>/dev/null || echo "unknown")
+check "kernel.perf_event_paranoid <= 1" "[ \"$PERF_PARANOID\" -le 1 ] 2>/dev/null" "Currently: $PERF_PARANOID — fix: sudo sysctl -w kernel.perf_event_paranoid=1"
+
 echo ""
 
 # ============================================

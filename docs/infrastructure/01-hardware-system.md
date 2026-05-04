@@ -36,41 +36,73 @@ Everything about this build revolves around memory — how much of it we have, a
 
 ## Runtime Optimizations
 
-Getting the hardware to actually deliver its theoretical bandwidth requires careful tuning. The wrong thread settings can cut performance in half, and ignoring NUMA topology leaves bandwidth on the table. Three settings matter most: pinning OpenMP to one thread (llama.cpp handles its own parallelism), interleaving memory across all 12 channels, and using only physical cores.
+Getting the hardware to actually deliver its theoretical bandwidth requires careful tuning. The wrong thread settings can cut performance in half, and ignoring NUMA topology leaves bandwidth on the table.
+
+The full canonical recipe is documented in [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../../handoffs/active/cpu-kernel-env-flags-inventory.md) (the live reference) and staged for orchestrator integration in [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../../handoffs/active/model-registry-v5-deployment-draft.yaml). This section is the public-facing summary; for per-arch tuning matrices, runtime quirks, and arch-class env blocks consult those docs.
+
+### Canonical host prerequisites
+
+Apply once per session — sysctls self-revert on reboot, and on this kernel some have been observed to drift even within a session. The host-side script `scripts/session/health_check.sh` flags drift; orchestrator-side enforcement at every llama-server launch is the v5 deployment-draft TODO.
 
 <details>
-<summary>Critical environment settings</summary>
-
-<details>
-<summary>Code: environment variables and launch flags</summary>
+<summary>Code: per-session host setup</summary>
 
 ```bash
-# Prevent nested parallelism (severely degrades performance)
-export OMP_NUM_THREADS=1
-export OPENBLAS_NUM_THREADS=1
+# Sysctls (re-applied each session — see /etc/sysctl.d/99-epyc-inference.conf for boot-time defaults)
+sudo sysctl -w kernel.numa_balancing=0          # page-migration churn kills decode BW utilization
+sudo sysctl -w kernel.perf_event_paranoid=1     # required for perf record without root
 
-# NUMA interleaving for balanced memory access across 12 channels
-numactl --interleave=all <command>
-
-# Use physical cores only (hyperthreading hurts inference)
--t 96
-
-# Enable Transparent Huge Pages
+# Transparent Huge Pages — both knobs to "always"
 echo always | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+echo always | sudo tee /sys/kernel/mm/transparent_hugepage/defrag
 
-# Set CPU governor to performance
-echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+# CPU governor — pin to performance
+sudo cpupower frequency-set -g performance
 ```
 
 </details>
 
-**OMP_NUM_THREADS=1**: llama.cpp handles threading internally. OpenMP trying to parallelize on top of llama.cpp's threading causes thread contention and can reduce performance by 50% or more.
+### Canonical llama-server / llama-bench invocation
 
-**numactl --interleave=all**: With 12 memory channels, NUMA effects are significant. Interleaving distributes data across all channels, maximizing bandwidth utilization.
+Every benchmark and production launch wraps the binary in this exact prefix. Without the OMP env stack a post-reboot session degrades 3-4× silently (memory: `feedback_omp_env_stack_required.md`); without `--mmap 0` cold-cache decode is ~3× slower.
 
-**96 threads (physical cores only)**: Hyperthreading provides no benefit for compute-bound LLM inference and can actually hurt due to cache contention.
+<details>
+<summary>Code: canonical launch wrapper</summary>
+
+```bash
+OMP_PROC_BIND=spread \
+OMP_PLACES=cores \
+OMP_WAIT_POLICY=active \
+  numactl --interleave=all -- \
+  taskset -c 0-95 \
+    /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
+      -t 96 -fa 1 --mmap 0 \
+      <model + per-role flags>
+```
 
 </details>
+
+| Setting | Why it matters |
+|---|---|
+| `OMP_PROC_BIND=spread` | libomp threads cluster on a few cores or migrate; barrier latency explodes |
+| `OMP_PLACES=cores` | threads bind to physical cores instead of SMT siblings (no execution-unit contention) |
+| `OMP_WAIT_POLICY=active` | threads spin at OMP barriers instead of sleeping; prevents amd-pstate-epp freq demotion |
+| `numactl --interleave=all` | distributes weights across all 4 NUMA nodes; without it 96 threads hammer 3 channels |
+| `taskset -c 0-95` | physical cores only; SMT siblings hurt AVX-512-heavy decode |
+| `-t 96` | physical-core thread count (matches taskset window) |
+| `-fa 1` | flash-attention; llama-bench defaults to `-fa 0` and skipping costs 8-10% |
+| `--mmap 0` | mmap=1 page-faults during decode on cold model memory and freq-demotes during stalls |
+
+### Reproducibility tripwire
+
+Before trusting any per-role bench, validate the host with one canonical Coder-30B Q4_K_M run. If it doesn't reproduce ~47-49 t/s cold-boot or ~58 t/s warmed, the host is degraded — investigate before benchmarking anything else.
+
+```bash
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all -- taskset -c 0-95 \
+  llama-bench -m $CODER_30B_Q4KM -t 96 -fa 1 --mmap 0 -p 0 -n 32 -r 5
+# Expected: tg32 ~47-49 t/s (cold-boot canonical), ~58 t/s (warmed)
+```
 
 ## Baseline Performance
 

@@ -6,11 +6,25 @@
 #   Stage per-role binary_path + env + moe_spec_budget assignments derived from
 #   the per-arch deployment matrix in cpu-kernel-env-flags-inventory.md.
 #
-# Status: NOT YET APPLIED to production model_registry.yaml.
-#   Triggered by: production-consolidated-v5 kernel push completing.
-#   Owned by: llama-cpp-kernel-push-rebase.md handoff.
+# Status: PARTIAL APPLICATION 2026-05-04.
+#   - Host prerequisites (sysctls, THP, governor): wired into orchestrator_stack.py
+#     via apply_host_prerequisites() invoked from cmd_start. Skip with
+#     --skip-host-prereqs (NOT recommended for benchmarks). See orchestrator_stack.py
+#     §Host prerequisites (~line 575) and the per-role env section below.
+#   - Per-role env blocks (canonical OMP stack + GGML_* per arch_class):
+#     wired into orchestrator_stack.py via build_launch_env() called from all
+#     four llama-server launch sites (vision, embedder, worker_pool, regular).
+#     Per-role mapping in _ROLE_ENV_BLOCKS dict (alongside _CANONICAL_OMP_ENV).
+#   - Aliases handle production roles → arch_class names: coder_escalation/
+#     worker_explore/worker_summarize/thinking_reasoning/toolrunner → worker;
+#     general_gemma_3_27b_it_qat → dense_q4; ingest_long_context/formalizer →
+#     architect_coding.
+#   - Per-role smoke + canonical bench under each env block: PENDING.
+#     Original gating still applies for moe_spec_budget plumbing + binary_path
+#     per-role overrides + reproducibility_tripwire as startup health check.
+#   Owned by: llama-cpp-kernel-push-rebase.md handoff (binary_path + moe_spec).
 #   Validated by: per-role smoke + canonical bench under each env block before
-#   shipping to orchestrator_stack.py.
+#   binary_path or moe_spec_budget per-role overrides ship.
 #
 # Why this file exists:
 #   We have measured per-arch optimization quirks (CPU1 stack, mbind kill-switch,
@@ -207,12 +221,36 @@ roles:
       σ ~0.01). Multi-arch n=15 c2 "+3.9%" was baseline-drift artifact (gemma
       c0 std was 6.4% CV in multi-arch run).
 
+  # -- MoE Q4 BW-bound mbind-sensitive — architect_general (Probe B 2026-05-04) --
+  architect_general:
+    arch_class: moe_q4_bw_bound_mbind_sensitive
+    model: Qwen3.5-122B-A10B
+    quant: Q4_K_M
+    binary_path: build_libomp_pgo_use/bin/
+    env:
+      # c2 wins +1.28% (σ ~0.4%, z ~3) vs default v5 at 96t canonical.
+      # CPU1 stack net-neutral here (+0.21%); c3 combined drops to +0.06% noise.
+      # Auto-mbind on CPU_REPACK buffer mildly hurts this arch — disabling lets
+      # `numactl --interleave=all` first-touch handle weight distribution.
+      GGML_NUMA_REPACK_INTERLEAVE: 0
+    expected_throughput:
+      tg32_canonical_96t_single_instance: ~12.2 t/s
+    source_bundle: data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/
+    notes: >
+      **Single-instance canonical 12.19 t/s vs production 2× cross-NUMA 4.3 t/s/instance
+      = +184% per-instance speedup unused.** Production wiring set 2026-03-29 predates
+      v5 audit + auto-mbind landings. Wiring change (1× full-machine vs 2× per-NUMA-node)
+      is a separate orchestrator-stack decision tracked at qwen35-122b-a10b-arch-class-probe.md
+      Phase 2 (w0..w3 bonus probe).
+
 # -----------------------------------------------------------------------------
 # Roles NOT YET in this draft (need decisions or measurement)
 # -----------------------------------------------------------------------------
 todo_or_undecided:
-  - role: architect_general                  # Qwen3.5-122B-A10B Q4_K_M
-    needs: arch class measurement under canonical (no clean per-arch data)
+  # architect_general — RESOLVED 2026-05-04 via Probe B
+  # See roles.architect_general above (arch_class: moe_q4_bw_bound_mbind_sensitive,
+  # env: GGML_NUMA_REPACK_INTERLEAVE=0). Bundle:
+  # data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md
   - role: coder_escalation                   # Qwen2.5-Coder-32B Q4_K_M
     needs: arch class measurement under canonical
     note: |
@@ -228,10 +266,10 @@ todo_or_undecided:
 # Migration checklist — when v5 ships
 # -----------------------------------------------------------------------------
 migration:
-  - step: Validate canonical recipe reproduces ~47-49 t/s tripwire on production-consolidated-v5 cold-boot
-  - step: For each role above, smoke + bench under documented env block, confirm expected_throughput
-  - step: For each todo_or_undecided role, run canonical baseline + 3-config probe (c0/c2/c3) before shipping
-  - step: Merge env blocks into model_registry.yaml under each role; preserve existing runtime_quirks descriptions
-  - step: Update orchestrator_stack.py to apply host_prerequisites at session start (not per-launch)
-  - step: Add reproducibility_tripwire as a startup health-check before any role launches
-  - step: Move this file to handoffs/completed/ once production model_registry.yaml is updated
+  - step: Validate canonical recipe reproduces ~47-49 t/s tripwire on production-consolidated-v5 cold-boot — DONE 2026-05-04 (47.86 ± 0.36 t/s)
+  - step: For each role above, smoke + bench under documented env block, confirm expected_throughput — PENDING per-role smoke; canonical recipe-equivalent now applied universally
+  - step: For each todo_or_undecided role, run canonical baseline + 3-config probe (c0/c2/c3) before shipping — handoff queued at qwen35-122b-a10b-arch-class-probe.md
+  - step: Merge env blocks into model_registry.yaml under each role; preserve existing runtime_quirks descriptions — PARTIAL (env blocks in orchestrator_stack.py _ROLE_ENV_BLOCKS dict, not yet inlined into yaml; binary_path + moe_spec_budget pending)
+  - step: Update orchestrator_stack.py to apply host_prerequisites at session start (not per-launch) — DONE 2026-05-04 (apply_host_prerequisites + build_launch_env)
+  - step: Add reproducibility_tripwire as a startup health-check before any role launches — PENDING (separate from host_prereq apply; --skip-host-prereqs flag exists for opt-out)
+  - step: Move this file to handoffs/completed/ once production model_registry.yaml is updated — DEFERRED until binary_path overrides + moe_spec_budget plumbing ship
