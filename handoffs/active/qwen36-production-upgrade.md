@@ -111,3 +111,21 @@ Released April 16, 2026. This is a weights-only upgrade — all improvements fro
   - Architecture caveat: Qwen3.5 -> Qwen3.6 keeps the 256-expert / 8+1-active / 40-layer structure but the post-training is different. Feature transferability between predecessor and successor SAEs in MoE+hybrid-SSM architectures is not characterized in the Qwen-Scope paper; the only same-architecture longitudinal comparison the paper makes is Qwen3 vs Qwen3.5.
   - Action: defer; mentioned in `qwen-scope-sae-toolkit.md` (stub 2026-05-04). Do NOT block the production-upgrade quality eval on SAE inspection. If quality regressions concentrate on think-loop or repetition-style failures (matching task-4 history), fall back to the SAE diagnostic path. Otherwise the SAEs remain a future-research asset for the predecessor model only.
   - Caveats (Tier 2b): Qwen-Scope's Section 7 SASFT shows non-trivial general-capability regressions on Qwen3-8B (HellaSwag -2.88pp, MMLU -2.06pp); applying SASFT-style suppression to a production candidate would need diversity-collapse + general-capability gates beyond what this handoff's current eval suite measures.
+
+## 2026-05-04 — STACK SWAP COMMITTED (pending final amendment)
+
+Qwen3.6-35B-A3B Q8 swap into `frontdoor` slot **committed** in `epyc-orchestrator` branch `feature/stack-swap-2026-05-04`:
+- Server entry `frontdoor` (port 8080): GGUF swapped Qwen3.5-35B-A3B-UD-Q4_K_M.gguf → Qwen_Qwen3.6-35B-A3B-Q8_0.gguf, model_role updated to qwen36_q8_0
+- Role definition `frontdoor`: throughput 24.3 t/s (May-4 canonical baseline aggregate), quality 93% (170/183 Claude-as-Judge 6-suite under canonical recipe)
+
+**Same branch additionally**:
+- `coder_escalation` swapped Qwen2.5-Coder-32B Q4 → **Qwen3-Coder-30B-A3B Q4** (consolidated)
+- `worker_general` and `toolrunner` doc-updated to reflect Qwen3-Coder-30B-A3B Q4 (already deployed since 2026-03-19, registry stale)
+- `thinking_reasoning` role REMOVED entirely (GGUF deleted from disk 2026-03-06)
+- Routing-hint `prove/verify` rewired thinking_reasoning → architect_general (commit 587219c)
+
+**Commits ahead of `main`**: `fee69b8` (afternoon, MoE-Spec budget + initial swap) + `587219c` (evening, routing-hint cleanup).
+
+Pending: re-bench `reap_246b` and `ingest_long_context` under canonical recipe to decide architect_coding confirmation + ingest consolidation question. Tomorrow's session.
+
+This handoff is now **CLOSE TO DONE** — pushing the branch + the two unscored re-benches will close it.

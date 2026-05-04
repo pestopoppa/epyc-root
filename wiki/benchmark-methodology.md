@@ -249,3 +249,30 @@ When the Phase A perf gate fails (Q6_K, 2026-05-04), the compounding rationale f
 - [`data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md) — Phase A.1+A.2 bundle
 - [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md) + [`findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — 122B Probe B
 - [`data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md) — REAP-246B Probe B
+
+### Multi-day uptime → bimodal bench throughput (2026-05-04 evening)
+
+After 6+ hours of full-suite benchmark activity (May-4 sweep: REAP-246B, MiniMax-M2.7, Qwen3-Next-80B, etc., ~500 GB cumulative model loads), the same canonical recipe + same binary that gave 48.71 t/s in the morning produced 28.96-29.98 t/s in the evening (5 consecutive runs). Freq sample healthy (4.3 GHz, 96/96 cores boosting), NUMA pages perfectly balanced, libomp + wrapping verified at process level, `thp_fault_fallback=0`. Drop-caches did NOT recover throughput.
+
+Definitive A/B test ruled out launcher / subprocess.run wrapping bugs: standalone preflight + `python -c "subprocess.run([sys.executable, preflight])"` produced 29.89 / 29.98 — identical bench numbers from both invocation modes.
+
+The phenomenon matches `feedback_host_throttle_check.md` reset behavior — reboot reliably restores canonical baseline — but the documented signature there (cores stuck at 1998 MHz) does NOT match the freq sample, indicating a DIFFERENT multi-day-uptime hysteresis (likely kernel scheduler / CCD prefetcher / NUMA balancer state below /proc visibility).
+
+**Methodology corollary**: the canonical-recipe preflight gate (5 checks: uptime / libomp / wrapping / tripwire bench / freq under load) is necessary but NOT sufficient — multi-day uptime can produce a state where ALL gates pass except tripwire bench. **Tripwire is the only canary that actually catches this.** When tripwire fails despite freq healthy, **reboot** rather than digging for a code-side cause. Don't `--skip-preflight` to bypass — the bench results would be at 60% of canonical baseline and not comparable.
+
+Open instrumentation idea: capture full bench process state (numa_maps, smaps, vmstat delta, perf-stat) on tripwire FAIL so we have evidence next time the state appears. Tracked as deferred work in [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) § "Evening session".
+
+Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/active/qwen36-benchmark-fixes.md](../handoffs/active/qwen36-benchmark-fixes.md) 2026-05-04 update.
+
+### Stack consolidation methodology (2026-05-04)
+
+May-4 Claude-as-Judge scoring under canonical recipe + the morning's 9-model sweep produced enough data to consolidate the production hot tier from 4 model classes (Qwen3.5-35B-A3B, Qwen2.5-Coder-32B, Llama-3-8B × 2 roles) to 2 (Qwen3.6-35B-A3B Q8 + Qwen3-Coder-30B-A3B Q4). The consolidation argument:
+
+1. **Score before t/s, not the other way around.** Llama-3-8B at 38% on agentic and general suites was disqualifying regardless of its 13.8 t/s; Qwen3-Coder-30B-A3B at 84% overall (87% agentic, 77% coder, 90% math) wins on capability AND was already 3× faster post-canonical (43.4 t/s).
+2. **Test the same model on the actual target workload's suite.** "Don't deploy Nemotron-Nano-9B for general/coder/agentic" was a defensible no-go when Nemotron's 99% was on a 3-suite subset (no coder, no math, no instruction_precision); per-suite where comparable, it beat Qwen3-Coder, but the missing suites are the ones that matter.
+3. **Single-model consolidation across slots is cheap when the GGUF mmap is shared.** Qwen3-Coder-30B-A3B as coder_escalation + worker_general + toolrunner is a single 16-GB resident binding; net savings vs three separate hot-tier residents (8B + 8B + 32B ≈ 33 GB).
+4. **Latency vs decode-rate as separate optimization axes.** Initial argument for keeping toolrunner on a smaller Qwen3-4B Q8 (low-latency tool emission) didn't survive the agentic-suite numbers — Qwen3-Coder won on agentic AND on decode rate. The remaining argument (TTFT on sub-100-token prompts) lacks a measurement; not enough to justify a separate slot.
+
+This methodology generalizes: **rank candidates per-suite, weight by traffic share, prefer single-model resident bindings when capability passes the floor for ALL traffic on that slot.** A single 16-GB MoE that hits 84% on all relevant suites beats a fleet of specialists each tuned to one suite.
+
+Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md) 2026-05-04 update, [`epyc-orchestrator` branch `feature/stack-swap-2026-05-04`](.../../) commits fee69b8 + 587219c.
