@@ -191,3 +191,65 @@ Per intake-490, SGLang ships hybrid Mamba+Attention slot-promotion serving primi
 - 2026-04-24 concurrent-split sweep deep-dive: `research/deep-dives/cpu-96t-production-sweep-2026-04-24.md`
 - Auto-memory: `project_concurrent_split_throughput.md`
 - intake-490 (SGLang slot-promotion serving) — architectural-lessons reference, NOT adopt_component; cross-link to `wiki/ssm-hybrid.md`
+
+## 2026-05-04 Update — architect_general 1× canonical wiring + orchestrator host_prereqs
+
+### architect_general wiring change LANDED
+
+Probe B (2026-05-04) found Qwen3.5-122B-A10B Q4_K_M production wiring (`numa_instances: 2 / numa_ports: [8083, 8183] / --numa distribute -t 96 / 4.3 t/s/instance / 8.6 t/s aggregate`, set 2026-03-29) is suboptimal in BOTH dimensions vs canonical-recipe alternatives:
+
+| Wiring | per-instance t/s | Aggregate | Best for |
+|---|---|---|---|
+| 1× canonical 96t + c2 env | 12.19 ± 0.05 | **12.19** | single-user, slots=1 (+184% per-request) |
+| 2× per-NUMA-node 24t + c2 | 4.19, 4.27 | 8.47 | matches old 2× cross-NUMA |
+| 4× per-NUMA-node 24t + c2 | 4.15-4.25 | **16.86** | 4+ concurrent batch (+96% aggregate) |
+| Production prior (2× --numa distribute) | 4.30 | 8.60 | suboptimal in BOTH dimensions |
+
+Wiring change LANDED in `epyc-orchestrator` commit `64101fd`:
+
+- `NUMA_CONFIG["architect_general"]`: collapsed from 2 instances to 1 instance using new `NUMA_FULL = ("0-95", 96)` constant (96 physical cores, no SMT, all 4 NPS4 nodes).
+- Added `numactl_policy: "interleave=all"` field — `_numa_prefix()` now wraps launch with `numactl --interleave=all --` ahead of taskset for canonical-recipe roles.
+- `HOT_SERVERS` port 8183 entry removed.
+- `model_registry.yaml`: `numa_instances: 2 → 1`, `numa_ports: [8083, 8183] → [8083]`, `throughput: 4.3 → 12.19`.
+
+Restart-verified 2026-05-04: `/proc/PID/numa_maps` shows `interleave:0-3` evenly across N0/N1/N2/N3, env block correctly applied (OMP stack + GGML_NUMA_REPACK_INTERLEAVE=0), VmLck = 73.36 GB.
+
+### Orchestrator host_prereqs enforcement (NEW)
+
+`apply_host_prerequisites()` wired into `cmd_start` audits and (with sudo -n) auto-fixes:
+
+- sysctls: `kernel.numa_balancing=0`, `kernel.perf_event_paranoid=1`
+- THP: `enabled` and `defrag` both `always`
+- CPU governor: `performance`
+
+Refuses to launch on prereq failure unless `--skip-host-prereqs` flag is set. Drift report + fix attempt + re-audit.
+
+`build_launch_env(role, base_env)` merges canonical OMP env stack (`OMP_PROC_BIND=spread`, `OMP_PLACES=cores`, `OMP_WAIT_POLICY=active`) into every llama-server launch — without these, post-reboot Coder-30B drops 17 → 48.8 t/s per `feedback_omp_env_stack_required`. Per-role GGML_* env block from `_ROLE_ENV_BLOCKS` dict (sourced from `model-registry-v5-deployment-draft.yaml`):
+
+| Role | env block | Source |
+|---|---|---|
+| worker | CPU1 3-flag stable | CPU21 P3 isolation |
+| frontdoor | EP stack (5 GGML_EP_* vars) | EP +17% honest baseline |
+| **architect_general** | **GGML_NUMA_REPACK_INTERLEAVE=0** | Probe B 2026-05-04 |
+| architect_coding | (default v5) | Probe B 2026-05-04 confirmed |
+| hybrid_ssm_dense | CPU1 + mbind-off (c3) | Nemotron-9B-v2 +8.9% pp512 |
+| hybrid_ssm_moe / dense_q8 / dense_q4 | (default v5) | per arch class probes |
+
+Production aliases routed automatically: `coder_escalation/worker_summarize/thinking_reasoning/toolrunner` → `worker`; `ingest_long_context/formalizer` → `architect_coding`; `general_gemma_3_27b_it_qat` → `dense_q4`.
+
+### `--draft-p-split` flag stripped from v5 binary (orthogonal fix)
+
+`production-consolidated-v5` binary no longer accepts `--draft-p-split` (tree speculation removed during the v5 kernel push). `build_server_command` was emitting it unconditionally for spec-decode roles, blocking architect_general startup. Fixed in commit `9b8143e` by gating both emission sites behind `if False` with comments preserving the historical context (Coder Q4KM tree was +2.7% at 48t; hybrids tree harmful -25% to -40%). Default behavior with the flag stripped is linear-only spec-decode, which matches the registry's intent (all 4 spec-decode roles configured with `p_split=0` = linear).
+
+### Spec-decode crash on Qwen3.5 hybrids (still open)
+
+After fixing `--draft-p-split`, architect_general comes up healthy but live decode crashes via `common_speculative_state_tree::draft` → `GGML_ASSERT(logits != nullptr)`. This is a **pre-existing** spec-decode bug on Qwen3.5/3.6 hybrid architectures — memory entry `feedback_qwen35_27b_architecture` already documented "CPU spec-dec architecturally foreclosed by GDN verification wall". The v5 binary appears to have introduced an assertion crash on top.
+
+Workaround: clear `draft_model:` field for `architect_general` in registry. Loses spec-decode advantage but makes the role serviceable. The 12.19 t/s Probe B number (no spec-decode) is what the role would deliver under the workaround. Actual investigation of the bug is open.
+
+### Sources (2026-05-04)
+
+- `epyc-orchestrator` commits `64101fd` (wiring), `4155d1c` (host_prereqs + per-role env), `9b8143e` (--draft-p-split fix)
+- [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../handoffs/active/model-registry-v5-deployment-draft.yaml) — `host_prerequisites` + per-role env blocks; status PARTIAL APPLIED 2026-05-04
+- [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) — full session including restart verification
+- [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — wiring revalidation

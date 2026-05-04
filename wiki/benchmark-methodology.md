@@ -194,3 +194,58 @@ Per-model curve becomes part of the model registry and enters routing decisions:
 - intake-450 — veniceai/skills (sibling SKILL.md authoring rubric)
 - intake-301 — AXI/TOON encoding (orthogonal layer)
 - [`handoffs/active/agent-file-prose-compression.md`](../handoffs/active/agent-file-prose-compression.md) NEW — `/agent-file-compress` skill + per-model deployment gate
+
+## 2026-05-04 Update — Probe B 4-config protocol formalized
+
+The 4-config Probe B methodology used throughout 2026-04-29/30 multi-arch coverage was applied formally on 2026-05-04 to close two `todo_or_undecided` slots in the v5 deployment draft (Qwen3.5-122B-A10B and Qwen3-Coder-REAP-246B-A35B). The protocol details are now explicit in [`handoffs/active/qwen35-122b-a10b-arch-class-probe.md`](../handoffs/active/qwen35-122b-a10b-arch-class-probe.md) — referenced here as the canonical methodology for any new model arch-class assignment.
+
+### Pre-flight: reproducibility tripwire
+
+Run before trusting any new bench output:
+
+```
+OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
+  numactl --interleave=all -- taskset -c 0-95 \
+  llama-bench -m Coder-30B-A3B-Q4_K_M -t 96 -fa 1 --mmap 0 -p 0 -n 32 -r 5
+```
+
+Expected: 47-49 t/s cold-boot, ~58 t/s warmed. If outside this band, host is degraded — investigate before benchmarking anything else. 2026-05-04 baseline: 47.86 ± 0.36 t/s (cold-boot canonical).
+
+### 4 envelope configs (single-instance 96t, n=5 reps)
+
+| Config | Env block | Tests |
+|---|---|---|
+| **c0** default v5 | (none) | baseline |
+| **c1** CPU1 stack | `GGML_CCD_POOLS=1 GGML_CCD_WORK_DIST=1 GGML_BARRIER_LOCAL_BETWEEN_OPS=1` | sync-bound MoE class |
+| **c2** mbind off | `GGML_NUMA_REPACK_INTERLEAVE=0` | mbind-sensitive class |
+| **c3** combined | c1 + c2 | hybrid SSM dense pattern (Nemotron-9B-v2) |
+
+All configs use the canonical OMP env stack + `numactl --interleave=all -- taskset -c 0-95 -t 96 -fa 1 --mmap 0`. n=5 reps; σ should land ≤ 1% per config under tight conditions.
+
+### Decision gates
+
+| Outcome | Verdict |
+|---|---|
+| Any single config ≥ +5% with σ ≤ 1% | Wire env block into v5 deployment draft for the role |
+| All within ±2% under tight Probe B | Mark `arch_class: ...` analogue with `env: {}` (default v5) |
+| ≥ +1% with z ≥ 3 vs c0 (statistically significant under tight σ) | Pragmatic flip — wire the winning env block, document the marginal delta |
+
+The "z ≥ 3" gate was applied 2026-05-04 to close 122B-A10B's c2 +1.28% (z=3.0, σ=0.42%). The flip was justified despite being below the strict +5% gate because the σ was unusually tight (0.42% per-run, n=5) and the signal cleanly separated from c0/c1/c3.
+
+### PPL bit-exact gate ≠ perf gate
+
+Q6_K AVX-512BW Phase A demonstrated: a kernel can be **bit-exact** (5/5 PPL identical to scalar generic across production lineup) yet still **fail the perf gate** (geomean -0.28%, REAP-246B -1.01%) because the multi-thread regime is BW-saturated — ALU width doesn't help when cycles are spent waiting on DRAM. This is consistent with `project_q8_8x8_avx512bw_outcome` "+1-3% at 12-96t (BW-saturated)" pattern.
+
+**Methodology corollary**: PPL gate (correctness) and perf gate (deployment) are independent. A kernel passing PPL is necessary but not sufficient for default-on flip — perf gate at production-relevant thread counts must also pass.
+
+### Failure mode: Phase A.2 strict gate failure → Phase B/C de-prioritization
+
+When the Phase A perf gate fails (Q6_K, 2026-05-04), the compounding rationale for downstream work (Q5_K body, blanket Q{5,6,8}_K default-on flip) is **falsified**, not just delayed. The "expected aggregate +2-7% on Q4_K_M decode" projection was contingent on the kernel showing some BW-utilization improvement; with -0.28% geomean confirmed, the path is closed unless new evidence emerges (different binary, different model class, different thread regime).
+
+### Sources (2026-05-04)
+
+- [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) — full session log with all 3 probes (Q6_K Phase A, 122B-A10B Probe B Phase 1+2, REAP-246B Probe B)
+- [`handoffs/active/qkernel-q5q6-default-on-flip.md`](../handoffs/active/qkernel-q5q6-default-on-flip.md) — Q6_K Phase A failure documented
+- [`data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md) — Phase A.1+A.2 bundle
+- [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md) + [`findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — 122B Probe B
+- [`data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md) — REAP-246B Probe B

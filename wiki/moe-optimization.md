@@ -252,3 +252,55 @@ Per [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-para
 - [intake-467] MegaBlocks (arXiv:2211.15841, Stanford/MosaicML, MLSys 2023) -- 2026-04-26: foundational dropless-MoE via block-sparse grouped GEMM with **blocked-CSR-COO + transpose-indices** encoding. Eliminates capacity-factor padding/dropping. Anchors CPU18 backlog item: port the **indexing scheme** (not the GPU kernel) into CPU2's AVX-512BW Q8_0 expert-GEMM path for padding-free CPU MoE expert dispatch. Compounds with already-shipped CPU2 +31.8% (1t) / +1-3% (12-96t) wins.
 - [intake-470] Tutel (arXiv:2206.03382, Microsoft Research, MLSys 2023) -- 2026-04-26: **2DH (two-dimensional hierarchical) all-to-all** aggregates intra-node small-message expert dispatches first, then inter-node exchange. Adaptive parallelism on a unified parameter layout. Anchors CPU19 backlog item: port 2DH to CPU15 inter-process EP shared-memory ring for the 4-NUMA-node × 12-CCD topology. Target: reduce ~96 sync points/token to ~24, addressing measured REAP-246B (-53%) and MiniMax-M2.7 (-23%) regressions on >150B MoE while attribution remains open. Phase 3.4 candidate in [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md).
 - [intake-471] Expert Choice Routing (arXiv:2202.09368, Google, NeurIPS 2022) -- 2026-04-26: **filed not_applicable**. Inverts dispatch (experts pick top-k tokens vs token picks top-k experts) for perfect load balance with no auxiliary loss. Three independent reasons: (1) training-time choice — our stack does no pre-training; (2) all production MoEs ship token-choice routers, cannot retrofit without retraining; (3) load-imbalance is largely absent on single-user CPU decode. Filed as literature reference only.
+
+## 2026-05-04 Update — Probe B closes 122B-A10B + REAP-246B arch classes; opposite verdicts
+
+### Qwen3.5-122B-A10B Q4_K_M — moe_q4_bw_bound_mbind_sensitive (NEW arch class)
+
+Probe B (2026-05-04) closed the `architect_general` slot in v5 deployment draft (was `todo_or_undecided`). Single-instance 96t canonical, 4 configs × n=5:
+
+| Config | avg t/s | σ % | Δ vs c0 | z |
+|---|---|---|---|---|
+| c0 default v5 | 12.041 ± 0.037 | 0.31% | baseline | — |
+| c1 CPU1 stack | 12.065 ± 0.024 | 0.20% | +0.21% | 0.7 |
+| **c2 mbind off** | **12.195 ± 0.051** | 0.42% | **+1.28%** | **3.0** |
+| c3 c1+c2 | 12.048 ± 0.082 | 0.68% | +0.06% | 0.1 |
+
+c2 (`GGML_NUMA_REPACK_INTERLEAVE=0`) wins +1.28% at z~3. CPU1 stack net-neutral; the two levers interact destructively (c3 = c1+c2 drops back to noise). Arch class: `moe_q4_bw_bound_mbind_sensitive`. Closest analogue is the Q8 frontdoor family (where mbind-off was +6%), distinct from Coder-30B "MoE Q4 sync-bound" (c1 wins +1.8%) and from REAP-246B "MoE Q4 DRAM-bound" (mbind-tolerant).
+
+The mechanism: auto-mbind(MPOL_INTERLEAVE) on the CPU_REPACK buffer (Q8 8×8 NUMA fix, Session 15) is calibrated for some MoE classes but mildly hurts this one. With mbind disabled, weights spread via `numactl --interleave=all` first-touch — still distributed but via the kernel's default-interleave path. Mechanism still under investigation.
+
+The bigger finding was production-wiring: 1× canonical 96t at 12.19 t/s vs production 2× cross-NUMA at 4.3 t/s/instance = **+184% per-request latency** unused. Wiring change LANDED in `epyc-orchestrator` commit `64101fd` (numa_instances 2→1, numa_ports `[8083,8183]→[8083]`).
+
+Source: [data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md), [findings_phase2.md](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md).
+
+### REAP-246B-A35B Q4_K_M — moe_q4_dram_bound CONFIRMED
+
+Probe B (2026-05-04) for `architect_coding` validates the v5 draft's existing `arch_class: moe_q4_dram_bound` + `env: {}` assignment. Same protocol as 122B:
+
+| Config | avg t/s | σ % | Δ vs c0 | z |
+|---|---|---|---|---|
+| **c0 default v5** | **6.351 ± 0.003** | 0.05% | baseline | — |
+| c1 CPU1 stack | 6.337 ± 0.005 | 0.08% | -0.23% | 2.49 |
+| c2 mbind off | 6.361 ± 0.007 | 0.11% | +0.14% | 1.20 |
+| c3 c1+c2 | 6.360 ± 0.005 | 0.09% | +0.14% | 1.40 |
+
+All configs within ±0.25% — Probe B "all within ±2%" decision triggers "default v5". CPU1 stack mild distinguishable regression matches the existing CPU22 -0.8% noise observation. mbind-off non-significant uplift.
+
+**Opposite verdict from 122B-A10B**: REAP is genuinely DRAM-bound; auto-mbind path is calibrated correctly for this class. The `moe_q4_dram_bound` v5 assignment stands.
+
+Phase 2 wiring revalidation NOT pursued — RAM headroom precludes 4× per-NUMA-node (138 GB × 4 > per-node 290 GB budget); without a Phase 1 winning lever, Phase 2 has nothing to scale.
+
+Source: [data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md](../../epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md).
+
+### Implication for arch-class taxonomy
+
+Three distinct MoE Q4 sub-classes now empirically validated:
+
+| Sub-class | Representative | Winning config | Why |
+|---|---|---|---|
+| **moe_q4_sync_bound** | Coder-30B-A3B | CPU1 stack (3-flag stable) +1.8% | barrier overhead is rate-limiting |
+| **moe_q4_dram_bound** | REAP-246B-A35B | default v5 (no opt-in) | DRAM channels saturated; no software lever helps |
+| **moe_q4_bw_bound_mbind_sensitive** | Qwen3.5-122B-A10B | mbind off (c2) +1.28% | auto-mbind calibration mismatched for this expert dispatch pattern |
+
+The taxonomy is determined empirically per Probe B; do NOT assume a new MoE Q4 model fits one of these classes without measurement. The 35B-A3B is its own class (MoE Q8 BW-bound frontdoor, EP stack +17%).

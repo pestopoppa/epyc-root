@@ -1054,3 +1054,42 @@ BOLT profile: collected from a DeepSeek-R1-1.5B instrumented run (~1 min; covers
 **Next gate**: orchestrator wiring (binary_path + env per role in model_registry.yaml). Blocked on user authorization; deployment-draft at `handoffs/active/model-registry-v5-deployment-draft.yaml` is the staging document.
 
 Source: [progress/2026-04/2026-04-30.md section "v5 kernel push + PGO/BOLT production binaries"](../progress/2026-04/2026-04-30.md)
+
+## 2026-05-04 Update — host_prereqs persistence + per-NUMA-node concurrent scaling
+
+### Canonical OMP env stack persistence
+
+The 2026-04-29 finding that post-reboot Coder-30B drops 17 → 48.8 t/s without `OMP_PROC_BIND=spread / OMP_PLACES=cores / OMP_WAIT_POLICY=active` (per `feedback_omp_env_stack_required`) was previously enforced only by per-bench discipline. 2026-05-04 wired persistent enforcement on three layers:
+
+1. **Boot-time defaults** via `/etc/sysctl.d/99-epyc-inference.conf` for `kernel.numa_balancing=0` + `kernel.perf_event_paranoid=1`.
+2. **Per-session drift catch** via `scripts/session/health_check.sh` (extended with NUMA balancing / THP / perf_paranoid checks; each emits a fix command on failure).
+3. **Per-launch enforcement** via `apply_host_prerequisites()` and `build_launch_env()` in `epyc-orchestrator/scripts/server/orchestrator_stack.py` — every llama-server launch now applies the canonical OMP env stack + per-role GGML_* env block from `_ROLE_ENV_BLOCKS` (sourced from `model-registry-v5-deployment-draft.yaml`). Refuses to launch on prereq failure unless `--skip-host-prereqs` opt-out flag is set.
+
+The "self-resets to 0" claim from `feedback_numa_balancing_self_reset` (2026-04-26) could not be verified in the 2026-05-04 session — sysctl.d apply succeeded and held throughout the session. The memory entry is 7+ days old and may be stale; re-validate after next reboot.
+
+Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md), [model-registry-v5-deployment-draft.yaml](../handoffs/active/model-registry-v5-deployment-draft.yaml) host_prerequisites section.
+
+### Per-NUMA-node concurrent scaling — linear 4-way confirmed on 122B-A10B
+
+Probe B Phase 2 (2026-05-04) measured Qwen3.5-122B-A10B Q4_K_M under 4 wiring configurations with the same env block (canonical OMP + `GGML_NUMA_REPACK_INTERLEAVE=0`):
+
+| Wiring | per-instance t/s | Aggregate |
+|---|---|---|
+| 1× canonical 96t (`numactl --interleave=all -- taskset -c 0-95`) | 12.19 ± 0.05 | 12.19 |
+| 1× single-NUMA-node 24t (`--cpunodebind=0 --membind=0`) | 4.21 ± 0.01 | 4.21 |
+| 2× concurrent per-NUMA-node 24t | 4.19 / 4.27 | 8.47 |
+| **4× concurrent per-NUMA-node 24t** | 4.15-4.25 (avg 4.22) | **16.86** |
+
+Linear 4× scaling: each per-NUMA-node 24t instance saturates its node's 3 DRAM channels independently with no cross-node contention. **4× per-NUMA-node aggregate (16.86) beats 1× canonical (12.19) by +38%** when the workload can actually issue 4 concurrent requests. For single-request latency, 1× canonical wins; for throughput-bound workloads, 4× per-node wins. Production was previously running 2× cross-NUMA at 8.6 t/s aggregate — suboptimal in both dimensions (latency-wise vs 1×, throughput-wise vs 4×).
+
+This is the same per-NUMA-node-saturation pattern as the 2026-04-24 concurrent-split finding (32×6t on 35B-A3B = 135.1 t/s aggregate, +110% vs 4×48t baseline). The linear-scaling regime applies when each instance's BW demand fits one NUMA node's 3 channels (~115 GB/s).
+
+Wiring change LANDED in `epyc-orchestrator` commit `64101fd`: architect_general switched from 2× cross-NUMA to 1× canonical full-machine. `_numa_prefix()` extended with optional `numactl_policy` field to wrap launches with `numactl --interleave=all --` for canonical-recipe roles. NUMA_FULL = ("0-95", 96) constant added.
+
+### Q6_K AVX-512BW kernel — bit-exact, BW-saturated at 96t (no production benefit)
+
+Phase A.1 PPL gate: 5/5 production models bit-exact under `GGML_Q6_K_8X8_AVX=1` vs scalar generic (Coder-30B 8.2622, gemma-31B 4359.7, SuperGemma-31B 19.6921, Qwen3-Next-80B 4.1565, REAP-246B 8.1396 — all Δ=0).
+
+Phase A.2 perf gate at 96t under canonical recipe: aggregate geomean **-0.28%**, REAP-246B regresses **-1.01%** (z>0). Gate FAILS — kernel is correct but BW-saturated at 96t (consistent with `project_q8_8x8_avx512bw_outcome` "+1-3% at 12-96t (BW-saturated)" pattern). Q6_K kernel kept env-gated default-OFF in `production-consolidated-v5`. Phase B (Q5_K body) and Phase C (blanket Q{5,6,8}_K default-on flip) **de-prioritized** — the compounding rationale for blanket flip is falsified.
+
+The +31.8% single-thread benefit (per `project_q8_8x8_avx512bw_outcome`) remains opt-in via `GGML_Q6_K_8X8_AVX=1` for low-thread workloads. Source: [data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md](../../epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md).
