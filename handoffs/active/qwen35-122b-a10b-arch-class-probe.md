@@ -1,7 +1,8 @@
 # Qwen3.5-122B-A10B — Arch-Class Probe (Probe B)
 
-**Status**: Phase 1 + Phase 2 COMPLETE 2026-05-04. c2 (`GGML_NUMA_REPACK_INTERLEAVE=0`) wins +1.28% at 96t canonical. Phase 2 wiring revalidation found production `2× --numa distribute` is suboptimal in BOTH dimensions; recommended Phase 1 wiring change: 1× canonical 96t + c2 (+184% per-request) OR 4× per-NUMA-node 24t + c2 (+96% aggregate at 4-concurrent).
+**Status**: ✅ **CLOSED 2026-05-04**. Phases 1+2 measured. Wiring change LANDED in epyc-orchestrator (`64101fd`): `architect_general` switched from 2× cross-NUMA (4.3 t/s/instance) to 1× canonical full-machine (12.19 t/s, +184% per-request). c2 env block (`GGML_NUMA_REPACK_INTERLEAVE=0`) wired into `_ROLE_ENV_BLOCKS` + NUMA_CONFIG `numactl_policy: "interleave=all"`. 4× per-NUMA-node alternative (16.86 t/s aggregate) documented for future high-concurrency workload shift.
 **Created**: 2026-05-04
+**Closed**: 2026-05-04 (move to `completed/` after orchestrator restart applies the change)
 **Categories**: hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (only model in current 27B/31B/122B production trio with plausible 2× single-instance headroom)
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)

@@ -275,9 +275,9 @@ todo_or_undecided:
 # -----------------------------------------------------------------------------
 migration:
   - step: Validate canonical recipe reproduces ~47-49 t/s tripwire on production-consolidated-v5 cold-boot — DONE 2026-05-04 (47.86 ± 0.36 t/s)
-  - step: For each role above, smoke + bench under documented env block, confirm expected_throughput — PENDING per-role smoke; canonical recipe-equivalent now applied universally
-  - step: For each todo_or_undecided role, run canonical baseline + 3-config probe (c0/c2/c3) before shipping — handoff queued at qwen35-122b-a10b-arch-class-probe.md
-  - step: Merge env blocks into model_registry.yaml under each role; preserve existing runtime_quirks descriptions — PARTIAL (env blocks in orchestrator_stack.py _ROLE_ENV_BLOCKS dict, not yet inlined into yaml; binary_path + moe_spec_budget pending)
+  - step: For each role above, smoke + bench under documented env block, confirm expected_throughput — PARTIAL (architect_general validated to 12.19 t/s 2026-05-04 via Probe B; rest pending)
+  - step: For each todo_or_undecided role, run canonical baseline + 3-config probe (c0/c2/c3) before shipping — DONE for architect_general (Probe B 2026-05-04 closed); other todo_or_undecided roles cleared previously
+  - step: Merge env blocks into model_registry.yaml under each role; preserve existing runtime_quirks descriptions — PARTIAL (env blocks in orchestrator_stack.py _ROLE_ENV_BLOCKS dict; architect_general wiring lands in model_registry.yaml 2026-05-04 via commit 64101fd; other roles' binary_path + moe_spec_budget pending)
   - step: Update orchestrator_stack.py to apply host_prerequisites at session start (not per-launch) — DONE 2026-05-04 (apply_host_prerequisites + build_launch_env)
   - step: Add reproducibility_tripwire as a startup health-check before any role launches — PENDING (separate from host_prereq apply; --skip-host-prereqs flag exists for opt-out)
   - step: Move this file to handoffs/completed/ once production model_registry.yaml is updated — DEFERRED until binary_path overrides + moe_spec_budget plumbing ship
