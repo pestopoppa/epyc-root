@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-04-20
-**Articles**: 24 compiled, 6 stub categories
-**Total sources**: 246 documents across 6 source types
+**Last compiled**: 2026-05-04
+**Articles**: 25 compiled, 5 stub categories
+**Total sources**: 251 documents across 6 source types
 
 ---
 
@@ -78,6 +78,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [LLM Prompting](llm-prompting.md) | 14 | CoT controllability is 0.1-15.4% (safety positive); FlowSteer blocked on hybrid SSM |
+| [Mechanistic Interpretability](mechanistic-interpretability.md) | 6 | Qwen-Scope releases SAEs for production-stack Qwen3/3.5 (~687 GB FP32 full subset, qwen license); AxBench + Wang 2026 falsify SAE-steering against simpler baselines (DiffMean, prompting); Section 4 benchmark-redundancy is the strongest application — pilot first |
 
 ---
 
@@ -93,7 +94,7 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 |----------|---------------|-------|
 | `emotion_psychology` | 18 | Persona, cognitive science of LLMs — not central to inference optimization |
 | ~~`knowledge_management`~~ | — | Promoted to full article 2026-04-28 → [Knowledge Management](knowledge-management.md) |
-| `mechanistic_interpretability` | 23 | Sparse autoencoders, circuit analysis — tangential to production stack |
+| ~~`mechanistic_interpretability`~~ | — | Promoted to full article 2026-05-04 → [Mechanistic Interpretability](mechanistic-interpretability.md) |
 | ~~`rag_alternatives`~~ | — | Promoted to full article 2026-04-28 → [RAG Alternatives](rag-alternatives.md) |
 | `safety` | 4 | Covered by [LLM Prompting](llm-prompting.md) CoT monitorability findings |
 | `swarm_techniques` | 7 | Partially covered by [Agent Architecture](agent-architecture.md) and [Autonomous Research](autonomous-research.md) |

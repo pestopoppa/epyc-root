@@ -119,3 +119,21 @@ The key metric for S4 is **total pipeline cost** (formalizer generation + solver
 ### Question Quality Filtering
 - **[intake-379] MathQ-Verify**: If applying question quality filtering to S4 test suite, use stages 1-4 only — stage 5 (completeness) hurts F1 by +0.57pp (ablation finding)
 - Missing premises in eval questions also waste compute — flawed questions trigger solver overthinking, inflating per-question cost and degrading signal quality
+
+## Research Intake Update — 2026-05-04
+
+### Qwen-Scope feature-overlap analysis as test-suite construction signal
+
+- **[intake-521] "Qwen-Scope: Turning Sparse Features into Development Tools for LLMs"** (Qwen Team, 2026-04-30) — deep-dive at `research/deep-dives/qwen-scope-sae-suite.md`; coordination handoff `qwen-scope-sae-toolkit.md`.
+  - Relevance to MathSmith S4 test-suite construction: Section 4 of the paper provides an evaluation-free framework to detect **structural redundancy** within a benchmark (per-sample feature footprints saturating early as samples are added) and **capability overlap** between two benchmarks (asymmetric and min-normalized feature-set overlap). Both signals are directly applicable to MathSmith's harder-distribution test-suite design where sample budget is constrained and we want each sample to contribute discriminative power.
+  - The paper's worked example is on point: from Figure 6, *63% of GSM8K's features are covered by MATH, while only 10% of MATH's features are covered by GSM8K*. The asymmetry carries the operational signal — MATH probes a broader feature set than GSM8K, so a suite containing MATH can drop GSM8K with little discriminative loss; the reverse substitution is not safe. Same logic applies to MathSmith S4 vs. its predecessor S1-S3 splits and to MathSmith vs. external math benchmarks (MATH, GSM8K, GPQA-D-math-only) we may want to deduplicate against.
+  - Concrete additions to the handoff's existing question-quality-filtering pipeline (which currently uses MathQ-Verify stages 1-4 from intake-379):
+    - **Pre-construction**: when sourcing or generating MathSmith candidate questions, encode them through SAE-Res-Qwen3.5-27B at the middle layer band and reject candidates whose feature footprints duplicate the existing pool (asymmetric overlap > some threshold against pool feature-footprint).
+    - **Post-construction**: compute the suite's redundancy curve c_n; if c_n saturates early, the suite is over-redundant and adding more samples won't improve discriminative power. This becomes a stopping rule for the synthesis pipeline.
+    - **Cross-suite**: compute MathSmith S4 ↔ {MATH, GSM8K, GPQA-D, KOR-Bench, AA-Omniscience-math-slice} feature-overlap matrix to characterize what S4 uniquely probes that the existing suites do NOT.
+  - Caveats (deep-dive 2026-05-04):
+    - SAE training data is undisclosed; redundancy claim is in-distribution to Qwen pretraining. For math benchmarks specifically, well-known datasets (MATH, GSM8K) are almost certainly in the pretraining corpus; this is fine for the comparative analysis, but the absolute feature-coverage numbers should not be interpreted as "objective" benchmark difficulty.
+    - License `qwen` custom; Section 4 post-hoc analysis unambiguously permitted.
+    - Wang et al. 2026 / AxBench critiques target steering and concept detection, not redundancy — they do not apply to this Section 4 application.
+  - **Cross-link**: implementation work belongs in `eval-tower-verification.md` EV-8 (just queued there in the parallel intake update). MathSmith should consume that pipeline once it lands rather than pull a parallel SAE; only one EV-8 stack to maintain.
+  - **Action**: defer until eval-tower EV-8 SAE-redundancy work lands. Track cross-suite overlap analysis as a stretch goal once S4 generation is operational and the pipeline produces feature footprints.

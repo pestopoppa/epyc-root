@@ -22871,3 +22871,276 @@
   novelty_justification: 'The component pieces — in-memory VFS, content-addressable store, Git-style versioning, MCP-served tool surface, multi-user permissions — are all individually well-trodden territory. The combination as a single Rust crate scoped specifically to .md files for agent workspace use is a genuinely novel packaging choice (no other intake entry presents the same composition), and the explicit `addagent` user class plus user-to-agent permission delegation is a small but distinct design idea worth tracking. Not high novelty because no underlying mechanism is new and the project is early/small.'
   relevance_justification: 'EPYC''s active markdown-handling stack already solves the same problems via different primitives: (1) versioning via real Git + PostToolUse-on-commit hooks, (2) retrieval via the planned ColBERT KB-RAG (internal-kb-rag.md) over the same on-disk corpus, (3) code intelligence via GitNexus, (4) governance via the project-wiki skill. Inserting an in-memory mdfs layer on top would duplicate VCS semantics rather than add capability. The genuine relevance is narrower: as one candidate MCP tool the Agent-World ETD species (agent-world-env-synthesis.md) could discover and exercise during environment synthesis, and as a reference design for any future shared-state agent workspace where Git-on-disk is too coarse-grained. Not high or medium because no active handoff has an unmet need that markdownfs uniquely fills.'
   verdict_justification: 'worth_investigating, not adopt_component or new_opportunity. DEEP-DIVE 2026-04-30 (research/deep-dives/markdownfs-rust-mcp-vfs.md) confirmed: do-not-adopt-as-dependency, but THREE patterns documented in mdfs''s docs/ are worth borrowing INDEPENDENTLY of mdfs adoption: (A) /runs/<run-id>/ markdown artifact bundle schema (prompt.md/command.md/stdout.md/stderr.md/result.md/metadata.md/artifacts/) from execution-roadmap.md — companion to JSONL journals for human-reviewable autopilot/HALO run records; (B) "filesystem truth + derived vector index" architecture from semantic-index.md INDEPENDENTLY corroborates internal-kb-rag.md K1-K7 design at the architectural level (heading-aware chunking, on-write/on-commit/on-revert reindex, breadcrumb-shaped retrieval results); (C) typed Agent identity with token-once-shown-then-SHA256-hashed semantics is a cleaner identity model than our current implicit-trust pattern. Watch signals: per-user MCP auth landing → relevance to medium; AWS S3 Files / mdfs / similar tools consolidating into "agent workspace" category → implications for hermes-outer-shell.md positioning; first published release / second contributor → adoption-risk improves. Original intake-520 contradicting_evidence has been corrected — MCP-as-root and single-writer-per-state.bin were missed on first pass and are now documented.'
+
+- id: intake-521
+  arxiv_id: null
+  url: https://qwen.ai/blog?id=qwen-scope
+  source_type: paper
+  title: 'Qwen-Scope: Turning Sparse Features into Development Tools for Large Language Models'
+  authors:
+  - Qwen Team
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  - routing_intelligence
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-04'
+  deep_dive_path: research/deep-dives/qwen-scope-sae-suite.md
+  key_claims:
+  - 'Releases an open-source SAE suite for the Qwen family covering 7 backbones and 14 SAE groups: Qwen3-1.7B/8B base, Qwen3-30B-A3B base, Qwen3.5-2B/9B base, Qwen3.5-27B-Instruct, Qwen3.5-35B-A3B base — every layer covered. SAE width 32K-128K, expansion factor 16x for dense and up to 64x for MoE; Top-k = 50 or 100. Trained on residual-stream activations using the Gao-et-al. TopK SAE recipe with 1/32 auxiliary dead-feature loss and L2-norm outlier filtering.'
+  - 'Steering: Two-step recipe (contrastive feature identification then h'' = h + alpha*d additive intervention in the residual stream). Two case studies on Qwen3 demonstrate (a) suppressing a Chinese-language feature to remove unwanted English->Chinese code-switching, (b) activating a classical-Chinese feature for style transfer.'
+  - 'Evaluation analysis: SAE feature-coverage curves act as an evaluation-FREE proxy for benchmark redundancy. Across 17 benchmarks evaluated with 26 model checkpoints, Spearman rank correlation between feature-redundancy R-hat(D) and performance-redundancy R(D) is 0.85; partial Pearson 75.5% after controlling for MMLU as a general-ability confound.'
+  - 'Data classification: An OR-rule over the top-K toxic-biased SAE features yields F1 > 0.90 on English (Qwen3-1.7B 0.92, Qwen3-8B 0.96) on the Dementieva multilingual toxicity corpus, with no extra trained head. English-discovered features transfer to other languages (best-F1 macro 0.72-0.75; strongest on European languages, weakest on Amharic). top1-diff is a reliable evaluation-free layer-selection proxy. 10% of feature-discovery data preserves 99% of classifier performance.'
+  - 'Data synthesis: Feature-driven safety synthesis reaches 99.74% target-feature coverage at the same WildJailbreak budget where natural sampling reaches ~90%. With 4k real + 4k feature-driven synthetic examples on Qwen3-8B, safety-Acc 77.75 with IFEval 53.23 — approaching the 78.75 of 120k safety-only SFT, while improving general utility.'
+  - 'Post-training (SASFT): An auxiliary suppression loss on language-specific SAE features added to cross-entropy reduces unexpected code-switching by 50-100% across Qwen3-1.7B and Qwen3-8B for Chinese / Russian / Korean targets, while preserving (and sometimes improving) general benchmark scores (MMLU, HumanEval, IFEval, MGSM).'
+  - 'Post-training (RL with SAEs): SAE-guided rare-negative augmentation injects one SAE-steered repetitive rollout per group into DAPO. Repetition ratio drops sharply across Qwen3-1.7B / Qwen3-8B / Qwen3-30B-A3B; on Qwen3-30B-A3B the method also yields +5.84pp MGSM relative to the pre-RL checkpoint.'
+  - The endless-repetition feature is shared between pathological and benign repetition (instruction-echo, multiple-choice answer-choice repetition), which is why Section 7 SASFT-style suppression is unsuitable for repetition control and rare-negative augmentation is preferred.
+  techniques:
+  - TopK Sparse Autoencoder (Gao-et-al. recipe) trained per-layer on residual-stream activations
+  - Contrastive feature identification (positive vs. negative example sets, rank by mean activation difference)
+  - 'Additive feature steering: h'' = h + alpha*d at chosen layer with strength alpha'
+  - Directional ablation of language-specific features at the residual stream
+  - Feature-coverage AUC and growth-rate correction as evaluation-free benchmark redundancy metric
+  - Asymmetric and min-normalized feature-overlap as inter-benchmark similarity metric, with MMLU partial-correlation control
+  - top1-diff (max delta-frequency at a layer) as evaluation-free layer-selection proxy
+  - Rule-based OR-classifier over a small set of class-biased SAE features (no trained head, no gradients post-SAE)
+  - Feature-driven data synthesis with representation-level verification (only retain examples that activate target feature)
+  - 'SASFT auxiliary loss: ReLU(f_s(x) - alpha_j) on language-specific SAE features added to cross-entropy'
+  - SAE-guided DAPO with rare-negative rollout augmentation (G-1 normal rollouts + 1 SAE-steered negative)
+  reported_results:
+  - 'Toxicity classifier F1: en 0.92 (Qwen3-1.7B), 0.96 (Qwen3-8B); 0.91/0.95 ru; 0.89/0.93 fr; 0.53/0.62 am (worst, transferred from English)'
+  - Benchmark-redundancy Spearman rho ~ 0.85 between feature-based and performance-based metrics across 17 benchmarks
+  - 'Inter-benchmark correlation: direct Pearson 68.4% / Spearman 60.7%; after partialling out MMLU: 75.5% / 71.3%'
+  - 'WildJailbreak coverage: feature-driven 99.74% (2772/2779) vs natural-sample max 91% at matched budget'
+  - 'Qwen3-8B safety SFT: Alpaca50k+Safety4k+FeatureSynth4k -> ASR 24.0 / RR 20.5 / Acc 77.75 / IFEval 53.23 vs Safety120k baseline -> ASR 21.0 / RR 21.5 / Acc 78.75 / IFEval 48.06'
+  - 'SASFT code-switching reduction (Qwen3-1.7B, 110k data): zh 0.68->0.31 (-55%), ru 0.19->0.03 (-87%), ko 0.23->0.02 (-93%); 210k: zh -72%, ru -85%, ko -100%'
+  - 'SASFT general capability (Qwen3-1.7B 110k zh): MMLU 37.47->38.38 (+0.91), HumanEval 90.29->89.04 (-1.25), IFEval 20.27->20.22 (~0)'
+  - 'RL+SAE on Qwen3-30B-A3B: MGSM 76.56 -> 82.40 (+5.84pp vs Before-RL); vanilla RL only +1.08pp on the same metric'
+  referenced_arxiv_ids: []
+  contradicting_evidence:
+  - ICML 2025 "Steering Language Model Refusal with Sparse Autoencoders" (arxiv:2411.11296) reports that successful SAE-based refusal steering causes systematic, broad-spectrum degradation across benchmark tasks even on safe inputs unrelated to refusal — a cost that the Qwen-Scope steering case studies (only 2 anecdotal Qwen3 examples in Section 3) do not measure. Apparent direct counter to the "no compromise on general utility" framing.
+  - 'Recent 2025 SAE-explanation work (OpenReview tbiCWZgGD3, vc1i3a4O99) finds frequency bias in feature interpretation: post-hoc explanation methods focus on trivial linguistic patterns rather than semantics, and existing steering methods rely on contrastive datasets or large activation storage to identify directions. Qwen-Scope confirms the contrastive-data dependency in Section 3.2 but does not benchmark its automatic-interpretation pipeline against frequency-bias critiques.'
+  - CorrSteer (arxiv:2508.12535) and SAE-RSV (arxiv:2509.23799) explicitly position themselves as fixing limitations in standard SAE steering — noisy steering vectors with limited data, reliance on context-token hidden states for both feature and coefficient selection. Qwen-Scope's steering case studies use the conventional approach these papers critique.
+  - 'Section 7 Table 5 itself shows non-trivial general-capability regressions for SASFT: Qwen3-8B SASFT vs SFT-only reports HellaSwag -2.88pp (42.48 -> 39.60), MMLU -2.06pp (52.15 -> 50.09), GSM8K +0.42pp; Qwen3-1.7B SASFT MGSM -2.06pp (32.91 -> 30.85). Section 8 Table 7 shows RL+SAE Qwen3-8B IFEval -2.08pp vs Before-RL (71.04 -> 68.96). The "preserves general utility" claim is therefore directional — SASFT and RL-SAE trade some general capability for the targeted reduction. Plausible alignment with the ICML 2025 cross-task degradation finding above.'
+  - The benchmark-redundancy Spearman 0.85 is computed over 17 benchmarks evaluated with 26 in-house Qwen pre-training checkpoints — same model family, same data distribution. Cross-family or out-of-distribution model panels are not tested. The "evaluation-free" claim therefore strictly applies when the evaluator pool resembles the SAE training distribution.
+  - Section 8 reveals that the identified "endless repetition" feature also fires on benign repetition (instruction-echo, multiple-choice). Naive feature-suppression for repetition control is therefore explicitly contraindicated; only the rare-negative-rollout pathway is safe. The same caveat almost certainly applies to other shared-purpose features and is a general limitation of SASFT-style training that the paper documents but does not bound systematically.
+  - 'DEEP-DIVE 2026-05-04 (research/deep-dives/qwen-scope-sae-suite.md): Wang et al. 2026 "Does Higher Interpretability Imply Better Utility?" (ICLR 2026, OpenReview Q4ooLNOFeR) — CITED IN QWEN-SCOPE''S OWN REFERENCE LIST — trains 90 SAEs across Gemma-2-2B, Qwen-2.5-3B, and Gemma-2-9B and reports Kendall tau ~0.298 between SAEBench-measured interpretability and AxBench-measured steering utility ("only a relatively weak positive association"). After their Delta Token Confidence feature filter, "the correlation between interpretability and utility vanishes and can even become negative." Directly undermines the implicit claim across Sections 3, 5, 7, 8 that interpretability-validated SAE features will be useful for downstream tasks. Qwen-Scope cites the paper but does not benchmark its applications against Wang et al.''s baselines.'
+  - 'DEEP-DIVE 2026-05-04: Wu et al. 2025 "AxBench: Steering LLMs? Even Simple Baselines Outperform Sparse Autoencoders" (ICML 2025 poster, OpenReview K2CckZjNy0, Stanford NLP) — NOT CITED by Qwen-Scope — tests Gemma-2-2B and Gemma-2-9B and concludes: "Prompting outperforms all existing methods, followed by finetuning. SAEs are not competitive." For concept detection specifically (the regime of Qwen-Scope Section 5 toxicity classifier), "representation-based methods such as difference-in-means perform the best." AxBench proposes ReFT-r1 as a competitive interpretable alternative. Direct implication: Qwen-Scope Section 5''s F1 0.92/0.96 classifier is not benchmarked against the very baselines that AxBench identifies as dominant for the same task category.'
+  - 'DEEP-DIVE 2026-05-04: License is `qwen` (custom), NOT Apache 2.0 — confirmed via HF model-card metadata for SAE-Res-Qwen3-1.7B-Base-W32K-L0_50 and SAE-Res-Qwen3.5-27B-W80K-L0_50. Section 9.3 of the paper additionally prohibits using the SAEs to "interfere with model capabilities" with author-reserved final interpretation — every Section 3/7/8 application is by the paper''s own framing exactly "interfere with model capabilities." Section 4/5 post-hoc analysis is unambiguously permitted; Section 7/8 behavior-modification adoption requires a license-clause review.'
+  - 'DEEP-DIVE 2026-05-04: Storage cost is materially larger than first-pass intake suggested. Confirmed via HF model card: SAE-Res-Qwen3.5-27B-W80K-L0_50 stores per-layer FP32 (W_enc 81920x5120 + W_dec 5120x81920 + biases) ~3.34 GB per layer x 64 layers = ~213 GB for ONE variant; both L0 settings = ~426 GB per backbone. EPYC production-stack inventory (Qwen3-1.7B + Qwen3.5-27B + Qwen3-30B-A3B + Qwen3.5-35B-A3B, both L0 settings) totals ~687 GB FP32 / ~344 GB FP16. Practical adoption requires per-application pulls (one model, one or two middle layers ~3-7 GB), not full-suite mirroring.'
+  - 'DEEP-DIVE 2026-05-04: Section 5 toxicity-classifier baselines absent. F1 0.92/0.96 reported with no comparison against (a) linear probe on the same residual stream, (b) difference-in-means (the AxBench-recommended dominant baseline for concept detection), (c) trained classification head, or (d) BERT/RoBERTa-class toxicity models. The structural value (sparse, interpretable, no extra trained head, 10% data-efficient) is real, but the performance claim — that this matches a learned head — is uncontextualized. The SAE classifier should be framed as an audit primitive, not a primary classifier.'
+  - 'DEEP-DIVE 2026-05-04: Section 8 repetition-feature identification has a structural confound. Features are selected by comparing first-vs-last-occurrence of the SAME token within an already-repetitive sample, which mechanically picks features that "rise during repetitive contexts." Bidirectional steering (Figure 20) provides causal direction but coefficients are not surfaced in the extracted text. The paper explicitly confirms (Figure 21) that the same features fire on benign repetition (instruction echo, multiple-choice answer choices). The +5.84pp MGSM Qwen3-30B-A3B RL+SAE result therefore cannot be cleanly attributed to "repetition suppression learning" — it could include collateral effects from injecting OOD steered samples that have any number of regularizing properties beyond targeting repetition. EPYC port requires an ablation distinguishing feature-targeted from generic-OOD rare-negative rollouts.'
+  - 'DEEP-DIVE 2026-05-04: SAE training data is undisclosed ("in-house pretraining data"). Reproducing on Qwen3.6 is not possible from the paper alone. Section 4''s "evaluation-free" claim is in-distribution: the SAEs were trained on Qwen pretraining data, and the 17 evaluated benchmarks (MMLU, GSM8K, MATH, etc.) are likely well-represented in that distribution, so the feature-coverage saturation is computed using SAEs that have effectively seen the benchmarks. Spearman 0.85 correlation with performance redundancy holds in-distribution; cross-family validity not tested.'
+  - 'DEEP-DIVE 2026-05-04: SASFT (Section 7) is a separately-published ICLR 2026 paper by the lead Qwen-Scope contributor (Deng et al. 2026, OpenReview BQOFU9qO5j). Section 7 carries higher peer-review credibility than the rest of the technical report. The first-pass intake credibility score of 4 is right for the suite as a whole; Section 7 specifically would warrant +1 (peer-reviewed venue) but this is offset by Section 7 Table 5''s documented HellaSwag -2.88 / MMLU -2.06 regressions on Qwen3-8B which align with Wang et al. 2026 utility-falsification.'
+  - 'DEEP-DIVE 2026-05-04: No first-party github repo from QwenLM org for Qwen-Scope inference. Loading is custom PyTorch (`torch.load(layer{N}.sae.pt)`), no transformers / sae_lens integration. Third-party `embeddr-net/ComfyUI-QwenScope` exists but is image-generation-focused. HF Space `Qwen/QwenScope` interactive feature explorer is in "Paused" state at deep-dive date. Practical implication: any EPYC integration writes the residual-stream extraction + SAE forward pass + feature-activation tooling itself; the released artifact is checkpoints + inline code snippets, not a tooling SDK.'
+  - 'DEEP-DIVE 2026-05-04: Falsifying-SAE-Reasoning-Features (Ma et al. 2026, arxiv:2601.05679) is cited in Qwen-Scope''s own reference list but Section 9.2 does NOT discuss whether Section 8''s repetition features survive the Ma et al. falsification framework. Notable omission given that Section 8 is the strongest empirical claim involving causal SAE-feature interventions in reasoning models.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-intelligence.md
+    - per-request-reasoning-budget.md
+    - reasoning-compression.md
+    - qwen36-production-upgrade.md
+    - learned-routing-controller.md
+    - eval-tower-verification.md
+    - mathsmith-hc-formalizer-eval.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-441 (post-training diversity collapse — Qwen-Scope SASFT's Table 5 regressions plausibly downstream of the same mechanism; Wang et al. 2026 ICLR utility-falsification on Qwen-2.5-3B reinforces)
+    - intake-483 (HPD distillation — orthogonal SFT-objective work; SASFT's feature-suppression auxiliary loss is a candidate add-on but gated on diversity-collapse evaluation)
+    - intake-455 (Qwen3.6-27B dense + drafter spec-decoding — same-family model that Qwen-Scope SAEs do NOT yet cover)
+    - intake-495 (BaRP bandit routing) and intake-496 (LLM Bandit) — routing-intelligence cousins; SAE feature footprints are a candidate auxiliary feature for the bandit policy's prompt encoder, BUT see deep dive — AxBench reports difference-in-means dominates SAEs at concept detection so head-to-head ablation mandatory
+  related_artifacts:
+    mirror_urls:
+    - https://huggingface.co/collections/Qwen/qwen-scope
+    - https://modelscope.cn/collections/Qwen/Qwen-Scope
+    - https://qianwen-res.oss-accelerate.aliyuncs.com/qwen-scope/Qwen_Scope.pdf
+    license: qwen (custom; NOT Apache 2.0; Section 9.3 of paper prohibits using SAEs to "interfere with model capabilities" with author-reserved final interpretation)
+    storage_estimate_fp32_gb:
+      qwen3_1_7b_W32K_both_L0: 30
+      qwen3_8b_W64K_both_L0: 146
+      qwen3_5_2b_W32K_both_L0: 26
+      qwen3_5_9b_W64K_both_L0: 130
+      qwen3_5_27b_W80K_both_L0: 426
+      qwen3_30b_a3b_W32K_plus_W128K_both_L0: 126
+      qwen3_5_35b_a3b_W32K_plus_W128K_both_L0: 105
+      production_stack_subset_total: 687
+    sae_release:
+    - SAE-Res-Qwen3-1.7B-Base-W32K-L0_{50,100} (all 28 layers, expansion 16x)
+    - SAE-Res-Qwen3-8B-Base-W64K-L0_{50,100} (all 36 layers, expansion 16x)
+    - SAE-Res-Qwen3.5-2B-Base-W32K-L0_{50,100} (all 24 layers, expansion 16x)
+    - SAE-Res-Qwen3.5-9B-Base-W64K-L0_{50,100} (all 32 layers, expansion 16x)
+    - SAE-Res-Qwen3.5-27B-W80K-L0_{50,100} (all 64 layers, instruct backbone, expansion 16x)
+    - SAE-Res-Qwen3-30B-A3B-Base-W32K-L0_50 + W128K-L0_100 (all 48 layers, expansion 16x and 64x)
+    - SAE-Res-Qwen3.5-35B-A3B-Base-W32K-L0_50 + W128K-L0_100 (all 40 layers, expansion 16x and 64x)
+    - 'QwenScope (Hugging Face Spaces interactive feature explorer; status: Paused at intake date)'
+    inference_loading: Custom PyTorch torch.load(layer{N}.sae.pt) per layer; 4 tensors per file (W_enc, W_dec, b_enc, b_dec, all FP32). No transformers / sae_lens integration. No first-party QwenLM github repo for Qwen-Scope inference code at deep-dive date. Third-party `embeddr-net/ComfyUI-QwenScope` is image-generation-focused.
+  handoffs_updated:
+  - routing-intelligence.md
+  - per-request-reasoning-budget.md
+  - qwen36-production-upgrade.md
+  handoffs_created:
+  - qwen-scope-sae-toolkit.md
+  novelty_justification: 'No prior SAE / mechanistic-interpretability material in the EPYC compendium — chapters, handoffs, and intake index have zero coverage. This is the first open-source SAE suite for the EXACT Qwen3 / Qwen3.5 backbones the production stack uses (1.7B drafter, 27B / 30B-A3B / 35B-A3B production candidates). The SAE recipe itself is conventional (Gao-et-al. TopK + dead-feature aux loss) and the steering / classification primitives have prior art in GemmaScope and LlamaScope, but three contributions are genuinely novel: (1) feature-coverage AUC with growth-rate correction and MMLU-partialled inter-benchmark overlap as evaluation-free benchmark redundancy / similarity metrics; (2) SASFT — auxiliary feature-suppression loss that internalizes inference-time directional ablation into SFT, with empirical 50-100% code-switching reduction across three target languages; (3) SAE-guided DAPO rare-negative augmentation as a structured way to manufacture training signal for low-frequency failure modes (endless repetition). Novelty rated high because the combined release + four-application taxonomy + the three new mechanisms is materially more than a re-skin of LlamaScope.'
+  relevance_justification: 'Direct intersection with EPYC production stack: Qwen-Scope releases SAEs on Qwen3-1.7B (drafter candidate, intake-455 flow), Qwen3.5-27B-Instruct (production frontdoor candidate path), Qwen3-30B-A3B (production worker per memory project_worker_replacement), and Qwen3.5-35B-A3B (Qwen3.6-35B-A3B production-upgrade candidate, qwen36-production-upgrade.md, same architecture family). Coverage is essentially the full EPYC production roster minus the new Qwen3.6 family. Five concrete entry points exist: (a) Section 5 toxicity classifier methodology (rule-based OR over class-biased SAE features) directly maps to routing-intelligence factual-risk classifier construction — sparse, interpretable, ~10% data efficient, no trained head; (b) Section 4 feature-coverage redundancy could prune the EPYC eval suite (eval-tower-verification.md, mathsmith-hc-formalizer-eval.md); (c) Section 7 SASFT for code-switching is a candidate fix for any multilingual seeding/routing degradations; (d) Section 8 endless-repetition feature methodology is the closest published analogue to the Ring-mini stuck-in-think failure-mode diagnostic in research/deep-dives/ — even though Ring-mini is non-Qwen, the method (identify stuck-state feature, use as diagnostic + RL rare-negative signal) is portable to any Qwen-family stuck-in-think failure (per-request-reasoning-budget.md, reasoning-compression.md); (e) SAE features as auxiliary inputs to learned-routing-controller / BaRP-style routing policies. CPU-cost pathway: SAE inference adds one extra residual-stream encode/decode per layer activation (small TopK matmul on a 32K-128K dictionary). On EPYC 9655 BW-bound CPU decode this is a single-digit-percent overhead at most for evaluation-time uses; SASFT and SAE-DAPO are training-time only and irrelevant to inference cost. Not relevance-medium because four of EPYC''s seven SAE-covered backbones are active production-stack candidates, not just adjacent.'
+  verdict_justification: 'new_opportunity stands after DEEP-DIVE 2026-05-04 (research/deep-dives/qwen-scope-sae-suite.md), but the practical adoption pathway is materially narrower than the first-pass verdict suggested. Revised application-priority order: (1) Section 4 benchmark-redundancy on the EPYC eval suite using SAE-Res-Qwen3.5-27B-W80K-L0_50 at one or two middle-band layers (~5 GB pull) — strongest single application, real value, low cost, no behavior modification, in-distribution caveat documented; (2) Section 5 rule-based classifier as an AUDIT primitive (NOT primary classifier) for routing-intelligence factual-risk transparency — head-to-head against difference-in-means + linear probe baselines is mandatory before commitment, since AxBench (Wu et al. ICML 2025) reports difference-in-means dominates SAEs at concept detection on Gemma-2; (3) Section 8 SAE-DAPO rare-negative-augmentation — strong-model candidate but BLOCKED on (a) RL training infra (DGX Spark not yet acquired, project_dgx_spark_target), (b) documented Qwen-family stuck-in-think failure mode in our own logs, (c) ablation distinguishing feature-targeted from generic-OOD rare negatives; (4) Section 7 SASFT — defer further than first-pass suggested; Wang et al. 2026 (ICLR 2026, OpenReview Q4ooLNOFeR, CITED BY Qwen-Scope but not benchmarked against) reports Kendall ~0.298 SAE-interpretability-vs-steering-utility correlation on Qwen-2.5-3B and Gemma-2 (negative under common feature selection); Section 7 Table 5 itself shows HellaSwag -2.88/MMLU -2.06 on Qwen3-8B; combined evidence argues SASFT trades some general capability for targeted reduction; (5) Section 3 inference-time steering — do NOT adopt; AxBench (ICML 2025) shows prompting and finetuning beat SAE steering on Gemma-2; ICML 2025 SAE-refusal paper documents broad-task degradation on safe inputs; Wang et al. 2026 utility-falsification on Qwen-2.5-3B holds. Storage budget: ~687 GB FP32 / ~344 GB FP16 for full production-stack inventory both L0 settings — pull per-application not en bloc. License is `qwen` custom (NOT Apache); Section 9.3 prohibition on using SAEs to "interfere with model capabilities" creates ambiguity for Section 7/8 adoption — Section 4/5 post-hoc analysis unambiguously permitted. Adoption posture: Section 4 = act when needed; Section 5 = pilot with baselines; Section 7/8 = monitor, do not implement until both infra and capability-regression evaluation hooks land.'
+
+- id: intake-522
+  arxiv_id: '2501.17148'
+  url: https://arxiv.org/abs/2501.17148
+  source_type: paper
+  title: 'AxBench: Steering LLMs? Even Simple Baselines Outperform Sparse Autoencoders'
+  authors:
+  - Zhengxuan Wu
+  - Aryaman Arora
+  - Atticus Geiger
+  - Zheng Wang
+  - Jing Huang
+  - Dan Jurafsky
+  - Christopher D. Manning
+  - Christopher Potts
+  categories:
+  - agent_architecture
+  - training_distillation
+  - routing_intelligence
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  discovered_via: expansion
+  expanded_from: intake-521
+  verdict: adopt_patterns
+  ingested_date: '2026-05-04'
+  deep_dive_path: research/deep-dives/sae-utility-falsification-axbench-wang2026.md
+  key_claims:
+  - Introduces AxBench, a benchmark for evaluating LM control methods (steering and concept detection) at scale using synthetic data; tests representation-based methods against prompting and finetuning baselines on Gemma-2-2B-it and Gemma-2-9B-it (instruction-tuned).
+  - 'On steering: prompting outperforms all existing methods, followed by finetuning. SAEs are not competitive — they fall behind both ReFT-r1 (the paper''s proposed weakly-supervised method) and difference-in-means.'
+  - 'On concept detection: representation-based methods such as difference-in-means perform the best. SAEs are also not competitive on this axis.'
+  - Tested SAEs are GemmaScope (Lieberum et al. 2024) — directly the methodological cousin to Qwen-Scope (intake-521). Two layers tested per backbone with concepts adapted from Neuronpedia's auto-interpretability pipeline.
+  - Proposes Rank-1 Representation Finetuning (ReFT-r1) as a weakly-supervised representational alternative that is competitive with prompting and finetuning while preserving interpretability advantages. Open-sources SAE-scale dictionaries for ReFT-r1 and DiffMean.
+  - 'Authors explicitly discuss the auto-interpretability confound: SAE feature labels from Neuronpedia''s pipeline are skewed toward token-level concepts. They run a follow-up with higher-quality labels (Appendix E.4): higher-quality labels improve SAE performance but do NOT close the gap to ReFT-r1 / DiffMean.'
+  techniques:
+  - 'AxBench evaluation pipeline: natural-language concept descriptions -> synthetic positive/negative example generation via LLM -> labeled training and evaluation data'
+  - 'Difference-in-means (DiffMean): wDiffMean = mean(H+) - mean(H-), normalized to unit norm; detection via dot product, steering via additive intervention with optimized magnitude alpha'
+  - 'Linear artificial tomography (LAT): top principal component of pairwise activation differences'
+  - 'Linear probe: BCE on Sigmoid(h . w_probe)'
+  - 'Supervised steering vector (SSV): learned bias vector trained with SFT-style language-modelling loss'
+  - 'ReFT-r1: jointly learns concept detection (via ReLU(h . w)) and steering (via TopK gating on detection latents); single rank-1 representation finetuning per concept'
+  - 'Supervised dictionary learning (SDL) framing: SDLs (DiffMean, ReFT-r1, etc.) require concepts known a priori but can be augmented without retraining; SAEs require concept discriminators after the fact'
+  reported_results:
+  - 'Headline: SAEs are not competitive on either steering or concept detection on Gemma-2-2B-it and Gemma-2-9B-it'
+  - 'For concept detection: difference-in-means dominates SAEs'
+  - 'For steering: prompting > finetuning > ReFT-r1 > [other SDL methods] > SAE'
+  - ReFT-r1 closes the gap to prompting/finetuning while remaining interpretable; SAEs do not
+  - Higher-quality concept labels (Appendix E.4) improve SAE performance but do not close the gap to ReFT-r1 / DiffMean
+  referenced_arxiv_ids:
+  - '2406.04093'
+  - '2310.06824'
+  - '2410.06981'
+  - '2410.17245'
+  contradicting_evidence:
+  - 'Author-acknowledged scope limit: tested only on Gemma-2-2B-it and Gemma-2-9B-it. Generalization to Qwen3 / Qwen3.5 SAEs (intake-521 / Qwen-Scope) is not directly tested. The conclusion "SAEs are not competitive" is therefore strictly an instruction-tuned-Gemma-2 + GemmaScope-SAE result, though Qwen-Scope uses methodologically equivalent TopK SAEs and similar widths so the inference is reasonable.'
+  - 'Author-acknowledged confound (Section 6 + Appendix E.4): SAE feature labels are sourced from Neuronpedia''s auto-interpretability pipeline which skews toward token-level concepts. The paper itself states "the poor performance of SAEs is at least partially a reflection of the limitations of auto-interpretability." Higher-quality labels improve SAE numbers but do not close the gap. Implication for downstream use: AxBench evaluates the SAE+auto-interp PIPELINE, not the SAE artifact in isolation. Qwen-Scope mostly uses contrastive feature identification (not auto-interp), so AxBench partially mitigates against Qwen-Scope Section 5''s methodology — but the contrastive vs. auto-interp distinction is incidental to the stronger finding that difference-in-means is the dominant baseline.'
+  - 'Concept selection: concepts adapted from Neuronpedia''s GemmaScope concept lists. GemmaScope features were not selected adversarially against AxBench; the SAE has not been "given" the most-steerable features. AxBench therefore measures average-case SAE steering quality, not best-case. For best-case SAE selection see Wang et al. 2026 (intake-523) which uses Delta Token Confidence to isolate steerable features.'
+  - 'Layer selection: two layers tested per backbone (specific layers not surfaced in the deep-dive read). Qwen-Scope Section 5 toxicity classifier finds best-F1 layers concentrate in middle-to-late bands; if AxBench tested non-optimal layers, SAE numbers are underestimates. The paper does not report layer ablations.'
+  - 'No mention of EPYC-relevant tasks: AxBench concepts are general (per the synthetic-data pipeline) — code-switching, repetition, factual-risk, and routing-classifier-style concepts are not specifically benchmarked. Generalization from "average synthetic concepts" to EPYC-specific applications (Section 5 toxicity classifier as audit primitive in routing-intelligence) is not directly established.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen-scope-sae-toolkit.md
+    - routing-intelligence.md
+    - eval-tower-verification.md
+    - mathsmith-hc-formalizer-eval.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-521 (Qwen-Scope — load-bearing skeptical evidence; AxBench is the canonical "SAE steering doesn't work as well as simpler baselines" reference)
+    - 'intake-523 (Wang et al. 2026 utility-falsification — companion paper, complementary methodology: AxBench benchmarks output-space behavior, Wang 2026 dissects the interpretability-utility correlation directly)'
+  related_artifacts:
+    github: github.com/stanfordnlp/axbench
+    huggingface: huggingface.co/pyvene (datasets and trained dictionaries)
+    venue: ICML 2025 (PMLR 267)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: The high-level claim "SAEs are not competitive at steering vs. simpler baselines" was already in the air pre-2025 (Pres et al. 2024, Braun et al. 2024). AxBench's novelty is (a) the first large-scale comparative benchmark across SAE / DiffMean / PCA / LAT / linear probe / SSV / ReFT-r1 / prompting / LoRA / SFT on a unified concept-detection-and-steering protocol, (b) the synthetic-data + LLM-judge methodology that scales to thousands of concepts without per-concept human annotation, (c) ReFT-r1 itself as a published-with-released-dictionary alternative to SAE steering, (d) the explicit acknowledgement and Appendix E.4 ablation of the auto-interpretability confound. Medium novelty rather than high because the underlying skepticism is incremental on prior critiques and the paper explicitly frames its contribution as a benchmark, not a new mechanism.
+  relevance_justification: 'High because intake-521 (Qwen-Scope) Sections 3 and 5 target exactly the regimes AxBench evaluates: Section 3 inference-time steering (where AxBench finds prompting and finetuning beat SAEs) and Section 5 rule-based concept-detection classifier (where AxBench finds difference-in-means dominates SAEs). Qwen-Scope does NOT run the AxBench-recommended baselines; this absence is the single most important caveat against piloting Qwen-Scope Section 5 as a primary classifier in routing-intelligence factual-risk. AxBench is also the methodological model for any future EPYC SAE evaluation — if we ever sit down to benchmark Qwen-Scope features against routing-intelligence baselines, the AxBench protocol (concept detection AUROC + model steering harmonic mean across many concepts with paired baselines) is the right shape of evaluation.'
+  verdict_justification: 'adopt_patterns: adopt the methodological discipline (mandatory difference-in-means + linear-probe baselines for any SAE-classifier or SAE-steering proposal; document layer selection; report on multiple concepts not single anecdotal cases; include prompting and finetuning as upper-bound references), but do NOT adopt AxBench code or ReFT-r1 as a deployment target. ReFT-r1 is interesting as an interpretable alternative to SAEs, but it requires labeled per-concept supervision and rank-1 finetuning per concept — that does not fit EPYC''s zero-finetuning constraint (project_dgx_spark_target — DGX Spark not yet acquired). The actionable deliverable is a one-paragraph rule added to qwen-scope-sae-toolkit.md and routing-intelligence.md: "Before piloting any SAE-feature classifier or SAE-steering intervention, run difference-in-means + linear-probe baselines on the same residual stream as a control. If the baselines match within 5pp, the SAE buys interpretability only — useful for audit, not a deployment-grade alternative to the learned classifier." This rule is already enforced in the deep-dive-revised qwen-scope-sae-toolkit.md priority order; intake-522 is its citation.'
+
+- id: intake-523
+  arxiv_id: '2510.03659'
+  url: https://arxiv.org/abs/2510.03659
+  source_type: paper
+  title: Does higher interpretability imply better utility? A Pairwise Analysis on Sparse Autoencoders
+  authors:
+  - Xu Wang
+  - Yan Hu
+  - Benyou Wang
+  - Difan Zou
+  categories:
+  - agent_architecture
+  - training_distillation
+  - routing_intelligence
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-521
+  verdict: adopt_patterns
+  ingested_date: '2026-05-04'
+  deep_dive_path: research/deep-dives/sae-utility-falsification-axbench-wang2026.md
+  key_claims:
+  - Trains 90 SAEs across three LLMs (Gemma-2-2B, Qwen-2.5-3B, Gemma-2-9B), spanning five SAE architectures (BatchTopK, Gated, JumpReLU, ReLU, TopK) and six sparsity levels (target L0 in {50, 80, 160, 320, 520, 820}), all at fixed dictionary width 16K. Training on The Common Pile v0.1, ~5e8 tokens per SAE on 2x A800. Residual stream at mid-layers (Gemma-2-2B layer 12, Qwen-2.5-3B layer 17, Gemma-2-9B layer 20).
+  - 'Pairwise analysis result: across all 90 SAEs, Kendall tau-b between SAEBench Automated Interpretability Score (Concept100) and AxBench steering-utility harmonic mean is ~0.298 (95% CI 0.159 - 0.419). Per-model: Gemma-2-2B 0.218, Qwen-2.5-3B 0.458, Gemma-2-9B 0.306. The Qwen-2.5-3B value is the highest, but still indicates only modest positive association.'
+  - After applying their proposed Delta Token Confidence (DTC) feature selection — measuring change in next-token top-k confidence under feature amplification — the interpretability-utility correlation falls to tau-b ~ -0.069 (95% CI -0.202 to 0.067). I.e., for HIGH-utility features the interpretability-utility correlation vanishes or becomes negative.
+  - DTC-selected features improve average steering score by 52.52% over the prior best output-score-based feature selection (Arad et al. 2025). DTC is computed as DTC(f, l, alpha) = C_k(p_intervened) - C_k(p_baseline) on a neutral prefix ("From my experience,") with alpha=10, k=1.
+  - 'Authors'' framing: "interpretability is at best irrelevant and potentially detrimental for top steering features." The hypothesized mechanism: not all interpretable features steer effectively; the steering-effective features are orthogonal or inversely related to the interpretability axis.'
+  - 'Authors recommend follow-up work in two directions: (a) advanced post-training feature selection protocols; (b) "fundamentally new, utility-oriented SAE training paradigms" — i.e. stop optimizing only for sparse-reconstruction quality and add a steering-utility objective at training time.'
+  techniques:
+  - 'Pairwise SAE evaluation: train multiple SAEs varying architecture and sparsity, measure both interpretability and utility per SAE, fit Kendall tau-b across the resulting joint distribution'
+  - 'SAEBench Automated Interpretability Score (Concept100): LLM judge evaluates feature descriptions against held-out activation windows, average precision over 100 sampled features'
+  - 'AxBench steering harmonic mean: HM(C, I, F) = 3 / (1/C + 1/I + 1/F), with Concept / Instruction / Fluency each in {0, 1, 2}'
+  - 'Delta Token Confidence (DTC) feature selector: amplify feature f by alpha=10, measure resulting change in negative-log-probability of top-1 next token on a neutral prefix; rank features by DTC magnitude'
+  - 'Axis-controlled tau (Psi_C): partial Kendall tau controlling for SAE architecture and sparsity to isolate the per-model interpretability-utility relationship'
+  reported_results:
+  - 'Overall Kendall tau-b across 90 SAEs: 0.298 [0.159, 0.419]'
+  - 'Per-model axis-controlled Psi_C: Gemma-2-2B 0.2184, Qwen-2.5-3B 0.4575, Gemma-2-9B 0.3057'
+  - 'After DTC-based selection: tau-b ~ -0.069 [-0.202, 0.067] (correlation vanishes or flips)'
+  - 'DTC vs. output-score baseline: +52.52% average improvement in AxBench steering score across all three models'
+  - 'Architectures tested: BatchTopK, Gated, JumpReLU, ReLU, TopK — all at 16K dictionary width'
+  referenced_arxiv_ids:
+  - '2501.17148'
+  - '2406.04093'
+  contradicting_evidence:
+  - 'Scope: 16K dictionary width is materially smaller than Qwen-Scope''s widths (32K for dense backbones, 64K for 8-9B, 80K for 27B, 128K for MoE wider variants). Higher-width SAEs may have different interpretability-utility tradeoffs — wider dictionaries can split features more finely, which could either improve or worsen the correlation. Wang et al.''s finding does not directly transfer to Qwen-Scope without re-running at Qwen-Scope widths. The directional claim (interpretability not a sufficient proxy for utility) is plausibly width-invariant; the exact tau values are not.'
+  - 'Single layer per model: layer 12 / 17 / 20 (mid-network). Qwen-Scope Section 5 finds best toxicity-classifier F1 in middle-to-late layers, which is consistent. But the layer-aggregated finding does not control for layer-dependent feature density variation. Cross-layer ablations would strengthen the claim.'
+  - 'Training corpus: Common Pile v0.1 ~5e8 tokens. Qwen-Scope SAEs trained on undisclosed in-house Qwen pretraining data (likely much larger). SAE quality is corpus-sensitive; the Common Pile may produce noisier SAEs than Qwen''s in-house data, inflating noise floor on the interpretability-utility correlation.'
+  - Qwen-2.5-3B Psi_C = 0.4575 is the strongest per-model correlation in the paper — non-trivially higher than Gemma-2-9B 0.306 and Gemma-2-2B 0.218. This is the SAME model FAMILY as Qwen-Scope (Qwen-2.5 vs Qwen-3 / Qwen-3.5). The deep-dive's use of Wang et al. 2026 to bound Qwen-Scope steering claims should acknowledge that within-Qwen the interpretability-utility correlation is materially better than within-Gemma — though still well below 1.0, so the conclusion stands.
+  - DTC alpha=10 is the only amplification level reported — the +52.52% improvement is at this single intervention strength. Sensitivity to alpha is not characterized in the deep-dive read. Qwen-Scope steering case studies use unspecified alpha in Section 3 and a directional ablation framework with lambda parameter in Section 7 — the comparison across papers is not methodologically clean.
+  - Wang et al. 2026 measures SAEBench auto-interpretability vs AxBench steering. Both Section 4 (benchmark redundancy via feature footprints) and Section 5 (rule-based classifier via class-biased features) of Qwen-Scope use NEITHER metric — Section 4 uses feature COVERAGE not feature interpretability, and Section 5 uses TOP1-DIFF activation difference not auto-interp. Wang 2026 therefore directly bounds Qwen-Scope Sections 3 / 7 / 8 (steering-adjacent) but leaves Sections 4 / 5 less directly constrained.
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen-scope-sae-toolkit.md
+    - routing-intelligence.md
+    - eval-tower-verification.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-521 (Qwen-Scope — Wang et al. 2026 is cited in the Qwen-Scope reference list but not benchmarked against; this is the load-bearing falsification work for Qwen-Scope steering / SASFT / SAE-DAPO claims; Qwen-Scope is also the paper's methodological cousin — same TopK SAE recipe at larger widths)
+    - 'intake-522 (AxBench — Wang et al. 2026 USES AxBench as its steering-utility metric; the two papers form a complementary pair: AxBench shows SAEs lose to baselines on average, Wang 2026 explains why — interpretability and utility are not sufficiently correlated under standard SAE feature selection)'
+  related_artifacts:
+    venue: ICLR 2026 (OpenReview Q4ooLNOFeR)
+    arxiv_html: https://arxiv.org/html/2510.03659v1
+    training_compute: 90 SAEs x ~5e8 tokens each on 2x NVIDIA A800 — moderate compute, reproducible
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'High novelty for two reasons. First, the result itself: Kendall tau-b ~0.298 between SAE interpretability and steering utility, falling to ~0 or negative under DTC-based feature selection, is a quantitatively decisive falsification of the "interpretable SAE features will be useful steering features" assumption that underlies most SAE-applications work (including Qwen-Scope Sections 3, 7, 8). Second, the methodological contribution: pairwise analysis across 90 SAEs varying both architecture and sparsity controls for the obvious confounds in the prior literature (single-architecture comparisons, single-sparsity comparisons). The Delta Token Confidence selector is a concrete proposed remedy and the +52.52% improvement quantifies the magnitude of recoverable utility under proper selection. Higher novelty than AxBench (intake-522) because Wang 2026 measures the underlying CORRELATION not just the average performance gap.'
+  relevance_justification: High because Wang et al. 2026 is cited in Qwen-Scope's own reference list yet not benchmarked against — exactly the kind of "the authors knew about this and chose not to address it" gap that should be flagged before adopting any Qwen-Scope steering / SASFT / SAE-DAPO application. The Qwen-2.5-3B per-model Psi_C 0.4575 is the highest of the three tested models, which strengthens the relevance to Qwen-Scope (which targets the Qwen3 / Qwen3.5 family — same architectural lineage). However, Wang 2026 does NOT directly bound Qwen-Scope Section 4 (benchmark redundancy via feature footprints) or Section 5 (rule-based classifier via top1-diff feature selection) since those use different metrics; this nuance was not surfaced in the original intake-521 deep-dive.
+  verdict_justification: 'adopt_patterns. Two concrete patterns to adopt across EPYC SAE work: (1) any SAE-steering or SASFT-style training proposal must report the Kendall tau between feature interpretability rank and downstream utility rank — if tau is below ~0.5, the proposal cannot rely on interpretability as a quality proxy and must motivate feature selection independently; (2) Delta Token Confidence is the canonical "utility-aware" feature selector and should be the baseline for any future feature-selection improvement we propose. Do NOT adopt the SAE training code (Qwen-Scope already provides the artifacts we would consume; we are not training SAEs). The actionable deliverable is a methodological gate added to qwen-scope-sae-toolkit.md priority 2 (Section 5 audit primitive) and priority 4 (Section 7 SASFT defer): "Before crediting any SAE-feature-based intervention, validate that the selected features score in the top decile under Delta Token Confidence on a representative prefix; otherwise the intervention is selecting interpretable-but-not-useful features." The paper itself stops short of testing Qwen-Scope SAEs specifically; that re-run on Qwen-Scope checkpoints would be the most decisive single experiment to clarify how strongly Wang 2026 binds Qwen-Scope adoption decisions, but it is not blocking — the directional finding on Qwen-2.5-3B SAEs is sufficient to gate immediate behavior-modification adoption.'
