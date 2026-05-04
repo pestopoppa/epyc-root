@@ -1,6 +1,6 @@
 # Qwen3.5-122B-A10B — Arch-Class Probe (Probe B)
 
-**Status**: Phase 1 COMPLETE 2026-05-04 — c2 (`GGML_NUMA_REPACK_INTERLEAVE=0`) wins +1.28%; closed `architect_general` slot in v5 deployment draft. Phase 2 (w0..w3 bonus wiring revalidation) deferred.
+**Status**: Phase 1 + Phase 2 COMPLETE 2026-05-04. c2 (`GGML_NUMA_REPACK_INTERLEAVE=0`) wins +1.28% at 96t canonical. Phase 2 wiring revalidation found production `2× --numa distribute` is suboptimal in BOTH dimensions; recommended Phase 1 wiring change: 1× canonical 96t + c2 (+184% per-request) OR 4× per-NUMA-node 24t + c2 (+96% aggregate at 4-concurrent).
 **Created**: 2026-05-04
 **Categories**: hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (only model in current 27B/31B/122B production trio with plausible 2× single-instance headroom)
@@ -148,16 +148,41 @@ concurrent instance.
 
 This wiring decision is OUT OF SCOPE for this probe. Tracked as Phase 2 below.
 
-## Phase 2 — bonus wiring revalidation (DEFERRED)
+## Phase 2 RESULTS — 2026-05-04 (same session)
 
-w1 (`2× --cpunodebind=N --membind=N -t 24`) is the most informative remaining test — it asks
-whether splitting one full-machine instance into two per-NUMA-node instances preserves the c2
-win at half the threads. If yes (analog to project_96t_single_node_operating_point's 30B-A3B
-finding), the wiring change becomes obvious.
+User direction: "proceed with Phase 2". RAM audit before launch: each NUMA node had ~120 GB
+free (70 GB Q4 model fits; 4× concurrent fits per-node).
 
-Skipped this session because:
-- Concurrent runs need explicit RAM headroom audit (`numactl -H` per node free vs 70 GB × 2 +
-  KV) and timing coordination per `feedback_no_concurrent_inference`
-- The single-instance finding is already actionable for v5 deployment
+| Wiring | per-instance t/s | Aggregate | Notes |
+|---|---|---|---|
+| w3 (1× canonical 96t + c2) | 12.19 ± 0.05 | **12.19** | latency-optimal, single-request |
+| w1a (1× 24t per-node + c2) | 4.207 ± 0.011 | 4.21 | per-node BW ceiling |
+| w1b (2× concurrent 24t per-node + c2) | 4.19, 4.27 | **8.47** | linear 2× scaling, matches production registry's 8.6 |
+| w2 (4× concurrent 24t per-node + c2) | 4.15, 4.25, 4.24, 4.22 | **16.86** | **linear 4× scaling — throughput-optimal at 4 concurrent** |
+| Production now (2× `--numa distribute`) | 4.30 | 8.60 | **suboptimal in BOTH dimensions** |
 
-Bundle: `data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md`
+**Operating-point matrix:**
+
+| Workload regime | Optimal | Δ vs production |
+|---|---|---|
+| Single user, 1 request at a time | w3 | **+184% per-request** (4.3 → 12.19) |
+| 4+ concurrent requests | w2 | **+96% aggregate** (8.6 → 16.86) |
+
+**Key insight**: production's 2-instance cross-NUMA wiring is in the worst quadrant. Going
+to 1× canonical wins per-request latency dramatically. Going to 4× per-NUMA-node wins
+aggregate throughput (when the orchestrator actually issues 4 concurrent requests).
+
+### Recommendation
+
+**Immediate (low-risk, single-line registry change)**: switch architect_general from
+`numa_instances: 2 / numa_ports: [8083, 8183]` to `numa_instances: 1 / numa_ports: [8083]`
+with the c2 env block already wired in `_ROLE_ENV_BLOCKS`. Expected: +184% per-request
+latency for the dominant single-user query pattern.
+
+**Conditional (requires concurrent workload)**: only if architect_general scales to high
+concurrency (eval batches, multi-tenant), switch to 4× per-NUMA-node 24t wiring for the
++96% aggregate win. Until then, the 4× wiring would leave 4-way capacity unused.
+
+**Do NOT keep production's 2× cross-NUMA**: there is no workload where it is optimal.
+
+Bundle: `data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md`

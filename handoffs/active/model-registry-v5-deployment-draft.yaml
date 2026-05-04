@@ -239,9 +239,17 @@ roles:
     notes: >
       **Single-instance canonical 12.19 t/s vs production 2× cross-NUMA 4.3 t/s/instance
       = +184% per-instance speedup unused.** Production wiring set 2026-03-29 predates
-      v5 audit + auto-mbind landings. Wiring change (1× full-machine vs 2× per-NUMA-node)
-      is a separate orchestrator-stack decision tracked at qwen35-122b-a10b-arch-class-probe.md
-      Phase 2 (w0..w3 bonus probe).
+      v5 audit + auto-mbind landings. Phase 2 wiring revalidation (2026-05-04) confirmed
+      production 2× --numa distribute = 8.60 t/s aggregate is suboptimal in BOTH dimensions.
+      Linear 4-way scaling found: 4× per-NUMA-node 24t + c2 = 16.86 t/s aggregate (+96%)
+      at the cost of slightly worse per-instance latency (4.22 vs 4.30 — within noise).
+      **Recommended wiring change**:
+        - Latency-optimal (single user, slots=1 per role): numa_instances: 1, numa_ports: [8083],
+          1× full-machine 96t + c2 env (THIS env block) → 12.19 t/s/req (+184%).
+        - Throughput-optimal (4+ concurrent batch eval): numa_instances: 4 per-NUMA-node
+          (--cpunodebind=N --membind=N -t 24) + c2 env → 16.86 t/s aggregate (+96%).
+      Wiring change tracked at qwen35-122b-a10b-arch-class-probe.md (separate from this env block,
+      which applies regardless of wiring).
 
 # -----------------------------------------------------------------------------
 # Roles NOT YET in this draft (need decisions or measurement)
