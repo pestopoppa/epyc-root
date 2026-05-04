@@ -125,12 +125,22 @@ roles:
     model: Qwen3-Coder-REAP-246B-A35B
     quant: Q4_K_M
     binary_path: build_libomp_pgo_use/bin/           # CPU11 PGO universal
-    env: {}                                          # default v5; CPU22 -0.8% (noise)
+    env: {}                                          # default v5; Probe B 2026-05-04 confirmed (all c0/c1/c2/c3 within ±0.25%)
     moe_spec_budget: 40                              # MoE-Spec REAP=40 +13-16% pp32 / +3% e2e
     expected_throughput:
+      tg32_canonical_96t: ~6.35 t/s                 # Probe B 2026-05-04 single-instance (n=5, σ ~0.05%)
       tg64_canonical: ~6.3 t/s                      # cold-boot
       tg32_warmed: ~6.85 t/s
-    source_bundle: data/cpu_optimization/2026-04-28-moe-spec-phase-1/
+    source_bundle: data/cpu_optimization/2026-05-04-reap246b-arch-probe/  # Probe B closure
+    notes: >
+      Probe B 2026-05-04 (4 configs × n=5): c0=6.351 c1=6.337 (-0.23%, z=2.49) c2=6.361
+      (+0.14%, z=1.20) c3=6.360 (+0.14%, z=1.40). All within ±0.25%, σ all ≤ 0.11%.
+      v5 deployment draft "default v5" assignment confirmed. CPU1 stack (c1) shows mild
+      regression (matches CPU22 -0.8% noise observation). mbind-off (c2) shows non-significant
+      uplift. **Production wiring (2× cross-NUMA at 16.5 t/s agg per registry) NOT
+      revalidated** under Probe B Phase 2 — RAM headroom precludes 4× per-NUMA-node
+      (138 GB × 4 > per-node budget). Phase 2 deferred unless production telemetry contradicts
+      the 16.5 t/s claim.
 
   # -- MoE Q8_0 BW-bound frontdoor --
   frontdoor:
