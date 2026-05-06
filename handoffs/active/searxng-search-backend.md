@@ -1,10 +1,21 @@
-# SearXNG Search Backend
+# Web Research Pipeline — SearXNG + Crawl4AI
 
-**Status**: SX-1–4 implemented and tested, SX-5/6 gated on AR-3
+**Status**: SX-1–4 done; CA-1–5 ready to start; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
-**Updated**: 2026-04-14 (findings audit: added checklist, engine tuning, monitoring, work items)
+**Updated**: 2026-05-05 (merged Crawl4AI steps 2+3; renamed from "SearXNG Search Backend")
 **Categories**: search_retrieval, tool_implementation
 **Tracked in**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P12
+
+## Four-Step Chain
+
+```
+Step 1: SearXNG  (port 8090) — search, returns candidate URLs           SX-1–4 done, SX-5/6 gated on AR-3
+Step 2: Crawl4AI (port 8086) — single-page markdown extraction          CA-1–5 ready now
+Step 3: Crawl4AI (port 8086) — limited multi-page crawl (docs/logs)    CA-7 (deferred)
+Step 4: Camofox  (port 9377) — full browser, last resort only           CA-6 (deferred, intake-524)
+```
+
+Policy: **Camofox last.** Only open a real browser when the page forces it. Each step must be exhausted before escalating.
 
 ## Objective
 
@@ -174,11 +185,25 @@ Mirrors P12 in [`routing-and-optimization-index.md`](routing-and-optimization-in
 - [ ] **SX-5: Load test** — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engine failure rates + latency via Phase 6b checks.
 - [ ] **SX-6: Swap default** — Feature flag `ORCHESTRATOR_SEARXNG_DEFAULT=1` implemented. Gated on AR-3 warmup trial quality data. Post-AR-3: confirm no regression → lock in swap. See bulk-inference-campaign.md Phase 6b.
 
+## Crawl4AI Work Items (Steps 2+3)
+
+Chosen over Firecrawl after deep-dive (2026-05-05): single container, Apache-2.0, ~1–2 GB idle, undetected Chrome mode self-hosted, BM25 `fit_markdown`, no external SDK. Full detail: [`research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md`](../../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md)
+
+- [ ] **CA-1**: Add `--shm-size` support to `start_docker_container()` in `orchestrator_stack.py` — one-liner: `if service.get("shm_size"): cmd.extend(["--shm-size", service["shm_size"]])` [30min]
+- [ ] **CA-2**: Add Crawl4AI to `DOCKER_SERVICES` — `{"name": "crawl4ai", "port": 8086, "image": "unclecode/crawl4ai:latest", "shm_size": "1g", "env": {"MAX_CONCURRENT_TASKS": "5"}, "health_path": "/health"}` [30min]
+- [ ] **CA-3**: Implement `_fetch_page_crawl4ai()`, `_is_blocked_page()`, `_poll_crawl4ai_task()` in `research.py` [2h]
+- [ ] **CA-4**: Replace `_fetch_page()` calls with Crawl4AI backend; keep `html.parser` path as fallback if container unreachable [1h]
+- [ ] **CA-5**: Smoke test — 5 URLs covering static, JS-heavy, and Cloudflare-protected pages [1h]
+- [ ] **CA-6** *(deferred — needs Camofox, intake-524)*: Wire `escalate_to_camofox` signal from `_is_blocked_page()` into step 4 call [2h]
+- [ ] **CA-7** *(deferred — post CA-5)*: `_fetch_docs_crawl_crawl4ai()` for step 3 limited BFS crawl, `limit=5`, `maxDiscoveryDepth=2` [2h]
+
+CA-1 through CA-5 are **independent** — no AR-3 gate, no Camofox dependency. Can start now.
+
 ## Dependencies
 
-- **Blocks**: None (independent workstream, no data gate, no inference dependency)
-- **Composes with**: `colbert-reranker-web-research.md` S5 (SearXNG snippets → ColBERT reranking → fetch top-3)
-- **Replaces**: `_search_duckduckgo()` in `search.py` lines 31-142
+- **Blocks**: None (CA-1–5 independent; CA-6 blocked on intake-524 Camofox)
+- **Composes with**: `colbert-reranker-web-research.md` S5 (SearXNG snippets → ColBERT reranking → Crawl4AI fetch)
+- **Replaces**: `_search_duckduckgo()` in `search.py` (SX) and `html.parser` fetch in `research.py` (CA)
 
 ## Notes
 
@@ -220,3 +245,23 @@ AGPL-3.0 license — no issue for self-hosted internal tool use (no distribution
 #### Deep-dive refinement (2026-04-30) — bench owned by granite-97m-r2-bench-plan
 
 Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md). For SearXNG SX-5/6 specifically: the dense first-stage choice (granite-97m-r2 vs BGE-M3 vs multilingual-e5-base) will come out of that bench. Defer SX-5 dense-stage decisions until Phase B completes. Note that the bench's eval corpus is currently planned as code-snippets-plus-handoffs, NOT mixed-language web snippets — if SearXNG-specific quality matters, add a SearXNG-output slice to the bench's eval-corpus engineering (Phase A-4).
+
+## Research Intake Update — 2026-05-04
+
+### New Related Research
+- **[intake-524] "camofox-browser — Stealth headless browser REST API for AI agents"** (github.com/jo-inc/camofox-browser)
+  - Relevance: Camofox is the **browser interaction** layer in the SearXNG→Firecrawl→Camofox three-tool stack — the same architecture this handoff's SearXNG component anchors. When SearXNG returns URLs and Firecrawl/direct-fetch returns 429/403/CAPTCHA, Camofox is the fallback that opens a real browser.
+  - Key technique: REST API (port 9377) wrapping Camoufox (Firefox fork with C++ fingerprint spoofing). Tools: `browser_open`, `snapshot`, `click`, `navigate`, `screenshot`. Accessibility snapshots are ~90% smaller than raw HTML with stable element refs for LLM interaction.
+  - Reported results: ~40MB idle memory, confirmed bypass of Cloudflare and Google bot detection, ~90% token reduction vs raw HTML.
+  - Delta from current approach: the canonical four-step fallback chain is **Search (SearXNG) → Scrape (Firecrawl single-page) → Crawl (Firecrawl limited) → Browse (Camofox)**. Camofox is the last resort — "expensive, stateful fallback" per the source doc — only opened when the page forces interaction. Firecrawl covers two steps (scrape + crawl-limited) before Camofox is invoked. This is different from a simple "Firecrawl fails → Camofox" trigger; the crawl-limited step (small page cap for docs/changelogs) should also be attempted first.
+  - Action item: after AR-3 data is available (SX-5/6 gate), check fetch-failure rate in web_research logs. If >15% of fetches fail with 403/429/CAPTCHA **after both Firecrawl scrape and crawl-limited attempts**, add camofox-browser to `orchestrator_stack.py` DOCKER_SERVICES at port 9377 and wire `_fetch_camofox()` as the terminal fallback in `web/research.py`. Do not short-circuit to Camofox before Firecrawl crawl-limited is tried.
+
+## Research Intake Update — 2026-05-05
+
+### New Related Research — Crawl4AI (Steps 2+3 resolved)
+- **[intake-372] "Crawl4AI — Open-Source LLM-Friendly Web Crawler"** (github.com/unclecode/crawl4ai)
+  - Relevance: **HIGH** — deep-dive (2026-05-05) resolved the step 2+3 question in the four-step chain. Crawl4AI is the chosen scraper; Firecrawl (intake-364/365) was evaluated and ruled out (verdict updated to `not_applicable`).
+  - Key finding from deep-dive: Firecrawl self-hosted lacks fire-engine (cloud-only anti-bot), requires 5-service docker-compose (incompatible with `start_docker_container()`), and uses 4–8 GB idle RAM. Crawl4AI is a single container, Apache-2.0, ~1–2 GB idle, with undetected Chrome mode self-hosted.
+  - Integration: new handoff [`crawl4ai-web-scraper.md`](crawl4ai-web-scraper.md) has the full implementation plan (CA-1 through CA-7, port 8086).
+  - Deep-dive: [`research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md`](../../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md)
+  - **Sequencing**: CA-1–5 (Crawl4AI step 2) are independent of SX-5/6 (ColBERT gate) and can proceed now. CA-6 (Camofox escalation wiring) waits for intake-524 Camofox integration.

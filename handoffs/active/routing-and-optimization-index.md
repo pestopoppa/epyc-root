@@ -44,7 +44,7 @@ When making a routing-architecture proposal, name which of these four (and which
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
 | ~~Retrain Routing Models~~ | ~~(blocked handoff removed; archival pending)~~ | SUPERSEDED by Learned Routing Controller Phase 1 (2026-04-15, 157K samples, 92% val acc, flag enabled). Duplicate `active/` copy removed 2026-04-17; blocked copy no longer present. | — |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
-| Web Search Backend | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done, SX-5/6 folded into AR-3 Package D | SX-5 load test + SX-6 swap gated on AR-3 warmup |
+| Web Research Pipeline | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done; CA-1–5 ready now; SX-5/6 + CA-6/7 gated on AR-3/Camofox | CA-1–5 (Crawl4AI steps 2+3) can start independently |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | Phase 1 P1.1-P1.4+P1.6 DONE — 92% val acc, per-class thresholds calibrated | P1.5 enable flag, Phase 1.5 logit probe |
 | Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
@@ -215,9 +215,9 @@ Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimi
 - [x] **MH-4: GEPA as search algorithm** — ✅ Folded into AR-3 Package D (2026-04-12). GEPA integrated as PromptForge mutation type. Journal collects Pareto frontier contributions by mutation source.
 - [x] **MH-5: Agent Lightning trace collection** — ✅ 2026-04-12. `telemetry.py` with TelemetryCollector, TransitionRecord, OTLP spans, JSONL export.
 
-### P12 — SearXNG Search Backend (2026-04-14 research intake)
+### P12 — Web Research Pipeline: SearXNG + Crawl4AI (2026-04-14 / updated 2026-05-05)
 
-Source: intake-359/360/361. Replaces DDG HTML scraping + Brave fallback in `search.py` (lines 31-142) with self-hosted SearXNG JSON API. Independent workstream — no data gate, no inference dependency. Composes with ColBERT reranker S5 (richer snippets with `engines[]`/`score` metadata). See [`searxng-search-backend.md`](searxng-search-backend.md).
+Source: intake-359/360/361 (SearXNG), intake-372 (Crawl4AI). Full four-step chain: SearXNG (step 1, search) → Crawl4AI (steps 2+3, scrape+crawl) → Camofox (step 4, browser, intake-524). SX-1–4 done. CA-1–5 (Crawl4AI steps 2+3) are independent — no AR-3 gate, no Camofox dependency, can start now. See [`searxng-search-backend.md`](searxng-search-backend.md).
 
 - [x] **SX-1: Docker container deployment** — ✅ 2026-04-14. SearXNG in `DOCKER_SERVICES` (port 8090). Config: `config/searxng/settings.yml`.
 - [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. JSON API backend in `search.py` with DDG fallback.

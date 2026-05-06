@@ -382,3 +382,14 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Key pattern: `/write-a-skill` meta-skill codifies progressive disclosure and bundled-resource conventions for new skills — pairs with veniceai's authoring rubric for a unified `SKILL TEMPLATE.md` we've been planning.
   - Delta from current approach: confirms the cross-runtime SKILL.md installer pattern is the going ecosystem default, not a one-off. Adopt the `/setup-X-skills` per-repo config-bootstrap shape when we wire `scripts/hermes/skills/`.
   - Caveat: MIT license, no empirical claims (credibility_score null). Pattern adoption only; runtime calibration is for TypeScript app development, not CPU inference.
+
+## Research Intake Update — 2026-05-04
+
+### New Related Research
+- **[intake-524] "camofox-browser — Stealth headless browser REST API for AI agents"** (github.com/jo-inc/camofox-browser)
+  - Relevance: Hermes Agent is explicitly listed as a production integration in the camofox-browser documentation. Camofox is the browser interaction tool Hermes uses when static scraping fails — i.e., it is the browser backend for Hermes's web tool calls.
+  - Key technique: REST API (port 9377) wrapping Camoufox Firefox fork. Provides `browser_open`, `snapshot`, `click`, `type`, `navigate`, `screenshot` over HTTP. Per-user cookie isolation and proxy routing for multi-session agent deployments. Returns accessibility snapshots (~90% smaller than HTML) with stable element refs.
+  - Reported results: Confirmed bypass of Cloudflare and Google bot detection in OpenClaw production. ~40MB idle memory. 4.1k+ GitHub stars.
+  - Delta from current approach: Hermes's current browser tool path (if any) runs Playwright directly. Camofox wraps Playwright + Camoufox in a server process with an anti-detection layer — this makes Hermes's web browsing far more reliable against bot-detection-protected sites without any changes to Hermes's tool calling logic (only the backend URL changes).
+  - **Fallback chain constraint**: per the source architecture doc ("SearXNG first, Camofox last"), Camofox should only be invoked as the terminal fallback in a four-step chain: Search (SearXNG) → Scrape (Firecrawl single-page) → Crawl (Firecrawl limited) → Browse (Camofox). Hermes's web tool routing should reflect this order — open Camofox only when the page forces interaction, not on first fetch attempt.
+  - Action item: when wiring Hermes's browser tool (Phase 2+ enhancement or P2.6 work items), consider setting `browser_provider: camofox` in `scripts/hermes/config.yaml` with `camofox_url: http://localhost:9377`. This is a one-line config change once camofox-browser Docker container is running.

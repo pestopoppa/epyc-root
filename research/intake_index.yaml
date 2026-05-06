@@ -12498,12 +12498,13 @@
   - 'CLI: 284+ stars'
   references: []
   novelty: medium
-  relevance: medium
+  relevance: high
   credibility_score: null
-  verdict: worth_investigating
+  verdict: not_applicable
   discovered_via: null
   expanded_from: null
   ingested_date: '2026-04-14'
+  deep_dive_path: research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md
   contradicting_evidence: null
   cross_references:
     chapters: []
@@ -12557,12 +12558,13 @@
   - '80K+ companies, 90+ contributors'
   references: []
   novelty: medium
-  relevance: medium
+  relevance: high
   credibility_score: null
-  verdict: worth_investigating
+  verdict: not_applicable
   discovered_via: null
   expanded_from: null
   ingested_date: '2026-04-14'
+  deep_dive_path: research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md
   contradicting_evidence:
   - 'Self-hosted version lacks cloud parity: /agent and /browser endpoints not supported'
   - 'Credit pricing unpredictable: JSON mode +4 credits, stealth mode +4, can reach 9 credits/page'
@@ -13022,10 +13024,11 @@
   - 'No performance benchmarks published'
   references: []
   novelty: medium
-  relevance: medium
+  relevance: high
   credibility_score: null
-  verdict: worth_investigating
+  verdict: adopt_component
   discovered_via: expansion
+  deep_dive_path: research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md
   expanded_from: intake-364
   ingested_date: '2026-04-14'
   contradicting_evidence:
@@ -23144,3 +23147,150 @@
   novelty_justification: 'High novelty for two reasons. First, the result itself: Kendall tau-b ~0.298 between SAE interpretability and steering utility, falling to ~0 or negative under DTC-based feature selection, is a quantitatively decisive falsification of the "interpretable SAE features will be useful steering features" assumption that underlies most SAE-applications work (including Qwen-Scope Sections 3, 7, 8). Second, the methodological contribution: pairwise analysis across 90 SAEs varying both architecture and sparsity controls for the obvious confounds in the prior literature (single-architecture comparisons, single-sparsity comparisons). The Delta Token Confidence selector is a concrete proposed remedy and the +52.52% improvement quantifies the magnitude of recoverable utility under proper selection. Higher novelty than AxBench (intake-522) because Wang 2026 measures the underlying CORRELATION not just the average performance gap.'
   relevance_justification: High because Wang et al. 2026 is cited in Qwen-Scope's own reference list yet not benchmarked against — exactly the kind of "the authors knew about this and chose not to address it" gap that should be flagged before adopting any Qwen-Scope steering / SASFT / SAE-DAPO application. The Qwen-2.5-3B per-model Psi_C 0.4575 is the highest of the three tested models, which strengthens the relevance to Qwen-Scope (which targets the Qwen3 / Qwen3.5 family — same architectural lineage). However, Wang 2026 does NOT directly bound Qwen-Scope Section 4 (benchmark redundancy via feature footprints) or Section 5 (rule-based classifier via top1-diff feature selection) since those use different metrics; this nuance was not surfaced in the original intake-521 deep-dive.
   verdict_justification: 'adopt_patterns. Two concrete patterns to adopt across EPYC SAE work: (1) any SAE-steering or SASFT-style training proposal must report the Kendall tau between feature interpretability rank and downstream utility rank — if tau is below ~0.5, the proposal cannot rely on interpretability as a quality proxy and must motivate feature selection independently; (2) Delta Token Confidence is the canonical "utility-aware" feature selector and should be the baseline for any future feature-selection improvement we propose. Do NOT adopt the SAE training code (Qwen-Scope already provides the artifacts we would consume; we are not training SAEs). The actionable deliverable is a methodological gate added to qwen-scope-sae-toolkit.md priority 2 (Section 5 audit primitive) and priority 4 (Section 7 SASFT defer): "Before crediting any SAE-feature-based intervention, validate that the selected features score in the top decile under Delta Token Confidence on a representative prefix; otherwise the intervention is selecting interpretable-but-not-useful features." The paper itself stops short of testing Qwen-Scope SAEs specifically; that re-run on Qwen-Scope checkpoints would be the most decisive single experiment to clarify how strongly Wang 2026 binds Qwen-Scope adoption decisions, but it is not blocking — the directional finding on Qwen-2.5-3B SAEs is sufficient to gate immediate behavior-modification adoption.'
+
+- id: intake-524
+  url: https://github.com/jo-inc/camofox-browser
+  arxiv_id: null
+  source_type: repo
+  title: 'camofox-browser — Stealth headless browser REST API for AI agents'
+  authors:
+  - jo-inc
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - search_retrieval
+  key_claims:
+  - 'C++-level fingerprint spoofing (via Camoufox Firefox fork) bypasses Cloudflare, Google, and mainstream bot detection — spoofs navigator, WebGL, AudioContext, screen geometry, WebRTC before JavaScript can inspect them; undetectable because modifications live in the browser binary, not in shim JavaScript'
+  - 'Accessibility snapshot API returns ~90% smaller payloads than raw HTML with stable element refs (e1, e2, e3) for reliable LLM-driven interaction; removes ad/tracking content automatically'
+  - '~40MB memory footprint at idle; REST API design (browser_open, snapshot, click, type, navigate, screenshot) cleanly decouples the browser process from the agent process'
+  - '14 built-in search macros (@google_search, @youtube_search, @reddit_search, etc.) eliminate URL construction for the most common platform queries'
+  - 'Per-user cookie/storage isolation, proxy routing with GeoIP-based locale/timezone spoofing, and authenticated session persistence — production-grade for parallel agent deployments'
+  techniques:
+  - REST API browser automation (HTTP + JSON, OpenAPI docs at /docs)
+  - Accessibility tree extraction with stable element refs
+  - CSS selector and element-ref click/type/navigate
+  - Camoufox C++-level fingerprint spoofing (underlying browser)
+  - Playwright trace capture for debugging
+  - yt-dlp YouTube transcript extraction with browser fallback
+  reported_results:
+  - '~90% token reduction vs raw HTML via accessibility tree snapshots'
+  - '~40MB idle memory footprint (vs ~800MB Chrome, ~200MB standard Firefox)'
+  - Docker rebuild ~30s with architecture-auto-detected pre-downloaded binaries
+  - Confirmed bypass of Cloudflare and Google bot detection in production (OpenClaw integration)
+  - '4.1k+ GitHub stars, 433+ forks as of 2026-05'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-05-04'
+  contradicting_evidence:
+  - 'AGPL/dependency risk: Camoufox stewardship transferred to CloverLabsAI as of 2026; upstream maintenance cadence and long-term API stability depend on a third-party maintainer. Bot detection is an arms race — bypass effectiveness degrades over time as anti-bot vendors patch against Camoufox-specific signals.'
+  - 'REST API latency overhead: adding an HTTP round-trip per browser action adds latency vs in-process Playwright. For single-page extraction this is immaterial; for multi-step interaction flows (login → navigate → scrape) the overhead accumulates.'
+  - 'No formal evaluation published: the 90% token reduction and ~40MB memory claims come from the project README, not an independent benchmark. Cross-browser comparison is against Chrome and standard Firefox, not against alternatives like browserless or steel-browser which also target AI agents.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    - hermes-outer-shell.md
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-359 (SearXNG — the search layer in the same SearXNG→Firecrawl→Camofox three-tool stack; already integrated into epyc-orchestrator web_research pipeline)
+    - intake-361 (mcp-searxng — MCP bridge for SearXNG; Camofox is the complementary browser-interaction layer when SearXNG+Firecrawl is insufficient)
+  handoffs_updated:
+  - searxng-search-backend.md
+  - hermes-outer-shell.md
+  handoffs_created: []
+  novelty_justification: 'High — no prior entry for browser-automation-as-REST-API optimized for AI agents with anti-detection at the C++ level. Distinct from intake-301 (axi.md / Playwright wrapper for Claude Code IDE integration): camofox-browser targets production agent deployments behind anti-detection services. The SearXNG→Firecrawl→Camofox three-tool stack is a named architectural pattern directly applicable to our web_research pipeline where the current DDG+Brave HTML scraping suffers exactly the bot-detection failures Camofox solves.'
+  relevance_justification: 'High — three direct connection points: (1) Hermes Agent is explicitly listed in camofox-browser docs as a production integration target; (2) epyc-orchestrator web_research pipeline (src/tools/web/research.py) relies on DDG HTML scraping that suffers bot detection — Camofox is a drop-in complement for the fetch-failure path; (3) ColBERT reranker handoff (colbert-reranker-web-research.md) is gated on AR-3 web_research data quality — Camofox improves upstream fetch reliability that AR-3 data quality depends on.'
+  verdict_justification: 'adopt_component — REST API design means Camofox is a drop-in for the browser interaction leg. No training or research required; wiring is a Docker container + HTTP client calls. Camofox is the TERMINAL fallback in a four-step chain: Search (SearXNG) → Scrape (Firecrawl single-page) → Crawl (Firecrawl limited) → Browse (Camofox). Do not short-circuit to Camofox before both Firecrawl modes are exhausted — per source doc: "browser automation is the expensive, stateful fallback." Concrete integration path: (1) add to orchestrator_stack.py DOCKER_SERVICES at port 9377; (2) add _fetch_camofox() as terminal fallback in web/research.py, triggered only after Firecrawl scrape AND crawl-limited both fail with 403/429/CAPTCHA; (3) wire into Hermes Agent via config.yaml browser_provider field, with same fallback-chain constraint in Hermes tool routing. Deferred until SX-5/6 (SearXNG ColBERT reranker gating) resolves, since that data will clarify whether fetch-failure rates justify adding the browser dependency.'
+
+- id: intake-525
+  url: https://github.com/daijro/camoufox
+  arxiv_id: null
+  source_type: repo
+  title: 'Camoufox — Firefox fork with C++-level fingerprint spoofing for AI agents'
+  authors:
+  - daijro
+  - CloverLabsAI (stewardship as of 2026)
+  categories:
+  - tool_implementation
+  - agent_architecture
+  key_claims:
+  - 'Modifies the Firefox binary at the C++ level to spoof browser fingerprints (navigator, WebGL, AudioContext, fonts, geolocation, timezone, WebRTC, screen geometry) before JavaScript can inspect them — undetectable by JS-based fingerprint scanners (CreepJS, Browserleaks, BrowserScan)'
+  - 'Isolated Playwright sandbox hides automation signals (navigator.webdriver, CDP presence) from page JavaScript; stealth mode is on by default'
+  - 'Clean DOM output for LLM consumption; removes ad/tracking content; compact accessible text representation'
+  techniques:
+  - Firefox C++ binary patching for fingerprint spoofing
+  - Playwright integration with anti-detection isolation
+  - BrowserForge-based realistic device profile generation
+  reported_results:
+  - '~200MB footprint vs ~800MB Chrome'
+  - Bypasses CreepJS, Browserleaks, BrowserScan detection suites
+  - MPL-2.0 license (same as Firefox)
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  discovered_via: expansion
+  expanded_from: intake-524
+  ingested_date: '2026-05-04'
+  contradicting_evidence:
+  - 'No contradicting evidence found — Camoufox is the C++ dependency underlying camofox-browser; same bypass effectiveness caveats apply (arms-race dynamics, maintainer transfer to CloverLabsAI).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-search-backend.md
+    experiments: []
+    intake_entries:
+    - intake-524 (camofox-browser — the REST API wrapper that makes Camoufox accessible to agent processes via HTTP)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'High — C++-level browser fingerprint spoofing as a distinct approach from JavaScript shims. No prior entry in the index for Camoufox itself, only the REST API wrapper (intake-524). The binary-level spoofing is architecturally novel: JS shim approaches (e.g., puppeteer-stealth) are detectable because they run in the same JavaScript context they are trying to deceive; Camoufox spoofing runs before JS is loaded.'
+  relevance_justification: 'High — direct dependency of intake-524 (camofox-browser); understanding the underlying browser fork is necessary for assessing update cadence, license compatibility (MPL-2.0 vs our stack), and long-term maintenance risk (CloverLabsAI stewardship).'
+  verdict_justification: 'adopt_component — consumed transitively through camofox-browser (intake-524). No direct integration action needed; maintenance tracking of daijro/camoufox and CloverLabsAI stewardship is the relevant follow-up.'
+
+- id: intake-526
+  url: https://github.com/daijro/browserforge
+  arxiv_id: null
+  source_type: repo
+  title: 'BrowserForge — Bayesian browser header and fingerprint profile generator'
+  authors:
+  - daijro
+  categories:
+  - tool_implementation
+  key_claims:
+  - 'Bayesian generative model producing HTTP headers and browser fingerprints that match real-world frequency distributions (OS share, screen resolution, browser version, platform) — e.g., 5% Linux users, OS-specific screen geometries at empirically correct proportions'
+  - '0.1-0.2ms header generation runtime; Python library with no browser subprocess required'
+  - 'Fingerprint injection is deprecated; project now recommends Camoufox for in-browser spoofing and focuses BrowserForge on HTTP client header generation'
+  techniques:
+  - Bayesian frequency-matching for browser profile generation
+  - HTTP header generation without browser subprocess
+  reported_results:
+  - 0.1-0.2ms header generation
+  - Python reimplementation of Apify fingerprint-suite
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-524
+  ingested_date: '2026-05-04'
+  contradicting_evidence:
+  - 'No contradicting evidence found — fingerprint injection use case explicitly deprecated by the author in favor of Camoufox; the HTTP header generation use case (the surviving value) is narrow and orthogonal to our browser automation stack.'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-524 (camofox-browser uses BrowserForge for device profile generation)
+    - intake-525 (Camoufox — the recommended replacement for BrowserForge fingerprint injection)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Medium — Bayesian frequency matching for browser profiles is a useful technique for HTTP client header spoofing in the web_research pipeline, but the fingerprint injection use case (the main value proposition) is deprecated by the author in favor of Camoufox. The header generation use case is novel-enough to track but not immediately actionable.'
+  relevance_justification: 'Medium — useful if epyc-orchestrator web/search.py HTTP client calls (currently subprocess curl) need plausible browser headers to avoid bot detection at the HTTP level (before any JavaScript is executed). Lower priority than Camoufox (intake-525) because header-only detection is less common than JS fingerprinting for the targets our pipeline hits.'
+  verdict_justification: 'worth_investigating — low-effort to add BrowserForge-generated headers to the existing curl/aiohttp calls in web/search.py and web/research.py as a lightweight first line of defense before escalating to Camofox. Defer until camofox-browser integration (intake-524 adopt_component) is evaluated; BrowserForge is the HTTP-client complement, not a replacement.'
