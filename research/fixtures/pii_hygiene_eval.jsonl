@@ -1,0 +1,40 @@
+{"text": "aws_access_key_id = AKIAIOSFODNN7EXAMPLE", "labels": [{"start": 21, "end": 41, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "aws_access_key_id = AKIA1234567890ABCDEF", "labels": [{"start": 21, "end": 41, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", "labels": [{"start": 25, "end": 65, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "AssumeRole returned ASIAQ7XBYBSLEEXAMPLE7", "labels": [{"start": 20, "end": 40, "label": "secret"}], "expected_match": true, "context_type": "code"}
+{"text": "GH_TOKEN=ghp_1234567890abcdefghij1234567890abcdef", "labels": [{"start": 9, "end": 49, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "fine-grained PAT: github_pat_11ABCDEFG0AbCdEfGhIjKlMnOpQrStUvWxYz1234567890abcdefghijklmnopqrstuv1234567890", "labels": [{"start": 18, "end": 111, "label": "secret"}], "expected_match": true, "context_type": "doc"}
+{"text": "SLACK_TOKEN=xoxb-1234567890123-1234567890123-AbCdEfGhIjKlMnOpQrStUvWx", "labels": [{"start": 12, "end": 70, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "ANTHROPIC_API_KEY=sk-ant-api03-aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789-aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789-aBcDe-_AAAA", "labels": [{"start": 18, "end": 116, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "GOOGLE_API_KEY=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI", "labels": [{"start": 15, "end": 54, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "GitLab token: glpat-aBcDeFgHiJkLmNoPqRsT", "labels": [{"start": 14, "end": 40, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "-----BEGIN RSA PRIVATE KEY-----", "labels": [{"start": 0, "end": 31, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "-----BEGIN OPENSSH PRIVATE KEY-----", "labels": [{"start": 0, "end": 35, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "-----BEGIN EC PRIVATE KEY-----", "labels": [{"start": 0, "end": 30, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "-----BEGIN PRIVATE KEY-----", "labels": [{"start": 0, "end": 27, "label": "secret"}], "expected_match": true, "context_type": "config"}
+{"text": "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c", "labels": [{"start": 22, "end": 153, "label": "secret"}], "expected_match": true, "context_type": "code"}
+{"text": "Account: 4929123456789012", "labels": [{"start": 9, "end": 25, "label": "account_number"}], "expected_match": true, "context_type": "fixture"}
+{"text": "IBAN equivalent: 12345678901234567", "labels": [{"start": 17, "end": 34, "label": "account_number"}], "expected_match": true, "context_type": "fixture"}
+{"text": "wire to 9876543210987654", "labels": [{"start": 8, "end": 24, "label": "account_number"}], "expected_match": true, "context_type": "doc"}
+{"text": "card number: 5555555555554444 expires", "labels": [{"start": 13, "end": 29, "label": "account_number"}], "expected_match": true, "context_type": "fixture"}
+{"text": "Hello world", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "import os\nfrom typing import List", "labels": [], "expected_match": false, "context_type": "code"}
+{"text": "Contact us at +1 415 555 1212", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "Office line: (415) 555-1212", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "Office line: 415.555.1212", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "[1714838400123] info: started", "labels": [], "expected_match": false, "context_type": "comment"}
+{"text": "[1714838400123456] debug: ready", "labels": [], "expected_match": false, "context_type": "comment"}
+{"text": "git commit abcdef1234567890abcdef1234567890abcdef1234", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "version: 1.2.3", "labels": [], "expected_match": false, "context_type": "config"}
+{"text": "user_id = 12345", "labels": [], "expected_match": false, "context_type": "code"}
+{"text": "this 32-character hash 0123456789abcdef0123456789abcdef is a content digest", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "license plate ABC-1234", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "AKIAIOSFODNN7", "labels": [], "expected_match": false, "context_type": "fixture"}
+{"text": "ghp_short", "labels": [], "expected_match": false, "context_type": "fixture"}
+{"text": "starts BEGIN RSA without dashes", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "AWS docs say AKIA followed by 16 chars; example below", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "key prefix sk- followed by user input", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "phone +1-800-555-9999 hotline", "labels": [], "expected_match": false, "context_type": "doc"}
+{"text": "Order #1234567890 status: shipped", "labels": [{"start": 7, "end": 17, "label": "account_number"}], "expected_match": false, "context_type": "comment"}
+{"text": "uuid: 550e8400-e29b-41d4-a716-446655440000", "labels": [], "expected_match": false, "context_type": "config"}
+{"text": "release tag v3.10.0-rc1+build.20260506", "labels": [], "expected_match": false, "context_type": "doc"}

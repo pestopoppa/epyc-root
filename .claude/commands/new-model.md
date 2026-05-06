@@ -131,6 +131,42 @@ for t in targets:
 done
 ```
 
+### Step 6.5: Compression-Tolerance Probe (Deployment Gate)
+
+After benchmark validates speed + quality, probe the model's tolerance for compressed agent files. Models with `operating_point: none` cannot be deployed to roles that consume agent files — the orchestrator routes the model to the highest compression level it can faithfully follow.
+
+```bash
+# Run the compliance suite against the new model at each level.
+# Phase 2 (now): --dry-run uses a deterministic fake LLM, validates the runner shape.
+# Phase 3 (inference-gated): replace --dry-run with live inference wiring per
+# tests/compliance/agent_file/runner.py LLMCall protocol.
+for level in none mild medium aggressive; do
+  python3 -m tests.compliance.agent_file.runner \
+    --model NEW_ROLE_NAME \
+    --agent-file agents/shared/ENGINEERING_STANDARDS.md \
+    --level "$level" \
+    --dry-run --fake-mode perfect
+done
+```
+
+Decision rule (Phase 3, against live model):
+- For each level (mild → medium → aggressive), require **compliance_pass_rate ≥ 0.95** AND **procedure_pass_rate ≥ 0.95** AND **recall_pass_rate ≥ 0.90** vs the level=none baseline.
+- The model's `agent_file_compression_operating_point` is the highest level that meets the rule.
+- If level=mild fails → `operating_point: none` → **block production deployment** of this model to roles that read agent files.
+
+Record the operating point in the registry entry:
+
+```yaml
+roles:
+  NEW_ROLE_NAME:
+    # ... existing fields ...
+    agent_file_compression_operating_point: mild | medium | aggressive | none
+```
+
+If `none`: do NOT add to `worker_pool` / `escalation_chains` until the source agent file is shortened or a different (smaller) model is chosen.
+
+Per `handoffs/active/agent-file-prose-compression.md` Phase 4 + `.claude/skills/agent-file-compress/SKILL.md`.
+
 ## Error Handling
 
 **If onboarding fails:**

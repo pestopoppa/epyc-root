@@ -105,6 +105,25 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 - `scripts/session/verify_llama_cpp.sh` — Check llama.cpp branch safety
 - `scripts/nightshift/` — Autonomous overnight run infrastructure
 
+## Web Search Routing
+
+Two web-search paths are available in this session:
+
+1. **Built-in `WebSearch` tool** — Anthropic-hosted, opaque engine selection, US-only. Best for one-shot lookups where a single result suffices.
+2. **`bash scripts/search/searx.sh '<query>'`** — self-hosted SearxNG at `localhost:8090`, returns structured JSON with `engines[]`, `score`, `unresponsive_engines[]`. Best for engine-diversity / multilingual / bulk queries.
+
+**Prefer SearxNG when**:
+- Running ≥3 web searches in one phase (literature expansion, cluster surveys).
+- Querying non-English content (Chinese-lab papers, EU/JP sources).
+- Engine-consensus matters (consistent hits across DDG / Brave / Wikipedia / Qwant).
+- You will pipe results through `jq` / `grep` before using them.
+
+**Stick with `WebSearch` when**:
+- One-shot factual lookup; the auto-summary is fine.
+- SearxNG health check fails (script exits 2).
+
+Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8090` is unreachable. On exit 2, switch to `WebSearch` for that query.
+
 ## Historical Documentation Warning
 
 Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHANGELOG.md` describe historical state — they may reference `/mnt/raid0/llm/claude` (the pre-split monorepo, archived 2026-02-25) and describe code structure that has since changed. **Always verify against actual code before trusting archived descriptions.** Use the repository structure documented above for current paths.
