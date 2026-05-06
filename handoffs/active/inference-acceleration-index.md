@@ -473,3 +473,15 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
   - Relevance: New external-drafter modality (SSM drafter for Transformer target). Constant-memory draft path is well-suited to CPU-decode where draft compute competes with target for DRAM bandwidth. MAB tree-shape selector is independently useful for our heap-spec tree shape.
   - Reported results: Mamba-130M beats Pythia-410M on Pythia-6.9B target (149.46 vs 119.67 tok/s, GSM-8K); 52GB vs 72GB total memory at 8k context vs EAGLE.
   - Delta: worth_investigating — MAB-tree first (drop-in), SSM-drafter second (requires hand-rolled Mamba in llama.cpp fork).
+
+## Research Intake Update — 2026-05-06
+
+### New Related Research
+
+- **[intake-527] "Accelerating Gemma 4: faster inference with multi-token prediction drafters"** (Google blog, 2026-05-05)
+  - Relevance: Pre-trained, Apache-2.0-licensed MTP drafter weights for Gemma 4 (31B Dense, 26B-A4B MoE, E4B/E2B). Drafter ships paired with base — eliminates the cold-start integration cost that gated our prior MTP-1 work. Single architecture class (`Gemma4AssistantForCausalLM`) shared across all variants — one llama.cpp port covers them all.
+  - Reported results (G0.4 — pure-CPU EPYC canonical, our own bench): 31B Dense + MTP draft-max=3 → **21.02 t/s vs 7.05 baseline = 2.98× speedup, 84.3% per-token acceptance**, 100% per-batch. Exceeds the PR mixed-CPU/GPU 2.3× because the small drafter amortizes well against the BW-bound dense target on CPU.
+  - Reported results (G0.4-26B — pure-CPU EPYC, our in-house GGUF conversion of the 26B-A4B drafter): 41.49 → 44.12 t/s = 1.06× ONLY, 58.7% per-token acceptance. **Empirically confirms MoE-batch=1 cancellation** (lilting.ch contradicting evidence). Slower than existing Coder-30B-A3B Q4_K_M (49.1 t/s) — does NOT displace coder role.
+  - Delta from current approach: 31B Dense + MTP is a credible architect-tier candidate (Tier B in registry as `gemma4_31b_q4km_mtp`, awaiting quality bench). 26B-A4B is Tier X eval-only. Required runtime: ik_llama.cpp PR #1744 (DRAFT) + our two patches (1-line `params_use_gemma4_external_mtp` gate fix + 4-line cosmetic Oops silencing); both posted upstream as PR #1744 comments [4388461769](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388461769) and [4388596615](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388596615).
+  - Tier 2b confirmed empirically: dense models get the 2.98× pure-CPU MTP win; MoE batch=1 sees only 1.06× — a separate failure mode from the Qwen 3.5 hybrid recurrent-verify wall (0.56×).
+  - New stub: [`gemma4-mtp-drafter-evaluation.md`](gemma4-mtp-drafter-evaluation.md) — full gate sequence + result tables + follow-up matrix. Companion deep-dive at [`/workspace/research/deep-dives/gemma4-mtp-drafter-deep-dive.md`](../../research/deep-dives/gemma4-mtp-drafter-deep-dive.md).

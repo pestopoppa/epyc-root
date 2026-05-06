@@ -23294,3 +23294,92 @@
   novelty_justification: 'Medium — Bayesian frequency matching for browser profiles is a useful technique for HTTP client header spoofing in the web_research pipeline, but the fingerprint injection use case (the main value proposition) is deprecated by the author in favor of Camoufox. The header generation use case is novel-enough to track but not immediately actionable.'
   relevance_justification: 'Medium — useful if epyc-orchestrator web/search.py HTTP client calls (currently subprocess curl) need plausible browser headers to avoid bot detection at the HTTP level (before any JavaScript is executed). Lower priority than Camoufox (intake-525) because header-only detection is less common than JS fingerprinting for the targets our pipeline hits.'
   verdict_justification: 'worth_investigating — low-effort to add BrowserForge-generated headers to the existing curl/aiohttp calls in web/search.py and web/research.py as a lightweight first line of defense before escalating to Camofox. Defer until camofox-browser integration (intake-524 adopt_component) is evaluated; BrowserForge is the HTTP-client complement, not a replacement.'
+
+- id: intake-527
+  arxiv_id: null
+  url: https://blog.google/innovation-and-ai/technology/developers-tools/multi-token-prediction-gemma-4/
+  source_type: blog
+  title: 'Accelerating Gemma 4: faster inference with multi-token prediction drafters'
+  authors:
+  - Olivier Lacombe (Director of Product Management, Google)
+  - Maarten Grootendorst (Developer Relations Engineer, Google)
+  publication_date: '2026-05-05'
+  deep_dive: research/deep-dives/gemma4-mtp-drafter-deep-dive.md
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - inference_serving
+  - local_inference
+  key_claims:
+  - 'Pre-trained MTP drafters released for Gemma 4 26B (MoE A4B), 31B (Dense), E4B, E2B variants under Apache 2.0 — paired with base checkpoint, drafter generates multiple draft tokens, base model verifies in parallel.'
+  - 'Up to 3x tokens-per-second speedup claimed across tested frameworks with no quality degradation. Frameworks: HuggingFace Transformers, vLLM, MLX, SGLang, Ollama, LiteRT-LM, Google AI Edge Gallery — llama.cpp explicitly NOT in the announced list.'
+  - 'DEEP-DIVE 2026-05-06: All Gemma 4 assistant drafters share one architecture class (Gemma4AssistantForCausalLM, model_type=gemma4_assistant). 4 layers, sliding+full attention pattern, num_kv_shared_layers=4 (Q-only KV shared with target). Variants differ only in width: 31B (1024 hidden, 32/16 heads), 26B-A4B (1024 hidden, 16/8 heads), E4B (256 hidden, 4/2 heads). One llama.cpp port covers all three variants.'
+  - 'DEEP-DIVE 2026-05-06: GGUF availability per variant — 31B Dense drafter at Radamanthys11/Gemma-4-31B-it-assistant-GGUF (Q8_0 491 MB). 26B-A4B drafter not converted by anyone publicly; we converted it in-house from google/gemma-4-26B-A4B-it-assistant safetensors (840 MB BF16 → 441 MB Q8_0 via PR #1744 convert_hf_to_gguf.py + llama-quantize). E-series drafter weights deliberately stripped from Google''s public HF until 2026-05-06; community LiteRT extraction at SeatownSin/gemma-4-E4B-mtp-drafter (78M, INT4-dequant ceiling 35% top-1 acceptance).'
+  - 'G0.4 EXECUTED 2026-05-06: ik_llama.cpp main (HEAD b937219) lacks gemma4_mtp arch; PR #1744 (DRAFT, "Add MTP Support for Gemma 4") adds it. First MTP attempt segfaulted on first /completion request — root cause: chicken-and-egg in params_use_gemma4_external_mtp helper (server-context.cpp:35-39) which required params.speculative.type==COMMON_SPECULATIVE_TYPE_MTP precondition that is itself set as a CONSEQUENCE of the helper returning true. Patched by removing the type-precondition (1-line diff). Patch posted upstream as PR #1744 comment 4388461769.'
+  techniques:
+  - Multi-Token Prediction drafter (model-native, co-trained with base) for speculative decoding
+  - KV-cache sharing across drafter/target via num_kv_shared_layers=4 (Q-only attention)
+  - Embedder clustering (centroid_count=2048, centroid_top_k=32, consistent across all variants)
+  reported_results:
+  - 'Up to 3x tokens/sec end-to-end (Google blog claim)'
+  - '~2.2x on Apple Silicon, batch 4-8 (Google blog)'
+  - 'PR #1744 mixed-CPU/GPU bench (Bartowski 31B Q8_0, threads=24, ngl=99, batch=128): 21.7 → 48.6 t/s, 2.3x speedup at draft-max=3, 74% acceptance'
+  - 'OUR PURE-CPU EPYC G0.4 SUCCESS (gemma-4-31B-it Q4_K_M target + Q8_0 drafter, 96 threads, fa=1, no-mmap, OMP env stack, numactl --interleave=all, taskset -c 0-95): 7.05 → 21.02 t/s = 2.98x speedup, 84.3% per-token acceptance (91/108), 100% per-batch acceptance (36/36). EXCEEDS the PR mixed-GPU ratio because small drafter amortizes well against BW-bound dense target on CPU.'
+  - 'OUR G0.4-26B (in-house GGUF, gemma-4-26B-A4B-it Q4_K_M target + Q8_0 drafter, same canonical settings): 41.49 → 44.12 t/s = 1.06x speedup ONLY, 58.7% per-token acceptance. EMPIRICALLY CONFIRMS lilting.ch contradicting-evidence finding that MoE batch=1 expert routing erodes drafter speedup. 26B-A4B+MTP at 44 t/s is SLOWER than existing Coder-30B-A3B Q4_K_M baseline 49.1 t/s — does NOT displace coder role. Tier X (eval-only).'
+  referenced_arxiv_ids:
+  - '2211.17192'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_component
+  discovered_via: input
+  ingested_date: '2026-05-06'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    - mtp-speculative-decoding.md
+    - multimodal-pipeline.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - gemma4-mtp-drafter-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-251 (Gemma 4 MLX Collection)
+    - intake-252 (Gemma 4 Official DeepMind)
+    - intake-256 (Gemma 4 Official follow-up)
+  handoff_relevance_notes:
+    inference-acceleration-index.md: 'Lists MTP-1 as CLOSED — NOT VIABLE on hybrid; this entry is the architecture-class-distinct counterpoint on dense Gemma 4 31B (2.98x) and confirms MoE batch=1 cancellation on 26B-A4B (1.06x).'
+    mtp-speculative-decoding.md: 'Closed handoff (handoffs/completed/) — Qwen3.5 hybrid 0.56x. Gemma 4 is non-hybrid so the recurrent-verify wall does not apply, BUT 26B-A4B MoE result shows MoE batch=1 expert routing is a separate failure mode independent of hybrid Delta-Net.'
+    multimodal-pipeline.md: 'Gemma 4 26B-A4B + E-series candidates here. 26B+MTP marginal but 26B base itself (41.5 t/s) might still be a quality candidate.'
+    moe-spec-cpu-spec-dec-integration.md: 'Verifier-side budgeted-expert; potential composition with drafter-side MTP. Untested. The 26B-A4B MoE finding suggests budget might help by reducing per-draft-candidate expert load count — open follow-up.'
+    gemma4-mtp-drafter-evaluation.md: 'Active stub for this work, fully expanded with G0.4 + G0.4-26B results.'
+  contradicting_evidence:
+  - '26B MoE at batch=1 sees limited gains; expert routing per draft candidate triggers extra expert weight loads that cancel drafter speedup (lilting.ch). EMPIRICALLY CONFIRMED on EPYC: 1.06x speedup, 58.7% acceptance — far below the 2.98x / 84% achieved on 31B Dense.'
+  - 'Documented FP8 case showing -38% slowdown when drafter quant mismatches target. Mitigation: use compatible quants (we used Q4_K_M target + Q8_0 drafter, no issues).'
+  - 'No reduction in TTFT — speedup applies only to decode phase. Our long-output workloads benefit fully; short agentic-loop turns would see negligible gain.'
+  - 'Our completed/mtp-speculative-decoding.md (Qwen3.5 hybrid 0.56x) does NOT generalize — different architecture class (recurrent-verify wall on Delta-Net).'
+  - 'Empirically discovered separate failure mode: MoE-A4B batch=1 expert-routing cancellation is independent of the hybrid Delta-Net wall. Both are MTP failure modes but with distinct mechanisms — dense models are the only universally-favorable MTP class on EPYC at batch=1.'
+  handoffs_updated:
+  - inference-acceleration-index.md
+  - multimodal-pipeline.md
+  handoffs_created:
+  - gemma4-mtp-drafter-evaluation.md
+  novelty_justification: >
+    High — first widely-released open-weights MTP-drafter-paired model family with Apache-2.0 licensing
+    and our first end-to-end pure-CPU EPYC measurement establishing dense-vs-MoE asymmetry of MTP gains
+    as a quantitative result (2.98x vs 1.06x). Both the patch to PR #1744 and the in-house 26B-A4B
+    drafter conversion are net-new artifacts. The architecture analysis (one Gemma4Assistant class
+    across all variants, one llama.cpp port covers all three) is structural insight not in the source.
+  relevance_justification: >
+    High — directly produces a deployable architect-tier candidate (gemma4_31b_q4km_mtp at 21 t/s,
+    registered in the model registry) AND closes the door on a coder-tier upgrade hypothesis
+    (gemma4_26b_a4b_q4km_mtp at 44 t/s, slower than existing Coder-30B-A3B 49.1 t/s, tier X). Quality
+    benchmark is the immediate open follow-up.
+  verdict_justification: >
+    adopt_component — the 31B Dense + MTP path is registry-integrated as gemma4_31b_q4km_mtp and ready
+    for quality benchmarking. The 26B-A4B path is registry-integrated as a tier-X eval-only artifact
+    for future research. Patch posted upstream. PR #1744 must merge to ik_llama.cpp main before
+    production use; until then we run from the patched pr-1744 branch (see runtime_requirements in
+    registry entries).

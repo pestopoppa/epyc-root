@@ -187,12 +187,39 @@ Verdict: worth_investigating. The principle (SSM drafter for Transformer target)
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; CLOSED 2026-04-30 (mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default; canonical 3×2 + 4-config × 5-prompt sweep showed primary wins 60/62 = 97% of K-parallel rounds)
 - [MoE-Spec handoff](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- Verification-budget mechanism deployable on REAP-246B B=40; Phase 1+2 measured 2026-04-28; pre-prod registry-integration gate active
 
-## Gemma 4 MTP-Drafter (2026-05-06)
+## Gemma 4 MTP Drafter — pure-CPU EPYC measured 2026-05-06
 
-The Gemma 4 family ships with native Multi-Token Prediction (MTP) drafter heads — built-in speculative decoding without requiring a separate draft model. Evaluated via deep-dive [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md) and handoff [gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md).
+Google released pre-trained Apache-2.0-licensed MTP drafters for Gemma 4 (31B Dense, 26B-A4B MoE, E4B/E2B). Distinct from in-target NextN MTP (Qwen 3.5, GLM-4.x): the drafter is a **separate small model** of the `Gemma4AssistantForCausalLM` arch (4 layers, 1024 or 256 hidden, sliding+full attention, `num_kv_shared_layers=4` so the drafter's K/V comes from the target's banks). One architecture class spans all variants — they differ only in width.
 
-**Mechanism**: per-layer MTP head produces draft tokens for verification by the main model in the same forward pass — eliminates the draft-target-mismatch acceptance-rate ceiling that limits external-draft spec decoding on hybrid SSM and large MoE models.
+ik_llama.cpp main does not support `gemma4_mtp` arch. PR #1744 (DRAFT, opened 2026-05-06 by Samuel/Radamanthys11) adds `LLM_ARCH_GEMMA4_MTP` + new `src/graphs/build_gemma4.cpp` + tensor mapping. Two patches were needed to actually run it on EPYC, both posted upstream:
 
-**Relevance to EPYC stack**: candidate for replacing external Qwen3-Coder-DRAFT-0.75B drafts on Qwen3-Coder-30B-A3B (current worker_general). MTP-style integration in llama.cpp would require kernel-level changes; not yet a near-term port. Intake status: research-tier evaluation, not deployed.
+1. **1-line gate fix** in `examples/server/server-context.cpp:35-39` (`params_use_gemma4_external_mtp`) — removed a chicken-and-egg precondition (`params.speculative.type == COMMON_SPECULATIVE_TYPE_MTP`) that's set as a *consequence* of the helper returning true. Without this fix, MTP gets disabled at slot init → NULL deref → segfault on first request. PR #1744 [comment 4388461769](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388461769).
+2. **4-line cosmetic Oops silencing** in `src/llama.cpp:2504-2515` — special-case the four top-level Gemma4Assistant tensor names (`mtp_pre_proj`, `mtp_post_proj`, `mtp_centroids`, `mtp_token_ordering`) in the size-accounting iteration. Loading is unaffected; warnings only. PR #1744 [comment 4388596615](https://github.com/ikawrakow/ik_llama.cpp/pull/1744#issuecomment-4388596615).
 
-Source: [handoffs/active/gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md), [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md).
+### Measured on EPYC 9655 canonical (96 threads, fa=1, no-mmap, OMP env stack, numactl --interleave=all, taskset -c 0-95)
+
+| Variant | Baseline | + MTP draft-max=3 | Acceptance | Speedup | Verdict |
+|---------|----------|-------------------|------------|---------|---------|
+| **Gemma 4 31B Dense** Q4_K_M target + Q8_0 drafter | 7.05 t/s | **21.02 t/s** | 84.3% per-token (91/108), 100% per-batch (36/36) | **2.98×** | architect-tier candidate |
+| **Gemma 4 26B-A4B MoE** Q4_K_M target + in-house Q8_0 drafter | 41.49 t/s | 44.12 t/s | 58.7% per-token (81/138), 73.9% per-batch (34/46) | 1.06× | tier X — slower than existing Coder-30B-A3B 49.1 t/s |
+| (PR #1744 author's mixed-CPU/GPU bench, threads=24, ngl=99, batch=128) | 21.7 | 48.6 | 74% | 2.3× | reference |
+
+### Two structural findings
+
+**31B Dense pure-CPU 2.98× exceeds the PR mixed-CPU/GPU 2.3×** because the small ~500 MB drafter amortizes well against the slow BW-bound dense target on CPU; on GPU the target is already fast so the relative drafter cost is larger. **Pure CPU is the most-favorable substrate for MTP on dense models.**
+
+**26B-A4B MoE + MTP only 1.06×** empirically confirms the lilting.ch contradicting-evidence finding (recorded in intake-527 `contradicting_evidence`): MoE batch=1 sees marginal gains because (a) the smaller 16/8-head drafter struggles to predict MoE expert routing (acceptance dropped 84.3% → 58.7%), and (b) the verifier loads up to K×8 distinct experts per K accepted tokens, eroding the bandwidth saving that makes MTP win on dense. **MoE batch=1 is a separate failure mode** from the Qwen 3.5 hybrid recurrent-verify wall (0.56× on Delta-Net) — both are MTP failure modes but with distinct mechanisms.
+
+### Production status
+
+- `gemma4_31b_q4km_mtp` registered in `epyc-inference-research/orchestration/model_registry.yaml` as Tier B (eval phase). Quality benchmark on the standard suite is the immediate open follow-up.
+- `gemma4_26b_a4b_q4km_mtp` registered as Tier X (eval-only; not deployable). Drafter GGUF was converted in-house from `google/gemma-4-26B-A4B-it-assistant` HF safetensors (no community GGUF existed) — 840 MB BF16 → 441 MB Q8_0 via PR #1744 `convert_hf_to_gguf.py` + `llama-quantize`.
+- Production use gates on PR #1744 merging to ik_llama.cpp main. Until then, runs from the `pr-1744` branch + our two patches; both registry entries pin `runtime_requirements.binary_dir` and `runtime_requirements.ld_library_path` accordingly.
+- E4B / E2B multimodal MTP path deferred unless multimodal-pipeline E-series unification proceeds.
+
+### Cross-references
+
+- Handoff: [gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md) — full gate sequence + result tables + follow-up matrix
+- Deep dive: [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md) — variant matrix, ik_llama.cpp PR table, EPYC implications
+- Inference acceleration index: [Research Intake Update — 2026-05-06](../handoffs/active/inference-acceleration-index.md#research-intake-update--2026-05-06)
+- Source: [intake-527](https://blog.google/innovation-and-ai/technology/developers-tools/multi-token-prediction-gemma-4/) — Google blog announcement, 2026-05-05
