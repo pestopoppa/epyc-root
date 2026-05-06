@@ -1,6 +1,6 @@
 # SearxNG as a Bash-Issued Web Search Channel for Claude Code Sessions
 
-**Status**: stub
+**Status**: Approach #1 LANDED 2026-05-06 — `scripts/search/searx.sh` (curl + jq with health-check fallback exiting 2 on container-down) + CLAUDE.md "Web Search Routing" section. Live verification deferred (container was down at commit time); next-session activation = bring up SearxNG container + wire into `orchestrator_stack.py` as first-class managed service per `feedback_stack_managed_services` memory.
 **Created**: 2026-04-29 (during research-intake of arxiv:2604.24432)
 **Categories**: search_retrieval, tool_implementation, agent_architecture
 **Owner**: deferred — user will handle in a future session

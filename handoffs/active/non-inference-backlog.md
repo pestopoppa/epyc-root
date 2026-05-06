@@ -1,6 +1,8 @@
 # Non-Inference Backlog — Round 2 (2026-04-17 audit refresh)
 
-**Status**: ACTIVE — 43 non-inference tasks catalogued. 35/43 done (23 original Round 2 + 4 × 2026-04-21 supplement + 6 × 2026-04-22 supplement = NIB2-41/42/44/45/47/48). Open: NIB2-40, 43, 46 (3 items). NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
+**Status**: ACTIVE — 43 non-inference tasks catalogued. 35/43 done. Open: NIB2-40, 43, 46 (3 items). NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
+
+**Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 35 NIB2 + 6 standalone = 41 items.
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
 **Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit)

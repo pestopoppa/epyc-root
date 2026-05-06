@@ -272,3 +272,20 @@ Self-hosted web research pipeline combining SearXNG (meta-search; localhost:8090
 Deep-dive [firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md](../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md) compares Firecrawl (managed SaaS) vs Crawl4AI (open-source self-hostable) for the page-content + extraction stages of the research pipeline. Crawl4AI selected for the EPYC self-hosted constraint per `feedback_opensource_only.md`.
 
 Source: [handoffs/active/searxng-search-backend.md](../handoffs/active/searxng-search-backend.md), [research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md](../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md).
+
+## Internal KB-RAG over markdown corpus (2026-05-06)
+
+Standalone ColBERT-backed retrieval over the project's compiled markdown KB so Explore-agent calls can semantic-search instead of grep-blind across 53+ active handoffs + 24 wiki articles + 246 source documents. Architecture:
+
+- **Encoder**: shared `epyc-orchestrator/src/retrieval/colbert_encoder.py` exposing `encode(text, max_tokens) → token-level embeddings`, `maxsim(q, d) → score`, lazy ONNX session + tokenizer (GTE-ModernColBERT-v1 INT8 by default; `LATEON_MODEL_PATH` env override). Two consumers: web-search reranker (`src/tools/web/colbert_reranker.py` — kept untouched for back-compat with `research.py:322` import) and KB-RAG.
+- **Chunker**: heading-aware (`^#{1,3} `) with 4000-char cap and paragraph-boundary sub-split for long sections; carries `(file_path, heading_path, line_range, content_hash)` per chunk.
+- **Storage**: per-chunk `.npz` of token embeddings + SQLite catalog mapping `(chunk_id, file_path, heading_path, line_range, mtime, content_hash)`. mtime + content_hash dedup makes rebuilds incremental.
+- **Query**: top-K MaxSim ranking returning `{file, heading_path, line_range, snippet, score}`.
+- **Index refresh**: `.claude/hooks/post_commit_kb_rag_update.sh` re-encodes only files in `git diff --name-only HEAD^` filtered by corpus globs.
+- **Discovery for agents**: `.claude/skills/kb-search/SKILL.md` documents when to prefer KB-RAG over grep (semantic / cross-cutting / topical queries) and when not to (exact-string match → grep, code → GitNexus, archived/ excluded by design).
+
+**Live build (2026-05-06)**: 409 markdown files → 13,537 chunks → 861 MiB of embeddings, 17:01 wall-time (~76 ms/chunk). Sample retrievals score 0.93+ on relevant chunks (`"context folding"` → CF deep-dive at 0.95; `"how do we handle CPU NUMA optimization"` → numa-mirror handoff at 0.94; `"ColBERT reranker"` → 2026-04-14 progress entry at 0.93).
+
+**Design choice — additive, not refactor**: per Plan agent advisory, the new `colbert_encoder.py` is purely additive. The reranker keeps its own ONNX session; KB-RAG creates a separate session. Cost: ~280 MB total RAM if both are imported in the same process. Benefit: zero risk to the deployed reranker, no need to edit `research.py:322`. Future cleanup option: refactor reranker to delegate to the shared module.
+
+Sources: [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), `epyc-orchestrator/src/retrieval/`, `epyc-orchestrator/scripts/kb_rag/cli.py`, `.claude/skills/kb-search/SKILL.md`.

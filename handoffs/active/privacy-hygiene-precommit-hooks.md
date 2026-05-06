@@ -1,6 +1,6 @@
 # Privacy / Secret Hygiene — Pre-Commit Hooks
 
-**Status**: stub
+**Status**: PII-1 + PII-2 LANDED 2026-05-06 — `scripts/hooks/pii_precommit.sh` (15 secret patterns + account_number with phone/timestamp/log/decimal-float disambiguation) + `research/fixtures/pii_hygiene_eval.jsonl` (40 examples, 19 TPs / 21 negatives) + 3-repo `.git/hooks/pre-commit` install. False-positive class on YAML config floats caught + fixed mid-session via `bc04c84`. PII-3 30-day re-eval scheduled for 2026-05-24.
 **Created**: 2026-04-24 (via research intake deep-dive — intake-452)
 **Categories**: knowledge_management, document_processing, tool_implementation
 **Priority**: MEDIUM (no immediate incident, but cheap insurance against accidental commits)

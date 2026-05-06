@@ -56,3 +56,19 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/opendataloader-pipeline-integration.md) -- Three-phase plan, work items, benchmark suite integration
 - [intake-161](https://github.com/opendataloader-project/opendataloader-pdf) OpenDataLoader PDF -- Initial intake evaluation
 - [arXiv:2504.10258] XY-Cut++ paper -- Algorithm details, DocBench-100 results
+
+## ODL structured-output Phase 2 scaffolding (2026-05-06)
+
+Phase 1 of the ODL integration (markdown-only extraction via `_extract_with_opendataloader()`) landed via NIB2-13. Phase 2 — wiring ODL's structured JSON output into figure-analyzer + chunker — landed 2026-05-06 as **additive scaffolding only**. Existing pdftotext/PyMuPDF/regex-chunker paths are unchanged when `ORCHESTRATOR_ODL_STRUCTURED` is unset.
+
+New module `epyc-orchestrator/src/models/odl_structured.py` defines a normalized layer over ODL JSON: `ODLBoundingBox`, `HeadingNode` (with `build_heading_tree` + `flatten_heading_tree` walkers), `FigureContext` (bbox + semantic_type + caption + surrounding_text + heading_breadcrumb), `TableContext`, and `ODLStructuredDocument.from_json()` that tolerates partial/missing keys across ODL versions.
+
+`pdf_router.py` gains `_extract_with_opendataloader_structured()` — invokes ODL with `format=["markdown","json"]` into a temp dir, parses both outputs, returns `(text, ODLStructuredDocument | None, latency_ms)`. `PDFExtractionResult` gains an optional `structured_data` field (default `None` preserves back-compat). The routing path adds an `ORCHESTRATOR_ODL_STRUCTURED=1` gate that opts into the structured path; falls through to pdftotext on empty ODL output.
+
+`figure_analyzer.py` gains additive helper `build_figure_prompt_with_context(base_prompt, figure_context)` that folds heading breadcrumb + semantic_type + caption + surrounding_text into the VL prompt when a `FigureContext` is supplied; returns base prompt unchanged when `None`. Existing `FigureAnalyzer` class untouched.
+
+`document_chunker.py` gains additive helper `chunk_by_odl_headings(text, structured_doc, max_section_length=10000)` that slices markdown text at ODL-detected heading boundaries instead of regex matches, with paragraph-boundary sub-split for long sections and a single-section fallback when the structured doc has no headings. Existing `DocumentChunker` class untouched.
+
+**Scope reduction vs original plan**: original Phase 2 plan called for replacing PyMuPDF figure extraction, replacing the regex chunker entirely, and refactoring `document_preprocessor.py`. Adopted the safer **additive helper functions** strategy — gated behind one feature flag, zero refactor risk to existing services, all 38 existing pdf_router + figure_analyzer tests still pass. The deeper integration (full PyMuPDF replacement, document_preprocessor refactor, end-to-end VL pipeline rewiring) is multi-day per-service work to land incrementally per service after Phase 2 is validated on real PDFs. 17 new unit tests cover the structured path with synthetic ODL JSON.
+
+Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), `epyc-orchestrator/src/models/odl_structured.py`, `epyc-orchestrator/src/services/pdf_router.py`, `epyc-orchestrator/tests/unit/test_odl_structured.py`.

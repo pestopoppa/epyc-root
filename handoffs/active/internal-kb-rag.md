@@ -1,6 +1,6 @@
 # Internal Knowledge-Base RAG
 
-**Status**: stub (proposal — not yet started)
+**Status**: K1-K6 LANDED 2026-05-06 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + 15 unit tests. **Live build complete: 409 files / 13,537 chunks / 861 MiB / 17:01 wall-time** (~76 ms/chunk). Sample queries return 0.93+ MaxSim scores on relevant chunks. Existing `src/tools/web/colbert_reranker.py` left untouched — additive design avoided refactor risk on `research.py:322` import. K7 Flywheel-template eval (HotpotQA + LoCoMo) inference-gated; K8 wikilink scorer deferred.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack)
 **Categories**: search_retrieval, knowledge_management, document_processing
 **Priority**: MEDIUM

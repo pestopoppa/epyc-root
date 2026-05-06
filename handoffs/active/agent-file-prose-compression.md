@@ -1,6 +1,6 @@
 # Per-Model Agent-File Prose Compression
 
-**Status**: stub
+**Status**: Phase 1+2+4 LANDED 2026-05-06 — skill + 3 pilot artifacts + compliance task suite (15+12+15) + `/new-model` Step 6.5 + registry field + validator. Phase 3 per-model A/B eval inference-gated; Phase 5 roll-forward depends on Phase 3.
 **Created**: 2026-04-30 (via research intake — intake-509 deep-dive follow-up)
 **Categories**: agent_architecture, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (cheap to pilot; high-amortization payoff if eval lands)

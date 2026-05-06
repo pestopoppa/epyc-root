@@ -1,6 +1,6 @@
 # Unified Trace / Memory Service
 
-**Status**: stub (proposal — not yet started)
+**Status**: T1-T6 LANDED 2026-05-06 — `epyc-orchestrator/src/trace/` package: SQLite store with FTS5 + 5 indices, agent_audit parser (JSON + legacy text dual-format), autopilot parser (no-op-when-absent for hosts without journals), progress markdown parser, query CLI (`python -m src.trace.cli {ingest,query,stats}`), 13 unit tests. Live ingest of 3477 events from `/workspace/logs` + `/workspace/progress` in <1s; idempotent re-ingest verified. T7 Hermes ingest deferred until Hermes graduates to daily use.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack — "Trace / Memory Service" box)
 **Categories**: agent_architecture, knowledge_management, autonomous_research
 **Priority**: MEDIUM

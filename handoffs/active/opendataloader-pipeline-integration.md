@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: ACTIVE
+**Status**: Phase 1 done (NIB2-13). Phase 2 SCAFFOLDING LANDED 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. Gated behind `ORCHESTRATOR_ODL_STRUCTURED=1`. 17 new unit tests + 38/38 existing tests still pass (back-compat verified). Phase 2 deeper integration (replace PyMuPDF figure extraction, replace regex chunker entirely, document_preprocessor refactor) is multi-day per-service work, deferred. Phase 3 (sidecar + benchmark) inference-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
