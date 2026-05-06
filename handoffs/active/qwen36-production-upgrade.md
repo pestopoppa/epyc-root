@@ -167,3 +167,36 @@ Same model as frontdoor — separate server (independent slot/crash domain/syste
 2. **Push `feature/stack-swap-2026-05-04`** to origin once #1 is resolved.
 
 This handoff is now **CLOSE TO DONE**. The frontdoor swap + 4-way worker consolidation + architect_coding elimination are all committed; only the long-context-driven ingest decision remains.
+
+## 2026-05-06 — STACK SWAP MERGED + LIVE ✅
+
+`feature/stack-swap-2026-05-04` MERGED into epyc-orchestrator main via merge commit `a268040`. Pushed to origin. Branch deleted (local + remote).
+
+### Final commit chain merged
+
+```
+a268040 (merge) Merge stack-swap-2026-05-04: full stack consolidation + launcher refactor
+├─ bd2455d orchestrator_stack: derive HOT/WARM_SERVERS from single-source classification
+├─ 02e871d orchestrator_stack: align launcher with May-4/6 registry stack swap
+├─ 852fd5c orchestrator: swap worker_summarize → Qwen3.6-35B-A3B Q8 (shared GGUF with frontdoor)
+├─ 78fdaf4 orchestrator: deprecate worker_pool config — superseded by worker_general consolidation
+├─ a26744c orchestrator: invert three_stage_summarization stages + promote ingest_long_context to hot
+├─ 7491a12 orchestrator: remove architect_coding + swap coder_escalation to frontdoor model
+├─ dad42a0 orchestrator: clean up process_layout + draft residency metadata
+├─ 587219c orchestrator: remove thinking_reasoning routing reference
+└─ fee69b8 orchestrator: plumb MoE-Spec budget=40 + initial frontdoor swap
+```
+
+### Frontdoor long_context bench — 27/27 (100%)
+
+Post-reboot bench of `qwen36_q8_0` on long_context suite returned 27/27 (100%) — beating Qwen3-Next-80B-A3B Q4 (93%), Qwen3.5-122B-A10B (89%), Qwen3-Coder-30B-A3B (59%). Used as input to the three_stage_summarization stage inversion decision (Stage 2 = frontdoor since it has the highest long_context quality). CSV at `benchmarks/results/reviews/may4_long_context/qwen36_q8_0_long_context.csv`.
+
+### What's still open after merge
+
+1. **Live deployment validation**: orchestrator_stack.py `start` should be run once on a freshly-rebooted host to confirm the merged stack actually launches without errors. Module-load + registry-validation passes statically; live launch is the final gate. Recommended: stop existing stack, reboot, `start --hot-only`, verify all 8 hot processes come up healthy.
+
+2. **Tighten preflight uptime warn threshold** (`scripts/lib/canonical_recipe.py` UPTIME_WARN_DAYS): bimodal-throughput failure recurred at 1.5d uptime in this session arc, below the documented 2.0d threshold. Tighten to 1.0-1.5d. Low priority — purely advisory (warn-only, doesn't block).
+
+3. **Long-context tier-3 rubric script audit**: context generation produces tech-docs instead of domain-specific content for t3_q1/t3_q2/t3_q3. All models correctly refuse, so rubric can't discriminate quality on these. Affects future ingest model evaluation. Belongs to a separate `benchmarks` handoff.
+
+This handoff is **COMPLETE** for the qwen36 production upgrade. Moving to `handoffs/completed/` is appropriate.

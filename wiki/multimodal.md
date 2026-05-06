@@ -140,3 +140,17 @@ Items 1 and 2 are strongly coupled: if Sakana ships weights AND the codec stack 
 - [intake-515](https://huggingface.co/SakanaAI/kame) HF model card
 - [`research/deep-dives/kame-tandem-s2s-architecture.md`](../research/deep-dives/kame-tandem-s2s-architecture.md) — full deep-dive with paper analysis, oracle-mechanism audit, EPYC mapping, SHANKS comparison
 - [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md) — Research Intake Update 2026-04-30 + deep-dive refinement
+
+## ERNIE-Image-Turbo (Baidu, 2026-05-06)
+
+8B distilled DiT (Diffusion Transformer) text-to-image model evaluated for the multimodal pipeline. Apache-2.0. Distilled from a larger ERNIE-Image base via consistency distillation; targets fast inference (single-step or few-step generation) at competitive quality.
+
+**Relevance to EPYC stack**: candidate for image generation in the multimodal pipeline (alongside Qwen3-VL for vision-understanding and faster-whisper for ASR). DiT inference on CPU is bandwidth-bound; quantized variants would need to land first to be production-viable on the EPYC 9655 host.
+
+Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md).
+
+## Multimodal pipeline (Vision + TTS + ASR) handoff
+
+Coordinating handoff [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
+
+Source: [handoffs/active/multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).

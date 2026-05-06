@@ -320,3 +320,48 @@ Pattern is now confirmed across **two independent occurrences** with different i
 Open instrumentation: still no signal in `/proc` to distinguish fast vs slow state. Capturing numa_maps + smaps + vmstat delta + perf-stat sample on tripwire FAIL would help root-cause if the pattern persists.
 
 Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`scripts/lib/canonical_recipe.py`](../../epyc-inference-research/scripts/lib/canonical_recipe.py) `UPTIME_WARN_DAYS = 2.0` constant.
+
+### Stack consolidation arc closed 2026-05-06 — final outcome
+
+The May 4-6 stack consolidation thread merged into epyc-orchestrator main on 2026-05-06 via merge commit `a268040` (9 commits). Final production stack quality + RAM accounting:
+
+| Role | Pre-2026-05-04 | Post-merge | Quality Δ | RAM Δ |
+|---|---|---|---|---|
+| frontdoor | Qwen3.5-35B-A3B Q4 (82%) | Qwen3.6-35B-A3B Q8 (93%) | +11pp | +18 GB |
+| coder_escalation | Qwen2.5-Coder-32B Q4 (77%) | Qwen3.6-35B-A3B Q8 (93%) shared GGUF mmap | +16pp | +0 (shared) |
+| worker_general / toolrunner | Llama-3-8B Q4 (38%) | Qwen3-Coder-30B-A3B Q4 (84%) shared | +46pp | +11 GB shared |
+| worker_summarize | Qwen2.5-Coder-32B Q4 (77%) | Qwen3.6-35B-A3B Q8 (93%) shared with frontdoor | +16pp | -18.5 GB |
+| architect_general | Qwen3.5-122B-A10B Q4 (94%) | unchanged | 0 | 0 |
+| ingest_long_context | Qwen3-Next-80B-A3B Q4 (warm) | promoted hot; Stage 1 of three_stage_summarization | 0 | 0 |
+| ~~architect_coding~~ | REAP-246B Q4 (70% coder) | **REMOVED** (frontdoor 97% > REAP 70%) | — | **-139 GB** |
+| ~~thinking_reasoning~~ | Qwen3-Next-80B-A3B-Thinking | **REMOVED** (GGUF deleted from disk) | — | 0 |
+| ~~worker_pool~~ | 3-tier hot/warm pool | **DEPRECATED** (config-only; superseded by worker_general consolidation) | — | 0 |
+
+**Net: ~157 GB warm-tier reclaimed** (139 + 18.5 - 0 frontdoor Q8 increment offset by GGUF mmap sharing).
+
+### Long-context bench finding — frontdoor model wins
+
+Frontdoor (Qwen3.6-35B-A3B Q8) scored **27/27 (100%)** on the canonical long_context suite — beating every other tested candidate:
+
+| Candidate | long_context score |
+|---|---|
+| Qwen3.6-35B-A3B Q8 (frontdoor) | **27/27 (100%)** |
+| Qwen3-Next-80B-A3B Q4 (ingest_long_context) | 25/27 (93%) |
+| Qwen3.5-122B-A10B Q4 (architect_general) | 24/27 (89%) |
+| Qwen3-Coder-30B-A3B Q4 (worker_general) | 16/27 (59%) — degenerate repetition |
+
+This drove the **three_stage_summarization stage inversion**: previous design had frontdoor as Stage 1 (full context, fast draft) + ingest_long_context as Stage 2 (quality review on reduced context). Inverted: ingest_long_context for Stage 1 (SSM-hybrid linear attention scales O(n) per token at large contexts) + frontdoor for Stage 2 (highest long_context quality). Each model now matched to its stage's demand profile.
+
+### Single-source-of-truth refactor
+
+The May-4/6 audit caught that orchestrator_stack.py's HOT_SERVERS / WARM_SERVERS / HOT_ROLES / SERIAL_ROLES were hand-edited dict literals duplicating wiring data already in NUMA_CONFIG. Adding/removing roles required editing 5 places consistently. Architect_coding registry-removal had been propagated to NUMA_CONFIG but NOT to HOT_SERVERS — `start` would have crashed.
+
+Refactor (commit `bd2455d`):
+- New `ROLE_LAUNCH_META` dict: per-role tier + mode + aliases + mode-specific kwargs (15 lines)
+- `_build_servers_from_classification()` computes HOT_SERVERS + WARM_SERVERS at module load from NUMA_CONFIG + ROLE_LAUNCH_META
+- `_validate_role_classification()` runs at module load; rejects port collisions, NUMA_CONFIG/ROLE_LAUNCH_META mismatches, missing classifications
+- `validate_against_registry()` runs at `start` command; warns on drift between launcher and registry's process_layout / server_mode
+
+Result: adding a role is now 2 places (NUMA_CONFIG + ROLE_LAUNCH_META) with self-validation; removing/renaming catches dangling refs at module load instead of at launch.
+
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`epyc-orchestrator` merge `a268040`](../../epyc-orchestrator/), [`handoffs/active/qwen36-production-upgrade.md`](../handoffs/active/qwen36-production-upgrade.md).

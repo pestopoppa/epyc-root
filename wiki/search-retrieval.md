@@ -260,3 +260,15 @@ Granite claims 60.5 on MTEB Code (v1) across 12 tasks with explicit training on 
 - llama.cpp ModernBERT support: `convert_hf_to_gguf.py:12452`
 - [`research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../research/deep-dives/granite-embedding-97m-r2-evaluation.md) — full bench plan, alternatives Pareto, risk register
 - [`handoffs/active/granite-97m-r2-bench-plan.md`](../handoffs/active/granite-97m-r2-bench-plan.md) — claim-ready bench plan
+
+## Web research pipeline — SearXNG + Crawl4AI (2026-05-06)
+
+Self-hosted web research pipeline combining SearXNG (meta-search; localhost:8090) with Crawl4AI (page-content extraction). Documented in handoff [searxng-search-backend.md](../handoffs/active/searxng-search-backend.md). The combined pipeline replaces SaaS web-search dependencies (Exa, Tavily, Firecrawl SaaS) while preserving multi-engine consensus + structured JSON output for tool integration.
+
+**Routing rule** (CLAUDE.md updated): prefer SearXNG (`bash scripts/search/searx.sh`) when ≥3 web searches in one phase, querying non-English sources, requiring engine-consensus, or piping through `jq`. Fall back to built-in `WebSearch` for one-shot lookups or when SearXNG health check fails (script exits 2).
+
+### Firecrawl vs Crawl4AI comparison
+
+Deep-dive [firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md](../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md) compares Firecrawl (managed SaaS) vs Crawl4AI (open-source self-hostable) for the page-content + extraction stages of the research pipeline. Crawl4AI selected for the EPYC self-hosted constraint per `feedback_opensource_only.md`.
+
+Source: [handoffs/active/searxng-search-backend.md](../handoffs/active/searxng-search-backend.md), [research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md](../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md).

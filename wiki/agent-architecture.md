@@ -401,3 +401,9 @@ Source review (`crates/tui/src/snapshot/{repo.rs, paths.rs}`) confirms:
 
 - [intake-508](https://github.com/Hmbown/DeepSeek-TUI) DeepSeek TUI — Terminal-native coding agent for DeepSeek V4 (Rust, closed-API-only)
 - [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — flat-enum disclosure + snapshot port recipe
+
+## Hermes/OpenGauss outer shell (2026-05-06)
+
+Coordinating handoff [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) tracks integration of Hermes (Nous Research agent frontend, upstream at /mnt/raid0/llm/hermes-agent) with OpenGauss as a possible outer-shell coordination layer above the EPYC orchestrator. Architecture pattern: Hermes handles user-facing dialogue + planning; orchestrator handles role routing + LLM dispatch; OpenGauss provides persistence for episodic memory + cross-session state. Status: design + intake; no production deployment yet.
+
+Source: [handoffs/active/hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md).

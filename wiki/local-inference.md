@@ -106,3 +106,21 @@ Phase 0 ran end-to-end on 2026-04-23 in `llama.cpp-experimental` on `cpu-optimiz
 - **96t-single-NUMA-node operating point** emerged as actionable: +26% vs production worker_explore (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1.
 
 See `research/deep-dives/cpu-optimization-phase0-baseline.md` for full analysis + revised gate decisions. Auto-memory entry `feedback_cpu_decode_bw_bound.md` captures the lesson: when perf shows high overhead inside a quantized-decode inner dot loop on this hardware, those samples are typically DRAM-wait cycles; a cheap wider-SIMD A/B test resolves the question in hours before committing to shape-specialized ukernel work.
+
+## 2026-05-06: Production stack consolidation merged
+
+The May 4-6 consolidation arc closed with `epyc-orchestrator` main merge commit `a268040` (9 stack-swap commits). Single GGUF mmap now serves three roles (frontdoor + coder_escalation + worker_summarize) — kernel page cache holds one physical copy of Qwen3.6-35B-A3B Q8 (~37 GB) instead of three. Same pattern for worker_general / worker_math / toolrunner (Qwen3-Coder-30B-A3B Q4 ~16 GB shared).
+
+Hot-tier resident model footprint is ~167 GB (well under 1.13 TB host); ~600 GB free for KV caches + OS. Net warm-tier savings vs pre-2026-05-04: ~157 GB.
+
+### Pipelines using the stack (final)
+
+- **Three_stage_summarization** (≥5000 tokens, lower for multi-doc): Stage 1 = ingest_long_context (Qwen3-Next-80B-A3B Q4 SSM-hybrid for full-context fast draft) → Stage 2 = frontdoor (Qwen3.6-35B-A3B Q8 for quality review on ~15% reduced context).
+- **Coder escalation chain**: frontdoor → coder_escalation (same model on separate slot for crash isolation) → FAIL. Shortened from 3 to 2 levels by architect_coding removal.
+- **Architect (synthesis/IR)**: routes to architect_general (Qwen3.5-122B-A10B Q4 + Qwen3.5-0.8B Q8 spec draft, 1×96t canonical wiring per Probe B).
+
+### Launcher single-source-of-truth refactor
+
+`scripts/server/orchestrator_stack.py` HOT_SERVERS + WARM_SERVERS now COMPUTED from `ROLE_LAUNCH_META` (tier + mode + aliases) + `NUMA_CONFIG` (wiring spec). Module-load validation rejects misconfiguration; start-time validation cross-checks against registry's `process_layout`. Adding/removing roles is now safer (catches dangling refs before launch).
+
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md).

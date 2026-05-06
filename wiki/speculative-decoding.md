@@ -186,3 +186,13 @@ Verdict: worth_investigating. The principle (SSM drafter for Transformer target)
 - [MAB tree-shape selector handoff](../handoffs/active/mab-tree-shape-selector.md) -- intake-491 §3.2 Phase 0/1/2/3 spec; pre-prod gate on MoE-Spec production registry integration
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- intake-490 reopener of 6 closed SSM-hybrid handoffs; CLOSED 2026-04-30 (mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default; canonical 3×2 + 4-config × 5-prompt sweep showed primary wins 60/62 = 97% of K-parallel rounds)
 - [MoE-Spec handoff](../handoffs/active/moe-spec-cpu-spec-dec-integration.md) -- Verification-budget mechanism deployable on REAP-246B B=40; Phase 1+2 measured 2026-04-28; pre-prod registry-integration gate active
+
+## Gemma 4 MTP-Drafter (2026-05-06)
+
+The Gemma 4 family ships with native Multi-Token Prediction (MTP) drafter heads — built-in speculative decoding without requiring a separate draft model. Evaluated via deep-dive [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md) and handoff [gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md).
+
+**Mechanism**: per-layer MTP head produces draft tokens for verification by the main model in the same forward pass — eliminates the draft-target-mismatch acceptance-rate ceiling that limits external-draft spec decoding on hybrid SSM and large MoE models.
+
+**Relevance to EPYC stack**: candidate for replacing external Qwen3-Coder-DRAFT-0.75B drafts on Qwen3-Coder-30B-A3B (current worker_general). MTP-style integration in llama.cpp would require kernel-level changes; not yet a near-term port. Intake status: research-tier evaluation, not deployed.
+
+Source: [handoffs/active/gemma4-mtp-drafter-evaluation.md](../handoffs/active/gemma4-mtp-drafter-evaluation.md), [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md).
