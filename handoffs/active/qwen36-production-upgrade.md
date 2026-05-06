@@ -129,3 +129,41 @@ Qwen3.6-35B-A3B Q8 swap into `frontdoor` slot **committed** in `epyc-orchestrato
 Pending: re-bench `reap_246b` and `ingest_long_context` under canonical recipe to decide architect_coding confirmation + ingest consolidation question. Tomorrow's session.
 
 This handoff is now **CLOSE TO DONE** — pushing the branch + the two unscored re-benches will close it.
+
+## 2026-05-06 — STACK CONSOLIDATION ADVANCED (5 commits ahead of main)
+
+Two more orchestrator commits land on `feature/stack-swap-2026-05-04`. Branch is now at **5 commits** ahead of main: `7491a12 dad42a0 587219c fee69b8 9b8143e`.
+
+### Architect candidates re-benched on full battery (May 5)
+
+| Candidate | Before (master CSV) | After (May-5 full sweep) | t/s |
+|---|---|---|---|
+| Qwen3.5-122B-A10B Q4_K_M | 56/61 (92%, OLD suite) | **196/210 (93%)** = 172/183 standard + 24/27 long_context | 12.34 |
+| Qwen3.6-27B Q4_K_M | 141/147 (96%, partial) | **173/183 (95%)** | 6.53 |
+| Qwen3.6-27B Q8_0 | 123/126 (98%, partial) | **166/183 (91%)** | 4.42 |
+
+Verdict: **keep Qwen3.5-122B-A10B Q4_K_M as architect_general** — quality tied across all 3, but 122B is fastest by 2× and only candidate with proven long_context capability.
+
+### REAP-246B falsification → architect_coding role ELIMINATED
+
+Per master CSV cross-check (`benchmarks/results/reviews/summary.csv`):
+- REAP-246B coder = **7/10 (70%)**
+- Worker (Qwen3-Coder-30B-A3B Q4) coder = 23/30 (77%)
+- Frontdoor (Qwen3.6-35B-A3B Q8) coder = **29/30 (97%)**
+
+REAP-246B is WORSE on coder than the consolidated worker AND 27pp behind the frontdoor model AT 4× the speed. The "hardest coding escalation" purpose is no longer met by REAP-246B. Role ELIMINATED in commit `7491a12`.
+
+### Coder_escalation swapped to Qwen3.6-35B-A3B Q8
+
+Same model as frontdoor — separate server (independent slot/crash domain/system prompt) with shared GGUF mmap. Net incremental RAM cost ~0. Replaces the 2026-05-04 consolidation onto Qwen3-Coder-30B-A3B Q4 (which had only 77% coder vs frontdoor's 97%). Hard coding escalations now route here.
+
+### Additional cleanup commit `dad42a0`
+
+`process_layout.hot_resident` stripped of stale draft entries (`draft_qwen25_coder`, `draft_qwen25` — no current targets after 2026-05-04 consolidation). Per-role draft `memory.residency` relabeled `co_resident_with_target` for the two production-active drafts (`draft_qwen3_coder_0_75b`, `draft_qwen35_0_8b_q8_0`) — they load inside their target server's llama-server process via `--draft-model` and pin via mlock, never run standalone.
+
+### Remaining
+
+1. **Bench Qwen3.6-35B-A3B Q8 on long_context** to decide frontdoor + ingest_long_context consolidation. Currently held up by post-1.5d-uptime preflight failure (bench bimodal-throughput recurrence; reboot pending).
+2. **Push `feature/stack-swap-2026-05-04`** to origin once #1 is resolved.
+
+This handoff is now **CLOSE TO DONE**. The frontdoor swap + 4-way worker consolidation + architect_coding elimination are all committed; only the long-context-driven ingest decision remains.

@@ -276,3 +276,47 @@ May-4 Claude-as-Judge scoring under canonical recipe + the morning's 9-model swe
 This methodology generalizes: **rank candidates per-suite, weight by traffic share, prefer single-model resident bindings when capability passes the floor for ALL traffic on that slot.** A single 16-GB MoE that hits 84% on all relevant suites beats a fleet of specialists each tuned to one suite.
 
 Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md) 2026-05-04 update, [`epyc-orchestrator` branch `feature/stack-swap-2026-05-04`](.../../) commits fee69b8 + 587219c.
+
+### Stack consolidation methodology — extended 2026-05-06 with role-elimination data
+
+Two refinements landed after re-benching the architect candidates and cross-checking REAP-246B's master CSV row:
+
+#### 1. Role elimination via cross-role comparison
+
+`architect_coding` was supposed to be the "hardest coding escalation" target. Its model (Qwen3-Coder-REAP-246B-A35B Q4_K_M) had been deployed there since 2026-03-29 without ever being scored on the canonical 183-question battery. Master CSV cross-check (`benchmarks/results/reviews/summary.csv`) revealed:
+
+- REAP-246B coder = **7/10 (70%)**
+- Worker (Qwen3-Coder-30B-A3B Q4) coder = 23/30 (77%) — *cheaper, better*
+- Frontdoor (Qwen3.6-35B-A3B Q8) coder = 29/30 (97%) — *27pp better, 3.8× faster*
+
+The role's purpose is no longer met by its current model AND no other available model class would do better than the existing frontdoor. **Conclusion**: the role itself is redundant. Hard coding escalations route to coder_escalation (which now also runs the frontdoor model on a separate slot, shared GGUF mmap).
+
+**Methodology rule**: when a role's stated purpose ("hardest X") is no longer served by the current model AND no alternative model in the eval pool can serve it better than an already-deployed sibling role, **eliminate the role** rather than swap. Saves a slot AND removes a routing decision the orchestrator no longer needs to make.
+
+Result: 139 GB warm-tier RAM reclaimed; coder escalation chain shortened from 3 (frontdoor → coder_escalation → architect_coding) to 2 (frontdoor → coder_escalation).
+
+#### 2. Architect re-bench: speed × long-context-capability tiebreaks quality-tied candidates
+
+Re-bench of the 3 architect_general candidates (Qwen3.5-122B-A10B Q4, Qwen3.6-27B Q4, Qwen3.6-27B Q8) on the full 183-question battery:
+
+| Candidate | Total | t/s | long_context | Verdict |
+|---|---|---|---|---|
+| Qwen3.5-122B-A10B Q4 | 196/210 (93%) | 12.34 | 24/27 (89%) | KEEP |
+| Qwen3.6-27B Q4 | 173/183 (95%) | 6.53 | not tested | reject |
+| Qwen3.6-27B Q8 | 166/183 (91%) | 4.42 | not tested | reject |
+
+Quality essentially tied (93-95%) — but 122B-A10B is **2× faster** (MoE 10B-active beats dense 27B) AND the only candidate with proven long-context capability (89% on long_context suite). For architect/synthesis workloads, latency matters more than the 1-2pp quality ceiling, and long-context capability is hard to retrofit.
+
+**Methodology rule**: when quality scores are tied within ~3pp, **don't swap** — speed and long-context are real differentiators. Re-bench the existing candidate properly before treating it as inferior to "newer" alternatives.
+
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md) 2026-05-06 update, [`epyc-orchestrator` branch `feature/stack-swap-2026-05-04`](.../../) commits `7491a12` + `dad42a0`, [`benchmarks/results/reviews/may5_architect_candidates/`](../../epyc-inference-research/benchmarks/results/reviews/may5_architect_candidates/) per-question CSVs.
+
+### Multi-day uptime hysteresis recurs at <2d (2026-05-06)
+
+After the 2026-05-04 evening reboot the system ran clean for ~24h, then preflight tripwire failed at **29.49 t/s @ 1.5d uptime** — earlier than the documented 2.0d warn threshold. Same pattern: freq healthy, libomp + wrapping correct, NUMA balanced, drop_caches no-op. Reboot recovered the bench to 45.55 t/s.
+
+Pattern is now confirmed across **two independent occurrences** with different initial uptimes (2.3d on May 4, 1.5d on May 6) producing the same ~60% throughput collapse. **The 2.0d preflight uptime warn threshold is not conservative enough.** Either tighten to 1.0-1.5d, OR accept that the threshold is purely advisory and the tripwire bench is the only reliable canary (warn doesn't fail-fast; only tripwire fails preflight).
+
+Open instrumentation: still no signal in `/proc` to distinguish fast vs slow state. Capturing numa_maps + smaps + vmstat delta + perf-stat sample on tripwire FAIL would help root-cause if the pattern persists.
+
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`scripts/lib/canonical_recipe.py`](../../epyc-inference-research/scripts/lib/canonical_recipe.py) `UPTIME_WARN_DAYS = 2.0` constant.
