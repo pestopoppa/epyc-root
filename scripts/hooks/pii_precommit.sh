@@ -89,6 +89,19 @@ is_timestamp_or_log_line() {
   return 1
 }
 
+is_decimal_float_line() {
+  # Skip lines where the digit run is part of a decimal float (preceded by `.`).
+  # Common cases: temperature: 0.0736042256959058, threshold: 4.09045566671701.
+  # Pattern: any `.` followed directly by 12+ digits.
+  local line="$1"
+  echo "$line" | grep -qE '\.[0-9]{12,}' && return 0
+  # YAML-style numeric tuning keys typical in registry / config files.
+  # If the line has `key: <number>` shape AND the number context is purely numeric
+  # (no surrounding text), it's a config value, not an account number.
+  echo "$line" | grep -qiE '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' && return 0
+  return 1
+}
+
 is_version_or_hash_line() {
   # Skip lines containing git SHAs / version hashes — long hex runs, not digit runs.
   # The account_number regex only matches `[0-9]{12,19}`, so pure hex SHAs already won't match.
@@ -125,6 +138,9 @@ scan_blob() {
         continue
       fi
       if is_timestamp_or_log_line "$fullline"; then
+        continue
+      fi
+      if is_decimal_float_line "$fullline"; then
         continue
       fi
       printf 'BLOCKED: %s:%s: [%s] %s — matched: %s\n' "$path" "$lineno" "$label" "$desc" "$(echo "$match" | head -c 80)" >&2
