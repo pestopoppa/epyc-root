@@ -33,10 +33,13 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Health check — exit 2 if unreachable so caller can fall back to WebSearch.
+# To launch SearxNG: `bash scripts/search/searxng_up.sh` (delegates to
+# orchestrator_stack.py's DOCKER_SERVICES entry — single source of truth).
 if ! curl -s -m 2 -o /dev/null -w '%{http_code}' "${SEARX_URL}/healthz" 2>/dev/null | grep -qE '^(200|204)$'; then
   # /healthz is the standard SearxNG health endpoint; some configs use /. Try /.
   if ! curl -s -m 2 -o /dev/null -w '%{http_code}' "${SEARX_URL}/" 2>/dev/null | grep -qE '^(200|302)$'; then
     echo "SearxNG not reachable at ${SEARX_URL} — fall back to built-in WebSearch tool." >&2
+    echo "To start: bash $(dirname "$0")/searxng_up.sh (or run orchestrator_stack.py start)" >&2
     exit 2
   fi
 fi
