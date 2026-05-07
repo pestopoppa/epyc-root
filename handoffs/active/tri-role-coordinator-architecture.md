@@ -54,12 +54,15 @@ Tri-role removal is the second-largest ablation effect after the feature-positio
 
 **Gate**: TR-1 produces a written role schema and is reviewed before TR-2 begins. ✅ **GATE PASSED 2026-05-07** — TR-2 (data layer) is unblocked.
 
-### TR-2: Data Layer — Add Role to Routing Payload
+### TR-2: Data Layer — Add Role to Routing Payload ✅ LANDED 2026-05-07
 
-- [ ] **TR-2.1** Extend `RoleResult` (and the routing-decision dataclass) with a `role: Literal["thinker", "worker", "verifier"]` field. Default to `"worker"` for backward compat.
-- [ ] **TR-2.2** Schema migration for `episodic.db`: add `assigned_role` column to routing memories (nullable for legacy rows). Update `parallel_embedder.py` / `episodic_store.py` to write the new field.
-- [ ] **TR-2.3** Update episodic-store query paths that consume routing memories to surface the role field (downstream consumers: `routing_classifier.py`, `q_scorer.py`, retraining scripts).
-- [ ] **TR-2.4** Backfill: write a one-shot script that infers role for existing memories from the available signals (e.g., "this memory was a review trigger" ⇒ Verifier). Acceptable to leave NULL where inference is ambiguous.
+- [x] **TR-2.1** Extended `RoleResult` (`scripts/benchmark/seeding_types.py:300`) and `RoutingResult` (`src/api/routes/chat_utils.py:67-72`) with `assigned_role: str = "worker"` field. **Naming note:** the field is `assigned_role`, NOT `role`, because `RoleResult.role` already exists as the model-role string ("frontdoor"/"worker_30b"/etc); collision would have silently broken every `RoleResult.role` consumer. Constants + feature flag live in new `src/classifiers/role_taxonomy.py` (TrinityRole enum + `normalise_role` + `role_aware_routing_enabled`).
+- [x] **TR-2.2** Schema migration in `episodic_store.py` adds `assigned_role TEXT` via `ALTER TABLE memories ADD COLUMN assigned_role TEXT` (idempotent — `OperationalError` on existing column is swallowed, mirrors the precedent set by `model_id`). Index `idx_assigned_role` created. `MemoryEntry` dataclass + `to_dict`/`from_dict` carry the field. `store()`, `store_immediate()`, and `store_with_graphs()` all accept `assigned_role: Optional[str] = None`.
+- [x] **TR-2.3** Reader paths surface the field — all four `SELECT … FROM memories` paths (`retrieve_by_similarity`, `get_by_id`, `get_all_memories`, `get_q_outliers`) now include `assigned_role` in their SELECT list and populate `MemoryEntry.assigned_role`. Downstream consumers (`routing_classifier.py`, `q_scorer.py`) read `MemoryEntry` via the dataclass surface, so no consumer-side changes were required to expose the field; TR-3 will populate it.
+- [x] **TR-2.4** Backfill script at `scripts/memory/backfill_assigned_role.py`. Heuristic: action substring match — `review|verify|validate|compliance|critique|judge|qa` → VERIFIER; `architect|decompose|plan|design|strategy|synthes|ingest_long_context` → THINKER; default WORKER. Only writes rows where `assigned_role IS NULL`; idempotent on rerun; `--dry-run` flag prints classification counts without writing.
+- [x] **TR-2.5** Tests: 21 unit tests in `tests/unit/test_episodic_store_assigned_role.py` cover taxonomy normalisation, feature-flag reading, schema migration idempotence, writer round-trip, legacy-NULL tolerance, backfill correctness + idempotence + dry-run + missing-DB error. All 21 pass; the existing 29 `test_episodic_store.py` tests still pass (no regressions).
+
+**Validation**: feature flag `ORCHESTRATOR_ROLE_AWARE_ROUTING` is wired but defaults OFF — TR-3 classifier will populate the field in shadow mode without acting on it. The TR-5 A/B is what flips the flag.
 
 ### TR-3: Initial Role Classifier (Heuristic First)
 
