@@ -157,7 +157,55 @@ Source: deep-dive [`research/deep-dives/trinity-evolved-llm-coordinator-methodol
 
 Order tasks by cost: P4.1 is cheapest (audit only), P4.4 is most expensive (overnight ES run). Each phase's go/no-go feeds the next.
 
-- [ ] **P4.1** **Feature-extraction position audit (cheap)**: Trinity's ablation shows penultimate-vs-final-token costs >10 points on LiveCodeBench (decoder-specific result). For our BGE encoder, the analogous knob is CLS vs mean-pool vs last-layer hidden states. Today our 1031-dim input is BGE-large pooled output (verify exact pool method by reading `embedder.py`). Run a comparative ablation on the existing 174K-label training set — three head retrains, no architecture change, single training session. Decision gate: if mid-pool ablation shows ≥1-point val-acc spread, document the best pool method and switch the default; if not, mark BGE feature-position as solved and move on.
+- [/] **P4.1** **Feature-extraction position audit** — **Phase A (audit) DONE 2026-05-07; Phase B (experiment) deferred pending FAISS rebuild + per-run inference approval.**
+
+  **Phase A audit findings (analytical, no code):**
+
+  1. **Current pool method confirmed as CLS** (not mean-pool). Per `epyc-orchestrator/scripts/server/orchestrator_stack.py:862`: BGE-large-en-v1.5 launches with `--pooling cls`. Comment in source: "BGE uses CLS token pooling (standard BERT)". This is the BGE-trained pool method (BGE was distilled with [CLS] as the pooled output) — switching to mean-pool or last-layer would diverge from the training distribution.
+  2. **Data-scale finding: handoff text says 174K labels, actual on-disk state is ~8K memories.** Production episodic.db at `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions/episodic.db` has 8,115 rows (135 MB file size is bloat from prior larger state + FTS). The 174K figure was aspirational from a previous epoch; current routing-classifier training would draw from 8K, not 174K. With 8K labels, binomial 95% CI half-width on per-arm val-acc is ~3-4 pp depending on val split — borderline for the ≥1 pp decision-gate.
+  3. **FAISS index is currently RESET.** `embeddings.faiss` is 385 KB (current) vs `.bak` 32 MB (Apr 28 snapshot). The live FAISS holds essentially no embeddings. Backup `.bak` files contain ~9.2K embeddings consistent with the DB row count.
+  4. **Implication for Phase B**: a real ablation requires (i) rebuilding FAISS from DB (≈40s of BGE inference), (ii) running BGE again for each alternative pool (`--pooling mean`, `--pooling last`) to produce 2 more 8K × 1024-dim matrices. Total inference: 3 × ~40s + 3 × startup ≈ 5 min wall-clock. Plus 3 head retrains (seconds, CPU-bound). The full ablation is cheap, but does require crossing the inference threshold.
+  5. **Trinity transfer caveat (re-emphasised)**: Trinity's penultimate-vs-final-token result is decoder-specific. BGE is a bidirectional encoder — its pool methods have different theoretical implications. Trinity's 10-point swing should NOT be expected here. The decision gate of ≥1 pp is appropriate (smaller expected effect size on encoder).
+
+  **Phase B (deferred — explicit per-run inference approval required, per `feedback_no_concurrent_inference`):**
+
+  ```bash
+  # Step 1: rebuild FAISS index from live episodic.db (uses current --pooling cls)
+  python3 scripts/graph_router/extract_training_data.py
+    --output orchestration/repl_memory/training_data_cls.npz
+
+  # Step 2: re-launch BGE with mean pooling
+  pkill -f 'llama-server.*bge'  # tear down current cls server
+  OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_NUM_THREADS=16 \
+    /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
+      --model /mnt/raid0/llm/models/bge-large-en-v1.5-f16.gguf \
+      --port 8090 --host 127.0.0.1 --threads 16 \
+      --embedding --pooling mean &
+  python3 scripts/graph_router/extract_training_data.py
+    --output orchestration/repl_memory/training_data_mean.npz
+
+  # Step 3: re-launch BGE with last-token pooling
+  pkill -f 'llama-server.*bge'
+  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \
+    ... --pooling last &
+  python3 scripts/graph_router/extract_training_data.py
+    --output orchestration/repl_memory/training_data_last.npz
+
+  # Step 4: train 3 heads with identical hyperparameters
+  for variant in cls mean last; do
+    python3 scripts/graph_router/train_routing_classifier.py \
+      --data orchestration/repl_memory/training_data_${variant}.npz \
+      --output orchestration/repl_memory/routing_classifier_weights_${variant}.npz
+  done
+
+  # Step 5: compare val acc across variants
+  python3 scripts/graph_router/ab_test_classifier.py
+    --weights orchestration/repl_memory/routing_classifier_weights_*.npz
+  ```
+
+  **Decision gate (when Phase B runs)**: best pool method becomes default if Δ val-acc ≥ 1 pp vs CLS baseline AND 95% CI rules out the null. With n=8K, this requires |Δ| ≥ ~4 pp for statistical confidence (half-width is sample-size-bounded, not protocol-bounded). If no variant moves the needle ≥4 pp, mark feature-position as solved (CLS stays default) and move on. If a variant wins, switch default in `orchestrator_stack.py:862` and document.
+
+  **Recommended sequencing**: bundle Phase B with P4.1.3 (IRT-feature variant) into a single inference run — same BGE invocations, +1 head retrain. Total wall-clock for combined P4.1 + P4.1.3 ≈ 10-15 min once authorized.
 - [ ] **P4.1.3** **IRT-feature audit (intake-496 LLM Bandit, +1 session bundled with P4.1)**: extend the P4.1 ablation to include an IRT-based prompt feature variant. Train a quick IRT (Item Response Theory) score predictor over the BGE pooled output that emits `(latent_difficulty, latent_discrimination)` per prompt; concatenate this 2-D output to the BGE embedding as a fourth feature variant. Compare against BGE-CLS / BGE-mean / BGE-last on val acc. Decision gate: if IRT-augmented features show ≥1-point val-acc improvement over the best pure-BGE variant, escalate IRT to a separate phase plan (cross-link to DAR-5 in `decision-aware-routing.md`). If null, record the result and stick with the best pure-BGE variant. **Bundled with P4.1**: same training infrastructure, same 174K labels, +1 session for IRT scorer training and one extra retrain.
 - [ ] **P4.2** **Block-ε-separability diagnostic (medium cost)**: Trinity's optimizer-choice argument rests on the loss surface being block-ε-separable (formal Hessian-based definition; their empirical evidence is a "block-diagonal-10" head retaining competitive performance). Mirror this on our setup: train identical 2-layer heads with (a) full-rank weights, (b) block-diagonal-10 weights (10 disconnected blocks), (c) diagonal-only weights, on existing 175K episodic labels. If mid-rank ≈ full-rank within ~2 points val acc, our routing geometry matches Trinity's and ES becomes methodologically appropriate (gates P4.4). If full-rank dominates, our problem is not block-ε-separable and Trinity's optimizer argument does NOT transfer to us. Either outcome is informative — record in deep-dive Section 6 ("Open Questions"). **Outcome of P4.2 directly gates DAR-4's bilinear-scorer architecture choice (full-rank vs rank-restricted W) per [`decision-aware-routing.md`](decision-aware-routing.md) DAR-1.5 audit (2026-05-07). DAR-1.5 conclusion: per-action Q-table architectures (DAR-2 / DAR-3) are trivially block-diagonal (`ε_H=0` by construction) so DAR-3 is unblocked unconditionally; bilinear architectures (DAR-4) introduce shared-W coupling by design and need rank-restriction or sep-CMA-ES if P4.2 confirms our landscape is separable.**
 - [ ] **P4.3** **SVD-scale fine-tuning trial (medium cost)**: Trinity uses singular-value FT on the backbone — learn only singular-value scales, keep orthogonal matrices fixed (~9K extra params). Their ablation: removing SVD-FT costs −3 to −4 points across all four benchmarks. This is a parameter-efficient adaptation cheaper than LoRA and applicable to whatever backbone we use as the routing-head feature extractor. Currently we treat BGE as fully frozen. Implement SVD-FT on BGE's last `k` transformer blocks, retrain the head end-to-end, A/B against frozen-BGE on val set. Decision gate: if Δ ≥ +2 points val acc, promote SVD-FT to default; if flat, record null result and move on.

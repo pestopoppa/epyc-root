@@ -281,7 +281,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Methodology audits on Learned Routing Controller**:
 
-- [ ] **P19.2**: P4.1 in [`learned-routing-controller.md`](learned-routing-controller.md). Feature-extraction position audit (BGE CLS vs mean-pool vs last-layer). Cheapest of the four LRC Phase 4 tasks; informs whether our 1031-dim input vector is well-chosen.
+- [/] **P19.2**: P4.1 in [`learned-routing-controller.md`](learned-routing-controller.md). **Phase A (audit) DONE 2026-05-07; Phase B (3-variant ablation) deferred pending explicit per-run inference approval + FAISS rebuild.** Audit findings: (1) current pool method confirmed CLS (`orchestrator_stack.py:862`); (2) data-scale finding — handoff says 174K labels, actual on-disk state is ~8K memories (production episodic.db at /mnt/raid0/llm/.../episodic.db has 8,115 rows); (3) FAISS index is currently reset (385KB live vs 32MB .bak from Apr 28); (4) Phase B is cheap (~10-15min wall-clock total: 3× BGE invocations × ~40s + 3 head retrains × seconds), but requires crossing the inference threshold. Phase B script + decision-gate logic written into the LRC handoff. With n=8K (not 174K), the original ≥1 pp gate produces a binomial CI half-width of ~3-4 pp — recommended to require |Δ| ≥ 4 pp for statistical confidence. Recommended sequencing: bundle Phase B with P19.9 (P4.1.3 IRT variant) into a single inference run.
 - [ ] **P19.3**: P4.2 in [`learned-routing-controller.md`](learned-routing-controller.md). Block-ε-separability diagnostic on our routing landscape (full-rank vs block-diagonal-10 vs diagonal head). Tells us whether Trinity's optimizer-choice argument applies to our problem geometry. **Gates P19.5** (sep-CMA-ES spike).
 - [ ] **P19.4**: P4.3 in [`learned-routing-controller.md`](learned-routing-controller.md). SVD-scale fine-tuning trial on BGE backbone (~9K extra params, claimed +3-4 points in Trinity's ablation). Cheaper than LoRA, applicable independent of all other Phase 4 work.
 - [ ] **P19.5**: P4.4 in [`learned-routing-controller.md`](learned-routing-controller.md). sep-CMA-ES cold-start spike for routing surfaces lacking episodic labels. Population λ≈45, m=16, ≈10h overnight at 32-way concurrency for feasibility test. **Prerequisites**: P19.3 (block-ε diagnostic favourable) + Math-Verify adoption (cross-cutting concern #13) so eval-tower can serve as fitness oracle.
@@ -320,7 +320,7 @@ P19.8 (outer-coord scoping) ──gated until tri-role + DAR + LRC Phase 4 all l
 **Recommended execution order** (by cheapness × informativeness):
 1. ~~P19.6 (DAR-1.5 audit — 1 session, analytical)~~ ✅ DONE 2026-05-07
 2. ~~P19.7 (chapter update — 1 session, doc only)~~ ✅ DONE 2026-05-07
-3. P19.2 (feature-position audit — 1 session, single training run) ← **next**
+3. P19.2 Phase A (audit, no inference) ✅ DONE 2026-05-07; **Phase B (3-variant ablation) deferred** — needs explicit per-run BGE inference approval, ~10-15 min wall-clock when authorized
 4. P19.4 (SVD-FT trial — moderate, 2-3 sessions)
 5. P19.3 (block-ε diagnostic — moderate, 3-5 sessions) **← gates DAR-4 architecture per DAR-1.5**
 6. P19.1 (tri-role TR-1 scoping in parallel — start anytime)
