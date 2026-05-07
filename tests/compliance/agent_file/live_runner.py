@@ -51,11 +51,18 @@ def make_live_llm_call(
     max_tokens: int = 512,
     temperature: float = 0.0,
     timeout_s: float = 90.0,
+    enable_thinking: bool = False,
 ):
     """Build an LLMCall closure that posts to /v1/chat/completions.
 
     The agent file is sent as a system message; the task prompt is the
     user message. Temperature 0 for reproducibility on smoke runs.
+
+    `enable_thinking` defaults to False per `feedback_think_mode_benchmarks`:
+    Qwen3.5+ / Qwen3.6 / Qwen3-Next reasoning models otherwise spend the
+    entire max_tokens budget on a `<think>` block, producing 0 visible
+    chars to the chat-completion API. Pass via `chat_template_kwargs`
+    which llama-server forwards to the chat template.
     """
 
     def call(agent_file_text: str, prompt: str) -> str:
@@ -68,6 +75,7 @@ def make_live_llm_call(
             "max_tokens": max_tokens,
             "temperature": temperature,
             "stream": False,
+            "chat_template_kwargs": {"enable_thinking": enable_thinking},
         }
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
@@ -123,6 +131,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--max-tokens", type=int, default=512)
     p.add_argument("--temperature", type=float, default=0.0)
     p.add_argument("--timeout", type=float, default=90.0)
+    p.add_argument("--enable-thinking", action="store_true",
+                   help="Enable Qwen3.5+/Qwen3.6/Qwen3-Next thinking mode (default: disabled per "
+                        "feedback_think_mode_benchmarks; models otherwise spend max_tokens on "
+                        "a <think> block and return 0 visible chars).")
     p.add_argument("--output", help="Optional JSON output path")
     p.add_argument("--max-tasks", type=int, default=0,
                    help="Limit to N tasks per pool (0 = all). Useful for quick smokes.")
@@ -151,6 +163,7 @@ def main(argv: list[str] | None = None) -> int:
         max_tokens=args.max_tokens,
         temperature=args.temperature,
         timeout_s=args.timeout,
+        enable_thinking=args.enable_thinking,
     )
 
     # Optionally truncate task pools for fast smoke. Patch in-place via runner.

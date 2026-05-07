@@ -97,18 +97,39 @@ def _check_substring_any(response: str, anchors: Iterable[str]) -> bool:
     return any(a.lower() in rl for a in anchors)
 
 
-def _check_ordered_anchors(response: str, anchors: list[str]) -> bool:
-    """True iff all anchors appear in the response in order (case-insensitive).
+def _check_ordered_anchors(response: str, anchors: list) -> bool:
+    """True iff all anchor groups match in order (case-insensitive).
 
-    Each anchor must appear AFTER the previous one's match position.
+    `anchors` is a list of "groups", where each group is either:
+      - a `str` (single substring; legacy format), OR
+      - a `list[str]` (synonym group; ANY substring in the list satisfies
+        this group).
+
+    For each group N, at least one synonym must appear at position >= cursor,
+    and cursor advances past the matched substring before checking group N+1.
+
+    v2 (2026-05-07): synonym groups added per Phase 3 first-pass finding that
+    strict single-substring matching produced a 0.417 floor — many models'
+    natural prose used synonyms (e.g. "feature flag" vs the literal anchor
+    "feature-flag") that the strict matcher rejected.
     """
     rl = response.lower()
     cursor = 0
-    for a in anchors:
-        idx = rl.find(a.lower(), cursor)
-        if idx < 0:
+    for group in anchors:
+        # Normalize: bare str → one-element list (legacy compat).
+        synonyms = [group] if isinstance(group, str) else list(group)
+        # Find earliest match of any synonym at/after cursor.
+        best_idx = -1
+        best_match_len = 0
+        for syn in synonyms:
+            sl = syn.lower()
+            idx = rl.find(sl, cursor)
+            if idx >= 0 and (best_idx < 0 or idx < best_idx):
+                best_idx = idx
+                best_match_len = len(sl)
+        if best_idx < 0:
             return False
-        cursor = idx + len(a)
+        cursor = best_idx + best_match_len
     return True
 
 
