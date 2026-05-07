@@ -118,7 +118,8 @@ Use vanilla Hermes Agent. OpenGauss is heavily specialized for Lean 4 (CLI comma
 - **Memory**: Simple flat files (`~/.hermes/memories/MEMORY.md`, `USER.md`), no database
 - **Auxiliary models**: All side tasks (compression, vision, web_extract) configurable to use same local endpoint via `provider: "main"`
 - **30+ tools available**: Local-safe subset: terminal, file, code_execution, todo, memory, skills, session_search, cronjob, delegate_task
-- **Cloud-dependent tools** (disabled in our config): vision_analyze (OpenRouter), image_generate (FAL), browser (Browserbase), web_search (Firecrawl/Tavily), honcho (cloud), mixture_of_agents (OpenRouter)
+- **Cloud-dependent tools** (disabled in our config): vision_analyze (OpenRouter), ~~image_generate (FAL)~~ **REPLACED 2026-05-06 by local plugin (see below)**, browser (Browserbase), web_search (Firecrawl/Tavily), honcho (cloud), mixture_of_agents (OpenRouter)
+- **`image_generate` self-hosted (2026-05-06)**: replaced by the `local-image-generate` Hermes plugin at `/workspace/scripts/hermes/plugins/local-image-generate/` (symlinked into `~/.hermes/plugins/`). The plugin registers a tool with the same name (`image_generate`) which overrides the FAL implementation since Hermes' tools.registry uses direct dict assignment. Backend: ERNIE-Image-Turbo Q8 GGUF via stack-managed ComfyUI on `127.0.0.1:8188` (see `ernie-image-turbo-evaluation.md`).
 - **Entry point**: `python cli.py` or `hermes` wrapper after install
 
 ### Architecture (Phase 1)

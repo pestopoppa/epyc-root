@@ -154,3 +154,29 @@ Sources: [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../researc
 Coordinating handoff [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md) tracks the integrated multimodal stack: vision (Qwen2.5-VL-7B at port 8086 + Qwen3-VL-30B-A3B at port 8087), ASR (faster-whisper large-v3-turbo at port 9000), and TTS (planned). Image generation candidates (ERNIE-Image-Turbo, others) feed into this handoff via intake.
 
 Source: [handoffs/active/multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+
+## Image generation deployment (production 2026-05-07)
+
+ERNIE-Image-Turbo Q8 GGUF runs in production via stable-diffusion.cpp's native ggml backend (`sd-server`, port 8190), replacing an initial ComfyUI + ComfyUI-GGUF + PyTorch deployment. The swap delivered **2.54× wall-clock speedup** at production scale (~188 s vs 478 s @ 1024² 8 steps) without quality cost, by skipping ComfyUI-GGUF's per-layer dequant-to-BF16 step in favor of ggml's native Q8 GEMM kernels (AVX-512BW + VNNI on Zen 5).
+
+Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_server()` in `orchestrator_stack.py`, launcher script at `scripts/diffusion/start_sd_server.sh`, registry entry `sd_server` (managed_by: orchestrator_stack), API exposed via `/sdapi/v1/txt2img` (sd-webui-compatible). The Hermes plugin path (`scripts/hermes/plugins/local-image-generate/`) routes through `ImageGenerator` → `SDServerClient` and replaces the disabled cloud `image_generate` (FAL) tool.
+
+### Production tunings
+
+| Flag | Effect | Notes |
+|---|---|---|
+| `--diffusion-fa` | Flash attention in DiT | enabled |
+| `--diffusion-conv-direct` | `ggml_conv2d_direct` for DiT convs | enabled, within-noise on sampling but no downside |
+| `--vae-conv-direct` | `ggml_conv2d_direct` for VAE convs | **enabled** — single biggest win, **7.10× on VAE decode alone** (76 s → 10.7 s at 832×1248), no quality cost |
+| `numactl --interleave=all`, `-t 96` | Full-host pinning + thread span | canonical CPU baseline |
+| Q8_0 weights | quantization | distilled-model penalty CONFIRMED at Q4_K_M (visible Korean-text corruption at 8 steps); Q8 is the production point |
+
+### Empirical findings worth recording
+
+- **stable-diffusion.cpp upstream already ships ERNIE-Image-Turbo support** (`src/ernie_image.hpp`, 441 lines). The "C++ port" we'd estimated as multi-week work was already done by upstream maintainers. Lesson: when a project moves at sd.cpp's pace and ERNIE-Image-Turbo is on huggingface, scan the upstream source before planning the port.
+- **IPEX is a no-op on the ComfyUI-GGUF path**: `ipex.optimize()` cannot bind onto `GGMLTensor` parameters (which materialize to BF16 just-in-time inside `GGMLLayer.forward`). The dequant tax IS the bottleneck and IPEX cannot reach it. Confirmed via 2026-05-07 A/B at 512² 4-step (0–4% delta, measurement noise). [ernie-image-turbo-evaluation.md, progress/2026-05-07.md]
+- **Distilled-model quantization-penalty hypothesis is real**: Q4_K_M at 8 steps delivers 17% wall-clock win at the cost of visible degradation on dense text rendering — exactly the model's signature differentiator (LongTextBench 0.9655 vs FLUX.1-dev 0.306). Mechanism prediction held: tight 8-step error budget cannot integrate out dequant noise the way a 50-step sampler would. Trade is bad for ERNIE specifically. [progress/2026-05-07.md]
+- **ggml CPU backend is at the kernel ceiling on Zen 5 stock**: `-march=native` already emits AVX-512BW + VNNI (387 explicit `vpdpbusd`/`vpdpwssd` instructions in the binary). Further sampler win on CPU requires either porting our llama.cpp fork's AVX-512BW 8x8 Q8 kernel (estimate +10-20%, multi-day work) or waiting for GPU.
+- **Hermes plugin path survived backend swap unchanged**: thin-interface discipline paid off — `ImageGenerator.generate(request) → result` interface was preserved across the ComfyUI → sd-server transition. Plugin code, Hermes tool registry, and dispatcher mapping all unchanged.
+
+Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).

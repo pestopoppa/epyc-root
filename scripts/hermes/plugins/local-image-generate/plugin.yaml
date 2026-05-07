@@ -1,0 +1,13 @@
+name: local-image-generate
+version: 0.1.0
+description: |
+  Replaces the cloud FAL `image_generate` tool with a self-hosted
+  ERNIE-Image-Turbo (Q8 GGUF) backend running through ComfyUI on
+  http://127.0.0.1:8188. Registers with the SAME tool name as the FAL
+  implementation so it overrides cleanly (Hermes' tools.registry uses
+  direct dict assignment; last-loaded wins).
+author: epyc-root
+provides_tools:
+  - image_generate
+provides_hooks: []
+requires_env: []
