@@ -102,6 +102,18 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 
 For the cost-side adoption rationale for DAR-4b ω preference vector and DAR-5 IRT prompt features see [Cost-Aware Routing](cost-aware-routing.md). For the optimizer-design-space methodology — ES vs REINFORCE on block-ε-separable surfaces, REINFORCE collapse pathology, GRPO at 7B — see [Reinforcement Learning](reinforcement-learning.md).
 
+### Implementation status — Tri-role coordinator (2026-05-07)
+
+The Trinity-derived tri-role architecture has cleared the first three implementation gates:
+
+- **TR-1 taxonomy gate (resolved with user)**: roles are *per-call*, not model-permanent (every model in the stack participates in every role by context); pool collapses to "cheapest TRUSTED model for the role" per role; Verifier runs *parallel* to the existing review pipeline initially (autopilot telemetry decides eventual collapse); action-space encoding is *decoupled `(L + 3)`* (separate softmaxes for model and role) — minimal extension on the existing `RoutingClassifier` (+195 params on a 200K baseline). `ROLE_AWARE_ROUTING` feature flag added (env var `ORCHESTRATOR_ROLE_AWARE_ROUTING`), default OFF.
+- **TR-2 data layer**: `assigned_role` field plumbed end-to-end — `RoleResult` (seeding) + `RoutingResult` (chat pipeline) dataclasses, `episodic.db` schema migration (idempotent `ALTER TABLE memories ADD COLUMN assigned_role TEXT`), all four `MemoryEntry` reader SELECT paths, heuristic backfill script for legacy NULL rows. **Naming collision avoided**: the field is `assigned_role`, NOT `role`, because `RoleResult.role` already names the *model* role; reusing the name would have silently broken consumers.
+- **TR-3.1 + TR-3.2 classifier (shadow mode)**: `src/classifiers/role_classifier.py` deterministic regex-only classifier. Rule precedence (first-match wins): VERIFIER (review/verify trigger AND prior-content cue, e.g. fenced code block / "my X above" / "my answer/code") → THINKER (architect-class routing OR architect force_role OR thinking_budget>0 OR plan/decompose/design/strategy keyword) → WORKER default. Wired into `_route_request`; field is *always* populated and logged (`strategy=trinity_role_shadow`) regardless of the feature flag. Defensive `try/except` falls back to `"worker"` on classifier failure. 27 classifier unit tests + 7 routing-integration tests pass.
+
+**Pattern worth reusing**: shadow-mode-default + flag-gated dispatch. Population of `RoutingResult.assigned_role` is *unconditional*; acting on the role is gated by `ROLE_AWARE_ROUTING`. This matches the way `factual_risk` and `difficulty_signal` already operate (off / shadow / enforce). It lets us collect ≥1-week of distribution telemetry (TR-3.3) and run the non-degeneracy diagnostic (TR-3.4) without committing to behavioural change. TR-4 (per-role prompt-template selection) and TR-5 (paired A/B at ≥N=200/arm) are the remaining gates.
+
+[Source: `handoffs/active/tri-role-coordinator-architecture.md` TR-1..5; commits epyc-orchestrator `edc31ac` (TR-2) + `f5c83d9` (TR-3.1+3.2)]
+
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
