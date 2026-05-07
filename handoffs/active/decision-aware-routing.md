@@ -85,10 +85,10 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 
 **Goal**: a written analytical audit (no code, no rerun) answering: do the gradients used in DAR-2 (contrastive Q-update, ALREADY LANDED), DAR-3 (SPO+), and DAR-4 (bilinear scorer) share REINFORCE's vulnerability to off-block noise on a block-ε-separable loss? If yes for any of DAR-3/DAR-4, document the mitigation before implementation begins.
 
-- [ ] **DAR-1.5.1** Write out each loss's gradient form: REINFORCE (`∇log π · advantage`), contrastive Q (`∇(Q_chosen − Q_alt − margin)`), SPO+ (`max(0, 2·c_hat − c_true)` form), bilinear (`∇sigmoid(v_m^T W v_p + b)`). Identify which gradients couple parameters across notional "blocks" of the loss surface.
-- [ ] **DAR-1.5.2** Cross-reference with `learned-routing-controller.md` P4.2 — the block-ε-separability diagnostic on our actual landscape. If P4.2 confirms our problem IS block-ε-separable, DAR-1.5 conclusions become load-bearing for DAR-3/DAR-4. If P4.2 falsifies it, this audit downgrades to a footnote.
-- [ ] **DAR-1.5.3** For any loss that DOES couple across blocks (and our landscape is block-ε-separable), document the mitigation: (a) regularise toward block-diagonal weights, (b) add a population-style outer loop on top of the gradient method, (c) re-weight the gradient by inverse off-block coupling estimate, or (d) accept the risk and proceed.
-- [ ] **DAR-1.5.4** Decision gate before DAR-3: if DAR-1.5 flags a high-confidence pathology and P4.2 confirmed block-ε-separability, pause DAR-3/4 and reconsider. Otherwise proceed with DAR-3 as planned, with DAR-1.5 conclusions captured as a "Known Risks" sub-section.
+- [x] **DAR-1.5.1** ✅ 2026-05-07 — Gradient forms tabulated. Per-action Q-table (DAR-2/3 substrate) is `ε_H=0` block-diagonal trivially; bilinear scorer (DAR-4) has high `ε_H` by design via shared W. See "DAR-1.5 audit deliverable" sub-section below for the table.
+- [x] **DAR-1.5.2** ✅ 2026-05-07 — Cross-reference written. P4.2 has not yet run; DAR-1.5 conclusions are CONDITIONAL on P4.2 outcome. Conditional logic captured in audit sub-section.
+- [x] **DAR-1.5.3** ✅ 2026-05-07 — Mitigations enumerated per architecture. Per-action Q-table: none needed. Bilinear: (b) rank-restrict W ≤ k as cheapest first defense if P4.2 confirms separability. (a/c/d) documented as follow-ups.
+- [x] **DAR-1.5.4** ✅ 2026-05-07 — Decision-gate verdict: **DAR-3 PROCEED unconditionally** (per-action substrate has ε_H=0 by construction); **DAR-4 CONDITIONAL on P4.2** (rank-restrict if separability confirmed, full-rank if falsified); **DAR-4b PROCEED** (inference-time blending, no training); **DAR-5 conditional on DAR-4 + P4.2** (adds more shared parameterization, inherits constraint).
 
 **Effort**: 1 session, analytical only. No infra, no code. Deliverable is a markdown sub-section appended to this handoff.
 
@@ -268,3 +268,81 @@ The BaRP (arxiv:2510.07429) lightweight policy network and LLM Bandit (arxiv:250
   - Relevance: companion bandit-routing paper. Direct hit on the "every model swap requires a full benchmark sweep" pain — IRT-based 20-50-prompt cold-start would compress that to hours.
   - Key pattern to lift: **IRT score predictor** + **model identity vectors** + **stratified-by-discrimination cold-start prompt selection**. Do not adopt the full PPO+GAE apparatus; that's heavyweight for our small pool.
   - Caveat (Tier 2b): single-author, no major-lab signal, slightly outside freshness window. Cost reductions only measured vs RouteLLM (not GraphRouter / RouterDC / BaRP). Short-output benchmarks may not transfer to autopilot multi-turn workload.
+
+## DAR-1.5 audit deliverable — REINFORCE-Pathology Cross-Check (2026-05-07)
+
+**Status**: ANALYTICAL DELIVERABLE COMPLETE. Captured here per the handoff's "Deliverable is a markdown sub-section appended to this handoff" directive. Cross-reference with [`learned-routing-controller.md`](learned-routing-controller.md) P4.2 + the Trinity deep-dive Section 2.2.
+
+### Premise
+
+Trinity (intake-474) reports that REINFORCE collapses to **0.253 LCB / 0.459 Math500** under the same compute budget where sep-CMA-ES achieves **0.615 / 0.880**. The paper attributes this to the loss surface being *block-ε-separable* (Section 1.5 of deep-dive: scaled Hessian `H_S(θ) = S^(1/2) H(θ) S^(1/2)` is uniformly nearly block-diagonal with inter-block coupling `ε_H` ∈ [0, 1)). Pure policy-gradient methods get drowned in off-block noise on this geometry; diagonal CMA gets `Ω(1/n)` per-iteration contraction after stabilization.
+
+The question DAR-1.5 must answer: **do the gradient forms used in DAR-2 / DAR-3 / DAR-4 share REINFORCE's vulnerability to off-block noise on a block-ε-separable loss?**
+
+### DAR-1.5.1 — Gradient forms per loss
+
+| Loss | Functional form | Gradient form | Parameter coupling pattern |
+|---|---|---|---|
+| **REINFORCE** (Trinity baseline) | `L = -E[A · log π(a\|s; θ)]` | `∇L = -∇log π(a\|s; θ) · A` (A = scalar advantage) | Couples ALL parameters of the policy network through ∇log π. On a deep network: `ε_H ≈ 1` (every layer couples everything). On a per-action softmax: `ε_H > 0` via partition function. |
+| **DAR-2 contrastive Q** (LANDED) | `L_contrast = max(0, Q[alt] + margin − Q[chosen])` | `∇L = -∇Q[chosen] + ∇Q[alt]` when margin violated | Q is a **per-action discrete table**: `Q[a] = θ[a]`. Gradient touches ONLY the two scalar entries θ[chosen] and θ[alt]. **`ε_H = 0` exactly — block-diagonal trivially.** |
+| **DAR-3 SPO+** (planned) | `L_SPO+ = Σⱼ max(0, 2c_hat[j] − c_true[j]) − c_hat[i*] + c_true[i*]` | `∇L = Σⱼ 2 ∇c_hat[j] · 𝟙{2c_hat[j] > c_true[j]} − ∇c_hat[i*]` | If `c_hat[j] = θ[j]` (per-action table, our existing Q-scorer): same as DAR-2, **`ε_H = 0` block-diagonal**. If `c_hat[j] = f(θ_shared, x_j)` (parameterized scoring, e.g. layered atop DAR-4): off-block coupling appears via shared `θ_shared`. |
+| **DAR-4 bilinear scorer** (planned) | `Q(prompt, model) = σ(v_m^T W v_p + b)` | `∇L_W = (∂L/∂z) · σ'(z) · v_m v_p^T` (rank-1 outer product) | **Single shared W matrix used for all actions.** A single (m, p) update perturbs every other (m', p') pair through the shared `W`. **`ε_H ≈ 1` by design** — bilinear coupling is the architectural choice, not an accident. |
+
+The key insight: **REINFORCE's pathology is parameter coupling × high-variance scalar advantage**, not the loss form per se. Block-ε-friendliness is determined by the **structural coupling pattern of the scorer**, not the loss:
+
+- **Per-action Q-table** (DAR-2 today, DAR-3 if kept on the same substrate): `ε_H = 0` exactly. Each θ[a] is structurally independent. No off-block noise can hurt the update.
+- **Shared parameterization** (DAR-4 bilinear, or any deep network): `ε_H > 0`. Updates couple across actions through shared parameters. The same geometry that hurts REINFORCE on deep policies hurts ANY gradient-based method on the same architecture — the coupling pattern is what matters, not whether the gradient comes from policy-gradient or a closed-form contrastive surrogate.
+
+### DAR-1.5.2 — Cross-reference with LRC P4.2
+
+`learned-routing-controller.md` P4.2 ("block-ε-separability diagnostic, medium cost") is **NOT YET RUN**. P4.2 trains identical 2-layer heads with (a) full-rank weights, (b) block-diagonal-10 weights, (c) diagonal-only weights on the existing 175K episodic labels. If mid-rank ≈ full-rank within ~2 points val acc, our routing geometry matches Trinity's and ES becomes methodologically appropriate (gates P4.4 sep-CMA-ES cold-start spike).
+
+**DAR-1.5 conclusions become load-bearing if and only if P4.2 confirms our landscape IS block-ε-separable**:
+
+- If P4.2 says "block-diagonal-10 ≈ full-rank" → our routing landscape decomposes along blocks → DAR-4 bilinear's coupling fights the geometry → DAR-1.5.3 mitigations apply.
+- If P4.2 says "full-rank dominates by ≥2 points" → our routing landscape requires shared structure → DAR-4 bilinear is appropriate, no mitigation needed → DAR-1.5 downgrades to a footnote.
+
+Until P4.2 lands, treat DAR-1.5 conclusions as **conditional**.
+
+### DAR-1.5.3 — Mitigations (if P4.2 confirms block-ε-separability)
+
+Per loss/architecture:
+
+| Component | Pathology risk | Mitigation |
+|---|---|---|
+| DAR-2 contrastive Q (LANDED) | None (`ε_H = 0` exactly by per-action table) | None needed |
+| DAR-3 SPO+ on per-action table | None (inherits per-action structure) | None needed |
+| DAR-3 SPO+ on bilinear scorer | Same as DAR-4 (coupling from shared W) | Not currently planned to layer SPO+ over bilinear; if it ever happens, apply DAR-4's mitigations |
+| DAR-4 bilinear scorer | High coupling by design — `W` shared across all (m, p) pairs | (a) **L1 / nuclear-norm regularization on W** to favor low-rank solutions empirically. (b) **Rank-restrict W** to rank ≤ k (e.g., k=8 matching Trinity's effective block count). (c) **Outer sep-CMA-ES loop on W** — Trinity's recipe directly applied. (d) **Accept and proceed** if P4.2 evidence is borderline. |
+
+Recommended preference order: (b) rank-restriction is the cheapest first defense and aligns with Trinity's empirical evidence (block-diagonal-10 head retained competitive performance on Math500). (a) regularization is a follow-up if (b) underperforms. (c) sep-CMA-ES is the heaviest mitigation, only justified if (a) and (b) both underdeliver — and would graduate DAR-4 from "decision-aware loss reshape" to the full Trinity-style optimizer rewrite tracked under LRC P4.4.
+
+### DAR-1.5.4 — Decision gate before DAR-3
+
+Per the handoff's gate criterion ("if DAR-1.5 flags a high-confidence pathology and P4.2 confirmed block-ε-separability, pause DAR-3/4 and reconsider"):
+
+- **DAR-3 (SPO+ on existing per-action Q-table)**: ✅ **PROCEED as planned, NO mitigation required**. The per-action table architecture has `ε_H = 0` exactly; no coupling pattern can carry the off-block-noise pathology. Trinity's REINFORCE result does NOT transfer to DAR-3 because the failure mode is architectural (deep-policy parameter sharing), and our existing Q-scorer is structurally a discrete lookup, not a deep parameterized policy.
+- **DAR-4 (bilinear scorer)**: 🟡 **CONDITIONAL on P4.2**. The bilinear architecture deliberately introduces shared-W coupling. Two paths:
+  - **P4.2 says block-ε-separable** → DAR-4 needs rank-restriction or other DAR-1.5.3 mitigation before A/B. The naïve full-rank bilinear is fighting the geometry.
+  - **P4.2 says NOT block-ε-separable** → naïve bilinear is appropriate; the W-coupling IS the signal we want to learn.
+- **DAR-4b (preference vector + cost τ)**: ✅ **PROCEED as planned**. DAR-4b is inference-time blending of an already-trained scorer; gradient form is N/A (no training in DAR-4b). Whatever DAR-4 produces gets re-weighted at serve time.
+- **DAR-5 (IRT + learned model identity vectors)**: ⚠️ **CONDITIONAL on DAR-4 outcome AND P4.2**. DAR-5 ADDS more shared parameterization (jointly trained model identity vectors). If DAR-4 needs mitigation, DAR-5 inherits the same constraint and may need it more strongly.
+
+### Why this matters even if it changes nothing
+
+The audit produces a *first-principles* answer to a question the project repeatedly hits when reasoning about new optimizer choices: "does Trinity's REINFORCE result transfer to us?" The conclusion is sharper than "maybe":
+
+- **For per-action Q-table architectures** (DAR-2, DAR-3): NO. Block-diagonal by construction. Trinity's negative result for REINFORCE does not transfer.
+- **For shared-parameterization architectures** (DAR-4 bilinear, DAR-5, future deep policies): YES, conditionally. If our landscape is block-ε-separable (P4.2 question), shared parameterization is fighting the geometry, and the entire family of gradient-based methods (REINFORCE, SPO+, contrastive) on that architecture suffers similar pathology.
+
+The unblocking insight: **the architectural choice (per-action vs shared) determines `ε_H`, and `ε_H` determines whether ANY gradient-based optimizer is appropriate.** Trinity's optimizer-vs-architecture confound is unwound: their negative result for REINFORCE is really a negative result for *gradient methods on coupled architectures over block-ε-separable geometry*. ES wins because it doesn't propagate gradients through the coupling.
+
+### Recommended follow-ups
+
+1. **Run LRC P4.2 next** (block-ε-separability diagnostic). It costs one training session, produces the binary answer that determines DAR-4's fate.
+2. **If P4.2 confirms separability**, add **rank-restriction on W** as the default for DAR-4's bilinear scorer (`v_m^T W v_p` with W of rank ≤ 10 instead of full-rank `d × d`). This is the cheapest mitigation and matches Trinity's empirical evidence directly.
+3. **Update `learned-routing-controller.md` P4.2 description** to reference DAR-1.5's conclusion: "Outcome of P4.2 directly gates DAR-4's bilinear-scorer architecture choice (full-rank vs rank-restricted W) per DAR-1.5 conclusions."
+
+### Status
+
+DAR-1.5 audit COMPLETE 2026-05-07. Tasks DAR-1.5.1–1.5.4 all addressed. Decision-gate verdict: **DAR-3 unblocked** (no mitigation), **DAR-4 conditional on P4.2** (no immediate code work; when P4.2 lands, choose rank-restriction or full-rank per its outcome).

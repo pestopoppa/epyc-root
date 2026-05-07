@@ -288,7 +288,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Methodology audit on Decision-Aware Routing**:
 
-- [ ] **P19.6**: DAR-1.5 in [`decision-aware-routing.md`](decision-aware-routing.md). REINFORCE-pathology audit — analytical, no code. Trinity's REINFORCE collapse (0.253 vs 0.615 LCB) raises the question of whether DAR-3/DAR-4 gradients share the same off-block-noise weakness on a block-ε-separable loss. 1 session of work. Cross-references P19.3 — together they answer "does Trinity's optimizer argument transfer to us?" with both empirical (P19.3) and analytical (P19.6) evidence.
+- [x] **P19.6**: DAR-1.5 in [`decision-aware-routing.md`](decision-aware-routing.md). ✅ **DONE 2026-05-07** — analytical audit complete. Verdict: **DAR-3 unblocked unconditionally** (per-action Q-table substrate has `ε_H=0` exactly by construction; Trinity's REINFORCE pathology cannot transfer to a discrete lookup architecture). **DAR-4 conditional on P19.3** (bilinear scorer's shared `W` matrix introduces high coupling by design — if P19.3 confirms our landscape is block-ε-separable, DAR-4 needs rank-restriction `W ≤ rank-k` or sep-CMA-ES; if P19.3 falsifies, naïve full-rank bilinear is appropriate). **DAR-4b unblocked** (inference-time blending, no training gradient). Key insight: REINFORCE's pathology is parameter coupling × high-variance scalar advantage — `ε_H` is determined by the scorer's *architectural coupling pattern*, not the loss form. Per-action tables are decoupled-by-construction; bilinear/deep policies are coupled-by-design. Full deliverable in DAR-1.5 audit sub-section appended to `decision-aware-routing.md`.
 
 **Documentation update**:
 
@@ -310,7 +310,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 P19.7 (chapter doc)         ──independent──
 P19.4 (SVD-FT trial)        ──independent──
 P19.2 (feature-position)    ──independent──
-P19.6 (DAR-1.5 audit)       ──independent──, but P19.3 result strengthens its conclusions
+P19.6 (DAR-1.5 audit)       ──DONE 2026-05-07; verdict conditional on P19.3 outcome──
 P19.3 (block-ε diagnostic)  ──gates P19.5──
 P19.5 (sep-CMA-ES spike)    ──needs P19.3 favourable + Math-Verify adoption──
 P19.1 (tri-role TR-1..5)    ──independent of all P19.2-6, can run in parallel; TR-1 is its own hard gate──
@@ -318,11 +318,11 @@ P19.8 (outer-coord scoping) ──gated until tri-role + DAR + LRC Phase 4 all l
 ```
 
 **Recommended execution order** (by cheapness × informativeness):
-1. P19.6 (DAR-1.5 audit — 1 session, analytical)
-2. P19.2 (feature-position audit — 1 session, single training run)
+1. ~~P19.6 (DAR-1.5 audit — 1 session, analytical)~~ ✅ DONE 2026-05-07
+2. P19.2 (feature-position audit — 1 session, single training run) ← **next**
 3. P19.7 (chapter update — 1 session, doc only)
 4. P19.4 (SVD-FT trial — moderate, 2-3 sessions)
-5. P19.3 (block-ε diagnostic — moderate, 3-5 sessions)
+5. P19.3 (block-ε diagnostic — moderate, 3-5 sessions) **← gates DAR-4 architecture per DAR-1.5**
 6. P19.1 (tri-role TR-1 scoping in parallel — start anytime)
 7. Conditional on above: P19.5 (sep-CMA-ES spike if P19.3 favourable + Math-Verify shipped)
 8. Long-term: P19.1 TR-2..5 (after TR-1 review)
