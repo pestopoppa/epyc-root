@@ -66,10 +66,10 @@ Tri-role removal is the second-largest ablation effect after the feature-positio
 
 ### TR-3: Initial Role Classifier (Heuristic First)
 
-- [ ] **TR-3.1** Implement a rule-based role classifier in `src/classifiers/role_classifier.py`: fixed mapping from request context (retry count, escalation flag, review-trigger flag, prompt features) to {T, W, V}. Deterministic, no ML.
-- [ ] **TR-3.2** Wire the classifier into `routing.py` so each dispatch call carries an assigned role.
-- [ ] **TR-3.3** Run for ≥1 week shadow mode with `ROLE_AWARE_ROUTING=0` (decision logged but not acted on). Collect role-distribution telemetry.
-- [ ] **TR-3.4** Diagnostic check: is the role distribution non-degenerate (e.g., not 99% Worker)? If degenerate, pause and revisit TR-1 taxonomy.
+- [x] **TR-3.1** ✅ **DONE 2026-05-07** — `src/classifiers/role_classifier.py`. Deterministic regex-only classifier. Returns `RoleClassification(role, reason)`. Rule precedence (first-match wins): VERIFIER (review/verify trigger AND prior-content cue), THINKER (architect-class routing OR force_role architect_* OR thinking_budget>0 OR plan/decompose/design keyword), WORKER (default). Word-boundary anchored so `checkmate`/`above the line` don't false-positive. 27 unit tests in `tests/unit/test_role_classifier.py` + 7 routing-integration tests in `tests/unit/test_pipeline_routing.py::TestTrinityRoleShadow` cover precedence, return shape, distribution-non-degeneracy.
+- [x] **TR-3.2** ✅ **DONE 2026-05-07** — wired into `_route_request` in `src/api/routes/chat_pipeline/routing.py`. Classifier invoked AFTER `routing_decision` is set so it can read the head model role. Field is **always** populated and logged via `task_extra(strategy="trinity_role_shadow")` regardless of the `ROLE_AWARE_ROUTING` flag — TR-4 gates *acting* on the role; TR-3.3 just collects telemetry. Defensive `try/except` around the classifier call falls back to `"worker"` on any failure (verified by integration test `test_classifier_failure_falls_back_to_worker`).
+- [ ] **TR-3.3** **Inference-gated.** Run for ≥1 week shadow mode (flag still default OFF, classifier active in shadow). Collect role-distribution telemetry from production traffic. Expected log line: `Trinity role classified: role=X reason=Y` with `strategy=trinity_role_shadow`.
+- [ ] **TR-3.4** **Inference-gated.** Diagnostic check: is the role distribution non-degenerate (e.g., not 99% Worker)? If degenerate, pause and revisit TR-1 taxonomy. (Will use the same telemetry pipeline that consumes factual_risk + difficulty_signal shadow data.)
 
 ### TR-4: Per-Call Dispatch Wiring (Execution)
 
