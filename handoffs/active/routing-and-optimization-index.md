@@ -292,7 +292,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Documentation update**:
 
-- [ ] **P19.7**: Update [`epyc-inference-research/docs/chapters/08-cost-aware-rewards.md`](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) to add a fourth methodological class — *ES-trained routers* — alongside RL-trained (xRouter / Router-R1), preference-trained (RouteLLM), and matrix-factorization. Trinity is the canonical citation. Cite intake-474 and the 21.9% mean error-reduction headline (caveat: heterogeneous-pool-specific). Doc edit; no code.
+- [x] **P19.7**: ✅ **DONE 2026-05-07** — chapter 08 updated with the 4-class methodological framing (RL-trained / preference-trained / confidence-cascade / ES-trained) + Trinity entry (canonical ES-trained router) + Conductor entry (companion design-space reference). Cross-links to LRC P4.1-4.4, tri-role TR-1..5, DAR-1.5 audit, outer-coordinator OC-0 in epyc-root. Caveats called out: pool-heterogeneity discount on inner-pool projections, six-author Trinity/Conductor overlap (not independent corroboration), MAST inter-agent misalignment.
 
 **Speculative scoping**:
 
@@ -319,8 +319,8 @@ P19.8 (outer-coord scoping) ──gated until tri-role + DAR + LRC Phase 4 all l
 
 **Recommended execution order** (by cheapness × informativeness):
 1. ~~P19.6 (DAR-1.5 audit — 1 session, analytical)~~ ✅ DONE 2026-05-07
-2. P19.2 (feature-position audit — 1 session, single training run) ← **next**
-3. P19.7 (chapter update — 1 session, doc only)
+2. ~~P19.7 (chapter update — 1 session, doc only)~~ ✅ DONE 2026-05-07
+3. P19.2 (feature-position audit — 1 session, single training run) ← **next**
 4. P19.4 (SVD-FT trial — moderate, 2-3 sessions)
 5. P19.3 (block-ε diagnostic — moderate, 3-5 sessions) **← gates DAR-4 architecture per DAR-1.5**
 6. P19.1 (tri-role TR-1 scoping in parallel — start anytime)
