@@ -23383,3 +23383,57 @@
     for future research. Patch posted upstream. PR #1744 must merge to ik_llama.cpp main before
     production use; until then we run from the patched pr-1744 branch (see runtime_requirements in
     registry entries).
+
+- id: intake-528
+  arxiv_id: null
+  url: https://kolinko.eu/effort/
+  source_type: blog
+  title: 'Effort Engine: a possibly new algorithm for LLM Inference (bucketMul)'
+  authors:
+  - Tomasz Kolinko
+  publication_date: '2024-03-26'
+  categories:
+  - hardware_optimization
+  - local_inference
+  - quantization
+  key_claims:
+  - 'A real-time-tunable "effort" knob: at 50% effort the kernel matches Apple-Silicon FP16 matmul speed; at 25% effort it is ~2× faster while "retaining most of the quality" (qualitative — no PPL/HumanEval/HellaSWAG numbers).'
+  - 'Core data structure "bucketMul": transpose W, split each row into fixed-size buckets (16 for FP16, 8 for Q8 on Apple GPU), sort each bucket by |w|, store positional offsets alongside values, and precompute per-bucket avg|w| as "bucket stats". At inference, multiply the input vector by per-row "probes" → topK threshold (the effort cutoff) → "dispatch list" of (bucket_id, v_val) pairs that survive the cutoff. Only those buckets are then multiplied.'
+  - 'Bonus "ad-hoc distillation": because each row''s buckets are sorted descending by importance, the trailing 10–30% of buckets can simply be NOT loaded at model load time. No re-conversion needed. Author claims "the model may not even notice" at 20–30% drop.'
+  - 'Q8 variant sketched (incomplete code in repo): 8-bit budget = 1 sign + 3 position + 4 value bits per weight. Per-bucket min/max ranges are tight (<2-decimal-digit span) so 4 value bits suffice — different from traditional Q8 which has to span the whole-tensor range.'
+  - 'Author admits the algorithm "doesn''t win against Quantization yet" per their own KL-distance metric, and the implementation has a 15ms/token fixed overhead vs <1ms for llama.cpp/ollama (the multiplications are fast; softmax/attention/norms are unoptimised). Mistral 7B FP16 only; Mixtral has an unidentified bug; Llama 7B claimed to work in earlier iterations.'
+  techniques:
+  - bucketMul (sorted-bucket structured-sparse GEMV)
+  - probe vectors + topK cutoff for adjustable per-call effort
+  - dispatch-list (pre-filtered bucket × v_val pairs) — splits effort selection from multiplication kernel
+  - load-time row-skip ("ad-hoc distillation") — drop trailing low-importance buckets at mmap time, no conversion
+  - per-bucket min/max Q8 packing (range-tight quant exploiting the sort)
+  reported_results:
+  - 'Apple Silicon (M2 Pro) FP16 Mistral-7B: bucketMul matches MPS GEMV at 50–70% effort; ~2× faster at 25% effort (single-stream wall-clock; not normalised against quantization).'
+  - 'Per-token fixed overhead: ~15ms on M2 Pro, several seconds on M1 Air, vs <1ms for llama.cpp/ollama — present even at 0% effort. Identified by author as the dominant blocker for fair benchmarks.'
+  - 'Quality: only "BasicQ" (a few GPT-4-curated trick questions) and qualitative input-state cosine similarity vs reference. KL Divergence "in the works"; no HumanEval / HellaSWAG / MathEval / PPL.'
+  - 'Mistral-7B inference works; Mixtral-7B×8 outputs garbage after a few tokens (regression introduced when porting to Mistral); Q8 path has converted weights but model "produces total garbage" (suspected to be an inference-engine bug rather than the kernel).'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 0
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-08'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-169 (Apple "LLM in a Flash" — closest prior art for sparsity-aware load-time data placement on Apple Silicon)
+  contradicting_evidence:
+  - 'Author''s own admission (pesky.html, 2024 KL-distance update): the bucketMul effort-dial "doesn''t win against Quantization yet" — directly negates the speed/quality positioning vs the Q4_K_M / Q8_0 path we already use in production.'
+  - 'No third-party port has emerged in the ~25 months since release (last GitHub push 2024-07-01, repo essentially abandoned at 228 stars). HN "Show HN" thread (id=40067677) is the public record; no llama.cpp / vLLM / MLX integration. Lack of replication despite open code is itself a negative signal.'
+  - 'Modern dense and small-MoE LLMs have far less activation/weight magnitude sparsity than the OPT-class models on which dynamic-sparsity ideas (Deja Vu, PowerInfer, LLM-in-a-Flash) were calibrated. NimbleEdge sparsity white paper and ICLR 2025 SLLM workshop materials note: "OPT-175b displayed sparsity levels >99% in some layers; Llama / Mistral / Gemma show vastly lower sparsity" — challenges include loss spikes at high sparsity, inability to recover original accuracy, overfitting on limited finetune data. The bucketMul effort dial sits in this same dynamic-sparsity class and is exposed to the same erosion.'
+  - 'Attention/softmax not optimised — long-context inference degrades quickly. Author notes the 15ms/token overhead is a Metal/Swift-implementation issue, but it caps any honest comparison at "best case the kernel does well, but the inference loop is slower than llama.cpp end-to-end at every effort level".'
+  - 'Apple-Silicon-only (Metal/Swift). No CPU port; the "ad-hoc distillation by skipping trailing rows" idea is the only piece that maps to a GGML repack format, but implementing it would mean reproducing the bucket layout from scratch in `ggml/src/ggml-cpu/repack.cpp` — comparable cost to writing a new K-quant variant.'
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Medium — the bucketMul data structure (per-row sort + position-tagged bucket layout + probe-cutoff dispatch) is a genuinely novel engineering trick for tunable structured sparsity, and the load-time trailing-row skip ("ad-hoc distillation by less mmap") is a clean, portable idea. But the algorithmic class — magnitude-driven dynamic activation/weight sparsity with a runtime effort dial — is well-trodden (Deja Vu, PowerInfer, LLM-in-a-Flash, contextual sparsity literature), so the novelty is at the data-layout level, not at the conceptual level.'
+  relevance_justification: 'Low — implementation is Apple-Silicon-only Metal/Swift, abandoned for ~22 months, single-author, no peer review, no third-party port. Author''s own KL-distance comparison concedes the kernel does not beat plain quantization — and Q4_K_M / Q8_0 / TQ3 are exactly what our EPYC stack already runs. The 15ms/token wrapper overhead would dominate any EPYC port until rewritten. The transferable artefact for our stack is conceptual: (a) "drop the trailing N% of buckets at load time" as a free distillation lever in any bucket-sorted repack format, (b) a runtime "effort dial" as a per-token quality-budget primitive that could be paired with our cost-aware routing work — both of which are too small to justify a dedicated handoff against the active CPU2 / wdata-aware-MUL_MAT / TQ3 / CPU18 priorities.'
+  verdict_justification: 'worth_investigating — not new_opportunity (no clear actionable EPYC fit; author concedes vs quantization), not not_applicable (per CLAUDE feedback_dont_dismiss_creative_uses, two ideas are portable: load-time trailing-bucket skip = free ad-hoc distillation in any sorted repack format, and a runtime effort dial as a per-token quality-budget primitive that could feed into routing-intelligence / per-request-reasoning-budget work). No handoff stub created — the conceptual fragments are individually too small, and the author''s 22-month silence + dynamic-sparsity erosion on modern dense/MoE models argue against committing engineering capacity. Logged for future cross-reference if any of (a) we add a sorted-bucket repack to ggml for an unrelated reason, (b) the per-request quality-budget work gets activated, (c) an Apple-Silicon backend re-enters scope.'
