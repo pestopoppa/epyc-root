@@ -223,3 +223,35 @@ ik_llama.cpp main does not support `gemma4_mtp` arch. PR #1744 (DRAFT, opened 20
 - Deep dive: [research/deep-dives/gemma4-mtp-drafter-deep-dive.md](../research/deep-dives/gemma4-mtp-drafter-deep-dive.md) — variant matrix, ik_llama.cpp PR table, EPYC implications
 - Inference acceleration index: [Research Intake Update — 2026-05-06](../handoffs/active/inference-acceleration-index.md#research-intake-update--2026-05-06)
 - Source: [intake-527](https://blog.google/innovation-and-ai/technology/developers-tools/multi-token-prediction-gemma-4/) — Google blog announcement, 2026-05-05
+
+### Production deployment landed (2026-05-08)
+
+**26B-A4B promoted to `worker_general`** despite the marginal 1.06× MoE-batch=1 speedup, on the strength of its quality lift over the prior occupant (Qwen3-Coder-30B-A3B Q4_K_M):
+
+| Axis | gemma4-26B-A4B Q4_K_M MTP | Qwen3-Coder-30B-A3B Q4_K_M | Δ |
+|---|---|---|---|
+| Full-suite quality (rigorous Claude-as-Judge, /183) | 165 (90%) | 153 (84%) | +6pp |
+| Tool_compliance (/27) | **26 (96%)** | 21 (78%) | +18pp |
+| Tool_compliance tps | 60.7 | 44.7 | +36% |
+| Median completion-token count per response | ~67 | ~120 | ~½ |
+
+The +1.06× MTP alone wouldn't have justified a swap; the orthogonal quality + verbosity lift did. **The corollary**: when MoE-batch=1 cancellation degrades the speedup ratio, evaluate whether the underlying model is also a quality / output-shape upgrade — those two axes can dominate the spec-dec axis for routing decisions.
+
+**Production launch tps measured higher than the original deep-dive bench** (76.5 t/s solo on full canonical instance, vs 44.12 t/s benchmarked at `mtp_speedup: 1.06`). The gap closes when launch params match the canonical recipe — the deep-dive bench used a subset of canonical settings; the production orchestrator now applies all of them.
+
+**Eight launch params required** for ik_llama.cpp PR #1744 + gemma4 MTP — every one surfaced as a root-cause for the same `GGML_ASSERT(buf != NULL && "tensor buffer not set")` failure at `ggml-backend.cpp:236`:
+
+1. `--spec-type mtp` — engages PR #1744 MTP code path (without it, `-md` is treated as standard spec decode and MTP draft tensors are loaded but never assigned to a backend buffer)
+2. `--jinja` — gemma4's custom embedded chat template
+3. `-np 1` — MTP fuses draft+target state across slots; `-np 2` ABA's on shared buffers
+4. `-c 16384` — match registry `max_context`; smaller values cause MTP buffer mismatches
+5. `--reasoning off` — gemma4 thinking-channel default ON; output otherwise lands in `reasoning_content` not `content`
+6. `-ctk q8_0 -ctv q8_0` — registry-declared KV types
+7. `--no-mmap` — canonical recipe (bulk-read on EPYC NUMA cold-cache)
+8. **Strip `GGML_*` env block** + `OMP_DYNAMIC=false` + LLVM-20 libomp on `LD_LIBRARY_PATH` — production llama.cpp's `GGML_CCD_POOLS` / `GGML_CCD_WORK_DIST` / `GGML_BARRIER_LOCAL_BETWEEN_OPS` are tuned against a different ggml fork commit; ik_llama.cpp PR #1744 leaves MTP draft tensors unassigned when these are set. The other two are part of the canonical OMP recipe.
+
+The `epyc-orchestrator/scripts/server/orchestrator_stack.py` worker_pool branch now applies all 8 via per-role `runtime_requirements` plumbing (binary override + LD_LIBRARY_PATH injection); other roles fall through to default. **Reference recipe**: memory `project_gemma4_mtp_launch_recipe`.
+
+**31B Dense remains evaluation-only** despite its 2.98× speedup — the absolute 21 t/s is unviable for production worker workloads (vs 76 t/s on 26B-A4B).
+
+**Cross-references**: [progress/2026-05/2026-05-08.md § session 2](../progress/2026-05/2026-05-08.md), commit `e205309` (epyc-orchestrator), commits `f106b7a`+`a295618` (epyc-inference-research), commit `0d131ea` (epyc-root).

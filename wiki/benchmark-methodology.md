@@ -365,3 +365,41 @@ Refactor (commit `bd2455d`):
 Result: adding a role is now 2 places (NUMA_CONFIG + ROLE_LAUNCH_META) with self-validation; removing/renaming catches dangling refs at module load instead of at launch.
 
 Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`epyc-orchestrator` merge `a268040`](../../epyc-orchestrator/), [`handoffs/active/qwen36-production-upgrade.md`](../handoffs/active/qwen36-production-upgrade.md).
+
+## 2026-05-08 — Five bench harness fixes surfaced during gemma4 evaluation
+
+The 2026-05-08 worker_general swap (gemma4-26B-A4B MTP) ran the harness end-to-end across two suites under conditions that exposed five distinct latent bugs. All were silent or partial failures pre-fix; none would have flagged in routine sweeps because each only manifests under specific config combinations.
+
+### 1. `--lookup` flag deprecated upstream — wasn't replaced in our path
+
+`scripts/lib/executor.py:339` still appended a literal `--lookup` to llama-server cmds for any config requesting prompt lookup acceleration. Production llama-server rejected this with `error: invalid argument: --lookup` (the flag was renamed to `--spec-type ngram-simple --spec-ngram-size-n N` in upstream months ago). Every `*_lookup` and `*_lookup_n*` config had been failing exit-1 silently for an unknown duration. Fix: route through the upstream flag, plumb a new `spec_ngram_size_n` parameter through `ServerManager.start` and the harness `_start_server` wrapper.
+
+### 2. Lookup ngram sweep wasn't actually varying ngram
+
+`_sweep_lookup_ngram._test_ngram` issued an inference call to the running server for each candidate ngram value (n=2, 3, 5, 9, 17, 33, 65, 128), assuming the legacy `--lookup` flag's per-request override semantics. Upstream `--spec-type ngram-simple` is **server-startup-fixed**, so all 8 sweep steps were running the same fixed-ngram server and reporting duplicate tps. Fix: restart the server with `spec_ngram_size_n=n` per sweep step; `_ServerState` gained a `lookup_ngram` slot to track the current value.
+
+### 3. Port-bind race after rapid restart cycles
+
+The MoE expert sweep + speculative-decoding draft-model swaps in a single bench run cycle the server through 6+ restarts. Some of those restarts left port 8080 in TIME_WAIT or partially released; the next launch hit `couldn't bind to server socket: ... double free or corruption` and crashed before model load. Fix: new `ServerManager._is_port_free(port)` + `_reserve_port(preferred, timeout=30, hops=10)` static helpers polled-then-hopped to the next free port (cmd argv updated to match), with a 30s wait before fallback. All downstream URLs use `self.port` and follow the hop transparently.
+
+### 4. Speed tests routed through subprocess that didn't exist
+
+`_run_speed_test` (the standard speed-only config runner) called `executor.run_inference` (the **subprocess** path that spawns standalone `llama-completion` / `llama-speculative` / `llama-lookup` binaries), even when a server was running with the right state. The harness's own preflight log warned `Missing subprocess binaries (server-mode still works): completion, speculative, lookup` — those binaries aren't built on production hosts. Every `spec_*` and `*_lookup` speed test exited 1 with `binary not found`. Fix: `_run_speed_test(..., ss=None)` accepts the server state and prefers `ss.server.run_inference` when running, mirroring the `_sweep_lookup_ngram` pattern. Backwards-compatible default.
+
+### 5. `--skip-moe-reduction` kept moe`<X>`_* configs when X equaled the production target
+
+`registry.get_baseline_experts(role)` had a fallback chain `accel.baseline_experts → accel.experts → 8`. The middle term was wrong: `accel.experts` is the **production-target reduction count** (e.g. `experts: 4` for "we want to deploy with 4 experts active"), NOT the **GGUF default** (the model's native expert count, e.g. 8 for Qwen3-30B-A3B). The `--skip-moe-reduction` filter `c.moe_experts is None or c.moe_experts == baseline_experts` then kept `moe<production_target>_*` configs because they "matched the baseline". 19 of 22 MoE roles in the registry were vulnerable. Fix: removed the dangerous `accel.experts` fallback; added explicit `baseline_experts` to all 20 affected role blocks (8 for Qwen3 family, 10 for Qwen3-Next-80B-A3B verified via direct GGUF metadata read).
+
+### Plus
+
+- New `--skip-speed-tests` CLI flag filters all `cfg.speed_test_only` configs for quality-only runs (e.g. tool_compliance-focused evaluations).
+- `tool_compliance.yaml` gained `inference_params.max_tokens: 2048` (was inheriting the global default of 512); pre-fix, gemma4 `t3_q2_llm_delegation` truncated at exactly 512 ctok mid-prompt and scored 0/3.
+- Added `constraints.forbid: [prompt_lookup]` to gemma4_31b/26b registry blocks — MTP-only models can't coexist with ngram-simple lookup (both consume the spec-decode slot).
+
+### Lessons that generalize
+
+- **Silent-failure backstop**: a CI guardrail that asserts every `*_lookup` config produces `tps > 0` would have caught (1)–(4) months earlier. The harness currently has no such assertion — every speed test that fails exit-1 just gets logged and skipped.
+- **Field-name semantics in registries**: when a YAML key has both a "production-target" and a "GGUF-baseline" interpretation, name them distinctly (`experts` vs `baseline_experts`) AND have the registry loader REQUIRE both for any MoE role (or default the missing one explicitly with a warning, not silently fall back to the wrong one).
+- **Flag deprecation needs a sweep**: when an upstream flag is renamed, search for it across all callers. The `--lookup` rename existed in upstream's CHANGELOG but didn't propagate to our harness.
+
+Source: [progress/2026-05/2026-05-08.md § session 2 § Bench harness bugs fixed](../progress/2026-05/2026-05-08.md), commits `f106b7a` (harness fixes) + `a295618` (bench data) on `epyc-inference-research:feature/preflight-canonical-gate`.

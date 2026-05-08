@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-08
+**Last compiled**: 2026-05-08 (updated session 2: worker_general swap + 5 harness fixes)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 267 documents across 6 source types
+**Total sources**: 270 documents across 6 source types
 
 ---
 
