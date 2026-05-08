@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-06
+**Last compiled**: 2026-05-08
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 263 documents across 6 source types
+**Total sources**: 264 documents across 6 source types
 
 ---
 
@@ -16,7 +16,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 34 | Attention Matching achieves 50x compression; autopilot slot_compact integration complete with slot memory visibility |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 19 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; DGX Spark ($4,699) is primary GPU path |
+| [Hardware Optimization](hardware-optimization.md) | 20 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; DGX Spark ($4,699) is primary GPU path |
 
 ## Serving & Systems
 
