@@ -23438,3 +23438,226 @@
   novelty_justification: 'Medium — the bucketMul data structure (per-row sort + position-tagged bucket layout + probe-cutoff dispatch) is a genuinely novel engineering trick for tunable structured sparsity, and the load-time trailing-row skip ("ad-hoc distillation by less mmap") is a clean, portable idea. But the algorithmic class — magnitude-driven dynamic activation/weight sparsity with a runtime effort dial — is well-trodden (Deja Vu, PowerInfer, LLM-in-a-Flash, contextual sparsity literature), so the novelty is at the data-layout level, not at the conceptual level.'
   relevance_justification: 'Low — implementation is Apple-Silicon-only Metal/Swift, abandoned for ~22 months, single-author, no peer review, no third-party port. Author''s own KL-distance comparison concedes the kernel does not beat plain quantization — and Q4_K_M / Q8_0 / TQ3 are exactly what our EPYC stack already runs. The 15ms/token wrapper overhead would dominate any EPYC port until rewritten. The transferable artefact for our stack is conceptual: (a) "drop the trailing N% of buckets at load time" as a free distillation lever in any bucket-sorted repack format, (b) a runtime "effort dial" as a per-token quality-budget primitive that could be paired with our cost-aware routing work — both of which are too small to justify a dedicated handoff against the active CPU2 / wdata-aware-MUL_MAT / TQ3 / CPU18 priorities.'
   verdict_justification: 'worth_investigating — not new_opportunity (no clear actionable EPYC fit; author concedes vs quantization), not not_applicable (per CLAUDE feedback_dont_dismiss_creative_uses, three ideas are portable per deep dive: load-time trailing-bucket skip = free ad-hoc distillation in any sorted repack format; runtime effort dial as a per-token quality-budget primitive that could feed into routing-intelligence / per-request-reasoning-budget / decision-aware-routing work; probe-as-diagonal-sample as a cheap per-row magnitude estimator). DEEP DIVE 2026-05-08 (research/deep-dives/kolinko-effort-engine-deep-dive.md) audited the actual Swift/Metal source — surfaced previously unrecorded findings: (a) probes are stride-sampled diagonal weights of W, not input·W expectations, (b) FP16 bucket size is forced by 4-bit position-encoding into the FP16 mantissa LSB, (c) Q8 packing is `[SvvvvvPPP]` 1-sign + 4-value + 3-position with separate outliers store, (d) kernel achieves 50-70% of Apple BW but with 4 kernel launches + atomic dispatch per matmul, (e) last code commit 46f5269 2024-04-25 = 24+ months frozen with issue #5 still open on Mac-only compilation. Re-surface triggers (machine-readable): (1) sorted-bucket repack lands in ggml for unrelated reason → trailing-skip becomes free, (2) routing-intelligence / per-request-reasoning-budget / decision-aware-routing activates AND a kernel supporting proportional effort exists → effort-dial composition, (3) dynamic-activation-sparsity (Deja Vu / PowerInfer / TEAL family) re-enters scope → revisit probe trick + full algorithm, (4) Apple-Silicon backend re-enters scope. Estimated direct port cost: ~1 staff-month for new repack + AVX-512 kernel; realistic upside 1.2-1.5× at 30-50% quality cost vs Q4_K_M, below already-shipped MTP 2.98× and CPU2 31.8% — no scenario where Effort beats existing roadmap on quality-per-staff-hour.'
+- id: intake-529
+  arxiv_id: '2603.23198'
+  url: https://arxiv.org/abs/2603.23198
+  source_type: paper
+  title: 'Sparser, Faster, Lighter Transformer Language Models'
+  authors:
+  - Edoardo Cetin
+  - Stefano Peluchetti
+  - Emilio Castillo
+  - Akira Naruse
+  - Mana Murakami
+  - Llion Jones
+  publication_date: '2026-03-24'
+  deep_dive: research/deep-dives/sakana-sparser-faster-llms-deep-dive.md
+  categories:
+  - hardware_optimization
+  - quantization
+  - training_distillation
+  key_claims:
+  - 'L1 regularization on FFN hidden activations during from-scratch pretraining induces >99% average activation sparsity at iso-quality at L1=2e-5; layer-wise the sparsity varies sharply (shallow layers ~10-15 non-zero, mid layers ~35-40 non-zero, per-token peaks >100x mean).'
+  - 'Custom Hopper-only (SM 90A) fused CUDA kernels plus the TwELL (Tile-wise ELLPACK) packing format make dynamic per-token activation sparsity efficient via WGMMA + TMA + thread-block clusters; the dense post-ReLU hidden vector is never materialized.'
+  - 'Architecture is a SwiGLU structural twin with σ=ReLU instead of σ=SiLU (gated-ReLU / ReGLU). Sparsity is dynamic per-token — weights remain dense BF16; D2T repacks the post-activation hidden every forward pass.'
+  - 'Reported gains scale modestly with model size from 0.5B → 2B but the 2B configuration shows a memory regression (+22.3%) — anomalous and contradicts the blog''s "scaling helps memory" framing.'
+  - 'Sakana AI releases code (github.com/SakanaAI/sparser-faster-llms, MIT) and pretrained sparse checkpoints (SparseLM 0.5B / 1B / 1.5B / 2B, Apache-2.0 on HF) — all dense gated-ReLU MLP, NOT MoE, and 2 048-context only (research-grade, not production-deployable).'
+  techniques:
+  - L1 regularization on FFN hidden activations (training-time, coefficient 2e-5 recommended)
+  - 'TwELL: Tile-wise ELLPACK packing — 32-bit unit per non-zero (16-bit col-idx + 16-bit BF16 value), per-row NNZ header, T_n=256 tile width, compression 2/4/8x'
+  - Hopper-only fused D2T+T2D CUDA kernels (WGMMA m64n256k16, TMA cp.async.bulk.tensor.2d, thread-block cluster, mbarrier.try_wait.parity.acquire)
+  - Hilbert-curve tile scheduling for SM occupancy (NUM_SMs=132 hardcoded for H100)
+  - Gated-ReLU FFN (ReGLU) — ReLU activation inside SwiGLU-shape gated MLP
+  reported_results:
+  - 'Inference speedup vs dense BF16 at L1=2e-5: +17.0% (0.5B) / +18.1% (1B) / +18.8% (1.5B) / +20.5% (2B). NOT vs Q4_K_M / INT8 / FP8 — no quantized baseline anywhere in the paper.'
+  - 'Training speedup vs dense BF16: -1.5% (0.5B) / +7.1% (1B) / +11.6% (1.5B) / +21.9% (2B).'
+  - 'Peak GPU memory: -19.2% (0.5B) / -25.5% (1B) / -28.1% (1.5B) / +22.3% (2B, anomalous regression).'
+  - 'Energy/token: 11.8-17.0% reduction across scales.'
+  - '>99% average FFN activation sparsity at iso-quality at L1=2e-5; >95% at the conservative blog framing.'
+  - 'Models evaluated: 0.5B / 1B / 1.5B / 2B dense gated-ReLU MLP, trained from scratch at Chinchilla-optimal token budgets (10B / 20B / 30B / 40B); hardware = NVIDIA H100 PCIe 8-GPU node, RTX 6000 in appendix. No MoE variant. No CPU benchmark anywhere.'
+  - 'No head-to-head numerical comparison vs DejaVu / TEAL / ProSparse / Q-Sparse / CATS — they are cited but not benchmarked against. No quantized baseline.'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-08'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-shape-specialized-gemv-decode.md
+    - gpu-acceleration-path.md
+    - moe-dynamic-expert-selection.md
+    - cpu-dynamic-moe-load-balancing.md
+    - large-moe-expert-parallelism.md
+    experiments: []
+    intake_entries:
+    - intake-528 (Kolinko Effort Engine — same dynamic-sparsity neighborhood; intake-528 enumerates Deja Vu / PowerInfer / TEAL / Wanda as the inference-time-predictor cousins, this paper is the training-time-induction angle)
+    - intake-474 (Trinity, Sakana AI, ICLR 2026 — same lab, author overlap with Cetin)
+    - intake-493 (Conductor, Sakana AI, ICLR 2026 — same lab, separate research line)
+    - intake-511 (KAME, Sakana AI, ICASSP 2026 — same lab, speech tandem)
+    - intake-467 (MegaBlocks, MLSys 2023 — block-sparse MoE GEMM prior art at structured-block granularity vs unstructured-weight here)
+    - intake-530 (Sakana AI publication blog — companion of this paper)
+    - intake-531 (github.com/SakanaAI/sparser-faster-llms — companion implementation)
+  contradicting_evidence:
+  - 'NO QUANTIZED BASELINE in the entire paper. All speedups (+17-20%) are vs dense BF16. Q4_K_M already gives 3-4x BW reduction over BF16; sparse-BF16 at 99% sparsity is ~0.32 effective bytes/weight (with header+index overhead) vs Q4_K_M ~0.5 bytes/weight — close, but Q4_K_M has the structured-load advantage (256-element super-blocks, contiguous reads) that indirect-addressed sparse loads break. The headline gain may not survive an apples-to-apples comparison against quantized dense.'
+  - 'NO HEAD-TO-HEAD COMPARISON vs DejaVu / TEAL / ProSparse / Q-Sparse / CATS. They are cited but not benchmarked. So the claimed novelty is entirely in the kernel co-design, not in algorithmic improvement over the existing dynamic-activation-sparsity family.'
+  - '2B model shows +22.3% peak memory REGRESSION in Table 1 vs dense baseline — directly contradicts the blog''s "scaling helps memory" framing. Either an extraction error in our fetch or a real instability; weakens the scaling claim either way.'
+  - 'Modest realized speedup (+20.5% peak) vs >99% sparsity claim — most of the theoretical BW saving is consumed by indirect-addressed scatter/gather, kernel launch overhead, and the fact that down-projection (not the fused up-projection step) is the actual bottleneck. The ratio of "claimed sparsity to realized speedup" is ~5x off, signaling the kernel is not yet pareto-optimal even on Hopper.'
+  - 'NimbleEdge sparsity white paper and ICLR 2025 SLLM workshop materials (recorded in intake-528 contradicting evidence): "Modern dense and small-MoE LLMs have far less activation/weight magnitude sparsity than the OPT-class models on which dynamic-sparsity ideas were calibrated." Sakana''s scaling-helps-sparsity claim is direct counter-evidence — but Sakana''s data is a single-lab single-recipe at 0.5B-2B, not yet replicated at production scale or in another architecture family.'
+  - 'Hopper-only (SM 90A): kernels emit WGMMA m64n256k16, TMA cp.async.bulk.tensor.2d, thread-block cluster, mbarrier.try_wait.parity.acquire. RTX 4090 (sm_89), A100 (sm_80), MI300 — all out. NUM_SMs=132 hardcoded for H100. Even the GPU portability story is narrower than "CUDA".'
+  - 'Technique requires from-scratch pretraining with L1 regularization. None of the EPYC stack''s production models (Qwen3 30B-A3B, Coder-30B, Next-80B, REAP-246B) qualify; this is a pretraining intervention, not an inference-time recipe. Finetune-from-existing-weights variant is acknowledged as future work.'
+  - 'Unstructured sparsity historically loses to dense quantized GEMV on AVX-512 (per intake-528 verdict and project_cpu_decode_bw_bound). CPU decode is DRAM-BW-bound — savings come from fewer bytes loaded only if the kernel can vectorize the gather, which is exactly where unstructured sparsity stumbles when stacked on top of Q4_K_M''s super-block layout.'
+  handoffs_updated:
+  - cpu-shape-specialized-gemv-decode.md
+  handoffs_created: []
+  novelty_justification: 'Medium — the algorithmic class (L1-induced activation sparsity in ReLU FFN) is well-trodden (ReLUfication / TurboSparse / ProSparse / DejaVu / TEAL / Q-Sparse / CATS — all cited by the paper). The genuine contributions are: (a) the TwELL Tile-wise ELLPACK 32-bit (idx+bf16) packing format, (b) the fused D2T+T2D pipeline aligned to WGMMA/TMA/cluster on Hopper, (c) the Hilbert-curve tile-scheduling for SM occupancy. As an ALGORITHM: incremental. As a Hopper-specific kernel-engineering artifact: real. Per feedback_closure_inflation, a new data point in a partially-explored space, not a paradigm shift.'
+  relevance_justification: 'Low — confirmed after 2026-05-08 deep-dive (research/deep-dives/sakana-sparser-faster-llms-deep-dive.md). Three structural blockers compound: (1) production stack is MoE (Qwen3 30B-A3B, Coder, Next, REAP-246B); Sakana models are dense gated-MLP — compute-saving regimes do not orthogonal-stack. (2) Production drafters/targets use SiLU/SwiGLU; TwELL needs ReLU — adopting forces retraining FFN as ReGLU or using SparseLM 2 048-context toy checkpoints (which cannot replace any production role). (3) All speedups are vs dense BF16 — Q4_K_M already gives 3-4x BW reduction, and sparse-BF16 at 99% sparsity does not cleanly compose with Q4_K_M''s 256-element super-block layout. Indirect relevance via TwELL format-spec for any future ReLU-FFN training experiment, not via direct adoption.'
+  verdict_justification: 'worth_investigating (narrowed to "design-reference-only" after deep-dive). Explicitly named re-surface trigger (c) in intake-528 (dynamic-activation-sparsity family). Refined re-surface triggers (deep-dive section "Refined Re-surface Triggers"): (1) finetune-from-existing-weights variant (paper''s own future work); (2) combined sparse + INT4/Q4_K kernel result vs Q4_K_M dense — the apples-to-apples we need; (3) MoE variant of TwELL — activation sparsity on top of expert sparsity could compound on Qwen3 30B-A3B; (4) Qwen-family or DeepSeek-family checkpoint released using this recipe (not Sakana''s 0.5B-2B from-scratch toys); (5) CPU port by anyone demonstrating BW savings under indirect-addressed gather on EPYC-class chip; (6) internal pretraining-from-scratch campaign in our project; (7) sorted-bucket repack format lands in ggml for unrelated reason (shared with intake-528 trigger #1). No immediate handoff stub warranted. Track as monitor-only via cpu-shape-specialized-gemv-decode handoff Research Intake Update + Deep Dive Addendum.'
+- id: intake-530
+  arxiv_id: null
+  url: https://pub.sakana.ai/sparser-faster-llms/
+  source_type: blog
+  title: 'Sparser, Faster, Lighter LLMs (Sakana AI publication blog)'
+  authors:
+  - Edoardo Cetin
+  - Stefano Peluchetti
+  - Emilio Castillo
+  - Akira Naruse
+  - Mana Murakami
+  - Llion Jones
+  publication_date: '2026-Q2'
+  deep_dive: research/deep-dives/sakana-sparser-faster-llms-deep-dive.md
+  categories:
+  - hardware_optimization
+  - training_distillation
+  - local_inference
+  key_claims:
+  - 'L1 regularization on FFN hidden activations during pretraining induces high (>95% blog framing, >99% paper framing at L1=2e-5) dynamic per-token activation sparsity with negligible downstream-quality loss.'
+  - 'Blog claims activation-sparsity benefit grows with model scale: scaling 0.5B → 2B yields 38% lower non-zero activation count at matched perplexity. NOTE: Table 1 in the paper itself shows the 2B model has a +22.3% peak memory REGRESSION vs dense baseline — directly contradicts the blog framing the deep-dive flagged this anomaly.'
+  - 'ReGLU (gated-ReLU FFN) combined with TwELL Tile-wise ELLPACK custom Hopper kernels avoids materializing dense hidden activations. Format is 32-bit per non-zero (16-bit col-idx + 16-bit BF16 value), per-row NNZ header, T_n=256 tile width.'
+  - 'Blog headlines "up to 30% inference speedup" — but paper Table 1 actual values are +17.0% / +18.1% / +18.8% / +20.5% across 0.5B/1B/1.5B/2B. The 30% figure is peak/best-case framing, not the typical operating point.'
+  - 'Sparsity is dynamic per-token, not static structured. Weights remain dense BF16 — the D2T pass repacks the post-ReLU hidden vector every forward pass.'
+  techniques:
+  - L1 regularization on FFN hidden activations (training-time, coefficient 2e-5)
+  - ReLU activations inside SwiGLU-shape gated MLP (ReGLU)
+  - 'TwELL: Tile-wise ELLPACK packing — 32-bit unit per non-zero, per-row NNZ header'
+  - Custom Hopper-only fused CUDA kernels (WGMMA + TMA + thread-block clusters; SM 90A required)
+  - Hybrid sparse + dense-backup training representation
+  reported_results:
+  - 'Inference speedup vs dense BF16 (Table 1, paper at L1=2e-5): +17.0% / +18.1% / +18.8% / +20.5% (0.5B / 1B / 1.5B / 2B). Blog claims "up to 30%" — peak-framing.'
+  - 'Training speedup vs dense BF16: -1.5% (0.5B regression!) / +7.1% / +11.6% / +21.9%.'
+  - 'Peak memory: -19.2% / -25.5% / -28.1% / +22.3% — the 2B model REGRESSES.'
+  - 'Energy/token: 11.8-17.0% reduction.'
+  - '>99% average FFN activation sparsity at L1=2e-5 (paper); >95% at the more conservative blog threshold.'
+  - 'Models evaluated: 0.5B / 1B / 1.5B / 2B dense gated-ReLU MLP, trained from scratch at Chinchilla-optimal token budgets. NOT MoE. Hardware: NVIDIA H100 PCIe 8-GPU node.'
+  - 'No quantized baseline anywhere. No CPU benchmark. No head-to-head vs DejaVu/TEAL/ProSparse/Q-Sparse/CATS.'
+  referenced_arxiv_ids:
+  - '2603.23198'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-08'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-shape-specialized-gemv-decode.md
+    - moe-dynamic-expert-selection.md
+    - cpu-dynamic-moe-load-balancing.md
+    - large-moe-expert-parallelism.md
+    - cpu-inference-optimization-index.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-528 (Kolinko Effort Engine deep-dive — same dynamic-sparsity neighborhood; deep-dive flags Deja Vu / PowerInfer / TEAL family as a re-surface trigger condition)
+    - intake-474 (Trinity, Sakana AI — author overlap: Cetin)
+    - intake-529 (companion paper arxiv:2603.23198)
+    - intake-531 (companion implementation github.com/SakanaAI/sparser-faster-llms)
+  contradicting_evidence:
+  - 'BLOG OVERSTATES vs paper Table 1: blog headlines "up to 30% inference speedup" but paper actuals are +17.0% / +18.1% / +18.8% / +20.5%. Blog omits the 2B +22.3% peak memory regression (Table 1) which directly contradicts its "memory reduction scales with size" framing.'
+  - 'intake-528 NimbleEdge counter-claim: "Modern dense and small-MoE LLMs have far less activation/weight magnitude sparsity than OPT-class" — directly contradicts Sakana''s scaling-helps-sparsity hypothesis. Both are unreplicated single-source claims; Sakana''s 0.5B-2B from-scratch evidence does not yet cover MoE or 30B+ scales, and the 2B memory anomaly is itself a hint that the scaling claim may not hold beyond 2B.'
+  - 'All benchmarks Hopper-only (SM 90A) with WGMMA + TMA + thread-block cluster + Hilbert-curve scheduling. Blog framing of "GPU-friendly" is broader than reality — RTX 4090 / A100 / MI300 cannot run the kernels at all.'
+  - 'NO QUANTIZED BASELINE in either paper or blog. All speedups are vs dense BF16. Q4_K_M already gives 3-4x BW reduction, so the headline +20% may not survive an apples-to-apples comparison.'
+  - 'Technique requires from-scratch pretraining with L1 regularization and ReGLU FFN. Production EPYC stack consumes off-the-shelf weights from Qwen / Mistral / Cerebras-pruned checkpoints; none qualify. Finetune-from-existing-weights variant is acknowledged future work in the paper.'
+  - 'Sakana commercial-product context (Fugu line, per intake-474 / intake-528 vendor-bias caveat) means the blog framing is product-marketing-adjacent — credibility lands at 3, not 4+.'
+  - 'No third-party replication or port at intake time. Companion repo (intake-531) is single-author / 4 commits / no tests / no CI / 47 stars; HF model cards are empty.'
+  handoffs_updated:
+  - cpu-shape-specialized-gemv-decode.md
+  handoffs_created: []
+  novelty_justification: 'Medium — the algorithmic class (L1-induced ReLU activation sparsity in gated FFN) is well-trodden (ReLUfication / TurboSparse / ProSparse / DejaVu / TEAL / Q-Sparse / CATS — all cited by the paper). The genuine contributions are (a) the TwELL Tile-wise ELLPACK 32-bit packing format, (b) the fused D2T+T2D Hopper kernel pipeline, (c) the Hilbert-curve tile-scheduling for SM occupancy. The blog''s scaling-helps-sparsity framing is interesting counter-evidence to NimbleEdge but contradicted internally by the 2B memory regression. Per feedback_closure_inflation, new data point in partially-explored space, not a paradigm shift.'
+  relevance_justification: 'Medium — kept (not downgraded to LOW) only because the TwELL format spec is a CPU-portable design reference for any future ReLU-FFN training experiment, and the deep-dive (2026-05-08) confirmed a T2D-only AVX-512BW port path is feasible at ~1-2 dev-weeks. However, three structural blockers compound that all justify staying short of MEDIUM-HIGH: (1) production stack is MoE; Sakana models are dense gated-MLP — compute-saving regimes do not orthogonal-stack. (2) Production drafters/targets use SiLU/SwiGLU; TwELL needs ReLU — adopting forces retraining FFN as ReGLU or using SparseLM 2 048-context toy checkpoints (which cannot replace any production role). (3) Speedups are vs dense BF16, not Q4_K_M — the apples-to-apples benchmark for our stack is missing. Per feedback_research_exhaustion_first and feedback_dont_dismiss_creative_uses, MEDIUM is the honest call: track for kernel-design reference, do not open a port handoff.'
+  verdict_justification: 'worth_investigating (narrowed to "design-reference-only" after deep-dive). Reasons NOT new_opportunity: requires from-scratch pretraining with L1 regularization and ReGLU FFN — none of the production EPYC stack models qualify, and we are not currently a pretraining shop. Reasons NOT not_applicable (per feedback_dont_dismiss_creative_uses and feedback_research_exhaustion_first): three transferable insights — (a) TwELL Tile-wise ELLPACK encoding (32-bit per non-zero, 16-bit idx + 16-bit BF16, per-row NNZ header) may inform a sparse-friendly variant of the CPU2 8x8 AVX-512BW kernel layout if a sparse path ever opens; (b) the iso-quality scaling-helps-sparsity claim is direct counter-evidence to the NimbleEdge thesis recorded in intake-528 — worth keeping (along with the 2B memory anomaly that internally contradicts it) for any future re-evaluation of DejaVu/PowerInfer/TEAL on modern weights; (c) ReGLU as a quality-preserving alternative to SwiGLU is a draft-target compatibility consideration if a Qwen-family or DeepSeek-family checkpoint ever ships using this recipe. Refined re-surface triggers in deep-dive document.'
+- id: intake-531
+  arxiv_id: null
+  url: https://github.com/SakanaAI/sparser-faster-llms
+  source_type: repo
+  title: 'sparser-faster-llms (SakanaAI implementation repo)'
+  authors:
+  - Edoardo Cetin
+  - Stefano Peluchetti
+  - Emilio Castillo
+  - Akira Naruse
+  - Mana Murakami
+  - Llion Jones
+  - Sakana AI
+  publication_date: '2026-Q2'
+  deep_dive: research/deep-dives/sakana-sparser-faster-llms-deep-dive.md
+  categories:
+  - hardware_optimization
+  - training_distillation
+  - local_inference
+  key_claims:
+  - 'Provides Hopper-only (SM 90A) fused CUDA kernels (D2T pack + T2D unpack + gated MLP wrapper) for dynamic per-token activation sparsity in ReGLU FFN. Sparsity is NOT static-pretrained — D2T repacks the post-ReLU hidden vector every forward pass; weights remain dense BF16.'
+  - 'TwELL packing format spec: 32-bit unit per non-zero (col-idx[15:0] + BF16-value[31:16]), per-row NNZ header (atomic-incremented during D2T fill), T_n=256 tile width with compression factor 2/4/8x (default 8). twell-flex variant for non-uniform sparsity.'
+  - 'Ships four pretrained ReGLU checkpoints: SparseLMxB on HF Hub at 0.5B / 1B / 1.5B / 2B params, BF16 safetensors, Apache-2.0 license (note: repo itself is MIT — license mix). Architecture is dense gated-MLP (model_type "llama_sparse_relu", architectures "SparseLlamaForCausalLM"), NOT MoE. max_position_embeddings=2048 — research-grade only, not production-deployable.'
+  - 'Single-author repository: 4 commits total (all by Aladoro = Edoardo Cetin), 47 stars, 4 forks, default branch is "master" not "main". No tests, no CI, no setup.py / pyproject.toml, no precompiled wheels. JIT-built via torch.utils.cpp_extension.load. One open PR #1 by emcastillo (Castillo) added 2026-04-24, awaiting review at intake. Last commit 2026-04-22 — silent for 16+ days. Publication-drop, not maintained project.'
+  - 'OUT_DIM=2048 hardcoded in matmul_t2d.cu — kernel specialized to SparseLM hidden size; porting to other dims requires template re-instantiation. Activation function in actual model code is nn.ReLU (not the "silu" written in config.json — that field is a leftover from the Llama base config and is overridden by sparse_models.py). HF AutoModelForCausalLM will NOT load these correctly without auto_map or vendoring sparse_models.py.'
+  techniques:
+  - TwELL Tile-wise ELLPACK packing (16-bit col-idx + 16-bit BF16 value per non-zero; per-row NNZ header)
+  - twell-flex (non-uniform sparsity variant)
+  - Hopper-only D2T (dense-to-packed) kernel - matmul_d2t.cu (51KB) - uses WGMMA m64n256k16, TMA cp.async.bulk.tensor.2d, thread-block cluster, mbarrier
+  - Hopper-only fused gated T2D - matmul_gated_t2d.cu (84KB, the largest file)
+  - Lightweight T2D (matmul_t2d.cu, 153 lines) - plain CUDA cores with __shfl_sync + __ldcs/__stcs - the inference-relevant bandwidth-bound path - this is the one that maps cleanly to AVX-512BW on EPYC
+  - Hilbert-curve tile scheduling for SM occupancy (NUM_SMs=132 hardcoded for H100)
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2603.23198'
+  implementation_notes: 'CUDA 12.8+ + PyTorch 2.9.1 + FlashAttention 2.7.4 cu128 wheel. Hopper-only (SM 90A), NOT just sm_90 - kernels emit cluster/TMA/WGMMA intrinsics. RTX 4090 (sm_89), A100 (sm_80), MI300 are out. 49.6% CUDA / 40.5% Python / 9.4% C++ / 0.5% Shell. Repo size 1.8 MB, 47 stars, 4 forks, 4 commits, 1 open PR. License: MIT (repo) / Apache-2.0 (HF weights) - mix. CPU port path (per deep-dive): T2D-only AVX-512BW reference is portable in principle (~1-2 dev-weeks; needs Zen 5 AVX512_BF16 verification), full fused MLP another 2-3 weeks; D2T side impractical to port (cluster/TMA/WGMMA have no CPU analog) - but D2T is training-side, not needed for inference. Energy measurement is GPU-only (pynvml + nvidia-smi); CPU equivalent (RAPL) must be added separately.'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-08'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-shape-specialized-gemv-decode.md
+    - cpu-dynamic-moe-load-balancing.md
+    - llama-cpp-kernel-push-rebase.md
+    - cpu-inference-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-474 (Trinity, Sakana AI — same lab, shared author Edoardo Cetin)
+    - intake-493 (Conductor, Sakana AI — same lab, shared author Edoardo Cetin)
+    - intake-529 (companion paper arxiv:2603.23198)
+    - intake-530 (companion publication blog)
+  contradicting_evidence:
+  - 'CRITICAL FRAMING CORRECTION (deep-dive 2026-05-08): the initial intake claimed TwELL "bakes sparsity into training so the pattern is structured/static rather than predicted" — this is WRONG. Sparsity is DYNAMIC PER-TOKEN. The D2T (dense-to-TwELL) kernel runs every forward pass to repack the post-ReLU hidden activation. Weights remain fully dense BF16. There is no static pruned weight matrix; SparseLM checkpoints are stock dense BF16 safetensors. This rules out any one-time conversion of pretrained Qwen/Llama weights.'
+  - 'ARCHITECTURE MISMATCH (deep-dive 2026-05-08): SparseLM checkpoints are dense gated-MLP (Llama-2/Llama-3 style with gate_proj/up_proj/down_proj), NOT MoE. Production EPYC stack is MoE (Qwen3 30B-A3B, Coder-30B, Next-80B, REAP-246B). The compute-saving regimes do not orthogonal-stack: TwELL skips post-ReLU zeros within a single FFN; MoE skips entire experts. No MoE-TwELL variant exists.'
+  - 'ACTIVATION FUNCTION MISMATCH: SparseLM uses nn.ReLU() in actual model code (model_type "llama_sparse_relu"). The hidden_act:"silu" in config.json is a leftover from the Llama base config that the custom sparse_models.py overrides. Production drafters/targets all use SiLU/SwiGLU. Adopting forces either retraining FFN as ReGLU (full pretrain cost) or using SparseLM 2 048-context toy checkpoints directly. Draft-target compatibility is broken: SparseLM-2B cannot be a drafter for Qwen3 30B-A3B because the activation-function mismatch causes guaranteed logit drift independent of vocab/embedding alignment.'
+  - 'HOPPER-ONLY (SM 90A), not just CUDA: kernels emit WGMMA m64n256k16, TMA cp.async.bulk.tensor.2d, thread-block cluster, mbarrier, mapa.shared::cluster. RTX 4090 (sm_89), A100 (sm_80), MI300 — all out. NUM_SMs=132 hardcoded for H100. Even the GPU portability story is narrower than implied.'
+  - 'OUT_DIM=2048 hardcoded in matmul_t2d.cu — kernel specialized to SparseLM''s 2 048 hidden dim. A port to other dims requires template re-instantiation. Suspicious for a "general purpose" sparse kernel claim.'
+  - 'NO TESTS, NO CI, NO BENCHMARK NUMBERS in the repo. README ships no numbers; the empirical anchor is entirely the companion paper (intake-529). HF model cards are empty README.md files. Single-author commit history (4/4 by Cetin); single open PR by Castillo sitting unreviewed for 7+ days at intake. Publication-drop, not maintained library.'
+  - 'License mix: repo is MIT, HF weights are Apache-2.0 — flag for any redistribution. No patent grant clauses in either.'
+  - 'Largest shipped checkpoint is 2B parameters at 2 048-context — useless as production assistant; only research artifact. No production EPYC stack model below 30B; smallest production drafter is Qwen3-1.7B at much longer context. SparseLM-2B as a drafter candidate is blocked by the activation-function mismatch above.'
+  - 'No vLLM or llama.cpp integration. SparseLM HF checkpoints would need GGUF conversion + a custom sparse-FFN execution path in our llama.cpp fork before any in-stack evaluation. Per deep-dive: T2D-only AVX-512BW reference is ~1-2 dev-weeks; full fused MLP another 2-3 weeks; D2T impractical to port (cluster/TMA have no CPU analog).'
+  handoffs_updated:
+  - cpu-shape-specialized-gemv-decode.md
+  handoffs_created: []
+  novelty_justification: 'High — kept after deep-dive. The TwELL bit layout (32-bit per non-zero with embedded 16-bit col-idx + 16-bit BF16 value, per-row NNZ header, T_n=256 tile width, compression factor 2/4/8x) is genuinely new kernel-engineering work and is well-modularized into D2T (Hopper-specific monolith) + gated-T2D (largest file, fused) + lightweight-T2D (153-line bandwidth-bound CUDA-cores path) + Hilbert-curve scheduler. The lightweight-T2D path is the inference-relevant one and is the cleanest target for an AVX-512BW port. The D2T fusion-with-up-projection co-design is novel for this kernel class. As an algorithm: incremental on ReLUfication / ProSparse. As an engineering artifact: real and worth referencing.'
+  relevance_justification: 'Medium — confirmed after deep-dive (research/deep-dives/sakana-sparser-faster-llms-deep-dive.md), with sharpened caveats. The actionable artifact is the TwELL bit-layout as a CPU-port-design reference for any future ReLU-FFN training experiment, not the SparseLM checkpoints themselves (which are 2 048-context dense gated-MLP toys). T2D-only AVX-512BW port is feasible at ~1-2 dev-weeks (gated on Zen 5 AVX512_BF16 verification per project_zen5_vnni_vs_maddubs precedent), but no production model in our stack uses ReGLU activations, so any port has no immediate consumer. Per feedback_dont_dismiss_creative_uses and feedback_research_exhaustion_first, MEDIUM is the honest call: track for kernel-design reference, do not open a port handoff.'
+  verdict_justification: 'worth_investigating (narrowed to "format-spec reference for any future ReLU-FFN CPU training experiment"). Reasons NOT new_opportunity: (1) production-stack adoption blocked by MoE/SwiGLU/2K-context triple wall; (2) the natively-sparse-pretrained-weights framing was wrong — sparsity is dynamic per-token, weights are dense BF16, so there is no one-time conversion path; (3) repo is single-author/4-commits/no-tests/no-CI publication drop. Reasons NOT not_applicable: (a) TwELL bit layout is a CPU-portable design reference, (b) lightweight-T2D path maps cleanly to AVX-512BW. Credibility=3 (lowered from 4 in initial intake): companion peer-able paper (+2), Sakana AI maintainer with prior credibility from Trinity/Conductor/KAME (+1), MIT/Apache-2.0 license + HF checkpoints provide reproducibility-in-principle (+1), but single-author / 4 commits / no tests / no CI / empty model cards / single open PR stalled — net 3. Refined re-surface triggers in deep-dive document. Do NOT open a port handoff today; the trigger conditions (Qwen/DeepSeek-family ReLU-trained checkpoint, MoE-TwELL variant, finetune-from-existing-weights recipe, internal pretraining campaign) are all absent.'
