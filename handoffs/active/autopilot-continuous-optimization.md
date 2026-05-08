@@ -524,14 +524,22 @@ intake-378 (arxiv:2604.01702) identifies Propose step ratio as a quality metric 
 
 **`research/deep-dives/autopilot-iteration-strategy-synthesis.md`** — 4-phase improvement plan:
 
-| Phase | What | Target | Scope |
-|-------|------|--------|-------|
-| 1 | Strategy Memory Upgrade | `strategy_store.py` | +FTS5/RRF, staleness detection, Bayesian validity (~200 LoC) |
-| 2 | Knowledge Distillation Pipeline | new `knowledge_distiller.py` | L1→L2→L3 tier promotion, MDL consolidation (~300 LoC) |
-| 3 | Controller Context Budget | `autopilot.py`, `eval_tower.py` | Progressive disclosure, 5KB gating, token budgets (~150 LoC) |
-| 4 | Mutation Knowledge Graph | `prompt_forge.py` | mutation×failure×outcome tracking, informed crossover (~200 LoC) |
+| Phase | What | Target | Scope | Status |
+|-------|------|--------|-------|--------|
+| 1 (AP-28) | Strategy Memory Upgrade | `strategy_store.py` | +FTS5/RRF, staleness detection, Bayesian validity (~200 LoC) | **CODE LANDED 2026-05-08** (`ad25ade`); active on AR-3 restart |
+| 2 (AP-29) | Knowledge Distillation Pipeline | new `knowledge_distiller.py` | L1→L2→L3 tier promotion, MDL consolidation (~300 LoC) | **CODE LANDED 2026-05-08** (`4cdc77e`); wiring deferred |
+| 3 (AP-30) | Controller Context Budget | `autopilot.py`, `eval_tower.py` | Progressive disclosure, 5KB gating, token budgets (~150 LoC) | **CODE LANDED 2026-05-08** (`2d4d18f`); helpers in `scripts/autopilot/context_budget.py`, wiring deferred |
+| 4 (AP-31) | Mutation Knowledge Graph | `prompt_forge.py` | mutation×failure×outcome tracking, informed crossover (~200 LoC) | **CODE LANDED 2026-05-08** (`49b920c`); sidecar at `scripts/autopilot/species/mutation_graph.py`, wiring deferred |
 
 Phase 1 is directly implementable from the synthesis document. Phases 1+2 parallelize with Phase 3.
+
+**Wiring checklist (AP-29/30/31 — apply on next autopilot restart):**
+
+1. AP-29: at the existing 25-trial auto-checkpoint in `autopilot.py`, instantiate `KnowledgeDistiller(strategy_store).distill(trial_counter)` and log the resulting `DistillationStats`.
+2. AP-30: replace flat strategy injection in `dispatch_action` (~line 548) with `format_strategies_tiered()`; wrap eval-tower output return through `gate_eval_output()`; pass each section in `build_controller_prompt` through `apply_section_budget()`.
+3. AP-31: in `PromptForge.propose_mutation` cycle end, call `MutationGraph().record(MutationOutcome(...))`. In `_build_mutation_prompt` for `crossover`, inject `informed_crossover_candidates(target_file)` as a "preferred sections" hint.
+
+Test coverage as of 2026-05-08: 46 unit tests across the four AP modules (`tests/unit/test_strategy_store.py`, `test_knowledge_distiller.py`, `test_context_budget.py`, `test_mutation_graph.py`) — all passing.
 
 ## Research Intake Update — 2026-04-21
 
