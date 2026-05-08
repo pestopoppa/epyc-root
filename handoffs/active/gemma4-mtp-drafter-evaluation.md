@@ -197,3 +197,20 @@ Only after G2 OR G1 ≥ +20% AND quality holds:
 - `moe-spec-cpu-spec-dec-integration.md` — verifier-side budgeted-expert; G3 composition target
 - `gpu-acceleration-path.md` — fallback path if CPU G0.3 = (b) or (c)
 - `model-registry-v5-deployment-draft.yaml` — registry pattern for G4
+
+---
+
+## 2026-05-08 — production deployment LANDED (26B-A4B variant only)
+
+**Status**: gemma4-26B-A4B Q4_K_M MTP is now `worker_general` in production. Phase 1 (declarative) + Phase 2 (launcher) + Phase 3 (smoke test) complete. The 31B Dense variant remains evaluation-only (Tier B).
+
+**Why 26B-A4B was promoted ahead of 31B**: rigorous Claude-as-Judge re-scoring of the May-7 eval found 26B-A4B at 165/183 (90%) full suite + 26/27 (96%) tool_compliance, narrowly beating 31B Dense (164/183, 90%). Combined with 26B-A4B's 60-76 t/s baseline (vs 31B Dense's 4.7 t/s), MTP at the small-MoE class is the deployable form.
+
+**MoE batch=1 cancellation (Q3) RESOLVED via measurement**: research-registry block records `mtp_speedup: 1.06` (44.12 vs 41.49 baseline tps) with 58.7% per-token acceptance — confirming lilting.ch's MoE-cancellation finding qualitatively, but the marginal +1.06× still composes with the 18pp quality lift, so promotion is justified. The full canonical orchestrator launch (taskset 0-95 + numactl interleave + canonical OMP env) brings the production tps higher (76.5 t/s solo verified) — the speedup gap closes when launch params match bench.
+
+**Phase 3 launch-recipe quirk discovered**: the orchestrator's worker_pool branch was missing **8 launch params** vs the bench's canonical recipe. Each missing param surfaced as the same `GGML_ASSERT(buf != NULL && "tensor buffer not set")` assertion at `ggml-backend.cpp:236`. Recipe is now in `project_gemma4_mtp_launch_recipe` memory; reference for any future MTP-role deployment.
+
+**Open follow-ups (not blocking deployment):**
+- Launcher full-XOR-quarter gating (task #57) — running all 5 instances simultaneously creates 1.5× CPU oversubscription (load 420 → 9 t/s).
+- Q-scorer `baseline_tps` may need refresh (was calibrated against Qwen3-Coder values per `project_qscorer_calibration`).
+- 31B Dense MTP rollout deferred — quality is similar to 26B-A4B but tps is unviable (4.7 t/s).
