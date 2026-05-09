@@ -255,3 +255,15 @@ The `epyc-orchestrator/scripts/server/orchestrator_stack.py` worker_pool branch 
 **31B Dense remains evaluation-only** despite its 2.98× speedup — the absolute 21 t/s is unviable for production worker workloads (vs 76 t/s on 26B-A4B).
 
 **Cross-references**: [progress/2026-05/2026-05-08.md § session 2](../progress/2026-05/2026-05-08.md), commit `e205309` (epyc-orchestrator), commits `f106b7a`+`a295618` (epyc-inference-research), commit `0d131ea` (epyc-root).
+
+### 2026-05-09 — ik_llama.cpp idle-spin caveat (9th launch-param fix)
+
+After the swap landed and the stack was restarted, observed gemma4 worker_general pinning ~96 cores with **zero in-flight inference** and load average 97. Diagnosed via per-PID `/proc/<pid>/stat` delta sampling (per memory `feedback_ps_cpu_is_cumulative`): worker_general showed 95.13 cores busy in a 5s sample; all other servers at 0.00. User-confirmed via stop-test (`orchestrator_stack.py stop server_8072` → load 97 → ~5).
+
+Root cause: **ik_llama.cpp PR #1744's gemma-mtp branch does NOT release OMP threads during idle slots when `OMP_WAIT_POLICY=active`**. Production llama.cpp's OMP integration releases correctly under `active`; ik_llama.cpp's fork point regresses this. The 96-thread OMP team busy-waits indefinitely between dispatches.
+
+Fix: **9th required launch-param** for ik_llama.cpp PR #1744 + gemma4 MTP — `OMP_WAIT_POLICY=passive`. Wired in `orchestrator_stack.py:start_server` worker_pool branch under the `if binary_override:` guard, so it applies automatically to any future role using the binary_override path (gemma4-31B-MTP if rolled out, gemma4-E-series, etc.). Latency cost: a few µs first-token wakeup per request — negligible vs continuous 96-core idle waste under any non-saturated workload.
+
+This makes the actual launch-param recipe for ik_llama.cpp PR #1744 + gemma4 MTP **9 items**, not 8 (the table above stays at 8 because OMP_WAIT_POLICY belongs in the env layer, not the cmd args). Reference: memory `feedback_ik_llamacpp_omp_idle_spin`.
+
+**Cross-references**: [progress/2026-05/2026-05-09.md](../progress/2026-05/2026-05-09.md), commit `5eafe2f` (epyc-orchestrator).
