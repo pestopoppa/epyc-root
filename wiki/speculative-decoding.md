@@ -267,3 +267,55 @@ Fix: **9th required launch-param** for ik_llama.cpp PR #1744 + gemma4 MTP — `O
 This makes the actual launch-param recipe for ik_llama.cpp PR #1744 + gemma4 MTP **9 items**, not 8 (the table above stays at 8 because OMP_WAIT_POLICY belongs in the env layer, not the cmd args). Reference: memory `feedback_ik_llamacpp_omp_idle_spin`.
 
 **Cross-references**: [progress/2026-05/2026-05-09.md](../progress/2026-05/2026-05-09.md), commit `5eafe2f` (epyc-orchestrator).
+
+### 2026-05-16 — passive override REVERTED, KMP_BLOCKTIME=10 is the correct fix
+
+The 2026-05-09 `OMP_WAIT_POLICY=passive` override (commit `5eafe2f`) was reverted after smoke testing revealed passive **breaks MTP first-decode coordination**: every new request hangs forever with `llama_decode: failed to decode, ret = -3`, threads asleep on a futex but never woken by the MTP draft+target dispatch path.
+
+Tried as direct source patches in ik_llama.cpp's `examples/server/server-context.cpp` at the `slots_idle()` transition:
+- `omp_pause_resource(omp_pause_soft, omp_get_default_device())` — verified ignored by AOCC 5.0.0 libomp (95+ threads stayed in `R` state with `wchan=0` after the call)
+- `omp_pause_resource_all(omp_pause_hard)` — same, ignored
+
+**The correct fix is `KMP_BLOCKTIME=10` in the launch env** (LLVM libomp tunable; AOCC's libomp is LLVM-based and respects it). Workers busy-wait 10 ms before transitioning to a futex sleep — fast enough that MTP request dispatch still finds them warm (no first-token-latency regression), short enough that multi-second idle gaps don't waste cycles. `OMP_WAIT_POLICY=active` stays in the canonical recipe; KMP_BLOCKTIME tunes the idle transition, not the steady-state behavior.
+
+| Metric | active alone (broken) | active + KMP_BLOCKTIME=10 |
+|---|---|---|
+| gemma4 idle cores busy (5s sample) | 95.05 | **0.00** |
+| Threads state distribution | 95R / 5S | **100S** |
+| Thread `wchan` | (userspace) | `futex_wait_queue` ✓ |
+| gemma4 decode (solo) | ~109 t/s | **112 t/s** (no regression) |
+
+Critically, **the spinning gemma4 OMP team was dragging concurrent inference on other roles** via L3/DRAM bandwidth contention even when renice=19 had been applied to gemma4's threads (renice fixes scheduler priority but not memory-subsystem contention). Post-fix:
+
+| Role | With gemma4 spinning | With gemma4 KMP_BLOCKTIME=10 |
+|---|---|---|
+| frontdoor decode (thinking mode) | 7.21 t/s | **12.85 t/s** (+78%) |
+| coder_escalation decode | 4.02 t/s | 12.34 t/s (+207%) |
+| ingest_long_context decode | 10.46 t/s | 28.99 t/s (+177%) |
+
+Wired in `orchestrator_stack.py:start_server` worker_pool branch under the same `if binary_override:` gate. The general pattern (AOCC libomp ignores standard OMP 5.0 pause API; KMP_BLOCKTIME is the supported tunable) applies to any future ik_llama.cpp-based role added via `runtime_requirements.binary_dir`.
+
+**Reference memory**: `feedback_ik_llamacpp_omp_idle_spin` (updated with full resolution path).
+
+### 2026-05-16 — TIDE dynamic early-exit was the inflated bench number (cost of correctness)
+
+Bisect across 62 llama.cpp commits between 2026-04-24 and 2026-05-02 traced a frontdoor "regression" (16.4 → 12.45 t/s on Qwen3.6-35B-A3B Q8) to a single commit: **`2ffbdbbba` "fix: gate TIDE dynamic early exit on explicit --n-layer-exit flag"** (2026-05-02). The commit's rationale, verbatim:
+
+> Commit 0a9e8e5bc unconditionally activated TIDE layer reduction in the server decode loop for all models. After 5 warmup tokens with 3 consecutive >80% confidence tokens, llama_set_n_layer_exit() was called, skipping the last ~5 layers of any model — including qwen35moe (Qwen3.6-35B-A3B) which does not wire n_layer_exit into its layer loop or recurrent state management. **This corrupted GatedDeltaNet state, producing garbage output (TemplateName, TargetException, WidgetItem token sequences)** on non-trivial prompts.
+
+Reproduced verbatim on current binary with `--n-layer-exit 5..56` (re-enables TIDE per the fix's gating). Real bench prompt from `agentic.yaml:t1_q1_sequential` produces output like:
+
+```
+[{"tool": "grep_search",arguments {"htagTargetExceptionTargetExceptionTargetException...
+TemplateNameTemplateName...lésãoárd可梦obilizedNametoweTemplateName
+```
+
+Sweep across `--n-layer-exit ∈ {5, 20, 40, 56}` caps at 16.7-17.6 t/s (always corrupted).
+
+**The bench CSV at `epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_baseline.csv` (April 24, 25-30 t/s per question) was measured under TIDE-active conditions.** Claude-as-Judge scores were on factual correctness, not token-level integrity; corruption tends to appear in trailing tokens after the model emits a usable answer, so Judge scoring of 3/3 is consistent with corruption being present but tolerable for the leading answer text.
+
+The correctness fix was correct. **Don't re-enable TIDE.** The orchestrator's RegistryLoader-driven launch path never passes `--n-layer-exit` for any production role today; TIDE is fully gated off by design.
+
+**Residual gap**: even on the **April 20 binary (pre-TIDE entirely, head `81df3f7c`)** in total isolation (all other servers killed, 1068 GB free, fresh drop_caches), Qwen3.6-35B-A3B Q8 only delivers 12.13-12.48 t/s — not the 26 t/s recorded in the April 20 bench retest. CPU boost is correct. The 2x gap survives every config and binary lever tested. Most-plausible remaining cause: sustained multi-day uptime + cumulative throttle that `drop_caches` no longer fully restores (per memory `feedback_host_throttle_check`). Reboot test pending.
+
+**Cross-references**: [progress/2026-05/2026-05-16.md](../progress/2026-05/2026-05-16.md), llama.cpp commit `2ffbdbbba`, bench CSV `epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_retest_fork_fix.json`.

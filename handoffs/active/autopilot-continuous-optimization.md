@@ -680,3 +680,57 @@ The 1-day spike has a 4-criterion go/no-go gate at end of Day 1 PM. Conditional 
 - **Failure-mode taxonomy seed labels** (hallucinated tool calls, redundant args, refusal loops, semantic correctness) for autopilot's trace-clustering pass.
 
 Most autopilot infrastructure that HALO would build is already done: `telemetry.py:to_otlp_span` (OTLP emission since 2026-04-12), trace-driven mutator (Tier-1 done), code-mutation search (Tier-2 done), GEPA evolution (intake-345 done), RLM REPL recursion (intake-153 R1-R6 done at ~80% pattern coverage). The spike specifically tests whether HALO's *analyzer* surface produces actionable findings against our autopilot trial telemetry — it is NOT a wholesale autopilot rewrite.
+
+---
+
+## Session 2026-05-16 — Recovery + host-health integration + journal purge
+
+### Trigger
+
+Autopilot was running 8.5h producing garbage data. Quality had collapsed from the April plateau (1.14 avg) to 0.6-0.9 today. User asked "Can we review the autopilot's progress?"
+
+### Root-cause chain (verified)
+
+1. **gemma4 worker_general spinning 95 cores idle.** Yesterday's `OMP_WAIT_POLICY=passive` fix had silently broken MTP first-decode coordination (`llama_decode ret=-3`, server hangs forever on first request). Reverting passive → active brought MTP back but then the libomp team busy-loops between requests.
+2. **architect_general crashed.** GGML_ASSERT in `common_speculative_state_tree::draft` — Qwen3.5-122B's M-RoPE refuses position rollback when speculative draft tokens are rejected. Persistent across np=1/np=2 attempts. Mitigated by setting `_NO_SPEC_DECODE = {"architect_general"}` in orchestrator launcher — disables -md flag for architect, retains moe_expert_reduction.
+3. **Half the stack down.** Ports 8080/8081/8083/8084 had no listening processes; seeder's `model_registry.yaml` `port:` fields pointed at those quarter-mode ports while launcher used full-mode 8070/8071/8072. Seeder `[INFRA_SKIP] worker_general` resulted from this mismatch, not from gemma4 actually being unreachable.
+4. **Duplicate Qwen3.6-35B Q8 server.** frontdoor (8070) + coder_escalation (8071) running TWO copies of same GGUF — 72 GB duplicate mlock + 2× competing 96-thread OMP teams. Removed in `ROLE_LAUNCH_META`: coder_escalation aliased onto frontdoor's server via `shared_with_first_n`. **+69% frontdoor throughput** from removing the contention.
+5. **Registry cross-section conflict.** `architect_general` had `acceleration` in BOTH `server_mode.X` and `roles.X` with **different `type:` values** (`moe_expert_reduction` vs `speculative_decoding`). RegistryLoader silently picked one; my edits to the other no-op'd, costing ~2h of debugging time.
+
+### Fixes landed in code
+
+| Fix | File | Verified |
+|---|---|---|
+| `KMP_BLOCKTIME=10` for binary_override roles (gemma4 MTP) | `orchestrator_stack.py:1944` (worker_pool branch) | gemma4 idle cores 95.05 → 0.00; threads sleep on `futex_wait_queue`; frontdoor +78% / coder +207% / ingest +177% throughput |
+| `_NO_SPEC_DECODE = {"architect_general"}` gate | `orchestrator_stack.py:1659` | architect serves cleanly at 12.5 t/s (was crashing) |
+| `_renice_all_threads(pid, 19)` per-thread renice helper | `orchestrator_stack.py:1251` | all 289 gemma4 threads at nice=19 on fresh launch (CLI `renice -p PID` only does lead thread) |
+| Same-GGUF consolidation: `frontdoor.shared_with_first_n = [coder_escalation, worker_summarize]` | `orchestrator_stack.py:371-388` | 36 GB freed; one OMP team |
+| `load_state()` drops non-ProcessInfo stubs | `orchestrator_stack.py:820-832` | `status` / `stop --all` no longer crash on dict entries |
+| Registry validator on `cmd_start` | `src/registry/registry_validator.py` (new) | strict-load + cross-section + same-GGUF-same-port checks; catches the architect dup |
+| Registry compile from master (opt-in `--compile-registry`) | `src/registry/registry_compiler.py` (new) | SHA-256 cache key; transitive draft/alias dep resolution; produces 10-role lean view |
+| Host-health auto-remediation | `scripts/autopilot/host_health.py` (new) + `safety_gate.py` (wire-in) | Throttle / freq / page-cache detection; auto-runs `sudo /usr/local/sbin/autopilot-flush-cache` before attributing throughput violation to config |
+| Master registry `architect_general` reconciliation | `epyc-inference-research/orchestration/model_registry.yaml:559+` / `:1170+` | `roles.X.acceleration` no longer references swapped-out Qwen3-235B-A22B |
+
+### Journal data purged
+
+Polluted trials 314-322 (today's run) removed from `autopilot_journal.tsv` + `.jsonl`. Backups at `orchestration/autopilot_journal.{tsv,jsonl}.bak-20260509-094821`. Pareto archive in `autopilot_state.json` did not contain those trials (state.json wasn't updated mid-trial). Trial counter at 323; next trial keeps that ID (no gap-renumbering).
+
+### Frontdoor throughput investigation — open
+
+User noted bench CSVs (`epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_baseline.csv`) show 25-30 t/s per-question for Qwen3.6-35B Q8, while current measurement is 12.5 t/s.
+
+git bisect across 62 llama.cpp commits between April 24 (`e734a682`) and May 2 (`2ffbdbbba`) identified the first-bad commit as **`2ffbdbbba` — "fix: gate TIDE dynamic early exit"**. The pre-fix binary silently dropped ~12.5% of layers for ALL models via TIDE, producing **+30% throughput AT THE COST OF corrupted output**. Reproduced verbatim: `--n-layer-exit 5..56` on current binary, real bench prompt → output emits `TargetExceptionTargetException`, `TemplateName`, mixed CJK garbage (matching the commit message's description). **TIDE was the inflated bench number; your fix was correct.**
+
+But: even with the April 20 binary (pre-TIDE entirely, head `81df3f7c`), bench recipe in TOTAL isolation (all other servers killed, fresh `drop_caches`, 1068 GB mem free) only delivers **12.13-12.48 t/s**, not 26. CPU boost is correct (3.9 GHz all-core, 4.5 GHz single-core peak). The 26 t/s bench-era number is currently unreproducible. Most likely cause per `feedback_host_throttle_check`: sustained multi-day uptime (6d 18h) with cumulative throttle that `drop_caches` no longer fully restores.
+
+**Next test (operator action)**: reboot, then re-run bench-recipe in isolation. If 25 t/s recovers, host-state hypothesis confirmed and no code action needed. If still 12.5, the binary or model file state has genuinely changed since April 20 and needs deeper investigation.
+
+### Autopilot relaunch readiness
+
+- Stack healthy, all 13 servers including new same-GGUF consolidation on 8070
+- Validator gates `cmd_start` (will fail-fast on future cross-section drift)
+- Polluted journal entries gone
+- host_health.py + safety_gate wired (will auto-remediate throttle on regression detection)
+- Registry compile module ready (opt-in via `--compile-registry`; default off pending master/orchestrator port-plan reconciliation)
+
+**Awaiting operator decision on autopilot restart timing.** Recommended: post-reboot, to also test the host-throttle hypothesis cleanly.
