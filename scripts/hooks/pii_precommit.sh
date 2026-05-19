@@ -109,6 +109,18 @@ is_version_or_hash_line() {
   return 1
 }
 
+is_social_status_url_line() {
+  # Skip lines containing X / Twitter status URLs — status IDs are 18-19 digit snowflake IDs.
+  # Common shapes:
+  #   x.com/<handle>/status/2054906931664585027
+  #   x.com/i/status/2052103646712828119
+  #   twitter.com/<handle>/status/1234567890123456789
+  # Added 2026-05-19 after wiki batch surfaced jun_song / @neural_avb X-post intakes.
+  local line="$1"
+  echo "$line" | grep -qE '(x\.com|twitter\.com)/[^[:space:]]*status/[0-9]{15,19}' && return 0
+  return 1
+}
+
 scan_blob() {
   local path="$1"
   local blob_content="$2"
@@ -141,6 +153,9 @@ scan_blob() {
         continue
       fi
       if is_decimal_float_line "$fullline"; then
+        continue
+      fi
+      if is_social_status_url_line "$fullline"; then
         continue
       fi
       printf 'BLOCKED: %s:%s: [%s] %s — matched: %s\n' "$path" "$lineno" "$label" "$desc" "$(echo "$match" | head -c 80)" >&2

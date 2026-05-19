@@ -394,3 +394,19 @@ Hermes is one *client* of the orchestrator's `/v1/chat/completions` + `x_*` over
   - Delta from current approach: Hermes's current browser tool path (if any) runs Playwright directly. Camofox wraps Playwright + Camoufox in a server process with an anti-detection layer — this makes Hermes's web browsing far more reliable against bot-detection-protected sites without any changes to Hermes's tool calling logic (only the backend URL changes).
   - **Fallback chain constraint**: per the source architecture doc ("SearXNG first, Camofox last"), Camofox should only be invoked as the terminal fallback in a four-step chain: Search (SearXNG) → Scrape (Firecrawl single-page) → Crawl (Firecrawl limited) → Browse (Camofox). Hermes's web tool routing should reflect this order — open Camofox only when the page forces interaction, not on first fetch attempt.
   - Action item: when wiring Hermes's browser tool (Phase 2+ enhancement or P2.6 work items), consider setting `browser_provider: camofox` in `scripts/hermes/config.yaml` with `camofox_url: http://localhost:9377`. This is a one-line config change once camofox-browser Docker container is running.
+
+## Research Intake Update — 2026-05-19
+
+### Recursive agent training + latent multi-agent — direct architectural matches
+
+- **[intake-536] RAO (Recursive Agent Optimization)** (arxiv:2605.06639, CMU — Gandhi/Chakraborty/Wang/Kumar/Neubig)
+  - RL training paradigm that teaches an agent to dynamically spawn and coordinate recursive child agents — Python REPL execution tree, asyncio.gather for parallel children, **child outputs as first-class Python objects the parent inspects BEFORE loading into context**. Direct match for this handoff's REPL-as-delegation-surface design intent.
+  - Three training tricks worth lifting: mean-of-children delegation bonus (anti-trivial-spawn), multi-task objective across tree depths (auto-curriculum), LOO baseline + depth-level inverse-frequency weighting.
+  - Headline results: TextCraft-Synth hard 0.88 (recursive) vs ~0 (single-agent); Oolong-Real 30B recursive ≈ frontier Claude/o3/GPT-5-mini.
+  - **Pair with [intake-550] ReDel** (arxiv:2408.02248, EMNLP 2024 Demos, MIT licensed) — open-source recursive multi-agent toolkit that already implements the REPL+asyncio+event-replay scaffolding RAO assumes. Evaluate as the harness substrate before in-house build.
+  - Tier 2b: RLM reproduction (intake-547, arxiv:2603.02615) shows depth=2 recursion DEGRADES accuracy and inflates wallclock 96×. Default max_depth=1 for any Hermes-outer-shell integration unless we explicitly train a depth-controller.
+
+- **[intake-555] LatentMAS** (arxiv:2511.20639, ICML 2026 Spotlight) — training-free latent collaboration in multi-agent systems via last-layer hidden embeddings. Claims 4×–4.3× decode speedup, 70.8%–83.7% token reduction, +14.6% accuracy across 9 benchmarks. Training-free fit for frozen GGUF stack is uniquely tractable here vs RMAS (intake-544, requires RecursiveLink fine-tuning).
+- **[intake-558] Dead Weights** (arxiv:2604.08335, Armstrong/Ayoobi/Mukherjee) — cross-architecture frozen-LLM composition via a single learned linear projection (~17.6M trainable params against ~12B frozen). The bridge that would unlock LatentMAS for our heterogeneous GGUF stack — IF the geometric-compatibility claim survives independent reproduction.
+- **Caveat**: both LatentMAS and Dead Weights need llama.cpp HTTP server fork to surface activations across server boundaries (breaks upstream rebase compat). Action: monitor; revisit when (a) Dead Weights independent reproduction lands, or (b) llama.cpp upstream exposes activation hooks.
+

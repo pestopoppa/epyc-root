@@ -554,3 +554,51 @@ These handoffs are tracked in other indices but have cross-cutting impact here:
 - **[intake-426] "Dive into Claude Code: The Design Space of Today's and Future AI Agent Systems"** (arxiv:2604.14228)
   - Graduated trust model for routing confidence thresholds: new models start conservative (~20% auto-approve at <50 sessions), relax as benchmarks accumulate (40% at 750+ sessions). Pattern applicable to RI-10 canary and learned routing controller work. No new task code — design pattern absorbed into existing P6/P13.
   - Input-only classification (anti-gaming pattern): Claude Code's permission classifier sees user request + tool call but NOT model reasoning — prevents model from influencing its own safety gate. Validates current `factual_risk.py` design which classifies on input features only. No code change needed.
+
+## Research Intake Update — 2026-05-19
+
+### Evolution Strategies at LLM scale — full-cluster ingest with mandatory evaluation protocol
+
+This batch adds four ES-at-LLM-scale papers that together significantly expand the gradient-free post-training tier of this index. **Read together they sharpen — not just extend — what we can say about ES vs gradient RL for routing/coordinator training.**
+
+- **[intake-532] EGGROLL** (arxiv:2511.16652, Foerster lab — Oxford/Mila, Courville/Whiteson/Hodjat/Miikkulainen lineage)
+  - **Mechanism**: rank-r perturbations recover near-inference arithmetic intensity at hyperscale → ~100× throughput at billion-parameter scale, 91% of pure batch-inference throughput.
+  - Pretrains int8 nonlinear RNNs (EGG) end-to-end with no backprop; competitive with GRPO for RWKV post-training on countdown/GSM8K.
+  - **EPYC role**: natural escalation beyond Trinity sep-CMA-ES (intake-474) on the routing/coordinator stack. PDF body could not be parsed directly (binary); content from project landing page + arxiv abstract.
+
+- **[intake-563] Evolution Strategies at Scale** (arxiv:2509.24372, Cognizant AI Labs)
+  - **Result that matters most for EPYC**: pop=30 suffices for billion-parameter LLM fine-tuning. 30 parallel forward passes on a 1B GGUF fit in 1.1 TB RAM with the NUMA-concurrent stack (per `project_concurrent_split_throughput`) — opening a CPU-only fine-tuning path for small drafters/q-scorer heads that would otherwise have no training avenue.
+  - Outperforms PPO/GRPO across multiple axes (long-horizon tolerance, robustness, reduced reward-hacking, training stability).
+  - Erodes the "EGGROLL requires huge populations" framing: if pop=30 is enough, EGGROLL's throughput advantage shrinks at the actual operating point.
+
+- **[intake-564] ESSA** (arxiv:2507.04453, T-Bank/Yandex lineage) — **single most EPYC-relevant paper in the cluster**
+  - **INT4/INT8 quantized inference for fitness evaluation** — the only ES-LLM paper that runs the optimizee in low-bit quant. This is exactly what EPYC's CPU stack does best (`project_q8_8x8_avx512bw_outcome` documents +31.8% at 1t for our AVX-512BW Q8_0 kernel).
+  - LoRA-SVD parameter-space restriction (~thousands of singular values vs billions of weights) keeps the search space tractable at modest population sizes.
+  - +12.6% GSM8K, +22.5% IFEval; 6× faster than GRPO on 128 GPUs to near-optimal.
+  - **Concrete spike candidate (CPU-only, no GPU acquisition required)**: take a Qwen2.5-7B Q4_K_M GGUF, instantiate a ~512-singular-value LoRA-SVD parameter space, run a 200-iteration ES loop (population=16, NES variant) with GSM8K-test as fitness oracle on EPYC. Spike succeeds if any GSM8K delta >2pp under <1 nightshift of compute. **Defer until user approval per `feedback_no_concurrent_inference` and `feedback_speed_verify_via_llama_bench`.**
+
+- **[intake-565] Matching Accuracy, Different Geometry** (arxiv:2604.01499, Hoy/Wang/Pan — Harvard + Miami) — **the qualifying study**
+  - ES and GRPO **match on task accuracy** but produce **nearly orthogonal update directions** in parameter space.
+  - ES induces **substantially larger off-task KL drift** than GRPO; ES updates are broad, GRPO localized.
+  - Sequential continual-learning: ES competitive **only when iteration budget is capped** — otherwise catastrophic forgetting is worse than GRPO.
+  - **Why this matters**: EGGROLL/ES-at-Scale/ESSA all report accuracy parity with GRPO. None of them report off-task KL or continual-learning behavior. Hoy 2026 shows the equal-accuracy outcome **masks materially different model behavior off-task**.
+
+**ES-LLM evaluation protocol (mandatory before any in-house ES spike)**:
+1. **Accuracy on training task** (standard).
+2. **Accuracy AND KL on ≥1 held-out off-task distribution** (per Hoy 2026 off-task drift finding).
+3. **Linear-mode-connectivity to the gradient-trained baseline** when available (sanity check that the solution sits on the same loss basin).
+4. **Iteration-budget control as a first-class hyperparameter** in any sequential/continual-learning setting (Hoy 2026: this is the critical knob preventing forgetting).
+
+Trinity (intake-474) is **grandfathered**: its frozen-backbone sep-CMA-ES-on-a-small-head design sidesteps the off-task-drift mechanism (backbone weights don't move). New full-parameter ES proposals **must** meet the four-point protocol above before adoption.
+
+### Post-deep-dive stub spawn — handoffs/active/
+
+The May 2026 cluster deep-dives (8 documents, `research/deep-dives/2026-05-19-*.md`) spawned **4 ready-to-claim handoff stubs** wired into the master priority queue items #42-#45:
+
+- **[`rao-redel-substrate-spike.md`](rao-redel-substrate-spike.md)** (master P#42 HIGH) — RAO substrate via ReDel toolkit; 3-step gated spike; depth=1 default per Wang reproduction caveat; wires 5-sub-decision orchestration-trace taxonomy into episodic store.
+- **[`x-mas-text-routing.md`](x-mas-text-routing.md)** (master P#44 HIGH) — heterogeneous text-MAS lookup (domain × function → winner-model) on our 4-model stack; **zero llama.cpp changes**; composes with `learned-routing-controller.md` as a routing prior. **Cheap-kill failure mode**: if gemma4-26B-A4B wins ~all cells, heterogeneity is moot and the spike aborts.
+- **[`delta-mem-reproduction.md`](delta-mem-reproduction.md)** (master P#43 HIGH) — δ-mem released-checkpoint reproduction + M.3 KV-Extension prototype + δ-mem GGML port. Falsified baseline finding: current B1 User Modeling = functionally M.1 Prefix → collapses at low capacity.
+- **[`streaming-llm-baseline.md`](streaming-llm-baseline.md)** (master P#45 MED) — gate for the KV-reduction cluster prioritization (LU-KV / KVP / ForesightKV / PBKV / SP-KV all measured against sink+window floor).
+
+**ES cluster status** (intake-532/563/564/565): still tracked under the Hoy 2026 4-gate protocol above. ESSA spike (CPU-feasible via Q4_K_M LoRA-SVD) remains the prime ES-cluster candidate but is **lower priority than the 4 stubs above** because it requires per-bench user approval per `feedback_no_concurrent_inference` and the Trinity retroactive audit (cheapest ES gate) is not yet scheduled.
+

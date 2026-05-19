@@ -240,3 +240,26 @@ Small dense matrices from NNLS/OLS fit in L2 cache. Our EPYC 384MB L3 is overkil
 The paradigm shift: token selection operates in token space (keep/evict), compaction operates in latent space (construct new representations). The closed-form decomposition (NNLS+OLS) makes this practical. At 10x, HighestAttnKeys-fast gives near-lossless quality in seconds. At 20x+, AM is the only viable approach (all token-selection methods degrade significantly).
 
 Online compaction (repeated 50% compactions preserving reasoning state) opens a second use case: extending effective context beyond physical KV cache limits during long generation.
+
+## Research Intake Update — 2026-05-19
+
+### SP-KV cluster — write-time admission and four neighboring KV reduction methods
+
+- **[intake-538] SP-KV: Self-Pruned Key-Value Attention** (arxiv:2605.14037, FAIR — Jégou/Douze/Faysse/Yih/Lomeli/Mazaré/Cabannes/Szilvasy)
+  - **New axis**: jointly trained lightweight **utility predictor** decides at **write time** whether each KV pair is admitted to the long-term cache. Recent-window keeps short-range pairs locally available. Differs from the dominant read-time eviction families (H2O, SnapKV, TriAttention) and from quantization-side methods (TurboQuant/TQ3).
+  - **3–10× KV cache reduction at little/no validation-loss degradation**, structured per-layer/per-head sparsity patterns, longer sequences are MORE compressible.
+  - **Constraint for EPYC**: requires joint fine-tuning of base model + predictor — heavier lift than the inference-only methods (TriAttention, AttentionMatching, SummaryToken) already in active pipeline. Useful as a comparison reference and possible future direction once fine-tuning capacity exists; not drop-in for the current frozen-checkpoint stack.
+  - Tier 2b — **contradicting evidence is concrete**:
+    - **arxiv:2601.14279 (Steele)** shows a 1.7M-param learned scorer (SIP) **fails to beat trivial position-based heuristics** (keep first 4 + last N) across 5 seeds × 4 retention levels × 3 tasks. SP-KV's joint-trained predictor is exactly the KV-only, query-agnostic write-time scorer Steele targets.
+    - **Query-aware methods succeed** because they condition on the current query — read-time selection has an information advantage over SP-KV's write-time admission, which must commit before any future query is observed.
+    - Position-based heuristics (attention-sink + recency window) being competitive aligns with SP-KV's own local-window component — much of SP-KV's reported gains may come from the recency window, not the learned predictor.
+    - **ForesightKV (intake-553)** requires a two-stage Supervised+GRPO recipe **specifically because** a pure learned predictor degraded LM loss on low-entropy tokens — independent corroboration that learned KV importance is brittle without explicit LM-loss safeguards.
+  - **Recommended ablation if/when we evaluate SP-KV**: replace the learned predictor with a position-heuristic (sink + sliding window) baseline at matched cache budget. If SP-KV does not significantly beat that, the learned component is not earning its complexity.
+
+- **[intake-551] KVP / Learning to Evict from KV Cache** (arxiv:2602.10238, Moschella/Manduchi/Sener) — per-head RL agents trained on pre-computed traces; consumes only K/V at write/read time, no LLM weight modification. Generalizes zero-shot to longer contexts and unseen tasks. Per-head specialization is the axis SP-KV does not exploit.
+- **[intake-552] LU-KV** (arxiv:2602.08585, Tang et al.) — global combinatorial optimization for per-head budget allocation via convex-hull relaxation + marginal-utility greedy. **80% KV reduction at minimal degradation on LongBench/RULER**. Static profile after offline training — fits frozen-weights constraint; head heterogeneity is the under-exploited axis.
+- **[intake-553] ForesightKV** (arxiv:2602.03203, Dong et al.) — distills a "Golden Eviction" oracle (future-attention scores) via supervised Pairwise-Ranking, then GRPO RL on LM loss. **Outperforms prior eviction at half the cache budget on AIME 2024/2025**. The Supervised+GRPO recipe is the cleanest published evidence for why pure learned KV importance is brittle.
+- **[intake-554] PBKV** (arxiv:2605.06472, Zheng et al.) — **strongest orchestrator-stack match**. Workflow-level prediction of next-agent invocation drives KV residency. 1.85× over LRU on dynamic workflows. Maps directly onto frontdoor → coder/worker hand-offs where shared long prompts pay BW-bound re-prefill cost on EPYC. Requires a tiny next-agent predictor + llama.cpp prefix-cache hooks; complements frozen GGUF weights.
+
+**Net update to this handoff's roadmap**: KV reduction now has four distinguishable axes — write-time vs read-time selection (SP-KV vs H2O family), per-head vs uniform budget allocation (LU-KV/ForesightKV), workflow-aware vs request-local residency (PBKV), and learned vs heuristic (KVP/SP-KV/ForesightKV vs sink+window). The clearest near-term EPYC opportunity is **PBKV's workflow-aware residency** because it operates at the orchestrator layer (no attention-kernel surgery, no fine-tuning) and matches our frontdoor→worker hand-off pattern.
+

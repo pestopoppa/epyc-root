@@ -129,6 +129,8 @@ Four orthogonal layers, each operating on a different dimension of KV memory:
 
 Combined realistic ceiling: **24-60x** (quant 4x × compaction 2-5x × masking 3x). Note: AM compaction achieves 2x universally lossless, 5x at 0.91 cosine. 10x only viable on early layers or long contexts. Compaction subsumes selection at 20x+ — no benefit stacking both.
 
+**2026-05-19 cluster gate (NEW)** — `streaming-llm-baseline.md` (master P#45 MED) lands a clean sink + sliding-window floor in `epyc-llama` as a **cluster-wide gate** for the May 2026 KV-admission papers (intake-538 SP-KV / intake-551 KVP / intake-552 LU-KV / intake-553 ForesightKV / intake-554 PBKV). Of those 5 papers, only KVP explicitly compared to StreamingLLM — without an internal floor, their relative gains are unanchored against the simplest possible competing technique. **Run before prioritizing LU-KV / KVP / ForesightKV implementations.** PBKV (workflow-aware residency) **composes with** sink+window rather than replacing it, so its prioritization is independent of this gate. See `research/deep-dives/2026-05-19-kv-admission-cluster.md`.
+
 At 256K context, Qwen2.5-Coder-32B KV at f16 = 64 GB. With 2x AM + 4x quant: **~8 GB**. With full 5x AM + quant + masking: **~1.1 GB**. Even conservative 8x (2x AM × 4x quant): enables 8 concurrent slots vs 1 today.
 
 **Cross-instance KV sharing** (KVCOMM, intake-352): Eliminates redundant prefill across homogeneous worker pools (4×48t coder instances sharing codebase context). Planned as Phase F in `dynamic-stack-concurrency.md`. Compounds with AM compaction.

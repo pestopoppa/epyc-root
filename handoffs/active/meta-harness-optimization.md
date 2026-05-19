@@ -413,3 +413,36 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
 **AppWorld dataset (intake-516)**: deferred. See `eval-tower-verification.md` and `agent-world-env-synthesis.md` 2026-04-30 deep-dive refinement sections.
 
 **Risk**: HALO `0.1.2` pre-1.0 churn; default `max_depth=1` matches Tier-2b warning; report is free-text markdown not structured JSON; default analyzer model is gpt-5.4-mini → spike must validate small-model coherence on local 30B-A3B coder before committing.
+
+## Research Intake Update — 2026-05-19
+
+### Recursive Agent Optimization (RAO) — RL training paradigm for recursive agents
+
+- **[intake-536] "Recursive Agent Optimization"** (arxiv:2605.06639, Gandhi/Chakraborty/Wang/Kumar/Neubig — CMU)
+  - Relevance to Meta-Harness: **HIGH**. RAO is the training-side complement to RLM (intake-153, ~80% coverage already implemented): RLM is inference-time orchestration on off-the-shelf models; RAO trains the *policy* to be good at recursive decomposition. Gives us a recipe to produce a LOCAL 8B–30B model that does what we're currently using frontier API models for.
+  - Three training tricks worth lifting into Meta-Harness Tier 3:
+    1. **Mean-of-children delegation bonus** (not sum) explicitly prevents the trivial-spawn exploit — encodes as a reward-shaping constraint when training any policy that can call subagents.
+    2. **Multi-task objective sampled across execution-tree depths** yields an automatic curriculum from model-generated sub-tasks — same policy trained on root + mid + leaf simultaneously.
+    3. **Leave-one-out (LOO) baseline shared across rollout group** + **depth-level inverse-frequency weighting** to prevent leaf-trajectory domination.
+  - Headline results: TextCraft-Synth hard 0.88 (recursive) vs ~0 (single-agent); Oolong-Real 30B recursive ≈ frontier Claude/o3/GPT-5-mini; DeepDive adaptive depth ~4 reaches hardest instances at ~18× single-agent latency.
+  - Inference architecture matches our existing pattern: rooted execution tree on Python REPL; delegation = async function (asyncio.gather); child outputs are first-class Python objects parent inspects/slices BEFORE loading into context. Direct match for `repl-turn-efficiency.md` and `tool-output-compression.md` goals.
+  - Tier 2b — **contradicting evidence (must integrate, not optional)**:
+    - **RLM reproduction** (intake-547, arxiv:2603.02615, Daren Wang): depth=2 recursion DEGRADES accuracy on simple retrieval AND inflates wallclock 96× (3.6s → 344.5s). RAO must demonstrate it overcomes (not just inherits) this overthinking pathology. **Recommended posture**: default `max_depth=1` for any RAO/RLM-style integration on EPYC unless we explicitly train a depth-controller.
+    - **Orchestration-trace survey** (intake-548, arxiv:2605.02801): as of May 2026, NO published RL method explicitly trains the stopping decision — including RAO. The stopping-decision gap is a concrete autopilot research target on its own.
+    - **Process-reward / LLM-judge rewards** are a known reward-hacking attack surface. RAO per-node LLM-judge reward is exactly this proxy class.
+    - **Mean-of-children delegation bonus** rewards delegation when children succeed on AVERAGE — biases parent toward over-delegating easy splits while masking individual catastrophic child failures.
+  - Adjacent assets discovered:
+    - **ReDel** (intake-550, arxiv:2408.02248, EMNLP 2024 Demo, MIT licensed): working open-source recursive multi-agent toolkit. asyncio sub-agent execution + recursive delegation via tool-use + event-stream replay + web-based visual debugger. This is the engineering substrate RAO assumes. **Evaluate ReDel as the harness substrate before in-house build** of halo-trace-loop-spike / rlm-orchestrator integration.
+    - **Tree-GRPO** (intake-549, arxiv:2509.21240, ICLR 2026): GRPO variant where each tree node is a complete agent interaction step, sharing common prefixes across rollouts. Methodological alternative to RAO LOO baseline.
+    - **@neural_avb X-post breakdown** (intake-541) — useful as onboarding/teaching asset alongside the paper.
+  - **Concrete next step**: when Meta-Harness Tier 3 design solidifies, draft a spike that combines (a) ReDel as harness substrate, (b) RAO's three training tricks as the policy training recipe, (c) `max_depth=1` cap per RLM-reproduction caveat, (d) explicit stopping-decision experiment per orchestration-trace survey gap finding.
+  - **STUB DRAFTED 2026-05-19**: ready-to-claim spike at [`rao-redel-substrate-spike.md`](rao-redel-substrate-spike.md) (master priority queue #42). 3-step gated: Step 1 = 1-day ReDel pre-flight (~20 LoC glue, verify `OPENAI_BASE_URL` swap to llama-server drives `DelegateOne` against worker_general); Step 2 = 1-week paired A/B vs current `repl_executor`; Step 3 = 2-3 week feature-flagged substrate replacement (~800-1200 LoC) including 5-sub-decision taxonomy labelling on episodic store.
+
+### Latent multi-agent collaboration cluster — training-free frozen-stack candidate
+
+- **[intake-544] RMAS** (arxiv:2604.25917, Yang et al., shared author lineage with intake-153 RLM), **[intake-555] LatentMAS** (arxiv:2511.20639, ICML 2026 Spotlight, training-free), **[intake-558] Dead Weights** (arxiv:2604.08335, cross-architecture frozen composition)
+  - Relevance: directly addresses meta-harness's open question of whether sub-agent handoffs can avoid the text-detokenize/re-tokenize round-trip. LatentMAS claims 4× decode speedup + 70-83% output token reduction via training-free hidden-state handoff. Dead Weights claims a single learned linear projection suffices to translate activations between heterogeneous architectures (Llama/Qwen/Gemma → Phi/Mistral) — the bridge that would unlock frozen-GGUF deployment.
+  - Tier 2b: requires llama.cpp HTTP server fork to surface last-layer hidden states across server boundaries — breaks compat with upstream rebases. Demonstrated only on homogeneous-tokenizer agent pools in the seed papers; cross-tokenizer claim rests on a single 3-author preprint (Dead Weights) without independent reproduction. Speedup is vs text-MAS baseline, not vs our well-tuned single-server prefix-cache-hit path.
+  - **Action**: monitor — do NOT spin a handoff stub for the latent path. Re-evaluate when (a) Dead Weights independent reproduction lands (GPU rental for Dead Weights replication **DEFERRED** per user direction 2026-05-19), or (b) llama.cpp upstream exposes activation hooks across servers.
+  - **STUB DRAFTED 2026-05-19 for the text-MAS subset**: adjacent **X-MAS** (intake-557, arxiv:2505.16997) is the immediately actionable text-MAS heterogeneity adoption path — its (domain × function × model) optimal-assignment matrix could replace ad-hoc role-bench mapping in our heterogeneous stack. See [`x-mas-text-routing.md`](x-mas-text-routing.md) (master priority queue #44, HIGH, 2-3 dev-days). Cheap-kill failure mode: if 5×5 winner table shows gemma4-26B-A4B winning ~all cells, heterogeneity does not apply to our stack and we abort.
+

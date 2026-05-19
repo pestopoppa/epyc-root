@@ -465,3 +465,33 @@ Our Action 12-15 conciseness work and Action 9 reasoning-length-alarm operate at
     3. The OOD-rollout vs feature-targeted-rollout ablation must run before crediting the +5.84pp.
   - **Near-term integration that does NOT require RL infra**: if budget enforcement in `per-request-reasoning-budget.md` lands AND we observe Qwen-family reasoning runs in our own logs that exhibit precursor-style monotone pre-activation rises in middle-band SAE features, we have an *inference-time* signal for "model is heading into a loop" without any training-time intervention. This is the same idea as the Halo entropy-based adaptive budget already noted in `per-request-reasoning-budget.md` (intake-392, 2026-04-17) — two independent precursor signals for the same internal failure state, both cheap to expose in llama-server.
   - **Action**: monitor only. Do NOT add an SAE-DAPO arm to Phase 3 — the existing DeepConf + STOP comparison is the right scope for the current canary. Re-evaluate when (a) a Qwen-family stuck-in-think is documented in EPYC logs, (b) the Falsifying-SAE-Reasoning-Features paper has been read, (c) RL training infra is online. Until then this is a watch-list item, not an action item.
+
+## Research Intake Update — 2026-05-19
+
+### Latent / abstract Chain-of-Thought cluster — full taxonomy refresh
+
+This update folds five new entries into the Tier-3/Tier-4 axis of the handoff. They collectively cover both the **training-free** and **training-required** branches of the "compress CoT into a non-verbal channel" design space.
+
+- **[intake-545] "Thinking Without Words" (Abstract CoT)** (arxiv:2604.22709, Ramji/Naseem/Astudillo — IBM Research)
+  - Replaces natural-language CoT with a short sequence of tokens from a **reserved abstract vocabulary** — up to **11.6× fewer reasoning tokens** at comparable accuracy. Recipe: policy-iteration warm-up (SFT from verbal CoT + self-distillation under constrained decoding) → warm-started RL.
+  - Emergent power-law over the abstract codebook suggests a compact discrete latent reasoning code is learned.
+  - **Distinct contribution vs existing intake**: discrete reserved-token codebook with policy-iteration warm-up — preserves standard autoregressive decoding (unlike Coconut/CODI/Soft Thinking continuous latent), and uses explicit training (unlike Soft Thinking training-free).
+  - Tier 2b — **measurable regressions on hard reasoning**: AIME'25 24.4% vs SFT+RL 25.6% (−1.2pp); GPQA-Diamond 50.5% vs 51.5% (−1.0pp). Token savings real (2.7×–7.9×) but the seed paper frames these as "comparable" — they are small but consistent regressions on the harder benchmarks. **Action**: measure on representative agent traces (long-tail tool-call reasoning) — report tokens/answer AND pass@1 jointly. Do NOT default to the seed paper's headline 11.6× compression for production.
+
+- **[intake-559] Coconut** (arxiv:2412.06769, Hao/Sukhbaatar/Su/Li/Hu/Weston/Tian — Meta/UCSD, COLM 2025) — **foundational** continuous-thought baseline. Last-layer hidden state fed back as next input embedding, curriculum training. ProsQA 97.0% vs 77.5% verbal CoT (FLOPS-matched). Brittle curriculum is the known weak point.
+- **[intake-560] CODI** (arxiv:2502.21074, Shen/Yan/Zhang et al.) — self-distillation alternative to Coconut: matches explicit CoT at 3.1× compression at GPT-2 scale via single-model two-pass teacher/student alignment. Architecturally cleaner (no curriculum) but unvalidated at >7B scale.
+- **[intake-561] Token Assorted** (arxiv:2502.03275, Su/Zhu/Xu/Jiao/Tian/Zheng — Meta) — **closest cousin** to Abstract CoT: VQ-VAE-learned discrete codebook replaces the early planning portion of the CoT, later steps stay verbal. Random-mix training. Preserves standard autoregressive decoding (no engine changes).
+- **[intake-562] Soft Thinking** (arxiv:2505.15778, Zhang et al.) — **only training-free entry** in the latent-CoT family. Replace argmax with probability-weighted mixture of top-k embeddings, fed back as next input. **Up to +2.48pp pass@1 AND up to 22.4% token reduction** on math + coding with **zero retraining** — only a decoder patch.
+
+**Taxonomy revision**:
+- **Tier 1 (no-training quick wins)**: Soft Thinking (intake-562) is now the highest-priority candidate. **Concrete next step**: implement top-k embedding mixture as an opt-in flag in our llama.cpp fork, verify on coder/frontdoor with measured pass@1 + tokens/answer delta. Risk to flag: mixture-of-embeddings may interact badly with quantized (Q4_K_M/Q6_K) embedding lookups — needs validation that the mixture stays on the model's natural manifold.
+- **Tier 3 (training-required) discrete-codebook head-to-head**: Abstract CoT (intake-545) vs Token Assorted (intake-561). Pick winner based on EPYC-relevant metric: tokens/decision at parity accuracy on coder/frontdoor traces. Both preserve standard llama.cpp decode path.
+- **Tier 4 (architectural alternatives)**: Coconut (intake-559) and CODI (intake-560) as foundational references — do not pursue implementation; cite when explaining why discrete reserved-token approach is preferable for our setting (preserves token-level inspection, no architecture change).
+
+### Practitioner skepticism signal — verified-vs-hyped local-LLM speedups at 100k+ ctx
+
+- **[intake-542] @jun_song (Super-Tune) X post** + **[intake-566] CGR (Certainty-Guided Reasoning)** (arxiv:2509.07820, Nogueira/Sun/Silva/Zumot)
+  - jun_song's empirical claim: after testing "most viral X speed tricks", only **(1) SFT for duplicate-inference suppression** and **(2) Adaptive Thinking dynamic budget** verified as quality-preserving at 100k+ context. CGR is the **concrete, model-agnostic, no-training implementation of Adaptive Thinking**: periodically probes answer-token certainty during the thinking trace, terminates early once a threshold is reached. Reports AIME2025 baseline accuracy preserved with millions of tokens eliminated in aggregate.
+  - Adjacent — Tier 2b — **adaptive thinking is bimodally brittle**: arxiv 2505.15400 documents the failure mode (under-thinking on hard questions, over-thinking on easy questions). ASRR framework reports ~32.5% budget reduction at ~1.2% pass@1 accuracy loss — the accuracy hit is **non-zero**, contradicting any "quality preserved" framing.
+  - **Concrete action**: CGR prototype is low-risk — a llama-cli sampling-loop patch in epyc-llama; A/B against existing reasoning-budget cap on a single bench. If even half the claimed aggregate-token reduction holds at our temperature/topk settings, the throughput win compounds with existing CPU optimizations without conflicting with `project_slot_promotion_shelved`.
+

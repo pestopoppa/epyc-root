@@ -127,3 +127,19 @@ Per [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) K8:
 
 - [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — K8 wikilink learning-loop scorer (deferred)
 - intake-492 (Flywheel) — wikilink scorer pattern + read-side `memory(action=brief)` assembler
+
+## Frozen-backbone persistent memory cluster (2026-05-19)
+
+Two May 2026 papers bracketing the design space for attaching trained persistent-memory modules to frozen LLM backbones — directly addressing the open question of how to give the orchestrator cross-session memory without retraining 26-30B production models.
+
+**δ-mem** (intake-539, arxiv:2605.12357, Lei et al. — declare-lab) — lightweight delta-rule online associative memory sidecar to a frozen full-attention backbone. Historical context compressed into a compact online state matrix (e.g. 8×8) updated via delta-rule; low-rank corrections injected into attention. **Released code + adapter checkpoint**: [github.com/declare-lab/delta-Mem](https://github.com/declare-lab/delta-Mem) CC-BY-4.0 with Qwen3-4B-Instruct-2507 adapter. Reported 1.10× avg over frozen backbone, **1.31× MemoryAgentBench, 1.20× LoCoMo**. Validation cost: 3-day reproduction is the cheapest first-week validation in the May 2026 batch.
+
+**Six-topology comparative study** (intake-568, arxiv:2603.16413) — catalogues six topologies for attaching memory to frozen Flan-T5-XL: M.1 Prefix, M.2 XAttn (parallel cross-attn), M.3 KV Extension, M.4 Hebbian (outer-product, 1.0M params — direct ancestor of δ-mem), M.5 Gated, M.6 Slot (top-k sparse). Headline empirical: **no single winner — capacity is the design knob**. M.2/M.6 win at low capacity; M.4 wins at high capacity / long-lag. No code released.
+
+**Falsified baseline finding** — the cluster deep-dive identifies that our shipped B1 User Modeling (SQLite snapshot of user_conclude/user_profile injected into the system prompt per `orchestrator-conversation-management.md` completed handoff) is **functionally M.1 Prefix**, which intake-568 measures collapsing to **~0% at low capacity**. The orchestrator User Modeling slot is the natural integration target for δ-mem (online) or M.4 Hebbian (long-lag).
+
+**Easiest llama.cpp integration path**: **M.3 KV Extension** (4.2M params) needs zero custom GGML ops — just prepend learned K/V vectors to the cache at decode start. Estimated **~3 engineer-weeks** for a first prototype against gemma4 worker_general. δ-mem path is ~5-6 weeks but shares kernel scaffolding with the active `log-linear-gated-deltanet-readiness.md` handoff (delta-rule primitive is shared with DeltaNet).
+
+**Spike ladder** at [`delta-mem-reproduction.md`](../handoffs/active/delta-mem-reproduction.md): Phase 1 (3 days) reproduce released δ-mem Qwen3-4B adapter on EPYC; Phase 2 (3 weeks) ship M.3 KV-Extension adapter for gemma4 wired into B1 User Modeling data path; Phase 3 (6 weeks) full δ-mem GGML port + cross-session persistent bank combined with M.4-style Hebbian for long-lag retention.
+
+**Sources**: [intake-539](https://arxiv.org/abs/2605.12357) δ-mem · [intake-568](https://arxiv.org/abs/2603.16413) Six-topology comparative study · [Deep-dive](../research/deep-dives/2026-05-19-frozen-memory-cluster.md) · [Reproduction spike](../handoffs/active/delta-mem-reproduction.md)

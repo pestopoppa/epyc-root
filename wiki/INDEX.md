@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-09 (added ik_llama.cpp PR #1744 OMP idle-spin caveat to gemma4 MTP section of speculative-decoding)
+**Last compiled**: 2026-05-19 (May 2026 cluster intake batch: RAO/RLM substrate + latent MAS + latent CoT + KV admission + frozen memory + ES@LLM-scale + adaptive thinking — added to agent-architecture, kv-cache, context-management, memory-augmented, reinforcement-learning)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 271 documents across 6 source types
+**Total sources**: 291 documents across 6 source types
 
 ---
 

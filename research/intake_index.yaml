@@ -23661,3 +23661,2291 @@
   novelty_justification: 'High — kept after deep-dive. The TwELL bit layout (32-bit per non-zero with embedded 16-bit col-idx + 16-bit BF16 value, per-row NNZ header, T_n=256 tile width, compression factor 2/4/8x) is genuinely new kernel-engineering work and is well-modularized into D2T (Hopper-specific monolith) + gated-T2D (largest file, fused) + lightweight-T2D (153-line bandwidth-bound CUDA-cores path) + Hilbert-curve scheduler. The lightweight-T2D path is the inference-relevant one and is the cleanest target for an AVX-512BW port. The D2T fusion-with-up-projection co-design is novel for this kernel class. As an algorithm: incremental on ReLUfication / ProSparse. As an engineering artifact: real and worth referencing.'
   relevance_justification: 'Medium — confirmed after deep-dive (research/deep-dives/sakana-sparser-faster-llms-deep-dive.md), with sharpened caveats. The actionable artifact is the TwELL bit-layout as a CPU-port-design reference for any future ReLU-FFN training experiment, not the SparseLM checkpoints themselves (which are 2 048-context dense gated-MLP toys). T2D-only AVX-512BW port is feasible at ~1-2 dev-weeks (gated on Zen 5 AVX512_BF16 verification per project_zen5_vnni_vs_maddubs precedent), but no production model in our stack uses ReGLU activations, so any port has no immediate consumer. Per feedback_dont_dismiss_creative_uses and feedback_research_exhaustion_first, MEDIUM is the honest call: track for kernel-design reference, do not open a port handoff.'
   verdict_justification: 'worth_investigating (narrowed to "format-spec reference for any future ReLU-FFN CPU training experiment"). Reasons NOT new_opportunity: (1) production-stack adoption blocked by MoE/SwiGLU/2K-context triple wall; (2) the natively-sparse-pretrained-weights framing was wrong — sparsity is dynamic per-token, weights are dense BF16, so there is no one-time conversion path; (3) repo is single-author/4-commits/no-tests/no-CI publication drop. Reasons NOT not_applicable: (a) TwELL bit layout is a CPU-portable design reference, (b) lightweight-T2D path maps cleanly to AVX-512BW. Credibility=3 (lowered from 4 in initial intake): companion peer-able paper (+2), Sakana AI maintainer with prior credibility from Trinity/Conductor/KAME (+1), MIT/Apache-2.0 license + HF checkpoints provide reproducibility-in-principle (+1), but single-author / 4 commits / no tests / no CI / empty model cards / single open PR stalled — net 3. Refined re-surface triggers in deep-dive document. Do NOT open a port handoff today; the trigger conditions (Qwen/DeepSeek-family ReLU-trained checkpoint, MoE-TwELL variant, finetune-from-existing-weights recipe, internal pretraining campaign) are all absent.'
+- id: intake-532
+  arxiv_id: '2511.16652'
+  url: https://eshyperscale.github.io/imgs/paper.pdf
+  source_type: paper
+  title: Evolution Strategies at the Hyperscale (EGGROLL)
+  authors:
+  - Bidipta Sarkar
+  - Mattie Fellows
+  - Juan Agustin Duque
+  - Alistair Letcher
+  - Antonio León Villares
+  - Anya Sims
+  - Clarisse Wibault
+  - Dmitry Samsonov
+  - Dylan Cope
+  - Jarek Liesen
+  - Kang Li
+  - Lukas Seier
+  - Theo Wolf
+  - Uljad Berdica
+  - Valentin Mohl
+  - Alexander David Goldie
+  - Aaron Courville
+  - Karin Sevegnani
+  - Shimon Whiteson
+  - Jakob Nicolaus Foerster
+  categories:
+  - training_distillation
+  - routing_intelligence
+  - hardware_optimization
+  - quantization
+  key_claims:
+  - EGGROLL structures individual ES perturbations as rank-r matrices so batched forward passes recover near-inference arithmetic intensity on GPUs
+  - ~100x throughput speedup at billion-parameter scale + large population vs naive ES; up to 91% of pure batch-inference throughput
+  - 'Theoretical consistency proof: low-rank perturbation gradient estimator converges to standard ES estimator in high dimensions'
+  - Enables stable pretraining of integer-only nonlinear RNNs (custom int8 EGG — no activation functions, no backprop)
+  - Competitive with GRPO for LLM post-training (RWKV) on countdown / GSM8K — maintains ES performance in RL without speed compromise
+  techniques:
+  - low-rank perturbation ES
+  - EGGROLL
+  - rank-r structured noise
+  - integer-only RNN pretraining (EGG)
+  - RWKV ES fine-tuning
+  - JAX implementation
+  - GPU batched ES
+  reported_results:
+  - ~100x training-speed gain at billion-param scale + large population
+  - 91% of batch-inference throughput
+  - GSM8K + countdown competitive with GRPO on RWKV
+  - int8 EGG nonlinear RNN trained end-to-end with no backprop
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-and-optimization-index.md
+    - learned-routing-controller.md
+    - decision-aware-routing.md
+    - tri-role-coordinator-architecture.md
+    - outer-coordinator-learned-head.md
+    - meta-harness-optimization.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-474 (Trinity / sep-CMA-ES coordinator, arxiv:2512.04695)
+    - intake-563 (ES-at-Scale companion, arxiv:2509.24372)
+    - intake-564 (ESSA LoRA-SVD + INT4/INT8, arxiv:2507.04453)
+    - intake-565 (ES vs GRPO geometry, arxiv:2604.01499)
+  handoffs_updated:
+  - routing-and-optimization-index.md
+  handoffs_created: []
+  novelty_justification: First ES variant to recover near-inference arithmetic intensity at hyperscale via rank-r perturbation structure; opens billion-param backprop-free pretraining and competes with
+    GRPO on LLM reasoning. Distinct mechanism vs sep-CMA-ES (Trinity intake-474) — EGGROLL is full-network low-rank.
+  relevance_justification: Direct intersection with P19.5 (sep-CMA-ES routing-head cold-start spike) and the broader decision-aware-routing / outer-coordinator-learned-head agenda. EGGROLL would (a) extend
+    ES from the 10K-param Trinity head to full model adaptation, (b) make ES-based post-training of small router/verifier LLMs CPU-tractable in JAX, (c) inform integer-only inference exploration relevant
+    to llama.cpp quantization. Foerster/Whiteson/Courville lineage; direct successor to Sakana Trinity work.
+  verdict_justification: Worth investigating as the natural escalation beyond Trinity sep-CMA-ES on routing/coordinator stack. PDF body could not be parsed directly (binary); content extracted from project
+    landing page + arxiv abstract.
+- id: intake-533
+  arxiv_id: null
+  url: https://nvlabs.github.io/Sana/WM/
+  source_type: blog
+  title: 'SANA-WM project page: Efficient Minute-Scale World Modeling'
+  authors:
+  - NVIDIA Labs (Sana team)
+  categories:
+  - multimodal
+  - training_distillation
+  - hardware_optimization
+  key_claims:
+  - SANA-WM extends the SANA efficient text-to-image framework (DC-AE 32x compression autoencoder, linear attention, decoder-only LLM text encoder) into a video world model targeting minute-scale temporal
+    generation
+  - 'Goal: efficient world modeling at minute-long horizons leveraging Sana high-compression VAE and linear-attention DiT'
+  - Positioned as the 'WM' variant of the broader Sana family (Sana-0.6B / 1.6B image models, arxiv 2410.10629)
+  techniques:
+  - Deep-compression autoencoder (DC-AE, ~32x spatial)
+  - Linear attention DiT
+  - Decoder-only LLM text encoder
+  - Minute-scale temporal modeling
+  reported_results:
+  - No numerical FID/FVD/latency on landing page at fetch time
+  - 'Parent Sana-0.6B: 1024x1024 image in <1s on 16GB laptop GPU (context only)'
+  referenced_arxiv_ids:
+  - '2410.10629'
+  - '2605.15178'
+  novelty: medium
+  relevance: low
+  credibility_score: 5
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-534 (NVlabs/Sana repo)
+    - intake-535 (SANA-WM paper, arxiv:2605.15178)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Sana family techniques (DC-AE, linear-attention DiT, LLM text encoder) are known from arxiv 2410.10629; WM extension to minute-scale video is a new application but the core methods
+    are previously indexed.
+  relevance_justification: EPYC focus is CPU LLM inference. SANA-WM is GPU video-generation / world-model system, no intersection with CPU-bound LLM stack. multimodal-pipeline.md is language-side (Gemma-4),
+    not video generation.
+  verdict_justification: not_applicable consistent with precedent (MultiWorld, WorldMark, UniT-WM intake entries). Revisit only if multimodal-pipeline expands to video gen/understanding on EPYC.
+- id: intake-534
+  arxiv_id: null
+  url: https://github.com/NVlabs/Sana
+  source_type: repo
+  title: 'SANA: Efficient High-Resolution Image Synthesis with Linear Diffusion Transformer'
+  authors:
+  - NVlabs
+  - MIT-Han-Lab
+  - Enze Xie
+  - Junsong Chen
+  - Junyu Chen
+  - Han Cai
+  - Song Han
+  categories:
+  - multimodal
+  - training_distillation
+  key_claims:
+  - SANA is 20x smaller and 100x faster than Flux-12B for text-to-image up to 4K
+  - SANA-Sprint generates a 1024px image in 0.1s on H100 via one/few-step generation
+  - Runs on laptop GPUs with <8GB VRAM via 4-bit quantization
+  - SANA-Video extends framework to 720p video via Block Causal Linear Attention + Causal Mix-FFN
+  - 'SANA-1.5: 1.6B→4.8B compute scaling, 6.5-23.3x faster than FLUX-dev at 1024x1024'
+  techniques:
+  - Linear-DiT
+  - Linear Attention
+  - DC-AE
+  - Decoder-only LLM text encoder
+  - Block Causal Linear Attention
+  - sCM continuous-time consistency distillation
+  - Sol-RL (NVFP4 rollout / BF16 optimizer)
+  - 4-bit weight quantization
+  reported_results:
+  - 'SANA-1.5 1.6B: 1.2s @ 1024x1024, FID 5.70, CLIP 29.12 (H100)'
+  - 'SANA-Sprint: 0.1s/1024px image (H100)'
+  - 'SANA-Video-2B: 36s @ 720p, VBench 84.05'
+  - <8GB VRAM laptop inference via 4-bit
+  referenced_arxiv_ids:
+  - '2410.10629'
+  - '2501.18427'
+  - '2503.09641'
+  - '2509.24695'
+  - '2604.06916'
+  - '2605.15178'
+  novelty: medium
+  relevance: none
+  credibility_score: null
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-533 (Sana WM project page)
+    - intake-535 (SANA-WM paper, arxiv:2605.15178)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Active NVlabs/MIT-Han-Lab project; Linear-DiT + DC-AE + sCM distillation novel diffusion-side techniques. Not duplicate in index.
+  relevance_justification: EPYC stack focus is CPU LLM inference (text-only). SANA is GPU-targeted T2I/T2V diffusion. <8GB VRAM still means GPU; Linear Attention/DC-AE/sCM do not transfer to autoregressive
+    LLM decode.
+  verdict_justification: Not applicable to current EPYC CPU-LLM-inference roadmap. Recorded for completeness; revisit only if generative-media role is ever added to the orchestrator stack.
+- id: intake-535
+  arxiv_id: '2605.15178'
+  url: https://arxiv.org/abs/2605.15178
+  source_type: paper
+  title: 'SANA-WM: Efficient Minute-Scale World Modeling with Hybrid Linear Diffusion Transformer'
+  authors:
+  - Haoyi Zhu
+  - Haozhe Liu
+  - Yuyang Zhao
+  - Tian Ye
+  - Junsong Chen
+  - Jincheng Yu
+  - Tong He
+  - Song Han
+  - Enze Xie
+  categories:
+  - multimodal
+  - ssm_hybrid
+  - hardware_optimization
+  key_claims:
+  - 2.6B open-source world model generates 720p minute-scale videos with precise 6-DoF camera control; matches industrial baselines (LingBot-World, HY-WorldPlay)
+  - Hybrid Linear Attention combining frame-wise Gated DeltaNet with softmax attention yields ~36x higher throughput vs prior open-source video world-models
+  - Distilled NVFP4-quantized variant produces a 60s clip in 34s on a single RTX 5090
+  - Trained on ~213K public video clips in 15 days on 64 H100 GPUs
+  - Two-stage long-video refiner + robust metric-scale pose annotation pipeline enables strong action-following accuracy
+  techniques:
+  - Hybrid Linear Attention (frame-wise Gated DeltaNet + softmax)
+  - Dual-Branch Camera Control (6-DoF)
+  - Two-Stage Generation Pipeline
+  - Metric-scale pose annotation
+  - NVFP4 quantization
+  - Diffusion Transformer (DiT)
+  reported_results:
+  - 36x higher throughput vs prior open-source world models
+  - 34s per 60s 720p clip on RTX 5090 (distilled NVFP4)
+  - 'Training: 15 days on 64 H100, ~213K clips'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - multimodal-pipeline.md
+    - gpu-acceleration-path.md
+    - agent-world-env-synthesis.md
+    experiments: []
+    intake_entries:
+    - intake-533 (Sana WM project page)
+    - intake-534 (NVlabs/Sana repo)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First open-source minute-scale 720p world model with camera control combining Gated DeltaNet linear attention with softmax in a DiT; technique novel for video gen but Hybrid Linear
+    Attention itself is incremental on prior GDN/hybrid SSM work.
+  relevance_justification: EPYC focus is CPU LLM inference. Targets GPU video diffusion world-modeling — different modality, GPU-only deployment, minute-scale generation with no obvious CPU inference path.
+    Gated DeltaNet block design weakly overlaps with log-linear-gated-deltanet-readiness but in DiT/video context not autoregressive LM.
+  verdict_justification: Not applicable to EPYC CPU LLM inference workload. Flagging for multimodal/agent-world-env-synthesis trackers as creative-use awareness rather than integration target.
+- id: intake-536
+  arxiv_id: '2605.06639'
+  url: https://arxiv.org/abs/2605.06639
+  source_type: paper
+  title: Recursive Agent Optimization (RAO)
+  authors:
+  - Apurva Gandhi
+  - Satyaki Chakraborty
+  - Xiangjun Wang
+  - Aviral Kumar
+  - Graham Neubig
+  categories:
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  - context_management
+  - routing_intelligence
+  key_claims:
+  - RL training paradigm that teaches LLM agents to dynamically spawn and coordinate recursive copies of themselves (sub-agents) for divide-and-conquer on long-horizon tasks
+  - Credit-assignment solved via local node rewards from an LLM judge (gpt-5-mini), with delegation bonus = MEAN child success (not sum) — explicitly prevents trivial-spawn exploit
+  - 'Inference uses REPL-based execution tree: child outputs are first-class Python objects, asyncio.gather enables parallel children, child reasoning stays out of parent context (automatic context isolation)'
+  - 'Three core training tricks: (1) multi-task objective across tree depths yields automatic curriculum; (2) leave-one-out (LOO) baseline shared across rollout group reduces variance; (3) depth-level inverse-frequency
+    weighting prevents leaf-trajectory domination'
+  - Even when single-agent context window is sufficient, recursive training is faster to train and outperforms single-agent — context-management capability emerges spontaneously
+  - Divide-and-conquer skill transfers from medium → hard tasks (positive generalization beyond training distribution)
+  techniques:
+  - Recursive RL training with local-node LLM-judge rewards
+  - Mean-of-children delegation bonus (anti-exploit reward shaping)
+  - Multi-task objective sampled across execution-tree depths
+  - Leave-one-out (LOO) baseline shared across rollout group
+  - Depth-level inverse-frequency reweighting
+  - REPL-based recursive execution harness with first-class child outputs
+  - Parent-context isolation of child reasoning
+  reported_results:
+  - 'TextCraft-Synth (hard): 0.88 recursive vs ~0 single-agent'
+  - 'Oolong-Real (10–12 page D&D transcripts, 32K ctx): 30B recursive ≈ frontier Claude/o3/GPT-5-mini'
+  - 'DeepDive (multi-hop): ~18× slower wall-clock but capable on hardest instances; adaptive depth ≈ 4'
+  - ART-E used as ablation benchmark
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: new_opportunity
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - meta-harness-optimization.md
+    - halo-trace-loop-spike.md
+    - tri-role-coordinator-architecture.md
+    - outer-coordinator-learned-head.md
+    - hermes-outer-shell.md
+    - repl-turn-efficiency.md
+    - agent-world-env-synthesis.md
+    - context-folding-progressive.md
+    - routing-intelligence.md
+    - decision-aware-routing.md
+    - rlm-orchestrator-roadmap.md
+    - 01-fast-rlm-budget-controls.md
+    experiments: []
+    intake_entries:
+    - intake-541 (RAO X-post breakdown by @neural_avb)
+    - intake-547 (RLM reproduction, arxiv:2603.02615)
+    - intake-548 (Orchestration-trace survey, arxiv:2605.02801)
+    - intake-549 (Tree-GRPO, arxiv:2509.21240)
+    - intake-550 (ReDel toolkit, arxiv:2408.02248)
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: Novel RL training paradigm for recursive agents. Distinct from prior RLM work (inference-time orchestration on off-the-shelf models) and from Context-Folding (folding learning).
+    Reward-shaping insight (mean-of-children) and depth-level reweighting are mechanically novel and directly address known trivial-spawn exploit in recursive RL.
+  relevance_justification: Direct integration path with active RLM/harness strand. RLM (canonical) already drives meta-harness-optimization, halo-trace-loop-spike, repl-turn-efficiency, tri-role-coordinator-architecture,
+    outer-coordinator-learned-head, hermes-outer-shell, context-folding-progressive. RAO provides missing training-side recipe to produce a LOCAL 8B–30B model good at recursive orchestration rather than
+    relying on frontier API models. Oolong benchmark overlap with RLM eval suite makes head-to-head comparison straightforward.
+  verdict_justification: 'new_opportunity: high novelty + high relevance + clear integration path. Training recipe reproducible (multi-task objective, LOO baseline, depth-weighting, mean-of-children reward)
+    on existing 8B/30B candidates. Best next step is a deep-dive in meta-harness-optimization handoff capturing the three training tricks as concrete experiments and flagging mean-vs-sum reward as load-bearing.'
+  contradicting_evidence:
+  - RLM reproduction (intake-547, arxiv:2603.02615) shows depth>=2 recursion DEGRADES accuracy on simple retrieval and inflates wallclock 96x (3.6s → 344.5s) — RAO must demonstrate it overcomes (not just
+    inherits) this overthinking pathology at depth-2.
+  - Orchestration-trace survey (intake-548, arxiv:2605.02801) finds NO published RL method as of May 2026 explicitly trains the stopping decision — RAO uses fixed depth/step caps rather than a learned stop
+    policy, exposing it to reward-hacking via deferred-failure (delegate forever) and undercommitment failure modes.
+  - 'ReDel toolkit (intake-550, arxiv:2408.02248) documents recursive multi-agent failure modes RAO training signal may not penalize: (a) infinite-delegation loops until depth cap, (b) tool-call repetition
+    with no loop detection, (c) misinterpreted cross-agent communication. RAO LLM-judge local rewards reward task-like behavior but do not directly penalize delegation pathologies.'
+  - Process-reward / LLM-judge rewards are a known reward-hacking attack surface — RAO per-node LLM-judge reward is exactly this proxy class, vulnerable in principle to children producing judge-pleasing
+    but task-irrelevant outputs that the parent then aggregates.
+  - Mean-of-children delegation bonus rewards delegation when children succeed on AVERAGE, biasing the parent toward over-delegating easy splits while masking individual catastrophic child failures. No
+    ablation in seed entry separates helpful delegation from lucky averaging.
+- id: intake-537
+  arxiv_id: null
+  url: https://towardsdatascience.com/recursive-language-models-one-example-deep-dive-that-explains-everything/
+  source_type: blog
+  title: 'Recursive Language Models: An All-in-One Deep Dive'
+  authors:
+  - Avishek Biswas
+  categories:
+  - agent_architecture
+  - context_management
+  - autonomous_research
+  - knowledge_management
+  key_claims:
+  - RLMs 'win all long-context benchmarks right now' by selectively loading context via a persistent REPL rather than dumping everything in-prompt
+  - 'Core: ''pass context around by reference, not by replication'' — sub-agent outputs bound to Python variables in a sandboxed REPL instead of injected into parent context'
+  - 'RLMs support dual output modes: FINAL(variable) returns arbitrary-length Python value without autoregressive token generation; FINAL(''string'') falls back to standard token decoding'
+  - Parallel sub-agent fan-out is plain asyncio.gather() in the REPL, making decomposition over orthogonal subtasks first-class
+  - Presented as more cost-efficient than ReAct, CodeAct, and conventional subagent harnesses on long-context QA
+  techniques:
+  - REPL sandbox with truncated output controls
+  - Programmatic context exploration (regex/slice/variable extraction)
+  - Pass-by-reference subagents
+  - Dual output modes (FINAL(variable) vs FINAL(string))
+  - Parallel subagent execution via asyncio.gather
+  reported_results:
+  - No quantitative numbers in the blog itself; defers to underlying paper (arxiv:2512.24601, already tracked as intake-153 with full result table)
+  referenced_arxiv_ids:
+  - '2512.24601'
+  novelty: low
+  relevance: high
+  credibility_score: 2
+  verdict: already_integrated
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - 01-fast-rlm-budget-controls.md
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+    experiments: []
+    intake_entries:
+    - intake-153 (canonical RLM paper, arxiv:2512.24601)
+    - intake-331 (predict-rlm, DSPy-based RLM)
+    - intake-349 (dspy.RLM official module)
+    - intake-250 (same author Avishek Biswas — text-albumentations)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: RLM paradigm, REPL sandbox, pass-by-reference subagents, FINAL(variable) vs FINAL(string), and asyncio fan-out are all in the intake index via intake-153 and its DSPy/vRLM/predict-rlm
+    descendants. Blog adds no new technique, no benchmark, no new code beyond pointing at avbiswas/fast-rlm (already referenced from 01-fast-rlm-budget-controls.md).
+  relevance_justification: RLM is an active EPYC workstream — two completed/active handoffs (rlm-orchestrator-roadmap.md completed, 01-fast-rlm-budget-controls.md completed), ~80% pattern coverage already
+    implemented, and four downstream intake entries feed the same area.
+  verdict_justification: 'already_integrated. Pedagogical recap of arxiv:2512.24601 by independent practitioner Avishek Biswas (also author of fast-rlm). Recommended use: link from rlm-orchestrator-roadmap.md
+    as onboarding/reference asset; do NOT open a new investigation handoff.'
+- id: intake-538
+  arxiv_id: '2605.14037'
+  url: https://arxiv.org/abs/2605.14037
+  source_type: paper
+  title: 'Self-Pruned Key-Value Attention: Learning When to Write by Predicting Future Utility (SP-KV)'
+  authors:
+  - Gergely Szilvasy
+  - Manuel Faysse
+  - Maria Lomeli
+  - Matthijs Douze
+  - Pierre-Emmanuel Mazaré
+  - Loïc Cabannes
+  - Wen-tau Yih
+  - Hervé Jégou
+  categories:
+  - kv_cache
+  - context_management
+  - context_extension
+  key_claims:
+  - SP-KV jointly trains a lightweight utility predictor with the LLM to decide whether each KV pair is admitted into the long-term cache; a recent-window keeps short-range pairs locally available
+  - Dynamic, input-dependent sparsification yields 3-10x KV cache size reduction with little to no validation-loss degradation
+  - Smaller cache produces both lower memory footprint and faster decoding
+  - Pruning reveals structured layer- and head-specific sparsity patterns, suggesting hybrid-architecture design opportunities
+  - Longer sequences are MORE compressible than short ones — utility-based admission scales favorably with context length
+  techniques:
+  - Learned per-pair utility predictor
+  - Threshold-based KV admission policy (write-time pruning rather than read-time eviction)
+  - Local recent-window plus selectively admitted long-term cache
+  - Joint end-to-end fine-tuning from pretrained checkpoint
+  - Per-layer / per-head sparsity analysis
+  reported_results:
+  - 3-10x KV cache reduction (dynamic, sequence-dependent)
+  - Negligible validation-loss change vs full-cache baseline
+  - Decoding throughput improvement
+  - Greater compressibility on longer sequences
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - triattention-kv-selection.md
+    - attention-matching-kv-compaction.md
+    - summary-token-attention-readiness.md
+    - multiscreen-attention-evaluation.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - intake-551 (KVP, arxiv:2602.10238)
+    - intake-552 (LU-KV, arxiv:2602.08585)
+    - intake-553 (ForesightKV, arxiv:2602.03203)
+    - intake-554 (PBKV, arxiv:2605.06472)
+  handoffs_updated:
+  - attention-matching-kv-compaction.md
+  handoffs_created: []
+  novelty_justification: Write-time admission via learned utility predictor differs from dominant read-time eviction families (H2O, SnapKV, expected-attention/TriAttention) and from quantization (TurboQuant/TQ3).
+    Local-window + admitted-global split reminiscent of summary-token/Multiscreen, but joint-trained predictor with threshold gating is a distinct mechanism.
+  relevance_justification: KV-cache reduction directly addresses EPYC CPU-inference bottlenecks (DRAM BW + cache footprint for long contexts). However, requires joint fine-tuning of base model + predictor,
+    which is heavier lift than inference-only methods (TriAttention, AttentionMatching) already in active pipeline. Useful as comparison reference and future direction once fine-tuning capacity exists;
+    not drop-in for current frozen-checkpoint stack.
+  verdict_justification: 'Worth investigating as complement to TriAttention/AttentionMatching/SummaryToken cluster: SP-KV is train-time write-side counterpart to those inference-time read-side methods.
+    Defer adoption until fine-tuning workstream exists.'
+  contradicting_evidence:
+  - arXiv:2601.14279 (Steele) shows a 1.7M-param learned scorer (SIP) fails to beat trivial position-based heuristics (keep first 4 + last N) across 5 seeds × 4 retention levels × 3 tasks — random selection
+    sometimes matches learned scoring. SP-KV is exactly a KV-only, query-agnostic write-time scorer and is vulnerable to same critique.
+  - Query-aware methods (e.g. TokenButler) succeed precisely because they condition on the current query — directly implying read-time selection has an information advantage over SP-KV write-time admission,
+    which by construction must commit before any future query is observed.
+  - Position-based heuristics (attention-sink + recency window) being competitive aligns with SP-KV own local-window component — suggesting most of SP-KV reported gains may come from the recency window
+    rather than the learned predictor.
+  - ForesightKV (intake-553) requires a two-stage Supervised+GRPO recipe specifically because a pure learned predictor degraded LM loss on low-entropy tokens — independent corroboration that learned KV
+    importance is brittle without explicit LM-loss safeguards.
+- id: intake-539
+  arxiv_id: '2605.12357'
+  url: https://arxiv.org/abs/2605.12357
+  source_type: paper
+  title: 'δ-mem: Efficient Online Memory for Large Language Models'
+  authors:
+  - Jingdi Lei
+  - Di Zhang
+  - Junxian Li
+  - Weida Wang
+  - Kaixuan Fan
+  - Xiang Liu
+  - Qihan Liu
+  - Xiaoteng Ma
+  - Baian Chen
+  - Soujanya Poria
+  categories:
+  - memory_augmented
+  - context_management
+  - ssm_hybrid
+  - agent_architecture
+  key_claims:
+  - Lightweight delta-rule-based memory module augments frozen LLMs without backbone retraining or context-window expansion
+  - Historical context is compressed into a compact online state matrix (e.g. 8x8) updated via delta-rule associative memory
+  - Low-rank corrections injected into attention computation preserve general capabilities while enabling long-horizon recall
+  - Targets long-term assistants/agent systems where historical info must accumulate across sessions
+  - Reports 1.10x avg over frozen backbone, 1.15x over strongest non-δ-mem baseline, 1.31x on MemoryAgentBench, 1.20x on LoCoMo
+  techniques:
+  - delta-rule associative memory
+  - compact online state matrices
+  - low-rank attention corrections
+  - frozen-backbone augmentation
+  - online memory updates at inference time
+  reported_results:
+  - 1.10x avg over frozen backbone
+  - 1.15x over strongest non-δ-mem baseline
+  - 1.31x on MemoryAgentBench
+  - 1.20x on LoCoMo
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - log-linear-gated-deltanet-readiness.md
+    - multiscreen-attention-evaluation.md
+    - orchestrator-conversation-management.md
+    - internal-kb-rag.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-568 (Trained Persistent Memory for Frozen Enc-Dec, arxiv:2603.16413)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Delta-rule online memory and low-rank attention correction overlap with broader DeltaNet/Gated DeltaNet research already tracked in log-linear-gated-deltanet-readiness; contribution
+    here is the *frozen-backbone augmentation* angle (no retraining, training-free compact state).
+  relevance_justification: Targets long-term assistant / agent memory — directly relevant to orchestrator episodic_store / user-modeling track and to context-folding-progressive. CPU-only and inference-time,
+    fits EPYC constraints. Not core to spec-dec / NUMA / quant priorities.
+  verdict_justification: Worth investigating as frozen-backbone bolt-on for orchestrator long-horizon memory track (user-modeling, persistent sessions, internal KB). Needs source-code availability check
+    and validation that delta-rule state plays nicely with llama.cpp KV-cache path.
+- id: intake-540
+  arxiv_id: null
+  url: https://github.com/Light-Heart-Labs/DreamServer
+  source_type: repo
+  title: Dream Server — Local-first all-in-one AI stack (llama.cpp + WebUI + agents + RAG + voice + image-gen)
+  authors:
+  - Light-Heart-Labs
+  categories:
+  - inference_serving
+  - local_inference
+  - agent_architecture
+  - multimodal
+  - tool_implementation
+  key_claims:
+  - One-command bundled deployment of llama.cpp-based llama-server + Open WebUI + LiteLLM gateway + TEI embeddings + Qdrant + Whisper/Kokoro voice + Hermes/OpenClaw agents + n8n workflows + ComfyUI + SearXNG/Perplexica
+    + Privacy Shield
+  - Auto-detects hardware tier across NVIDIA (3060→H100, NV_ULTRA), AMD Strix Halo, Apple Silicon (Metal), Intel Arc (SYCL), and CPU fallback; selects model and context window accordingly
+  - Bootstrap mode launches a 1.5B model in <1 min for chat in <2 min while larger Qwen/Gemma 4 Q4_K_M models download in background
+  - Positions self-hosted AI as critical-infrastructure sovereignty play; default stack scopes broader than Ollama / LM Studio / LocalAI
+  - Manifest-based hot-pluggable extension system; multi-GPU support claimed up to 8× RTX 5060 Ti
+  techniques:
+  - llama-cpp-server bundling
+  - LiteLLM gateway
+  - TEI embeddings
+  - Qdrant vector store
+  - Open WebUI
+  - Hermes agent
+  - OpenClaw agent framework
+  - n8n workflows
+  - Whisper STT
+  - Kokoro TTS
+  - ComfyUI image-gen
+  - SearXNG
+  - Perplexica
+  - PII Privacy Shield
+  - hardware-tier autodetect
+  - bootstrap fast-load
+  reported_results:
+  - 'AMD Strix Halo: ~89 tokens/sec (bare-metal, model/quant unspecified)'
+  - Cold-start to first chat <2 min via 1.5B bootstrap
+  - Multi-GPU tested up to 8× RTX 5060 Ti
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - hermes-agent-index.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Pure integration/packaging play. Every component is a third-party project already in use (llama-server, Hermes Agent, ComfyUI, SearXNG, Whisper/Kokoro/n8n/Qdrant). No new algorithms,
+    kernels, scheduler, or serving protocol; contribution is one-command installer + hardware-tier autodetect + manifest extension format.
+  relevance_justification: 'EPYC orchestrator already manages ~30 first-class llama-server processes via orchestrator_stack.py with bespoke NUMA/OMP tuning, role→port routing, ik_llama.cpp PR #1744 fork,
+    gemma4 MTP recipe — operating well below the abstraction layer DreamServer occupies. DreamServer targets prosumer single-box deployments; hardware-tier table does not include EPYC-class CPU-only.'
+  verdict_justification: 'Worth quarterly star/release check: (a) tracks llama.cpp fork compatibility for prosumer hardware (useful launch-flag patterns), (b) integrates Hermes Agent + OpenClaw we already
+    track upstream, (c) manifest-based extension format could inform future orchestrator add-on patterns. No action required.'
+- id: intake-541
+  arxiv_id: null
+  url: https://x.com/i/status/2054906931664585027
+  source_type: blog
+  title: X breakdown of RAO (Recursive Agent Optimization) by @neural_avb
+  authors:
+  - '@neural_avb'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - context_management
+  - training_distillation
+  key_claims:
+  - 'RAO trains LLM agents the meta-skill of divide-and-conquer: an agent learns to slice long-horizon tasks, spawn recursive child agents, aggregate results, and recurse'
+  - 'Credit-assignment solved with local node rewards from an LLM judge (gpt-5-mini): each node scored on (a) own sub-task success and (b) MEAN child success (mean — not sum — blocks trivial-spawn exploit)'
+  - Inference uses a rooted execution tree on a Python REPL interface; delegation is async function (asyncio.gather for parallel independent children); child outputs are first-class Python objects parent
+    inspects/slices BEFORE loading into context
+  - 'Training stack: (1) multi-task objective across depths (auto-curriculum); (2) leave-one-out (LOO) baseline shared across rollout group; (3) depth-level inverse-frequency weighting'
+  - 'Context-management skills emerge spontaneously (Oolong-Real: initially crashed dumping full 32K docs into children, later learned chunked delegation autonomously)'
+  techniques:
+  - Recursive Agent Optimization (RAO) RL training paradigm
+  - LLM-judge local node rewards with mean-child delegation bonus
+  - Python REPL execution surface; asyncio.gather
+  - Multi-task depth-mixed training objective
+  - LOO group baseline
+  - Depth-level inverse-frequency loss weighting
+  - Adaptive recursion depth
+  reported_results:
+  - 'TextCraft-Synth hard: recursive 0.88 vs single-agent ~0'
+  - 'Oolong-Real (10-12pg D&D, 32K ctx): 30B recursive ≈ frontier Claude/o3/GPT-5-mini'
+  - 'DeepDive (multi-hop KG QA + web search): adaptive depth ~4 reaches hardest instances at ~18× single-agent latency'
+  referenced_arxiv_ids:
+  - '2605.06639'
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - hermes-agent-index.md
+    - hermes-outer-shell.md
+    - outer-coordinator-learned-head.md
+    - tri-role-coordinator-architecture.md
+    - agent-world-env-synthesis.md
+    - halo-trace-loop-spike.md
+    - context-folding-progressive.md
+    - repl-turn-efficiency.md
+    - tool-output-compression.md
+    - decision-aware-routing.md
+    - per-request-reasoning-budget.md
+    experiments: []
+    intake_entries:
+    - intake-536 (RAO paper, arxiv:2605.06639) — primary source
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Secondary-source X-thread breakdown of arxiv 2605.06639 (RAO). Adds no new empirical claims beyond the paper but materially improves accessibility — explicit naming of three training
+    tricks, mean-vs-sum delegation-bonus anti-exploit, and Python-REPL-as-delegation-surface design point are unusually concrete for an intro-level post and reusable as onboarding material.
+  relevance_justification: 'RLM/agent stack is active focus: outer-coordinator-learned-head, tri-role-coordinator-architecture, meta-harness-optimization, hermes-outer-shell, agent-world-env-synthesis,
+    halo-trace-loop-spike all touch the same design surface. Two most portable contributions map directly onto open questions: (a) mean-child delegation reward as training signal for outer-coordinator-learned-head;
+    (b) child-output-as-first-class-object BEFORE entering parent context aligns with context-folding-progressive, tool-output-compression, repl-turn-efficiency goals.'
+  verdict_justification: worth_investigating — keep the post link as onboarding/teaching asset alongside primary 2605.06639 entry. Cross-link from intake-536; do NOT promote to standalone handoff stub.
+- id: intake-542
+  arxiv_id: null
+  url: https://x.com/i/status/2052103646712828119
+  source_type: blog
+  title: '@jun_song (Super-Tune) X post: only SFT-duplicate-suppression + Adaptive-Thinking verified for quality-preserving local LLM speedups at 100k+ context'
+  authors:
+  - '@jun_song'
+  - '(reply: @ZenMagnets)'
+  categories:
+  - context_management
+  - training_distillation
+  - agent_architecture
+  - local_inference
+  - speculative_decoding
+  key_claims:
+  - Most local LLM speed-up tricks on X are exaggerated — either work only at low context or hide quality degradation
+  - Only SFT for duplicate-inference suppression and Adaptive Thinking (dynamic thinking budget) verified as quality-preserving at 100k+ context in personal testing
+  - Speculative decoding (MTP, Eagle, etc.) often hurts high-concurrency throughput even when it helps single-stream (per @ZenMagnets reply)
+  - No other widely-promoted technique (aggressive KV cache opts, certain quant combos, spec-decoding variants) reliably preserved quality at realistic long-context
+  techniques:
+  - SFT-duplicate-inference-suppression
+  - Adaptive-Thinking-dynamic-budget
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - memento-block-reasoning-compression.md
+    - context-folding-progressive.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - cpu-context-regime-coverage.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC On-Policy Self-Distillation for Reasoning Compression)
+    - intake-126 (FlowSteer)
+    - intake-127 (TrimR)
+    - intake-128 (Adaptive CoT Compression)
+    - intake-129 (short-m@k)
+    - intake-276 (Brevity Constraints Reverse Performance Hierarchies)
+    - 'intake-566 (CGR: Certainty-Guided Reasoning, arxiv:2509.07820)'
+    - intake-567 (ECHO Elastic Spec-Dec, arxiv:2604.09603)
+  handoffs_updated:
+  - per-request-reasoning-budget.md
+  handoffs_created: []
+  novelty_justification: 'Neither technique individually novel — Adaptive Thinking mirrors Anthropic Claude dynamic thinking budget and academic work (intake-128/127/129); SFT-for-redundant-step-suppression
+    overlaps with OPSDC (intake-110). Novelty is the empirical-skepticism framing: practitioner claiming to have tested all viral X speed-tricks at 100k+ ctx and finding only these two quality-preserving.'
+  relevance_justification: EPYC has explicit feedback memory (benchmarks run without think mode for stability) and active per-request-reasoning-budget handoff trying to operationalize Adaptive Thinking.
+    ZenMagnets reply reinforces project_slot_promotion_shelved memory (Dispatcher v1 net-negative on Qwen3.6+Qwen3-1.7B drafter) — independent practitioner corroboration of internal finding.
+  verdict_justification: 'worth_investigating: low effort to test implicit hypothesis — re-run bench suite at 100k+ context with Adaptive-Thinking-style dynamic budget per request via per-request-reasoning-budget
+    infrastructure, and any SFT-d model variants we have, then compare against exaggerated baselines.'
+  contradicting_evidence:
+  - 'Adaptive-thinking failure modes ARE documented (arxiv 2505.15400): models ''fail to sufficiently engage in Continue-Thinking on more difficult questions, resulting in incomplete reasoning'' AND ''unnecessarily
+    invoke Continue-Thinking on simple questions, leading to overthinking''. jun_song''s endorsement is directionally correct but adaptive thinking is bimodally brittle.'
+  - ASRR framework reports up to 32.5% budget reduction with only 1.2% pass@1 accuracy loss — the accuracy hit is non-zero, contradicting any quality-preserved framing.
+  - 'Speculative-decoding CAN win at concurrency when implemented right: P-EAGLE (AWS, vLLM) 55-69% throughput gain at low concurrency AND 5-25% at c=64; MineDraft up to 75% throughput / 39% latency. ECHO
+    (intake-567) confirms vanilla EAGLE-3 underperforms at bs=128 BUT its own scheduler-level fix recovers — ZenMagnets blanket claim is true ONLY for naive vanilla implementations.'
+  - 'Repetition/duplicate-suppression via SFT alone is necessary-not-sufficient — open-r1 issue #492 documents SFT models can produce significant repetition during inference; sampling-time penalties typically
+    also needed.'
+- id: intake-543
+  arxiv_id: '2604.25727'
+  url: https://arxiv.org/abs/2604.25727
+  source_type: paper
+  title: Toward Scalable Terminal Task Synthesis via Skill Graphs (SkillSynth)
+  authors:
+  - Zhiyuan Fan
+  - Tinghao Yu
+  - Yuanjun Cai
+  - Jiangtao Guan
+  - Yun Yang
+  - Dingxin Hu
+  - Jiang Zhou
+  - Xing Wu
+  - Zhuo Han
+  - Feng Zhang
+  - Lilin Wang
+  categories:
+  - agent_architecture
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - Existing terminal-agent task synthesis approaches scale task quantity but lack explicit control over execution-trajectory diversity (scenario and skill coverage)
+  - Scenario-mediated skill graph (scenarios as intermediate nodes bridging command-line skills) enables systematic workflow abstraction and inverse-frequency-weighted random-walk path sampling
+  - Two-stage planning multi-agent harness (abstraction → implementation) with execution + rubric verification + iterative repair achieves 95.7% oracle pass rate
+  - 'SFT on Qwen3 with SkillSynth data: 33.8% Terminal-Bench 1.0, 29.6% TB 2.0 (Qwen3-32B); 31% higher unique scenario-skill coverage vs single-skill baselines'
+  - Graph-guided synthesis yields harder tasks and more diverse trajectories than single-skill / random-composition baselines at ~$27.3 per verified instance
+  techniques:
+  - Scenario-mediated skill graph construction
+  - Inverse-frequency weighted random walks with monotone progression constraints
+  - Two-stage planning multi-agent harness
+  - SFT data construction for terminal agents
+  reported_results:
+  - 'Skill graph: 82,073 scenarios, 57,214 skills, 185,529 bridges'
+  - 3,721 paths → 3,560 verified instances (95.7%)
+  - 'Qwen3-32B + SkillSynth SFT: 33.8% TB 1.0; 29.6% TB 2.0'
+  - 31% higher unique scenario-skill coverage
+  - $27.3 per verified instance
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Scenario-mediated skill graph as intermediate abstraction is a non-trivial design choice over flat skill-composition baselines, and inverse-frequency weighted path sampling for
+    explicit diversity control is novel relative to random/skill-driven generation. Broader recipe (LLM-generated multi-agent synthesis + execution verification + SFT) overlaps with prior agentic-synthesis
+    pipelines.
+  relevance_justification: EPYC focus is CPU inference optimization, MoE, NUMA, spec-dec, quantization, orchestrator/autopilot — not SFT-data construction for terminal agents. Qwen3-32B Terminal-Bench numbers
+    (29-34%) well below SOTA (Claude Code 86.4% TB2). Tangential relevance only via (a) skill-graph + diversity-controlled sampling could inform autopilot exploration-coverage metric, (b) TB scoring methodology
+    already in benchmarking radar.
+  verdict_justification: 'Worth_investigating: not duplicate but adjacent to existing agentic-synthesis entries; methodology sound but downstream numbers uncompetitive with frontier coding-agent stacks
+    we already track. Re-check if (1) authors release skill graph as public dataset, (2) diversity-controlled sampling proves useful for autopilot question generation.'
+- id: intake-544
+  arxiv_id: '2604.25917'
+  url: https://arxiv.org/abs/2604.25917
+  source_type: paper
+  title: Recursive Multi-Agent Systems (RMAS)
+  authors:
+  - Xiyuan Yang
+  - Jiaru Zou
+  - Rui Pan
+  - Ruizhong Qiu
+  - Pan Lu
+  - Shizhe Diao
+  - Jindong Jiang
+  - Hanghang Tong
+  - Markus J. Buehler
+  - Jingrui He
+  - James Zou
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - context_management
+  - training_distillation
+  key_claims:
+  - Extends recursive language models to multi-agent systems via unified latent-space recursive computation, replacing text-mediated inter-agent communication with latent state transfer
+  - RecursiveLink modules (two-layer residual projections, inner+outer) connect heterogeneous agents in continuous embedding space without intermediate text decoding
+  - Inner-outer loop training (model-level warm-start then system-level co-optimization) yields stable gradients across recursive depth, avoiding vanishing-gradient issues of text-based recursive agent
+    training
+  - Runtime complexity drops from Θ(N·m·|V|·dh) to Θ(N·m·dh^2) since dh ≪ |V| — removes per-step vocabulary projection cost on inter-agent hops
+  - Reports +8.3% avg accuracy, 1.2x–2.4x inference speedup, 34.6%–75.6% token reduction across 9 benchmarks
+  techniques:
+  - RecursiveLink latent-state projection module
+  - Inner-outer loop training
+  - Latent thoughts generation (continuous embeddings, no decode-to-text)
+  - Gradient-based credit assignment through recursive computation traces
+  - Multi-agent system unification as recursive computation graph
+  reported_results:
+  - +8.3% avg accuracy across 9 benchmarks
+  - 1.2x-2.4x inference speedup
+  - 34.6%-75.6% token-usage reduction vs text-MAS baselines
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - 01-fast-rlm-budget-controls.md
+    - meta-harness-optimization.md
+    - hermes-outer-shell.md
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-555 (LatentMAS, arxiv:2511.20639) — training-free variant
+    - intake-556 (Thought Communication, arxiv:2510.20733) — theoretical layer
+    - intake-557 (X-MAS, arxiv:2505.16997) — text-MAS baseline
+    - intake-558 (Dead Weights, arxiv:2604.08335) — cross-architecture frozen composition
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First system-level extension of recursive language models from single model to heterogeneous multi-agent systems via latent-space inter-agent links + joint training. No prior intake
+    hits for RecursiveMAS/RecursiveLink; orthogonal to existing text-mediated RLM-orchestrator-roadmap.
+  relevance_justification: 'Touches RLM-orchestrator roadmap, meta-harness optimization, Hermes outer-shell agent architecture lines: latent inter-agent transfer could compress orchestrator-frontdoor-worker
+    handoffs and reduce token-budget overhead. Requires fine-tuning shared embedding spaces across roles — heavyweight for CPU-only, open-weights, mixed-architecture (Qwen/Gemma/Llama) stack.'
+  verdict_justification: Worth_investigating — promising direction for multi-role orchestrator, but (a) requires shared/trainable latent interface across heterogeneous frozen GGUFs, (b) reported speedups
+    vs text-MAS baselines (not vs our cost-aware routing), (c) no llama.cpp / open-weights impl referenced. Revisit if authors release code compatible with stack or meta-harness work motivates a thin RecursiveLink
+    adapter.
+  contradicting_evidence:
+  - 'Reliability limits of LLM-based multi-agent planning (arxiv:2603.26993) — multi-agent setups are decision-theoretically dominated by a centralized Bayes decision maker with same information; no exogenous
+    signal => no fundamental gain. Applies equally to latent-space MAS: latent transfer reduces lossy compression but does not add new information.'
+  - 'Multi-agent LLM failure-mode surveys: 42% bad specifications, 37% coordination breakdowns, 21% weak verification — none of which latent-space communication directly addresses. RMAS reduces tokens but
+    does not fix specification or verification failure modes.'
+  - Frozen-model latent handoff not yet demonstrated cross-tokenizer for RMAS/LatentMAS papers themselves — abstracts/code suggest homogeneous-tokenizer (Qwen-family) agent pools. Dead Weights (intake-558)
+    is the only one claiming cross-architecture frozen composition and is a 3-author preprint without independent reproduction.
+  - RMAS reports 1.2x-2.4x speedup vs text-based MAS baseline, not vs single-model inference. On frozen-GGUF single-server stack the text-MAS baseline is already replaced by direct tool-calls; speedup vs
+    actual production path may be negative once additional projection-layer compute and loss of llama.cpp prefix-cache reuse are accounted for.
+  - Llama.cpp HTTP server API exposes only token streams, not last-layer hidden states. Adopting RMAS on EPYC requires fork patch to surface activations across server boundaries — non-trivial, breaks compat
+    with upstream rebases.
+- id: intake-545
+  arxiv_id: '2604.22709'
+  url: https://arxiv.org/abs/2604.22709
+  source_type: paper
+  title: 'Thinking Without Words: Efficient Latent Reasoning with Abstract Chain-of-Thought'
+  authors:
+  - Keshav Ramji
+  - Tahira Naseem
+  - Ramón Fernandez Astudillo
+  categories:
+  - context_management
+  - training_distillation
+  - cost_aware_routing
+  key_claims:
+  - Replacing natural-language CoT with a short sequence of tokens from a reserved abstract vocabulary preserves task performance while using up to 11.6× fewer reasoning tokens
+  - Policy-iteration warm-up (SFT from verbal CoT + self-distillation via constrained decoding) followed by warm-started RL trains Abstract CoT without losing accuracy
+  - Approach generalizes across math reasoning, instruction following, multi-hop reasoning, and multiple LM families
+  - Emergent power-law distribution arises in usage of the abstract vocabulary, suggesting a compact discrete latent reasoning code is learned
+  techniques:
+  - Discrete latent reasoning via reserved-token vocabulary
+  - Policy-iteration warm-up alternating SFT on verbal CoT and self-distillation under constrained decoding
+  - Constrained decoding restricted to abstract codebook
+  - Warm-started reinforcement learning over the abstract sequence
+  reported_results:
+  - Up to 11.6× reduction in reasoning tokens at comparable accuracy
+  - Comparable performance to explicit CoT on math, instruction following, multi-hop QA
+  - Cross-family generalization
+  - Empirical power-law usage over abstract vocabulary
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - reasoning-compression.md
+    - memento-block-reasoning-compression.md
+    - context-folding-progressive.md
+    - per-request-reasoning-budget.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC)
+    - intake-126 (FlowSteer)
+    - intake-127 (TrimR)
+    - intake-129 (short-m@k)
+    - intake-289 (Memento)
+    - intake-292 (InftyThink)
+    - intake-559 (Coconut, arxiv:2412.06769)
+    - intake-560 (CODI, arxiv:2502.21074)
+    - intake-561 (Token Assorted, arxiv:2502.03275)
+    - intake-562 (Soft Thinking, arxiv:2505.15778)
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: Discrete latent reasoning over reserved-token codebook is a distinct point in the reasoning-compression design space vs text-level pruning (TrimR, short-m@k, InftyThink) and continuous
+    latent compression (Coconut, CoLaR, CODI). Policy-iteration warm-up + RL recipe and emergent power-law over codebook are non-trivial contributions.
+  relevance_justification: 'Reasoning-token reduction (up to 11.6×) directly attacks decode-time cost dominant for reasoning workloads (architect, debug_scorer paths) on EPYC. Maps onto active reasoning-compression
+    handoff (Tier-3 trained approaches) and complements Memento KV-side compression with token-count-side compression. Not immediate plug-in: requires training (RL+SFT) and reserved abstract vocabulary,
+    incompatible with GGUF-only inference path until fine-tuning infra exists.'
+  verdict_justification: Worth_investigating — adds credible third axis to reasoning-compression handoff (discrete latent codebook) alongside text-level pruning and continuous latent compression. Tracked
+    as comparison point and ingested as Tier-3 candidate in reasoning-compression taxonomy.
+- id: intake-546
+  arxiv_id: '2510.08191'
+  url: https://arxiv.org/abs/2510.08191
+  source_type: paper
+  title: Training-Free Group Relative Policy Optimization
+  authors:
+  - Yuzheng Cai
+  - Siqi Cai
+  - Yuchen Shi
+  - Zihan Xu
+  - Lichao Chen
+  - Yulei Qin
+  - Xiaoyu Tan
+  - Gang Li
+  - Zongyi Li
+  - Haojia Lin
+  - Yong Mao
+  - Ke Li
+  - Xing Sun
+  categories:
+  - agent_architecture
+  - training_distillation
+  - memory_augmented
+  - routing_intelligence
+  key_claims:
+  - 'GRPO-style policy optimization without parameter updates: experience distilled into a natural-language token prior maintained across multi-epoch in-context learning rollouts'
+  - ~100 training examples and ~$18 API cost (DeepSeek-V3.1) match/exceed fine-tuning baselines (e.g., ReTool on 32B at ~$10k)
+  - Frozen base model retains general capability while domain adapts via pluggable experience library (Add/Delete/Modify/Keep operations)
+  - Semantic group advantage (NL extraction from rollout comparisons) replaces numerical advantage signal in standard GRPO
+  techniques:
+  - Training-free GRPO (in-context, no gradient updates)
+  - Semantic group advantage extraction (NL diff over grouped rollouts)
+  - Experience library with Add/Delete/Modify/Keep CRUD operators
+  - Multi-epoch in-context learning over a frozen base LLM
+  reported_results:
+  - 'AIME24 (DeepSeek-V3.1): 80.0% → 82.7% (+2.7pp)'
+  - 'AIME25: 67.9% → 73.3% (+5.4pp)'
+  - 'WebWalkerQA Pass@1: 63.2% → 67.8% (+4.6pp)'
+  - Training cost ~$18 vs ~$10,000 for ReTool fine-tuning of 32B
+  referenced_arxiv_ids:
+  - '2412.19437'
+  - '2504.11536'
+  - '2505.07773'
+  novelty: high
+  relevance: low
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - agent-world-env-synthesis.md
+    - hermes-agent-index.md
+    - 08-doc-to-lora-prototype.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First clear formulation of GRPO as a purely in-context experience-library update rule with NL advantages; distinct from prior reflection/self-refine work because it preserves group-relative
+    structure and uses explicit CRUD over a persistent prior.
+  relevance_justification: Tencent Youtu + Fudan + Xiamen U; arxiv only; ~7mo. EPYC stack is CPU-inference + orchestrator with frozen GGUF models — no in-house training pipeline, so direct optimization
+    relevance is low. However, persistent experience library as token prior overlaps with orchestrator knowledge-base / agent-world-env-synthesis / meta-harness directions.
+  verdict_justification: 'Worth_investigating: technique is API-priced for hosted models but underlying mechanic (semantic group advantage over rollouts, CRUD experience library) implementable on local
+    llama.cpp by replacing API cost accounting with our own bench harness.'
+- id: intake-547
+  arxiv_id: '2603.02615'
+  url: https://arxiv.org/abs/2603.02615
+  source_type: paper
+  title: 'Think, But Don''t Overthink: Reproducing Recursive Language Models'
+  authors:
+  - Daren Wang
+  categories:
+  - agent_architecture
+  - context_extension
+  - benchmark_methodology
+  - context_management
+  key_claims:
+  - Reproduces Zhang et al. RLM framework on DeepSeek v3.2 and Kimi K2; confirms depth-1 RLM gains on complex long-context reasoning
+  - Depth-2 recursion OVERTHINKS — accuracy on simple retrieval tasks DEGRADES vs depth-1 and vs vanilla long-context
+  - 'Execution cost explodes super-linearly with depth: 3.6s → 344.5s per query going depth-1 → depth-2'
+  - Original RLM paper defaulted to depth=1; deeper recursion only speculative future work — reproduction shows it is actively harmful at depth>=2 for many tasks
+  - Token-cost inflation is exponential in depth; advocates dynamic/learned depth control instead of fixed recursion
+  techniques:
+  - 'Reproduction study: depth-1 vs depth-2 RLM sweep'
+  - S-NIAH (Synthetic Needle-in-a-Haystack)
+  - OOLONG long-context QA
+  - Per-depth wallclock + token-cost accounting
+  - Cross-model verification (DeepSeek v3.2 vs Kimi K2)
+  reported_results:
+  - 'Execution time: 3.6s @ depth-1 → 344.5s @ depth-2 (~96x)'
+  - Depth-2 RLM accuracy < depth-1 on simple retrieval
+  - Depth-1 still beats vanilla long-context on complex reasoning
+  referenced_arxiv_ids:
+  - '2512.24601'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - context-folding-progressive.md
+    - orchestrator-conversation-management.md
+    experiments: []
+    intake_entries:
+    - intake-153 (RLM foundational, arxiv:2512.24601)
+    - intake-536 (RAO, arxiv:2605.06639) — RAO claims to LEARN good decomposition; this reproduction shows naive deeper recursion fails, motivating RAO reward-shaped training
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First independent reproduction of RLM with cross-model verification and direct quantification of overthinking failure mode at depth>=2. Provides empirical contradicting evidence
+    to naive "just recurse deeper" deployment of RLM/RAO patterns.
+  relevance_justification: RLM/RAO patterns are on EPYC roadmap (rlm-orchestrator-roadmap.md + halo-trace-loop-spike). The 96x cost blow-up at depth-2 is a hard constraint for CPU inference where every
+    token costs ~10-40 t/s budget — recursion depth must be capped or learned, not heuristic.
+  verdict_justification: 'Worth_investigating as cautionary evidence: cap recursion depth at 1 by default in any RLM/RAO-style orchestrator integration on EPYC unless we explicitly train a depth-controller.'
+  expanded_from: intake-536 (RAO)
+- id: intake-548
+  arxiv_id: '2605.02801'
+  url: https://arxiv.org/abs/2605.02801
+  source_type: paper
+  title: Reinforcement Learning for LLM-based Multi-Agent Systems through Orchestration Traces
+  authors:
+  - Chenchen Zhang
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - training_distillation
+  - cost_aware_routing
+  - autonomous_research
+  - swarm_techniques
+  key_claims:
+  - 'Introduces ''orchestration traces'' as temporal interaction graphs: nodes are sub-agent spawn/delegate/communicate/tool/return/aggregate/stop events'
+  - 'Decomposes orchestration learning into 5 sub-decisions: when-to-spawn, whom-to-delegate, how-to-communicate, how-to-aggregate, when-to-stop'
+  - 'Catalogs 8 reward families including a NEW class: ''orchestration rewards'' for parallelism speedup, split correctness, and aggregation quality (beyond task rewards)'
+  - 'Gap finding: as of May 2026 NO published RL method explicitly trains the stopping-decision policy — all systems use heuristic stop'
+  - Counterfactual message-level credit assignment remains structurally sparse across the surveyed corpus (84 entries)
+  techniques:
+  - Orchestration-trace formalism (temporal interaction DAG)
+  - 'Multi-level credit assignment: token → action → message → sub-agent → team'
+  - Reward-family taxonomy (8 families)
+  - 84-paper tagged pool + 32-paper exclusion log
+  - Five-sub-decision policy decomposition
+  reported_results:
+  - Curated survey, no empirical numbers; 84 tagged papers, 32 exclusions
+  - 'Industrial systems referenced: Kimi Agent Swarm, OpenAI Codex, Anthropic Claude Code'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tri-role-coordinator-architecture.md
+    - routing-and-optimization-index.md
+    - routing-intelligence.md
+    - decision-aware-routing.md
+    - hermes-agent-index.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-536 (RAO) — RAO is one specific instantiation of this taxonomy "orchestration reward" family
+    - intake-153 (RLM, arxiv:2512.24601)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Provides the missing conceptual framework that RAO sits inside: the 5-sub-decision + 8-reward-family taxonomy lets us map RAO mean-of-children + depth-inverse-frequency to a named
+    cell and identify the stopping-decision gap as EPYC-specific opportunity.'
+  relevance_justification: 'Directly applicable to tri-role-coordinator-architecture, hermes-agent stack, dynamic-stack-concurrency. The stopping-decision gap is a concrete autopilot research target: EPYC
+    CPU-bound cost structure makes "when to stop" the highest-leverage orchestration decision.'
+  verdict_justification: Worth_investigating as a taxonomy reference; integrate the 5-sub-decision decomposition into tri-role-coordinator handoff and use it to classify every RAO/RLM-style intake going
+    forward.
+  expanded_from: intake-536 (RAO)
+- id: intake-549
+  arxiv_id: '2509.21240'
+  url: https://arxiv.org/abs/2509.21240
+  source_type: paper
+  title: Tree Search for LLM Agent Reinforcement Learning (Tree-GRPO)
+  authors:
+  - Yuxiang Ji
+  - Ziyu Ma
+  - Yong Wang
+  - Guanhua Chen
+  - Xiangxiang Chu
+  - Liaoni Wu
+  categories:
+  - agent_architecture
+  - training_distillation
+  - cost_aware_routing
+  - search_retrieval
+  - routing_intelligence
+  key_claims:
+  - 'Tree-GRPO: GRPO variant where each tree node is a complete agent interaction step, sharing common prefixes across rollouts'
+  - Prefix-sharing across siblings increases rollout count under FIXED token+tool-call budgets — direct cost-efficiency win for agent RL
+  - Proves intra-tree group-relative optimization is equivalent to step-level direct preference learning — derives dense step-wise process signal from outcome-only rewards
+  - Outperforms chain-based agent RL (sequential rollouts) across 11 datasets and 3 QA task types
+  - Targets the sparse-supervision pathology of long-horizon multi-turn agent training
+  techniques:
+  - 'Tree-GRPO: tree-structured group relative policy optimization'
+  - Prefix-sharing rollout (each node = full interaction step)
+  - Hierarchical advantage estimation (intra-tree + inter-tree)
+  - Step-wise process reward derived from outcome reward via tree structure
+  reported_results:
+  - '11 datasets x 3 QA task types: Tree-GRPO > chain-GRPO baseline'
+  - ICLR 2026 acceptance
+  - 'Code: github.com/AMAP-ML/Tree-GRPO'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - decision-aware-routing.md
+    - routing-and-optimization-index.md
+    - tri-role-coordinator-architecture.md
+    experiments: []
+    intake_entries:
+    - intake-536 (RAO) — RAO uses LOO baseline + mean-of-children; Tree-GRPO uses prefix-sharing instead — direct methodological alternative
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Distinct from RAO: RAO trains the recursive-decomposition policy itself; Tree-GRPO uses tree topology purely as a sample-efficient rollout structure with prefix sharing. The equivalence
+    proof (intra-tree group-relative = step-level DPO) is novel.'
+  relevance_justification: 'Relevance is methodological, not deployment: EPYC is inference-only, but prefix-sharing rollout idea directly maps to existing KV-cache-share workflows. ICLR 2026 acceptance
+    + open code raises credibility.'
+  verdict_justification: Worth_investigating as methodological cross-reference for any in-house agent RL work; not deployment target. Tag against decision-aware-routing handoff.
+  expanded_from: intake-536 (RAO)
+- id: intake-550
+  arxiv_id: '2408.02248'
+  url: https://arxiv.org/abs/2408.02248
+  source_type: paper
+  title: 'ReDel: A Toolkit for LLM-Powered Recursive Multi-Agent Systems'
+  authors:
+  - Andrew Zhu
+  - Liam Dugan
+  - Chris Callison-Burch
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - local_inference
+  - autonomous_research
+  key_claims:
+  - First open-source toolkit for recursive multi-agent systems where LLMs themselves decide delegation and team structure (self-organizing topology)
+  - Implements async sub-agent execution with custom tool integration per sub-agent
+  - Event-based logging system supports interactive replay via web UI — debugging primitive for recursive systems
+  - Pluggable delegation schemes (configurable spawn policies) rather than hard-coded tree shape
+  - Predates RAO by ~1 year and provides the engineering substrate RAO assumes
+  techniques:
+  - Asynchronous sub-agent execution
+  - Recursive delegation via tool-use protocol (delegate() as a callable tool)
+  - Event-stream logging + replay
+  - Web-based visual debugger
+  - MIT-licensed Python toolkit
+  reported_results:
+  - Demo paper (EMNLP 2024 Demos), qualitative results only
+  - 'Open-source: github.com/zhudotexe/redel'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 5
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - halo-trace-loop-spike.md
+    - hermes-agent-index.md
+    - tri-role-coordinator-architecture.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-536 (RAO) — RAO harness is conceptually a ReDel-class system + learned delegation policy
+    - intake-153 (RLM)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Not novel as research (demo paper), but architecturally novel for EPYC: a working, open, license-compatible (MIT) reference implementation of the harness RAO and RLM presume. We
+    can fork rather than re-implement.'
+  relevance_justification: Directly deployable. The asyncio.gather + REPL execution + delegate-as-tool pattern is exactly what halo-trace-loop-spike and rlm-orchestrator-roadmap would otherwise need to
+    build from scratch. License-compatible (MIT).
+  verdict_justification: Worth_investigating; high priority for halo-trace-loop-spike and rlm-orchestrator-roadmap handoffs. Evaluate ReDel as harness substrate before in-house build.
+  expanded_from: intake-536 (RAO)
+- id: intake-551
+  arxiv_id: '2602.10238'
+  url: https://arxiv.org/abs/2602.10238
+  source_type: paper
+  title: Learning to Evict from Key-Value Cache (KVP)
+  authors:
+  - Luca Moschella
+  - Laura Manduchi
+  - Ozan Sener
+  categories:
+  - kv_cache
+  key_claims:
+  - Reformulates KV eviction as a reinforcement-learning problem instead of using heuristic recency/attention proxies
+  - Per-head lightweight RL agents (KV-Policy) trained on pre-computed generation traces using only K/V vectors
+  - Requires no LLM weight modification and adds no extra inference-time overhead beyond a tiny per-head policy
+  - Generalizes zero-shot to longer contexts and unseen tasks (LongBench, BOOLQ, ARC)
+  techniques:
+  - Offline RL on pre-computed generation traces; reward = future token usefulness across cache budgets
+  - Per-head specialized eviction policy
+  - Decoupled from LLM forward pass; consumes only K/V at write/read time
+  reported_results:
+  - Significantly outperforms heuristic baselines (recency, attention-score) on RULER long-context
+  - Wins on OASST2-4k multi-turn dialogue
+  - Generalizes to LongBench/BOOLQ/ARC and longer contexts zero-shot
+  referenced_arxiv_ids:
+  - '2605.14037'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - kv-cache-quantization.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    experiments: []
+    intake_entries:
+    - intake-538 (SP-KV)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: RL-formulated eviction is distinct from SP-KV write-time admission and from supervised ForesightKV; per-head policies are a strong axis SP-KV does not exploit.
+  relevance_justification: Decode-time KV eviction matters for EPYC long-context where DRAM-BW-bound decode pays per-token cost proportional to live KV; per-head RL agents are small enough to be feasible
+    on CPU.
+  verdict_justification: Worth_investigating — requires offline trace generation pipeline and per-head agent training infra we don't yet have; complements rather than conflicts with our llama.cpp frozen-quant
+    path.
+  expanded_from: intake-538 (SP-KV)
+- id: intake-552
+  arxiv_id: '2602.08585'
+  url: https://arxiv.org/abs/2602.08585
+  source_type: paper
+  title: 'LU-KV: Predicting Future Utility — Global Combinatorial Optimization for Task-Agnostic KV Cache Eviction'
+  authors:
+  - Ziyao Tang
+  - Pengkun Jiao
+  - Xinhang Chen
+  - Wei Liu
+  - Shiyong Li
+  - Jingjing Chen
+  categories:
+  - kv_cache
+  key_claims:
+  - Per-head budget allocation should be driven by marginal utility in preserving long-term semantic info, not uniform
+  - Different attention heads exhibit fundamentally different temporal patterns (immediate vs long-horizon)
+  - Frames cache budget as a global combinatorial optimization problem solvable with convex-hull relaxation + marginal-utility greedy solver
+  - Data-driven offline profiling makes the method task-agnostic and deployable without retraining
+  techniques:
+  - Convex-hull relaxation of per-head budget allocation
+  - Marginal-utility greedy solver
+  - Offline profiling protocol that produces deployable head-level budgets
+  reported_results:
+  - 80% KV-cache reduction with minimal performance degradation on LongBench/RULER
+  - Concurrent inference-latency improvement and GPU memory footprint reduction
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - kv-cache-quantization.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    experiments: []
+    intake_entries:
+    - intake-538 (SP-KV)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Global combinatorial framing of per-head budget allocation is orthogonal to SP-KV per-token write-time admission; head-heterogeneity axis is under-exploited in current stack.
+  relevance_justification: Per-head budget allocation can be implemented as a static profile inside llama.cpp without retraining — fits our frozen-weights constraint; 80% reduction at minimal loss is BW-relevant
+    on EPYC.
+  verdict_justification: Worth_investigating — offline profiling is feasible on our CPU stack but no llama.cpp integration path exists yet; verify whether convex-hull solver runs offline only or in-loop.
+  expanded_from: intake-538 (SP-KV)
+- id: intake-553
+  arxiv_id: '2602.03203'
+  url: https://arxiv.org/abs/2602.03203
+  source_type: paper
+  title: 'ForesightKV: Optimizing KV Cache Eviction for Reasoning Models by Learning Long-Term Contribution'
+  authors:
+  - Zican Dong
+  - Peiyu Liu
+  - Junyi Li
+  - Zhipeng Chen
+  - Han Peng
+  - Shuo Wang
+  - Wayne Xin Zhao
+  categories:
+  - kv_cache
+  key_claims:
+  - Heuristic eviction (attention-score, recency) fails to capture complex KV dependencies in long reasoning chains
+  - Training-based eviction predictor distilled from a 'golden' future-attention oracle outperforms heuristics under tight budgets
+  - Dual training (supervised Pairwise-Ranking + GRPO RL) is needed to avoid LM degradation on low-entropy tokens
+  - Outperforms prior eviction methods at HALF the cache budget on reasoning benchmarks (AIME 2024/2025)
+  techniques:
+  - 'Golden Eviction Algorithm: oracle that selects optimal evictions using future attention scores'
+  - 'Stage 1: supervised distillation with Pairwise Ranking Loss'
+  - 'Stage 2: GRPO RL on LM loss to fix low-entropy degradation'
+  reported_results:
+  - Wins vs prior eviction at half the cache budget on AIME 2024 and AIME 2025
+  - Validated across three reasoning models
+  referenced_arxiv_ids:
+  - '2605.14037'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - kv-cache-quantization.md
+    - attention-matching-kv-compaction.md
+    - triattention-kv-selection.md
+    experiments: []
+    intake_entries:
+    - intake-538 (SP-KV)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Distillation-from-oracle + GRPO-on-LM-loss is novel two-stage recipe; explicitly targets the reasoning-chain regime where SP-KV and SnapKV under-perform.
+  relevance_justification: Reasoning workloads (frontdoor + coder) generate long CoT where live KV dominates decode BW on EPYC; halving KV at iso-quality directly buys decode tps.
+  verdict_justification: Worth_investigating — requires LLM fine-tuning which collides with frozen-quant constraint, but oracle/budget evaluation could inform a training-free head-budget profile.
+  expanded_from: intake-538 (SP-KV)
+- id: intake-554
+  arxiv_id: '2605.06472'
+  url: https://arxiv.org/abs/2605.06472
+  source_type: paper
+  title: 'PBKV: Efficient Serving for Dynamic Agent Workflows with Prediction-based KV-Cache Management'
+  authors:
+  - Haoyu Zheng
+  - Fangcheng Fu
+  - Jia Wu
+  - Binhang Yuan
+  - Yongqiang Zhang
+  - Hao Wang
+  - Yuanyuan Zhu
+  - Xiao Yan
+  - Jiawei Jiang
+  categories:
+  - kv_cache
+  - inference_serving
+  - agent_architecture
+  key_claims:
+  - Existing KV-cache managers either operate per-agent (miss cross-agent reuse) or per-workflow (assume static sequence)
+  - Dynamic agent workflows need predicted future agent-invocation patterns to make KV retention/prefetch decisions
+  - Conservative prediction strategies during eviction + prefetching tolerate prediction error without correctness regressions
+  techniques:
+  - History-conditioned next-agent-invocation predictor
+  - Reuse-potential scoring for cache entries to pick GPU-resident set
+  - Prediction-aware prefetcher with conservative fallback on misprediction
+  reported_results:
+  - 1.85x speedup over LRU on dynamic workflows
+  - 1.26x speedup over KVFlow (SOTA) on static workflows
+  - Validated on three workflow benchmarks
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    - 09-claude-debugger.md
+    handoffs:
+    - kv-cache-quantization.md
+    - rlm-orchestrator-roadmap.md
+    - orchestrator-conversation-management.md
+    - dynamic-stack-concurrency.md
+    experiments: []
+    intake_entries:
+    - intake-538 (SP-KV)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Workflow-level prediction of next-agent invocation as a KV-residency signal is orthogonal to SP-KV token-level admission — operates at orchestrator layer, not attention kernel.
+  relevance_justification: 'Directly maps to our orchestrator: frontdoor → coder/worker hand-offs share long prompts; predicting hand-off patterns could amortize prefill across agents on EPYC where prefill
+    is BW-bound and re-prefill is dominant per-turn cost.'
+  verdict_justification: Worth_investigating — strongest match to orchestrator stack of the SP-KV expansion cluster; requires tiny next-agent predictor and llama.cpp prefix-cache hooks; complements frozen
+    GGUF weights.
+  expanded_from: intake-538 (SP-KV)
+- id: intake-555
+  arxiv_id: '2511.20639'
+  url: https://arxiv.org/abs/2511.20639
+  source_type: paper
+  title: Latent Collaboration in Multi-Agent Systems (LatentMAS)
+  authors:
+  - Jiaru Zou
+  - Xiyuan Yang
+  - Ruizhong Qiu
+  - Gaotang Li
+  - Katherine Tieu
+  - Pan Lu
+  - Ke Shen
+  - Hanghang Tong
+  - Yejin Choi
+  - Jingrui He
+  - James Zou
+  - Mengdi Wang
+  - Ling Yang
+  categories:
+  - agent_architecture
+  - context_management
+  - inference_serving
+  key_claims:
+  - Agents collaborate in continuous latent space via last-layer hidden embeddings instead of text tokens
+  - Shared latent working memory preserves and transfers internal representations for lossless information exchange
+  - 'Training-free framework: no fine-tuning required on participating LLMs'
+  - Higher expressiveness than text-based MAS with lower computational complexity
+  techniques:
+  - Auto-regressive latent thought generation through last-layer hidden states
+  - Shared latent working memory buffer across agents
+  - Direct embedding-to-embedding handoff (no detokenization)
+  - End-to-end inference operating on continuous representations
+  reported_results:
+  - +14.6% accuracy vs single-model and text-based MAS baselines
+  - 70.8%-83.7% reduction in output token usage
+  - 4×-4.3× end-to-end inference speedup
+  - '9 benchmarks: math, science, commonsense, code'
+  - ICML 2026 Spotlight
+  referenced_arxiv_ids:
+  - '2604.25917'
+  - '2512.24601'
+  - '2510.25741'
+  - '2510.20733'
+  - '2502.05171'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - meta-harness-optimization.md
+    - orchestrator-conversation-management.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-544 (RMAS — direct predecessor; LatentMAS is training-free, RMAS adds RecursiveLink fine-tuning)
+    - intake-153 (RLM)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First training-free latent-space MAS framework. While RMAS requires RecursiveLink fine-tuning, LatentMAS claims lossless latent handoff with zero parameter updates — a major architectural
+    shift that, if reproducible, removes the training barrier for frozen-stack deployment.
+  relevance_justification: EPYC stack is exclusively frozen GGUF llama.cpp servers — training-free latent handoff is uniquely tractable here vs RMAS. 4× decode speedup would compound with our 76.5 t/s gemma4-26B-A4B
+    worker. Last-layer hidden state access across heterogeneous tokenizers is a known gap in llama.cpp server API — would require fork patches.
+  verdict_justification: 'Worth_investigating because (a) training-free fit for frozen stack, (b) 4× speedup claim is testable on EPYC, (c) ICML 2026 Spotlight gives credibility. Gate: confirm whether reference
+    impl works across heterogeneous tokenizers.'
+  expanded_from: intake-544 (RMAS)
+- id: intake-556
+  arxiv_id: '2510.20733'
+  url: https://arxiv.org/abs/2510.20733
+  source_type: paper
+  title: Thought Communication in Multiagent Collaboration
+  authors:
+  - Yujia Zheng
+  - Zhuokai Zhao
+  - Zijian Li
+  - Yaqi Xie
+  - Mingze Gao
+  - Lizhu Zhang
+  - Kun Zhang
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  key_claims:
+  - Formalizes inter-agent communication as a latent variable model
+  - 'Identifiability theorem: shared and private thoughts between agent pairs are nonparametrically recoverable'
+  - Sharing topology (which agent exchanges which thought) is reconstructable with theoretical guarantees
+  - 'Modality-agnostic: extends beyond LLMs to any system with hidden generative processes'
+  techniques:
+  - Latent variable modeling of agent state
+  - Nonparametric identification (no auxiliary information required)
+  - Hidden-thought extraction prior to routing
+  - Thought-to-agent assignment mechanism
+  reported_results:
+  - Validated on synthetic and real-world benchmarks
+  - Theoretical proofs for identifiability of shared vs private latent thoughts
+  referenced_arxiv_ids:
+  - '2604.25917'
+  - '2512.24601'
+  - '2511.20639'
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-intelligence.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-544 (RMAS)
+    - intake-153 (RLM)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Provides theoretical basis for why latent multi-agent communication can work without explicit alignment — identifiability proof for shared vs private thoughts. Complementary theory
+    layer beneath LatentMAS / RMAS empirical work.
+  relevance_justification: Theoretical framework, not directly implementable on frozen GGUF stack. However, shared-vs-private-thought partition could inform routing-intelligence handoff (decide what to
+    send to draft vs verifier vs frontdoor based on identified shared latent dimensions). Quantitative results sparse in abstract; relevance contingent on full method.
+  verdict_justification: 'Worth_investigating: theoretical contribution with unclear immediate engineering hook. Reopen if a follow-up paper applies the identifiability framework to derive a practical routing
+    policy.'
+  expanded_from: intake-544 (RMAS)
+- id: intake-557
+  arxiv_id: '2505.16997'
+  url: https://arxiv.org/abs/2505.16997
+  source_type: paper
+  title: 'X-MAS: Towards Building Multi-Agent Systems with Heterogeneous LLMs'
+  authors:
+  - Rui Ye
+  - Xiangrui Liu
+  - Qimin Wu
+  - Xianghe Pang
+  - Zhenfei Yin
+  - Lei Bai
+  - Siheng Chen
+  categories:
+  - agent_architecture
+  - cost_aware_routing
+  - benchmark_methodology
+  - routing_intelligence
+  key_claims:
+  - Heterogeneous MAS significantly outperforms homogeneous MAS with no structural change
+  - Optimal model selection varies by (domain × function) combination
+  - Mixed chatbot + reasoner configurations show exceptional gains
+  - 'X-MAS-Bench: 1.7M+ evaluations across 27 LLMs, 5 domains (21 test sets), 5 functions'
+  techniques:
+  - Domain-specific and function-specific role-to-model assignment
+  - Empirical sweep across 27 LLMs as agent backbones
+  - Text-mediated communication (NOT latent — contrasts with RMAS/LatentMAS)
+  - Benchmark suite for MAS heterogeneity evaluation
+  reported_results:
+  - 'MATH: +8.4% with heterogeneous chatbot-only configuration'
+  - 'AIME: +47% with mixed chatbot-reasoner setup'
+  - 1.7M+ total evaluation runs across 27 models
+  referenced_arxiv_ids:
+  - '2604.25917'
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - routing-intelligence.md
+    - routing-and-optimization-index.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-544 (RMAS — text-based heterogeneous baseline)
+    - intake-153 (RLM)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Medium novelty: principle of heterogeneous agent assignment is well-known, but X-MAS provides the first large-scale (1.7M run) empirical map of which models win which roles. Predates
+    RMAS/LatentMAS by months; serves as the text-MAS strong baseline they all measure against.'
+  relevance_justification: 'Directly applicable to EPYC current orchestrator stack: we already run heterogeneous models (qwen3.6 frontdoor, gemma4-26B-A4B worker_general, coder-30B). X-MAS-Bench methodology
+    could replace ad-hoc role-bench mapping with systematic (domain × function × model) lookup table. Text-based → zero infra change to adopt.'
+  verdict_justification: 'Worth_investigating: the per-(domain,function) optimal-model matrix is the cleanest empirical justification we have for our heterogeneous stack and could inform q_scorer baseline_tps
+    / role assignment defaults. Confirm X-MAS-Bench is releasable on our model set.'
+  expanded_from: intake-544 (RMAS)
+- id: intake-558
+  arxiv_id: '2604.08335'
+  url: https://arxiv.org/abs/2604.08335
+  source_type: paper
+  title: 'Dead Weights, Live Signals: Feedforward Graphs of Frozen Language Models'
+  authors:
+  - Marcus Armstrong
+  - Navid Ayoobi
+  - Arjun Mukherjee
+  categories:
+  - agent_architecture
+  - hardware_optimization
+  - local_inference
+  - training_distillation
+  key_claims:
+  - Heterogeneous frozen LLMs can be wired as a feedforward graph communicating via shared continuous latent space
+  - Independently trained LLMs converge to geometrically compatible latent spaces — a single linear projection suffices to translate activations between heterogeneous architectures
+  - Gradient flow through multiple frozen model boundaries is empirically tractable
+  - Only projection matrices + lightweight cross-attention output node trained (~17.6M params vs ~12B frozen)
+  techniques:
+  - Frozen heterogeneous LLMs as graph nodes (Llama-3.2-1B, Qwen2.5-1.5B, Gemma-2-2B → Phi-3-mini, Mistral-7B)
+  - Learned linear projection matrices into shared latent space
+  - Residual stream injection hooks
+  - Lightweight cross-attention output node
+  - End-to-end differentiable through frozen-model graph
+  reported_results:
+  - 'ARC-Challenge: 87.3% (+11.4pp over best single model)'
+  - 'OpenBookQA: 82.8% (+6.2pp)'
+  - 'MMLU: 67.2% (+1.2pp)'
+  - +9.1/+5.2/+6.7 pp vs learned classifier baselines
+  - 17.6M trainable params against ~12B frozen
+  referenced_arxiv_ids:
+  - '2604.25917'
+  - '2511.20639'
+  - '2510.20733'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 09-claude-debugger.md
+    handoffs:
+    - rlm-orchestrator-roadmap.md
+    - dynamic-stack-concurrency.md
+    - meta-harness-optimization.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-544 (RMAS — similar projection-module idea)
+    - intake-153 (RLM)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First paper to operationalize cross-tokenizer / cross-architecture frozen-LLM composition via a single learned linear projection. The geometric-compatibility claim (independently
+    trained LLMs converge to compatible latent spaces) is the missing piece that would let LatentMAS-style frozen latent handoff work across our heterogeneous GGUF stack.
+  relevance_justification: 'Highest relevance of the RMAS expansion to EPYC actual configuration: heterogeneous frozen models matches our exact stack. 17.6M trainable parameters is feasible to train on
+    a single GPU borrowed for the projection-matrix training phase. If geometric-compatibility claim holds for our specific model set, this is the bridge that unlocks LatentMAS/RMAS for frozen GGUF deployment.
+    Requires llama.cpp patch to expose residual-stream hidden states across servers — non-trivial but bounded.'
+  verdict_justification: 'Worth_investigating with HIGH priority: directly addresses open question from LatentMAS — "can heterogeneous frozen models share a latent space?". Smaller author footprint (3 authors,
+    unknown lab) → independent reproduction is a gate. First validation: load Qwen3-1.7B + Gemma-2-2B in single process, train 1024×1024 projection on ARC-Challenge.'
+  expanded_from: intake-544 (RMAS)
+- id: intake-559
+  arxiv_id: '2412.06769'
+  url: https://arxiv.org/abs/2412.06769
+  source_type: paper
+  title: Training Large Language Models to Reason in a Continuous Latent Space (Coconut)
+  authors:
+  - Shibo Hao
+  - Sainbayar Sukhbaatar
+  - DiJia Su
+  - Xian Li
+  - Zhiting Hu
+  - Jason Weston
+  - Yuandong Tian
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - Reasoning can occur entirely in continuous latent space by feeding the last hidden state back as the next input embedding instead of decoding a token
+  - Continuous thoughts encode a superposition of next-step alternatives, enabling implicit breadth-first-search behavior that outperforms verbal CoT on logical reasoning tasks
+  - A curriculum that gradually replaces verbalized CoT tokens with continuous thoughts is required for stable training; direct training fails due to distributional mismatch
+  - Achieves a strictly better accuracy/efficiency Pareto than CoT on logical-deduction tasks while reducing generated tokens substantially
+  techniques:
+  - Continuous thought = last-layer hidden state, fed back as next input embedding
+  - 'Curriculum training: progressively replace k verbal CoT tokens with k continuous thoughts per stage'
+  - Mixed loss combining LM on remaining verbal tokens and answer-supervision
+  - No discrete vocabulary — purely continuous embedding stream during latent phase
+  reported_results:
+  - 'ProsQA: 97.0% with continuous thoughts vs 77.5% verbal CoT (FLOPS-matched)'
+  - 'ProntoQA: matches CoT accuracy with ~10x fewer generated tokens'
+  - 'GSM8K: trails verbal CoT under fair training but reduces token count'
+  - Accepted COLM 2025
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - memento-block-reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-545 (Abstract CoT — Coconut is the canonical continuous-thought baseline it compares against)
+    - intake-110 (OPSDC)
+    - intake-134 (CoLaR)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Coconut is the foundational paper for continuous latent CoT and is referenced directly by the Abstract CoT seed. It introduces the curriculum-based hidden-state-feedback mechanism
+    that every subsequent latent-CoT method extends or contrasts against. COLM 2025 acceptance + Meta/UCSD authorship + DiJia Su make it the canonical entry point for this literature.
+  relevance_justification: 'Medium: Coconut continuous-thought decoding still requires one forward pass per latent step (no per-step token I/O savings) — the win is in TOTAL steps, not per-step BW. CPU
+    decode on EPYC is DRAM-BW-bound, so fewer decode steps directly reduces wallclock. Reasoning-compression handoff explicitly tracks token-reduction methods. Not high because it requires model retraining
+    and the curriculum is brittle.'
+  verdict_justification: Worth_investigating as foundational reference; do not pursue implementation. Add to reasoning-compression.md Tier 4 (architectural alternatives) for context when evaluating Abstract
+    CoT / Soft Thinking.
+  expanded_from: intake-545 (Abstract CoT)
+- id: intake-560
+  arxiv_id: '2502.21074'
+  url: https://arxiv.org/abs/2502.21074
+  source_type: paper
+  title: 'CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation'
+  authors:
+  - Zhenyi Shen
+  - Hanqi Yan
+  - Linhai Zhang
+  - Zhanghao Hu
+  - Yali Du
+  - Yulan He
+  categories:
+  - training_distillation
+  - agent_architecture
+  key_claims:
+  - Joint teacher (explicit CoT) / student (implicit CoT) training distills reasoning into continuous latent vectors by aligning hidden states
+  - First implicit-CoT method to match explicit-CoT accuracy at GPT-2 scale on GSM8K
+  - 3.1x reduction in reasoning length at parity accuracy; +28.2pp over prior implicit-CoT baselines on GSM8K
+  - Self-distillation avoids Coconut brittle curriculum by sharing weights between teacher and student passes
+  techniques:
+  - Single model, two forward passes per training step (teacher = verbal CoT, student = continuous latent)
+  - Hidden-state alignment loss between teacher and student at matched positions
+  - No external teacher model needed; self-distillation
+  - 'Inference: pure continuous latent reasoning, decoded only at answer position'
+  reported_results:
+  - 'GSM8K: matches explicit CoT at 3.1x compression'
+  - +28.2pp over prior implicit-CoT on GSM8K (GPT-2 scale)
+  - Generalizes to SVAMP, MultiArith
+  referenced_arxiv_ids:
+  - '2412.06769'
+  novelty: medium
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    experiments: []
+    intake_entries:
+    - intake-545 (Abstract CoT)
+    - intake-110 (OPSDC — also uses self-distillation, but at token level)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First demonstration that pure self-distillation (no separate teacher, no curriculum) can match explicit CoT in continuous space. Architecturally cleaner than Coconut (no staged
+    curriculum, no progressive token replacement). Cited by Abstract CoT as canonical continuous-distillation baseline.
+  relevance_justification: Same EPYC reasoning as Coconut — fewer decode steps directly reduce CPU-BW wallclock. Stronger architectural pairing with OPSDC (intake-110) which uses self-distillation at token
+    level — OPSDC + CODI could compose. Limited to GPT-2 scale; weakens applicability to 30B-A3B/27B production stack until validated at scale.
+  verdict_justification: Worth_investigating — add to reasoning-compression.md as the cleanest self-distillation baseline. Do not implement until validated at >7B scale.
+  expanded_from: intake-545 (Abstract CoT)
+- id: intake-561
+  arxiv_id: '2502.03275'
+  url: https://arxiv.org/abs/2502.03275
+  source_type: paper
+  title: 'Token Assorted: Mixing Latent and Text Tokens for Improved Language Model Reasoning'
+  authors:
+  - DiJia Su
+  - Hanlin Zhu
+  - Yingchen Xu
+  - Jiantao Jiao
+  - Yuandong Tian
+  - Qinqing Zheng
+  categories:
+  - training_distillation
+  - agent_architecture
+  - quantization
+  key_claims:
+  - 'Hybrid reasoning representation: VQ-VAE produces discrete latent tokens that replace the early (high-level planning) portion of the CoT, while later steps remain verbal'
+  - Random mixing of latent and text tokens during training enables fast adaptation when the latent vocabulary changes
+  - Consistent outperformance over verbal CoT baselines on Keys-Finding Maze, logical reasoning, and math reasoning
+  - Discrete latent vocabulary is interpretable as a learned codebook, in contrast to Coconut opaque continuous thoughts
+  techniques:
+  - VQ-VAE trained on intermediate reasoning steps to produce a discrete codebook
+  - 'Hybrid generation: first M tokens from latent codebook, remaining tokens verbal'
+  - Random mix training
+  - Standard autoregressive decoding with extended vocabulary
+  reported_results:
+  - Outperforms verbal CoT on Keys-Finding Maze (training from scratch)
+  - Improves over baselines on ProntoQA and math reasoning benchmarks
+  - Latent tokens form ~3-4x compression of early planning steps
+  referenced_arxiv_ids:
+  - '2412.06769'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - memento-block-reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-545 (Abstract CoT — closest architectural cousin; both use a discrete reserved/learned vocabulary)
+    - intake-110 (OPSDC)
+    - intake-134 (CoLaR)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Closest architectural cousin to Abstract CoT seed — both use DISCRETE reserved/learned token set rather than continuous thoughts, preserving standard autoregressive decoding. Token
+    Assorted is the published prior art that Abstract CoT explicitly differentiates from (Abstract CoT uses reserved vocab + policy iteration; Token Assorted uses VQ-VAE-learned codebook + random-mix training).
+  relevance_justification: HIGH for EPYC because (1) discrete tokens preserve standard llama.cpp decode path — no engine changes; (2) compresses the early planning phase, which is the most token-wasteful
+    segment in agent traces; (3) directly composable with memento-block-reasoning-compression; (4) explicit-vocabulary approach is the only latent-CoT family that fits no-model-retraining constraint when
+    paired with small finetune.
+  verdict_justification: 'Worth_investigating — promote into reasoning-compression.md as the published discrete-codebook baseline next to Abstract CoT. Head-to-head: Abstract CoT (reserved tokens + policy
+    iteration) vs Token Assorted (learned VQ codebook + random-mix).'
+  expanded_from: intake-545 (Abstract CoT)
+- id: intake-562
+  arxiv_id: '2505.15778'
+  url: https://arxiv.org/abs/2505.15778
+  source_type: paper
+  title: 'Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space'
+  authors:
+  - Zhen Zhang
+  - Xuehai He
+  - Weixiang Yan
+  - Ao Shen
+  - Chenyang Zhao
+  - Shuohang Wang
+  - Yelong Shen
+  - Xin Eric Wang
+  categories:
+  - agent_architecture
+  - inference_serving
+  key_claims:
+  - 'Training-free latent reasoning: replace the argmax/sampling step with a probability-weighted mixture of the top-k token embeddings, fed back as the next input'
+  - Operates entirely at inference time on any off-the-shelf instruction-tuned LLM — no retraining
+  - Up to +2.48 pp pass@1 improvement and up to 22.4% token reduction on math + coding benchmarks vs standard CoT
+  - Continuous concept tokens act as a soft superposition over plausible next tokens, enabling implicit search without verbalizing each branch
+  techniques:
+  - 'Inference modification: replace e_{t+1} = embed(argmax p_t) with e_{t+1} = sum_i p_t[i] * embed(i) over top-k'
+  - Cold-stop heuristic to exit the soft phase before answer emission
+  - Top-k truncation and temperature scaling to control mixture sharpness
+  - No weight changes; no curriculum; no extra training
+  reported_results:
+  - Up to +2.48 pp pass@1 on math + coding benchmarks
+  - Up to 22.4% reduction in generated tokens
+  - Works on DeepSeek-R1-Distill-Qwen, Qwen2.5-Instruct, others
+  referenced_arxiv_ids:
+  - '2412.06769'
+  novelty: high
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - per-request-reasoning-budget.md
+    - memento-block-reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-545 (Abstract CoT — alternative compression mechanism, training-free vs Abstract CoT policy-iteration warm-up)
+    - intake-110 (OPSDC)
+    - intake-134 (CoLaR)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Only training-free entry in latent-CoT family — strictly an inference-time decoder modification. Decouples latent reasoning from any finetuning requirement, which is qualitatively
+    different from Coconut/CODI/Token Assorted/Abstract CoT (all require training).
+  relevance_justification: HIGH for EPYC because it is the only family member that could be prototyped against production stack with ZERO retraining — only a decoder patch in llama.cpp (mix top-k embeddings
+    before next forward pass). 22% token reduction on coding benchmarks maps directly onto worker_coder t/s budget. CPU decode is DRAM-BW bound, so 22% fewer decode steps ~= 22% wallclock reduction.
+  verdict_justification: 'Worth_investigating — HIGH priority for reasoning-compression.md Tier 1 (no-training quick wins). Prototype: implement top-k embedding mixture as an opt-in flag in our llama.cpp
+    fork, verify on coder/frontdoor with measured pass@1 + tokens/answer delta. Risk: mixture-of-embeddings may interact badly with quantized embedding lookups.'
+  expanded_from: intake-545 (Abstract CoT)
+- id: intake-563
+  arxiv_id: '2509.24372'
+  url: https://arxiv.org/abs/2509.24372
+  source_type: paper
+  title: 'Evolution Strategies at Scale: LLM Fine-Tuning Beyond Reinforcement Learning'
+  authors:
+  - Xin Qiu
+  - Yulu Gan
+  - Conor F. Hayes
+  - Qiyao Liang
+  - Yinggan Xu
+  - Roberto Dailey
+  - Elliot Meyerson
+  - Babak Hodjat
+  - Risto Miikkulainen
+  categories:
+  - training_distillation
+  - routing_intelligence
+  - autonomous_research
+  key_claims:
+  - First successful application of ES to full-parameter fine-tuning of billion-parameter LLMs without dimensionality reduction
+  - 'ES outperforms PPO/GRPO across multiple axes: long-horizon/delayed-reward tolerance, robustness across base models, reduced reward-hacking susceptibility, training stability'
+  - Only a population of 30 needed to optimize billions of parameters (vs >=10k in prior small-scale ES work)
+  - Backprop-free post-training paradigm; minimal hyperparameter sensitivity and low across-seed variance
+  - ES consistently outperforms PPO and GRPO across all tested model sizes with no custom HP tuning
+  techniques:
+  - Simplified Natural Evolution Strategies (NES)
+  - Population-size scaling decoupled from parameter count (population=30 at 1-8B params)
+  - Forward-only rollouts with terminal reward fitness
+  - No dimensionality reduction (full-parameter perturbations)
+  reported_results:
+  - Tested on Qwen2.5 and LLaMA3 families, 0.5B-8B parameters
+  - Countdown symbolic-arithmetic + GSM8K-style reasoning
+  - Matches/exceeds PPO and GRPO at comparable or smaller sample budgets
+  - Stable across random seeds
+  referenced_arxiv_ids:
+  - '1703.03864'
+  - '2511.16652'
+  - '2304.12180'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - learned-routing-controller.md
+    - meta-harness-optimization.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-474 (Trinity)
+    - intake-532 (EGGROLL)
+    - intake-564 (ESSA)
+    - intake-565 (ES vs GRPO geometry)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Load-bearing prior cited by EGGROLL as the concurrent demonstration that ES scales to billion-parameter LLM fine-tuning. Distinct from EGGROLL on mechanism: EGGROLL achieves throughput
+    via rank-r perturbations; ES-at-Scale achieves it via population-size minimization (pop=30, sample-side). Orthogonal and could compose.'
+  relevance_justification: 'No fine-tuning compute path today (DGX Spark not yet acquired), so cannot be direct adoption target. Becomes High the moment we acquire GPU box or use CPU forward-pass capacity
+    for population evaluation. pop=30 result is EPYC-relevant: 30 parallel forward passes on a 1B model fit comfortably in 1.1 TB RAM with NUMA-concurrent stack.'
+  verdict_justification: 'Worth_investigating: (1) document in routing-and-optimization-index that ES-at-Scale + EGGROLL form the new tier of full-parameter-ES references; (2) flag for learned-routing-controller
+    handoff as gradient-free alternative path. Defer adopt until GPU compute path lands OR CPU-population ES on small model is benchmarked.'
+  expanded_from: intake-532 (EGGROLL)
+- id: intake-564
+  arxiv_id: '2507.04453'
+  url: https://arxiv.org/abs/2507.04453
+  source_type: paper
+  title: 'ESSA: Evolutionary Strategies for Scalable Alignment'
+  authors:
+  - Daria Korotyshova
+  - Boris Shaposhnikov
+  - Alexey Malakhov
+  - Alexey Khokhulin
+  - Nikita Surnachev
+  - Kirill Ovcharenko
+  - George Bredis
+  - Alexey Gorbatovski
+  - Viacheslav Sinii
+  - Daniil Gavrilov
+  categories:
+  - training_distillation
+  - quantization
+  - routing_intelligence
+  key_claims:
+  - Gradient-free alignment framework using only forward inference + black-box optimization; replaces PPO/GRPO/DPO
+  - Operates ENTIRELY in INT4 and INT8 inference modes — the only ES-LLM paper that runs the optimizee in low-bit quant
+  - +12.6% GSM8K (Qwen2.5-Math-7B), +14.8% PRM800K, +22.5% IFEval (LLaMA3.1-8B)
+  - Reaches near-optimal accuracy 2x faster on 16 GPUs, 6x faster on 128 GPUs vs GRPO
+  - Optimizes only singular values from SVD decomposition of LoRA adapters — drastic parameter-space compression
+  techniques:
+  - 'LoRA + SVD: parameter-space restricted to singular values of the LoRA delta'
+  - Black-box evolutionary search
+  - INT4/INT8 quantized inference for fitness evaluation
+  - Hardware-friendly scaling
+  reported_results:
+  - 'Qwen2.5-Math-7B: +12.6% GSM8K, +14.8% PRM800K'
+  - 'LLaMA3.1-8B: +22.5% IFEval'
+  - 2x faster vs GRPO on 16 GPUs; 6x faster on 128 GPUs
+  referenced_arxiv_ids:
+  - '2509.24372'
+  - '2511.16652'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - learned-routing-controller.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-532 (EGGROLL — sibling low-rank-ES, complementary compression axes)
+    - intake-474 (Trinity)
+    - intake-563 (ES-at-Scale)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'High. ESSA is the only paper in the EGGROLL cluster that operates the optimizee model in INT4/INT8 quantization for fitness evaluation rather than fp16/bf16. Mechanistically distinct
+    from both EGGROLL (rank-r perturbation in fp) and ES-at-Scale (full-parameter NES in fp): ESSA constrains the SEARCH SPACE (LoRA-SVD singular values) AND the EVALUATION PRECISION (INT4/INT8), making
+    it a 2-axis compression.'
+  relevance_justification: Single most EPYC-relevant paper in the EGGROLL expansion. INT4/INT8 quantized forward passes are EXACTLY what EPYC CPU stack does best (project_q8_8x8_avx512bw_outcome documents
+    +31.8% at 1t for our AVX-512BW Q8_0 kernel). A CPU-only ES fine-tuning loop using llama-cli forward passes on Q4_K_M / Q8_0 weights as the fitness evaluator is mechanistically feasible TODAY — no GPU
+    acquisition required.
+  verdict_justification: 'Worth_investigating, with HIGHER priority than ES-at-Scale because INT4/INT8 evaluation path is uniquely EPYC-feasible. Concrete first action: take a Qwen2.5-7B Q4_K_M GGUF, instantiate
+    ~512-singular-value LoRA-SVD parameter space, run 200-iteration ES loop (population=16, NES variant) with GSM8K-test as fitness oracle.'
+  expanded_from: intake-532 (EGGROLL)
+- id: intake-565
+  arxiv_id: '2604.01499'
+  url: https://arxiv.org/abs/2604.01499
+  source_type: paper
+  title: 'Matching Accuracy, Different Geometry: Evolution Strategies vs GRPO in LLM Post-Training'
+  authors:
+  - William Hoy
+  - Binxu Wang
+  - Xu Pan
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  - routing_intelligence
+  key_claims:
+  - ES matches or exceeds GRPO in single-task accuracy across 4 tasks — corroborates EGGROLL/ES-at-Scale/ESSA on the headline parity claim
+  - DESPITE accuracy parity, ES updates are nearly ORTHOGONAL to GRPO updates in parameter space
+  - ES induces much LARGER off-task KL drift than GRPO; ES updates are broad, GRPO updates are localized
+  - ES and GRPO solutions are linearly connected with no loss barrier — sit on same loss basin despite orthogonal trajectories
+  - ES competitiveness in sequential continual-learning REQUIRES iteration-budget control — without it, catastrophic forgetting is worse than GRPO
+  techniques:
+  - Comparative empirical study across 4 single-task + sequential-CL settings
+  - Update-direction cosine analysis (ES vs GRPO trajectories)
+  - Linear-mode-connectivity probing between ES and GRPO endpoints
+  - Off-task KL divergence measurement for forgetting characterization
+  - Closed-form theoretical model of NES update geometry
+  reported_results:
+  - ES matches/exceeds GRPO on single-task accuracy across all 4 tested tasks
+  - ES update vectors nearly orthogonal to GRPO updates (cos similarity ~0)
+  - ES KL drift on off-task data substantially exceeds GRPO
+  - 'Sequential setting: ES competitive only when iteration budget capped'
+  - Linear interpolation between ES and GRPO endpoints shows no loss barrier
+  referenced_arxiv_ids:
+  - '2509.24372'
+  - '2511.16652'
+  - '2507.04453'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - learned-routing-controller.md
+    - routing-and-optimization-index.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-532 (EGGROLL)
+    - intake-474 (Trinity)
+    - intake-563 (ES-at-Scale)
+    - intake-564 (ESSA)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First paper in EGGROLL cluster to characterize WHAT ES is actually doing in parameter space at LLM scale, as distinct from throughput/accuracy headlines. Three core findings — orthogonal
+    updates, no loss barrier, large off-task KL drift — are novel mechanistic results not yet folded into any other ES-LLM paper.
+  relevance_justification: 'Medium, but elevated because of its role as contradicting/qualifying evidence for EGGROLL line. For learned-routing-controller: if we adopt ES-style training of MLP router, off-task-drift
+    caveat means we MUST also measure routing accuracy on held-out task distributions. NOT load-bearing for the existing Trinity-style sep-CMA-ES-on-small-head approach — that setup freezes backbone, so
+    the off-task drift mechanism doesn''t apply.'
+  verdict_justification: 'Worth_investigating. Single concrete update to routing-and-optimization-index: add an ES-LLM evaluation protocol requiring (a) accuracy on training task, (b) accuracy/KL on >=1
+    held-out off-task distribution, (c) linear-mode-connectivity to gradient-trained baseline if available, (d) iteration-budget control as first-class hyperparameter in any sequential setting.'
+  expanded_from: intake-532 (EGGROLL)
+- id: intake-566
+  arxiv_id: '2509.07820'
+  url: https://arxiv.org/abs/2509.07820
+  source_type: paper
+  title: 'Certainty-Guided Reasoning in Large Language Models: A Dynamic Thinking Budget Approach (CGR)'
+  authors:
+  - João Paulo Nogueira
+  - Wentao Sun
+  - Alonso Silva
+  - Laith Zumot
+  categories:
+  - cost_aware_routing
+  - benchmark_methodology
+  key_claims:
+  - Model-agnostic adaptive inference procedure; periodically probes whether current reasoning supports a confident final answer and terminates early once a target certainty threshold is reached
+  - Certainty estimated from model predicted probabilities over answer tokens — no auxiliary head, no fine-tune, no draft model
+  - Preserves baseline accuracy on AIME2025 while eliminating millions of tokens in aggregate
+  - Introduces a 'Grade' metric that penalizes incorrect answers and permits abstention — risk-sensitive evaluation
+  techniques:
+  - Periodic answer-probability probing during thinking trace
+  - Threshold-based early stop on internal CoT generation
+  - Tunable certainty/efficiency knob (single hyper-parameter)
+  - Abstention via low-certainty floor
+  reported_results:
+  - 'AIME2025: baseline accuracy preserved, aggregate token spend reduced by millions of tokens'
+  - Grade metric improves when system abstains under low certainty
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - per-request-reasoning-budget.md
+    - reasoning-compression.md
+    - cpu-context-regime-coverage.md
+    experiments: []
+    intake_entries:
+    - intake-110
+    - intake-126
+    - intake-127
+    - intake-128
+    - intake-129
+    - intake-134
+    - intake-289
+    - intake-292
+    - intake-542 (jun_song)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Differs from existing reasoning-compression cluster — those rely on SFT-time budget control, draft models, or RL-d budget heads. CGR is purely inference-time, model-agnostic, single-knob,
+    no training. Closest cousin is ABF but CGR uses answer-token probability directly.
+  relevance_justification: Directly addresses jun_song verified-as-real "Adaptive Thinking dynamic budget" claim with a concrete, model-agnostic, no-train implementation that drops cleanly onto frozen worker_general
+    / frontdoor — no orchestrator changes needed beyond a probe-and-stop hook on llama-server sampling loop. Token-spend reduction maps directly to EPYC CPU decode cost (BW-bound).
+  verdict_justification: 'Worth_investigating: low-risk integration vector — can be prototyped as a llama-cli sampling-loop patch in epyc-llama and A/B-d against existing reasoning-budget cap on a single
+    bench.'
+  expanded_from: intake-542 (jun_song)
+- id: intake-567
+  arxiv_id: '2604.09603'
+  url: https://arxiv.org/abs/2604.09603
+  source_type: paper
+  title: 'ECHO: Elastic Speculative Decoding with Sparse Gating for High-Concurrency Scenarios'
+  authors:
+  - Xinyi Hu
+  - Yuhao Shen
+  - Baolin Zhang
+  - Hengxin Zhang
+  - Jun Dai
+  - Shuang Ge
+  - Lei Chen
+  - Yue Li
+  - Mingcheng Wan
+  categories:
+  - speculative_decoding
+  - inference_serving
+  key_claims:
+  - Vanilla EAGLE-3 speedup diminishes and eventually UNDERPERFORMS autoregressive decoding at batch size ≈128 — corroborates @ZenMagnets practitioner claim
+  - Frames speculative execution as a budgeted scheduling problem; sparse confidence gating treats batch as a unified super-tree with dynamic depth/width
+  - Avoids both static-tree verification waste and dynamic-tree cumulative misjudgment
+  - Up to 5.35× walltime speedup; ≥20% over SOTA at low-AND-high concurrency; validated on Qwen3-235B
+  - Integrated into SGLang (not vLLM)
+  techniques:
+  - Sparse confidence gating per draft branch
+  - Unified super-tree across concurrent batch
+  - Adaptive depth/width allocation under verification-FLOP budget
+  - Kernel-friendly tree shape
+  reported_results:
+  - EAGLE-3 falls below baseline at bs=128
+  - ECHO up to 5.35× walltime speedup on Qwen3-235B
+  - ≥20% over SOTA across low-load and high-load regimes
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - per-request-reasoning-budget.md
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments: []
+    intake_entries:
+    - intake-542 (jun_song — ZenMagnets reply about spec-dec hurting high-concurrency)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: First spec-dec paper that explicitly quantifies the high-concurrency regression and proposes a scheduler-level (not algorithm-level) fix. Distinct from MTP/EAGLE/MagicDec — operates
+    one layer up at the batch-scheduling boundary.
+  relevance_justification: 'Single-user EPYC stack is bs=1 most of the time. ECHO headline win is at high concurrency, which is exactly the regime we DON''T operate in. BUT: corroborates ZenMagnets claim
+    and explains why MTP draft+verify with greedy on Qwen3.6 didn''t compound. Useful as "why our shelved decision was right" reference.'
+  verdict_justification: 'Worth_investigating (monitor scope): tied to SGLang server stack we don''t run; benefit regime (bs≥32) doesn''t match single-user workload. Track as evidence supporting the slot-promotion-shelved
+    reopen criteria.'
+  expanded_from: intake-542 (jun_song)
+- id: intake-568
+  arxiv_id: '2603.16413'
+  url: https://arxiv.org/abs/2603.16413
+  source_type: paper
+  title: 'Trained Persistent Memory for Frozen Encoder–Decoder LLMs: Six Architectural Methods'
+  authors:
+  - (to verify on full fetch)
+  categories:
+  - memory_augmented
+  - context_extension
+  - context_management
+  key_claims:
+  - Six concrete architectural patterns for attaching a trained persistent-memory module to a FROZEN encoder–decoder backbone (no backbone fine-tune)
+  - Direct architectural sibling of δ-mem (online associative state on frozen full-attention) — but enumerates the design space rather than picking one point
+  - Targets long-context recall and multi-session persistence without context-window growth
+  techniques:
+  - 'Six attachment topologies (likely covering: cross-attention bridge, KV-prepend, adapter-routed memory read, gated residual injection, low-rank attention correction, sidecar retriever)'
+  - Frozen-backbone training (only memory module learns)
+  - Persistent (cross-session) memory vs δ-mem online (within-session) state
+  reported_results:
+  - Comparative head-to-head across 6 methods on long-context / multi-session benchmarks (specific numbers to verify on full fetch)
+  referenced_arxiv_ids:
+  - '2605.12357'
+  novelty: medium
+  relevance: high
+  credibility_score: 6
+  verdict: worth_investigating
+  discovered_via: expansion
+  ingested_date: '2026-05-19'
+  cross_references:
+    chapters: []
+    handoffs:
+    - context-folding-progressive.md
+    - cpu-context-regime-coverage.md
+    experiments: []
+    intake_entries:
+    - intake-539 (δ-mem)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Complements δ-mem by giving broader design space rather than single-point solution. δ-mem = online, 8×8 state, low-rank correction. This paper = persistent + 6 alternative topologies.
+    Together they bracket the frozen-backbone-memory literature; ingesting both prevents single-point bias.
+  relevance_justification: 'Frozen-backbone memory maps directly onto EPYC constraint: cannot fine-tune 26B-A4B / 30B-A3B / 35B daily, but CAN train a tiny memory sidecar once and reuse across worker_general
+    / frontdoor / coder. Cross-session persistence is the missing piece our context-folding-progressive chapter currently hand-waves.'
+  verdict_justification: 'Worth_investigating (low priority): worth a deep-dive read to pick the 1 of 6 topologies most compatible with llama.cpp KV-cache layout. If any is implementable as a custom GGML
+    op without backbone surgery, it becomes a candidate companion to δ-mem.'
+  expanded_from: intake-539 (δ-mem)

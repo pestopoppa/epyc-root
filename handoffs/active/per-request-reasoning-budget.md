@@ -137,3 +137,25 @@ curl localhost:8082/v1/chat/completions -d '{"model":"auto","messages":[{"role":
   - Cross-link: the Ring-mini stuck-in-think failure mode documented in `research/deep-dives/ring-mini-stuck-in-think-failure-mode.md` (2026-05-04) is the closest analogue in our own diagnostic record. Ring-mini is non-Qwen so the Qwen-Scope SAEs do not transfer directly, but the methodology — identify the stuck-state feature → use its pre-activation as a precursor signal → manufacture rare-negative rollouts via amplification — is portable to any Qwen-family checkpoint that exhibits comparable budget-overrun failures.
   - Action: when budget enforcement in this handoff lands, add a follow-up exploratory task to (a) extract Qwen3-1.7B / Qwen3-8B Lethality-of-think feature ids using contrastive sets of completed-vs-overrun think traces from our own benchmark logs, (b) verify pre-activation rise pattern matches Section 8 Figure 19, (c) consider exposing the scalar in llama-server alongside attention entropy. Tracked in `qwen-scope-sae-toolkit.md`.
   - Caveats (Tier 2b): ICML 2025 "Steering Language Model Refusal with Sparse Autoencoders" reports broad-task degradation under feature steering; the rare-negative-rollout pathway largely sidesteps this because the model learns to *avoid* steered outputs rather than imitate them. Section 8 Table 7 still shows Qwen3-8B IFEval -2.08pp vs Before-RL — task-dependent regressions remain plausible at the intervention scale used.
+
+## Research Intake Update — 2026-05-19
+
+### CGR — concrete no-training Adaptive Thinking implementation
+
+- **[intake-566] "Certainty-Guided Reasoning"** (arxiv:2509.07820, Nogueira/Sun/Silva/Zumot)
+  - Direct match for this handoff's goal: **model-agnostic, no-fine-tune, single-knob** dynamic thinking budget. Periodically probes the LLM's own predicted probability over answer tokens during the CoT; terminates early once a target certainty threshold is reached. No auxiliary head, no draft model, no constrained decoding.
+  - Headline: **AIME2025 baseline accuracy preserved while eliminating millions of tokens in aggregate** at the level of an evaluation run. Adds a **Grade metric** that penalizes incorrect answers and permits abstention — risk-sensitive evaluation aligns with our per-request budget framing.
+  - Implementation cost on EPYC: a sampling-loop patch in our `epyc-llama` fork that, every N decode tokens, runs the answer-token probability probe and early-stops if above threshold. Estimated ~150 LoC + flag plumbing.
+
+### External practitioner corroboration (with caveats)
+
+- **[intake-542] @jun_song (Super-Tune) X post** — Korean local-LLM practitioner reports that after testing most viral X "speed tricks", only **Adaptive Thinking** + SFT-duplicate-suppression preserved quality at 100k+ context. Useful direction-setting signal; treat as anecdotal not validated.
+- Tier 2b — **adaptive thinking failure modes ARE documented**: arxiv 2505.15400 ("When to Continue Thinking") shows models under-engage Continue-Thinking on hard questions AND over-invoke on easy questions — bimodally brittle. ASRR framework reports ~32.5% budget reduction at **non-zero ~1.2% pass@1 accuracy loss**. CGR's "preserves baseline accuracy" claim must be verified at our temperature/topk settings on our benches, not taken at face value.
+
+### Speculative-decoding concurrency caveat — corroborates `project_slot_promotion_shelved`
+
+- **[intake-567] ECHO** (arxiv:2604.09603) confirms vanilla EAGLE-3 underperforms autoregressive decoding at bs≈128, matching the @ZenMagnets reply to the jun_song thread. ECHO's own scheduler-level fix (sparse confidence gating, unified super-tree) **recovers and exceeds baseline** — so the blanket "spec-dec hurts high-concurrency" claim is true ONLY for naive vanilla implementations.
+- Not actionable for EPYC today (single-user, bs≈1, SGLang-only ECHO impl), but useful as a "why our shelved decision was right" reference and as evidence for the slot-promotion-shelved reopen criteria.
+
+**Concrete next step (this handoff)**: when prototyping the per-request budget infrastructure, design the API surface so CGR-style certainty-threshold early-stop slots in alongside the existing hard-cap budget. Both are values on a single "stop signal" abstraction.
+
