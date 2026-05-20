@@ -495,3 +495,12 @@ This update folds five new entries into the Tier-3/Tier-4 axis of the handoff. T
   - Adjacent — Tier 2b — **adaptive thinking is bimodally brittle**: arxiv 2505.15400 documents the failure mode (under-thinking on hard questions, over-thinking on easy questions). ASRR framework reports ~32.5% budget reduction at ~1.2% pass@1 accuracy loss — the accuracy hit is **non-zero**, contradicting any "quality preserved" framing.
   - **Concrete action**: CGR prototype is low-risk — a llama-cli sampling-loop patch in epyc-llama; A/B against existing reasoning-budget cap on a single bench. If even half the claimed aggregate-token reduction holds at our temperature/topk settings, the throughput win compounds with existing CPU optimizations without conflicting with `project_slot_promotion_shelved`.
 
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-570] "Expanding the Capabilities of RL via Text Feedback" (RLTF)** (Song/Chen/Tajwar/Munos/Pathak/Bagnell/Singh/Zanette, CMU+Inria; arxiv:2602.02482, OpenReview)
+  - **Relevance**: Joins the RLSD/OPSDC/CODI self-distillation family already tracked here. RLTF-SD treats the post-feedback second-turn rollout as an implicit teacher and distills it back into the one-shot policy; RLTF-FM adds an auxiliary head that predicts the critique itself, enabling iterative self-feedback at inference time with no external critic.
+  - **Reported results**: K&K 0.802/0.880, MATH500 0.598/0.636, LitBench 8.80/8.40 (SD/FM). Replacing text critiques with binary correctness collapses gains — semantically-rich text feedback is load-bearing (matches the existing Tier 2b "rich signal beats sparse" thread).
+  - **Delta from current approach**: This is a training-time technique (GPU-gated, out of scope on EPYC CPU stack today) — file alongside RLSD as a reference for when GPU becomes available. The RLTF-FM inference-time self-feedback loop is reproducible as a harness pattern without retraining, but reported gains depend on the trained FM head — do not expect equivalent improvements from a pure-prompt analogue.
+

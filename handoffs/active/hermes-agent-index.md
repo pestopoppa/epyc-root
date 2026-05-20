@@ -280,3 +280,12 @@ After completing any task:
   - Index-level relevance: low. Closed DeepSeek-API-only Rust TUI shell — no offline / GGUF / llama.cpp path. UX-pattern overlap only.
   - Per-child-handoff lift: **hermes-outer-shell** picks up the only meaningful overlap (Plan/Agent/YOLO three-tier approval gating + side-git snapshot rollback as a session-checkpoint reference). All other patterns (rlm_query parallel sub-agent fan-out, MCP server interop, paste-burst CRLF normalization) are already covered by Claude Code, hermes-agent v0.11.0, and pi-agent-core (intake-473) — not lifted into other child handoffs to avoid noise.
   - Delta: not a runtime candidate, not a fork target — recorded primarily to mark the URL seen and the pattern-coverage as already saturated.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-572] "Mirage: A Unified Virtual Filesystem For AI Agents"** (Strukto AI; github.com/strukto-ai/mirage, Apache-2.0)
+  - **Index-level relevance**: medium. A multi-backend VFS (S3/Drive/Slack/Gmail/Redis/SSH) with FUSE mounts and first-class adapters for OpenAI Agents, Vercel AI, LangChain, Pydantic AI, CAMEL, OpenHands, Mastra.
+  - **Per-child-handoff lift**: **hermes-outer-shell** picks up the adapter-shim pattern (one VFS surface + N framework wrappers) as a reference for tool exposure. No lift to other child handoffs — multi-cloud connector breadth is outside our offline / GGUF / hermes-core scope.
+  - **Delta**: not a runtime candidate (single-author, v0.0.1, 14-day-old, commercial-product-adjacent — credibility deferred per CLAUDE.md repo-credibility guidance). Recorded primarily to mark the design pattern as referenced and pending re-evaluation at v0.1 or second human contributor.

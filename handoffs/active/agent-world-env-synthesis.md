@@ -193,3 +193,55 @@ Revisit AppWorld if: (a) Phase 2 lands and we want a multi-app simulator with ve
     - **Borrow Pattern A — `/runs/<run-id>/` markdown artifact schema** (from `docs/execution-roadmap.md`): `prompt.md / command.md / stdout.md / stderr.md / result.md / metadata.md / artifacts/`. A clean human-reviewable companion to our JSONL journals for AR-3 trial bundles or env-synth-coordinator outputs. Independent of mdfs adoption — schema-only.
     - **Pattern B (`docs/semantic-index.md`)** — independent corroboration of `internal-kb-rag.md` K1–K7 (heading-aware chunking, FS-truth + derived vector index, on-commit reindex). De-risks our retrieval design; no implementation change.
   - Do NOT adopt as substrate for `wiki/` or `handoffs/` corpus — that role is already filled by Git + the planned ColBERT KB-RAG (`internal-kb-rag.md`). Single-writer constraint + single-author project + just-pivoted scope make adoption strictly net-negative.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-571] "ECHO: Terminal Agents Learn World Models for Free"** (Papailiopoulos et al., MSR AI Frontiers; PDF at github.com/anadim/anadim.github.io/papers/echo.pdf, no arxiv yet)
+  - **Relevance**: Direct training-side complement to this handoff's environment-synthesis frame. ECHO = the missing RL objective; agent-world-env-synthesis = the missing environments. Same author cluster as Endless Terminals (intake-574 below).
+  - **Key technique**: Add a next-token cross-entropy loss on the terminal's response tokens to standard GRPO rollouts (no masking). The agent thereby implicitly learns a "world model" of shell dynamics with zero marginal data — same rollout, same forward pass.
+  - **Reported results**: ~2× over baseline GRPO across Qwen3 family on Terminal-Bench class benchmarks; self-improvement signal without expert SFT. Exact numbers not machine-extracted (PDF only).
+  - **Delta from current approach**: Phase 1 of this handoff focuses on environment-task discovery via ETD; Phase 2 (GPU-gated, post-DGX-Spark) currently has no specific training objective specified. ECHO is the candidate. Action: add as Phase 2.5 training-side note; revisit once Spark + Endless-Terminals env pipeline are live.
+
+- **[intake-574] "Endless Terminals: Scaling RL Environments for Terminal Agents"** (Gandhi/Garg/Goodman/Papailiopoulos, Stanford + MSR; arxiv:2601.16443) — *discovered via reference chasing from intake-571*
+  - **Relevance**: Reference design for the ETD-side species. 4-stage autonomous procedural-generation pipeline produces 3,255 verified terminal tasks without human annotation; vanilla PPO scales meaningfully on those envs.
+  - **Reported results**: Qwen2.5-7B 10.7%→53.3% on dev set (+42.6pp), 2.2%→3.4% on TerminalBench 2.0; Qwen3-8B-openthinker-sft 42.6%→59.0% dev, 1.1%→6.7% TB2.0. Solution-based filtering via o3 pass@16 removes ~50% of generated tasks.
+  - **Delta from current approach**: Validates the procedural-env-generation arm of this handoff and provides a concrete 4-stage recipe (task-description → containerized-env → completion-test → solution-filter) we can mirror. Suggests the SFT→RL composition (rather than RL alone) is the right path on EPYC's Qwen3 stack once GPU is available.
+
+### Deep-Dive Refinement — 2026-05-20 (post-original intake)
+
+**Endless Terminals (intake-574) was UNDERESTIMATED in the first pass.** Three corrections from a focused audit:
+
+1. **Code IS released** at `github.com/kanishkg/endless-terminals` (Apache-2.0). The pipeline is runnable today.
+2. **Dataset + both PPO checkpoints ARE on HuggingFace** as the `obiwan96/endless-terminals` collection — including `qwen-2.5-7b-instruct-endless-terminals` and `qwen3-8b-openthinker-sft-endless-terminals`. Independent TB-2.0 transfer-gap validation can run on EPYC inference-only.
+3. **The o3 dependency was misread.** The released `generate_solutions.py` defaults to **Qwen3-32B via vLLM** (`--vllm` flag); o3 appears only in the paper's specific experiment, not the implementation. Open-weight solution-filter substitution is implicitly endorsed by the authors. **gemma4-26B-A4B is a credible drop-in on our box** (76.5 t/s decode > Qwen3-32B); full filter pass across 3,255 tasks at ~16 rollouts × ~16 turns × ~1k output tok = **~50-100 wall-hr on EPYC, decode-only, NO GPU required**.
+
+**Refined work items** (replace original Phase 1/2 split for the env-supply arm):
+
+- **AW-7 (NEW, immediate, no-blocker)**: Pull `obiwan96/endless-terminals` dataset + both PPO checkpoints. Re-evaluate the released checkpoints on TB-2.0 from EPYC to independently confirm the +1-6pp transfer gain reported in the paper. Time-to-value: hours. Outcome: real transfer-gap measurement under our harness before we commit to mirroring the pipeline.
+- **AW-8 (NEW, background, runs concurrent with ETD development)**: Run a `gemma4-26B-A4B-as-filter` reproduction of Stages I-IV. ~50-100 wall-hr in a low-priority worker slot. First ablation to run: filter-model swap (gemma4 vs Qwen3-32B vs Qwen3-coder) — the paper omits this and it is the load-bearing methodological hole. Output is our own env pool, parameterized by filter model, that the ETD species can consume.
+- **AW-9 (DEFERRED on GPU)**: PPO training itself. Genuinely GPU-gated; awaits DGX Spark. Decoupled from env-generation work above.
+
+**Transfer-gap caution** (carry into design): in-distribution dev-set gains (+14 to +43pp) vs TB-2.0 transfer gains (+1 to +6pp) is a >10× ratio more consistent with procedural-distribution overfitting than the paper's "messy real-user requests" denial. Two existing alternatives the paper does not engage — **R2E-Gym** (arxiv:2504.07164, 8.1k procedural SWE envs via real-PR back-translation) and **SWE-Gym** (arxiv:2412.21139, 2,438 PR-derived envs) — use real-PR back-translation rather than wholesale procedural synthesis and may be less overfit-prone. Worth a separate intake pass before AW-8 commits significant compute.
+
+### ECHO (intake-571) Deep-Dive Refinement — 2026-05-20
+
+**ECHO is GPU+repo-blocked** beyond what the original intake noted. New findings from local PDF read (`/tmp/echo.pdf`):
+
+- True authors: **Vaishnavi Shrivastava, Ahmed Awadallah, Dimitris Papailiopoulos (MSR)** — earlier guess of Gandhi/Garg/Goodman was wrong (those are Endless Terminals authors; Papailiopoulos overlaps both).
+- Exact loss: `L_total = L_GRPO + λ · L_Env` with **λ=0.05** (base) or 0.02 (SFT-init). Warning-prefix tokens excluded from `O'`; timestamps/ANSI kept (0.05-0.10 nat env-CE floor treated as irreducible).
+- Real TB-2.0 numbers: Qwen3-8B 2.70%→5.17%, Qwen3-14B 5.17%→10.79%. ECHO closes ~50% of the SFT-then-GRPO gap on TB-2.0 (Table 5).
+- **Self-falsification on the verifier-free claim** — Table 4 shows env-only fine-tune REGRESSES TBLite by −3.9pp from seed (lifts only on val100 +3.8pp and PyTerm +10pp filtered).
+- **Advertised public repo `github.com/microsoft/echo-rl` returns HTTP 404** — no published training code, no released ECHO-tuned checkpoints.
+- Compute: 8×B200, 24-48h per run; ~15 runs in the paper. Even a single DGX Spark is below this throughput.
+
+**Status downgrade**: intake-571 credibility 3→2. Verdict stays `worth_investigating` but with three hard gates before any upgrade to `adopt_patterns` — (i) microsoft/echo-rl publishes; (ii) ≥1 independent reproduction; (iii) DGX Spark acquired AND a single-node GRPO trainer is operational.
+
+**EPYC-actionable spinoff** (not ECHO, borrows the intuition): inside `autopilot-continuous-optimization`, prototype a **prediction-error-as-feature** signal — have the autopilot controller maintain an expected-terminal-output prediction for each proposed config probe and use (actual − predicted) surprise as an explicit Pareto-archive feature. Cheap to add (logging only) and tests whether the "good prediction implies good understanding" intuition pays off without any RL training. Cross-link this work item into autopilot-continuous-optimization rather than spinning a new handoff stub.
+
+### Mirage Pattern Adoption — 2026-05-20 (design reference, no runtime dep)
+
+One pattern lifted from `strukto-ai/mirage` source audit. Apply when designing the ETD species' tool-discovery loop; do NOT depend on Mirage itself.
+
+- **AW-Pattern-L — Lazy resource registry with `importlib`-deferred backend loading** (Mirage `python/mirage/resource/registry.py:28-107` + `python/mirage/resource/loader.py`). The registry is a single `dict[str, ResourceEntry]` mapping connector name → `(resource_path, config_path)` STRINGS — not imported classes. `build_resource(name, config)` resolves classes only when the connector is actually instantiated, so importing the registry itself doesn't pull `aioboto3`/`asyncpg`/`mfusepy`/etc. into the process. Apply directly to the ETD species' tool-discovery loop: each candidate MCP server / connector / synthesized environment should be registered as a string-typed entry, with classes loaded only when the species decides to actually exercise that environment in a rollout. Without this, the species' import surface grows monotonically with the discovered-tool count and you eventually OOM the dispatcher on dependency loading. A 10-line `loader.load_backend_class("module.submodule:ClassName")` helper is the entire pattern.

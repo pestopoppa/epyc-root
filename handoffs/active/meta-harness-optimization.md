@@ -446,3 +446,17 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
   - **Action**: monitor — do NOT spin a handoff stub for the latent path. Re-evaluate when (a) Dead Weights independent reproduction lands (GPU rental for Dead Weights replication **DEFERRED** per user direction 2026-05-19), or (b) llama.cpp upstream exposes activation hooks across servers.
   - **STUB DRAFTED 2026-05-19 for the text-MAS subset**: adjacent **X-MAS** (intake-557, arxiv:2505.16997) is the immediately actionable text-MAS heterogeneity adoption path — its (domain × function × model) optimal-assignment matrix could replace ad-hoc role-bench mapping in our heterogeneous stack. See [`x-mas-text-routing.md`](x-mas-text-routing.md) (master priority queue #44, HIGH, 2-3 dev-days). Cheap-kill failure mode: if 5×5 winner table shows gemma4-26B-A4B winning ~all cells, heterogeneity does not apply to our stack and we abort.
 
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-571] "ECHO: Terminal Agents Learn World Models for Free"** (Papailiopoulos et al., MSR AI Frontiers; PDF only, no arxiv yet)
+  - **Relevance**: Training-side analogue of the Tier-3 self-improvement loop. Auxiliary terminal-output prediction loss on GRPO rollouts ≈ 2× over baseline at zero marginal data cost.
+  - **Key technique**: Single rollout, single forward pass — train both action and observation tokens; the "world model" emerges as a byproduct of an existing auxiliary head, not a new model.
+  - **Delta from current approach**: Meta-harness Tier 3 is currently inference-time scaffold search; ECHO suggests a parallel training-time lever. Both are GPU-gated and out of scope until DGX Spark — file as a future Tier 4 candidate alongside SkillRL.
+
+- **[intake-570] "Expanding the Capabilities of RL via Text Feedback" (RLTF)** (Song/Chen/Tajwar/Munos/Pathak/Bagnell/Singh/Zanette, CMU+Inria; arxiv:2602.02482, OpenReview)
+  - **Relevance**: RLTF-FM's auxiliary "predict the critique" head enables test-time iterative self-feedback even when no external critic is available — a pattern the meta-harness could express as a self-critique sub-routine.
+  - **Reported results**: K&K 0.802/0.880, MATH500 0.598/0.636, LitBench 8.80/8.40 (SD/FM); critically, replacing text feedback with binary correctness collapses gains — text richness is load-bearing.
+  - **Delta from current approach**: Inference-side self-critique already exists in our harness via tool-call retries; RLTF-FM's gains depend on the trained FM head, which we lack. Note as a reference for any future GPU-gated training arm; the inference-time pattern alone is unlikely to reproduce the reported deltas.
+

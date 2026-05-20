@@ -26096,34 +26096,39 @@
   source_type: paper
   title: 'ECHO: Terminal Agents Learn World Models for Free'
   authors:
-  - Dimitris Papailiopoulos (Microsoft Research AI Frontiers)
-  - '(likely co-authors per Endless Terminals lineage: Kanishk Gandhi, Shivam Garg, Noah D. Goodman — unconfirmed)'
+  - Vaishnavi Shrivastava (Microsoft Research)
+  - Ahmed Awadallah (Microsoft Research)
+  - Dimitris Papailiopoulos (Microsoft Research)
   categories:
   - agent_architecture
   - autonomous_research
   - training_distillation
   - tool_implementation
   key_claims:
-  - Standard GRPO training for CLI agents masks the terminal's response tokens and thereby ignores environment dynamics; ECHO adds an environment-prediction auxiliary loss so the agent must predict terminal output as part of training.
-  - By training on agent actions AND terminal responses in a single rollout / forward pass (no masking), the agent implicitly learns a "world model" of terminal physics for free — no new data, no expert SFT, no extra rollouts.
-  - Approximately doubles benchmark performance over baseline GRPO without additional data; shows signs of self-improvement without explicit external reward signals.
-  - Improvements demonstrated across Qwen3 model family on terminal-use benchmarks (Terminal-Bench class).
-  - 'Author prediction: by end of 2026 ECHO-style environment-prediction loss will be part of standard agent RL trainers.'
+  - 'ECHO = Environment Cross-entropy Hybrid Objective (paper p.1). Hybrid loss L_total = L_GRPO + λ · L_Env, where L_Env is mean cross-entropy on observation-token positions in the same rollout. λ=0.05 for base-model runs, λ=0.02 for SFT-init runs (App. B). λ≥0.1 plateaus; λ=0.2 collapses to degenerate easy-to-predict rollouts (§3.3).'
+  - 'Single shared forward pass with GRPO — no extra rollouts, no extra data. Same logits indexed at two disjoint position sets (action tokens for policy gradient, observation tokens for CE).'
+  - 'Cosmetic-token masking question is PARTIALLY addressed (§3.2): warning-prefix tokens are excluded from O''; timestamps, ANSI, byte counts, filenames are KEPT in the CE target. The 0.05–0.10 nat env-CE floor is treated as irreducible cosmetic entropy.'
+  - 'Exact gains on TerminalBench-2.0 pass@1: Qwen3-8B 2.70%→5.17% (+2.47pp ≈ 1.91×); Qwen3-14B 5.17%→10.79% (+5.62pp ≈ 2.09×). On internal val100: Qwen3-8B 54.9%→63.7%; Qwen3-14B 60.3%→65.0%.'
+  - 'ECHO recovers ~50% of the expert-SFT-then-GRPO gap on TB-2.0 (Qwen3-8B: base-RL 2.70, +ECHO 5.17, +SFT 7.64 → ECHO closes 50% of SFT gap) and ~100% on internal evals (Table 5).'
+  - 'Verifier-free env-only mode (Table 4): from strongest 8B GRPO+ECHO checkpoint + 100 steps env-only, lifts val100 +3.8pp and PyTerm +10pp BUT REGRESSES TBLite −3.9pp — verifier-free claim is conditional, not universal.'
   techniques:
-  - Environment prediction auxiliary loss (predict terminal output tokens) added to GRPO
-  - Unified single-rollout / single-forward-pass training over (action, environment-response) sequences (no response-token masking)
-  - Hybrid RL + next-token-prediction objective for CLI / terminal agents
-  - World-model-for-free framing — agent dynamics learned implicitly from existing rollouts
+  - 'ECHO = Environment Cross-entropy Hybrid Objective; L_total = L_GRPO + λ · L_Env'
+  - 'Single shared forward pass over (action, observation) tokens with disjoint loss positions (Algorithm 1)'
+  - 'Warning-prefix masking (excluded from CE target); rest of observation kept'
+  - 'Pure env-only fine-tune (verifier-free mode) from a competent GRPO+ECHO seed checkpoint'
   reported_results:
-  - ~2x improvement on Terminal-Bench class benchmarks vs baseline GRPO with same data
-  - Improvements consistent across multiple Qwen3 model sizes
-  - Self-improvement signal observed without expert SFT dependency
-  - (Specific Qwen3 size × TB-1.0/2.0 percentage points not recoverable from public summaries; PDF text extraction failed via WebFetch)
+  - 'TB-2.0 pass@1 (n=5): Qwen3-8B base 1.57% → GRPO 2.70% → ECHO 5.17%; Qwen3-14B base 4.27% → GRPO 5.17% → ECHO 10.79%; OT-SFT base 5.62% → GRPO 7.64% → ECHO 7.87%'
+  - 'TB-2.0 pass@5: Qwen3-8B 4.49→8.99→13.48; Qwen3-14B 12.36→13.48→19.10'
+  - 'Env-token CE (held-out trajectories): Qwen3-8B 0.29→0.07 on val100, 0.46→0.32 on ITD, 0.35→0.25 on TBLite — GRPO alone barely moves env-CE (key claim, Fig. 3)'
+  - 'Expert-SFT-gap closure (Table 5): val100 101.6%, ITD 103.9%, TBLite 88.9%, TB-2 p@1 50.0%, TB-2 p@3 48.6%, TB-2 p@5 50.0%'
+  - 'Compute: 8×B200 GPUs, 500–1000 GRPO steps, 24-48h wallclock per run; ~15 runs across model × seed in the paper'
+  - 'CAVEAT: Advertised code repo `github.com/microsoft/echo-rl` returns HTTP 404 as of 2026-05-20 — no published implementation despite prominent README pointer'
   referenced_arxiv_ids:
   - '2601.16443'
+  - '2510.02387'
   novelty: high
   relevance: high
-  credibility_score: 3
+  credibility_score: 2
   verdict: worth_investigating
   discovered_via: input
   ingested_date: '2026-05-20'
@@ -26146,10 +26151,11 @@
   handoffs_created: []
   novelty_justification: EPYC corpus indexes Endless Terminals (procedural env scaling, vanilla PPO) and Agent-World (environment-task discovery + multi-env RL) but no prior entry covers ECHO's specific technique — auxiliary next-token-prediction loss on terminal responses turning a standard GRPO rollout into implicit world-model training with no extra data. The "world model for free" construction is the novel contribution; the 2x improvement at zero marginal data cost is a strong empirical claim.
   relevance_justification: Direct fit for the agent-world-env-synthesis active handoff (which already plans environment-task discovery as the 5th autopilot species) and the meta-harness-optimization Tier 3 loop. ECHO is the missing training-side complement — agent-world synthesizes environments, ECHO trains agents on them with implicit world-model objective. Also relevant to GPU-gated work (DGX Spark) since ECHO requires GRPO + an extra auxiliary loss — feasible on the Spark with a small terminal-agent class model. Indirect relevance to orchestrator tool-using agent quality, since EPYC's worker/tool roles execute shell/MCP commands.
-  verdict_justification: worth_investigating — not adopt_patterns yet because (a) the PDF text could not be machine-extracted via WebFetch (returned binary), so exact baselines / Qwen3 sizes / TB percentages need a human read of the PDF before committing to reproduction, (b) ECHO requires GRPO training (GPU-gated, deferred to DGX Spark per EPYC's CPU-only constraint), (c) the precise loss formulation, weighting, and whether terminal responses need any masking of cosmetic tokens (timestamps, ANSI codes) needs verification. Recommendation — add as a Phase 2.5 "training-side" note inside agent-world-env-synthesis handoff; reproduce only after DGX Spark + Endless Terminals env pipeline are operational. Credibility 3 = known author (Papailiopoulos, well-established), recent (<12mo, +1), major lab (Microsoft Research, +1), not yet peer-reviewed venue (preprint/PDF only, 0), no independent corroboration yet (single source + viral X post).
+  verdict_justification: worth_investigating — DEEP-DIVE 2026-05-20 (PDF read locally via /tmp/echo.pdf) recovered authors (Shrivastava/Awadallah/Papailiopoulos, MSR), exact loss formulation (L_GRPO + 0.05·L_Env), and exact TB-2.0 numbers (Qwen3-8B 2.70→5.17, Qwen3-14B 5.17→10.79). Three blockers prevent upgrade to adopt_patterns - (a) advertised repo `github.com/microsoft/echo-rl` is 404 as of 2026-05-20 — no public training code, no released ECHO-tuned checkpoints; (b) 8×B200 compute requirement is incompatible with current CPU-only EPYC stack and exceeds even a single DGX Spark's effective throughput; (c) the verifier-free env-only claim (Table 4) shows a TBLite REGRESSION of −3.9pp, so the "world model for free" framing is conditional, not universal. Credibility downgraded 3→2 — no independent corroboration, advertised public repo is absent, only one secondary source (the youmind blog already in index as intake-573 with cred 0).
   contradicting_evidence:
   - 'Adjacent literature (arxiv:2601.03905 "Current Agents Fail to Leverage World Model as Tool for Foresight"; arxiv:2504.04608 "AI in a vat: Fundamental limits of efficient world modelling for agent sandboxing") argues that LLM agents lack robust foresight mechanisms even when they articulate goal-achieving plans, and that there are fundamental efficiency/interpretability trade-offs to world model construction. These do not directly falsify ECHO''s gains, but suggest the "free world model" framing may be optimistic about what an auxiliary-loss head can actually internalize.'
-  - PDF is not yet on arXiv; no peer review; no independent replication. The 2x claim is from a viral X thread and the author's PDF only. Reserve adopt_patterns until at least one independent group reproduces on Qwen3 + Terminal-Bench.
+  - 'Self-falsification: paper''s own Table 4 shows env-only verifier-free fine-tune REGRESSES TBLite by −3.9pp from the seed checkpoint. Lifts are real on val100 (+3.8pp) and PyTerm (+10pp filtered) but the universal "verifier-free self-improvement" framing is overclaimed.'
+  - 'Advertised public repo `github.com/microsoft/echo-rl` returns HTTP 404; no peer review; no independent reproduction. The 2× claim is single-source until repo lands and one external group reproduces. Closest comparison the paper itself cites is CWM (FAIR CodeGen, arxiv:2510.02387) — not a direct ECHO replication.'
 - id: intake-572
   arxiv_id: null
   url: https://github.com/strukto-ai/mirage
@@ -26157,7 +26163,7 @@
   title: 'Mirage: A Unified Virtual Filesystem For AI Agents'
   authors:
   - Strukto AI (org)
-  - zechengz (sole human contributor, 114 commits)
+  - zechengz (Zecheng Zhang — sole core developer, 114/130 commits as of 2026-05-20; other contributors are drive-by 1-4 commit fixes from Goktug, aaronjmars, milosveljkovic, jneless, plus dependabot)
   categories:
   - agent_architecture
   - tool_implementation
@@ -26165,19 +26171,21 @@
   - document_processing
   - context_management
   key_claims:
-  - Mounts heterogeneous services (S3/R2/OCI/GCS/Supabase, Google Drive/Docs/Sheets/Slides, Gmail, Slack/Discord/Telegram, GitHub/Linear/Notion/Trello, MongoDB, Redis, SSH) as a single virtual filesystem tree so agents interact via Unix-like commands rather than per-service SDKs.
-  - 'Two-layer cache architecture: index cache (metadata/listings) + file cache (object bytes), with pluggable backends — RAM (default, 512 MB cap) or Redis (shared across workers).'
-  - FUSE-based mounts on macOS/Linux; embeddable in-process from both Python and TypeScript without requiring a separate daemon.
-  - Portable workspaces with snapshot/clone/version semantics — designed to be passed between agents/sessions as durable shared state.
-  - 'Adapters for major agent frameworks: OpenAI Agents SDK (MirageSandboxClient), Vercel AI SDK (mirageTools), LangChain, Pydantic AI, CAMEL, OpenHands, Mastra.'
+  - 'Mounts heterogeneous services (28 connectors total: ram, disk, redis, s3, r2, oci, supabase, gcs, github, github_ci, linear, gdocs, gsheets, gslides, gdrive, slack, discord, gmail, trello, telegram, mongodb, postgres, notion, langfuse, ssh, email, paperclip + TS-only box/dropbox/posthog/sscholar) as a single virtual filesystem tree so agents interact via Unix-like commands rather than per-service SDKs.'
+  - 'Two-layer cache architecture: index cache (metadata/listings) + file cache (object bytes), with pluggable backends — RAM (default, 512 MB cap) or Redis (shared across workers). Confirmed in python/mirage/cache/{index,file}/{ram,redis}.py.'
+  - FUSE-based mounts on macOS/Linux via mfusepy; FUSE is OPTIONAL (in-process embedded API works without it); embeddable in-process from both Python and TypeScript without requiring a separate daemon.
+  - 'Portable workspaces with snapshot/clone/version semantics (workspace/snapshot/, 8 files / ~37 KB — the most-engineered subsystem). Uses recorded-at-read fingerprints + replay-time ContentDriftError to detect divergence between snapshot and live state.'
+  - 'Framework adapters are LANGUAGE-SPLIT, not 7-each: Python ships openai_agents/, langchain/, pydantic_ai/, camel/, openhands/; TS ships openai, langchain, vercel, mastra, pi. Only openai + langchain overlap. README "7+ frameworks" claim is union, not per-language.'
   techniques:
-  - Unified virtual filesystem over multi-backend connectors (S3, Drive, Slack, Gmail, Redis, etc.)
-  - Two-layer cache (index cache + file cache) with pluggable RAM/Redis backends
-  - FUSE mount layer for filesystem semantics on Linux/macOS
-  - Embeddable in-process library (Python + TypeScript) rather than sidecar daemon
+  - 28-connector unified virtual filesystem over multi-backend services (S3, Drive, Slack, Gmail, Redis, Postgres, MongoDB, SSH, etc.)
+  - Two-layer cache (index cache + file cache) with pluggable RAM/Redis backends; pipelined Redis set/expire with configurable key_prefix
+  - FUSE mount layer for filesystem semantics on Linux/macOS via mfusepy (optional — in-process API works without)
+  - Embeddable in-process library (Python ≥3.12 + TypeScript) rather than sidecar daemon
   - Bash/VFS dispatcher exposing connectors as Unix commands ("any LLM that knows bash can use Mirage")
-  - Portable workspace abstraction (clone / snapshot / version)
-  - Per-framework adapter shims (OpenAI Agents, Vercel AI, LangChain, Pydantic AI, CAMEL, OpenHands, Mastra)
+  - 'Portable workspace abstraction with snapshot/clone/version; FORMAT_VERSION-gated state dict; live_only_mount_prefixes flag for non-replayable backends (Gmail, Slack)'
+  - Per-framework adapter shims (5-file shape per framework — backend.py + prompt.py + _convert.py + _messages.py + __init__.py)
+  - Lazy resource registry with importlib-deferred backend loading (registry doesn't pull aioboto3/asyncpg/etc unless backend instantiated)
+  - Per-resource SUPPORTS_SNAPSHOT class flag + FileStat.fingerprint contract for content-addressable drift detection
   reported_results: []
   referenced_arxiv_ids: []
   novelty: medium
@@ -26205,7 +26213,7 @@
   handoffs_created: []
   novelty_justification: The component primitives (FUSE, S3FS-style multi-backend mounts, RAM+Redis cache layers) are all well-trodden territory; the novel contribution is packaging them with first-class agent-framework adapters (7+ frameworks) and a deliberate "agents-already-know-bash" UX framing. Distinct from intake-520 (markdownfs) which is markdown-only with Git-style VCS and an MCP surface but no multi-cloud-connector breadth. Distinct from intake-444's MCP-tool-ecosystem frame in that mirage chooses filesystem semantics over JSON-RPC tool calls. Combination is genuinely novel packaging; no underlying mechanism is new.
   relevance_justification: EPYC's active stack already has overlapping primitives — GitNexus + Git-on-disk for code, internal-kb-rag (planned ColBERT) for retrieval, agent-world-env-synthesis ETD for MCP-tool discovery, hermes-outer-shell for the user-facing agent. Mirage's multi-backend mount could be one connector class the ETD species discovers and exercises, and its bash-as-tool-surface design is a useful reference for hermes-outer-shell tool exposure. Not high relevance because no active handoff has an unmet need that mirage uniquely fills — we don't currently bridge Gmail/Slack/Drive to agents, and adding mirage would impose a heavy FUSE + adapter surface for capabilities outside the inference/research scope. Not low because the architectural patterns (two-layer cache, framework-agnostic adapters, portable workspaces) are directly applicable as reference designs and the project's adapter list overlaps cleanly with hermes-outer-shell's framework-agnosticism goal.
-  verdict_justification: worth_investigating, not adopt_component. Activity is unusually intense (126 commits in 14 days since 2026-05-06 init, v0.0.1 just tagged, ~2.5k stars + 167 forks in 2 weeks — viral interest signal but very early). Sole human contributor (zechengz, 114 commits) + dependabot is concerning for sustainability and the standard "commercial bias" signal applies — strukto.ai positions Mirage as the open-source entry point to a managed product surface. Per CLAUDE.md guidance, credibility-from-README is unreliable here — defer numeric score until benchmarks/adoption mature. Concrete actions — (1) compare mirage's two-layer cache + RAM/Redis architecture against markdownfs (intake-520) and internal-kb-rag's planned design, (2) consider mirage as one candidate MCP-or-equivalent connector class the agent-world-env-synthesis ETD species could surface, (3) re-evaluate at v0.1 / second human contributor / first published benchmark — until then do not add as dependency. Per feedback_opensource_only — Apache-2.0 is fine; per feedback_dont_dismiss_creative_uses — keep on radar for hermes-outer-shell tool-exposure design even though direct adoption is premature.
+  verdict_justification: 'DEEP-DIVE 2026-05-20 — verdict stays worth_investigating, sharpens to "adopt 6 patterns as design references, no runtime dependency". Engineering quality is genuinely high (734 py-test / 1965 py-src = 0.37 ratio; 561 ts-test / 1917 ts-src = 0.29; clean cache/ + fuse/ + resource/ + agents/ + workspace/ separation; per-package READMEs) but sustainability is fragile (Zecheng Zhang owns 95%+ of commits, 130 commits in 14 days suggests AI-assisted single-dev burst, zero published benchmarks, no CHANGELOG, numpy>=2.4.3 future-pin, requires Python 3.12, mandatory mfusepy + tree-sitter-bash + jq native compile). Patterns to lift INTO our handoffs (not as code dep) — (1) per-resource SUPPORTS_SNAPSHOT flag + FileStat.fingerprint contract → internal-kb-rag chunk-source semantics; (2) replay-time drift detection via recorded fingerprints → hermes-outer-shell session replay; (3) lazy resource registry with importlib-deferred loading → agent-world-env-synthesis ETD tool discovery; (4) 5-file-per-framework adapter shim shape (backend + prompt + _convert + _messages + __init__) → hermes-outer-shell multi-framework wrapping of our llama.cpp HTTP server; (5) FORMAT_VERSION-gated snapshot state dict → versioned KB compilation artifacts; (6) live_only_mount_prefixes complement to fingerprinting → honest declaration of non-replayable RAG sources. Upgrade triggers to revisit as runtime dep — (a) v0.1.0 with documented API-stability commitment, (b) sustained second human committer (>20 commits over >30 days; current drive-bys do not count), (c) first published latency/throughput benchmark, (d) CHANGELOG.md, (e) resolution of the open eouzoe FUSE-primary-vs-overlay architectural issue. Earliest realistic revisit: 2026-08.'
 - id: intake-573
   arxiv_id: null
   url: https://youmind.com/fr-FR/landing/x-viral-articles/echo-terminal-agents-world-models
@@ -26283,15 +26291,17 @@
   - Starting from supervised fine-tuned models amplifies RL gains significantly (SFT→RL composition beats RL-only).
   techniques:
   - 'Procedural generation pipeline (4 stages: task description generation, containerized environment setup with validation, completion test generation, solution-based filtering)'
-  - Vanilla PPO with binary episode-level rewards
-  - Solution-based filtering using o3 (pass@16 threshold)
+  - Vanilla PPO with binary episode-level rewards (16 rollouts/prompt, up to 16 turns, 2048 tok/turn, 16k ctx, temp 0.6, PPO clip ε_low=0.2/ε_high=0.28, sequence-level loss, NO KL penalty)
+  - 'Solution-based filtering at pass@16 threshold; paper uses o3 but RELEASED code (kanishkg/endless-terminals) defaults to Qwen3-32B via vLLM — filter model is swappable, open-weight substitution implicitly endorsed by authors'
   - Persistent shell sessions via Apptainer/Docker containers with pseudo-terminal (PTY) support
   - Minimal scaffolding approach without retrieval, tool use, or multi-agent coordination
   reported_results:
   - 'Dev set: Llama-3.2-3B 4.0%→18.2% (+14.2pp); Qwen2.5-7B 10.7%→53.3% (+42.6pp); Qwen3-8B-openthinker-sft 42.6%→59.0% (+16.4pp)'
-  - 'TerminalBench 2.0: Llama-3.2-3B 0.0%→2.2%; Qwen2.5-7B 2.2%→3.4%; Qwen3-8B-openthinker-sft 1.1%→6.7%'
+  - 'TerminalBench 2.0: Llama-3.2-3B 0.0%→2.2%; Qwen2.5-7B 2.2%→3.4%; Qwen3-8B-openthinker-sft 1.1%→6.7% (small transfer gains relative to large in-distribution gains — possible procedural-distribution overfitting)'
   - 3,255 verified tasks total (~2,500 in Harbor format); 50% filtered by solvability checks
   - 'Failure analysis: loop failures 39%, turn exhaustion 26%; command diversity 0.49 (successful) vs 0.18 (looping); pass@5 by difficulty Easy 25%, Medium 14.5%, Hard 10%'
+  - 'RELEASED ARTIFACTS (verified 2026-05-20): code at github.com/kanishkg/endless-terminals (Apache-2.0); 83.4k-row dataset on HF as obiwan96/endless-terminals; BOTH PPO checkpoints released (obiwan96/qwen-2.5-7b-instruct-endless-terminals and obiwan96/qwen3-8b-openthinker-sft-endless-terminals)'
+  - 'NO ablations in paper: no judge-model comparison (filter quality across models), no KL ablation, no reward-shaping ablation; only TB-2.0 + proprietary dev set as benchmarks (no SWE-bench, OSWorld, AgentBench)'
   referenced_arxiv_ids:
   - '2310.06770'
   - '2407.16741'
@@ -26299,6 +26309,8 @@
   - '2506.04178'
   - '2503.01307'
   - '2512.12895'
+  - '2504.07164'
+  - '2412.21139'
   novelty: high
   relevance: high
   credibility_score: 4
@@ -26320,7 +26332,9 @@
   handoffs_created: []
   novelty_justification: 'Concrete recipe for one of the two missing pieces in the agent-world-env-synthesis design (the env-generation arm). Four-stage pipeline (description → container → tests → solution-filter) with reproducible numbers on Qwen2.5/Qwen3 and TerminalBench 2.0 is more actionable than most "agent-env synthesis" claims in the literature; the 50% solvability-filter survival rate and 0.49 vs 0.18 command-diversity contrast for success/failure are useful design constants.'
   relevance_justification: 'Direct fit for agent-world-env-synthesis ETD species — Endless Terminals IS the kind of curated env supply the ETD coordinator would emit, and the 4-stage pipeline is a reference design. Also relevant to meta-harness Tier 3 (terminal-agent scaffold search needs envs to score against). Less relevant to non-agent inference work but central to the agent-side roadmap.'
-  verdict_justification: 'worth_investigating, NOT adopt_patterns yet. Reasons: (a) pipeline assumes GPU PPO budget, GPU-gated on DGX Spark; (b) the env-generator itself uses o3 for solution-based filtering, which is a closed model and a budget item; (c) reproducing 3,255 tasks + filtering takes nontrivial compute we cannot justify before agent-world-env-synthesis is ready to consume them. Action: track as the primary env-supply reference design for the ETD species; revisit reproduction priority once Phase 2 (GPU) is unblocked.'
+  verdict_justification: 'DEEP-DIVE 2026-05-20 UPGRADED — was worth_investigating with GPU-gated reproduction; now adopt_component (released dataset + checkpoints) AND adopt_patterns (4-stage env-gen pipeline, runnable on EPYC TODAY with gemma4-26B-A4B as solution-filter substitute). Reasons: (a) the o3 dependency was misread from the paper — the released code defaults to Qwen3-32B via vLLM; (b) the full pipeline (Stages I-IV) is decode-only compute = ~50-100 wall-hr on EPYC for 3,255-task filter pass, no GPU required; (c) PPO training (the only genuinely GPU-gated step) is decoupled from env-generation, so env-synth can begin immediately as a background autopilot ETD species; (d) Both released PPO checkpoints (Qwen2.5-7B and Qwen3-8B-openthinker-sft) can be evaluated on TB2.0 from EPYC for independent transfer-gap validation. Remaining caveats — no judge-model ablation in paper (we should run it as our first ablation), zero external benchmarks beyond TB2.0, prior art (R2E-Gym arxiv:2504.07164, SWE-Gym arxiv:2412.21139) uses real-PR back-translation which may be less overfit-prone.'
   contradicting_evidence:
-  - 'TerminalBench 2.0 transfer numbers are small (2-6%) despite large dev-set gains (14-43pp). The procedural distribution may not match TB2.0''s difficulty profile — the procedural pipeline may overfit to its own narrow task class. The paper acknowledges this as a domain-gap signal worth tracking.'
-  - 'No direct replication from a second independent group found in Tier 2b — the paper is recent (2026-04) and the result is single-source so far. The o3-dependent solution filter is also a methodological concern — the env pool quality is bounded by o3''s pass@16 reliability.'
+  - 'TerminalBench 2.0 transfer numbers are small (2-6%) despite large dev-set gains (14-43pp). The procedural distribution may not match TB2.0''s difficulty profile — the procedural pipeline may overfit to its own narrow task class. The paper offers only a thin denial ("messy real-user requests"); the >10× ratio between in-distribution and transfer gains is more consistent with overfitting.'
+  - 'Solution-filter selection bias: filter (o3 or Qwen3-32B pass@16 ≥ 1) systematically selects for tasks the filter model can already solve, biasing the env pool toward the filter''s policy basin. Filter-model ablation is the load-bearing missing experiment.'
+  - 'Zero external benchmarks: paper evaluates only on TB-2.0 + the in-distribution dev set. No SWE-bench, OSWorld, AgentBench, Mind2Web validation.'
+  - 'Prior art the paper does not deeply engage: R2E-Gym (arxiv:2504.07164, 8.1k procedural SWE envs via SWEGEN) and SWE-Gym (arxiv:2412.21139, 2,438 PR-derived envs) — both use real-PR back-translation rather than wholesale procedural synthesis. Endless Terminals contribution is the terminal domain and the LLM-pass@16 filter, not the env-curation loop itself.'

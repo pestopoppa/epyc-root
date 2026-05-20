@@ -39,6 +39,8 @@
 | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **NEW** — download pending, storage-constrained (325GB model, 417GB free). 9-phase eval plan. | MEDIUM | 2026-04-22 |
 | (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | Monitoring — design task from intake-426 deep dive | LOW | 2026-04-22 |
 | [sliders-local-validation.md](sliders-local-validation.md) | SLIDERS (structured-DB+SQL alt to RAG) Coder-30B viability | **STUB / NEW 2026-04-28** — Phase 0 falsification gate (catalogue GPT-4.1 call sites, substitute Coder-30B, FinQ5 run, gate on schema-hallucination >20% OR call-count >5×). **Does NOT block `internal-kb-rag.md`.** Sequential evaluation only after KB-RAG K7 ships. Source: intake-494. | LOW | 2026-04-28 |
+| (intake-574) Endless Terminals released-artifact re-eval (AW-7) | Independent TB-2.0 transfer-gap validation | **NEW 2026-05-20** — pull `obiwan96/endless-terminals` HF dataset + both PPO checkpoints (Qwen2.5-7B-instruct + Qwen3-8B-openthinker-sft); re-evaluate on TB-2.0 from EPYC inference-only. Confirms or refutes paper's +1-6pp transfer claim before pipeline mirroring (AW-8). Hours of inference. Deep dive in [agent-world-env-synthesis.md](agent-world-env-synthesis.md) Deep-Dive Refinement. | HIGH | 2026-05-20 |
+| (intake-571) ECHO 3-gate tracking | GPU-side adoption trigger watch | **NEW 2026-05-20, gated** — `microsoft/echo-rl` watch (currently HTTP 404), independent-reproduction watch, DGX-Spark acquisition watch. Pure tracking, no immediate work. Mirror entry in [gpu-acceleration-path.md](gpu-acceleration-path.md) §ECHO. | LOW | 2026-05-20 |
 
 ---
 

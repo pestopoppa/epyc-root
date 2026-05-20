@@ -251,3 +251,40 @@ Per [`agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesi
 - [`handoffs/active/agent-world-env-synthesis.md`](../handoffs/active/agent-world-env-synthesis.md) — L2-Simulator → L3-Evolver bridge, 5th species Phase 1 scaffolding
 - [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) — third L3-Evolver / Digital instance, Tier 3 deferred
 - intake-444 — Agent-World env synthesis, training-free Phase 1 + GPU-gated Phase 2
+
+## 2026-05-20 — ECHO + Endless Terminals: env-supply and training-side complement (intakes 571 + 574)
+
+Two complementary 2026-05 papers fill the agent-world-env-synthesis design's missing pieces from different angles. After a focused deep-dive both initial intakes were revised substantially; the upshot is that **env generation can begin on EPYC today** while training stays GPU-gated.
+
+### Endless Terminals (intake-574, arxiv:2601.16443) — env-supply side, NOT GPU-gated
+
+Gandhi/Garg/Goodman/Papailiopoulos (Stanford + MSR). Released `github.com/kanishkg/endless-terminals` Apache-2.0; 83.4k-row dataset on HF as `obiwan96/endless-terminals`; **both PPO checkpoints released** (Qwen2.5-7B-instruct and Qwen3-8B-openthinker-sft variants). Original intake misread the o3 dependency — **released `generate_solutions.py` defaults to Qwen3-32B via vLLM**; o3 appears only in the paper's specific experiment. Open-weight filter substitution is implicitly endorsed.
+
+4-stage pipeline: (I) task-description generation, (II) containerized env + prereq-test build with `k=3` refine retries, (III) completion-test generation (must fail in initial state), (IV) solution-based filter at pass@16 ≥ 1. Hyperparameters fully specified (16 rollouts/prompt, 16 turns, 2048 tok/turn, 16k ctx, temp 0.6, PPO clip ε_low=0.2/ε_high=0.28, sequence-level loss, NO KL penalty). Zero ablations in paper — no judge-model comparison, no reward-shaping ablation, no KL ablation; **first thing to run when mirroring**.
+
+Reported numbers: Qwen2.5-7B dev 10.7→53.3% (+42.6pp), TB-2.0 2.2→3.4%; Qwen3-8B-openthinker-sft dev 42.6→59.0% (+16.4pp), TB-2.0 1.1→6.7%. The >10× ratio between in-distribution and transfer gains is more consistent with procedural-distribution overfitting than the paper's thin "messy real-user requests" denial. Prior art the paper does NOT engage: **R2E-Gym (arxiv:2504.07164, real-PR back-translation)** and **SWE-Gym (arxiv:2412.21139, 2,438 PR-derived envs)**, both arguably less overfit-prone than wholesale procedural synthesis.
+
+EPYC implication: full pipeline Stages I-IV run on CPU with gemma4-26B-A4B as filter substitute (~76.5 t/s solo decode); ~50-100 wall-hr in a low-priority worker slot for the full 3,255-task filter pass. PPO **consumption** is the only GPU-gated step. See `handoffs/active/agent-world-env-synthesis.md` Deep-Dive Refinement AW-7/AW-8/AW-9.
+
+### ECHO (intake-571) — training-side complement, GPU+repo-blocked
+
+Shrivastava/Awadallah/Papailiopoulos (Microsoft Research) — original intake misattributed to Endless Terminals authors. **ECHO = Environment Cross-entropy Hybrid Objective.** Loss: `L_total = L_GRPO + λ · L_Env` with **λ=0.05** (base) or 0.02 (SFT-init). Same rollout, same forward pass; warning-prefix tokens excluded from `O'` (the env-prediction-loss positions); timestamps/ANSI kept with 0.05-0.10 nat irreducible env-CE floor.
+
+Exact TB-2.0 numbers (verified from local PDF read at `/workspace/tmp/echo.pdf`): Qwen3-8B 2.70%→5.17%, Qwen3-14B 5.17%→10.79%. ECHO recovers ~50% of the expert-SFT-then-GRPO gap on TB-2.0 (Table 5) and ~100% on internal evals. **Self-falsification**: Table 4 shows the verifier-free env-only fine-tune REGRESSES TBLite by −3.9pp from seed (lifts only on val100 +3.8pp and PyTerm +10pp). Compute: 8×B200, 24-48h per run, ~15 runs in the paper.
+
+**Hard blocker**: advertised public repo `github.com/microsoft/echo-rl` returns HTTP 404 as of 2026-05-20 (verified via `gh api repos/microsoft/echo-rl` + `curl -I`). No training code, no released ECHO-tuned checkpoints. Reproduction is blocked on this gate **independent** of GPU acquisition. Three hard gates documented in `handoffs/active/gpu-acceleration-path.md` §ECHO before any upgrade to `adopt_patterns`: (i) repo publishes, (ii) ≥1 independent reproduction confirms or refutes the env-only verifier-free claim, (iii) DGX Spark + single-node GRPO trainer operational. Credibility downgraded 3→2.
+
+### PEAF — EPYC-actionable spinoff (NOT ECHO, default-on)
+
+`scripts/autopilot/peaf.py` in epyc-orchestrator implements **Prediction-Error-As-Feature**: when the autopilot controller proposes a trial, optionally emit a `json:peaf_prediction` block forecasting the four eval objectives (quality / speed / cost / reliability). After dispatch, `peaf.compute_surprise()` logs L1 distance in normalized objective space alongside the actuals. Default-on (overhead ~$0.05-0.45/day in Claude output tokens; never feeds into Pareto scoring); disable via `EPYC_AUTOPILOT_PEAF=0` for a baseline A/B period. Cheap-kill criterion via `python autopilot.py peaf`: abandon if Pearson r² between surprise and Δquality from parent trial is < 0.10 over ≥200 predicted trials. Borrows ECHO's "prediction error = understanding signal" intuition without any RL training — the only ECHO-adjacent thing buildable on CPU today.
+
+### Sources (2026-05-20 update)
+
+- [intake-571](https://github.com/anadim/anadim.github.io/blob/master/papers/echo.pdf) ECHO paper — MSR; local PDF at `/workspace/tmp/echo.pdf`; advertised `microsoft/echo-rl` is 404
+- [intake-573](https://youmind.com/fr-FR/landing/x-viral-articles/echo-terminal-agents-world-models) Youmind French blog — downstream secondary commentary, credibility 0
+- [intake-574](https://arxiv.org/abs/2601.16443) Endless Terminals — released artifacts at github.com/kanishkg/endless-terminals + obiwan96/endless-terminals HF collection
+- [intake-570](https://arxiv.org/abs/2602.02482) RLTF — adjacent self-distillation family entry, GPU-gated training
+- `handoffs/active/agent-world-env-synthesis.md` Deep-Dive Refinement (AW-7/AW-8/AW-9)
+- `handoffs/active/gpu-acceleration-path.md` §ECHO 3-gate adoption trigger
+- `handoffs/active/autopilot-continuous-optimization.md` §ECHO Deep-Dive Refinement + PEAF spec
+- `scripts/autopilot/peaf.py` + `scripts/autopilot/program.md` §PEAF — Prediction-Error-As-Feature
