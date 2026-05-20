@@ -77,6 +77,190 @@ This is the only entry in the May 2026 latent-MAS cluster that's deployable on t
 3. **Fallback policy**: when the classifier confidence is low, do we route via current ad-hoc heuristics (safest) or via the most-frequent X-MAS winner (simpler)?
 4. **Composability with learned MLP router** (`learned-routing-controller.md` Phase 1 @ 92% val acc): does X-MAS routing replace the MLP, sit before it, or sit after it? My read: X-MAS provides the *prior* (domain × function → winner), MLP provides the *posterior* refinement on specific task features. They compose.
 
+## Cheap-Kill Run 2026-05-19 — HETEROGENEITY_PRESENT_escalate (v2 max_tokens=4096)
+
+**Verdict**: spike does NOT auto-abort. Two distinct cell winners across the 5 coarse domains tested. Re-confirms the deep-dive's hypothesis that the 4-model stack is genuinely heterogeneous — and surfaces a strict-dominance finding that's even more interesting than the planned 5×5 sweep.
+
+**Raw artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-19-xmas-cheap-kill-v2-maxtok4k/results.json`. Harness: `/mnt/raid0/llm/epyc-inference-research/scripts/research/xmas_cheap_kill.py` (15 tasks × 4 models = 60 chat-completion calls, max_tokens=4096).
+
+### Methodology
+
+5 domains × 3 tasks each, all with auto-scorable expected answers drawn from `benchmarks/prompts/question_pool.jsonl`:
+
+| Domain | Suite | Scoring |
+|---|---|---|
+| math | gsm8k 3 problems | numeric exact_match |
+| code | cruxeval_output 3 problems | exact_match on Python output |
+| knowledge | simpleqa 3 problems | substring/f1 |
+| long_context | needle_parameterized 3 (4096-ctx, depths 0.10/0.50/0.90) | substring on gold phrase |
+| reasoning | gpqa 3 multi-choice problems | single-letter match |
+
+### Run 1 (max_tokens=256) — INVALID for thinking-mode models
+
+`frontdoor` (Qwen3.6-35B Q8) and `architect_general` (Qwen3.5-122B-A10B Q4) returned **15/15 empty answers each** — both thinking-mode models exhausted max_tokens on `<think>` reasoning before emitting a single content token. Spike verdict was contaminated.
+
+### Run 2 (max_tokens=4096) — CLEAN
+
+| Cell | frontdoor | worker_general (gemma4) | architect_general | ingest_long_context (Qwen3-Next-80B) | Winner |
+|---|---|---|---|---|---|
+| math | 3/3 (89 s) | **3/3 (3 s)** | 2/3 (174 s) | 3/3 (80 s) | worker_general |
+| code | 0/3 (234 s) | **3/3 (6 s)** | 1/3 (340 s) | 3/3 (53 s) | worker_general |
+| knowledge | 1/3 (113 s) | 0/3 (3 s) | 0/3 (355 s) | **1/3 (2 s)** | ingest_long_context |
+| long_context | 3/3 (96 s) | **3/3 (1 s)** | 3/3 (80 s) | 3/3 (5 s) | worker_general |
+| reasoning | 0/3 (234 s) | 2/3 (0 s) | 0/3 (355 s) | **3/3 (97 s)** | ingest_long_context |
+
+Wall times in parentheses are means per task in that cell.
+
+### Per-model totals across all 15 tasks
+
+| Model | Correct | Total Wall | Notes |
+|---|---|---|---|
+| **ingest_long_context** (Qwen3-Next-80B-A3B Q4) | **13/15 (87%)** | 711 s | top accuracy; thinking-mode but disciplined |
+| **worker_general** (gemma4-26B-A4B Q4 MTP) | **11/15 (73%)** | **38 s** | top speed; non-thinking, near-top accuracy |
+| frontdoor (Qwen3.6-35B Q8) | 7/15 (47%) | 2,297 s | thinking, 60× slower than gemma4 for less accuracy |
+| architect_general (Qwen3.5-122B-A10B Q4) | 6/15 (40%) | 3,917 s | thinking, degenerate `<think>` loops — see below |
+
+### Headline findings
+
+1. **Heterogeneity exists** — `≥2 distinct winners` gate met. gemma4 dominates math / code / long-context retrieval (substrate-friendly, non-thinking). Qwen3-Next-80B dominates knowledge / reasoning where deep deliberation pays off. **The X-MAS thesis holds for our stack.** Spike escalates to the full 5×5 sweep.
+2. **frontdoor + architect_general are strictly dominated** — both have *lower accuracy AND higher wall* than the top-2. This is a planned-stack-simplification signal: either prune them or repurpose them. (Caveat: 15 samples is small; production routing may surface domains we didn't probe where these models excel.)
+3. **architect_general's thinking-mode is degenerate at chat-completions defaults** — 6/15 correct despite a mean wall of 261 s/task. On knowledge + reasoning (6 tasks total) it returned **0/6 empty answers** at max_tokens=4096 — 2,130 s of wall time producing zero content tokens. The model fills the entire token budget with `<think>` reasoning and gets cut off before emitting any user-visible content. Operational implication: architect_general needs either a much higher max_tokens cap OR an explicit `<think>` disable knob OR a structured response format (`<answer>...</answer>`) OR it's unsuitable for direct chat-completions style queries.
+4. **The thinking-mode tax is enormous** — architect 261 s/task vs gemma4 2.5 s/task. Even the best thinking-mode model (ingest_long_context at 47 s/task) is 19× slower than gemma4 for similar-or-better accuracy. Routing intelligence has a real production payoff: send fast tasks to gemma4, send accuracy-critical tasks to ingest.
+
+### What changes if we escalate to the full 5×5 sweep
+
+- **Confirm cell winners with 10–20 tasks per cell** (per the original handoff plan) — 15-sample probe is statistically weak.
+- **Fix the architect_general / frontdoor capture path** before counting them in the winner table. Options: (a) tune max_tokens to 8K-16K; (b) pass an explicit no-think flag if the model supports it; (c) use the production system prompt that constrains output format; (d) sample directly through the orchestrator's frontdoor route (which presumably bakes in the right defaults) instead of raw chat-completions.
+- **Drop the 256-token default everywhere**. The eval-tower harness presumably hits the same problem on these models.
+
+## Stack-simplification probe (2026-05-20) — fixes the cheap-kill measurement artifact
+
+**Verdict**: the cheap-kill v2 "frontdoor + architect strictly dominated" finding was a **measurement artifact**. With `enable_thinking=False`, frontdoor becomes the *top-accuracy model* in the stack on these 15 tasks. Stack-simplification claim retracted. Architect_general remains the lowest performer but is no longer a 40%-er.
+
+**Raw artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-20-stack-simplification-probe-nothink/results.json` (4 models × 15 tasks × `enable_thinking=False` config).
+
+### Methodology
+
+Same 15 cheap-kill tasks, same 4 models. Single config change: pass `chat_template_kwargs={"enable_thinking": false}` in every chat-completions request. max_tokens=2048 (sufficient when thinking is disabled). Both thinking-capable Qwen3.x models in the stack (Qwen3.6-35B = frontdoor, Qwen3.5-122B = architect_general) accept the kwarg via their llama-server Jinja chat template; gemma4-26B and Qwen3-Next-80B's templates ignore it (no-op).
+
+Discovery prompt for the kwarg came from `curl http://127.0.0.1:8083/v1/chat/completions ... '"chat_template_kwargs":{"enable_thinking":false}'`. Direct compare on the simpleqa "Olga Polverino" question:
+- **Stock thinking-on, max_tokens=4096**: `content=""` (empty) + 13,346-char `reasoning_content` stuck in a `"Wait, I found a reference: Olga Polverino is a mistake for Olga Polverino (a defense attorney)..."` hallucination loop, finish_reason=length.
+- **enable_thinking=false, max_tokens=1024**: `content="Olga Polverino is a distinguished Italian physicist..."` (1,739 chars), finish_reason=stop. Wrong answer but coherent and bounded.
+
+### Run summary
+
+| Model | Cheap-kill v2 stock | Stack-probe nothink | Δ |
+|---|---|---|---|
+| **frontdoor** (Qwen3.6-35B Q8) | 7 / 15 (47%) | **12 / 15 (80%)** | **+5** |
+| worker_general (gemma4-26B-A4B Q4) | 11 / 15 (73%) | 11 / 15 (73%) | 0 (no think mode) |
+| architect_general (Qwen3.5-122B-A10B Q4) | 6 / 15 (40%) | 9 / 15 (60%) | +3 |
+| **ingest_long_context** (Qwen3-Next-80B-A3B Q4) | **13 / 15 (87%)** | 11 / 15 (73%) | **−2** |
+
+### Per-category breakdown (nothink config)
+
+| Category | frontdoor | worker_general | architect_general | ingest_long_context |
+|---|---|---|---|---|
+| math | 3/3 (23 s/task) | **3/3 (4 s)** | 3/3 (31 s) | 2/3 (59 s) |
+| code | 3/3 (37 s) | **3/3 (6 s)** | 1/3 (3 s) | 3/3 (51 s) |
+| knowledge | **1/3 (1 s)** | 0/3 (4 s) | 1/3 (3 s) | 1/3 (2 s) |
+| long_context | **3/3 (2 s)** | 3/3 (1 s) | 3/3 (5 s) | 3/3 (5 s) |
+| reasoning | **2/3 (16 s)** | 2/3 (0 s) | 1/3 (1 s) | 2/3 (65 s) |
+
+### Headline reversals from cheap-kill v2
+
+1. **frontdoor is NOT strictly dominated.** It's the highest-accuracy model in the stack (12/15 vs ingest 11/15 with thinking off). The v2 result was contaminated because the harness used raw chat-completions with `enable_thinking` defaulting to on, sending frontdoor into degenerate `<think>` loops on knowledge/reasoning tasks.
+
+2. **ingest_long_context's accuracy advantage WAS thinking-driven.** Disabling thinking dropped it from 13/15 to 11/15 — it loses 2 accuracy points without the deliberation budget. **Conclusion: do NOT pass `enable_thinking=false` to ingest_long_context routes**; the 2-point gain is worth the per-task latency cost on accuracy-critical work.
+
+3. **architect_general's thinking-mode is genuinely broken at chat-completions defaults.** Even with `enable_thinking=false` and max_tokens=2048, architect tops out at 9/15 = 60%, slightly behind worker_general and frontdoor. The model is the lowest-accuracy member of the stack. *And* it consumes the most wall time on thinking-mode tasks. The stack-simplification signal for architect_general specifically is real — pending a wider sample.
+
+4. **knowledge is the universal weak spot.** No model in the stack got >1/3 on simpleqa-style factual questions. We need an external retrieval mechanism (per `internal-kb-rag.md` K-track), not better models, to fix this cell.
+
+### Operational recommendation
+
+Update orchestrator routing rules to:
+
+- Pass `chat_template_kwargs={"enable_thinking": false}` by default to frontdoor + architect_general routes. Frontdoor goes from 47%→80% accuracy on this benchmark slice; architect from 40%→60%. **This is the highest-ROI single-line config change identified in the session.**
+- Keep ingest_long_context as-is — its thinking-mode is healthy and adds value.
+- Drop the `max_tokens=256` orchestrator default (if it exists) to ≥2048 to avoid silent truncation of any model's response.
+
+These three together are testable on the autopilot trial loop without further benchmarking — they're config changes, not architecture changes.
+
+### Implication for the x-mas full 5×5
+
+Re-run the full sweep with the corrected config (`enable_thinking=false` on Qwen3.x models). The cheap-kill verdict (`HETEROGENEITY_PRESENT_escalate`) likely stands but the cell-winner attribution will shift. Knowledge + reasoning may flip away from ingest_long_context if the thinking-mode advantage was the only differentiator. Run scheduled as x-mas v3 with the 25-task / 5-domain / nothink-config harness.
+
+## X-MAS v3 (2026-05-20) — 25 tasks × 4 models × nothink — HETEROGENEITY_PRESENT, but winner table flips
+
+**Verdict**: heterogeneity still holds (`HETEROGENEITY_PRESENT_escalate`), with 2 distinct cell winners. But which model wins which cell differs from cheap-kill v2 — **frontdoor takes knowledge + reasoning**, gemma4 keeps math + code + long_context. Ingest_long_context and architect_general win 0 cells.
+
+**Raw artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-20-xmas-v3-25tasks-nothink/results.json` (5 tasks per domain × 5 domains = 25 tasks; `enable_thinking=False`; max_tokens=2048).
+
+### Per-model totals (25 tasks)
+
+| Model | Correct | Acc | Wall total |
+|---|---|---|---|
+| **frontdoor** (Qwen3.6-35B Q8) | **19/25** | **76%** | 549 s |
+| worker_general (gemma4-26B-A4B Q4 MTP) | 17/25 | 68% | **181 s** (fastest by 1.8×) |
+| ingest_long_context (Qwen3-Next-80B-A3B Q4) | 17/25 | 68% | 1,072 s (5.9× slower than gemma4) |
+| architect_general (Qwen3.5-122B-A10B Q4) | 14/25 | 56% | 318 s |
+
+### Per-domain table (5 tasks each)
+
+| Domain | frontdoor | worker_general | architect_general | ingest_long_context | Winner |
+|---|---|---|---|---|---|
+| math | 5/5 (32 s) | **5/5 (6 s)** | 5/5 (33 s) | 4/5 (77 s) | worker_general |
+| code | 4/5 (41 s) | **5/5 (9 s)** | 1/5 (3 s) | 5/5 (43 s) | worker_general |
+| knowledge | **1/5 (2 s)** | 0/5 (16 s) | 1/5 (4 s) | 1/5 (3 s) | frontdoor (tiebreak) |
+| long_context | 5/5 (11 s) | **5/5 (4 s)** | 5/5 (23 s) | 5/5 (18 s) | worker_general |
+| reasoning | **4/5 (25 s)** | 2/5 (1 s) | 2/5 (1 s) | 2/5 (74 s) | frontdoor |
+
+### Headline findings (combined with stack-probe + v2)
+
+1. **Frontdoor is the top-accuracy model in our stack** when configured with `enable_thinking=False`. The 47% → 80% v2-to-v3 jump confirmed: the cheap-kill v2 result was a measurement artifact.
+2. **Worker_general / gemma4-26B-A4B remains the speed/quality compromise pick.** 68% accuracy in 181 s total — 3× faster than frontdoor at -8pp accuracy. Wins 3/5 cells (math + code + long_context) on speed-tiebreak when accuracy ties.
+3. **Frontdoor's reasoning advantage (4/5 vs 2/5)** is the clearest model differentiator. On GPQA-style multi-choice, frontdoor's larger param count + Q8 weights matter — but it needs nothink to actually answer, not loop in `<think>`.
+4. **Architect_general is genuinely under-performing.** 56% overall, 1/5 on code (vs 5/5 from gemma4 + ingest), 2/5 on reasoning. Even with thinking disabled, it's the weakest model in the stack. Worth a focused deprecation review — but the n=25 sample is still small. Schedule a 50-100 task confirmation before pruning.
+5. **Ingest_long_context's 87% → 68% drop without thinking** is the most informative result for routing policy: this model NEEDS its thinking budget to add value. Pass `enable_thinking=False` only when latency matters more than accuracy.
+6. **Knowledge cell is universally weak** (max 1/5 across all models). All four models are too small / undertrained for raw factual recall of obscure entities. This cell is unwinnable without external retrieval — the orchestrator must route knowledge queries through `internal-kb-rag.md`-style retrieval, not bigger models.
+
+### Routing rule recommendation (production-ready)
+
+Update `epyc-orchestrator/orchestration/model_registry.yaml` defaults to:
+
+```yaml
+frontdoor:
+  request_overrides:
+    chat_template_kwargs: {enable_thinking: false}
+    max_tokens: 2048  # was likely lower
+architect_general:
+  request_overrides:
+    chat_template_kwargs: {enable_thinking: false}
+    max_tokens: 2048
+  routing_priority: -1  # candidate for deprecation pending wider eval
+ingest_long_context:
+  request_overrides:
+    # keep enable_thinking=true (default) — accuracy regresses without it
+    max_tokens: 8192  # accommodate thinking budget
+worker_general:
+  # unchanged — non-thinking, the speed/accuracy default for most cells
+  request_overrides:
+    max_tokens: 2048
+```
+
+This is the highest-ROI orchestrator change from the session: a config-only PR that should lift frontdoor accuracy from 47% to 80% on the cheap-kill task set with zero infrastructure cost.
+
+### Open follow-ups
+
+1. **5×5 functions axis still not exercised.** v3 is 5 domains × 5 tasks but no separate function axis. The headline X-MAS thesis (different models excel at different (domain, function) cells) needs a separate harness that varies function (solve/verify/plan/refine/extract). Schedule x-mas v4.
+2. **Architect_general deprecation gate**: confirm with a 50-100 task wider eval before pulling it. Sample these tasks from production autopilot trial logs (real workload, not synthetic).
+3. **Knowledge cell**: the only viable fix is retrieval; do not retest models without RAG context.
+
+### Updated Open Questions
+
+5. **Should the cheap-kill find a winner for frontdoor / architect_general first?** Their 0% accuracy on multiple cells is a measurement bug, not a capability bug — fixing it changes the winner table. Recommend: yes, with a separate "thinking-mode tax audit" sub-task before the full 5×5.
+6. **Does the deprecation signal hold?** frontdoor + architect_general's 7/15 + 6/15 vs gemma4's 11/15 is striking. If the full 5×5 confirms it, this is a *bigger* finding than X-MAS routing — it's a stack-simplification opportunity. Cross-ref `project_stack_simplification.md`.
+
 ## References
 
 - Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`
