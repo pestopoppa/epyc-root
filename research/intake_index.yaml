@@ -25949,3 +25949,378 @@
   verdict_justification: 'Worth_investigating (low priority): worth a deep-dive read to pick the 1 of 6 topologies most compatible with llama.cpp KV-cache layout. If any is implementable as a custom GGML
     op without backbone surgery, it becomes a candidate companion to δ-mem.'
   expanded_from: intake-539 (δ-mem)
+- id: intake-569
+  arxiv_id: '2605.15514'
+  url: https://arxiv.org/abs/2605.15514
+  source_type: paper
+  title: 'RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably'
+  authors:
+  - Yufeng Du
+  - Phillip Harris
+  - Minyang Tian
+  - Eliu A Huerta
+  - Srikanth Ronanki
+  - Subendhu Rongali
+  - Aram Galstyan
+  - Hao Peng
+  categories:
+  - context_extension
+  - context_management
+  key_claims:
+  - 'Theorem 1: position-inversion probability (RoPE assigning higher attention to a farther key than a nearer one) approaches 1/2 as log M log B → ∞ — locality bias is lost at long context, regardless of content'
+  - 'Theorem 2: position-aliasing probability (two different positions producing the same attention score for the same key) converges to 1 exponentially with context length'
+  - 'Theorem 3: token-inversion probability lower bound increases with context length M, decreases with RoPE base B → distinguishing tokens degrades unless base is raised'
+  - 'Theorem 4: token-aliasing positions bounded by Θ(2^(-f)√h M) — increasing base helps tokens BUT inevitably sacrifices position distinguishing; the two cannot be preserved simultaneously'
+  - 'Empirically: 7B–405B models (Llama 3.1, Mistral, Qwen3, DeepSeek-v3, Kimi k2.5, GPT-OSS) all drop to ~0.25 (random) accuracy on a position-indexing task by 4K–8K tokens; 75K aliasing pairs + 1,491 attention-invariance cases at 8K BF16'
+  - 'Multi-head, multi-layer architectures empirically insufficient to overcome these limitations — failure modes survive standard scale-ups'
+  techniques:
+  - 'RoPE Product modeled as Normal Random Variable S̃ ~ N(μ_M, σ_M²) — gives closed-form attention statistics over context length'
+  - 'Position Inversion / Position Aliasing / Token Inversion / Token Aliasing / Attention Invariance (4 failure-mode taxonomy)'
+  - 'Indexing-task empirical probe: feed model a long context, ask which position holds a given token; expect 1.0 accuracy, observe collapse to chance'
+  reported_results:
+  - 'Position inversion probability exceeds 0.3 at short contexts, approaches 0.5 beyond ~50K tokens'
+  - 'Token inversion probability approaches 0.5 once context m ≥ 20K'
+  - 'At 8K BF16 context: 75K aliasing pairs detected; 1,491 attention-invariance cases'
+  - 'At 32K BF16, h=64: up to 5% of positions exhibit token aliasing (~1.6K aliasing positions)'
+  - 'All tested models (7B–405B) collapse to ~0.25 accuracy on indexing task by 4K–8K context'
+  referenced_arxiv_ids:
+  - '2104.09864'
+  - '2309.00071'
+  - '2602.10959'
+  - '2602.11162'
+  - '2407.21783'
+  - '2310.05209'
+  - '2310.01889'
+  - '2402.10171'
+  - '2404.06654'
+  - '2406.10149'
+  - '2510.05381'
+  - '2503.01832'
+  - '2410.06205'
+  - '2412.19437'
+  - '2507.06261'
+  - '2508.10925'
+  - '1904.06376'
+  - '1706.03762'
+  - '2308.14508'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    - context-folding-progressive.md
+    - long-context-eval-datasets.md
+    - cpu-context-regime-coverage.md
+    experiments: []
+    intake_entries:
+    - intake-032 (YaRN paper — arxiv:2309.00071; this paper directly bounds why the YaRN trick has limits)
+    - intake-153 (canonical RLM — arxiv:2512.24601; recursive decomposition as an answer to RoPE long-context collapse)
+    - intake-547 (Wang RLM reproduction — arxiv:2603.02615; depth-1 default and depth-2 cliff are CONSISTENT with this paper's predictions)
+    - intake-409 (EM-LLM — episodic memory for long context)
+  handoffs_updated:
+  - yarn-context-extension-research.md
+  - context-folding-progressive.md
+  handoffs_created: []
+  novelty_justification: 'Theoretical closed-form proofs for four distinct RoPE failure modes (position inversion, position aliasing, token inversion, token aliasing) at long context. Prior work (Liu 2026 arxiv:2602.10959 phase-modulation bounds; Peng/YaRN 2309.00071) gave empirical and partial theoretical evidence; this paper unifies the failure modes under a single statistical model (RoPE Product ~ Normal) and proves the position-vs-token base trade-off is irreducible. The trade-off claim is the load-bearing novelty.'
+  relevance_justification: 'Direct relevance to FOUR EPYC handoffs: yarn-context-extension-research (YaRN raises the RoPE base — this paper bounds the cost of that), context-folding-progressive (procedural decomposition becomes more defensible when long-context attention is provably degraded), long-context-eval-datasets (empirical 0.25-by-8K result is a useful sanity-check for our own eval set), cpu-context-regime-coverage (informs the upper context-regime boundary at which extending YaRN scaling is throwing away quality for tokens). The Wang RLM reproduction (intake-547) showing depth-2 wallclock 96× cliff is empirically CONSISTENT with this paper''s prediction — that is the strongest cross-paper triangulation in the cluster.'
+  verdict_justification: 'worth_investigating (posture-setting, NOT new_opportunity): no actionable code change for our off-the-shelf GGUF stack — we cannot retrain the position-encoding mechanism. The findings reinforce existing EPYC posture (favor RLM-style recursive decomposition + context-folding over long-context-extension scaling) rather than open a new investigation. Treat as load-bearing evidence to cite in future yarn / context-folding / long-context-eval handoff updates. No implementation work; do not create a handoff stub. Closest formal verdict is worth_investigating since the paper genuinely informs future decisions, not already_integrated (theoretical contribution is net-new) and not adopt_patterns (nothing to adopt).'
+  contradicting_evidence:
+  - 'Paper is 2026-05-15 (5 days old at intake) — limited time for independent critique. Liu 2026 (arxiv:2602.10959) reaches phase-modulation bounds via a different derivation and arrives at consistent conclusions, NOT contradicting; counts as supporting independent corroboration.'
+  - 'TAPA / Token-Aware Phase Attention (arxiv:2509.12635, surfaced via Tier 2b search) and HoPE (Hyperbolic Position Embedding) are proposed alternatives that implicitly accept this paper''s premise — i.e., the field consensus is moving in the same direction this paper argues for.'
+  - 'No falsification of the four-failure-mode taxonomy found yet. Standard caveat: theoretical bounds may not bite at the context lengths we actually deploy (we routinely cap at 32K–64K, where empirical degradation is real but not yet at the chance-floor); the paper''s most dramatic claims are at 128K+ where we operate rarely.'
+- id: intake-570
+  arxiv_id: '2602.02482'
+  url: https://rl-textfeedback.github.io/
+  source_type: paper
+  title: Expanding the Capabilities of Reinforcement Learning via Text Feedback
+  authors:
+  - Yuda Song (CMU)
+  - Lili Chen (CMU)
+  - Fahim Tajwar (CMU)
+  - Remi Munos (Inria)
+  - Deepak Pathak (CMU)
+  - J. Andrew Bagnell (Aurora Innovation / CMU)
+  - Aarti Singh (CMU)
+  - Andrea Zanette (CMU)
+  categories:
+  - training_distillation
+  - autonomous_research
+  key_claims:
+  - Text feedback occupies a middle ground between sparse binary rewards (uninformative) and full demonstrations (expensive), and is richer per unit cost.
+  - Models can be trained with multi-turn text-feedback trajectories so that the resulting single-turn policy improves at inference even when no feedback is available.
+  - 'RLTF-SD (Self Distillation): the feedback-conditioned second-turn output is treated as a teacher and distilled into the first-turn policy.'
+  - 'RLTF-FM (Feedback Modeling): predicting the textual critique as an auxiliary objective enables self-feedback at test time and scales further with iterative refinement.'
+  - Semantically-rich text feedback is critical — replacing it with correctness-only signals collapses gains.
+  techniques:
+  - RLTF (RL from Text Feedback) framework
+  - RLTF-SD (Self Distillation of feedback-conditioned multi-turn outputs into single-turn policy)
+  - RLTF-FM (Feedback Modeling as auxiliary head, enabling test-time self-feedback scaling)
+  reported_results:
+  - 'Knights and Knaves (reasoning): RLTF-SD 0.802 / RLTF-FM 0.880'
+  - 'MATH500 (DeepMath, competition math): RLTF-SD 0.598 / RLTF-FM 0.636'
+  - 'LitBench (creative writing): RLTF-SD 8.80 / RLTF-FM 8.40'
+  - Both methods consistently beat baselines; RLTF-FM enables further gains via iterative self-feedback at inference.
+  referenced_arxiv_ids:
+  - '2602.02482'
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - skillbank-distillation.md
+    - reasoning-compression.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - reasoning-compression.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  novelty_justification: New named techniques (RLTF-SD, RLTF-FM) and a clean text-feedback training framework not yet in the index; conceptually adjacent to OPSDC, CODI, RLSD in reasoning-compression and to skill-distillation work, but the specific feedback-as-teacher framing and the test-time self-feedback scaling via FM head are distinct contributions. Medium, not transformative.
+  relevance_justification: EPYC is CPU-only inference on a 192-core EPYC 9655 with no GPU; all RL-training paths (RAO, MindDR, Agent-World Phase 2, SkillRL adaptation) are explicitly GPU-gated awaiting DGX Spark. RLTF requires multi-turn RL training; we cannot run it today. The RLTF-FM inference-time iterative-self-feedback pattern could in principle become a future meta-harness experiment without retraining, but published gains depend on the trained FM head. Low rather than none because it lines up with future GPU-gated training plans.
+  verdict_justification: Not applicable to current production stack — pure training research, GPU-gated, no inference-side artifact we can deploy. File alongside RLSD/OPSDC/CODI/SkillRL as a training-time reference for when GPU becomes available; the RLTF-FM test-time iterative-self-feedback pattern could be a future meta-harness experiment but is speculative without the trained checkpoint.
+  contradicting_evidence:
+  - Tier 2b search returned no direct replication failures or methodology criticism in the top results — only the in-paper caveats (text feedback quality is load-bearing; noisy/adversarial feedback degrades performance). The OpenReview thread for arxiv 2602.02482 may surface reviewer concerns later; not yet visible.
+- id: intake-571
+  arxiv_id: null
+  url: https://github.com/anadim/anadim.github.io/blob/master/papers/echo.pdf
+  source_type: paper
+  title: 'ECHO: Terminal Agents Learn World Models for Free'
+  authors:
+  - Dimitris Papailiopoulos (Microsoft Research AI Frontiers)
+  - '(likely co-authors per Endless Terminals lineage: Kanishk Gandhi, Shivam Garg, Noah D. Goodman — unconfirmed)'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - training_distillation
+  - tool_implementation
+  key_claims:
+  - Standard GRPO training for CLI agents masks the terminal's response tokens and thereby ignores environment dynamics; ECHO adds an environment-prediction auxiliary loss so the agent must predict terminal output as part of training.
+  - By training on agent actions AND terminal responses in a single rollout / forward pass (no masking), the agent implicitly learns a "world model" of terminal physics for free — no new data, no expert SFT, no extra rollouts.
+  - Approximately doubles benchmark performance over baseline GRPO without additional data; shows signs of self-improvement without explicit external reward signals.
+  - Improvements demonstrated across Qwen3 model family on terminal-use benchmarks (Terminal-Bench class).
+  - 'Author prediction: by end of 2026 ECHO-style environment-prediction loss will be part of standard agent RL trainers.'
+  techniques:
+  - Environment prediction auxiliary loss (predict terminal output tokens) added to GRPO
+  - Unified single-rollout / single-forward-pass training over (action, environment-response) sequences (no response-token masking)
+  - Hybrid RL + next-token-prediction objective for CLI / terminal agents
+  - World-model-for-free framing — agent dynamics learned implicitly from existing rollouts
+  reported_results:
+  - ~2x improvement on Terminal-Bench class benchmarks vs baseline GRPO with same data
+  - Improvements consistent across multiple Qwen3 model sizes
+  - Self-improvement signal observed without expert SFT dependency
+  - (Specific Qwen3 size × TB-1.0/2.0 percentage points not recoverable from public summaries; PDF text extraction failed via WebFetch)
+  referenced_arxiv_ids:
+  - '2601.16443'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    - rlm-orchestrator-roadmap.md
+    - orchestrator-conversation-management.md
+    experiments: []
+    intake_entries:
+    - intake-444 (Agent-World — environment synthesis for evolving agents)
+    - intake-574 (Endless Terminals — same group precursor, expansion of this entry)
+  handoffs_updated:
+  - agent-world-env-synthesis.md
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: EPYC corpus indexes Endless Terminals (procedural env scaling, vanilla PPO) and Agent-World (environment-task discovery + multi-env RL) but no prior entry covers ECHO's specific technique — auxiliary next-token-prediction loss on terminal responses turning a standard GRPO rollout into implicit world-model training with no extra data. The "world model for free" construction is the novel contribution; the 2x improvement at zero marginal data cost is a strong empirical claim.
+  relevance_justification: Direct fit for the agent-world-env-synthesis active handoff (which already plans environment-task discovery as the 5th autopilot species) and the meta-harness-optimization Tier 3 loop. ECHO is the missing training-side complement — agent-world synthesizes environments, ECHO trains agents on them with implicit world-model objective. Also relevant to GPU-gated work (DGX Spark) since ECHO requires GRPO + an extra auxiliary loss — feasible on the Spark with a small terminal-agent class model. Indirect relevance to orchestrator tool-using agent quality, since EPYC's worker/tool roles execute shell/MCP commands.
+  verdict_justification: worth_investigating — not adopt_patterns yet because (a) the PDF text could not be machine-extracted via WebFetch (returned binary), so exact baselines / Qwen3 sizes / TB percentages need a human read of the PDF before committing to reproduction, (b) ECHO requires GRPO training (GPU-gated, deferred to DGX Spark per EPYC's CPU-only constraint), (c) the precise loss formulation, weighting, and whether terminal responses need any masking of cosmetic tokens (timestamps, ANSI codes) needs verification. Recommendation — add as a Phase 2.5 "training-side" note inside agent-world-env-synthesis handoff; reproduce only after DGX Spark + Endless Terminals env pipeline are operational. Credibility 3 = known author (Papailiopoulos, well-established), recent (<12mo, +1), major lab (Microsoft Research, +1), not yet peer-reviewed venue (preprint/PDF only, 0), no independent corroboration yet (single source + viral X post).
+  contradicting_evidence:
+  - 'Adjacent literature (arxiv:2601.03905 "Current Agents Fail to Leverage World Model as Tool for Foresight"; arxiv:2504.04608 "AI in a vat: Fundamental limits of efficient world modelling for agent sandboxing") argues that LLM agents lack robust foresight mechanisms even when they articulate goal-achieving plans, and that there are fundamental efficiency/interpretability trade-offs to world model construction. These do not directly falsify ECHO''s gains, but suggest the "free world model" framing may be optimistic about what an auxiliary-loss head can actually internalize.'
+  - PDF is not yet on arXiv; no peer review; no independent replication. The 2x claim is from a viral X thread and the author's PDF only. Reserve adopt_patterns until at least one independent group reproduces on Qwen3 + Terminal-Bench.
+- id: intake-572
+  arxiv_id: null
+  url: https://github.com/strukto-ai/mirage
+  source_type: repo
+  title: 'Mirage: A Unified Virtual Filesystem For AI Agents'
+  authors:
+  - Strukto AI (org)
+  - zechengz (sole human contributor, 114 commits)
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - knowledge_management
+  - document_processing
+  - context_management
+  key_claims:
+  - Mounts heterogeneous services (S3/R2/OCI/GCS/Supabase, Google Drive/Docs/Sheets/Slides, Gmail, Slack/Discord/Telegram, GitHub/Linear/Notion/Trello, MongoDB, Redis, SSH) as a single virtual filesystem tree so agents interact via Unix-like commands rather than per-service SDKs.
+  - 'Two-layer cache architecture: index cache (metadata/listings) + file cache (object bytes), with pluggable backends — RAM (default, 512 MB cap) or Redis (shared across workers).'
+  - FUSE-based mounts on macOS/Linux; embeddable in-process from both Python and TypeScript without requiring a separate daemon.
+  - Portable workspaces with snapshot/clone/version semantics — designed to be passed between agents/sessions as durable shared state.
+  - 'Adapters for major agent frameworks: OpenAI Agents SDK (MirageSandboxClient), Vercel AI SDK (mirageTools), LangChain, Pydantic AI, CAMEL, OpenHands, Mastra.'
+  techniques:
+  - Unified virtual filesystem over multi-backend connectors (S3, Drive, Slack, Gmail, Redis, etc.)
+  - Two-layer cache (index cache + file cache) with pluggable RAM/Redis backends
+  - FUSE mount layer for filesystem semantics on Linux/macOS
+  - Embeddable in-process library (Python + TypeScript) rather than sidecar daemon
+  - Bash/VFS dispatcher exposing connectors as Unix commands ("any LLM that knows bash can use Mirage")
+  - Portable workspace abstraction (clone / snapshot / version)
+  - Per-framework adapter shims (OpenAI Agents, Vercel AI, LangChain, Pydantic AI, CAMEL, OpenHands, Mastra)
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - hermes-outer-shell.md
+    - hermes-agent-index.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-520 (markdownfs — sibling agent-VFS; markdown-only scope, Git-style versioning, MCP-served; mirage is broader multi-backend, FUSE-fronted, no built-in VCS, no MCP surface)
+    - intake-411 (Qwen-Agent MCP singleton manager pattern — same "unified tool surface for agents" frame, but via MCP vs filesystem)
+    - intake-444 (Agent-World ETD — public-MCP-ecosystem tool discovery; mirage is the kind of connector ETD could exercise)
+  handoffs_updated:
+  - hermes-outer-shell.md
+  - hermes-agent-index.md
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: The component primitives (FUSE, S3FS-style multi-backend mounts, RAM+Redis cache layers) are all well-trodden territory; the novel contribution is packaging them with first-class agent-framework adapters (7+ frameworks) and a deliberate "agents-already-know-bash" UX framing. Distinct from intake-520 (markdownfs) which is markdown-only with Git-style VCS and an MCP surface but no multi-cloud-connector breadth. Distinct from intake-444's MCP-tool-ecosystem frame in that mirage chooses filesystem semantics over JSON-RPC tool calls. Combination is genuinely novel packaging; no underlying mechanism is new.
+  relevance_justification: EPYC's active stack already has overlapping primitives — GitNexus + Git-on-disk for code, internal-kb-rag (planned ColBERT) for retrieval, agent-world-env-synthesis ETD for MCP-tool discovery, hermes-outer-shell for the user-facing agent. Mirage's multi-backend mount could be one connector class the ETD species discovers and exercises, and its bash-as-tool-surface design is a useful reference for hermes-outer-shell tool exposure. Not high relevance because no active handoff has an unmet need that mirage uniquely fills — we don't currently bridge Gmail/Slack/Drive to agents, and adding mirage would impose a heavy FUSE + adapter surface for capabilities outside the inference/research scope. Not low because the architectural patterns (two-layer cache, framework-agnostic adapters, portable workspaces) are directly applicable as reference designs and the project's adapter list overlaps cleanly with hermes-outer-shell's framework-agnosticism goal.
+  verdict_justification: worth_investigating, not adopt_component. Activity is unusually intense (126 commits in 14 days since 2026-05-06 init, v0.0.1 just tagged, ~2.5k stars + 167 forks in 2 weeks — viral interest signal but very early). Sole human contributor (zechengz, 114 commits) + dependabot is concerning for sustainability and the standard "commercial bias" signal applies — strukto.ai positions Mirage as the open-source entry point to a managed product surface. Per CLAUDE.md guidance, credibility-from-README is unreliable here — defer numeric score until benchmarks/adoption mature. Concrete actions — (1) compare mirage's two-layer cache + RAM/Redis architecture against markdownfs (intake-520) and internal-kb-rag's planned design, (2) consider mirage as one candidate MCP-or-equivalent connector class the agent-world-env-synthesis ETD species could surface, (3) re-evaluate at v0.1 / second human contributor / first published benchmark — until then do not add as dependency. Per feedback_opensource_only — Apache-2.0 is fine; per feedback_dont_dismiss_creative_uses — keep on radar for hermes-outer-shell tool-exposure design even though direct adoption is premature.
+- id: intake-573
+  arxiv_id: null
+  url: https://youmind.com/fr-FR/landing/x-viral-articles/echo-terminal-agents-world-models
+  source_type: blog
+  title: 'ECHO: Terminal Agents Learn World Models for Free (Youmind French summary of viral X thread)'
+  authors:
+  - '@DimitrisPapail (Dimitris Papailiopoulos, paper author cited by blog)'
+  - youmind.com (blog publisher, byline absent)
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  - knowledge_management
+  - training_distillation
+  key_claims:
+  - '[paper, per blog] ECHO is a hybrid reinforcement-learning objective that trains CLI/terminal agents to predict terminal responses (next-observation prediction) alongside acting, yielding a "free" world model of the shell environment.'
+  - '[paper, per blog] Joint action + observation-prediction training reduces dependence on expert SFT demonstrations and supports "self-improvement without rewards" via prediction-error signal.'
+  - '[paper, per blog] Faster convergence and better dynamic modeling of terminal behavior than action-only RL baselines (no specific benchmark numbers reported in the blog snippet).'
+  - '[blog editorialization] Frames the result as practically accessible for researchers and emphasises the "free" framing (zero marginal data cost) — youmind is a SaaS knowledge-tool, so framing is promotional.'
+  techniques:
+  - Hybrid RL objective (action policy + next-observation prediction)
+  - World-model auxiliary head for CLI/terminal environments
+  - Prediction-error as reward-free self-improvement signal
+  - Reduced-supervision SFT alternative for terminal agents
+  reported_results:
+  - Faster training vs conventional action-only RL (no quantitative number in blog)
+  - Better dynamic modeling of terminal output behavior (qualitative)
+  - Reduced reliance on expert demonstrations (qualitative)
+  - '"Self-improvement without rewards" capability claim (qualitative)'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: 0
+  verdict: not_applicable
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - meta-harness-optimization.md
+    - agent-world-env-synthesis.md
+    - autopilot-continuous-optimization.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-571 (ECHO primary paper — this blog is a downstream commentary on it)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: Secondary commentary / SaaS landing-page summary of a viral X thread about the Echo paper (anadim.github.io/papers/echo.pdf, sibling intake-571). As a downstream French-language blog re-summary, marginal novelty over the primary intake is near-zero — adds no new claims, no quantitative results, and no methodological detail beyond a one-line gloss. Author (Dimitris Papailiopoulos) is already a known cluster contributor (OpenMementos).
+  relevance_justification: Subject matter (RL training of CLI/terminal agents with world-model auxiliary objective) is medium-relevant to EPYC's agent-harness / autopilot work — the autopilot loop is a terminal agent and could in principle benefit from predictive auxiliary objectives. However, EPYC does not train agents locally (we orchestrate frozen open-weight models); training-time techniques are out of scope unless an open-weight Echo-trained model ships. Even then, blog itself adds no actionable detail beyond the primary paper entry.
+  verdict_justification: not_applicable — this blog is a French-language SaaS landing-page summary of an X thread about the Echo paper. The primary paper has a sibling intake entry (intake-571) that will carry all actionable content. This entry's marginal value is zero — no new claims, no metrics, no reproducible artifact pointers, and commercial bias from youmind's product framing. Logged for traceability of the secondary citation trail; all integration work (if any) should be driven from the primary Echo paper intake, not this commentary. Credibility floor 0 = +0 (no peer review) +1 (recent, May 2026) -1 (commercial/SaaS bias) +0 (no independent corroboration in the blog itself) = 0.
+  contradicting_evidence:
+  - 'Same contradicting evidence as intake-571: arxiv 2601.03905 ("Current Agents Fail to Leverage World Model as Tool for Foresight") and arxiv 2504.04608 ("AI in a vat") argue LLM agents lack robust foresight even when articulating plans. Blog does not engage with these counter-currents — pure promotional framing.'
+- id: intake-574
+  arxiv_id: '2601.16443'
+  url: https://arxiv.org/abs/2601.16443
+  source_type: paper
+  title: 'Endless Terminals: Scaling RL Environments for Terminal Agents'
+  authors:
+  - Kanishk Gandhi (Stanford University)
+  - Shivam Garg (Microsoft Research)
+  - Noah D. Goodman (Stanford University)
+  - Dimitris Papailiopoulos (Microsoft Research & UW-Madison)
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'Environment bottleneck: current terminal benchmarks lack sufficient scale for robust RL training, with existing efforts managing only hundreds of tasks.'
+  - A fully unsupervised four-stage pipeline can generate thousands of verifiable terminal tasks without human annotation or proprietary model distillation.
+  - Vanilla PPO without specialized scaffolding achieves meaningful gains when given access to diverse, automatically verifiable tasks.
+  - Training improvements generalize beyond procedurally generated distributions to TerminalBench 2.0 (transfer to human-curated benchmark).
+  - Starting from supervised fine-tuned models amplifies RL gains significantly (SFT→RL composition beats RL-only).
+  techniques:
+  - 'Procedural generation pipeline (4 stages: task description generation, containerized environment setup with validation, completion test generation, solution-based filtering)'
+  - Vanilla PPO with binary episode-level rewards
+  - Solution-based filtering using o3 (pass@16 threshold)
+  - Persistent shell sessions via Apptainer/Docker containers with pseudo-terminal (PTY) support
+  - Minimal scaffolding approach without retrieval, tool use, or multi-agent coordination
+  reported_results:
+  - 'Dev set: Llama-3.2-3B 4.0%→18.2% (+14.2pp); Qwen2.5-7B 10.7%→53.3% (+42.6pp); Qwen3-8B-openthinker-sft 42.6%→59.0% (+16.4pp)'
+  - 'TerminalBench 2.0: Llama-3.2-3B 0.0%→2.2%; Qwen2.5-7B 2.2%→3.4%; Qwen3-8B-openthinker-sft 1.1%→6.7%'
+  - 3,255 verified tasks total (~2,500 in Harbor format); 50% filtered by solvability checks
+  - 'Failure analysis: loop failures 39%, turn exhaustion 26%; command diversity 0.49 (successful) vs 0.18 (looping); pass@5 by difficulty Easy 25%, Medium 14.5%, Hard 10%'
+  referenced_arxiv_ids:
+  - '2310.06770'
+  - '2407.16741'
+  - '2405.15793'
+  - '2506.04178'
+  - '2503.01307'
+  - '2512.12895'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  discovered_via: expansion
+  expanded_from: intake-571
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agent-world-env-synthesis.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-571 (ECHO — directly cites Endless Terminals as precursor, same author cluster)
+    - intake-444 (Agent-World — environment-task discovery, sister problem framing)
+  handoffs_updated:
+  - agent-world-env-synthesis.md
+  handoffs_created: []
+  novelty_justification: 'Concrete recipe for one of the two missing pieces in the agent-world-env-synthesis design (the env-generation arm). Four-stage pipeline (description → container → tests → solution-filter) with reproducible numbers on Qwen2.5/Qwen3 and TerminalBench 2.0 is more actionable than most "agent-env synthesis" claims in the literature; the 50% solvability-filter survival rate and 0.49 vs 0.18 command-diversity contrast for success/failure are useful design constants.'
+  relevance_justification: 'Direct fit for agent-world-env-synthesis ETD species — Endless Terminals IS the kind of curated env supply the ETD coordinator would emit, and the 4-stage pipeline is a reference design. Also relevant to meta-harness Tier 3 (terminal-agent scaffold search needs envs to score against). Less relevant to non-agent inference work but central to the agent-side roadmap.'
+  verdict_justification: 'worth_investigating, NOT adopt_patterns yet. Reasons: (a) pipeline assumes GPU PPO budget, GPU-gated on DGX Spark; (b) the env-generator itself uses o3 for solution-based filtering, which is a closed model and a budget item; (c) reproducing 3,255 tasks + filtering takes nontrivial compute we cannot justify before agent-world-env-synthesis is ready to consume them. Action: track as the primary env-supply reference design for the ETD species; revisit reproduction priority once Phase 2 (GPU) is unblocked.'
+  contradicting_evidence:
+  - 'TerminalBench 2.0 transfer numbers are small (2-6%) despite large dev-set gains (14-43pp). The procedural distribution may not match TB2.0''s difficulty profile — the procedural pipeline may overfit to its own narrow task class. The paper acknowledges this as a domain-gap signal worth tracking.'
+  - 'No direct replication from a second independent group found in Tier 2b — the paper is recent (2026-04) and the result is single-source so far. The o3-dependent solution filter is also a methodological concern — the env pool quality is bounded by o3''s pass@16 reliability.'

@@ -1073,3 +1073,13 @@ Map Claude Code's 5-layer pipeline against EPYC L1-L5:
   - Key technique: token-budgeted brief assembly with confidence decay; structure-preserving safe writes (hash-before-write conflict, atomic rollback, one-call undo) as a portable abstract contract; YAML "policies" as a declarative search-then-write abstraction.
   - Delta from current approach: progressive-folding currently has no explicit query-side abstraction over folded state. Flywheel's confidence-decay assembler is a candidate factoring for L5+ when folded summaries should be queryable rather than serialized into the prompt.
   - Caveat (Tier 2b): credibility 3 (engineering-rigor signals via 1,092 commits + 3,292 tests, capped by no peer review or independent replication); self-reported benchmarks with ~1pp LLM-non-determinism variance band.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+- **[intake-569] "RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably"** (arxiv:2605.15514)
+  - Relevance: Theoretical justification for the progressive-folding hypothesis. The paper proves (Theorems 1–4) that RoPE-based attention loses locality bias and token-distinguishing power at long context — **a long-context model literally cannot reliably tell which earlier position a key vector belongs to.** Procedural folding (decompose long context into bounded chunks + summarize) is one of the few paths that sidesteps the theoretical limit because each chunk stays in the regime where RoPE still works.
+  - Key technique: 4-way failure taxonomy {position inversion, position aliasing, token inversion, token aliasing}; closed-form attention-statistics model (RoPE Product ~ Normal).
+  - Reported results: position inversion → chance by ~50K tokens; token inversion → chance by ~20K; 7B–405B models all hit 0.25 (random) on indexing-task by 4K–8K. Triangulates with Wang 2026 RLM reproduction (intake-547) — **the depth-2 96× wallclock cliff Wang observed is empirically consistent with this paper's predictions** (the underlying RoPE failure modes degrade depth-2 recursion's long-context aggregation step).
+  - Delta from current approach: No code change needed. Strengthens existing posture (favor procedural folding + recursive decomposition over long-context-scaling tricks). Use as cite-on-rationale in future L4+ design discussions when someone asks "why not just give the model a longer context window?" — the answer is now provably "because RoPE breaks down."
+  - Caveat (Tier 2b): paper is 2026-05-15 (5 days old); empirical results most dramatic at 128K+ where we operate rarely. Use as cumulative-evidence with intake-547 (Wang RLM reproduction) and intake-153 (canonical RLM), not standalone authority.

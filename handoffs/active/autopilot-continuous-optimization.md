@@ -2,8 +2,28 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-04-17
+**Updated**: 2026-05-20 (search space expanded — see "Autopilot Delegation Expansion 2026-05-20" below)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
+
+## Autopilot Delegation Expansion — 2026-05-20
+
+Search space expanded with 4 new NumericSwarm surfaces + 3 new StructuralLab-experimentable flags. Total new knobs: **7** (4 numeric + 3 boolean).
+
+**NumericSwarm surfaces added** (`scripts/autopilot/species/numeric_swarm.py`):
+- `repl_executor` (2 knobs): `repl.turn_token_cap` [256–4096], `repl.frontdoor_non_tool_token_cap` [256–4096]
+- `repl_budget` (2 knobs, gated by `worker_call_budget` / `task_token_budget` flags): `repl.worker_call_budget_cap` [5–100], `repl.task_token_budget_cap` [50K–500K]
+- `kv_compaction` (3 knobs, runtime-applied via `kv_compress.compress_slot()`): `kv.keep_ratio` [0.25–0.90], `kv.keep_first` [2–16], `kv.n_future` [64–1024]
+
+**HOT_SWAP_FEATURES additions** (`scripts/autopilot/config_applicator.py`): `structured_tool_output`, `content_cache`, `model_fallback` — promoted from the `rlm-orchestrator-roadmap.md` R6 default-off candidate matrix.
+
+**New applicator path**: `apply_kv_compact()` in `config_applicator.py` routes `kv.*` trials to `kv_compress.compress_slot()` per role (uses existing `PRODUCTION_PORTS` mapping). `apply_params()` now dispatches across three buckets: hot_swap, env_restart, kv_compact.
+
+**Caveats captured at wire-in time**:
+- `repl.turn_token_cap` and `repl.frontdoor_non_tool_token_cap`: when `difficulty_signal` mode is `enforce`, `_repl_turn_token_cap()` returns hardcoded band-adaptive values from `_BAND_TOKEN_BUDGETS` and ignores the env var. The sweep affects only the flat-cap path. If fANOVA importance is low, next step is env-var-ifying the band-adaptive dict.
+- `repl.worker_call_budget_cap` and `repl.task_token_budget_cap`: sweep is meaningful only when corresponding feature flag is on. StructuralLab should toggle the flags ON before these surfaces yield signal.
+- `kv.keep_ratio` lower bound clipped at 0.25 (program.md notes "below 0.25 format degrades").
+
+**Handoff promotion**: see `research-evaluation-index.md` §P11 for outcome-observation checkboxes (P11.1, P11.1b, P11.1c, P11.1d).
 
 ## Architecture
 
@@ -734,3 +754,12 @@ But: even with the April 20 binary (pre-TIDE entirely, head `81df3f7c`), bench r
 - Registry compile module ready (opt-in via `--compile-registry`; default off pending master/orchestrator port-plan reconciliation)
 
 **Awaiting operator decision on autopilot restart timing.** Recommended: post-reboot, to also test the host-throttle hypothesis cleanly.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-571] "ECHO: Terminal Agents Learn World Models for Free"** (Papailiopoulos et al., MSR AI Frontiers; PDF, no arxiv)
+  - **Relevance**: The autopilot loop IS a terminal agent (bash + orchestrator tool calls). ECHO's "predict-the-environment" auxiliary loss is the training-time analogue of what autopilot already does empirically — gather rollouts, observe terminal responses. If/when we train a small specialized model for autopilot's coordinator role, ECHO-style auxiliary loss is a cheap add-on.
+  - **Key technique**: Joint action + observation prediction on the same GRPO rollout; no masking; ~2× over baseline GRPO across Qwen3 family.
+  - **Delta from current approach**: Pure training-time technique, GPU-gated. Out of scope for the current CPU-only autopilot, but worth noting in the gpu-acceleration-path watchlist alongside SkillRL and Endless-Terminals (intake-574). The pattern itself (treat all bytes in a rollout as training signal, not just policy bytes) is a useful frame even for non-training contexts — e.g., consider whether the Pareto archive should also score "tool-response predictability" as a co-objective.

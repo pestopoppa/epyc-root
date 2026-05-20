@@ -58,8 +58,8 @@ No additional work needed.
 - Pressure warning injected into prompt when <15% token budget remaining
 - Feature flag: `task_token_budget` (env: `ORCHESTRATOR_TASK_TOKEN_BUDGET`)
 
-### 4. Evaluate REPL truncation at 2000 chars — DEFERRED
-Requires seeding benchmark runs, not code changes. Will evaluate after budget controls are validated in production.
+### 4. Evaluate REPL truncation at 2000 chars — DELEGATED TO AUTOPILOT 2026-05-20
+Original plan: seeded benchmark A/B at 2000 vs 5000 chars. **Resolved 2026-05-20** by wiring `repl.turn_token_cap` into NumericSwarm's parameter surfaces (`scripts/autopilot/species/numeric_swarm.py`) + `ENV_PARAMS` (`scripts/autopilot/config_applicator.py`). Autopilot now sweeps the env var `ORCHESTRATOR_REPL_TURN_N_TOKENS` over [256, 4096] organically as part of the `repl_executor` surface, with results landed in the 4D Pareto archive. No further manual eval needed; tracked in [`handoffs/active/research-evaluation-index.md`](../active/research-evaluation-index.md) §P11 for outcome observation after autopilot accumulates trial data.
 
 ## Acceptance Criteria
 
@@ -77,3 +77,7 @@ Requires seeding benchmark runs, not code changes. Will evaluate after budget co
 - `src/graph/helpers.py` — `_worker_call_budget_cap()`, `_task_token_budget_cap()`, `_check_budget_exceeded()`, `_budget_pressure_warnings()`, counter increments in `_execute_turn()`
 - `src/graph/nodes.py` — budget check in all 7 node `run()` methods
 - `scripts/server/orchestrator_stack.py` — production env vars
+
+## Follow-up — 2026-05-20 (post-completion review)
+
+Re-review of upstream `avbiswas/fast-rlm` (commits `72862af`, `cc8395c` landed 2026-05-20) added one net-new pattern beyond what this handoff captured: **typed `FINAL` value validation against a Pydantic/JSON-Schema spec, with retry-with-error-path on validation failure**, plus structured dict input with a flat top-level schema probe (`examples/structured_io.py`, `src/subagents.ts:118-332`, `fast_rlm/_runner.py:23-180`). This is orthogonal to our existing `structured_tool_output` flag (which envelopes intermediate tool *invocations* in `ToolOutput`, not the agent's final answer). The pattern was ported and landed same-day under feature flag `final_schema_validation` (default-off, opt-in per request via `ChatRequest.output_schema`); see [`handoffs/completed/repl-final-schema-validation.md`](repl-final-schema-validation.md).

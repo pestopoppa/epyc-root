@@ -2,8 +2,8 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-04-18
-**Sources**: 21 documents (0 dedicated deep-dives, 4 cross-referenced deep-dives, 3 active handoffs, 14 intake entries)
+**Last compiled**: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive)
+**Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
 
@@ -26,6 +26,8 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - **llama.cpp fully supports YaRN**: Dedicated CLI flags (`--rope-scaling yarn`, `--rope-scale N`, `--yarn-orig-ctx N`, plus fine-tuning parameters `--yarn-ext-factor`, `--yarn-attn-factor`, `--yarn-beta-slow`, `--yarn-beta-fast`). Our models support extension: Qwen3.5 supports 256K native + YaRN to 1M; Qwen3-Next-80B supports 256K native + YaRN to 1M (RULER 91.8% avg across 4K-1M). [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md)
 
 - **Quality degradation at extended lengths is an open question for our specific hardware**: The RULER accuracy curve from 256K to 1M with YaRN on CPU inference has not been measured. KV cache memory at 1M context is the primary concern -- 6x KV compression via TurboQuant-style techniques (intake-191, intake-192, intake-193) could make this practical but is not yet implemented beyond our existing Hadamard+q4_0 quantization.
+
+- **RoPE base-extension trades position-fidelity for token-fidelity provably (intake-569, Du et al. 2026)**: Closed-form proofs of four RoPE failure modes (Position Inversion → 0.5 prob at long M; Position Aliasing → 100% exponentially in M; Token Inversion → 0.5 at m ≥ 20K; Token Aliasing ≈ 5% positions at BF16 h=64). Critical asymmetry: raising the RoPE base B (the YaRN move) **helps** token modes F3/F4 but **hurts** position modes F1/F2 — no single B preserves both. Empirically all tested 7B–405B models collapse to chance (~0.25) on a 4-element position-indexing task by 4K–8K tokens. **Operational implication for EPYC**: 32K is the operational hard line for reliable position discrimination; above 32K, YaRN-style extension preserves content fidelity but degrades position fidelity, so YaRN's `yarn-context-extension-research.md` gate now requires workload tolerance for degraded position-discrimination. Triangulates mechanistically with intake-547 (Wang RLM reproduction): depth-2 96× wallclock cliff is the predicted symptom of long-context attention over depth-1 children's outputs. [2026-05-20-rope-long-context-bounds.md](../research/deep-dives/2026-05-20-rope-long-context-bounds.md), [yarn-context-extension-research handoff](../handoffs/active/yarn-context-extension-research.md), [intake-569]
 
 ### Memory-Augmented Architectures
 

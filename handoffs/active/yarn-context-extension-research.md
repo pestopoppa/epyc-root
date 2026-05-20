@@ -1,6 +1,6 @@
 # YaRN Context Extension Research
 
-**Status**: QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05). New quality gate added: Tulving 200ch episodic memory benchmark (P3b in research-evaluation-index). **Gate to reactivate**: context_extension becomes a concrete workload requirement.
+**Status**: QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05). New quality gate added: Tulving 200ch episodic memory benchmark (P3b in research-evaluation-index). **Gate to reactivate**: context_extension becomes a concrete workload requirement AND the workload tolerates degraded position-discrimination above 32K (per intake-569 Theorem 3+4 trade-off table — raising the RoPE base helps token-distinguishing but provably hurts position-distinguishing; see `research/deep-dives/2026-05-20-rope-long-context-bounds.md`).
 **Created**: 2026-03-09
 **Priority**: LOW
 **Workstream**: Research
@@ -89,3 +89,13 @@ The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tests entity
   - Relevance: Component technique of TurboQuant. 4.2x KV cache compression via polar coordinate transformation. Eliminates normalization overhead.
 - **[intake-193] "QJL: 1-Bit Quantized JL Transform for KV Cache Quantization with Zero Overhead"** (arxiv:2406.03482)
   - Relevance: Component technique of TurboQuant. 5x KV cache reduction to 3 bits. Has GitHub implementation (github.com/amirzandieh/QJL). Published at AAAI 2025.
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+- **[intake-569] "RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably"** (arxiv:2605.15514)
+  - Relevance: Bounds the cost of YaRN's central trick. YaRN extends context by **raising the RoPE base hyperparameter** — this paper proves (Theorems 3+4) that raising the base trades off position-distinguishing for token-distinguishing, and the trade-off is irreducible: a single base cannot preserve both. **YaRN does not contradict this; it accepts the trade-off implicitly.** The paper turns the trade-off explicit and quantifies where it bites.
+  - Key technique: closed-form statistical model (RoPE Product ~ Normal RV) + 4-way failure taxonomy {position inversion, position aliasing, token inversion, token aliasing}. Proves position inversion → 1/2 (chance) as `log M log B → ∞`; position aliasing converges to 1 exponentially with M.
+  - Reported results: empirically 7B–405B models (Llama 3.1, Mistral, Qwen3, DeepSeek-v3, Kimi k2.5, GPT-OSS) all collapse to ~0.25 (random) on a position-indexing task by 4K–8K tokens. At 8K BF16: 75K position-aliasing pairs + 1,491 attention-invariance cases. Token inversion → 1/2 once `m ≥ 20K`.
+  - Delta from current approach: Strengthens the **"YaRN is gated to a concrete workload need, NOT a default"** posture this handoff already takes (Status line: "Gate to reactivate: context_extension becomes a concrete workload requirement"). Cite this paper as theoretical justification for the gate; do not change the gate criteria.
+  - Caveat (Tier 2b): paper is 2026-05-15 (5 days old at intake); the most dramatic chance-floor claims kick in at 128K+ where EPYC operates rarely (we cap at 32K–64K in practice). Use as informing-evidence, not blocking-evidence.

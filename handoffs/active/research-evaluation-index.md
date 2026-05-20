@@ -200,6 +200,55 @@ Pointer — full plan tracked in [`granite-97m-r2-bench-plan.md`](granite-97m-r2
 - [ ] **P9.6**: Phase B-1/B-2/B-3 bench execution (gated, requires per-run inference approval)
 - [ ] **P9.7**: Phase C decision + deployment recommendation; update consuming handoffs
 
+### P10 — RoPE Long-Context Sanity Check, per-model (from intake-569 deep-dive, 2026-05-20)
+
+Pointer — source deep-dive at [`research/deep-dives/2026-05-20-rope-long-context-bounds.md`](../../research/deep-dives/2026-05-20-rope-long-context-bounds.md). Anchor intake: intake-569 (arxiv:2605.15514, RoPE-distinguishes-neither-positions-nor-tokens). Companion empirical: intake-547 (Wang RLM reproduction, arxiv:2603.02615).
+
+**Premise**: Du et al. prove four RoPE failure modes (position inversion, position aliasing, token inversion, token aliasing) and empirically show all tested 7B–405B models collapse to chance (~0.25) on a 4-element position-indexing task **by 4K–8K tokens** — far below their nominal context windows. The paper's reference models include Qwen3 + Llama-3.1 variants but not our specific GGUF quantizations / llama.cpp build. Running the same probe against OUR stack gives a **per-model empirical bound** on where RoPE breakdown actually begins in production.
+
+**Protocol**: 4-element `arr = [v₁,v₂,v₃,v₄]`, vᵢ ∈ {0,1,2,3} (single-token); ask `arr[k]` with padding-extended context. 100 samples per (model, context_length) cell. Baseline = 0.25 (chance).
+
+**Matrix**: 5 models × 4 context lengths = 20 cells. Models: `gemma4-26B-A4B Q4_K_M`, `qwen3.6-27B Q8_0` (or current frontdoor), `qwen3-next-80B`, `REAP-246B Q4_K_M`, `30B-A3B Q4_K_M`. Lengths: 4K, 8K, 16K, 32K.
+
+**Cost**: ~5 min per cell × 20 cells ≈ **100 min total compute**.
+
+**Inference gate**: per-run user approval (`feedback_no_concurrent_inference` + `feedback_speed_verify_via_llama_bench`).
+
+**Priority**: LOW — user-flagged "not urgent" (2026-05-20). Bulk pickup eligible.
+
+**Outcome**: per-model collapse point. Refines `cpu-context-regime-coverage.md` 32K test row, the YaRN gate criterion (intake-569 caveat already added), and informs whether any context-folding aggressiveness tier should kick in earlier for specific models.
+
+- [ ] **P10.1**: Write probe script (~30 LoC, no inference) — token-encoded list, padding generator, 100-sample driver
+- [ ] **P10.2**: 5×4 matrix run (inference-gated)
+- [ ] **P10.3**: Record results + collapse-point per model into [`research/deep-dives/2026-05-20-rope-long-context-bounds.md`](../../research/deep-dives/2026-05-20-rope-long-context-bounds.md) Appendix
+- [ ] **P10.4**: Cross-link finding back to `cpu-context-regime-coverage.md` 32K row and `yarn-context-extension-research.md` gate
+
+### P11 — Fast-RLM REPL Output Truncation A/B (2000 vs 5000 chars; deferred since 2026-03-03)
+
+Pointer — completed handoff [`handoffs/completed/01-fast-rlm-budget-controls.md`](../completed/01-fast-rlm-budget-controls.md) §4 ("Evaluate REPL truncation at 2000 chars — DEFERRED"). Source: fast-rlm `examples/structured_io.py`, default `max_output_chars=2000` vs our current `_repl_turn_token_cap` ≈ 5000 tokens.
+
+**Premise**: fast-rlm defaults to a more aggressive REPL output truncation (2000 chars) than ours. Empirical question: does dropping to 2000 chars improve worker_general / coder accuracy by forcing tighter focus, OR degrade it by clipping useful intermediate output?
+
+**Protocol**: Paired A/B at the existing eval-tower seeded suite. Two arms: arm A = current cap; arm B = 2000-char cap. Same seed, same suite, same routing.
+
+**Cost**: small (single seeded suite × 2 arms). Estimated **~30–60 min** depending on suite size.
+
+**Inference gate**: per-run user approval.
+
+**Priority**: LOW. Has been deferred since 2026-03-03 without harm; no active workload signals this is load-bearing.
+
+**Status update — 2026-05-20**: wired into autopilot. NumericSwarm now has a `repl_executor` surface with `ParamSpec("repl.turn_token_cap", 256, 4096, "int")`; `config_applicator.ENV_PARAMS["repl"]["turn_token_cap"] = "ORCHESTRATOR_REPL_TURN_N_TOKENS"` routes trials via env-restart. End-to-end smoke verified: `classify_params({"repl.turn_token_cap": 1500}) → env_restart`, `NumericSwarm.suggest_trial("repl_executor")` returns a sampled int in range. Autopilot will sweep this organically; no further manual eval needed.
+
+**Caveat**: when `difficulty_signal` mode is `enforce`, `_repl_turn_token_cap()` returns the hardcoded band-adaptive value (1500/3500/7000 per easy/medium/hard) and ignores the env var. The sweep affects only the flat-cap path (mode != enforce, or no difficulty_band set). If autopilot's fANOVA importance shows `repl.turn_token_cap` is low-impact, the next step is to expose the band-adaptive dict to sweep too — not yet wired.
+
+- [x] **P11.1**: Wire `repl.turn_token_cap` into NumericSwarm + config_applicator. **DONE 2026-05-20** (commit pending). Files: `scripts/autopilot/species/numeric_swarm.py` (+10 LoC), `scripts/autopilot/config_applicator.py` (+3 LoC). Smoke verified.
+- [x] **P11.1b**: Wire **3 sibling caps** under the same `repl_executor` + new `repl_budget` surfaces. **DONE 2026-05-20**. Adds: `repl.frontdoor_non_tool_token_cap` (env: `ORCHESTRATOR_FRONTDOOR_REPL_NON_TOOL_N_TOKENS`), `repl.worker_call_budget_cap` (env: `ORCHESTRATOR_WORKER_CALL_BUDGET_CAP`, flag-gated by `worker_call_budget`), `repl.task_token_budget_cap` (env: `ORCHESTRATOR_TASK_TOKEN_BUDGET_CAP`, flag-gated by `task_token_budget`). 4 knobs total across 2 surfaces (2+2). Smoke verified.
+- [x] **P11.1c**: Wire **KV compaction knobs** as a new `kv_compaction` surface with a new `apply_kv_compact` applicator path that calls `kv_compress.compress_slot()` at runtime (not env-restart, not POST /config). **DONE 2026-05-20**. Adds: `kv.keep_ratio` (0.25–0.90 float — lower bound clipped at 0.25 to avoid the format-degradation cliff), `kv.keep_first` (2–16 int), `kv.n_future` (64–1024 int). Per autopilot `program.md` Tier 4.5, this is the largest single-item leverage in the audit. Smoke verified via `classify_params({"kv.keep_ratio": 0.5}) → kv_compact` bucket.
+- [x] **P11.1d**: Promote **3 default-off flags** to `HOT_SWAP_FEATURES` so StructuralLab can experiment with them. **DONE 2026-05-20**. Adds: `structured_tool_output` (Lobster ToolOutput envelope), `content_cache` (SHA-256 keyed response cache), `model_fallback` (same-tier alternatives on circuit-open). Each was previously listed as a default-off candidate in `rlm-orchestrator-roadmap.md` R6 candidate matrix; promotion makes them sweepable by autopilot's existing flag-mutation pool.
+- [ ] **P11.2**: Observe autopilot results after ≥20 trials on the `repl_executor` surface; record fANOVA importance + cluster-selected best value.
+- [ ] **P11.3**: If band-adaptive path dominates and the sweep is uninformative, optionally expose `_BAND_TOKEN_BUDGETS[easy/medium/hard]` as three sweepable params.
+- [ ] **P11.4**: Record outcome + cross-link from `01-fast-rlm-budget-controls.md` Follow-up section when sufficient trial data is available.
+
 ### Monitoring (no action unless triggered)
 
 - [ ] **TQ3**: Watch PR #21038 for merge, evaluate PR #21089 when merged, read ChunkKV paper
@@ -225,6 +274,8 @@ P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopil
 P7 (Ouro LoopLM eval)               ──independent (download + benchmark)──
 P8 (eval tower verification)         ──EV-1/2/6 DONE (2026-04-15); EV-0/3 independent; EV-4/5 need inference; EV-7 depends on all + P7──
 GLM-5.1-REAP eval                    ──independent (download + benchmark); stack simplification depends on quality results──
+P10 (RoPE per-model probe)            ──independent (inference-gated, ~100 min); informs cpu-context-regime-coverage + yarn gate──
+P11 (REPL truncation A/B)             ──independent (inference-gated, ~30–60 min); or promotable to NumericSwarm wire-in──
 Compaction gap analysis               ──independent (design task from intake-426)──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
