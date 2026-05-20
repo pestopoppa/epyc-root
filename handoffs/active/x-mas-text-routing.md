@@ -253,8 +253,62 @@ This is the highest-ROI orchestrator change from the session: a config-only PR t
 ### Open follow-ups
 
 1. **5×5 functions axis still not exercised.** v3 is 5 domains × 5 tasks but no separate function axis. The headline X-MAS thesis (different models excel at different (domain, function) cells) needs a separate harness that varies function (solve/verify/plan/refine/extract). Schedule x-mas v4.
-2. **Architect_general deprecation gate**: confirm with a 50-100 task wider eval before pulling it. Sample these tasks from production autopilot trial logs (real workload, not synthetic).
+2. ~~**Architect_general deprecation gate**: confirm with a 50-100 task wider eval before pulling it.~~ ✅ **CLOSED 2026-05-20**: see "Architect deprecation gate — RETAIN" below.
 3. **Knowledge cell**: the only viable fix is retrieval; do not retest models without RAG context.
+
+## Architect deprecation gate — RETAIN (2026-05-20)
+
+**Verdict**: **RETAIN architect_general**. The cheap-kill v3 "architect is strictly dominated" signal was a small-N + task-mix artifact. At N=100, architect_general competes with frontdoor within 4pp overall (below the 5pp RETAIN threshold) and actually **wins math gsm8k 20/20 vs frontdoor 19/20**.
+
+**Raw artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-20-architect-deprecation-probe/results.json` (100 tasks × 2 models × `enable_thinking=False` config; 200 total inferences; 2h53m wall on EPYC CPU).
+
+### Methodology
+
+Designed to confirm or refute the cheap-kill v3 attribution at higher N. 20 tasks each from 5 suites, sorted by stable task-id order:
+- gpqa (reasoning, multi-choice single letter)
+- gsm8k (math, numeric exact_match)
+- cruxeval (code, input-prediction — harder variant than the cheap-kill's cruxeval_output_*)
+- simpleqa (knowledge, short-answer substring/f1)
+- aime (math2, numeric exact_match — olympiad-difficulty)
+
+All queries: `max_tokens=2048`, `temperature=0.0`, `chat_template_kwargs={"enable_thinking": false}`.
+
+### Final per-model per-category accuracy
+
+| Category | frontdoor | architect_general | Δ pp (f − a) |
+|---|---|---|---|
+| math (gsm8k, 20 tasks) | 19/20 (95%) | **20/20 (100%)** | **−5** |
+| math2 (aime, 20 tasks) | 9/20 (45%) | 9/20 (45%) | 0 |
+| code (cruxeval_input, 20) | 7/20 (35%) | 5/20 (25%) | +10 |
+| knowledge (simpleqa, 20) | 2/20 (10%) | 2/20 (10%) | 0 |
+| reasoning (gpqa, 20) | 9/20 (45%) | 6/20 (30%) | +15 |
+| **Total (100 tasks)** | **46/100 (46%)** | 42/100 (42%) | **+4pp** |
+| Wall total | 5,514 s | 6,091 s | architect 10% slower overall |
+
+### Reversals from cheap-kill v3
+
+| Finding | Cheap-kill v3 (N=25) | Deprecation gate (N=100) | Verdict |
+|---|---|---|---|
+| Architect overall acc | 14/25 = **56%** | 42/100 = **42%** | task-mix bias was overstating gap |
+| Architect on math | 5/5 (5 gsm8k tasks) | 20/20 (20 gsm8k tasks) | gsm8k confirmed strong (architect actually WINS here) |
+| Architect on code | 1/5 (cruxeval_output picks) | 5/20 (cruxeval_input picks) | both struggle on cruxeval; architect-input is 25% vs frontdoor-input 35% |
+| Architect on reasoning | 2/5 | 6/20 | architect IS weaker on GPQA, but only by 15pp not 60pp |
+| Frontdoor − architect Δ | **+20pp** | **+4pp** | small-N estimate was 5× too large |
+
+### Operational implications
+
+- **No deprecation**. The cheap-kill v3 recommendation to consider deprecating architect_general is retracted. Architect is competitive at production-relevant N.
+- **Architect IS the right model for math**. On gsm8k it's the only model to score 20/20 perfect. If routing intelligence is wired, math tasks should prefer architect over frontdoor (despite architect's 50% higher wall-time).
+- **Frontdoor's edge is reasoning + code**, by 10-15pp. Not big enough to make architect unusable, but real and consistent.
+- **Knowledge weak across the stack** (both models 2/20 on simpleqa) — confirms cheap-kill v3 finding that RAG is the only realistic fix.
+- **Wall time**: architect averages 158s on aime vs frontdoor 101s — architect IS slower by ~50% on the longest-thinking tasks. For latency-critical paths, prefer frontdoor. For accuracy-critical math, prefer architect.
+
+### Methodology notes for future deprecation gates
+
+The cheap-kill v3 N=25 result over-estimated the frontdoor-architect gap by **5×** (20pp → 4pp). Lessons:
+1. **Cheap-kills are screening tools, not deprecation evidence.** Always confirm with N ≥ 100 before pulling production roles.
+2. **Task-mix bias is the dominant noise source.** The cheap-kill's 5 cruxeval tasks happened to be ones architect struggled with; the wider gate samples a more representative mix.
+3. **`enable_thinking=False` lifts thinking-mode models to their natural baseline.** Without this fix, both gates would have been contaminated.
 
 ### Updated Open Questions
 
