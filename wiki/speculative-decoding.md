@@ -319,3 +319,22 @@ The correctness fix was correct. **Don't re-enable TIDE.** The orchestrator's Re
 **Residual gap**: even on the **April 20 binary (pre-TIDE entirely, head `81df3f7c`)** in total isolation (all other servers killed, 1068 GB free, fresh drop_caches), Qwen3.6-35B-A3B Q8 only delivers 12.13-12.48 t/s — not the 26 t/s recorded in the April 20 bench retest. CPU boost is correct. The 2x gap survives every config and binary lever tested. Most-plausible remaining cause: sustained multi-day uptime + cumulative throttle that `drop_caches` no longer fully restores (per memory `feedback_host_throttle_check`). Reboot test pending.
 
 **Cross-references**: [progress/2026-05/2026-05-16.md](../progress/2026-05/2026-05-16.md), llama.cpp commit `2ffbdbbba`, bench CSV `epyc-inference-research/benchmarks/results/reviews/qwen36_q8_0_retest_fork_fix.json`.
+
+### 2026-05-20 — Unified-model self-speculation (Nemotron-Labs-Diffusion)
+
+NVIDIA released **Nemotron-Labs-Diffusion** (intake-576, no arXiv ID, tech report 2026-05-19, NVIDIA Nemotron Open Model License). Family: 3B/8B/14B (Base + Instruct) + VLM-8B. Backbone is **Ministral3 dense LLaMA-family** — no SSM, no Mamba, no Delta Net. Distinct from every prior block-diffusion-speculation entry in this wiki (DFlash, DART, Lucebox, Luce-Qwen3.6) because the drafter and verifier are **the same set of weights** — mode is selected at inference time by switching the attention pattern (causal → AR, block-bidirectional → diffusion, dual-stream → training).
+
+Headline numbers (8B Instruct, batch=1, paper Fig. 9 + Tab. 10):
+
+| Hardware / quant | AR | Linear SS | Speedup | Eagle3 | SOL |
+|---|---|---|---|---|---|
+| GB200 FP8 | 256 t/s | **851 t/s** | **3.32×** | 354 (1.38×) | 1471 (5.75×) |
+| GB200 FP8 + custom CUDA | – | 1015 t/s | 3.97× | – | – |
+| RTX Pro 6000 INT4-AWQ-Marlin | 80 | 525 | 6.56× | 211 (2.64×) | 989 (12.36×) |
+| DGX Spark INT4-AWQ-Marlin | 41.8 | **112.5** | **2.69×** (INT4 vs INT4) | 43.2 (1.03×) | 223.1 (5.34×) |
+
+Acceptance length on SPEED-Bench (k=31): **NLD-8B native 5.46 / LoRA-tuned 6.82 vs Qwen3-8B-Eagle3 2.75 / Qwen3-9B-MTP 4.24**. Gap to MTP widens to 8.69 vs 4.73 on the four diffusion-friendly categories (coding, math, reasoning, multilingual). **Quality**: 8B AR mode +0.86% avg over Qwen3-8B AR across 10 benchmarks — first diffusion LM to match AR-class accuracy (LLaDA, Dream, SDAR were 9–26 points below).
+
+CPU portability prerequisites are materially better than DFlash: same-model drafter+verifier eliminates the cross-precision quantization drift that killed our DFlash CPU port at 27% acceptance; dense Ministral3 backbone has no recurrent-verify wall. **Port effort estimate: 15–25 days for Linear SS, 10–15 for diffusion-only** — comparable to DFlash but with more favorable architectural starting conditions. Critical unknowns before any port: (a) does Q4_K_M preserve the diffusion sampler's confidence-threshold sweet spot, (b) does Ministral3 load in our v4 llama.cpp fork, (c) does block-wise attention work as a causal-only approximation as a fast first cut. Two cheap pre-port audit tasks: Ministral3 conversion check (~1 h), AR-mode quality re-test on Q4_K_M (~4 h) — the latter validates the paradigm, NOT a worker-role candidacy (our worker_general is gemma4-26B-A4B Q4_K_M MTP; an 8B dense is the wrong size class).
+
+Verdict: `worth_investigating`. Tracked in [`inference-acceleration-index.md`](../handoffs/active/inference-acceleration-index.md) + [`gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) (DGX Spark Day-0 candidate alongside DFlash) + [`gemma4-mtp-drafter-evaluation.md`](../handoffs/active/gemma4-mtp-drafter-evaluation.md) (Tab. 10 is the strongest single-paper evidence that "self-speculation > MTP" at low concurrency on dense models). Full deep dive at [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md`](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md). Tier 2b contradicting-evidence re-run scheduled 2026-06-20. Follow-up intake candidates: Set Block Decoding (arxiv:2509.04185, Meta FAIR — immediate prior art), Efficient-dlm (arxiv:2512.14067), TiDAR (arxiv:2511.08923), Fast-dllm (arxiv:2505.22618).
