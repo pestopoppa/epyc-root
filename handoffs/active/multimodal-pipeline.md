@@ -384,3 +384,15 @@ Three concrete revival gates (any of these flips the verdict):
 - (c) An EPYC voice-interface use case appears
 
 Watch list: SHANKS (arxiv:2510.06917) is sibling not supersession — different problem (interruption + tool-call-during-listen vs knowledge-grounded response).
+
+## Research Intake Update — 2026-05-20
+
+### New Related Research
+
+- **[intake-575] "Marlin-2B — Dense Video Captioning + Temporal Grounding at 2B"** (HF: NemoStation/Marlin-2B)
+  - Relevance: Extends this handoff's scope beyond the current frame-level ffmpeg-extraction approach (§1 "Video processing: ffmpeg frame extraction, frame-level analysis"). Marlin-2B does native video captioning AND second-precise temporal grounding via `.find(query) → (start, end)` span resolution — capabilities the existing vision pipeline does not have.
+  - Key technique: Two-stage post-training — SFT on ~400K clip-level annotations, then SimPO (reference-model-free preference optimization) with Gemini-3-Flash as judge. BF16, 2B params, vLLM-compatible, single-H100-trained.
+  - Reported results: tops CaReBench at 2B; sits between Tarsier-34B and Gemini-1.5-Pro on DREAM-1K; +6.4 mIoU over Qwen2.5-VL-7B on TimeLens-Bench (Charades/ActivityNet/QVHighlights), matching Gemini-2.0-Flash — all author-reported, no third-party replication yet.
+  - Delta from current approach: Vision pipeline (Qwen2.5-VL-7B on 8086, Qwen3-VL-30B on 8087) is image-first with video as frame chunks; Marlin-2B is video-native at a much smaller parameter scale.
+  - Caveats: (a) BF16-only — **no GGUF or quantized variant** at intake; would need either a small GPU host or a llama.cpp conversion. (b) Base architecture labeled "Qwen3.5-2B" on the card, but Qwen3.5 family is publicly 27B+ — likely a mislabel for Qwen2.5-VL-2B or an internal checkpoint; exact reproduction unclear. (c) Single-org (NemoStation) commercial product with fine-tuning service framing; credibility tier low. (d) No public ablations of SimPO vs DPO, no failure-mode catalogue.
+  - Action: **None now** — no active video captioning workload. Re-evaluate if (i) a video-understanding workload appears, OR (ii) a small GPU is added to the stack, OR (iii) third-party benchmark replication appears for the TimeLens / DREAM-1K claims.

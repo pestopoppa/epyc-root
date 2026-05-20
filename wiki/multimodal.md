@@ -180,3 +180,13 @@ Stack integration mirrors the document_formalizer (OCR) pattern: `start_sd_serve
 - **Hermes plugin path survived backend swap unchanged**: thin-interface discipline paid off — `ImageGenerator.generate(request) → result` interface was preserved across the ComfyUI → sd-server transition. Plugin code, Hermes tool registry, and dispatcher mapping all unchanged.
 
 Sources: [progress/2026-05-07.md](../progress/2026-05/2026-05-07.md), [handoffs/active/ernie-image-turbo-evaluation.md](../handoffs/active/ernie-image-turbo-evaluation.md), [research/deep-dives/ernie-image-turbo-dit-text-to-image.md](../research/deep-dives/ernie-image-turbo-dit-text-to-image.md).
+
+## Marlin-2B — video captioning + temporal grounding at 2B (NemoStation, 2026-05-20)
+
+2B VLM fine-tune (base stated as "Qwen3.5-2B" but Qwen3.5 family is publicly 27B+ — likely Qwen2.5-VL-2B mislabel) trained via SFT on ~400K clip-level annotations followed by SimPO (reference-model-free preference optimization) with Gemini-3-Flash as the teacher/judge. Two convenience methods on the HF wrapper: `.caption()` returns scene + temporally-stamped events, `.find(query)` resolves natural-language queries to `(start, end)` spans. Apache-2.0, BF16, vLLM-compatible, single-H100-trained, 125 downloads/mo at intake.
+
+**Author-reported benchmarks** (no third-party replication at intake time): tops CaReBench at 2B; positioned between Tarsier-34B and Gemini-1.5-Pro on DREAM-1K; +6.4 mIoU over Qwen2.5-VL-7B on TimeLens-Bench (Charades / ActivityNet / QVHighlights aggregate), matching Gemini-2.0-Flash.
+
+**Relevance to EPYC stack**: low — no active video-captioning or temporal-grounding workload. The multimodal pipeline currently handles video only as ffmpeg-extracted frames fed through image-VLMs. Marlin-2B is BF16-only (no GGUF), so any deployment would require either a small dedicated GPU host or a llama.cpp conversion. Held at `worth_investigating` rather than `not_applicable` per the project's "consider creative deployment roles" policy — a small dense video model could plausibly serve as a frame-level event detector inside `src/vision/` if a GPU is added. Three revival gates documented: (i) a video-understanding workload appears, (ii) a small GPU is added, (iii) third-party benchmark replication of the +6.4 mIoU TimeLens claim. Base-architecture ambiguity should be resolved with NemoStation before any deployment.
+
+Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml), [handoffs/active/multimodal-pipeline.md#research-intake-update--2026-05-20](../handoffs/active/multimodal-pipeline.md).

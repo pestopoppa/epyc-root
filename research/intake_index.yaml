@@ -26338,3 +26338,60 @@
   - 'Solution-filter selection bias: filter (o3 or Qwen3-32B pass@16 ≥ 1) systematically selects for tasks the filter model can already solve, biasing the env pool toward the filter''s policy basin. Filter-model ablation is the load-bearing missing experiment.'
   - 'Zero external benchmarks: paper evaluates only on TB-2.0 + the in-distribution dev set. No SWE-bench, OSWorld, AgentBench, Mind2Web validation.'
   - 'Prior art the paper does not deeply engage: R2E-Gym (arxiv:2504.07164, 8.1k procedural SWE envs via SWEGEN) and SWE-Gym (arxiv:2412.21139, 2,438 PR-derived envs) — both use real-PR back-translation rather than wholesale procedural synthesis. Endless Terminals contribution is the terminal domain and the LLM-pass@16 filter, not the env-curation loop itself.'
+- id: intake-575
+  arxiv_id: null
+  url: https://huggingface.co/NemoStation/Marlin-2B
+  source_type: repo
+  title: 'Marlin-2B — Dense Video Captioning + Temporal Grounding at 2B (NemoStation)'
+  authors:
+  - NemoStation team (contact aryan@letsnemo.com; org has no published lab affiliation)
+  categories:
+  - multimodal
+  - training_distillation
+  key_claims:
+  - 'Claims SOTA dense video captioning at 2B parameter scale — tops CaReBench leaderboard at this size class and reportedly sits between Tarsier-34B and Gemini-1.5-Pro on DREAM-1K despite being ~15× smaller than Tarsier-34B.'
+  - 'Claims best-in-class temporal grounding at 2B — reports +6.4 mIoU over Qwen2.5-VL-7B on TimeLens-Bench (Charades / ActivityNet / QVHighlights aggregate) and matches Gemini-2.0-Flash.'
+  - 'Two-stage post-training recipe: SFT on ~400K clip-level annotations followed by SimPO (Simple Preference Optimization, reference-model-free) with Gemini-3-Flash as the teacher/judge.'
+  - 'Base architecture stated as "Qwen3.5-2B with intact video-capable visual tower" — the Qwen3.5-2B label is non-standard (Qwen3.5 family is 27B/35B publicly; the actual base is most plausibly Qwen2.5-VL-2B or an unreleased internal checkpoint; model card does not disambiguate).'
+  - 'Developer ergonomics: standard HF Transformers API with convenience methods `.caption()` (returns scene + temporally-stamped events) and `.find(query)` (resolves NL queries to (start,end) spans); BF16 inference, single H100 trained, vLLM and swift-deploy compatible.'
+  techniques:
+  - SimPO (Simple Preference Optimization, reference-model-free) — preference optimization without the SFT-reference KL term that DPO requires
+  - Teacher-distilled preference pair generation using Gemini-3-Flash as judge
+  - Canonical training prompt per mode (fixed prompt structure for caption vs find heads)
+  - 'Multichunk video reasoning with explicit chunk-time → source-time arithmetic (limited <think>-style scaffold)'
+  - Atomic event extraction with explicit <start-end> span boundaries (teacher pipeline tuned to produce temporally grounded atomic events)
+  reported_results:
+  - 'CaReBench leaderboard: closes gap to Gemini-2.5-Flash teacher to within 0.21/0.43 of 10 (metric scale unspecified on card)'
+  - 'DREAM-1K dense captioning: positioned between Tarsier-34B and Gemini-1.5-Pro (no absolute number cited)'
+  - 'TimeLens-Bench (Charades/ActivityNet/QVHighlights): +6.4 mIoU advantage over Qwen2.5-VL-7B; matches Gemini-2.0-Flash'
+  - 'Distribution: 125 downloads/month at time of intake; Apache-2.0 license; BF16 weights only — no GGUF or quantized variants'
+  - 'No public ablations of SimPO vs DPO, no preference-judge sensitivity analysis, no failure-mode catalogue, no comparison against Tarsier2-7B / Qwen3-VL-8B-Video / InternVideo2-mini'
+  referenced_arxiv_ids:
+  - '2512.14698'
+  - '2501.00513'
+  - '2407.00634'
+  novelty: medium
+  relevance: low
+  credibility_score: 1
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-121 (Moondream 3 Preview — sibling small-VLM, image not video)
+    - intake-251 (Gemma 4 MLX E2B/E4B — any-to-any multimodal at similar parameter scale)
+    - intake-432 (Qwen3.5-Omni — long-context video understanding, closed-API)
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'Component techniques (SimPO, teacher-judge preference distillation, multichunk reasoning, atomic-event temporal grounding) are individually well-known. Novel contribution is the operating-point claim: SOTA video captioning + temporal grounding at 2B, packaged with a clean two-method developer API. Not high novelty because no new mechanism is introduced and the base architecture is not disclosed clearly (the "Qwen3.5-2B" label is suspect — Qwen3.5 family is 27B+ publicly). Not low because the parameter-efficiency claim (matching Gemini-2.0-Flash on temporal grounding at 2B) would be meaningful if reproduced.'
+  relevance_justification: 'EPYC has no active video captioning or temporal grounding workload. Multimodal pipeline (multimodal-pipeline.md, priority LOW) covers ASR/TTS/image-VL and only mentions video at the frame-extraction level (ffmpeg → frame-level analysis), not native video understanding. Marlin-2B is BF16-only (no GGUF), so it would also need either a GPU host or a llama.cpp-side conversion before any deployment. Not no-relevance because the multimodal-pipeline.md handoff explicitly tracks video-capable models (Qwen3.5-Omni intake-432 entry) for the case where video work becomes a priority, and Marlin-2B would be a credible 2B candidate if video understanding ever joins the stack.'
+  verdict_justification: 'worth_investigating (not new_opportunity, not not_applicable). Held above not_applicable per project policy "consider creative deployment roles before marking not_applicable" (feedback_dont_dismiss_creative_uses): a small dense video model could plausibly be repurposed as a frame-level event detector inside the existing vision pipeline (src/vision/) without requiring a new GPU host if a single small GPU is added. Held below new_opportunity because (a) no current EPYC workload demands native video understanding, (b) BF16-only — no CPU/GGUF inference path, (c) credibility low (model card claims, no peer review, ambiguous base architecture, single-org commercial product), (d) no independent third-party replication of the +6.4 mIoU TimeLens claim. Credibility = 0 (no peer review) +1 (recent, May 2026) +0 (NemoStation org has no published lab signal) -1 (commercial fine-tuning service framing) +1 (cites published benchmarks with explicit numbers) +0 (no independent corroboration found in cursory check) = 1.'
+  contradicting_evidence:
+  - 'Base architecture identity is unresolved: model card states "Qwen3.5-2B" but no Qwen3.5 model at 2B has been released publicly (Qwen3.5 family is 27B-Dflash and 35B-A3B per our internal stack). Card likely conflates Qwen2.5-VL-2B with Qwen3.5 naming, OR uses an unreleased internal checkpoint — either way, exact reproduction is impossible without the base.'
+  - 'Single-source benchmark claims: the +6.4 mIoU TimeLens-Bench advantage over Qwen2.5-VL-7B is reported only by the model authors. No third-party replication, no independent leaderboard verification at time of intake. CaReBench gap-closing to Gemini-2.5-Flash is also author-reported.'
+  - 'Tier 2b (full contradicting-evidence search) was not performed because credibility_score=1 (below the >=3 threshold) and verdict is not new_opportunity. If verdict is later upgraded, run a search for "video temporal grounding 2B limitations" and "SimPO video distillation overfitting" before commitment.'
