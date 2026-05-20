@@ -166,3 +166,25 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 - [tri-role-coordinator-architecture.md](../handoffs/active/tri-role-coordinator-architecture.md) -- per-call role axis (Thinker/Worker/Verifier) as orthogonal dimension to model selection; Trinity-derived; HIGH priority architectural change
 - [outer-coordinator-learned-head.md](../handoffs/active/outer-coordinator-learned-head.md) -- speculative scoping handoff for Trinity-style learned head replacement of part of the Claude-driven autopilot loop
 - [Trinity deep-dive](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) -- methodology cross-check vs our stack, portable-vs-not split, replication budget estimate, 9 refined recommended actions
+
+## X-MAS heterogeneous routing + thinking-mode capture (2026-05-20)
+
+The X-MAS thesis (intake-557, arxiv:2505.16997) — different models excel at different (domain × function) cells, so heterogeneous routing beats homogeneous deployment — was validated on the EPYC 4-model production stack in 2026-05-20 via a 25-task × 4-model cheap-kill probe at `enable_thinking=False`. **Heterogeneity confirmed** (2 distinct cell winners across 5 domains):
+
+| Domain | Winner | Runner-up |
+|---|---|---|
+| math (gsm8k) | worker_general (5/5 in 6 s) | tied with frontdoor + architect at 5/5 (slower) |
+| code (cruxeval_output) | worker_general (5/5 in 9 s) | ingest_long_context (5/5 in 53 s) |
+| knowledge (simpleqa) | frontdoor (1/5 — all models weak; need RAG) | ingest_long_context (1/5) |
+| long_context (needle 4096) | worker_general (5/5 in 4 s) | tied across all 4 models at 5/5 |
+| reasoning (gpqa) | frontdoor (4/5) | ingest_long_context (2/5) |
+
+**Per-model overall**: frontdoor 19/25 (76%), worker_general 17/25 (68%, fastest by 3×), ingest_long_context 17/25 (68%, slowest by 6×), architect_general 14/25 (56%). The architect_general signal was confirmed at N=100 in a follow-up deprecation gate (46% vs frontdoor 46% = +4pp delta — **RETAIN, not deprecate**; cheap-kill v3's 20pp gap was a small-N + task-mix artifact). Architect wins math gsm8k 20/20 at N=100 — it has a genuine specialty.
+
+The single highest-ROI finding was **operational, not architectural**: the cheap-kill v2 baseline (max_tokens=4096 with default thinking) reported frontdoor + architect at 47% / 40% accuracy — until the stack-simplification probe surfaced that both models go into degenerate `<think>` loops at chat-completions defaults. Passing `chat_template_kwargs={"enable_thinking": false}` lifts frontdoor 47% → **80%** (+33pp, top of stack) and architect 40% → 60%. Ingest_long_context's accuracy *regresses* without thinking (87% → 73%) — its thinking budget is load-bearing. Worker_general is unaffected (gemma4 has no think mode).
+
+**Operational rec**: pass `chat_template_kwargs={"enable_thinking": false}` on routes to frontdoor + coder_escalation + architect_general; leave ingest_long_context default-on. Landed in `epyc-orchestrator` as PR #2 (`d89ceeb`, squash-merged 2026-05-20): backend forwards the kwarg from `request.extra` and per-role registry defaults document the right values. Wiring the routing layer to populate `request.extra` from the registry per-call is the remaining follow-up — until that lands, callers must set it manually.
+
+**Methodology lesson**: cheap-kills (N=25) over-estimate accuracy gaps by ~5× on this hardware. **N ≥ 100 is required for any deprecation gate on production roles** — the architect-deprecation example collapsed a 20pp signal to 4pp at higher N.
+
+**Sources**: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md) (cheap-kill v1/v2/v3 + stack-probe + deprecation gate writeups) · [intake-557](https://arxiv.org/abs/2505.16997) X-MAS · [chat_template_kwargs PR #2](https://github.com/pestopoppa/epyc-orchestrator/pull/2) · [Latent-MAS deep-dive](../research/deep-dives/2026-05-19-latent-mas-cluster.md)

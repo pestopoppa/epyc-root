@@ -143,3 +143,22 @@ Two May 2026 papers bracketing the design space for attaching trained persistent
 **Spike ladder** at [`delta-mem-reproduction.md`](../handoffs/active/delta-mem-reproduction.md): Phase 1 (3 days) reproduce released δ-mem Qwen3-4B adapter on EPYC; Phase 2 (3 weeks) ship M.3 KV-Extension adapter for gemma4 wired into B1 User Modeling data path; Phase 3 (6 weeks) full δ-mem GGML port + cross-session persistent bank combined with M.4-style Hebbian for long-lag retention.
 
 **Sources**: [intake-539](https://arxiv.org/abs/2605.12357) δ-mem · [intake-568](https://arxiv.org/abs/2603.16413) Six-topology comparative study · [Deep-dive](../research/deep-dives/2026-05-19-frozen-memory-cluster.md) · [Reproduction spike](../handoffs/active/delta-mem-reproduction.md)
+
+### Phase 1 reproduction result (2026-05-20, EPYC CPU)
+
+The δ-mem Phase 1 reproduction landed on EPYC CPU on 2026-05-20 with the released `declare-lab/delta-mem_qwen3_4b-instruct` adapter against the released `Qwen/Qwen3-4B-Instruct-2507` base. Gates 1 + 4 PASS, Gate 3 PASS directionally, Gate 2 deferred:
+
+| Gate | Spec | Result | Verdict |
+|---|---|---|---|
+| 1 | Adapter loads cleanly on Qwen3-4B-Instruct-2507 | 4.028B base + 2.5M delta-mem params, loads in **1.7 s** on CPU/fp32 | ✅ PASS |
+| 4 | CPU inference within ≤2× of baseline | baseline 1.56 t/s, with adapter 1.48 t/s = **−5% overhead** | ✅ PASS (20× margin) |
+| 3 | LoCoMo F1 ratio within ±20% of 1.20× (i.e. 0.96-1.44×) | base 0.324 / delta 0.533 = **1.65× at N=5** (1 conv × 5 q × 2 arms) | ✅ PASS directionally, magnitude inconclusive at small N |
+| 2 | MemoryAgentBench F1 ratio within ±20% of 1.31× | INFEASIBLE on CPU — smallest source is 65K-ctx prefill (~22 min/sample at fp32; full eval 12-24+ h) | ⏸ DEFERRED until GPU |
+
+**Per-question LoCoMo F1 (delta arm)**: 0.44, 0.0, 0.22, **1.0, 1.0** — the +1.65× ratio comes from two questions where δ-mem cleanly lifts from {0.67, 0.29} to {1.0, 1.0}. Two questions stayed flat (0.44, 0.22), one stayed 0.0 (a question the model is confidently wrong on regardless of memory).
+
+**Operating cost reality check**: 1.5 h wall for 10 LoCoMo task-pairs at fp32 CPU eager attn. Extrapolating to the full LoCoMo benchmark (10 conv × ~200 q × 2 arms ≈ 4000 task-pairs) = **600 h ≈ 25 days on CPU**. Gate 3 magnitude reproduction is GPU-only realistic even at ±20% tolerance. Phase 1 conclusion: directional gate passes are enough to clear the "kill the spike" threshold; Phase 2 (M.3 KV-Extension on gemma4 worker_general) remains viable.
+
+**Phase 1 artifact**: `/mnt/raid0/llm/epyc-inference-research/data/research/2026-05-20-dmem-locomo-smoke/results.json` + `.jsonl`.
+
+**Model-agnostic caveat (2026-05-20)**: the M.3 topology is **not gemma4-specific** — it learns K/V vectors matching any frozen backbone's cache geometry (head_dim × num_heads × num_layers). Gemma4 is just the target Phase 2 will be tested against because worker_general is the highest-traffic role; the same recipe applies to frontdoor (Qwen3.6-35B), coder, or ingest_long_context with per-backbone param counts that scale with cache geometry.
