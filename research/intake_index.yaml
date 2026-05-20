@@ -26395,3 +26395,411 @@
   - 'Base architecture identity is unresolved: model card states "Qwen3.5-2B" but no Qwen3.5 model at 2B has been released publicly (Qwen3.5 family is 27B-Dflash and 35B-A3B per our internal stack). Card likely conflates Qwen2.5-VL-2B with Qwen3.5 naming, OR uses an unreleased internal checkpoint — either way, exact reproduction is impossible without the base.'
   - 'Single-source benchmark claims: the +6.4 mIoU TimeLens-Bench advantage over Qwen2.5-VL-7B is reported only by the model authors. No third-party replication, no independent leaderboard verification at time of intake. CaReBench gap-closing to Gemini-2.5-Flash is also author-reported.'
   - 'Tier 2b (full contradicting-evidence search) was not performed because credibility_score=1 (below the >=3 threshold) and verdict is not new_opportunity. If verdict is later upgraded, run a search for "video temporal grounding 2B limitations" and "SimPO video distillation overfitting" before commitment.'
+- id: intake-576
+  arxiv_id: null
+  url: https://d1qx31qr3h6wln.cloudfront.net/publications/Nemotron_Diffusion_Tech_Report_v1.pdf
+  source_type: paper
+  title: 'Nemotron-Labs-Diffusion: A Tri-Mode Language Model Unifying Autoregressive, Diffusion, and Self-Speculation Decoding'
+  authors:
+  - Yonggan Fu
+  - Lexington Whalen
+  - Abhinav Garg
+  - Chengyue Wu
+  - Maksim Khadkevich
+  - Nicolai Oswald
+  - Enze Xie
+  - Daniel Egert
+  - Sharath Turuvekere Sreenivas
+  - Shizhe Diao
+  - Chenhan Yu
+  - Ye Yu
+  - Weijia Chen
+  - Sajad Norouzi
+  - Jingyu Liu
+  - Shiyi Lan
+  - Ligeng Zhu
+  - Jin Wang
+  - Jindong Jiang
+  - Morteza Mardani
+  - Mehran Maghoumi
+  - Song Han
+  - Ante Jukić
+  - Nima Tajbakhsh
+  - Jan Kautz
+  - Pavlo Molchanov
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - training_distillation
+  - hardware_optimization
+  - multimodal
+  key_claims:
+  - 'Tri-mode unified architecture — same weights support three decoding modes by switching the attention pattern at inference: (1) Autoregressive (AR), (2) Diffusion-based parallel decoding, (3) Self-Speculation where the diffusion path drafts and the AR path verifies with a SHARED KV cache (no separate drafter model required).'
+  - '"AR and diffusion objectives are complementary: diffusion improves lookahead planning, while AR provides left-to-right linguistic priors" — joint training of the two modes within a single set of weights yields synergy rather than interference.'
+  - 'Self-speculation outperforms multi-token-prediction (MTP) methods in both acceptance length and end-to-end speedup; reported 3× higher acceptance length and 2.2× speed-up vs Qwen3-8B-Eagle3 in SGLang.'
+  - 'Compute-bound regime claim: "Generation moved from a memory-bound regime toward a compute-bound regime. Model weights are loaded once and reused to compute multiple tokens during generation." Reports 5.9× tokens per forward pass over Qwen3-8B (no MTP) at matched accuracy.'
+  - 'Released a family: 3B, 8B, 14B (Base + Instruct) plus a VLM-8B (9B-param vision-language variant) under the NVIDIA Nemotron Open Model License. Three inference modes exposed as `ar_generate`, `generate` (dLM), `linear_spec_generate` on the HuggingFace Transformers model class.'
+  techniques:
+  - Tri-mode unified model (single weight set, attention-pattern-switched AR / diffusion / self-spec)
+  - Block diffusion decoding (block_length=32 in release configs, threshold=0.9 denoising stop criterion)
+  - Linear Self-Speculation with shared KV cache between diffusion drafter and AR verifier
+  - Joint AR+diffusion training objective (left-to-right prior + masked-denoising lookahead, complementary losses)
+  - Custom CUDA kernels for GB200 self-speculation inference path (claimed 4× over AR baseline at concurrency 1)
+  reported_results:
+  - 'GB200, 8B, concurrency 1: 850 tok/sec self-spec vs 253 tok/sec AR (3.3×) and 360 tok/sec Qwen3-8B-Eagle3; with custom CUDA kernels 1015 tok/sec (4× AR).'
+  - 'DGX Spark, 8B, concurrency 1 (w4a16 weight quant): 112 tok/sec self-spec vs 41.8 tok/sec AR (2.7×).'
+  - 'SPEED-Bench (SGLang, GB200): 4× higher throughput vs Qwen3-8B AR baseline.'
+  - 'Acceptance: 3× higher acceptance length vs Qwen3-8B-Eagle3; 5.9× tokens-per-forward vs Qwen3-8B (no MTP).'
+  - 'Diffusion-only path delivers up to 76.5% more tokens per forward than the self-speculation path (signals long-term ceiling — full diffusion mode is higher-throughput but lower-quality than the hybrid self-spec mode at current training scale).'
+  - 'Release scale: 8B-Base 187k downloads, 8B-Instruct 14.5k, 3B-Base 14k, 3B-Instruct 11.1k, 14B 65, 14B-Base 284, VLM-8B 22 (within ~19h of release per HF collection page).'
+  - 'No MMLU / GSM8K / HumanEval / ARC numbers were extractable from the model cards in this intake pass — full benchmark table is in the tech report PDF body, which did not decode via WebFetch (binary stream). Numbers must be re-extracted from PDF before any chapter integration.'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  verdict: worth_investigating
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    - gpu-acceleration-path.md
+    - gemma4-mtp-drafter-evaluation.md
+    - llama-cpp-fork-rebase.md
+    experiments: []
+    intake_entries:
+    - intake-158 (DFlash — block diffusion drafter, separate-model variant of the same idea — Nemotron-Diff''s key delta is unified-model + shared KV)
+    - intake-159 (DART — diffusion-inspired drafter)
+    - intake-296 (DFlash HF collection — sibling reference cluster)
+    - intake-297 (DFlash GitHub — implementation pattern)
+    - intake-298 (DFlash project page — sibling)
+    - intake-447 (Lucebox Hub — DFlash GGUF port to llama.cpp, shows what a community port path would look like)
+    - intake-455 (Luce DFlash for Qwen3.6-27B — proves drafter cross-version portability on the prior generation)
+    - intake-567 (ECHO — Eagle3 batch-size degradation analysis; Nemotron-Diff''s GB200 single-stream wins do not yet address the batch>>1 regime where Eagle3 collapses)
+  handoffs_updated:
+  - inference-acceleration-index.md
+  - gpu-acceleration-path.md
+  - gemma4-mtp-drafter-evaluation.md
+  handoffs_created: []
+  novelty_justification: 'High. The block-diffusion-speculation lineage (DFlash, DART, Lucebox) is well-covered in the index (8+ entries), but every prior entry uses a SEPARATE drafter model. Nemotron-Labs-Diffusion''s contribution is materially different: a single set of weights serves AR, diffusion, and self-spec — selecting the mode is just an attention-pattern switch, and the diffusion-drafter / AR-verifier share KV cache. That eliminates the drafter-target alignment problem entirely (which is what failed our DFlash CPU port at 27% acceptance — the drafter''s hidden states didn''t match the target on Q4_K_M). The joint AR+diffusion training objective is also new — DFlash and DART both bolt a diffusion drafter onto a pre-trained AR target. Releasing a family at 3B/8B/14B/VLM-8B sizes (rather than a single research checkpoint) is itself a novel data point: it tests whether the tri-mode pretraining generalizes across scale.'
+  relevance_justification: 'Medium. STRATEGIC: validates that the diffusion-LM-for-decode-acceleration thesis remains live and is now backed by NVIDIA at production scale — directly relevant to inference-acceleration-index.md (which lists DFlash as CONCLUDED-not-viable on CPU but tracks the GPU path) and to gpu-acceleration-path.md (already treats DFlash as the canonical GPU spec-dec target). IMMEDIATE: not deployable on the EPYC CPU stack. All published numbers are GPU (GB200, DGX Spark w4a16); release is BF16-only (no GGUF, no Q4_K_M), inference frameworks are vLLM and SGLang only, and the NVIDIA Nemotron Open Model License is materially more restrictive than the Apache-2.0 baseline we use for production roles. DGX Spark (project_dgx_spark_target memory: not yet acquired) is the natural deployment target if/when hardware is procured. Held above LOW because (a) the unified-model architecture removes the drafter-portability friction that has killed two of our prior spec-dec attempts; (b) self-spec on a single weight set is closer to the orchestrator''s preference for fewer distinct models in the role table; (c) the VLM-8B variant maps onto multimodal-pipeline.md if video/image work later joins the stack. Held below HIGH because there is no current EPYC workload that can run it.'
+  verdict_justification: 'worth_investigating (NOT new_opportunity, NOT not_applicable). Not new_opportunity because (a) zero CPU deployment path — vLLM/SGLang only, BF16/w4a16 only, no GGUF support announced; (b) sibling Nemotron-3-Nano release has known llama.cpp Mamba-base assertion crashes (ggml-org/llama.cpp#20570, #18099) signaling that NVIDIA''s Nemotron-line releases have a poor CPU/llama.cpp track record so far; (c) NVIDIA Nemotron Open Model License is not Apache-2.0 — would need legal review before any production use even on GPU. Not not_applicable because the tri-mode unified architecture is a genuine architectural advance over DFlash (which we''ve already invested 21 commits + a deep-dive into), and because the EPYC roadmap explicitly tracks DGX Spark as a future target via project_dgx_spark_target memory + gpu-acceleration-path.md. Right action: append to the GPU-acceleration-path handoff alongside DFlash as a parallel candidate; flag for re-evaluation if/when DGX Spark is procured or a community GGUF port surfaces. Credibility scored 2: published within 12 months (+1), major lab with strong author signal — Song Han, Jan Kautz, Pavlo Molchanov, Enze Xie (+1), commercial bias toward NVIDIA hardware (GB200 + DGX Spark are co-marketing targets in the report) (−1), no independent corroboration yet — release is ~1 day old (0), no peer review (0), 26-author tech report from NVIDIA core research (+1 for breadth of co-authorship across labs).'
+  contradicting_evidence:
+  - 'PDF tech report did not decode via WebFetch (binary stream — only model card + research page were readable). All quantitative claims in this entry are sourced from the model card and research page rather than the paper itself. The 5.9× tokens-per-forward and 4× throughput claims have not been independently corroborated against an arXiv version (no arXiv ID was assigned at intake time).'
+  - 'Sibling Nemotron-3 GGUF releases have known llama.cpp assertion crashes on Mamba-base components (ggml-org/llama.cpp #20570 mamba-base.cpp:173 GGML_ASSERT, #18099 CPU-only sched_split_graph backend assignment, #18064 nemotron_h MoE feature request). Nemotron-Diff''s architecture details are not yet public enough to confirm whether the same Mamba-state-update class is involved, but the precedent suggests a community port is non-trivial and likely GPU-required at first landing.'
+  - 'All headline performance numbers are at concurrency=1 single-stream. Intake-567 (ECHO) demonstrated that vanilla Eagle3 underperforms autoregressive at batch size ≈128 — the Nemotron-Diff comparison "3× acceptance length vs Eagle3" does not address whether self-speculation also collapses at high concurrency. The orchestrator''s production load profile is mixed-concurrency, not c=1.'
+  - 'DGX Spark numbers use w4a16 (4-bit weight, 16-bit activation), not BF16. The 2.7× speedup may not generalize to BF16 or to Q4_K_M (the EPYC CPU quant); the prior DFlash CPU experience (27% per-token acceptance on Q4_K_M vs ~40% paper-reported on BF16) is the direct historical analogue.'
+  - 'License: NVIDIA Nemotron Open Model License is restrictive relative to Apache-2.0 (the baseline for our production roles per orchestrator stack registry policy). Legal-review burden is not zero. Per feedback_license_not_a_blocker: "not building a commercial product" — license is NOT a project blocker, but it is a deployment-friction data point worth recording.'
+  - 'Tier 2b note: full contradicting-evidence search performed inline (no separate WebSearch pass) because the release is ~1 day old and no third-party reproduction or critical analysis exists yet. Re-run Tier 2b in ~30 days when community reactions, llama.cpp issue tickets, and independent benchmarks have accumulated; specifically search "Nemotron-Labs-Diffusion reproduction", "tri-mode self-speculation failures", and "diffusion language model production".'
+  deep_dive: research/deep-dives/nemotron-labs-diffusion-tri-mode.md
+- id: intake-577
+  arxiv_id: null
+  url: https://research.nvidia.com/publication/2026-05_nemotron-labs-diffusion-tri-mode-language-model-unifying-autoregressive
+  source_type: paper
+  title: 'Nemotron-Labs-Diffusion — NVIDIA Research Publication Page (landing)'
+  authors:
+  - Yonggan Fu et al. (26 authors — see intake-576 for full list)
+  categories:
+  - speculative_decoding
+  - inference_serving
+  key_claims:
+  - 'Landing page for the tri-mode Nemotron-Labs-Diffusion release; provides title, full 26-author list, publication date 2026-05-19, abstract excerpts ("AR and diffusion objectives are complementary"), and pointer to the tech report PDF + HuggingFace collection. No standalone content beyond what is in the PDF / model cards.'
+  techniques: []
+  reported_results:
+  - 'Same claims as intake-576: 5.9× tokens/forward vs Qwen3-8B, 4× throughput on SPEED-Bench (SGLang, GB200), tri-mode AR + diffusion + self-speculation architecture.'
+  referenced_arxiv_ids: []
+  novelty: duplicate
+  relevance: medium
+  credibility_score: null
+  verdict: superseded
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-576 (PRIMARY — tech report PDF, full claims/scoring/cross-refs)
+    - intake-578 (sibling — HuggingFace model collection)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Duplicate of intake-576. Same release; this is the NVIDIA research portal landing page that links to the tech report PDF and HF collection. Recorded for URL-level dedup completeness so a future intake of the same landing URL is caught.'
+  relevance_justification: 'Inherits intake-576 relevance (medium). No independent scoring needed.'
+  verdict_justification: 'superseded by intake-576. All actionable content lives in the primary entry.'
+- id: intake-578
+  arxiv_id: null
+  url: https://huggingface.co/collections/nvidia/nemotron-labs-diffusion
+  source_type: repo
+  title: 'Nemotron-Labs-Diffusion — HuggingFace Collection (7 models)'
+  authors:
+  - NVIDIA
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - multimodal
+  key_claims:
+  - 'Single collection page exposing 7 model variants from the Nemotron-Labs-Diffusion release: 3B-Base (4B params; 14k downloads), 3B-Instruct (4B; 11.1k), 8B-Base (8B; 187k), 8B-Instruct (8B; 14.5k), 14B-Base (14B; 284), 14B-Instruct (14B; 65), VLM-8B (9B; 22 — vision-language variant).'
+  - 'All weights released BF16 only; no FP8, GGUF, or AWQ/GPTQ variants in the collection at intake time. License is NVIDIA Nemotron Open Model License (not Apache-2.0). Recommended inference frameworks per the 8B model card: vLLM, SGLang, Transformers, Docker Model Runner — no llama.cpp support.'
+  - 'Public-facing model API exposes three decoding modes via Python methods on the HF Transformers model class: `model.ar_generate()`, `model.generate(block_length=32, threshold=0.9, ...)` (diffusion / dLM), `model.linear_spec_generate(block_length=32, ...)` (self-speculation).'
+  techniques: []
+  reported_results:
+  - 'Download distribution within ~19h of release skews heavily toward the 8B-Base checkpoint (187k vs next-highest 14.5k for 8B-Instruct), suggesting 8B-Base is the community''s preferred starting point for fine-tuning / research'
+  - 'Likes distribution: 14B = 34, 3B-Instruct = 10, 8B-Instruct = 7, VLM-8B = 6, 3B-Base = 3, 14B-Base = 2, 8B-Base = 1 — community engagement does not track download count'
+  referenced_arxiv_ids: []
+  novelty: duplicate
+  relevance: medium
+  credibility_score: null
+  verdict: superseded
+  discovered_via: input
+  ingested_date: '2026-05-20'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-576 (PRIMARY — tech report PDF, full claims/scoring/cross-refs)
+    - intake-577 (sibling — NVIDIA research landing page)
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Duplicate of intake-576 as a research source — same release. Recorded separately because it is the actionable artifact registry (which sizes exist, which formats, what the API surface looks like) and is the URL a future intake would re-discover; URL-level dedup integrity requires the explicit entry. Listed model sizes/formats are the only original content beyond intake-576.'
+  relevance_justification: 'Inherits intake-576 relevance (medium). The model registry data points (7 variants, BF16-only, no GGUF) are the immediately load-bearing facts for any future deployment decision.'
+  verdict_justification: 'superseded by intake-576. All technique analysis and scoring lives in the primary entry; this is the artifact catalog.'
+- id: intake-579
+  arxiv_id: '2603.25333'
+  url: https://huggingface.co/papers/2603.25333
+  source_type: paper
+  title: 'Adaptive Chunking: Optimizing Chunking-Method Selection for RAG'
+  authors:
+  - Paulo Roberto de Moura Júnior
+  - Jean Lelong
+  - Annabelle Blangero
+  categories:
+  - document_processing
+  - search_retrieval
+  - knowledge_management
+  key_claims:
+  - 'No single chunking method works best for every document; method should be selected per-document based on intrinsic characteristics, not fixed globally.'
+  - 'Five intrinsic, document-only metrics — References Completeness (RC), Intrachunk Cohesion (ICC), Document Contextual Coherence (DCC), Block Integrity (BI), Size Compliance (SC) — can drive chunker selection without downstream RAG ground truth.'
+  - 'Adaptive selection lifts answer correctness to ~72-78% from 62-73% baseline (LangChain recursive / page splitting) and resolves 30%+ more questions (65 vs 49) on the same RAG stack with no model or prompt change.'
+  - 'Mean intrinsic score 91.07% on the adaptive method vs 89.80% for LLM-regex baseline and 88.62% for recursive (s=1100), per repo README — claimed correlation between intrinsic metrics and downstream answer-correctness.'
+  - 'Results generalize across three domains (technical / legal / sustainability reporting) on a 33-document, ~1.18M-token CLAIR corpus.'
+  techniques:
+  - Per-document chunker selection driven by five intrinsic metrics (RC, ICC, DCC, BI, SC)
+  - Split-then-merge recursive splitter (token-target 600 and 1100)
+  - LLM-regex splitter (LLM generates document-specific regex split patterns)
+  - Page-based splitter with size-constraint post-processing
+  - Coreference-based filtered-missing-reference-error (FMRE) metric using maverick-coref (CC BY-NC-SA 4.0)
+  reported_results:
+  - 'Retrieval Completeness: adaptive 67.7 vs LangChain Recursive 58.1 vs Page Splitting 59.1 (33-doc CLAIR corpus)'
+  - 'Answer Correctness: adaptive 78.0 vs LangChain Recursive 70.1 vs Page Splitting 73.3 (same corpus)'
+  - 'Adaptive selection: +30% questions resolved (65 vs 49), +8-10 pp answer correctness'
+  - 'Intrinsic-score mean: 91.07% adaptive, 89.80% LLM regex, 88.62% recursive (s=1100)'
+  - 'Corpus: 33 documents, ~1.18M tokens, 3 domains (technical, legal, sustainability reporting)'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-05-20'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence:
+  - '2026-05-20 Tier 2b — arxiv:2505.02171 (HOPE, SIGIR 2025, intake-581) directly contradicts the cohesion-as-quality assumption: HOPE finds traditional assumptions about maintaining concept unity within passages show minimal impact and that semantic INDEPENDENCE between passages is the load-bearing signal (up to +56.2% factual correctness, +21.1% answer correctness). The Ekimetrics paper''s Intrachunk Cohesion (ICC) and Block Integrity (BI) metrics rest on the opposite premise. Two intrinsic-eval frameworks now exist with contradictory load-bearing signals — must not adopt Ekimetrics metrics as-is without a side-by-side eval on our corpus.'
+  - '2026-05-20 Tier 2b — ragaboutit.com 2026 blog (non-peer-reviewed) reports a February 2026 study comparing seven chunking strategies where recursive character splitting at 512 tokens achieved highest answer accuracy and retrieval F1, challenging the assumption that more sophisticated chunking helps. One indicative data point only. Reinforces need for empirical confirmation before lifting any complex chunking framework.'
+  - '2026-05-20 Tier 2b — medRxiv chunk-quality measurement Phase 1 study reports inter-rater Fleiss κ = 0.269 (fair only) on manual chunk quality scoring, suggesting intrinsic chunk evaluation is hard to do reliably across human raters — a concern for any framework whose intrinsic metrics are validated against human judgment.'
+  - '2026-05-20 Methodology gaps: (a) 33-doc / 3-domain corpus is small (CLAIR — sustainability + legal + technical) — generalization claims are weakly supported. (b) Baselines are only 4 (recursive 600, recursive 1100, page, LLM-regex) — no comparison to MarkdownHeaderTextSplitter, W-RAC (intake-436), Meta-Chunking (arxiv:2410.12788), or semantic chunkers. (c) LREC 2026 is peer-reviewed but smaller-tier than SIGIR/ACL/EMNLP/NAACL.'
+  - '2026-05-20 Critical dependency: filtered-missing-reference-error (FMRE) metric requires maverick-coref (CC BY-NC-SA 4.0) — non-commercial license. Lifting the full 5-metric suite requires either license clearance or a coref-free reimplementation of RC.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-436
+    - intake-580
+    - intake-581
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: >
+    Medium. Per-document adaptive selection across multiple chunker variants driven by
+    intrinsic-only metrics is a useful framing — different angle from intake-436 (W-RAC)
+    which targets cost-reduction via decoupled LLM grouping, and from intake-581 (HOPE)
+    which proposes a competing intrinsic-eval framework with opposing load-bearing
+    signal. The five-metric vocabulary (RC, ICC, DCC, BI, SC) is novel as a named set;
+    the underlying ideas (cohesion, coherence, size compliance) appear elsewhere in
+    chunking literature but are typically not packaged as a method-selection driver.
+    Not high novelty because intrinsic metrics like ICC/BI are empirically falsified
+    as load-bearing by HOPE (intake-581) — the framework''s core premise is contested.
+  relevance_justification: >
+    High. Two active handoffs touch this directly: (a) opendataloader-pipeline-integration
+    Phase 2 work includes replacing the regex document_chunker with structural splitting
+    from ODL JSON heading hierarchy — a natural slot to evaluate adaptive method-selection
+    AND borrow the 5-metric scoring as an offline quality gate on chunker output;
+    (b) internal-kb-rag K2 designs a heading-aware markdown chunker for the KB, where
+    the same intrinsic metrics could serve as a unit-test quality signal on K2 fixtures.
+    Also pairs with intake-436 (W-RAC) as a complementary cost-vs-quality lever for the
+    same problem space.
+  verdict_justification: >
+    worth_investigating, NOT adopt_patterns — because (i) the core premise (intrinsic
+    cohesion/integrity drives retrieval quality) is contested by intake-581 (HOPE) which
+    empirically finds the opposite, (ii) the 33-doc corpus is too small for confident
+    generalization, (iii) the FMRE metric carries a CC BY-NC-SA 4.0 transitive dependency.
+    Concrete next step: when opendataloader Phase 2 chunker work begins OR when
+    internal-kb-rag K2 moves out of stub, run a side-by-side eval where the Ekimetrics
+    5-metric suite AND HOPE''s independence-focused metrics both score our chunker
+    output, then check which metric set correlates with downstream answer-correctness
+    on our actual KB-RAG eval (HotpotQA-template + LoCoMo-template from internal-kb-rag
+    K7). Lift the 5-metric Python implementation (MIT-licensed core) as the eval
+    scaffolding regardless of which metric set wins, since it is the cheapest way to
+    instrument both.
+- id: intake-580
+  arxiv_id: null
+  url: https://github.com/ekimetrics/adaptive-chunking
+  source_type: repo
+  title: 'ekimetrics/adaptive-chunking — Official MIT-licensed Adaptive Chunking implementation (LREC 2026)'
+  authors:
+  - Paulo Roberto de Moura Junior
+  - Jean Lelong
+  - Annabelle Blangero
+  - Ekimetrics
+  categories:
+  - document_processing
+  - search_retrieval
+  - knowledge_management
+  key_claims:
+  - 'Official Python (3.11+) implementation of intake-579; MIT-licensed core; 67 stars / 3 forks / 4 commits on main at intake time.'
+  - 'Ships REPLICATE_GUIDELINES.md for environment setup, stability constraints, and reproduction notes; metrics and raw_metrics steps are resumable — interrupted runs skip already-computed documents on rerun.'
+  - 'Modular chunker ABC: each chunker is an independent module behind a small interface, so a custom chunker (e.g., ODL-heading-driven, markdown heading-aware) can be slotted in without touching the metric harness or selection logic.'
+  - 'Supports three PDF backends (Docling default open-source, PyMuPDF lightweight, Azure Document Intelligence cloud) plus Excel input.'
+  - 'Optional integrations with documented license/dependency surface: spaCy en_core_web_sm for NLP; maverick-coref (CC BY-NC-SA 4.0) for FMRE; OpenAI API for LLM-regex splitter + RAG evaluation; Jina AI for embeddings (local fallback available).'
+  techniques: []
+  reported_results:
+  - 'Repo benchmarks (33-doc CLAIR corpus, same as paper): Retrieval Completeness adaptive 67.7 vs recursive 58.1 vs page 59.1; Answer Correctness adaptive 78.0 vs recursive 70.1 vs page 73.3.'
+  - 'Intrinsic-only mean scores: adaptive 91.07%, LLM regex 89.80%, recursive (s=1100) 88.62%.'
+  - 'Runtime profile: Python 3.11+, minimal core deps, resumable metrics computation for large corpora.'
+  referenced_arxiv_ids:
+  - '2603.25333'
+  novelty: duplicate
+  relevance: high
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-05-20'
+  discovered_via: input
+  expanded_from: null
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-579
+    - intake-581
+    - intake-436
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: >
+    duplicate of intake-579 (same project; this is the implementation artifact). Logged
+    separately for URL-level dedup integrity and because the dependency / license /
+    runtime surface (MIT core, CC BY-NC-SA 4.0 transitive via maverick-coref, modular
+    chunker ABC, three PDF backends, resumable metrics) is the load-bearing engineering
+    info for any future lift decision and lives only in the repo, not the paper.
+  relevance_justification: >
+    High — same as intake-579 plus an actionable engineering surface. The MIT-licensed
+    core makes this lift-able as an eval scaffold even if we do not adopt the
+    adaptive-selection thesis: the 5 intrinsic metric implementations are the part most
+    likely to migrate into our chunker quality harness for either opendataloader Phase 2
+    chunker work or internal-kb-rag K7 eval. Note the FMRE metric requires maverick-coref
+    (CC BY-NC-SA 4.0) so lifting that specific metric requires either license clearance
+    or a coref-free reimplementation.
+  verdict_justification: >
+    worth_investigating. If we ever evaluate this framework, this is the artifact to
+    lift — modular chunker ABC means we can slot our existing document_chunker (ODL
+    pipeline) or markdown_chunker (KB RAG) in as additional candidates and let the
+    selection harness score them. Treat the repo as a candidate eval scaffold, not a
+    runtime dependency. All Tier 2b concerns from intake-579 apply identically.
+- id: intake-581
+  arxiv_id: '2505.02171'
+  url: https://arxiv.org/abs/2505.02171
+  source_type: paper
+  title: 'A New HOPE: Domain-agnostic Automatic Evaluation of Text Chunking'
+  authors:
+  - Henrik Brådland
+  - Morten Goodwin
+  - Per-Arne Andersen
+  - Alexander S. Nossum
+  - Aditya Gupta
+  categories:
+  - document_processing
+  - search_retrieval
+  - benchmark_methodology
+  key_claims:
+  - 'Proposes HOPE (Holistic Passage Evaluation) — a domain-agnostic automatic chunking-evaluation framework aggregating three levels of passage characteristics: intrinsic passage properties, extrinsic (inter-passage) properties, and passages-document coherence.'
+  - 'Empirically falsifies a common assumption: traditional assumptions about maintaining concept unity within passages show minimal impact on downstream retrieval quality.'
+  - 'Identifies semantic INDEPENDENCE between passages as the load-bearing signal — up to +56.2% factual correctness and +21.1% answer correctness when independence is enforced.'
+  - 'HOPE score correlates significantly with multiple downstream RAG quality indicators (p<0.13 reported across indicator set).'
+  - 'Evaluated across seven domains, no domain-specific tuning required.'
+  techniques:
+  - Three-level passage scoring (intrinsic + extrinsic + passages-document coherence) aggregated into HOPE
+  - Semantic-independence enforcement between adjacent chunks
+  - Domain-agnostic automatic evaluation pipeline
+  reported_results:
+  - '+56.2% factual correctness gain from semantic-independence enforcement'
+  - '+21.1% answer correctness improvement'
+  - 'Seven-domain evaluation, no domain-specific tuning'
+  - 'Significant correlation (p<0.13) between HOPE score and multiple downstream RAG quality indicators'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  ingested_date: '2026-05-20'
+  discovered_via: search
+  expanded_from: intake-579
+  contradicting_evidence: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-579
+    - intake-580
+    - intake-436
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: >
+    High. Directly falsifies the concept-unity / intrachunk-cohesion premise that
+    underlies the Ekimetrics framework (intake-579) and most production chunkers
+    (semantic chunking, recursive with overlap). The independence-between-passages
+    finding is non-obvious and methodologically important. No prior intake entry covers
+    inter-passage independence as a quality signal.
+  relevance_justification: >
+    High. The independence-vs-cohesion question is decision-relevant for both
+    opendataloader-pipeline-integration Phase 2 (structural chunker quality criteria)
+    and internal-kb-rag K2 (heading-aware markdown chunker — heading boundaries
+    naturally produce more-independent chunks, so the handoff''s design choice is
+    corroborated by HOPE while being challenged by Ekimetrics ICC). The +56.2% factual
+    correctness number is large and demands replication or rejection on our own corpus
+    before we commit to one metric framework.
+  verdict_justification: >
+    worth_investigating. SIGIR 2025 publication + multi-author independent group
+    (NORCE / University of Agder) + seven-domain evaluation gives the result more weight
+    than intake-579''s 33-doc single-team study. Recommended action: when chunker
+    quality evaluation is instrumented (opendataloader Phase 2 OR internal-kb-rag K7),
+    include HOPE''s independence-focused metrics alongside Ekimetrics'' cohesion-focused
+    metrics; the side-by-side will let the data settle which metric set is load-bearing
+    on our actual corpora. Independent replication and an open code release (status
+    unknown at fetch time) would move this from worth_investigating to adopt_patterns.
