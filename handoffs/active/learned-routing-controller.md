@@ -578,6 +578,98 @@ Request ─► BGE embed ─► RoutingClassifier MLP → top class + softmax
 
 User authorization required for the first `orchestrator_stack.py start --repair-embeddings` run (BGE inference, ~5-15 min). This is a one-time bulk operation; subsequent restarts will diagnose-clean in ~1 sec.
 
+##### A3/A2 Production Wiring (2026-05-21) — done
+
+User authorized 2026-05-21 and the following four-step sequence was executed end-to-end:
+
+**Step A — RoutingClassifier loading wired into production routing path**
+
+Pre-existing gap discovered during A2 wiring: the P1.5 task ("enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1`") had flipped the feature flag but the actual *loading code* was never written. `HybridRouter` accepted a `routing_classifier` parameter but nothing in `src/api/services/memrl.py` ever called `RoutingClassifier.load(...)` and passed it in. **Every production request was taking the full KNN path** since 2026-04-15.
+
+Fix landed at `src/api/services/memrl.py:471` (before the `HybridRouter` construction). The new block:
+- Checks `features().routing_classifier` (existing flag, default OFF)
+- Loads weights from `ROUTING_CLASSIFIER_WEIGHTS` env override or `DEFAULT_WEIGHTS_PATH` (which points at `orchestration/repl_memory/routing_classifier_weights.npz`)
+- Logs param count, action count, and weights path on success
+- Gracefully degrades if weights missing (logs warning, fast-path stays disabled)
+- Threads the loaded classifier into `HybridRouter(routing_classifier=…)`
+
+**Step B — Classifier retrained on the post-stack-change distribution**
+
+The April 2026-04-15 weights were trained on a distribution where `architect_general` was 100% successful. The 2026-05-09 stack consolidation (`project_stack_consolidation_2026_05`) reshuffled the role pool and architect_general's empirical success rate dropped to 9.1% in post-change data. The April-weights classifier was therefore mis-routing aggressively into architect_general failures.
+
+Retrained via `train_routing_classifier.py` on the post-repair `/tmp/p6_4_training_data_fresh.npz` (40,956 samples):
+
+| Metric | April 2026-04-15 | Fresh 2026-05-21 |
+|---|---|---|
+| Train accuracy | 92.0% | **98.7%** |
+| Val accuracy | 92.0% | **98.7%** |
+| Best val loss | 0.099 | **0.017** |
+| Per-class val acc — frontdoor | 91.5% | **99.6%** |
+| Per-class val acc — architect_general | 95.1% | 93.9% |
+| Per-class val acc — architect_coding | 95.7% | 100.0% |
+| Per-class threshold — frontdoor | 0.447 | 0.611 |
+| Per-class threshold — architect_general | 0.362 | 0.604 |
+| Per-class threshold — architect_coding | 0.560 | 0.379 |
+
+Fresh weights staged to production path: `orchestration/repl_memory/routing_classifier_weights.npz` (522KB, 140,872 params). Next API restart picks them up via Step A's loading code.
+
+**Coverage caveat**: fresh classifier still only trained on 3 classes (frontdoor, architect_general, architect_coding) because the normalizer-bug-driven 22.9% drop excluded `coder_escalation`, `worker_general`, `ingest_long_context` from the reembed. Normalizer fix landed (next bullet), but rebuilding the missing classes' embeddings requires another `--repair-embeddings` run.
+
+**Step C — Frontdoor verifier gate wired in retriever.py + memrl.py**
+
+`HybridRouter.__init__` now accepts `frontdoor_verifier` (default None) and a configurable `frontdoor_verifier_threshold` (default 0.5, env override `FRONTDOOR_VERIFIER_THRESHOLD`). The classifier fast-path in `route()` was extended:
+
+```
+classifier predicts top class
+    ├── confidence < per-class threshold → fall through to KNN (unchanged)
+    └── confidence ≥ threshold AND routing[0] == "frontdoor" AND verifier loaded
+            verifier.predict(features, action_idx=0) → P_success
+                ├── P_success ≥ threshold OR shadow mode → return via fast-path (with verifier metadata)
+                └── P_success <  threshold AND enforcing → fall through to KNN
+```
+
+For non-frontdoor routes the verifier is bypassed (no signal to add). Loading wired in `memrl.py` behind `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE` (default OFF) — same defensive style as the classifier. Two related env vars:
+- `FRONTDOOR_VERIFIER_THRESHOLD` — default 0.5
+- `FRONTDOOR_VERIFIER_SHADOW` — set to `1` for shadow mode (verifier runs and is logged via `last_decision_meta`, but never gates)
+
+Fresh frontdoor-specialist weights staged at `orchestration/repl_memory/verifier_head_weights.npz` (253KB, 68,161 params).
+
+**Step D — Shadow-mode capability**: implemented inline via `FRONTDOOR_VERIFIER_SHADOW=1` (no separate harness needed — `last_decision_meta` records `verifier_verdict`, `verifier_p_success`, `verifier_shadow` on every fast-path decision, so existing telemetry captures the shadow signal). A week of live shadow traffic can be analyzed against downstream outcomes to validate the gate before enforcing-mode rollout.
+
+**Step normalizer-fix — bonus, also done 2026-05-21**
+
+Added 7 missing entries to `ACTION_NORMALIZATION` (5 identity maps for canonical actions whose raw label IS the canonical name — `coder_escalation`, `ingest_long_context`, `worker_explore`, `worker_math`, `worker_vision` — plus `worker_general → worker_explore` and `coder → architect_coding` for renamed/legacy labels). Closes the 22.9% silent drop discovered during the first `--repair-embeddings` run. Next `--repair-embeddings` run will capture the missing 12K memories.
+
+**Bug fixes landed during this work**
+
+1. `repair_episodic_embeddings.py` — `np.save` auto-appends `.npy` to its path; my original code constructed `id_map.new` via `Path.with_suffix(".new")` and then renamed `id_map.new → id_map.npy`, but np.save had actually written to `id_map.new.npy`. The rename silently failed (`FileNotFoundError` swallowed by the orchestrator_stack wrapper), leaving FAISS rebuilt with 40,956 vectors but `id_map.npy` stuck at 94 entries. Fixed by explicit naming + post-write existence validation. Production `id_map.npy` was manually corrected (the bug version preserved as `id_map.npy.broken-1779368503`).
+2. `VerifierHead.join/join_batch` — IndexError when `n_actions == 0` (single-action specialist case, e.g., frontdoor-only). `oh = np.zeros(0)` is empty, so `oh[action_idx] = 1` raises. Fixed to skip the one-hot construction entirely when `n_actions <= 0`.
+
+##### Rollout sequence to enable in production
+
+1. **Restart the API service.** It will:
+   - Pick up the fresh classifier (98.7% val acc) automatically — `routing_classifier` flag is already on.
+   - Pick up the fresh frontdoor verifier ONLY IF `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1` is set (default OFF).
+
+2. **For initial verifier rollout (recommended)**: set `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1` + `FRONTDOOR_VERIFIER_SHADOW=1`. Verifier runs and decisions are logged via `last_decision_meta` but no fast-path is gated. ≥1 week of traffic accumulates shadow-mode signal.
+
+3. **After shadow validation**: unset `FRONTDOOR_VERIFIER_SHADOW` (or set to `0`). Gate enforces — frontdoor routes with verifier P_success < 0.5 fall through to KNN instead of fast-path routing.
+
+4. **Optional follow-up**: another `orchestrator_stack.py start --repair-embeddings` to ingest the previously-dropped 12K memories (coder_escalation, worker_general, ingest_long_context). Will trigger because the diagnostic will report ORPHANED for those 12K rows. Once they're in, classifier can be retrained for full 4+ class coverage.
+
+##### Files touched (all in /mnt/raid0/llm/epyc-orchestrator/)
+
+| File | Change |
+|---|---|
+| `src/api/services/memrl.py` | +60 LoC — RoutingClassifier + VerifierHead loading, wired into HybridRouter |
+| `orchestration/repl_memory/retriever.py` | +50 LoC — verifier gate in fast-path, constructor args, env-var threshold + shadow flag |
+| `orchestration/repl_memory/verifier_head.py` | bug fix — `join`/`join_batch` handle `n_actions=0` |
+| `orchestration/repl_memory/routing_classifier_weights.npz` | NEW — fresh weights, 98.7% val acc on current distribution |
+| `orchestration/repl_memory/verifier_head_weights.npz` | NEW — frontdoor-specialist verifier, intra-action AUC 0.9996 on fresh val |
+| `scripts/graph_router/extract_training_data.py` | +7 entries to ACTION_NORMALIZATION — closes 22.9% drop |
+| `scripts/maintenance/repair_episodic_embeddings.py` | bug fix — id_map.new.npy filename handling |
+| `orchestration/repl_memory/sessions/id_map.npy` | repaired in-place (broken version preserved) |
+
 **Files**:
 - New: `orchestration/repl_memory/verifier_head.py`
 - New: `scripts/graph_router/extract_verifier_training_data.py`
