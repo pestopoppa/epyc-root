@@ -502,3 +502,35 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
   - Activation gate: same as DFlash — GPU acquisition (DGX Spark per `project_dgx_spark_target`). Cross-referenced into [`gpu-acceleration-path.md`](gpu-acceleration-path.md) and [`gemma4-mtp-drafter-evaluation.md`](gemma4-mtp-drafter-evaluation.md) (Nemotron-Diff explicitly outperforms MTP — alternative direction if/when MTP path stalls).
   - Sibling URL-dedup entries: intake-577 (NVIDIA research landing) and intake-578 (HuggingFace collection — 7 model variants, BF16-only, no GGUF/FP8).
   - **Deep dive 2026-05-20**: [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md`](../../research/deep-dives/nemotron-labs-diffusion-tri-mode.md). Key new finding from full PDF parse: backbone is **Ministral3-8B (dense LLaMA-family, no SSM/Mamba/Delta Net)** — the recurrent-verify wall that killed our DFlash CPU port does NOT apply. CPU port effort estimate **15–25 days** with materially better prerequisites than DFlash (same-model drafter+verifier = no cross-precision quantization drift, no per-layer hidden state extraction API needed). Two cheap pre-port audit tasks identified: (a) Ministral3 support check in our llama.cpp fork, (b) AR-mode Q4_K_M quality re-test on `Nemotron-Labs-Diffusion-8B-Base` to validate the paper's +0.86% claim over Qwen3-8B as a paradigm sanity check — **NOT a worker_general candidacy** (our worker_general is gemma4-26B-A4B Q4_K_M MTP, an 8B dense is the wrong size class; the relevant role-comparison candidate is NLD-14B at 66.4% avg, if it's ever converted). The 8B test is a precondition for any spec-dec port work, not a deployment proposal. Follow-up intake candidates flagged: Set Block Decoding (arxiv:2509.04185), Efficient-dlm (arxiv:2512.14067), TiDAR (arxiv:2511.08923), Fast-dllm (arxiv:2505.22618).
+
+## Research Intake Update — 2026-05-21
+
+### New Related Research — Tencent AngelSlim cluster (Hy-MT2 intake)
+
+- **[intake-590] AngelSlim toolkit** (arxiv:2602.21233, Tencent Hunyuan AI Infra)
+  - Unifies FP8/INT8 PTQ + ultra-low-bit (Sherry 1.25-bit, Tequila ternary, DAQ delta-aware PTQ) + speculative decoding (Eagle3, SpecExit) + token pruning (IDPruner) + sparse attention (Stem).
+  - Runtime focus is **vLLM/SGLang/transformers-first**; license inconsistency (custom-proprietary GitHub vs CC-BY-4.0 arxiv) blocks wholesale adoption. Cherry-pick individual algorithms + the upstream llama.cpp PR; do NOT vendor the toolkit. Tracked at [`angelslim-techniques-evaluation.md`](angelslim-techniques-evaluation.md).
+
+- **[intake-591] Sherry — 1.25-bit hardware-efficient ternary quantization** (arxiv:2601.07892, ACL 2026; credibility=4, highest in this batch)
+  - 3:4 fine-grained sparsity packs 4 weights into 5 bits = 1.25 bpw with power-of-two SIMD-aligned storage. "Arenas" annealing-residual-synapse mechanism addresses weight-trapping / representational collapse during QAT.
+  - LLaMA-3.2-1B (eval cap): zero accuracy loss vs SOTA ternary baselines, 25% bit savings, 10% inference speedup on Intel i7-14700HX (laptop class).
+  - **Correction logged mid-intake**: Sherry is QAT not PTQ. Applying to arbitrary post-trained workers requires ~10B tokens QAT training that we have no infrastructure for. STQ1_0 kernel + Sherry-QAT'd weights only exist for `Hy-MT1.5-1.8B`, `HY-1.8B-2bit`, and (new today) `Hy-MT2-1.8B-1.25bit`. The kernel is generic; the algorithm is not.
+  - Concrete upstream artifact: **llama.cpp PR #22836 (STQ1_0 kernel)** — directly mergeable into `epyc-llama`. Hy-MT2-1.8B-1.25bit reference weights downloaded 2026-05-21 to `/mnt/raid0/llm/models/hy-mt2-1.8b/1.25bit/` (440 MiB).
+  - When PR #22836 lands: rebuild fork, llama-bench the 1.25bit reference under canonical baseline (`taskset -c 0-95 -t 96 -fa 1`, per `feedback_canonical_baseline_protocol`). Generalization to EPYC's BW-bound regime is unverified — Sherry's 10% number was measured on a laptop CPU (BW-rich); EPYC's bottleneck is DRAM channels not ALU.
+
+- **[intake-592] SpecExit — speculative early-exit via draft-model hidden states** (arxiv:2509.24248, Tencent AngelSlim team; OpenReview)
+  - Predicts BOTH future tokens AND an early-exit signal directly from a lightweight draft model's hidden states — no separate probing overhead. 66% average reasoning-trace length reduction, 2.5x end-to-end speedup vs SD baseline.
+  - Relevance: third stop-signal source for [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md) alongside hard-cap (this handoff) and CGR certainty-probe (intake-566). Composable with the existing budget plumbing as a hidden-state read-out abstraction.
+  - **Caveat**: 2.5× claim is "additive vs SD baseline." On EPYC at single-user bs=1, vanilla SD has been net-negative for Qwen3.6 + Qwen3-1.7B drafter (`project_slot_promotion_shelved`); SpecExit inherits this gating unless paired with the reopen-criteria configurations.
+
+- **[intake-593] Tequila — Trapping-free Ternary QAT** (arxiv:2509.23809) and **[intake-594] DAQ — Delta-Aware Quantization** (arxiv:2603.22324)
+  - Both deferred. Tequila is training-time only (same QAT-gating as Sherry). DAQ targets sub-4-bit recovery of post-training capabilities (RL/DPO/instruction-tune deltas) — load-bearing question (does DAQ help at INT4/INT2?) unanswered in abstract; tested only at FP8 where standard PTQ already near-lossless. Becomes relevant only if we move below Q4_K_M.
+
+- **[intake-595/596] Hunyuan-MT-7B gen-1 + HY-MT1.5** (arxiv:2509.05209, 2512.24092)
+  - Tracked for lineage completeness; translation models themselves are out of scope for direct adoption (no translation route in stack). Gen-1's WMT2025 1st-in-30/31-language-pairs result is a third-party-validated credibility anchor for the family.
+
+### Wider Hy-MT2 implications
+
+- **Sub-2-bit weight quantization** now has a concrete, llama.cpp-upstream path (STQ1_0 PR #22836) and a public 440 MiB reference release. Distinct from TurboQuant (KV-cache quant, intake-191) and BitNet b1.58 (ternary inference, intake-186). New track on [[angelslim-techniques-evaluation]].
+- **Reasoning-trace compression** picks up an additional axis (SpecExit hidden-state signal) — useful for `reasoning-compression.md` and `memento-block-reasoning-compression.md` if/when budget enforcement infrastructure lands.
+- **AngelSlim license inconsistency** (custom-proprietary repo vs CC-BY-4.0 arxiv) is a blocker for any toolkit-level adoption; the llama.cpp PR sidesteps via MIT-licensed upstream.

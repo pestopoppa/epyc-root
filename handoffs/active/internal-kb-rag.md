@@ -213,3 +213,142 @@ Three patterns lifted from `strukto-ai/mirage` source audit. Apply at design tim
 
 - [ ] Bookmark the Ekimetrics MIT 5-metric implementation as candidate eval scaffolding for K7 — gate adoption on the HOPE-vs-Ekimetrics side-by-side that opendataloader Phase 2 work will produce on PDF-extracted text. The markdown-input case here is similar enough that the metric-validity verdict from there should transfer with a small re-check on markdown fixtures.
 - [ ] When defending K2's heading-aware chunking choice in any future review, cite HOPE's independence finding as empirical support rather than relying on the "natural for markdown" argument alone.
+
+## Research Intake Update — 2026-05-21
+
+### Hy-MT2-1.8B-1.25bit as optional multilingual pre-processor (narrow scope)
+
+- **[intake-586] Hy-MT2 (Tencent Hunyuan, 2026-05-21 release)** — 33-language translation model family. The 1.8B-1.25bit variant is 440 MB on-disk (claimed 1.5x decode speedup) — small enough to live as a research-intake-pipeline tool rather than a server role.
+- **Why this lands on the KB-RAG handoff**: CLAUDE.md routing guidance explicitly calls out Chinese-lab papers / EU/JP sources as a "prefer-SearXNG" case. Today, ingest of foreign-language abstracts relies on frontdoor (Qwen3.6) or ingest_long_context (Qwen3-Next-80B thinking ON) translating inline. Per user framing 2026-05-21, those models "already handle translation somewhat" — so a dedicated MT specialist is **overkill at 7B/30B scale** and only marginally useful at 1.8B-1.25bit scale.
+- **Concrete adoption scope (narrow)**: optional tool, not a stack role. If/when the ColBERT ingest pipeline encounters foreign-language snippets that the existing model handles poorly (measure first), the 1.8B-1.25bit variant is a low-cost candidate to slot in as a pre-encode translation step. No standing role allocation. No autopilot routing.
+- **Higher-leverage artefact (correctly scoped — see correction 2026-05-21)**: The **STQ1_0 llama.cpp kernel** (PR #22836) is generic at inference — it can decode any Sherry-QAT'd 1.25-bit weights. The **Sherry algorithm itself is QAT (training-time)**, not PTQ — applying it to an arbitrary worker would require ~10B tokens of QAT training that we have no infrastructure for. Today the only public Sherry-QAT'd weights are Tencent's Hy-MT1.5-1.8B and HY-1.8B-2bit; no Qwen3.6 / gemma4-26B-A4B / Qwen3.5-122B / Qwen3-Next-80B Sherry releases exist. So the kernel is "a decoder for weights only Tencent currently produces, and only at 1.8B class." Tracked on [[angelslim-techniques-evaluation]] and [[llama-cpp-kernel-push-rebase]].
+
+### What NOT to do
+
+- Do NOT add Hy-MT2-30B-A3B or 7B as a stack role — existing multilingual coverage suffices for the workflows we run today.
+- Do NOT commit to autopilot routing for a translation specialist before measuring whether the existing models actually have a quality gap on the foreign-language snippets the KB-RAG ingest actually receives.
+
+Cross-references: [[searxng-bash-websearch-bridge]] (multilingual web-search ingest), [[colbert-reranker-web-research]] (external snippet pipeline), [[angelslim-techniques-evaluation]] (umbrella for the quant/early-exit techniques).
+
+## Test Scope — Multilingual Ingest Quality-Gap Measurement (added 2026-05-21)
+
+The 2026-05-21 Hy-MT2 intake left an open empirical question: do existing stack models (Qwen3.6 frontdoor, Qwen3-Next-80B ingest_long_context, gemma4-26B-A4B worker_general) have a measurable quality gap on foreign-language ingest content that a dedicated MT specialist (Hy-MT2-1.8B-1.25bit, 440 MB) would close? The answer is **contingent on what languages we actually see**, so the only way to resolve it is direct measurement. This subsection scopes that test.
+
+### Hypothesis
+
+- **H0 (overkill)**: For the foreign-language content the research-intake / KB-RAG pipeline actually encounters, inline translation via Qwen3-Next-80B (thinking ON) yields downstream summaries of equal quality to a pipeline that pre-translates with Hy-MT2-1.8B-1.25bit. The specialist provides no measurable lift.
+- **H1 (niche found)**: For ≥1 language stratum the existing inline-translation pipeline measurably underperforms a pre-translate-then-summarize pipeline using Hy-MT2-1.8B-1.25bit. The gap is large enough to justify slotting the 440 MB specialist as an optional pre-encode step.
+
+Decision threshold (set in advance to avoid post-hoc rationalization): **H1 holds if the pre-translation pipeline wins ≥60% pairwise on at least one non-Chinese-English stratum AND the win rate on Chinese/English is not significantly worse than baseline (i.e., no regression on the strong-coverage languages).**
+
+### Language Stratification (refined 2026-05-21)
+
+This is the load-bearing design choice. A test that pulls only Chinese-English samples will under-report H1 because all three stack models already cover that pair well. Required strata (≥10 samples each, target 40 total):
+
+| Stratum | Sample target | Why | Hy-MT2 emphasis |
+|---------|---------------|-----|-----------------|
+| **Chinese (Simplified) → English** | 10 | Strong-coverage control; H1 must NOT win here or scoring is biased | Yes (general pair) |
+| **European mainstream → English** (Italian, French, German, Russian) | 10 | **Primary user interest** — high-resource EU where existing stack models *should* be strong; a Hy-MT2 win here is the meaningful niche finding, since these are the languages the user's actual research-intake pipeline encounters | Yes (33-language scope) |
+| **Japanese / Korean technical → English** | 10 | Medium-coverage; CJK shared script complications | Yes |
+| **Mixed-script / structured content** (Chinese paper with English equations/code, JSON-embedded MT) | 10 | Tests structural fidelity; tokenizer-fertility edge case | IFMTBench-style |
+
+Total: 40 snippets, ~200-500 tokens each (paper abstract scale, matches our actual research-intake unit of work).
+
+**Dropped stratum (2026-05-21)**: Mandarin-minority/dialect (Tibetan/Mongolian/Uyghur/Cantonese). Per user direction — not represented in actual research-intake content. Hy-MT2's marketed strength on this stratum is therefore irrelevant to the user's workflow; testing it would inflate the H1 conclusion in a way that doesn't generalize to actual use.
+
+**Re-scoring implication**: dropping the Hy-MT2-favorable stratum makes the test more honest, not less. If Hy-MT2 still wins on European-mainstream — where existing models *should* already be strong — the niche is real. If it doesn't, H0 holds for the user's actual content mix.
+
+### Sample Provenance
+
+SearxNG returns snippets (~150-300 chars) per result, not full documents. For 40 full-snippet samples in the 200-500 token range, sources to draw from:
+
+1. **Recent research-intake foreign-language sources** — papers from Chinese labs (Tencent Hunyuan, DeepSeek, Kimi, Qwen, Kuaishou, Baichuan, MiniMax, AntGroup) plus any European-language technical content the user encounters. Pull abstracts directly. Already-indexed examples in `intake_index.yaml`: intake-543 (SkillSynth), intake-546 (Training-Free GRPO), intake-590-596 (Hunyuan MT family).
+2. **WMT competition test sets** — Flores-200 is the canonical multilingual corpus. Free, standardized, covers all four required strata (zh, en, it, fr, de, ru, ja, ko all natively supported).
+3. **Manual curation** — for the mixed-script-structured stratum, Flores-200 doesn't cover composite documents; hand-curate from intake-indexed papers that mix Chinese prose + English equations / code blocks.
+
+Provenance log: record each sample's source URL, language, character/token count, and content type (paper abstract, blog post, structured doc) so the test is reproducible.
+
+### Pipelines
+
+**Pipeline A — Baseline (current production)**:
+```
+foreign-language snippet
+  → Qwen3-Next-80B (ingest_long_context, thinking=ON, --enable-thinking=true)
+  → English summary (target ~100-150 tokens)
+```
+
+**Pipeline B — Specialist pre-translation**:
+```
+foreign-language snippet
+  → Hy-MT2-1.8B-1.25bit GGUF (one-shot translation prompt, --enable-thinking=false)
+  → English translation (raw)
+  → Qwen3-Next-80B (ingest_long_context, thinking=ON, same prompt as A)
+  → English summary (target ~100-150 tokens)
+```
+
+**Pipeline C — Control (chain-of-thought confound check)**:
+```
+foreign-language snippet
+  → Qwen3-Next-80B step 1: "Translate to English" (thinking=OFF)
+  → English translation (raw)
+  → Qwen3-Next-80B step 2: same summarization prompt as A and B (thinking=ON)
+  → English summary
+```
+
+Pipeline C is mandatory: if B beats A, we must verify whether the gain is from Hy-MT2 specifically or from the two-step (translate → summarize) decomposition itself. C controls for that. If B ≈ C and both beat A, the lift is structural (decomposition) not specialist-specific, and Hy-MT2 is still overkill.
+
+### Prerequisites
+
+- [ ] **STQ1_0 llama.cpp PR #22836 either landed OR confirmed to load via existing GGUF support**. If the 1.25-bit GGUF cannot load without the new kernel, fall back to the BF16 safetensors variant via a temporary HF transformers loader OR use the 2-bit GGUF (also released, no special kernel needed). Document which variant was used — speedup numbers do not transfer across variants.
+- [ ] **Hy-MT2-1.8B weights downloaded** to `/mnt/raid0/llm/models/` (pick variant per above)
+- [ ] **Test launch recipe verified** — Hy-MT2-1.8B likely needs `--enable-thinking=false` (fast-thinking model per release notes), verify chat template + sampling params before bulk run
+- [ ] **Approval to run** — per `feedback_speed_verify_via_llama_bench`, NEVER launch `run_benchmark.py` autonomously; user runs ALL benchmarks manually. Same constraint applies here: prepare commands, do not execute. Per `feedback_no_concurrent_inference`, get explicit per-run approval to avoid contaminating concurrent agent work.
+- [ ] **Sample set frozen** before any pipeline runs — no swapping samples post-hoc
+
+### Metrics
+
+Three layers, listed in order of decision weight:
+
+1. **Downstream KB-RAG retrieval quality** (primary, load-bearing). For each summary produced by A/B/C, index it into the ColBERT KB-RAG (`epyc-orchestrator/src/retrieval/kb_rag.py`) and measure NDCG@5 / MRR on a held-out query set drawn from the source documents' topics. If a pipeline produces summaries that retrieve worse, the pipeline is worse — this is the only metric that directly maps to the KB-RAG use case. Threshold: ≥0.05 lift in NDCG@5 to count as a win.
+2. **Pairwise LLM-as-judge** (secondary). Use a sibling model (gemma4-26B-A4B worker_general, NOT Qwen3-Next-80B which is in-the-loop on A) as the judge. Present A vs B vs C summaries blind, ask for preference + reasoning. Bias caveat: LLM judges have known position bias — randomize order; verbosity bias — normalize length. Threshold: ≥60% A-vs-B win for H1 on the relevant stratum.
+3. **Structural / terminology fidelity** (tertiary, manual spot-check). On ~5 mixed-script / structured samples, manually verify whether: (a) JSON delimiters are preserved, (b) named entities (people, places, model names, paper titles) are translated correctly, (c) equations / code blocks pass through unmodified. Hy-MT2 is explicitly trained for structural preservation (IFMTBench) — if it loses on this metric, the specialist-framing is wrong.
+
+### Confounders to control
+
+- **Length normalization**: longer translations may retrieve better simply by having more keywords. Cap summary lengths consistently across pipelines.
+- **Sampling stochasticity**: run each pipeline 3× per sample with temperature > 0, report median. OR run at temperature=0 if reproducibility is more important than diversity.
+- **Order effects in pairwise judging**: randomize A/B/C presentation order per sample.
+- **Tokenizer fertility skew**: Hy-MT2-1.8B may tokenize the source language differently from Qwen3-Next-80B. Record tokens-in for each pipeline; if costs are wildly different, factor that into the decision (a 10% quality lift that costs 5× the tokens is not a win for an optional tool).
+- **Hy-MT2 prompt sensitivity**: Hy-MT2 is fast-thinking + translation-SFT — generic chat prompts will degrade it. Use the prompt format documented in the model card / HY_MT2_0_Report.pdf, not a generic "translate the following" prompt.
+
+### Acceptance Criteria
+
+| Outcome | Decision |
+|---------|----------|
+| H0 confirmed on all strata | Mark `intake-586` as `not_applicable` (downgrade from `worth_investigating`). Remove Hy-MT2 from candidate-tools list. Close [[angelslim-techniques-evaluation]] sub-track for translation models specifically (Sherry/STQ1_0 quant track continues independently). |
+| H1 confirmed on 1+ stratum, B ≫ C (specialist-specific lift) | Add Hy-MT2-1.8B-1.25bit (or whichever variant won) as optional pre-encode step in the KB-RAG ingest pipeline, gated by language detection. Specify which stratum triggers the tool route. Update `intake-586` verdict to `adopt_component`. |
+| H1 confirmed but B ≈ C (structural-decomposition lift) | Pipeline change without Hy-MT2: switch ingest_long_context summarization to a 2-step (translate then summarize) prompt for the affected strata. Hy-MT2 specialist is NOT adopted — the win was decomposition, not the specialist. Mark `intake-586` as `not_applicable` (specifically); update relevant prompts in `epyc-orchestrator`. |
+| Mixed results, ambiguous threshold | Escalate to user for stratum-by-stratum decision. Do NOT auto-adopt. |
+| Test infeasible (samples unavailable, STQ1_0 not loadable + 2-bit GGUF crashes, etc.) | Document the blocker. Defer test until the prerequisite resolves; do NOT proceed with adoption decision based on partial evidence. |
+
+### Cost Estimate
+
+- Sample curation: ~1-1.5 hours manual (most time on the mixed-script-structured stratum since Flores-200 covers all single-language strata natively after the 2026-05-21 refocus)
+- Pipeline A baseline run (50 × 3 reps): ~30 min on ingest_long_context :8083
+- Pipeline B run (50 × 3 reps): ~20 min Hy-MT2 + ~30 min Qwen3-Next-80B = ~50 min total
+- Pipeline C run (50 × 3 reps): ~60 min on ingest_long_context (2 calls per sample)
+- KB-RAG retrieval eval: ~10 min (precomputed query set)
+- LLM-as-judge pairwise on gemma4-26B-A4B: ~20 min (150 judgments × 3 pipelines)
+- Total: ~3-4 hours user-attended runtime + 2-3 hours sample curation
+
+### What this test does NOT decide
+
+- Whether to deploy a translation route as a first-class stack role (still NO regardless of outcome — even H1 maps to "optional pre-encode tool", not a server role).
+- Whether the AngelSlim 1.25-bit quantization recipe scales beyond 1.8B (separate question, gated on Tencent releases per the AngelSlim stub correction).
+- Anything about other AngelSlim techniques (Sherry, SpecExit, Tequila, DAQ) — those are tracked on [[angelslim-techniques-evaluation]] and are independent of this test.
+
+### Reporting
+
+When the test runs, record results in `progress/2026-MM/YYYY-MM-DD.md` with: sample set + provenance, per-stratum NDCG@5 / win-rate / structural-fidelity numbers, decision under the acceptance criteria above, and update both this handoff and `intake-586` verdict accordingly. Per `feedback_handoff_driven_tracking`, no test runs without a handoff update afterward.
+
+Cross-references: [[angelslim-techniques-evaluation]] (umbrella for Sherry/SpecExit/Tequila/DAQ — independent of this MT test), [[searxng-bash-websearch-bridge]] (multilingual ingest origin), [[colbert-reranker-web-research]] (external snippet pipeline).

@@ -27112,3 +27112,783 @@
     Single-paper critique — independent replication would move credibility from 4 to 5+
     but is not required for the takeaway: if we ever port a recursive net to a routing
     sub-problem, the training-tricks lever is the load-bearing one, not the architecture.
+- id: intake-586
+  arxiv_id: null
+  url: https://github.com/Tencent-Hunyuan/Hy-MT2
+  source_type: repo
+  title: 'Hy-MT2 — Hunyuan Machine Translation 2 (Tencent open-source MT family)'
+  authors:
+  - Tencent Hunyuan team
+  - 'Mao Zheng'
+  - 'Zheng Li'
+  - 'Tao Chen'
+  - 'Mingyang Song'
+  - 'Di Wang'
+  categories:
+  - training_distillation
+  - quantization
+  - local_inference
+  - benchmark_methodology
+  key_claims:
+  - 'Three open-weight "fast-thinking" multilingual translation models — Hy-MT2-1.8B (on-device), Hy-MT2-7B, Hy-MT2-30B-A3B (MoE) — covering 33 languages including Mandarin↔ethnic-minority/dialect pairs (Tibetan, Mongolian, Uyghur, Cantonese)'
+  - '7B and 30B-A3B reportedly outperform DeepSeek-V4-Pro and Kimi K2.6 on multi-dimensional MT eval (general / business / domain / instruction-following)'
+  - '1.8B reportedly surpasses Microsoft Translator and Doubao commercial APIs overall while remaining deployable on-device'
+  - 'AngelSlim 1.25-bit extreme quantization reduces Hy-MT2-1.8B storage to 440 MB with claimed ~1.5x inference speed-up; ships alongside BF16 safetensors, FP8, GGUF (vanilla / 2-bit / 1.25-bit)'
+  - 'Companion IFMTBench open-source benchmark targets translation instruction-following (terminology preservation, style adaptation, personalization, delimiter preservation, JSON/XML structured translation) — capability gap not covered by BLEU/COMET classics'
+  techniques:
+  - 'MoE 30B-A3B (~3B active per token, same total/active split as Qwen3-30B-A3B / Qwen3.5-35B-A3B in current EPYC stack)'
+  - 'Dense 1.8B and 7B variants'
+  - 'AngelSlim 1.25-bit sub-2-bit quantization (Sherry algorithm) + STQ1_0 llama.cpp kernel'
+  - 'FP8 native weights (Hopper/Blackwell)'
+  - 'Translation-specific instruction-following SFT with 7+ instruction types'
+  - 'IFMTBench evaluation harness'
+  reported_results:
+  - 'Hy-MT2-1.8B at 1.25-bit: 440 MB on-disk, claimed 1.5x decode speed-up vs FP baseline (Tencent self-reported)'
+  - 'No surfaced BLEU/COMET numerics in README — comparisons quoted as "multi-dimensional eval" against DeepSeek-V4-Pro / Kimi K2.6 / Microsoft / Doubao; numerics live in in-repo HY_MT2_0_Report.pdf'
+  - 'Gen-1 reference (Hunyuan-MT-7B): 1st in 30/31 WMT2025 language pairs'
+  referenced_arxiv_ids:
+  - '2512.24092'
+  - '2509.05209'
+  - '2602.21233'
+  - '2601.07892'
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: input
+  contradicting_evidence:
+  - 'All benchmark comparisons are Tencent self-reported on "internal multi-dimensional eval" — no third-party reproduction at release time; commercial bias acknowledged in scoring'
+  - 'Repo signals weak at fetch (11 stars / 7 commits / 0 forks) — credibility relies on major-lab signal alone'
+  - 'No HY-MT2 arxiv paper yet — only in-repo PDF tech report; predecessor HY-MT1.5 (2512.24092) is the closest peer-reviewable artifact'
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-bash-websearch-bridge.md
+    - searxng-search-backend.md
+    - colbert-reranker-web-research.md
+    - internal-kb-rag.md
+    - tq3-quantization-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-587
+    - intake-588
+    - intake-589
+    - intake-590
+    - intake-591
+    - intake-595
+    - intake-596
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: >
+    First Tencent-Hunyuan MT family ingested. The 30B-A3B size point lands in the same activated-param
+    class as production worker_explore (Qwen3-30B-A3B) and architect_general (Qwen3.5-35B-A3B), and the
+    1.25-bit GGUF is one of the lowest-bit production-grade quants surfaced from a major lab. Medium
+    (not high) because the predecessor HY-MT1.5 (2512.24092) exists and the architectural novelty is
+    incremental MT-specific SFT + sub-2-bit quantization rather than a new modeling primitive.
+  relevance_justification: >
+    Per user framing 2026-05-21: the 30B/7B variants are overkill against the existing multilingual
+    capability of frontdoor (Qwen3.6) / ingest (Qwen3-Next-80B thinking ON) / worker (gemma4-26B-A4B).
+    The 1.8B-1.25-bit at 440 MB is the one piece that is NOT overkill — a tool-class artifact for the
+    SearXNG / research-intake ingest pipeline when foreign-language snippets arrive (CLAUDE.md
+    explicitly calls out Chinese-lab papers, EU/JP sources as a prefer-SearxNG case). The AngelSlim
+    1.25-bit recipe + STQ1_0 llama.cpp kernel are the higher-leverage portable artifacts; tracked
+    separately as intake-590/591 and via [[angelslim-techniques-evaluation]] stub.
+  verdict_justification: >
+    worth_investigating, narrowly scoped per user direction: (1) keep 1.8B-1.25-bit on a candidate list
+    as an optional multilingual ingest tool (NOT a stack role); (2) verify AngelSlim 1.25-bit recipe and
+    STQ1_0 kernel reproducibility on EPYC 9655 via the [[angelslim-techniques-evaluation]] stub; (3) do
+    NOT pursue 7B / 30B-A3B variants — existing English-coding-centric stack already covers translation
+    well enough. Credibility=1: Tencent Hunyuan major lab (+1), <12mo (+1), commercial bias (-1),
+    self-reported claims with no third-party numerics yet (0), no peer review (0).
+- id: intake-587
+  arxiv_id: null
+  url: https://modelscope.cn/collections/Tencent-Hunyuan/Hy-MT2
+  source_type: blog
+  title: 'Hy-MT2 — ModelScope collection (Tencent Hunyuan MT 2nd generation)'
+  authors:
+  - Tencent Hunyuan
+  categories:
+  - moe_optimization
+  - quantization
+  - training_distillation
+  - local_inference
+  key_claims:
+  - 'ModelScope collection mirrors the HuggingFace tencent/hy-mt2 collection; same 3-size family (1.8B dense, 7B dense, 30B-A3B MoE) + FP8 + GGUF (vanilla / 2-bit / 1.25-bit on 1.8B)'
+  - 'IFMTBench instruction-following MT eval dataset ships in the same collection'
+  - 'Predecessor Hunyuan-MT-7B (gen-1, arxiv:2509.05209) took 1st in 30/31 WMT2025 language pairs; MT2 inherits 33-language scope'
+  - 'ModelScope landing page is JS-rendered; concrete model/arch detail was retrieved via parallel HuggingFace + GitHub URLs in same intake batch'
+  techniques:
+  - 'Same as intake-586 (MoE 30B-A3B, dense 1.8B/7B, AngelSlim sub-2-bit, FP8, GGUF)'
+  reported_results:
+  - 'No new numerics on the ModelScope landing page itself beyond the sibling URLs'
+  referenced_arxiv_ids:
+  - '2509.05209'
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: input
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-588
+    - intake-589
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Low — ModelScope is a Chinese mirror of the HuggingFace collection captured separately as
+    intake-588. Listed for traceability of the Chinese distribution surface (separate license/SLA
+    posture than HF). No new artifacts beyond the parent intake-586.
+  relevance_justification: >
+    Medium because the distribution-format coverage on ModelScope (the GGUF 2-bit and 1.25-bit
+    variants of Hy-MT2-1.8B) is the actually portable artifact for EPYC; the page itself doesn't
+    add information beyond intake-586/588 but anchors the Chinese-mirror download path for any
+    reproduction step on AngelSlim/Sherry/STQ1_0.
+  verdict_justification: >
+    worth_investigating, mirror-of-intake-586. No standalone action item — folded into intake-586's
+    1.8B-1.25-bit-as-ingest-tool track and [[angelslim-techniques-evaluation]] stub. credibility=null
+    because the collection page itself makes no empirical claims to score.
+- id: intake-588
+  arxiv_id: null
+  url: https://huggingface.co/collections/tencent/hy-mt2
+  source_type: blog
+  title: 'Hy-MT2 — HuggingFace collection (Tencent Hunyuan MT 2nd generation)'
+  authors:
+  - Tencent Hunyuan
+  - 'Mao Zheng'
+  - 'Zheng Li'
+  - 'Tao Chen'
+  - 'Mingyang Song'
+  - 'Di Wang'
+  categories:
+  - quantization
+  - training_distillation
+  - benchmark_methodology
+  - local_inference
+  key_claims:
+  - 'Collection of 10 model variants + IFMTBench dataset; 3-tier family (1.8B dense, 7B dense, 30B-A3B MoE), each in BF16 + FP8; 1.8B additionally in vanilla GGUF, 2-bit GGUF, 1.25-bit GGUF'
+  - 'Release date 2026-05-21 (hours before fetch); supports transformers >=5.6.0, vLLM, SGLang, llama.cpp with STQ1_0 kernel'
+  - 'WMT26 partnership for video subtitle translation (forward-looking commercial framing)'
+  - 'License posture not stated on model cards fetched in this URL set — needs verification via GitHub repo (intake-586)'
+  techniques:
+  - 'Same as intake-586'
+  reported_results:
+  - 'Download counts at fetch (release ~3h old): 30B-A3B=43, 7B=19, 1.8B=17, FP8 variants 6-12, GGUF variants 4-6'
+  referenced_arxiv_ids:
+  - '2512.24092'
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: input
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-587
+    - intake-589
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Low — Western distribution mirror of intake-586. Captured separately because the HF collection
+    page is the canonical English download source and exposes downloads/last-update telemetry; the
+    arxiv reference to 2512.24092 (HY-MT1.5) was recovered here.
+  relevance_justification: >
+    Medium for the same reason as intake-587: the GGUF distribution lives here, including the
+    1.25-bit variant that is the only piece flagged for EPYC adoption (per user framing 2026-05-21).
+    No standalone EPYC action beyond intake-586.
+  verdict_justification: >
+    worth_investigating, mirror-of-intake-586. credibility=null (collection page has no empirical
+    claims to score beyond the sibling intake entries). Folded into intake-586's adoption thread.
+- id: intake-589
+  arxiv_id: null
+  url: https://aistudio.tencent.com/llm/zh?tabIndex=0
+  source_type: blog
+  title: 'Tencent AI Studio — LLM portal (腾讯混元 commercial landing)'
+  authors:
+  - Tencent Hunyuan team
+  categories:
+  - inference_serving
+  key_claims:
+  - 'Vendor SPA shell — WebFetch returns only "腾讯混元" (Tencent Hunyuan) header; no model list, benchmarks, API tiers, or pricing scrape-able server-side'
+  - 'Indirect search confirms the portal fronts the open Hunyuan catalogue (Hunyuan-Large MoE A52B/389B, Hunyuan T1 Hybrid-Transformer-Mamba MoE, HY-MT 7B/1.8B + Chimera ensemble variant) — commercial-positioning surface for artefacts captured by sibling URLs in this batch'
+  - 'Adds no NEW information beyond GitHub / HF / ModelScope sibling URLs — only commercial framing (login-with-WeChat/QQ, console UX)'
+  techniques: []
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  ingested_date: '2026-05-21'
+  discovered_via: input
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-587
+    - intake-588
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Vendor SPA shell with no scrape-able content beyond the portal title. All concrete artefacts
+    live on sibling URLs (intake-586/587/588) and on arxiv (2512.24092, 2509.05209, 2602.21233,
+    2601.07892). Captured for batch-traceability only.
+  relevance_justification: >
+    Low. Tencent Cloud / AI Studio managed API is out of scope per feedback_opensource_only
+    (self-hosted open-source only). Login-gated portal exposes no GGUF, no inference recipe, no
+    benchmark protocol.
+  verdict_justification: >
+    not_applicable as an intake source on its own merits. The actionable artefacts are captured on
+    the open-source sibling intake entries. credibility=null (no empirical claims on this page).
+- id: intake-590
+  arxiv_id: '2602.21233'
+  url: https://arxiv.org/abs/2602.21233
+  source_type: paper
+  title: 'AngelSlim: A more accessible, comprehensive, and efficient toolkit for large model compression'
+  authors:
+  - 'Rui Cen'
+  - 'QiangQiang Hu'
+  - 'Hong Huang'
+  - 'Hong Liu'
+  - 'Song Liu'
+  - 'Xin Luo'
+  - 'Lin Niu'
+  - 'Yifan Tan'
+  - 'Decheng Wu'
+  - 'Linchuan Xie'
+  - 'Rubing Yang'
+  - 'Guanghua Yu'
+  - 'Jianchen Zhu'
+  categories:
+  - quantization
+  - speculative_decoding
+  - hardware_optimization
+  key_claims:
+  - 'Unified toolkit consolidating FP8/INT8 PTQ + ultra-low-bit (2-bit, 1.25-bit) + speculative decoding (Eagle3) + token pruning (IDPruner) + diffusion caching + sparse attention'
+  - 'HY-1.8B-int2 claimed as first industrially-viable 2-bit large model'
+  - 'Training-aligned speculative decoding framework: claimed 1.8-2.0x throughput gains, multimodal compatible'
+  - 'Training-free sparse attention reduces long-context TTFT via hybrid static-pattern + dynamic-token selection'
+  - 'CC-BY-4.0 license; supports vLLM (≥0.8.5.post1), SGLang (≥0.4.6.post1), llama.cpp, transformers'
+  techniques:
+  - 'PTQ: FP8-Static/Dynamic, INT8-Dynamic, INT4-GPTQ/AWQ/GPTAQ, NVFP4, LeptoQuant'
+  - 'Sub-2-bit: Sherry (1.25-bit, intake-591), Tequila (ternary, intake-593), DAQ (intake-594)'
+  - 'Spec-dec: Eagle3 training framework, SpecExit early-exit (intake-592)'
+  - 'Token pruning: IDPruner (vision-token MMR), Samp (audio merging/pruning)'
+  - 'Sparse attention: Stem'
+  reported_results:
+  - 'Qwen3-1.7B w/ Eagle3: ~643 t/s vs 381 baseline, ~1.7x speedup, accept length 2.17'
+  - 'Qwen3-8B FP8-Static: MMLU 74.79% vs 74.78% BF16 (negligible loss)'
+  - 'Qwen3-8B INT4-GPTQ: GSM8K 86.43% vs 87.79% BF16'
+  - 'HY-1.8B-2Bit and Hy-MT1.5-1.8B variants shipped at 2-bit and 1.25-bit'
+  referenced_arxiv_ids:
+  - '2601.07892'
+  - '2509.23809'
+  - '2603.22324'
+  - '2509.24248'
+  novelty: high
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-586
+  contradicting_evidence:
+  - 'Toolkit is a unifier paper — most novel mechanisms (Sherry, Tequila, DAQ, SpecExit) are tracked separately and have their own credibility scores; rate AngelSlim on integration quality, not on individual algorithms'
+  - 'Supported runtime list (vLLM/SGLang/transformers/llama.cpp) targets GPU-first deployment — EPYC CPU-inference adoption requires cherry-picking individual kernels (e.g., STQ1_0 PR #22836), not adopting the toolkit wholesale'
+  - 'AngelSlim License on GitHub is custom/proprietary (README) but arxiv paper claims CC-BY-4.0 — license inconsistency needs resolution before any code adoption'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - llama-cpp-kernel-push-rebase.md
+    - inference-acceleration-index.md
+    - per-request-reasoning-budget.md
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-591
+    - intake-592
+    - intake-593
+    - intake-594
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - llama-cpp-kernel-push-rebase.md
+  - per-request-reasoning-budget.md
+  handoffs_created:
+  - angelslim-techniques-evaluation.md
+  novelty_justification: >
+    High. Bundles four un-indexed Tencent-published techniques (Sherry 1.25-bit, Tequila ternary,
+    DAQ delta-aware PTQ, SpecExit speculative-exit) plus Eagle3 spec-dec under one toolkit. Sub-2-bit
+    weight quantization with a corresponding llama.cpp upstream PR (#22836, STQ1_0 kernel) is a new
+    intake category — prior intake covered KV-cache quant (TurboQuant intake-191, TQ3_1S intake-246)
+    and ternary inference (BitNet intake-186) but not weight-side 1.25-bit at this packing
+    efficiency.
+  relevance_justification: >
+    High. Four orthogonal EPYC levers: (1) Sherry/STQ1_0 PR #22836 is a concrete, llama.cpp-upstream
+    sub-2-bit kernel applicable to any quantized worker — directly affects [[tq3-quantization-evaluation]]
+    and [[llama-cpp-kernel-push-rebase]] tracks; (2) SpecExit early-exit reasoning is a no-fine-tune
+    method aligned with [[per-request-reasoning-budget]] and [[reasoning-compression]] tracks; (3)
+    DAQ's delta-aware PTQ targets recovery of fine-tuned/RL-aligned capabilities lost under standard
+    quantization — relevant to any quantization of post-trained worker models; (4) Tequila ternary
+    addresses BitNet-class deadzone-trapping. AngelSlim itself is a vendor toolkit, but the underlying
+    algorithms map cleanly to existing handoffs.
+  verdict_justification: >
+    worth_investigating. Do NOT adopt AngelSlim wholesale (vLLM/SGLang/transformers-first, license
+    inconsistency between repo and arxiv, GPU-centric runtime focus). DO cherry-pick: (a) Track STQ1_0
+    llama.cpp PR #22836 for merge — see [[llama-cpp-kernel-push-rebase]]; (b) Read Sherry algorithm
+    paper (intake-591) and verify the 3:4 sparse 1.25-bit packing works on EPYC AVX-512BW; (c) Map
+    SpecExit's hidden-state-based early-exit signal onto our existing [[per-request-reasoning-budget]]
+    work (intake-566 CGR is the closest peer); (d) Defer Tequila/DAQ until quantization-eval cycle
+    schedules them. credibility=1: arxiv preprint only (+0), <12mo (+1), Tencent major lab (+1),
+    commercial bias (-1), no independent corroboration yet (+0).
+- id: intake-591
+  arxiv_id: '2601.07892'
+  url: https://arxiv.org/abs/2601.07892
+  source_type: paper
+  title: 'Sherry: Hardware-Efficient 1.25-Bit Ternary Quantization via Fine-grained Sparsification'
+  authors:
+  - 'Hong Huang'
+  - 'Decheng Wu'
+  - 'Qiangqiang Hu'
+  - 'Guanghua Yu'
+  - 'Jinhai Yang'
+  - 'Jianchen Zhu'
+  - 'Xue Liu'
+  - 'Dapeng Wu'
+  categories:
+  - quantization
+  - hardware_optimization
+  key_claims:
+  - 'Resolves ternary-quant bit-packing dilemma: 2-bit aligned (bit waste) vs 1.67-bit irregular (slow inference) → 1.25-bit via 3:4 fine-grained sparsity packing 4 weights into 5 bits (power-of-two aligned)'
+  - 'Introduces Arenas — annealing residual synapse mechanism — to address weight trapping / representational collapse during training'
+  - 'Zero accuracy loss vs SOTA ternary baselines + 25% bit savings + 10% speed-up on Intel i7-14700HX CPU (LLaMA-3.2-1B)'
+  - 'Code in Tencent/AngelSlim repo (intake-590); STQ1_0 kernel upstreamed to llama.cpp PR #22836'
+  - 'Accepted at ACL 2026'
+  techniques:
+  - '3:4 fine-grained sparsity packing (4 weights into 5 bits = 1.25 bpw)'
+  - 'Arenas: annealing residual synapse for representational diversity preservation'
+  - 'Power-of-two aligned storage for SIMD compatibility'
+  reported_results:
+  - 'LLaMA-3.2-1B: zero accuracy loss vs SOTA ternary on 5 benchmarks; 25% bit savings; 10% inference speed-up on Intel i7-14700HX'
+  - 'AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF: 440 MB on-disk, claimed 1.5x decode vs FP baseline'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-590
+  contradicting_evidence:
+  - 'Sherry paper explicitly limits evaluation to models up to 3B parameters as "primary candidates for local edge deployment" — scaling behavior to 7B / 30B-A3B / 70B+ class models unverified at publication time'
+  - 'Speed-up benchmark on Intel i7-14700HX (single-CPU laptop class) — generalization to EPYC 9655 (96-core, 12-channel DDR5) requires direct measurement; the dominant bottleneck on EPYC CPU decode is DRAM bandwidth (per feedback_cpu_decode_bw_bound), not ALU, so 10% speedup pattern may not transfer'
+  - 'Reproductions on competing methods use only 10B tokens from UltraFineWeb at identical hyperparameters — original publication conditions for baselines may have been more favorable; the "zero accuracy loss" claim is relative to authors-reproduced baselines, not original papers'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - llama-cpp-kernel-push-rebase.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-590
+    - intake-586
+    - intake-191
+    - intake-186
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  - llama-cpp-kernel-push-rebase.md
+  handoffs_created:
+  - angelslim-techniques-evaluation.md
+  novelty_justification: >
+    High. 3:4 sparse 1.25-bit packing is mechanistically distinct from BitNet b1.58 (1.58 bpw,
+    intake-186) and TurboQuant Hadamard rotation (intake-191). Power-of-two-aligned 1.25 bpw is a
+    new operating point on the bit-width vs accuracy frontier. Paired with a concrete llama.cpp
+    upstream PR (#22836, STQ1_0 kernel) — i.e., a directly mergeable path into our fork.
+  relevance_justification: >
+    High at the kernel level; bounded at the algorithm level. Correction logged 2026-05-21 after
+    initial overstatement: the STQ1_0 llama.cpp kernel (PR #22836) is generic inference — it
+    decodes any 1.25-bit Sherry-packed weights. But Sherry is a QAT method (training-time, ~10B
+    tokens on UltraFineWeb at identical hyperparameters per the paper's own reproduction setup),
+    NOT a PTQ calibration like GPTQ/AWQ. Applying Sherry to an arbitrary post-trained worker
+    (Qwen3.6, gemma4-26B-A4B, Qwen3.5-122B-A10B, Qwen3-Next-80B) requires a QAT cycle we have
+    no infrastructure for (per feedback_experimental_repo and standing CPU-inference-only operating
+    constraints). Today the only public Sherry-QAT'd weights are Tencent's Hy-MT1.5-1.8B and
+    HY-1.8B-2bit. Real-world EPYC adoption is therefore gated on either (a) Tencent (or another
+    party) releasing Sherry-QAT'd checkpoints of an EPYC-stack base model, or (b) us acquiring
+    a QAT pipeline. Until then, STQ1_0 is "a decoder for weights only Tencent currently
+    produces, and only at 1.8B class." The Hy-MT1.5-1.8B-1.25bit-GGUF release is still useful
+    as an empirical-test artefact for the KERNEL behavior on EPYC's BW-bound regime, but the
+    algorithm scope is narrower than initially framed.
+  verdict_justification: >
+    worth_investigating. Concrete next steps: (1) When llama.cpp PR #22836 lands, rebuild our fork
+    with STQ1_0 enabled; (2) llama-bench the Hy-MT1.5-1.8B-1.25bit-GGUF on EPYC 9655 to verify the
+    decode-speedup claim under our BW-bound regime (Sherry's 10% number was measured on Intel laptop
+    class — generalization to multi-channel DDR5 server unproven); (3) If positive, evaluate whether
+    Sherry training recipe applies to our worker_general (gemma4-26B-A4B) class. credibility=4:
+    ACL 2026 peer-reviewed venue (+2), <12mo (+1), Tencent major lab (+1), commercial bias (-1),
+    one independent literature review on themoonlight.io (+1), no replication failures surfaced (+0).
+    Not adopt_component because no head-to-head on EPYC yet — Sherry's speedup claim is laptop-CPU
+    measurement; need confirmation on our hardware before committing to STQ1_0 in the fork.
+- id: intake-592
+  arxiv_id: '2509.24248'
+  url: https://arxiv.org/abs/2509.24248
+  source_type: paper
+  title: 'SpecExit: Accelerating Large Reasoning Model via Speculative Exit'
+  authors:
+  - 'Rubing Yang'
+  - 'Huajun Bai'
+  - 'Song Liu'
+  - 'Guanghua Yu'
+  - 'Runzhi Fan'
+  - 'Yanbin Dang'
+  - 'Jiejing Zhang'
+  - 'Kai Liu'
+  - 'Jianchen Zhu'
+  - 'Peng Chen'
+  categories:
+  - speculative_decoding
+  - context_management
+  - inference_serving
+  key_claims:
+  - 'Predicts BOTH future tokens AND an early-exit signal directly from a lightweight draft model hidden states — no separate probing overhead'
+  - 'Reduces average reasoning-trace generation length by 66%'
+  - '2.5x end-to-end latency speedup vs speculative-decoding baseline (additive to SD gains)'
+  - 'Maintains accuracy without compromise (authors claim)'
+  - 'Inspired by hidden-state use in speculative decoding; suggests broader use of hidden states for efficient reasoning'
+  techniques:
+  - 'Draft-model hidden-state-based early-exit signal prediction'
+  - 'Joint future-token + exit-signal prediction'
+  - 'Integration with existing spec-dec pipeline (additive)'
+  reported_results:
+  - '66% average generation length reduction'
+  - '2.5x end-to-end latency speedup vs SD baseline'
+  - 'Accuracy maintained (specific benchmarks/models not surfaced in abstract)'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-590
+  contradicting_evidence:
+  - 'Early-exit mechanisms have documented failure modes: (a) confidence-based overconfidence → premature termination (b) predicted-length over-optimism on hard problems (c) progress-signal instability on complex tasks. SpecExit claims to address by combining signals, but third-party replication is absent at submission time'
+  - 'Speed claim of 2.5x is "vs speculative-decoding baseline" — additive gain, but absolute end-to-end depends on the SD baseline''s own efficiency, which on EPYC CPU is often net-negative for short drafters (per project_slot_promotion_shelved). May not generalize to non-greedy verifier or single-user bs=1'
+  - 'Generation-length reduction of 66% on reasoning traces is comparable to CGR (intake-566) and dynamic early-exit (arxiv:2504.15895) — needs head-to-head comparison'
+  cross_references:
+    chapters: []
+    handoffs:
+    - per-request-reasoning-budget.md
+    - reasoning-compression.md
+    - memento-block-reasoning-compression.md
+    - decision-aware-routing.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-590
+    - intake-566
+    - intake-567
+  handoffs_updated:
+  - per-request-reasoning-budget.md
+  handoffs_created:
+  - angelslim-techniques-evaluation.md
+  novelty_justification: >
+    High. Existing per-request-reasoning-budget thread tracks budget-cap (hard cap) and certainty-based
+    early-stop (CGR intake-566). SpecExit adds a THIRD axis: hidden-state-derived joint
+    future-token + exit-signal prediction, eliminating the probing-detection overhead that limits CGR-style
+    methods. No prior intake entry captures this technique. Direct peer-reviewable artefact (OpenReview).
+  relevance_justification: >
+    High. Maps directly onto [[per-request-reasoning-budget]] (which seeks no-fine-tune dynamic
+    thinking termination) and [[reasoning-compression]]. 66% generation-length reduction would
+    materially shorten the reasoning traces emitted by Qwen3.6 / Qwen3.5-122B / ingest_long_context
+    under thinking-mode workloads. The hidden-state mechanism is also compatible with our existing
+    spec-dec infrastructure in epyc-llama.
+  verdict_justification: >
+    worth_investigating. Concrete next steps logged on [[per-request-reasoning-budget]]: (1) Confirm
+    which base models SpecExit was tested on (likely Qwen / DeepSeek-R1 class); (2) Read full paper
+    on OpenReview for ablation against confidence-only and predicted-length early-exit baselines;
+    (3) Compare against CGR (intake-566) on same benchmarks if any overlap; (4) If positive,
+    prototype hidden-state read-out in epyc-llama as a follow-on to the existing budget plumbing.
+    credibility=3: OpenReview venue (+2 likely peer-reviewed at submission), arxiv 2509 ~8mo (+1),
+    Tencent (+1), commercial bias (-1), no independent corroboration yet (+0). Not adopt_component
+    because no third-party reproduction at intake time; need direct measurement.
+- id: intake-593
+  arxiv_id: '2509.23809'
+  url: https://arxiv.org/abs/2509.23809
+  source_type: paper
+  title: 'Tequila: Trapping-free Ternary Quantization for Large Language Models'
+  authors:
+  - 'Hong Huang'
+  - 'Decheng Wu'
+  - 'Rui Cen'
+  - 'Guanghua Yu'
+  - 'Zonghang Li'
+  - 'Kai Liu'
+  - 'Jianchen Zhu'
+  - 'Peng Chen'
+  - 'Xue Liu'
+  - 'Dapeng Wu'
+  categories:
+  - quantization
+  key_claims:
+  - 'Identifies "deadzone trapping" as root cause of ternary-quant accuracy degradation: weights stuck at deadzone boundary receive only noisy gradients'
+  - 'Trapping-free fix: repurpose deadzone-trapped weights as dynamic biases (continuous forward signal + meaningful gradient flow during backprop)'
+  - '>4% accuracy gain over SOTA ternary baselines on ARC benchmark; within <1% of full-precision; 3.0x inference speedup; "nearly zero inference overhead"'
+  - 'Code in Tencent/AngelSlim repo (intake-590)'
+  techniques:
+  - 'Dynamic-bias repurposing of deadzone-trapped weights'
+  - 'Quantization-aware training (QAT) extension'
+  reported_results:
+  - 'ARC: >4% accuracy gain over SOTA ternary baseline; <1% gap to full-precision'
+  - '3.0x inference speedup'
+  - '5 benchmarks evaluated (ARC named; others unspecified in abstract)'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-590
+  contradicting_evidence:
+  - 'Abstract does NOT compare against BitNet b1.58 (intake-186), Sherry (intake-591), or TernGEMM by name — only generic "SOTA ternary" baselines; specific competitor identification deferred to full paper read'
+  - 'Tequila is a QAT (training-time) method — requires training-from-scratch or QAT fine-tune; not a post-training fix. Adoption path on EPYC requires either Tencent-released QAT-Tequila checkpoints (none verified at intake time) or in-house QAT cycle'
+  - '3.0x inference speedup claim measured against an unspecified baseline — likely vs FP16 dense on the same kernel infrastructure; not directly comparable to Sherry''s 10% number'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-590
+    - intake-591
+    - intake-186
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created:
+  - angelslim-techniques-evaluation.md
+  novelty_justification: >
+    Medium. Identifies a specific failure mode (deadzone trapping) and proposes a targeted QAT
+    modification. Not a new bit-width regime (Sherry already opened 1.25-bit territory) — Tequila
+    sits within standard ternary {-1,0,+1} and fixes training-time accuracy degradation.
+  relevance_justification: >
+    Medium. Tequila is a training-time fix; EPYC stack is inference-only with frozen GGUF weights
+    (per feedback_experimental_repo and standing operating constraints). The relevance is indirect:
+    if Tencent releases Tequila-trained ternary checkpoints of an EPYC-stack-compatible base model
+    (e.g., a Qwen3.6 ternary variant), it becomes a deployment candidate. Until then, reference-only.
+  verdict_justification: >
+    worth_investigating, deferred. No direct EPYC action — track on [[tq3-quantization-evaluation]]
+    as a methodology reference and on [[angelslim-techniques-evaluation]] as an algorithm under the
+    AngelSlim umbrella. credibility=1: arxiv preprint (+0), <12mo (+1), Tencent (+1), commercial
+    (-1), no independent corroboration (+0).
+- id: intake-594
+  arxiv_id: '2603.22324'
+  url: https://arxiv.org/abs/2603.22324
+  source_type: paper
+  title: 'DAQ: Delta-Aware Quantization for Post-Training LLM Weight Compression'
+  authors:
+  - 'Xiaoming Yu'
+  - 'Shize Tang'
+  - 'Guanghua Yu'
+  - 'Linchuan Xie'
+  - 'Song Liu'
+  - 'Jianchen Zhu'
+  - 'Feng Li'
+  categories:
+  - quantization
+  key_claims:
+  - 'Data-free PTQ framework preserving knowledge acquired during parameter tuning (fine-tune / RL / DPO deltas) rather than minimizing reconstruction error on the base model'
+  - 'Introduces two delta-aware metrics: Sign Preservation Rate and Cosine Similarity of weight changes ΔW; uses only base + post-trained weight matrices'
+  - 'Recovers style-specific capabilities lost under standard quantization while sustaining general performance (FP8 testing)'
+  - 'Theoretical analysis: quantization-as-implicit-regularization'
+  techniques:
+  - 'Sign Preservation Rate metric on ΔW = W_post - W_base'
+  - 'Cosine Similarity preservation on ΔW'
+  - 'Replaces reconstruction-error PTQ objective with directional-fidelity objective'
+  reported_results:
+  - 'Recovery of style-specific capabilities under FP8 (specific benchmarks not surfaced in abstract)'
+  - 'Quantitative comparisons against GPTQ/AWQ/SpinQuant not detailed in abstract; deferred to full paper'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-590
+  contradicting_evidence:
+  - 'Recovery claim is qualitative ("recovers style-specific capabilities") — no quantitative comparison vs GPTQ/AWQ/SpinQuant surfaced in abstract'
+  - 'Tested in FP8 only at abstract time — FP8 is already known to be near-lossless for most LLMs (intake-590 reports Qwen3-8B FP8-Static MMLU 74.79% vs 74.78% BF16). Whether the delta-preservation effect persists at INT4/INT2 (where standard PTQ breaks) is the load-bearing question, and the abstract does not commit to it'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tq3-quantization-evaluation.md
+    - angelslim-techniques-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-590
+  handoffs_updated:
+  - tq3-quantization-evaluation.md
+  handoffs_created:
+  - angelslim-techniques-evaluation.md
+  novelty_justification: >
+    Medium. Directional-fidelity PTQ objective is a methodological shift from reconstruction-error
+    PTQ (GPTQ / AWQ / SpinQuant). Specifically aimed at recovering post-training capabilities (RL,
+    DPO, instruction-tune deltas) that standard PTQ over-attenuates. No prior intake captures this
+    framing.
+  relevance_justification: >
+    Medium. Our worker models are aggressively post-trained (Qwen3.6 RL-tuned, gemma4-26B-A4B MTP,
+    Qwen3.5-122B-A10B hybrid SSM). DAQ would matter if/when we move worker quants below Q4_K_M
+    (e.g., Q3_K_M, Q2_K). Today our Q4_K_M is the standing best operating point and post-training
+    deltas survive — DAQ becomes load-bearing only at sub-4-bit. Track on
+    [[tq3-quantization-evaluation]] as a methodology reference.
+  verdict_justification: >
+    worth_investigating, deferred. No active sub-4-bit deployment plan. credibility=1: arxiv (+0),
+    <12mo (+1), Tencent (+1), commercial (-1), no corroboration (+0).
+- id: intake-595
+  arxiv_id: '2509.05209'
+  url: https://arxiv.org/abs/2509.05209
+  source_type: paper
+  title: 'Hunyuan-MT Technical Report (gen-1: Hunyuan-MT-7B + Hunyuan-MT-Chimera-7B)'
+  authors:
+  - 'Mao Zheng'
+  - 'Zheng Li'
+  - 'Bingxin Qu'
+  - 'Mingyang Song'
+  - 'Yang Du'
+  - 'Mingrui Sun'
+  - 'Di Wang'
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'Hunyuan-MT-7B: first open-source Hunyuan multilingual translation model, 33 languages bidirectional, emphasis on Mandarin↔ethnic-minority / dialect pairs'
+  - 'Hunyuan-MT-Chimera-7B: slow-thinking-inspired ensemble — integrates multiple Hunyuan-MT-7B outputs under varying parameter settings, claimed to outperform conventional CoT slow-thinking'
+  - 'Training pipeline: general PT → MT-oriented PT → SFT → RL + weak-to-strong RL'
+  - 'Ranked 1st in 30 of 31 WMT2025 language pairs (peer-reviewed competition result)'
+  techniques:
+  - 'MT-oriented continued pre-training'
+  - 'Multi-stage SFT + RL + weak-to-strong RL'
+  - 'Chimera output-ensemble at varying parameter settings (alternative to CoT slow-thinking)'
+  reported_results:
+  - 'WMT2025: 1st in 30/31 language pairs (third-party validated)'
+  - 'Languages: Chinese, English, Japanese, Czech, Marathi, Estonian, Icelandic among the 33'
+  - 'Specific BLEU/COMET numbers vs GPT-4o / Claude / Gemini / DeepSeek not surfaced in abstract'
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-586
+  contradicting_evidence: null
+  cross_references:
+    chapters: []
+    handoffs:
+    - searxng-bash-websearch-bridge.md
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-596
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Medium. Predecessor of Hy-MT2. Chimera output-ensemble at varying parameter settings is a
+    methodology curiosity (cheaper alternative to CoT slow-thinking) but not directly applicable
+    to non-translation EPYC routes. Captured for traceability and as the WMT2025-validated
+    credibility anchor for the Hy-MT2 family.
+  relevance_justification: >
+    Low to medium. EPYC has no translation route. The WMT2025 1st-place result is a third-party
+    credibility signal for the lab/recipe (lifts intake-586/591/596 credibility through corroboration)
+    but does not produce a direct EPYC action item beyond the multilingual-ingest-tool framing
+    already captured on intake-586.
+  verdict_justification: >
+    worth_investigating, reference-only. The Chimera output-ensemble at varying parameter settings is
+    interesting as a *cheap* alternative to CoT slow-thinking for any small specialist worker — note
+    for future autopilot configuration experiments where multiple temperature samples are aggregated.
+    credibility=3: arxiv (+0), <12mo (+1), Tencent (+1), commercial (-1), WMT2025 peer-reviewed
+    competition result with third-party validation (+2 corroboration).
+- id: intake-596
+  arxiv_id: '2512.24092'
+  url: https://arxiv.org/abs/2512.24092
+  source_type: paper
+  title: 'HY-MT1.5 Technical Report (Hy-MT1.5-1.8B + Hy-MT1.5-7B)'
+  authors:
+  - 'Mao Zheng'
+  - 'Zheng Li'
+  - 'Tao Chen'
+  - 'Mingyang Song'
+  - 'Di Wang'
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  key_claims:
+  - 'HY-MT1.5-1.8B comprehensively outperforms larger open-source baselines (Tower-Plus-72B, Qwen3-32B) and commercial APIs (Microsoft Translator, Doubao); ~90% of Gemini-3.0-Pro performance'
+  - 'HY-MT1.5-7B reaches 95% of Gemini-3.0-Pro on Flores-200 and surpasses it on WMT25 + Mandarin-minority benchmarks — new SOTA for its size class'
+  - 'Training pipeline: general PT + MT-oriented PT + SFT + on-policy distillation + RL'
+  - 'Supports terminology intervention, context-aware translation, format preservation'
+  techniques:
+  - 'MT-oriented continued pre-training'
+  - 'Multi-stage SFT + on-policy distillation + RL'
+  - 'Instruction-controllable translation (terminology / format / context)'
+  reported_results:
+  - 'HY-MT1.5-1.8B ~90% of Gemini-3.0-Pro on standard tasks'
+  - 'HY-MT1.5-7B 95% of Gemini-3.0-Pro on Flores-200; surpasses on WMT25 + Mandarin-minority'
+  - 'Outperforms Tower-Plus-72B and Qwen3-32B at 1.8B parameter scale (parameter-efficiency claim)'
+  referenced_arxiv_ids:
+  - '2509.05209'
+  novelty: medium
+  relevance: low
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-586
+  contradicting_evidence:
+  - 'All Gemini-3.0-Pro comparison numbers are Tencent self-reported; no third-party reproduction at publication'
+  - 'Parameter-efficiency claim (1.8B beats Tower-Plus-72B) is benchmark-specific (Chinese-foreign + English-foreign) — 33-language scope vs broader Flores-200 coverage is implied but not quantified for the 1.8B'
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    experiments: []
+    intake_entries:
+    - intake-586
+    - intake-595
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Medium. Predecessor of Hy-MT2 with similar 1.8B/7B architecture footprint. Adds on-policy
+    distillation to the training pipeline (vs gen-1's weak-to-strong RL alone). The 1.8B-beats-72B
+    parameter-efficiency claim, if reproducible, is a forceful demonstration that MT-specific SFT can
+    extract small-model translation performance — relevant to any future cheap-specialist-worker
+    framing for translation.
+  relevance_justification: >
+    Low. Same translation-route-doesn't-exist gating as intake-586/595. Captured for lineage
+    completeness (Hy-MT2 cites HY-MT1.5 as its arxiv predecessor) and as the Sherry / STQ1_0
+    deployment reference point (AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF is the public 1.25-bit
+    artefact we can pull and probe).
+  verdict_justification: >
+    worth_investigating, reference-only. credibility=1: arxiv preprint (+0), <12mo (+1, dated 2025-12),
+    Tencent (+1), commercial bias (-1), no independent corroboration at publication time (+0). The
+    Gemini-3.0-Pro comparison numbers will need third-party reproduction before any adoption decision.

@@ -418,3 +418,29 @@ if (tide_router && batch_size == 1) {
 | Validation & deployment | 1 hour | After all above |
 
 **Total: ~6-10 hours (one dedicated session)**
+
+---
+
+## Research Intake Update — 2026-05-21
+
+### STQ1_0 kernel — Tencent sub-2-bit weight quant via llama.cpp PR #22836
+
+- **PR URL**: https://github.com/ggml-org/llama.cpp/pull/22836
+- **Origin**: Tencent AngelSlim toolkit (intake-590, arxiv:2602.21233) + Sherry algorithm (intake-591, arxiv:2601.07892, ACL 2026)
+- **What it does**: Implements the STQ1_0 quantization type — 3:4 fine-grained sparsity ternary quantization at 1.25 bpw (4 weights packed into 5 bits, power-of-two-aligned for SIMD). Sherry algorithm pairs with this kernel; weights are {-1, 0, +1} with the sparsity pattern enforcing power-of-two storage alignment.
+- **Reference artefact**: `AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF` on HuggingFace (440 MB on disk, claimed 1.5x decode speedup vs FP baseline)
+- **Why it matters here**: This is a concrete, directly-mergeable upstream sub-2-bit weight-quantization kernel. Unlike PR #21089 (TBQ3_0/TBQ4_0 KV-cache, tracked on [[tq3-quantization-evaluation]]), STQ1_0 quantizes model weights — closer to Q4_K_M's regime, not KV.
+- **Status at intake**: PR is open at fetch time (2026-05-21). Not yet merged.
+
+### Speed-claim caveat
+
+Sherry's 10% speedup was measured on Intel i7-14700HX (laptop class, 2-channel DDR5). EPYC 9655 (96-core, 12-channel DDR5) is DRAM-bandwidth-bound on quantized decode per `feedback_cpu_decode_bw_bound`. The speedup pattern may not transfer; we must measure directly. Plan: when PR #22836 lands, rebuild our fork with STQ1_0 enabled and llama-bench the 1.8B-1.25bit reference GGUF using the canonical baseline protocol (`taskset -c 0-95 -t 96 -fa 1`, per `feedback_canonical_baseline_protocol`).
+
+### Action Items (added 2026-05-21)
+
+- [ ] Monitor PR #22836 — set a wakeup or periodic check; flip to in-progress when the PR is reviewed/merged
+- [ ] When merged: cherry-pick into next `production-consolidated-v5` (or successor) branch alongside any other pending kernel work
+- [ ] Bench `AngelSlim/Hy-MT1.5-1.8B-1.25bit-GGUF` on EPYC 9655 (single-instance, NPS4, canonical params); compare decode t/s vs Q4_K_M equivalent
+- [ ] If positive at the kernel level: note that scaling Sherry to worker-class models (gemma4-26B-A4B, Qwen3.6, Qwen3.5-122B-A10B) is **gated on a QAT pipeline we do not have**. Sherry is QAT (training-time, ~10B tokens), not PTQ — applying it requires either Tencent (or another party) releasing Sherry-QAT'd checkpoints of an EPYC-stack base, or us acquiring training infrastructure. Today only Hy-MT1.5-1.8B and HY-1.8B-2bit are public Sherry-QAT'd weights. The kernel alone is "a decoder for weights only Tencent currently produces."
+
+Cross-references: [[angelslim-techniques-evaluation]] (umbrella stub), [[tq3-quantization-evaluation]] (KV-quant analog).

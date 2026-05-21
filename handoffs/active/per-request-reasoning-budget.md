@@ -159,3 +159,21 @@ curl localhost:8082/v1/chat/completions -d '{"model":"auto","messages":[{"role":
 
 **Concrete next step (this handoff)**: when prototyping the per-request budget infrastructure, design the API surface so CGR-style certainty-threshold early-stop slots in alongside the existing hard-cap budget. Both are values on a single "stop signal" abstraction.
 
+
+## Research Intake Update — 2026-05-21
+
+### SpecExit — speculative early-exit via draft-model hidden states
+
+- **[intake-592] SpecExit: Accelerating Large Reasoning Model via Speculative Exit (arxiv:2509.24248, OpenReview)** — Tencent AngelSlim team. Predicts BOTH future tokens AND an early-exit signal directly from a lightweight draft model's hidden states — no separate probing overhead (a documented weak point of confidence-based or predicted-length-based early-exit). Claims: 66% average reasoning-trace length reduction, 2.5x end-to-end latency speedup vs SD baseline, accuracy maintained.
+- **Mechanism**: Inspired by speculative decoding's hidden-state use. The draft model emits, in addition to candidate tokens, a scalar exit-signal predicted from the same forward-pass hidden state. Joint prediction eliminates the separate-probe overhead.
+- **Why it matters for this handoff**: Directly aligns with this handoff's stated goal — "no fine-tune, model-agnostic, single-knob dynamic thinking budget." Adds a THIRD axis to the existing budget plumbing: (a) hard cap (this handoff's prior work), (b) certainty probe (CGR intake-566), (c) hidden-state-derived joint exit signal (SpecExit). Note: (a)+(b) compose; (c) sidesteps the probe-overhead limitation of (b).
+- **Caveats (Tier 2b)**:
+  - SpecExit's 2.5x is "additive vs SD baseline" — on EPYC at single-user bs=1, vanilla SD has been net-negative for Qwen3.6 with Qwen3-1.7B drafter (`project_slot_promotion_shelved`); SpecExit may inherit that gating issue unless tested with the reopen-criteria configurations (larger drafter, non-greedy verifier, long-context).
+  - Early-exit mechanisms have documented failure modes: confidence overconfidence, predicted-length over-optimism on hard problems, progress-signal instability on complex tasks. SpecExit claims to mitigate by joint prediction, but third-party replication is absent at submission time.
+  - 66% generation-length reduction is comparable to CGR (intake-566) and dynamic-early-exit (arxiv:2504.15895) — head-to-head ablation against these on the same benchmark suite has not been published.
+
+### Concrete next step for this handoff
+
+When budget enforcement infrastructure (Step 3-4: state machine, logit forcing, hybrid-SSM memory access) lands and a running server is available, add SpecExit-style hidden-state probe as a third stop-signal source in the API surface design. The abstraction is already framed (per the prior 2026-05-19 CGR intake update): a single "stop signal" abstraction over which hard-cap / certainty-threshold / hidden-state-exit are interchangeable producers.
+
+Cross-references: [[angelslim-techniques-evaluation]] (umbrella stub), [[reasoning-compression]], [[memento-block-reasoning-compression]], [[decision-aware-routing]].

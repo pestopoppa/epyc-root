@@ -1,0 +1,4 @@
+# Outputs of the multilingual ingest test — never commit
+# Per feedback_gitignore_binaries: gitignore all data/output dirs
+*
+!.gitignore
