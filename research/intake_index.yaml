@@ -26803,3 +26803,312 @@
     metrics; the side-by-side will let the data settle which metric set is load-bearing
     on our actual corpora. Independent replication and an open code release (status
     unknown at fetch time) would move this from worth_investigating to adopt_patterns.
+- id: intake-582
+  arxiv_id: '2605.19376'
+  url: https://arxiv.org/abs/2605.19376
+  source_type: paper
+  title: 'Generative Recursive Reasoning Models (GRAM)'
+  authors:
+  - Junyeob Baek
+  - Mingyu Jo
+  - Minsu Kim
+  - Mengye Ren
+  - Yoshua Bengio
+  - Sungjin Ahn
+  categories:
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - Existing Recursive Reasoning Models (RRMs) are deterministic — a single latent trajectory converging to a single prediction, limiting hypothesis exploration and multi-solution coverage
+  - GRAM reframes recursive latent reasoning as probabilistic multi-trajectory computation via a stochastic latent trajectory τ, supporting multiple hypotheses and alternative solution strategies in one model
+  - Latent-variable generative model supports both conditional p_θ(y|x) reasoning and unconditional p_θ(x) generation modes from one trained backbone
+  - Inference-time scaling has two orthogonal axes — recursive depth AND parallel trajectory sampling — that compound
+  - Trained with amortized variational inference; gains depend on the variational framework, not on mere noise injection (naive stochasticity on TRM does not help)
+  techniques:
+  - Stochastic latent trajectory τ in place of deterministic recurrent state
+  - 'Amortized variational ELBO: log p_θ(y|x) ≥ 𝔼_qϕ[log p_θ(y|τ,x)] − KL(qϕ(τ|x,y) ‖ p_θ(τ|x))'
+  - Per-supervision-step truncated surrogate ELBO for memory efficiency
+  - Parallel trajectory sampling at inference (width scaling) composable with depth scaling
+  - Optional structured guidance signal for multi-solution constraint satisfaction tasks
+  reported_results:
+  - 'Sudoku-Extreme (16 supervision steps): GRAM 97.0% vs TRM 87.4%, HRM 55.0%, Looped Transformer 61.3%'
+  - 'ARC-AGI-1: GRAM 52.0% vs TRM 44.6%, HRM 40.3%; ARC-AGI-2: GRAM 11.1% vs TRM 7.8%, HRM 5.0%'
+  - 'N-Queens 8×8 with N=20 samples: 99.7% accuracy, 90.3% coverage vs deterministic baselines max 36.1% coverage'
+  - 'Compute-matched comparison: GRAM @ 16 iter + N=20 samples ≈ 97.0%, beats TRM @ 320 iter (90.5%) at comparable budget'
+  - 'Depth scaling (single trajectory, Sudoku-Extreme): ~65% at 4 iter → 93.96% at 16 iter'
+  - 'Unconditional generation on binarized MNIST demonstrates p_θ(x) capability'
+  referenced_arxiv_ids:
+  - '2506.21734'
+  - '2510.04871'
+  - '2311.12424'
+  - '2412.06769'
+  - '2505.12514'
+  - '1807.03819'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: input
+  contradicting_evidence:
+  - 'Ablation — remove guidance: maintains Sudoku performance but COLLAPSES on N-Queens to 50.27% — structured guidance is load-bearing for multi-solution tasks'
+  - 'Ablation — remove stochasticity: 0.0% on both Sudoku and N-Queens — variational structure (not just noise) is the source of gains'
+  - 'Naive stochasticity applied to TRM (stochastic decoder, random init) does NOT recover GRAM-level performance — gains are tied to the amortized variational framework, not a generic stochasticity bonus'
+  - 'Standard amortized VI is known to suffer an "amortization gap" (per-instance optimal vs amortized variational parameters), suggesting headroom but also a methodological caveat'
+  - 'Requires training a recursive architecture from scratch — NO application path to pretrained GGUF LLMs in current EPYC stack; conceptual only until/unless GRAM-trained checkpoints are released'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-559
+    - intake-332
+    - intake-443
+    - intake-153
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    High. The probabilistic / multi-trajectory framing of latent recursive reasoning
+    has no prior intake entry. Closest neighbors are Coconut (intake-559, continuous
+    latent reasoning), Ouro (intake-332, looped LM latent reasoning), and OneVL
+    (intake-443, one-step latent reasoning) — all of which are deterministic-trajectory
+    methods. GRAM is the first entry to introduce stochastic latent trajectories +
+    amortized VI to this family, and the multi-solution coverage result on N-Queens
+    (90.3% vs deterministic ceiling 36.1%) is qualitatively new — deterministic RRMs
+    cannot represent multi-solution outputs at all.
+  relevance_justification: >
+    Medium, not high. The conceptual contribution (multi-trajectory inference-time
+    scaling) is directly relevant to the reasoning-compression handoff's broader
+    interest in latent-space approaches (already references OneVL/CoLaR), and to any
+    future work on parallel-trajectory routing or width-vs-depth tradeoffs. However,
+    GRAM requires training a recursive architecture from scratch — there is no path
+    to apply it to our pretrained GGUF models. Same scope constraint that gates Ouro
+    (intake-332) gates GRAM. If GRAM checkpoints or open code with EPYC-compatible
+    quantization paths become available, relevance upgrades to high.
+  verdict_justification: >
+    worth_investigating. ICLR 2026 workshop venue (recursive self-improvement track) +
+    Bengio/Mengye Ren/Sungjin Ahn co-authorship + substantial ablations covering both
+    failure modes (no guidance → N-Queens collapse, no stochasticity → 0%) gives the
+    result methodological credibility. Action: track for (a) open-source code release
+    on the project website (ahn-ml.github.io/gram-website), (b) any release of trained
+    GRAM checkpoints that could be benchmarked locally, and (c) follow-up papers
+    exploring whether amortized VI over latent trajectories transfers to larger pretrained
+    LLMs (which would change the relevance assessment). Do NOT create a stub handoff —
+    no actionable EPYC deployment path until pretraining-free adaptation is shown.
+- id: intake-583
+  arxiv_id: '2510.04871'
+  url: https://arxiv.org/abs/2510.04871
+  source_type: paper
+  title: 'Less is More: Recursive Reasoning with Tiny Networks (TRM)'
+  authors:
+  - Alexia Jolicoeur-Martineau
+  categories:
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - A single 2-layer network with 7M parameters (Tiny Recursive Model) outperforms HRM's two-network design and most leading LLMs on hard puzzle tasks
+  - Achieves 45% on ARC-AGI-1 and 8% on ARC-AGI-2 with <0.01% of leading LLM parameter counts (vs Deepseek R1, o3-mini, Gemini 2.5 Pro)
+  - Simpler architecture (one tiny net, recursive iteration) generalizes better than HRM's biologically-inspired dual-frequency design
+  - Effective training from ~1000 examples without pretraining or chain-of-thought data
+  techniques:
+  - Tiny Recursive Model — single 2-layer network with recursive state iteration
+  - Small-data training (~1000 examples), no pretraining required
+  - Puzzle-task supervision (Sudoku, ARC-AGI, Maze)
+  reported_results:
+  - 'TRM: 7M parameters, ARC-AGI-1 45% test accuracy, ARC-AGI-2 8% test accuracy'
+  - 'HRM baseline: 27M parameters at lower puzzle accuracy'
+  - 'Per GRAM paper Sudoku-Extreme 16-step: TRM 87.4%, TRM @ 320 iter 90.5%'
+  - 'Outperforms Deepseek R1, o3-mini, Gemini 2.5 Pro on ARC-AGI while using <0.01% of their parameters'
+  referenced_arxiv_ids:
+  - '2506.21734'
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-582
+  contradicting_evidence:
+  - 'Per GRAM (intake-582) ablation: naive stochasticity (stochastic decoder, random init) added to TRM does NOT close the gap to GRAM — TRM is a strong deterministic baseline but ceiling-bound on multi-solution tasks (N-Queens coverage)'
+  - 'GRAM reports TRM needs 20× more iterations (320 vs 16) to approach GRAM''s sample-parallel accuracy on Sudoku-Extreme'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-582
+    - intake-584
+    - intake-332
+    - intake-559
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    High novelty in our intake — no prior entry covers the recursive-tiny-network family,
+    and the result that a 7M-parameter recursive net can outperform frontier LLMs on
+    ARC-AGI on puzzle-style tasks is qualitatively notable. Net-novel for the intake even
+    though the wider field has been discussing it since late 2025.
+  relevance_justification: >
+    Medium. The parameter-efficiency story (7M params, no pretraining, 1000 examples) is
+    not directly applicable to our pretrained-GGUF stack but is conceptually relevant to
+    the cost-aware routing / draft-model space (could a 7M recursive puzzle solver act
+    as a specialized router for constraint-satisfaction subtasks?). Captured here to
+    complete the GRAM lineage and as a reference baseline for any future EPYC-side
+    experiments comparing recursive reasoning to autoregressive CoT.
+  verdict_justification: >
+    worth_investigating. Single-author preprint from MILA-affiliated researcher with
+    strong empirical claims; results have been independently reproduced and extended by
+    GRAM (intake-582), which gives them external validation. No immediate EPYC action
+    until either checkpoints are released or a transfer-learning recipe to pretrained
+    LLMs is demonstrated.
+- id: intake-584
+  arxiv_id: '2506.21734'
+  url: https://arxiv.org/abs/2506.21734
+  source_type: paper
+  title: 'Hierarchical Reasoning Model (HRM)'
+  authors:
+  - Guan Wang
+  - Jin Li
+  - Yuhao Sun
+  - Xing Chen
+  - Changling Liu
+  - Yue Wu
+  - Meng Lu
+  - Sen Song
+  - Yasin Abbasi Yadkori
+  categories:
+  - agent_architecture
+  - training_distillation
+  key_claims:
+  - Two-module recurrent architecture (slow high-level abstract planner + fast low-level computation module) attains significant computational depth in a single forward pass without explicit intermediate supervision
+  - 27M parameters trained on 1000 examples achieves "nearly perfect" performance on complex Sudoku and optimal-path-finding mazes — no pretraining, no CoT data
+  - Outperforms much larger LLMs with longer context windows on ARC-AGI
+  - Brain-inspired multi-timescale processing principle (slow/fast modules at different frequencies) is the key inductive bias
+  techniques:
+  - Hierarchical Reasoning Model — two interdependent recurrent modules at different frequencies
+  - High-level module → slow abstract planning
+  - Low-level module → rapid detailed computation
+  - Single-forward-pass reasoning without intermediate token-level supervision
+  reported_results:
+  - 'HRM: 27M parameters, 1000 training samples, near-perfect on Sudoku and maze optimal-path'
+  - 'Per GRAM (intake-582) reporting: Sudoku-Extreme 16-step 55.0%, ARC-AGI-1 40.3%, ARC-AGI-2 5.0%'
+  - 'Outperforms much larger LLMs on ARC-AGI per the abstract'
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  ingested_date: '2026-05-21'
+  discovered_via: expansion
+  expanded_from: intake-582
+  contradicting_evidence:
+  - 'TRM (intake-583) shows a simpler single-network design outperforms HRM''s dual-module architecture on the same puzzle tasks, suggesting the biological dual-frequency motivation is not load-bearing'
+  - 'Per GRAM (intake-582): HRM is the weakest of the three recursive baselines on Sudoku-Extreme (55.0% vs TRM 87.4% vs GRAM 97.0%) and ARC-AGI (5-40% vs GRAM 11-52%)'
+  - 'Single forward-pass reasoning without supervision works on closed-domain puzzle tasks but generalization to open-domain language reasoning remains unproven'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-582
+    - intake-583
+    - intake-332
+    - intake-559
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    High novelty within our intake — this is the foundational paper for the recursive
+    reasoning lineage (HRM → TRM → GRAM) and was not previously captured. The dual-module
+    multi-timescale recurrent design is architecturally distinct from autoregressive,
+    looped-LM (Ouro), and continuous-thought (Coconut) approaches already in the index.
+  relevance_justification: >
+    Medium. Same gating constraint as TRM and GRAM — requires training a custom recursive
+    architecture; no path to pretrained GGUF LLMs. Tracked as the origin of the lineage
+    so that future entries citing HRM have a resolvable cross-reference and so that the
+    intake captures the architectural starting point being incrementally refuted by TRM
+    and extended by GRAM.
+  verdict_justification: >
+    worth_investigating. Multi-author group, multiple paper revisions, broadly cited in
+    follow-up work (TRM and GRAM both position against it), and the original "27M params
+    beats LLMs on puzzle tasks" claim has been independently reproduced. Subsequently
+    partially superseded by TRM in architectural simplicity and by GRAM in multi-solution
+    coverage — neither rejects HRM, both build on it. No EPYC action item; reference only.
+- id: intake-585
+  arxiv_id: '2601.10679'
+  url: https://arxiv.org/abs/2601.10679
+  source_type: paper
+  title: 'Are Your Reasoning Models Reasoning or Guessing? A Mechanistic Analysis of Hierarchical Reasoning Models'
+  authors:
+  - Zirui Ren
+  - Ziming Liu
+  categories:
+  - agent_architecture
+  - mechanistic_interpretability
+  key_claims:
+  - HRM does NOT genuinely reason — it converges to fixed points by pattern matching, despite strong empirical performance
+  - HRM fails on extremely simple puzzles with minimal unknowns, violating its "fixed point property" foundational assumption
+  - Progress across recursive steps is NOT uniform — there is a critical step at which the answer abruptly becomes correct (grokking dynamics, not logical progression)
+  - HRM converges to the first available fixed point regardless of correctness and gets trapped there (multiple-fixed-points trap)
+  - The proposed "Augmented HRM" (data augmentation + input perturbation + model bootstrapping) improves Sudoku-Extreme accuracy from 54.5% to 96.9% — recovering nearly all of HRM's claimed gap via training tricks alone, with no architectural change
+  techniques:
+  - Mechanistic probing of HRM internal trajectories
+  - Augmented-HRM training recipe — data augmentation, input perturbation, model bootstrapping
+  - Failure-mode taxonomy for fixed-point-based reasoning networks
+  reported_results:
+  - 'Sudoku-Extreme: baseline HRM 54.5% → Augmented HRM 96.9% (+42.4pp via training tricks only)'
+  - 'Documented failures on minimal-unknown puzzles where HRM cannot represent the answer at all'
+  - 'Grokking-style abrupt accuracy transitions across recursive steps'
+  referenced_arxiv_ids:
+  - '2506.21734'
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  verdict: adopt_patterns
+  ingested_date: '2026-05-21'
+  discovered_via: search
+  expanded_from: intake-584
+  contradicting_evidence:
+  - 'Single-paper critique; needs independent replication before fully accepted as the dominant interpretation of HRM behavior'
+  - 'Augmented-HRM''s 96.9% Sudoku-Extreme number depends on the specific augmentation/perturbation/bootstrapping recipe — recipe portability to other recursive nets (TRM, GRAM) is unverified'
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-584
+    - intake-583
+    - intake-582
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  novelty_justification: >
+    High. This is a direct mechanistic challenge to HRM''s "reasoning" framing and
+    by extension to the entire HRM → TRM → GRAM lineage''s claim that small recurrent
+    nets "reason" on closed-world puzzles. The Augmented-HRM result (+42.4pp via
+    training tricks alone, no architecture change) is a concrete, replicable proof
+    that most of HRM''s headline gap was missing training tricks, not missing
+    biological inspiration. No prior intake entry captures this critique.
+  relevance_justification: >
+    High. Reframes the entire HRM/TRM/GRAM lineage from "novel reasoning architecture"
+    to "pattern-matching with iterative refinement + heavy data augmentation". This
+    reframing is decision-relevant for any routing/verifier work that contemplates
+    porting one of these recursive nets to EPYC — the productive transfer is the
+    data-augmentation/perturbation/bootstrapping recipe (Augmented-HRM), NOT the
+    recursive architecture per se. See deep-dive
+    research/deep-dives/2026-05-21-recursive-reasoning-routing.md §2 + §6 for the
+    full implication chain.
+  verdict_justification: >
+    adopt_patterns. The Augmented-HRM training recipe (data augmentation + input
+    perturbation + model bootstrapping) is portable to any small recurrent net we
+    might train on a closed-world subproblem — including any future TRM-as-verifier
+    experiment under learned-routing-controller.md or decision-aware-routing.md. The
+    architectural framing of HRM itself stays as reference-only (per intake-584).
+    Single-paper critique — independent replication would move credibility from 4 to 5+
+    but is not required for the takeaway: if we ever port a recursive net to a routing
+    sub-problem, the training-tricks lever is the load-bearing one, not the architecture.

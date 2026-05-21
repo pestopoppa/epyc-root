@@ -504,3 +504,35 @@ This update folds five new entries into the Tier-3/Tier-4 axis of the handoff. T
   - **Reported results**: K&K 0.802/0.880, MATH500 0.598/0.636, LitBench 8.80/8.40 (SD/FM). Replacing text critiques with binary correctness collapses gains — semantically-rich text feedback is load-bearing (matches the existing Tier 2b "rich signal beats sparse" thread).
   - **Delta from current approach**: This is a training-time technique (GPU-gated, out of scope on EPYC CPU stack today) — file alongside RLSD as a reference for when GPU becomes available. The RLTF-FM inference-time self-feedback loop is reproducible as a harness pattern without retraining, but reported gains depend on the trained FM head — do not expect equivalent improvements from a pure-prompt analogue.
 
+## Research Intake Update — 2026-05-21
+
+### New Related Research — Recursive Reasoning Architecture Lineage (HRM → TRM → GRAM)
+
+User-submitted GRAM paper (arxiv:2605.19376) ingested with two reference-chase expansions (HRM, TRM). All three are architecturally distinct from the latent-reasoning entries already tracked here (intake-443 OneVL, intake-559 Coconut, intake-332 Ouro): they propose dedicated *recursive reasoning networks* trained from scratch on puzzle tasks rather than latent CoT compressions of pretrained LLMs.
+
+- **[intake-582] "Generative Recursive Reasoning Models (GRAM)"** (Baek/Jo/Kim/Ren/Bengio/Ahn, arxiv:2605.19376, ICLR 2026 workshop)
+  - **Relevance**: First entry in our intake to introduce *stochastic* latent trajectories + amortized variational inference to recursive reasoning. Multi-trajectory inference-time scaling (parallel τ sampling) is a different axis from the depth-only scaling discussed elsewhere in this handoff. Closest lineage neighbor is Ouro (intake-332) — looped LM latent reasoning — but Ouro stays deterministic.
+  - **Reported results**: Sudoku-Extreme 97.0% vs TRM 87.4% / HRM 55.0% / Looped TF 61.3%. ARC-AGI-1 52.0% (vs TRM 44.6%, HRM 40.3%). N-Queens 8×8 with N=20 samples — 99.7% accuracy, 90.3% solution-coverage vs deterministic ceiling 36.1%. Compute-matched: GRAM @ 16 iter + N=20 samples beats TRM @ 320 iter at comparable budget.
+  - **Delta from current approach**: Requires training a recursive architecture from scratch — same scope gate as Ouro (intake-332). NO EPYC deployment path on pretrained GGUFs today. Captured as conceptual reference: the variational-multi-trajectory framing is the relevant idea, not the specific GRAM model. Ablations are load-bearing — remove guidance and N-Queens collapses to 50.27%; remove stochasticity and both tasks collapse to 0% (naive noise injection does not work; the variational framework itself is the source of gains).
+
+- **[intake-583] "Less is More: Recursive Reasoning with Tiny Networks (TRM)"** (Jolicoeur-Martineau, arxiv:2510.04871, Oct 2025)
+  - **Relevance**: Captures the architectural simplification that GRAM positions against. 7M-parameter single-2-layer-net recursive model beats Deepseek R1 / o3-mini / Gemini 2.5 Pro on ARC-AGI-1 (45%) and ARC-AGI-2 (8%) while using <0.01% of their parameters. Direct architectural predecessor in the GRAM ablation table.
+  - **Reported results**: ARC-AGI-1 45%, ARC-AGI-2 8% at 7M params. Per GRAM compute-matched runs, TRM needs 320 iterations to reach what GRAM gets in 16 iterations with N=20 parallel samples.
+  - **Delta from current approach**: Same training-from-scratch gate. Worth filing because the parameter-efficiency claim (7M, no pretraining, 1000 examples) is potentially relevant to the draft-model / cost-aware routing space — could a TRM-style 7M recursive puzzle solver act as a specialized router for constraint-satisfaction subtasks? Open question, no immediate action.
+
+- **[intake-584] "Hierarchical Reasoning Model (HRM)"** (Wang et al., arxiv:2506.21734, Jun 2025)
+  - **Relevance**: Foundational paper of the recursive-reasoning lineage. Two-module recurrent architecture (slow planner + fast computation) trained on 1000 puzzle examples. Reference-tracked so future entries citing HRM resolve cleanly.
+  - **Reported results**: 27M params, near-perfect on Sudoku and optimal-path mazes without pretraining or CoT data. Per GRAM: Sudoku-Extreme 55.0%, ARC-AGI-1 40.3%, ARC-AGI-2 5.0% — the weakest of the three recursive baselines.
+  - **Delta from current approach**: Partially superseded by TRM (architectural simplification — TRM dropped the dual-module design and improved accuracy) and extended by GRAM (multi-trajectory generalization). Reference-only entry; no action item.
+
+**Cross-cutting note**: All three entries share the same scope constraint that already gates Ouro (intake-332) and OneVL (intake-443): the techniques require training architectures from scratch and have no demonstrated transfer recipe to pretrained GGUF LLMs. Monitoring for (a) open code/checkpoint release on ahn-ml.github.io/gram-website, (b) any transfer-learning bridge from these recursive nets to pretrained LLMs, (c) follow-up papers — would change relevance to high.
+
+- **[intake-585] "Are Your Reasoning Models Reasoning or Guessing? A Mechanistic Analysis of Hierarchical Reasoning Models"** (Ren & Liu, arxiv:2601.10679)
+  - **Tier 2b on the entire HRM → TRM → GRAM lineage**: HRM doesn't reason — it converges to fixed-point attractors by pattern matching. Fails on trivial puzzles; progress across recursive steps is grokking-style (abrupt) not progressive; trapped in incorrect fixed points.
+  - **Productive payload**: Augmented-HRM (data augmentation + input perturbation + model bootstrapping) improves Sudoku-Extreme from **54.5% → 96.9%** with NO architectural change. Most of HRM's claimed gap was missing training tricks, not missing bio-inspiration.
+  - **Implication for any future recursive-net port to EPYC** (e.g., the "tiny recursive net as router/verifier" thread the user has been circling): if we port one of these architectures to a routing subproblem, the load-bearing transfer is the **training recipe**, not the architecture. Verdict in intake: `adopt_patterns`.
+
+### Deep-dive
+
+Full analysis at [`research/deep-dives/2026-05-21-recursive-reasoning-routing.md`](../../research/deep-dives/2026-05-21-recursive-reasoning-routing.md) — covers the lineage in detail, maps it onto our existing routing infrastructure (BGE+MLP, Phase 2 hidden-state probe, Trinity Phase 4 sep-CMA-ES), and proposes three hypotheses (TRM-as-router DO NOT pursue; GRAM-multi-trajectory via cheap MC-dropout proxy; **GRAM-as-verifier SCOPE FIRST** — the genuinely novel framing missing from `learned-routing-controller.md` / `decision-aware-routing.md` / `outer-coordinator-learned-head.md`).
+

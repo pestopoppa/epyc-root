@@ -1,11 +1,11 @@
-# Non-Inference Backlog — Round 2 (2026-04-17 audit refresh)
+# Non-Inference Backlog — Round 2 (2026-05-19 audit refresh)
 
-**Status**: ACTIVE — 43 non-inference tasks catalogued. 35/43 done. Open: NIB2-40, 43, 46 (3 items). NIB2-33 moved to excluded (hermes-outer-shell auth deferral).
+**Status**: ACTIVE — 43 Round-2 baseline tasks catalogued + 4 May 2026 cluster supplements. 36/43 Round-2-baseline done. Open Round-2 baseline (7 items): NIB2-12, 15, 18, 29, 40, 43, 46. NIB2-33 moved to excluded (hermes-outer-shell auth deferral). May 2026 cluster supplement (4 items, ready-to-claim): NIB2-49 RAO+ReDel pre-flight, NIB2-50 δ-mem Phase 1 setup, NIB2-51 X-MAS routing scaffolding, NIB2-52 StreamingLLM C++ patch — see section below.
 
-**Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 35 NIB2 + 6 standalone = 41 items.
+**Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 36 NIB2 + 6 standalone = 42 items.
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
-**Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit)
+**Supplemented**: 2026-04-21 (NIB2-31..34 added from handoff hygiene audit), 2026-04-22 (NIB2-40..48 from deep-dive integration pass), 2026-05-19 (NIB2-49..52 from May 2026 research cluster deep-dives)
 **Priority**: MEDIUM (as a whole; individual items tagged HIGH/MED/LOW below)
 
 ---
@@ -90,6 +90,23 @@ Items surfaced by the 8 research deep dives landed 2026-04-22 (`/workspace/resea
 - [ ] **NIB2-46**: STOP Phase 0 instrumentation in llama.cpp (DD3, intake-437). ~1d code; non-inference (hook-level). Reserve unused token, add orchestrator hook for hidden-state fetch at prefix position. **Gated on NIB2-32** difficulty-signal re-validation producing a live verdict. → [`reasoning-compression.md`](reasoning-compression.md) Action 10a.
 - [x] **NIB2-47**: ONNX INT8 export of LateOn + parity test vs PyLate (DD1-A1, intake-428/430/431). ~1h. Non-inference. Prerequisite for S3b latency benchmark. → [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) S3b. **DONE 2026-04-22 (code)**: `scripts/benchmark/colbert/export_lateon_onnx_int8.py` downloads pre-quantized `lightonai/LateOn` ONNX INT8 (shipped on HF) + runs 20-snippet parity vs PyLate reference with tolerance 1e-2. `src/tools/web/colbert_reranker.py` extended with `LATEON_MODEL_PATH` env var override. pyproject extras `[colbert-export]` group added. 13/13 colbert tests passing (+2 new). Execution deferred until orchestrator `.venv` receives the colbert-export extras.
 - [x] **NIB2-48**: Update intake-432 verdict to `reference_only` + mark intakes 435/436/440 with explicit `trigger_to_reactivate` fields (DD2/DD8). ~30min. Pure metadata fix. → `research/intake_index.yaml`. **DONE 2026-04-22**: Audit showed 435/436/440 already had `trigger_to_reactivate` from the 2026-04-22 intake-trio deep-dive pass; only intake-432 verdict flip (`not_applicable` → `reference_only`, L16854) needed.
+
+---
+
+## Round 2 supplement (added 2026-05-19 — May 2026 research cluster deep-dives)
+
+Four cluster handoffs landed 2026-05-19 (post-research-intake-batch). Each entry captures the **non-inference scaffolding** portion of the cluster spike; the live benchmark / A/B / nightshift sweep stays in the canonical handoff and is inference-gated.
+
+- [ ] **NIB2-49**: RAO + ReDel Step 1 pre-flight gate scaffolding — [`rao-redel-substrate-spike.md`](rao-redel-substrate-spike.md) Step 1. ~20 LoC glue + throwaway venv. **HIGH** (Priority Queue #42). Install `redel[all]` + `kani` in `/tmp/redel-spike`, point `OPENAI_BASE_URL` at local `worker_general`, run a `DelegateOne` smoke call, capture `DelegationEvent` stream. <100 K local tokens (zero $). Gate criteria 1–4 are smoke-test scale, not bench scale. Step 2 paired A/B and Step 3 substrate replacement are inference-gated.
+- [ ] **NIB2-50**: δ-mem Phase 1 setup (checkpoint + adapter download + throwaway venv) — [`delta-mem-reproduction.md`](delta-mem-reproduction.md) Phase 1 prep. **HIGH** (Priority Queue #43). Clone `github.com/declare-lab/delta-Mem` (CC-BY-4.0) into `/tmp/dmem-spike`, pull Qwen3-4B-Instruct-2507 + released δ-mem adapter, verify checkpoint loads cleanly against the backbone, dry-run `eval_memoryagentbench.py` / `eval_locomo.py` argument parsing (no full eval). ~0.5d. The 1-nightshift MemoryAgentBench / LoCoMo reproduction itself is inference-gated.
+- [ ] **NIB2-51**: X-MAS routing scaffolding (taxonomy + classifier + winner-table loader + orchestrator override path) — [`x-mas-text-routing.md`](x-mas-text-routing.md). **HIGH** (Priority Queue #44). Map X-MAS-Bench's 5 domain × 5 function taxonomy onto our orchestrator task labels; implement a coarse `(domain, function)` classifier (nearest-neighbor over prototype embeddings via `internal-kb-rag.md` TEI service is the cheap path); add a `WinnerTableLoader` that reads a per-stack 5×5 table from disk and exposes a `winner_for(domain, function)` query; wire `model_registry.yaml` override at the frontdoor entry point behind a `XMAS_ROUTING_ENABLED` feature flag (default OFF). ~1d code. The 1500-eval (5 domains × 5 functions × 4 models × ~15 tasks, 1 nightshift) sweep that *populates* the table is inference-gated and lives in the canonical handoff. Cheap-kill check: if `project_worker_general_swap_2026_05_08` predicts gemma4-26B-A4B winning ≥80% of cells, the spike abort-decision happens after the sweep, not in this scaffold.
+- [ ] **NIB2-52**: StreamingLLM sink + sliding-window patch in `epyc-llama` — [`streaming-llm-baseline.md`](streaming-llm-baseline.md). **MEDIUM** (Priority Queue #45, cluster-wide gate for May 2026 KV-admission cluster). Patch `llama_kv_cache_*` for sink + window eviction policy (port algorithm from `github.com/mit-han-lab/streaming-llm`, MIT-licensed) + add `--kv-streaming-sink K_sink --kv-streaming-window K_win` CLI flags to `llama-cli` and `llama-server`. ~200 LoC C++ + ~50 LoC CLI plumbing. ~3 dev-days. The 4-axis bench sweep (3 budgets × 2 models × 4 workloads, 1 nightshift, requires `feedback_no_concurrent_inference` per-cell approval) is inference-gated. **Cluster-wide gate**: until this lands, the relative gains claimed by SP-KV / KVP / LU-KV / ForesightKV / PBKV are unanchored against the simplest possible competing technique.
+
+**Reporting protocol for NIB2-49..52**: same as Round 2 baseline. When the non-inference scaffolding portion completes:
+1. Check the box here.
+2. Update the linked canonical cluster handoff's "Spike Plan" status to reflect scaffolding-done / inference-pending.
+3. Add a one-line entry in `progress/YYYY-MM/YYYY-MM-DD.md`.
+4. Do NOT mark the linked cluster handoff complete — the inference-gated portion stays open until the sweep / A/B lands.
 
 ---
 
