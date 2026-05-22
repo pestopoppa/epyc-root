@@ -210,3 +210,39 @@ Adopt the `/setup-X-skills` per-repo config-bootstrap shape when we wire `script
 - [intake-509](https://github.com/mattpocock/skills) Skills For Real Engineers
 - intake-450 — veniceai/skills (sibling cross-runtime SKILL.md authoring rubric)
 - [`handoffs/active/hermes-outer-shell.md`](../handoffs/active/hermes-outer-shell.md) Research Intake Update 2026-04-30 — installer pattern adoption note
+
+## GitNexus CLI-only operational posture (2026-05-22)
+
+**TL;DR**: Fresh agent sessions chronically struggled to use GitNexus because the CLI was not on PATH, `CLAUDE.md` referenced MCP tool names (`gitnexus_impact({...})`) with no MCP server registered, and the skill SKILL.md files were nested one level too deep for the Skill-tool discovery scanner. Settled on **CLI-only posture with `<!-- gitnexus:keep -->` bloat protection + a `--skip-skills` analyze wrapper** across all 5 repos (epyc-root, epyc-orchestrator, epyc-inference-research, llama.cpp, llama.cpp-experimental). MCP integration deliberately declined — the team's `Bash(gitnexus:*)` permission shows the CLI was always the intended path.
+
+### Diagnosis (3 compounding causes)
+
+- **No CLI on PATH.** `which gitnexus` exited 127. Only ephemeral `npx` caches existed under `~/.npm/_npx/` and one (`5e786f48223a616c`) was corrupted with an `ENOTEMPTY` rename error on `brace-expansion`. Fix: `npm install -g gitnexus@1.6.5` → `/usr/local/share/npm-global/bin/gitnexus` (already on PATH).
+- **MCP-syntax in agent files with no MCP server registered.** The auto-generated `CLAUDE.md` and `AGENTS.md` gitnexus blocks instructed agents to call `gitnexus_impact({target, direction: "upstream"})`, `gitnexus_detect_changes()`, `gitnexus_query({query})`, `gitnexus_context({name})`, and `gitnexus_rename(...)` — none of which exist as Claude Code tools unless `.mcp.json` includes a `gitnexus` MCP server. None of the repos had one.
+- **Skill SKILL.md nested one level too deep.** Upstream's `installSkills()` writes to `.claude/skills/gitnexus/<name>/SKILL.md`. The Skill-tool discovery scanner reads `.claude/skills/<name>/SKILL.md` (one level deep), so the 6 `gitnexus-*` skills never surfaced in the available-skills list.
+
+### Bloat protection via upstream's `<!-- gitnexus:keep -->` marker
+
+`gitnexus analyze` rewrites the `<!-- gitnexus:start --> ... <!-- gitnexus:end -->` block in both `CLAUDE.md` and `AGENTS.md` to a 43-line MCP-style template on every run (epyc-inference-research's pre-fix block had grown to 77 lines from prior hand-customization). Source-code inspection of the installed package (`/usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli/ai-context.js`) revealed an upstream-supported escape hatch: if `<!-- gitnexus:keep -->` is present on its own line inside the block, upstream preserves the user-authored content and only refreshes the stats line (regex `^Indexed as \*\*name\*\* \(...\)`). Adopted across the 3 active code repos; CLAUDE.md blocks now ~22 lines, AGENTS.md blocks now ~18 lines.
+
+### Skill layout: flat + `--skip-skills` wrapper
+
+Flattened `.claude/skills/gitnexus/gitnexus-*/SKILL.md` → `.claude/skills/gitnexus-*/SKILL.md` so all 6 skills (`gitnexus-cli`, `gitnexus-debugging`, `gitnexus-exploring`, `gitnexus-guide`, `gitnexus-impact-analysis`, `gitnexus-refactoring`) auto-surface in the Skill tool list. Upstream `gitnexus analyze` would re-nest them on next run, so each repo now ships `scripts/gitnexus-analyze.sh` wrapping `gitnexus analyze --skip-skills "$@"` — this is the canonical re-index entry point. The lean CLAUDE.md/AGENTS.md text explicitly warns: *"`scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze`."*
+
+### Verification
+
+Ran the wrapper twice on epyc-root (stale at `17e43ca`, head at `00d2c80`). Block remained lean, stats line refreshed (`19925 → 19967 → 19966` symbols), nested `.claude/skills/gitnexus/` did not re-appear. Skill list confirmed all 6 `gitnexus-*` skills surfaced. Behavior identical for CLAUDE.md and AGENTS.md.
+
+### Patterns worth re-using
+
+- **`<!-- gitnexus:keep -->` as a template invariant.** Any upstream-managed block that supports a keep-style escape hatch is the right place to land project-specific lean text without forking the tool. Worth checking other auto-managed blocks (linters, formatters, generated docs) for similar mechanisms before fighting their default output.
+- **Wrapper scripts as the canonical CLI entry point.** When the upstream binary has multiple subtly-wrong defaults (re-nesting skills, re-bloating templates, fetching when offline), the cheapest fix is a `scripts/<tool>.sh` wrapper that hardcodes the safe flags + a doc line in CLAUDE.md that warns against the bare command. Easier than vendoring the tool, easier than hooking the post-tool-use phase.
+- **Skill auto-discovery's one-level rule is load-bearing.** When the harness's Skill tool list determines whether a skill is even reachable, the on-disk layout MUST match the scanner — vendor bundles that nest a level deeper (`.claude/skills/<vendor>/<name>/`) silently disappear from the agent's available actions. Flatten on install or symlink.
+- **Bloat protection requires a 3-layer fix, not just one.** (a) Mark the block as user-owned (`keep` marker). (b) Make the canonical re-run wrapper carry the safe flags. (c) Document in agent files that the wrapper is the canonical command. Skipping any layer = re-bloat on the next session.
+
+### Sources
+
+- [`progress/2026-05/2026-05-22.md`](../progress/2026-05/2026-05-22.md) Session 4 — full diagnosis, verification, and per-repo commit table
+- `memory/feedback_gitnexus_bloat_protection.md` — operational rule: never bypass the wrapper, never strip the keep-marker
+- `memory/project_gitnexus_cli_only_setup.md` — full setup notes (global install, flat skills, wrapper, posture rationale)
+- Upstream source: `/usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli/ai-context.js` — `upsertGitNexusSection` keep-marker logic (lines ~174–200)

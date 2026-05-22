@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-19 (May 2026 cluster intake batch: RAO/RLM substrate + latent MAS + latent CoT + KV admission + frozen memory + ES@LLM-scale + adaptive thinking — added to agent-architecture, kv-cache, context-management, memory-augmented, reinforcement-learning)
+**Last compiled**: 2026-05-22 (GitNexus CLI-only operational posture — keep-marker bloat protection, flat skill layout, --skip-skills wrapper across 5 repos — added to tool-implementation)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 291 documents across 6 source types
+**Total sources**: 292 documents across 6 source types
 
 ---
 
@@ -71,7 +71,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
 | [Knowledge Management](knowledge-management.md) | 6 | KB-RAG ColBERT architecture (K1–K8); Flywheel HotpotQA+LoCoMo eval methodology adopted for K7; wiki compilation governance |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 12 | GitNexus: context injection outperforms tools; "real REPL, mock LLM" integration test pattern; risk-weighted coverage methodology |
+| [Tool Implementation](tool-implementation.md) | 13 | GitNexus: context injection outperforms tools; CLI-only posture with `<!-- gitnexus:keep -->` + `--skip-skills` wrapper protects agent files from auto-bloat; "real REPL, mock LLM" integration test pattern; risk-weighted coverage methodology |
 
 ## Research & Analysis
 
