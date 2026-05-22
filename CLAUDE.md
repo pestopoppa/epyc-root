@@ -23,7 +23,11 @@ Key scripts by repo:
 - **Model registry (lean)**: `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml`
 - **Hermes setup**: `/mnt/raid0/llm/epyc-root/scripts/hermes/` (setup, config, launch script)
 
-For fresh setups: `scripts/clone-repos.sh` clones into `repos/` with symlinks.
+**Single source of truth**: `/workspace/repos/<name>` is a symlink to `/mnt/raid0/llm/<name>` (or `/mnt/raid0/llm/llama.cpp` for `epyc-llama`). Both paths refer to the same physical tree — parallel agent sessions touching either path operate on the same clone, branch, and staging area. Always-good identity: `stat -c %i /workspace/repos/<name>/.git` equals `stat -c %i /mnt/raid0/llm/<name>/.git`.
+
+For fresh setups: `scripts/clone-repos.sh` creates these symlinks (and falls back to a fresh `git clone` only if no canonical tree exists under `/mnt/raid0/llm/`). Idempotent — re-running converts any pre-existing plain-dir clone in `/workspace/repos/` into a symlink, after moving the old tree to `<name>.bak-<timestamp>`. Use `DRY_RUN=1 scripts/clone-repos.sh` to preview.
+
+**If you see divergent commits between `/workspace/repos/<name>` and `/mnt/raid0/llm/<name>`**: the symlink was replaced by a real clone (a parallel agent ran `git clone` directly into the repos path, or `clone-repos.sh` predates the 2026-05-22 fix). Push any unique commits from both sides, then re-run `scripts/clone-repos.sh` to re-link. The script will back up the divergent clone before symlinking — verify the backup contains nothing unique before deleting.
 
 ## Dependency Map
 
