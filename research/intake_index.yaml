@@ -27892,3 +27892,68 @@
     worth_investigating, reference-only. credibility=1: arxiv preprint (+0), <12mo (+1, dated 2025-12),
     Tencent (+1), commercial bias (-1), no independent corroboration at publication time (+0). The
     Gemini-3.0-Pro comparison numbers will need third-party reproduction before any adoption decision.
+- id: intake-597
+  arxiv_id: null
+  url: https://zensical.org/
+  source_type: blog
+  title: 'Zensical — modern static site generator (Rust-core, MkDocs Material successor)'
+  authors:
+  - 'squidfunk (Martin Donath) and team'
+  categories:
+  - knowledge_management
+  - tool_implementation
+  key_claims:
+  - 'Open-source (MIT) static site generator from the creators of Material for MkDocs, positioned as the successor path after MkDocs 2.0 removes plugin support that Material relies on'
+  - 'Rust-core differential build engine (ZRX) gives 4-5x faster rebuild speeds during `serve` (not initial builds); only changed files rebuild'
+  - 'Natively reads existing `mkdocs.yml` for drop-in migration from Material for MkDocs 1.x; existing markdown / template overrides / CSS / JS remain compatible'
+  - 'Bundles "Disco" client-side search engine with improved ranking and filtering vs lunr; subset of MkDocs plugins ported, full parity in progress'
+  - 'Currently alpha (v0.0.43 as of 2026-05-19); Material for MkDocs enters maintenance mode with 12-month critical-fix support; module/component system opens to third-party developers Q1 2026'
+  - 'Free for any use (incl. commercial); paid "Zensical Spark" replaces sponsorware model for professional/priority support, not a feature paywall'
+  techniques:
+  - 'Differential build via ZRX (architectural hoisting of caching + data orchestration into a standalone OSS library)'
+  - 'Rust + PyO3 hybrid: Rust core with Python bindings; Python Markdown still in use during transition to Rust CommonMark toolchain'
+  - 'Native mkdocs.yml compatibility layer'
+  - 'Disco client-side search engine'
+  reported_results:
+  - '4-5x faster repeated/serve builds vs Material for MkDocs'
+  - 'GitHub: 4.7k stars, 106 forks, 446 commits, latest v0.0.43 (2026-05-19); ~60% Rust / ~40% Python'
+  - 'Initial cold build can be slower than MkDocs Material due to Python Markdown marshalling overhead'
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: low
+  credibility_score: null
+  verdict: not_applicable
+  ingested_date: '2026-05-22'
+  discovered_via: input
+  contradicting_evidence:
+  - 'Tool is still alpha (v0.0.43, sub-1.0): MkDocs Material plugin parity incomplete; module/component system not yet open to third parties'
+  - '4-5x figure is for incremental `serve` rebuilds only — initial build can REGRESS vs MkDocs Material today'
+  - 'MkDocs 1.x ecosystem itself is described as "unmaintained, 18+ months without releases" so staying-put is also risky — but that risk does not apply to projects (like ours) that never adopted MkDocs in the first place'
+  cross_references:
+    chapters: []
+    handoffs:
+    - knowledge-base-governance-improvements.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: >
+    Low. Zensical is a tooling refresh of a mature static-site-generator lineage (MkDocs → Material
+    for MkDocs → Zensical), not a new technique or research result. The differential-build /
+    Rust-core pattern is well established in adjacent ecosystems (Hugo, Zola, mdBook). Notable
+    primarily as the migration target for the very large Material for MkDocs install base after
+    MkDocs 2.0 drops the plugin system Material depends on.
+  relevance_justification: >
+    Low. EPYC's documentation pipeline does NOT use MkDocs anywhere — `/workspace/wiki/` and
+    `epyc-inference-research/docs/chapters/` are raw markdown, consumed primarily by Claude agents
+    via direct file reads and the ColBERT-backed kb-search skill, not via a published HTML site.
+    "4-5x faster builds" presupposes an existing build step we don't have. The tool would only
+    become relevant if we decided to publish a public-facing documentation site (which is not on
+    the roadmap per knowledge-base-governance-improvements). For projects that already run on
+    Material for MkDocs, the relevance / urgency is high — but that's not our starting point.
+  verdict_justification: >
+    not_applicable to the current EPYC stack. Credibility scoring skipped (tool blog, no empirical
+    research claims). If/when a future decision lands to publish an external-facing docs site
+    (currently out of scope per the wiki-as-agent-context model), Zensical would jump to
+    `worth_investigating` and become the natural default given the squidfunk lineage and MIT
+    license — flag for revisit at that decision point rather than rejecting outright.
