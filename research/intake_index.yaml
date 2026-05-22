@@ -27957,3 +27957,109 @@
     (currently out of scope per the wiki-as-agent-context model), Zensical would jump to
     `worth_investigating` and become the natural default given the squidfunk lineage and MIT
     license — flag for revisit at that decision point rather than rejecting outright.
+- id: intake-598
+  arxiv_id: '2605.20613'
+  url: https://arxiv.org/abs/2605.20613
+  source_type: paper
+  title: 'HRM-Text: Efficient Pretraining Beyond Scaling'
+  authors:
+  - 'Guan Wang'
+  - 'Changling Liu'
+  - 'Chenyu Wang'
+  - 'Cai Zhou'
+  - 'Yuhao Sun'
+  - 'Yifei Wu'
+  - 'Shuai Zhen'
+  - 'Luca Scimeca'
+  - 'Yasin Abbasi Yadkori'
+  - 'Sapient Intelligence + MIT'
+  categories:
+  - training_distillation
+  - agent_architecture
+  - ssm_hybrid
+  - local_inference
+  key_claims:
+  - 'A 1.15B-parameter Hierarchical Recurrent Model can match or beat 2-7B transformer baselines (Llama3.2-3B, Qwen3.5-2B, Gemma3-4B) on MMLU, ARC-C, GSM8K, DROP, MATH while using ~40B effective tokens (100-900x fewer) and ~$1,500 of H100 compute (96-432x less) than naive scaling targets'
+  - 'Dual-timescale recurrent architecture: slow-evolving "strategic" layers and fast-evolving "execution" layers (extends prior puzzle-domain HRM [intake-584] to text)'
+  - 'Stabilization: "MagicNorm" exploits forward/backward horizon asymmetry under truncated BPTT; "warmup deep credit assignment" progressively expands gradient backprop from 2 → 5 recurrent steps'
+  - 'Training objective: instruction-response pairs with task-completion / response-only loss + PrefixLM bidirectional attention masking; strips all <think>...</think> content before training to concentrate signal on final completions'
+  - 'Open-source release: code at github.com/sapientinc/HRM-Text (FSDP2 training scaffold, eval, checkpoint conversion); weights at huggingface.co/sapientinc/HRM-Text-1B; MIT-style permissive license per repo'
+  techniques:
+  - 'Hierarchical Recurrent Model (HRM) for text — dual-timescale fast/slow layers'
+  - 'MagicNorm — normalization for asymmetric forward/backward compute horizons under TBPTT'
+  - 'Warmup deep credit assignment — progressive BPTT depth (2→5 recurrent steps)'
+  - 'Task-completion / response-only training objective on instruction-response pairs'
+  - 'PrefixLM bidirectional masking on instructions'
+  - '<think>...</think> stripping prior to pretraining'
+  reported_results:
+  - 'HRM-Text 1B: MMLU 60.7% (vs Llama3.2-3B 58.0%)'
+  - 'HRM-Text 1B: ARC-C 81.9% (vs Qwen3.5-2B 81.0%)'
+  - 'HRM-Text 1B: GSM8K 84.5% (vs Llama3.2-3B 77.7%)'
+  - 'HRM-Text 1B: DROP 82.2% (vs Gemma3-4B 60.1%)'
+  - 'HRM-Text 1B: MATH 56.2% (vs Ouro-1.4B 22.4%)'
+  - 'XL config reference run: 84.7% GSM8K, 56.5% MATH at ~$1,472 H100 cost (Feb 2026)'
+  - '96-432x less compute, 100-900x fewer training tokens than baseline scaling-law targets'
+  referenced_arxiv_ids:
+  - '2001.08361'
+  - '2203.15556'
+  - '2406.06159'
+  - '2402.00976'
+  - '2101.10605'
+  - '2510.25741'
+  novelty: high
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  ingested_date: '2026-05-22'
+  discovered_via: input
+  contradicting_evidence:
+  - 'Comparison framing is apples-to-oranges: HRM-Text is trained on instruction-response pairs with task-completion loss (closer to an instruction-tuned model) but benchmark deltas are quoted against general-pretrained BASE models (Llama3.2-3B base, Qwen3.5-2B base, Gemma3-4B base). The 100-900x efficiency multiplier loses force when the comparators are not matched on supervision regime.'
+  - 'Stripping <think>...</think> content from training data plausibly biases the model toward final-answer-only benchmarks (MMLU multiple-choice, GSM8K final number, MATH final answer) and away from open-ended generation; the benchmark suite reported is dominated by exactly this format.'
+  - 'Authors self-disclose: "residual contamination may still persist" in the pretraining mix despite decontamination — paper offers no quantitative leakage check vs the reported benchmarks.'
+  - 'No peer review yet (submitted 2026-05-20, ~2 days at intake time). The "independent verification April 2026" referenced in Sapient marketing predates the paper itself, so the verification provenance is unclear.'
+  - 'Architecture is non-transformer (dual-timescale recurrent) — same llama.cpp support gap as Ouro [intake-332]; transformers-only inference today blocks any drop-in EPYC role assignment.'
+  cross_references:
+    chapters:
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-584
+    - intake-585
+    - intake-583
+    - intake-582
+    - intake-332
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  handoffs_created: []
+  novelty_justification: >
+    High. Existing HRM-lineage intake (intake-584 base HRM, intake-585 mechanistic critique,
+    intake-583 TRM, intake-582 GRAM) is entirely puzzle-domain (Sudoku-Extreme, ARC-AGI, mazes).
+    HRM-Text is the FIRST application of the dual-timescale recurrent architecture to natural-language
+    pretraining, with new stabilization machinery (MagicNorm, warmup deep credit assignment) and a
+    new objective (task-completion response-only loss + PrefixLM + <think> stripping) that did not
+    appear in any prior intake entry. The efficiency claim (100-900x fewer tokens, 96-432x less
+    compute) is the kind of order-of-magnitude shift that, if it survives scrutiny, restructures the
+    pretraining cost frontier.
+  relevance_justification: >
+    Medium. EPYC does not pretrain models, so the methodological contribution is not directly
+    actionable. However, the *artifact* — a 1.15B open-source MIT-licensed model claimed to match
+    3-4B transformer baselines — is on its face a very strong candidate for a cheap-first-worker or
+    draft role on EPYC CPU. Two gating risks: (1) architecture support — like Ouro [intake-332],
+    HRM-Text is non-transformer and would need either transformers-library inference (slow on CPU)
+    or custom llama.cpp work; (2) the apples-to-oranges supervision-regime comparison (see
+    contradicting_evidence) may collapse the headline efficiency once a fair eval is run against
+    instruction-tuned 1-3B models (Qwen3.5-1.7B-Instruct, Llama3.2-3B-Instruct). Worth tracking
+    because the deep-dive cost is low (HF weights + repo are public) and the upside — a $1,500 1B
+    model that genuinely beats 3-4B models — would meaningfully change our cheap-specialist roster.
+  verdict_justification: >
+    worth_investigating, NOT new_opportunity. credibility=1: arXiv only (+0), <12mo (+1), Sapient+MIT
+    (+1), commercial bias from Sapient launch / PR Newswire push (-1), independent corroboration
+    (+0 — the cited "April 2026 independent verification" predates the paper and lacks a citable
+    third party). The contradicting-evidence list (instruction-tuned vs base comparison, <think>
+    stripping, residual contamination disclosure, no peer review) means the headline 100-900x number
+    needs validation before it informs any EPYC decision. Recommended follow-up: pull the HF weights,
+    run a fair eval against Qwen3.5-1.7B-Instruct on our own benchmark suite, defer any deployment
+    decision until that's done. Flag for user review — efficiency claim is large enough that the
+    deep-dive is worth scheduling even though the architecture path is blocked.

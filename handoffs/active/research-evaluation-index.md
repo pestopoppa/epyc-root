@@ -21,7 +21,7 @@
 |---------|--------|--------|----------|-------------|
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 done, TALE eval complete — static limits kept) | HIGH | 2026-04-11 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, A/B done (+4pp REPL), Phase 3a-b done (55% def compression). P3d A/B pending. **2026-04-20**: intake-414/415 deep dives add subprocess sandbox pattern (Phase 3 MCP workaround) + 5KB threshold gating + FTS5 indexing. | MEDIUM | 2026-04-20 |
-| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Sub-quadratic attention survey | active (literature survey complete, priority ranking established) | LOW | 2026-04-14 |
+| [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Sub-quadratic attention survey + non-transformer recurrent eval cluster | active (literature survey complete, priority ranking established; HRM-Text intake-598 + actions HRM-1/2/3 queued 2026-05-22) | LOW | 2026-05-22 |
 | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Log-Linear GDN readiness | stub (MONITORING) — blocked on pretrained models | HIGH | 2026-04-14 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | ~~[long-context-eval-datasets.md](long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
