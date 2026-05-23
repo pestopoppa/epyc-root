@@ -24,6 +24,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Inference Serving](inference-serving.md) | 17 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); per-model serving configs critical for quality |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
+| [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
 ## Routing & Evaluation
 
