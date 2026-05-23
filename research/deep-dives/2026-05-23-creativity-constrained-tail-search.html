@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Creativity as Constrained Tail Search — v3</title>
+<style>
+  :root{
+    --bg:#f7f7f4;
+    --paper:#ffffff;
+    --ink:#1f2933;
+    --muted:#667085;
+    --line:#d8ddd6;
+    --soft:#eef2ed;
+    --accent:#304ffe;
+    --accent2:#0f766e;
+    --warn:#b45309;
+    --bad:#991b1b;
+    --good:#166534;
+    --shadow: 0 12px 30px rgba(31,41,51,0.08);
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#f8f8f4 0%,#ecefeb 100%);
+    color:var(--ink);
+    font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  }
+  header{
+    max-width:1160px;
+    margin:0 auto;
+    padding:56px 24px 24px;
+  }
+  .eyebrow{
+    color:var(--accent2);
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    font-size:13px;
+  }
+  h1{
+    font-size:clamp(34px,5vw,62px);
+    line-height:1.02;
+    letter-spacing:-.045em;
+    margin:12px 0 16px;
+  }
+  h2{
+    font-size:clamp(24px,3vw,34px);
+    line-height:1.15;
+    letter-spacing:-.025em;
+    margin:0 0 12px;
+  }
+  h3{
+    font-size:20px;
+    margin:8px 0 8px;
+    letter-spacing:-.015em;
+  }
+  p{margin:0 0 14px}
+  .subtitle{
+    color:var(--muted);
+    font-size:20px;
+    max-width:920px;
+  }
+  main{
+    max-width:1160px;
+    margin:0 auto;
+    padding:8px 24px 80px;
+  }
+  section{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:28px;
+    margin:22px 0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1.05fr .95fr;
+    gap:24px;
+    align-items:start;
+  }
+  .three{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+  }
+  .four{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+  }
+  .card{
+    background:var(--soft);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px;
+  }
+  .small{font-size:14px;color:var(--muted)}
+  .math{
+    font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+    background:#f2f4f7;
+    border:1px solid #dde3ea;
+    border-radius:10px;
+    padding:10px 12px;
+    overflow:auto;
+    color:#263238;
+    font-size:13.5px;
+  }
+  .math.annot{
+    background:#fffbeb;
+    border-color:#fde68a;
+  }
+  .applet{
+    background:#fbfcfa;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+  }
+  canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#fff;
+    border:1px solid #e1e5df;
+    border-radius:14px;
+  }
+  .controls{
+    display:grid;
+    gap:12px;
+    margin-top:14px;
+  }
+  label{
+    display:grid;
+    grid-template-columns:200px 1fr 58px;
+    gap:12px;
+    align-items:center;
+    color:#344054;
+    font-size:14px;
+  }
+  label .lblmain{font-weight:600}
+  label .lblsub{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:2px}
+  input[type=range]{
+    width:100%;
+    accent-color:var(--accent);
+  }
+  .readout{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+    font-size:13px;
+    color:#111827;
+    text-align:right;
+  }
+  .pillrow{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+  }
+  .pill{
+    border-radius:999px;
+    padding:6px 10px;
+    background:#eef2ff;
+    color:#26358c;
+    font-size:13px;
+    border:1px solid #dbe2ff;
+  }
+  .pill.good{ background:#ecfdf5; color:#065f46; border-color:#a7f3d0; }
+  .pill.warn{ background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+  .callout{
+    border-left:5px solid var(--accent2);
+    background:#f0fdfa;
+    padding:16px 18px;
+    border-radius:12px;
+    margin-top:16px;
+  }
+  .callout.warn{
+    border-left-color:var(--warn);
+    background:#fff7ed;
+  }
+  .callout.bad{
+    border-left-color:var(--bad);
+    background:#fef2f2;
+  }
+  .footer{
+    color:var(--muted);
+    font-size:13px;
+    text-align:center;
+    margin-top:24px;
+  }
+  table{
+    border-collapse:collapse;
+    width:100%;
+    margin-top:10px;
+    font-size:14px;
+  }
+  th,td{
+    border-bottom:1px solid var(--line);
+    padding:9px 6px;
+    text-align:left;
+    vertical-align:top;
+  }
+  th{color:#344054}
+  .example{
+    border:1px dashed #c7d2e0;
+    border-radius:14px;
+    padding:14px 16px;
+    background:#fbfcff;
+    margin-top:10px;
+  }
+  .example h4{
+    margin:0 0 8px;
+    font-size:15px;
+    color:#1e3a8a;
+    letter-spacing:.01em;
+  }
+  .example .row{
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:10px;
+    padding:6px 0;
+    border-top:1px solid #e6ecf5;
+    font-size:14px;
+  }
+  .example .row:first-of-type{border-top:none}
+  .example .lbl{ color:#475467; font-weight:600 }
+  .deployed-prompt{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .deployed-prompt h3{margin-top:0}
+  .promptbox{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+    background:#f2f4f7;
+    border:1px solid #dde3ea;
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:13px;
+    line-height:1.5;
+    color:#263238;
+    white-space:pre-wrap;
+  }
+  .promptbox.deployed{background:#ecfdf5;border-color:#a7f3d0}
+  .changeNote{
+    background:#fffbeb;
+    border:1px solid #fde68a;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:10px;
+    font-size:13.5px;
+  }
+  .changeNote strong{color:#854d0e}
+  .loop{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+    background:#0b1220;
+    color:#e2e8f0;
+    border-radius:12px;
+    padding:14px;
+    font-size:13px;
+    line-height:1.55;
+    overflow:auto;
+  }
+  .loop .k{color:#7dd3fc}
+  .loop .v{color:#fde68a}
+  .loop .c{color:#94a3b8;font-style:italic}
+  @media (max-width:900px){
+    .grid,.three,.four,.deployed-prompt{grid-template-columns:1fr}
+    label{grid-template-columns:1fr}
+    .readout{text-align:left}
+    section{padding:22px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Interactive report · v3</div>
+  <h1>Creativity as Constrained Tail Search</h1>
+  <p class="subtitle">
+    A model of why genuine creative thought is not merely &ldquo;unlikely thought,&rdquo; why the raw
+    tail is mostly garbage, why structured creativity has a cost worth gating, and how the same
+    framing landed inside a working autopilot loop that now generates ideas, scores them, and
+    records the falsifier so the next pass can grade against still-open claims.
+  </p>
+</header>
+
+<main>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>Executive summary</h2>
+  <div class="three">
+    <div class="card">
+      <h3>1. Novelty is not enough</h3>
+      <p>
+        The far tail of raw idea-space is dominated by incoherence, delusion, malformed analogy,
+        and arbitrary weirdness. Creativity is not maximum distance from the mean.
+      </p>
+    </div>
+    <div class="card">
+      <h3>2. Creativity lives on a ridge</h3>
+      <p>
+        Valuable ideas are unusual <em>conditional on</em> validity, relevance, compression, and
+        goal-directedness. The rare region is high novelty plus high reality-contact.
+      </p>
+    </div>
+    <div class="card">
+      <h3>3. Real insight sharpens out-of-sample</h3>
+      <p>
+        A genuine creative idea lowers entropy on <em>held-out</em> observations &mdash; predictions
+        improve where they were not yet checked. Delusion lowers entropy only on observations
+        already explained.
+      </p>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Why this matters operationally:</strong> structured creativity costs prompt tokens,
+    reasoning steps, and time. It is the right tool when a system is stuck; it is wasteful when
+    the system is climbing. The protocol we describe here gets gated on a stagnation signal &mdash;
+    cheap when exploiting a working lead, expensive only when stuck.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section class="grid">
+  <div>
+    <h2>The core model</h2>
+    <p>
+      The natural starting question is one-dimensional: how many standard deviations from the mean
+      is creative or revolutionary thought? The answer is that a one-dimensional thought
+      distribution is the wrong object. A thought has latent coordinates: novelty, validity,
+      laboriousness, intent, compression, domain relevance, and falsifiability.
+    </p>
+    <p>
+      Ordinary thought sits near the modal/default response. Garbage delusion can be extremely far
+      from that mode, but with low validity. Genuinely creative thought is far from the default
+      while still satisfying constraints &mdash; the conditional tail of <strong>valid novelty</strong>,
+      not the absolute tail of novelty.
+    </p>
+    <div class="math">
+      <span class="small" style="color:#7a839a">heuristic decomposition (each term in [0,1]):</span><br>
+      creative_value &asymp; novelty &times; validity &times; relevance &times; compression<br><br>
+      revolutionary_insight: low P(idea | ordinary prior)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;but high P(idea | sharper world model)
+    </div>
+    <p class="small" style="margin-top:8px">
+      These are deliberately heuristic. They are the colour field Applet 1 paints: the score moves
+      with all four factors and the &ldquo;ridge&rdquo; visualises the multiplicative coupling.
+    </p>
+    <div class="callout">
+      <strong>Best compressed form:</strong> creativity is not &ldquo;be weirder.&rdquo; It is
+      &ldquo;move as far as possible from the default answer without breaking contact with reality.&rdquo;
+    </div>
+
+    <div class="example">
+      <h4>Worked example &mdash; an LLM orchestration loop that has stagnated</h4>
+      <p class="small" style="margin-top:0">
+        Prompt to the planner: <em>&ldquo;System has been at quality 0.62 for the last 8 trials, all
+        action_type=seed_batch. Frontier slope is flat. What should we try next?&rdquo;</em>
+      </p>
+      <div class="row"><div class="lbl">Modal answer (T=0)</div><div>Run another <code>seed_batch</code> of 20 questions in the same suite mix &mdash; the obvious continuation. Low novelty, high validity, very low information gain.</div></div>
+      <div class="row"><div class="lbl">Raw tail (high T)</div><div>&ldquo;Swap out the entire model architecture.&rdquo; High novelty, low validity (out of action space, no falsifier, no expected mechanism). Garbage.</div></div>
+      <div class="row"><div class="lbl">Constrained creative</div><div>Run a <code>numeric_trial</code> on the verifier&rsquo;s confidence threshold that <em>also</em> encodes the structural hypothesis from trial #47 (KV-compaction at threshold X). Fuses two pending ideas into one falsifiable experiment with a quoted expected mechanism and an explicit falsifier (&ldquo;quality drops &gt;2pp&rdquo;).</div></div>
+    </div>
+  </div>
+
+  <div class="applet">
+    <h3>Applet 1 &mdash; novelty &times; validity &times; compression ridge</h3>
+    <p class="small">
+      Move the candidate idea. The colour field is the heuristic above: the bright upper-right
+      ridge is the region of high creative value. Raise compression to see the ridge narrow &mdash;
+      a sharper world model is more demanding.
+    </p>
+    <canvas id="ridgeCanvas" width="620" height="440"></canvas>
+    <div class="controls">
+      <label><span><span class="lblmain">Novelty</span><span class="lblsub">distance from modal answer</span></span><input id="novelty" type="range" min="0" max="100" value="68"><span class="readout" id="noveltyVal"></span></label>
+      <label><span><span class="lblmain">Validity</span><span class="lblsub">consistent with known facts/constraints</span></span><input id="validity" type="range" min="0" max="100" value="78"><span class="readout" id="validityVal"></span></label>
+      <label><span><span class="lblmain">Compression</span><span class="lblsub">explanatory parsimony</span></span><input id="compression" type="range" min="0" max="100" value="65"><span class="readout" id="compressionVal"></span></label>
+    </div>
+    <div class="pillrow">
+      <span class="pill" id="ridgeClass"></span>
+      <span class="pill" id="ridgeScore"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section class="grid">
+  <div class="applet">
+    <h3>Applet 2 &mdash; posterior over idea-generators</h3>
+    <p class="small">
+      Given an idea of some strangeness plus evidence of some quality, which kind of process most
+      likely produced it? The likelihood ratio at the bottom is the Bayesian punchline: how many
+      times more probable a <em>creative</em> generator is than a <em>delusional</em> one for this
+      idea/evidence pair.
+    </p>
+    <canvas id="posteriorCanvas" width="620" height="440"></canvas>
+    <div class="controls">
+      <label><span><span class="lblmain">Strangeness</span><span class="lblsub">distance from modal completion</span></span><input id="strange" type="range" min="0" max="100" value="72"><span class="readout" id="strangeVal"></span></label>
+      <label><span><span class="lblmain">Evidence quality</span><span class="lblsub">independent corroboration / test fit</span></span><input id="evidence" type="range" min="0" max="100" value="62"><span class="readout" id="evidenceVal"></span></label>
+      <label><span><span class="lblmain">Prior skepticism</span><span class="lblsub">how much you weight ordinary explanations</span></span><input id="skepticism" type="range" min="0" max="100" value="75"><span class="readout" id="skepticismVal"></span></label>
+    </div>
+    <div class="pillrow">
+      <span class="pill" id="entropyReadout"></span>
+      <span class="pill" id="winnerReadout"></span>
+      <span class="pill" id="lrReadout"></span>
+    </div>
+  </div>
+  <div>
+    <h2>Entropy: in-sample vs out-of-sample</h2>
+    <p>
+      If a revolutionary idea is true, the world model conditional on prior knowledge plus the new
+      idea should usually have lower entropy:
+    </p>
+    <div class="math">
+      H(W | K, r) &lt; H(W | K)
+    </div>
+    <p>
+      But that inequality is not by itself a sign of truth. A conspiracy theory also reduces
+      subjective uncertainty by forcing every observation into a single overfit pattern. The
+      sharper criterion is:
+    </p>
+    <div class="math">
+      <strong>insight</strong>: H(W | K, r) falls on observations <em>not yet seen</em><br>
+      <strong>delusion</strong>: H(W | K, r) falls only on observations already explained
+    </div>
+    <p>
+      Insight is entropy reduction that survives held-out data. Delusion is entropy reduction that
+      collapses the moment new data arrives. Validity, falsifiability, and compression are how we
+      tell them apart <em>before</em> the new data arrives.
+    </p>
+    <table>
+      <thead><tr><th>Idea type</th><th>Entropy effect</th><th>Holds up out-of-sample?</th></tr></thead>
+      <tbody>
+        <tr><td>Routine thought</td><td>Little change</td><td>Yes (mostly preserves known model)</td></tr>
+        <tr><td>Delusional pattern</td><td>Subjective entropy falls sharply</td><td>No &mdash; prediction error rises on new data</td></tr>
+        <tr><td>Creative insight</td><td>Entropy falls, model integrates</td><td>Yes &mdash; predictions sharpen on unseen cases</td></tr>
+        <tr><td>Revolutionary idea</td><td>Major reorganisation</td><td>Yes &mdash; many prior anomalies suddenly fit</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section class="grid">
+  <div>
+    <h2>Why &ldquo;sample from the tails&rdquo; is useful but reductive</h2>
+    <p>
+      Tail-sampling prompts for LLMs can reduce blandness and mode collapse. They ask the model to
+      avoid the single most canonical answer and generate less typical completions. This helps
+      with brainstorming, creative writing, analogy generation, and synthetic variation.
+    </p>
+    <p>
+      But if creativity is modeled only as low probability, the method confuses <em>unusual</em>
+      with <em>valuable</em>. The better target is not the raw tail of the response distribution.
+      It is the tail of plausible, useful, falsifiable, reality-preserving hypotheses.
+    </p>
+    <div class="math">
+      bad target:&nbsp;&nbsp;&nbsp;sample low P(response | prompt)<br><br>
+      better target: sample low P(response | ordinary prior)<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;subject to high validity, relevance, compression, falsifiability
+    </div>
+    <div class="callout warn">
+      Tail sampling is a good <strong>divergence</strong> tool. It is not, by itself, a complete
+      creativity engine. It needs filtering, adversarial testing, and synthesis.
+    </div>
+  </div>
+  <div class="applet">
+    <h3>Applet 3 &mdash; stochasticity, filter strength, and tail mass</h3>
+    <p class="small">
+      Three independent levers: how much variance the generator emits, how hard the reality-filter
+      re-weights that distribution, and where you decide non-obviousness starts. The orange tail
+      is mass that <em>looks</em> creative but fails the filter. The green tail is what survives.
+    </p>
+    <canvas id="tempCanvas" width="620" height="440"></canvas>
+    <div class="controls">
+      <label><span><span class="lblmain">Generator stochasticity</span><span class="lblsub">decoding temperature / variance</span></span><input id="temperature" type="range" min="20" max="220" value="95"><span class="readout" id="temperatureVal"></span></label>
+      <label><span><span class="lblmain">Reality-preservation filter</span><span class="lblsub">strength of truth/coherence re-weighting</span></span><input id="constraint" type="range" min="0" max="100" value="70"><span class="readout" id="constraintVal"></span></label>
+      <label><span><span class="lblmain">Non-obviousness cutoff</span><span class="lblsub">where the tail begins</span></span><input id="tail" type="range" min="45" max="95" value="72"><span class="readout" id="tailVal"></span></label>
+    </div>
+    <div class="pillrow">
+      <span class="pill good" id="validTailReadout"></span>
+      <span class="pill warn" id="garbageTailReadout"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section class="grid">
+  <div class="applet">
+    <h3>Applet 4 &mdash; diverge, filter, fuse</h3>
+    <p class="small">
+      Generate candidate ideas, keep those above the novelty and validity filters, then fuse the
+      top two survivors into a single synthesised point. The synthesis sits at their
+      compression-weighted centroid &mdash; the best creative idea reduces uncertainty by uniting
+      two partial models, not by adding a third.
+    </p>
+    <canvas id="pipelineCanvas" width="620" height="440"></canvas>
+    <div class="controls">
+      <label><span><span class="lblmain">Number of ideas</span></span><input id="nideas" type="range" min="30" max="260" value="130"><span class="readout" id="nideasVal"></span></label>
+      <label><span><span class="lblmain">Novelty filter</span></span><input id="novfilter" type="range" min="0" max="100" value="55"><span class="readout" id="novfilterVal"></span></label>
+      <label><span><span class="lblmain">Validity filter</span></span><input id="valfilter" type="range" min="0" max="100" value="62"><span class="readout" id="valfilterVal"></span></label>
+      <button id="regen" style="padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;">Regenerate candidate cloud</button>
+    </div>
+    <div class="pillrow">
+      <span class="pill" id="survivorReadout"></span>
+      <span class="pill" id="bestIdeaReadout"></span>
+      <span class="pill good" id="fusionReadout"></span>
+    </div>
+  </div>
+  <div>
+    <h2>Temperature 0 is not &ldquo;average human thought&rdquo;</h2>
+    <p>
+      It is tempting to call T=0 the mode of &ldquo;ordinary thought.&rdquo; In an instruction-tuned
+      LLM that is almost right but in a misleading way: T=0 is the <strong>mode of the
+      RLHF-shaped posterior</strong>, not the mode of the underlying base distribution. Raising
+      temperature gets you more variance on the <em>same</em> aligned posterior &mdash; not access
+      to a different one.
+    </p>
+    <div class="math">
+      T = 0 &asymp; mode of the alignment-shaped posterior<br>
+      T &gt; 0 &asymp; more variance, same posterior<br><br>
+      creative candidate &asymp; semantic distance from that mode<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;subject to validity, usefulness, compression, falsifiability
+    </div>
+    <p>
+      This is why the most useful artificial creativity pipeline is not simply &ldquo;increase
+      temperature.&rdquo; It is:
+    </p>
+    <div class="math">
+      diverge &rarr; filter &rarr; fuse &rarr; test &rarr; update posterior
+    </div>
+    <p>
+      The last two steps are where the system stops being a brainstorm and starts being a research
+      loop. They are also where most creativity prompts stop short.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>The falsifier loop &mdash; making the entropy claim operational</h2>
+  <p>
+    The most subtle move is not in the prompt itself; it is in what gets <em>recorded</em>. Asking
+    every chosen idea to ship with a one-line falsifier turns a single creative pass into a
+    cross-trial feedback loop. Trial <em>N</em> commits to a prediction whose absence would
+    invalidate it. Trial <em>N+k</em>&rsquo;s planner sees that falsifier, sees whether the
+    intervening evidence resolved it, and grades new candidates against still-open claims.
+  </p>
+  <div class="loop"><span class="c">// each trial through the planner</span>
+trial[N].action          = <span class="v">"numeric_trial on verifier threshold"</span>
+trial[N].hypothesis      = <span class="v">"raising threshold reduces escalation rate"</span>
+trial[N].falsifier       = <span class="v">"escalation rate unchanged after 20 trials"</span>
+trial[N].rubric_scores   = { <span class="k">info_gain</span>:4, <span class="k">coherence</span>:5, <span class="k">usefulness</span>:3 }
+
+<span class="c">// many trials later, planner assembles its prompt</span>
+unfalsified_hypotheses = journal.unfalsified_hypotheses(n=5)
+  &rarr; [(N,   <span class="v">"raising threshold reduces escalation"</span>, <span class="v">"unchanged after 20"</span>),
+     (N+3, <span class="v">"KV-compaction at X preserves quality"</span>,  <span class="v">"quality drops &gt;2pp"</span>),
+     ...]
+
+<span class="c">// these get injected into the next rich-fragment prompt:</span>
+<span class="c">// "score new candidates against the still-open claims above"</span></div>
+  <p style="margin-top:14px">
+    This is what makes &ldquo;a genuine creative idea lowers entropy out-of-sample&rdquo; a thing
+    the system actually <em>checks</em> over time, rather than a thing we just assert. A claim
+    whose falsifier never gets resolved is doing no epistemic work and gets aged out. A claim
+    whose falsifier fires is a piece of evidence the next planner pass can&rsquo;t pretend not to
+    know.
+  </p>
+  <div class="callout">
+    The expensive structural move is not &ldquo;ask for a falsifier.&rdquo; It is <strong>persist it,
+    and have the next pass see it.</strong> Without the cross-trial loop, the falsifier is just
+    decoration.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>From theory to a deployed system</h2>
+  <p>
+    The framing above is not abstract; it sits inside an autopilot loop that proposes the next
+    experiment for an LLM orchestration stack. The earlier implementation treated creativity as
+    <code>random.shuffle</code> over under-used action types and injected three samples as
+    candidates the controller had to defend. That mechanism is a textbook example of conflating
+    <em>unlikely</em> with <em>creative</em>: it sampled the raw tail, ran every trial, and never
+    recorded a falsifier. Three concrete moves replaced it.
+  </p>
+  <div class="four">
+    <div class="card">
+      <h3>Tail samples &rarr; seeds, not candidates</h3>
+      <p>
+        Under-used action types still get surfaced &mdash; but as <em>inspiration</em> ("directions
+        explored &le;1 time in the last 30 trials") rather than candidates the controller must
+        defend. Diversity priming without forcing the model to argue for noise.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Stagnation-gated, not always-on</h3>
+      <p>
+        The rich creativity protocol activates only when one of three signals fires: hypervolume
+        slope below &epsilon;, trustworthy trial count below 5, or three consecutive trials with
+        the same action_type. Otherwise the planner uses a lean prompt. Structured creativity has
+        a cost; pay it only when stuck.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Rubric collapsed 6 &rarr; 3 axes</h3>
+      <p>
+        Information gain (novelty + falsifiability + compression), coherence with evidence
+        (signatures, blacklist, last 30 trials), and cost-adjusted usefulness. LLMs grade more
+        crisply across three orthogonal axes than six adjacent ones &mdash; we observed score
+        mushing on the longer rubric.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Falsifier persisted to the journal</h3>
+      <p>
+        A second fenced block (<code>autopilot_rationale</code>) carries the chosen action&rsquo;s
+        falsifier and self-scored rubric. Both fields land on every journal entry, and a new
+        helper surfaces still-open claims to the next planner pass. The cross-trial loop is what
+        makes the entropy claim operational.
+      </p>
+    </div>
+  </div>
+  <p style="margin-top:18px">
+    Two further refinements that did not show up in the V0 sketch but matter in practice:
+    <strong>fusion preference</strong> (if the top-two candidates can be encoded as one action
+    that dominates both, prefer the fusion), and <strong>quote, don&rsquo;t regenerate</strong>
+    (the chosen action&rsquo;s rubric scores must be copied verbatim from the candidate table, not
+    re-graded after the fact &mdash; an anti-drift guard against performative reasoning).
+  </p>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>Failure modes</h2>
+  <p>
+    Every applet in this report shows the protocol working. None of them shows how it can fail.
+    The four modes below are the ones worth budgeting against; the deployed version has a guard
+    against each.
+  </p>
+  <div class="four">
+    <div class="card">
+      <h3>Performative reasoning</h3>
+      <p>
+        The controller writes the full rubric, lists alternatives, then picks the modal answer
+        anyway. The rubric becomes a fig leaf over the default.
+      </p>
+      <p class="small"><strong>Guard:</strong> the chosen action&rsquo;s scores must be quoted from
+      the candidate table, not regenerated &mdash; making it costly to grade something high in the
+      table and then ignore it.</p>
+    </div>
+    <div class="card">
+      <h3>Rubric drift / score mushing</h3>
+      <p>
+        With six adjacent dimensions an LLM ranks unreliably &mdash; novelty and falsifiability
+        bleed into each other; compression and usefulness do too. The rank order becomes
+        signal-free.
+      </p>
+      <p class="small"><strong>Guard:</strong> collapse to three orthogonal axes (info_gain,
+      coherence, cost-adjusted usefulness). Reintroduce dimensions only if a real ablation shows
+      the collapse loses information.</p>
+    </div>
+    <div class="card">
+      <h3>Falsifier inflation</h3>
+      <p>
+        The &ldquo;what would falsify it&rdquo; line becomes a ritualised non-answer: &ldquo;the
+        approach not working,&rdquo; &ldquo;a worse outcome,&rdquo; &ldquo;regression on the
+        metric.&rdquo; Anything that can&rsquo;t actually fail isn&rsquo;t a falsifier.
+      </p>
+      <p class="small"><strong>Guard:</strong> persist falsifiers to the journal and surface still-open
+      ones to the next pass. A vague falsifier that never resolves gets aged out; planner sees its
+      uselessness over time.</p>
+    </div>
+    <div class="card">
+      <h3>Local-optimum defence</h3>
+      <p>
+        Even with tail seeds and a rubric, the model can list the alternatives, dismiss each in a
+        sentence, and return to the obvious answer &mdash; the &ldquo;break local-optimum&rdquo;
+        scaffold rationalised the local optimum.
+      </p>
+      <p class="small"><strong>Guard:</strong> the stagnation gate. If autopilot has been flat for
+      <em>N</em> trials in the same action_type, the controller is told so explicitly &mdash;
+      &ldquo;the system is STAGNATING&rdquo; &mdash; and given different inspiration each pass.</p>
+    </div>
+  </div>
+  <div class="callout warn">
+    None of these guards is bulletproof. They raise the cost of the failure mode enough that the
+    cheaper path is to do the right thing. That is usually enough for an LLM controller; it is
+    rarely enough for an adversarial one.
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>The deployed prompt &mdash; V0 sketch vs what we shipped</h2>
+  <p>
+    The piece originally closed on a clean V0 protocol. What actually went into the autopilot loop
+    has the same shape but specific refinements at every step. The side-by-side is below; the
+    yellow notes call out each change and why it was made.
+  </p>
+  <div class="deployed-prompt">
+    <div>
+      <h3>V0 sketch</h3>
+      <div class="promptbox">Generate N candidate ideas.
+
+Constraints:
+- Each idea should be non-obvious relative to the standard answer.
+- Do not optimize for weirdness alone.
+- Each idea must preserve contact with known facts and constraints.
+- Include one sentence explaining why this idea is low-typicality.
+- Include one sentence explaining what evidence would falsify it.
+
+Then score each idea on:
+1. Novelty
+2. Coherence
+3. Explanatory compression
+4. Practical usefulness
+5. Falsifiability
+6. Risk of being merely aesthetic nonsense
+
+Finally, synthesize the best 2 ideas into a cleaner, lower-entropy model.</div>
+    </div>
+    <div>
+      <h3>Deployed (rich fragment)</h3>
+      <div class="promptbox deployed">The system is STAGNATING. Run the constrained-creativity protocol:
+
+1. Generate <b>5 candidate actions</b>. Each must be:
+   - Non-obvious relative to the recent default (last 3 trials).
+   - Consistent with Pareto geometry, blacklist, signatures,
+     last 30 trials. Do NOT optimize for weirdness.
+   - Inspired (not constrained) by these under-used action
+     types &mdash; directions explored &le;1 time in last 30 trials:
+       { tail_seeds injected here }
+
+2. For each candidate, one line each:
+   - why-low-typicality (non-default given current evidence)
+   - falsifier (concrete observation that would invalidate it)
+
+3. Score each candidate 1&ndash;5 on three axes:
+   - info_gain      &mdash; novelty + falsifiability + compression
+   - coherence      &mdash; consistency with the evidence above
+   - usefulness     &mdash; Pareto improvement per compute, minus
+                       aesthetic-nonsense risk
+
+4. <b>Synthesize.</b> If your top-2 candidates can be FUSED into
+   one action that dominates both, prefer the fusion. The best
+   creative idea reduces uncertainty, not adds complexity.
+
+5. <b>Quote, don&rsquo;t regenerate.</b> The chosen action&rsquo;s rubric
+   scores in the rationale sidecar must be copied verbatim
+   from your candidate table &mdash; no re-grading after the fact.
+
+### Still-open hypotheses
+   { unfalsified hypotheses injected here }</div>
+    </div>
+  </div>
+  <div class="changeNote"><strong>N: 12 &rarr; 5.</strong> Five fits in working memory for scoring; twelve produces a long table the model grades sloppily. Three is too few to escape the default&rsquo;s gravity well.</div>
+  <div class="changeNote"><strong>Rubric: 6 axes &rarr; 3 axes.</strong> Adjacent dimensions (novelty/falsifiability, compression/usefulness) collapsed into orthogonal composites. Sharper rank order with less score mushing.</div>
+  <div class="changeNote"><strong>Tail samples: candidate &rarr; seed.</strong> Promoted from &ldquo;defend at least one&rdquo; to &ldquo;use as inspiration.&rdquo; The diversity priming survives without forcing the model to argue for noise.</div>
+  <div class="changeNote"><strong>Synthesise &rarr; fuse.</strong> The two best ideas should collapse into one action when possible, not summarise into a paragraph. Operational, not philosophical.</div>
+  <div class="changeNote"><strong>New: quote-don&rsquo;t-regenerate.</strong> Anti-drift guard against performative reasoning &mdash; the rubric scores attached to the chosen action must match the table the model wrote a paragraph earlier.</div>
+  <div class="changeNote"><strong>New: stagnation gate.</strong> This whole block runs only when hv_slope &lt; &epsilon; or trustworthy &lt; 5 or 3-trial action-type streak. Otherwise the planner sees a lean prompt. Structured creativity has a cost; pay it when stuck.</div>
+  <div class="changeNote"><strong>New: persisted falsifier.</strong> A second fenced block (<code>autopilot_rationale</code>) carries the chosen action&rsquo;s falsifier and rubric. Both land on the journal entry, and a helper surfaces still-open claims to the next pass.</div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── -->
+<section>
+  <h2>Bottom line</h2>
+  <div class="callout">
+    Genuine creativity is not the absolute tail of the thought distribution. It is the rare region
+    where a low-typicality idea survives reality constraints and makes the posterior world model
+    simpler, sharper, and more predictive <em>on data it hasn&rsquo;t seen yet</em>. The protocol
+    that operationalises this in a working autopilot &mdash; diverge with seeds, filter with a
+    three-axis rubric, fuse top-two, quote not regenerate, persist the falsifier, gate the whole
+    apparatus on a stagnation signal &mdash; is the cheapest mechanical scaffold I&rsquo;ve found
+    that consistently outperforms both T=0 exploitation and raw tail sampling.
+  </div>
+</section>
+
+<div class="footer">
+  Standalone interactive report. All applets run locally in the browser; no external libraries or network calls.
+</div>
+</main>
+
+<script>
+function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+function lerp(a,b,t){return a+(b-a)*t}
+function fmt(x,d=2){return Number(x).toFixed(d)}
+function entropy(ps){
+  let h=0;
+  for(const p of ps){ if(p>0) h -= p*Math.log2(p); }
+  return h;
+}
+function softmax(logits){
+  const m=Math.max(...logits);
+  const ex=logits.map(x=>Math.exp(x-m));
+  const s=ex.reduce((a,b)=>a+b,0);
+  return ex.map(x=>x/s);
+}
+function colorMix(c1,c2,t){
+  const a=c1.match(/\w\w/g).map(x=>parseInt(x,16));
+  const b=c2.match(/\w\w/g).map(x=>parseInt(x,16));
+  const c=a.map((v,i)=>Math.round(lerp(v,b[i],t)));
+  return "#" + c.map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+function drawAxes(ctx,w,h,xlab,ylab){
+  const m={l:58,r:24,t:24,b:56};
+  ctx.strokeStyle="#98a2b3"; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(m.l,m.t); ctx.lineTo(m.l,h-m.b); ctx.lineTo(w-m.r,h-m.b); ctx.stroke();
+  ctx.fillStyle="#475467"; ctx.font="13px system-ui";
+  ctx.fillText(ylab,m.l-42,m.t+8);
+  ctx.fillText(xlab,w/2-40,h-18);
+  ctx.fillStyle="#667085"; ctx.font="12px system-ui";
+  ctx.fillText("low",m.l-10,h-m.b+20);
+  ctx.fillText("high",w-m.r-24,h-m.b+20);
+  ctx.save(); ctx.translate(m.l-36,(h-m.b+m.t)/2+40); ctx.rotate(-Math.PI/2); ctx.fillText("high",0,0); ctx.restore();
+  return m;
+}
+
+/* Applet 1 */
+function drawRidge(){
+  const c=document.getElementById("ridgeCanvas"), ctx=c.getContext("2d"), w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const m=drawAxes(ctx,w,h,"Novelty","Validity");
+  const pw=w-m.l-m.r, ph=h-m.t-m.b;
+  const comp = +document.getElementById("compression").value/100;
+  for(let ix=0; ix<80; ix++){
+    for(let iy=0; iy<58; iy++){
+      const x=ix/79, y=iy/57;
+      const ridge=Math.pow(x,0.7)*Math.pow(y,1.25);
+      const garbage=Math.pow(x,1.8)*Math.pow(1-y,1.5);
+      const compressionGate = 0.35 + 0.65*Math.exp(-Math.pow((x-0.78)/(.34-.18*comp),2) - Math.pow((y-0.80)/(.38-.20*comp),2));
+      const val=clamp((ridge * (0.55 + 0.70*comp) * compressionGate) - (0.45 + 0.35*(1-comp))*garbage,0,1);
+      const col=colorMix("fff7ed","bbf7d0",val);
+      ctx.fillStyle=col;
+      ctx.fillRect(m.l+x*pw, m.t+(1-y)*ph, pw/78+1, ph/56+1);
+    }
+  }
+  ctx.fillStyle="rgba(153,27,27,.12)";
+  ctx.fillRect(m.l+0.72*pw,m.t+0.55*ph,0.28*pw,0.45*ph);
+  ctx.fillStyle="#991b1b"; ctx.font="13px system-ui"; ctx.fillText("garbage tail",m.l+0.74*pw,m.t+0.62*ph);
+  ctx.fillStyle="rgba(22,101,52,.15)";
+  ctx.beginPath(); ctx.ellipse(m.l+0.78*pw,m.t+0.22*ph,75,42,-0.55,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle="#166534"; ctx.fillText("creative ridge",m.l+0.66*pw,m.t+0.2*ph);
+  const novelty=+document.getElementById("novelty").value/100;
+  const validity=+document.getElementById("validity").value/100;
+  const compression=+document.getElementById("compression").value/100;
+  const score=Math.pow(novelty,0.8)*Math.pow(validity,1.4)*Math.pow(compression,0.7);
+  const x=m.l+novelty*pw, y=m.t+(1-validity)*ph;
+  const markerRadius = 5 + 9*compression;
+  ctx.fillStyle="#304ffe"; ctx.strokeStyle="#fff"; ctx.lineWidth=4;
+  ctx.beginPath(); ctx.arc(x,y,markerRadius,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle="rgba(48,79,254,.28)"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(x,y,markerRadius + 8 + 14*compression,0,Math.PI*2); ctx.stroke();
+  ctx.fillStyle="#111827"; ctx.font="13px system-ui"; ctx.fillText("candidate idea",x+13,y-10);
+  document.getElementById("noveltyVal").textContent=Math.round(novelty*100)+"%";
+  document.getElementById("validityVal").textContent=Math.round(validity*100)+"%";
+  document.getElementById("compressionVal").textContent=Math.round(compression*100)+"%";
+  let cls="routine / central";
+  if(novelty>.72 && validity<.45) cls="raw novelty garbage tail";
+  else if(novelty>.62 && validity>.65 && compression>.55) cls="creative ridge candidate";
+  else if(novelty>.78 && validity>.78 && compression>.7) cls="revolutionary-style candidate";
+  else if(validity>.7 && novelty<.45) cls="competent conventional thought";
+  document.getElementById("ridgeClass").textContent=cls;
+  document.getElementById("ridgeScore").textContent="creative value ≈ "+fmt(score,2);
+}
+
+/* Applet 2 */
+function drawPosterior(){
+  const c=document.getElementById("posteriorCanvas"), ctx=c.getContext("2d"), w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const strange=+document.getElementById("strange").value/100;
+  const evidence=+document.getElementById("evidence").value/100;
+  const skepticism=+document.getElementById("skepticism").value/100;
+  const labels=["ordinary","competent","noisy/delusional","creative","revolutionary"];
+  const priors=[
+    0.50 + 0.25*skepticism,
+    0.25,
+    0.18,
+    0.06*(1-skepticism)+0.025,
+    0.012*(1-skepticism)+0.003
+  ];
+  const psum=priors.reduce((a,b)=>a+b,0);
+  const p0=priors.map(p=>p/psum);
+  const logits=[
+    Math.log(p0[0]) + 1.7*(1-strange) - 0.6*evidence,
+    Math.log(p0[1]) + .6*(1-Math.abs(strange-.35)) + .4*evidence,
+    Math.log(p0[2]) + 2.0*strange - 1.8*evidence,
+    Math.log(p0[3]) + 1.3*strange + 1.7*evidence,
+    Math.log(p0[4]) + 1.8*strange + 2.6*evidence
+  ];
+  const post=softmax(logits);
+  const priorH=entropy(p0), postH=entropy(post);
+  const m={l:70,r:22,t:22,b:90}, pw=w-m.l-m.r, ph=h-m.t-m.b;
+  ctx.strokeStyle="#98a2b3";
+  ctx.beginPath(); ctx.moveTo(m.l,m.t); ctx.lineTo(m.l,h-m.b); ctx.lineTo(w-m.r,h-m.b); ctx.stroke();
+  const bw=pw/labels.length*0.58;
+  labels.forEach((lab,i)=>{
+    const x=m.l+(i+.5)*pw/labels.length-bw/2;
+    const bh=post[i]*ph*1.25;
+    ctx.fillStyle=i===2?"#f97316":(i>=3?"#22c55e":"#93c5fd");
+    ctx.fillRect(x,h-m.b-bh,bw,bh);
+    ctx.fillStyle="#334155"; ctx.font="12px system-ui"; ctx.save();
+    ctx.translate(x+bw/2,h-m.b+12); ctx.rotate(-Math.PI/5); ctx.fillText(lab,-18,12); ctx.restore();
+    ctx.fillStyle="#111827"; ctx.font="12px ui-monospace"; ctx.fillText(fmt(post[i],2),x+4,h-m.b-bh-6);
+  });
+  ctx.fillStyle="#475467"; ctx.font="13px system-ui"; ctx.fillText("Posterior probability after observing idea + evidence",m.l,m.t+4);
+  document.getElementById("strangeVal").textContent=Math.round(strange*100)+"%";
+  document.getElementById("evidenceVal").textContent=Math.round(evidence*100)+"%";
+  document.getElementById("skepticismVal").textContent=Math.round(skepticism*100)+"%";
+  const maxI=post.indexOf(Math.max(...post));
+  document.getElementById("entropyReadout").textContent="entropy: "+fmt(priorH,2)+" → "+fmt(postH,2)+" bits";
+  document.getElementById("winnerReadout").textContent="most likely generator: "+labels[maxI];
+  // Bayesian punchline: likelihood ratio of creative vs delusional given this idea/evidence.
+  const lr = post[3] / Math.max(post[2], 1e-9);
+  let lrText;
+  if(lr >= 1) lrText = "creative " + fmt(lr,2) + "× more likely than delusional";
+  else        lrText = "delusional " + fmt(1/lr,2) + "× more likely than creative";
+  document.getElementById("lrReadout").textContent = lrText;
+}
+
+/* Applet 3 */
+function normalPDF(x,mu,s){return Math.exp(-.5*Math.pow((x-mu)/s,2))/(s*Math.sqrt(2*Math.PI))}
+function drawTemp(){
+  const c=document.getElementById("tempCanvas"), ctx=c.getContext("2d"), w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const temp=+document.getElementById("temperature").value/100;
+  const constraint=+document.getElementById("constraint").value/100;
+  const tail=+document.getElementById("tail").value/100;
+  const m=drawAxes(ctx,w,h,"Response typicality → tail","Probability density");
+  const pw=w-m.l-m.r, ph=h-m.t-m.b;
+  const sigma=0.16*temp;
+  let maxY=0;
+  const pts=[];
+  for(let i=0;i<=220;i++){
+    const x=i/220;
+    const base=normalPDF(x,.42,sigma);
+    // Filter strength suppresses ultra-tail probability and re-weights mass toward
+    // a disciplined "useful non-obvious" band rather than letting probability smear
+    // into pure weirdness.
+    const disciplinedBand = 0.50*normalPDF(x,.70,0.16);
+    const garbagePenalty = 1 - constraint*(1/(1+Math.exp(-18*(x-.86))));
+    const y=(base*(1-0.28*constraint) + disciplinedBand*constraint) * garbagePenalty;
+    pts.push([x,y]);
+    maxY=Math.max(maxY,y);
+  }
+  ctx.beginPath();
+  pts.forEach(([x,y],i)=>{
+    const px=m.l+x*pw, py=h-m.b-(y/maxY)*ph*.88;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  });
+  ctx.lineTo(m.l+pw,h-m.b); ctx.lineTo(m.l,h-m.b); ctx.closePath();
+  ctx.fillStyle="rgba(48,79,254,.10)"; ctx.fill();
+
+  function fillTail(kind){
+    ctx.beginPath();
+    let started=false;
+    pts.forEach(([x,y])=>{
+      if(x < tail) return;
+      const px=m.l+x*pw;
+      const validness=clamp(constraint*(1.12-x)+0.12+0.28*constraint,0,1);
+      const yy = kind === "valid" ? y*validness : y*(1-validness);
+      const py=h-m.b-(yy/maxY)*ph*.88;
+      if(!started){ ctx.moveTo(px,h-m.b); ctx.lineTo(px,py); started=true; }
+      else ctx.lineTo(px,py);
+    });
+    ctx.lineTo(m.l+pw,h-m.b);
+    ctx.closePath();
+    ctx.fillStyle = kind === "valid" ? "rgba(34,197,94,.38)" : "rgba(249,115,22,.42)";
+    ctx.fill();
+  }
+  fillTail("garbage");
+  fillTail("valid");
+
+  ctx.strokeStyle="#304ffe"; ctx.lineWidth=2; ctx.beginPath();
+  pts.forEach(([x,y],i)=>{
+    const px=m.l+x*pw, py=h-m.b-(y/maxY)*ph*.88;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+
+  ctx.fillStyle="rgba(34,197,94,.85)";
+  ctx.fillRect(m.l+14,m.t+20,12,12);
+  ctx.fillStyle="#475467"; ctx.font="12px system-ui";
+  ctx.fillText("valid constrained tail",m.l+32,m.t+31);
+  ctx.fillStyle="rgba(249,115,22,.85)";
+  ctx.fillRect(m.l+14,m.t+40,12,12);
+  ctx.fillText("garbage / unconstrained tail",m.l+32,m.t+51);
+  const tx=m.l+tail*pw;
+  ctx.strokeStyle="#b45309"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(tx,m.t); ctx.lineTo(tx,h-m.b); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#b45309"; ctx.font="13px system-ui"; ctx.fillText("non-obviousness cutoff",tx-78,m.t+14);
+  let valid=0, garbage=0, total=0;
+  for(const [x,y] of pts){
+    const dx=1/220; total+=y*dx;
+    if(x>tail){
+      const validness=clamp(constraint*(1.12-x)+0.12+0.28*constraint,0,1);
+      valid += y*validness*dx;
+      garbage += y*(1-validness)*dx;
+    }
+  }
+  valid/=total; garbage/=total;
+  document.getElementById("temperatureVal").textContent=fmt(temp,2);
+  document.getElementById("constraintVal").textContent=Math.round(constraint*100)+"%";
+  document.getElementById("tailVal").textContent=Math.round(tail*100)+"%";
+  document.getElementById("validTailReadout").textContent="valid creative tail mass ≈ "+fmt(valid,3);
+  document.getElementById("garbageTailReadout").textContent="garbage tail mass ≈ "+fmt(garbage,3);
+}
+
+/* Applet 4 */
+let cloud=[];
+let seed=12345;
+function rnd(){
+  seed=(1664525*seed+1013904223)%4294967296;
+  return seed/4294967296;
+}
+function randn(){
+  let u=1-rnd(), v=1-rnd();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function regenCloud(){
+  cloud=[];
+  const n=260;
+  for(let i=0;i<n;i++){
+    const novelty=clamp(0.42+0.23*randn()+0.10*rnd(),0,1);
+    let validity=clamp(0.72-0.43*Math.max(0,novelty-.55)+0.20*randn(),0,1);
+    const compression=clamp(0.52+0.24*randn()+0.28*validity-0.08*Math.abs(novelty-.72),0,1);
+    cloud.push({novelty,validity,compression});
+  }
+}
+function drawPipeline(){
+  const c=document.getElementById("pipelineCanvas"), ctx=c.getContext("2d"), w=c.width,h=c.height;
+  ctx.clearRect(0,0,w,h);
+  const n=+document.getElementById("nideas").value;
+  const nf=+document.getElementById("novfilter").value/100;
+  const vf=+document.getElementById("valfilter").value/100;
+  const m=drawAxes(ctx,w,h,"Novelty","Validity");
+  const pw=w-m.l-m.r, ph=h-m.t-m.b;
+  ctx.fillStyle="rgba(153,27,27,.08)";
+  ctx.fillRect(m.l+nf*pw,m.t+(1-vf)*ph,(1-nf)*pw,vf*ph);
+  ctx.strokeStyle="#22c55e"; ctx.setLineDash([4,5]);
+  ctx.beginPath(); ctx.moveTo(m.l+nf*pw,m.t); ctx.lineTo(m.l+nf*pw,h-m.b); ctx.moveTo(m.l,m.t+(1-vf)*ph); ctx.lineTo(w-m.r,m.t+(1-vf)*ph); ctx.stroke(); ctx.setLineDash([]);
+  const pts=cloud.slice(0,n);
+  let survivors=[];
+  pts.forEach(p=>{
+    const x=m.l+p.novelty*pw, y=m.t+(1-p.validity)*ph;
+    const pass=p.novelty>=nf && p.validity>=vf;
+    const score=Math.pow(p.novelty,.9)*Math.pow(p.validity,1.35)*Math.pow(p.compression,.9);
+    if(pass) survivors.push({...p,score});
+    ctx.fillStyle=pass?"rgba(34,197,94,.75)":"rgba(100,116,139,.35)";
+    ctx.beginPath(); ctx.arc(x,y,pass?4.3:3.3,0,Math.PI*2); ctx.fill();
+  });
+  survivors.sort((a,b)=>b.score-a.score);
+
+  // Fusion step: compression-weighted centroid of the top two survivors.
+  let fused = null;
+  if(survivors.length >= 2){
+    const a = survivors[0], b = survivors[1];
+    const wa = Math.max(a.compression, 0.05), wb = Math.max(b.compression, 0.05);
+    const ws = wa + wb;
+    fused = {
+      novelty:    (a.novelty*wa + b.novelty*wb) / ws,
+      validity:   (a.validity*wa + b.validity*wb) / ws,
+      compression:(a.compression*wa + b.compression*wb) / ws,
+    };
+    fused.score = Math.pow(fused.novelty,.9)*Math.pow(fused.validity,1.35)*Math.pow(fused.compression,.9);
+  }
+
+  if(survivors.length){
+    const b=survivors[0], x=m.l+b.novelty*pw, y=m.t+(1-b.validity)*ph;
+    ctx.strokeStyle="#304ffe"; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(x,y,11,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle="#111827"; ctx.font="13px system-ui"; ctx.fillText("top-1 survivor",x+13,y-10);
+  }
+  if(survivors.length >= 2){
+    const b=survivors[1], x=m.l+b.novelty*pw, y=m.t+(1-b.validity)*ph;
+    ctx.strokeStyle="#304ffe"; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle="#111827"; ctx.font="12px system-ui"; ctx.fillText("top-2 survivor",x+11,y-8);
+  }
+  if(fused){
+    const fx=m.l+fused.novelty*pw, fy=m.t+(1-fused.validity)*ph;
+    // arrows from the top-two survivors to the fused centroid
+    [survivors[0], survivors[1]].forEach(s=>{
+      const sx=m.l+s.novelty*pw, sy=m.t+(1-s.validity)*ph;
+      ctx.strokeStyle="rgba(15,118,110,.55)"; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(fx,fy); ctx.stroke();
+    });
+    // fused marker
+    ctx.fillStyle="#0f766e"; ctx.strokeStyle="#fff"; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(fx,fy,9,0,Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle="rgba(15,118,110,.35)"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(fx,fy,18,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle="#0f766e"; ctx.font="13px system-ui";
+    ctx.fillText("fused synthesis (compression-weighted)", fx+14, fy+18);
+  }
+
+  document.getElementById("nideasVal").textContent=n;
+  document.getElementById("novfilterVal").textContent=Math.round(nf*100)+"%";
+  document.getElementById("valfilterVal").textContent=Math.round(vf*100)+"%";
+  document.getElementById("survivorReadout").textContent=survivors.length+" ideas survive filters";
+  document.getElementById("bestIdeaReadout").textContent=survivors.length?("best raw survivor ≈ "+fmt(survivors[0].score,2)):"no valid creative candidates";
+  document.getElementById("fusionReadout").textContent = fused
+    ? ("fused score ≈ "+fmt(fused.score,2)+(fused.score >= survivors[0].score ? "  (dominates top-1)" : ""))
+    : "fusion: need ≥2 survivors";
+}
+
+function redrawAll(){drawRidge();drawPosterior();drawTemp();drawPipeline();}
+for(const id of ["novelty","validity","compression"]) document.getElementById(id).addEventListener("input",drawRidge);
+for(const id of ["strange","evidence","skepticism"]) document.getElementById(id).addEventListener("input",drawPosterior);
+for(const id of ["temperature","constraint","tail"]) document.getElementById(id).addEventListener("input",drawTemp);
+for(const id of ["nideas","novfilter","valfilter"]) document.getElementById(id).addEventListener("input",drawPipeline);
+document.getElementById("regen").addEventListener("click",()=>{seed=Math.floor(Math.random()*4294967296); regenCloud(); drawPipeline();});
+regenCloud();
+redrawAll();
+</script>
+</body>
+</html>

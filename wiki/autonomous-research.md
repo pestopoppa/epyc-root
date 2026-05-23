@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 30 documents (added intake-438 MindDR + intake-444 Agent-World; 4 deep-dives, 19 intake entries, 10 handoffs)
+**Last compiled**: 2026-05-23
+**Sources**: 31 documents (added 2026-05-23 constrained-creativity planner deep-dive; 5 deep-dives, 19 intake entries, 10 handoffs)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-23, constrained-creativity planner)
+
+- **Tail-sampling alone is not creativity; constrained tail search is** [internal explainer, deployed in `epyc-orchestrator/scripts/autopilot/`]. The prior planner injected three under-used action types per trial as candidates the controller had to defend &mdash; a textbook conflation of "unlikely" with "creative." 2026-05-23 replaced it with: tail samples promoted from candidates to seeds (inspiration, not mandates); stagnation gating (rich creativity protocol activates only when `hv_slope_10 < 1e-3` or trustworthy &lt; 5 or 3-trial action-type streak); 6-axis rubric collapsed to 3 orthogonal axes (info_gain, coherence, cost-adjusted usefulness) for crisper LLM grading; falsifier persisted on every `JournalEntry` via a new `autopilot_rationale` fenced sidecar block; new `ExperimentJournal.unfalsified_hypotheses()` helper surfaces still-open claims to the next planner pass &mdash; the cross-trial feedback loop that makes "real insight lowers entropy out-of-sample" something the system actually checks. Two extra moves: fusion preference for top-2 candidates that can be encoded as one dominating action, and a quote-don't-regenerate anti-drift rule on the rationale sidecar. 63/63 autopilot unit tests green; interactive HTML explainer with four applets walks the Bayesian framing, the deployed prompt diff (V0 sketch vs shipped rich fragment), and four catalogued failure modes (performative reasoning, rubric drift, falsifier inflation, local-optimum defence). Report: [2026-05-23-creativity-constrained-tail-search.md](../research/deep-dives/2026-05-23-creativity-constrained-tail-search.md) (HTML companion in same directory).
 
 ### New (2026-04-22, DD6 + DD7)
 
