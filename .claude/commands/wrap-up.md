@@ -28,6 +28,22 @@ Update all documentation artifacts to reflect work completed in this session, co
 - Update child repo documentation (`epyc-orchestrator`, `epyc-inference-research`, `epyc-llama`) if code-level docs need to reflect changes made this session
 - Update model registry, config files, or reference docs if applicable
 
+### 4b. README staleness check (lightweight)
+
+Quick discoverability + freshness check on the three owned repo READMEs. Runs in <1 s and never blocks the wrap-up — just surfaces a warning if anything is stale or missing knowledge-base links.
+
+Run this exact one-liner:
+
+```bash
+python3 .claude/skills/project-wiki/scripts/check_readme_freshness.py
+```
+
+The script flags any owned-repo README that:
+- has not been modified in **≥60 days** (commit-date, not file mtime), OR
+- does not link to both `wiki/` AND `research/` (the two knowledge-base entry points a GitHub visitor needs).
+
+If anything fires, include the warning verbatim in your wrap-up output under a `## README freshness warnings` heading so the operator sees it. **Do not auto-fix** — the rewrite cadence is the operator's call (the `readme-refresh.md` handoff in `handoffs/active/` tracks scheduled rewrites). If everything passes, omit the section.
+
 ### 5. Wiki Compilation
 
 Compile any loose knowledge into the project wiki so findings don't stay buried in handoffs and progress logs.
