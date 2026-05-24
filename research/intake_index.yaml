@@ -28063,3 +28063,404 @@
     run a fair eval against Qwen3.5-1.7B-Instruct on our own benchmark suite, defer any deployment
     decision until that's done. Flag for user review — efficiency claim is large enough that the
     deep-dive is worth scheduling even though the architecture path is blocked.
+- id: intake-599
+  arxiv_id: '2601.07372'
+  url: https://arxiv.org/abs/2601.07372
+  source_type: paper
+  title: 'Conditional Memory via Scalable Lookup: A New Axis of Sparsity for Large Language Models'
+  authors:
+  - 'DeepSeek + Peking University (joint)'
+  categories:
+  - memory_augmented
+  - moe_optimization
+  - hardware_optimization
+  - rag_alternatives
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'Adds a conditional-memory axis: 2-3 token suffix n-grams are hashed (multiplicative-XOR) and mapped to a large embedding table; retrieved vector is added via residual at select Transformer layers (e.g. layers 2 and 15 of a 30-layer model). d_mem = 1280.'
+  - 'Sparsity Allocation Law: under iso-parameter/iso-FLOPs, optimal split is ~20-25% of sparse-param budget to Engram and ~75-80% to MoE — memory and computation are complementary, not competing.'
+  - 'Hardware claim: a 100B-parameter embedding table can be offloaded to CPU host DRAM with <3% inference throughput penalty (8B backbone case: 2.8%) via deterministic-address PCIe async prefetch.'
+  - 'Engram-27B (26.7B total) beats same-FLOPs MoE baseline: +5.0 BBH, +3.7 ARC-Challenge, +2.4 MATH; NIAH long-context 84.2% → 97%; +3-4 pts MMLU/CMMLU.'
+  - 'Models trained from scratch on 262B tokens with Engram baked in; convolution params zero-initialized to preserve identity at step 0; n-gram embedding LR scaled 5× with no weight decay.'
+  techniques:
+  - 'multiplicative-XOR hash addressing'
+  - 'residual injection of retrieved memory vector at sparse layer set'
+  - 'context-aware gating on hidden state'
+  - 'PCIe async prefetch of host-DRAM embedding table'
+  - 'Sparsity Allocation Law (Engram : MoE = 25 : 75)'
+  reported_results:
+  - 'Engram-27B vs MoE baseline: +5.0 BBH, +3.7 ARC-C, +2.4 MATH, +3-4 MMLU/CMMLU, NIAH 84.2 → 97'
+  - 'Host-DRAM offload overhead: <3% on 100B-param table; 2.8% on 8B backbone'
+  - 'Model sizes: 27B (26.7B total, ~5.7B Engram), 40B (39.5B total, ~18.5B Engram); ablations at 3B and 5.7B'
+  referenced_arxiv_ids:
+  - '2603.10087'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-504
+    - intake-600
+  novelty_justification: 'Distinct architectural axis — n-gram-keyed parametric memory designed for host-DRAM offload — orthogonal to MoE, KV-cache, and speculative decoding. Not previously dedicated-indexed (only a peripheral mention under intake-504 LongCat work).'
+  relevance_justification: 'Directly addresses our hardware asymmetry: 1.1 TB RAM, no fast GPU. The <3% PCIe-offload penalty for a 100B-param table matches our deployment regime more precisely than any other recently surveyed inference technique. Even if not currently usable post-hoc, it sets a target architecture for future model selection.'
+  verdict_justification: 'new_opportunity (not adopt yet): the technique aligns with our hardware but is architectural — no published recipe for retrofitting onto an existing pretrained model, and DeepSeek released code only, no Engram-trained weights. Track for: a DeepSeek follow-up that releases weights, third-party reproductions, or a research bet on backbone-frozen Engram-table distillation. Cross-link to LongCat-Flash-Lite (intake-502/504) — Meituan ships an Engram-style layer in a production open-weight checkpoint, which is the most likely near-term path to a deployable proof-of-concept.'
+  contradicting_evidence:
+  - 'DeepSeek V4 production architecture writeups state Engram research was NOT included in V4 final architecture — research-track only as of 2026-Q2.'
+  - 'No pretrained Engram weight checkpoints released; GitHub repo is documented as a data-flow demo only.'
+  - 'LongCat-Flash-Lite (Meituan) production Engram-style layer has vLLM serving issues — 31.4B n-gram embedding causes loading-time memory overhead reported in vLLM issues (see intake-504 contradicting_evidence note).'
+  - 'Deterministic hashed lookup raises training-data extraction risk vs standard weight memorization (privacy/memorization concern flagged in third-party writeups). Not blocking for self-hosted use but worth flagging.'
+  - 'Paper does not address batched-decode or KV-cache interaction explicitly; production-serving question remains open.'
+  - 'No published method for post-hoc retrofit of Engram to a frozen pretrained backbone — would be novel R&D, not a port.'
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created:
+  - engram-conditional-memory.md
+  notes: |
+    2026-05-24 deep-dive synthesis (3 parallel sub-agents on the paper, the deepseek-ai/Engram
+    repo, and LongCat-Flash-Lite tooling):
+
+    Architecture clarifications:
+    - K=8 distinct hash heads per n-gram order. Modulus is a distinct prime per (layer, n, head)
+      generated at init from numpy default_rng(seed + 10007*layer_id). Collisions within a head
+      unresolved by design — K-head ensemble + gating is the entire mitigation.
+    - Suffix n-grams of *canonicalized* token IDs. The canonicalization map P collapses ~23% of
+      DeepSeek-V3's 128k vocab and is NOT publicly released — must be rebuilt for any non-DeepSeek
+      tokenizer.
+    - d_mem=1280 concatenated across (n,k) → 20,480-wide pre-projection vector, then W_K/W_V to
+      d_model.
+    - Injection equation: scalar sigmoid gate α_t = σ(RMSNorm(h)·RMSNorm(W_K·e)/√d) with a
+      sqrt-signed-magnitude squash, → gated value → depthwise causal Conv1D (kernel=4, dilation=3,
+      SiLU) → residual add BEFORE Attention + MoE at the inserted layer. Conv weights
+      zero-initialized for identity at step 0.
+    - Reference config: layers [2, 15] of 30-layer 27B. Ablation §6.2 reports [2, 6] is BETTER.
+      Engram works best at early layers — "relieves the backbone's early layers from static
+      reconstruction."
+
+    Repo state (github.com/deepseek-ai/Engram, fetched 2026-05-24):
+    - 422 LoC single file engram_demo_v1.py. Module is clean and reusable (~250 LoC of substantive
+      logic). Attention/MoE are mocked as identity lambdas.
+    - Missing: training loop, dataloader, optimizer config, backbone-freeze hook, zero-init code,
+      KV-cache, CUDA kernels, PCIe prefetch. Anyone citing "Engram's deterministic addressing
+      enables efficient offload" is citing the paper's promise, not released code.
+    - Maintainer disengaged after day 3 (2026-01-14). 20 issues open, 0 closed. Issue #16 "training
+      code" and #9 "why LR×5, WD=0" both unanswered.
+    - Apache-2.0, safe to vendor.
+
+    Bandwidth math (from CXL follow-up 2603.10087):
+    - ~10 KB/token total at FP8 (paper config, 2 Engram layers × 5 KB) → 0.7 GB/s at 70k tok/s.
+    - <0.2% of our DDR5 aggregate. Lookup BW is a non-issue on EPYC.
+    - Paper's <3% offload claim uses Dense-4B/8B backbones (NOT 27B), 512 sequences,
+      length Uniform(100, 1024), synthetic 100B-param table to stress PCIe. Best case for the
+      offload story; 27B's longer per-layer compute would hide PCIe latency MORE not less.
+
+    LongCat-Flash-Lite architectural deviation from paper (CRITICAL for Track A interpretation):
+    - Injection at input embedding only (NOT per-layer mid-stream)
+    - NO scalar gate, NO depthwise conv
+    - Just additive then /13 normalization
+    - 4 hash heads per order (not 8)
+    - Polynomial rolling hash (not multiplicative-XOR)
+    - Custom 131k tokenizer with no canonicalization
+    - n ∈ {2,3,4} (paper uses {2,3})
+    - 31.4B n-gram params / 68.5B total / 2.9-4.5B active
+    Track A is a POC of the family, NOT a reproduction of the paper's Engram.
+
+    Track A (LongCat CPU probe) scoping:
+    - InquiringMinds-AI/LongCat-Flash-Lite-GGUF Q4_K_M = 37.4 GB. Resident with KV+activations
+      ≈ 51 GB. Trivial on 1.1 TB.
+    - InquiringMinds-AI/llama.cpp branch longcat-flash-ngram head 56abe857: 57 t/s on GB10 GPU.
+      No CPU number anywhere — we would be the first benchmarkers.
+    - Fork is AI-generated, non-upstreamable per llama.cpp policy. Fine for local research.
+    - ik_llama.cpp has zero LongCat code; use the mainline-based InquiringMinds fork.
+    - 6-phase plan in handoff: build → smoke → speed verify → quality gate vs Qwen3-30B-A3B.
+    - Falsification thresholds: <15 t/s broken, <35 t/s uncompetitive (Qwen3-30B-A3B is 49 t/s).
+    - Quality risk: Meituan reports VitaBench 7.0 (very weak agentic). Math/PPL strong.
+
+    Track B (frozen-backbone retrofit) scoping:
+    - Estimated effort: ~400 LoC new glue + ~280 LoC vendored from demo. One-week spike to proxy
+      result on a single GPU.
+    - Paper provides NO direct evidence for retrofit feasibility. §6.3 post-hoc Engram suppression
+      shows co-trained backbone learns to DELEGATE to Engram → frozen backbone has structurally
+      less headroom. Zero-init conv is gradient-compatible (no backbone shock) but that's the
+      ceiling of the architectural evidence.
+    - Phase 0 derisk: 1.5B proxy (TinyLlama/SmolLM-1.7B), train frozen-Engram + co-trained-Engram
+      on same data, measure recovery ratio. Gate: ≥30% of co-trained gain or abandon.
+    - Phase 3 full-scale: Qwen3.6 or gemma4-26B-A4B with layer choice via CKA-alignment probe.
+    - GPU required for training; EPYC alone insufficient.
+    - Tokenizer canonicalization map is a real reproduction obstacle for non-DeepSeek tokenizers.
+
+    Cross-source consistency: all three deep-dives agreed on hash mechanics, gate, conv, layer
+    placement, and the abandoned-repo + LongCat-architectural-deviation findings. No
+    contradictions discovered during synthesis.
+- id: intake-600
+  arxiv_id: '2603.10087'
+  url: https://arxiv.org/abs/2603.10087
+  source_type: paper
+  title: 'Pooling Engram Conditional Memory in Large Language Models using CXL'
+  authors:
+  - 'Unknown (workshop paper, 7 pages)'
+  categories:
+  - memory_augmented
+  - hardware_optimization
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-599
+  verdict: worth_investigating
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'Proposes CXL-attached memory pools as a substrate for Engram conditional-memory tables across multi-node LLM inference clusters, replacing per-node PCIe-host-DRAM offload.'
+  - 'Targets scale-out scenarios where the Engram table no longer fits in a single node''s DRAM.'
+  techniques:
+  - 'CXL memory pooling for parametric n-gram tables'
+  reported_results:
+  - 'Specific speedup numbers not extracted from accessible PDF sections — workshop paper'
+  cross_references:
+    chapters: []
+    handoffs:
+    - engram-conditional-memory.md
+    experiments: []
+    intake_entries:
+    - intake-599
+  novelty_justification: 'Niche follow-up — applies CXL-pool ideas to the Engram offload pattern; modest novelty, single-author workshop format.'
+  relevance_justification: 'Not load-bearing for single-socket EPYC with 1.1 TB local DDR5; our Engram table (if we ever deploy one) fits comfortably in node-local RAM. Becomes relevant only in a hypothetical multi-node EPYC cluster.'
+  verdict_justification: 'worth_investigating (file-and-forget): cross-linked from the Engram stub for completeness; no near-term action.'
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-601
+  arxiv_id: null
+  url: https://github.com/algorithmicsuperintelligence/optillm
+  source_type: repo
+  title: 'OptiLLM: OpenAI-API-compatible optimizing inference proxy implementing 20+ test-time techniques'
+  authors:
+  - 'Asankhaya Sharma (Algorithmic Superintelligence / Patched Codes)'
+  categories:
+  - agent_architecture
+  - inference_serving
+  - routing_intelligence
+  - cost_aware_routing
+  - tool_implementation
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'OpenAI-API-compatible drop-in proxy that wraps any backend (OpenAI, Anthropic, Gemini, Cerebras, LiteLLM 100+ models, local HuggingFace, llama.cpp, Ollama) and applies test-time optimization with zero model training/fine-tuning; tagline "2-10x accuracy improvements on reasoning tasks".'
+  - 'Implements 20+ techniques in two families: (a) proxy-compatible (work over any chat endpoint) — MARS multi-agent reasoning, CePO, CoT-with-reflection, PlanSearch, ReRead/RE2, self-consistency, Z3 solver, R*/rStar, LEAP, RTO round-trip, Best-of-N, Mixture-of-Agents, MCTS, Prover-Verifier game; (b) local-inference-only (need logits/activations) — Deep Confidence (DeepConf), CoT-decoding, entropy/adaptive-sampling decoding, ThinkDeeper (reasoning_effort emulation), AutoThink (query-complexity classifier + steering vectors).'
+  - 'Each technique is a swappable module selected per-request via a model-name prefix or extra_body field, so a router can pick a method per query — architecturally identical to our role/method routing.'
+  - 'Self-reported benchmark gains: MARS +30.0 pts AIME2025 (Gemini 2.5 Flash Lite 43.3 -> 73.3); CePO +18.6 Math-L5 (Llama-3.3-70B); AutoThink +9.34 GPQA-Diamond (DeepSeek-R1-1.5B); MOA matches GPT-4 on Arena-Hard with GPT-4o-mini; PlanSearch +20% pass@5 LiveCodeBench.'
+  techniques:
+  - 'per-request method selection via model-name prefix / extra_body'
+  - 'Mixture-of-Agents aggregation'
+  - 'Best-of-N + verifier selection'
+  - 'MCTS / PlanSearch test-time search'
+  - 'CoT-decoding + entropy decoding (logit-level, local backend)'
+  - 'AutoThink query-complexity classification + steering vectors'
+  - 'DeepConf confidence-gated trace filtering'
+  - 'ThinkDeeper reasoning_effort emulation'
+  reported_results:
+  - 'MARS Gemini-2.5-Flash-Lite AIME2025 43.3 -> 73.3 (+30.0)'
+  - 'CePO Llama-3.3-70B Math-L5 51.0 -> 69.6 (+18.6)'
+  - 'AutoThink DeepSeek-R1-1.5B GPQA-Diamond 21.72 -> 31.06 (+9.34)'
+  - 'LongCePO Llama-3.3-70B InfiniteBench 58.0 -> 71.6 (+13.6)'
+  - 'ReadURLs+Memory GPT-4o-mini Google FRAMES 50.61 -> 61.29'
+  referenced_arxiv_ids:
+  - '2506.08060'
+  - '2508.15260'
+  - '2402.03620'
+  - '2312.04474'
+  - '2409.12941'
+  - '2408.14906'
+  - '2402.10200'
+  - '2309.06275'
+  - '2402.05403'
+  - '2409.03733'
+  - '2203.11171'
+  - '2408.06195'
+  - '2406.04692'
+  - '2407.13692'
+  - '2405.00451'
+  - '2402.08699'
+  - '2407.18521'
+  - '2407.16557'
+  - '2504.16891'
+  - '2507.16075'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - per-request-reasoning-budget.md
+    - routing-intelligence.md
+    - meta-harness-optimization.md
+    - routing-and-optimization-index.md
+    - eval-tower-verification.md
+    experiments: []
+    intake_entries:
+    - intake-602
+    - intake-603
+    - intake-604
+    - intake-244
+  novelty_justification: 'Individual techniques are mostly known/published (many already in our chapters + intake — MoA, self-consistency, MCTS, CoT-decoding). Novelty is in the integration: a single open-source Apache-2.0 OpenAI-API-compatible proxy (4k stars, ~10 contributors, codelion-dominated) that catalogs 20+ test-time methods as swappable per-request modules. No single new technique of its own -> medium, not high.'
+  relevance_justification: 'Direct structural analogue to our orchestrator: an OpenAI-API-style inference proxy that does per-request method/role selection over backends. IMPORTANT (2026-05-24 deep-dive correction): OptiLLM''s local-inference-only modules (cot_decoding, entropy_decoding, autothink, deepconf, thinkdeeper) are implemented against HuggingFace transformers in-process (AutoModelForCausalLM + register_forward_hook + output_attentions), so they do NOT run over our llama-server OpenAI endpoints — they are reimplementation targets, not drop-in. Of these, DeepConf and CoT-decoding need only token top_logprobs (which llama-server already exposes), so a proxy/fork reimplementation is feasible; AutoThink steering needs layer-19 activation injection (transformers-only) and would require our own llama.cpp activation-steering to use at all — only AutoThink''s complexity-CLASSIFIER idea is portable. The API-level techniques (MCTS, self_consistency, PlanSearch, RTO, RStar, CoT-reflection, LEAP, RE2, MARS) DO work over llama-server; BoN/MoA/CEPO degrade because llama.cpp lacks the `n` multi-sample parameter and falls back to sequential generation.'
+  verdict_justification: 'adopt_patterns (not new_opportunity): not a novel method but a mature reference toolbox we can mine. Two concrete follow-up tracks: (1) adopt_component candidates worth porting to our stack — DeepConf (intake-603, 84.7% token reduction is high-value on CPU where decode is BW-bound), CoT-decoding (intake-602, decode-level, llama.cpp-fork-implementable), AutoThink steering-vector routing; (2) pattern reference for our orchestrator method-routing API. Headline "2-10x with zero training" is marketing — see contradicting_evidence; real per-technique gains are single-to-double-digit points and compute-multiplied. License is permissive (not a blocker per feedback_license_not_a_blocker). Did NOT auto-create a stub: verdict is adopt_patterns not new_opportunity, and matches existing handoffs (per-request-reasoning-budget, routing-intelligence) which are updated instead.'
+  contradicting_evidence:
+  - 'Test-time scaling is candidate-bounded: solution correctness is fundamentally limited by the quality of sampled candidates — if no correct solution is sampled, no amount of verification/voting recovers it (Revisiting Test-Time Scaling survey, arXiv:2506.04611).'
+  - 'Verification overhead: SOTA verification methods can require up to 8x more compute just to match simple self-consistency, with only marginal gains even at 128x compute (budget-aware verification literature) — directly relevant to CPU where compute is the scarce resource.'
+  - 'Self-consistency / Best-of-N majority does not always hold truth; samples make correlated mistakes (arXiv:2511.02309 inverse-entropy voting work).'
+  - 'Doubt cast on presumed test-time scaling of o1-like models (Revisiting the Test-Time Scaling of o1-like Models, ACL 2025).'
+  - 'The "2-10x accuracy / zero training" headline is a README marketing claim aggregated across cherry-picked technique+model+benchmark triples, not a controlled single-config result.'
+  - 'BACKEND CONSTRAINT (2026-05-24 deep-dive): the high-value local techniques (DeepConf, CoT-decoding, entropy-decoding, AutoThink, ThinkDeeper) are HuggingFace-transformers-only in OptiLLM and cannot run against llama-server/Ollama endpoints; using them as-is would require running OptiLLM''s own in-process HF inference server (cannot host our Qwen3.5-122B + Qwen3.6 + gemma4 set in its memory model). Net: OptiLLM is a PATTERN reference for these, not a usable dependency.'
+  - 'llama.cpp / Ollama do not support the `n` multi-sample parameter, so BoN, MoA, and CEPO fall back to sequential generation on our backends — losing their parallelism and most of their cost advantage.'
+  - 'Known unfixed security issues (23 open as of deep-dive): RCE via z3_solver exec() and via the unsandboxed code-execution plugin. Any adoption must scope/sandbox these out.'
+  handoffs_updated:
+  - per-request-reasoning-budget.md
+  - routing-intelligence.md
+  handoffs_created: []
+- id: intake-602
+  arxiv_id: '2402.10200'
+  url: https://arxiv.org/abs/2402.10200
+  source_type: paper
+  title: 'Chain-of-Thought Reasoning Without Prompting (CoT-Decoding)'
+  authors:
+  - 'Xuezhi Wang'
+  - 'Denny Zhou (Google DeepMind)'
+  categories:
+  - agent_architecture
+  - routing_intelligence
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-601
+  verdict: worth_investigating
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'CoT reasoning paths are already latent in pretrained LLMs and are surfaced not by prompting but by altering decoding: branch into the top-k alternative first tokens instead of greedy, and CoT paths frequently appear among those continuations.'
+  - 'Model confidence (probability gap on the final answer token) correlates with presence of a CoT path, giving a training-free signal to select the reasoning continuation and to distinguish CoT from non-CoT outputs.'
+  - 'Bypasses prompt-engineering confounders and reveals intrinsic reasoning capacity without any fine-tuning or special prompts.'
+  techniques:
+  - 'top-k first-token branched decoding'
+  - 'answer-token confidence scoring for path selection'
+  reported_results:
+  - 'Improves reasoning across GSM8K / math / commonsense benchmarks vs greedy decoding (paper reports per-benchmark gains; abstract does not enumerate single headline number)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - per-request-reasoning-budget.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  novelty_justification: 'Decode-level elicitation of latent CoT is a distinct mechanism from prompt-based or fine-tuned reasoning; medium because it is now well-cited (2024) and partially folded into entropy/adaptive-sampling work we already track.'
+  relevance_justification: 'Decode-level and training-free -> implementable in our full-control llama.cpp fork as a sampler variant; the answer-token confidence signal is reusable for routing-intelligence difficulty/risk estimation and for per-request-reasoning-budget (elicit reasoning without a thinking template).'
+  verdict_justification: 'worth_investigating: requires a custom sampler (top-k branch + confidence scoring) and multiple forward continuations, so the BW-bound CPU cost must be measured before committing (feedback_cpu_decode_bw_bound); strong conceptual fit but not free.'
+  contradicting_evidence:
+  - 'Top-k branching multiplies decode passes; on a BW-bound CPU this can erase the benefit relative to a single greedy pass — net win unproven on our hardware.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-603
+  arxiv_id: '2508.15260'
+  url: https://arxiv.org/abs/2508.15260
+  source_type: paper
+  title: 'Deep Think with Confidence (DeepConf)'
+  authors:
+  - 'Yichao Fu'
+  - 'Xuewei Wang'
+  - 'Yuandong Tian (Meta FAIR)'
+  - 'Jiawei Zhao'
+  categories:
+  - agent_architecture
+  - inference_serving
+  - routing_intelligence
+  - local_inference
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-601
+  verdict: new_opportunity
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'Uses model-internal confidence signals to dynamically filter out low-quality reasoning traces during or after generation, addressing diminishing returns of self-consistency + majority voting.'
+  - 'Requires no additional training and no hyperparameter tuning; integrates into existing serving frameworks.'
+  - 'DeepConf@512 reaches up to 99.9% on AIME 2025 while reducing generated tokens by up to 84.7% vs full parallel thinking.'
+  - 'Validated across Qwen3 and GPT-OSS model series.'
+  techniques:
+  - 'confidence-gated early termination of reasoning traces'
+  - 'confidence-weighted trace voting (online + offline variants)'
+  reported_results:
+  - 'AIME 2025: DeepConf@512 up to 99.9% accuracy'
+  - 'Up to 84.7% fewer generated tokens vs full parallel self-consistency'
+  referenced_arxiv_ids:
+  - '2203.11171'
+  cross_references:
+    chapters: []
+    handoffs:
+    - per-request-reasoning-budget.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  novelty_justification: 'Confidence-gated trace filtering is a fresh, training-free efficiency mechanism on top of self-consistency with a large reported token reduction; recent (Aug 2025) and not previously indexed.'
+  relevance_justification: 'The 84.7% token-reduction claim is exactly the lever we need on a BW-bound CPU where every decoded token costs DRAM bandwidth; framed as serving-framework-integrable, and Qwen3 is in our active model family (frontdoor Qwen3.6, architect Qwen3.5). Confidence signal also feeds routing-intelligence + per-request-reasoning-budget.'
+  verdict_justification: 'new_opportunity: directly targets test-time-scaling efficiency on models we run; matches per-request-reasoning-budget handoff (updated rather than stubbed). Action: extract the confidence-gating rule and prototype against a local Qwen3 server, measuring real CPU t/s + accuracy on our suite (no run_benchmark.py — standalone only, per feedback_speed_verify_via_llama_bench).'
+  contradicting_evidence:
+  - '99.9% AIME headline is at DeepConf@512 (512 traces) — still a large compute multiple in absolute terms; the win is relative to even-more-wasteful full parallel voting, not vs a single pass.'
+  - 'Candidate-bounded limitation of all voting/filtering methods applies: confidence filtering cannot manufacture a correct trace if none was sampled (arXiv:2506.04611).'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-604
+  arxiv_id: '2506.08060'
+  url: https://arxiv.org/abs/2506.08060
+  source_type: paper
+  title: 'Eliciting Fine-Tuned Transformer Capabilities via Inference-Time Techniques'
+  authors:
+  - 'Asankhaya Sharma (Patched Codes)'
+  categories:
+  - agent_architecture
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: expansion
+  expanded_from: intake-601
+  verdict: worth_investigating
+  ingested_date: '2026-05-24'
+  key_claims:
+  - 'Theoretical result: a base transformer can approximate supervised-fine-tuning capabilities via in-context learning within a quantifiable error margin, with no parameter updates, under idealized conditions.'
+  - 'Argument rests on transformer Turing-completeness (self-attention as tape, FFN as transition rules); SFT "refines latent knowledge" rather than adding new capability.'
+  - 'Derives dataset-size bounds for text generation O(mV/eps^2 log(m/delta)) and linear classification O(d/eps).'
+  techniques:
+  - 'in-context learning as SFT surrogate'
+  - 'retrieval-augmented / few-shot prompting'
+  reported_results:
+  - 'No empirical validation — purely theoretical bounds'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  novelty_justification: 'Provides the theoretical justification OptiLLM leans on (inference-time techniques can substitute for fine-tuning); the ICL-approximates-SFT framing is a known intuition formalized here, hence medium.'
+  relevance_justification: 'Background/context for why a test-time proxy can work without training; not directly actionable. Relevant to meta-harness framing (optimize harness instead of weights) but provides no method to deploy.'
+  verdict_justification: 'worth_investigating (context-only): theoretical, no empirical validation, and assumes unbounded compute + access to the fine-tuning dataset — assumptions our finite-context CPU regime violates. File as the conceptual backing for intake-601, not an action item.'
+  contradicting_evidence:
+  - 'Self-admitted: assumes unbounded computational resources and access to the fine-tuning dataset; real contexts are finite. OOD queries make ICL fail to generalize. No empirical validation provided.'
+  - 'Single-author paper by the OptiLLM proxy author (Patched Codes) — commercial bias toward justifying the proxy approach.'
+  handoffs_updated: []
+  handoffs_created: []

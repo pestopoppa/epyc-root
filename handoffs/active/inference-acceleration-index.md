@@ -534,3 +534,26 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
 - **Sub-2-bit weight quantization** now has a concrete, llama.cpp-upstream path (STQ1_0 PR #22836) and a public 440 MiB reference release. Distinct from TurboQuant (KV-cache quant, intake-191) and BitNet b1.58 (ternary inference, intake-186). New track on [[angelslim-techniques-evaluation]].
 - **Reasoning-trace compression** picks up an additional axis (SpecExit hidden-state signal) — useful for `reasoning-compression.md` and `memento-block-reasoning-compression.md` if/when budget enforcement infrastructure lands.
 - **AngelSlim license inconsistency** (custom-proprietary repo vs CC-BY-4.0 arxiv) is a blocker for any toolkit-level adoption; the llama.cpp PR sidesteps via MIT-licensed upstream.
+
+## Research Intake Update — 2026-05-24
+
+### New Related Research
+
+- **[intake-599] "Conditional Memory via Scalable Lookup: A New Axis of Sparsity for LLMs"** (arxiv:2601.07372, DeepSeek + PKU)
+  - Relevance: matches our hardware shape (CPU-rich, 1.1 TB DDR5, no fast GPU) more precisely than any other recently surveyed inference technique. Engram offloads a 100B-param hashed n-gram embedding to host DRAM with <3% throughput penalty via deterministic-address PCIe async prefetch.
+  - Key technique: 2-3 token suffix n-grams → multiplicative-XOR hash → embedding table (d=1280) → residual-added at select layers (e.g. layers 2 and 15 of 30). Sparsity Allocation Law: 25% of sparse-param budget → memory, 75% → MoE.
+  - Reported results: Engram-27B vs same-FLOPs MoE: +5.0 BBH, +3.7 ARC-C, +2.4 MATH; NIAH 84.2% → 97% at long context. <3% offload penalty on 100B-param table.
+  - **Delta from current approach**: this is an architecture-level change, not a runtime lever. Cannot be retrofitted onto our current Qwen3.6 / gemma4 / GLM stack post-hoc per the paper. Tracked on new stub `engram-conditional-memory.md`. Watch list: (a) DeepSeek follow-up that releases Engram-trained weights, (b) third-party reproductions, (c) llama.cpp viability of Meituan LongCat-Flash-Lite's existing Engram-style layer (intake-504).
+  - **Important caveat**: DeepSeek V4 production line does NOT include Engram per V4 architecture writeups — research-track only as of 2026-Q2.
+
+- **[intake-600] "Pooling Engram Conditional Memory in LLMs using CXL"** (arxiv:2603.10087, workshop) — file-and-forget; CXL pooling is overkill for single-socket EPYC. Cross-linked from the stub for completeness.
+
+### 2026-05-24 Deep-Dive Addendum (engram-conditional-memory)
+
+Three parallel sub-agents deep-dived (a) the paper, (b) the deepseek-ai/Engram repo, (c) LongCat-Flash-Lite tooling. The handoff `engram-conditional-memory.md` is now an active dual-track plan with sequencing diagram, decision log, and falsification gates. Key findings beyond first-pass intake:
+
+- **LongCat-Flash-Lite is architecturally simpler than paper Engram** (input-embedding-only add + /13 normalization, no gate, no conv, polynomial rolling hash, no vocab canonicalization). A working GGUF (Q4_K_M = 37.4 GB) and a non-upstreamable llama.cpp fork (`InquiringMinds-AI/llama.cpp` head `56abe857`) exist; ik_llama.cpp has zero LongCat code. We would be the first to publish a CPU benchmark.
+- **Track A** (LongCat CPU probe) is now scoped at 1–2 weeks, no GPU, all on-machine. Gate A = ≥35 t/s decode AND quality ≥ Qwen3-30B-A3B. Falsification thresholds explicit in the handoff.
+- **Track B** (frozen-backbone Engram retrofit on Qwen3.6 or gemma4) is now scoped at ~400 LoC new glue + ~280 LoC vendored from the demo repo, gated on Track A passing AND a 1.5B-proxy derisk (Gate B0 = ≥30% recovery of co-trained-Engram gain). GPU rental required for the proxy run.
+- Bandwidth math (from CXL follow-up paper, not the Engram paper): ~10 KB/token total at FP8, 0.7 GB/s at 70k tok/s — **<0.2% of our DDR5 aggregate**. Lookup BW is structurally a non-issue on EPYC.
+- The deepseek-ai/Engram repo is 422 LoC single-file demo; module clean and reusable, but training loop / dataloader / freeze / KV-cache / offload code all absent. Maintainer disengaged after day 3.

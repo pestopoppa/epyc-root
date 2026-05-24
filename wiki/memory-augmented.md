@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 21 documents (1 deep-dive, 16 intake entries, 2 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-05-24
+**Sources**: 23 documents (1 deep-dive, 18 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -18,6 +18,14 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-05-24)
+
+- **Parametric n-gram memory (Engram) is an architectural axis orthogonal to MoE/KV/spec-dec that targets exactly our hardware shape.** DeepSeek + Peking University (arxiv:2601.07372, intake-599) propose a deterministic-lookup memory module where 2-3-token suffix n-grams are hashed via multiplicative-XOR (K=8 heads per order, distinct prime moduli) and the retrieved vector is added through a scalar sigmoid gate + zero-init depthwise causal Conv1D at early Transformer layers (best ablation: [2, 6] of 30). The "Sparsity Allocation Law" says 25% of sparse-param budget → Engram, 75% → MoE under iso-FLOPs. Engram-27B reports +5.0 BBH, +3.7 ARC-C, +2.4 MATH, NIAH 84.2 → 97. The CXL follow-up paper (arxiv:2603.10087, intake-600) gives the only published bandwidth figure: **~10 KB/token total at FP8, 0.7 GB/s at 70k tok/s — <0.2% of EPYC 9655's DDR5 aggregate**. The technique is a near-perfect fit for our 1.1 TB single-socket regime but is **architectural, not a runtime knob** — the paper releases code-as-demo only (no weights, no training loop, no offload kernels), and DeepSeek V4 production line does NOT ship Engram per V4 architecture writeups (research-track only). [engram-conditional-memory.md](../handoffs/active/engram-conditional-memory.md) `verified`
+
+- **LongCat-Flash-Lite (Meituan) is the only deployed Engram-family open-weight checkpoint but it is architecturally simpler than the paper.** 68.5B total / 2.9-4.5B active, ~31.4B in n-gram tables, MIT-licensed. Critical deviation from paper Engram: injection at the input embedding only (NOT per-layer mid-stream), no gate, no conv, just additive + /13 normalization. Polynomial rolling hash (not multiplicative-XOR), 4 hash heads per order (not 8), n ∈ {2,3,4} (paper {2,3}), custom 131k tokenizer with no canonicalization. A working GGUF (`InquiringMinds-AI/LongCat-Flash-Lite-GGUF` Q4_K_M = 37.4 GB) and a non-upstreamable llama.cpp fork (Claude-Code-generated, violates ggml-org AI policy; fine for local research) already exist; ik_llama.cpp has zero LongCat code. Upstream PRs #19167 / #19182 stalled in draft for 4+ months. **No CPU performance number for LongCat exists anywhere — we would be the first benchmarkers.** A successful LongCat CPU POC validates the n-gram-lookup family, not the paper's specific gating-and-conv architecture. [intake-502, intake-504, engram-conditional-memory.md](../handoffs/active/engram-conditional-memory.md) `verified`
+
+- **Frozen-backbone retrofit of paper-faithful Engram is a research bet, not a port.** The paper provides NO direct evidence for retrofit feasibility — its closest result (§6.3 post-hoc Engram suppression) shows the co-trained backbone has learned to *delegate* to Engram, which means the frozen-backbone setting has structurally less headroom. Zero-init conv is gradient-compatible (no backbone shock at step 0), which is the architectural reason to hope. The deepseek-ai/Engram repo is 422 LoC single-file demo: module clean (~250 LoC of substantive logic, Apache-2.0, vendorable), but training loop / dataloader / freeze hooks / KV-cache / offload all absent — maintainer disengaged after day 3 (2026-01-14), 20 issues open with zero answers. The DeepSeek-V3 vocab canonicalization map P (~23% reduction) is also not released and must be rebuilt for any non-DeepSeek tokenizer. Estimated effort: ~400 LoC new glue + ~280 LoC vendored, single-week single-GPU proxy spike. Phase 0 derisk gate: frozen-Engram must recover ≥30% of co-trained-Engram gain on a 1.5B proxy (SmolLM-1.7B or TinyLlama) before committing GPU-weeks to Qwen3.6 or gemma4 surgery. [engram-conditional-memory.md](../handoffs/active/engram-conditional-memory.md) `verified`
 
 ### New Finding (2026-04-21)
 
