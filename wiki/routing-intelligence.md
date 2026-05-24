@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 23 documents (1 dedicated deep-dive, 18 intake entries, 5 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-05-24
+**Sources**: 24 documents (added 2026-05-24 cross-role BW-aware admission gate completed handoff; 1 dedicated deep-dive, 18 intake entries, 6 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -18,6 +18,17 @@ The broader routing stack comprises 9 production subsystems that must coordinate
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
 
 ## Key Findings
+
+### New Findings (2026-05-24 — cross-role BW-aware admission gate)
+
+- **Cross-role decode contention dominates "frontdoor regression" complaints** when autopilot is probing the stack [implemented + deployed; `handoffs/completed/cross-role-bw-aware-routing.md`]. Empirical 13-pair contention matrix on the production stack (Qwen3.6-35B Q8 frontdoor + 4 other large MoE roles): two heavy decoders that share NUMA-overlapping CPU sets crater each other (frontdoor + ingest_long_context = ratio 0.37 parallel vs sequential; frontdoor + architect_general = 0.50). gemma4-26B MTP (worker_general) is the universal good-citizen — wins parallel with every role tested (1.07-1.48× sequential). Same-role quartering is always concurrency-positive (1.23-2.86× depending on NUMA disjointness). 5-way frontdoor (full + 4 quarters all decoding) DROPS to 0.88× — running full simultaneously with all its own quarters is anti-pattern. The original "frontdoor at 10 t/s" observation was real BW contention from autopilot probing on the catastrophic pairs while frontdoor was foreground-decoding.
+- **`src/scheduling/contention_gate.py` + `cpu_region_lock.active_region_holders()` ship the gate.** Gate runs BEFORE `_acquire_role` in `_real_call`; consults region-lock holders for the cross-process active-decode set; applies `pair_policy(role_a, role_b, traffic_class, floor=0.85)`. Background traffic (autopilot seeding) queues on known-bad/unknown pairs; foreground may DEGRADED_ALLOW past the floor for SLO-tight cases. Missing/stale matrix fails open for foreground runtime + blocks background campaigns. Exposed via `/dashboard/api/contention` with a dashboard panel. `ContentionDenied` → HTTP 503 + Retry-After.
+- **Topology-aware quarter selection in ConcurrencyAwareBackend (Phase D).** `_compute_quarter_preference()` parses NUMA cpu_list overlap with full's at init: NUMA-disjoint quarters are tried first when the full lock is held. For frontdoor full on NUMA_NODE0 → preferred quarter order `[q2, q3, q0, q1]` (full+q3 = 1.71× sequential, best in the matrix). For vision_escalation full on NUMA_NODE1 → preferred `[q0, q1, q2, q3]`. For worker_general full on NUMA_FULL (no disjoint option) → natural order.
+- **KV migration ported into per-region-locks dispatch (Phase E).** Previously the migration logic only ran in the legacy `_select` path; under `ORCHESTRATOR_PER_REGION_LOCKS=1` (production default) it was dormant. Now `_dispatch` mirrors the flow: when a NEW session acquires full and an OLD session was the previous holder (no quarter affinity yet), `_migrate_kv(old_session, target_quarter)` fires async to a NUMA-disjoint idle quarter. Sticky-quarter session affinity ensures the old session's next request lands back on the migrated-to quarter with warm KV.
+- **Standardized matrix re-bench process.** `scripts/server/contention_matrix.py {run|validate}` is the canonical tool; `scripts/validate/check_contention_matrix_fresh.py` is a CI/pre-commit fail-loud (exit 2 on missing/stale, 3 on invalid). Re-run required after any NUMA_CONFIG change, model swap, binary upgrade, or BIOS NPS reboot. YAML carries `topology_hash` + `binary.git_commit` + `host` so drift is detected automatically.
+- **Autopilot stamps `request_priority=background` + `max_queue_wait_ms` on every seed_batch probe** so autopilot probing ingest/architect while frontdoor is foreground-decoding now queues at the gate instead of cratering both. 143/143 autopilot+gate unit tests pass. Trials 510-516 from 2026-05-24 morning were scrubbed (`bug_corrupted_by=33ae4e2`) since they ran without the gate.
+
+### Pre-existing findings
 
 - **The 9-heuristic problem is solved.** All brittle keyword heuristics now delegate to the unified `src/classifiers/` module with YAML-driven configuration. New classification categories require YAML edits, not code changes. 61 unit tests cover the classifiers. The original functions in chat_utils.py and chat_review.py remain as thin delegating wrappers for zero import breakage. [routing-intelligence.md handoff, Phase 1]
 
