@@ -290,7 +290,9 @@ A paper-faithful Engram layer (multiplicative-XOR hash + 8 heads × bigram/trigr
 
 Append a line for each gate outcome. Format: `YYYY-MM-DD | <gate> | <result> | <evidence link> | <decision>`
 
-- _(empty — no compute spent yet)_
+- `2026-05-24 | Phase 0 freshness (Track A) | PASS | gh API: fork head 56abe85 unchanged, PRs #19167/#19182 still draft | proceed to Phase 2 build`
+- `2026-05-24 | Phase 2 build (Track A) | PASS | cmake exit 0 in /mnt/raid0/llm/llama.cpp-longcat-probe (worktree on probe/longcat-build tracking inq/longcat-flash-ngram) | ready for Phase 3 GGUF probe, pending user approval per feedback_no_concurrent_inference.md`
+- `2026-05-24 | Phase 0a Track B (identity-at-step-zero invariant) | PASS | 36/36 unit tests pass in 0.36s on CPU; engram-spike commit e3b88f0c in epyc-inference-research; max abs Engram output after identity init = 0 (atol 1e-6) on non-zero hidden states | architectural feasibility of frozen-backbone retrofit confirmed at step 0; proceed to GPU rental for Phase 0 proxy training when ready`
 
 ## Anti-Rationalization (for this work specifically)
 
@@ -322,20 +324,28 @@ Recurring failure modes worth pre-empting:
 
 Copy this into a TaskCreate list when starting work:
 
-1. [ ] **Track A Phase 0** — confirm InquiringMinds llama.cpp branch head + GGUF repo are still at the heads documented above. `gh pr view 19167 -R ggml-org/llama.cpp --json state,updatedAt` to confirm upstream PR hasn't unexpectedly landed.
-2. [ ] **Track A Phase 1** — fetch the Q4_K_M GGUF (37.4 GB) to `/mnt/raid0/llm/models/longcat-flash-lite-q4km/`. Verify sha256.
-3. [ ] **Track A Phase 2** — clone the InquiringMinds fork into the experimental llama.cpp tree, branch `longcat-flash-ngram`. Build with our standard AOCC + AVX-512 + KMP_BLOCKTIME=10 + no-CUDA settings.
+1. [x] **Track A Phase 0** — `gh pr view 19167/19182 -R ggml-org/llama.cpp` + `gh api repos/InquiringMinds-AI/llama.cpp/branches/longcat-flash-ngram` confirm fork head `56abe85` and upstream PRs unchanged as of 2026-05-24. ✅
+2. [ ] **Track A Phase 1** — fetch the Q4_K_M GGUF (37.4 GB) to `/mnt/raid0/llm/models/longcat-flash-lite-q4km/`. Verify sha256. _(bandwidth-only, no inference approval needed; not done yet to avoid stranded disk if Phase 5 fails quality)_
+3. [x] **Track A Phase 2** — InquiringMinds fork built in worktree `/mnt/raid0/llm/llama.cpp-longcat-probe` (branch `probe/longcat-build` tracking `inq/longcat-flash-ngram` at `56abe857d`). `llama-cli`, `llama-server`, full toolchain present. ✅
 4. [ ] **Track A Phase 3** — prepare smoke-test command. Request user approval before launching.
 5. [ ] **Track A Phase 4** — prepare `llama-bench` commands for 1K/4K/16K decode. Request user approval. Record results in Decision Log.
 6. [ ] **Track A Phase 5** — quality gate. 20-q MMLU subset + 5 internal agentic prompts vs Qwen3-30B-A3B. Record results.
 7. [ ] **Track A Phase 6** — apply gate. PASS → file Track A follow-on handoff and START Track B Phase 0 in parallel. FAIL → write negative deep-dive, stop.
 
-Track B Phase 0 (only if Gate A passes):
-8. [ ] Rent H100-80GB or borrow A100s. Set up SmolLM-1.7B (preferred) or TinyLlama as backbone.
-9. [ ] Vendor `engram_demo_v1.py` into a working training-shaped wrapper. Add the missing zero-init lines.
-10. [ ] Port numpy hash to torch (PR #15 reference) for GPU execution.
-11. [ ] Train two configs on identical data (5-20B tokens FineWeb-Edu): frozen-backbone-Engram and co-trained-Engram. Same Engram-table size for both.
-12. [ ] Compute recovery ratio on held-out PPL + MMLU subset + LAMBADA. Apply ≥30% gate. Record in Decision Log.
+Track B Phase 0a (non-inference prep — COMPLETE 2026-05-24):
+8. [x] Vendor + refactor the demo Engram module into a clean importable package with config dataclasses (no global state). Drop mocked attn/moe stubs. ✅
+9. [x] Add the **two missing zero-init lines** (`value_proj.weight`, `value_proj.bias`, `short_conv.conv.weight`) so identity is preserved at step 0. ✅
+10. [x] Unit test the identity-at-step-zero invariant on CPU with non-zero hidden states. ✅ **PASS** at atol=1e-6.
+11. [x] HF backbone splicing helper (`EngramLayerWrapper`, `splice_engram_into`) with raises on missing/stale input_ids. Tested with mock HF layer. ✅
+12. [x] Two-group AdamW factory + freeze utilities + trainable-param helpers. ✅
+13. [x] Pure-Python canonicalizer (NFKC + accent strip + lowercase + whitespace collapse) + offline build script for HF tokenizers. ✅
+
+Track B Phase 0b (the actual GPU proxy run, only when ready to spend ~$50–150 cloud):
+14. [ ] Rent H100-80GB or borrow A100s. Set up SmolLM-1.7B (preferred) or TinyLlama as backbone.
+15. [ ] Run `scripts/build_canonicalizer.py --tokenizer HuggingFaceTB/SmolLM-1.7B --output canonicalizers/smollm-1.7b.json` to materialize the canonicalization map.
+16. [ ] Write the training driver — uses `engram.EngramLayerWrapper`, `engram.freeze`, `engram.make_two_group_adamw` against a frozen SmolLM backbone. Add a co-trained reference run with backbone unfrozen on the same data budget.
+17. [ ] Train both configs on 5–20 B tokens FineWeb-Edu. Same Engram-table size for both.
+18. [ ] Compute recovery ratio on held-out PPL + MMLU subset + LAMBADA. Apply ≥30% gate. Record in Decision Log.
 
 ## Reporting Instructions
 
