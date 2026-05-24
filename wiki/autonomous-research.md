@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-05-23
-**Sources**: 31 documents (added 2026-05-23 constrained-creativity planner deep-dive; 5 deep-dives, 19 intake entries, 10 handoffs)
+**Last compiled**: 2026-05-24
+**Sources**: 32 documents (added 2026-05-24 autopilot exogenous-restart resilience completed handoff; 5 deep-dives, 19 intake entries, 11 handoffs)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-24, autopilot exogenous-restart resilience)
+
+- **Journal integrity is a precondition for planner learning; classifying failures by service identity (not by HTTP error) prevents reload-induced pollution from being learned as a real regression** [completed 2026-05-24, shipped in `epyc-orchestrator` across 7 commits]. The planner reads `JournalEntry` evidence to form hypothesis chains; if operator-initiated orchestrator/llama reloads land mid-trial, every `/chat` fails → `EvalResult(quality=0)` is journaled as a "quality_floor regression" → planner refutes good hypotheses on phantom signal. Same applies to autopilot SIGKILL'd between `journal.record()` and the final `save_state()` (narrow but real corruption window). **Solution: deterministic fleet markers** (atomic temp+fsync+`os.replace` files in `/mnt/raid0/llm/tmp`, one per orchestrator + one per llama-server port, written by the launch script BEFORE `subprocess.Popen`, read by every uvicorn worker at import) let any consumer answer "did this service restart between request A and request B?" without statistical estimation. `OrchestratorWatcher` + `resilient_post` thread that signal through the seeder + eval tower into `EvalResult.n_exogenous_recovered/_unrecovered`; trials that weather brief reloads complete normally with `eval_details["exogenous_retries"]` audit only, while trials that stayed unrecovered past the wait window are tagged `bug_corrupted_by=exogenous_orchestrator_reload` (DeficiencyCategory `EXOGENOUS_RELOAD`) and pre-gate skipped from `safety_gate` + `archive.update`. Symmetric autopilot-self-crash recovery: WAL-style `in_flight_trial` state marker around `dispatch_action`, on restart either re-syncs the trial counter + re-imports a missing Pareto entry from the journal (case a: trial WAS journaled) or writes an `AUTOPILOT_KILLED` placeholder (case b: died before journal.record) so the planner sees a gap rather than silently skipping a trial id. State persistence made atomic (Phase 6a); corrupt JSON on `load_state` → `sys.exit(70)` with verbatim recovery message (refuses to overwrite the operator's only recovery handle by silently resetting). Real production crashes (no marker change) still flow through to the journal as before — the planner SHOULD see those as real signal. 60/60 tests across new modules. [autopilot-exogenous-restart-resilience.md](../handoffs/completed/autopilot-exogenous-restart-resilience.md), [progress/2026-05/2026-05-24.md](../progress/2026-05/2026-05-24.md) Session 2.
 
 ### New (2026-05-23, constrained-creativity planner)
 
