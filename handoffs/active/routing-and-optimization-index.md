@@ -342,6 +342,21 @@ Touches autopilot directly: lifted patterns land in `autopilot-continuous-optimi
 
 AppWorld dataset (intake-516) DEFERRED. Already emits OTLP-shaped spans via `scripts/autopilot/telemetry.py:to_otlp_span` since 2026-04-12 — no new emission infra required.
 
+### P21 — Test-Time-Compute Techniques (2026-05-24 research intake + deep-dive)
+
+Source: `/research-intake` of OptiLLM (intake-601) + expansion intakes 602/603/604. Full analysis + autopilot-scope determination in [`research/deep-dives/optillm-test-time-techniques.md`](../../research/deep-dives/optillm-test-time-techniques.md). **Sequencing decision (user, 2026-05-24): DeepConf-offline FIRST, then the method-selection axis.** Both are orchestrator-side and become autopilot-tunable *only after* a dedicated session builds + sanity-checks them and wires a flag/knob surface (see `program.md` "Out-of-Action-Space" gated rows — autopilot must NOT propose these until the surfaces exist).
+
+**P21.A — DeepConf-offline (intake-603), highest ROI.** Logprob-based trace filtering: N parallel llama-server completions with `top_logprobs`, bottom-10% group-confidence scoring, keep top-η%, confidence-weighted majority vote. Needs only `top_logprobs` (already exposed) — no fork change. Token reduction is a direct BW win.
+- [x] **P21.A1** ✅ 2026-05-24 — DeepConf offline scorer + live runner + `Features.deepconf` flag (default-OFF), 41 tests. `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5`, `3f4eaee`), built in an isolated worktree. Adapter handles both legacy and OpenAI-style `top_logprobs[].logprob` (the real production shape).
+- [x] **P21.A2** ✅ 2026-05-24 — **DECISIVE NEGATIVE.** Live Qwen3.6 (`:8080`), thinking ON, 4 hard Qs × 6 traces (autopilot stopped). DeepConf vote 3/4 = plain majority 3/4 (no gain); top-1 **confidence** only 1/4; correct-vs-wrong confidence gap **−0.158**. Model is overconfident on wrong short answers → confidence-filtering *hurts*. Full data in [`research/deep-dives/optillm-test-time-techniques.md`](../../research/deep-dives/optillm-test-time-techniques.md) §P21.A Outcome.
+- [x] **P21.A3 / A4** ❌ 2026-05-24 — **DO NOT PROCEED.** No accuracy benefit over majority + N× generation/`n_probs` cost. `program.md` gate updated to "do-not-wire (A2 negative)". Branch preserved as a default-OFF reference, NOT merged to `main`. Revisit only with a much larger trace budget or a better-calibrated model (the confidence metric itself is anti-correlated here).
+
+**P21.B — Method-selection axis (intake-601), second.** A "which test-time technique" axis above role-routing. Reference: OptiLLM pattern only — its local modules are transformers-only and NOT usable over llama-server (see deep-dive). Start with `self_consistency` (only cheap llama.cpp-compatible technique needing no `n`); MCTS/PlanSearch/RTO also work; avoid BoN/MoA/CEPO (need `n` multi-sampling llama.cpp lacks).
+- [ ] **P21.B1**: Build the method axis + wrappers + a method-routing classifier/flags in `src/` (dedicated session).
+- [ ] **P21.B2**: Hand the per-query-class method policy + thresholds to autopilot (StructuralLab + PromptForge); remove the `program.md` gate row.
+
+**P21.C — out of autopilot scope (tracked, not scheduled here):** CoT-decoding (intake-602) + DeepConf-online → `epyc-llama-experimental` fork spike + BW roofline + **manual** speed bench, gated on P21.A proving worthwhile. Follow-up intake of 17 OptiLLM-cited papers + AutoThink SSRN 5253327 → future `/research-intake` run.
+
 ### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
 
 Independent workstream — 2× AR-3 throughput by running 2 concurrent eval streams on dedicated port sets. No contention, no changes to existing seeding scripts, no inference dependency on implementation side. **Cross-ref**: `non-inference-backlog.md` NIB2-12 (implementation) and NIB2-29 (port-doc update).

@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-22 (GitNexus CLI-only operational posture — keep-marker bloat protection, flat skill layout, --skip-skills wrapper across 5 repos — added to tool-implementation)
+**Last compiled**: 2026-05-24 (OptiLLM test-time-compute intake — DeepConf built + validated NEGATIVE on CPU/Qwen3, OptiLLM local techniques transformers-only — added to inference-serving)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 292 documents across 6 source types
 
@@ -22,7 +22,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 17 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); per-model serving configs critical for quality |
+| [Inference Serving](inference-serving.md) | 21 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); per-model serving configs critical for quality. Test-time compute (DeepConf) validated NEGATIVE on CPU — confidence anti-correlated with correctness, no gain over majority |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 

@@ -253,3 +253,28 @@ Workaround: clear `draft_model:` field for `architect_general` in registry. Lose
 - [`handoffs/active/model-registry-v5-deployment-draft.yaml`](../handoffs/active/model-registry-v5-deployment-draft.yaml) — `host_prerequisites` + per-role env blocks; status PARTIAL APPLIED 2026-05-04
 - [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) — full session including restart verification
 - [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — wiring revalidation
+
+## 2026-05-24 — Test-time-compute techniques (OptiLLM intake): DeepConf built + validated NEGATIVE on CPU
+
+`/research-intake` of OptiLLM (intake-601) + expansion (CoT-Decoding intake-602, DeepConf intake-603, Sharma theory intake-604). Full analysis + autopilot-scope determination in [`research/deep-dives/optillm-test-time-techniques.md`](../research/deep-dives/optillm-test-time-techniques.md).
+
+**OptiLLM is a pattern reference, not a usable dependency.** Its high-value local techniques (DeepConf, CoT-decoding, entropy-decoding, AutoThink, ThinkDeeper) are HuggingFace-transformers-only (in-process model + activation hooks) and do NOT run over llama-server endpoints. AutoThink steering needs layer-19 activation injection (infeasible without our own fork-level steering); only its complexity-classifier idea is portable. API-level techniques (MCTS, self_consistency, PlanSearch, RTO, MARS) do work over llama-server; BoN/MoA/CEPO degrade because llama.cpp lacks the `n` multi-sample param. Apache-2.0 but has unfixed RCE issues (z3/code-exec plugins) — never import those.
+
+**DeepConf (arXiv:2508.15260) — built, validated, NOT adopted.** Reimplemented the offline variant (confidence-weighted self-consistency from per-token top-k logprobs) on `epyc-orchestrator` branch `feat/p21a-deepconf` (default-OFF `Features.deepconf`, 41 tests). Sanity-checked against live Qwen3.6-35B-A3B (thinking ON, 4 hard multiplications × 6 traces):
+
+| Metric | Result |
+|---|---|
+| Plain majority | 3/4 |
+| DeepConf confidence-weighted vote (top-50%) | 3/4 — identical to majority |
+| Top-1 confidence (DeepConf's filtering signal) | **1/4** |
+| Correct-vs-wrong confidence gap | **−0.158 (anti-correlated)** |
+
+The model is systematically **overconfident on wrong short answers** (e.g. `529`@13.7 outscored correct traces), so on our CPU/Qwen3 stack confidence-filtering *hurts* and confidence-weighted voting *degenerates to plain majority* — zero accuracy gain for N× generation + `n_probs` overhead (~58 s/trace). **Verdict: do not wire into the orchestrator or autopilot** (autopilot `program.md` gate updated to permanent do-not-wire). The branch is preserved as a default-OFF reference, not merged. Confirms the candidate-bounded / "confidently wrong" / verification-overhead criticisms logged at intake. CoT-decoding (intake-602) + DeepConf-online remain unbuilt fork-level work, gated on a BW roofline; the OptiLLM-style method-selection axis (intake-601, P21.B) is a separate future track.
+
+### Sources (2026-05-24)
+
+- [`research/deep-dives/optillm-test-time-techniques.md`](../research/deep-dives/optillm-test-time-techniques.md) — full deep-dive + autopilot-scope + P21.A outcome
+- `research/intake_index.yaml` intake-601..604 (committed `27e86f0`)
+- `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5` module+flag, `3f4eaee` runner+adapter+tests) — default-OFF, not merged
+- [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) P21 (A1 done / A2 negative / A3 do-not-proceed)
+- [`handoffs/active/per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
