@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-24 (OptiLLM test-time-compute intake — DeepConf built + validated NEGATIVE on CPU/Qwen3, OptiLLM local techniques transformers-only — added to inference-serving)
+**Last compiled**: 2026-05-25 (Repo Prompt + Code-as-Agent-Harness deep dive — context PRE-assembly "assemble vs evict" → context-management; harness-level eval metrics / behavior-signature versioning / uncertainty-routed escalation / experiential memory + RP harness patterns → agent-architecture)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 292 documents across 6 source types
 

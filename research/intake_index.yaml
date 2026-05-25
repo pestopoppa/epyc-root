@@ -28465,3 +28465,280 @@
   - 'Single-author paper by the OptiLLM proxy author (Patched Codes) — commercial bias toward justifying the proxy approach.'
   handoffs_updated: []
   handoffs_created: []
+- id: intake-605
+  arxiv_id: null
+  url: https://repoprompt.com/
+  source_type: blog
+  title: 'Repo Prompt — context-engineering tool for developers (CodeMaps + Context Builder + MCP)'
+  authors:
+  - 'Eric Provencher (independent)'
+  categories:
+  - context_management
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-05-25'
+  key_claims:
+  - 'Manual/curated context selection beats agent auto-search: humans pick relevant files via a visual file-tree UI; the app assembles a structured prompt and returns edits as reviewable diffs.'
+  - 'CodeMaps extract classes/functions/references into a compact structural overview, giving the model architectural context without spending tokens on full file bodies.'
+  - 'Context Builder is an agent-orchestration engine (drives Claude Code or Codex) that researches the codebase via Repo Prompt MCP tools and iterates file/codemap selection to fit a token budget (default 60k; 24-32k recommended for direct agent use).'
+  - 'Functions as an MCP server exposing 15+ tools so Claude Desktop, Cursor, Claude Code, or Codex can read files, generate code maps, and apply changes as a context source.'
+  - 'Claims up to ~80% token-usage reduction; XML Pro Edit returns structured XML changes for parallel application.'
+  techniques:
+  - 'CodeMaps (structural API/symbol extraction for token-cheap architecture context)'
+  - 'manual context curation via visual file-tree selection'
+  - 'Context Builder agent orchestration with token-budget-bounded iterative selection'
+  - 'MCP server with 15+ context/edit tools'
+  - 'diff-based and XML Pro Edit apply workflows'
+  reported_results:
+  - 'Vendor claim: up to ~80% token-usage reduction (no methodology disclosed)'
+  - 'Cited 64-128k token context "sweet spot"; no quantified efficiency data'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - context-folding-progressive.md
+    - meta-harness-optimization.md
+    - delegation-context-preassembly.md
+    - batched-edit-parallel-apply.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-295
+    - intake-330
+    - intake-269
+  novelty_justification: 'Pure product/packaging play. CodeMaps closely parallels intake-330 (code-review-graph AST structural extraction, ~8.2x token reduction) and GitNexus; MCP-context-source-for-agents and token-reducing file selection parallel intake-295 (fff.nvim) and intake-269 (llm-wiki plugin). The "curate over auto-search" thesis is a reasonable framing but not a novel technique; no new mechanism or empirical result vs prior intake.'
+  relevance_justification: 'RELEVANCE RAISED medium->high (2026-05-25 deep dive): Repo Prompt is a direct feature-competitor to the harness/context layer of the orchestrator we are building, not merely a tangential dev tool. Per user direction, the open-source-only rule governs what we DEPLOY, not what we ANALYZE — the full feature set is a spec to mine. Concrete net-new gaps vs our stack are enumerated in deep_dive.'
+  verdict_justification: 'adopt_patterns (reframed 2026-05-25 from a deployment-constraint dismissal to competitor-feature-mining): we will not deploy the closed macOS GUI, but its feature set maps onto active workstreams and exposes concrete gaps. The genuinely net-new ideas (budget-bounded context PRE-assembly for delegation; per-file full|slices|codemap_only inclusion modes; think-then-act batch editing to collapse CPU tool round-trips; parallel cheap-executor apply fan-out; non-prescriptive discovery prompt) are sharper on our BW-bound CPU regime than on the cloud-GPU system they came from. credibility null per rubric (product page, no methodology; ~80% figure unbenchmarked).'
+  deep_dive:
+    date: '2026-05-25'
+    summary: 'Full feature reverse-engineering (official blog + open-source w-winter/dot314 MCP wrapper source, since repoprompt.com is JS-opaque). Headline: our orchestrator does REACTIVE context discovery (Root LM explores via REPL mid-reasoning); Repo Prompt does PROACTIVE budget-bounded context PRE-assembly (curate a sliced+codemap bundle that provably fits a token budget before the model runs, then think-to-completion + one structured edit set). RP optimizes a weaker version of our cost model — its 60k default is GPT-5 Pro''s paste ceiling; on our BW-bound CPU regime every unearned token (DRAM at decode) and every interleaved tool round-trip (full prefill+decode) costs more, so the principle transfers with greater force.'
+    net_new_vs_our_stack:
+    - 'Context Builder budget-bounded ITERATIVE context pre-assembly (task analysis -> file discovery -> codemap gen -> token verification -> add/drop/slice until it fits -> non-prescriptive handoff). We have session-level compaction (the EVICT side); this is the ASSEMBLE side, and it is missing — most valuable as a delegation context packager (less prefill + less contamination when handing sub-tasks to worker/coder roles).'
+    - 'Per-file inclusion modes full|slices|codemap_only with auto-merged overlapping line-ranges and reads auto-promoting to slices. We have the inputs (GitNexus 42.6K symbols, ColGREP AST chunks) but no assembly layer that composes them into a budgeted bundle.'
+    - 'Think-then-act: reasoner spends full budget then emits ONE structured XML edit set (no interleaved tool calls). Our Root LM interleaves REPL calls. On EPYC each round-trip is a fresh prefill+decode, so a batch-edit mode is a plausibly real latency lever and the cheapest-to-falsify idea (candidate autopilot search-space knob + head-to-head bench vs the interleaved loop).'
+    - 'Two-tier split: heavy reasoner plans/edits, cheap CLI agents apply per-file IN PARALLEL in a sandbox. Maps onto our proven NUMA concurrency (32x6t split, +44-58% aggregate). Our escalation chain is quality-escalation, not apply fan-out.'
+    - 'Non-prescriptive discovery prompt: discovery deliberately withholds proposed solutions (open questions + file-relationship explanations only) to avoid biasing/under-scoping the downstream plan. One-line insight; natural PromptForge mutation to A/B in autopilot.'
+    partial_have:
+    - 'CodeMaps = signature-only API skeletons injected as a distinct prompt budget-class: GitNexus CAN produce this but nothing exposes an architecture-snapshot for prompt injection (no dedicated tool / query wired).'
+    - 'General sandbox-before-disk patch review with granular accept/reject: we have only meta-harness Tier 2 (4-file allowlist + git-commit-before), not a general capability.'
+    already_have:
+    - 'MCP server (orchestrator read-only + canvas tools); multi-model routing (learned MLP 92%); escalation chain ~= Oracle escalation primitive; prompt resolver ~= prompt library; fully self-hosted/local (we win on privacy).'
+    mcp_tool_surface: 'list_windows, get_file_tree, manage_selection, read_file (line ranges + tail + read-cache), apply_edits, file_actions, file_search, get_code_structure (CodeMaps primitive), workspace_context, manage_workspaces, oracle_send (modes chat/plan/edit/review), oracle_utils, chat_send, agent_run, agent_manage, git, + window/tab bind/route verbs. Config notable: toolCallTimeoutMs 5400000 (90min for long reasoning), autoSelectReadSlices, confirmDeletes/confirmEdits.'
+    architecture: 'macOS-only native app + local MCP server (stdio). Local-first, BYO API keys (no model access shipped). Providers OpenAI/Anthropic/Gemini/DeepSeek/Azure/OpenRouter/LiteLLM + Ollama local. Single-user, no team features. Pro $14.99/mo. Launched Product Hunt 2026-01-09.'
+    audit_refinements_2026_05_25:
+    - 'DCP implementation must use provenance-bearing ContextBundle manifests, not rendered prompt text only: per-file content hashes, source provenance, inclusion/exclusion reasons, stable IDs, and model-calibrated token estimates.'
+    - 'Context assembly should be two-pass for CPU efficiency: cheap GitNexus/file metadata ranking first, selective body reads second; broad full-repo search on every delegation would erase the latency win.'
+    - 'CodeMaps need cache/staleness semantics keyed by content hash + gitnexus index commit; stale index must trigger wrapper re-index or downgrade confidence.'
+    - 'BEP implementation should be deterministic-first: typed patch schema with base repo/file hashes, sandbox/worktree apply, dependency-aware parallelism, whole-repo verify. Optional LM repair/fan-out is a fallback and remains inference-gated.'
+    - 'DCP and BEP manifests should cross-link so a batch edit planned from omitted/codemap-only context is flagged as under-evidenced before apply.'
+  handoffs_updated:
+  - tool-output-compression.md
+  - context-folding-progressive.md
+  - meta-harness-optimization.md
+  - routing-and-optimization-index.md
+  - master-handoff-index.md
+  handoffs_created:
+  - delegation-context-preassembly.md
+  - batched-edit-parallel-apply.md
+- id: intake-606
+  arxiv_id: '2605.15960'
+  url: https://arxiv.org/html/2605.15960v2
+  source_type: paper
+  title: 'Imperfect World Models are Exploitable'
+  authors:
+  - 'Logan Mondal Bhamidipaty'
+  - 'Esmeralda S. Whitammer'
+  - 'David Abel'
+  - 'Mykel J. Kochenderfer'
+  - 'Subramanian Ramamoorthy'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: high
+  relevance: none
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-25'
+  key_claims:
+  - 'Formal definition of model exploitation in RL: a world model is exploitable if it implies one policy should be strictly preferred over another while the true transition model implies the reverse.'
+  - 'Unified theory bridging reward hacking and model exploitation; exploitation is essentially unavoidable on large (open-subset-containing) policy sets, with reward hacking as a special case.'
+  - 'Finite-policy-set conditions guaranteeing unhackability have no counterpart precluding exploitation — exploitation persists even where reward hacking is provably avoidable.'
+  - 'Introduces a relaxed epsilon-exploitability notion and derives a closed-form safe horizon H(epsilon,delta) within which exploitation can be avoided given model error and tolerance.'
+  techniques:
+  - 'value inversion (opposite policy rankings)'
+  - 'epsilon-exploitability (relaxed threshold-bounded inversion)'
+  - 'safe horizon bound H(epsilon,delta)'
+  - 'simulation-lemma model-error accumulation bounds'
+  reported_results:
+  - 'Theorem 2 gives tight exploitation-gap bounds; Corollary 4 square-root heuristic gives conservative estimates.'
+  - 'Worked example: actual exploitation gap 4.35 at delta=0.64, gamma=0.9.'
+  - 'Worst-case inversion scales O(100*delta) at gamma=0.9 and O(10000*delta) at gamma=0.99; safe horizon H -> infinity as delta -> 0.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: 'Introduces a genuinely new formalism (model exploitation as value inversion) and proves it distinct from reward hacking with its own (im)possibility results — not covered anywhere in the compendium. Standalone theoretical contribution.'
+  relevance_justification: 'Pure RL-theory on world-model planning safety, reward hacking, and policy-ordering preservation. EPYC focus is CPU inference on EPYC 9655 (llama.cpp/ik_llama.cpp, spec-dec, MoE, quantization, NUMA, orchestrator routing, agent harness). No inference, serving, quantization, hardware, or applied-agent content; keyword matches (Agent-World env synthesis, autopilot reward design) concern applied env/reward shaping, not this paper''s transition-model inversion theory.'
+  verdict_justification: 'not_applicable: no actionable connection to CPU-inference or the deployed orchestrator/autopilot stack. High-quality theory (Edinburgh + Stanford/Kochenderfer, <12mo: +1 recency, +1 known-lab, +2 venue-track => credibility 4) but offers no technique, benchmark, or pattern mapping onto inference acceleration, quantization, routing, or harness work. Flagged for awareness per research-intake policy; no creative CPU-inference deployment angle exists.'
+  contradicting_evidence:
+  - 'Adjacent empirical work (Reinforcement World Model Learning, arxiv:2602.05842) claims reward hacking is practically mitigable via sim-to-real world-model rewards — mild tension with this paper''s "essentially unavoidable" framing, though the two address different constructs (exploitation vs. hacking).'
+  - 'Purely theoretical under idealized conditions; no empirical validation of the safe-horizon bound on real tasks.'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-607
+  arxiv_id: '2605.18747'
+  url: https://arxiv.org/html/2605.18747v1
+  source_type: paper
+  title: 'Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems'
+  authors:
+  - 'Xuying Ning'
+  - 'Katherine Tieu'
+  - 'Dongqi Fu'
+  - 'Tianxin Wei'
+  - 'Zihao Li'
+  - 'Yuanchen Bei'
+  - 'et al. (UIUC, Meta, Stanford; ~30 authors)'
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - memory_augmented
+  - tool_implementation
+  novelty: low
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-05-25'
+  key_claims:
+  - 'Code is not just an LLM-generated artifact but an executable, inspectable, and stateful medium through which agents reason, act, observe feedback, and verify progress.'
+  - 'Organizes code-as-harness around three layers: harness interface, harness mechanisms (planning, memory, tool use, control, optimization), and scaling for multi-agent coordination.'
+  - 'Code-as-interface makes reasoning executable, action programmable, and environment state inspectable; shared code artifacts enable multi-agent coordination, review, and collective verification.'
+  - 'Current agent evaluation over-focuses on final task success rather than harness-level reliability — a measurement gap.'
+  techniques:
+  - 'program-delegated reasoning (Program-of-Thoughts, PAL, Chain of Code)'
+  - 'formal-verification interfaces (Lean, SAT/SMT)'
+  - 'iterative code-grounded reasoning (CodePRM, RLEF, EG-CFG)'
+  - 'execution-driven Plan/Execute/Verify control loops'
+  - 'memory taxonomy: working, semantic, experiential, long-term, multi-agent'
+  reported_results:
+  - 'Survey/taxonomy — no original empirical benchmarks; synthesizes referenced-system results within a three-layer framework.'
+  referenced_arxiv_ids:
+  - '2305.16291'
+  - '2308.00352'
+  - '2308.08155'
+  - '2405.15793'
+  - '2310.06770'
+  - '2211.10435'
+  - '2211.12588'
+  - '2312.04474'
+  - '2204.01691'
+  - '2209.07753'
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - meta-harness-optimization.md
+    - rao-redel-substrate-spike.md
+    - agent-world-env-synthesis.md
+    - autopilot-continuous-optimization.md
+    - decision-aware-routing.md
+    - unified-trace-memory-service.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries:
+    - intake-244
+  novelty_justification: 'Survey/taxonomy with no new technique or empirical result. The agent-harness theme is already densely covered (Externalization review, "Dive into Claude Code" design-space study, the active Meta-Harness handoff). The "code as executable/stateful/verifiable medium" framing overlaps existing coverage; adds an organizing taxonomy (interface/mechanism/scaling) but no novelty beyond it.'
+  relevance_justification: 'Squarely inside the agent_architecture domain (orchestrator harness, role routing, escalation, prompt/code mutation in the meta-harness autopilot), but conceptual rather than CPU-inference actionable, and reports no metrics that change any deployment decision. The harness-reliability evaluation gap maps onto existing chapter-09 / meta-harness Tier-1 trace-feedback work. Medium, not high.'
+  verdict_justification: 'adopt_patterns: framing patterns (interface/mechanism/scaling layers; harness-reliability vs final-task-success distinction) can sharpen the meta-harness-optimization handoff and chapter-09 framing, but there is no component to adopt and no new result to integrate. Does not supersede the actionable Meta-Harness (arxiv:2603.28052, intake-244) already in flight; belongs in the same saturated cluster. referenced_arxiv_ids are name-resolved (paper HTML truncated before bibliography), high-confidence-by-name but not page-verified.'
+  contradicting_evidence:
+  - 'Concurrent competing survey "Agent Harness for LLM Agents: A Survey" (Preprints 202604.0428; GitHub Awesome-Agent-Harness, 110+ papers, 23 systems) covers the same space — the harness-survey cluster is saturated; corroborates novelty:low.'
+  - 'Survey reports no original metrics; the harness-reliability evaluation gap is asserted, not measured.'
+  deep_dive:
+    date: '2026-05-25'
+    summary: 'Deep read of the open-problems section (§5) + memory taxonomy (§3.2) + scaling (§4). Most of the paper CONFIRMS our direction (it cites Context-Folding as the canonical compaction design — we already track intake-154). The genuinely ADDITIVE pieces are four, seeded into the handoffs below.'
+    actionable_ideas:
+    - 'HARNESS-LEVEL EVAL METRICS + ORACLE ADEQUACY (§5.2.1, §5.2.7) — standout. Scoring only final-task-success optimizes a noisy single bit that rewards shortcut configs. Score the harness INTERMEDIATE behavior on named axes: execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate; plus an oracle-adequacy meta-metric (does the eval oracle actually cover the failure modes, or are we assuming "no exception = correct"?). Methodology: HOLD THE MODEL FIXED, VARY ONLY THE HARNESS to isolate harness quality. Seeds meta-harness-optimization.md + autopilot-continuous-optimization.md (objective dimensions beyond the 4D Pareto quality/speed/cost/reliability).'
+    - 'BEHAVIOR-SIGNATURE VERSIONING for regression-safe self-improvement (§5.2.3, §5.2.4). We are ahead on raw regression gating (quality floor, per-suite guard, auto-rollback, git reverts) but we merge improvements SYNTACTICALLY — a new autopilot config can silently break a prior Pareto win. Prescription: behavior-signature versioning + differential testing (run new vs old in parallel, compare behavior, not just aggregate score). Seeds autopilot-continuous-optimization.md (Pareto-archive integrity).'
+    - 'UNCERTAINTY-ROUTED ESCALATION with approval as first-class harness state (§5.2.5). Our escalation is rules + learned Q-values (quality axis). Different axis: quantify decision UNCERTAINTY, route high-uncertainty decisions up, and store the approval/escalation decision IN harness state for accountability/auditability. Seeds decision-aware-routing.md.'
+    - 'EXPERIENTIAL MEMORY = index FAILED trajectories for avoidance (§3.2.3) + externalize working state because LLMs fail at latent-state persistence (§3.2.1). We have a failure_graph (partial); the explicit "store failures as pattern-matched avoidance cases" (ExpeL/Evo-Memory/MemGovern) reframing sharpens episodic_store design. Seeds unified-trace-memory-service.md.'
+    audit_refinements_2026_05_25:
+    - 'Harness-level metrics must be evidence-linked, confidence-scored, and observe-only before Pareto promotion; otherwise they just replace one noisy scalar with several noisy scalars.'
+    - 'Oracle adequacy needs explicit blind-spot and shortcut-risk fields, especially for web-search leakage and exact-match/test-undercoverage failure modes.'
+    - 'Behavior signatures must include process features (route path, tool-call sequence, escalation path, latency/token buckets, harness metrics), not just final-answer hashes.'
+    - 'Uncertainty-routed escalation must be calibration-first: log/shadow mode with ECE, abstention precision/recall, per-suite drift, and bounded approval records before enforcement.'
+    - 'Experiential memory should store governed failure cases with root-cause labels, avoidance advice, evidence event IDs, lifecycle-managed working state, and validity/governance ranking to avoid negative transfer.'
+    - 'P24/P25/URE/EXM should share unified trace event IDs so metrics, approvals, behavior signatures, and failure cases remain joinable.'
+    not_relevant: 'Robotics/embodied (§2.2) and multimodal grounding (§5.2.6) halves are out of scope for a CPU text/tool orchestrator.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  - autopilot-continuous-optimization.md
+  - decision-aware-routing.md
+  - unified-trace-memory-service.md
+  - routing-and-optimization-index.md
+  - master-handoff-index.md
+  handoffs_created: []
+- id: intake-608
+  arxiv_id: '2605.22821'
+  url: https://arxiv.org/html/2605.22821v1
+  source_type: paper
+  title: 'Tokenisation via Convex Relaxations'
+  authors:
+  - 'Jan Tempus'
+  - 'Philip Whittington'
+  - 'Craig W. Schmidt'
+  - 'Dennis Komm'
+  - 'Tiago Pimentel'
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-25'
+  key_claims:
+  - 'Tokeniser construction reformulated as a global linear program (ConvexTok), replacing greedy BPE-style merge selection with polyhedral optimisation over the whole vocabulary at once.'
+  - 'Despite the problem being NP-hard, LP relaxations yield increasingly near-integral solutions at larger vocab sizes, with computable lower bounds certifying within ~1% of optimal at common vocab sizes.'
+  - 'ConvexTok consistently beats BPE on intrinsic compression metrics (bits-per-byte, vocabulary utilisation, entropy).'
+  - 'Downstream task gains (CORE benchmark) are inconsistent and weaker than the compression gains; BPE remains more stable to training-data variation.'
+  techniques:
+  - 'ConvexTok (LP-based tokeniser construction)'
+  - 'tokenisation graph (DAG of byte/token edges with colour partitions)'
+  - 'integer program with flow constraints + LP relaxation'
+  - 'rounding schemes: deterministic top-K, biased value-to-length ratio, integral-only'
+  reported_results:
+  - 'Optimality gap within ~1% of optimal at common vocab sizes (certified via LP lower bounds); LP solutions become increasingly integral as vocab size grows.'
+  - 'Deterministic rounding consistently outperforms BPE on bits-per-byte; biased rounding dominates on intrinsic metrics.'
+  - 'Downstream CORE-task improvements inconsistent; BPE more stable across training-data variations.'
+  referenced_arxiv_ids:
+  - '1508.07909'
+  - '2306.16842'
+  - '2402.18376'
+  - '2412.15210'
+  - '2411.08671'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 03-prompt-lookup.md
+    - 07-benchmark-suite-construction.md
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: 'Reformulating tokeniser vocabulary construction as a certifiable LP/IP with optimality lower bounds is a genuinely novel angle not covered in the compendium. Builds on the NP-completeness line (Whittington 2025) but is first to produce near-optimal, certifiable tokenisers via convex relaxation. The only "convex relaxation" in the corpus is PAVA isotonic regression for KV-cache budget allocation — a different problem.'
+  relevance_justification: 'All deployed models ship fixed pre-trained tokenisers; tokeniser construction is a pre-training-time concern with no inference-time lever. Compression gains (BpB) do not translate to throughput on a fixed vocab, and downstream gains are reported inconsistent. Closest adjacency (tokenizer compat for spec-dec draft/target) is unaffected by how the vocab was built. Tangential at best.'
+  verdict_justification: 'not_applicable: a tokeniser-design / LM-theory contribution requiring training models from scratch with new vocabularies to exploit. We serve open-weight checkpoints with their own tokenisers on CPU; no orchestrator/llama.cpp/spec-dec/quant/routing hook for ConvexTok. Flagged rather than hard-rejected per policy — if a future from-scratch-training or doc-to-LoRA effort (08-doc-to-lora-prototype is nearest) emerges, revisit as a vocab-construction component.'
+  contradicting_evidence:
+  - 'Tier 2b corroborates not_applicable: multiple sources find tokenizer compression (BpB) does not straightforwardly predict downstream performance, and the strongest compressors can be detrimental to learnability (Character-Token-Correlation studies; "Tokenization is More Than Compression"). The paper''s own inconsistent downstream results match this pattern.'
+  - 'Gains require training models from scratch with new vocabularies; no inference-time lever for fixed pre-trained tokenisers.'
+  handoffs_updated: []
+  handoffs_created: []
