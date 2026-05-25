@@ -182,6 +182,8 @@ void llama_memory_hybrid::state_write(io, seq_id, flags) {
 | Queue depth → routing decision | **TODO** | Small | Use DS-1 `_active_per_instance` data |
 | Fallback to full when idle | **TODO** | Small | Route to 96t when all quarters idle |
 
+> **Within-role placement state machine** (2026-05-25): the KV save/restore primitives documented here (`_slot_save` / `_slot_restore` / `_slot_erase` in `src/backends/concurrency_aware.py:69-120`) are reused by [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md). That handoff owns the *trigger* logic — specifically, the missing load-transition trigger ("evict full→quarter when a 2nd request arrives") — plus the placement state machine that prevents full↔overlapping-quarter co-placement in the first place. This handoff stays focused on the mechanics and the broader stack templates (DS-6/DS-7); the within-role placement work runs as a sibling under routing-and-optimization-index P7.
+
 ---
 
 ## Part 3: Tiered Deployment Architecture

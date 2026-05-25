@@ -37,6 +37,7 @@ When making a routing-architecture proposal, name which of these four (and which
 | Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Phase 5 seeder refactor DONE** (2026-04-17). 3-way→per-role eval. Blacklist cleaned (6→1). Model signatures in controller. AR-3 needs restart. | Restart AR-3, accumulate per-role Q-values, then route_per_role() in retriever |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
+| Within-Role Placement + KV Migration | [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md) | **NEW 2026-05-25** — 7-phase plan to close the within-role full↔quarter cpuset-overlap gap left open by cross-role-bw-aware-routing Phase E. Built primitives (slot save/restore + per-region locks) reused; only the trigger logic + placement state machine are new. | WP-0 revert risky `AUTOPILOT_EVAL_CONCURRENCY=4` default, then WP-1 topology-safe per-role concurrency cap |
 | KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
 | Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
@@ -148,6 +149,19 @@ Depends on observability (P4) and autoresearch baseline (P5). **Phase F now incl
 - [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08). **Design audit 2026-04-09**: 6 gaps identified. **Gap resolutions 2026-04-09**: All 6 gaps resolved with concrete specs (dynamic URL API, liveness heartbeat, quarter-fixed ports, 3-phase drain protocol, idle tracking, degradation via existing retry paths). See `dynamic-stack-concurrency.md` § DS-6 Gap Resolutions. Implementation deferred to Phase F.
 
 - [ ] **DS-7: Stack templates in orchestrator config** — Encode autoresearch findings as selectable stack profiles. **Design audit 2026-04-09**: 4 gaps identified. **Gap resolutions 2026-04-09**: All 4 gaps resolved (formal YAML template schema, `--stack-profile` CLI selection, migration paths with/without DS-6, resource validation with fail-fast). See `dynamic-stack-concurrency.md` § DS-7 Gap Resolutions. Implementation deferred to Phase F.
+
+#### Within-Role Placement + KV Migration (siblings to DS-6/DS-7; NEW 2026-05-25)
+
+Tracked in [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md). Each phase is independently shippable behind an env flag with a metric gate; phases described in detail in the handoff.
+
+- [ ] **WP-0: Revert risky default** — Roll back `AUTOPILOT_EVAL_CONCURRENCY` default from 4 to 1 in `scripts/autopilot/eval_tower.py`; the =4 default was shipped 2026-05-25 without modeling full+quarter cpuset overlap. Gate: serial dispatch matches pre-2026-05-25 baseline.
+- [ ] **WP-1: Topology-safe per-role concurrency** — Add `max_safe_concurrency(role)` to `src/runtime/instance_topology.py`; use as the autopilot default. Frontdoor=3, worker_general=1 by topology. Gate: 3-way frontdoor fan-out shows full+q3+q2 with no overlap.
+- [ ] **WP-2: Placement state machine (no migration; queue-instead-of-overlap)** — New `src/scheduling/placement.py` consulted by `ConcurrencyAwareBackend._dispatch`; extend matrix schema with derived `placement_overlap`. Gate: 4-way frontdoor shows 3 active + 1 queued, never overlap.
+- [ ] **WP-3: Forward migration trigger (N=1→N=2 evict full)** — Reuse `_migrate_kv` with new load-transition trigger; honor `ChatRequest.migration_budget_ms`. Gate: 4-way frontdoor aggregate t/s ≥ matrix's 4-quarters ratio (~1.88×).
+- [ ] **WP-4: Reverse migration (quarter→full when load drops)** — Cooldown + recency + per-session cap. Gate: 30-min mixed traffic shows reverse migrations; solo-after-burst latency ≤+10% vs solo-only baseline.
+- [ ] **WP-5: Full-machine roles (worker_general, architect_general)** — Decide quarters-only vs preferred-quarters-at-N≥2 vs queue. Gate: worker_general 2-way concurrent uses q0+q1, not full.
+- [ ] **WP-6: Matrix extension + re-bench** — Sweep within-role instance pairs in `scripts/server/contention_matrix.py`; update YAML schema with `instance_pairs`. Gate: CV ≤ 5% across 3 runs.
+- [ ] **WP-7: Production rollout + autopilot tuning** — Matrix-aware default fan-out; 24-hour gate. Documentation in `wiki/autopilot-tuning.md`.
 
 ### P8 — AutoPilot Design Philosophy Imports
 
@@ -616,4 +630,59 @@ The May 2026 cluster deep-dives (8 documents, `research/deep-dives/2026-05-19-*.
 - **[`streaming-llm-baseline.md`](streaming-llm-baseline.md)** (master P#45 MED) — gate for the KV-reduction cluster prioritization (LU-KV / KVP / ForesightKV / PBKV / SP-KV all measured against sink+window floor).
 
 **ES cluster status** (intake-532/563/564/565): still tracked under the Hoy 2026 4-gate protocol above. ESSA spike (CPU-feasible via Q4_K_M LoRA-SVD) remains the prime ES-cluster candidate but is **lower priority than the 4 stubs above** because it requires per-bench user approval per `feedback_no_concurrent_inference` and the Trinity retroactive audit (cheapest ES gate) is not yet scheduled.
+
+## Research Intake Update — 2026-05-25 (intake-605/607 deep dive)
+
+Deep dive of **intake-605 (Repo Prompt)** + **intake-607 (Code as Agent Harness)** — full feature reverse-engineering + open-problems read. intake-605 relevance raised medium→high (reframed from "closed-source, not deployable" to **competitor-feature-mining**: the open-source-only rule governs *deploy*, not *analyze*). Spawned **2 new handoffs** (P22/P23) + **task additions to 4 existing handoffs** (P24/P25). All tasks are first-draft for strategy brainstorm; refine before implementing. Inference-gated tasks honor `feedback_no_concurrent_inference` + `feedback_speed_verify_via_llama_bench`.
+
+### P22 — Budget-Bounded Context Pre-Assembly for Delegation (intake-605)
+
+New handoff [`delegation-context-preassembly.md`](delegation-context-preassembly.md). The *assemble* side of context engineering (context-folding owns *evict*). Sharper on CPU than the cloud system it came from (unearned tokens = DRAM-at-decode; bloated prefill = pure latency).
+
+- [ ] **DCP-1** ContextBundle data model + per-file `full|slices|codemap_only` modes w/ merged line-ranges (substrate; net-new)
+- [ ] **DCP-2** Budget-bounded assembly loop (discover→codemap→token-verify→add/drop/slice→fit); budget is a per-role parameter, not a fixed 60k
+- [ ] **DCP-3** CodeMaps-as-budget-class via GitNexus architecture-snapshot producer (closes analyzed-not-wired gap)
+- [ ] **DCP-4** Wire pre-assembly into dispatcher/escalation delegation (flag default-off)
+- [ ] **DCP-5** Non-prescriptive discovery prompt as a PromptForge mutation (A/B via autopilot)
+- [ ] **DCP-6** Eval on delegation-heavy workload: prefill/latency/quality vs reactive-discovery baseline (inference-gated)
+
+### P23 — Batched Structured Editing + Parallel Apply Fan-out (intake-605)
+
+New handoff [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md). Think-then-act batch edit (collapse tool round-trips) + fan per-file apply across NUMA quarters.
+
+- [ ] **BEP-1** Batch-edit mode: emit one structured patch set, no interleaved REPL calls (flag default-off)
+- [ ] **BEP-2** CPU latency A/B vs interleaved Root LM loop — round-trips/prefill/latency/quality (the cheap falsification gate; inference-gated)
+- [ ] **BEP-3** Autopilot StructuralLab knob batch-vs-interleaved (gated on BEP-2 positive)
+- [ ] **BEP-4** Parallel apply fan-out across 32×6t NUMA split + independent per-file verify
+- [ ] **BEP-5** General sandbox-before-disk + granular accept/reject apply path (generalize Meta-Harness Tier-2 beyond 4-file allowlist; safety-gated)
+
+### P24 — Harness-Level Evaluation Metrics + Oracle Adequacy (intake-607 §5.2.1 / §5.2.7)
+
+Tasks added to [`meta-harness-optimization.md`](meta-harness-optimization.md) (HLE-1/2/3) and [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) (HLE-4). Stop optimizing the harness against final-task-success alone; score intermediate behavior + an oracle-adequacy meta-metric; adopt hold-model-fixed/vary-harness benchmarking.
+
+- [ ] **HLE-1** Per-component harness metrics from Tier-1 traces (meta-harness)
+- [ ] **HLE-2** Oracle-adequacy meta-metric per suite (meta-harness; addresses P8b web-search-shortcut)
+- [ ] **HLE-3** Harness-isolating benchmark lane: fix model, vary harness (meta-harness)
+- [ ] **HLE-4** Per-component metrics as Pareto co-objectives/guardrails (autopilot)
+
+**Additional task additions (existing handoffs):**
+- **Uncertainty-routed escalation** → [`decision-aware-routing.md`](decision-aware-routing.md) URE-1/2/3 (decision-uncertainty as a second escalation axis; approval-as-harness-state; uncertainty as routing feature) — intake-607 §5.2.5.
+- **Experiential memory** → [`unified-trace-memory-service.md`](unified-trace-memory-service.md) EXM-1/2/3 (index failed trajectories for avoidance; externalize working state; governed-experience tier) — intake-607 §3.2.1/§3.2.3.
+
+### P25 — Regression-Safe Self-Improvement: Behavior-Signature Versioning (intake-607 §5.2.3 / §5.2.4)
+
+Tasks added to [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md). We are ahead on scalar regression gating but merge improvements syntactically — a new config can silently break a prior Pareto win.
+
+- [ ] **BSV-1** Behavior signature per archive member; diff on accept to catch silent behavioral regression
+- [ ] **BSV-2** Differential testing on accept (new vs old in parallel, compare behavior; inference-gated)
+- [ ] **BSV-3** Conflict-aware acceptance for mutations touching the same subsystem (semantic-conflict flag)
+
+### Cross-cutting / dependencies (this batch)
+
+- **P22 ↔ context-folding-progressive**: assemble vs evict; must share segment-importance heuristics (extends CCC #7).
+- **P22 → P23**: a pre-assembled bundle feeds a clean think-then-act batch edit.
+- **P24 ↔ P25 ↔ HALO (P20)**: per-component metrics are candidate fields for the HALO analyzer surface; harness-isolating benchmarks gate both.
+- **P24/P25 ↔ AP-27 (RLVR eval tower)**: the verifier must score the augmented reward/objectives.
+- **URE ↔ CCC #12** (decision-aware routing ↔ difficulty signal) and **eval-tower P8 calibration** (uncertainty must be calibrated).
+- Source of record: intake-605 + intake-607 `deep_dive` fields in `research/intake_index.yaml`. Surfaced in master priority queue items #51/#52.
 

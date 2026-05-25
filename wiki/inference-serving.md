@@ -278,3 +278,33 @@ The model is systematically **overconfident on wrong short answers** (e.g. `529`
 - `epyc-orchestrator` branch `feat/p21a-deepconf` (`d894fd5` module+flag, `3f4eaee` runner+adapter+tests) — default-OFF, not merged
 - [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) P21 (A1 done / A2 negative / A3 do-not-proceed)
 - [`handoffs/active/per-request-reasoning-budget.md`](../handoffs/active/per-request-reasoning-budget.md), [`handoffs/active/routing-intelligence.md`](../handoffs/active/routing-intelligence.md) — research-intake updates
+
+## 2026-05-25 — Within-role full↔quarter placement is unmodeled (architectural gap)
+
+`ConcurrencyAwareBackend` (`epyc-orchestrator/src/backends/concurrency_aware.py`) and `ContentionGate` (`src/scheduling/contention_gate.py`) admit and place requests by lock availability + NUMA disjointness, but they do NOT model the within-role full↔quarter cpuset overlap relation. For each role with `full + N quarters` deployed, the dispatcher tries full first (via non-blocking try-acquire), then falls through to NUMA-disjoint quarters first, overlapping quarters last. The `same_role` matrix verdict in `orchestration/contention_matrix.yaml` is a single `allow / block / n/a` value with no instance-pair granularity — it was measured for quarters-only co-placement, not full+quarter.
+
+Concrete failure modes per role (cpu_list source: `scripts/server/stack_numa.py:NUMA_CONFIG`):
+
+| Role | Full cpu_list | Disjoint quarters | Safe-without-migration N |
+|---|---|---|---|
+| frontdoor | NUMA_NODE0 (0-47) | q2(48-71), q3(72-95) | 3 (full+q3+q2); N=4 forces q1 onto NUMA_NODE0, overlap |
+| ingest_long_context | NUMA_NODE0 (0-47) | q2, q3 | 3 |
+| vision_escalation | NUMA_NODE1 (48-95) | q0(0-23), q1(24-47) | 3 |
+| worker_general | NUMA_FULL (0-95) | (none) | 1 — full covers every quarter |
+| architect_general | NUMA_FULL (0-95) | n/a (single instance) | 1 |
+| worker_vision | NUMA_Q0B (24-47) | n/a (single instance) | 1 |
+
+The KV save/restore HTTP plumbing IS in place: `_slot_save()` (`concurrency_aware.py:69-88`), `_slot_restore()` (90-108), `_slot_erase()` (111-120), `_migrate_kv()` (436+). It is wired into both legacy `_select` (trigger at 314-319) and per-region-locks `_dispatch` (trigger at 636-682). The trigger is "different session takes over full while old session has no quarter affinity yet" — session-handover-based, NOT load-transition-based. The right trigger for contention avoidance is "load grew past the safe-with-full threshold → evict in-flight full session to a disjoint quarter before admitting the new request."
+
+The 2026-05-25 `AUTOPILOT_EVAL_CONCURRENCY=4` regression made this concrete: autopilot's eval tower previously dispatched sentinels serially (`eval_tower.py:421-498` plain for-loop with shared httpx.Client), so the dispatcher never saw concurrent traffic and quarters sat idle. Adding a `ThreadPoolExecutor` fan-out to 4 surfaced the gap — 4-way frontdoor lands on full + q3 + q2 + q1, and q1 CPU-overlaps full → contention.
+
+Closure plan: 7-phase handoff [`within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md). WP-0 reverts the 4 → 1 default. WP-1 adds `max_safe_concurrency(role)` topology-derived cap. WP-2 builds a placement state machine (queue-instead-of-overlap, no migration). WP-3 wires the load-transition forward migration trigger using the existing `_migrate_kv` primitives. WP-4 adds reverse migration (quarter→full when load drops, with cooldown + thrash guard). WP-5 handles full-machine roles. WP-6 re-benches `same_role` with instance-pair granularity. WP-7 production rollout. Each phase ships behind an env flag with a metric gate.
+
+### Sources (2026-05-25)
+
+- [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md) — NEW 2026-05-25 — 7-phase handoff
+- [`handoffs/completed/cross-role-bw-aware-routing.md`](../handoffs/completed/cross-role-bw-aware-routing.md) — direct predecessor; Phases A-F shipped the matrix, gate, per-region-locks dispatcher; Phase E KV migration under PER_REGION_LOCKS was deferred as design-only follow-up (this gap)
+- [`handoffs/active/dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md) — owns the KV save/restore mechanics + DS-6/DS-7 quarter scheduler; reused by new handoff
+- `epyc-orchestrator/orchestration/contention_matrix.yaml` — same_role schema gap is documented in the new handoff
+- `epyc-orchestrator/src/backends/concurrency_aware.py:228-269` (`_compute_quarter_preference`) — already orders quarters by NUMA-disjointness; only the candidate priority is overlap-blind
+- `progress/2026-05/2026-05-25.md` Session 10 — full session log with concrete cpu_list table
