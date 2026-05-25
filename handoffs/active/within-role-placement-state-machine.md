@@ -10,7 +10,7 @@ predecessors:
 
 ## Executive summary
 
-The `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full↔quarter cpuset overlap relation. Full and overlapping quarters share physical cores, so concurrent placement is catastrophic even though the same-role contention matrix verdict says "allow." The KV save/restore plumbing is built and live in both dispatch paths, but its trigger is session-handover-based instead of load-transition-based. This handoff closes the gap end-to-end in seven gated phases, each shippable independently behind an env flag, each gated by a metric guard. The end state is autopilot-grade per-role concurrency without overlap and with mid-flight KV eviction when load grows past the safe-with-full threshold.
+The `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full↔quarter cpuset overlap relation. Full and overlapping quarters share physical cores, so concurrent placement is catastrophic even though the same-role contention matrix verdict says "allow." The KV save/restore plumbing is built and live in both dispatch paths, but its trigger is session-handover-based instead of load-transition-based. This handoff closes the gap end-to-end in eight gated phases (P0..P7), each shippable independently behind an env flag, each gated by a metric guard. The end state is autopilot-grade per-role concurrency without overlap and with mid-flight KV eviction when load grows past the safe-with-full threshold.
 
 ## Problem (concrete)
 
@@ -74,6 +74,10 @@ Refactor `ConcurrencyAwareBackend._dispatch` to delegate the candidate-selection
 
 Extend `orchestration/contention_matrix.yaml` schema with a derived `placement_overlap` section (auto-generated from topology, not measured): `{role: {(i, j): bool}}`. `pair_policy` in `src/scheduling/contention.py` consults it for same-role pair queries instead of the single-verdict shortcut. Generator script: `scripts/server/derive_placement_overlap.py` (new), runs at stack launch and on NUMA_CONFIG change.
 
+Audit refinement: keep **topology overlap** and **measured throughput matrix** as separate layers. `placement_overlap=true` is a hard safety veto regardless of benchmark ratios. `same_role.instance_pairs[*].verdict` is a throughput gate layered on top for disjoint pairs that underperform serial. Do not encode topology into measured ratios only; stale or missing benchmark data must never permit overlapping cpusets.
+
+Queue semantics: queue entries must be per-role FIFO with deadline-aware cancellation, but re-evaluate placement on every release because the best instance can change after migration or completion. Record queue reason (`topology_overlap`, `matrix_floor`, `migration_in_flight`, `deadline_exceeded`) so dashboard and telemetry can distinguish safe queuing from capacity bugs.
+
 Tests:
 - `tests/unit/test_placement_policy.py`: synthetic NUMA_CONFIG, simulate holder snapshots, assert correct Place vs Queue decisions.
 - `tests/integration/test_dispatch_queue_instead_of_overlap.py`: spin a mock backend, fire 4 concurrent requests at frontdoor, assert the 4th queues until the 1st finishes (not placed on overlapping quarter).
@@ -90,6 +94,10 @@ New trigger condition in `ConcurrencyAwareBackend._dispatch`, evaluated when `sa
 4. On migration failure or timeout (configurable; default 5s): fall through to Phase 2 queue behavior.
 
 Read `ChatRequest.migration_budget_ms` (currently exists but is unused per `tests/test_kv_migration_status.py:62-69`) and honor it as the per-request deadline cap.
+
+Audit refinement: model migration as a transaction with explicit states: `planned -> saving -> restoring -> verified -> source_erased -> committed` or `aborted`. The incoming request must not be placed on the newly-freed full/quarter topology assumption until the transaction reaches `verified`; `_slot_erase` only runs after restore verification. Store the transaction ID in telemetry and `_session_quarter` updates so failures can be reconciled on restart.
+
+Placement after migration: if full is vacated into one disjoint quarter, the incoming request should choose a cpuset disjoint from all current holders, not simply "a different quarter." For frontdoor with full on NUMA_NODE0 and disjoint q2/q3, a migrated full session on q3 means the incoming can use q2; full becomes safe only if no holder overlaps NUMA_NODE0. The policy should recompute from topology after migration rather than relying on a hard-coded role table.
 
 Tests:
 - `tests/unit/test_load_transition_migration.py`: 2 sequential requests with overlapping timing; assert (a) `_migrate_kv` invoked with correct args, (b) 2nd request placed on a different disjoint quarter, (c) 1st session's affinity updated.
@@ -122,6 +130,10 @@ Sub-tasks:
 3. **For architect_general**: hand off to the registry maintainer — should it be re-quartered? Outside scope of placement work but the answer affects this phase.
 
 **Gate**: worker_general 2-way concurrent test: dispatcher places on q0 + q1, full idle. Aggregate t/s ≥ matrix-measured 2-quarter baseline.
+
+Audit refinement: before adding `prefer_quarters_when_load_gt_one`, decide whether the full instance should remain warm while quarters serve burst load. Keeping full warm improves solo latency but consumes memory and can hide scheduler bugs; disabling full under burst simplifies placement but may regress single-request throughput. Record this as an explicit per-role policy: `solo_prefer_full`, `burst_prefer_quarters`, `full_disabled`, or `queue_only`.
+
+**Sequencing decision (2026-05-25)**: the per-role policy enum is upstream of P3's placement-after-migration logic. If P3 lands with hardcoded role-table fallbacks first, P5 must refactor it. To avoid that churn, **land the policy enum scaffolding alongside or before P3** even if the full per-role decisions (which role gets which policy value) take longer to ratify. Concretely: introduce `RolePlacementPolicy` enum + per-role policy field reads in NUMA_CONFIG as part of WP-3 (or as a tiny pre-P3 patch), populated with the conservative default `solo_prefer_full` for every role. P5 then becomes "ratify per-role policy values + tune for full-machine roles" rather than "introduce the enum and refactor P3 callers." This sequencing keeps the dispatcher's policy-lookup call sites stable from P3 onward.
 
 ### Phase 6 — Matrix extension + re-bench (≤2d, can run overnight)
 
@@ -176,6 +188,9 @@ P0 is mandatory before any subsequent phase ships. P4, P5, P6 are independent an
 - **Settings drift**: `src/config/__init__.py` and `src/config/models.py` have parallel definitions (three drifts fixed 2026-05-25); any new env vars (e.g., `ORCHESTRATOR_REVERSE_MIGRATION_COOLDOWN_MS`) MUST land in both.
 - **CLAUDE.md governance**: do not flag KV save/restore as "destructive" — it is reversible by design. The `_slot_erase` on the source instance after restore IS destructive on failure; ensure the restore confirmation completes before the erase.
 - **Concurrent benchmark contention** (per `feedback_no_concurrent_inference.md`): every Phase 1-7 measurement gate needs explicit user approval to launch llama traffic.
+- **Matrix/topology drift**: derive a `topology_hash` from role instance cpu_lists and write it into both `placement_overlap` and measured `same_role.instance_pairs`. Runtime must warn or fail closed when topology_hash in YAML does not match live NUMA_CONFIG.
+- **Fairness/starvation**: queue-instead-of-overlap can starve low-priority sessions during sustained autopilot fan-out. Add per-role queue age metrics and a starvation guard before production rollout.
+- **Session affinity consistency**: `_session_quarter` must be the single source of truth for warm-session placement after migrations. Any code path that bypasses `PlacementPolicy` risks stale affinity and must be audited in Phase 2.
 
 ## Reporting
 
@@ -216,6 +231,9 @@ Each phase ships behind an env flag, default-on after its gate passes. Rollback 
 - **Migration failure leaving stale session on full + new on quarter**: P3 trigger MUST require migration completion confirmation before the erase. Existing `_migrate_kv` ordering (save → restore → erase) is correct; the new caller must check return.
 - **Re-introducing the 2026-05-25 bug**: P0 revert ships before anything else; P1 topology cap is a hard guard that prevents *any* overlapping placement regardless of subsequent phase wiring.
 - **Concurrent benchmark contamination during gates**: user approval required per existing project guidance.
+- **Stale topology/matrix allowing unsafe placement**: live NUMA_CONFIG changes without regenerated YAML could bypass intended rules. Mitigate with topology_hash validation and fail-closed placement when hashes mismatch.
+- **Queue deadlock under migration failure**: migration-in-flight events must always resolve success/failure; use `finally` callbacks and timeout counters so waiting requests do not hang forever.
+- **Dashboard false confidence**: if queue/migration telemetry is not updated atomically with placement decisions, operators may see "safe" while overlap exists. Phase 2 should include an invariant metric: `active_overlap_detected_count` computed from live holders, independent of the planner.
 
 ## Cross-references
 

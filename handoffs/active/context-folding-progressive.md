@@ -1083,3 +1083,13 @@ Map Claude Code's 5-layer pipeline against EPYC L1-L5:
   - Reported results: position inversion → chance by ~50K tokens; token inversion → chance by ~20K; 7B–405B models all hit 0.25 (random) on indexing-task by 4K–8K. Triangulates with Wang 2026 RLM reproduction (intake-547) — **the depth-2 96× wallclock cliff Wang observed is empirically consistent with this paper's predictions** (the underlying RoPE failure modes degrade depth-2 recursion's long-context aggregation step).
   - Delta from current approach: No code change needed. Strengthens existing posture (favor procedural folding + recursive decomposition over long-context-scaling tricks). Use as cite-on-rationale in future L4+ design discussions when someone asks "why not just give the model a longer context window?" — the answer is now provably "because RoPE breaks down."
   - Caveat (Tier 2b): paper is 2026-05-15 (5 days old); empirical results most dramatic at 128K+ where we operate rarely. Use as cumulative-evidence with intake-547 (Wang RLM reproduction) and intake-153 (canonical RLM), not standalone authority.
+
+## Research Intake Update — 2026-05-25
+
+### New Related Research
+- **[intake-605] "Repo Prompt — context-engineering tool (CodeMaps, Context Builder)"** (repoprompt.com)
+  - Relevance: Context Builder is a token-budget-bounded iterative context-selection engine (default 60k budget) — a query-side abstraction over what to keep resident, adjacent to progressive folding's bounded-chunk discipline.
+  - Key technique: CodeMaps structural maps + budget-bounded iterative selection driven by the agent; manual-curation-over-auto-search bias.
+  - Reported results: vendor claim ~80% token reduction (unbenchmarked, credibility null).
+  - Delta from current approach: progressive-folding folds *conversation/context state*; Repo Prompt curates *codebase* context — same budget-bounded discipline, different corpus. Pattern reference only (proprietary GUI, cloud-LLM oriented). Overlaps intake-330/intake-295 already tracked.
+  - Audit refinement: share scoring primitives with `delegation-context-preassembly.md` rather than inventing parallel heuristics. Folding's importance features (recent use, role relevance, failure history, symbol centrality) should become DCP rank features; DCP bundle manifests should remain external state that folding can evict/render without losing provenance.

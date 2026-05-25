@@ -346,3 +346,20 @@ The unblocking insight: **the architectural choice (per-action vs shared) determ
 ### Status
 
 DAR-1.5 audit COMPLETE 2026-05-07. Tasks DAR-1.5.1–1.5.4 all addressed. Decision-gate verdict: **DAR-3 unblocked** (no mitigation), **DAR-4 conditional on P4.2** (no immediate code work; when P4.2 lands, choose rank-restriction or full-rank per its outcome).
+
+## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.5)
+
+DAR optimizes routing/escalation along a **quality** axis (learned Q-values + contrastive sharpening). The Code-as-Agent-Harness survey (§5.2.5) names a *different* axis worth adding: **decision uncertainty**, with the escalation decision recorded as first-class harness state for accountability. Audit pass tightened this into a calibration-first plan.
+
+- [ ] **URE-1 — Uncertainty-quantified escalation signal.** Add a calibrated decision-uncertainty estimate as an escalation trigger *orthogonal* to the quality Q-value. Candidate inputs: routing classifier confidence/entropy, top-2 margin, Q-value spread, conformal abstention score, MC-dropout variance if enabled, and disagreement between rule/router/Q-scorer. High-uncertainty decisions route up even when the point Q-estimate looks fine. Connects to the DAR-1 finding that Q-values were near-uniform (96%) — uncertainty may carry signal the flat Q-band does not. Required gate before enforcement: ECE ≤ target from eval-tower P8, abstention precision above baseline escalation precision, and no >10% latency regression in shadow mode.
+- [ ] **URE-2 — Approval/escalation as harness state.** Persist each escalation/approval decision into the trace store, not just as a transient routing event. Minimum record: `request_id`, `task_signature`, selected role/model, alternatives considered, quality score, uncertainty score and components, trigger reason, approval boundary ("what this approval permits"), human/system actor if any, downstream outcome, and linked behavior signature. Wires into [`unified-trace-memory-service.md`](unified-trace-memory-service.md) (see EXM-3).
+- [ ] **URE-3 — Uncertainty as a routing feature.** If URE-1's estimate is calibrated, feed it back as a routing feature (revisits `difficulty_signal.py`, routing-index cross-cutting concern #12). Gated on URE-1 calibration quality and an ablation showing uncertainty improves routing or escalation decisions beyond existing difficulty/risk features. Start in shadow mode; do not let uncertainty recursively train itself without frozen labels.
+
+**Audit refinements / missed gaps**:
+
+1. **Calibration precedes enforcement.** An uncalibrated confidence score can be worse than no uncertainty signal because it creates false assurance. URE-1 must land in logging/shadow mode first and report ECE, AUC for "would escalation help?", abstention precision/recall, and per-suite calibration drift.
+2. **Separate aleatoric from epistemic when possible.** Ambiguous prompts, missing context, and unfamiliar domains call for different interventions. Record component features so later work can distinguish "ask user/approve" from "route to stronger model."
+3. **Approval is a bounded artifact.** URE-2 should store what was approved and what was not; e.g. "escalate to architect for plan review" is not the same as "apply code edits." This prevents approval state from becoming a vague global permission.
+4. **Avoid feedback loops.** If uncertainty becomes a feature and also decides which examples get labels/escalations, the training distribution shifts. Keep a frozen shadow-calibration set and periodically re-run calibration after DAR-3/DAR-4 changes.
+
+Additive to DAR-2/3/4 (which sharpen the *quality* Q), not a replacement — uncertainty is a second axis. Interacts with AP-27 (RLVR eval tower must score the uncertainty-augmented reward). Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § Additional task additions. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.

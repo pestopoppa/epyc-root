@@ -460,3 +460,40 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
   - **Reported results**: K&K 0.802/0.880, MATH500 0.598/0.636, LitBench 8.80/8.40 (SD/FM); critically, replacing text feedback with binary correctness collapses gains — text richness is load-bearing.
   - **Delta from current approach**: Inference-side self-critique already exists in our harness via tool-call retries; RLTF-FM's gains depend on the trained FM head, which we lack. Note as a reference for any future GPU-gated training arm; the inference-time pattern alone is unlikely to reproduce the reported deltas.
 
+## Research Intake Update — 2026-05-25
+
+### New Related Research
+- **[intake-607] "Code as Agent Harness: Toward Executable, Verifiable, and Stateful Agent Systems"** (arxiv:2605.18747)
+  - Relevance: Survey framing the agent harness as three layers (interface / mechanism / scaling) and naming the *harness-level reliability vs. final-task-success* evaluation gap — directly sharpens the Tier-1 trace-feedback framing here.
+  - Key technique: taxonomy of code-as-substrate mechanisms (program-delegated reasoning, formal-verification interfaces, execution-driven Plan/Execute/Verify loops, working/semantic/experiential/long-term memory tiers).
+  - Reported results: none — survey/taxonomy, no original benchmarks.
+  - Delta from current approach: adopt_patterns only, nothing to implement. Use the interface/mechanism/scaling decomposition as a coverage checklist when auditing the harness. **Tier 2b**: a concurrent competing survey exists ("Agent Harness for LLM Agents", Preprints 202604.0428, 110+ papers) — the cluster is saturated, novelty:low. Does not supersede the actionable Meta-Harness (arxiv:2603.28052) work already in flight.
+- **[intake-605] "Repo Prompt — context-engineering tool (CodeMaps, Context Builder)"** (repoprompt.com)
+  - Relevance: closed-source GUI product whose *patterns* map onto context budgeting — CodeMaps (token-cheap structural API/symbol extraction) and a token-budget-bounded iterative context-selection engine (default 60k, 24-32k recommended for direct agent use).
+  - Key technique: "curate over auto-search" — humans/agent pick files; structural maps supply architecture context without spending tokens on full file bodies; exposed as a 15+ tool MCP server.
+  - Reported results: vendor claim ~80% token reduction (unbenchmarked, credibility null — upper bound only).
+  - Delta from current approach: pattern adoption only — proprietary macOS GUI + cloud-LLM orientation conflicts with the open-source-self-hosted constraint, so no component. CodeMaps overlaps GitNexus + intake-330 (code-review-graph AST extraction) already in hand.
+
+## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.1 / §5.2.7)
+
+The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop optimizing the harness against final-task-success alone** (a noisy single bit that rewards shortcut configs) and instead score the harness's *intermediate* behavior. This sharpens the Tier-1 trace-feedback loop, which currently feeds a 50-line trace tail to PromptForge but does not score it on named axes. Audit pass converted the initial brainstorm into an implementation contract below.
+
+- [ ] **HLE-1 — Per-component harness metrics.** From Tier-1 traces (`inference_tap.log`, unified trace store events, tool-call records), compute per-trial scores on the paper's named axes and persist them next to the existing eval result:
+  - **Execution fidelity**: planned action matches executed action and resulting artifact; penalize stale-file edits, failed patch preconditions, tool calls whose observed result contradicts the plan, and "answer without evidence" shortcuts.
+  - **Feedback interpretation**: harness correctly parses tool/error/test output into the next decision; score whether failures lead to targeted retries rather than repeated identical actions.
+  - **Planning stability**: plan decomposition remains coherent under small prompt/order perturbations; compare step sequence signatures, not just final score.
+  - **Memory coherence**: references to prior state resolve to stored trace/strategy/scratchpad entries; penalize hallucinated memory and unlogged state assumptions.
+  - **Recovery rate**: number of recoveries from failed tool/test/checkpoint states divided by recoverable failures; distinguish "never failed" from "failed and recovered."
+
+  Implementation detail: start with rule-based metrics over structured traces, not an LLM judge. Add a `harness_metrics` JSON field to the journal/trace record with `metric_version`, per-axis scores, evidence event IDs, and `confidence`. Metrics without evidence IDs are not allowed into HLE-4 Pareto objectives.
+- [ ] **HLE-2 — Oracle-adequacy meta-metric.** For each eval suite/sentinel, explicitly characterize whether the oracle (tests / trace / judge / exact match) actually covers the failure modes, instead of assuming "no exception + tests pass = correct." Persist `oracle_adequacy` with at least: `oracle_type`, `coverage_claim`, `known_blind_spots`, `shortcut_risk`, `requires_external_answer`, `deterministic`, and `reviewed_by`. Flag suites where success is under-determined; these are where PromptForge can reward shortcuts. (Directly addresses the Package-B finding that REPL mode "succeeds" by web-searching the answer — routing-index P8b.)
+- [ ] **HLE-3 — Harness-isolating benchmark methodology.** Adopt §5.2.7: **hold the model fixed, vary only the harness**, to isolate harness quality from model capability. Today T0/T1/T2 vary many things at once. Define a fixed-model harness-only eval lane with: fixed model/quant/build, fixed server flags, fixed prompt corpus, fixed random seeds where applicable, fixed retrieval corpus snapshot, and a single harness variable changed per run. Store `harness_variant_id` and `model_snapshot_id` so later analysis cannot confuse model upgrades with harness wins. (Pairs with autopilot HLE-4.)
+
+**Audit refinements / missed gaps**:
+
+1. **Metric validity has to be measured.** Before HLE-4 uses any metric as an objective, run it in observe-only mode and check whether it separates accepted vs rejected configs, predicts future regressions, or correlates with human-reviewed failures. Drop or quarantine metrics with no signal.
+2. **Avoid replacing one noisy scalar with five noisy scalars.** Each HLE-1 score needs evidence links and confidence. Low-confidence metrics should act as dashboard diagnostics, not hard gates.
+3. **Shortcut detection belongs in oracle adequacy.** Web-search leakage, answer-key memorization, exact-match parsing artifacts, and "tests do not cover behavior" should be first-class blind spots, not prose notes.
+4. **HALO/P20 should consume the same schema.** The HALO analyzer surface should read `harness_metrics` and `oracle_adequacy` directly from the unified trace store instead of scraping ad hoc text.
+
+These compose with the existing Tier-1/Tier-2/Tier-2b work and the HALO trace-loop spike (P20); the per-component metrics are candidate fields for the HALO six-tool analyzer surface. Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.

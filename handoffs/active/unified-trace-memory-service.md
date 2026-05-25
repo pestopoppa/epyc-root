@@ -141,3 +141,21 @@ existing writers (unchanged):
 | `epyc-orchestrator/src/trace/query.py` | T5 query API |
 | `epyc-orchestrator/scripts/trace/cli.py` | `python -m epyc.trace ...` CLI (T5) |
 | `data/trace/events.sqlite` | Output store (gitignored — derived data) |
+
+## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §3.2.1 / §3.2.3)
+
+The Code-as-Agent-Harness memory taxonomy (§3.2) reframes two design choices for the trace/episodic stores. Audit pass converts the brainstorm into concrete schema/query additions.
+
+- [ ] **EXM-1 — Index FAILED trajectories as first-class avoidance cases.** §3.2.3 (experiential memory; ExpeL / Evo-Memory / MemGovern) argues failures should be stored and *retrieved for pattern-matched avoidance*, not just logged. We have a `failure_graph` (partial). Extend the unified trace store with a queryable "failure case" view: given a current (task, context) signature, return prior failed trajectories with similar signatures so a role can avoid repeating them. Minimum fields for a `failure_case` view/table: `failure_id`, `task_signature`, `suite`, `role_path`, `tool_sequence_hash`, `files_touched`, `error_class`, `root_cause_label`, `avoidance_advice`, `evidence_event_ids`, `resolved_by_event_id`, `governance_level`, and `validity_score`. Retrieval should combine lexical FTS, structured filters, and optional embedding similarity only after a cheap first pass. *(Highest-value here — cheap, reuses the store.)*
+- [ ] **EXM-2 — Externalize working state (LLMs fail at latent-state persistence).** §3.2.1 cautions that raw LLMs lose working state across long horizons, so working memory should be *externalized* rather than held in-context. Audit where the orchestrator relies on the model to "remember" mid-task state vs. where it externalizes to the trace/scratchpad store; pull the former into the store where cheap. Add a `working_state` record family with `state_id`, `scope` (`request|trial|session|handoff`), `owner`, `key`, `value_json`, `created_from_event_id`, `expires_at`, and `supersedes_state_id`. Complements context-folding (which evicts) by keeping authoritative state outside the window.
+- [ ] **EXM-3 — Governed-experience tier (MemGovern).** Distinguish *governed* experiences (human-reviewed/approved outcomes) from raw trajectories when scoring retrieval relevance, so high-trust cases outrank noisy ones. Ties to the URE-2 approval-as-harness-state record in [`decision-aware-routing.md`](decision-aware-routing.md). Proposed levels: `raw`, `auto_verified`, `human_reviewed`, `approved_baseline`, `deprecated`. Retrieval should down-rank raw failures when a governed resolution exists, and should never present deprecated advice without a warning.
+
+**Audit refinements / missed gaps**:
+
+1. **Failure retrieval can cause negative transfer.** EXM-1 must show why a prior failure is similar and what changed since then. Include content hashes/config snapshot IDs where possible; stale failures should be marked `suspected` rather than blindly retrieved.
+2. **Avoidance advice needs provenance.** A failure case without evidence event IDs and a resolution link is just folklore. Keep it searchable, but do not elevate it to governed memory.
+3. **Working state needs lifecycle rules.** EXM-2 should distinguish short-lived request state from durable handoff state. Add expiry/supersession so the store does not become an unbounded pile of stale scratchpad facts.
+4. **Governance should affect ranking, not delete history.** Raw and deprecated records remain auditable; ranking and warnings handle trust. This preserves forensic value after regressions.
+5. **Unify with HLE/BSV schemas.** Failure cases should link to harness metrics, oracle adequacy, behavior signatures, and URE approval records via event IDs so a future query can answer: "what failed, why was it accepted, who/what approved it, and what behavior changed?"
+
+Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § Additional task additions. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.

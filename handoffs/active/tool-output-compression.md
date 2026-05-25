@@ -361,3 +361,13 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
     3. **Reasoning-fidelity risk**: prompt-side style riders are known to occasionally degrade reasoning on multi-step tasks (the model "compresses" intermediate thinking it actually needed). Pocock's repo does not measure this; the auto-clarity exception in `/caveman` covers "multi-step sequences where fragment order risks misread" but the gate is non-deterministic.
   - **Minimum eval gate before deployment** (Phase 4+ work): 50 consultation traces, blind quality scoring by Q-scorer, target **≥95% baseline quality at ≥40% prose-only token reduction**, plus an explicit hedge-preservation recall eval on a held-out set with explicit uncertainty markers. Do NOT trust Pocock's 75% headline as either a target or a baseline — treat it as an upper bound only.
   - Caveat: no empirical claims with methodology (credibility_score null). Pattern adoption only — no runtime component, MIT-licensed but calibrated to TypeScript app development. Pre-deep-dive framing of `/caveman` as a generic compression alternative was overstated; the corrected framing above governs.
+
+## Research Intake Update — 2026-05-25
+
+### New Related Research
+- **[intake-605] "Repo Prompt — context-engineering tool (CodeMaps, Context Builder)"** (repoprompt.com)
+  - Relevance: CodeMaps extracts classes/functions/references into a compact structural overview — a token-reduction lever at the *input/context-assembly* layer, sibling to this handoff's tool-output compressors. Reinforces the structured-vs-prose split: structural maps (like TOON for payloads) beat shipping full file bodies.
+  - Key technique: structural symbol extraction + token-budget-bounded context selection; "curate over auto-search."
+  - Reported results: vendor claim ~80% token reduction (unbenchmarked, credibility null) — treat as upper bound only, same caution as the `/caveman` 75% headline.
+  - Delta from current approach: input-side analogue, not a tool-output compressor; proprietary GUI so pattern-only. Overlaps intake-330 (code-review-graph, ~8.2× structural token reduction) already tracked.
+  - Audit refinement: if DCP emits CodeMaps or manifests as tool/context payloads, encode them with structured fields and stable IDs rather than prose blobs. Token savings should be measured with model-calibrated token counts and downstream top-up/error rates, not vendor headline percentages.
