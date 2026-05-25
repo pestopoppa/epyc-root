@@ -548,6 +548,10 @@ Additional flags: `GGML_HIP_NO_MMQ_MFMA` (disable MFMA for mmq), `GGML_HIP_GRAPH
 
 - **[intake-600] "Pooling Engram Conditional Memory in LLMs using CXL"** (arxiv:2603.10087, workshop) — file-and-forget; CXL pooling is overkill for single-socket EPYC. Cross-linked from the stub for completeness.
 
+### 2026-05-25 Track A Closed — NEGATIVE (engram-conditional-memory)
+
+Phases 3-6 of `engram-conditional-memory.md` Track A executed end-to-end on EPYC 9655. LongCat-Flash-Lite Q4_K_M dominated by deployed gemma4-26B-A4B Q4_K_M MTP worker_general on BOTH axes: −51% decode (37.08 vs ~76.5 t/s) AND −12.9pp sentinel quality (53.8% vs 66.7%). Math suite 0/6 confirmed structural via 4× token-budget re-run. Track A archived; **Track B (frozen-backbone paper-faithful Engram retrofit) is unaffected** — different architecture and optimization. Side result preserved: n-gram-augmented MoE inference IS viable on CPU at production-relevant rates (37 t/s decode on 68B/4.5B-active with 31.4B-param n-gram table fully in DDR5) — the family works on our hardware, the specific checkpoint just isn't competitive vs what we deploy. Full writeup: [research/deep-dives/longcat-flash-lite-engram-cpu-poc.md](../../research/deep-dives/longcat-flash-lite-engram-cpu-poc.md).
+
 ### 2026-05-24 Deep-Dive Addendum (engram-conditional-memory)
 
 Three parallel sub-agents deep-dived (a) the paper, (b) the deepseek-ai/Engram repo, (c) LongCat-Flash-Lite tooling. The handoff `engram-conditional-memory.md` is now an active dual-track plan with sequencing diagram, decision log, and falsification gates. Key findings beyond first-pass intake:

@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-05-24
-**Sources**: 23 documents (1 deep-dive, 18 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-05-25
+**Sources**: 24 documents (2 deep-dives, 18 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -18,6 +18,10 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-05-25) — Track A measured outcome
+
+- **n-gram-augmented MoE inference is viable on CPU at production-relevant rates, but the only available open-weight checkpoint (LongCat-Flash-Lite Q4_K_M) is dominated by our deployed worker on both speed and quality.** Three-way head-to-head on EPYC 9655: LongCat-Lite at 37.08 t/s decode and 53.8% on the 39-question sentinel suite vs gemma4-26B-A4B Q4_K_M MTP (the deployed worker_general) at ~76.5 t/s decode and 66.7% sentinel. Suite-level: LongCat loses math 0/6 vs 4/6 (genuine reasoning failure, confirmed by re-running at 4× token budget — `4^3 = 16` arithmetic error mid-chain despite Meituan's published MATH500 = 96.8%); wins hotpotqa 3/4 vs 1/4 (the n-gram-augmented input embedding plausibly helping literal multi-hop retrieval); ties at agentic 1/3 (both weak, VitaBench 7.0 concern validated for the family). The 31.4B-param n-gram embedding table fits fully resident in our 1.1 TB DDR5 with room to spare; the bandwidth math from the CXL follow-up paper (arxiv:2603.10087, ~10 KB/token at FP8 = <0.2% of DDR5 aggregate) holds in practice. **Track A closed as NEGATIVE** in `engram-conditional-memory.md`. Track B (frozen-backbone retrofit research bet) is unaffected — different architecture (paper-faithful, not LongCat-simplified-input-only) and different optimization (training own model, not adopting an existing checkpoint). [longcat-flash-lite-engram-cpu-poc.md](../research/deep-dives/longcat-flash-lite-engram-cpu-poc.md) `verified`
 
 ### New Finding (2026-05-24)
 
