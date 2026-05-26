@@ -159,3 +159,17 @@ The Code-as-Agent-Harness memory taxonomy (§3.2) reframes two design choices fo
 5. **Unify with HLE/BSV schemas.** Failure cases should link to harness metrics, oracle adequacy, behavior signatures, and URE approval records via event IDs so a future query can answer: "what failed, why was it accepted, who/what approved it, and what behavior changed?"
 
 Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § Additional task additions. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
+
+## Shared Harness/Trace Schema — OWNED HERE (gap-fix 2026-05-25)
+
+**This handoff owns the single shared event schema** that the 2026-05-25 intake-607 cluster (HLE / BSV / URE / EXM) all write to. Four handoffs independently assumed a common trace/journal event family; without a designated owner that becomes four divergent schemas and the promised cross-queries ("what failed, why was it accepted, what behavior changed?") break. The schema lives in `epyc-orchestrator/src/trace/store.py` + `src/trace/harness_schema.py` (extends the existing T1–T6 store) and MUST be implemented **before** the consuming tasks (HLE-1, HLE-4, BSV-1, URE-2) land their writes. *(Implemented + tested on branch `intake607-harness-impl`.)*
+
+| Record family | Owning task | Written by | Read by |
+|---|---|---|---|
+| `harness_metrics` (execution_fidelity, feedback_interpretation, planning_stability, memory_coherence, recovery_rate + `evidence_event_ids`, `confidence`, `metric_schema_version`) | HLE-1 (meta-harness) | eval tower / trace ingest | HLE-4 (autopilot Pareto), HALO/P20 |
+| `oracle_adequacy` (`oracle_type`, `coverage_claim`, `known_blind_spots`, `shortcut_risk`, `requires_external_answer`, `deterministic`, `reviewed_by`) | HLE-2 (meta-harness) | suite registration | HLE-1/HLE-4, autopilot gating |
+| `behavior_signature` (per-sentinel outcome, answer hash, route/tool/escalation path hashes, latency/token buckets, harness-metrics ref, oracle-adequacy version) | BSV-1 (autopilot) | archive accept path | BSV-2/BSV-3 diff |
+| approval/escalation record (`request_id`, uncertainty components, trigger reason, approval boundary, linked behavior_signature) | URE-2 (decision-aware-routing) | router/escalation | EXM-3 governance, audit |
+| `failure_case` + `working_state` (fields enumerated in EXM-1/EXM-2 above) | EXM-1/EXM-2 (here) | trace ingest | role retrieval, all of the above |
+
+**Contract rules**: (1) every record carries `metric_schema_version` and is keyed by stable `event_id`; (2) cross-references use `event_id` links, never duplicated payloads; (3) schema changes are additive + versioned (no silent field repurposing); (4) consumers must tolerate missing fields (`signature_confidence=partial` for backfilled rows). Implementation order is pinned in [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § "Implementation spine".

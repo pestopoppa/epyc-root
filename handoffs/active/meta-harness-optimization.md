@@ -478,6 +478,8 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
 
 The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop optimizing the harness against final-task-success alone** (a noisy single bit that rewards shortcut configs) and instead score the harness's *intermediate* behavior. This sharpens the Tier-1 trace-feedback loop, which currently feeds a 50-line trace tail to PromptForge but does not score it on named axes. Audit pass converted the initial brainstorm into an implementation contract below.
 
+> **Schema dependency (gap-fix 2026-05-25):** the `harness_metrics` and `oracle_adequacy` record families HLE-1/HLE-2 produce are part of the **shared trace schema owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** — do not define a private schema here. Implement the shared schema first; HLE writes into it.
+
 - [ ] **HLE-1 — Per-component harness metrics.** From Tier-1 traces (`inference_tap.log`, unified trace store events, tool-call records), compute per-trial scores on the paper's named axes and persist them next to the existing eval result:
   - **Execution fidelity**: planned action matches executed action and resulting artifact; penalize stale-file edits, failed patch preconditions, tool calls whose observed result contradicts the plan, and "answer without evidence" shortcuts.
   - **Feedback interpretation**: harness correctly parses tool/error/test output into the next decision; score whether failures lead to targeted retries rather than repeated identical actions.
@@ -497,3 +499,11 @@ The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop o
 4. **HALO/P20 should consume the same schema.** The HALO analyzer surface should read `harness_metrics` and `oracle_adequacy` directly from the unified trace store instead of scraping ad hoc text.
 
 These compose with the existing Tier-1/Tier-2/Tier-2b work and the HALO trace-loop spike (P20); the per-component metrics are candidate fields for the HALO six-tool analyzer surface. Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
+
+## Post-result conditional workflow + mitigation (HLE-1/2/3 — metric-validity gate, bulk-inference J9 lane)
+
+HLE-1/HLE-2 are non-inference code (compute metrics + register oracle-adequacy into the shared schema); HLE-3 (fixed-model harness-isolating lane) + the observe-only run land as **J9**. **Metric-validity gate before any metric is allowed to influence decisions:** run each metric in observe-only mode and check it separates accepted-vs-rejected configs, predicts future regressions, and has missingness ≤20%.
+- ✅ metric shows signal → eligible for HLE-4 promotion (Pareto co-objective/guardrail in autopilot).
+- ❌ no signal / high missingness / low-confidence-for-most-trials → keep it a **dashboard diagnostic only**; never a hard gate.
+
+Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE-1 score carries evidence-event-ids + confidence; shortcut detection (web-search leakage, answer-key memorization, exact-match artifacts) lives in oracle-adequacy as first-class blind spots, not prose. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.

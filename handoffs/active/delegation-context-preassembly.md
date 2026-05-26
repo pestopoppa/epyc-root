@@ -74,8 +74,19 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
 - `epyc-orchestrator/src/repl_environment/code_search.py` — ColGREP discovery (DCP-1/2).
 - GitNexus MCP `context`/`impact` — codemap source (DCP-3).
 - `epyc-orchestrator/src/prompt_builders/` — non-prescriptive handoff prompt (DCP-5).
-- `epyc-orchestrator/src/context/bundle.py` *(proposed, new)* — ContextBundle model + assembly loop.
+- `epyc-orchestrator/src/context/bundle.py` *(proposed, new)* — ContextBundle model + assembly loop. **Layout note (gap-fix 2026-05-25):** implemented as top-level `epyc-orchestrator/src/context_assembly.py` (DCP-1/DCP-2 pack core, on branch `intake607-harness-impl`) to match the existing `context_manager.py` / `context_compression.py` convention rather than a new `src/context/` package.
 
 ## Reporting
 
 Update this handoff + routing-and-optimization-index P22 after each DCP task; record bench results (DCP-6) per `feedback_incremental_persistence`.
+
+## Post-result conditional workflow + mitigation (DCP-6 / bulk-inference J7)
+
+Pre-run wiring: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE + tested** on `intake607-harness-impl` (`src/context_discovery.py`: `discover_candidates` / `build_python_codemap` / `cost_candidates` / `assemble_delegation_bundle`, injectable ColGREP + file-reader backends, 11 tests; codemap is a dependency-free `ast` signature skeleton — GitNexus is not a runtime dep). **Remaining: only DCP-4** — the reviewed dispatcher/escalation **advisory** seed-bundle attach (flag default-off; reactive discovery stays on), wiring the orchestrator's ColGREP (`parse_colgrep_json(self._code_search(q, limit=k))`) + workspace file reader into `assemble_delegation_bundle`.
+
+Run **advisory-first** (bundle attached, reactive discovery still enabled — DCP-1 audit #7). Decision tree:
+- ✅ prefill+latency down AND quality ≥ baseline AND top-up rate ≤20% → keep advisory; consider seed-bundle-primary mode after a second confirm.
+- ⚠️ quality flat but top-up rate >20% (packer under-selecting) → tune discovery depth / ColGREP top-k / per-role budget; re-run.
+- ❌ quality drop OR no latency improvement → keep reactive discovery; shelve pre-assembly; flag off.
+
+Mitigation: flag default-off; advisory mode never removes reactive discovery; top-ups always allowed (no hard firewall); bundle freshness (`repo_sha`/`content_sha256`) re-checked per delegation; security/noise exclusion policy applied at DCP-1. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.

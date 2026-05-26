@@ -981,7 +981,49 @@ This Package is designed to absorb additional inference-gated items from paralle
 
 | # | Task | Source Handoff | Description | Models Needed | Effort |
 |---|------|---------------|-------------|--------------|--------|
-| _add_ | — | — | — | — | — |
+| J10 | URE-1 routing-uncertainty calibration | [decision-aware-routing.md](decision-aware-routing.md) URE-1 | Enable `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG=1`; passively collect shadow routing-uncertainty records over normal traffic; compute ECE/AUC for "would escalation help?", abstention precision/recall, per-suite calibration drift. Pre-enforcement gate: ECE ≤ eval-tower P8 target + abstention precision > baseline escalation precision + ≤10% latency regression. **Shadow-only** — needs no dedicated window. Prereq: URE-1 shadow logger wired (approval_record schema done in `src/trace/harness_schema.py`). | none extra (shadow on existing frontdoor/escalation traffic) | passive collection + ~1h analysis |
+| J11 | BSV-2 behavior-signature differential testing | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) BSV-2 | Before promoting a mutation, run new-vs-old paired on the same sentinels (sequential under identical model snapshot preferred; parallel only if explicitly approved per `feedback_no_concurrent_inference`); compare behavior_signature diff severity (benign/watch/blocking) + scalar score; gate accept on both. Catches silent Pareto-win regressions a scalar misses. Prereq: BSV-1 signature wired into archive accept-path + paired-eval lane (compute done in `src/behavior_signature.py`). | autopilot eval stack | paired eval per candidate mutation |
+
+**Sequencing of the appended items (intake-607 residual gates):**
+- **J10 (URE-1) is shadow-only** — flip the flag and let it accumulate during ANY of J1–J9 or Package I traffic; it shapes no workload and needs no dedicated slot. Analyze once enough decisions accrue.
+- **J11 (BSV-2)** runs per-mutation inside the autopilot accept loop; co-runs naturally with J9's autopilot observation window.
+- Both are gated on their wiring landing (URE-1 shadow logger; BSV-1 accept-wire). Schemas + pure algorithms already done + tested on epyc-orchestrator branch `intake607-harness-impl`. DCP-6/BEP-2/HLE-4 are already covered above as J7/J8/J9 — no duplication.
+
+### Per-gate conditional workflows + mitigation policies (intake-607 gates J7–J11 — READ BEFORE RUNNING)
+
+Each gate is a **decision point**, not just a measurement: run → branch on the result → apply the mitigation. Deep specs are in the owning handoffs (linked); this is the operator decision tree so the run can proceed in one sitting without round-trips.
+
+**Pre-run wiring status** (none is in production until wired AND its gate passes; all flags default-OFF):
+- **J10 / URE-1**: shadow logger **WIRED** (`ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`) on `intake607-harness-impl` — runnable now.
+- **J7 / DCP-6**: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE** on `intake607-harness-impl` (`context_discovery.py` `assemble_delegation_bundle()` end-to-end, 11 tests). Needs only **DCP-4** — the reviewed dispatcher *advisory* seed-bundle attach (wire the orchestrator's ColGREP + workspace reader into `assemble_delegation_bundle`).
+- **J8 / BEP-2**: needs the `_execute_turn` batch divergence + BEP-4 runner + BEP-5 sandbox (`ORCHESTRATOR_BATCH_EDIT_MODE`). Parser/prompt/schema/pure-applier done. **Full deferred-wiring spec: [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md) § "Deferred live-wiring spec (build before J8)".**
+- **J9 / HLE-4**: needs HLE-1 metric computation over real traces + `EvalResult`/journal extension (observe-only). Schema done.
+- **J11 / BSV-2**: needs BSV-1 signature wired into the archive accept-path + paired-eval lane. Compute (`compute_behavior_signature`, `diff_signatures`) done.
+
+**J8 — BEP-2 batched-edit A/B (falsification gate; run FIRST in the harness cluster):**
+- ✅ batch cuts end-to-end latency ≥15% AND quality within −1pp AND parse-failure ≤5% AND apply-failure ≤2% (whole-repo verify) → proceed to **BEP-3** (autopilot task-class knob); keep flag available, default-off until BEP-3 finds where batch wins.
+- ⚠️ latency win but quality −1..−3pp OR parse/apply failures 5–15% → do NOT promote; loop back to BEP-1 prompt/parser hardening; flag stays off.
+- ❌ no latency win OR quality < −3pp OR failures >15% → **STOP the BEP line** (this is the falsification gate); flag default-off permanently; record NEGATIVE in the handoff + intake-605.
+- **Mitigation**: flag-off = instant rollback; **every apply is in a sandbox/worktree (BEP-5), never production files, until whole-repo verify passes AND accept**; stale-base rejection; parse=None/invalid → fall back to the normal REPL loop (zero behavior change).
+
+**J7 — DCP-6 delegation pre-assembly eval (run advisory-first: bundle attached, reactive discovery still on):**
+- ✅ prefill+latency down AND quality ≥ baseline AND top-up rate ≤20% → keep advisory; consider seed-bundle-primary mode after a second confirm.
+- ⚠️ quality flat but top-up rate >20% → packer under-selecting; tune discovery depth / ColGREP top-k / budget; re-run.
+- ❌ quality drop OR no latency improvement → keep reactive discovery; shelve pre-assembly; flag off.
+- **Mitigation**: flag-off; advisory mode never removes reactive discovery; top-ups always allowed (no hard firewall); bundle freshness (repo_sha/content_sha256) re-checked per delegation.
+
+**J9 — HLE-4 harness-metrics observe-only (no Pareto promotion during the run):**
+- Per metric: promote to a Pareto co-objective/guardrail ONLY if it separates accepted-vs-rejected (AUC ≥ target) AND correlates with future regressions AND missingness ≤20%; else keep diagnostic-only.
+- **Mitigation**: observe-only first; low-signal/low-confidence metrics never gate; oracle-adequacy flags shortcut-prone suites so they can't drive promotion.
+
+**J10 — URE-1 calibration (shadow → enforce; J10 itself only collects + analyzes):**
+- ✅ ECE ≤ eval-tower P8 target AND abstention precision > baseline escalation precision AND ≤10% shadow latency regression → enable uncertainty-routed escalation (separate enforce flag) + optionally URE-3 (uncertainty as a frozen-label routing feature).
+- ❌ any gate fails → stay shadow-only; recalibrate (re-weight components / threshold) on a frozen shadow set; do NOT enforce.
+- **Mitigation**: calibration-precedes-enforcement; shadow→enforce is a separate flag flip; frozen shadow-calibration set; re-run calibration after any DAR-3/DAR-4 change to avoid a feedback loop.
+
+**J11 — BSV-2 differential testing (mutation accept gate; per candidate mutation):**
+- `benign` → auto-accept; `watch` (route/tool changed, outcomes equal) → accept + log; `blocking` (prior-pass sentinel regressed, forbidden shortcut appeared, or cost guardrail crossed) → **REJECT, do not promote**; if it touches a shared subsystem → BSV-3 conflict-ledger review.
+- **Mitigation**: gate accept on BOTH scalar regression AND signature severity; partial-confidence signatures cannot certify `benign`; git-committed revert remains the backstop.
 
 ---
 
