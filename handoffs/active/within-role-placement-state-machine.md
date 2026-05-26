@@ -248,6 +248,21 @@ Autopilot ratification run launched (pid ~1559782, `--max-trials 30`, `--no-cont
 
 **Note**: J1's queue + J2 (forward) + J3 (reverse) migration verification were re-vehicled to this eval-concurrency path (per J1 finding F3 — external `/chat` is rate-limited; the autopilot eval fan-out is the path the placement SM was built for). Migration evidence is collected here, not via external `/chat` fan-out.
 
+**Ratification observation (2026-05-26, autopilot trials 561+):** Placement SM **confirmed exercised live** — `active_region_holders` shows `{frontdoor: 3}` (3 concurrent disjoint placements: full + 2 disjoint quarters) under the autopilot's eval-concurrency-3 fan-out; no overlap; gemma4 8072 stable (parser fix holds); J10 shadow accruing. **0 migrations + 0 topology_overlap queues** observed — *expected, and a finding for J2/J3*: the autopilot eval uses a **distinct session per question** (no session-handover → forward migration never triggers) and concurrency 3 ≤ 3 safe frontdoor slots (no queue). So neither external `/chat` (rate-limited) nor the autopilot eval (distinct sessions, steady concurrency) exercises migration. **J2/J3 live verification needs a dedicated probe**: same `session_id` reused across turns (forces session-handover → forward migration) + load oscillation (>safe-slots then drop → reverse migration). The WP-3/WP-4 code is unit-tested + merged; only the live observation is pending that probe.
+
+**WP-5 per-role placement_policy DECISION (ratified):**
+
+| Role | placement_policy | basis |
+|------|-----------------|-------|
+| frontdoor | **burst_prefer_quarters** | J5 quarters scale 1.37–1.67×; SM places 3 disjoint live |
+| worker_general | solo_prefer_full | J5 quarter pairs block (0.58–0.84×) — **provisional**, confounded by -t96 (re-bench at -t48 `da1aed6`) |
+| vision_escalation | solo_prefer_full | J5 quarter pairs block (0.40–0.46×) — provisional, same -t48 caveat + mmproj |
+| ingest_long_context | solo_prefer_full (half) | non-quarterable (80B on 24 cores ~0.1 t/s) |
+| architect_general | queue_only / solo | single whole-machine instance (122B) |
+| worker_vision | solo | single instance (q0b) |
+
+**Applying** the policy (set `frontdoor=burst_prefer_quarters` in NUMA_CONFIG `placement_policy` field, commit, restart) is the **WP-7/J6** step — deliberately deferred so it doesn't interrupt the in-flight J4 observe run; gate on the worker_general/vision -t48 re-bench before flipping them off `solo_prefer_full`.
+
 ## Reporting
 
 After each phase:
