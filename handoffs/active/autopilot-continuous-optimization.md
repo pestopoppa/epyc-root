@@ -779,6 +779,8 @@ But: even with the April 20 binary (pre-TIDE entirely, head `81df3f7c`), bench r
 
 Two ideas from the Code-as-Agent-Harness survey land on the Pareto-archive optimizer. Audit pass converted the brainstorm into concrete acceptance and storage contracts.
 
+> **Schema dependency (gap-fix 2026-05-25):** `behavior_signature` (BSV-1) and the `harness_metrics` fields HLE-4 consumes live in the **shared trace schema owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"**, not a private autopilot store. Reuse `event_id` links; do not duplicate payloads. Shared schema lands before BSV-1/HLE-4 writes.
+
 - [ ] **HLE-4 — Harness-level objective dimensions (beyond the 4D Pareto).** The current archive optimizes quality × speed × −cost × reliability on *task outcomes*. The paper argues final-task-success is a noisy single bit that rewards shortcut configs. Add the per-component harness metrics defined in [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 (execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate) as **observe-only fields first**, then promote them to guardrails or co-objectives only after they show predictive signal. Required implementation pieces:
   - Extend `EvalResult` / journal JSONL with `harness_metrics`, `oracle_adequacy`, and `metric_schema_version`.
   - Add an analysis report over N trials: separation accepted-vs-rejected, correlation with future regressions, missingness rate, and p95 metric extraction cost.

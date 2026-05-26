@@ -74,7 +74,7 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
 - `epyc-orchestrator/src/repl_environment/code_search.py` — ColGREP discovery (DCP-1/2).
 - GitNexus MCP `context`/`impact` — codemap source (DCP-3).
 - `epyc-orchestrator/src/prompt_builders/` — non-prescriptive handoff prompt (DCP-5).
-- `epyc-orchestrator/src/context/bundle.py` *(proposed, new)* — ContextBundle model + assembly loop.
+- `epyc-orchestrator/src/context/bundle.py` *(proposed, new)* — ContextBundle model + assembly loop. **Layout note (gap-fix 2026-05-25):** implemented as top-level `epyc-orchestrator/src/context_assembly.py` (DCP-1/DCP-2 pack core, on branch `intake607-harness-impl`) to match the existing `context_manager.py` / `context_compression.py` convention rather than a new `src/context/` package.
 
 ## Reporting
 

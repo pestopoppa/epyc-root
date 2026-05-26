@@ -684,5 +684,25 @@ Tasks added to [`autopilot-continuous-optimization.md`](autopilot-continuous-opt
 - **P24 ↔ P25 ↔ HALO (P20)**: per-component metrics are candidate fields for the HALO analyzer surface; harness-isolating benchmarks gate both.
 - **P24/P25 ↔ AP-27 (RLVR eval tower)**: the verifier must score the augmented reward/objectives.
 - **URE ↔ CCC #12** (decision-aware routing ↔ difficulty signal) and **eval-tower P8 calibration** (uncertainty must be calibrated).
-- **P24/P25/URE/EXM shared schema**: harness metrics, oracle adequacy, behavior signatures, approvals, and failure cases should cross-link through unified trace event IDs rather than separate ad hoc logs.
+- **P24/P25/URE/EXM shared schema — OWNED by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** (gap-fix 2026-05-25): `harness_metrics`, `oracle_adequacy`, `behavior_signature`, approval records, and `failure_case`/`working_state` are ONE versioned event family in `src/trace`, cross-linked by `event_id`. HLE/BSV/URE consume it; they must not define private schemas. **Build the shared schema first.**
+
+**Implementation spine (cross-handoff critical path, gap-fix 2026-05-25):**
+
+```
+[EXM-1/EXM-2 shared trace schema in src/trace]   ← foundation, build first  (DONE: intake607-harness-impl)
+        │
+        ├─► HLE-1 (writes harness_metrics) ─► HLE-2 (oracle_adequacy)
+        │        └─► HLE-3 (harness-isolating bench lane) ─► gates clean attribution for all evals
+        │        └─► HLE-4 (autopilot consumes metrics, observe-only first)
+        │        └─► BSV-1 (behavior_signature reuses the family) ─► BSV-2 ─► BSV-3
+        │        └─► URE-2 (approval record links behavior_signature) ; URE-1 calib ─► URE-3
+        │
+[DCP-1 ContextBundle]  ─► DCP-2 ─► DCP-3 ─► DCP-4 ─► DCP-5 ─► DCP-6   (DCP-1/DCP-2-core DONE)
+        └─(shared manifest)─► BEP-1 (batch edit records bundle ID) ─► BEP-4 ─► BEP-5 ; BEP-2 gate ─► BEP-3
+```
+
+Recommended build order (non-inference): **(1)** EXM shared schema → **(2)** HLE-1/HLE-2 + DCP-1 + BEP-1 → **(3)** HLE-3 harness-isolating lane → **(4)** DCP-2/3, BEP-4/5 deterministic appliers, BSV-1, URE-1 logging-only → then the inference gates.
+
+**Inference-gated eval order (gap-fix 2026-05-25):** all intake-607/605 inference gates are consolidated in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) **Package J** to run in one operator window: **DCP-6 = J7, BEP-2 = J8, HLE-4 = J9, URE-1 = J10 (shadow), BSV-2 = J11**. Cheap-kill order within the harness cluster: **BEP-2 (J8) first** (falsification gate for the batched-edit line) → DCP-6 (J7) → URE-1 (J10, passive/shadow, can accumulate during any run) → BSV-2 (J11, per-mutation). HLE-3's fixed-model lane underlies them so deltas attribute to the harness, not model drift. Each gated on its live-wiring prereq landing first.
+
 - Source of record: intake-605 + intake-607 `deep_dive` fields in `research/intake_index.yaml`. Surfaced in master priority queue items #51/#52.

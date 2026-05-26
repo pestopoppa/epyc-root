@@ -478,6 +478,8 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
 
 The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop optimizing the harness against final-task-success alone** (a noisy single bit that rewards shortcut configs) and instead score the harness's *intermediate* behavior. This sharpens the Tier-1 trace-feedback loop, which currently feeds a 50-line trace tail to PromptForge but does not score it on named axes. Audit pass converted the initial brainstorm into an implementation contract below.
 
+> **Schema dependency (gap-fix 2026-05-25):** the `harness_metrics` and `oracle_adequacy` record families HLE-1/HLE-2 produce are part of the **shared trace schema owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** — do not define a private schema here. Implement the shared schema first; HLE writes into it.
+
 - [ ] **HLE-1 — Per-component harness metrics.** From Tier-1 traces (`inference_tap.log`, unified trace store events, tool-call records), compute per-trial scores on the paper's named axes and persist them next to the existing eval result:
   - **Execution fidelity**: planned action matches executed action and resulting artifact; penalize stale-file edits, failed patch preconditions, tool calls whose observed result contradicts the plan, and "answer without evidence" shortcuts.
   - **Feedback interpretation**: harness correctly parses tool/error/test output into the next decision; score whether failures lead to targeted retries rather than repeated identical actions.
