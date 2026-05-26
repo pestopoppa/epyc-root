@@ -224,6 +224,20 @@ The first J4b pass (above) benched each role's **full/primary** instance concurr
 
 **Status of the full-instance n_way entries**: per operator, full-instance co-running data is valid where it boosts (gemma4 MTP is BW-light), so `{vision,worker_general,worker_vision}`=1.286 and `{frontdoor,vision,worker_general}`=1.126 are kept as a **full-mode coarse layer**. The authoritative concurrent matrix is the **quarter-level disjoint** re-bench (15 size≥3 feasible sets, `--safe-sampling`, alone on host) — **in progress** (`data/contention_matrix/bulk-2026-05-26-j4b-feasible/`). The earlier "matrix CLOSED" is therefore **superseded**: closure is re-defined over the feasible quarter-level candidate set.
 
+## J4c DONE + matrix CLOSED at quarter level (2026-05-26)
+
+**Quarter-level matrix complete** (the authoritative concurrent layer). Benched all feasible candidates with `--safe-sampling`, ingest restricted to full (non-quarterable): **17 verdicts — 16 allow + 1 block**. The block is `{frontdoor, ingest, vision}` = 0.847 (ingest's heavy half saturates BW with two co-runners) — and crucially **all three of its pairs are allow (1.72 / 1.43 / 1.06)**, so it is the concrete proof that pairwise-allow ≠ N-way-safe. The previously-"crashed" `{ingest, vision, worker_general}` is now a clean **1.578 allow** (ingest-half + two light quarters), superseding the full-instance pass. Only one feasible all-quarterable 4-way exists (`{frontdoor,vision,worker_general,worker_vision}` = 1.605 allow). Non-quarterable: ingest (half-only), architect (whole-machine full → strictly solo, 0 feasible co-run sets).
+
+**J4c wired — the runtime now KNOWS** (orchestrator commit `d937483`). `ContentionGate.evaluate()` was pairwise; it would have admitted the 0.847 block (all pairs allow). Now:
+- `contention.py`: `Nway` dataclass + `ContentionMatrix.n_way/light_roles/heavy_roles`; `load_contention_matrix` parses `n_way` + `nway_light_roles`/`nway_heavy_roles`; new `nway_policy(roles, traffic_class)`.
+- `contention_gate.py`: after the pairwise loop, `evaluate()` consults `nway_policy` on the exact active-set union and escalates to QUEUE; `contention_nway_restricted_count` metric.
+- Policy: measured allow→ALLOW; measured block→QUEUE (serialize); unmeasured all-light→ALLOW (covers mixed multi-instance light sets via role-set dedup, anchored by the 4-way 1.605× + within-role 1.88–2.86×); unmeasured otherwise→fail-open foreground / fail-closed background (matches pair_policy + the fail-open-foreground handoff rule).
+- 6 `nway_policy` regression tests; 30 contention + 45 gate/contention tests green.
+
+**Verified at runtime semantics**: `nway_policy({frontdoor,ingest,vision})` = QUEUE (both classes); 4-way all-light = ALLOW; `{ingest,worker_vision}` heavy-unmeasured = QUEUE(bg)/ALLOW(fg).
+
+**Closed-world for topology `df373c79cc4af06f`**: every feasible candidate (9 pairs + 7 triples + 1 quad) is measured allow/block; infeasible sets (architect-containing, ≥5-role) are `topology_infeasible`; the runtime gate consumes the verdicts. **Matrix CLOSED + wired.** Mixed multi-instance light sets are covered by the all-light policy (role-set keyed). Remaining refinement (documented, low-priority): per-quarter NUMA-node assignment can shift a verdict a few %; the matrix stores one representative assignment per role-set.
+
 ## Completion Criteria
 
 - J4a candidate/exclusion manifest exists and is topology-stamped.
