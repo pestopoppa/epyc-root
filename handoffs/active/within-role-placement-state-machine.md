@@ -13,10 +13,10 @@ implementation_status:
   WP-2: MERGED to main 2026-05-26 (3d94a03, behind ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1, default off)
   WP-3: MERGED to main 2026-05-26 (b4d5161, transactional model + policy gate always-on; budget honored)
   WP-4: MERGED to main 2026-05-26 (66a8bfc, behind ORCHESTRATOR_REVERSE_MIGRATION=1, default off)
-  WP-5: scaffold MERGED to main 2026-05-26 (29e95b4, conservative SOLO_PREFER_FULL default for all roles); full ratification deferred (Package J J4)
-  WP-6: inference-gated (Package J J5; operator approval required for the bench sweep)
+  WP-5: scaffold MERGED (29e95b4); J4 ratification run IN PROGRESS 2026-05-26 (autopilot pid ~1559782, --max-trials 30, placement+reverse-migration flags live in API; collect per-role placement_policy after run)
+  WP-6: J5 BENCHED 2026-05-26 (bench-within-role 6d28616) — frontdoor quarter-safe (8 pairs allow 1.37-1.67x, instance_pairs in contention_matrix.yaml ca65470); worker_general/vision all pairs block BUT confounded by launcher over-threading (quarters were -t 96 not -t 48; FIXED da1aed6) — re-bench at -t 48 pending (optimization; safe default=don't-quarter)
   WP-7: inference-gated (Package J J6; requires WP-6 + 24h autopilot gate)
-checkout_state: merged to epyc-orchestrator main at 15350fe; 155/155 dispatcher-adjacent tests green at the merged tip.
+checkout_state: merged to epyc-orchestrator main at 15350fe; J4a/J4b/J4c/J5/J10/J12 + gemma4 parser fix + launcher -t fix landed 2026-05-26 (commits in progress/2026-05/2026-05-26.md). J4 ratification autopilot running.
 ---
 
 ## Executive summary
@@ -229,6 +229,24 @@ Ran with `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` live (API restarted via `start
 - **F4 — p99 "+20% vs serial" gate is mis-specified.** Quarter-placed requests run on 24 physical cores vs full's 48, so they are inherently ~2× slower per-request under concurrency (n=3 p99 92.7s vs serial 52s). Aggregate batch t/s is the correct objective (matches the campaign's concurrent-metric policy). The per-request p99 vs serial comparison should be dropped or re-baselined against the quarter's own solo speed.
 
 **Disposition**: WP-2 placement core verified live (scaling + no overlap). Queue/migration live observation re-assigned to the eval-concurrency path. WP-2/WP-3/WP-4 flags left enabled (`PLACEMENT_STATE_MACHINE=1`). Phases 3–4 (J2/J3) should not be chased via `/chat`.
+
+### J5 / Phase 6 — within-role instance-pair bench (2026-05-26)
+
+`bench-within-role` (contention_matrix.py `6d28616`, `--safe-sampling`, alone): disjoint same-role instance pairs.
+
+| Role | pairs | verdict | ratio range |
+|------|-------|---------|-------------|
+| frontdoor | 8 | **allow** | 1.37–1.67× — quarter-safe |
+| worker_general | 6 | block* | 0.58–0.84× |
+| vision_escalation | 8 | block* | 0.40–0.46× |
+
+`*` **CONFOUNDED by a launcher over-threading bug**: worker_general (gemma4 MTP) + vision quarters were launched `-t 96` (full's count) on 24-core quarters (~2× HW-thread over-subscription). Root cause: `build_server_command`'s vision + worker_pool branches dropped `numa_instance`, and the reload path never extracted it (the server list correctly carries it; the generic path was fine — frontdoor got `-t 48` and scaled). **FIXED** (orchestrator `da1aed6`): forward `numa_instance` in both branches + the reload loop. Re-bench worker_general/vision at `-t 48` after a stop+start for the true verdict (likely flips toward allow). `same_role.instance_pairs` written for frontdoor (`ca65470`); worker_general/vision flagged provisional. Safe placement default meanwhile: frontdoor `burst_prefer_quarters`, worker_general/vision `solo_prefer_full`.
+
+### J4 / Phase 5 — WP-5 ratification (IN PROGRESS 2026-05-26)
+
+Autopilot ratification run launched (pid ~1559782, `--max-trials 30`, `--no-controller`). API live with `PLACEMENT_STATE_MACHINE=1` + `REVERSE_MIGRATION=1` + `URE_UNCERTAINTY_SHADOW_LOG=1`. EvalTower fans concurrency-3 to the API `/chat` → exercises the placement SM (+ the J4c cross-role N-way gate + J12 frontdoor enable_thinking=false + J10 shadow). Collect after the run: per-role concurrency histogram, full-vs-quarter utilization, forward+reverse migration counts, N-way active-set IDs + verdicts → ratify per-role `placement_policy`. Journal baseline 389 trials.
+
+**Note**: J1's queue + J2 (forward) + J3 (reverse) migration verification were re-vehicled to this eval-concurrency path (per J1 finding F3 — external `/chat` is rate-limited; the autopilot eval fan-out is the path the placement SM was built for). Migration evidence is collected here, not via external `/chat` fan-out.
 
 ## Reporting
 
