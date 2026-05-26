@@ -1,9 +1,11 @@
 # Docs/Chapters Audit & Refresh
 
-**Status**: active
+**Status**: completed 2026-05-26
 **Opened**: 2026-05-26
 **Owner**: claude (autonomous swarm)
 **Driver**: in-session orchestration over multiple parallel sub-agent batches
+**Commits**: epyc-orchestrator `535cca6`, epyc-inference-research `b95ba18`, epyc-root `437a778`
+**Follow-up handoff**: `handoffs/active/docs-site-narrative-and-rewriter.md`
 
 ## Motivation
 
@@ -44,7 +46,7 @@ Six parallel agents, one per cluster. Each produces a per-chapter checklist with
 - broken path references
 - proposed edits (concrete diffs where possible)
 
-Output written to `handoffs/active/docs-chapters-audit/<cluster>.md`.
+Output written to `handoffs/completed/docs-chapters-audit/<cluster>.md`.
 
 | Cluster | Chapters | Repo |
 |---|---|---|
@@ -61,7 +63,7 @@ Output written to `handoffs/active/docs-chapters-audit/<cluster>.md`.
 - [x] **Phase 2 — Edit dispatch** (parallel, 6 agents) — COMPLETE 2026-05-26 (23 files modified, staged uncommitted)
 - [x] **Phase 3 — Validation** (2 agents) — COMPLETE 2026-05-26 (zero rework required)
 - [x] **Phase 4 — Re-edit loop** — SKIPPED (validation found nothing to rework)
-- [ ] **Phase 5 — Wrap-up**: progress entry written; awaiting user commit approval
+- [x] **Phase 5 — Wrap-up** — COMPLETE 2026-05-26 (commits pushed, handoff moved to completed/)
 
 ## Phase 2 Results — Edit Pass
 
@@ -69,7 +71,7 @@ Output written to `handoffs/active/docs-chapters-audit/<cluster>.md`.
 - **epyc-orchestrator**: 14 chapter files (chapters 01, 02, 03, 04, 05, 07, 09, 10, 11, 12, 13, 14, 15, 16)
 - **epyc-inference-research**: 9 files (chapters 01, 03, 06, 07, 08, 10; MODEL_MANIFEST.md; 2 guides rewritten — benchmarking-guide.md, model-sizing.md)
 
-Per-cluster edit reports: `handoffs/active/docs-chapters-audit/cluster-{A,B,C,D,E,F}-edits.md`
+Per-cluster edit reports: `handoffs/completed/docs-chapters-audit/cluster-{A,B,C,D,E,F}-edits.md`
 
 **Editor cross-checks caught 3 audit errors:**
 - Cluster D editor verified `src/services/` still exists (audit incorrectly claimed deletion)
@@ -96,7 +98,7 @@ Both validation agents returned clean.
 - Zero residual `/mnt/raid0/llm/claude` pre-monorepo-split paths
 - Cross-repo coherence verified
 
-Validation reports: `handoffs/active/docs-chapters-audit/validation-{orchestrator,research}.md`
+Validation reports: `handoffs/completed/docs-chapters-audit/validation-{orchestrator,research}.md`
 
 ## Total Tally
 
