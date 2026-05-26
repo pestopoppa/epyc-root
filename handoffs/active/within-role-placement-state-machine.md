@@ -14,7 +14,7 @@ implementation_status:
   WP-3: MERGED to main 2026-05-26 (b4d5161, transactional model + policy gate always-on; budget honored)
   WP-4: MERGED to main 2026-05-26 (66a8bfc, behind ORCHESTRATOR_REVERSE_MIGRATION=1, default off)
   WP-5: scaffold MERGED (29e95b4); J4 ratification run IN PROGRESS 2026-05-26 (autopilot pid ~1559782, --max-trials 30, placement+reverse-migration flags live in API; collect per-role placement_policy after run)
-  WP-6: J5 BENCHED 2026-05-26 (bench-within-role 6d28616) — frontdoor quarter-safe (8 pairs allow 1.37-1.67x, instance_pairs in contention_matrix.yaml ca65470). worker_general RE-BENCHED at -t48 (launcher fix da1aed6 validated live): mean 0.879, 4/6 borderline + 2/6 block, all net-positive → gate verdict flipped block→borderline. vision -t48 re-bench STILL PENDING (no clean stack stop handle + mmproj confound) — kept block
+  WP-6: J5 BENCHED 2026-05-26 (bench-within-role 6d28616) — frontdoor quarter-safe (8 pairs allow 1.37-1.67x, instance_pairs in contention_matrix.yaml ca65470). worker_general RE-BENCHED at -t48 (launcher fix da1aed6 validated live): mean 0.879, 4/6 borderline + 2/6 block, all net-positive → gate verdict flipped block→borderline. vision RE-BENCHED at -t48 too: OVERTURNS the -t96 block + refutes mmproj — quarter-pairs 5/6 allow super-linear (1.14-1.27x), only full+quarter blocks → verdict block→borderline (DIAGNOSTIC-GRADE: 5/8 pairs cv>5%, needs higher-sample ratify)
   WP-7: inference-gated (Package J J6; requires WP-6 + 24h autopilot gate)
 checkout_state: merged to epyc-orchestrator main at 15350fe; J4a/J4b/J4c/J5/J10/J12 + gemma4 parser fix + launcher -t fix landed 2026-05-26 (commits in progress/2026-05/2026-05-26.md). J4 ratification autopilot running.
 ---
@@ -238,7 +238,7 @@ Ran with `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` live (API restarted via `start
 |------|-------|---------|-------------|
 | frontdoor | 8 | **allow** | 1.37–1.67× — quarter-safe |
 | worker_general | 6 | block* → **borderline** (re-benched -t48) | -t96: 0.58–0.84× → -t48: 0.77–0.95× |
-| vision_escalation | 8 | block* | 0.40–0.46× (-t48 re-bench still pending) |
+| vision_escalation | 8 | block* → **borderline** (re-benched -t48) | -t96: 0.40–0.46× → -t48: quarter-pairs 0.96–1.27× (5/6 allow), full+quarter 0.58–0.62× block |
 
 `*` **CONFOUNDED by a launcher over-threading bug**: worker_general (gemma4 MTP) + vision quarters were launched `-t 96` (full's count) on 24-core quarters (~2× HW-thread over-subscription). Root cause: `build_server_command`'s vision + worker_pool branches dropped `numa_instance`, and the reload path never extracted it (the server list correctly carries it; the generic path was fine — frontdoor got `-t 48` and scaled). **FIXED** (orchestrator `da1aed6`): forward `numa_instance` in both branches + the reload loop. `same_role.instance_pairs` written for frontdoor (`ca65470`).
 
@@ -255,7 +255,24 @@ Stopped the 5 worker_general instances via `orchestrator_stack.py stop server_80
 | q0+q2 | 0.844 | 0.091 | block | 0.584 |
 | q1+q3 | 0.772 | 0.169 | block | 0.726 |
 
-**Finding**: mean 0.879 → role verdict **borderline** (was block). Over-threading was a real *contributing* factor (every pair +0.05 to +0.26) but a residual cross-NUMA-node DRAM-BW ceiling keeps 2 pairs (q0+q2, q1+q3 — both cross-node) sub-floor. This is the BW-bound-decode signature: `allow` (ratio ≥ 1.0, super-linear) is structurally unreachable, so **borderline is the realistic green light**. All 6 pairs sit well above the **0.5 co-run-vs-serialize break-even** (1.54–1.89× aggregate) → concurrent quartering is net-positive on every pair. Updated `contention_matrix.yaml` worker_general → `borderline` (runtime gate now ALLOWs same-role co-run instead of serializing background; **takes effect on next API restart** — matrix is load-once cached, J6/WP-7 applies it). **vision_escalation -t48 re-bench still pending** (not tracked in `orchestrator_state.json` → no clean stack `stop` handle yet; + mmproj confound) — kept `block`. Cross-role n_way (1.58–1.81× allow) was benched while these quarters were `-t96`-over-threaded → conservative + still valid.
+**Finding**: mean 0.879 → role verdict **borderline** (was block). Over-threading was a real *contributing* factor (every pair +0.05 to +0.26) but a residual cross-NUMA-node DRAM-BW ceiling keeps 2 pairs (q0+q2, q1+q3 — both cross-node) sub-floor. This is the BW-bound-decode signature: `allow` (ratio ≥ 1.0, super-linear) is structurally unreachable, so **borderline is the realistic green light**. All 6 pairs sit well above the **0.5 co-run-vs-serialize break-even** (1.54–1.89× aggregate) → concurrent quartering is net-positive on every pair. Updated `contention_matrix.yaml` worker_general → `borderline` (runtime gate now ALLOWs same-role co-run instead of serializing background; **takes effect on next API restart** — matrix is load-once cached, J6/WP-7 applies it). Cross-role n_way (1.58–1.81× allow) was benched while these quarters were `-t96`-over-threaded → conservative + still valid.
+
+#### J5 vision_escalation -t48 RE-BENCH (2026-05-26, claude — OVERTURNS -t96 block, refutes mmproj confound)
+
+The "no clean stack stop handle" blocker turned out to be a **state-clobber bug I'd introduced** (`start --only worker_general` wiped non-worker_general roles from `orchestrator_state.json`; root-caused + fixed `f2ffd29` + state restored — see progress log). With the stack manageable again, stopped the 4 vision quarters (`stop server_8187/8287/8387/8487`, kept full 8087), relaunched via `start --only vision_escalation` → quarters now **-t 48** (launcher fix validated on vision too), and the merge fix preserved every other role. Re-benched alone (`--safe-sampling --samples 3`):
+
+| pair | -t48 ratio | cv | verdict | note |
+|------|-----------|-----|---------|------|
+| q0+q3 | 1.266 | 0.004 | allow | tight |
+| q1+q2 | 1.233 | 0.007 | allow | tight |
+| q0+q2 | 1.188 | 0.088 | allow | cv>5% |
+| q0+q1 | 1.154 | 0.067 | allow | cv>5% |
+| q2+q3 | 1.140 | 0.076 | allow | cv>5% |
+| q1+q3 | 0.963 | 0.420 | borderline | **cv 42%! unreliable** |
+| full+q0 | 0.580 | 0.024 | block | full coexists poorly |
+| full+q1 | 0.619 | 0.124 | block | with quarters |
+
+**Finding** (the big one): the -t96 all-block (0.40–0.46×) was almost entirely **launcher over-threading**, NOT the mmproj/qwen3vlmoe arch — **that hypothesis is refuted**. At -t48 the **quarter+quarter** pairs are **5/6 allow, super-linear** (1.14–1.27×; a lone 24-core quarter under-saturates DRAM BW, so two concurrent quarters use memory more efficiently than serial). The only blocks are the two **full+quarter** disjoint pairs (vision's "full" is node1-only 48-95, so full+q0/full+q1 are core-disjoint but the 48-core full starves the co-running quarter) → placement_policy must **disable full under burst**. **Measurement caveat**: DIAGNOSTIC-GRADE — 5/8 pairs exceed the 5% CV gate (q1+q3 cv 0.420!); the *direction* is robust but ratifying a clean "allow" needs a higher-sample (≥8) re-bench. Set `contention_matrix.yaml` vision → `borderline` (gate ALLOWs quarter co-run; applies on next API restart). vision is now a **stronger quartering candidate than worker_general**.
 
 ### J4 / Phase 5 — WP-5 ratification (IN PROGRESS 2026-05-26)
 
@@ -271,12 +288,12 @@ Autopilot ratification run launched (pid ~1559782, `--max-trials 30`, `--no-cont
 |------|-----------------|-------|
 | frontdoor | **burst_prefer_quarters** | J5 quarters scale 1.37–1.67×; SM places 3 disjoint live |
 | worker_general | **burst_prefer_quarters** (candidate) | J5 -t48 re-bench (`da1aed6` validated): 4/6 borderline + 2/6 block, mean 0.879, all pairs 1.54–1.89× aggregate (net-positive). Gate verdict flipped block→borderline. WP-7 should flip NUMA_CONFIG to burst; a node-aware variant avoiding q0+q2/q1+q3 cross-node pairs is the refinement |
-| vision_escalation | solo_prefer_full | J5 quarter pairs block (0.40–0.46×) — **still provisional**: -t48 re-bench pending (no clean stack stop handle — not in orchestrator_state.json — + mmproj confound) |
+| vision_escalation | **burst_prefer_quarters** (candidate, full-disabled-under-burst) | J5 -t48 re-bench OVERTURNS -t96 block + refutes mmproj: quarter-pairs 5/6 allow super-linear (1.14–1.27×); only full+quarter blocks (0.58–0.62×). Gate verdict flipped block→borderline. DIAGNOSTIC-GRADE (5/8 pairs cv>5%, q1+q3 cv 0.420) — ratify allow after higher-sample re-bench. Strongest quartering candidate of the three |
 | ingest_long_context | solo_prefer_full (half) | non-quarterable (80B on 24 cores ~0.1 t/s) |
 | architect_general | queue_only / solo | single whole-machine instance (122B) |
 | worker_vision | solo | single instance (q0b) |
 
-**Applying** the policy (set `frontdoor` + `worker_general` = `burst_prefer_quarters` in NUMA_CONFIG `placement_policy` field, commit, restart) is the **WP-7/J6** step — deliberately deferred so it doesn't interrupt the in-flight J4 observe run. worker_general's -t48 re-bench is now done (borderline → burst candidate; gate verdict already flipped in `contention_matrix.yaml`, applies on next API restart). vision_escalation stays `solo_prefer_full` until its -t48 re-bench (blocked on getting a clean stack stop handle for the vision instances).
+**Applying** the policy (set `frontdoor` + `worker_general` = `burst_prefer_quarters` in NUMA_CONFIG `placement_policy` field, commit, restart) is the **WP-7/J6** step — deliberately deferred so it doesn't interrupt the in-flight J4 observe run. worker_general AND vision_escalation -t48 re-benches are now both done (both borderline → burst candidates; gate verdicts flipped in `contention_matrix.yaml`, apply on next API restart). vision is the strongest quartering candidate (quarter-pairs super-linear) but its bench is DIAGNOSTIC-GRADE (5/8 pairs cv>5%) — ratify a clean `allow` + finalize `burst_prefer_quarters` (full-disabled-under-burst) after a higher-sample re-bench. WP-7 should set frontdoor + worker_general + vision to `burst_prefer_quarters`.
 
 ## Reporting
 
