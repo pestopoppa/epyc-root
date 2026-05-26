@@ -1,8 +1,10 @@
 # Docs-site narrative pages + link-rewriter
 
-**Status**: active
+**Status**: completed 2026-05-26
 **Opened**: 2026-05-26
 **Predecessor**: `handoffs/completed/docs-chapters-audit-refresh.md` (chapter substrate refresh) + commit `10aa13f` (MkDocs scaffold)
+**Completion commits**: `d74692e` (Phase A+B+C), `17b8125` (math fix), `6119e6e` (stylistic rewrite), `6dfa0c3` (Phase D + 3 new stories), `ab2d235` (anchor fix in epyc-inference-research)
+**Carry-over**: future narrative stories + custom domain + analytics — out of scope for this handoff; reopen as needed.
 
 ## Motivation
 
@@ -73,7 +75,11 @@ User invocation (this session, 2026-05-26): "proceed with both please" — the u
   - All 7 stories landed in one pass under `site_src/stories/`
   - Math correction in `why-cpu-inference.md` (commit `17b8125`)
   - Stylistic rewrite of 6 stories against the voice baseline (commit `6119e6e`); bold-prefix-paragraph count 50+ → 3; word counts normalized to 1000-1200 range
-- [ ] **Phase D** — polish: mermaid topology diagram on landing page; auto-generated "Recent results" from `progress/` digests; resolve 3 residual stale-anchor refs inside research chapters 01 + 03
+- [x] **Phase D** — polish — COMPLETE 2026-05-26 (commits `6dfa0c3`, `ab2d235`)
+  - Mermaid topology diagram on landing page (user → API → router + 4 model tiers → response → telemetry → MemRL)
+  - Auto-generated "Recent results" page from `progress/YYYY-MM/*.md` digests (`scripts/docs/build-recent-results.py`, 77 entries on first run, wired into the workflow)
+  - 3 residual stale-anchor refs resolved (research chapters 01 + 03 link-target case, markdownfs deep-dive self-anchor)
+- [x] **Bonus** — 3 new narrative stories landed: SkillBank rollout, autopilot restart resilience, constrained-creativity planner. Stories index reorganized into Features / Wins / Investigations / Operations / Live work groups.
 
 ## Constraints
 
