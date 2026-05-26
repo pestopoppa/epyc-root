@@ -8,7 +8,7 @@ This is the hardware story behind the project.
 
 Modern LLM decode is **memory-bandwidth bound**, not FLOP-bound. For each generated token you read the entire model from memory (the weights), do a relatively small amount of arithmetic, and write back a small KV-cache update. The arithmetic-to-bytes ratio is so low that the CPU/GPU is idling on memory most of the time.
 
-On an AMD EPYC 9655 we have 12 channels of DDR5-5600 delivering ~460 GB/s of aggregate memory bandwidth. That's roughly 1/8th the bandwidth of an A100 (1.6 TB/s) and 1/16th of an H100 (3.4 TB/s). So the upper bound on single-stream decode throughput is also about 1/8th to 1/16th of GPU-equivalent.
+On an AMD EPYC 9655 we have 12 channels of DDR5-5600 delivering ~460 GB/s of aggregate memory bandwidth. That's roughly a quarter of an A100 (1.6 TB/s) and about 1/7 of an H100 (3.4 TB/s). So the upper bound on single-stream decode throughput is also about 1/4 to 1/7 of GPU-equivalent.
 
 But — and this is the lever the project is built on — the chip has *96 cores* split across *four NUMA nodes*, each with its own quarter of the bandwidth. If you can run four independent model instances and they each saturate one quarter, you get back roughly 3× the effective decode throughput. That's NUMA quartering, and it's the single biggest performance lever on this machine. [Hardware Optimization](../topics/hardware-optimization.md) has the full picture, including the measurement that pinned 4×24-thread quartering at 4.6× the throughput of 1×96-thread single-instance on the same model.
 
