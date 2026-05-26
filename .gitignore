@@ -54,5 +54,6 @@ site_src/topics/*.md
 !site_src/topics/index.md
 site_src/deep-dives/*.md
 !site_src/deep-dives/index.md
+site_src/stories/recent-results.md
 site_src/subsystems/orchestrator/
 site_src/subsystems/research/

@@ -71,6 +71,9 @@ jobs:
           RES_REPO: ${{ github.workspace }}/repos/epyc-inference-research
         run: python3 scripts/docs/rewrite-links.py
 
+      - name: Generate Recent results page
+        run: python3 scripts/docs/build-recent-results.py
+
       - name: Build site
         run: mkdocs build --verbose
 

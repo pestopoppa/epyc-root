@@ -83,8 +83,12 @@ nav:
     - 'Worker_general: 17 → 76 t/s': stories/worker-general-story.md
     - The autonomous research loop: stories/autonomous-research-loop.md
     - The speculative decoding investigation: stories/spec-decoding-investigation.md
+    - SkillBank rollout: stories/skillbank-rollout.md
+    - Autopilot restart resilience: stories/autopilot-restart-resilience.md
+    - The constrained-creativity planner upgrade: stories/creativity-planner.md
     - What we're investigating now: stories/investigating-now.md
     - What we tried and ruled out: stories/ruled-out.md
+    - Recent results: stories/recent-results.md
   - Topics:
     - topics/index.md
     - Speculative Decoding: topics/speculative-decoding.md

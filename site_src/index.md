@@ -10,6 +10,33 @@ hide:
 
 96 cores / 192 threads (Zen 5), 1.13 TB DDR5-5600 ECC across 12 channels (~460 GB/s aggregate), NPS4 NUMA.
 
+```mermaid
+flowchart LR
+    User([User])
+    API[Orchestrator API]
+    Router{Router<br/>+ learned classifier}
+    W[worker_general<br/>26B MoE]
+    C[coder_escalation<br/>35B MoE]
+    A[architect_general<br/>122B MoE]
+    I[ingest_long_context<br/>80B SSM-hybrid]
+    Mem[(MemRL<br/>episodic store)]
+
+    User --> API --> Router
+    Router --> W
+    Router --> C
+    Router --> A
+    Router --> I
+    W --> Resp([Response])
+    C --> Resp
+    A --> Resp
+    I --> Resp
+    Resp --> User
+    Resp -.telemetry.-> Mem
+    Mem -.posterior.-> Router
+```
+
+Each box on the right is a separate `llama-server` instance pinned to a NUMA quarter. The router chooses among them per request, escalates when a smaller model fails, and learns from every outcome.
+
 ---
 
 ## What's here

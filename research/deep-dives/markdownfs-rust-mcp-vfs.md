@@ -116,7 +116,7 @@ This number is the headline of the README and the most likely thing to be misrea
 
 **Verdict on the headline**: the 102.8× number is technically correct, methodologically defensible, and substantively misleading as a value prop for EPYC.
 
-## Architectural Limits (the original intake missed two of these)
+## Architectural Limits (the original intake missed two of these) { #architectural-limits }
 
 These are documented inside the project, not external critiques.
 

@@ -13,12 +13,19 @@ If [Topics](../topics/index.md) tells you *what we learned* and [Subsystems](../
 ## Specific wins
 
 - [Worker_general: 17 → 76 t/s](worker-general-story.md) — what cascaded when we swapped a 7B for a 26B (and gained throughput)
+- [SkillBank rollout](skillbank-rollout.md) — turning trajectories into structured skills the worker can use at inference time
+- [The constrained-creativity planner upgrade](creativity-planner.md) — making AutoPilot's exploration mechanism actually function as designed
 
 ## Investigations
 
 - [The speculative decoding investigation](spec-decoding-investigation.md) — what worked, what didn't, why the GPU literature doesn't transfer
 
+## Operations
+
+- [Autopilot restart resilience](autopilot-restart-resilience.md) — how AutoPilot learned to tell "operator did this" apart from "the config is broken"
+
 ## Live work
 
 - [What we're investigating now](investigating-now.md) — curated snapshot of the active work queue
 - [What we tried and ruled out](ruled-out.md) — falsified hypotheses with the measurements that killed them
+- [Recent results](recent-results.md) — auto-generated chronology of the last 90 days of progress entries
