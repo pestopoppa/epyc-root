@@ -82,7 +82,7 @@ Update this handoff + routing-and-optimization-index P22 after each DCP task; re
 
 ## Post-result conditional workflow + mitigation (DCP-6 / bulk-inference J7)
 
-Pre-run wiring (non-inference, must land first): DCP-2 discovery (ColGREP top-k + GitNexus caller/callee neighborhoods feeding `pack_to_budget`), DCP-3 GitNexus codemap producer, DCP-4 dispatcher/escalation **advisory** seed-bundle attach (flag default-off; reactive discovery stays on). Pack core (`context_assembly.pack_to_budget`) + ContextBundle done + tested on `intake607-harness-impl`.
+Pre-run wiring: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE + tested** on `intake607-harness-impl` (`src/context_discovery.py`: `discover_candidates` / `build_python_codemap` / `cost_candidates` / `assemble_delegation_bundle`, injectable ColGREP + file-reader backends, 11 tests; codemap is a dependency-free `ast` signature skeleton — GitNexus is not a runtime dep). **Remaining: only DCP-4** — the reviewed dispatcher/escalation **advisory** seed-bundle attach (flag default-off; reactive discovery stays on), wiring the orchestrator's ColGREP (`parse_colgrep_json(self._code_search(q, limit=k))`) + workspace file reader into `assemble_delegation_bundle`.
 
 Run **advisory-first** (bundle attached, reactive discovery still enabled — DCP-1 audit #7). Decision tree:
 - ✅ prefill+latency down AND quality ≥ baseline AND top-up rate ≤20% → keep advisory; consider seed-bundle-primary mode after a second confirm.

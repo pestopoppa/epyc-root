@@ -697,7 +697,7 @@ Tasks added to [`autopilot-continuous-optimization.md`](autopilot-continuous-opt
         │        └─► BSV-1 (behavior_signature reuses the family) ─► BSV-2 ─► BSV-3
         │        └─► URE-2 (approval record links behavior_signature) ; URE-1 calib ─► URE-3
         │
-[DCP-1 ContextBundle]  ─► DCP-2 ─► DCP-3 ─► DCP-4 ─► DCP-5 ─► DCP-6   (DCP-1/DCP-2-core DONE)
+[DCP-1 ContextBundle]  ─► DCP-2 ─► DCP-3 ─► DCP-4 ─► DCP-5 ─► DCP-6   (DCP-1/DCP-2/DCP-3 DONE; DCP-4 = reviewed dispatcher hook)
         └─(shared manifest)─► BEP-1 (batch edit records bundle ID) ─► BEP-4 ─► BEP-5 ; BEP-2 gate ─► BEP-3
 ```
 

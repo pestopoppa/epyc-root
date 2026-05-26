@@ -995,7 +995,7 @@ Each gate is a **decision point**, not just a measurement: run → branch on the
 
 **Pre-run wiring status** (none is in production until wired AND its gate passes; all flags default-OFF):
 - **J10 / URE-1**: shadow logger **WIRED** (`ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`) on `intake607-harness-impl` — runnable now.
-- **J7 / DCP-6**: needs DCP-2 discovery + DCP-3 codemap + DCP-4 dispatcher seed-bundle attach. Pack core (`pack_to_budget`) done.
+- **J7 / DCP-6**: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE** on `intake607-harness-impl` (`context_discovery.py` `assemble_delegation_bundle()` end-to-end, 11 tests). Needs only **DCP-4** — the reviewed dispatcher *advisory* seed-bundle attach (wire the orchestrator's ColGREP + workspace reader into `assemble_delegation_bundle`).
 - **J8 / BEP-2**: needs the `_execute_turn` batch divergence + BEP-4 runner + BEP-5 sandbox (`ORCHESTRATOR_BATCH_EDIT_MODE`). Parser/prompt/schema/pure-applier done. **Full deferred-wiring spec: [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md) § "Deferred live-wiring spec (build before J8)".**
 - **J9 / HLE-4**: needs HLE-1 metric computation over real traces + `EvalResult`/journal extension (observe-only). Schema done.
 - **J11 / BSV-2**: needs BSV-1 signature wired into the archive accept-path + paired-eval lane. Compute (`compute_behavior_signature`, `diff_signatures`) done.
