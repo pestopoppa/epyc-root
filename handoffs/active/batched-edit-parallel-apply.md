@@ -77,7 +77,7 @@ Update this handoff + routing-index P23 after each BEP task; persist BEP-2 bench
 
 ## Deferred live-wiring spec (build before J8) — the change to make once reviewed
 
-The pure pieces are done + tested on `intake607-harness-impl`: `src/batch_edit.py` (PatchSet/validate/conflict/dependency + `apply_file_patch_to_text`), `src/batch_edit_parse.py` (`parse_patchset_from_model_output` + `BATCH_EDIT_INSTRUCTIONS` rider), flag `batch_edit_mode` (default off). What remains touches the production execution core, so it is specified here for a reviewed landing rather than shipped blind.
+The pure pieces are done + tested on main (merged 2026-05-26): `src/batch_edit.py` (PatchSet/validate/conflict/dependency + `apply_file_patch_to_text`), `src/batch_edit_parse.py` (`parse_patchset_from_model_output` + `BATCH_EDIT_INSTRUCTIONS` rider), flag `batch_edit_mode` (default off). What remains touches the production execution core, so it is specified here for a reviewed landing rather than shipped blind.
 
 **1. BEP-4 runner — `apply_patchset_sandboxed(ps, *, repo_root, current_shas, verify_cmd)` (NEW, e.g. `src/batch_edit_runner.py`).** Pure-of-inference; testable with a temp git repo.
 - `validate_patchset(ps)`; `check_stale_base(ps, current_shas)` → refuse stale (return failure manifest, do not apply); `detect_conflicts(ps)` → refuse overlaps.

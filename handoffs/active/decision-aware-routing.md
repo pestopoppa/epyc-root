@@ -368,7 +368,7 @@ Additive to DAR-2/3/4 (which sharpen the *quality* Q), not a replacement — unc
 
 ## Post-calibration conditional workflow + mitigation (URE-1 / bulk-inference J10)
 
-Wiring status: shadow logger **WIRED** on `intake607-harness-impl` (`src/uncertainty_shadow.py`, flag `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`, default off, hooked at the single chokepoint `hybrid_router._record_decision_meta`, exception-safe). J10 collects shadow records → `ingest_uncertainty_shadow()` → `approval_record` → analyze. **The shadow score is UNCALIBRATED first-pass; calibration precedes enforcement (audit #1).**
+Wiring status: shadow logger **WIRED** on main (merged 2026-05-26) (`src/uncertainty_shadow.py`, flag `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`, default off, hooked at the single chokepoint `hybrid_router._record_decision_meta`, exception-safe). J10 collects shadow records → `ingest_uncertainty_shadow()` → `approval_record` → analyze. **The shadow score is UNCALIBRATED first-pass; calibration precedes enforcement (audit #1).**
 
 Decision tree (after J10 analysis):
 - ✅ ECE ≤ eval-tower P8 target AND abstention precision > baseline escalation precision AND ≤10% shadow latency regression → enable uncertainty-routed escalation (a SEPARATE enforce flag, not the shadow flag) + optionally URE-3 (uncertainty as a routing feature, frozen labels).

@@ -296,3 +296,44 @@ Exact TB-2.0 numbers (verified from local PDF read at `/workspace/tmp/echo.pdf`)
 - `handoffs/active/gpu-acceleration-path.md` §ECHO 3-gate adoption trigger
 - `handoffs/active/autopilot-continuous-optimization.md` §ECHO Deep-Dive Refinement + PEAF spec
 - `scripts/autopilot/peaf.py` + `scripts/autopilot/program.md` §PEAF — Prediction-Error-As-Feature
+
+## 2026-05-26 update — intake-607 harness instrumentation cluster MERGED
+
+The intake-607 cluster (10 commits, 192 unit tests) merged into `epyc-orchestrator` main 2026-05-26 (merge tip `15350fe`). Lands a unified harness-instrumentation substrate that lets autopilot's optimizer see *behavioral* differences between candidate configs, not just the scalar final-task-success bit. All shipped code is additive + flags default-OFF; live wiring of runtime hooks + the metric-validity gates are tracked in `bulk-inference-campaign.md` § Package J (J7-J11).
+
+### What landed (code on main)
+
+| Module | Purpose | Owning handoff |
+|---|---|---|
+| `src/trace/harness_schema.py` + `src/trace/store.py` | **Shared event schema** — single source of truth for HLE/BSV/URE/EXM record families. Extends the existing T1-T6 store. Owned by [`unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md). | unified-trace-memory-service |
+| `src/context_discovery.py` + `src/context_assembly.py` | DCP-1/2/3 — ColGREP-backed candidate discovery, ast-codemap (pure-stdlib signature skeleton; no GitNexus runtime dep), end-to-end budget-bounded ContextBundle assembly. | [`delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) |
+| `src/batch_edit.py` + `src/batch_edit_parse.py` + `src/batch_edit_runner.py` | BEP-1 + BEP-4 — typed PatchSet schema with base hashes + cross-file dependency metadata; parser + `BATCH_EDIT_INSTRUCTIONS` rider; pure deterministic applier; sandbox→apply→verify runner. | [`batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) |
+| `src/behavior_signature.py` + `src/mutation_ledger.py` | BSV-1/2/3 — per-archive-member behavior signature (final answer + route path + tool sequence + escalation path + latency/token buckets + harness metrics + oracle-adequacy version); differential-testing scaffolding; mutation-dependency ledger for conflict-aware acceptance. | [`autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) |
+| `src/uncertainty_shadow.py` + `orchestration/repl_memory/hybrid_router.py` (URE-1 hook) | URE-1 wired — shadow logging of routing-uncertainty records at the `hybrid_router._record_decision_meta` chokepoint, behind `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG` (default OFF, exception-safe). Calibrates before any enforcement role. | [`decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) |
+| `src/features.py` | 2 new feature flags, default OFF. | (cross-cutting) |
+
+### Design pattern this codifies
+
+The cluster operationalizes the 2026-05-25 audit refinement: "harness-level metrics + oracle adequacy → observe-only first → promote to Pareto co-objective only after predictive-signal analysis." Concretely:
+- **Observe-only first**: every metric writes to the unified trace before any policy uses it as a gate. The data-validity question is answered before the policy-impact question.
+- **Cheap-kill criteria**: if a metric never separates accepted-vs-rejected configs, has missingness >20%, or depends on low-confidence evidence for most trials, it stays diagnostic and never promotes.
+- **Severity-gated acceptance**: BSV signature diffs classified `benign / watch / blocking` rather than boolean. Pareto-win regressions that silently flip a prior sentinel pass→fail get caught.
+- **Calibration before enforcement**: URE-1 shadow-logs uncertainty for ECE/AUC analysis before any escalation rerouting fires. Audit refinement explicitly bans single-confidence-score shortcuts.
+
+### How autopilot benefits
+
+Before this cluster, autopilot's Pareto archive optimized `quality × speed × −cost × reliability` measured on task outcomes. The paper-supported claim (intake-607 §5.2.1) is that final-task-success is a noisy single bit that rewards shortcut configs (forbidden web-search leakage, extra escalations, much higher cost on equal answers). With the cluster on main + the J9 observe-only run wired, the archive gains:
+- Per-component harness metrics (execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate).
+- Oracle adequacy meta-metric per suite (blind-spot risk + shortcut risk).
+- Process-level behavior signature so two accepted mutations touching the same subsystem flag for semantic-conflict review instead of blind composition.
+
+### Sources (2026-05-26)
+
+- `epyc-orchestrator` merge `15350fe` (10 squashed commits from former branch `intake607-harness-impl`)
+- [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md) — owns the shared schema
+- [`handoffs/active/delegation-context-preassembly.md`](../handoffs/active/delegation-context-preassembly.md) — DCP-1/2/3 implementation status + DCP-4/6 next
+- [`handoffs/active/batched-edit-parallel-apply.md`](../handoffs/active/batched-edit-parallel-apply.md) — BEP-1/4 implementation status + BEP-2/3/5 next
+- [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) — BSV-1/2/3 + HLE-4
+- [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — URE-1 wired
+- [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) § Package J J7-J11 — inference verification gates
+- `progress/2026-05/2026-05-26.md` Session 17 + 18

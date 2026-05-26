@@ -8,15 +8,15 @@ predecessors:
   - handoffs/completed/cross-role-bw-aware-routing.md  # Phases A–F, completed 2026-05-24; KV migration under PER_REGION_LOCKS deferred as design-only follow-up
   - handoffs/active/dynamic-stack-concurrency.md       # KV save/restore mechanics, quarter scheduler (DS-6/DS-7)
 implementation_status:
-  WP-0: shipped 2026-05-26 (epyc-orchestrator commit 33bfe20, live)
-  WP-1: shipped 2026-05-26 (cab27ac, live — autopilot default now max_safe_concurrency(frontdoor)=3)
-  WP-2: shipped 2026-05-26 (3d94a03, behind ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1, default off)
-  WP-3: shipped 2026-05-26 (b4d5161, transactional model + policy gate always-on; budget honored)
-  WP-4: shipped 2026-05-26 (66a8bfc, behind ORCHESTRATOR_REVERSE_MIGRATION=1, default off)
-  WP-5: scaffold shipped 2026-05-26 (29e95b4, conservative SOLO_PREFER_FULL default for all roles); full ratification deferred (needs observability data)
-  WP-6: inference-gated (operator approval required for the bench sweep)
-  WP-7: inference-gated (requires WP-6 + 24h autopilot gate)
-worktree: epyc-orchestrator/.claude/worktrees/wp-0-eval-concurrency-default (branch feat/wp-0-eval-concurrency-default; 6 stacked commits ahead of main; 155/155 dispatcher-adjacent tests green)
+  WP-0: MERGED to main 2026-05-26 (epyc-orchestrator commit 33bfe20 via merge fe6805c, live)
+  WP-1: MERGED to main 2026-05-26 (cab27ac, live — autopilot default now max_safe_concurrency(frontdoor)=3)
+  WP-2: MERGED to main 2026-05-26 (3d94a03, behind ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1, default off)
+  WP-3: MERGED to main 2026-05-26 (b4d5161, transactional model + policy gate always-on; budget honored)
+  WP-4: MERGED to main 2026-05-26 (66a8bfc, behind ORCHESTRATOR_REVERSE_MIGRATION=1, default off)
+  WP-5: scaffold MERGED to main 2026-05-26 (29e95b4, conservative SOLO_PREFER_FULL default for all roles); full ratification deferred (Package J J4)
+  WP-6: inference-gated (Package J J5; operator approval required for the bench sweep)
+  WP-7: inference-gated (Package J J6; requires WP-6 + 24h autopilot gate)
+worktree: REMOVED 2026-05-26 — work merged to main as part of housekeeping. Source branch feat/wp-0-eval-concurrency-default deleted local + remote. 155/155 dispatcher-adjacent tests green at the merged tip; full epyc-orchestrator main now at 15350fe.
 ---
 
 ## Executive summary

@@ -943,8 +943,8 @@ Initial regret analysis on 7,211 routing decisions (Apr 10-14):
 
 **Duration**: ~1-3 days if sequenced; J6 (matrix re-bench) can run overnight
 **Stack required**: Standard orchestrator stack; J1-J3 require `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` and (for J2/J3) `ORCHESTRATOR_REVERSE_MIGRATION=1` set in the API env
-**Depends on**: epyc-orchestrator branch `feat/wp-0-eval-concurrency-default` merged into main (6 stacked commits; WP-0..WP-4 + WP-5 scaffold; 155/155 tests green; pushed but unmerged as of 2026-05-26)
-**Status**: NOT STARTED — wired 2026-05-26
+**Depends on**: epyc-orchestrator main @ `15350fe` or later — both feature branches MERGED 2026-05-26 (`fe6805c` placement WP-0..WP-4 + WP-5 scaffold; `15350fe` intake-607 harness DCP/BEP/BSV/URE). 347 unit tests on main; all new code additive + flags default-OFF. No further branch merging needed before any J task.
+**Status**: NOT STARTED — wired 2026-05-26; both code prereqs merged + pushed 2026-05-26
 
 Inference-gated verifications and observability runs for the within-role-placement-state-machine handoff. Also bundles the two sibling inference gates from the 2026-05-25 audit batch (DCP-6, BEP-2) because they share the same "needs autopilot-style eval workload" profile and benefit from one operator sitting + one cleared stack window. Add other-agent inference-gated items under this Package (or a successor) for shared sequencing.
 
@@ -983,19 +983,20 @@ This Package is designed to absorb additional inference-gated items from paralle
 |---|------|---------------|-------------|--------------|--------|
 | J10 | URE-1 routing-uncertainty calibration | [decision-aware-routing.md](decision-aware-routing.md) URE-1 | Enable `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG=1`; passively collect shadow routing-uncertainty records over normal traffic; compute ECE/AUC for "would escalation help?", abstention precision/recall, per-suite calibration drift. Pre-enforcement gate: ECE ≤ eval-tower P8 target + abstention precision > baseline escalation precision + ≤10% latency regression. **Shadow-only** — needs no dedicated window. Prereq: URE-1 shadow logger wired (approval_record schema done in `src/trace/harness_schema.py`). | none extra (shadow on existing frontdoor/escalation traffic) | passive collection + ~1h analysis |
 | J11 | BSV-2 behavior-signature differential testing | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) BSV-2 | Before promoting a mutation, run new-vs-old paired on the same sentinels (sequential under identical model snapshot preferred; parallel only if explicitly approved per `feedback_no_concurrent_inference`); compare behavior_signature diff severity (benign/watch/blocking) + scalar score; gate accept on both. Catches silent Pareto-win regressions a scalar misses. Prereq: BSV-1 signature wired into archive accept-path + paired-eval lane (compute done in `src/behavior_signature.py`). | autopilot eval stack | paired eval per candidate mutation |
+| J12 | chat_template_kwargs registry-driven wiring verification | epyc-orchestrator `cac4148` (chat_template_kwargs passthrough merge) + [x-mas-text-routing.md](x-mas-text-routing.md) | Data-plane shipped 2026-05-20: `src/backends/openai.py` now passes `request.extra["chat_template_kwargs"]` to llama-server's chat-completions endpoint. **Wiring follow-up**: add the small code change that auto-populates `request.extra["chat_template_kwargs"]` from `model_registry.yaml`'s per-role defaults (currently every caller has to set it manually). Then run the cheap-kill empirical comparison from the merge commit body — 15-task mixed-domain probe on frontdoor (Qwen3.6-35B Q8) + architect (Qwen3.5-122B): pre-wiring baseline vs post-wiring with `enable_thinking=False`. Gate: frontdoor +30pp or better, architect +15pp or better, ingest_long_context unchanged (its registry entry is untouched — thinking-on is load-bearing). | frontdoor + architect_general + ingest_long_context | ~1h wire + ~1h verify |
 
 **Sequencing of the appended items (intake-607 residual gates):**
 - **J10 (URE-1) is shadow-only** — flip the flag and let it accumulate during ANY of J1–J9 or Package I traffic; it shapes no workload and needs no dedicated slot. Analyze once enough decisions accrue.
 - **J11 (BSV-2)** runs per-mutation inside the autopilot accept loop; co-runs naturally with J9's autopilot observation window.
-- Both are gated on their wiring landing (URE-1 shadow logger; BSV-1 accept-wire). Schemas + pure algorithms already done + tested on epyc-orchestrator branch `intake607-harness-impl`. DCP-6/BEP-2/HLE-4 are already covered above as J7/J8/J9 — no duplication.
+- Both are gated on their wiring landing (URE-1 shadow logger; BSV-1 accept-wire). Schemas + pure algorithms now on main (`15350fe`, merged from former `intake607-harness-impl`). DCP-6/BEP-2/HLE-4 are already covered above as J7/J8/J9 — no duplication.
 
 ### Per-gate conditional workflows + mitigation policies (intake-607 gates J7–J11 — READ BEFORE RUNNING)
 
 Each gate is a **decision point**, not just a measurement: run → branch on the result → apply the mitigation. Deep specs are in the owning handoffs (linked); this is the operator decision tree so the run can proceed in one sitting without round-trips.
 
 **Pre-run wiring status** (none is in production until wired AND its gate passes; all flags default-OFF):
-- **J10 / URE-1**: shadow logger **WIRED** (`ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`) on `intake607-harness-impl` — runnable now.
-- **J7 / DCP-6**: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE** on `intake607-harness-impl` (`context_discovery.py` `assemble_delegation_bundle()` end-to-end, 11 tests). Needs only **DCP-4** — the reviewed dispatcher *advisory* seed-bundle attach (wire the orchestrator's ColGREP + workspace reader into `assemble_delegation_bundle`).
+- **J10 / URE-1**: shadow logger **WIRED** (`ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`) on main (merged 2026-05-26) — runnable now.
+- **J7 / DCP-6**: **DCP-1 + DCP-2 discovery + DCP-3 ast-codemap DONE** on main (merged 2026-05-26) (`context_discovery.py` `assemble_delegation_bundle()` end-to-end, 11 tests). Needs only **DCP-4** — the reviewed dispatcher *advisory* seed-bundle attach (wire the orchestrator's ColGREP + workspace reader into `assemble_delegation_bundle`).
 - **J8 / BEP-2**: needs the `_execute_turn` batch divergence + BEP-4 runner + BEP-5 sandbox (`ORCHESTRATOR_BATCH_EDIT_MODE`). Parser/prompt/schema/pure-applier done. **Full deferred-wiring spec: [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md) § "Deferred live-wiring spec (build before J8)".**
 - **J9 / HLE-4**: needs HLE-1 metric computation over real traces + `EvalResult`/journal extension (observe-only). Schema done.
 - **J11 / BSV-2**: needs BSV-1 signature wired into the archive accept-path + paired-eval lane. Compute (`compute_behavior_signature`, `diff_signatures`) done.

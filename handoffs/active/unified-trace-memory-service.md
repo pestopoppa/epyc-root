@@ -162,7 +162,7 @@ Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md
 
 ## Shared Harness/Trace Schema — OWNED HERE (gap-fix 2026-05-25)
 
-**This handoff owns the single shared event schema** that the 2026-05-25 intake-607 cluster (HLE / BSV / URE / EXM) all write to. Four handoffs independently assumed a common trace/journal event family; without a designated owner that becomes four divergent schemas and the promised cross-queries ("what failed, why was it accepted, what behavior changed?") break. The schema lives in `epyc-orchestrator/src/trace/store.py` + `src/trace/harness_schema.py` (extends the existing T1–T6 store) and MUST be implemented **before** the consuming tasks (HLE-1, HLE-4, BSV-1, URE-2) land their writes. *(Implemented + tested on branch `intake607-harness-impl`.)*
+**This handoff owns the single shared event schema** that the 2026-05-25 intake-607 cluster (HLE / BSV / URE / EXM) all write to. Four handoffs independently assumed a common trace/journal event family; without a designated owner that becomes four divergent schemas and the promised cross-queries ("what failed, why was it accepted, what behavior changed?") break. The schema lives in `epyc-orchestrator/src/trace/store.py` + `src/trace/harness_schema.py` (extends the existing T1–T6 store) and MUST be implemented **before** the consuming tasks (HLE-1, HLE-4, BSV-1, URE-2) land their writes. *(Implemented + tested; MERGED to epyc-orchestrator main 2026-05-26, tip `15350fe`.)*
 
 | Record family | Owning task | Written by | Read by |
 |---|---|---|---|
