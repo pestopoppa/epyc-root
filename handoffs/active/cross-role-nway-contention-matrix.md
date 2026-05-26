@@ -23,6 +23,7 @@ The closure guarantee is scoped to the exact measured stack:
 - same `topology_hash`
 - same role set and model mappings
 - same CPU binding / instance topology
+- same **live process affinity** as the intended CPU binding (`/proc/<pid>/task/*/status` must match `NUMA_CONFIG`, not just the hash of `NUMA_CONFIG`)
 - same llama-server launch shape and relevant runtime flags
 - same orchestration stack behavior for dispatch and contention gating
 
@@ -33,6 +34,7 @@ Future topology, model, CPU-binding, or orchestration-stack changes invalidate t
 - `orchestration/contention_matrix.yaml` contains measured pairwise cross-role data, same-role coarse verdicts, explicit unknown pairs, and a small number of informational triples.
 - Runtime admission is pairwise today: a candidate request is compared with each active role; N-way active sets are not modeled as first-class verdicts.
 - `scripts/server/contention_matrix.py` should be treated as requiring audit before use for N-way closure. Its high-level comments describe smart pruning, but the current implementation has historically been pair-oriented; J4a must verify or add the exact N-way enumeration and manifest output.
+- 2026-05-26 stack audit found a matrix trust gap: `topology_hash` can match even when special launcher paths start quarter processes with the wrong `_numa_prefix()` instance index. In the observed live stack, frontdoor and ingest affinities matched `NUMA_CONFIG`, but `worker_general` and `vision_escalation` quarter ports did not. Matrix rows involving affected role/shapes are diagnostic-only until the launcher is fixed, the roles are reloaded, live affinity is exact-match, and the rows are re-measured.
 
 ## Definitions
 
@@ -71,12 +73,15 @@ Manifest fields:
 | `excluded_sets` | yes | List of pruned sets and exact reason. |
 | `lower_order_evidence` | yes | Pair/triple evidence used to allow or prune. |
 | `matrix_source` | yes | Path + git sha or checksum for the input YAML. |
+| `live_affinity_verified` | yes | Boolean, false unless the live process affinity preflight passes for every role/shape considered. |
+| `affinity_artifact` | yes | Path to port->pid->expected-cpus->observed-cpus evidence captured immediately before enumeration/measurement. |
 
 Closure gate:
 
 - Manifest is deterministic across two dry runs on the same topology.
 - Every exclusion cites concrete lower-order evidence.
 - No candidate lacks pairwise evidence.
+- Live affinity is either verified exact-match or the manifest is explicitly marked `diagnostic_only` and cannot feed J4b certification.
 
 ## J4b: N-Way Measurement
 
@@ -85,10 +90,12 @@ Goal: measure all non-trivial candidates from J4a and update the matrix so bulk 
 Run policy:
 
 - Run alone on the host. Do not co-run with J5, standalone throughput benches, or downstream evals.
+- Before sampling, assert live process affinity exactly matches `NUMA_CONFIG` for every port used by the candidate assignment. Do not rely on `topology_hash` alone.
 - Measure triples before quads.
 - Skip any quad/superset that contains a measured failed triple and record it in `excluded_n_way`.
 - Use at least 3 samples per measured set; gate on CV <= 5% unless the handoff/progress log explains why the result is still decisive.
 - Compare `parallel_aggregate_tps` against `seq_aggregate_tps`. Per-request median speed is diagnostic only for this matrix.
+- If any affected role was relaunched to fix affinity, discard or quarantine pre-fix rows involving that role/shape and rerun them under the repaired stack.
 
 Suggested YAML extension:
 
@@ -115,8 +122,23 @@ excluded_n_way:
 Closure gate:
 
 - For the current topology hash, every J4a `candidate_sets` entry has a matching measured `n_way` verdict.
+- The affinity artifact proves every sampled port matched its expected CPU set.
 - Every pruned candidate is listed in `excluded_n_way` with evidence.
 - There is no unmeasured, all-lower-order-allowed N-way set remaining.
+
+## Topology Repair Addendum: Frontdoor Half1 Is Optional, Not Implied
+
+The dashboard labels the current frontdoor idx0 anchor as `Half0` because its CPU mask is `0-47,96-143`. That is the validated solo/full-speed anchor shape for frontdoor. It does not imply that a second `Half1` frontdoor instance exists, is wired, or is matrix-certified.
+
+Current frontdoor concurrency certification is for the existing q0-q3 quarter instances. A dedicated frontdoor `Half1` replica would be a new topology experiment and must not be folded into J4/J5 repair by assumption. If the operator elects to test it:
+
+- add a distinct port and `NUMA_CONFIG` instance for the Half1 CPU mask
+- update dispatch/placement policy so Half0+Half1 is an explicit mode, not an accidental dashboard interpretation
+- capture a new topology hash and live-affinity artifact
+- benchmark Half0+Half1 against the current Half0 solo anchor plus q0-q3 quarter policy
+- rederive `same_role`, cross-role pair, and N-way matrix rows before using it for bulk scheduling
+
+Until that experiment exists and passes, the bulk run uses the current frontdoor topology: Half0 solo anchor plus q0-q3 quarters.
 
 ## J4c: Policy Wiring
 
@@ -156,6 +178,8 @@ Every J4a/J4b/J4c execution should have a manifest row or JSON object with these
 | `roles` | yes | Roles in scope or exact active set. |
 | `concurrency_mode` | yes | `enumeration`, `isolated_bench`, `policy_wiring`, or `observe_only`. |
 | `matrix_status` | yes | `preclosure`, `closed_world`, `stale`, or `diagnostic_only`. |
+| `live_affinity_verified` | yes | Required true before any certification or baseline-eligible run. |
+| `affinity_artifact` | yes | Captured immediately before the run. |
 | `command` | yes | Exact command or script invocation. |
 | `flags` | yes | Relevant env vars and feature flags. |
 | `output_artifacts` | yes | Manifest/YAML/log/result paths. |
@@ -241,6 +265,7 @@ The first J4b pass (above) benched each role's **full/primary** instance concurr
 ## Completion Criteria
 
 - J4a candidate/exclusion manifest exists and is topology-stamped.
+- Live-affinity artifact exists and proves every measured port matched `NUMA_CONFIG` at measurement time.
 - J4b updates `orchestration/contention_matrix.yaml` or an equivalent matrix artifact with `n_way` and `excluded_n_way`.
 - J4c fail-closed policy is implemented or explicitly delegated to the bulk runner.
 - Bulk inference runbook points to this handoff.
