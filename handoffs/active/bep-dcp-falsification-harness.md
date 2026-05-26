@@ -545,3 +545,13 @@ Wire `get_task_root()`/`resolve_task_path()` into the surfaces, each behind `tas
 4. **`helpers.py:341` `_batch_edit_repo_root` (#8)** → `get_task_root()`.
 5. **`chat_delegation.py` `_maybe_dcp_seed_context` file_reader + code_search (#10/#11)** → `get_task_root()`.
 Then run the 8 Phase-0 exit-gate tests. Phases 1b (BEP delete/rename promotion fix-or-exclude), 1c (BEP telemetry states), 2 (scratch repo + 5 tasks), 3 (`bep_ab.py`) follow. STOP before real inference (host-quiet approval required).
+
+- **2026-05-26 Phase 1 — surface redirects COMPLETE** (orchestrator `b15e2b5`). All 6 model-facing surfaces honor `get_task_root()`/`resolve_task_path()` when `task_root_active()`, default-off parity otherwise: `_validate_file_path` #1/#2 (covers write/peek/grep/list/file_info), `run_shell` cwd #5, `code_search` #7 (index-free scratch walk — ColGREP/NextPLAID are indexed over the prod corpus so can't search scratch), `_batch_edit_repo_root` #8, DCP file_reader #10. **Verification**: 8 active-behavior exit-gate tests (`test_task_root_surfaces.py`: relative→scratch resolve, run_shell cwd=scratch, code_search returns scratch, batch repo_root=scratch) + dcp4 tests updated to the real env mechanism + **246-test default-off parity sweep** (code_search/file_mutation/external_access/environment/file_exploration unchanged when env unset). Phase-0 exit-gate checklist items 1-6 covered by tests; 7-8 (control-plane real, checkout unchanged) hold by construction (only task-root surfaces switched; control-plane keeps `_get_project_root`) + the parity sweep.
+
+### REMAINING (next increments)
+
+- **Phase 1b** — BEP delete/rename promotion: check `promote_sandbox` handles delete (remove from live) + rename (move), else exclude delete/rename from the Phase-2 tasks. Decide fix-or-exclude.
+- **Phase 1c** — BEP telemetry: `_maybe_batch_edit_turn` must distinguish + record {patchset absent, malformed, apply-failed, verify-failed, promote-failed, fallback}. **Hard gate: malformed ≠ absent.** Currently both return None indistinguishably.
+- **Phase 2** — `data/bep_sandbox/template/` scratch repo + 5 deterministic synthetic sweet-spot tasks (`tasks.jsonl`) with independent verifiers.
+- **Phase 3** — `scripts/benchmark/bep_ab.py`: per task×arm, reset scratch, set `ORCHESTRATOR_EDIT_ROOT`, restart API with flag (ABBA/randomized ordering), `/chat` force_role=coder_escalation high max_turns read `answer`, run verifier, incremental JSONL + artifact dirs.
+- Then stub/fake dry-runs only. **STOP before real inference** (Phases 0-3 complete+tested+committed+explicit host-quiet go-ahead — hard gate).
