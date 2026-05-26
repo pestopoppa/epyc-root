@@ -1,55 +1,44 @@
 # The speculative decoding investigation
 
-Speculative decoding looked, on paper, like the single biggest performance lever available to a CPU inference project. The recipe is irresistible: use a small fast draft model to propose K tokens, verify them all in one forward pass through the big model, accept the prefix that matches. If the draft is right N times out of K, you've decoded N tokens for the cost of one big-model forward pass.
+Speculative decoding looked, on paper, like the single biggest performance lever available to a CPU inference project. The recipe is irresistible: use a small fast draft model to propose K tokens, verify them all in one forward pass through the big model, accept the prefix that matches. The literature was full of 5-11× speedups. We invested heavily.
 
-The literature was full of 5-11× speedups. We invested heavily in it. The result, after ~14 months of work across maybe 30 separate experiments, is messier than the literature suggested and very informative about *what the CPU regime actually looks like*.
+The result, after about fourteen months of work across maybe thirty experiments, is that speculation contributes a real but unspectacular 17-21 % to production throughput. The headline gain on this hardware comes from elsewhere — see [Why CPU-only inference is viable](why-cpu-inference.md). The interesting part of the investigation is *why* the literature numbers don't transfer, because the answer reshapes how to read every other CPU-vs-GPU comparison.
 
-This is what we found, what we deployed, and what we ruled out.
+## The regime difference that breaks everything
 
-## The framing the literature uses
+Most speculative decoding papers are written from a GPU perspective. On a GPU, the dominant cost is the single forward pass through the target model — the matmul on the H100 — and verification can amortize K tokens of that pass at near-constant cost. If you can draft cheaply on the side, the speedup approaches K. That's the implicit story behind the 11× numbers.
 
-Most speculative decoding papers are written from a GPU perspective. On a GPU, the dominant cost is the *single forward pass* through the target model — the matmul on the H100 — and verification can amortize K tokens of that pass at near-constant cost. If you can draft cheaply on the side, the speedup approaches K.
+On CPU the math is different in one specific way: each verified token requires re-reading the same KV cache to compute attention, and that re-read is *not* constant across K. The verification cost grows close to linearly in K, so the speedup ceiling — even with a perfect drafter — is much lower than the literature suggests. Empirically, for Q4_K_M models on EPYC, K saturates around 16. Past that, adding draft tokens stops helping and starts hurting because rejection cascades cost more than the wins. [Advanced Speculative Decoding](../subsystems/research/10-advanced-speculative-decoding.md) has the measurement.
 
-On CPU the math is different. The single forward pass is bandwidth-bound, not compute-bound. Each verified token requires re-reading the same KV cache to compute attention; that re-read is *not* constant across K. The verification cost on CPU grows close to linearly in K. So the speedup ceiling — even with a perfect drafter — is much lower than the literature suggests.
+That single constraint reshapes which variants are worth pursuing and which aren't. The variants that work on CPU all share one property: they avoid paying the separate-drafter cost. The variants that don't work all share another: they assume verification is cheap.
 
-For Q4_K_M models on EPYC, [Advanced Speculative Decoding](../subsystems/research/10-advanced-speculative-decoding.md) shows the empirical ceiling: K saturates around 16, after which adding more draft tokens doesn't help (and starts to hurt, because of rejection cascades).
+## What works: self-speculation in the model itself
 
-## What we deployed
+The clearest CPU-friendly variant is **multi-token prediction (MTP)**, where the model's own auxiliary heads serve as the drafter and its main head serves as the verifier — no separate draft model, no extra weights to load. On `gemma-4-26B-A4B` (the worker role) the MTP accept rate sits at 0.5-0.7 depending on content type, and the net throughput gain over no-MTP is about 1.5×. This is one of the two levers in the [worker_general story](worker-general-story.md), the other being MoE expert sparsity.
 
-Three speculative-decode configurations are live in production:
+A close cousin is **prompt lookup**, where the "drafter" isn't a model at all but a string-match against the prompt's own KV cache. For repetitive long-context workloads (summarization, structured extraction over long documents) this hits often. On Qwen3-Next-80B's long-context benchmark we measure roughly 12.7× speedup, though with a ~13 pp acceptance drop from a freeze-recurrent variant we're forced into by the SSM architecture. [Prompt Lookup](../subsystems/research/03-prompt-lookup.md) and [SSM & Hybrid Architectures](../topics/ssm-hybrid.md) cover the constraint.
 
-1. **gemma-4-26B-A4B with MTP** (worker_general role). Multi-token prediction is technically a self-speculation variant — the auxiliary heads serve as the drafter, the main head serves as the verifier, no separate draft model needed. Accept rate ~0.5–0.7 depending on content type. Net throughput gain over no-MTP: ~1.5×. The full story is in [Worker_general: 17 → 76 t/s](worker-general-story.md).
+The earlier production winner was a separate-drafter pair — Qwen3-Coder-32B verified by a Qwen2.5-Coder-0.5B drafter, K=24, 70.8 % acceptance, ~11× on code-completion benchmarks. That configuration retired after the 2026-05-06 stack consolidation merged the coder role into frontdoor; the win is preserved as a reference benchmark. The 11× number is real and reproducible, but it lived in a workload niche (high-acceptance code completion with a cheap aligned drafter) that doesn't generalize across the production mix.
 
-2. **Qwen3-Next-80B with prompt lookup** (ingest_long_context role). The "drafter" here isn't a model — it's a string-match lookup against the current prompt's KV cache. For repetitive long-context tasks (summarization, structured extraction over long documents), the prompt-lookup hits a lot. We see ~12.7× speedup on Qwen3-Next-80B's long-context benchmark with a ~13 pp acceptance drop from a freeze-recurrent variant that the SSM constraint forces. See [Prompt Lookup](../subsystems/research/03-prompt-lookup.md) and the [SSM & Hybrid Architectures](../topics/ssm-hybrid.md) topic.
+## What doesn't work: anything that depends on cheap verification
 
-3. **Qwen3-Coder-32B with Qwen2.5-Coder-0.5B drafter** (legacy coder_escalation, now decommissioned). When `coder_escalation` was a separate model from `frontdoor`, the 32B/0.5B pair was the project's biggest spec-decode win: K=24, 70.8 % acceptance, ~11× speedup on code-completion benchmarks. After the 2026-05-06 stack consolidation merged coder_escalation onto frontdoor's Qwen3.6-35B-A3B Q8 model, the standalone pair retired. The win remains documented as a reference benchmark.
+The deepest negative result is **hybrid SSM speculation**. Hybrid state-space models like Qwen3-Next-80B have a verification path that's almost entirely sequential — about 220 ms per token, which is roughly 90 % of the decode cost. Even with a perfect drafter you can't amortize that sequential cost; we tried it with drafter sizes from 1.7 B to 4 B and K values from 4 to 24, and the verifier wall dominates every configuration. The freeze-recurrent variant in production sidesteps the wall by dropping SSM updates during draft proposal, which costs ~13 pp acceptance but recovers throughput on prompt-lookup workloads. No draft-verify approach works on hybrid SSM on CPU, full stop. [SSM & Hybrid Architectures](../topics/ssm-hybrid.md).
 
-Aggregate contribution of speculative decoding to production throughput: +17–21 % over a no-spec baseline. Real but not transformative. The NUMA quartering work (see [Why CPU-only inference is viable](why-cpu-inference.md)) contributes more.
+The other closures cluster around the same theme — approaches that depended on near-flat verification scaling or on cheap drafting:
 
-## What we ruled out
+| Approach | What it assumed | Why it closed |
+|---|---|---|
+| **SpecExec** (large tree speculation) | Verification trees of hundreds-to-thousands of speculative tokens amortize at near-flat cost | Q4_K_M CPU decode measures 4-5× verification scaling, not flat. Practical tree budgets max out at 16-64 nodes. |
+| **DFlash** (O(1) drafting) | A learned hash function maps input to a draft token in constant time, eliminating drafter forward pass | Hash collisions drove acceptance below the break-even where verification cost dominates |
+| **Slot promotion v1** | Dynamically reassigning NUMA quarters between drafter and verifier should improve aggregate throughput | Promotion overhead (KV-cache invalidation, server-state reload) larger than per-request gain on our workload mix |
+| **MAB tree selector** | Per-request optimal-K varies enough that a bandit should converge to better-than-fixed-K | Optimal-K distribution is narrower than the literature suggests; fixed K=24 within 1-2 % of bandit-best on every measured workload |
 
-Cases where measurement said the idea didn't fit the regime:
+All four have reopen criteria documented in their respective handoffs and chapters; none of those criteria describe the current production mix.
 
-**SpecExec (large tree speculation).** The paper proposes verification trees of hundreds-to-thousands of speculative tokens, which on GPU amortize cleanly. On Q4_K_M CPU decode we measure 4–5× verification scaling, not the projected near-flat curve. Practical tree budgets max out at 16–64 nodes. The full reconciliation between the paper's projection and our empirical results is in [Advanced Speculative Decoding](../subsystems/research/10-advanced-speculative-decoding.md), section 10.3.
+## The lesson the literature obscures
 
-**Hybrid SSM speculation.** This is the deepest negative result. Hybrid state-space models (like `Qwen3-Next-80B`) have a verification path that's almost entirely sequential — ~220 ms per token, which is ~90 % of the decode cost. Even with a perfect drafter, you can't amortize that sequential cost. We tried it with multiple drafter sizes (1.7 B, 4 B) and multiple K values; the verifier wall dominates every configuration. The result: no draft-verify approach works on hybrid SSM on CPU. The freeze-recurrent variant (used in Qwen3-Next-80B production) sidesteps this by dropping the SSM updates during draft proposal, which costs ~13 pp acceptance but recovers the throughput on prompt-lookup workloads. [SSM & Hybrid Architectures](../topics/ssm-hybrid.md).
+The CPU verification wall is the most important constraint for this whole investigation, and it's almost never named directly in the GPU-centric literature because it isn't a constraint on a GPU. Read any speculative decoding paper from 2024-2026 with the question "what does this assume about verification cost?" pinned to the top of the page and most of the technique-selection problems on CPU become tractable.
 
-**DFlash O(1) drafting.** The paper proposes a constant-time drafter via a learned hash function over the input. We implemented it for Qwen3.6-35B-A3B Q4_K_M; the hash collisions degraded acceptance below the threshold where it pays for the drafter cost. Closed NO-GO. [Advanced Speculative Decoding](../subsystems/research/10-advanced-speculative-decoding.md) section 10.5.
+Practically: MTP and prompt-lookup are the two CPU-friendly variants worth deploying. The separate-drafter pairs work when the drafter is small, aligned to the target, and the workload has high acceptance — code completion, structured extraction — and not much else. The big architectural ideas in the literature (SpecExec, DFlash) need a different verification regime than ours to land their headline numbers.
 
-**Slot promotion (v1).** A scheme where the orchestrator dynamically reassigns NUMA quarters between drafter and verifier based on observed acceptance. Net-negative on Qwen3.6 + Qwen3-1.7B drafter (the candidate workload). Tree disabled-by-default in production. Reopen criteria documented: larger drafter, non-greedy verifier, long-context, high drafter/target disagreement workload. None of those describe our current production mix.
-
-**MAB (multi-armed bandit) tree selector.** Adaptive K selection per request. Lost to a fixed K=24 on our workload mix because the bandit's exploration cost was bigger than the per-request optimal-K gain. Closed NO-GO.
-
-## What this story actually demonstrates
-
-Three takeaways:
-
-1. **The CPU verification wall is the most important constraint.** The whole speculative-decode literature is implicitly assuming GPU verification costs. Treat the CPU case as a different problem with a much lower ceiling.
-
-2. **MTP and prompt-lookup are the CPU-friendly variants.** Both avoid the separate-drafter cost. Both have acceptance distributions that suit our typical workload. Both are deployable today.
-
-3. **Closed-negatives are load-bearing knowledge.** Half of the value of this investigation is the set of approaches we now know *not* to try. The [Deprecated Approaches](../subsystems/research/05-deprecated-approaches.md) chapter is the canonical record. Each closure cites the measurement that killed the approach and the reopen criteria that would resurrect it.
-
-## What's next on this thread
-
-[Speculative Decoding](../topics/speculative-decoding.md) is the topic synthesis; [Advanced Speculative Decoding](../subsystems/research/10-advanced-speculative-decoding.md) is the research chapter with the empirical detail. For the SSM-specific side, [SSM & Hybrid Architectures](../topics/ssm-hybrid.md). The broader pattern of pursuing-and-falsifying lives in [What we tried and ruled out](ruled-out.md).
+The other half of this investigation's value is the explicit set of approaches we now know not to retry. [What we tried and ruled out](ruled-out.md) catalogues them with reopen criteria; [Deprecated Approaches](../subsystems/research/05-deprecated-approaches.md) is the per-chapter version with measurement detail.
