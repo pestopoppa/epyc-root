@@ -5,6 +5,7 @@
 **Categories**: context_management, agent_architecture, routing_intelligence, tool_implementation
 **Source**: intake-605 (Repo Prompt — Context Builder + CodeMaps); cross-ref intake-330 (code-review-graph), intake-151 (GitNexus), intake-295 (fff.nvim)
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P22
+**DCP-6 falsification-harness construction**: [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (2026-05-26 — Phase 5; shares the BEP-2 sandbox harness, adds delegation workload + top-up-rate metric; DCP-4 advisory wiring already landed `31ea6d4`)
 
 ## Objective
 

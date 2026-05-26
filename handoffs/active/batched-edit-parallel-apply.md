@@ -5,6 +5,7 @@
 **Categories**: agent_architecture, inference_serving, hardware_optimization, tool_implementation
 **Source**: intake-605 (Repo Prompt — think-then-act XML edits + parallel sandboxed apply)
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P23
+**BEP-2 falsification-harness construction**: [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (2026-05-26 — the safe sandbox edit-root + workload + A/B driver needed to actually run BEP-2; the `_execute_turn` divergence is already wired `ea5f010`)
 
 ## Objective
 
