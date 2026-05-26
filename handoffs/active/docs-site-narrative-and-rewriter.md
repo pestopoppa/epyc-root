@@ -64,10 +64,16 @@ User invocation (this session, 2026-05-26): "proceed with both please" — the u
 
 ## Phases
 
-- [ ] **Phase A** (Track 1, ~2 hours): write `scripts/docs/rewrite-links.py`; wire into workflow; verify warning count drops; spot-check deployed links
-- [ ] **Phase B** (Track 2 setup, ~30 min): scaffold `site_src/stories/` + nav entry; draft "How a request flows through the stack" as a voice/length calibration sample for user review
-- [ ] **Phase C** (Track 2 main, multi-session): remaining 6 anchor pages, one or two per session
-- [ ] **Phase D** (polish): mermaid topology diagram on landing page; verify all internal links resolve; consider adding a "Recent results" auto-generated page from `progress/` digests
+- [x] **Phase A** — link-rewriter — COMPLETE 2026-05-26 (commit `d74692e`)
+  - `scripts/docs/rewrite-links.py` (164-file published-map, reverse-map skip for hand-written pages, GitHub-blob fallback for unpublished, sibling-repo URL mapping, anchor + code-fence handling)
+  - Wired into workflow between populate + build
+  - Result: 820 links rewritten across 46 files; build warnings 651 → 0 (3 residual cosmetic INFO-level anchor refs)
+- [x] **Phase B** — calibration story (`how-a-request-flows.md`) — COMPLETE 2026-05-26 (commit `d74692e`)
+- [x] **Phase C** — remaining 6 anchor pages — COMPLETE 2026-05-26 (commit `d74692e`)
+  - All 7 stories landed in one pass under `site_src/stories/`
+  - Math correction in `why-cpu-inference.md` (commit `17b8125`)
+  - Stylistic rewrite of 6 stories against the voice baseline (commit `6119e6e`); bold-prefix-paragraph count 50+ → 3; word counts normalized to 1000-1200 range
+- [ ] **Phase D** — polish: mermaid topology diagram on landing page; auto-generated "Recent results" from `progress/` digests; resolve 3 residual stale-anchor refs inside research chapters 01 + 03
 
 ## Constraints
 
