@@ -15,8 +15,8 @@ implementation_status:
   WP-4: MERGED to main 2026-05-26 (66a8bfc, behind ORCHESTRATOR_REVERSE_MIGRATION=1, default off)
   WP-5: scaffold MERGED (29e95b4); J4 ratification run IN PROGRESS 2026-05-26 (autopilot pid ~1559782, --max-trials 30, placement+reverse-migration flags live in API; collect per-role placement_policy after run)
   WP-6: J5 BENCHED 2026-05-26 (bench-within-role 6d28616) — frontdoor quarter-safe (8 pairs allow 1.37-1.67x, instance_pairs in contention_matrix.yaml ca65470). worker_general RE-BENCHED at -t48 (launcher fix da1aed6 validated live): mean 0.879, 4/6 borderline + 2/6 block, all net-positive → gate verdict flipped block→borderline. vision RE-BENCHED at -t48 too: OVERTURNS the -t96 block + refutes mmproj — quarter-pairs 5/6 allow super-linear (1.14-1.27x), only full+quarter blocks → verdict block→borderline (DIAGNOSTIC-GRADE: 5/8 pairs cv>5%, needs higher-sample ratify)
-  WP-7: inference-gated (Package J J6; requires WP-6 + 24h autopilot gate)
-checkout_state: merged to epyc-orchestrator main at 15350fe; J4a/J4b/J4c/J5/J10/J12 + gemma4 parser fix + launcher -t fix landed 2026-05-26 (commits in progress/2026-05/2026-05-26.md). J4 ratification autopilot running.
+  WP-7: APPLIED + J6 LAUNCHED 2026-05-26T17:39 — NUMA_CONFIG placement_policy=burst_prefer_quarters for frontdoor+worker_general (1e67169; vision held solo, diagnostic-grade); API restarted (pid 1668588) with PLACEMENT_STATE_MACHINE+REVERSE_MIGRATION+URE_SHADOW flags (a plain stack-start had dropped them); gate verdicts (worker_general+vision borderline) now active. 24h autopilot observe running (pid 1672756, --no-controller --max-trials 2000); placement SM confirmed placing full+2 disjoint quarters live. Pre-J6 checkpoint 20260526_173859 for rollback.
+checkout_state: merged to epyc-orchestrator main at 15350fe; J4a/J4b/J4c/J5/J10/J12 + gemma4 parser fix + launcher -t fix landed 2026-05-26 (commits in progress/2026-05/2026-05-26.md). J6 24h rollout running.
 ---
 
 ## Executive summary
