@@ -79,3 +79,14 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
 ## Reporting
 
 Update this handoff + routing-and-optimization-index P22 after each DCP task; record bench results (DCP-6) per `feedback_incremental_persistence`.
+
+## Post-result conditional workflow + mitigation (DCP-6 / bulk-inference J7)
+
+Pre-run wiring (non-inference, must land first): DCP-2 discovery (ColGREP top-k + GitNexus caller/callee neighborhoods feeding `pack_to_budget`), DCP-3 GitNexus codemap producer, DCP-4 dispatcher/escalation **advisory** seed-bundle attach (flag default-off; reactive discovery stays on). Pack core (`context_assembly.pack_to_budget`) + ContextBundle done + tested on `intake607-harness-impl`.
+
+Run **advisory-first** (bundle attached, reactive discovery still enabled — DCP-1 audit #7). Decision tree:
+- ✅ prefill+latency down AND quality ≥ baseline AND top-up rate ≤20% → keep advisory; consider seed-bundle-primary mode after a second confirm.
+- ⚠️ quality flat but top-up rate >20% (packer under-selecting) → tune discovery depth / ColGREP top-k / per-role budget; re-run.
+- ❌ quality drop OR no latency improvement → keep reactive discovery; shelve pre-assembly; flag off.
+
+Mitigation: flag default-off; advisory mode never removes reactive discovery; top-ups always allowed (no hard firewall); bundle freshness (`repo_sha`/`content_sha256`) re-checked per delegation; security/noise exclusion policy applied at DCP-1. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.

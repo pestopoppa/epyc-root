@@ -74,3 +74,41 @@ Two coupled, CPU-relevant levers borrowed from Repo Prompt's edit pipeline:
 ## Reporting
 
 Update this handoff + routing-index P23 after each BEP task; persist BEP-2 bench results incrementally per `feedback_incremental_persistence`.
+
+## Deferred live-wiring spec (build before J8) — the change to make once reviewed
+
+The pure pieces are done + tested on `intake607-harness-impl`: `src/batch_edit.py` (PatchSet/validate/conflict/dependency + `apply_file_patch_to_text`), `src/batch_edit_parse.py` (`parse_patchset_from_model_output` + `BATCH_EDIT_INSTRUCTIONS` rider), flag `batch_edit_mode` (default off). What remains touches the production execution core, so it is specified here for a reviewed landing rather than shipped blind.
+
+**1. BEP-4 runner — `apply_patchset_sandboxed(ps, *, repo_root, current_shas, verify_cmd)` (NEW, e.g. `src/batch_edit_runner.py`).** Pure-of-inference; testable with a temp git repo.
+- `validate_patchset(ps)`; `check_stale_base(ps, current_shas)` → refuse stale (return failure manifest, do not apply); `detect_conflicts(ps)` → refuse overlaps.
+- **Stage in a sandbox (BEP-5)**: `git worktree add` a scratch worktree at the workspace HEAD (preferred — real git, cheap), or copy touched files into a temp dir. NEVER mutate the live tree here.
+- For each `dependency_stages(ps)` stage (files in a stage are independent → may apply concurrently; stages serialize): apply each FilePatch — `create`/`modify` via `apply_file_patch_to_text`, `delete`/`rename` via filesystem ops — into the SANDBOX only.
+- **Verify in two layers** (audit #4): per-file syntax/type check, then a **whole-repo** `verify_cmd` (tests/type-check). The accept gate is the whole-repo layer, not the median per-file result.
+- Return a structured result: `{applied:[...], failed:[{path, failure_type}], diff, verify_passed, sandbox_path}`. Failure types (audit #5): `parse`, `stale_base`, `conflict`, `apply_error`, `verify_failed`, `undeclared_file`, `over_broad`.
+- **Promotion is separate + explicit**: only on `verify_passed` AND accept does the runner copy the sandbox result into the live tree (transactional — all-or-nothing, audit #7). For the **J8 A/B**, no production promotion is needed: apply-to-sandbox + measure (latency / parse-failure / apply-failure / verify-pass / quality) is the whole experiment.
+
+**2. BEP-1 `_execute_turn` divergence (the flag-gated live hook).** In `src/graph/helpers.py:_execute_turn`, after `code = auto_wrap_final(code)` (~line 687):
+```python
+if features().batch_edit_mode:
+    from src.batch_edit_parse import parse_patchset_from_model_output
+    try:
+        ps = parse_patchset_from_model_output(raw_llm_output)   # None if no ```patchset block
+    except ValueError:
+        ps = None   # present-but-malformed → nudge to re-emit, or fall back to REPL this turn
+    if ps is not None:
+        result = apply_patchset_sandboxed(ps, repo_root=..., current_shas=..., verify_cmd=...)
+        return _finalize_batch_edit(state, result)   # synthesize FINAL(summary); NO REPL this turn
+    # ps is None → fall through to the normal REPL loop (ZERO behavior change when no patchset)
+```
+The `BATCH_EDIT_INSTRUCTIONS` rider must be injected into the coder/architect system prompt when the flag is on (via `resolve_prompt(..., variant="batch-edit-v1")` or appended in the prompt builder) so the model emits a patchset instead of REPL code.
+
+**3. Safety invariants that MUST hold even behind the flag** (mitigation policy): default-off; **sandbox-before-disk** — production files untouched until whole-repo verify passes AND accept; stale-base rejection; fall-back-to-REPL on `parse=None`; whole-repo verify is the accept gate; granular accept/reject is review UX over a coherent staged diff, never piecemeal mutation of production files.
+
+## Post-result conditional workflow + mitigation (BEP-2 / bulk-inference J8)
+
+Run order: **BEP-2 first** — it is the falsification gate for the whole batched-edit line.
+- ✅ batch cuts end-to-end latency ≥15% AND quality within −1pp AND parse-failure ≤5% AND apply-failure ≤2% → proceed to **BEP-3** (autopilot task-class knob); keep flag available, default-off until BEP-3 localizes where batch wins.
+- ⚠️ latency win but quality −1..−3pp OR parse/apply failures 5–15% → do NOT promote; harden BEP-1 prompt/parser; flag stays off; re-run.
+- ❌ no latency win OR quality < −3pp OR failures >15% → **STOP the BEP line**; flag default-off permanently; record NEGATIVE here + in intake-605.
+
+Mitigation/rollback: flag-off is instant rollback; sandbox isolation means a bad patch never reaches production; on any parse/validate failure the turn falls back to the existing REPL loop (no regression). Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J § "Per-gate conditional workflows".

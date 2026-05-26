@@ -365,3 +365,13 @@ DAR optimizes routing/escalation along a **quality** axis (learned Q-values + co
 4. **Avoid feedback loops.** If uncertainty becomes a feature and also decides which examples get labels/escalations, the training distribution shifts. Keep a frozen shadow-calibration set and periodically re-run calibration after DAR-3/DAR-4 changes.
 
 Additive to DAR-2/3/4 (which sharpen the *quality* Q), not a replacement — uncertainty is a second axis. Interacts with AP-27 (RLVR eval tower must score the uncertainty-augmented reward). Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24 § Additional task additions. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
+
+## Post-calibration conditional workflow + mitigation (URE-1 / bulk-inference J10)
+
+Wiring status: shadow logger **WIRED** on `intake607-harness-impl` (`src/uncertainty_shadow.py`, flag `ORCHESTRATOR_URE_UNCERTAINTY_SHADOW_LOG`, default off, hooked at the single chokepoint `hybrid_router._record_decision_meta`, exception-safe). J10 collects shadow records → `ingest_uncertainty_shadow()` → `approval_record` → analyze. **The shadow score is UNCALIBRATED first-pass; calibration precedes enforcement (audit #1).**
+
+Decision tree (after J10 analysis):
+- ✅ ECE ≤ eval-tower P8 target AND abstention precision > baseline escalation precision AND ≤10% shadow latency regression → enable uncertainty-routed escalation (a SEPARATE enforce flag, not the shadow flag) + optionally URE-3 (uncertainty as a routing feature, frozen labels).
+- ❌ any gate fails → stay shadow-only; recalibrate (re-weight the logged components / adjust threshold) on a **frozen shadow-calibration set**; do NOT enforce.
+
+Mitigation: shadow→enforce is a deliberate second flag flip (shadow logging alone never changes routing); keep a frozen calibration set; re-run calibration after any DAR-3/DAR-4 change (audit #4, avoid feedback loop); separate aleatoric vs epistemic components so "ask/approve" vs "route-to-stronger-model" interventions stay distinct. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
