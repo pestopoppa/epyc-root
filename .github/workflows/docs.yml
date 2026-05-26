@@ -1,0 +1,82 @@
+name: Docs site — build & deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wiki/**'
+      - 'research/deep-dives/**'
+      - 'site_src/**'
+      - 'mkdocs.yml'
+      - 'requirements-docs.txt'
+      - 'scripts/docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout epyc-root
+        uses: actions/checkout@v4
+
+      - name: Checkout epyc-orchestrator
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          path: repos/epyc-orchestrator
+          fetch-depth: 1
+
+      - name: Checkout epyc-inference-research
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          path: repos/epyc-inference-research
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-docs.txt
+
+      - name: Populate site source
+        env:
+          ORCH_REPO: ${{ github.workspace }}/repos/epyc-orchestrator
+          RES_REPO: ${{ github.workspace }}/repos/epyc-inference-research
+        run: bash scripts/docs/build-site-src.sh
+
+      - name: Build site
+        # Note: --strict disabled for v1. Wiki and chapter content reference
+        # paths (handoffs/, progress/, repo-relative absolute paths) that aren't
+        # published to the site. A link-rewriter pass is the long-term fix.
+        run: mkdocs build --verbose
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

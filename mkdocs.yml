@@ -1,0 +1,154 @@
+site_name: EPYC Local-Inference
+site_description: CPU-only local LLM inference on AMD EPYC 9655 — research, methods, and production stack
+site_url: https://pestopoppa.github.io/epyc-root/
+repo_url: https://github.com/pestopoppa/epyc-root
+repo_name: pestopoppa/epyc-root
+edit_uri: ""
+
+docs_dir: site_src
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Anchor link
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - awesome-pages
+
+nav:
+  - Home: index.md
+  - Topics:
+    - topics/index.md
+    - Speculative Decoding: topics/speculative-decoding.md
+    - MoE Optimization: topics/moe-optimization.md
+    - KV Cache: topics/kv-cache.md
+    - Quantization: topics/quantization.md
+    - Hardware Optimization: topics/hardware-optimization.md
+    - Inference Serving: topics/inference-serving.md
+    - Local Inference: topics/local-inference.md
+    - Chat Templates: topics/chat-templates.md
+    - Cost-Aware Routing: topics/cost-aware-routing.md
+    - Routing Intelligence: topics/routing-intelligence.md
+    - Benchmark Methodology: topics/benchmark-methodology.md
+    - Agent Architecture: topics/agent-architecture.md
+    - Autonomous Research: topics/autonomous-research.md
+    - Memory-Augmented Models: topics/memory-augmented.md
+    - Context Management: topics/context-management.md
+    - Context Extension: topics/context-extension.md
+    - SSM & Hybrid Architectures: topics/ssm-hybrid.md
+    - Training & Distillation: topics/training-distillation.md
+    - Reinforcement Learning: topics/reinforcement-learning.md
+    - Multimodal: topics/multimodal.md
+    - Document Processing: topics/document-processing.md
+    - Formal Verification: topics/formal-verification.md
+    - Search & Retrieval: topics/search-retrieval.md
+    - Knowledge Management: topics/knowledge-management.md
+    - RAG Alternatives: topics/rag-alternatives.md
+    - Tool Implementation: topics/tool-implementation.md
+    - LLM Prompting: topics/llm-prompting.md
+    - Mechanistic Interpretability: topics/mechanistic-interpretability.md
+    - Taxonomy: topics/SCHEMA.md
+  - Subsystems:
+    - subsystems/index.md
+    - Orchestrator:
+      - Runtime Environment: subsystems/orchestrator/01-runtime-environment.md
+      - Orchestration Architecture: subsystems/orchestrator/02-orchestration-architecture.md
+      - REPL Environment: subsystems/orchestrator/03-repl-environment.md
+      - Production Server Stack: subsystems/orchestrator/04-production-server-stack.md
+      - Data Processing Pipelines: subsystems/orchestrator/05-data-processing-pipelines.md
+      - TOON Encoding: subsystems/orchestrator/06-toon-encoding.md
+      - MemRL System: subsystems/orchestrator/07-memrl-system.md
+      - Graph Reasoning: subsystems/orchestrator/08-graph-reasoning.md
+      - Memory Seeding: subsystems/orchestrator/09-memory-seeding.md
+      - Escalation & Routing: subsystems/orchestrator/10-escalation-and-routing.md
+      - Procedure Registry: subsystems/orchestrator/11-procedure-registry.md
+      - Session Persistence: subsystems/orchestrator/12-session-persistence.md
+      - Tool Registry: subsystems/orchestrator/13-tool-registry.md
+      - Security & Monitoring: subsystems/orchestrator/14-security-and-monitoring.md
+      - SkillBank: subsystems/orchestrator/15-skillbank-experience-distillation.md
+      - Calibration & Risk Control: subsystems/orchestrator/16-calibration-and-risk-control.md
+      - Programmatic Tool Chaining: subsystems/orchestrator/17-programmatic-tool-chaining.md
+    - Research:
+      - Speculative Decoding: subsystems/research/01-speculative-decoding.md
+      - MoE Optimization: subsystems/research/02-moe-optimization.md
+      - Prompt Lookup: subsystems/research/03-prompt-lookup.md
+      - RadixAttention: subsystems/research/04-radix-attention.md
+      - Deprecated Approaches: subsystems/research/05-deprecated-approaches.md
+      - Benchmarking Framework: subsystems/research/06-benchmarking-framework.md
+      - Benchmark Suite Construction: subsystems/research/07-benchmark-suite-construction.md
+      - Cost-Aware Rewards: subsystems/research/08-cost-aware-rewards.md
+      - Claude Debugger: subsystems/research/09-claude-debugger.md
+      - Advanced Speculative Decoding: subsystems/research/10-advanced-speculative-decoding.md
+      - Benchmarking Guide: subsystems/research/benchmarking-guide.md
+      - KV Compaction Guide: subsystems/research/kv-compaction-guide.md
+      - Model Sizing: subsystems/research/model-sizing.md
+  - Research Deep-Dives:
+    - ... | deep-dives/*.md
+  - About: about.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pestopoppa
+  generator: false
+
+copyright: MIT — content under EPYC local-inference project

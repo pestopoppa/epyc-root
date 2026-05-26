@@ -46,3 +46,12 @@ backups/
 # Compiler/profiling residue (PGO instrumented runs leave these)
 *.profraw
 *.profdata
+
+# MkDocs — generated content populated by scripts/docs/build-site-src.sh
+# Hand-written pages (index.md, topics/index.md, etc.) are tracked individually.
+site/
+site_src/topics/*.md
+!site_src/topics/index.md
+site_src/deep-dives/*.md
+site_src/subsystems/orchestrator/
+site_src/subsystems/research/
