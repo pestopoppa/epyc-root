@@ -311,7 +311,7 @@ Closure plan: 7-phase handoff [`within-role-placement-state-machine.md`](../hand
 
 ### 2026-05-26 update — WP-0..WP-4 + WP-5 scaffold IMPLEMENTED
 
-The architectural gap documented above (within-role full↔quarter overlap unmodeled by the dispatcher; KV save/restore plumbing without load-aware trigger) is now closed on the code side. Six stacked commits on `epyc-orchestrator` branch `feat/wp-0-eval-concurrency-default` (NOT pushed at time of writing; tip `66a8bfc`; 155/155 dispatcher-adjacent tests):
+The architectural gap documented above (within-role full↔quarter overlap unmodeled by the dispatcher; KV save/restore plumbing without load-aware trigger) is now closed on the code side. Six stacked commits MERGED to `epyc-orchestrator` main 2026-05-26 (merge tip `15350fe`; source branch `feat/wp-0-eval-concurrency-default` consumed + deleted post-merge; 155/155 dispatcher-adjacent tests at merge):
 
 | Commit | WP | Status |
 |---|---|---|
