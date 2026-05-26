@@ -18,29 +18,29 @@ This site collects the **distilled knowledge** behind the project — the topic 
 
 <div class="grid cards" markdown>
 
-- :material-book-open-page-variant:{ .lg .middle } **[Topics](topics/)**
+- :material-book-open-page-variant:{ .lg .middle } **[Stories](stories/index.md)**
+
+    ---
+
+    The narrative layer — cross-cutting threads about how features were built, what we tried and ruled out, what we're investigating now. Start here if you're cold on the project.
+
+- :material-tag-multiple:{ .lg .middle } **[Topics](topics/index.md)**
 
     ---
 
     30 compiled articles synthesizing every research thread — speculative decoding, KV cache, MoE optimization, routing, hardware, autonomous research. Each article cites its sources.
 
-- :material-cog:{ .lg .middle } **[Subsystems](subsystems/)**
+- :material-cog:{ .lg .middle } **[Subsystems](subsystems/index.md)**
 
     ---
 
     Pedagogical walkthroughs of the production stack — orchestrator (runtime, REPL, MemRL, escalation, SkillBank…) and research infrastructure (benchmarks, cost-aware rewards, model sizing).
 
-- :material-magnify:{ .lg .middle } **[Deep-Dives](deep-dives/)**
+- :material-magnify:{ .lg .middle } **[Deep-Dives](deep-dives/index.md)**
 
     ---
 
     Long-form analyses of individual papers, techniques, and decisions. Authored when a topic warrants more than an intake entry — including ideas we tried and ruled out.
-
-- :material-information-outline:{ .lg .middle } **[About](about.md)**
-
-    ---
-
-    Hardware, design philosophy, source repositories, license.
 
 </div>
 

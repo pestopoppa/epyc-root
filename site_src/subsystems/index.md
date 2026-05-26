@@ -22,4 +22,4 @@ Source: [pestopoppa/epyc-inference-research](https://github.com/pestopoppa/epyc-
 
 ---
 
-Pick a subsystem from the left nav. For research deep-dives on specific papers and techniques, see [Deep-Dives](../deep-dives/). For domain syntheses, see [Topics](../topics/).
+Pick a subsystem from the left nav. For research deep-dives on specific papers and techniques, see [Deep-Dives](../deep-dives/index.md). For domain syntheses, see [Topics](../topics/index.md).

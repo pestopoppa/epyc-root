@@ -76,6 +76,15 @@ plugins:
 
 nav:
   - Home: index.md
+  - Stories:
+    - stories/index.md
+    - How a request flows through the stack: stories/how-a-request-flows.md
+    - Why CPU-only inference is viable on EPYC: stories/why-cpu-inference.md
+    - 'Worker_general: 17 → 76 t/s': stories/worker-general-story.md
+    - The autonomous research loop: stories/autonomous-research-loop.md
+    - The speculative decoding investigation: stories/spec-decoding-investigation.md
+    - What we're investigating now: stories/investigating-now.md
+    - What we tried and ruled out: stories/ruled-out.md
   - Topics:
     - topics/index.md
     - Speculative Decoding: topics/speculative-decoding.md
@@ -142,6 +151,7 @@ nav:
       - KV Compaction Guide: subsystems/research/kv-compaction-guide.md
       - Model Sizing: subsystems/research/model-sizing.md
   - Research Deep-Dives:
+    - deep-dives/index.md
     - ... | deep-dives/*.md
   - About: about.md
 

@@ -22,6 +22,12 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  # Force Node 24 runtime for actions still pinned to Node 20.
+  # Node 20 forced-default on 2026-06-02; this opts in early so the workflow
+  # is forward-compatible without waiting on action releases.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -59,10 +65,13 @@ jobs:
           RES_REPO: ${{ github.workspace }}/repos/epyc-inference-research
         run: bash scripts/docs/build-site-src.sh
 
+      - name: Rewrite cross-doc links
+        env:
+          ORCH_REPO: ${{ github.workspace }}/repos/epyc-orchestrator
+          RES_REPO: ${{ github.workspace }}/repos/epyc-inference-research
+        run: python3 scripts/docs/rewrite-links.py
+
       - name: Build site
-        # Note: --strict disabled for v1. Wiki and chapter content reference
-        # paths (handoffs/, progress/, repo-relative absolute paths) that aren't
-        # published to the site. A link-rewriter pass is the long-term fix.
         run: mkdocs build --verbose
 
       - name: Upload Pages artifact

@@ -48,9 +48,9 @@ for f in "$ROOT/wiki/"*.md; do
     cp "$f" "$SITE/topics/$base"
 done
 
-# Deep-dives — copy everything except an INDEX.md if present
+# Deep-dives — copy everything except INDEX.md; preserve hand-written index.md
 mkdir -p "$SITE/deep-dives"
-find "$SITE/deep-dives" -maxdepth 1 -name '*.md' -delete
+find "$SITE/deep-dives" -maxdepth 1 -name '*.md' ! -name 'index.md' -delete
 if [[ -d "$ROOT/research/deep-dives" ]]; then
     for f in "$ROOT/research/deep-dives/"*.md; do
         base="$(basename "$f")"

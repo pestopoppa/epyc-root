@@ -2,7 +2,7 @@
 
 30 compiled articles synthesizing the project's research across every domain we've worked in. Each article pulls together findings from research deep-dives, completed handoffs, progress logs, and child-repo documentation into a single navigable reference. Citations preserved.
 
-This is the **topic** view. For the **subsystem** view (how each piece of the production stack is built), see [Subsystems](../subsystems/). For long-form per-paper analyses, see [Deep-Dives](../deep-dives/).
+This is the **topic** view. For the **subsystem** view (how each piece of the production stack is built), see [Subsystems](../subsystems/index.md). For long-form per-paper analyses, see [Deep-Dives](../deep-dives/index.md).
 
 ## How articles are organized
 
