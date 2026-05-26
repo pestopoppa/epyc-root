@@ -28742,3 +28742,83 @@
   - 'Gains require training models from scratch with new vocabularies; no inference-time lever for fixed pre-trained tokenisers.'
   handoffs_updated: []
   handoffs_created: []
+- id: intake-609
+  url: https://github.com/prefecthq/fastmcp
+  arxiv_id: null
+  source_type: repo
+  discovered_via: input
+  title: 'FastMCP — Pythonic framework for building MCP servers and clients'
+  authors:
+  - PrefectHQ
+  - Jeremiah Lowin
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_component
+  ingested_date: '2026-05-26'
+  key_claims:
+  - 'Decorator-based API (`@mcp.tool`, `@mcp.resource`, `@mcp.prompt`) auto-generates JSON Schema, validation, and docs from Python type hints; minimal boilerplate compared to hand-rolling against the MCP wire spec.'
+  - 'Three first-class component types — Servers (expose tools/resources/prompts), Clients (connect to any MCP-compliant server), Apps (interactive UIs in conversations).'
+  - 'FastMCP 1.0 was upstreamed into the official MCP Python SDK in 2024; FastMCP v2/v3 remains standalone with a superset of features (composition, mounting, OpenAPI/FastAPI conversion, in-memory testing client, proxy, middleware, OAuth/bearer auth).'
+  - 'Apache-2.0, Python-only, 25.3k stars, v3.3.1 (2026-05-15), maintainer-reported 1M daily downloads and ~70% of MCP servers across all languages built on it.'
+  - 'Handles transport negotiation (stdio, SSE, streamable HTTP), auth, and protocol lifecycle so consumers write business logic only.'
+  techniques:
+  - Decorator-driven tool/resource/prompt registration with Pydantic-derived schemas
+  - In-memory client for fast unit/integration testing without subprocess overhead
+  - Server composition / mounting (compose multiple FastMCP instances into a single server)
+  - Proxy server (mirror a remote MCP server, useful for transport bridging)
+  - OpenAPI / FastAPI conversion (auto-wrap a REST API as an MCP server)
+  - Middleware hook points around tool dispatch
+  - LLM sampling primitive (server-initiated client-side completion)
+  reported_results:
+  - '25.3k GitHub stars, Apache-2.0, Python 100%, v3.3.1 (2026-05-15)'
+  - 'Maintainer-reported ~1M daily downloads; framework underlying ~70% of MCP servers across languages (self-report, not independently measured)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-output-compression.md
+    - internal-kb-rag.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-414
+  novelty_justification: 'Mature, widely-used production framework — not novel research. Already imported as `mcp.server.fastmcp.FastMCP` in the project''s archived MCP-server scaffolds (handoffs/archived/mcp-knowledge-tools.md, json-canvas-plugin-architecture.md). Recorded as a reference entry, not a discovery.'
+  relevance_justification: 'Three active handoffs name MCP-tool wrapping as forward work without naming the framework: tool-output-compression Phase 3 (wrap compression as MCP tool to bypass the PostToolUse-cannot-replace-Bash-output limitation), internal-kb-rag K6 (kb_search MCP tool for Explore subagents), meta-harness-optimization (curated-context MCP server pattern, ref intake-414). FastMCP v2/v3 features beyond the upstream SDK fork — in-memory testing client, server composition, OpenAPI/FastAPI conversion, middleware — directly cut implementation cost for these.'
+  verdict_justification: 'adopt_component: canonical MCP server scaffold for the three named handoffs. FastMCP 1.0 is already vendored via the official MCP Python SDK; standalone v3 is a strict superset and the safer default for new servers that may need composition/proxy/OpenAPI bridges or in-memory tests. No build-vs-buy debate — already in use, just unpinned in the framework choice.'
+  contradicting_evidence: null
+  handoffs_updated:
+  - tool-output-compression.md
+  - internal-kb-rag.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    Deep-dive 2026-05-26 (verified against gofastmcp.com/clients/transports, gofastmcp.com/servers/middleware, and project source).
+
+    Production reality (correction to the initial entry):
+    - epyc-orchestrator already ships a LIVE FastMCP server at `src/mcp_server.py` (540 LOC, 11 read-only tools, stdio transport, plugin-loader-backed, two test files: tests/unit/test_mcp_server.py and test_mcp_chat_tool.py). It is NOT just archived.
+    - Dependency pinned in `epyc-orchestrator/pyproject.toml`: `mcp>=1.0.0` (the official Anthropic Python SDK, which vendors `mcp.server.fastmcp.FastMCP` = FastMCP 1.0 upstreamed). Standalone `fastmcp` v3 is NOT a current dependency.
+    - Migration to standalone v3 = new top-level dep + import-site change (`from mcp.server.fastmcp import FastMCP` → `from fastmcp import FastMCP`) + run the v2→v3 upgrade guide. Not free, but small.
+
+    Feature boundary v1-vendored (`mcp.server.fastmcp`) vs v3-standalone (`fastmcp`):
+    - `@mcp.tool` / `@mcp.resource` / `@mcp.prompt` decorators: BOTH.
+    - stdio / SSE / streamable HTTP transports: BOTH.
+    - In-memory transport (test client without subprocess): STANDALONE-ONLY (confirmed via gofastmcp.com/clients/transports).
+    - Middleware with around-style hooks (`on_call_tool`, `on_message`, `on_request`, ...): STANDALONE-ONLY (confirmed: "MCP middleware is a FastMCP-specific concept and is not part of the official MCP protocol specification"). Pre+post + can mutate response + can short-circuit `call_next`.
+    - Server composition / mounting: STANDALONE-ONLY.
+    - Proxy server (mirror remote MCP server): STANDALONE-ONLY.
+    - OpenAPI / FastAPI conversion (`FastMCP.from_openapi` / `FastMCP.from_fastapi`): STANDALONE-ONLY.
+    - OAuth provider library (15+ providers): STANDALONE-ONLY (vendored v1 has bearer-token only).
+    - LLM sampling primitive: STANDALONE-ONLY.
+
+    Implication for the three updated handoffs:
+    - tool-output-compression Phase 3 wants middleware to measure compression ratio + downstream top-up rate without instrumenting each tool by hand — that hook style is v3-only. Justifies the v3 dependency.
+    - internal-kb-rag K6 (kb_search MCP tool) only needs `@mcp.tool` + stdio — both versions work. No v3 requirement; vendored v1 is fine for K6 alone.
+    - meta-harness-optimization curated-context server (15+ tools) benefits from composition + OpenAPI conversion (existing FastAPI endpoints) + middleware (per-tool token-cost accounting for the Pareto evaluator). v3 materially cheaper here.
+
+    Correction to original actionable #3: server composition replaces stitching multiple MCP-server processes into one, NOT the orchestrator's per-tool `ToolPluginLoader` (`src/registry/tool_loader.py`) — that registry already exists and stays.
+
+    Open question for the user: migrate the live `src/mcp_server.py` from vendored v1 to standalone v3 at the same time as the first v3-requiring handoff (Phase 3 of tool-output-compression) for consistency, or keep two MCP scaffolds in the tree (low-friction K6 stays on v1, new servers go v3)? Recommend the migration to avoid dual-codepath drift.

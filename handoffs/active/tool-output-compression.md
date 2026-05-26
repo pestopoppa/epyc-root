@@ -371,3 +371,53 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
   - Reported results: vendor claim ~80% token reduction (unbenchmarked, credibility null) — treat as upper bound only, same caution as the `/caveman` 75% headline.
   - Delta from current approach: input-side analogue, not a tool-output compressor; proprietary GUI so pattern-only. Overlaps intake-330 (code-review-graph, ~8.2× structural token reduction) already tracked.
   - Audit refinement: if DCP emits CodeMaps or manifests as tool/context payloads, encode them with structured fields and stable IDs rather than prose blobs. Token savings should be measured with model-calibrated token counts and downstream top-up/error rates, not vendor headline percentages.
+
+## Research Intake Update — 2026-05-26
+
+### New Related Research
+- **[intake-609] "FastMCP — Pythonic framework for building MCP servers and clients"** (`github.com/prefecthq/fastmcp`, Apache-2.0, v3.3.1)
+  - Relevance: Phase 3 of this handoff identifies "wrap compression as MCP tool" as the workaround for the PostToolUse hook limitation (PostToolUse cannot replace built-in tool output; only MCP tools support `updatedMCPToolOutput`). FastMCP is the canonical Python scaffold for that wrapper; the project already runs a live FastMCP server (`epyc-orchestrator/src/mcp_server.py`, 11 tools, stdio, vendored-v1 path via `mcp>=1.0.0`).
+  - Key technique (Phase 3 requires standalone v3, NOT the vendored v1 — feature boundary verified in intake-609 `notes`):
+    - **Around-style middleware** (`on_call_tool` hook with pre+post + mutate-response + short-circuit): the natural insertion point for the compressor — pre-call passes through, post-call rewrites the tool result with the compressed payload AND emits the compression-ratio + downstream-top-up-rate metrics from intake-605's audit refinement, without instrumenting each tool by hand. Vendored-v1 has NO middleware.
+    - **In-memory transport / test client**: unit-test the compressor end-to-end against the real tool without subprocess overhead. Vendored-v1 path requires a stdio subprocess.
+    - **Server composition**: stack the compressor next to other internal tools in one process if Phase 3 grows beyond a single endpoint.
+  - Delta from current approach: replaces the Phase 3 "wrap as MCP tool" stub with a concrete framework choice. Cost: adds `fastmcp>=3` as a new top-level dep alongside the existing `mcp>=1.0.0` — OR migrate the live `src/mcp_server.py` from vendored v1 to standalone v3 at the same time (recommended in intake-609 `notes` to avoid dual-codepath drift). v2→v3 upgrade guide exists; standalone v3 is a strict superset of the vendored v1 API at the decorator surface.
+
+## Phase 4 — MCP Tool Wrapping (unblocked 2026-05-26)
+
+**Status**: ready to start. Promotes the line-49 "Future work: wrap compression as an MCP tool" note to actionable items now that `epyc-orchestrator/src/mcp_server.py` is on standalone FastMCP v3 (commit pending). Resolves the Bash-output gap that PostToolUse hooks cannot close (only MCP tools support `updatedMCPToolOutput`).
+
+### Objective
+
+Expose the existing `scripts/utils/compress_tool_output.py` logic as an MCP tool surface so Claude Code sees compressed Bash output for the high-frequency commands enumerated in §"Strategy Prioritization" (`cargo test`, `git status/diff/log`, `ls`, `cargo build`/`make`/`tsc`/`gcc`). The orchestrator-side path that runs through `helpers.py:1497` (`TOOL_OUTPUT_COMPRESSION` flag) keeps working unchanged — Phase 4 only adds the Claude Code MCP-tool surface that Phase 2's PostToolUse hook approach could not.
+
+### Approach
+
+Add a new MCP server module that wraps the bash invocation as a `run_bash_compressed` tool, with an around-style middleware that runs the existing compressor on the tool result before it returns. This is intentionally a **separate FastMCP instance** from `src/mcp_server.py` (whose 11 tools are read-only introspection) — composed into the same Claude Code session via two `.mcp.json` entries, not via FastMCP server composition (the two surfaces have nothing to share at the composition layer).
+
+### Work Items
+
+- [ ] **P4a — Bash-compressor MCP server skeleton** (~1 h). New file `epyc-orchestrator/src/tool_output_compressor_mcp.py`. Single tool `run_bash_compressed(command: str, timeout_s: int = 60, working_dir: str = "") -> str` that shells out via `subprocess.run` with the same security envelope as the existing orchestrator bash path. Uses `from fastmcp import FastMCP` (v3, already pinned in pyproject after the 2026-05-26 migration). Add module-level test (`tests/unit/test_tool_output_compressor_mcp.py`) mirroring `test_mcp_server.py`'s direct-import pattern — v3 keeps `@mcp.tool()` callable, so existing test style transfers.
+- [ ] **P4b — Compressor middleware** (~2 h). Implement `CompressorMiddleware(Middleware)` with `on_call_tool(self, context, call_next)`:
+  1. `result = await call_next(context)` — let the tool run.
+  2. Detect content type from the command (re-use the existing routing logic in `scripts/utils/compress_tool_output.py` — import, don't duplicate).
+  3. Run the compressor on `result.content` strings; rewrite the result with the compressed payload.
+  4. Emit per-call telemetry (`command`, `pre_bytes`, `post_bytes`, `compression_ratio`, `compressor_strategy`) into the existing Phase 2b monitoring sink (`logs/tool_compression_monitor.jsonl`).
+  Wire via `mcp.add_middleware(CompressorMiddleware())` in the module's bottom. Use the FastMCP in-memory client (`from fastmcp import Client; Client(mcp)`) for the unit-test fixture so the middleware path is exercised without spawning a stdio subprocess.
+- [ ] **P4c — Downstream-top-up rate measurement** (~1 h). Per intake-605's audit refinement (line 373), vendor token-reduction claims must be measured by *downstream* effects, not headline %. Add a paired telemetry field `next_turn_followup_command` to the Phase 2b sink — populated by reading the next bash command in the same session journal; flag patterns that look like "re-run uncompressed for missing context" (e.g., the same command re-issued within 3 turns, or `cat`/`head`/`tail` against a file just listed). Compute weekly `top_up_rate = followups / compressed_calls` from the journal; gate any compression-strategy promotion on top_up_rate ≤ 10%.
+- [ ] **P4d — `.mcp.json` registration + Claude Code smoke test** (~30 min). Add a second entry to `epyc-orchestrator/.mcp.json` alongside `orchestrator`: `bash-compressor` → `python src/tool_output_compressor_mcp.py`, stdio. Restart Claude Code, run the smoke commands from §"Strategy Prioritization" via `run_bash_compressed`, verify each returns a visibly compressed result with the expected ratio band (60-90% per the table). Gate live use on a 1-week observation window of P4c top-up-rate before defaulting any high-frequency command to the compressed surface.
+- [ ] **P4e — Decision gate: roll-out scope** (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (Claude Code agent file overlay points the model at `run_bash_compressed` for that command), (ii) keep optional, or (iii) drop. Record decisions in this handoff under a "P4e results" subsection.
+
+### Dependencies
+
+- Standalone `fastmcp>=3` in `epyc-orchestrator/pyproject.toml` — **LANDED 2026-05-26** alongside the `src/mcp_server.py` migration. No further dep work.
+- Existing `scripts/utils/compress_tool_output.py` (Phase 2) — re-used as a library, not modified.
+- Existing Phase 2b monitoring sink (`logs/tool_compression_monitor.jsonl`) — extended with new fields, schema-backward-compatible.
+
+### Cross-references
+
+- Phase 2 (orchestrator-side compression at `helpers.py:1497`) — Phase 4 is the **Claude-Code-facing** counterpart; the two paths are independent and can both ship.
+- Phase 3d (anti-thrashing / language-aware / fallback chain) — those patches go into `compress_tool_output.py` itself, so they automatically benefit Phase 4 once the middleware is wired.
+- [`internal-kb-rag.md`](internal-kb-rag.md) — K6 was satisfied via the kb-search skill route, not an MCP tool; the v3 middleware pattern in P4b is the precedent if a future kb-search MCP variant is wanted.
+- [`meta-harness-optimization.md`](meta-harness-optimization.md) HLE-1 — the per-call telemetry shape in P4b is a candidate evidence source for the "per-component harness metrics" axis if the compressor is ever scored as a harness component.
+- intake-609 `notes` field — feature-boundary table behind the v1-vs-v3 decision.

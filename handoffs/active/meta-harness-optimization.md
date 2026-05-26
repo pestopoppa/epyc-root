@@ -507,3 +507,11 @@ HLE-1/HLE-2 are non-inference code (compute metrics + register oracle-adequacy i
 - ❌ no signal / high missingness / low-confidence-for-most-trials → keep it a **dashboard diagnostic only**; never a hard gate.
 
 Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE-1 score carries evidence-event-ids + confidence; shortcut detection (web-search leakage, answer-key memorization, exact-match artifacts) lives in oracle-adequacy as first-class blind spots, not prose. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+
+## Research Intake Update — 2026-05-26
+
+### New Related Research
+- **[intake-609] "FastMCP — Pythonic framework for building MCP servers and clients"** (`github.com/prefecthq/fastmcp`, Apache-2.0, v3.3.1)
+  - Relevance: the curated-context MCP server pattern referenced alongside intake-414 ("15+ tool MCP server" for structural-map curation) and the Phase 1 "MCP tool ecosystem → synthesized verifiable tasks" thread (line 223) both presuppose an MCP-server scaffold. FastMCP is the framework.
+  - 2026-05-26 update: standalone `fastmcp>=3` is now pinned in `epyc-orchestrator/pyproject.toml` and `src/mcp_server.py` runs on it (migration verified, 40 MCP tests pass). The framework choice is settled and v3-specific features (server composition, `FastMCP.from_fastapi`/`from_openapi`, around-style middleware) are now available without a further dep change. **No outstanding HLE work is unblocked** — HLE-1/HLE-2/HLE-3 are trace-schema and eval-methodology work, not MCP-tool work; the intake-605 "curate over auto-search" pattern was already verdict `adopt_patterns` (proprietary GUI, no component) so there is nothing here to build.
+  - When relevant: if HLE-1's "per-component harness metrics" ever needs to capture MCP-tool-call evidence (`@on_call_tool` middleware emitting evidence-event-ids), the precedent is [`tool-output-compression.md`](tool-output-compression.md) Phase 4 (P4b). Until then, this entry is reference-only.

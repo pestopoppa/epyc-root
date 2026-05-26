@@ -352,3 +352,11 @@ Three layers, listed in order of decision weight:
 When the test runs, record results in `progress/2026-MM/YYYY-MM-DD.md` with: sample set + provenance, per-stratum NDCG@5 / win-rate / structural-fidelity numbers, decision under the acceptance criteria above, and update both this handoff and `intake-586` verdict accordingly. Per `feedback_handoff_driven_tracking`, no test runs without a handoff update afterward.
 
 Cross-references: [[angelslim-techniques-evaluation]] (umbrella for Sherry/SpecExit/Tequila/DAQ — independent of this MT test), [[searxng-bash-websearch-bridge]] (multilingual ingest origin), [[colbert-reranker-web-research]] (external snippet pipeline).
+
+## Research Intake Update — 2026-05-26
+
+### New Related Research
+- **[intake-609] "FastMCP — Pythonic framework for building MCP servers and clients"** (`github.com/prefecthq/fastmcp`, Apache-2.0, v3.3.1)
+  - Relevance: K6's original phrasing offered "`kb_search` MCP tool OR in-orchestrator helper" — the **skill route** (`.claude/skills/kb-search/SKILL.md`) shipped 2026-05-06 and satisfies the Explore-subagent integration goal. The MCP-tool variant was not built and is not currently needed.
+  - 2026-05-26 update: standalone `fastmcp>=3` is now pinned in `epyc-orchestrator/pyproject.toml` and `src/mcp_server.py` runs on it (migration verified, 40 MCP tests pass). If a future workflow needs an MCP-tool variant of `kb_search` (e.g., a different agent runtime that does not consume Claude Code skills, or a multi-MCP-client scenario), the framework choice is settled and the scaffold pattern in `src/mcp_server.py` is the reference. **No outstanding K6 work is unblocked** — the skill route is the production path.
+  - Cross-ref: the FastMCP v3 middleware pattern being built out in [`tool-output-compression.md`](tool-output-compression.md) Phase 4 (P4b) is the precedent if a `kb_search` MCP variant is ever added.
