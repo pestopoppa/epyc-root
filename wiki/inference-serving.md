@@ -308,3 +308,25 @@ Closure plan: 7-phase handoff [`within-role-placement-state-machine.md`](../hand
 - `epyc-orchestrator/orchestration/contention_matrix.yaml` — same_role schema gap is documented in the new handoff
 - `epyc-orchestrator/src/backends/concurrency_aware.py:228-269` (`_compute_quarter_preference`) — already orders quarters by NUMA-disjointness; only the candidate priority is overlap-blind
 - `progress/2026-05/2026-05-25.md` Session 10 — full session log with concrete cpu_list table
+
+### 2026-05-26 update — WP-0..WP-4 + WP-5 scaffold IMPLEMENTED
+
+The architectural gap documented above (within-role full↔quarter overlap unmodeled by the dispatcher; KV save/restore plumbing without load-aware trigger) is now closed on the code side. Six stacked commits on `epyc-orchestrator` branch `feat/wp-0-eval-concurrency-default` (NOT pushed at time of writing; tip `66a8bfc`; 155/155 dispatcher-adjacent tests):
+
+| Commit | WP | Status |
+|---|---|---|
+| `33bfe20` | WP-0 | Live — `AUTOPILOT_EVAL_CONCURRENCY` default reverted 4→1 |
+| `cab27ac` | WP-1 | Live — `max_safe_concurrency(role)` topology helper; autopilot default = `max_safe_concurrency('frontdoor')` = 3 |
+| `29e95b4` | WP-5 scaffold | Live — `RolePlacementPolicy` enum + accessor, conservative `solo_prefer_full` for all roles (no live behavior change) |
+| `3d94a03` | WP-2 | Behind `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` (default off) — `src/scheduling/placement.py` + dispatcher refactor with poll-on-queue |
+| `b4d5161` | WP-3 | Always-on transactional `MigrationTransaction` + policy gate + `migration_budget_ms` honoring on the existing session-handover trigger. The speculative load-transition trigger was explored and removed (`_migrate_kv` cannot preempt mid-decode — rationale documented in `_dispatch` comment) |
+| `66a8bfc` | WP-4 | Behind `ORCHESTRATOR_REVERSE_MIGRATION=1` (default off) — quarter→full migration with 4 guards (cooldown 2s / window 30s / per-session cap 5 / in-flight de-dup) |
+
+Inference-gated verifications (WP-2/WP-3/WP-4 gates, WP-5 ratification, WP-6 matrix re-bench, WP-7 production rollout) are bundled in `bulk-inference-campaign.md` § Package J alongside DCP-6 and BEP-2 from the same audit batch and HLE-4 from the harness-metrics track. Priority-zero sequencing: J1 → J2 → J3 (the WP-2/WP-3/WP-4 verifications) must run BEFORE any other downstream inference Package so flag-enablement raises every subsequent Package's effective concurrency.
+
+### Sources (2026-05-26)
+
+- `epyc-orchestrator` branch `feat/wp-0-eval-concurrency-default` — 6 stacked WP commits, 155/155 tests green
+- [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) § Package J — wires the inference gates with priority-zero sequencing
+- [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md) — handoff frontmatter `implementation_status` block tracks per-WP status
+- [`progress/2026-05/2026-05-25.md`](../progress/2026-05/2026-05-25.md) Session 14 + [`progress/2026-05/2026-05-26.md`](../progress/2026-05/2026-05-26.md) Session 15
