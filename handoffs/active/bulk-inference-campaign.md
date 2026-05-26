@@ -939,6 +939,52 @@ Initial regret analysis on 7,211 routing decisions (Apr 10-14):
 
 ---
 
+## Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)
+
+**Duration**: ~1-3 days if sequenced; J6 (matrix re-bench) can run overnight
+**Stack required**: Standard orchestrator stack; J1-J3 require `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` and (for J2/J3) `ORCHESTRATOR_REVERSE_MIGRATION=1` set in the API env
+**Depends on**: epyc-orchestrator branch `feat/wp-0-eval-concurrency-default` merged into main (6 stacked commits; WP-0..WP-4 + WP-5 scaffold; 155/155 tests green; pushed but unmerged as of 2026-05-26)
+**Status**: NOT STARTED — wired 2026-05-26
+
+Inference-gated verifications and observability runs for the within-role-placement-state-machine handoff. Also bundles the two sibling inference gates from the 2026-05-25 audit batch (DCP-6, BEP-2) because they share the same "needs autopilot-style eval workload" profile and benefit from one operator sitting + one cleared stack window. Add other-agent inference-gated items under this Package (or a successor) for shared sequencing.
+
+### Priority-zero sequencing (RUN FIRST)
+
+> **J1 → J2 → J3 must run BEFORE any other downstream inference Package** (G/H/I, J4-J9, or other-agent items appended at the end). Reason: J1-J3 enable the WP-2/3/4 parallelization flags. Once verified and left on, every subsequent autopilot/eval/bench task benefits from up to 3× higher per-role concurrency, which is a force-multiplier on every downstream Package's wallclock — most importantly J4 (autopilot observability), J6 (24h rollout), J7 (delegation eval), J9 (HLE-4 trial accumulation), Package H tasks, and Package I traffic-collection runs. Running parallel-eval work BEFORE flipping these flags pays a serial-fan-out tax on every batch.
+>
+> Equivalent ordering rule for the global Execution Order table: insert **`J1, J2, J3`** ahead of any not-yet-started inference Package (currently D-tail, G, H, I, and J4+). Don't backfill `Package E/B/F/C` ordering — those already completed.
+>
+> If the operator wants to mix flag-enablement validation with downstream work in the same sitting, the safe interleave is: J1 (~1h) → J2 (~2h) → J3 (~30-min profile) → enable flags persistently → proceed with anything else.
+
+| # | Task | Source Handoff | Description | Models Needed | Effort |
+|---|------|---------------|-------------|--------------|--------|
+| J1 | WP-2 placement state machine gate | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 2 | Enable `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1`, fan 4 concurrent requests at frontdoor, verify per-region-locks dashboard shows 3 active (full + 2 disjoint quarters) + 1 queued with `reason=topology_overlap`. Aggregate t/s ≥ 3-way Phase 1 baseline; p99 ≤ +20% vs serial. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~1h |
+| J2 | WP-3 forward-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 3 | Forward migration is shipped on the existing session-handover trigger (transactional, policy-gated). Verify: under sustained 2+ concurrent traffic with session handover on full, MigrationTransaction completes (state_history shows planned→saving→restoring→verified→source_erased→committed within budget), old session's NEXT request lands on the assigned quarter (sticky affinity preserved), and aggregate t/s under continuous fan-out approaches the matrix's 4-quarters baseline (~1.88×). | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~2h |
+| J3 | WP-4 reverse-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 4 | Enable `ORCHESTRATOR_REVERSE_MIGRATION=1`, run a 30-min mixed traffic profile (alternating bursts of 4 concurrent and solo turns) on frontdoor. Verify Prometheus counter `kv_migration_direction_total{direction="reverse"}` increments, per-session migration counts respect the cap (default 5), and solo-after-burst per-request latency regresses ≤+10% vs solo-only baseline. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~30-min profile + analysis |
+| J4 | WP-5 ratification observability run | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 5 | With WP-2 + WP-3 + WP-4 enabled and conservative `solo_prefer_full` defaults, run autopilot for ~6-12h and collect: (a) per-role concurrency histogram, (b) full vs quarter utilization, (c) migration counts forward + reverse. Decide per-role `placement_policy` values: keep `solo_prefer_full` for autopilot-dominant low-concurrency roles; switch worker_general to `burst_prefer_quarters` if concurrent load grows; consider `full_disabled` for any role where full is wasted memory. Edit NUMA_CONFIG, commit, restart, re-run. | full production stack | ~12h observation + ~1h analysis |
+| J5 | WP-6 matrix re-bench (within-role instance pairs) | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 6 | Extend `epyc-orchestrator/scripts/server/contention_matrix.py` (Phase F harness from cross-role-bw-aware-routing) to sweep within-role pairs `full+q0, full+q1, full+q2, full+q3, q0+q1, q0+q2, q0+q3, q1+q2, q1+q3, q2+q3` for each role with ≥2 instances. Update `orchestration/contention_matrix.yaml` schema with `instance_pairs` block + `topology_hash`. Gate: CV ≤ 5% across 3 runs; runtime fails closed on topology/YAML hash mismatch. **Highest stack-conflict risk in this Package** — runs llama-bench across many configurations; must run alone. | All multi-instance roles (frontdoor, worker_general, ingest_long_context, vision_escalation) | ~overnight (~8-12h) |
+| J6 | WP-7 production rollout + 24h gate | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 7 | Switch `_eval_concurrency()` default from static `max_safe_concurrency(frontdoor)` to "matrix-aware" — query the gate at startup for the role's max sustainable concurrency given measured ratios (uses J5's data). Document operator override path in `wiki/autopilot-tuning.md`. Run a 24-hour autopilot pass; compare throughput/quality vs Phase 0 baseline; verify dashboard shows quarters actively rotating; assert `contention_timeout_count` stays at baseline. | full production stack | ~24h passive + ~1h analysis |
+| J7 | DCP-6 delegation context pre-assembly eval | [delegation-context-preassembly.md](delegation-context-preassembly.md) DCP-6 | Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream answer quality, hallucinated-file references, context-contamination failures vs reactive-discovery baseline. Run offline replay over historical tasks first (validates bundle size/coverage), then the inference gate. Default-off flag stays off until results justify. | frontdoor + worker_coder (delegation-heavy roles) | ~3-4h |
+| J8 | BEP-2 batched edit CPU-latency A/B | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) BEP-2 | Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a coding/edit workload. Measure round-trip count, total prefill tokens, end-to-end latency, bundle/context size (if DCP enabled), patch-parse failure rate, apply failure rate, verification pass rate, quality. **Falsification gate** — if batch mode doesn't cut latency at equal quality, stop the BEP track. Offline replay first; then inference. | worker_coder + frontdoor | ~3h |
+| J9 | HLE-4 harness metrics observe-only run | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) HLE-4 + [meta-harness-optimization.md](meta-harness-optimization.md) HLE-1/2/3 | Extend `EvalResult` + journal JSONL with `harness_metrics`, `oracle_adequacy`, `metric_schema_version` (non-inference code change first); then run autopilot for N trials with metrics in **observe-only mode** (no Pareto promotion). Analyze: separation accepted-vs-rejected, correlation with future regressions, missingness rate, p95 metric-extraction cost. Cheap-kill: metric that never separates or has missingness >20% stays diagnostic, doesn't promote to Pareto co-objective. | full autopilot stack | ~6-12h observation |
+
+### Sequencing notes
+
+- **J1 → J2 → J3 → J4** runs as a single block: each is short, each depends on the previous flag/observation, all share frontdoor traffic. Estimate ~half-day with operator sitting.
+- **J5 (matrix re-bench)** must run ALONE on the host (full instance-pair sweep across all multi-instance roles; honors `feedback_no_concurrent_inference`). Overnight slot. Required input for J6.
+- **J6 (production rollout)** is 24-hour passive once flipped; can start as soon as J5 is done.
+- **J7, J8, J9** are independent of the WP track; J7/J8 are autopilot-style evals against the production stack and can interleave with J6's 24h pass (they're consumers of the stack, not workload-shaping changes). J9 is purely observe-only — safe to run alongside anything else.
+
+### Other agents' inference-gated work — add here
+
+This Package is designed to absorb additional inference-gated items from parallel agents so one operator-sitting window clears multiple. Append rows below (or open a Package K for a separate window). Suggested format: same table columns; surface dependencies in this sequencing section if any.
+
+| # | Task | Source Handoff | Description | Models Needed | Effort |
+|---|------|---------------|-------------|--------------|--------|
+| _add_ | — | — | — | — | — |
+
+---
+
 ## Reporting
 
 After each Package completes:
