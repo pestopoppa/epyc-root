@@ -16,12 +16,14 @@ implementation_status:
   WP-5: scaffold MERGED to main 2026-05-26 (29e95b4, conservative SOLO_PREFER_FULL default for all roles); full ratification deferred (Package J J4)
   WP-6: inference-gated (Package J J5; operator approval required for the bench sweep)
   WP-7: inference-gated (Package J J6; requires WP-6 + 24h autopilot gate)
-worktree: REMOVED 2026-05-26 — work merged to main as part of housekeeping. Source branch feat/wp-0-eval-concurrency-default deleted local + remote. 155/155 dispatcher-adjacent tests green at the merged tip; full epyc-orchestrator main now at 15350fe.
+checkout_state: merged to epyc-orchestrator main at 15350fe; 155/155 dispatcher-adjacent tests green at the merged tip.
 ---
 
 ## Executive summary
 
-The `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full↔quarter cpuset overlap relation. Full and overlapping quarters share physical cores, so concurrent placement is catastrophic even though the same-role contention matrix verdict says "allow." The KV save/restore plumbing is built and live in both dispatch paths, but its trigger is session-handover-based instead of load-transition-based. This handoff closes the gap end-to-end in eight gated phases (P0..P7), each shippable independently behind an env flag, each gated by a metric guard. The end state is autopilot-grade per-role concurrency without overlap and with mid-flight KV eviction when load grows past the safe-with-full threshold.
+The `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full↔quarter cpuset overlap relation. Full and overlapping quarters share physical cores, so concurrent placement is catastrophic even though the same-role contention matrix verdict says "allow." The KV save/restore plumbing is built and live in both dispatch paths. The shipped forward-migration trigger is session-handover-based, transactional, and policy-gated; it is not load-transition-based mid-decode eviction. This handoff closes the gap end-to-end in eight gated phases (P0..P7), each shippable independently behind an env flag or metric guard. The end state is autopilot-grade per-role concurrency without overlap, sticky quarter affinity for handed-over sessions, reverse migration when load drops, and matrix-aware production rollout.
+
+**Audit correction (2026-05-26)**: a proactive "load grew past safe threshold, evict the currently decoding full session before admitting the next request" trigger was explored and removed from the implementation because `_migrate_kv` cannot preempt an in-flight llama-server decode. Package J's J2 gate must validate the shipped session-handover transaction and affinity behavior, not require impossible mid-flight preemption. A future proactive design would need cooperative decode cancellation or server-level preemption and should be scoped as new work.
 
 ## Problem (concrete)
 
@@ -44,7 +46,7 @@ The KV save/restore code path is in place: `_slot_save()` (`concurrency_aware.py
 
 **Goals**:
 - Never place two requests on overlapping cpusets for the same role under the per-region-locks dispatch path.
-- When load grows past the safe-with-full threshold, evict the in-flight full session to a disjoint quarter before admitting the new request.
+- When a later session takes over full and an earlier full-backed session has no quarter affinity, migrate that earlier session transactionally to a disjoint quarter and preserve sticky affinity for its next turn.
 - When load drops back to 1 and the session is warm, migrate it back to full so peak per-request latency returns.
 - Extend the contention matrix to encode placement-overlap as a topology fact, separate from measured throughput ratios.
 - Make autopilot's eval fan-out actually exercise the quarter instances (the original motivation that surfaced the gap).
@@ -95,26 +97,27 @@ Tests:
 
 **Gate**: dashboard's per-region-locks panel: 4 concurrent frontdoor requests show 3 active (full + 2 disjoint quarters), 1 queued (visible in a new queue-depth column). Aggregate t/s ≥ 3-way Phase 1 baseline; tail latency p99 doesn't regress more than +20% vs serial.
 
-### Phase 3 — Forward migration trigger (N=1→N=2 evict full) (≤3d)
+### Phase 3 — Forward migration transaction (session handover; no mid-decode preemption) (≤3d)
 
-New trigger condition in `ConcurrencyAwareBackend._dispatch`, evaluated when `safe` (from Phase 2) is empty BUT the only holder is on full AND ≥1 disjoint quarter would be free if full were vacated. Action:
+Shipped trigger condition in `ConcurrencyAwareBackend._dispatch`: when a different session takes over full and the previous full-backed session has no quarter affinity, attempt to migrate the previous session to the policy-selected disjoint quarter. This is not a load-transition eviction of a currently decoding request; if full is still occupied by an in-flight decode, Phase 2 queue semantics remain the safe behavior until a lock releases.
 
-1. Async kick off `_migrate_kv(role, full_session, target_quarter=preferred_disjoint)`. The migration uses existing slot save/restore plumbing.
-2. The incoming request blocks on a `threading.Event` keyed by `(role, target_quarter)` — released by `_migrate_kv`'s completion callback.
-3. On migration completion: place incoming on a *different* disjoint quarter; update `_session_quarter` so the migrated session keeps its quarter affinity.
-4. On migration failure or timeout (configurable; default 5s): fall through to Phase 2 queue behavior.
+Action:
 
-Read `ChatRequest.migration_budget_ms` (currently exists but is unused per `tests/test_kv_migration_status.py:62-69`) and honor it as the per-request deadline cap.
+1. Run `_migrate_kv(role, full_session, target_quarter=preferred_disjoint)` through `MigrationTransaction`. The migration uses existing slot save/restore plumbing.
+2. Honor `ChatRequest.migration_budget_ms` as the transaction budget/deadline cap.
+3. On migration completion: update `_session_quarter` so the migrated session keeps its quarter affinity on its next request.
+4. On migration failure or timeout: abort transactionally, leave source KV intact, and fall through to Phase 2 queue/placement behavior.
 
 Audit refinement: model migration as a transaction with explicit states: `planned -> saving -> restoring -> verified -> source_erased -> committed` or `aborted`. The incoming request must not be placed on the newly-freed full/quarter topology assumption until the transaction reaches `verified`; `_slot_erase` only runs after restore verification. Store the transaction ID in telemetry and `_session_quarter` updates so failures can be reconciled on restart.
 
 Placement after migration: if full is vacated into one disjoint quarter, the incoming request should choose a cpuset disjoint from all current holders, not simply "a different quarter." For frontdoor with full on NUMA_NODE0 and disjoint q2/q3, a migrated full session on q3 means the incoming can use q2; full becomes safe only if no holder overlaps NUMA_NODE0. The policy should recompute from topology after migration rather than relying on a hard-coded role table.
 
 Tests:
-- `tests/unit/test_load_transition_migration.py`: 2 sequential requests with overlapping timing; assert (a) `_migrate_kv` invoked with correct args, (b) 2nd request placed on a different disjoint quarter, (c) 1st session's affinity updated.
-- `tests/integration/test_migration_under_real_dispatch.py`: real httpx mock server, end-to-end save→restore→erase, verify slot 0 content matches.
+- `tests/unit/test_load_transition_migration.py`: verifies the shipped forward-migration transaction and policy gates under per-region locks.
+- `tests/unit/test_migration_transaction.py`: transaction states `planned -> saving -> restoring -> verified -> source_erased -> committed` and abort paths.
+- `tests/integration/test_migration_under_real_dispatch.py`: real httpx mock server, end-to-end save→restore→erase, verify slot 0 content matches when available.
 
-**Gate**: 4-way concurrent autopilot fan-out at frontdoor shows: 1st request hits full briefly, then migrates to q3; 2nd lands on q2; 3rd lands on (newly disjoint of {q2,q3}) full or queues if migration not yet complete; 4th queues; aggregate t/s ≥ measured 4-quarters baseline from contention matrix (~1.88×).
+**Gate**: sustained frontdoor traffic with session handover shows a prior full-backed session migrates to a disjoint quarter, its next request follows sticky quarter affinity, no overlapping cpusets are admitted, and aggregate t/s improves only when placements are actually disjoint. Do not require in-flight full decode preemption.
 
 ### Phase 4 — Reverse migration (quarter→full when load drops) (≤2d)
 
@@ -125,7 +128,7 @@ New condition: when the last in-flight request finishes on a quarter AND full ha
 3. Update `_session_quarter` to remove the affinity.
 4. Best-effort; failure leaves session on quarter unchanged.
 
-Add Prometheus counter `kv_migration_direction_total{direction="forward|reverse"}` and `kv_migration_thrash_skipped_total`.
+Telemetry should expose reverse migration count/direction and thrash skips. The original plan named Prometheus counters `kv_migration_direction_total{direction="forward|reverse"}` and `kv_migration_thrash_skipped_total`; as of the 2026-05-26 audit, the reverse path has log/stat evidence but those exact Prometheus counters are not wired. Package J should verify the available observable evidence unless a metrics patch lands first.
 
 Tests: `tests/unit/test_reverse_migration.py` covering: load drops 2→1 → reverse triggered; cooldown gate; thrash guard.
 
@@ -202,6 +205,30 @@ P0 is mandatory before any subsequent phase ships. P4, P5, P6 are independent an
 - **Matrix/topology drift**: derive a `topology_hash` from role instance cpu_lists and write it into both `placement_overlap` and measured `same_role.instance_pairs`. Runtime must warn or fail closed when topology_hash in YAML does not match live NUMA_CONFIG.
 - **Fairness/starvation**: queue-instead-of-overlap can starve low-priority sessions during sustained autopilot fan-out. Add per-role queue age metrics and a starvation guard before production rollout.
 - **Session affinity consistency**: `_session_quarter` must be the single source of truth for warm-session placement after migrations. Any code path that bypasses `PlacementPolicy` risks stale affinity and must be audited in Phase 2.
+
+## Inference-gate verification results
+
+### J1 / Phase 2 gate — partial verification + verification-vehicle correction (2026-05-26, claude)
+
+Ran with `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` live (API restarted via `start_orchestrator()`, PID 1306375; `PER_REGION_LOCKS=1`). Topology `df373c79cc4af06f`. Fan-out via a new probe `scripts/benchmark/placement_fanout_probe.py` against `/chat` with `force_role=frontdoor, allow_delegation=False`, distinct sessions. Artifacts in `data/bulk_inference_2026_05_26/j1_*.json`.
+
+| Run | Result |
+|-----|--------|
+| serial n=3 (baseline) | 25.53 t/s median per-request, p99 latency 52.06s |
+| concurrent n=3 | aggregate **42.83 t/s = 1.68×** single-stream; all placed disjoint; no queue (3 ≤ 3 safe slots, expected) |
+| concurrent n=4 (clean, no dashboard poll) | all 4 → 200; aggregate **48.78 t/s = 1.91×**; no queue fired |
+| concurrent n=8 | 4 → 200, **4 → 429** (rate-limited); aggregate 45.6 t/s; no queue fired |
+
+**Core gate: PASS.** The placement SM distributes concurrent frontdoor requests across disjoint instances with near-linear aggregate scaling (1.68×–1.91×) and **no overlap collapse**. Physical cpuset overlap is structurally impossible (exclusive `fcntl` region flocks); the `Queue(topology_overlap)` decision logic is covered by `test_dispatch_placement_state_machine.py` + `test_per_region_locks_migration.py` (green in preflight).
+
+**Live `topology_overlap` queue event: NOT observed via `/chat`, and that is expected — `/chat` is the wrong vehicle.** Findings:
+
+- **F1 — dashboard `active_instance_idxs` is broken.** `/dashboard/api/region_locks` resolves lock-holder PIDs to *llama-server* ports, but under PER_REGION_LOCKS the flock is held by the *API-worker* process running the dispatcher → `active_instance_idxs` is always `[]`. The panel cannot show "N active" as J1/J2/J3 assumed. Fix options: resolve holders to API-worker PIDs, or derive active instances from `active_region_holders()` directly.
+- **F2 — `active_region_holders()` over-reports for full+quarter topology.** It flags every instance *spanning* a held region (full spans q0+q1, so a held q0 marks both full(idx0) and q0(idx1) active). "Count of active idxs" overstates concurrency; use distinct-regions-held (occupancy), not instance-idx count, when interpreting "active instances" in J2/J3/J4.
+- **F3 — the HTTP rate limiter shadows the queue.** `RateLimitMiddleware` (60 rpm / 10 burst, shared per-IP, only `/health` exempt) plus a persistent external dashboard client cap concurrent external `/chat` at ~3–4 reaching the dispatcher. The placement-SM `topology_overlap` queue needs >3 *simultaneous at the dispatcher*; external `/chat` can't sustain that. **The queue is relevant to the internal EvalTower / autopilot eval fan-out path (the original WP-0 motivation, `AUTOPILOT_EVAL_CONCURRENCY`), which bypasses the HTTP rate limiter.** → J1's queue observation and **J2/J3 migration verification should be driven through the autopilot eval-concurrency path (folded into J4 / WP-5 ratification), not external `/chat` fan-out.**
+- **F4 — p99 "+20% vs serial" gate is mis-specified.** Quarter-placed requests run on 24 physical cores vs full's 48, so they are inherently ~2× slower per-request under concurrency (n=3 p99 92.7s vs serial 52s). Aggregate batch t/s is the correct objective (matches the campaign's concurrent-metric policy). The per-request p99 vs serial comparison should be dropped or re-baselined against the quarter's own solo speed.
+
+**Disposition**: WP-2 placement core verified live (scaling + no overlap). Queue/migration live observation re-assigned to the eval-concurrency path. WP-2/WP-3/WP-4 flags left enabled (`PLACEMENT_STATE_MACHINE=1`). Phases 3–4 (J2/J3) should not be chased via `/chat`.
 
 ## Reporting
 

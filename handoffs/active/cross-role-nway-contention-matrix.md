@@ -1,0 +1,234 @@
+# Cross-Role N-Way Contention Matrix Closure
+
+**Status**: active
+**Created**: 2026-05-26
+**Updated**: 2026-05-26
+**Categories**: orchestration, inference, scheduling, measurement
+**Priority**: HIGH
+**Owners**: bulk-inference-campaign Package J / routing-and-optimization
+**Related**: [bulk-inference-campaign.md](bulk-inference-campaign.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
+
+---
+
+## Problem
+
+The current cross-role contention guard is pairwise. `ContentionGate.evaluate()` checks a new role against each active role through `pair_policy()`, so any known-bad pair inside a triple/quad is correctly blocked. That does not prove that an all-pairwise-allowed triple or quad is aggregate-throughput-positive. Shared memory bandwidth, cache pressure, llama-server scheduling, and per-role thread placement can still make an N-way active set regress even when every constituent pair passed.
+
+This handoff owns Package J tasks J4a/J4b/J4c. They must close the N-way matrix before downstream bulk inference uses cross-role parallelism to reduce wall time.
+
+## Scope
+
+The closure guarantee is scoped to the exact measured stack:
+
+- same `topology_hash`
+- same role set and model mappings
+- same CPU binding / instance topology
+- same llama-server launch shape and relevant runtime flags
+- same orchestration stack behavior for dispatch and contention gating
+
+Future topology, model, CPU-binding, or orchestration-stack changes invalidate the matrix and require re-derivation. That future re-derivation is out of scope here.
+
+## Current State
+
+- `orchestration/contention_matrix.yaml` contains measured pairwise cross-role data, same-role coarse verdicts, explicit unknown pairs, and a small number of informational triples.
+- Runtime admission is pairwise today: a candidate request is compared with each active role; N-way active sets are not modeled as first-class verdicts.
+- `scripts/server/contention_matrix.py` should be treated as requiring audit before use for N-way closure. Its high-level comments describe smart pruning, but the current implementation has historically been pair-oriented; J4a must verify or add the exact N-way enumeration and manifest output.
+
+## Definitions
+
+**Trivial N-way rejection**: an active set can be skipped without new inference when it contains any lower-order failure:
+
+- a pair with verdict `block`
+- a pair below the configured background/bulk throughput floor
+- an explicit `unknown` pair
+- a same-role combination already blocked
+- a measured failed triple contained inside a larger candidate
+
+**Non-trivial N-way candidate**: an N-way active set whose every lower-order constituent is allowed under background/bulk policy. Pairwise-allowed is a precondition only; J4b measurement is still required before launch certification.
+
+**Closed-world matrix for a topology**: for the measured topology hash, every non-trivial N-way active set is either measured `allow`, measured `block`, or explicitly listed as excluded by lower-order evidence. There must be no residual "unmeasured but potentially launchable" bucket.
+
+## J4a: Candidate Enumeration
+
+Goal: produce a deterministic manifest of every N-way active-set candidate and every excluded active set for the current topology.
+
+Required behavior:
+
+- Read live role topology and the current pairwise/same-role matrix.
+- Enumerate triples first; then enumerate every larger active set up to the maximum cross-role concurrency the scheduler or bulk runner can admit.
+- Prune trivial failures using lower-order evidence.
+- Keep all non-trivial all-lower-order-allowed candidates for J4b measurement.
+- Emit a topology-stamped manifest under `data/contention_matrix/` or another durable path named in the progress log.
+
+Manifest fields:
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `topology_hash` | yes | Must match runtime topology before any measurement or launch use. |
+| `generated_at` | yes | UTC timestamp. |
+| `roles` | yes | Sorted role list considered by enumeration. |
+| `candidate_sets` | yes | List of non-trivial N-way sets requiring measurement. |
+| `excluded_sets` | yes | List of pruned sets and exact reason. |
+| `lower_order_evidence` | yes | Pair/triple evidence used to allow or prune. |
+| `matrix_source` | yes | Path + git sha or checksum for the input YAML. |
+
+Closure gate:
+
+- Manifest is deterministic across two dry runs on the same topology.
+- Every exclusion cites concrete lower-order evidence.
+- No candidate lacks pairwise evidence.
+
+## J4b: N-Way Measurement
+
+Goal: measure all non-trivial candidates from J4a and update the matrix so bulk scheduling can make closed-world decisions.
+
+Run policy:
+
+- Run alone on the host. Do not co-run with J5, standalone throughput benches, or downstream evals.
+- Measure triples before quads.
+- Skip any quad/superset that contains a measured failed triple and record it in `excluded_n_way`.
+- Use at least 3 samples per measured set; gate on CV <= 5% unless the handoff/progress log explains why the result is still decisive.
+- Compare `parallel_aggregate_tps` against `seq_aggregate_tps`. Per-request median speed is diagnostic only for this matrix.
+
+Suggested YAML extension:
+
+```yaml
+n_way:
+  - roles: [frontdoor, worker_general, vision_escalation]
+    size: 3
+    topology_hash: "..."
+    seq_aggregate_tps: 100.0
+    parallel_aggregate_tps: 145.0
+    ratio: 1.45
+    samples: 3
+    cv: 0.03
+    verdict: allow
+    measured_at: "2026-05-26T00:00:00Z"
+    artifact: "data/contention_matrix/..."
+excluded_n_way:
+  - roles: [frontdoor, ingest_long_context, worker_general]
+    topology_hash: "..."
+    reason: contains_blocked_pair
+    evidence: ["frontdoor+ingest_long_context ratio 0.49 block"]
+```
+
+Closure gate:
+
+- For the current topology hash, every J4a `candidate_sets` entry has a matching measured `n_way` verdict.
+- Every pruned candidate is listed in `excluded_n_way` with evidence.
+- There is no unmeasured, all-lower-order-allowed N-way set remaining.
+
+## J4c: Policy Wiring
+
+Goal: prevent the bulk runner or runtime scheduler from treating all-pairwise-allowed N-way sets as certified unless J4b actually measured them.
+
+Required policy:
+
+- Before J4b closure: fail closed. Cross-role N-way task overlap is queue/serialize unless the exact active set is already measured and topology-valid.
+- After J4b closure: launch only exact active sets with `n_way.verdict: allow` and matching topology hash.
+- Treat `block`, `excluded_n_way`, missing N-way entries, stale topology hash, or missing matrix status as queue/serialize.
+- Same-trial EvalTower fan-out is separate; it uses within-role topology-safe placement and concurrent speed semantics, not this cross-role N-way matrix.
+
+Implementation note: if the runtime remains pairwise only and the bulk runner is the only component launching cross-role overlap, J4c can be a bulk-runner guard plus documentation. If production admission itself can create N-way overlap, teach `ContentionGate` or its caller to evaluate the exact active-set union.
+
+## Baseline Mutation Rule
+
+Do not update production baselines, Pareto archives, regression thresholds, learned scheduling priors, or routing speed priors from any concurrent run unless all of the following are recorded and valid:
+
+- `speed_metric_mode`
+- `topology_hash`
+- `matrix_status`
+- exact active-set verdict id or same-trial within-role flag
+- median per-request t/s when available
+- aggregate batch t/s when concurrency is used
+
+If any field is missing, stale, or inconsistent, quarantine the run as diagnostic-only. It may inform manual investigation, but it must not mutate production baselines or safety thresholds.
+
+## Execution Manifest Template
+
+Every J4a/J4b/J4c execution should have a manifest row or JSON object with these fields:
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `run_id` | yes | Stable id reused in artifacts and progress notes. |
+| `task_id` | yes | `J4a`, `J4b`, or `J4c`. |
+| `topology_hash` | yes | Captured immediately before the run. |
+| `roles` | yes | Roles in scope or exact active set. |
+| `concurrency_mode` | yes | `enumeration`, `isolated_bench`, `policy_wiring`, or `observe_only`. |
+| `matrix_status` | yes | `preclosure`, `closed_world`, `stale`, or `diagnostic_only`. |
+| `command` | yes | Exact command or script invocation. |
+| `flags` | yes | Relevant env vars and feature flags. |
+| `output_artifacts` | yes | Manifest/YAML/log/result paths. |
+| `journal_policy` | yes | `quarantine`, `diagnostic_only`, or `baseline_eligible`. |
+| `baseline_mutation_allowed` | yes | Boolean; false unless the baseline rule above passes. |
+| `pass_gate` | yes | Explicit gate expression. |
+| `next_action` | yes | Continue, rerun, serialize downstream, or stop. |
+
+## Resume Protocol
+
+If interrupted:
+
+1. Read the latest progress log and the execution manifest.
+2. Recompute the current `topology_hash` and compare it with the manifest and matrix.
+3. Inspect the last produced artifact, not just process exit status.
+4. Rerun only idempotent preflight/enumeration steps automatically.
+5. Resume from the first incomplete gate.
+6. Do not mark a partially completed bench row as complete unless all samples, CV, ratio, verdict, topology hash, and artifact paths are present.
+7. If topology changed, stop cross-role parallelism and restart from J4a.
+
+## J4a Result (2026-05-26, claude bulk-inference session)
+
+J4a enumeration **implemented + run (no inference)**. An additive `enumerate` subcommand now lives in `scripts/server/contention_matrix.py` (reuses `load_contention_matrix` + `topology_fingerprint`; refuses to emit against a stale/mismatched matrix). It loads the live matrix + NUMA_CONFIG, classifies every cross-role pair by the background/bulk floor (0.85), enumerates all size-3..N role sets, prunes on lower-order evidence (below-floor/block/unknown pair, or measured-failed-triple superset), and emits a topology-stamped JSON manifest with a deterministic `content_hash`.
+
+- **Topology**: live `topology_hash = df373c79cc4af06f` == matrix; `matrix_status = OK` (measured 2026-05-24, fresh).
+- **Artifact**: `data/contention_matrix/bulk-2026-05-26-j4a/j4a_candidate_manifest.json` (`content_hash = 8dd5f740f3651bfb`).
+- **Command**: `python3 scripts/server/contention_matrix.py enumerate --run-id bulk-2026-05-26-j4a --output data/contention_matrix/bulk-2026-05-26-j4a`
+- **Candidate sets (require J4b measurement — currently NOT certified)**:
+  - `{ingest_long_context, vision_escalation, worker_general}` (min pair ratio 1.18)
+  - `{vision_escalation, worker_general, worker_vision}` (min pair ratio 1.07)
+  - **No 4-way or larger candidates** — no clique of bulk-allowed pairs exceeds size 3 in the current matrix.
+- **Excluded**: 40 size-3..6 sets, each citing the first offending pair (e.g. `frontdoor+ingest_long_context 0.37 block`, `architect_general+frontdoor 0.50 block`) or unknown pair (`*+worker_vision` unknowns).
+- **Discrepancy flag**: `{frontdoor, vision_escalation, worker_general}` is excluded by `frontdoor+vision_escalation = 0.84 < floor 0.85`, **but** the matrix's informational triple measured **1.45**. This is the canonical pairwise-conservative-vs-N-way-positive case. **J4b should measure this set explicitly** alongside the two candidates; if confirmed ≥ floor, it is a foreground-only-allow / floor-reconsideration candidate (still not a background/bulk allow until the pair itself clears).
+
+**Closure gate status**: J4a closure gate **met** (deterministic across two runs; every exclusion cites concrete lower-order evidence; no candidate lacks pairwise evidence). **J4b/J4c remain OPEN** — `matrix_status` stays `preclosure` until J4b measures the 3 sets above (alone on host) and writes `n_way`/`excluded_n_way` into `contention_matrix.yaml`. Cross-role parallelism stays fail-closed meanwhile.
+
+**Note for J5 (within-role)**: `worker_general` is a 4-quarter role (full `0-95` + q0–q3), not single-instance; its quarters-only disjoint capacity is 4. The current `same_role.worker_general = allow` verdict is "assumed quarter-safe, not directly measured 4-way" — J5's instance-pair sweep is what validates the worker_general quarters path.
+
+## J4b Result (2026-05-26, claude bulk-inference session) — MATRIX CLOSED (+ gemma4 crash finding)
+
+J4b measurement **implemented + run alone on host** (frontdoor measured 25.5 t/s pre-bench → no throttle, so drop_caches skipped per `feedback_drop_caches_numa_eviction`). New `bench-nway` subcommand in `scripts/server/contention_matrix.py` reads the J4a manifest, benches each set (solo + all-K concurrent, 3 samples, ratio = parallel_agg/seq_agg, CV gate). Artifacts: `data/contention_matrix/bulk-2026-05-26-j4b/`. Matrix updated: `orchestration/contention_matrix.yaml` now has `n_way:` (2 allow) + `excluded_n_way:` (1 block). `matrix_status=ok`, topology `df373c79cc4af06f`.
+
+| Active set | ratio | CV | verdict |
+|------------|-------|-----|---------|
+| {vision_escalation, worker_general, worker_vision} | 1.286 | 0.003 | **allow** (clean) |
+| {frontdoor, vision_escalation, worker_general} (J4a-flagged) | 1.126 | 0.06 | **allow** (foreground) — N-way-positive despite the pairwise frontdoor+vision=0.84; resolves the J4a flag |
+| {ingest_long_context, vision_escalation, worker_general} | 1.209* | 0.15 | **block / UNSAFE** |
+
+**Closed-world gate MET**: both non-trivial candidates classified (1 allow, 1 block), the flagged set measured (allow), no residual unmeasured bucket for this topology.
+
+**⚠️ Critical finding — gemma4 worker_general full crashed under the heaviest 3-way contention.** During the `{ingest, vision, worker_general}` bench, the gemma4-26B-A4B MTP **full** instance (port 8072) crashed (`Errno 111` connection-refused mid-bench; `logs/worker-explore-8072.log`: degenerate repetition then `terminate: std::runtime_error Failed to parse input at pos 0:`). This is a *different* signature from the FA-assert wedge in `feedback_gemma4_mtp_fa_assert_wedge` (it's a parse-error after degenerate output, clean process exit — no zombie threads). The full instance (gemma4 wants 0-95) under simultaneous ingest(0-47)+vision(48-95) load destabilized. The 4 quarters survived; production was degraded-not-broken. **Restored** via `orchestrator_stack.py start --only worker_general --skip-host-prereqs` (started only the down instance; new PID, all 5 healthy). The set's 1.209 ratio (on completing samples) is moot — it is marked `block` for safety until gemma4 full-instance stability under contention is investigated. This is exactly the kind of all-pairwise-allowed-but-unsafe N-way set the closure exists to catch.
+
+**Remaining**: **J4c** — wire the fail-closed → allow-only policy so the bulk runner / scheduler only launches exact active sets with `n_way.verdict: allow` + matching topology hash, treating `block`/`excluded_n_way`/missing/stale as queue-serialize. (Pre-J4c operator policy is already fail-closed.)
+
+## J4b CORRECTION (2026-05-26, operator audit) — full-instance model was wrong; quarter-level disjoint-cpuset model + parser fix
+
+The first J4b pass (above) benched each role's **full/primary** instance concurrently. The operator correctly flagged this as a methodology error:
+
+- **A full-machine instance is solo-only.** worker_general-full (0-95) and architect-full (0-95) need all cores; they exist for max *single-stream* throughput when there is no concurrency. Running worker_general-full concurrently with ingest+vision (what the first J4b did) is a config the placement SM should never create. Under concurrency a role must use a **quarter**.
+- **Concurrency is mutually-disjoint cpusets, not "quarters only".** ingest-full(0-47) + vision-full(48-95) co-run fine (disjoint halves). The hard veto is *overlap*: a full instance that needs all cores blocks concurrency until it is moved to a quarter/half.
+- **{ingest, vision, worker_general} at full is over-subscribed**, not merely "block": ingest(0-47)+vision(48-95) already fill the machine. Its first-pass crash was the gemma4 PEG **parser bug**, not a pure concurrency verdict.
+
+**Corrected model implemented** (`scripts/server/contention_matrix.py`, commit `941a340`): `feasible_assignment()` (backtracking disjoint-cpuset search, quarters preferred) + `enumerate --feasibility` + `bench-nway` using per-role assignment ports + `--safe-sampling`. Feasible enumeration for topology `df373c79cc4af06f`: **25 candidate sets** (size 2-4), **32 excluded `topology_infeasible`** (every architect-containing set — architect is full-only/solo — plus all ≥5-role sets). Manifest: `data/contention_matrix/bulk-2026-05-26-j4a-feasible/`.
+
+**gemma4 parser crash FIXED** (not just filed). Root cause: `ik_llama.cpp/common/chat.cpp` `common_chat_peg_parse` threw an *uncaught* `std::runtime_error` on un-parseable output → server `terminate`. Patched (ik_llama.cpp commit `d84755dc`, branch `pr-1744`): final parse → return raw text as content; partial parse → empty msg. Rebuilt + redeployed all 5 worker_general instances; **verified** — the exact greedy degenerating prompt now returns content and the server survives.
+
+**Status of the full-instance n_way entries**: per operator, full-instance co-running data is valid where it boosts (gemma4 MTP is BW-light), so `{vision,worker_general,worker_vision}`=1.286 and `{frontdoor,vision,worker_general}`=1.126 are kept as a **full-mode coarse layer**. The authoritative concurrent matrix is the **quarter-level disjoint** re-bench (15 size≥3 feasible sets, `--safe-sampling`, alone on host) — **in progress** (`data/contention_matrix/bulk-2026-05-26-j4b-feasible/`). The earlier "matrix CLOSED" is therefore **superseded**: closure is re-defined over the feasible quarter-level candidate set.
+
+## Completion Criteria
+
+- J4a candidate/exclusion manifest exists and is topology-stamped.
+- J4b updates `orchestration/contention_matrix.yaml` or an equivalent matrix artifact with `n_way` and `excluded_n_way`.
+- J4c fail-closed policy is implemented or explicitly delegated to the bulk runner.
+- Bulk inference runbook points to this handoff.
+- Master handoff index points to the early matrix-closure dependency.
+- Latest progress log records topology hash, commands, artifacts, and closure verdict.

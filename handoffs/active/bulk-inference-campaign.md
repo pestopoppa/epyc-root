@@ -1,12 +1,12 @@
-# Bulk Inference Campaign: Packages B-E
+# Bulk Inference Campaign: Packages B-J
 
-**Status**: active (A+B+C+E+F done, D relaunching. G1/G2/AM-L1-L3b/SEAL all complete 2026-04-13. AM has native llama.cpp beta injection + server endpoint. H1/H2/H3/H6 folded into D. v3 binary live. G7/G7a MiniMax NUMA sweeps done 2026-04-17.)
+**Status**: active. Completed: A, B, C, E, F, G1/G2/G7/G7a, AM-L1-L3b, SEAL, H1/H2/H3/H6 fold-in. Remaining inference-gated work is now led by Package J, especially J1-J3 parallel-dispatch validation; downstream D-tail/G/H/I/J4+ should not run before those gates pass.
 **Created**: 2026-04-06
-**Updated**: 2026-04-17
+**Updated**: 2026-05-26
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
-**Related**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`research-evaluation-index.md`](research-evaluation-index.md), [`pipeline-integration-index.md`](pipeline-integration-index.md), [`hermes-agent-index.md`](hermes-agent-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Related**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`research-evaluation-index.md`](research-evaluation-index.md), [`pipeline-integration-index.md`](pipeline-integration-index.md), [`hermes-agent-index.md`](hermes-agent-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cross-role-nway-contention-matrix.md`](cross-role-nway-contention-matrix.md)
 
 ---
 
@@ -769,19 +769,28 @@ Then update orchestrator config:
   └── ✅ PACKAGE F ──────────── DONE 2026-04-10 (v3 binary swapped, coder +101%, REAP +50%)
 ```
 
-## Execution Order
+## Remaining Execution Order
 
-| Order | Package | Duration | Why this order |
-|-------|---------|----------|----------------|
-| 1 | ~~**E**~~ | ~~1 hour~~ | ✅ DONE 2026-04-06. Hermes streaming PASS, vision fixed 2026-04-08. |
-| 2 | ~~**B**~~ | ~~1 day~~ | ✅ DONE 2026-04-10. All phases complete. Tool A/B: compression +4pp REPL. WS-3 fix validated. |
-| 3 | ~~**F**~~ | ~~30 min~~ | ✅ DONE 2026-04-10. 4/4 models PASS, Hadamard PASS, PPL 6.80. v3 binary swapped. |
-| 4 | **D** | Multi-day | B done, prerequisites met (sentinels expanded, baseline schema ready). |
-| 5 | ~~**C**~~ | ~~½ day~~ | ✅ DONE 2026-04-11. 2a: 30B-A3B perfect summarizer. 2b: L3 sweet spot. 2c: ρ=0.65. TALE: static limits kept. |
+| Order | Work | Duration | Why this order / concurrency policy |
+|-------|------|----------|--------------------------------------|
+| 0 | **Parallel-dispatch integrity preflight** | ~15 min | Before any large run: confirm epyc-orchestrator main is `15350fe` or later plus the concurrency-metric patch if present, run the placement/migration unit subset, verify `AUTOPILOT_EVAL_CONCURRENCY` defaults to topology-safe `max_safe_concurrency(frontdoor)=3`, and confirm 4-way frontdoor traffic queues rather than placing on overlapping q0/q1. Abort the bulk train if this fails. |
+| 1 | **J1** WP-2 placement state-machine gate | ~1h | First required inference gate. Proves safe fan-out (full + disjoint quarters + queued overlap) before any downstream task relies on parallel dispatch. |
+| 2 | **J2** WP-3 forward-migration verification | ~2h | Verifies shipped session-handover migration semantics and sticky quarter affinity. This is not proactive mid-decode eviction; do not require an impossible in-flight full decode preemption. |
+| 3 | **J3** WP-4 reverse-migration verification | ~30 min + analysis | Verifies solo-after-burst recovery before persistent parallel flags stay on. |
+| 4 | **J4a/J4b** N-way contention-matrix closure | ~4-12h, runs alone | Required before using cross-role parallelism to accelerate the backlog. Enumerate every non-trivial all-lower-order-allowed active set up to the scheduler's maximum cross-role concurrency, bench it, write N-way verdicts, and fail closed until every candidate is either measured or explicitly pruned/excluded for this topology. |
+| 5 | **J5** WP-6 within-role instance-pair matrix re-bench | overnight, runs alone | Completes the within-role side of the matrix. Must run alone because it launches controlled instance-pair benches. |
+| 6 | **J10** URE-1 shadow logger | passive | Flip after the matrix gates are safe; it shapes no workload and can accumulate through all later traffic. |
+| 7 | **J12** chat_template_kwargs wiring verification | ~2h | Cheap, high-leverage quality gate. Run before large quality-sensitive evals if wiring is still absent. |
+| 8 | **J4** WP-5 ratification observation + **J9/J11** observe-only/paired gates where wired | 6-12h | Uses the newly verified parallel-dispatch path and completed matrix. J9 is observe-only; J11 runs per accepted mutation. Keep paired-eval attribution sequential unless explicit concurrent approval exists. |
+| 9 | **J6** WP-7 24h rollout | 24h passive | Requires J4a/J4b/J5. J7/J8/J9/J10/J11 can co-run only when their own flags are observe/advisory, the N-way matrix allows the specific active set, and run metadata records concurrency. |
+| 10 | **J7/J8** DCP/BEP inference gates | 3-4h each | Build missing live hooks first. J8 is the falsification gate and should run first within this harness cluster once wired. |
+| 11 | **Package H/I/G residuals and D-tail** | variable | H7 before H5; I1 before I2; I3 independent. Standalone G benches can fill downtime, but do not co-run with J4a/J4b/J5 or any standalone throughput bench. |
 
-**Parallelization note**: F can run anytime (experimental binary, loads models one-at-a-time). C uses individual model servers on a single NUMA quarter — can run during B/D downtime.
+**Completed historical ordering**: E/B/F/C and the completed G/AM/SEAL items remain documented below for provenance only. Do not use their April ordering as the current run order.
 
-**Recommended approach**: Run F first (quick, unblocks v3 swap). Then B → D (full stack). Run C during B/D downtime or after.
+**Concurrent-run metric policy**: When `AUTOPILOT_EVAL_CONCURRENCY>1`, fan-out is allowed only inside a single trial's eval batch; do not run separate trials concurrently in one autopilot process. Individual request tokens/sec normally drops while aggregate batch throughput can improve. Every concurrent eval must record `speed_metric_mode`, `eval_concurrency`, median per-request t/s, aggregate batch t/s, and eval wall time. For concurrent eval batches, the SafetyGate/Pareto `speed` objective is aggregate batch t/s; the raw median request t/s is retained as audit metadata. This prevents the planner from treating safe same-trial fan-out as a regression while still exposing the per-instance slowdown for diagnostics. Cross-role bulk parallelism is stricter: pairwise-allowed is necessary but not sufficient; before J4b completion, unmeasured N-way active sets fail closed. After J4b completion for the current topology, there should be no unclassified N-way active set: each is measured `allow`, measured `block`, or explicitly pruned/excluded by a lower-order failure. This closed-world guarantee is scoped to the exact `topology_hash` / stack state measured by J4b; any future orchestration-stack, role, model, CPU binding, or server-launch topology change invalidates the matrix and requires re-derivation before using cross-role parallelism again.
+
+**Baseline mutation hard rule**: Do not update production baselines, Pareto archives, regression thresholds, learned scheduling priors, routing speed priors, or trial-scheduling evidence from any run unless `speed_metric_mode`, `topology_hash`, and `matrix_status` are recorded and valid. Cross-role concurrent runs must also record the exact N-way active-set verdict or a same-trial within-role fan-out marker. Missing, stale, or inconsistent metadata means diagnostic-only quarantine.
 
 ---
 
@@ -941,39 +950,112 @@ Initial regret analysis on 7,211 routing decisions (Apr 10-14):
 
 ## Package J: Within-Role Placement + Audit-Batch Inference Gates (2026-05-26)
 
-**Duration**: ~1-3 days if sequenced; J6 (matrix re-bench) can run overnight
-**Stack required**: Standard orchestrator stack; J1-J3 require `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` and (for J2/J3) `ORCHESTRATOR_REVERSE_MIGRATION=1` set in the API env
+**Duration**: ~1-3 days if sequenced; J5 (matrix re-bench) can run overnight
+**Stack required**: Standard orchestrator stack; J1-J3 require `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1`; J3 additionally requires `ORCHESTRATOR_REVERSE_MIGRATION=1` set in the API env
 **Depends on**: epyc-orchestrator main @ `15350fe` or later — both feature branches MERGED 2026-05-26 (`fe6805c` placement WP-0..WP-4 + WP-5 scaffold; `15350fe` intake-607 harness DCP/BEP/BSV/URE). 347 unit tests on main; all new code additive + flags default-OFF. No further branch merging needed before any J task.
-**Status**: NOT STARTED — wired 2026-05-26; both code prereqs merged + pushed 2026-05-26
+**Status**: IN PROGRESS (claude 2026-05-26). Preflight PASS (67 tests). **J4a DONE** (`data/contention_matrix/bulk-2026-05-26-j4a/`). **J1 core PASS** — placement SM scales concurrent frontdoor 1.68×–1.91× across disjoint instances, no overlap; the `topology_overlap` queue is NOT observable via `/chat` (HTTP rate limiter 60rpm/10burst + a persistent dashboard client cap concurrent arrivals) → **J1 queue + J2/J3 migration verification re-vehicled to the autopilot eval-concurrency fan-out path** (the original WP-0 motivation). **J4b**: first full-instance pass exposed an operator-flagged methodology error → corrected to a **quarter-level disjoint-cpuset feasibility model** (`enumerate --feasibility`: 25 feasible / 32 `topology_infeasible`); quarter-level re-bench (`--safe-sampling`) IN PROGRESS (`data/contention_matrix/bulk-2026-05-26-j4b-feasible/`). **gemma4 worker_general full-instance crash FIXED** (uncaught PEG-parser throw → raw-content fallback; ik_llama.cpp `d84755dc`, rebuilt+redeployed+verified). Findings F1–F4 in [within-role-placement-state-machine.md](within-role-placement-state-machine.md); correction detail in [cross-role-nway-contention-matrix.md](cross-role-nway-contention-matrix.md). Remaining: finalize quarter-level matrix → J4c policy wiring → J5/J4/J6 → J7–J12.
 
 Inference-gated verifications and observability runs for the within-role-placement-state-machine handoff. Also bundles the two sibling inference gates from the 2026-05-25 audit batch (DCP-6, BEP-2) because they share the same "needs autopilot-style eval workload" profile and benefit from one operator sitting + one cleared stack window. Add other-agent inference-gated items under this Package (or a successor) for shared sequencing.
 
 ### Priority-zero sequencing (RUN FIRST)
 
-> **J1 → J2 → J3 must run BEFORE any other downstream inference Package** (G/H/I, J4-J9, or other-agent items appended at the end). Reason: J1-J3 enable the WP-2/3/4 parallelization flags. Once verified and left on, every subsequent autopilot/eval/bench task benefits from up to 3× higher per-role concurrency, which is a force-multiplier on every downstream Package's wallclock — most importantly J4 (autopilot observability), J6 (24h rollout), J7 (delegation eval), J9 (HLE-4 trial accumulation), Package H tasks, and Package I traffic-collection runs. Running parallel-eval work BEFORE flipping these flags pays a serial-fan-out tax on every batch.
+> **J1 → J2 → J3 → J4a/J4b/J5 must run BEFORE any downstream inference Package that relies on parallelism** (D-tail, G/H/I, J4/J6-J9, or other-agent items appended at the end). Reason: J1-J3 enable the within-role WP-2/3/4 parallelization flags, while J4a/J4b/J5 finish the cross-role and within-role matrix evidence needed to decide which concurrent active sets are actually throughput-positive. Once verified and left on, every subsequent autopilot/eval/bench task benefits from safe concurrency without corrupting throughput metrics or scheduling priors.
 >
-> Equivalent ordering rule for the global Execution Order table: insert **`J1, J2, J3`** ahead of any not-yet-started inference Package (currently D-tail, G, H, I, and J4+). Don't backfill `Package E/B/F/C` ordering — those already completed.
+> Equivalent ordering rule for the global Execution Order table: insert **`J1, J2, J3, J4a, J4b, J5`** ahead of any not-yet-started inference Package that could use shared-stack concurrency. Don't backfill `Package E/B/F/C` ordering — those already completed.
 >
-> If the operator wants to mix flag-enablement validation with downstream work in the same sitting, the safe interleave is: J1 (~1h) → J2 (~2h) → J3 (~30-min profile) → enable flags persistently → proceed with anything else.
+> If the operator wants to mix flag-enablement validation with downstream work in the same sitting, the safe interleave is: J1 (~1h) → J2 (~2h) → J3 (~30-min profile) → J4a dry-run enumeration → J4b/J5 matrix benches in isolated slots → enable flags persistently → proceed with anything else.
+
+### Parallel-dispatch integrity preflight (abort-on-fail)
+
+Before starting the bulk train, run this preflight on the orchestrator checkout:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+python3 -m py_compile src/backends/concurrency_aware.py src/scheduling/placement.py scripts/autopilot/eval_tower.py scripts/autopilot/safety_gate.py scripts/autopilot/autopilot.py
+pytest -q tests/unit/test_eval_tower_concurrency_metrics.py \
+  tests/unit/test_topology_concurrency.py \
+  tests/unit/test_dispatch_placement_state_machine.py \
+  tests/unit/test_per_region_locks_migration.py \
+  tests/unit/test_load_transition_migration.py \
+  tests/unit/test_reverse_migration.py \
+  tests/unit/test_migration_transaction.py
+```
+
+Gate expectations:
+- `AUTOPILOT_EVAL_CONCURRENCY` unset resolves to `max_safe_concurrency(frontdoor)=3`; any explicit override above 3 is a deliberate stress test, not a production default.
+- Four concurrent frontdoor requests show exactly 3 active safe placements and one queued/denied for `topology_overlap`; no q0/q1 overlap with full is allowed.
+- Concurrent eval results include `speed_metric_mode`, separate median request t/s, and aggregate batch t/s metadata. If a run predates that telemetry, compute the two metrics manually from logs and mark the trial analysis as concurrency-audited before using it for scheduling decisions.
+- If any of these fail, stop. Do not run D-tail/G/H/I/J4+ on top of a suspect dispatcher or unlabelled concurrent speed metric.
 
 | # | Task | Source Handoff | Description | Models Needed | Effort |
 |---|------|---------------|-------------|--------------|--------|
 | J1 | WP-2 placement state machine gate | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 2 | Enable `ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1`, fan 4 concurrent requests at frontdoor, verify per-region-locks dashboard shows 3 active (full + 2 disjoint quarters) + 1 queued with `reason=topology_overlap`. Aggregate t/s ≥ 3-way Phase 1 baseline; p99 ≤ +20% vs serial. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~1h |
-| J2 | WP-3 forward-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 3 | Forward migration is shipped on the existing session-handover trigger (transactional, policy-gated). Verify: under sustained 2+ concurrent traffic with session handover on full, MigrationTransaction completes (state_history shows planned→saving→restoring→verified→source_erased→committed within budget), old session's NEXT request lands on the assigned quarter (sticky affinity preserved), and aggregate t/s under continuous fan-out approaches the matrix's 4-quarters baseline (~1.88×). | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~2h |
-| J3 | WP-4 reverse-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 4 | Enable `ORCHESTRATOR_REVERSE_MIGRATION=1`, run a 30-min mixed traffic profile (alternating bursts of 4 concurrent and solo turns) on frontdoor. Verify Prometheus counter `kv_migration_direction_total{direction="reverse"}` increments, per-session migration counts respect the cap (default 5), and solo-after-burst per-request latency regresses ≤+10% vs solo-only baseline. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~30-min profile + analysis |
-| J4 | WP-5 ratification observability run | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 5 | With WP-2 + WP-3 + WP-4 enabled and conservative `solo_prefer_full` defaults, run autopilot for ~6-12h and collect: (a) per-role concurrency histogram, (b) full vs quarter utilization, (c) migration counts forward + reverse. Decide per-role `placement_policy` values: keep `solo_prefer_full` for autopilot-dominant low-concurrency roles; switch worker_general to `burst_prefer_quarters` if concurrent load grows; consider `full_disabled` for any role where full is wasted memory. Edit NUMA_CONFIG, commit, restart, re-run. | full production stack | ~12h observation + ~1h analysis |
-| J5 | WP-6 matrix re-bench (within-role instance pairs) | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 6 | Extend `epyc-orchestrator/scripts/server/contention_matrix.py` (Phase F harness from cross-role-bw-aware-routing) to sweep within-role pairs `full+q0, full+q1, full+q2, full+q3, q0+q1, q0+q2, q0+q3, q1+q2, q1+q3, q2+q3` for each role with ≥2 instances. Update `orchestration/contention_matrix.yaml` schema with `instance_pairs` block + `topology_hash`. Gate: CV ≤ 5% across 3 runs; runtime fails closed on topology/YAML hash mismatch. **Highest stack-conflict risk in this Package** — runs llama-bench across many configurations; must run alone. | All multi-instance roles (frontdoor, worker_general, ingest_long_context, vision_escalation) | ~overnight (~8-12h) |
-| J6 | WP-7 production rollout + 24h gate | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 7 | Switch `_eval_concurrency()` default from static `max_safe_concurrency(frontdoor)` to "matrix-aware" — query the gate at startup for the role's max sustainable concurrency given measured ratios (uses J5's data). Document operator override path in `wiki/autopilot-tuning.md`. Run a 24-hour autopilot pass; compare throughput/quality vs Phase 0 baseline; verify dashboard shows quarters actively rotating; assert `contention_timeout_count` stays at baseline. | full production stack | ~24h passive + ~1h analysis |
+| J2 | WP-3 forward-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 3 | Forward migration is shipped on the existing session-handover trigger (transactional, policy-gated), not as proactive mid-decode eviction. Verify: under sustained 2+ concurrent traffic with session handover on full, MigrationTransaction completes (state_history shows planned→saving→restoring→verified→source_erased→committed within budget), old session's NEXT request lands on the assigned quarter (sticky affinity preserved), and aggregate t/s under continuous fan-out approaches the matrix's 4-quarters baseline once all requests are placed on disjoint cpusets. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~2h |
+| J3 | WP-4 reverse-migration verification | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 4 | Enable `ORCHESTRATOR_REVERSE_MIGRATION=1`, run a 30-min mixed traffic profile (alternating bursts of 4 concurrent and solo turns) on frontdoor. Verify reverse-migration log/stat evidence increments, per-session migration counts respect the cap (default 5), and solo-after-burst per-request latency regresses ≤+10% vs solo-only baseline. The Prometheus counter named in the original Phase 4 plan is not wired as of this audit; do not block on it unless a metrics patch lands first. | frontdoor (Qwen3.6-35B-A3B Q8 ×5) | ~30-min profile + analysis |
+| J4a | XCM-1 N-way contention candidate enumeration | [cross-role-nway-contention-matrix.md](cross-role-nway-contention-matrix.md) + `scripts/server/contention_matrix.py` | Add/verify an enumeration mode that produces every non-trivial candidate N-way active set from the live role topology up to the scheduler's maximum cross-role concurrency. Prune trivial supersets containing any pair that is `block`, below `default_floor`, unknown, or same-role blocked. Keep candidates where all lower-order constituents are allowed under **background/bulk** policy; these are not certified until J4b measures them. Emit a manifest with `candidate_roles`, lower-order evidence, prune reason, and topology hash. | no inference if dry-run; full stack metadata | ~1h code/dry-run |
+| J4b | XCM-2 N-way contention matrix re-bench | [cross-role-nway-contention-matrix.md](cross-role-nway-contention-matrix.md) + `orchestration/contention_matrix.yaml` | Run the J4a candidate manifest alone on the host. Measure triples first; skip any quad/superset containing a failing triple. For each measured N-way set, compute `seq_aggregate_tps`, `parallel_aggregate_tps`, ratio, CV across 3 runs, and verdict. Update `contention_matrix.yaml` with `n_way:` entries and `excluded_n_way:` entries for candidates pruned by known-bad pairs/triples. Gate: for the current topology hash, every non-trivial N-way active set is classified as measured `allow`, measured `block`, or explicitly excluded; there must be no residual `unmeasured` bucket. Future stack/topology changes are out of scope and require matrix re-derivation. | full production stack | ~4-12h, runs alone |
+| J4c | XCM-3 N-way policy wiring / scheduling guard | [cross-role-nway-contention-matrix.md](cross-role-nway-contention-matrix.md) + `src/scheduling/contention_gate.py` | If runtime bulk scheduling can launch multiple cross-role tasks at once, teach it to consult the `n_way` matrix for the exact active-set union before treating an all-pairwise-allowed N-way combo as certified. Operator policy before J4b completes is fail-closed. Operator policy after J4b completes is closed-world for the current topology: launch only active sets classified in `n_way` as `allow`; treat `block`, `excluded_n_way`, missing entries, or topology-hash mismatch as queue/serialize. | no extra inference after J4b | ~2-4h |
+| J4 | WP-5 ratification observability run | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 5 | With WP-2 + WP-3 + WP-4 enabled, and after J4a/J4b/J5 matrix gates complete, run autopilot for ~6-12h and collect: (a) per-role concurrency histogram, (b) full vs quarter utilization, (c) migration counts forward + reverse, (d) N-way active-set IDs and matrix verdicts for any cross-role overlap. Decide per-role `placement_policy` values: keep `solo_prefer_full` for autopilot-dominant low-concurrency roles; switch worker_general to `burst_prefer_quarters` if concurrent load grows; consider `full_disabled` for any role where full is wasted memory. Edit NUMA_CONFIG, commit, restart, re-run. | full production stack | ~12h observation + ~1h analysis |
+| J5 | WP-6 matrix re-bench (within-role instance pairs) | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 6 | Extend `epyc-orchestrator/scripts/server/contention_matrix.py` (Phase F harness from cross-role-bw-aware-routing) to sweep within-role pairs `full+q0, full+q1, full+q2, full+q3, q0+q1, q0+q2, q0+q3, q1+q2, q1+q3, q2+q3` for each role with ≥2 instances. Update `orchestration/contention_matrix.yaml` schema with `instance_pairs` block + `topology_hash`. Gate: CV ≤ 5% across 3 runs; runtime fails closed on topology/YAML hash mismatch. **Stack-conflict risk** — runs llama-bench across many configurations; must run alone. | All multi-instance roles (frontdoor, worker_general, ingest_long_context, vision_escalation) | ~overnight (~8-12h) |
+| J6 | WP-7 production rollout + 24h gate | [within-role-placement-state-machine.md](within-role-placement-state-machine.md) § Phase 7 | Switch `_eval_concurrency()` default from static `max_safe_concurrency(frontdoor)` to "matrix-aware" — query the gate at startup for the role's max sustainable concurrency given measured ratios (uses J4b + J5 data). Document operator override path in `wiki/autopilot-tuning.md`. Run a 24-hour autopilot pass; compare quality, median request t/s, aggregate batch t/s, and wall-clock throughput vs Phase 0 baseline; verify dashboard shows quarters actively rotating; assert `contention_timeout_count` stays at baseline. | full production stack | ~24h passive + ~1h analysis |
 | J7 | DCP-6 delegation context pre-assembly eval | [delegation-context-preassembly.md](delegation-context-preassembly.md) DCP-6 | Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up count, bundle-build latency, downstream answer quality, hallucinated-file references, context-contamination failures vs reactive-discovery baseline. Run offline replay over historical tasks first (validates bundle size/coverage), then the inference gate. Default-off flag stays off until results justify. | frontdoor + worker_coder (delegation-heavy roles) | ~3-4h |
 | J8 | BEP-2 batched edit CPU-latency A/B | [batched-edit-parallel-apply.md](batched-edit-parallel-apply.md) BEP-2 | Head-to-head bench: batch-edit mode vs interleaved Root LM loop on a coding/edit workload. Measure round-trip count, total prefill tokens, end-to-end latency, bundle/context size (if DCP enabled), patch-parse failure rate, apply failure rate, verification pass rate, quality. **Falsification gate** — if batch mode doesn't cut latency at equal quality, stop the BEP track. Offline replay first; then inference. | worker_coder + frontdoor | ~3h |
-| J9 | HLE-4 harness metrics observe-only run | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) HLE-4 + [meta-harness-optimization.md](meta-harness-optimization.md) HLE-1/2/3 | Extend `EvalResult` + journal JSONL with `harness_metrics`, `oracle_adequacy`, `metric_schema_version` (non-inference code change first); then run autopilot for N trials with metrics in **observe-only mode** (no Pareto promotion). Analyze: separation accepted-vs-rejected, correlation with future regressions, missingness rate, p95 metric-extraction cost. Cheap-kill: metric that never separates or has missingness >20% stays diagnostic, doesn't promote to Pareto co-objective. | full autopilot stack | ~6-12h observation |
+| J9 | HLE-4 harness metrics observe-only run | [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) HLE-4 + [meta-harness-optimization.md](meta-harness-optimization.md) HLE-1/2/3 | Extend `EvalResult` + journal JSONL with `harness_metrics`, `oracle_adequacy`, `metric_schema_version` (non-inference code change first); retain the concurrency telemetry fields (`speed_metric_mode`, `eval_concurrency`, `median_request_tps`, `aggregate_tps`, `eval_wall_s`). Then run autopilot for N trials with metrics in **observe-only mode** (no Pareto promotion). Analyze: separation accepted-vs-rejected, correlation with future regressions, missingness rate, p95 metric-extraction cost. Cheap-kill: metric that never separates or has missingness >20% stays diagnostic, doesn't promote to Pareto co-objective. | full autopilot stack | ~6-12h observation |
 
 ### Sequencing notes
 
-- **J1 → J2 → J3 → J4** runs as a single block: each is short, each depends on the previous flag/observation, all share frontdoor traffic. Estimate ~half-day with operator sitting.
-- **J5 (matrix re-bench)** must run ALONE on the host (full instance-pair sweep across all multi-instance roles; honors `feedback_no_concurrent_inference`). Overnight slot. Required input for J6.
-- **J6 (production rollout)** is 24-hour passive once flipped; can start as soon as J5 is done.
-- **J7, J8, J9** are independent of the WP track; J7/J8 are autopilot-style evals against the production stack and can interleave with J6's 24h pass (they're consumers of the stack, not workload-shaping changes). J9 is purely observe-only — safe to run alongside anything else.
+- **Preflight → J1 → J2 → J3 → J4a/J4b/J5 → J4** is the new parallelization block. J1-J3 prove dispatcher safety; J4a/J4b close cross-role N-way contention; J5 closes within-role instance-pair contention; J4 observes policy choices on the now-characterized stack.
+- **J4b and J5 matrix benches** must run ALONE on the host and honor `feedback_no_concurrent_inference`. They are the highest stack-conflict risk in this Package and are required before using cross-role concurrency to speed up the remaining inference backlog.
+- **J6 (production rollout)** is 24-hour passive once flipped; can start as soon as J4a/J4b/J5 are done and any J4c policy wiring needed for bulk scheduling is in place.
+- **J7, J8, J9** are independent of the WP implementation work but should run after J1-J3 so they inherit safe fan-out. J7/J8 are autopilot-style evals against the production stack and can interleave with J6's 24h pass only after their missing live hooks are built and the concurrent-run metrics are labelled. J9 is observe-only, but it should still record `speed_metric_mode`, median request t/s, and aggregate batch t/s so later scheduling does not learn from mixed semantics.
+
+### Execution manifest template
+
+Before launching the nonstop bulk train, create a run manifest with one row per task/gate. A JSONL file is preferred for machine checking; this table defines the required fields.
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `run_id` | yes | Stable id shared by logs, artifacts, and progress notes. |
+| `task_id` | yes | Package task id such as `J1`, `J4b`, `H7`, `I1`. |
+| `allowed_concurrency_mode` | yes | `serial`, `same_trial_eval_fanout`, `cross_role_matrix_allow`, `observe_only`, or `isolated_bench`. |
+| `required_topology_hash` | yes for concurrent/bench tasks | Must match runtime before launch. |
+| `matrix_status` | yes | `not_required`, `preclosure`, `closed_world`, `stale`, or `diagnostic_only`. |
+| `flags` | yes | Feature flags and env vars used for the task. |
+| `command` | yes | Exact command or script invocation. |
+| `output_path` | yes | Primary artifact directory/file. |
+| `journal_quarantine_rule` | yes | When results must be kept out of baselines/Pareto/scheduling priors. |
+| `pass_fail_gate` | yes | Concrete metric threshold or artifact condition. |
+| `next_action` | yes | Continue, rerun, serialize downstream, stop, or open follow-up. |
+
+Minimum manifest example:
+
+```json
+{"run_id":"bulk-2026-05-26-j4b","task_id":"J4b","allowed_concurrency_mode":"isolated_bench","required_topology_hash":"<hash>","matrix_status":"preclosure","flags":{"feedback_no_concurrent_inference":true},"command":"python scripts/server/contention_matrix.py ...","output_path":"data/contention_matrix/<run_id>/","journal_quarantine_rule":"diagnostic_only_until_closed_world","pass_fail_gate":"all candidate_sets measured or excluded; CV <= 0.05","next_action":"J5 if pass; stop if topology drift or unmeasured bucket remains"}
+```
+
+### Baseline mutation rule
+
+Baseline mutation is opt-in, never implicit. A run is baseline-eligible only if:
+
+- `speed_metric_mode` is present and matches the evaluation shape.
+- `topology_hash` matches the manifest and matrix artifact.
+- `matrix_status` is `closed_world` for cross-role parallel runs, or `not_required` for serial/same-trial-only runs.
+- Same-trial EvalTower fan-out records `eval_concurrency`, median per-request t/s, aggregate batch t/s, and eval wall time.
+- Cross-role concurrent runs record the exact active-set verdict id and launch only `allow` sets.
+
+Everything else is diagnostic-only. Diagnostic-only data can be summarized in progress reports, but it must not update production baselines, Pareto archives, regression thresholds, learned scheduling priors, routing speed priors, or future trial scheduling evidence.
+
+### Resume protocol
+
+If the long-running session is interrupted:
+
+1. Read the latest `progress/YYYY-MM/*.md` entry and the run manifest.
+2. Verify the current orchestrator git sha, stack state, and topology hash before relaunching anything.
+3. Inspect the last produced artifact, not just the final log line or process exit status.
+4. Rerun only idempotent preflight steps automatically: py_compile, unit subset, health checks, topology hash capture, and J4a dry-run enumeration.
+5. Continue from the first incomplete gate in the manifest.
+6. Keep partially completed throughput benches quarantined unless every sample, CV, ratio, verdict, topology hash, and artifact path is present.
+7. If topology hash or matrix status changed, stop cross-role parallelism and return to J4a/J4b before downstream bulk work.
 
 ### Other agents' inference-gated work — add here
 
@@ -988,7 +1070,7 @@ This Package is designed to absorb additional inference-gated items from paralle
 **Sequencing of the appended items (intake-607 residual gates):**
 - **J10 (URE-1) is shadow-only** — flip the flag and let it accumulate during ANY of J1–J9 or Package I traffic; it shapes no workload and needs no dedicated slot. Analyze once enough decisions accrue.
 - **J11 (BSV-2)** runs per-mutation inside the autopilot accept loop; co-runs naturally with J9's autopilot observation window.
-- Both are gated on their wiring landing (URE-1 shadow logger; BSV-1 accept-wire). Schemas + pure algorithms now on main (`15350fe`, merged from former `intake607-harness-impl`). DCP-6/BEP-2/HLE-4 are already covered above as J7/J8/J9 — no duplication.
+- Both are gated on their wiring landing (URE-1 shadow logger; BSV-1 accept-wire). Schemas + pure algorithms are on main (`15350fe`). DCP-6/BEP-2/HLE-4 are already covered above as J7/J8/J9 — no duplication.
 
 ### Per-gate conditional workflows + mitigation policies (intake-607 gates J7–J11 — READ BEFORE RUNNING)
 
