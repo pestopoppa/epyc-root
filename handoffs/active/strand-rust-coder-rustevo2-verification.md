@@ -81,27 +81,59 @@ Independent corroboration from the GGUF metadata:
 - Model is invoked via `evaluate/generation.py`, which **the user is expected to modify** to point at their model under test ("Replace the target LLM in the evaluate/generation.py"). The repo's README explicitly says it's under construction; **the harness is NOT OpenAI-API-compatible out-of-the-box** — a thin adapter must be written that proxies whatever interface the existing `generation.py` expects to a local `llama-server` on a dev port (avoid production stack collision).
 - Repo activity: 10 commits total, no release tags, "Repo Under Construction" notice on the README. This is a fragile dependency — pin to a specific commit SHA before benching to avoid mid-evaluation moving-target.
 
-**Public leaderboard** (from README, current as of 2026-05-27):
+**Pinned commit for benching**: `aed98f6` (HEAD of main 2026-05-27). Repo cloned to `/workspace/tmp/rustevo/RustEvo` for inspection.
 
-| Model | Pass@1 | API Usage Accuracy |
-|---|---|---|
-| Claude-3.7-Sonnet | 65.3% | 78.2% |
-| (other entries — GPT-4o, Gemini, DeepSeek, Llama, Qwen — present, exact rank ordering not transcribed; need to read README directly for full list) | — | — |
+**Public leaderboard** (from README at pinned commit, 10 models):
 
-Category-specific aggregates from the paper: 65.8% Pass@1 on Stabilizations; **38.0% Pass@1 on Behavioral Changes**; 56.1% on before-knowledge-cutoff APIs vs 32.5% on after-cutoff tasks.
+| Rank | Model | Pass@1 | API Usage Accuracy | Coverage |
+|---|---|---|---|---|
+| 1 | Claude-3.7-Sonnet | 65.3% | 78.2% | 83.6% |
+| 2 | o1-mini | 57.5% | 70.4% | 85.2% |
+| 3 | GPT-4o | 55.4% | 68.4% | 77.2% |
+| 4 | Gemini-1.5-Pro | 55.3% | 62.6% | 60.9% |
+| 5 | DeepSeek-v3 | 54.8% | 69.7% | 71.0% |
+| 6 | Gemini-2.0-Flash | 52.6% | 73.5% | 72.5% |
+| 7 | Llama-3.1-70B | 51.0% | 65.3% | 69.0% |
+| 8 | **Qwen-2.5-72B** | **50.9%** | 66.7% | 64.7% |
+| 9 | Claude-3.5-Sonnet | 48.1% | 68.7% | 80.3% |
+| 10 | Grok-3 | 40.5% | 67.2% | 70.4% |
 
-**CRITICAL FINDING for the verification gate**:
-**Strand-Rust-Coder-14B is NOT on the public RustEvo² leaderboard** as of 2026-05-27 (verified by reading the GitHub repo README + paper). The Fortytwo founder's "**#1 on RustEvo2**" claim from the sales call (intake-614) therefore cannot be corroborated from public sources. Two possibilities:
+Category-specific Pass@1: Stabilizations 65.8%, Signature Changes 58.2%, Behavioral Changes 38.0%, Deprecations 40.4%.
 
-1. Fortytwo ran the bench themselves but did not submit results to the maintainers (plausible — the repo's submission process is not formalized).
-2. The leaderboard is stale and Strand was submitted but not yet integrated (less plausible given the repo's low commit volume — any pending PR would be visible).
+**CRITICAL FINDING #1 — claim is not on leaderboard**:
+**Strand-Rust-Coder-14B is NOT on the public RustEvo² leaderboard** as of 2026-05-27 (verified at pinned commit `aed98f6`). Founder's "#1 on RustEvo2" claim (intake-614) is unsourced; only a local bench can verify.
 
-Either way, the local-bench result is the only way to verify the claim. The verification gate's STRONG-GO threshold (≥10pp over base, claimed #1) should be tempered by this: even if we beat the listed top model, "#1" requires comparison against the same submissions; if leaderboard is stale, our number is corroborating but not conclusive on the rank claim.
+**CRITICAL FINDING #2 — claim magnitude is unusually aggressive**:
+For Strand-Rust-Coder-14B to claim #1 it must beat Claude-3.7-Sonnet at **65.3% Pass@1**. Its closest base-family entry, **Qwen-2.5-72B at 50.9%**, is 5× larger and lands rank 8. The claim therefore implies the Strand fine-tune of a 14B base recovers (and exceeds) +14.4 pp over the 72B variant of the same family — extraordinary for a "simplest possible fine-tune" on 191k samples in 8 days. The verification gate's decision matrix should treat any local result below ~50% as a normal-Qwen-family expectation, 50–60% as a strong-but-not-#1 fine-tune signal, and ≥65% as the extraordinary claim that warrants follow-up scrutiny on the eval methodology itself (data contamination, leaderboard submission process, etc.).
 
-**Adapter work for Phase B** (must be done before B-1 launches):
-- Read `evaluate/generation.py` in the pinned commit. Identify what call signature it expects (e.g., does it use the `openai` SDK? `requests` to a custom endpoint? `transformers.pipeline()`?).
-- Write a minimal adapter that translates that interface to a POST against a local `llama-server` `/v1/chat/completions` endpoint on a dev port (e.g., :9091).
-- Document the adapter as part of B-1 launch protocol.
+**Adapter work — much simpler than initially scoped (no shim needed)**:
+
+The harness ALREADY uses the OpenAI Python SDK with `api_key` + `base_url` as env vars (see `Evaluate/unit.py:1-7` and `Evaluate/eval_models_rq1.py`). `llama-server` exposes a compatible `/v1/chat/completions` natively. So:
+
+1. Start `llama-server` for the model under test on a dev port (e.g., :9091).
+2. Set env vars before invoking the harness:
+   ```bash
+   export API_KEY=dummy            # llama-server ignores; SDK requires non-empty
+   export BASE_URL=http://localhost:9091/v1
+   ```
+3. **Single-file edit**: the canonical Pass@1 / API Usage Accuracy / Coverage numbers (the leaderboard table above) are produced by `Evaluate/eval_models_rq1.py`. Edit its `MODELS` list (lines 18-30) to contain the alias our llama-server reports (e.g., `"strand-rust-coder-14b"`). Use `llama-server --alias strand-rust-coder-14b ...` to set that alias deterministically.
+4. Invoke via `cd Evaluate && python eval_models_rq1.py --file_a ./data/final_dataset.json --file_b ./data/final_dataset.json --output ./data/RQ1/rq1_strand.json` (per the harness's own docstring example at the top of `eval_models_rq1.py:1-3`).
+
+**No adapter code to write.** The custom adapter speculation in the earlier version of this handoff was wrong — the harness was already OpenAI-API-compatible from the start.
+
+**HOST PREREQ for Phase B — Rust toolchain not installed on EPYC**:
+
+The harness runs each generated solution + test via `subprocess` calls to `cargo`/`rustc` (see `Evaluate/unit.py:run_rust_code`). Verified 2026-05-27 on the bench host: `cargo` and `rustc` are NOT installed. Without them, every task fails with "Execution error" and Pass@1 collapses to 0%.
+
+Install before Phase B (no special permissions, installs to user home):
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+source $HOME/.cargo/env
+cargo --version && rustc --version  # confirm
+```
+The harness has no documented minimum Rust version; pick the current stable. Approx ~300 MB of disk for the toolchain + Cargo registry; well within `/home` budget.
+
+Also install Python deps from `requirements.txt` (openai 1.66.3, langchain 0.3.x, tree-sitter 0.20.4, semver 3.0.4, etc.) into a clean venv to avoid polluting the orchestrator's Python env.
 
 #### A-3: Pick comparison baselines (must include all three)
 
@@ -142,14 +174,19 @@ Produce a single markdown table:
 | Model | RustEvo2 pass@1 | pass@10 | Rank on leaderboard (if listed) | Delta vs base |
 |---|---|---|---|---|
 
-#### C-2: Decision matrix
+#### C-2: Decision matrix (calibrated against the actual leaderboard distribution)
 
-| Outcome | Action |
-|---|---|
-| Strand-Rust-Coder-14B at **#1** AND clearly beats Qwen2.5-Coder-14B-Instruct base by ≥10pp pass@1 | **STRONG GO** for [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md). The swarm-as-dataset-generator pipeline produces deployable artifacts on first try. |
-| Top-3 AND beats base by ≥5pp | **QUALIFIED GO** — proceed with `swarm-dataset-distillation.md` but tighten its Phase-3 ranking gate; the founder claim was overstated but pipeline is real. |
-| Top-10 OR beats base by <5pp | **WEAK SIGNAL** — pause `swarm-dataset-distillation.md`. The "8 days, simplest fine-tune" claim is doing heavy lifting. Re-evaluate when Fortytwo publishes pipeline details. |
-| Below top-10 OR fails to beat base | **NO-GO** — fold the kill-decision back into intake-614 / intake-616 notes; the dataset-distillation handoff is not worth pursuing on Fortytwo's evidence. |
+Reference distribution from the current public leaderboard (10 models, top to bottom: 65.3 / 57.5 / 55.4 / 55.3 / 54.8 / 52.6 / 51.0 / 50.9 / 48.1 / 40.5). Qwen-2.5-72B (the closest base-family entry at 5× Strand's parameter count) lands at 50.9% / rank 8.
+
+| Strand-Rust-Coder-14B Pass@1 result | Rank vs leaderboard | Disposition |
+|---|---|---|
+| ≥65.3% | **#1 (matches founder claim)** | **STRONG GO + scrutinize methodology**: a 14B model recovering +14.4 pp over its 72B sibling is extraordinary. **Before promoting `swarm-dataset-distillation.md`** verify: (a) the Strandset-Rust-v1 dataset has no overlap with RustEvo² evaluation tasks (data-contamination check), (b) the harness ran against the same dataset version as the leaderboard, (c) sampling parameters match the leaderboard's protocol (RustEvo² README does not document the sampling settings used for its published numbers — this needs reading the paper appendix). Only after these pass: full GO on the distillation handoff. |
+| 55–65% | **Top 3-5 (clear overperform vs Qwen-2.5-72B + most frontier APIs)** | **STRONG GO**: strong-but-not-#1 fine-tune. Founder's "#1" framing was hype; the underlying technique still produces a deployable artifact that significantly outperforms its 5×-larger base-family sibling. Proceed with `swarm-dataset-distillation.md`. Note the rank discrepancy in intake-614. |
+| 50–55% | **Top 5-8 (matches or slightly beats Qwen-2.5-72B base-family expectation)** | **QUALIFIED GO**: Strand is roughly Qwen-2.5-72B-tier at 1/5 the param count — that itself is a respectable Rust-specialist outcome and validates the dataset-distillation pipeline, but founder's "#1" claim is materially overstated. Tighten `swarm-dataset-distillation.md`'s Phase-3 ranking gate (raise BT margin threshold) and proceed. |
+| 40–50% | **Rank 9–10 / bottom of leaderboard** | **WEAK SIGNAL**: Strand is no better than Qwen-2.5-72B base. The fine-tune adds value at the 14B param tier but is not exceptional. Pause `swarm-dataset-distillation.md` and re-evaluate when Fortytwo publishes pipeline details; the marketing claim is doing the heavy lifting. |
+| <40% / off-leaderboard | **Below rank 10** | **NO-GO**: kill `swarm-dataset-distillation.md`; record kill-decision back into intake-614 / intake-616 notes citing this Phase-B result. |
+
+In all cases, **also report the Qwen2.5-Coder-14B-Instruct base-model number on the same harness** — that isolates the Strand fine-tune's contribution vs the base's own RustEvo² capability. If the base hits 50%+ on its own, much of Strand's claimed value is base-model capability, not the Strand dataset.
 
 #### C-3: Side observation worth recording
 
