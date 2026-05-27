@@ -634,3 +634,46 @@ stays parked** (reuses this harness). Invalid runs quarantined under `data/bep_s
   (idx0), which were always correctly pinned; the affinity bug only mis-pinned *quarters* (already
   re-benched: within-role `9a414a9`, n_way size-3+ `4363dae`). The "J4b/J4c re-run pending" prose flag
   was over-conservative for the size-2 full-pair cells.
+
+## Rework-gate execution (2026-05-27, cont.) — leak fix + canary DONE; OFF arm STILL blocked
+
+Worked the operator gate, no-inference pieces first (commit orch `f7a2cb0`, all production-safe / default-off):
+- **(a) task-root isolation leak FIXED** — `_validate_file_path` allows the scratch root ONLY when
+  `task_root_active()` (was appending it to the global `llm_root`+`/tmp` set; scratch lives under `/tmp`
+  so every outside path validated). `/tmp/x`, `../x`, the orchestrator tree now rejected; realpath both
+  sides. **Verified non-vacuous**: reverting the fix makes the canary + regression escape-tests FAIL.
+- **(b) interleaved rider REWRITTEN** → instruct `file_write_safe(path, content)`, explicitly forbid
+  `open()` (the original rider pointed at `open()`, which `security.py` forbids).
+- **(e) regression tests** (`test_task_root_surfaces.py`): write lands in scratch / escapes rejected /
+  outside-path validation rejected when active.
+- **(f) no-inference CANARY** (`test_bep_canary.py`, 6 tests): real-mode-not-mock, force_mode=repl accepted,
+  REPL write→scratch, outside write rejected, `open()` forbidden. **338 REPL/file/task-root parity tests +
+  6 canary green.**
+- **`_log_append`** hardened: redirect under scratch when task-root active (parity otherwise) + reject
+  non-basename `log_name` (pre-existing `../../etc/passwd` traversal that `_validate_file_path`'s `/mnt/raid0/llm`
+  prefix had allowed).
+
+**(g) live single-task smoke (J6 paused, host quiet, affinity certified) — t1, BOTH arms via real `/chat`:**
+- **ON arm (batch_edit=1): PASS** — turns=2, `mathutil.py` written to scratch, verifier PASS. The harness,
+  scratch, task-root, write path, and verifier all work end-to-end with real inference.
+- **OFF arm (interleaved_rider=1): STILL FAILS** — turns=8 (max), `[Max turns reached]`, scratch empty,
+  verifier fail. **The rider rewrite did NOT fix it.**
+
+**Refined diagnosis (still not a confirmed fix path — do not patch blind):** the OFF-arm turns produced
+**zero `repl_tap.log` entries** across all 8 turns (the tap at `helpers.py:985` fires only when the model
+output is extracted as executable REPL *code*). Combined with the operator's earlier `content=…; FINAL("done")`
+observation, this means the real coder in interleaved mode emits prose/non-tool output that never reaches
+`execute()` → never calls `file_write_safe` → loops to max turns. Since the CANARY proved
+`file_write_safe`→scratch works when *called*, the problem is purely that **the real coder will not drive the
+interleaved tool loop for these tasks** — it strongly prefers emitting the whole artifact (which is exactly
+why the ON/batch arm succeeds in 2 turns). This may be a genuine finding (interleaved is not this coder's
+natural grain) rather than a harness bug.
+
+**True remaining blocker = OFF-arm REPL-turn observability.** `repl_tap.log` did not capture the OFF-arm
+turns in the reloaded-API path (the ON arm returns early before the tap; the OFF arm apparently never reaches
+it). Next rework step (observability-FIRST, before ANY further baseline change): instrument the OFF-arm
+executor path directly — log, per turn, the raw model output and whether/why it is or isn't extracted as
+executable code — to confirm the "emits-prose, never-calls-a-tool" hypothesis. THEN decide: (i) a stronger
+interleaved prompt/few-shot that forces tool calls, or (ii) accept that batch-edit is the only viable mode for
+this coder and reframe BEP-2's claim accordingly. **(c) repl_tap→bep_ab artifacts and (d) full bep_ab row
+schema are downstream of a working OFF arm — deferred until then.** Smoke log: `logs/bep_smoke_*.log`.
