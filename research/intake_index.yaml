@@ -29274,3 +29274,549 @@
     Discovered 2026-05-27 via user-provided URL alongside intake-614. The interesting artifact is the dataset, not the model: https://huggingface.co/datasets/Fortytwo-Network/Strandset-Rust-v1(191k samples, Apache-2.0). If we ever need a sanity test of synthetic-dataset-generation pipelines for narrow domains, this is a public reference point with a downloadable model.
 
     Founder''s timeline claim ("8 days, simplest possible fine-tune, beats GPT-5 Codex on Rust") is the most testable Fortytwo claim in the entire transcript — RustEvo2 leaderboard rank is independently verifiable and would either strongly corroborate or strongly undermine the swarm-as-dataset-generator pitch.
+- id: intake-617
+  arxiv_id: '2502.05202'
+  url: https://arxiv.org/abs/2502.05202
+  source_type: paper
+  title: 'Accelerating LLM Inference with Lossless Speculative Decoding Algorithms for Heterogeneous Vocabularies'
+  authors:
+  - Nadav Timor
+  - Jonathan Mamou
+  - Daniel Korat
+  - Moshe Berchansky
+  - Gaurav Jain
+  - Roy Schwartz
+  - Oren Pereg
+  - Moshe Wasserblat
+  - David Harel
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - local_inference
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Three lossless speculative-decoding algorithms (SLEM string-level exact match, SLRS string-level rejection sampling, TLI token-level intersection) that eliminate the requirement for drafter and target to share a vocabulary.'
+  - 'All three algorithms preserve the target distribution and work with off-the-shelf models — no training or fine-tuning required.'
+  - 'Algorithm 2 (SLEM) merged into HuggingFace Transformers via PR #35029, affecting 265k+ downstream repositories.'
+  - 'Algorithm 4 (TLI) theoretically dominates naive union-based approaches by projecting drafter distribution onto vocabulary intersection.'
+  - 'Demonstrated 2.8x speedup over autoregressive decoding on summarization / programming / long-context tasks across drafter-target pairs with 12-85% vocabulary overlap.'
+  techniques:
+  - SLEM (String-Level Exact Match)
+  - SLRS (String-Level Rejection Sampling)
+  - TLI (Token-Level Intersection)
+  - Byte-canonical reference measure for cross-tokenizer logit transport
+  reported_results:
+  - 'Gemma-2-9b + vicuna-68m on CNN/Daily Mail: 37.5 t/s vs 27.7 t/s baseline (1.35x)'
+  - 'Gemma-2-9b + gemma-2-2b on SCROLLS: 30.5 t/s vs 13.4 t/s baseline (2.28x)'
+  - 'All non-empty vocabulary intersections (12-85% overlap range) yielded positive speedups'
+  referenced_arxiv_ids:
+  - '2302.01318'
+  - '2408.11049'
+  - '2501.12948'
+  - '2407.21783'
+  - '2405.04304'
+  - '2305.09781'
+  - '2405.14105'
+  - '2411.11055'
+  - '2412.15115'
+  - '2403.10444'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - gemma4-mtp-drafter-evaluation.md
+    - peer-verifier-speculation-spike.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-042
+    - intake-618
+    - intake-619
+    - intake-620
+    - intake-624
+  novelty_justification: 'High — first work to provide lossless cross-tokenizer speculative decoding with no auxiliary training. Directly invalidates Chapter 01 § "Tokenizer Compatibility Constraints" assertion that SD requires exact tokenizer match. SLEM is already deployed in HuggingFace Transformers PR #35029, making this not just research but available infrastructure.'
+  relevance_justification: 'High — directly applicable to the `gpu-drafter-mi200-investigation.md` Stage 2 (drafter farm) and to peer-verifier speculation. Today our stack enforces matched-vocab drafters (Qwen3-1.7B for Qwen3.6 frontdoor). With SLEM/TLI, the drafter pool expands to any small model regardless of tokenizer — unlocking cross-vocab drafter co-location on spare GPU VRAM. Also relevant to coder/architect roles where matched drafters are scarce.'
+  verdict_justification: 'new_opportunity — algorithm is already merged in HuggingFace Transformers (Algorithm 2/SLEM). Open work: port SLEM/SLRS/TLI to llama.cpp, measure cross-tokenizer pairs against our production targets (Qwen3.6-35B, Gemma4-26B-A4B-MTP, Qwen3.5-122B). Critical path for GPU-drafter Stage 2.'
+  contradicting_evidence:
+  - 'Acceptance rate degrades with vocabulary overlap — the paper''s 12-85% range gives positive speedups but does not characterize the cliff below 12%. Worst-case pair (very low overlap, e.g. Qwen tokenizer + Gemma tokenizer) may yield <1x.'
+  - 'Token-granularity mismatch (sub-word boundary differences) can reduce acceptance even with shared underlying string. SLEM falls back to per-string verification which adds per-token CPU cost.'
+  - 'HF Transformers integration of Algorithm 2 may not be the full lossless variant — community PR discussion notes simplifications. Algorithm 4 (TLI, theoretically dominant) is NOT yet merged.'
+  - 'No reported numbers on hybrid SSM targets (Qwen3-Next / Qwen3.5) which face an orthogonal verification wall (see `completed/mtp-speculative-decoding.md`).'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  - gemma4-mtp-drafter-evaluation.md
+  - peer-verifier-speculation-spike.md
+  - inference-acceleration-index.md
+  - moe-spec-cpu-spec-dec-integration.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input as part of GPU-drafter-MI200 design session.
+    Companion handoff `gpu-drafter-mi200-investigation.md` (created in parallel by main agent
+    during this same session) is the primary integration target. Chapter 01 update flagged but
+    not executed per skill boundary rule.
+
+    Credibility score breakdown: peer-reviewed venue (ICML 2025 oral) +2, published <12mo +1,
+    Intel Labs + Weizmann Institute (major lab) +1, no commercial bias 0, HF PR #35029 +
+    Intel newsroom corroboration +1 (capped at +1 from single corroborating ecosystem) = 5/6.
+- id: intake-618
+  arxiv_id: '2405.07883'
+  url: https://arxiv.org/abs/2405.07883
+  source_type: paper
+  title: 'Zero-Shot Tokenizer Transfer'
+  authors:
+  - Benjamin Minixhofer
+  - Edoardo M. Ponti
+  - Ivan Vulić
+  categories:
+  - speculative_decoding
+  - training_distillation
+  - local_inference
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'A hypernetwork trained on diverse tokenizers can predict embedding parameters for arbitrary new tokenizers — enabling zero-shot tokenizer swap without retraining.'
+  - 'Hypernetwork preserves accuracy to within 1% on cross-lingual benchmarks while reducing sequence length 14% on average.'
+  - 'Mistral-7B zero-shot transfer loses 3-5% accuracy; recovers to near-original with 800M tokens of continued training.'
+  - 'Hypernetwork trained for a base model transfers effectively to fine-tuned variants without re-training the hypernetwork.'
+  techniques:
+  - ZeTT (Zero-Shot Tokenizer Transfer)
+  - Tokenizer-conditioned hypernetwork for embedding/lm-head prediction
+  reported_results:
+  - 'XLM-R + XNLI: <=1% accuracy loss, +16% inference speedup'
+  - 'Mistral-7B zero-shot: 3-5% accuracy drop'
+  - 'HumanEvalPack with StarCoder tokenizer: ~3% functional correctness gap'
+  - 'Multilingual MMLU: 8-15% accuracy drop, addressable via continued training'
+  referenced_arxiv_ids:
+  - '1810.04805'
+  - '2402.09977'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-617
+    - intake-619
+    - intake-622
+  novelty_justification: 'High — first general-purpose zero-shot tokenizer transfer via hypernetwork. Prior art (FVT/intake-622, WECHSEL, OFA) requires either retraining or domain-specific procedures. ZeTT subsumes them with a single trained hypernetwork.'
+  relevance_justification: 'Medium — offline / drafter-prep mechanism complementary to Timor (intake-617). Where Timor lets you serve mismatched-vocab pairs at runtime, ZeTT lets you build a matched-vocab drafter from a mismatched candidate offline. Practical only if Timor SLEM/TLI proves too lossy on a specific pair we care about.'
+  verdict_justification: 'worth_investigating — not on the critical path for GPU-drafter Stage 1, but is the principled backup for Stage 2 if cross-vocab acceptance rates erode. Hypernetwork training is expensive (one-time per base architecture), so adoption decision should wait until Timor runtime numbers exist.'
+  contradicting_evidence:
+  - 'Hypernetwork training is computationally intensive and may not be feasible for many practitioners (per emergentmind.com summary).'
+  - 'Anchor selection and embedding-space alignment degrade when lexica are noisy or token coverage is sparse.'
+  - 'Numeric-tokenization mismatch specifically degrades GSM8K performance — limits applicability to math/reasoning roles.'
+  - 'Hypernetwork still falls behind on some decoder-model benchmarks; gap only fully closes with continued training on the target tokenizer (defeating the "zero-shot" advantage in those cases).'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input. Backup mechanism to Timor (intake-617) for
+    cross-tokenizer drafter setup. Adoption gated on Timor runtime measurements.
+- id: intake-619
+  arxiv_id: '2404.09492'
+  url: https://arxiv.org/abs/2404.09492
+  source_type: paper
+  title: 'Bridging the Gap between Different Vocabularies for LLM Ensemble'
+  authors:
+  - Yangyifan Xu
+  - Jinliang Lu
+  - Jiajun Zhang
+  categories:
+  - speculative_decoding
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'LLMs share substantial overlapping tokens (e.g., TigerBot + LLaMA = 53% overlap) which serve as anchors for cross-vocab projection.'
+  - 'Fine-grained per-step ensemble outperforms coarse-grained output selection/fusion by preventing error snowballing.'
+  - 'Method (EVA) needs only ~1MB projection matrices per model pair — no fusion model, no supervised corpus.'
+  - 'Three-stage noise reduction (top-t truncation + threshold truncation + variance truncation) controls projection artifacts.'
+  techniques:
+  - EVA (Ensemble via Vocabulary Alignment)
+  - Overlapping-token anchored projection matrix
+  - Three-stage noise reduction (top-t, threshold, variance)
+  reported_results:
+  - 'GSM8K: 42.91% accuracy (+10.61 over best individual model)'
+  - 'Flores Zh-En MT: 31.16 BLEU (+1.98), 57.77 ChrF (+1.14)'
+  - 'E2E data-to-text: 42.62 ROUGE-L (+1.51)'
+  - 'Beats LLM-Blender on 6/8 tasks without any auxiliary fusion model'
+  referenced_arxiv_ids:
+  - '2305.10403'
+  - '2309.10305'
+  - '2307.09288'
+  - '2210.02414'
+  - '2305.05176'
+  - '2311.08692'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-617
+    - intake-618
+  novelty_justification: 'Medium — projection-matrix approach is standard but the per-step ensembling at the logit level (not output level) was new in 2024. Pre-dates Timor (intake-617) and provides the same mathematical primitive (cross-vocab logit projection) without the SD wrapper.'
+  relevance_justification: 'Medium — not directly deployable (we do not currently ensemble LLMs at the logit level — routing intelligence selects one model per turn), but the projection-matrix math is the same primitive Timor TLI uses. Useful as theory reference and as an ablation point: EVA shows the projection works for ensembling; Timor shows the same projection works for speculation.'
+  verdict_justification: 'worth_investigating — informs the theoretical underpinnings of Timor (intake-617) and any future cross-tokenizer work. Not an integration target itself unless the routing controller (`routing-intelligence.md`) ever migrates from single-model selection to per-token ensembling, which is currently out of scope.'
+  contradicting_evidence:
+  - 'Per-step ensemble requires N forward passes per generated token — N× compute. Paper does not characterize latency cost vs single-model baselines.'
+  - 'Projection matrices were learned via overlapping tokens; quality on disjoint-vocab pairs (e.g., Japanese-trained model + English-trained model) not characterized.'
+  - 'NAACL 2024 venue is mid-tier for major ML claims; corroborating ensembling literature (LLM-Blender, FrugalGPT) uses different mechanisms.'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input. Treated as theoretical companion to Timor;
+    not a deployment target.
+- id: intake-620
+  arxiv_id: '2405.19715'
+  url: https://arxiv.org/abs/2405.19715
+  source_type: paper
+  title: 'SpecDec++: Boosting Speculative Decoding via Adaptive Candidate Lengths'
+  authors:
+  - Kaixuan Huang
+  - Xudong Guo
+  - Mengdi Wang
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Adaptive candidate-length selection formulated as Markov Decision Process with theoretically-derived threshold stopping policy.'
+  - 'When probability of at least one rejected token exceeds a threshold, expected total cost of stop < continue (provable).'
+  - 'Trained acceptance prediction head on the draft model predicts conditional acceptance probability per token, using weighted BCE loss to address class imbalance.'
+  - 'Achieves 2.04x speedup on Alpaca (+7.2pp), 2.26x on GSM8K (+9.4pp), 2.23x on HumanEval (+11.1pp) over fixed-length speculative decoding.'
+  techniques:
+  - 'Acceptance Prediction Head (lightweight classifier on draft hidden state)'
+  - 'MDP-derived cumulative-probability stopping rule'
+  - 'Weighted BCE loss for class-imbalanced acceptance signal'
+  reported_results:
+  - 'Alpaca: 2.04x speedup (7.2pp over fixed γ)'
+  - 'GSM8K: 2.26x speedup (9.4pp over fixed γ)'
+  - 'HumanEval: 2.23x speedup (11.1pp over fixed γ)'
+  referenced_arxiv_ids:
+  - '2302.01318'
+  - '2401.07981'
+  - '1810.04805'
+  - '2305.09781'
+  - '2406.18002'
+  - '2401.10774'
+  - '2309.06180'
+  - '2310.08461'
+  - '2404.14535'
+  - '2401.05030'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - gemma4-mtp-drafter-evaluation.md
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments: []
+    intake_entries:
+    - intake-617
+    - intake-623
+  novelty_justification: 'Medium — PEARL (intake) already adopted adaptive γ in 2024 via a simpler heuristic; SpecDec++ adds (1) trained acceptance head, (2) MDP threshold derivation. Code available (github.com/Kaffaljidhmah2/SpecDec_pp). Incremental but principled.'
+  relevance_justification: 'High — directly applicable to Gemma 4 MTP MoE-batch-cancellation problem (1.06× MoE vs 2.98× dense): fixed γ is the wrong setting under MoE expert routing; per-token adaptive γ is the principled fix. Also directly applicable to GPU-drafter Stage 1 where PCIe round-trip cost makes over-drafting expensive.'
+  verdict_justification: 'new_opportunity — code exists, theory is clean, gains 7-11pp over fixed-γ baseline. Integration path: port acceptance-head training to our draft pipeline (Qwen3-1.7B for frontdoor, Gemma4Assistant for Gemma4), retrain on production traffic, replace fixed γ in llama-server spec-dec loop.'
+  contradicting_evidence:
+  - 'Severe class-imbalance in acceptance signal (most draft tokens are accepted) — weighted BCE is mitigation but not full solution.'
+  - 'Training signal is sparse: input sequence is mostly target-model tokens with only a fraction from the draft — limits how much the head can learn per training token.'
+  - 'No reported numbers on MoE targets (Gemma4 MoE, DeepSeek-V3) where γ-cancellation effects we care about manifest. All reported results are on dense Llama-2 / Vicuna.'
+  - 'Acceptance head adds parameters to draft; overhead may be non-trivial on tiny drafters (Qwen3-1.7B, Gemma4Assistant ~500M).'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  - gemma4-mtp-drafter-evaluation.md
+  - moe-spec-cpu-spec-dec-integration.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input. Highest priority follow-on after Timor
+    (intake-617) for the GPU-drafter stack. Open-source code at
+    github.com/Kaffaljidhmah2/SpecDec_pp.
+- id: intake-621
+  arxiv_id: '2412.19437'
+  url: https://arxiv.org/abs/2412.19437
+  source_type: paper
+  title: 'DeepSeek-V3 Technical Report (Multi-Token Prediction section)'
+  authors:
+  - DeepSeek-AI
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - inference_serving
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'DeepSeek-V3 implements sequential Multi-Token Prediction: D sequential modules each with own transformer block, shared embedding + shared output head with main model.'
+  - 'D=1 in V3 — predicts one additional future token beyond next-token. Architecture supports D>1.'
+  - 'Training objective: averaged cross-entropy across depths with weighting factor λ — λ=0.3 for first 10T tokens, λ=0.1 for remaining 4.8T tokens.'
+  - 'MTP modules can be directly discarded at inference (main model stands alone) OR used as speculative-decoding drafter heads.'
+  - 'Ablation: MTP improves HumanEval (20.7→26.8% small / 44.5→53.7% large), GSM8K (25.4→31.4% small). No TPS numbers reported.'
+  techniques:
+  - 'Sequential Multi-Token Prediction (D-depth stacked modules)'
+  - 'Shared embedding + shared output head between MTP modules and main model'
+  - 'Per-depth projection matrix M_k ∈ R^{d×2d}'
+  - 'Two-phase λ weighting (0.3 → 0.1) across training'
+  reported_results:
+  - 'Small-scale ablation (15.7B): HumanEval 20.7→26.8%, GSM8K 25.4→31.4%'
+  - 'Large-scale ablation (228.7B): HumanEval 44.5→53.7%'
+  - 'No inference TPS / acceptance-rate numbers reported in tech report'
+  referenced_arxiv_ids:
+  - '2404.19737'
+  - '2401.07981'
+  - '2404.14535'
+  - '2401.02385'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - gemma4-mtp-drafter-evaluation.md
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments: []
+    intake_entries:
+    - intake-623
+    - intake-620
+  novelty_justification: 'High — first widely-deployed sequential-MTP architecture in a production frontier model. The "shared output head + per-depth transformer block + projection" topology is distinct from Gloeckle parallel MTP (intake-623) and from the Gemma 4 Assistant-style separate-sub-model drafter. Three-way architectural fork in the MTP design space.'
+  relevance_justification: 'High — directly informs the head-on-GPU / trunk-on-CPU split discussed in `gpu-drafter-mi200-investigation.md` § Thesis. DeepSeek-V3 explicitly designs MTP modules to be separable at inference — strongest published precedent for the separability assumption. Also relevant to `gemma4-mtp-drafter-evaluation.md` for cross-architecture comparison.'
+  verdict_justification: 'new_opportunity — not as a model to deploy (671B is too large for our stack), but as architectural precedent. Concrete actions: (1) compare Gemma4Assistant drafter topology to DeepSeek-V3 sequential MTP — same class? (2) if Gemma 4 G0 ports succeed, evaluate whether the same MTP-extraction mechanism would work on DeepSeek-V3 distill variants (`completed/v3-spec-decode-qwen25-bug.md` is precedent for this class of bug).'
+  contradicting_evidence:
+  - 'Paper reports no inference TPS / acceptance-rate numbers — only training-quality ablations. The "MTP can be used for speculative decoding" claim is asserted, not measured in the paper itself.'
+  - 'D=1 in actual V3 deployment — the architecture supports D>1 but it''s not validated. Sequential-MTP scaling curve unknown.'
+  - 'No comparison vs Gloeckle parallel-MTP (intake-623) in the same model. Authors acknowledge Gloeckle as inspiration but did not ablate the design choice.'
+  - 'DeepSeek-V3 is MoE; the MTP separability argument may not transfer to dense models without ablation.'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  - gemma4-mtp-drafter-evaluation.md
+  - moe-spec-cpu-spec-dec-integration.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input. Per session brief, scored ONLY on the MTP
+    contribution, not the overall paper scope. Full DeepSeek-V3 paper covers MoE/scaling/RL
+    which is out of scope for this intake.
+
+    Credibility: DeepSeek is a major lab (+1), <12mo old (+1), peer-status is preprint not
+    venue (no +2), commercial bias 0 (open weights), no independent corroboration of MTP
+    inference TPS claim (0) = baseline 2 + 2 corroborating signals from production
+    deployment = 4/6.
+- id: intake-622
+  arxiv_id: '2402.09977'
+  url: https://arxiv.org/abs/2402.09977
+  source_type: paper
+  title: 'Fast Vocabulary Transfer for Language Model Compression'
+  authors:
+  - Leonidas Gee
+  - Andrea Zugarini
+  - Leonardo Rigutini
+  - Paolo Torroni
+  categories:
+  - training_distillation
+  - quantization
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Domain-specific tokenizers produce shorter sequences and reduce embedding-matrix size — both compression vectors.'
+  - 'FVT initializes new-vocab embeddings by averaging the original-tokenizer decomposition embeddings (for new tokens) or direct inheritance (for shared tokens).'
+  - 'Combines with knowledge distillation for up to 2.76x reduction with limited F1 degradation.'
+  - 'Speed improvements range 1.07-1.40x alone, 1.96-2.76x with distillation; gains larger in specialized domains (medical) than news.'
+  techniques:
+  - 'FVT (Fast Vocabulary Transfer)'
+  - 'Embedding initialization via original-tokenizer decomposition averaging'
+  reported_results:
+  - 'Model-size reduction: 15.42% (VT alone, 25% vocab), 54.68% (VT + distillation)'
+  - 'Worst-case F1 drop: -3.65 on CoNLL03 (VT alone), -7.04 (VT + distillation)'
+  - 'Inference speedup: 1.07x-1.40x (VT alone), 1.96x-2.76x (VT + distillation)'
+  - 'Sequence length reduction (medical domain): 32% average'
+  referenced_arxiv_ids:
+  - '1810.04805'
+  - '1910.01108'
+  - '1907.11692'
+  - '2006.03654'
+  - '2004.02984'
+  - '2112.14569'
+  - '1503.02531'
+  - '1808.06226'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-617
+    - intake-618
+  novelty_justification: 'Medium — FVT is a simpler, faster implementation of the older Vocabulary Transfer (Samenko et al. 2021, arxiv:2112.14569). Useful for compression but predates ZeTT (intake-618) which generalizes the same idea via hypernetwork.'
+  relevance_justification: 'Low — main use case (compress encoder model for specific domain) does not match our current stack (we run decoder LLMs at production scale; tokenizer choice is downstream of model selection). Could matter if we ever need to retrofit a tighter tokenizer onto a candidate drafter for embedded compression, but not on the critical path.'
+  verdict_justification: 'worth_investigating — keep in the index as the historical baseline for vocabulary-transfer techniques. ZeTT (intake-618) supersedes FVT for our use case. No active integration target.'
+  contradicting_evidence:
+  - 'All reported results are on encoder models (BERT-class), not decoder LLMs. Generalization to LLM drafters not demonstrated.'
+  - 'Worst-case F1 drop -3.65pp (VT alone) and -7.04pp (VT + distillation) on CoNLL03 — non-trivial accuracy cost.'
+  - 'Speed improvements 1.07-1.40x alone are modest; comparable to or slower than what Timor (intake-617) achieves at runtime without any retraining.'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via direct user input. Weakest of the seven session inputs for our
+    use case. Maintained in the index as historical baseline / context for ZeTT (intake-618)
+    and Samenko et al. 2021.
+- id: intake-623
+  arxiv_id: '2404.19737'
+  url: https://arxiv.org/abs/2404.19737
+  source_type: paper
+  title: 'Better and Faster Large Language Models via Multi-Token Prediction (Gloeckle et al.)'
+  authors:
+  - Fabian Gloeckle
+  - Badr Youbi Idrissi
+  - Baptiste Rozière
+  - David Lopez-Paz
+  - Gabriel Synnaeve
+  categories:
+  - speculative_decoding
+  - training_distillation
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  discovered_via: expansion
+  expanded_from: intake-621
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Training language models to predict n future tokens in parallel improves sample efficiency, downstream code/math performance, and inference speed via self-speculation.'
+  - 'n parallel output heads share a transformer trunk; each head predicts token t+i. Trunk learns better representations than next-token-only training.'
+  - 'Up to 3× decoding speedup on code with n=4 via self-speculation using the trained heads.'
+  - 'Effects scale with model size — large 13B+ models benefit more than small models from MTP training.'
+  techniques:
+  - 'Parallel Multi-Token Prediction (n parallel output heads on shared trunk)'
+  - 'Self-speculative decoding using trained MTP heads as drafter'
+  reported_results:
+  - 'Code generation up to 3x decoding speedup with n=4'
+  - 'Improved HumanEval and MBPP scores at all scales when MTP-trained'
+  - 'Training compute overhead modest; inference compute parity with n=1 if heads are discarded'
+  referenced_arxiv_ids:
+  - '2302.01318'
+  - '2401.07981'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - gemma4-mtp-drafter-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-621
+    - intake-620
+  novelty_justification: 'High — first to demonstrate that multi-token prediction at training time improves both quality and inference speed via self-speculation. Inspired DeepSeek-V3 (intake-621) and the broader MTP family. NeurIPS 2024 spotlight.'
+  relevance_justification: 'High — parent design of the entire MTP head family our production stack now relies on (Gemma4-26B-A4B MTP, intake-621 V3-MTP). Parallel vs sequential MTP is the central design fork; understanding the parallel version is necessary to classify Gemma 4 Assistant correctly in `gemma4-mtp-drafter-evaluation.md`.'
+  verdict_justification: 'new_opportunity — primarily as architectural / theoretical reference. Concrete action: classify Gemma 4 Assistant drafter (4-layer 1024-hidden transformer block) as closer to Gloeckle parallel-MTP (separate heads on shared trunk) or DeepSeek-V3 sequential-MTP (per-depth blocks) — affects whether G0 port mechanics generalize across architectures.'
+  contradicting_evidence:
+  - '3× decoding speedup is on code tasks specifically; smaller gains on other domains.'
+  - 'Quality improvements from MTP training are larger for code/math than for general language tasks.'
+  - 'Self-speculation acceptance rates depend on head quality — small models (<7B) show weaker gains, limiting applicability to small drafters like Gemma4Assistant ~500M.'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  - gemma4-mtp-drafter-evaluation.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via Tier 1 reference chase from intake-621 (DeepSeek-V3 cites this
+    as inspiration for V3-MTP). NeurIPS 2024 spotlight; Meta FAIR authors.
+
+    Credibility: peer-reviewed (+2), <12mo (+1), Meta FAIR major lab (+1), 0 bias,
+    independent corroboration via DeepSeek-V3 adoption (+1) = 5/6.
+- id: intake-624
+  arxiv_id: '2411.11055'
+  url: https://arxiv.org/abs/2411.11055
+  source_type: paper
+  title: 'FastDraft: How to Train Your Draft'
+  authors:
+  - Ofir Zafrir
+  - Igor Margulis
+  - Dorin Shteyman
+  - Shira Guskin
+  - Guy Boudoukh
+  categories:
+  - speculative_decoding
+  - training_distillation
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-617
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'FastDraft enables efficient draft-model creation for any target LLM without requiring vocabulary compatibility — addresses the same constraint Timor (intake-617) removes at runtime, but from the training side.'
+  - 'A draft model can be trained on 10 billion tokens using 8 Intel Gaudi 2 accelerators in under 24 hours on a single server.'
+  - 'Two-phase procedure: efficient pretraining of the draft, then fine-tuning on synthetic data generated by the target model.'
+  - 'Demonstrated up to 3x memory-bound speedup on code completion and 2x on summarization/text tasks.'
+  techniques:
+  - 'FastDraft pretraining + synthetic-fine-tune procedure'
+  - 'Target-model-generated synthetic dataset for vocab alignment'
+  reported_results:
+  - 'Phi-3-mini and Llama-3.1-8B drafter demos'
+  - 'Up to 2x wall-clock speedup on Intel Core Ultra processors'
+  - 'Training cost: 8 Gaudi-2 + 10B tokens + <24h'
+  - 'Up to 3x memory-bound speedup on code completion, 2x on summarization'
+  referenced_arxiv_ids:
+  - '2302.01318'
+  - '2401.07981'
+  - '2305.09781'
+  - '2502.05202'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-617
+    - intake-618
+    - intake-621
+  novelty_justification: 'Medium — procedural contribution rather than algorithmic. Builds on prior drafter-training works (DistillSpec, online distillation) but documents an industry-practical recipe with explicit hardware cost (8 Gaudi-2 / 24h / 10B tokens). Useful as the build-the-drafter complement to Timor (intake-617) serve-the-drafter algorithms.'
+  relevance_justification: 'High — closest commercial-grade procedure for producing the kind of drafters this stack needs. If GPU-drafter Stage 2 needs a drafter for a target where no matched-vocab small model exists (Qwen3.5-122B architect, Gemma4-26B-A4B worker), FastDraft is the recipe to build one. Intel affiliation = relevance to potential AMD GPU port via ROCm.'
+  verdict_justification: 'new_opportunity — if Stage 2 drafter-pool expansion is needed, this is the recipe. Build cost is bounded (24h on 8 Gaudi-2, or equivalent rented compute on H100/MI300). Not on the critical path until Timor SLEM/TLI measurements show which specific drafter-target pairs need a custom build.'
+  contradicting_evidence:
+  - 'All reported numbers are on Intel hardware (Core Ultra, Gaudi-2) — generalization to AMD/NVIDIA GPUs (our target) requires verification.'
+  - 'Synthetic-data fine-tune step is a vector for distribution drift; published results do not characterize the failure mode if the synthetic distribution misses target use cases (code vs general text vs reasoning).'
+  - 'Phi-3-mini and Llama-3.1-8B are well-studied targets; harder cases (Qwen3.6-35B-A3B MoE frontdoor with no published drafter) not validated.'
+  - 'Wall-clock 2x is "memory-bound" speedup — exact regime characterization matters for CPU vs GPU drafter placement decisions.'
+  handoffs_updated:
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via Tier 1 reference chase from intake-617 (Timor cites FastDraft as
+    drafter-training precedent). ACL 2025; Intel authors.
+
+    Credibility: peer-reviewed venue ACL 2025 (+2), <12mo (+1), Intel major lab (+1),
+    Intel commercial bias toward Gaudi/Core Ultra (-1), no independent corroboration of
+    speedup numbers yet (0) = 3 baseline + 1 venue freshness = 4/6.

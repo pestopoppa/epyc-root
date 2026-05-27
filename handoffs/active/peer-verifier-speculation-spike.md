@@ -166,3 +166,21 @@ The user explicitly flagged this for handling. The two reasons it's worth a scop
 - **Sibling at request-time level**: [`decision-aware-routing.md`](decision-aware-routing.md) DAR-6 covers the **published** full-completion swarm-routing form. That one is buildable today; this spike covers the speculative chunk-level form.
 - **Related but different**: `tree-speculation-numa-drafting.md`, `hsd-hierarchical-self-speculation.md`, `gemma4-mtp-drafter-evaluation.md` — all draft-target speculation (small drafter, large target). Peer-verifier speculation is **same-tier peer cross-verification** — different mechanism, do not merge.
 - **Index entries**: registered in [`inference-acceleration-index.md`](inference-acceleration-index.md)
+
+---
+
+## Research Intake Update — 2026-05-27
+
+Companion `/research-intake` run surfaced two papers relevant to this handoff.
+
+### New Related Research
+
+- **[intake-617] "Accelerating LLM Inference with Lossless Speculative Decoding for Heterogeneous Vocabularies"** (arxiv:2502.05202, ICML 2025 oral)
+  - Relevance: Peer-verifier speculation across different model families is currently blocked by the tokenizer-compatibility wall (chapter 01: "exact tokenizer compatibility... DeepSeek-R1-Distill-Qwen-32B cannot use DeepSeek-R1-Distill-Qwen-1.5B"). Timor et al. removes this constraint losslessly via SLEM (string-level exact match, merged in HF Transformers) and TLI (token-level intersection). Directly unblocks peer-verifier setups where the peers have different vocabs.
+  - Key technique: byte/string canonical form as shared intermediate; rejection sampling preserves target distribution.
+  - Reported results: 2.8× over autoregressive; up to 37.5 t/s on Gemma-2-9b + vicuna-68m (CNN-DM).
+  - Delta: was previously a hard "tokenizer must match" gate on this handoff's peer pool; now a soft "acceptance rate degrades with vocabulary overlap" trade-off.
+
+- **[intake-042] "Cascade Speculative Drafting"** (arxiv:2312.11462, ICML 2024) — already in index as intake-042 (added 2026-03-14); duplicate detected during 2026-05-27 session, no new intake row created. Vertical cascade (recursive drafter chain, terminating in a Max-Gram statistical model) is a natural fit for peer-verifier setups where draft confidence varies across the peer pool.
+
+See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 9-entry intake batch.

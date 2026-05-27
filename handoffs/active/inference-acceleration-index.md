@@ -563,3 +563,25 @@ Three parallel sub-agents deep-dived (a) the paper, (b) the deepseek-ai/Engram r
 - **Track B** (frozen-backbone Engram retrofit on Qwen3.6 or gemma4) is now scoped at ~400 LoC new glue + ~280 LoC vendored from the demo repo, gated on Track A passing AND a 1.5B-proxy derisk (Gate B0 = ≥30% recovery of co-trained-Engram gain). GPU rental required for the proxy run.
 - Bandwidth math (from CXL follow-up paper, not the Engram paper): ~10 KB/token total at FP8, 0.7 GB/s at 70k tok/s — **<0.2% of our DDR5 aggregate**. Lookup BW is structurally a non-issue on EPYC.
 - The deepseek-ai/Engram repo is 422 LoC single-file demo; module clean and reusable, but training loop / dataloader / freeze / KV-cache / offload code all absent. Maintainer disengaged after day 3.
+
+---
+
+## Research Intake Update — 2026-05-27
+
+Companion `/research-intake` run for the new `gpu-drafter-mi200-investigation.md` handoff registered 7 new intake entries + 2 expansion entries (intake-617 through intake-624). Summary by category:
+
+| Intake ID | Title | Primary lever | Stage of GPU-drafter handoff |
+|-----------|-------|---------------|------------------------------|
+| intake-617 | Timor et al., Heterogeneous-Vocab SD (ICML 2025) | Cross-tokenizer drafter at runtime | Stage 2 |
+| intake-618 | Minixhofer & Ponti, ZeTT (NeurIPS 2024) | Hypernetwork retrofit of tokenizer | Stage 2 (offline) |
+| intake-619 | Xu et al., EVA Vocabulary Alignment (NAACL 2024) | Logit-space projection (precursor to TLI) | Stage 2 theory |
+| intake-042 (dup) | Chen et al., Cascade Speculative Drafting (ICML 2024) | Vertical + horizontal drafter cascade | Stage 2 composition |
+| intake-620 | Huang et al., SpecDec++ (COLM 2025) | Adaptive γ via acceptance prediction head | Stage 1 controller |
+| intake-621 | DeepSeek-AI, DeepSeek-V3 MTP section | Sequential MTP head, separable from trunk | Stage 3 architecture |
+| intake-622 | Gee et al., FVT (2024) | Vocabulary transfer for compression | Not on critical path |
+| intake-623 | Gloeckle et al., Parallel MTP (NeurIPS 2024 spotlight, Meta FAIR) | Parallel MTP heads | Stage 3 architecture |
+| intake-624 | Zafrir et al., FastDraft (ACL 2025, Intel) | Drafter-training procedure for vocab-mismatched targets | Stage 2 procedure |
+
+**Chapter rewrite flag**: Chapter 01 § "Tokenizer Compatibility Constraints" claim that SD requires exact tokenizer match is no longer accurate post-ICML 2025 (Timor et al. + HF Transformers PR #35029). Flagged for rewrite — not modified by intake skill per skill-boundary rule.
+
+See `gpu-drafter-mi200-investigation.md` § Research Intake Update for full per-paper relevance notes and stage mapping.

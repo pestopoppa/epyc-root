@@ -226,3 +226,32 @@ Only after G2 OR G1 ≥ +20% AND quality holds:
   - Caveats: (a) PDF tech report did not decode via WebFetch in this intake pass — full ablations vs MTP and quality benchmarks (MMLU/GSM8K/HumanEval) are in the report body but not yet captured; (b) sibling Nemotron-3-Nano GGUF releases have known llama.cpp Mamba-base assertion crashes (ggml-org/llama.cpp #20570, #18099) — community port path is non-trivial.
   - Action: monitor for community llama.cpp port + ablation re-extraction from PDF; re-evaluate as MTP alternative on Tier B candidates if `gemma4_31b_q4km_mtp` quality-bench stalls.
   - **Deep dive 2026-05-20**: [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md`](../../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) — full PDF parsed; Tab. 10 acceptance length on SPEED-Bench gives the head-to-head MTP comparison: **Nemotron-Diff Native 5.46 / LoRA-tuned 6.82 vs Qwen3-9B-MTP 4.24**. On the four diffusion-friendly categories (coding/math/reasoning/multilingual) the gap widens to 8.69 vs 4.73. This is the strongest single-paper evidence yet that "self-speculation > MTP" as a paradigm at low concurrency on dense models. Caveat: paper baseline is Qwen3-9B-MTP, not Gemma 4 MTP — our 2.98× pure-CPU gemma4-26B-A4B-MTP datapoint may still beat Nemotron-Diff if the Gemma 4 drafter is significantly better aligned to its target than Qwen3-9B-MTP is to Qwen3-9B.
+
+---
+
+## Research Intake Update — 2026-05-27
+
+A companion `/research-intake` run for the `gpu-drafter-mi200-investigation.md` handoff surfaced three papers that bear on this handoff's design assumptions.
+
+### New Related Research
+
+- **[intake-621] "DeepSeek-V3 Technical Report" (MTP section)** (arxiv:2412.19437, Dec 2024)
+  - Relevance: Confirms that the MTP heads are designed to be *separable from the trunk* — "during inference, we can directly discard the MTP modules and the main model can function independently." This is the same separability the Gemma 4 MTP G0 ports rely on. DeepSeek-V3 uses **sequential** MTP (D=1 here, but the architecture supports D>1 stacked modules each with their own transformer block + projection M_k); Gemma 4 Assistant drafters appear closer to this sequential-with-shared-head topology than to Gloeckle's parallel-heads design.
+  - Key technique: shared embedding + shared output head across MTP modules and main model; per-depth transformer block + projection.
+  - Reported results: ablation shows MTP improves HumanEval 20.7→26.8% small / 44.5→53.7% large, GSM8K 25.4→31.4%; no inference TPS reported.
+  - Delta from current approach: validates the Gemma 4 G0 architectural assumption that the assistant head is structurally a "speculative-drafting peer" of the trunk, not an entangled trunk module. Independently corroborates the deep-dive's two-class taxonomy of Gemma 4 drafters (Gemma4Assistant 31B/26B vs E4B variants).
+
+- **[intake-623] "Better and Faster Large Language Models via Multi-Token Prediction" (Gloeckle et al.)** (arxiv:2404.19737, NeurIPS 2024 spotlight, Meta FAIR)
+  - Relevance: Parent paper of the entire MTP head family. **Parallel** MTP (Gloeckle, 4 heads sharing trunk) vs **sequential** MTP (DeepSeek-V3, depth-D stacked) is the design fork. Gemma 4 Assistant drafters are 4-layer 1024-hidden transformer blocks — closer to "small attached sub-model" than to either Gloeckle's parallel heads or V3's per-depth blocks. Worth comparing acceptance rates if Google publishes details.
+  - Key technique: train n parallel output heads on a shared trunk; each head predicts token t+i.
+  - Reported results: code/math gains scale with n; up to 3× decoding speedup on code with n=4.
+  - Delta: gives this handoff the *spectrum* (parallel ↔ sequential ↔ separate-sub-model) into which Gemma 4 Assistant should be classified — affects whether G0 port mechanics from one work on the others.
+
+- **[intake-620] "SpecDec++: Boosting Speculative Decoding via Adaptive Candidate Lengths"** (arxiv:2405.19715, COLM 2025)
+  - Relevance: Adaptive γ controller. The 1.06× MoE-batch=1 vs 2.98× dense Gemma 4-31B split (per handoff header) implies that **fixed γ is the wrong setting** under MoE expert-routing cancellation — the optimal γ likely varies per-token by routing entropy. SpecDec++'s acceptance-prediction head on the drafter is the right substrate to encode that.
+  - Key technique: lightweight binary classifier on draft hidden state, MDP-derived stop threshold.
+  - Reported results: 2.04× Alpaca / 2.26× GSM8K / 2.23× HumanEval over fixed γ.
+  - Delta: if G0a/G0b ports succeed, SpecDec++ is a follow-on lever specifically targeted at recovering the MoE-batch loss. Caveat (Tier 2b): training the acceptance head has class-imbalance + signal-sparsity issues; the COLM camera-ready discusses mitigations.
+
+### Cross-link to companion handoff
+- See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 9-entry intake batch and stage mapping.

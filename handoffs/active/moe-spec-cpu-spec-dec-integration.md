@@ -349,3 +349,21 @@ Production registry reference: REAP-246B = 8.0 t/s spec-dec, 74-82% accept on co
 3. **Orchestrator launch path** (`orchestrator_stack.py`): read per-role binary_path + env-pass MoE-Spec budget
 4. **production-consolidated-v5 branch** in `/mnt/raid0/llm/llama.cpp`: git history paperwork — cherry-pick from `feature/cpu-ep-inter-process` HEAD `0c8d05597` onto `production-consolidated-v4`. Optional; the binary built from experimental HEAD is functionally equivalent.
 5. **Full 32-chunk PPL gate on v5 PGO build**: 3-chunk diagnostic suffices for Phase 1; production routing decisions need full PPL.
+
+---
+
+## Research Intake Update — 2026-05-27
+
+Companion `/research-intake` run for `gpu-drafter-mi200-investigation.md` surfaced one paper directly relevant to this handoff.
+
+### New Related Research
+
+- **[intake-620] "SpecDec++: Boosting Speculative Decoding via Adaptive Candidate Lengths"** (arxiv:2405.19715, COLM 2025, Princeton + Tsinghua)
+  - Relevance: SpecDec++ formalizes adaptive γ as an MDP and trains a per-token acceptance-prediction head on the drafter — the principled replacement for the current MoE-Spec verification-budget heuristic. Where MoE-Spec adjusts the *verification* budget (expert union reduction), SpecDec++ adjusts the *drafting* budget — orthogonal but composable.
+  - Key technique: binary classifier on draft hidden state; stop drafting when cumulative rejection probability crosses learned threshold.
+  - Reported results: 2.04× Alpaca / 2.26× GSM8K / 2.23× HumanEval (7-11pp over fixed γ).
+  - Delta: layered onto MoE-Spec's +15.2% forward-pass / +3% e2e on REAP-246B, SpecDec++ would close the drafter side of the same loop. Lower priority than the current MoE-Spec rollout but a natural follow-on.
+
+- **[intake-621] "DeepSeek-V3 Technical Report" (MTP section)** (arxiv:2412.19437) — cross-link only; main entry lives with the GPU-drafter handoff. DeepSeek-V3 MoE + MTP is the closest published reference architecture for "MoE target with MTP-style spec-dec head" — relevant for prior-art comparisons in the wiki page.
+
+See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 9-entry intake batch.
