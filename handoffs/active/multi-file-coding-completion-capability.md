@@ -1,134 +1,145 @@
 ---
-title: Multi-file coding completion failure (coder_escalation = Qwen3.6-35B-A3B) — capability investigation
-status: open — root issue isolated, awaiting a dedicated brainstorming/remediation session
+title: Multi-file coding completion — suspected gap on read→edit→finish (coder_escalation = Qwen3.6-35B-A3B)
+status: open — SIGNAL ONLY (not cleanly demonstrated); needs a clean confirmation run + a model comparison
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
-priority: HIGH (core coding-capability gap — affects every read-then-edit coding task)
+priority: HIGH (if real, it is a core coding-capability gap)
 related:
-  - orchestration/model_registry.yaml  # coder_escalation role config (~line 903)
-  - scripts/benchmark/bep_ab.py         # the multi-file task harness
-  - data/bep_sandbox/                   # tasks + results + per-turn traces
+  - orchestration/model_registry.yaml   # coder_escalation role config (~line 903)
+  - scripts/benchmark/bep_ab.py          # the multi-file task harness
+  - data/bep_sandbox/                    # tasks + results + per-turn traces
 ---
 
-# Multi-file coding completion failure — capability investigation
+# Multi-file coding completion — suspected read→edit→finish gap
 
-## The core issue (unresolved)
+## The suspected issue (NOT yet cleanly demonstrated)
 
-The orchestrator's coding role **`coder_escalation` (Qwen3.6-35B-A3B Q8, an MoE with ~3B active params,
-shared with `frontdoor`)** cannot reliably complete multi-step coding tasks of the form
-**"read an existing file → edit it → finish."** It succeeds *only* on pure create-from-scratch tasks
-(where no prior file needs to be read). Every task that requires reading existing code before editing
-runs to the turn cap without producing a correct, complete result.
+There is a **signal** that the orchestrator's coding role **`coder_escalation` (Qwen3.6-35B-A3B Q8 — a
+general MoE, ~3B active, shared with `frontdoor`; NOT a coding specialist)** struggles to complete
+multi-step **"read an existing file → edit it → call FINAL"** coding tasks, while it completes pure
+create-from-scratch tasks fine. The discriminator of interest is the **read step** (a single-file
+read-then-edit, `t5`, is in the suspect set — it is not specifically about multi-file).
 
-This is a **capability/behavior gap of the model on the read→edit→finish loop**, not a tooling gap (the
-execution harness was independently verified to be correct — see "How it was verified" below).
+**This is a hypothesis, not a proven verdict.** The one A/B run that appeared to show it
+(`results-readfix7`) is **contaminated** (see below), so it does not cleanly separate model capability
+from infrastructure noise. The next session's job is to get a **clean** signal and then a **comparison**,
+not to assume the gap is real.
 
-**Note on the model:** `coder_escalation` is a *general* model (Qwen3.6-35B-A3B Q8), not a coding
-specialist. The dedicated coder (`Qwen3-Coder-30B-A3B-Instruct-Q4_K_M`) was swapped OUT for it on
-2026-05-06. So the role is currently a 3B-active general MoE doing all hard coding work.
+**Model context:** `coder_escalation` is currently `Qwen3.6-35B-A3B Q8` (general). The dedicated coder
+`Qwen3-Coder-30B-A3B-Instruct-Q4_K_M` was swapped OUT for it on 2026-05-06 (optimizing other metrics). So
+a general 3B-active MoE is doing all hard coding — relevant to whether the gap (if real) is model choice.
 
-## The test workload (where the failure is reproduced)
+## The test workload
 
-A fixed 5-task micro-benchmark in a clean scratch git repo, each task graded by a deterministic verifier
-(`scripts/benchmark/bep_ab.py`, tasks in `data/bep_sandbox/tasks.jsonl`):
+5 micro-tasks in a clean scratch git repo, verifier-graded (`scripts/benchmark/bep_ab.py`, tasks in
+`data/bep_sandbox/tasks.jsonl`), run as an OFF (interleaved edits) vs ON (batched edits) A/B:
 
-| Task | Kind | What it requires | Result |
-|------|------|------------------|--------|
-| `t1_create_util` | create | Write `mathutil.py` with `add(a,b)`. **No read.** | **PASSES** |
-| `t2_add_and_use` | multi-file modify | Add `square(x)` to existing `calc.py`; import+use it in `main.py` (must print `25`). | FAILS |
-| `t3_method_and_caller` | multi-file modify | Add `area()` to `Rect` in existing `shapes.py`; `report.py` already calls it (must print `20`). | FAILS |
-| `t4_rename_module` | rename + import-fix | Rename `helpers.py`→`utils.py`; fix the import in `app.py`. | FAILS |
-| `t5_bugfix` | single-file modify | Fix `total(price)` in existing `tax.py` (`*0.1` → `*1.1`). | FAILS |
+| Task | Kind | Requires | Verifier |
+|------|------|----------|----------|
+| `t1_create_util` | create | write `mathutil.py` (**no read**) | `import mathutil; add(2,3)==5` |
+| `t2_add_and_use` | multi-file modify | add `square` to `calc.py`; use in `main.py` | `python3 main.py` == `25` |
+| `t3_method_and_caller` | multi-file modify | add `area()` to `Rect` in `shapes.py`; `report.py` calls it | `python3 report.py` == `20` |
+| `t4_rename_module` | rename + import-fix | rename `helpers.py`→`utils.py`; fix import in `app.py` | `helpers.py` gone & `python3 app.py`==`hi` |
+| `t5_bugfix` | single-file modify | fix `total()` in `tax.py` (`*0.1`→`*1.1`) | `tax.total(100)==110` |
 
-**The discriminator is the READ step, not multi-file-ness:** `t5` is single-file and still fails; the
-common factor across all four failures is "must read existing code first." `t1` is the only task needing
-no read, and it is the only one that passes.
+## ⚠ The reference run (`results-readfix7`) is CONTAMINATED — read this before trusting any "it fails" claim
 
-### Observed per-task failure modes (from per-turn traces)
-The model, after (correctly) reading the file, exhibits one of:
-- **Read-loop:** re-emits the same `peek(...)` read turn after turn, never advancing to a write (seen on
-  `t3`, `t5`).
-- **Write-then-stall:** writes a file but never calls `FINAL()`, so it never terminates; re-writes or goes
-  idle until the turn cap (seen on `t2`).
-- **Empty turns:** emits no code at all for several turns (`raw=""`) — see the confound below.
-- **Wrong/incomplete edit:** writes *something* (touched>0) but the result fails the verifier (e.g. `t2`
-  edited files but `main.py` didn't print `25`).
+Per-turn trace inspection shows **none** of the failing tasks failed cleanly on model behavior:
 
-All failures terminate at the 8-turn cap with `quality_pass=False`.
+| Task / arm | turns | what actually happened | verdict |
+|------------|-------|------------------------|---------|
+| t1-off | 1 | wrote file, passed | PASS |
+| t1-on  | 2/3 | batch edit applied, passed | PASS |
+| **t4-off** | 8 | **8/8 turns `[ERROR: Backend unavailable (circuit open): :8070]`** | INFRA — discard |
+| **t5-off** | 8 | **8/8 turns backend unavailable** | INFRA — discard |
+| **t4-on**  | 8 | **6 backend-unavailable + 3 inference-failed** | INFRA — discard |
+| t2-off | 8 | 1 write + **4 empty turns** + **2 `Inference failed: timed out`** | MIXED — not clean |
+| t2-on  | 8 | 0 writes + 4 empty + 3 inference-failed | MIXED — not clean |
+| t3-off | 8 | 0 writes + 3 inference-failed + 1 empty | MIXED — not clean |
+| t3-on  | 8 | 0 writes + 2 inference-failed | MIXED — not clean |
+| t5-on  | 8 | 0 writes + **5 empty turns** (no backend error) | closest to model-behavior, but empties |
 
-## How it was verified that this is the MODEL, not the harness
+So the headline "OFF 1/5, ON 1/5" **must not be read as a 1/5 capability rate.** A mid-run backend outage
+on `:8070` knocked out t4/t5-off and t4-on entirely; inference timeouts hit t2/t3; and the empty-output
+turns (t2, t3, t5-on) are unexplained (could be model behavior OR the thinking confound below). **There is
+no clean capability data point in this run.**
 
-Before concluding capability, the execution path was made provably correct end-to-end. With **all** of the
-following confirmed working, the model still failed every read-then-edit task on **both** editing strategies:
+## What IS solidly established (so the next session doesn't re-litigate it)
 
-1. **Reads return real content.** The model's `peek()`/`grep()` resolve to the task workspace and return
-   the actual file contents (verified: the read content appears in the next prompt and the model echoes it
-   back, e.g. reconstructing `calc.py`'s existing `double()` before adding `square()`).
-2. **Writes land in the workspace.** `file_write_safe(<relative path>, ...)` writes to the task workspace
-   (verified: `touched_files > 0`, writes confirmed on disk).
-3. **Execution output feeds back.** The previous turn's stdout/result is injected into the next prompt
-   (verified in the prompt builder and in traces).
-4. **A hard loop-break intervention fires.** A guard detects ≥2 consecutive no-progress turns and injects a
-   forceful directive ("stop repeating; you already have the content [included]; write the file now or call
-   FINAL"). This was **proven to fire on the live path** (an instrumented probe showed the no-progress
-   counter accumulating across turns, and traces showed the directive injected at the threshold). The model
-   even **wrote a file in direct response** to it once — yet still did not complete the task.
-5. **Both editing strategies fail equally.** Interleaved per-turn edits AND batched (sandbox-verified,
-   transactional) patch application both yield **1/5** (only `t1`). So it is not specific to one edit path.
+- **The execution harness mechanics are correct** — file reads resolve to the task workspace and return
+  real content; the `file_write_safe` write tool works *when invoked*; previous-turn output feeds back into
+  the next prompt; and a hard loop-break intervention is wired and was **proven to fire** (instrumented
+  live probe: the no-progress counter accumulates across turns; the directive is injected at the threshold;
+  the model wrote a file in direct response once). **Do NOT re-debug the loop-guard** — that bug is resolved
+  separately (flag-gated default-off `ORCHESTRATOR_REPL_LOOP_GUARD`; probe `ORCHESTRATOR_LOOPGUARD_PROBE`).
+- **BUT** "the write tool is functional" is NOT "the model reliably chooses and completes the right edits."
+  In this run most failing tasks never produced meaningful target-file writes at all (t3/t4/t5-off: 0 target
+  writes; on-arm mostly created solution artifacts or stalled; only t2-off wrote and still failed). Whether
+  that is model behavior vs. the contamination above is exactly what the clean run must separate.
 
-→ With reads, writes, feedback, and a forceful anti-loop nudge all working, the coder still cannot converge
-on a correct multi-file edit + termination. That is the capability signal.
+## Confound to settle definitively (narrowed)
 
-## ⚠ One confound to rule out FIRST (could change "capability" → "config fix")
+Qwen3.6 degenerates into empty/`<think>`-loop output unless `enable_thinking=false` is applied. The
+orchestrator code **already supports this** for `coder_escalation`: it defaults the role onto the
+chat-completions route and injects the registry `chat_template_kwargs` (`src/llm_primitives/backend.py:76`,
+`src/backends/llama_server.py:493`), and the registry sets `enable_thinking: false` for the role
+(`orchestration/model_registry.yaml`). So the open question is **not** "does the code support it?" — it is
+**"did the live A/B run's process env + request payload actually carry `enable_thinking=false`?"** The empty
+turns (t2/t3/t5-on) are consistent with thinking output stripped to empty, so this must be confirmed at
+runtime (capture/inspect the actual request payload for a coder REPL turn), not assumed from the code path.
 
-Qwen3.6 has a documented **degenerate `<think>`-loop failure** unless `enable_thinking=false` is *applied*
-(empty/looping output with no usable content). The registry **does** set `enable_thinking: false` for
-`coder_escalation` — **but that setting only takes effect on the chat-completions path**
-(`ORCHESTRATOR_USE_CHAT_COMPLETIONS_ROLES`), not the plain `/completion` path. It was **not confirmed** that
-`enable_thinking=false` is actually applied on the REPL coder turns used by this harness, and the observed
-**empty (`raw=""`) turns are consistent with thinking-mode output being stripped to empty**.
+## The actual next step: a CLEAN confirmation matrix
 
-**First action for the next session (cheap, high-leverage):** confirm the coder REPL turns run with
-thinking genuinely off (inspect the path / look for degenerate thinking / verify the chat-completions route
-covers `coder_escalation`). **If thinking is leaking on, this is partly a configuration bug, not a pure
-capability gap** — and fixing it could materially change the pass rate. Do this before investing in
-model/training remediation.
+Before concluding anything about capability, run a clean, controlled matrix:
+1. **Backend-health preflight** — assert all coder backends (`:8070` etc.) are up + circuits closed
+   *immediately before* the run, and abort/skip on any backend-unavailable turn (don't score it).
+2. **Prove `enable_thinking=false` in the live payload** — capture the actual request payload for a
+   `coder_escalation` REPL turn and confirm the flag is present (rules out the confound at runtime).
+3. **Rerun the suspect tasks** (`t2`, `t3`, `t5`) with the above clean, several reps each, and classify each
+   failure by *reason* (read-loop / no-write / wrong-edit / FINAL-missing), not by aggregate pass rate.
+4. **Compare models** — run the same clean matrix on the current general `Qwen3.6-35B-A3B` route vs a real
+   coding-specialist route. If a specialist clears the read→edit tasks and the general model doesn't, that
+   is the real signal (and points at the 2026-05-06 swap as the regression). Coding specialists confirmed
+   available (research registry `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`;
+   GGUFs in `/mnt/raid0/llm/models/`):
+   - **`Qwen3-Coder-30B-A3B-Instruct` Q4_K_M** (`Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf`) — the **cleanest
+     comparison: this WAS `coder_escalation` until the 2026-05-06 swap to the general Qwen3.6**, so it
+     directly tests whether the swap regressed multi-file editing. MoE, ~3B active (same class as current).
+     SEAL-concise variant also on disk (`qwen3-coder-30b-seal-concise.gguf`).
+   - **`Qwen2.5-Coder-32B`** (`Qwen2.5-Coder-32B-Q4_K_M.gguf`; fp16 shards + `qwen2.5-coder-32b-q4km-seal-concise.gguf`
+     on disk; draft `Qwen2.5-Coder-0.5B-Instruct-Q8_0`) — a **dense 32B** coding specialist; the research
+     registry even carries a coder_escalation staging block for it (~line 488). Dense vs MoE is a useful
+     second axis.
+   - (Larger option if warranted: `Qwen3-Coder-REAP-246B-A35B` Q4_K_M, also on disk.)
 
-## Brainstorming directions (if it is genuinely capability)
+Only after 1–3 are clean and 4 shows a model-attributable gap should this be called a capability problem.
 
-- **Model choice:** the role is a 3B-active *general* MoE. Benchmark a coding-specialist (e.g. re-evaluate
-  the swapped-out Qwen3-Coder-30B, or a current coder model) specifically on read→edit→finish multi-file
-  tasks — the 2026-05-06 swap optimized other metrics and may have regressed multi-step editing.
-- **Task scaffolding:** free-form REPL may be too unstructured for multi-step edits. Try an explicit
-  state-machine prompt (read → plan → write file 1 → write file 2 → verify → FINAL) or a planning turn.
-- **Edit affordance:** a structured diff/patch tool (apply-unified-diff with base-hash) may suit the model
-  better than free-form `file_write_safe` of full file contents.
-- **In-loop verification feedback:** the verifier currently runs post-hoc. Feeding a quick self-check / the
-  verifier result back into the loop could let the model iterate to correctness instead of stalling.
-- **Termination cue:** the model frequently fails to emit `FINAL()` after editing. A stronger
-  "edits-done → FINAL" cue (or auto-FINAL when all target files are written + a self-check passes) may help.
-- **Scope realism:** these are deliberately minimal micro-tasks. Re-check against the model's real
-  production coding workload to gauge how much this generalizes vs. is a micro-task artifact.
+## Brainstorming directions (only if a clean run confirms a real gap)
+- **Model choice:** general 3B-active MoE vs a coding specialist for `coder_escalation`.
+- **Task scaffolding:** explicit read→plan→write→verify→FINAL state machine vs free-form REPL.
+- **Edit affordance:** structured diff/patch tool (base-hash) vs free-form full-file `file_write_safe`.
+- **In-loop verification feedback:** feed a quick self-check / the verifier result back so the model iterates.
+- **Termination cue:** stronger "edits-done → FINAL" (the model frequently fails to terminate after editing).
 
 ## Reproduce
-
 ```bash
 cd /mnt/raid0/llm/epyc-orchestrator
-# Pause J6 first (it is the only inference load; concurrent runs poison timing — feedback_no_concurrent_inference).
+# Pause J6 first (only inference load; concurrent runs poison timing — feedback_no_concurrent_inference).
+# Add a backend-health preflight (see step 1 above) before trusting results.
 python3 scripts/benchmark/bep_ab.py --reps 1 --max-turns 8 --host-quiet-confirmed \
-  --output data/bep_sandbox/results-<name>
-# For the live no-progress counter probe, set ORCHESTRATOR_LOOPGUARD_PROBE=1 in the run env
-# (the loop-guard itself is flag-gated default-off via ORCHESTRATOR_REPL_LOOP_GUARD).
+  --output data/bep_sandbox/results-<name>     # ORCHESTRATOR_LOOPGUARD_PROBE=1 for the live counter probe
 ```
-Inspect `data/bep_sandbox/results-<name>/results.jsonl` (per-task pass/turns/touched) and
-`.../traces/<task>-<arm>-blk0.jsonl` (per-turn: what the model emitted, whether it wrote/FINAL'd).
-Reference run with everything working + the issue reproduced: `data/bep_sandbox/results-readfix7/`.
+Then classify per-task by failure REASON from `.../traces/<task>-<arm>-blk0.jsonl` (the `raw_output` per
+turn shows backend errors vs timeouts vs empties vs real model code). Contaminated reference run (do NOT
+re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 
-## Key files / locations
+## Key files
 - `orchestration/model_registry.yaml` — `coder_escalation` (~line 903): Qwen3.6-35B-A3B Q8, `enable_thinking: false`.
-- `scripts/benchmark/bep_ab.py` — the A/B harness; `data/bep_sandbox/tasks.jsonl` — the 5 task definitions.
-- `src/graph/helpers.py` `_execute_turn` — the LLM→REPL turn loop the model runs in.
+- `src/llm_primitives/backend.py:76`, `src/backends/llama_server.py:493` — chat-completions route + chat_template_kwargs injection (code supports thinking-off).
+- `scripts/benchmark/bep_ab.py`; `data/bep_sandbox/tasks.jsonl` — harness + task defs.
+- `src/graph/helpers.py` `_execute_turn` — the LLM→REPL turn loop.
 
 ## Constraint
-`feedback_no_concurrent_inference`: J6 (the autopilot soak) is the only inference load on the host. Any A/B
-run must pause J6 first and requires operator host-quiet approval; restore J6 afterward.
+`feedback_no_concurrent_inference`: J6 (autopilot soak) is the only inference load. Any run must pause J6
+first + needs operator host-quiet approval; restore J6 afterward. The `:8070` backend outage that
+contaminated `results-readfix7` is itself a reminder to preflight backend health before scoring.

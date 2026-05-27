@@ -781,3 +781,13 @@ not the harness** (evidence-backed, not a smell test). BEP-2 interleaved-vs-batc
 from multi-file (both fail; only single-file create t1 completes). Loop-guard stays flag-gated **default-OFF**.
 Full report: `epyc-orchestrator/data/bep_sandbox/LOOPGUARD_BUGREPORT.md`. Orchestrator commits: `11cd60c`,
 `539670b`, `3e9ab5e`, `87c80b1`, `4fe681e`, `555b03c`, `0d6216f`.
+
+**CORRECTION (operator review 2026-05-27):** the "tasks still fail both arms → coder-capability" claim
+above is OVERSTATED. `results-readfix7` is **contaminated** — t4/t5-off + t4-on were backend `:8070`
+unavailable/circuit-open (infra outage), t2/t3 hit inference timeouts, and several turns were empty; **no
+failing task in that run is a clean model-behavior failure.** The **loop-guard firing is still proven**
+(the live probe + halt are independent of this), but the **capability verdict is NOT clean**. Reframed to
+"signal only" and tracked for a clean rerun in
+[`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md) (backend-health
+preflight + prove `enable_thinking=false` in the live payload + rerun t2/t3/t5 + compare vs a coder
+specialist — Qwen3-Coder-30B was the pre-swap role).
