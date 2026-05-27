@@ -741,3 +741,17 @@ the ON/batch arm also fails the multi-file tasks (t2), so this is NOT purely an 
 verifiers / read-feedback path need review. **The harness mechanics are validated (t1 both arms); the read-loop
 on multi-file tasks is the next blocker for a decision-grade A/B — diagnose from the tap, do not blind-fix.**
 J6 resumed on production (pid 2350351).
+
+### Read-loop ROOT-CAUSED + FIXED (2026-05-27, flag-gated) — supersedes the "OPEN hypothesis" above
+
+Diagnosed from the parked traces (operator pushed back on the deferral — and rightly: the diagnosis needed **no inference**, only reading `bep_turn_trace.jsonl` + `repl_tap.log`). **Both failure modes are harness bugs — not model capability, not "interleaved-baseline unviable":**
+
+- **A — write-loop / "timeout":** `_execute_turn` (helpers.py:~757) sets `_early_stop_check = FINAL( or CALL( detected`, which aborts streaming the instant `FINAL(` appears — *before* the closing ` ``` ` fence. When the model emits `file_write_safe(...)` + `FINAL("done")` in one block (trace TASK #2), the raw output ends unclosed → `extract_code_from_response` returns nothing → identical re-prompt → 6 repeats → stream timeout. Tasks that write *without* FINAL in the block (TASK #3/#4) keep their fence and succeed in one turn.
+- **B — read-loop:** confirms the prior hypothesis. The `peek()` output IS fed back (the general `repl_tap.log` shows `NameError`/`ValueError` returned to the model), but the REPL has **no identical-non-advancing-turn breaker**, so the model re-emits the identical read until the turn budget burns out. Confirmed beyond BEP: `repl_tap.log:86–101`/`:427–439` show unknown-tool / undefined-name calls looping 3× identically.
+
+**FIX (orchestrator `3e9ab5e`, flag-gated default-off via `ORCHESTRATOR_REPL_LOOP_GUARD=1`):**
+- Fix A `_repair_unclosed_code_fence`: closes an unclosed ` ``` ` fence before extraction (preserves the token-saving early-stop; only changes the currently-broken case).
+- Fix B `_loop_guard_repeat` + prompt nudge: counts identical non-advancing turns and injects a "LOOP DETECTED — act on what you read, or FINAL" nudge once it repeats, instead of silently re-prompting.
+- 9 unit tests (`tests/unit/test_repl_loop_guard.py`) + 88 neighbor tests green. `_execute_turn` is gitnexus-CRITICAL (14 impacted / 9 processes) → flag-gating keeps prod a true no-op until validated. `bep_ab.py` enables the flag for both A/B arms.
+
+**Status: read-loop FIXED, pending verification.** Remaining = a host-quiet BEP-2 A/B re-run with the flag on (J6 paused) to confirm both arms complete multi-file tasks + read the gate. Code + unit tests are inference-free and landed. (Secondary still-open: the `batch_edit_states` `be=-` capture gap from `orchestrator.log`.) DCP-6 downstream.
