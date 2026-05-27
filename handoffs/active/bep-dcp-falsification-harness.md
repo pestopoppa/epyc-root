@@ -505,7 +505,7 @@ Key decisions already made:
 - Use ORCHESTRATOR_EDIT_ROOT as a model-facing task-root override, not merely a write-root.
 - Keep registry/config/session/log/control-plane paths on the real project_root.
 - Route model-facing reads, writes, run_shell cwd, batch-edit repo root, and DCP file discovery to the scratch task root.
-- Build BEP-2 first; DCP-6 comes after BEP-2 decides.
+- BEP-2/J8 and DCP-6/J7 are now separate decisions. BEP-2/J8 only decides whether the legacy `batch_edit_mode` path is worth keeping; DCP-6 can proceed independently because DCP-4 advisory attach is already wired/default-off.
 - Use five synthetic sweet-spot tasks for cheap falsification; a positive synthetic result requires mined/real confirmation before BEP-3.
 - Use API restart per arm block with ABBA/randomized ordering, not one monolithic off block then one monolithic on block.
 - Do not run inference until Phase 0-3 are complete, tested, committed, and the operator approves the host-quiet run.

@@ -639,12 +639,12 @@ Deep dive of **intake-605 (Repo Prompt)** + **intake-607 (Code as Agent Harness)
 
 New handoff [`delegation-context-preassembly.md`](delegation-context-preassembly.md). The *assemble* side of context engineering (context-folding owns *evict*). Sharper on CPU than the cloud system it came from (unearned tokens = DRAM-at-decode; bloated prefill = pure latency).
 
-- [ ] **DCP-1** ContextBundle data model + per-file `full|slices|codemap_only` modes w/ merged line-ranges, content hashes, source provenance, inclusion/exclusion reasons, and stable manifest IDs (substrate; net-new)
-- [ ] **DCP-2** Budget-bounded two-pass assembly loop (cheap metadata ranking → selective body reads → token-verify→add/drop/slice→fit); budget is a per-role parameter with explicit reserves, not a fixed 60k
-- [ ] **DCP-3** CodeMaps-as-budget-class via GitNexus architecture-snapshot producer with content-hash/index-commit cache and stale-index fallback (closes analyzed-not-wired gap)
-- [ ] **DCP-4** Wire pre-assembly into dispatcher/escalation as a seed bundle plus bounded reactive top-ups (flag default-off; log top-up requests as packer-quality signal)
+- [x] **DCP-1** ContextBundle data model + per-file `full|slices|codemap_only` modes w/ merged line-ranges, content hashes, source provenance, inclusion/exclusion reasons, and stable manifest IDs (substrate; net-new)
+- [x] **DCP-2** Budget-bounded two-pass assembly loop (cheap metadata ranking → selective body reads → token-verify→add/drop/slice→fit); budget is a per-role parameter with explicit reserves, not a fixed 60k
+- [x] **DCP-3** CodeMaps-as-budget-class via dependency-free AST codemap producer with content-hash/index-commit cache and stale-index fallback (GitNexus runtime dependency deferred)
+- [x] **DCP-4** Wire pre-assembly into dispatcher/escalation as a seed bundle plus bounded reactive top-ups (flag default-off; reactive discovery remains enabled; validated by `tests/unit/test_dcp4_wiring.py`)
 - [ ] **DCP-5** Non-prescriptive discovery prompt as a PromptForge mutation (A/B via autopilot), preserving evidence and uncertainty while withholding solutions
-- [ ] **DCP-6** Eval on delegation-heavy workload: prefill/latency/quality/top-up count/hallucinated refs/context contamination vs reactive-discovery baseline (offline replay first; inference-gated) — **PARKED 2026-05-27** (reuses the BEP harness; blocked behind the BEP-2 rework gate below)
+- [ ] **DCP-6** Eval on delegation-heavy workload: prefill/latency/quality/top-up count/hallucinated refs/context contamination vs reactive-discovery baseline (offline replay first; inference-gated) — **CODE-READY 2026-05-27** (DCP-4 advisory attach landed/default-off; no longer blocked by BEP read-loop)
 
 ### P23 — Batched Structured Editing + Parallel Apply Fan-out (intake-605)
 
@@ -652,10 +652,10 @@ New handoff [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md). 
 
 **2026-05-26 — P22/P23 code wired (default-off) + falsification-harness handoff reviewed.** BEP `_execute_turn` divergence (`ea5f010`) + DCP-4 advisory pre-assembly (`31ea6d4`) are wired behind `batch_edit_mode` / `dcp_pre_assembly` (both default-off, tested). Their inference falsification gates (BEP-2, DCP-6) need a safe task-root harness (no off-the-shelf multi-file-edit workload; the live edit/read/test paths otherwise target the orchestrator project root) — construction tracked in [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (implements `ORCHESTRATOR_EDIT_ROOT` as model-facing task-root, not write-only redirect).
 
-**2026-05-27 — BEP-2 PARKED post-real-run (operator review).** First real BEP-2 A/B exposed 4 real-path defects the stub never caught (stub bypasses `/chat`+REPL): mock_mode + force_mode (driver, fixed `22b03c0`/`c407137`); interleaved rider + file_mutation write-redirect (`1bad0e1`, production-safe). **Root cause: the interleaved-baseline rider told the model to use `open()`, which the REPL security layer forbids** → coder looped without writing. Operator also found a **task-root isolation leak** (`/tmp/`+`..` validate while task-root active) and that the stub validated nothing real. **No valid BEP-2 result.** Binding rework gate before any rerun: fix the task-root leak (scratch-only allowed set when active), rewrite the rider around `file_write_safe` (forbid `open()`), attach per-session `repl_tap.log` slices to bep_ab artifacts, expand bep_ab rows to the full gate schema (topology_hash/flags/transcripts/touched-files/parse-apply-promote), add a `_file_write_safe` task-root regression test, then a no-inference real-path canary + one live single-task smoke. **DCP-6 stays parked** (reuses this harness). Full detail in the harness handoff §Operator review (2026-05-27).
+**2026-05-27 — BEP-2 diagnosis superseded the original rework gate.** The direct one-shot ablation proved Qwen3.6 can solve the five multi-file/read-first tasks 5/5 with the same verifiers; the failure was the read->peek->edit->FINAL REPL/BEP contract. The default-off `force_mode="edit"` transaction is now built/hardened as the practical remediation. Therefore **J8/BEP-2 is optional**: run it only to decide the legacy structured patchset/batch-edit path's keep/retire/task-scope fate. **DCP-6 is separate and code-ready** because DCP-4 advisory attach is already wired/default-off.
 
 - [ ] **BEP-1** Batch-edit mode: bounded evidence phase, then emit one typed structured patch set with base repo/file hashes and cross-file dependency metadata (flag default-off)
-- [ ] **BEP-2** CPU latency A/B vs interleaved Root LM loop — round-trips/prefill/latency/quality plus parse/apply/verify failure rates (offline replay first; inference-gated) — **PARKED 2026-05-27** post-real-run; root cause = rider used forbidden `open()` + task-root leak + stub validated nothing real; binding rework gate (see status note above), no valid result yet
+- [ ] **BEP-2 / J8** CPU latency A/B vs interleaved Root LM loop — round-trips/prefill/latency/quality plus parse/apply/verify failure rates (offline replay first; inference-gated) — **OPTIONAL DECISION EXPERIMENT 2026-05-27** for the legacy `batch_edit_mode` path only; not the practical multi-file remediation gate
 - [ ] **BEP-3** Autopilot StructuralLab knob batch-vs-interleaved (gated on BEP-2 positive)
 - [ ] **BEP-4** Deterministic-first parallel apply fan-out across 32×6t NUMA split + independent per-file verify; optional LM repair lane only after explicit inference approval
 - [ ] **BEP-5** General sandbox/worktree-before-disk + stale-base rejection + granular accept/reject over a coherent staged diff; whole-repo verify before commit
@@ -664,8 +664,8 @@ New handoff [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md). 
 
 Tasks added to [`meta-harness-optimization.md`](meta-harness-optimization.md) (HLE-1/2/3) and [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) (HLE-4). Stop optimizing the harness against final-task-success alone; score intermediate behavior + an oracle-adequacy meta-metric; adopt hold-model-fixed/vary-harness benchmarking.
 
-- [ ] **HLE-1** Per-component harness metrics from structured traces with evidence event IDs and confidence: execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate (meta-harness)
-- [ ] **HLE-2** Oracle-adequacy meta-metric per suite including blind spots, shortcut risk, determinism, and review status (meta-harness; addresses P8b web-search-shortcut)
+- [x] **HLE-1** Per-component harness metrics from structured traces with evidence event IDs and confidence: execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate (meta-harness) — rule-based observe-only implementation landed in epyc-orchestrator `9222a19`
+- [x] **HLE-2** Oracle-adequacy meta-metric per suite including blind spots, shortcut risk, determinism, and review status (meta-harness; addresses P8b web-search-shortcut) — default oracle-adequacy registration landed in epyc-orchestrator `9222a19`
 - [ ] **HLE-3** Harness-isolating benchmark lane: fixed model/server/retrieval snapshot, vary one harness component at a time (meta-harness)
 - [ ] **HLE-4** Per-component metrics as observe-only fields first, then Pareto co-objectives/guardrails only after predictive-signal analysis (autopilot)
 
@@ -711,12 +711,12 @@ Tasks added to [`autopilot-continuous-optimization.md`](autopilot-continuous-opt
         │        └─► BSV-1 (behavior_signature reuses the family) ─► BSV-2 ─► BSV-3
         │        └─► URE-2 (approval record links behavior_signature) ; URE-1 calib ─► URE-3
         │
-[DCP-1 ContextBundle]  ─► DCP-2 ─► DCP-3 ─► DCP-4 ─► DCP-5 ─► DCP-6   (DCP-1/DCP-2/DCP-3 DONE; DCP-4 = reviewed dispatcher hook)
-        └─(shared manifest)─► BEP-1 (batch edit records bundle ID) ─► BEP-4 ─► BEP-5 ; BEP-2 gate ─► BEP-3
+[DCP-1 ContextBundle]  ─► DCP-2 ─► DCP-3 ─► DCP-4 ─► DCP-5 ─► DCP-6   (DCP-1/DCP-2/DCP-3/DCP-4 DONE; DCP-6 inference gate remains)
+        └─(shared manifest)─► BEP-1 (batch edit records bundle ID) ─► BEP-4 ─► BEP-5 ; optional BEP-2/J8 decision ─► BEP-3
 ```
 
-Recommended build order (non-inference): **(1)** EXM shared schema → **(2)** HLE-1/HLE-2 + DCP-1 + BEP-1 → **(3)** HLE-3 harness-isolating lane → **(4)** DCP-2/3, BEP-4/5 deterministic appliers, BSV-1, URE-1 logging-only → then the inference gates.
+Recommended build order (non-inference): **(1)** EXM shared schema → **(2)** HLE-1/HLE-2 + DCP-1 + BEP-1 → **(3)** HLE-3 harness-isolating lane → **(4)** DCP-2/3/4, BEP-4/5 deterministic appliers, BSV-1, URE-1 logging-only → then the inference gates. **2026-05-27 update:** EXM schema, DCP-1/2/3/4, BEP edit-transaction remediation, HLE-1/2 observe-only metrics, and HLE-4 journal plumbing are now built; remaining work is mostly inference gates plus BSV/URE follow-through.
 
-**Inference-gated eval order (gap-fix 2026-05-25):** all intake-607/605 inference gates are consolidated in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) **Package J** to run in one operator window: **DCP-6 = J7, BEP-2 = J8, HLE-4 = J9, URE-1 = J10 (shadow), BSV-2 = J11**. Cheap-kill order within the harness cluster: **BEP-2 (J8) first** (falsification gate for the batched-edit line) → DCP-6 (J7) → URE-1 (J10, passive/shadow, can accumulate during any run) → BSV-2 (J11, per-mutation). HLE-3's fixed-model lane underlies them so deltas attribute to the harness, not model drift. Each gated on its live-wiring prereq landing first.
+**Inference-gated eval order (gap-fix 2026-05-25, revised 2026-05-27):** all intake-607/605 inference gates are consolidated in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) **Package J** to run in one operator window: **DCP-6 = J7, BEP-2 = J8, HLE-4 = J9, URE-1 = J10 (shadow), BSV-2 = J11**. J8 is no longer first or mandatory; it is a legacy batch-edit decision experiment. Current cheap-kill order: DCP-6 (J7) and HLE-4 observe-only (J9) are the directly actionable gates; URE-1 (J10) can accumulate passively during any run; BSV-2 (J11) runs per mutation; J8 runs only if its answer would change the `batch_edit_mode` keep/retire/task-scope decision. HLE-3's fixed-model lane underlies them so deltas attribute to the harness, not model drift. Each gate still requires its live-wiring prereq to be present and labelled in the manifest.
 
 - Source of record: intake-605 + intake-607 `deep_dive` fields in `research/intake_index.yaml`. Surfaced in master priority queue items #51/#52.
