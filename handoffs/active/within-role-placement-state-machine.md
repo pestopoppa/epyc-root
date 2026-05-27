@@ -283,6 +283,24 @@ Autopilot ratification run launched (pid ~1559782, `--max-trials 30`, `--no-cont
 
 **Ratification observation (2026-05-26, autopilot trials 561+):** Placement SM **confirmed exercised live** — `active_region_holders` shows `{frontdoor: 3}` (3 concurrent disjoint placements: full + 2 disjoint quarters) under the autopilot's eval-concurrency-3 fan-out; no overlap; gemma4 8072 stable (parser fix holds); J10 shadow accruing. **0 migrations + 0 topology_overlap queues** observed — *expected, and a finding for J2/J3*: the autopilot eval uses a **distinct session per question** (no session-handover → forward migration never triggers) and concurrency 3 ≤ 3 safe frontdoor slots (no queue). So neither external `/chat` (rate-limited) nor the autopilot eval (distinct sessions, steady concurrency) exercises migration. **J2/J3 live verification needs a dedicated probe**: same `session_id` reused across turns (forces session-handover → forward migration) + load oscillation (>safe-slots then drop → reverse migration). The WP-3/WP-4 code is unit-tested + merged; only the live observation is pending that probe.
 
+**J2/J3 RESOLVED — SM logic VERIFIED (2026-05-27, operator audit #5).** Ran the probe. Two findings:
+1. **Live-via-API observation is CONFOUNDED by `--workers 6`** (per-worker state isolation): the
+   `ConcurrencyAwareBackend`'s session→quarter affinity, `_session_last_seen`, and migration counters
+   are per-worker, while requests round-robin across 6 workers and the dashboard hits an arbitrary one.
+   So a `/chat` probe can neither reliably trigger (session affinity rarely lands the same session on
+   the same worker's full) nor observe migrations. **This is why J6 + the live probe both saw 0
+   migrations** — not that migration is broken. (Separately fixed: the dashboard read `state.llm_primitives`
+   (built without `server_urls` → no backends) instead of `state._real_primitives` (the CAB-bearing
+   primitives) — commit `181e86a`; now at least visible on the handling worker.)
+2. **The migration STATE MACHINE is verified in-process** (no multi-worker confound) →
+   `tests/unit/test_concurrency_aware_migration_sm.py` (commit `181e86a`): **J2 forward** — a new session
+   displaces the prior one from full → `_migrations` increments + the prior session lands on a quarter;
+   **J3 reverse** — a warm quartered session released after the full instance is idle ≥ cooldown →
+   `_reverse_migration_counts` increments. The full 4-guard chain (full-idle≥cooldown, session-warm
+   window, per-session cap, in-flight) functions. KV-HTTP slot save/restore stubbed (separately
+   unit-tested). **Genuinely-live under-traffic verification would require a single-worker API; the SM
+   trigger logic is now verified + regression-protected.**
+
 **WP-5 per-role placement_policy DECISION (ratified):**
 
 | Role | placement_policy | basis |
