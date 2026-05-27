@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-05-24
-**Sources**: 32 documents (added 2026-05-24 autopilot exogenous-restart resilience completed handoff; 5 deep-dives, 19 intake entries, 11 handoffs)
+**Last compiled**: 2026-05-27
+**Sources**: 36 documents (added 2026-05-27 bulk-campaign audit, BEP real-path harness lessons, and wrap-up checkpoint)
 
 ## Summary
 
@@ -16,6 +16,12 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-27, concurrent eval semantics and campaign-audit discipline)
+
+- **Concurrent EvalTower speed semantics are correct in the objective, but baseline mutation needs a second guard.** Same-trial concurrent eval fan-out should use aggregate batch throughput as the SafetyGate/Pareto `speed` objective, while raw median per-request throughput remains diagnostic metadata. This prevents quartered instance per-request slowdown from looking like a regression when aggregate wall-clock throughput improves. The audit found this math implemented, but also found that production baseline mutation still needs an explicit eligibility check requiring `speed_metric_mode`, topology hash, matrix status, and live-affinity proof before updating baselines. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
+- **Autopilot dispatch-latency work improves operator visibility without changing high-blast-radius eval caller contracts.** Phase heartbeat, dashboard idle-reason panel, async auxiliary plot/digest scheduling, shorter pause/health sleeps, and conservative contention-aware seed-role waves reduce downtime and explain idle windows. Request-level `trial_id`/`batch_id` propagation through legacy benchmark callers remains deferred because those functions were marked high/critical blast radius. Source: [autopilot-dispatch-latency-optimization.md](../handoffs/active/autopilot-dispatch-latency-optimization.md).
+- **Observability-first is now a campaign rule, not just a BEP lesson.** The BEP-2 harness initially produced plausible but wrong diagnoses because stub validation bypassed `/chat`/REPL and the investigation did not enumerate existing turn traces before root-cause claims. The corrected path used real-path canaries, per-turn trace slices, and single-task live smoke before interpreting full ABBA results. This generalizes to all autonomous experiment harnesses: a stub that bypasses the real path proves schema shape, not behavior. Sources: [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
 
 ### New (2026-05-24, autopilot exogenous-restart resilience)
 
@@ -337,3 +343,23 @@ Before this cluster, autopilot's Pareto archive optimized `quality × speed × �
 - [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) — URE-1 wired
 - [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) § Package J J7-J11 — inference verification gates
 - `progress/2026-05/2026-05-26.md` Session 17 + 18
+
+## 2026-05-26 update — autopilot dispatch-latency and idle-visibility hardening
+
+Parallel dispatch made autopilot idle gaps operationally expensive: when CPU-region locks are ready but no inference is visible, the operator needs to know whether the loop is stopped, paused, waiting on health, building the controller prompt, invoking the planner, dispatching work, journaling, checkpointing, or doing auxiliary artifacts. The orchestrator now has `scripts/autopilot/phase_status.py`, which writes `/mnt/raid0/llm/tmp/autopilot_phase.json{,l}` and feeds the dashboard `autopilot_phase` panel through `/dashboard/api/process_status`.
+
+The hardening also moves safe auxiliary work off the critical path. Plot generation and daily digest generation can run asynchronously after durable state mutation; journal/archive/state writes and checkpointing remain synchronous. Seed-role evaluation can now use contention-matrix-safe waves (`AUTOPILOT_SEED_ROLE_CONCURRENCY=auto`) with strict same-port and heavy-port guards, so background seeding can use available parallel capacity without touching the high-blast-radius benchmark caller contracts.
+
+Recommended bulk-run knobs:
+
+```bash
+AUTOPILOT_ASYNC_AUX=1
+AUTOPILOT_ASYNC_WORKERS=2
+AUTOPILOT_SEED_ROLE_CONCURRENCY=auto
+AUTOPILOT_PAUSE_POLL_S=1
+AUTOPILOT_HEALTH_BACKOFF_S=10
+```
+
+Remaining deliberate gap: request-level `trial_id` and `batch_id` are supported by the structured inference tap, but propagating them through `call_orchestrator_forced` / `_call_orchestrator_with_slot_poll` is a separate high-risk benchmark-contract edit. Current attribution is therefore loop-level via phase heartbeat plus request/instance-level via the tap where callers already provide metadata.
+
+Sources: [`handoffs/active/autopilot-dispatch-latency-optimization.md`](../handoffs/active/autopilot-dispatch-latency-optimization.md), [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md), [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md), `progress/2026-05/2026-05-26.md`.

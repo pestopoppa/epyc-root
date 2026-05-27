@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-04-27 late-evening
-**Sources**: 36 documents
+**Last compiled**: 2026-05-27
+**Sources**: 38 documents
 
 ## Summary
 
@@ -17,6 +17,8 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 
 ## Key Findings
 
+- **Real-path canaries are mandatory for model-facing harnesses.** The BEP-2 falsification harness passed stub dry-runs while still failing the real `/chat` + REPL path in multiple ways: mock/real payload flags, REPL mode forcing, forbidden `open()` instructions, task-root isolation, and per-turn extraction behavior. The corrected methodology is: no-inference real-path canary with deterministic mocked LLM output, then one live single-task smoke, then full A/B. Stub validation alone only proves row/schema shape. [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
+- **Root-cause claims require primitive evidence before narrative.** The BEP-2 retrospective logged several wrong but coherent diagnoses before per-turn trace evidence was inspected. The durable benchmark rule is to enumerate all observability artifacts first (`repl_tap`, structured tap, orchestrator log, scratch git diff, verifier output), cap blind fixes at one, and downgrade hypotheses to "suspected" until the primitive trace supports them. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - Claude-as-Judge scoring achieves semantic understanding of correct answers in unexpected formats, providing consistent 0-3 graded evaluation. Algorithmic pattern matching underscored by 51 percentage points on the same output in early experiments. [06-benchmarking-framework.md]
 - Benchmark hardening eliminated the 89-93% ceiling effect. Expected post-hardening ranges: 30-50% for draft models (0.5-1.5B), 50-70% for general models (4-8B), 60-80% for specialized thinking models (8B+), 70-85% for large models (14B+). No model hits 90%+. [06-benchmarking-framework.md]
 - Speculative decoding preserves quality (same model) while delivering 10x speed. MoE expert reduction trades quality for speed in a predictable curve: MoE4 at 85% quality/33.6 t/s, MoE3 at 78%/37.7 t/s vs baseline 89%/2.89 t/s. [06-benchmarking-framework.md]

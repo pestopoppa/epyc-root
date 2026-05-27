@@ -112,6 +112,15 @@ Source: "Episodic Memories Generation and Evaluation Benchmark for LLMs" (arXiv 
 - [ ] Run 20ch benchmark on all production models (10K context — any model handles this)
 - [ ] (Deferred to P4) Download 200ch dataset (100K tokens, 686 QA pairs) for YaRN quality gating
 
+### P3c — LongMemEval-V2 Agent-Memory Eval Target (from intake-612 deep-dive, 2026-05-27)
+
+Source: "LongMemEval-V2" (arXiv:2605.12493, UCLA NLP). The updated memory benchmark — reframes from chat-history recall (V1, arXiv:2410.10813) to **web-agent environment expertise**: 451 human-curated questions over WebArena/WorkArena trajectories, multimodal screenshots, Small 100traj/~25M tok + Medium ~500traj/~115M tok, 5 abilities (static state recall, dynamic state tracking, workflow knowledge, environment gotchas, premise-awareness/abstention). Memory operationalized as `Insert(trajectory)/Query→evidence`, 200K reader budget, **fixed reader = Qwen3.5-9B (CPU-viable)**.
+
+**Caveat (decisive for scoping)**: web-agent-specific — needs WebArena/ServiceNow environments or pre-collected trajectory haystacks to run; it is **not** a drop-in for our LoCoMo/MemoryAgentBench memory gates. Aspirational target for `delta-mem-reproduction.md`'s B1/M.3 prototypes, not part of its current gates. Our markdown RAG would land in the 42–51% RAG-baseline band.
+
+- [ ] Decide whether to stand up WebArena/ServiceNow haystacks or wait for the authors to release pre-collected haystacks before adopting LME-V2 as a gate.
+- [ ] Forward opportunity (separate from eval): AgentRunbook-C ("trajectories-as-files + coding-agent-in-sandbox + query-time manifest + workflow-doc", 72.5% vs RAG 48.5%) maps onto our REPL + skill-bank + `unified-trace-memory-service.md` SQLite trajectory store. Track as a candidate, not actioned. See `research/deep-dives/2026-05-27-agent-memory-cluster.md`.
+
 ### P4 — YaRN Context Extension (when datasets ready)
 
 - [ ] Benchmark quality degradation curve from 256K → 512K → 1M with YaRN

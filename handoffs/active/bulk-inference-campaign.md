@@ -796,6 +796,18 @@ Then update orchestrator config:
 
 **Frontdoor Half0/Half1 interpretation**: The dashboard's `Half0` cell for frontdoor is the current idx0 solo/full-speed anchor shape (`0-47,96-143`), not evidence that a validated second `Half1` frontdoor instance exists. Current certified frontdoor concurrency is via the existing q0-q3 quarter instances. Adding a dedicated frontdoor `Half1` replica is a new topology experiment, not a matrix-repair assumption: it requires a new server/port, explicit placement policy, fresh topology hash, isolated benchmarks comparing Half0+Half1 against the current Half0-plus-quarters policy, and a new matrix derivation before it can accelerate the bulk backlog.
 
+**Autopilot dispatch-latency defaults (2026-05-26 hardening)**: before starting the long bulk train, run on an orchestrator containing `scripts/autopilot/phase_status.py`, the dashboard `autopilot_phase` panel, async auxiliary plot/digest scheduling, and contention-aware seed-role waves. Recommended environment:
+
+```bash
+AUTOPILOT_ASYNC_AUX=1
+AUTOPILOT_ASYNC_WORKERS=2
+AUTOPILOT_SEED_ROLE_CONCURRENCY=auto
+AUTOPILOT_PAUSE_POLL_S=1
+AUTOPILOT_HEALTH_BACKOFF_S=10
+```
+
+Use the dashboard phase panel to classify idle gaps before changing scheduling policy: stopped/down, paused, health backoff, planner prompt build, planner invoke, dispatch, journaling, checkpointing, or async artifact scheduling. Seeder fan-out is allowed only for background contention-matrix-safe role waves; missing/stale/unknown matrix evidence should collapse toward serial behavior. Request-level `trial_id`/`batch_id` propagation through benchmark HTTP callers is still deferred because those callers have high/critical GitNexus blast radius; the current phase heartbeat gives loop-level attribution without changing those contracts.
+
 ---
 
 ## Telemetry Collection Plan
@@ -959,6 +971,16 @@ Initial regret analysis on 7,211 routing decisions (Apr 10-14):
 **Depends on**: epyc-orchestrator main @ `15350fe` or later — both feature branches MERGED 2026-05-26 (`fe6805c` placement WP-0..WP-4 + WP-5 scaffold; `15350fe` intake-607 harness DCP/BEP/BSV/URE). 347 unit tests on main; all new code additive + flags default-OFF. No further branch merging needed before any J task.
 **Status**: IN PROGRESS (claude 2026-05-26). Preflight PASS (67 tests). **J4a DONE** (`data/contention_matrix/bulk-2026-05-26-j4a/`). **J1 core PASS** — placement SM scales concurrent frontdoor 1.68×–1.91× across disjoint instances, no overlap; the `topology_overlap` queue is NOT observable via `/chat` (HTTP rate limiter 60rpm/10burst + a persistent dashboard client cap concurrent arrivals) → **J1 queue + J2/J3 migration verification re-vehicled to the autopilot eval-concurrency fan-out path** (the original WP-0 motivation). **J4b**: first full-instance pass exposed an operator-flagged methodology error → corrected to a **quarter-level disjoint-cpuset feasibility model** (`enumerate --feasibility`: 25 feasible / 32 `topology_infeasible`); quarter-level re-bench (`--safe-sampling`) IN PROGRESS (`data/contention_matrix/bulk-2026-05-26-j4b-feasible/`). **gemma4 worker_general full-instance crash FIXED** (uncaught PEG-parser throw → raw-content fallback; ik_llama.cpp `d84755dc`, rebuilt+redeployed+verified). Findings F1–F4 in [within-role-placement-state-machine.md](within-role-placement-state-machine.md); correction detail in [cross-role-nway-contention-matrix.md](cross-role-nway-contention-matrix.md). Remaining: finalize quarter-level matrix → J4c policy wiring → J5/J4/J6 → J7–J12.
 
+**2026-05-27 Codex audit checkpoint**: this runbook is structurally correct, but several execution-state surfaces
+need a consistency sweep before launching another nonstop bulk agent. Later certified-affinity results supersede
+older manifest/handoff rows that still cite the `{frontdoor,ingest,vision}` `0.847` block as live proof; current
+matrix/progress says that row was a bad-affinity artifact and remeasured `allow`. Runtime safety also needs two
+code-level hardening items before baseline-eligible cross-role bulk parallelism: `ContentionGate.matrix_health()`
+should check the live topology hash, and `SafetyGate.update_baseline()` should enforce the documented
+`speed_metric_mode`/`topology_hash`/`matrix_status` baseline mutation rule. J2/J3 live migration verification
+remains open; do not call J1-J3 complete until the dedicated probe produces evidence. See the 2026-05-27 progress
+entry "Codex bulk-campaign audit + wrap-up skill checkpoint" for the full findings list.
+
 Inference-gated verifications and observability runs for the within-role-placement-state-machine handoff. Also bundles the two sibling inference gates from the 2026-05-25 audit batch (DCP-6, BEP-2) because they share the same "needs autopilot-style eval workload" profile and benefit from one operator sitting + one cleared stack window. Add other-agent inference-gated items under this Package (or a successor) for shared sequencing.
 
 ### Priority-zero sequencing (RUN FIRST)
@@ -1118,6 +1140,25 @@ Each gate is a **decision point**, not just a measurement: run → branch on the
 **J11 — BSV-2 differential testing (mutation accept gate; per candidate mutation):**
 - `benign` → auto-accept; `watch` (route/tool changed, outcomes equal) → accept + log; `blocking` (prior-pass sentinel regressed, forbidden shortcut appeared, or cost guardrail crossed) → **REJECT, do not promote**; if it touches a shared subsystem → BSV-3 conflict-ledger review.
 - **Mitigation**: gate accept on BOTH scalar regression AND signature severity; partial-confidence signatures cannot certify `benign`; git-committed revert remains the backstop.
+
+---
+
+## Package K: Audit-Batch Code-Ready Inference Gates (2026-05-27)
+
+**Origin**: the 2026-05-27 `/research-intake` of agent-oss (intake-610–613) prompted an audit of `research-evaluation-index.md` + `pipeline-integration-index.md` for work that is *not* inference-gated. All code scaffolding was implemented that session (see `progress/2026-05/2026-05-27.md` + `research/deep-dives/2026-05-27-agent-memory-cluster.md`). The RUNS below are now unblocked — code has landed, models/datasets are downloaded or have a one-line fetch noted. **Independent of Package J** — pick up in any stack window; none block J.
+
+**Stack required**: varies per row (most need only individual model servers, not the full orchestrator).
+
+| Task | Code prereq (DONE this session) | Inference run / gate |
+|------|----------------------------------|----------------------|
+| **K-RAG-1** — KB-RAG hybrid-signal eval (K7 + K9/K10) | `kb_rag.query()` recency+rerank params (`src/retrieval/kb_rag.py`); `src/retrieval/cross_encoder.py`; cross-encoder ONNX on disk at `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx`; 21 unit tests pass | Run the K7 HotpotQA/LoCoMo retrieval-recall harness (`internal-kb-rag.md` K7) sweeping `KB_RAG_RECENCY_WEIGHT` / `KB_RAG_RECENCY_SIGMA_DAYS` / `KB_RAG_RERANK=1` / `KB_RAG_RERANK_WEIGHT`. Gate: any config beats the MaxSim-only baseline on doc-recall@{3,5,10} by >2pp (Flywheel ~1pp noise floor). Decide default weights. |
+| **K-EMB-1** (P9) | granite-97m-r2 bench Phase A (GGUF + comparator deploys) — see `granite-97m-r2-bench-plan.md` | Phase B: throughput + nDCG@10/recall@10/50 + 32K probe + end-to-end-with-reranker. Gate: dense first-stage retriever decision (granite vs BGE-M3 vs defer). |
+| **K-EVAL-1** (EV-3 → H5/EV-4) | `scoring_verifiers` suite adapter landed (`scripts/benchmark/scoring_verifiers_adapter.py`, registered in `dataset_adapters.py`+`suites.py`) | EV-4 calibration baseline (ECE/AUC) on Scoring-Verifiers — **already tracked as H5**; the EV-3 adapter prereq is now DONE. One-line dataset fetch: `snapshot_download('nvidia/Scoring-Verifiers', repo_type='dataset', local_dir='/mnt/raid0/llm/data/eval/scoring_verifiers')`. |
+| **K-MEM-1** (P3b) | `tulving_episodic` suite adapter + deterministic F1 scorer landed (`scripts/benchmark/tulving_episodic_adapter.py`); 77 unit tests | Run 20ch (10K-token, 456 QA) on production models; report Simple-Recall + Chronological-Awareness. Dataset: Figshare DOI 10.6084/m9.figshare.28244480 → `/mnt/raid0/llm/data/eval/tulving_episodic/`. |
+| **K-DIV-1** (EV-8) | `diversity_metrics` + 5 `EvalResult` fields wired (`scripts/autopilot/diversity_metrics.py` + `safety_gate.py`; `src/` side pre-existing); 50 tests | Baseline diversity pass on 4 production roles; populate the SafetyGate two-tier WARN/REJECT thresholds (semantic-embedding-agreement needs an embedder pass). |
+| **K-ROPE-1** (P10.2) | `scripts/benchmark/rope_position_probe.py` (`--dry-run` verified) | 5 models × 4 context lengths (4K/8K/16K/32K), 100 samples/cell ≈ 100 min. LOW priority, **bulk-pickup eligible**. Record collapse-point per model into the RoPE deep-dive appendix. |
+
+**Run-command note**: each adapter is registered as a named suite, so existing seeding/eval harnesses pick them up by suite name (`scoring_verifiers`, `tulving_episodic`). K-RAG-1 + K-ROPE-1 are standalone scripts (env-var-swept / `--context-length` per cell). Per `feedback_speed_verify_via_llama_bench` + `feedback_no_concurrent_inference`: the user/campaign runs these manually with per-run approval — code is prepared, not executed.
 
 ---
 

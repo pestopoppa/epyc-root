@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 13 documents (3 deep-dives, 6 intake entries, 4 handoffs)
+**Last compiled**: 2026-05-27
+**Sources**: 15 documents (added GitNexus CLI posture updates and local wrap-up skill workflow)
 
 ## Summary
 
@@ -19,6 +19,8 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 
 ## Key Findings
 
+- **Session closeout is now codified as a local Codex skill.** The `/workspace/.claude/commands/wrap-up.md` routine has a Codex skill mirror at `/home/node/.codex/skills/wrap-up`: update progress reports, handoffs, handoff indices, relevant docs, README freshness warnings, wiki compilation, agent log, and per-repo local commits, then report hashes for manual push. The project command remains the source of truth when present; the skill makes "wrap up", "checkpoint", and `/wrap-up` phrasing durable across Codex sessions. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
+- **GitNexus remains the required pre-edit blast-radius tool, but markdown/log/progress targets are usually not indexed symbols.** During the 2026-05-27 wrap-up, `gitnexus impact` on documentation targets returned `UNKNOWN` / `0 impacted`; that is expected for unindexed prose surfaces. For code changes, high/critical impact still requires explicit warning and scoping before edits. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **GitNexus provides single-query answers to dependency questions that currently cost 5-8 REPL turns.** When the coder modifies `_execute_turn()` in helpers.py, it has no awareness that 7 node classes call it, that it depends on 15+ helper functions, or that changing its return signature would break the entire graph. The `impact` tool answers this in one call with confidence-scored edges. Import-resolved calls score 0.90, same-file calls 0.85, fuzzy single-match 0.50, fuzzy multi-match 0.30. Tools default to `minConfidence=0.7` to exclude guesses, letting the agent distinguish "definitely calls X" from "might call X." [gitnexus-codebase-intelligence.md](../research/deep-dives/gitnexus-codebase-intelligence.md)
 
 - **Context injection is strictly superior to tool calling for dependency awareness.** Five integration options were assessed, ranked by ROI: (1) MCP tool server -- zero Python code, 20 lines of config; (2) REPL tool wrappers -- 120 lines, follows existing registry pattern; (3) auto-inject context into prompts -- 150 lines, highest impact on code quality, feature-flagged; (4) pre-commit validation -- 50 lines, safety net for blast radius; (5) KuzuDB direct Python queries -- 200 lines, sub-millisecond queries, no Node.js runtime dependency. The recommended order is 2, then 3, then 4, then 5. Option 3 (auto-injection) represents the highest value because the model gets dependency context before it writes code, matching the "front-load intelligence" pattern analogous to prefix caching. [gitnexus-orchestrator-integration.md](../research/deep-dives/gitnexus-orchestrator-integration.md)

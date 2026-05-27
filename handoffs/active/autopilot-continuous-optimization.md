@@ -2,7 +2,7 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-20 (search space expanded — see "Autopilot Delegation Expansion 2026-05-20" below)
+**Updated**: 2026-05-26 (parallel-dispatch metric audit + dispatch-latency/idle-visibility hardening — see safety notes below)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 ## Autopilot Delegation Expansion — 2026-05-20
@@ -37,7 +37,7 @@ Controller (Claude CLI meta-reasoning)
   └── Species 3: StructuralLab (flags + routing model lifecycle)
   │
   EvalTower: T0 (10q/30s) → T1 (100q/5m) → T2 (500+/30m)
-  ParetoArchive: 4D (quality × speed × -cost × reliability)
+  ParetoArchive: 4D (quality × speed × -cost × reliability; speed is median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches)
   SafetyGate: quality floor + per-suite guard + routing diversity
 ```
 
@@ -52,6 +52,7 @@ epyc-orchestrator/scripts/autopilot/
   eval_tower.py             # Tiered evaluation wrapping seeding infrastructure (on_question callback for TUI)
   config_applicator.py      # Hot-swap vs restart parameter routing
   meta_optimizer.py         # Species budget rebalancing + stagnation detection
+  phase_status.py           # Phase heartbeat + async auxiliary-task runner
   progress_plots.py         # 6 matplotlib visualizations (auto-updated)
   sentinel_questions.yaml   # 10 curated T0 validation questions
   program.md                # Human-editable autoresearch strategy document
@@ -70,6 +71,7 @@ epyc-orchestrator/orchestration/
   autopilot_baseline.yaml   # Frozen baseline metrics
   autopilot_checkpoints/    # Timestamped routing intelligence snapshots
   autopilot_plots/          # Auto-generated progress visualizations
+  /mnt/raid0/llm/tmp/autopilot_phase.json{,l}  # Dashboard-visible loop phase heartbeat
   repl_memory/strategy_store.py  # FAISS+SQLite strategy memory (species retrieval)
 ```
 
@@ -89,6 +91,8 @@ epyc-orchestrator/orchestration/
 
 # EvalResult (from eval_tower → safety_gate → pareto_archive)
 EvalResult(tier, quality, speed, cost, reliability, per_suite_quality, routing_distribution)
+# Parallel eval metadata in details/JSONL: speed_metric_mode, eval_concurrency,
+# median_request_tps, aggregate_tps, eval_wall_s.
 
 # ParetoEntry (4D: quality↑, speed↑, -cost↑, reliability↑)
 ParetoEntry(trial_id, objectives, config_snapshot, species, git_tag, parent_trial, ...)
@@ -127,11 +131,15 @@ CHECKPOINT + RESET (selective) + RESEED → back to top
 | Regression | Δq < -0.05 vs baseline | Reject |
 | Per-suite | Δq < -0.1 any suite | Reject |
 | Routing diversity | >80% architect | Reject |
-| Throughput floor | <80% baseline speed | Reject |
+| Throughput floor | <80% baseline effective speed | Reject |
 | Consecutive failures | 3 × T0 fail | Auto-rollback |
 | **Code mutation deep validation** | Syntax + shrinkage + public names + import test | Reject (added 2026-04-04) |
 | **Catastrophic shrinkage** | >50% size reduction (code or prompt) | Reject (added 2026-04-04) |
 | **Revert commit** | All reverts are git-committed | Prevents corruption as HEAD (added 2026-04-04) |
+
+**Parallel-dispatch metric policy (2026-05-26 audit)**: concurrent EvalTower fan-out is valid only inside one trial's own eval batch; separate trials must not run concurrently in one autopilot process. Concurrent fan-out intentionally trades lower individual request t/s for higher aggregate batch throughput. `EvalResult.speed` and Pareto objective #2 are the effective speed for the eval mode: median request t/s for serial evals, aggregate batch t/s for concurrent same-trial eval batches. Concurrent runs also journal `speed_metric_mode`, `median_request_tps`, `aggregate_tps`, `eval_concurrency`, and `eval_wall_s`, so the planner does not infer a regression from raw per-instance slowdown while diagnostics still expose it.
+
+**Dispatch-latency / idle-visibility policy (2026-05-26 hardening)**: the dashboard CPU-region table is a placement-readiness view, not proof that autopilot is alive or actively dispatching. `phase_status.py` now writes `/mnt/raid0/llm/tmp/autopilot_phase.json{,l}` so the dashboard can show whether the loop is stopped, paused, in health backoff, building the planner prompt, invoking the planner, dispatching, journaling, checkpointing, or scheduling async artifacts. Auxiliary plot/digest work may run asynchronously (`AUTOPILOT_ASYNC_AUX=1`, `AUTOPILOT_ASYNC_WORKERS=2`) after durable journal/state mutation; checkpointing remains synchronous. Seeder role evals may fan out with `AUTOPILOT_SEED_ROLE_CONCURRENCY=auto`, but only in contention-matrix-safe background waves with same-port and heavy-port guards. The high-blast-radius request caller contracts remain unchanged; request-level `trial_id`/`batch_id` stamping through `call_orchestrator_forced` is a separate accepted-risk follow-up, not part of this hardening.
 
 ## Integration Points
 
