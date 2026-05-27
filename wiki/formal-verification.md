@@ -2,8 +2,8 @@
 
 **Category**: `formal_verification`
 **Confidence**: verified
-**Last compiled**: 2026-04-15
-**Sources**: 6 documents
+**Last compiled**: 2026-05-27
+**Sources**: 7 documents (added RustEvo2 verification gate)
 
 ## Summary
 
@@ -18,6 +18,8 @@ The proposed pipeline follows the OCR pattern: Leanstral plans (repo-scale conte
 Verina (intake-234) provides a benchmarking framework for verifiable code generation but was assessed as not applicable for direct integration -- it is a benchmark, not a tool.
 
 ## Key Findings
+
+- **RustEvo2 is now a gate benchmark for narrow-domain coder distillation claims.** The Strand-Rust-Coder-14B verification handoff scopes a single standalone RustEvo2 run to test Fortytwo's "#1 on RustEvo2" and "beats GPT-5 Codex on Rust" claims before any larger swarm-dataset effort starts. The run is intentionally isolated from the production stack, sequential across models, and requires explicit approval before inference because it is a benchmark gate, not background autopilot traffic. Source: [strand-rust-coder-rustevo2-verification.md](../handoffs/active/strand-rust-coder-rustevo2-verification.md).
 
 - Goedel-Code-Prover-8B achieves 62.0% prove rate on 427 verification tasks, 2.6x over strongest baseline (BFS-Prover-V2, 32B) [goedel-code-prover-analysis.md]
 - All Goedel-CP innovation is in training methodology -- vanilla Qwen3-8B base with standard GGUF conversion [goedel-code-prover-analysis.md]
@@ -68,3 +70,4 @@ Verina (intake-234) provides a benchmarking framework for verifiable code genera
 - [intake-233](https://arxiv.org/abs/2603.19329) Goedel-Code-Prover intake entry -- Initial evaluation and verdict
 - [intake-235](https://mistral.ai/news/leanstral) Leanstral intake entry -- Initial evaluation and verdict
 - [MathSmith HC formalizer eval handoff](/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md) -- Formalizer-overthinking connection (arxiv:2504.06514), Math-Verify integration (intake-377), MathQ-Verify question quality (intake-379)
+- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/strand-rust-coder-rustevo2-verification.md) -- independent gate for Fortytwo's Rust specialist model and downstream dataset-distillation work

@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-04-22
-**Sources**: 23 documents (added intake-441 diversity collapse)
+**Last compiled**: 2026-05-27
+**Sources**: 25 documents (added Fortytwo swarm dataset gate and RustEvo2 verification)
 
 ## Summary
 
@@ -22,6 +22,11 @@ A critical finding from SFT generalization research (intake-374, intake-378) is 
 Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
 
 ## Key Findings
+
+### New (2026-05-27, swarm-as-dataset-generator gate)
+
+- **Swarm-as-dataset-generator is gated on an external artifact, not accepted from the founder claim.** The Fortytwo-derived dataset-distillation handoff is deliberately stubbed until Strand-Rust-Coder-14B independently clears RustEvo2. A strong or qualified result promotes the pipeline; weak/no-go keeps the idea parked. This prevents spending weeks on fan-out, pairwise ranking, and fine-tuning based only on marketing evidence. Sources: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md), [strand-rust-coder-rustevo2-verification.md](../handoffs/active/strand-rust-coder-rustevo2-verification.md).
+- **If promoted, the pipeline reuses existing EPYC infrastructure rather than inventing a separate swarm stack.** Candidate generation should reuse the bulk-inference campaign fan-out, ranking should reuse the autopilot Bradley-Terry machinery, and evaluation must use a held-out domain suite that the BT judge never sees. Fine-tuning remains GPU-gated; EPYC's CPU role is generation, ranking, verification, and deployment of a quantized specialist. Source: [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md).
 
 ### New (2026-04-22, DD4)
 
@@ -92,3 +97,5 @@ Aletheia RLVR (intake-370) provides scale-dependent training recipes for verific
 - [Eval Tower Verification handoff](/workspace/handoffs/active/eval-tower-verification.md) -- Aletheia scale-dependent RLVR recipes, SWE-RM TTS vs RL effectiveness, ECE/AUC metrics, ThinkPRM deployment plan
 - [Simula Synthetic Data Generation deep dive](/workspace/research/deep-dives/simula-synthetic-data-generation.md) -- intake-410, TMLR 2026, reasoning-driven seedless framework, double-critic rejection sampling, calibrated Elo complexity scoring, taxonomy-based coverage (1.72 vs 0.83), mechanism design principles (no silver bullet, quality>quantity, complexity requires calibration), student-teacher saturation bounds
 - [Ch.16 Calibration & Risk Control](/mnt/raid0/llm/epyc-orchestrator/docs/chapters/16-calibration-and-risk-control.md) -- Skill effectiveness scoring integration with confidence calibration
+- [Swarm-as-Dataset-Generator handoff](../handoffs/active/swarm-dataset-distillation.md) -- gated narrow-domain SFT distillation pipeline using bulk fan-out plus Bradley-Terry ranking
+- [Strand-Rust-Coder RustEvo2 verification](../handoffs/active/strand-rust-coder-rustevo2-verification.md) -- gate benchmark for the Fortytwo public artifact before dataset-distillation promotion
