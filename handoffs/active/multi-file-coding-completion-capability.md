@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84; docstring + 412 regression test 0f00708). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -144,7 +144,7 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   multi-file / rename+delete, `mode=='edit'` + verifier PASS on the scratch the server edited); +55 chat
   route/endpoint/canary tests green.
 
-**✅ Hardened (review 2026-05-27 — commits `d4fafdf` + `fba6c84`):**
+**✅ Hardened (review 2026-05-27 — commits `d4fafdf` + `fba6c84` + `0f00708`):**
 - **Fail-closed edit mode** — explicit `force_mode="edit"` with the flag/root missing now returns **HTTP 412**
   (was: silent REPL fall-through, which would reintroduce the loop this work avoids). Live-verified 412.
 - **Scope caps** — `assemble_context` fail-closes (no model call, no writes) above 50 files / 400 KB, checked
@@ -165,9 +165,10 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   `topology_role` constructor mismatch is gone.
 - Clean detached worktree tests: `tests/unit/test_edit_transaction.py` + `test_chat_completions_roles.py`
   **21/21 PASS**; `test_chat_routes.py` + `test_chat_endpoints.py` + `test_bep_canary.py` **55/55 PASS**.
-- Residual polish only: `src/edit_transaction.py` still has one stale docstring phrase saying
-  `py_compile self-check` although implementation uses `compile()`, and the HTTP 412 fail-closed behavior is
-  live-probed but should get a committed route regression test before broad rollout.
+- Post-audit follow-up (commit `0f00708`): both residuals **RESOLVED** — the `py_compile self-check`
+  docstring phrase was corrected to `compile()`, and a committed route regression test
+  (`tests/unit/test_chat_routes.py::TestEditModeFailClosed`) now asserts the HTTP 412 fail-closed path
+  drives the real `_handle_chat` edit branch (suites **77/77 PASS**).
 
 **Open / not-yet-done (rollout decisions, not blockers):**
 - **Default routing.** Edit-mode is opt-in (`force_mode="edit"` + flags). Routine coding edits do NOT yet
