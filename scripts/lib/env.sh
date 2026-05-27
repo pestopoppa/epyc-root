@@ -29,7 +29,7 @@ _PROJECT_ROOT="$(cd "${_ENV_SH_DIR}/../.." && pwd)"
 # consistent path. Inode-verified: only remaps when it is genuinely the same directory.
 _CANON_ROOT="${ORCHESTRATOR_PATHS_LLM_ROOT:-/mnt/raid0/llm}/epyc-root"
 if [[ "${_PROJECT_ROOT}" != /mnt/raid0/* && -d "${_CANON_ROOT}" \
-      && "$(stat -c %i "${_CANON_ROOT}" 2>/dev/null)" == "$(stat -c %i "${_PROJECT_ROOT}" 2>/dev/null)" ]]; then
+      && "$(stat -c '%d:%i' "${_CANON_ROOT}" 2>/dev/null)" == "$(stat -c '%d:%i' "${_PROJECT_ROOT}" 2>/dev/null)" ]]; then
   _PROJECT_ROOT="${_CANON_ROOT}"
 fi
 unset _CANON_ROOT
