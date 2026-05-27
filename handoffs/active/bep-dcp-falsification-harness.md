@@ -1,6 +1,6 @@
 # BEP-2 / DCP-6 Falsification-Harness Construction
 
-status: REVIEWED / READY TO BUILD (2026-05-26)
+status: BEP-2 REMEDIATED 2026-05-27 (harness built+run; multi-file read-loop diagnosed as agentic protocol/tooling NOT capability, then bypassed by a shipped flag-gated `force_mode="edit"` edit-transaction — see the closing "RESOLVED" section). J8 batch-edit A/B now OPTIONAL; DCP-6 is a separate, now-unblockable track.
 owner: claude session handoff; operator review incorporated
 related:
   - handoffs/active/batched-edit-parallel-apply.md (BEP source; BEP-1/4/5 merged, `_execute_turn` divergence wired `ea5f010`)
@@ -765,9 +765,9 @@ Cracked via the tap (operator: finish it, observe don't defer). The real cause w
 
 **Residual (reported, NOT blind-patched — it is not a clean path bug):** with both fixes, `results-readfix2` = **OFF 1/5, ON 1/5** (only t1 create passes; all 4 read-first tasks fail BOTH arms, turns=8, no FINAL). The coder model on read-first tasks either **loops re-emitting the same action** (t5: identical `peek` ×6 even though the content is in the persisted REPL var) or **writes but never FINALs** (t2); the advisory loop-breaker nudge (loop-guard `3e9ab5e`) does not override this under greedy decode. Both arms fail multi-file equally → **BEP-2's interleaved-vs-batched latency question is unanswerable from multi-file** (no successful completions to compare; only t1: ON batch=3 turns vs OFF interleaved=1 turn).
 
-**Conclusion:** the harness path-bugs that caused the read-loop are FIXED + verified + unit-tested (`11cd60c`, `539670b`). The remaining multi-file COMPLETION failure is a deeper, open-ended problem — coder looping/termination + a too-weak advisory loop-breaker — NOT file resolution. Scope it as a separate deliberate effort (a *hard* loop-break that injects the already-read content + forces progress; an explicit FINAL-after-edit cue in the rider; and a coder-capability check on multi-file edits), not more blind A/B cycles. J6 restored after the runs.
+**Conclusion:** the harness path-bugs that caused the read-loop are FIXED + verified + unit-tested (`11cd60c`, `539670b`). The remaining multi-file COMPLETION failure is a deeper, open-ended problem — coder looping/termination + a too-weak advisory loop-breaker — NOT file resolution. Scope it as a separate deliberate effort (a *hard* loop-break that injects the already-read content + forces progress; an explicit FINAL-after-edit cue in the rider; and protocol/model ablations on read→edit→FINAL tasks), not more blind A/B cycles. J6 restored after the runs.
 
-### Track (A) PROVEN (results-readfix7, 2026-05-27) — loop-guard fixed + fires; coder-capability is the wall
+### Track (A) PROVEN (results-readfix7, 2026-05-27) — loop-guard fixed + fires; capability verdict corrected below
 Pursued (A) per operator ("no smell tests, I want proof"). Building the hard intervention surfaced a
 counter-persistence bug: the no-progress counter was an ad-hoc `state._repl_repeat_count` attr that did NOT
 survive across turns on the live path (probe showed it stuck) → the intervention never fired. **Fixed
@@ -776,18 +776,36 @@ live probe logged the counter accumulating **`0→7`** (`enabled=True`; pre-fix 
 `prompt_has_loop_halt=True` at turn 3 (count=2) and the model **wrote in response** (`fws=1`). So the hard
 intervention now provably FIRES. **Yet read-first tasks still fail both arms (OFF 1/5, ON 1/5).** With the
 harness now correct end-to-end (read-resolve `11cd60c` + write-anchor `539670b` + last_output feedback +
-loop-break firing), the coder still cannot complete multi-file read→edit→FINAL → **coder-model capability,
-not the harness** (evidence-backed, not a smell test). BEP-2 interleaved-vs-batched latency is unanswerable
-from multi-file (both fail; only single-file create t1 completes). Loop-guard stays flag-gated **default-OFF**.
+loop-break firing), the REPL/BEP path still cannot complete multi-file read→edit→FINAL. This was initially
+misread as a coder-model capability wall, but the correction below supersedes that verdict. BEP-2
+interleaved-vs-batched latency is unanswerable from multi-file until the edit protocol is redesigned (both
+arms fail; only single-file create t1 completes). Loop-guard stays flag-gated **default-OFF**.
 Full report: `epyc-orchestrator/data/bep_sandbox/LOOPGUARD_BUGREPORT.md`. Orchestrator commits: `11cd60c`,
 `539670b`, `3e9ab5e`, `87c80b1`, `4fe681e`, `555b03c`, `0d6216f`.
 
-**CORRECTION (operator review 2026-05-27):** the "tasks still fail both arms → coder-capability" claim
-above is OVERSTATED. `results-readfix7` is **contaminated** — t4/t5-off + t4-on were backend `:8070`
-unavailable/circuit-open (infra outage), t2/t3 hit inference timeouts, and several turns were empty; **no
-failing task in that run is a clean model-behavior failure.** The **loop-guard firing is still proven**
-(the live probe + halt are independent of this), but the **capability verdict is NOT clean**. Reframed to
-"signal only" and tracked for a clean rerun in
-[`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md) (backend-health
-preflight + prove `enable_thinking=false` in the live payload + rerun t2/t3/t5 + compare vs a coder
-specialist — Qwen3-Coder-30B was the pre-swap role).
+**CORRECTION (operator review + one-shot ablation 2026-05-27):** the "tasks still fail both arms →
+coder-capability" claim above is wrong for this issue. `results-readfix7` is **contaminated** — t4/t5-off +
+t4-on were backend `:8070` unavailable/circuit-open (infra outage), t2/t3 hit inference timeouts, and several
+turns were empty; **no failing task in that run is a clean model-behavior failure.** More importantly, the
+one-shot protocol ablation proved Qwen3.6 can solve the exact same 5 tasks with the same verifiers when the
+files are supplied directly and the model returns complete final files: **5/5 PASS, no `<think>` leakage**.
+The **loop-guard firing is still proven** (the live probe + halt are independent of this), but the remaining
+wall is **agentic protocol/tooling**, not coding capability. Track remediation in
+[`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md): one-shot/full-file
+or structured-patch edit affordance + auto-`FINAL`; do not pursue a model swap for BEP-2.
+
+---
+
+### ✅ RESOLVED — BEP-2 remediated by a first-class edit transaction (2026-05-27, Opus session)
+
+The protocol/tooling diagnosis above was acted on — the remediation is **built, hardened, and validated**, not merely scoped. A flag-gated, default-OFF `force_mode="edit"` path bypasses the multi-turn REPL read→edit→`FINAL` loop for routine file edits: assemble the workspace files → ask the model **once** for the complete new files → apply transactionally (snapshot → write/delete → `compile()` syntax-check → promote or roll back; all-or-nothing; scope-capped via `stat` before reading) → auto-finalize.
+
+- **Module + wiring:** `epyc-orchestrator/src/edit_transaction.py` + `src/api/routes/chat.py` (8b2 branch) + `src/chat_completions_roles.py`. Self-contained commit series `bd87ceb → 3c1f423 → d4fafdf → fba6c84 → 0f00708`.
+- **Validation:** module **5/5** through the real coder; live server `force_mode=edit` **3/3** (create / read-first multi-file / rename+delete); explicit-mode preconditions fail closed (HTTP **412**); **77 unit tests** (21 edit/cc-role + 55 chat route/endpoint/canary + 1 fail-closed regression).
+- Full detail + open rollout items: [`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md).
+
+**Impact on this harness's open gates:**
+- **BEP-2 read-loop:** the multi-file *completion* capability now exists via `force_mode="edit"`. The REPL/BEP loop itself is **not repaired — it is bypassed** (the edit path is opt-in, default-OFF; auto-routing is the open product decision). BEP-2's blocker is remediated.
+- **J8 (batch-edit vs interleaved-REPL latency A/B):** now **OPTIONAL**, not a blocker. The edit-transaction is a third path that sidesteps the batch-vs-interleaved question; run the A/B only if the batched-edit approach is still being weighed on its own merits.
+- **DCP-6 (delegation-context pre-assembly):** **separate track**, no longer gated behind the read-loop fix — proceed independently (offline replay first, then the inference gate) in any host-quiet window.
+- Loop-guard (`ORCHESTRATOR_REPL_LOOP_GUARD`) + edit-transaction (`ORCHESTRATOR_EDIT_TRANSACTION`) both stay flag-gated **default-OFF**.
