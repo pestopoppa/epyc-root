@@ -1,6 +1,6 @@
 # Peer-Verifier Speculation — Scoping Spike
 
-**Status**: SPIKE / UNVERIFIED PREMISE — deliverable is a go/no-go scoping report, not an implementation.
+**Status**: SPIKE RESOLVED — **NO-GO-roofline + NO-GO-backend** (2026-05-27). Re-eval triggers documented in § Resolution below. Keep in active/ as a frozen reference for the re-eval conditions; do NOT promote to implementation handoff.
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: speculative_decoding, swarm_techniques, agent_architecture, hardware_optimization
 **Priority**: LOW until the premise is verifiable; do NOT start before [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) Phase-1 decision is in.
@@ -91,6 +91,61 @@ The spike completes when one of the following is in this file's status line:
 - **GO**: backend exposes prefix-only forward; KV-cache cohabitation works for N≤4; latency roofline shows <30% per-stream regression at expected chunk sizes. → promote spike to design phase, write a real implementation handoff.
 - **NO-GO — backend-blocked**: backend does not expose mid-stream control and adding it is multi-week. → close spike, fold the kill-decision into intake-614 notes, keep this handoff as a frozen reference for "if Fortytwo ever publishes, here's what we'd need."
 - **NO-GO — roofline-blocked**: even if backend support existed, the latency math says >30% per-stream regression on our hardware. → close spike, same as above; record the roofline numbers so future re-evaluation against new hardware (e.g., DGX Spark) is cheap.
+
+## Resolution — 2026-05-27 (NO-GO, two gates)
+
+Spike resolved by direct inspection of `src/backends/llama_server.py` + protocol + concurrency-aware wrapper. Both go/no-go gates fail. Detailed findings below.
+
+### Gate 1: Backend introspection — **NO-GO-backend**
+
+**Question**: Does `LlamaServerBackend` expose mid-stream control to swap continuation source?
+
+**Answer**: No, not without a wrapper. Three specific gaps:
+
+1. **No prefix-score request mode.** The native `/completion` path is constructed in `LlamaServerBackend._build_payload` (`src/backends/llama_server.py:937-990`) with `n_predict = request.n_tokens` — there is no path that exposes `n_predict=0` + per-prompt-position log-probs as a callable request mode. The only existing log-probs hook is `n_probs=64` set conditionally for frontdoor when the `logit_probe` feature flag is enabled (line 985-988) — and that captures **first-generated-token** alternatives, not prompt-position log-probs.
+
+2. **No mid-generation handoff.** `infer_stream` / `infer_stream_text` are one-shot stream-to-completion. There is no API surface to (a) pause an in-flight generation, (b) hand its current KV-cache state to a different role, (c) resume generation from that point under the different role. The closest primitives are `save_slot` / `restore_slot` (lines 1036-1080) which serialize KV state to disk — round-trip cost is dominated by file IO, not the swap math, and the disk format is **not portable across different GGUFs** (per memory `feedback_same_model_roles_share_server.md`, same-GGUF roles share one process; different-GGUF roles run in separate llama-server processes with incompatible slot files).
+
+3. **OpenAI-compatible `/v1/completions` with `echo=true, logprobs=N`** is the standard llama-server way to get prompt-position log-probs in a single call. Our backend does not currently use this path for any role. Wiring it up would add ~30-50 LOC in `_build_payload` + result-parsing, plus a new `prefix_score_only: bool` field on `InferenceRequest` (src/backends/protocol.py:32-58). Not infeasible, but not "free" — and only solves the scoring half of the problem; the KV-state handoff between heterogeneous models remains unsolved.
+
+**Verdict**: The "prefix-score" half is a ~1-day backend change. The "swap continuation source mid-stream across heterogeneous models" half is multi-week (probably requires changes in llama-server itself, not just our wrapper). Gate fails.
+
+### Gate 2: Latency roofline — **NO-GO-roofline**
+
+**Question**: On current EPYC config, would peer-verifier speculation deliver ≤30% per-stream regression?
+
+**Answer**: No — the roofline math says 35–50% regression on the conservative model. Setup:
+
+- Leader = gemma4-26B-A4B MTP, measured solo decode = **76.5 t/s** (per memory `project_worker_general_swap_2026_05_08`).
+- Prefill rate for 26B Q4_K_M on EPYC NPS4 is in the ~200–300 t/s band (per memory `feedback_cpu_decode_bw_bound`; prefill is compute-bound, not BW-bound — uses more of the 460 GB/s aggregate but isn't the limiter at this scale).
+- Chunk size: 128 tokens (per spike Variant 1 design).
+- N = 3 peer verifiers.
+
+**Sequential verification**:
+- Leader generates 128 tokens at 76.5 t/s = **1.67 s** per chunk.
+- Each peer verifier prefills `prefix + chunk` over the 128 new chunk tokens at ~250 t/s = **0.51 s** per peer.
+- Total: 1.67 + 3 × 0.51 = **3.20 s** per chunk → **40 t/s effective**.
+- Per-stream regression: (76.5 − 40) / 76.5 = **48%**. Above the 30% gate.
+
+**Parallel verification (peers run concurrently on shared CPU)**:
+- N peers compete for the same 96-thread CPU pool that leader is using. Per `project_concurrent_split_throughput` (4×48t → 32×6t = +44-58% aggregate), splitting CPU degrades per-stream throughput sub-linearly but degrades it.
+- Conservative model: leader on 48 threads (~half throughput → ~38 t/s) + 3 peers on 16 threads each. Leader-bound chunk time = 128 / 38 = 3.37 s → **38 t/s effective**, **50% regression**.
+
+**Either scheduling model breaches the 30% gate by 20–30 absolute points.** Mitigations exist (smaller peer verifiers, every-Nth-chunk verification, embedding-similarity scoring instead of log-probs) but each erodes the value proposition: a small verifier doesn't represent peer's true preferences; sparse verification loses the per-chunk swap signal; embedding similarity is not log-prob-equivalent.
+
+### Re-evaluation triggers (when to revisit this spike)
+
+Re-open this spike if **any** of the following change:
+
+1. **Fortytwo publishes the chunk-ranking method.** A real paper / blog / code release would replace our hypothesis-driven Variant 1 reconstruction with the actual mechanism — possibly cheaper than our roofline assumes.
+2. **DGX Spark (or other unified-memory hardware) arrives** (per memory `project_dgx_spark_target.md`). New hardware potentially changes the prefill-to-decode ratio (Spark's bandwidth/compute profile differs from EPYC NPS4). Re-do the roofline math at that point — the gate may flip.
+3. **The orchestrator backend grows mid-stream-control primitives for an unrelated reason** (e.g., RAO+ReDel substrate work in P#42 of `master-handoff-index.md` adds sub-decision handoff). If those primitives exist as a side effect, the Gate-1 cost drops from "multi-week" to "wire it up", and only Gate-2 remains binding.
+4. **Smaller specialist peers become the new norm** (e.g., the swarm-as-dataset-distillation pipeline in `swarm-dataset-distillation.md` produces 8B specialists). N=3 8B verifiers prefill faster (~400 t/s) than 26B verifiers, shrinking the per-chunk overhead from 0.51 s to ~0.32 s. Roofline at that point: 1.67 + 3 × 0.32 = 2.63 s → 49 t/s effective, **36% regression**. Still above the gate but much closer; combined with every-other-chunk verification (2x reduction) it lands at ~18% — under the gate.
+
+### What was not investigated (deliberately out of scope for this spike)
+
+- Variant 2/3/4 alternative mechanisms (milestone-gated beams, continuation auction, hidden-state aggregation). The spike committed to Variant 1 as the most-plausible-real form. If a re-eval trigger fires, re-pick the variant against the new constraints rather than testing all four blind.
+- Production routing-mode design — that is DAR-6's territory in [`decision-aware-routing.md`](decision-aware-routing.md). DAR-6's post-hoc full-completion fanout is independently buildable; it is **not** blocked by this spike's negative result.
 
 ## Out-of-scope (explicit non-goals for this spike)
 
