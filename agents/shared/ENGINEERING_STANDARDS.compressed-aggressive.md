@@ -98,6 +98,10 @@ vl_score: "11/12 (92%)"         # quoted string — mixed format
 - Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
 - Deprecated entries retain `deprecated: true` + reason.
 
+## Debugging Discipline
+
+Observe before diagnosing: no root cause asserted (or written to a handoff/index as fact) without the primitive datum (actual output/error/state) — unverified = hypothesis, never a finding. "Not observable" only after enumerating all artifacts (`find` tap/trace/session), not just the one log you know. Cap blind fixes at one, then observe. Coherent narrative ≠ evidence (closure inflation).
+
 ## Verification Minimum
 
-Syntax-check, run targeted tests, confirm feature-flag behavior, update docs.
+Syntax-check, run targeted tests, confirm feature-flag behavior, update docs. Validate the real path — a stub bypassing real inference/REPL/IO proves nothing; do one real end-to-end call (canary) before "ready".

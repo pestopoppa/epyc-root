@@ -114,6 +114,13 @@ vl_score: "11/12 (92%)"         # quoted string — mixed format
 - Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
 - Deprecated entries retain `deprecated: true` + reason in comments.
 
+## Debugging Discipline (Observe Before Diagnosing)
+
+- Observe before diagnosing: no root cause — or fact written to a handoff/index/progress log — without the primitive datum (actual model output / error / file state). Unverified = hypothesis, never a finding.
+- "Not observable" requires having looked everywhere: enumerate all artifacts (`find` tap/trace/session/scratch files), not just the one log you know.
+- Cap blind fixes at one; if a hypothesis-driven fix fails, the next action is observability, not another fix.
+- A coherent failure narrative is a yellow flag (closure inflation), not reassurance.
+
 ## Verification Minimum
 
 Before finalizing:
@@ -122,3 +129,4 @@ Before finalizing:
 2. Run targeted tests for touched behavior.
 3. Confirm feature-flag behavior where applicable.
 4. Update docs when behavior or interfaces change.
+5. Validate the real path — a stub/dry-run bypassing real inference/REPL/IO proves nothing; exercise one real end-to-end call (a canary) before declaring infra "ready".

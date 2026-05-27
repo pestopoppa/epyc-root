@@ -114,6 +114,15 @@ vl_score: "11/12 (92%)"         # quoted string — mixed format
 - Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
 - Deprecated models retain their entry with a `deprecated: true` flag and reason in comments.
 
+## Debugging Discipline (Observe Before Diagnosing)
+
+When a real-path or inference failure is opaque, capture evidence before forming conclusions:
+
+- **Observe before diagnosing.** Do not state a root cause — or write one into a handoff, index, or progress log as *fact* — until you have seen the primitive datum: the actual model output, the actual error string, the actual file/state. An unverified mechanism is a **hypothesis**; label it as such and never propagate it as a finding.
+- **"Not observable" requires having looked everywhere.** Enumerate all artifacts (`find`/`ls` for tap/trace/session/scratch files), not just the one log you already know, before declaring a blind spot. The cheapest debug move is often a flag-gated per-turn trace of the raw model output.
+- **Cap blind fixes at one.** If a hypothesis-driven fix fails, the next action is observability — not another fix. Each blind patch on inference-gated work costs a host-quiet window.
+- **A coherent failure narrative is a yellow flag, not reassurance** (closure inflation) — coherence is not evidence.
+
 ## Verification Minimum
 
 Before finalizing:
@@ -122,3 +131,4 @@ Before finalizing:
 2. Run targeted tests for touched behavior.
 3. Confirm feature-flag behavior where applicable.
 4. Update docs when behavior or interfaces change.
+5. **Validate the real path, not a proxy.** A stub/dry-run that bypasses the real inference/REPL/IO path proves nothing about it — exercise one real end-to-end call (a canary) before declaring infrastructure "ready" or "validated."

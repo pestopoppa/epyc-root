@@ -103,9 +103,17 @@ vl_score: "11/12 (92%)"         # quoted string — mixed format
 - Per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling`) must be set before benchmarking.
 - Deprecated entries retain `deprecated: true` + reason.
 
+## Debugging Discipline (Observe Before Diagnosing)
+
+- Observe before diagnosing: no root cause — or fact written to a handoff/index/progress log — without the primitive datum (actual output/error/state); unverified = hypothesis, never a finding.
+- "Not observable" only after enumerating all artifacts (`find` tap/trace/session), not just the one log you know.
+- Cap blind fixes at one — then observe, don't re-patch.
+- A coherent failure narrative is a yellow flag (closure inflation), not evidence.
+
 ## Verification Minimum
 
 1. Syntax-check modified Python files.
 2. Run targeted tests.
 3. Confirm feature-flag behavior.
 4. Update docs when behavior or interfaces change.
+5. Validate the real path — a stub bypassing real inference/REPL/IO proves nothing; do one real end-to-end call (canary) before "ready".
