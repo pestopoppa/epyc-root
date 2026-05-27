@@ -360,3 +360,31 @@ Cross-references: [[angelslim-techniques-evaluation]] (umbrella for Sherry/SpecE
   - Relevance: K6's original phrasing offered "`kb_search` MCP tool OR in-orchestrator helper" — the **skill route** (`.claude/skills/kb-search/SKILL.md`) shipped 2026-05-06 and satisfies the Explore-subagent integration goal. The MCP-tool variant was not built and is not currently needed.
   - 2026-05-26 update: standalone `fastmcp>=3` is now pinned in `epyc-orchestrator/pyproject.toml` and `src/mcp_server.py` runs on it (migration verified, 40 MCP tests pass). If a future workflow needs an MCP-tool variant of `kb_search` (e.g., a different agent runtime that does not consume Claude Code skills, or a multi-MCP-client scenario), the framework choice is settled and the scaffold pattern in `src/mcp_server.py` is the reference. **No outstanding K6 work is unblocked** — the skill route is the production path.
   - Cross-ref: the FastMCP v3 middleware pattern being built out in [`tool-output-compression.md`](tool-output-compression.md) Phase 4 (P4b) is the precedent if a `kb_search` MCP variant is ever added.
+
+## Research Intake Update — 2026-05-27
+
+### New Related Research
+- **[intake-611] "agentmemory V4 — LongMemEval real-retrieval #1 (96.2%)"** (`github.com/JordanMcCann/agentmemory`, MIT)
+  - Relevance: its retrieval engine is **local and self-hostable** (all-mpnet-base-v2 embedder + ms-marco-MiniLM cross-encoder reranker) — directly compatible with our ONNX/MaxSim stack, unlike OpenAI-bound peers.
+  - Key technique: **six-signal hybrid retrieval** — semantic + BM25 lexical + graph activation + importance + confidence + temporal proximity, fused per query; deterministic HNSW (SHA-256 content-based level assignment).
+  - Reported results: 96.20% LongMemEval_S real-retrieval (481/500), beats PwC Chronos 95.6%; per-category single-session 100% / knowledge-update 97.4% / temporal 96.2% / multi-session 93.2%.
+  - Delta from current approach: our K1–K6 layer is single-signal ColBERT MaxSim over markdown. agentmemory adds BM25 + graph-activation + temporal-proximity signals plus a cross-encoder rerank stage — additive on top of the existing encoder, and corroborates the `colbert-reranker-web-research.md` rerank direction.
+- **[intake-610] "Quarq Agent (agent-oss)"** (`github.com/quarqlabs/agent-oss`, Apache-2.0)
+  - Relevance: hybrid vector+keyword retrieval with a **self-correcting fallback pass** when initial evidence is incomplete — a retrieval-policy pattern for kb_rag query-time.
+  - Key technique: self-correcting fallback retrieval + HyDE query optimization.
+  - Reported results: 99.59% on a 241-q LongMemEval-S *partial checkpoint* (unverified — see intake-610 contradicting_evidence; verified field full-run SOTA is ~96.2%).
+  - Delta from current approach: adds a fallback retry loop on low-evidence queries; we currently do single-pass MaxSim retrieval.
+
+## Research Intake Deep-Dive — 2026-05-27 (six-signal retrieval → scoped K9/K10)
+
+Source-level deep dive of intake-611 (agentmemory V4) + intake-610 (agent-oss) at `research/deep-dives/2026-05-27-agent-memory-cluster.md` (both repos cloned + read at file:line). The Phase-4a note above flagged "six-signal hybrid retrieval" as a candidate; the deep dive **scopes it down** — most of agentmemory's six signals are tuned to conversational agent-memory and do not transfer to a structured-markdown corpus. Concrete, gated additions to the **already-landed K1–K6 ColBERT layer**:
+
+- [x] **K9 — Cross-encoder rerank stage.** ✅ CODE LANDED 2026-05-27. New `src/retrieval/cross_encoder.py` (ONNX, mirrors `colbert_encoder.py`; graceful no-op when model absent) + `cross_encoder.rerank()` blend `(1−w)·maxsim + w·sigmoid(CE_logit)` (agentmemory `reranking.py:62`). Wired into `kb_rag.query(rerank=…, rerank_weight=…)` over the top-`4×K` pool (`KB_RAG_RERANK` / `_WEIGHT` / `_POOL_MULT` env overrides). Model downloaded: `cross-encoder/ms-marco-MiniLM-L-6-v2` ONNX int8 at `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx`. Live smoke: relevant logit +8.0 vs irrelevant −11.3; rerank flips a lower-base relevant doc to top. 4 unit tests (mocked + real-model skipif). **Win-validation gated on K7** → campaign K-RAG-1. Coordinates with [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) (same ONNX-runtime pattern).
+- [x] **K10 — Temporal Gaussian recency signal.** ✅ CODE LANDED 2026-05-27. `_recency_score(mtime, now, σ_days)` Gaussian + blend in `kb_rag.query(recency_weight=…, recency_sigma_days=…)`; `mtime` now SELECTed from the K3 catalog. Default `recency_weight=0.0` → identical to MaxSim-only (back-compat); env overrides `KB_RAG_RECENCY_WEIGHT` / `KB_RAG_RECENCY_SIGMA_DAYS` for the K7 sweep. 2 unit tests (monotonicity + tie-break reorder). **Tuning gated on K7** → campaign K-RAG-1.
+- [ ] **K11 (optional, measure-first) — FTS5 lexical signal.** SQLite FTS5 porter-stemmed `rank` as a third signal. ColBERT MaxSim is already lexical-strong, so marginal; only adopt if the K7 eval shows exact-match / variant-form misses. Low cost (SQLite already in the stack).
+
+**Explicitly NOT adopting** (deep-dive rationale): spreading-activation graph signal (agentmemory's entity extraction is regex-based and brittle on structured markdown — would need spaCy/LLM NER at high cost for low gain), importance×confidence (all KB chunks ≈ equal importance by design), node-activation LRU recency (a static-doc corpus has no meaningful access-frequency signal). agentmemory's six-signal weights are hand-tuned to **conversational** QA over 46 iterations — any blend we adopt must be re-tuned on our query distribution via K7, not copied.
+
+**Self-correcting two-pass retrieval (from agent-oss, intake-610).** Backend-agnostic pattern worth a K-track later: if a downstream consumer (Explore subagent / orchestrator) signals "evidence incomplete", emit gap-queries and re-retrieve at a lower MaxSim threshold before answering (agent-oss `agent.py:1488-1566`). Defer behind K9/K10 — it needs a consumer that emits the incompleteness signal; note it here so it isn't re-discovered.
+
+Cross-refs: [[colbert-reranker-web-research]] (shared encoder + rerank), `research/deep-dives/2026-05-27-agent-memory-cluster.md`, intake-610/611.

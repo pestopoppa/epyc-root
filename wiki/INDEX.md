@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-25 (Repo Prompt + Code-as-Agent-Harness deep dive — context PRE-assembly "assemble vs evict" → context-management; harness-level eval metrics / behavior-signature versioning / uncertainty-routed escalation / experiential memory + RP harness patterns → agent-architecture)
+**Last compiled**: 2026-05-27 (manual incremental update: bulk-inference campaign audit, certified-affinity matrix consistency, BEP real-path harness lessons, dashboard/tap synchronization, and wrap-up skill)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 292 documents across 6 source types
+**Total sources**: 319 documents across 6 source types
 
 ---
 
@@ -31,15 +31,15 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
-| [Routing Intelligence](routing-intelligence.md) | 17 | MemRL with 2,714 episodic memories, FAISS 35x speedup, species budget rebalancing |
-| [Benchmark Methodology](benchmark-methodology.md) | 31 | DeepPlanning rule-based scoring + case-vs-composite gap; Simula double-critic + Elo complexity; 5-model quality benchmark infrastructure |
+| [Routing Intelligence](routing-intelligence.md) | 29 | Cross-role contention gate plus live-affinity proof and topology-hash enforcement are required before baseline-eligible parallel routing |
+| [Benchmark Methodology](benchmark-methodology.md) | 33 | Real-path canaries and live smoke tests are required before trusting model-facing harnesses; stubs that bypass `/chat`/REPL prove only schema shape |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 28 | MCP singleton pattern (Qwen-Agent), DeepPlanning reasoning-mode gap (+40pp), global optimization as dominant failure mode |
-| [Autonomous Research](autonomous-research.md) | 26 | Simula mechanism design for eval tower; Meta-Harness GEPA+telemetry (Tier 2b); Phase 5 per-role seeder |
+| [Autonomous Research](autonomous-research.md) | 36 | AutoPilot concurrent evals use aggregate batch speed semantics, but baseline mutation still needs code-level metadata eligibility |
 | [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
 
 ## Context & Compression
@@ -72,7 +72,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
 | [Knowledge Management](knowledge-management.md) | 6 | KB-RAG ColBERT architecture (K1–K8); Flywheel HotpotQA+LoCoMo eval methodology adopted for K7; wiki compilation governance |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 13 | GitNexus: context injection outperforms tools; CLI-only posture with `<!-- gitnexus:keep -->` + `--skip-skills` wrapper protects agent files from auto-bloat; "real REPL, mock LLM" integration test pattern; risk-weighted coverage methodology |
+| [Tool Implementation](tool-implementation.md) | 15 | GitNexus remains the required blast-radius tool; local `$wrap-up` skill now codifies progress/handoff/wiki/commit closeout discipline |
 
 ## Research & Analysis
 

@@ -2,7 +2,7 @@
 
 **Status**: active
 **Created**: 2026-05-26
-**Updated**: 2026-05-26
+**Updated**: 2026-05-27
 **Categories**: orchestration, inference, scheduling, measurement
 **Priority**: HIGH
 **Owners**: bulk-inference-campaign Package J / routing-and-optimization
@@ -35,6 +35,14 @@ Future topology, model, CPU-binding, or orchestration-stack changes invalidate t
 - Runtime admission is pairwise today: a candidate request is compared with each active role; N-way active sets are not modeled as first-class verdicts.
 - `scripts/server/contention_matrix.py` should be treated as requiring audit before use for N-way closure. Its high-level comments describe smart pruning, but the current implementation has historically been pair-oriented; J4a must verify or add the exact N-way enumeration and manifest output.
 - 2026-05-26 stack audit found a matrix trust gap: `topology_hash` can match even when special launcher paths start quarter processes with the wrong `_numa_prefix()` instance index. In the observed live stack, frontdoor and ingest affinities matched `NUMA_CONFIG`, but `worker_general` and `vision_escalation` quarter ports did not. Matrix rows involving affected role/shapes are diagnostic-only until the launcher is fixed, the roles are reloaded, live affinity is exact-match, and the rows are re-measured.
+
+**2026-05-27 audit note**: later certified-affinity progress reports and the current matrix supersede parts of
+this handoff's older "quarter-level matrix complete" prose. In particular, the earlier `{frontdoor,
+ingest_long_context, vision_escalation}` `0.847` block was itself a bad-affinity artifact and was remeasured as
+allow (`1.731`) on the certified stack. Before using this document as an execution source, run a consistency pass
+against `orchestration/contention_matrix.yaml`, the latest `progress/2026-05/2026-05-26.md`/`2026-05-27.md`
+entries, and the regenerated execution manifest. Until that sweep lands, treat the current YAML plus live-affinity
+artifact as authoritative over stale narrative examples below.
 
 ## Definitions
 
@@ -249,6 +257,8 @@ The first J4b pass (above) benched each role's **full/primary** instance concurr
 **Status of the full-instance n_way entries**: per operator, full-instance co-running data is valid where it boosts (gemma4 MTP is BW-light), so `{vision,worker_general,worker_vision}`=1.286 and `{frontdoor,vision,worker_general}`=1.126 are kept as a **full-mode coarse layer**. The authoritative concurrent matrix is the **quarter-level disjoint** re-bench (15 size≥3 feasible sets, `--safe-sampling`, alone on host) — **in progress** (`data/contention_matrix/bulk-2026-05-26-j4b-feasible/`). The earlier "matrix CLOSED" is therefore **superseded**: closure is re-defined over the feasible quarter-level candidate set.
 
 ## J4c DONE + matrix CLOSED at quarter level (2026-05-26)
+
+> **⚠️ SUPERSEDED (2026-05-27 certified-affinity re-bench).** The single block below — `{frontdoor, ingest, vision}` = 0.847 — was a **bad-affinity artifact** (the worker/vision quarters were pinned to the wrong cores; `_numa_prefix` launcher bug, fixed `da1aed6`/orchestrator_stack 681/732/847). On certified disjoint quarters (`live_affinity_verified=true`) it re-benches to **1.731 ALLOW** (`orchestration/contention_matrix.yaml` n_way; commit `4363dae`). **The current certified matrix has NO measured N-way block — every measured set allows.** The "0.847 = the concrete proof of pairwise≠N-way" claim in this paragraph is therefore **retracted**; the N-way gate (`nway_policy`) remains as a *defensive* mechanism that would queue any future measured block, but none currently exists. Treat `contention_matrix.yaml` + the live-affinity artifact as authoritative; the paragraph below is retained only as historical narrative.
 
 **Quarter-level matrix complete** (the authoritative concurrent layer). Benched all feasible candidates with `--safe-sampling`, ingest restricted to full (non-quarterable): **17 verdicts — 16 allow + 1 block**. The block is `{frontdoor, ingest, vision}` = 0.847 (ingest's heavy half saturates BW with two co-runners) — and crucially **all three of its pairs are allow (1.72 / 1.43 / 1.06)**, so it is the concrete proof that pairwise-allow ≠ N-way-safe. The previously-"crashed" `{ingest, vision, worker_general}` is now a clean **1.578 allow** (ingest-half + two light quarters), superseding the full-instance pass. Only one feasible all-quarterable 4-way exists (`{frontdoor,vision,worker_general,worker_vision}` = 1.605 allow). Non-quarterable: ingest (half-only), architect (whole-machine full → strictly solo, 0 feasible co-run sets).
 

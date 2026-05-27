@@ -182,3 +182,28 @@ Phase 1 cannot complete-positive without gates 2 + 3. But **gates 1 + 4 alone cl
 - Related handoffs: `log-linear-gated-deltanet-readiness.md`, `internal-kb-rag.md`, `context-folding-progressive.md`, `orchestrator-conversation-management.md` (completed)
 - Smoke-test script: `/mnt/raid0/llm/delta-Mem/phase1_gate1_smoketest.py`
 - Baseline tps script: `/tmp/dmem_gate4_baseline.py` (throwaway)
+
+## Research Intake Update — 2026-05-27
+
+### New Related Research
+- **[intake-612] "LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues"** (arxiv:2605.12493)
+  - Relevance: updated eval target for the B1 / memory prototypes this handoff builds; reframes memory as *environment-expertise acquisition*, not just recall.
+  - Key technique: **AgentRunbook-C** — store trajectories as files, invoke a coding agent in an augmented sandbox; a memory paradigm distinct from both our trained-memory (KV-extension) and retrieval-based memory.
+  - Reported results: AgentRunbook-C 72.5% avg vs RAG baseline 48.5% vs off-the-shelf coding agent 69.3%; 451 questions, up to 500 trajectories / 115M tokens.
+  - Delta from current approach: this handoff prototypes M.3 KV-Extension (trained, prepend-K/V); LongMemEval-V2 is the benchmark to score that prototype against, and AgentRunbook-C is the file-based-memory baseline to beat.
+- **[intake-610] "Quarq Agent (agent-oss)"** + **[intake-611] "agentmemory V4 (96.2% LongMemEval)"**
+  - Relevance: the two leading **retrieval-based** memory implementations the B1 User Modeling slot could integrate as an alternative/complement to trained δ-mem. agent-oss's **Temporal Truth Protocol** (storage-time vs event-time) is directly applicable to B1, which this handoff's falsified-baseline finding shows is functionally M.1 Prefix.
+  - Key technique: agentmemory six-signal hybrid retrieval (verified SOTA, local engine); agent-oss temporal-truth + quantitative-fidelity records.
+  - Delta from current approach: retrieval-based (no training) vs this handoff's trained-adapter path — cheaper to wire into B1, but weaker on derivation/coherence per LongMemEval's known retrieval-only limitation.
+
+## Research Intake Deep-Dive — 2026-05-27 (agent-oss B1 patterns + LME-V2 eval target)
+
+Source-level deep dive at `research/deep-dives/2026-05-27-agent-memory-cluster.md`. **Correction to the Phase-4a note above**: the agent-oss "Temporal Truth Protocol" is **prompt-only**, not a structural mechanism — single-timestamp schema with the event date embedded in free-text `content` and a reason-time prompt telling the LLM to trust the in-text date (agent.py:1096). It is GPT-4.1-instruction-coupled and does **not** port to B1 as a structural win. Same for "quantitative fidelity" (a `<thinking>` table, prompt-only).
+
+**What IS worth studying from agent-oss for the B1 User-Modeling slot** (the M.1-Prefix baseline this handoff is trying to improve):
+- **Structural semantic / episodic / procedural separation** (agent.py:456-526): three distinct stores with three schemas and three retrieval policies — semantic + episodic as separate vector indices, procedural as tag-routed rule objects (no vector store). Our shipped B1 is a single SQLite snapshot of `user_conclude`/`user_profile`; the separation pattern is a low-cost structural refinement orthogonal to (and combinable with) the trained δ-mem / M.3 KV-Extension path. Retrieval-based (no training) → cheaper to wire into B1, but weaker on derivation/coherence per LongMemEval's retrieval-only limitation.
+- **Self-correcting two-pass retrieval** (agent.py:1488-1566): emit gap-queries + re-retrieve when the first evidence pass is incomplete. Tracked on [[internal-kb-rag]] as the natural home (it is a retrieval pattern); cross-listed here because B1 injection would be a consumer.
+
+**LongMemEval-V2 (intake-612) as the updated eval target.** Reader = Qwen3.5-9B (CPU-viable), Insert/Query interface, 200K reader budget — the δ-mem / M.3 prototype can slot in as the Insert/Query implementation. **Caveat (decisive for scoping):** LME-V2 is web-agent-specific (WebArena/ServiceNow trajectories, multimodal screenshots) and needs those environments or pre-collected haystacks — it is **not** a drop-in replacement for the LoCoMo/MemoryAgentBench gates this handoff already uses (Phase 1 Gate 3 = LoCoMo, Gate 2 = MemoryAgentBench, CPU-infeasible). Treat LME-V2 as aspirational; the AgentRunbook-C paradigm it introduces (trajectories-as-files + coding-agent-in-sandbox + query-time manifest) maps onto our REPL + skill-bank + [[unified-trace-memory-service]] SQLite trajectory store and is a separate forward opportunity, not part of this handoff's gates. Recorded in `research-evaluation-index.md` P3.
+
+Cross-refs: `research/deep-dives/2026-05-27-agent-memory-cluster.md`, intake-610/611/612, [[internal-kb-rag]], [[unified-trace-memory-service]].

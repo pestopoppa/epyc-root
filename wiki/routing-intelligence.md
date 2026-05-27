@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-05-24
-**Sources**: 24 documents (added 2026-05-24 cross-role BW-aware admission gate completed handoff; 1 dedicated deep-dive, 18 intake entries, 6 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-05-27
+**Sources**: 29 documents (added 2026-05-27 bulk-inference audit + cross-role matrix consistency checkpoint)
 
 ## Summary
 
@@ -27,6 +27,19 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **KV migration ported into per-region-locks dispatch (Phase E).** Previously the migration logic only ran in the legacy `_select` path; under `ORCHESTRATOR_PER_REGION_LOCKS=1` (production default) it was dormant. Now `_dispatch` mirrors the flow: when a NEW session acquires full and an OLD session was the previous holder (no quarter affinity yet), `_migrate_kv(old_session, target_quarter)` fires async to a NUMA-disjoint idle quarter. Sticky-quarter session affinity ensures the old session's next request lands back on the migrated-to quarter with warm KV.
 - **Standardized matrix re-bench process.** `scripts/server/contention_matrix.py {run|validate}` is the canonical tool; `scripts/validate/check_contention_matrix_fresh.py` is a CI/pre-commit fail-loud (exit 2 on missing/stale, 3 on invalid). Re-run required after any NUMA_CONFIG change, model swap, binary upgrade, or BIOS NPS reboot. YAML carries `topology_hash` + `binary.git_commit` + `host` so drift is detected automatically.
 - **Autopilot stamps `request_priority=background` + `max_queue_wait_ms` on every seed_batch probe** so autopilot probing ingest/architect while frontdoor is foreground-decoding now queues at the gate instead of cratering both. 143/143 autopilot+gate unit tests pass. Trials 510-516 from 2026-05-24 morning were scrubbed (`bug_corrupted_by=33ae4e2`) since they ran without the gate.
+
+### New Findings (2026-05-26 — dispatch latency and safe background fan-out)
+
+- **Dashboard lock readiness is not activity.** The CPU-region table can show all roles ready while autopilot is down, paused, in health backoff, building a controller prompt, journaling, checkpointing, or scheduling artifacts. The new `autopilot_phase` heartbeat makes those states explicit in `/dashboard/api/process_status` and the dashboard panel instead of requiring tap/log inference.
+- **Background seed-role fan-out now uses the contention matrix conservatively.** `AUTOPILOT_SEED_ROLE_CONCURRENCY=auto` groups seed roles into waves only when `pair_policy(..., BACKGROUND)` and `nway_policy(..., BACKGROUND)` allow the active set. Same-port roles are never grouped, and at most one legacy heavy-port role is grouped per wave because `_eval_single_config` still owns global heavy-port idle/erase behavior.
+- **This does not change the routing safety model.** Unknown, stale, borderline, or blocked combinations collapse toward serial background waves. Request-level `trial_id`/`batch_id` propagation through the benchmark callers remains deferred because those caller contracts have high/critical blast radius; loop-level phase attribution and structured tap request/instance attribution are sufficient for the bulk-run idle diagnosis path.
+
+### New Findings (2026-05-27 — matrix consistency and baseline-eligibility audit)
+
+- **Live affinity is part of the routing evidence, not an operational nicety.** The certified-affinity rebench showed that a previously recorded N-way block (`{frontdoor, ingest_long_context, vision_escalation}` at 0.847) was a bad-affinity artifact and remeasured as allow (1.731) once live llama-server thread masks matched `NUMA_CONFIG`. A matching `topology_hash` fingerprints the intended config, but does not prove the launched processes actually use the intended CPU sets. Parallel routing evidence is baseline-eligible only with both topology hash and live-affinity artifact. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [cross-role-nway-contention-matrix.md](../handoffs/active/cross-role-nway-contention-matrix.md), [progress 2026-05-26](../progress/2026-05/2026-05-26.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
+- **The runtime gate still needs topology-hash enforcement.** Standalone matrix validators and bench scripts can pass a current hash into `matrix_status()`, but the runtime `ContentionGate.matrix_health()` path was audited as not doing so. Until that is fixed, docs should not imply runtime automatically fails closed on topology drift; preflight must remain explicit.
+- **Documented closed-world policy and runtime unmeasured-set policy must be reconciled.** Handoffs say missing N-way entries queue/serialize after J4b, while runtime allows unmeasured all-light sets and fails open for some foreground heavy sets. That may be acceptable as an intentional exception, but it must be named; otherwise future agents will treat prose and code as contradictory sources of truth.
+- **Dashboard "ready" and decode activity are distinct routing states.** The live-sync repair added physical topology-role mapping for alias roles, `decoding` vs `pending` in-flight badges, and quiet-state aging for structured tap streams. This prevents the CPU-region lock panel from being read as "autopilot is decoding now" when the loop is between tasks or a request is pre-inference. Source: [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
 
 ### Pre-existing findings
 

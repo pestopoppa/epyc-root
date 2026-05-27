@@ -28822,3 +28822,253 @@
     Correction to original actionable #3: server composition replaces stitching multiple MCP-server processes into one, NOT the orchestrator's per-tool `ToolPluginLoader` (`src/registry/tool_loader.py`) — that registry already exists and stays.
 
     Open question for the user: migrate the live `src/mcp_server.py` from vendored v1 to standalone v3 at the same time as the first v3-requiring handoff (Phase 3 of tool-output-compression) for consistency, or keep two MCP scaffolds in the tree (low-friction K6 stays on v1, new servers go v3)? Recommend the migration to avoid dual-codepath drift.
+- id: intake-610
+  arxiv_id: null
+  url: https://github.com/quarqlabs/agent-oss
+  source_type: repo
+  title: 'Quarq Agent (agent-oss) — memory-first AI agent for long-context personal intelligence'
+  authors:
+  - QuarqLabs
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - search_retrieval
+  - rag_alternatives
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Local-first memory: FAISS (IndexFlatIP cosine) + JSON store, no Supabase/pgvector dependency; positioned as an OSS alternative to "memory agents like Hermes or OpenClaw".'
+  - 'Hybrid retrieval: every pass combines dense vector search and direct keyword matching, with a self-correcting fallback retrieval pass when initial evidence is incomplete.'
+  - 'Temporal Truth Protocol: separates database storage time from narrative event time so the agent reasons over when events happened, not when they were written.'
+  - 'Quantitative fidelity: numbers are stored and used with owner, property, item, and exactness metadata rather than as free text.'
+  - 'Semantic/episodic/procedural memory separation orchestrated by a LangGraph StateGraph + ReAct tool loop; HyDE query optimization; OpenAI embeddings.'
+  techniques:
+  - FAISS IndexFlatIP (cosine) dense memory store
+  - Hybrid vector + keyword retrieval with self-correcting fallback
+  - Temporal Truth Protocol (storage-time vs event-time separation)
+  - Quantitative fidelity records (owner/property/item/exactness)
+  - LangGraph StateGraph orchestration + ReAct loop
+  - HyDE query optimization
+  - Episodic / semantic / procedural memory separation
+  reported_results:
+  - 'LongMemEval-S checkpoint: 240 yes / 1 no = 99.59% on a 241-question PARTIAL run (full 500-question run reported in progress, claimed 99.6-99.7% range)'
+  - 'Apache-2.0, Python 100%, 57 GitHub stars, v0.4.0 OSS release candidate'
+  referenced_arxiv_ids:
+  - '2410.10813'
+  cross_references:
+    chapters: []
+    handoffs:
+    - delta-mem-reproduction.md
+    - internal-kb-rag.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-326
+    - intake-346
+    - intake-267
+  novelty_justification: 'Core architecture (local FAISS store + episodic/semantic/procedural separation + LongMemEval benchmarking) is already well-covered by intake-326 (MemPalace, 96.6%) and intake-346 (Mem0 three-type taxonomy). The Temporal Truth Protocol (storage-time vs event-time) and quantitative-fidelity records (owner/property/exactness) are a distinctive engineering framing not previously catalogued, and the self-correcting fallback-retrieval loop adds a new perspective — hence medium, not low.'
+  relevance_justification: 'Directly adjacent to active memory work: the orchestrator B1 User Modeling slot (delta-mem-reproduction.md integration target) and internal-kb-rag hybrid retrieval. The Temporal Truth Protocol and quantitative-fidelity patterns are adoptable into B1. NOT a drop-in component: the LLM and embeddings are OpenAI-API-bound, not llama.cpp/local, so it cannot run inside the CPU-inference EPYC stack as-is — patterns transfer, the runtime does not.'
+  verdict_justification: 'adopt_patterns: open-source (Apache-2.0) and architecturally instructive, but OpenAI-bound and overlapping already-analyzed MemPalace/Mem0. Harvest the Temporal Truth Protocol, quantitative-fidelity records, and self-correcting fallback retrieval into B1 User Modeling / internal-kb-rag; do not adopt the component wholesale. Not new_opportunity because the headline benchmark is unverified (see contradicting_evidence) and the space is saturated.'
+  contradicting_evidence:
+  - 'The 99.59% headline is a 241-question PARTIAL checkpoint of LongMemEval-S, not the full 500-question run. Verified field SOTA on the full real-retrieval run is ~96.2% (agentmemory, intake-611, 481/500) and 95.6% (PwC Chronos); MemPalace (intake-326) reports 96.6% but as R@5 retrieval recall — a different metric. A solo 57-star repo claiming to exceed funded/established systems on an unverified partial run is a methodological red flag.'
+  - 'agent-oss / QuarqLabs does not appear in any independent agent-memory landscape coverage (e.g. OSSInsight "Agent Memory Race of 2026", intake-613) — zero independent corroboration.'
+  - 'Metric ambiguity: README reports QA accuracy (yes/no) while the closest analog MemPalace reports retrieval recall (R@5); the numbers are not directly comparable.'
+  - 'DEEP-DIVE 2026-05-27 (source-level): the 99.59% is 240/241 = a PARTIAL run (~48% of the 500-question suite), SELF-GRADED by a single custom binary judge with 11 explicit leniency rules (run_dataset_evals.py:176-206) using model id "gpt-5", against a "cleaned" HF dataset variant. NO results file is committed — only reports/eval_checkpoint.json = {"question_id":"4dfccbf7","last_chunk_index":43}. The official LongMemEval grader is NOT used. The number is not usable.'
+  handoffs_updated:
+  - internal-kb-rag.md
+  - delta-mem-reproduction.md
+  handoffs_created: []
+  notes: |
+    Ingested 2026-05-27 via /research-intake (direct user input). source_type repo, Apache-2.0, Python, 57 stars, v0.4.0 RC.
+    Repo structure: live system is a single 2,207-line agent.py (agent_v1/v2/v3.py are dead prototypes); main.py (FastAPI), tools/ (4 skills), local_memory/ (FAISS + JSON), reports/.
+
+    DEEP-DIVE 2026-05-27 (cloned to /tmp, read at file:line) — research/deep-dives/2026-05-27-agent-memory-cluster.md:
+    - CORRECTION to original note: the Temporal Truth Protocol is PROMPT-ONLY, not structural. Single-timestamp schema (created_at = storage time); the event date lives inside the free-text content string; a reason-time prompt (agent.py:1096) just tells the LLM to trust the in-text date over the [STORED_AT] prefix. No event_time column, no temporal index. Quantitative fidelity is likewise prompt-only (a <thinking> NUMERIC EVIDENCE TABLE), coupled to GPT-4.1 instruction-following. Do NOT port either as a "structural win".
+    - Genuinely transferable (backend-agnostic): (1) self-correcting two-pass retrieval — REQUIRED_DATA gap-query then re-retrieve then re-generate (agent.py:1488-1566); (2) multi-query decomposition (mislabeled "HyDE", 4 angles, agent.py:625-812); (3) STRUCTURAL semantic/episodic/procedural separation (3 stores, 3 schemas, tag-routed procedural rules). The structural separation is the real B1-relevant pattern.
+    - Retrieval "fusion" is weak: union-then-dedupe by UUID, recency-sorted, no score fusion; keyword = substring scan (not BM25).
+    - Backend: hard-wired OpenAI end to end (gpt-4.1 + text-embedding-3-large dim1536); no local/configurable-endpoint path. Not deployable on the CPU stack as-is.
+    - Integration routed to internal-kb-rag.md (self-correcting two-pass) + delta-mem-reproduction.md (episodic/semantic/procedural separation for B1).
+- id: intake-611
+  arxiv_id: null
+  url: https://github.com/JordanMcCann/agentmemory
+  source_type: repo
+  title: 'agentmemory V4 — memory operating system for AI agents (LongMemEval real-retrieval #1, 96.2%)'
+  authors:
+  - Jordan McCann
+  categories:
+  - memory_augmented
+  - search_retrieval
+  - agent_architecture
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  discovered_via: search
+  expanded_from: intake-610
+  verdict: adopt_patterns
+  ingested_date: '2026-05-27'
+  key_claims:
+  - '96.20% on LongMemEval_S (481/500) under real-retrieval conditions, single deterministic run, no oracle access, no ensemble — claimed world record, surpassing PwC Chronos (95.60%, 478/500) by +3 cases.'
+  - 'Six-signal hybrid retrieval: semantic + BM25 lexical + graph activation + importance + confidence + temporal proximity.'
+  - 'HNSW ANN index (M=16, ef_construction=200, ef_search=100) with deterministic content-based level assignment via SHA-256 vector hashing.'
+  - 'Local embedder (all-mpnet-base-v2, 768-dim) + local cross-encoder reranker (ms-marco-MiniLM-L-6-v2); zero required deps (TF-IDF fallback) or optional dense embeddings.'
+  - 'Built solo in 16 days on a Core i3-12100F for ~$1,000 / ~300M tokens / 46 iteration cycles.'
+  techniques:
+  - Six-signal hybrid retrieval (semantic/BM25/graph-activation/importance/confidence/temporal)
+  - HNSW deterministic ANN (SHA-256 content-based level assignment)
+  - Local cross-encoder reranking (ms-marco-MiniLM-L-6-v2)
+  - Knowledge graph with spreading activation
+  - Per-case in-memory SQLite (cross-contamination isolation)
+  reported_results:
+  - '96.20% LongMemEval_S real-retrieval (481/500), GPT-4o judge; vs PwC Chronos 95.60% (478/500)'
+  - 'Per-category: single-session-user 100%, knowledge-update 97.4%, temporal-reasoning 96.2%, multi-session 93.2%; abstention 30/30'
+  - 'Generator Claude Opus 4.6 (temp 0), judge GPT-4o (temp 0, seed 42), embeddings local all-mpnet-base-v2'
+  referenced_arxiv_ids:
+  - '2410.10813'
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - colbert-reranker-web-research.md
+    - delta-mem-reproduction.md
+    experiments: []
+    intake_entries:
+    - intake-326
+    - intake-610
+    - intake-267
+  novelty_justification: 'Current verified #1 on LongMemEval_S real-retrieval (full 500-question run, deterministic, transparent 481/500 breakdown) — a stronger and more credible result than any memory repo previously catalogued. The six-signal hybrid retrieval ensemble and deterministic HNSW (SHA-256 level assignment) are novel engineering not present in intake-326/346.'
+  relevance_justification: 'The six-signal hybrid retrieval and the LOCAL embedder+cross-encoder reranker stack map directly onto internal-kb-rag (already ColBERT/ONNX MaxSim) and colbert-reranker-web-research — these components are local and EPYC-compatible (unlike the OpenAI-bound agent-oss). Generator/judge are cloud APIs but the retrieval engine is self-hostable.'
+  verdict_justification: 'adopt_patterns: harvest the six-signal retrieval blend (add BM25/graph-activation/temporal-proximity signals to our ColBERT MaxSim layer) and the deterministic-HNSW idea into internal-kb-rag; the cross-encoder rerank stage corroborates colbert-reranker-web-research. Not adopt_component because generator (Claude Opus) + judge (GPT-4o) are cloud and the harness is benchmark-shaped, not a production memory service.'
+  contradicting_evidence:
+  - 'Self-reported "world record", GPT-4o-judged, not independently replicated or peer-reviewed; the +3-case margin over PwC Chronos is within plausible judge/seed variance. More transparent than agent-oss (full 500-run, deterministic, per-category breakdown) but still single-source.'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via WebSearch while contradiction-checking agent-oss (intake-610). agentmemory is the actual verified LongMemEval real-retrieval leader, which agent-oss's partial-checkpoint 99.59% claim does not displace. MIT license. Retrieval engine is local/self-hostable; only generator+judge are cloud APIs.
+
+    DEEP-DIVE 2026-05-27 (cloned to /tmp, read at file:line) — research/deep-dives/2026-05-27-agent-memory-cluster.md:
+    - VERIFIED credible: full 500-run, real-retrieval enforced by `assert not USE_DIRECT_CONTEXT` (run_longmemeval_full.py:707), answer_session_ids stripped at ingest, official LongMemEval judge prompts verbatim (gpt-4o temp0 seed42), committed longmemeval_results_opus6.json {total 500, correct 481, j_score 96.2} + fullrun_opus6.log. Credibility kept at 2 (still single-source, unreplicated) but materially more trustworthy than agent-oss.
+    - CAVEAT: the 95.6 to 96.2 jump is partly an HNSW-seed artifact — SHA-256 level assignment (ann_index.py:87-104) + PYTHONHASHSEED=42 found a graph structure that happens to suit LongMemEval's query distribution (repo's own FINAL_REPORT). Reproducible, not generalizable; do not read +0.6 as real signal.
+    - Six-signal fusion (retrieval.py:240-242) = HARDCODED weighted linear sum: 0.30 semantic + 0.12 lexical(FTS5 BM25-like, not standalone BM25) + 0.18 activation(LRU) + 0.18 graph(spreading-activation over regex entity graph) + 0.10 importance + 0.12 temporal(Gaussian sigma=168h). Weights hand-tuned to CONVERSATIONAL QA over 46 iterations; need re-tuning for a doc corpus. Cross-encoder rerank (ms-marco-MiniLM-L-6-v2, local) after fusion, blend 0.70 fusion + 0.30 sigmoid(CE).
+    - Transfer into our ColBERT KB-RAG (ranked): cross-encoder reranker HIGH/LOW-cost (~67 LOC), temporal Gaussian HIGH (our corpus is dated)/~1h; FTS5 lexical optional; graph/importance/activation SKIP (regex extraction brittle on structured markdown, signals tuned to conversational memory). Routed to internal-kb-rag.md.
+- id: intake-612
+  arxiv_id: '2605.12493'
+  url: https://arxiv.org/abs/2605.12493
+  source_type: paper
+  title: 'LongMemEval-V2: Evaluating Long-Term Agent Memory Toward Experienced Colleagues'
+  authors:
+  - Di Wu
+  - Zixiang Ji
+  - Asmi Kawatkar
+  - Bryan Kwan
+  - Jia-Chen Gu
+  - Nanyun Peng
+  - Kai-Wei Chang
+  categories:
+  - benchmark_methodology
+  - memory_augmented
+  - agent_architecture
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-610
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Reframes agent memory as developing environment-specific expertise (an "experienced colleague"), not just conversational recall; memory = consume historical trajectories, return evidence for QA.'
+  - '451 manually curated questions across five memory abilities: static state recall, dynamic state tracking, workflow knowledge, environment gotchas, premise awareness; histories up to 500 trajectories / 115M tokens.'
+  - 'Coding-agent-based memory (AgentRunbook-C: store trajectories as files, invoke a coding agent in an augmented sandbox) achieves 72.5% avg vs strongest RAG baseline 48.5% and off-the-shelf coding agent 69.3%.'
+  - 'Substantial headroom remains — even the best method is far from solving the benchmark.'
+  techniques:
+  - AgentRunbook-R (RAG memory with knowledge pools for raw observations, events, strategy notes)
+  - AgentRunbook-C (trajectory-as-files + coding agent in augmented sandbox)
+  reported_results:
+  - 'AgentRunbook-C 72.5% avg accuracy; RAG baseline 48.5%; off-the-shelf coding agent 69.3%'
+  - '451 questions, up to 500 trajectories / 115M tokens per history'
+  referenced_arxiv_ids:
+  - '2410.10813'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - delta-mem-reproduction.md
+    - long-context-eval-datasets.md
+    experiments: []
+    intake_entries:
+    - intake-326
+    - intake-610
+    - intake-611
+  novelty_justification: 'Successor to the original LongMemEval (arxiv:2410.10813, already in index) with a new agent-experience framing and a coding-agent-memory method (AgentRunbook-C) that beats RAG by ~24pp — a genuinely new benchmark + technique not in the index.'
+  relevance_justification: 'Our active memory handoffs (delta-mem-reproduction, long-context-eval-datasets) benchmark on LongMemEval/LoCoMo; V2 is the updated eval target. AgentRunbook-C''s "store trajectories as files + coding agent in a sandbox" is a notable contrast to our REPL/skill-bank approach and to retrieval-based memory (intake-610/611).'
+  verdict_justification: 'worth_investigating: newer evaluation target plus a coding-agent-memory paradigm relevant to both our memory and agent-architecture work, but not immediately actionable — track as the benchmark to adopt when we next evaluate B1 / memory prototypes.'
+  contradicting_evidence:
+  - 'Preprint, not yet peer-reviewed; AgentRunbook-C''s sandbox+coding-agent setup is compute-heavy and its 72.5% is reported by the benchmark authors (potential home-field advantage vs the RAG baselines they implement).'
+  handoffs_updated: []
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via WebSearch during agent-oss (intake-610) expansion. Authors include Nanyun Peng & Kai-Wei Chang (UCLA NLP). Reframes original LongMemEval toward agent/environment expertise.
+
+    DEEP-DIVE 2026-05-27 (full ar5iv read) — research/deep-dives/2026-05-27-agent-memory-cluster.md:
+    - V2 vs V1: web-agent trajectories (WebArena Magento/Reddit + WorkArena ServiceNow), MULTIMODAL (screenshots), Small 100traj/~25M tok, Medium ~500traj/~115M tok, 451 human-curated questions, 5 agent-environment abilities (static state recall / dynamic state tracking / workflow knowledge / environment gotchas / premise-awareness=abstention). Frontier models score 1.6-4.5% without context (genuine environment-specificity).
+    - Memory operationalized as Insert(trajectory)/Query->evidence, truncate 200K, FIXED reader = Qwen3.5-9B (CPU-viable), GPT-5.2 judge for gotchas/abstention.
+    - AgentRunbook-R (RAG, 3 pools raw-slice/event/note) 58.6%; AgentRunbook-C (trajectories-as-files + coding agent in sandbox + workflow-doc + manifest + helper scripts) 72.5% > off-the-shelf Codex 69.9% > slice+notes RAG 51%. Ablations: workflow-doc -4.8pp, helpers -3.5pp, manifest -0.2pp acc (latency win). Latency R ~27s vs C ~108-140s. Oracle ceiling ~84% (12pp headroom); gotchas plateau 34-48% = unsolved category.
+    - RELEVANCE: AgentRunbook-C == REPL-as-evidence-retriever, which we already have (REPL + skill-bank + unified-trace-memory-service.md SQLite trajectory store); missing pieces are the query-time manifest + the workflow-document framing. BUT LME-V2 needs WebArena/ServiceNow environments or pre-collected haystacks to run = aspirational eval target, not drop-in; our current markdown RAG would land in the 42-51% RAG-baseline band. Routed to research-evaluation-index P3 + delta-mem-reproduction.md eval-target note.
+    - Referenced-arxiv expansion candidates (NOT ingested, recorded for future scoped intake): A-MEM 2502.12110, Memory-R1 2508.19828, ReasoningBank/AWM 2509.25140, Mem-alpha 2509.25911, coding-agents-as-long-context-processors 2603.20432, FileGramBench 2604.04901, MemGPT 2310.08560, MemoryArena 2602.16313.
+- id: intake-613
+  arxiv_id: null
+  url: https://ossinsight.io/blog/agent-memory-race-2026
+  source_type: blog
+  title: 'The Agent Memory Race of 2026: 5 Repos, 4 Architectures, 1 Unsolved Problem (OSS Insight)'
+  authors:
+  - OSS Insight
+  categories:
+  - memory_augmented
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-610
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Five Q1-2026 agent-memory repos (combined >80k stars) cluster into four architectures: MemPalace (43,458 stars, ChromaDB verbatim "palace-room" storage), OpenViking (21,865 stars, filesystem context DB with tiered loading), code-review-graph (7,335 stars, code-specialized knowledge graph), SimpleMem (3,163 stars, multimodal lifelong memory), engram (2,389 stars, single Go binary SQLite+FTS5).'
+  - 'The unsolved problem: no system handles BOTH general conversation memory AND code-specific knowledge graphs simultaneously — "and does it without requiring a compiler toolchain".'
+  - 'MemPalace authors issued a correction: their AAAK compression "regresses 12.4 points" vs raw verbatim mode.'
+  - 'code-review-graph claims 6.8x fewer tokens on code reviews, up to 49x on daily coding tasks.'
+  techniques:
+  - ChromaDB verbatim storage (MemPalace)
+  - Filesystem context DB with tiered loading (OpenViking)
+  - Code-specialized knowledge graph (code-review-graph)
+  - SQLite + FTS5 single-binary local store (engram)
+  reported_results:
+  - 'MemPalace 96.6% LongMemEval (raw verbatim; AAAK compression -12.4pts)'
+  - 'code-review-graph 6.8x-49x token reduction on coding tasks'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - delta-mem-reproduction.md
+    - internal-kb-rag.md
+    - unified-trace-memory-service.md
+    experiments: []
+    intake_entries:
+    - intake-326
+    - intake-610
+    - intake-611
+  novelty_justification: 'Landscape survey, not primary research; value is in contextualizing and correcting existing entries — notably the MemPalace (intake-326) AAAK-compression -12.4pt correction and the "no unified conversation+code memory" gap framing.'
+  relevance_justification: 'Maps the competitive landscape for our active memory/RAG handoffs and flags the conversation+code-KG unification gap — exactly where our GitNexus (code) + internal-kb-rag (markdown) + B1 (user) memories sit unintegrated. engram''s single-binary SQLite+FTS5 echoes unified-trace-memory-service''s SQLite+FTS5 store.'
+  verdict_justification: 'worth_investigating: useful landscape, and the MemPalace compression correction refines intake-326; the conversation+code unification gap is a potential differentiator for our stack (GitNexus + kb-rag + B1 are already separable memories). No standalone action beyond noting.'
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via WebSearch during agent-oss (intake-610) expansion. OSS Insight blog, 2026-04-13. NOTE: the "engram" here (2,389-star Go SQLite+FTS5 memory repo) is DISTINCT from the LongCat/paper Engram n-gram embedding layer tracked elsewhere (project_engram_vs_longcat_distinction) — name collision, different artifact. Article does not mention QuarqLabs/agent-oss, Mem0, Supermemory, Chronos, Mastra, or Emergence.
