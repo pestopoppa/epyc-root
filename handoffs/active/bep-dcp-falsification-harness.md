@@ -766,3 +766,18 @@ Cracked via the tap (operator: finish it, observe don't defer). The real cause w
 **Residual (reported, NOT blind-patched — it is not a clean path bug):** with both fixes, `results-readfix2` = **OFF 1/5, ON 1/5** (only t1 create passes; all 4 read-first tasks fail BOTH arms, turns=8, no FINAL). The coder model on read-first tasks either **loops re-emitting the same action** (t5: identical `peek` ×6 even though the content is in the persisted REPL var) or **writes but never FINALs** (t2); the advisory loop-breaker nudge (loop-guard `3e9ab5e`) does not override this under greedy decode. Both arms fail multi-file equally → **BEP-2's interleaved-vs-batched latency question is unanswerable from multi-file** (no successful completions to compare; only t1: ON batch=3 turns vs OFF interleaved=1 turn).
 
 **Conclusion:** the harness path-bugs that caused the read-loop are FIXED + verified + unit-tested (`11cd60c`, `539670b`). The remaining multi-file COMPLETION failure is a deeper, open-ended problem — coder looping/termination + a too-weak advisory loop-breaker — NOT file resolution. Scope it as a separate deliberate effort (a *hard* loop-break that injects the already-read content + forces progress; an explicit FINAL-after-edit cue in the rider; and a coder-capability check on multi-file edits), not more blind A/B cycles. J6 restored after the runs.
+
+### Track (A) PROVEN (results-readfix7, 2026-05-27) — loop-guard fixed + fires; coder-capability is the wall
+Pursued (A) per operator ("no smell tests, I want proof"). Building the hard intervention surfaced a
+counter-persistence bug: the no-progress counter was an ad-hoc `state._repl_repeat_count` attr that did NOT
+survive across turns on the live path (probe showed it stuck) → the intervention never fired. **Fixed
+`4fe681e`** by declaring `TaskState.repl_noprogress_count`. **PROVEN via a probed A/B** (`ORCHESTRATOR_LOOPGUARD_PROBE=1`):
+live probe logged the counter accumulating **`0→7`** (`enabled=True`; pre-fix None/0); trace shows
+`prompt_has_loop_halt=True` at turn 3 (count=2) and the model **wrote in response** (`fws=1`). So the hard
+intervention now provably FIRES. **Yet read-first tasks still fail both arms (OFF 1/5, ON 1/5).** With the
+harness now correct end-to-end (read-resolve `11cd60c` + write-anchor `539670b` + last_output feedback +
+loop-break firing), the coder still cannot complete multi-file read→edit→FINAL → **coder-model capability,
+not the harness** (evidence-backed, not a smell test). BEP-2 interleaved-vs-batched latency is unanswerable
+from multi-file (both fail; only single-file create t1 completes). Loop-guard stays flag-gated **default-OFF**.
+Full report: `epyc-orchestrator/data/bep_sandbox/LOOPGUARD_BUGREPORT.md`. Orchestrator commits: `11cd60c`,
+`539670b`, `3e9ab5e`, `87c80b1`, `4fe681e`, `555b03c`, `0d6216f`.
