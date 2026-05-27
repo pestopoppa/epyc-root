@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — 63430b5). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -126,26 +126,32 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
 
 - **`src/edit_transaction.py`** — assemble workspace files → ask the model **once** for the complete
   new files (`<<<FILE: path>>>…<<<END>>>`, fenced-block fallback) → **transactional apply**
-  (snapshot → write/delete → `py_compile` self-check → promote, or **roll back** the whole transaction on
-  any failure) → return a concise summary. Path-safe (`_safe_join` preserves nested dirs, rejects
-  `..`/absolute escapes). The REPL is untouched — it stays for exploratory computation.
+  (snapshot → write/delete → **syntax-check via `compile()`** → promote, or **roll back the whole
+  transaction** on any failure; any unsafe/escape path also aborts the whole transaction) → return a
+  concise summary. Path-safe (`_safe_join` preserves nested dirs, rejects `..`/absolute escapes). Scope is
+  **capped (≤50 files / ≤400 KB, checked by `stat` before any read)**. The REPL is untouched.
 - **Wired as `force_mode="edit"`** (chat.py `_handle_chat` branch 8b2): the model is called once via the
   same `_execute_direct` path, the transaction is applied, and the turn **auto-finalizes** (`turns=1`,
   no multi-turn read→write→`FINAL` choreography). gitnexus: `_handle_chat` LOW risk.
   **Safety gate:** fires only when **both** `ORCHESTRATOR_EDIT_TRANSACTION=1` **and** a scoped
-  `ORCHESTRATOR_EDIT_ROOT` are set; otherwise it falls through to the REPL path. Without the scoped root,
-  assembly would read/rewrite the whole orchestrator repo — so the gate is mandatory.
-- **Validated:** `tests/unit/test_edit_transaction.py` 14/14 (incl. rollback-on-syntax-error, partial-txn
-  rollback, path-escape rejection); module end-to-end through the real coder **5/5**
-  (`scripts/benchmark/bep_edit_transaction_validate.py`); **live server `force_mode=edit` 3/3**
-  (`scripts/benchmark/bep_edit_mode_wiring.py` — create / read-first multi-file / rename+delete, response
-  `mode=='edit'` + verifier PASS on the scratch the server edited).
+  `ORCHESTRATOR_EDIT_ROOT` are set; an explicit `force_mode="edit"` with either missing **fails closed
+  (HTTP 412)** rather than silently using the REPL. Without the scoped root, assembly would read/rewrite
+  the whole orchestrator repo — so the gate is mandatory.
+- **Validated:** `tests/unit/test_edit_transaction.py` + `test_chat_completions_roles.py` **21/21** (incl.
+  rollback-on-syntax-error, **all-or-nothing escape-abort**, **scope caps via `stat`**, **no-`__pycache__`**
+  self-check); module end-to-end through the real coder **5/5** (`scripts/benchmark/bep_edit_transaction_validate.py`);
+  **live server `force_mode=edit` 3/3** (`scripts/benchmark/bep_edit_mode_wiring.py` — create / read-first
+  multi-file / rename+delete, `mode=='edit'` + verifier PASS on the scratch the server edited); +55 chat
+  route/endpoint/canary tests green.
 
-**✅ Hardened (review 2026-05-27 — `harden(edit-transaction)` 63430b5):**
+**✅ Hardened (review 2026-05-27 — commits `d4fafdf` + `fba6c84`):**
 - **Fail-closed edit mode** — explicit `force_mode="edit"` with the flag/root missing now returns **HTTP 412**
   (was: silent REPL fall-through, which would reintroduce the loop this work avoids). Live-verified 412.
-- **Scope caps** — `assemble_context` fail-closes (no model call, no writes) above 50 files / 400 KB, bounding
-  the unscoped whole-root assembly.
+- **Scope caps** — `assemble_context` fail-closes (no model call, no writes) above 50 files / 400 KB, checked
+  by `stat().st_size` **before any content read** (bounds IO/memory, not just model calls — fba6c84).
+- **Self-contained commits** — the series was rewritten so each commit contains ONLY this work; parallel-agent
+  topology (`backend.py`) + inference-tap (`chat.py`/`requests.py`) changes that had been transiently swept in
+  were returned to the working tree for their owners. Clean-worktree build verified.
 - **Clean syntax-check** — `compile(src, path, "exec")` (no `__pycache__`/`.pyc` side effects the rollback
   wouldn't track).
 - **All-or-nothing** — any unsafe (escape/absolute) path aborts the WHOLE transaction (nothing written).
