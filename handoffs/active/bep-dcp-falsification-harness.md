@@ -582,23 +582,52 @@ harness had multiple real-path defects that stub mode structurally could not cat
    `task_root_active()` (`1bad0e1`, default-off parity, gitnexus LOW). **No effect on the symptom** —
    baseline still turns=8, no file in scratch.
 
-**ROOT CAUSE UNCONFIRMED → PARKED.** After 4 fixes the baseline still cannot land a file in the
-scratch repo, and the model's actual per-turn REPL behavior is **not observable** from
-`logs/orchestrator.log` (HTTP access lines only) — so issue #3/#4 debugging was hypothesis-driven
-guessing, which is the symptom-chasing anti-pattern. **Do NOT attempt more fixes blind.**
+**PARKED — and the park stands.** I wrote this up as "root cause unconfirmed / REPL behavior not
+observable from logs"; the operator review below showed that was **WRONG on both counts**. Park decision
+was still correct (stopping beat blind patching), but the diagnosis was already available.
 
-### Rework prerequisites (observability-first)
-1. Instrument the REPL turn loop to log, per turn for a given session: the model's emitted code/tool
-   calls, the dispatched tool, the resolved write path, and any `[ERROR …]` returned. Without this,
-   we cannot tell whether the OFF coder (a) never calls a write tool, (b) calls `_file_write_safe`
-   and errors, or (c) writes somewhere then it's lost.
-2. Only then decide the real fix for the interleaved baseline.
-3. Re-validate the full ABBA run; THEN evaluate the gate (batch latency ≥15% down, quality within
-   -1pp, parse ≤5%, apply ≤2% via `_BATCH_EDIT_STATE_COUNTS`).
+### Operator review (2026-05-27) — corrections + BINDING rework plan
+Operator reviewed + reproduced the failures.
 
-Prior fixes (`22b03c0`, `c407137`, `1bad0e1`) all stand and are production-safe (all flags default-off;
-`_file_write_safe` redirect is a genuine task-root-contract correctness fix). **DCP-6 stays parked**
-(it reuses this harness). Invalid runs quarantined under `data/bep_sandbox/INVALID-*`.
+- **ACTUAL root cause of #3/#4:** `INTERLEAVED_EDIT_INSTRUCTIONS` (`batch_edit_parse.py:~61`) told the
+  model to use `open("…","w")`, but the REPL security layer **forbids `open()`** (`security.py`
+  FORBIDDEN_CALLS includes `open`). The baseline coder literally could not write — it looped doing
+  `content = …; FINAL("done")` (plainly visible in `/mnt/raid0/llm/tmp/repl_tap.log:~41489`) → turns=8.
+  The `_file_write_safe` write-redirect (#4) was irrelevant — the model never reached that surface. **The
+  rider must require `file_write_safe(...)` and explicitly forbid `open()`.**
+- **My "not observable" claim was wrong:** `repl_tap.log` (1.3 MB) had the per-turn trace the whole time;
+  I only checked `orchestrator.log` (HTTP access lines). The "needs observability-first instrumentation"
+  framing was over-stated — the tap already exists; it just needs to be *read* and *attached to artifacts*.
+
+**Operator findings — fix ALL before any rerun:**
+1. **[High] Task-root isolation is LEAKY.** `_validate_file_path` (`environment.py:~500`) *appends* the
+   scratch root to the global `ALLOWED_FILE_PATHS`, so with task-root active `/tmp/outside_abs.py` and
+   `../outside.py` STILL validate (reproduced). Required behavior: when `task_root_active()`, the allowed
+   set must be the **scratch root ONLY** (drop the global prefixes) so writes outside scratch are rejected.
+2. **[High] Stub dry-run validated nothing real.** Stub writes known-good solutions directly
+   (`bep_ab.py:64`), bypassing `/chat`, routing, REPL, mode selection, and the model write tools — exactly
+   why mock_mode/force_mode/file-write semantics escaped until live inference. The "exercises full plumbing"
+   claim (`bep_ab.py:15`) is false; stub only covers scratch-reset + verifier + ABBA sequencing.
+3. **[High] Baseline rider points at a blocked API** (root cause above) → rewrite around `file_write_safe`,
+   forbid `open()`.
+4. **[Med] Behavior was observable** → attach per-session `repl_tap.log` slices to bep_ab artifacts.
+5. **[Med] bep_ab rows can't support the formal gate.** Rows record a small subset (`bep_ab.py:179`); the
+   gate needs topology_hash, flags, transcript paths, touched files, parse/apply/promote state (this
+   handoff's Artifact schema, ~L290). Current rows are diagnostic-only, not decision-grade.
+6. **[Med] Missing regression test:** with `ORCHESTRATOR_EDIT_ROOT=<tmp>`, `_file_write_safe("cart.py", …)`
+   must create `<tmp>/cart.py`, NOT cwd/project-root (existing mutation tests use absolute paths only —
+   `test_repl_file_mutation.py:101`).
+
+**Binding gate before resume (operator):** (a) fix the task-root leak #1; (b) rewrite the interleaved rider
+around `file_write_safe`, forbid `open()` #3; (c) attach per-session REPL-tap slices to bep_ab artifacts #4;
+(d) expand bep_ab row schema to full gate fields #5; (e) add the `_file_write_safe` task-root regression
+test #6; (f) add a **no-inference real-path canary** — POST `/chat` with mocked deterministic LLM outputs,
+asserting `mock_mode=false`, `real_mode=true`, `mode=repl`, scratch writes in BOTH arms, and **no outside
+path validates**; (g) THEN one **live single-task smoke** before any full ABBA. **No valid BEP-2 result may
+be inferred from the existing runs.**
+
+Prior fixes (`22b03c0`, `c407137`, `1bad0e1`) stand and are production-safe (all flags default-off). **DCP-6
+stays parked** (reuses this harness). Invalid runs quarantined under `data/bep_sandbox/INVALID-*`.
 
 ### Also resolved this window (not BEP)
 - **n_way size-2 cross-role re-bench: NOT NEEDED** (closed). The `pairs:` matrix uses *full* instances
