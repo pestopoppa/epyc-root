@@ -3,7 +3,7 @@
 **Category**: `tool_implementation`
 **Confidence**: verified
 **Last compiled**: 2026-05-27
-**Sources**: 15 documents (added GitNexus CLI posture updates and local wrap-up skill workflow)
+**Sources**: 16 documents (added Understand-Anything code-intelligence cohort entry)
 
 ## Summary
 
@@ -248,3 +248,43 @@ Ran the wrapper twice on epyc-root (stale at `17e43ca`, head at `00d2c80`). Bloc
 - `memory/feedback_gitnexus_bloat_protection.md` — operational rule: never bypass the wrapper, never strip the keep-marker
 - `memory/project_gitnexus_cli_only_setup.md` — full setup notes (global install, flat skills, wrapper, posture rationale)
 - Upstream source: `/usr/local/share/npm-global/lib/node_modules/gitnexus/dist/cli/ai-context.js` — `upsertGitNexusSection` keep-marker logic (lines ~174–200)
+
+## Understand-Anything — code-intelligence cohort entry (2026-05-27)
+
+**TL;DR**: intake-625 ([Lum1104/Understand-Anything](https://github.com/Lum1104/Understand-Anything), MIT) is a multi-IDE plugin (Claude Code / Cursor / Copilot / Codex) that converts codebases + markdown corpora into interactive knowledge graphs via a hybrid Tree-sitter + LLM pipeline. It directly overlaps with **GitNexus (intake-151, in production)**, **code-review-graph (intake-330)**, and **Repo Prompt CodeMaps (intake-573)**. After a full-clone audit at commit `26edf61`, the verdict is `worth_investigating` — **adopt three deterministic patterns as design references, do NOT install the plugin, do NOT swap GitNexus.**
+
+### What the plugin is, mechanically
+
+- 9 specialized agents (README says 5) orchestrated by an 844-line `SKILL.md` running 7 phases: SCAN → BATCH → ANALYZE → ASSEMBLE-REVIEW → ARCHITECTURE → TOUR → REVIEW → SAVE.
+- 10 first-class Tree-sitter languages (TypeScript, JavaScript, Python, Go, Rust, Java, Ruby, PHP, C/C++, C#); regex-fallback for PowerShell / Bash / Batch / Swift / Kotlin.
+- Louvain community detection on the import graph batches files (`MAX_COMMUNITY_SIZE=35`, `MIN_BATCH_SIZE=3`); 5 concurrent `file-analyzer` subagents dispatch per batch.
+- Incremental update via `git diff <lastCommitHash>..HEAD --name-only` + fingerprint-based change detection (cheap steady-state).
+- TypeScript implementation: 16 340 LOC prod / 13 034 LOC tests (0.80 ratio, 44 test files).
+
+### Patterns worth lifting (as design references, not as code dependency)
+
+- **A. LLM-annotation layered on Tree-sitter structural truth.** `agents/file-analyzer.md:15` enforces a strict two-phase split: deterministic `extract-structure.mjs` (334 LOC) produces functions/classes/imports/exports/size/complexity *first*; the LLM then annotates the **skeleton + source** with summary, tags, semantic edges. A `merge-batch-graphs.py` canonicalizer normalizes IDs and drops orphans after the LLM. Application target: KB-RAG chunking — feed skeleton to the annotator, not raw source. Cheaper, less drift.
+- **B. Dependency-ordered guided-tour generation.** `agents/tour-builder.md` Phase 1 is a deterministic graph-topology script: fan-in / fan-out rankings, explicit entry-point scoring rubric (`README.md` at root = +5, `main.{ts,py,go,rs,...}` = +3, root/one-deep = +1, high-fan-out top-10% = +1, low-fan-in bottom-25% = +1), BFS-with-depth-bands from the top entry point, bidirectional-cluster detection. The LLM only writes narrative around the computed topology. Application targets: handoff-index reading order; query-time context expansion over the `[[wiki-link]]` graph.
+- **C. Code → business-domain mapping schema.** `agents/domain-analyzer.md` ships a `domain → flow → step` 3-level hierarchy with `flow_step.weight` as monotonic ordering in [0,1] and `step.filePath + lineRange` as round-trip anchor. Schema is well-specified; caveat — UA leaves the anchor as a soft prompt rule. If lifted, enforce at write time.
+
+### Why not adopt UA itself (4 gates, 0 currently met)
+
+- **Sustainability gate fails.** 547 commits / 30 contributors in 10 weeks, but Lum1104 = 83% (377+58+18 across two email aliases); second-largest contributor = 9 commits (1.6%). No CHANGELOG. Commit-rate tapering 60→8/wk over the last six weeks reads as one person's enthusiasm curve, not a maintained team.
+- **Stability gate fails.** No API/schema-stability commitment for `knowledge-graph.json` / `domain-graph.json`.
+- **Empirical gate fails.** Zero third-party-published full-rebuild + incremental benchmarks on >1k-file repos. 39 127 ★ in 10 weeks = novelty hype, not measured value (memory: `feedback_credibility_from_source_not_readme`).
+- **Cost characterization.** Full rebuild on ~500-file repo ≈ 33 file-analyzer dispatches × 5 concurrent → low-hundreds to low-thousands of cents per full index. GitNexus is zero-LLM on both full and incremental, seconds-to-minutes regardless of size.
+
+### Patterns NOT worth lifting
+
+- **The 9-agent decomposition itself.** No published ablation comparing 1-agent vs 9-agent quality; reads as natural-LLM-style framing of orthogonal concerns. The repo's own count is unstable (README says 5, repo ships 9).
+
+### Revisit-trigger (earliest 2026-08)
+
+Requires **all four** of: (1) internal pull from `internal-kb-rag.md` for guided-onboarding or code→domain mapping that current K1–K10+K11 doesn't cover; (2) sustained second-committer ≥30 commits / ≥60 days; (3) CHANGELOG.md + written schema-stability commitment; (4) third-party-published full-rebuild + incremental benchmark on >1k-file repo.
+
+### Sources
+
+- [`research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md`](../research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md) — full audit + adoption thesis vs four user statements
+- [`research/intake_index.yaml`](../research/intake_index.yaml) intake-625 — entry with deep_dive cross-link, refined verdict_justification, contradicting_evidence
+- [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) Research Intake Deep-Dive — 2026-05-27 section — gated lift-not-fork shopping list for Patterns A+B
+- [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) Research Intake Update — 2026-05-27 — explicit do-not-lift record for the 9-agent decomposition
