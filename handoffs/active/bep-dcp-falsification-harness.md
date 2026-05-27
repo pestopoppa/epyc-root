@@ -706,3 +706,20 @@ per-session `repl_tap`/`bep_turn_trace` slices to bep_ab artifacts; (d) expand b
 arms and evaluate the BEP-2 gate. (Note: the OFF arm's `file_write_safe` content must match the task exactly —
 multi-file/modify tasks t2/t3/t4 not yet smoke-tested; do that within the full ABBA.) Obs logs:
 `logs/bep_obs*.log`, `logs/bep_smoke2_*.log`; trace: `$tmp_dir/bep_turn_trace.jsonl`.
+
+### (c)+(d) DONE + full ABBA in-flight (2026-05-27)
+
+`bep_ab` is now decision-grade (`e88429d`): (c) real runs set `ORCHESTRATOR_BEP_TURN_TRACE=1` and save each
+task's per-turn trace slice to `<out>/traces/<task>-<arm>-blkN.jsonl`; (d) full per-row schema (flags,
+`topology_hash`, `touched_files`, `batch_edit_states` parsed from `orchestrator.log`, trace summary) + run-level
+`meta.json` with an `orch_checkout_unchanged` proof + a final BEP-2 gate computation. Stub dry-run validated.
+
+**Full 5-task ABBA launched** (`results-abba-20260527-074259`; J6 paused trial 25, affinity certified).
+**Early in-flight finding:** OFF arm `t1_create_util` PASS (turns=1, wrote file); OFF arm `t2_add_and_use`
+(multi-file) FAIL (turns=8, touched=[]). **The one-action-per-turn rider works for single-file create but does
+NOT yet generalise to multi-file/modify (t2/t3/t4).** Per `feedback_observe_before_diagnosing`, NOT diagnosed
+yet — the per-task trace artifacts are captured; diagnose from `traces/t2_add_and_use-off-*.jsonl` (what the model
+emits across the 8 turns) AFTER the run, then refine the rider for multi-file (likely: write each file in its
+own closed block across turns, FINAL only after all writes confirmed). Gate verdict pending run completion. The
+**harness is validated** (single-file both arms PASS); the multi-file OFF-arm generalisation is the open item for
+a decision-grade A/B. DCP-6 still downstream (reuses harness).
