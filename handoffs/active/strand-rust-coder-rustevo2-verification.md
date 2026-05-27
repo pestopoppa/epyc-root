@@ -135,13 +135,22 @@ The harness has no documented minimum Rust version; pick the current stable. App
 
 Also install Python deps from `requirements.txt` (openai 1.66.3, langchain 0.3.x, tree-sitter 0.20.4, semver 3.0.4, etc.) into a clean venv to avoid polluting the orchestrator's Python env.
 
-#### A-3: Pick comparison baselines (must include all three)
+#### A-3: Pick + acquire comparison baselines — DONE 2026-05-27
 
-1. **Base model**: Qwen2.5-Coder-14B-Instruct Q4_K_M (apples-to-apples — isolates the fine-tune delta).
-2. **Production worker_general**: gemma4-26B-A4B MTP Q4_K_M (sanity — confirms our current general coder is or isn't a Rust gap).
-3. **Frontier baseline from the RustEvo2 leaderboard** (whatever the leaderboard reports for GPT-5 Codex / Claude / Gemini).
+1. **Base model: Qwen2.5-Coder-14B-Instruct Q4_K_M** (apples-to-apples — isolates the fine-tune delta).
+   - Source: `bartowski/Qwen2.5-Coder-14B-Instruct-GGUF`
+   - Storage: **`/mnt/raid0/llm/models/qwen2.5-coder-14b-base/Qwen2.5-Coder-14B-Instruct-Q4_K_M.gguf`**
+   - Size: 8,988,111,072 bytes (8.37 GiB) — 224 B smaller than Strand (Strand's GGUF carries extra metadata KV-pairs for dataset reference).
+   - SHA-256: `2946d28c9e1bb2bcae6d42e8678863a31775df6f740315c7d7e6d6b6411f5937`
+   - GGUF header confirms structural identity to Strand: `architecture=qwen2`, 48 blocks, 5120 emb, 40/8 GQA heads, 32K ctx, 579 tensors, `general.basename=Qwen2.5-Coder`, `general.finetune=Instruct`, license apache-2.0. **Apples-to-apples comparison confirmed** — the bench will isolate the Strandset-Rust-v1 fine-tune delta cleanly.
 
-Strand-Rust-Coder-14B Q4_K_M is the model under test.
+2. **Production worker_general: gemma4-26B-A4B MTP Q4_K_M** (sanity — confirms our current general coder is or isn't a Rust gap). Already in production registry; no download needed.
+
+3. **Frontier baseline from the RustEvo² leaderboard** — taken from the README table above (Claude-3.7-Sonnet 65.3% / o1-mini 57.5% / GPT-4o 55.4% / Qwen-2.5-72B 50.9%). No local download — these are reference numbers only.
+
+Strand-Rust-Coder-14B Q4_K_M is the model under test (A-1).
+
+**Phase A is now fully complete.** All artifacts in place; only Phase B (inference, user approval required) and its `rustup` prereq remain.
 
 ### Phase B — Single-instance bench (USER APPROVAL REQUIRED)
 
