@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 33 documents (10 deep-dives, 20 intake entries, 6 handoffs)
+**Last compiled**: 2026-05-27
+**Sources**: 34+ documents (10 deep-dives, 20 intake entries, 7 handoffs)
 
 ## Summary
 
@@ -16,6 +16,12 @@ The EPYC orchestrator's tiered pipeline sits between these topologies. It has st
 The key architectural tension is between the current pydantic_graph's flat 7-node structure and the need for composable subgraphs as the system grows. LangGraph's subgraph composition, checkpoint granularity with time-travel debugging, and `interrupt()` flexibility at any node represent genuine capability gaps. However, migration carries significant risk: 180+ state fields, 120+ tests, and deep domain-specific features (MemRL, think-harder ROI, budget enforcement, 5-layer context) have no LangGraph equivalents and would require porting. The recommended path is hybrid -- build new capabilities as LangGraph subgraphs alongside the existing pydantic_graph, migrating nodes incrementally.
 
 ## Key Findings
+
+### New Findings (2026-05-27 - edit-transaction protocol fix)
+
+- **The multi-file coding failure was an agentic protocol failure, not a model capability failure.** The deployed `coder_escalation` role (`Qwen3.6-35B-A3B Q8`) solved the exact five BEP scratch coding tasks **5/5** in a single direct prompt with full file contents and the same verifiers, including every read-first task that failed the REPL/BEP read→peek→edit→FINAL loop. The remediation is therefore an interaction-contract change, not a model swap: a first-class `force_mode="edit"` path asks once for complete file replacements and applies them transactionally. [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) `verified`
+
+- **For routine file edits, one-shot full-file edit transactions are the safe alternative to free-form tool choreography.** The shipped edit path is default-off and requires both `ORCHESTRATOR_EDIT_TRANSACTION=1` and a scoped `ORCHESTRATOR_EDIT_ROOT`; explicit `force_mode="edit"` fails closed with HTTP 412 if either precondition is missing. The transaction preserves nested paths, rejects absolute/escape paths all-or-nothing, bounds unscoped context at 50 files / 400 KB via `stat()` before reading, syntax-checks with `compile()` to avoid `__pycache__` side effects, rolls back on failure, and auto-finalizes in one turn. Validation: 21 edit/cc-role unit tests, module 5/5 through the real coder, live server 3/3, plus 55 chat route/endpoint/canary tests. [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md) `verified`
 
 ### New Findings (2026-04-26 — Trinity deep-dive)
 

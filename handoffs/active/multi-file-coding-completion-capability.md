@@ -160,6 +160,15 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   load-bearing → latent double-templating for `coder_escalation`). Direct ablation **5/5** with the canonical
   default confirms `coder_escalation` correctly relies on server-side jinja — no regression.
 
+**Post-rewrite audit (Codex wrap-up 2026-05-27):**
+- Clean detached worktree at `fba6c84` constructs prewarm backends successfully, so the earlier swept-in
+  `topology_role` constructor mismatch is gone.
+- Clean detached worktree tests: `tests/unit/test_edit_transaction.py` + `test_chat_completions_roles.py`
+  **21/21 PASS**; `test_chat_routes.py` + `test_chat_endpoints.py` + `test_bep_canary.py` **55/55 PASS**.
+- Residual polish only: `src/edit_transaction.py` still has one stale docstring phrase saying
+  `py_compile self-check` although implementation uses `compile()`, and the HTTP 412 fail-closed behavior is
+  live-probed but should get a committed route regression test before broad rollout.
+
 **Open / not-yet-done (rollout decisions, not blockers):**
 - **Default routing.** Edit-mode is opt-in (`force_mode="edit"` + flags). Routine coding edits do NOT yet
   auto-route to it — needs a routing decision (which tasks/roles, and a non-scratch edit-root policy).
@@ -192,7 +201,7 @@ re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 - `scripts/benchmark/bep_oneshot_ablation.py` — protocol ablation driver; path-safe (preserves nested paths under scratch, rejects `..`/absolute escapes) so it is reusable beyond the 5 top-level sandbox tasks.
 - **`src/edit_transaction.py`** — the shipped one-shot edit-transaction module (assemble → one-shot → parse → transactional apply w/ rollback). Flag: `edit_transaction_enabled()` ⇐ `ORCHESTRATOR_EDIT_TRANSACTION=1`.
 - **`src/api/routes/chat.py`** branch **8b2** — `force_mode="edit"` wiring (`_execute_direct` llm_call closure → `run_edit_transaction` → auto-finalize). Allowlist + `force_mode` doc updated (`src/api/models/requests.py`).
-- **`tests/unit/test_edit_transaction.py`** (14) · **`scripts/benchmark/bep_edit_transaction_validate.py`** (module 5/5) · **`scripts/benchmark/bep_edit_mode_wiring.py`** (live server 3/3) — the validation ladder.
+- **`tests/unit/test_edit_transaction.py` + `tests/unit/test_chat_completions_roles.py`** (21) · **`scripts/benchmark/bep_edit_transaction_validate.py`** (module 5/5) · **`scripts/benchmark/bep_edit_mode_wiring.py`** (live server 3/3) — the validation ladder.
 - `src/llm_primitives/backend.py:76`, `src/backends/llama_server.py:493` — chat-completions route + chat_template_kwargs injection (code supports thinking-off).
 - `scripts/benchmark/bep_ab.py`; `data/bep_sandbox/tasks.jsonl` — harness + task defs.
 - `src/graph/helpers.py` `_execute_turn` — the LLM→REPL turn loop.

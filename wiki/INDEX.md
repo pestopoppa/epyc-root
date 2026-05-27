@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-27 (manual incremental update: bulk-inference campaign audit, certified-affinity matrix consistency, BEP real-path harness lessons, dashboard/tap synchronization, and wrap-up skill)
+**Last compiled**: 2026-05-27 (manual incremental update: bulk-inference campaign audit, certified-affinity matrix consistency, BEP real-path harness lessons, dashboard/tap synchronization, wrap-up skill, and edit-transaction coding protocol fix)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 319 documents across 6 source types
 
@@ -38,7 +38,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 28 | MCP singleton pattern (Qwen-Agent), DeepPlanning reasoning-mode gap (+40pp), global optimization as dominant failure mode |
+| [Agent Architecture](agent-architecture.md) | 29 | Multi-file coding failure diagnosed as REPL/BEP protocol friction, not model capability; one-shot edit transactions are the safe routine-edit affordance |
 | [Autonomous Research](autonomous-research.md) | 36 | AutoPilot concurrent evals use aggregate batch speed semantics, but baseline mutation still needs code-level metadata eligibility |
 | [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
 
