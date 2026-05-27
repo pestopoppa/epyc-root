@@ -34,20 +34,51 @@ If the #1 claim holds, that is the strongest external evidence we'd have that th
 
 ### Phase A — Acquisition & sanity checks [~1–2 hours, no inference]
 
-#### A-1: Download the GGUF
+#### A-1: Download the GGUF — IN PROGRESS 2026-05-27
 
-- Source: `mradermacher/Strand-Rust-Coder-14B-v1-GGUF`, quant **Q4_K_M** (~8.99 GB) — our standard band ([`feedback_psplit_default.md`](../../...nope) cf. memory `project_coder_quant_decision.md`).
-- Storage: `/mnt/raid0/llm/models/` (cf. user memory `user_hardware.md` 3.7TB raid0).
-- Sanity: SHA, file size, gguf header (`gguf_dump.py`) to confirm Qwen2.5 14B arch and chat template presence.
+- Source: `mradermacher/Strand-Rust-Coder-14B-v1-GGUF`, quant **Q4_K_M** (~8.99 GB) — our standard band (memory `project_coder_quant_decision.md`).
+- Storage: **`/mnt/raid0/llm/models/strand-rust/Strand-Rust-Coder-14B-v1.Q4_K_M.gguf`** (raid0; ~338 GB free as of acquisition start).
+- Download status as of 2026-05-27 11:23 UTC: in progress (~2.1 GB / 9 GB ≈ 23%); background `curl` PID 2549931. Completion expected within ~10–15 min from start.
+- Outstanding A-1 sub-steps when download completes (operator can do or next session):
+  - Verify final file size ≈ 8.99 GB.
+  - SHA-256 + compare with mradermacher's posted hash on HF (if present).
+  - `python3 llama.cpp/gguf-py/scripts/gguf_dump.py <file>` to confirm Qwen2.5 14B arch + chat template presence.
 
-#### A-2: Locate the RustEvo2 benchmark and its leaderboard
+#### A-2: Locate the RustEvo2 benchmark and its leaderboard — DONE 2026-05-27
 
-- Find the official repo / leaderboard for **RustEvo2** (no internal reference in our tree). Resolve:
-  - The eval harness (Python? Rust?).
-  - The pass@k metric definitions.
-  - The current leaderboard top-K and whether GPT-5 Codex / Claude / Gemini results are listed there or claimed separately.
-  - Whether the harness supports OpenAI-compatible `/v1/completions` (works with `llama-server`) or expects a specific provider SDK.
-- If the harness only accepts a provider SDK, write a thin adapter that proxies to `llama-server` on a chosen port (do **NOT** wire to the production stack — use an isolated dev port).
+**Benchmark identified**: **RustEvo²** (paper [arxiv:2503.16922](https://arxiv.org/abs/2503.16922), repo **`https://github.com/SYSUSELab/RustEvo`**), Linxi Liang et al., 2025.
+
+**Scope**: 588 API-evolution tasks synthesized from Rust standard libraries (380) + 15 third-party crates (208). Four categories: Stabilizations, Signature Changes, Behavioral Changes, Deprecations.
+
+**Metrics**: Pass@1 and API Usage Accuracy.
+
+**Harness shape**:
+- Python (100% per GitHub language stats).
+- Entry point: `cd evaluate && ./run.sh eval_models.py --model_name <name>`.
+- Model is invoked via `evaluate/generation.py`, which **the user is expected to modify** to point at their model under test ("Replace the target LLM in the evaluate/generation.py"). The repo's README explicitly says it's under construction; **the harness is NOT OpenAI-API-compatible out-of-the-box** — a thin adapter must be written that proxies whatever interface the existing `generation.py` expects to a local `llama-server` on a dev port (avoid production stack collision).
+- Repo activity: 10 commits total, no release tags, "Repo Under Construction" notice on the README. This is a fragile dependency — pin to a specific commit SHA before benching to avoid mid-evaluation moving-target.
+
+**Public leaderboard** (from README, current as of 2026-05-27):
+
+| Model | Pass@1 | API Usage Accuracy |
+|---|---|---|
+| Claude-3.7-Sonnet | 65.3% | 78.2% |
+| (other entries — GPT-4o, Gemini, DeepSeek, Llama, Qwen — present, exact rank ordering not transcribed; need to read README directly for full list) | — | — |
+
+Category-specific aggregates from the paper: 65.8% Pass@1 on Stabilizations; **38.0% Pass@1 on Behavioral Changes**; 56.1% on before-knowledge-cutoff APIs vs 32.5% on after-cutoff tasks.
+
+**CRITICAL FINDING for the verification gate**:
+**Strand-Rust-Coder-14B is NOT on the public RustEvo² leaderboard** as of 2026-05-27 (verified by reading the GitHub repo README + paper). The Fortytwo founder's "**#1 on RustEvo2**" claim from the sales call (intake-614) therefore cannot be corroborated from public sources. Two possibilities:
+
+1. Fortytwo ran the bench themselves but did not submit results to the maintainers (plausible — the repo's submission process is not formalized).
+2. The leaderboard is stale and Strand was submitted but not yet integrated (less plausible given the repo's low commit volume — any pending PR would be visible).
+
+Either way, the local-bench result is the only way to verify the claim. The verification gate's STRONG-GO threshold (≥10pp over base, claimed #1) should be tempered by this: even if we beat the listed top model, "#1" requires comparison against the same submissions; if leaderboard is stale, our number is corroborating but not conclusive on the rank claim.
+
+**Adapter work for Phase B** (must be done before B-1 launches):
+- Read `evaluate/generation.py` in the pinned commit. Identify what call signature it expects (e.g., does it use the `openai` SDK? `requests` to a custom endpoint? `transformers.pipeline()`?).
+- Write a minimal adapter that translates that interface to a POST against a local `llama-server` `/v1/chat/completions` endpoint on a dev port (e.g., :9091).
+- Document the adapter as part of B-1 launch protocol.
 
 #### A-3: Pick comparison baselines (must include all three)
 
