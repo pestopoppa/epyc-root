@@ -329,6 +329,8 @@ The cluster operationalizes the 2026-05-25 audit refinement: "harness-level metr
 - **Severity-gated acceptance**: BSV signature diffs classified `benign / watch / blocking` rather than boolean. Pareto-win regressions that silently flip a prior sentinel pass→fail get caught.
 - **Calibration before enforcement**: URE-1 shadow-logs uncertainty for ECE/AUC analysis before any escalation rerouting fires. Audit refinement explicitly bans single-confidence-score shortcuts.
 
+**2026-05-27 incremental update:** J9/HLE-4's non-inference journal plumbing landed in `epyc-orchestrator` `931e43c`: autopilot `EvalResult` and JSONL journal entries now carry `metric_schema_version`, `harness_metrics`, and `oracle_adequacy`, mirrored into `eval_details` for existing analysis paths. This is schema transport only; HLE-1 metric computation over real traces, HLE-2 oracle-adequacy registration, and the observe-only validity run remain the gate before any metric can affect Pareto decisions. [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress/2026-05-27](../progress/2026-05/2026-05-27.md)
+
 ### How autopilot benefits
 
 Before this cluster, autopilot's Pareto archive optimized `quality × speed × −cost × reliability` measured on task outcomes. The paper-supported claim (intake-607 §5.2.1) is that final-task-success is a noisy single bit that rewards shortcut configs (forbidden web-search leakage, extra escalations, much higher cost on equal answers). With the cluster on main + the J9 observe-only run wired, the archive gains:
