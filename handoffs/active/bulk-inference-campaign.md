@@ -25,7 +25,7 @@ The 2026-04 campaign (Packages A–F) is complete/overtaken and archived (see *C
 | Item | Status | Detail / pointer |
 |------|--------|------------------|
 | **J2/J3 live migration probe** | OPEN | Forward/reverse migration SM verified in-process (`tests/unit/test_concurrency_aware_migration_sm.py`); genuinely-live under-traffic observation needs a single-worker API run (`--workers 6` makes CAB state per-worker, so a round-robin `/chat` probe can't observe it). → Package J · [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md) |
-| **BEP-2 multi-file read-loop** | PARKED | Single-file both arms PASS; multi-file tasks loop on the `peek` read step, never writing (both arms). Diagnose from the turn-trace tap, don't blind-fix. → [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) |
+| **BEP-2 multi-file completion** | SIGNAL ONLY | Read-loop root-caused + harness fixed (reads/writes resolve to task-root, loop-break PROVEN to fire). Remaining: a *suspected* coder read→edit→FINAL gap — NOT cleanly demonstrated (the A/B run was backend/timeout/empty-contaminated). Needs a clean confirmation matrix + coder-specialist comparison. → [`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md) · [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) |
 | **DCP-6** | PARKED | Reuses the BEP harness; gated behind the read-loop fix. |
 | **J11 / BSV-2 · K-EVAL-1** | code-ready, inference-pending | Behavior-signature differential accept-test + `scoring_verifiers` eval; run in next host-quiet window. |
 | **Package G tail** (G3, G5, G10–G12) | partial | Full KVPress eval + stacking, short-m@k voting, AA-Omniscience factual-risk calibration. |

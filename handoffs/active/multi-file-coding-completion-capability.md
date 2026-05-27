@@ -5,7 +5,7 @@ created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (if real, it is a core coding-capability gap)
 related:
-  - orchestration/model_registry.yaml   # coder_escalation role config (~line 903)
+  - orchestration/model_registry.yaml   # coder_escalation OPERATIONAL role config at line 381 (enable_thinking:false); model-catalog block at ~903 is separate
   - scripts/benchmark/bep_ab.py          # the multi-file task harness
   - data/bep_sandbox/                    # tasks + results + per-turn traces
 ---
@@ -46,18 +46,20 @@ a general 3B-active MoE is doing all hard coding — relevant to whether the gap
 
 Per-turn trace inspection shows **none** of the failing tasks failed cleanly on model behavior:
 
-| Task / arm | turns | what actually happened | verdict |
-|------------|-------|------------------------|---------|
-| t1-off | 1 | wrote file, passed | PASS |
-| t1-on  | 2/3 | batch edit applied, passed | PASS |
-| **t4-off** | 8 | **8/8 turns `[ERROR: Backend unavailable (circuit open): :8070]`** | INFRA — discard |
-| **t5-off** | 8 | **8/8 turns backend unavailable** | INFRA — discard |
-| **t4-on**  | 8 | **6 backend-unavailable + 3 inference-failed** | INFRA — discard |
-| t2-off | 8 | 1 write + **4 empty turns** + **2 `Inference failed: timed out`** | MIXED — not clean |
-| t2-on  | 8 | 0 writes + 4 empty + 3 inference-failed | MIXED — not clean |
-| t3-off | 8 | 0 writes + 3 inference-failed + 1 empty | MIXED — not clean |
-| t3-on  | 8 | 0 writes + 2 inference-failed | MIXED — not clean |
-| t5-on  | 8 | 0 writes + **5 empty turns** (no backend error) | closest to model-behavior, but empties |
+Per-turn bucket counts (mutually-exclusive; from the trace `raw_output`s, n=8 turns each unless noted):
+
+| Task / arm | turn breakdown | verdict |
+|------------|----------------|---------|
+| t1-off | 1 turn: wrote file → PASS | PASS |
+| t1-on  | 2 turns: 1 model turn + batch edit applied → PASS | PASS |
+| **t4-off** | **8/8 `[ERROR: Backend unavailable (circuit open): :8070]`** | INFRA — discard |
+| **t5-off** | **8/8 backend-unavailable** | INFRA — discard |
+| **t4-on**  | **3 connection-refused + 3 backend-unavailable + 2 forbidden `open()` attempts** | INFRA-dominated — discard |
+| t2-off | 1 write + 1 other model turn + **4 empty** + **2 inference-timeout** | MIXED — not clean |
+| t2-on  | 1 model turn + 4 empty + 3 inference-timeout (0 writes) | MIXED — not clean |
+| t3-off | 4 model turns (no write) + 3 inference-timeout + 1 empty | MIXED — not clean |
+| t3-on  | **6 model turns (no write) + 2 inference-timeout** | closest to model-behavior, still 2 infra turns |
+| t5-on  | 3 model turns + **5 empty** (no backend error; 0 writes) | model-ish, but empties unexplained |
 
 So the headline "OFF 1/5, ON 1/5" **must not be read as a 1/5 capability rate.** A mid-run backend outage
 on `:8070` knocked out t4/t5-off and t4-on entirely; inference timeouts hit t2/t3; and the empty-output
@@ -82,8 +84,10 @@ no clean capability data point in this run.**
 Qwen3.6 degenerates into empty/`<think>`-loop output unless `enable_thinking=false` is applied. The
 orchestrator code **already supports this** for `coder_escalation`: it defaults the role onto the
 chat-completions route and injects the registry `chat_template_kwargs` (`src/llm_primitives/backend.py:76`,
-`src/backends/llama_server.py:493`), and the registry sets `enable_thinking: false` for the role
-(`orchestration/model_registry.yaml`). So the open question is **not** "does the code support it?" — it is
+`src/backends/llama_server.py:493`), and the registry sets `enable_thinking: false` at the **operational
+role config** (`orchestration/model_registry.yaml:381`; the separate model-catalog block ~line 903 carries
+`disable_thinking: true` but is NOT the runtime role config — inspect line 381). So the open question is
+**not** "does the code support it?" — it is
 **"did the live A/B run's process env + request payload actually carry `enable_thinking=false`?"** The empty
 turns (t2/t3/t5-on) are consistent with thinking output stripped to empty, so this must be confirmed at
 runtime (capture/inspect the actual request payload for a coder REPL turn), not assumed from the code path.
@@ -100,17 +104,14 @@ Before concluding anything about capability, run a clean, controlled matrix:
 4. **Compare models** — run the same clean matrix on the current general `Qwen3.6-35B-A3B` route vs a real
    coding-specialist route. If a specialist clears the read→edit tasks and the general model doesn't, that
    is the real signal (and points at the 2026-05-06 swap as the regression). Coding specialists confirmed
-   available (research registry `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`;
-   GGUFs in `/mnt/raid0/llm/models/`):
-   - **`Qwen3-Coder-30B-A3B-Instruct` Q4_K_M** (`Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf`) — the **cleanest
-     comparison: this WAS `coder_escalation` until the 2026-05-06 swap to the general Qwen3.6**, so it
-     directly tests whether the swap regressed multi-file editing. MoE, ~3B active (same class as current).
-     SEAL-concise variant also on disk (`qwen3-coder-30b-seal-concise.gguf`).
-   - **`Qwen2.5-Coder-32B`** (`Qwen2.5-Coder-32B-Q4_K_M.gguf`; fp16 shards + `qwen2.5-coder-32b-q4km-seal-concise.gguf`
-     on disk; draft `Qwen2.5-Coder-0.5B-Instruct-Q8_0`) — a **dense 32B** coding specialist; the research
-     registry even carries a coder_escalation staging block for it (~line 488). Dense vs MoE is a useful
-     second axis.
-   - (Larger option if warranted: `Qwen3-Coder-REAP-246B-A35B` Q4_K_M, also on disk.)
+   available — exact GGUF paths verified on disk:
+   - **`Qwen3-Coder-30B-A3B-Instruct` Q4_K_M** — `/mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf`
+     (18.5 GB). **Cleanest comparison: this WAS `coder_escalation` until the 2026-05-06 swap to the general
+     Qwen3.6**, so it directly tests whether the swap regressed multi-file editing. MoE, ~3B active.
+   - **`Qwen2.5-Coder-32B-Instruct` Q4_K_M** — `/mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen2.5-Coder-32B-Instruct-GGUF/Qwen2.5-Coder-32B-Instruct-Q4_K_M.gguf`
+     (19.8 GB). A **dense 32B** coding specialist (dense-vs-MoE is a useful second axis).
+   - Note: `/mnt/raid0/llm/models/` holds SEAL-concise fine-tunes of both + `Qwen3-Coder-REAP-246B-A35B-Q4_K_M.gguf`
+     (a larger pruned-MoE option), NOT the two baseline files above — use the `lmstudio/` paths for a clean baseline.
 
 Only after 1–3 are clean and 4 shows a model-attributable gap should this be called a capability problem.
 
@@ -134,7 +135,7 @@ turn shows backend errors vs timeouts vs empties vs real model code). Contaminat
 re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 
 ## Key files
-- `orchestration/model_registry.yaml` — `coder_escalation` (~line 903): Qwen3.6-35B-A3B Q8, `enable_thinking: false`.
+- `orchestration/model_registry.yaml:381` — `coder_escalation` OPERATIONAL role config (`chat_template_kwargs.enable_thinking: false`, `model_role: qwen36_q8_0`). The model-catalog block at ~903 (`disable_thinking: true`) is NOT the runtime role config — inspect line 381.
 - `src/llm_primitives/backend.py:76`, `src/backends/llama_server.py:493` — chat-completions route + chat_template_kwargs injection (code supports thinking-off).
 - `scripts/benchmark/bep_ab.py`; `data/bep_sandbox/tasks.jsonl` — harness + task defs.
 - `src/graph/helpers.py` `_execute_turn` — the LLM→REPL turn loop.
