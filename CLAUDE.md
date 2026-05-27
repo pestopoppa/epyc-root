@@ -177,4 +177,8 @@ Indexed as **epyc-root** (21401 symbols, 22844 relationships, 27 execution flows
 ## Skills (invoke via Skill tool)
 
 `gitnexus-exploring` · `gitnexus-impact-analysis` · `gitnexus-debugging` · `gitnexus-refactoring` · `gitnexus-guide` · `gitnexus-cli`
+
+## Additional CLI
+
+`gitnexus query <concept>` (execution flows) · `gitnexus cypher <query>` (graph) · `gitnexus wiki` (docs)
 <!-- gitnexus:end -->
