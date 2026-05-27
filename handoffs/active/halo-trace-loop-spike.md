@@ -1,6 +1,6 @@
 # HALO Trace-Loop Spike
 
-**Status**: ready-to-claim (1-day spike + conditional Day 2)
+**Status**: HALO-2 LANDED 2026-05-27 (converter + tests); HALO-1 (pip install halo-engine) + HALO-3 (run analyzer against local llama) operator-gated — auto-mode classifier correctly blocked the untrusted PyPI install + autopilot pid 2853082 is mid 2000-trial run so concurrent inference would violate `feedback_no_concurrent_inference`.
 **Created**: 2026-04-30 (post-intake-517/518 deep-dive)
 **Categories**: agent_architecture, autonomous_research, tool_implementation
 **Priority**: MEDIUM (validates whether to lift HALO patterns into existing meta-harness/autopilot scope)
@@ -31,7 +31,11 @@ Validate whether `halo-engine` (intake-518, MIT, 2.5 MB pip install) produces ac
 
 ## Tasks
 
-### HALO-1: Pre-flight verification [30 min]
+### HALO-1: Pre-flight verification [30 min] — OPERATOR-GATED
+
+`pip install halo-engine==0.1.2` was blocked by the auto-mode classifier as untrusted-PyPI-package supply-chain risk (correct call — release was ≤2 days old at the time of intake-518). Operator action required: explicitly allow `pip install halo-engine==0.1.2` in a throwaway venv (`/tmp/halo-spike-venv`) before HALO-3 can run.
+
+
 
 ```bash
 python -m venv /tmp/halo-spike-venv && source /tmp/halo-spike-venv/bin/activate
@@ -46,17 +50,26 @@ halo path/to/tiny_traces.jsonl -p "diagnose"
 
 **Gate**: halo-engine installs cleanly, runs against bundled traces, accepts local-llama backend.
 
-### HALO-2: Build OTel converter [Day 1 AM, 4 h]
+### HALO-2: Build OTel converter [Day 1 AM, 4 h] — ✅ LANDED 2026-05-27
 
-Write `/workspace/scripts/halo/convert_tap_to_otel.py` with two converters:
+Code at `/workspace/scripts/halo/convert_tap_to_otel.py` (~220 LoC) + tests at `test_convert_tap_to_otel.py` (9 passing).
 
-- `convert_autopilot_telemetry()` — **~30 LoC**. Autopilot's `telemetry.py:to_otlp_span()` already produces OTLP-shaped JSON. Group spans into traces by trial_id and emit JSONL.
-- `convert_inference_tap()` — **~120 LoC**. Block parser (~30) + PROMPT/RESPONSE pair extraction (~20) + trace grouping (~20) + OpenInference attribute mapping (~15) + hierarchy assembly (~25) + writer (~10).
-- 4 unit tests (~80 LoC).
+Scope deviation from the original plan: live production artifact is `autopilot_journal.jsonl` (one row per trial, 445 rows live), NOT `autopilot_telemetry.jsonl` (TelemetryCollector exists in `scripts/autopilot/telemetry.py` but is not enabled by the running autopilot). The converter accepts **either** source:
 
-Convert ONE existing autopilot trial's telemetry to OTel JSONL. Run halo against it.
+- `convert_autopilot_telemetry()` — re-emits TransitionRecord rows as OTLP spans, preserving `trace_id`/`span_id` and inferring `parentSpanId` from first-span-per-trial.
+- `convert_journal()` — synthesizes 4 spans per trial (controller_reasoning → action_execution → eval → safety_gate), mirroring the order `TelemetryCollector.record_trial()` would have emitted so HALO sees the same shape either way. `pareto_status` carried as an attribute; status code maps `frontier`/`dominated_but_kept` → OK, anything else → UNSET.
+- `_detect_source()` auto-selects by sniffing the first row's fields.
+- CLI: `python3 scripts/halo/convert_tap_to_otel.py <input>.jsonl -o <output>.jsonl`.
 
-### HALO-3: Day 1 PM falsification gate [4 h]
+Live smoke run: `autopilot_journal.jsonl` (445 trials) → 1,780 OTLP spans written in <1s.
+
+Inference-tap converter (`convert_inference_tap`, ~120 LoC) deferred — no inference-tap JSONL is being emitted by the running orchestrator, so the journal route is the entry point for HALO-3. Re-open if/when the inference tap is wired in.
+
+### HALO-3: Day 1 PM falsification gate [4 h] — OPERATOR-GATED
+
+Two blockers: (a) needs HALO-1 install; (b) needs a calm window where autopilot is paused so the analyzer LLM call doesn't poison concurrent benchmarks (autopilot pid 2853082 is in the middle of a 2000-trial run as of HALO-2 landing). Operator action required: pause autopilot via SIGTERM (per `feedback_autopilot_pause_broken_use_sigterm`) before running halo against `/tmp/halo-otlp-sample.jsonl` (the live-converted 1,780-span artifact).
+
+
 
 Inspect the halo report against 4 criteria. **Need ≥3/4 to proceed to Day 2.**
 
