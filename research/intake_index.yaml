@@ -1653,19 +1653,73 @@
   arxiv_id: '2602.12670'
   url: https://arxiv.org/abs/2602.12670
   source_type: paper
-  title: arXiv:2602.12670
+  title: 'SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks'
+  authors:
+  - Xiangyi Li
+  - Wenbo Chen
+  - Yimin Liu
+  - et al. (~40+ authors)
   categories:
-  - speculative_decoding
-  novelty: low
-  relevance: medium
+  - benchmark_methodology
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 3
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
   citation_context: 'fort**: ~1 developer-day (see sizing below) **Source**: [SkillsBench (arxiv.org/pdf/2602.12670)](https://arxiv.org/pdf/2602.12670)  ##
     Research Review  ### SkillsBench: Bench'
+  key_claims:
+  - 'First standardized benchmark for whether Agent Skills (structured packages of procedural knowledge that augment LLM agents at inference time) actually HELP: 86 tasks across 11 domains, each paired with a curated Skill and a deterministic verifier.'
+  - 'CRITICAL (v3 finding, NOT in the 2026-03-03 review): SELF-GENERATED skills give NO benefit on average (-1.3pp vs no-skill; only Opus 4.6 positive at +1.4pp, Codex+GPT-5.2 -5.6pp) — "models cannot reliably author the procedural knowledge they benefit from consuming."'
+  - 'CURATED skills help on average (+16.2pp) but the effect is highly domain-dependent (Healthcare +51.9pp -> Software Engineering +4.5pp) and 16 of 84 tasks REGRESS (e.g. taxonomy-tree-merge -39.3pp) via conflicting guidance / unnecessary complexity.'
+  - 'Claude Code + Opus 4.5 shows the highest absolute curated gain (+23.3pp), attributed to Claude Code''s native Skills-spec integration.'
+  techniques:
+  - paired_skill_vs_no_skill_evaluation
+  - deterministic_programmatic_verifiers
+  - leak_resistant_post_solution_verification
+  - three_condition_design_no_skill_curated_self_generated
+  reported_results:
+  - '86 tasks (84 evaluated; 2 dropped for verifier runtime errors), 11 domains (Healthcare, Manufacturing, Cybersecurity, Natural Science, Energy, Office/White-Collar, Finance, Media/Content, Robotics, Mathematics, Software Engineering)'
+  - 'Difficulty: Core 17 (<60min human), Extended 43 (1-4h), Extreme 26 (>4h)'
+  - '7 model-harness configs across 3 PROPRIETARY harnesses (Claude Code / Gemini CLI / Codex CLI): Gemini 3 Flash/Pro, Opus 4.5/4.6, GPT-5.2, Sonnet 4.5, Haiku 4.5 — all commercial API models, NO open-weight evaluated'
+  - '7,308 trajectories; binary reward averaged over 5 trials/task; agents do NOT see verifiers (post-solution execution)'
+  novelty_justification: 'Upgraded low->high after 2026-05-27 v3 deep-dive: the first systematic benchmark measuring whether agent skills help, with two decision-relevant findings absent from the 2026-03-03 review — (1) self-generated skills are net-negative, (2) curated skills can regress specific tasks.'
+  relevance_justification: 'High but BOUNDED by harness availability. Methodology already adopted (see completed/07-skillsbench-eval-suite.md: skill_transfer.yaml suite + analyze_skill_transfer.py + skill_transfer_regression.py, 2026-03-03). The v3 self-generated-skills caution is a direct empirical warning for our autopilot/PromptForge self-optimization. All 3 harnesses + 7 models are proprietary commercial-API (no open-weight) so the native Docker/Harbor suite is NOT runnable on our CPU stack — methodology and findings transfer, the artifact does not.'
+  verdict_justification: 'already_integrated (methodology) + NEW follow-on. The 2026-03-03 handoff adopted the per-skill cross-domain transfer + model-swap regression methodology. The 2026-05-27 deep-dive adds the self-generated-skills caution and motivates the eval-tower EV-10a efficacy gate (which should reuse the EXISTING skill_transfer_regression.py negative-delta detector, not rebuild it).'
+  contradicting_evidence:
+  - 'AUTHOR-STATED limitations: terminal/containerized tasks only (may not transfer to GUI / multi-agent / very-long-horizon); CONTEXT-LENGTH CONFOUND — skill injection adds context, so gains "could partly reflect more context rather than procedural structure"; containerization is not perfect determinism nor immune to training-set contamination.'
+  - 'All harnesses/models proprietary commercial-API; the +23.3pp Claude-Code/Opus result reflects Anthropic''s native Skills integration and may not generalize to a self-hosted llama.cpp harness.'
+  - 'Task/version drift: the 2026-03-03 review cited 87 tasks + GitHub THUDM/SkillsBench; the v3 paper (13 Mar 2026) states 86 tasks (84 evaluated) and the suite is attributed to benchflow-ai. Use 86/84.'
   cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
     handoffs:
     - 07-skillsbench-eval-suite.md
+    - eval-tower-verification.md
+    - meta-harness-optimization.md
+    intake_entries:
+    - intake-626
+    - intake-628
+  notes: |
+    ORIGINALLY a 2026-03-14 seed stub (placeholder title, miscategorized speculative_decoding). ENRICHED
+    2026-05-27 after a full v3 deep-dive (arxiv.org/abs + arxiv.org/html/2602.12670v1 + skillsbench.ai), at
+    user request during the SkillOpt cluster intake. arXiv 2602.12670, submitted 13 Feb 2026, v3 13 Mar 2026, cs.AI.
+
+    PRIOR ADOPTION (do not re-do): completed/07-skillsbench-eval-suite.md (2026-03-03) adopted the METHODOLOGY
+    only — our own skill_transfer.yaml (36q, 4 skills × 3 domains) + analyze_skill_transfer.py (skill×domain
+    pass-rate matrix) + skill_transfer_regression.py (model-swap per-skill regression, >threshold flagging).
+    Native 87-Docker-task suite deferred (Harbor + containerized data, no flat/HF export).
+
+    NEW from v3 deep-dive (the reason for re-touch): self-generated skills = -1.3pp avg (decision-critical
+    caution for PromptForge self-optimization); curated skills regress 16/84 tasks (per-suite negative-delta
+    guard needed). These motivate eval-tower EV-10a (paired efficacy gate — should REUSE the existing
+    skill_transfer_regression.py negative-delta detector wired into the autopilot accept-path, not net-new) and
+    reinforce why intake-626 SkillOpt's validation-gated/meta-updated discipline beats naive self-generation.
+    Credibility 3/6: preprint (+0), <12mo (+1), independent corroboration as eval suite adopted by CoEvoSkills
+    (intake-628) + cited by SkillGenBench (2605.18693) / SkillLearnBench (2604.20087) (+2).
 - id: intake-097
   arxiv_id: '2602.15257'
   url: https://arxiv.org/abs/2602.15257
@@ -29917,3 +29971,401 @@
     Louvain batching MAX_COMMUNITY_SIZE=35 / 5 concurrent file-analyzer dispatches / incremental
     via `git diff <lastCommitHash>..HEAD --name-only` + fingerprint change-detection.
   deep_dive: research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md
+- id: intake-626
+  arxiv_id: '2605.23904'
+  url: https://arxiv.org/abs/2605.23904
+  source_type: paper
+  title: 'SkillOpt: Executive Strategy for Self-Evolving Agent Skills'
+  authors:
+  - Yifan Yang
+  - Ziyang Gong
+  - Weiquan Huang
+  - Qihao Yang
+  - Ziwei Zhou
+  - Zisu Huang
+  - Yan Li
+  - Xuemei Gao
+  - Qi Dai
+  - Bei Liu
+  - Kai Qiu
+  - Yuqing Yang
+  - Dongdong Chen
+  - Xue Yang
+  - Chong Luo
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  verdict: new_opportunity
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'First systematic controllable text-space optimizer for agent skills: a separate optimizer model turns scored rollouts into bounded add/delete/replace edits on a single skill document, and an edit is accepted only when it strictly improves a held-out validation score.'
+  - 'Treats the skill as the EXTERNAL STATE of a frozen agent and trains it with weight-space-optimizer discipline (batched evidence, textual learning-rate budget, validation gating, momentum-like slow/meta updates) while adding ZERO inference-time model calls at deployment.'
+  - 'Across 6 benchmarks x 7 target models x 3 execution harnesses (direct chat, Codex, Claude Code), SkillOpt is best-or-tied on all 52 evaluated (model, benchmark, harness) cells and beats every per-cell competitor among human, one-shot LLM, Trace2Skill, TextGrad, GEPA, and EvoSkill skills.'
+  - 'On GPT-5.5 it lifts average no-skill accuracy by +23.5 points in direct chat, +24.8 inside the Codex agentic loop, and +19.1 inside Claude Code.'
+  - 'Optimized skill artifacts retain value when transferred across model scales, between Codex and Claude Code execution environments, and to a nearby math benchmark without further optimization.'
+  techniques:
+  - textual_learning_rate_budget
+  - rejected_edit_buffer
+  - epoch_wise_slow_meta_update
+  - validation_gated_add_delete_replace_edits
+  - separate_optimizer_model_over_frozen_agent
+  - single_skill_document_as_external_state
+  reported_results:
+  - 'Best or tied on all 52 (model, benchmark, harness) cells; also beats a per-cell ORACLE (best-of-six competing methods per cell) by +5.4 (82.3 vs 76.9) — a stronger claim than the no-skill delta'
+  - 'GPT-5.5: +23.5 (direct chat, 58.8->82.3 six-bench avg) / +24.8 (Codex agentic loop) / +19.1 (Claude Code) avg accuracy over no-skill baseline'
+  - 'VERIFIED six benchmarks (Sec 4): SearchQA, SpreadsheetBench, OfficeQA, DocVQA, LiveMathematicianBench, ALFWorld (OlympiadBench/Omni-MATH are transfer-only, Table 4c). Seven target models: GPT-5.5, GPT-5.4, GPT-5.4-mini, GPT-5.4-nano, GPT-5.2, Qwen3.5-4B, Qwen3.6-35B-A3B'
+  - 'ABLATION (Table 3): removing the epoch-wise slow/meta update is by far the most damaging (SpreadsheetBench 77.5->55.0, -22.5pts) = load-bearing mechanism; rejected-edit buffer mid (~-4.6); textual learning-rate is LEAST critical (~-2)'
+  - 'Optimizer is a SEPARATE model from the frozen target (GPT-5.5 for main runs); a target-matched optimizer recovers only 56-74% of the strong-optimizer gain (Table 5)'
+  - 'Transfer: cross-harness is large (Codex-trained SpreadsheetBench skill -> Claude Code = +59.7 over no-skill; Claude Code -> Codex on LiveMath = +12.8); cross-scale GPT-5.4 -> mini/nano positive; cross-benchmark OlympiadBench skill -> Omni-MATH = +3.7/+1.8/+1.3'
+  referenced_arxiv_ids:
+  - '2603.25158'
+  - '2603.02766'
+  - '2406.07496'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - agent-file-prose-compression.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-240
+    - intake-244
+    - intake-327
+    - intake-627
+    - intake-628
+    - intake-629
+    - intake-630
+  novelty_justification: 'High — a distinct method, not a re-skin of GEPA (intake-240) or Meta-Harness (intake-244). Where GEPA/EvoSkill (intake-630) do evolutionary/Pareto skill-or-prompt selection and Meta-Harness mutates harness CODE via agentic search, SkillOpt frames a single SKILL DOCUMENT as the external state of a frozen agent and applies optimizer discipline: a textual learning-rate budget (bounds EDIT COUNT/step, default 4 cosine-decay to 2), rejected-edit buffer, epoch-wise slow/meta update, and strict held-out validation gating (strict improvement on a separate selection split, ties rejected; default 2:1:7 train/sel/test). Deep-read 2026-05-27 confirmed best-or-tied on all 52 cells AND beats a per-cell best-of-six oracle by +5.4 — significant new results not covered by existing entries.'
+  relevance_justification: 'High (verified, upgraded confidence) — (1) it optimizes Claude Code SKILL documents on FROZEN models with zero added inference cost, the exact deployment constraint of this stack (CPU inference, no fine-tuning of the served model); (2) VERIFIED to test the Claude Code harness AND Qwen3.6-35B-A3B, which the registry confirms IS the production frontdoor (qwen36_q8_0), plus GPT-5.5; (3) its optimizer!=target design (strong separate optimizer drives edits) MATCHES PromptForge''s existing Claude-CLI-optimizes-the-Qwen-orchestrator-prompts design — so the "target-matched optimizer recovers only 56-74%" caveat does NOT bite us; (4) open-source MIT (github.com/microsoft/SkillOpt), adoptable not just citable. Maps onto meta-harness-optimization, agent-file-prose-compression, autopilot-continuous-optimization.'
+  verdict_justification: 'new_opportunity (CONFIRMED after deep-read + codebase check) — but recommendation REVISED. PromptForge ALREADY has a baseline-comparison accept gate (apply_mutation_isolated -> ctx.accept() only if result.quality>baseline, auto-revert; plus safety_gate.py and mutation_ledger.py). The genuinely MISSING, highest-value piece is SkillOpt''s LOAD-BEARING mechanism per its own ablation: the epoch-wise slow/meta update (-22.5pts when removed) — PromptForge has no epoch/cross-epoch consolidation concept. Second: a DISTINCT held-out selection split with strict-improvement-ties-rejected gating (verify eval_tower is not scoring on the same set it accepts against, to avoid overfitting). Third (mid-value): a rejected-edit buffer recording rejected edits + score drops (extend mutation_ledger, which today tracks only ACCEPTED mutations). The textual LR budget is LEAST critical per ablation — deprioritize. Reference impl is MIT; it generates a portable best_skill.md (does NOT ship pre-trained artifacts).'
+  contradicting_evidence:
+  - 'No independent replication or external criticism exists yet — paper submitted 22 May 2026 (5 days old at intake). The 52/52 best-or-tied claim is self-reported and not yet corroborated.'
+  - 'AUTHOR-STATED limitations (Appendix B): the method ASSUMES reliable automatic feedback (executable checks / verifiers / exact-match) — for open-ended/subjective tasks the validation gate needs stronger human/model judging, which this stack does not have for many eval suites. It optimizes ONE skill document, not a growing skill library, and not weights. Authors explicitly warn optimized skills can OVERFIT domain-specific heuristics of the training distribution.'
+  - 'Headline gains (+19 to +24.8) are on GPT-5.5, a frontier model; gains on Qwen3.6-35B-A3B (the open-weight model we actually serve) appear in the 52-cell sweep but are NOT separately headlined and may be smaller. Verify the Qwen3.6-35B-A3B per-cell deltas in the paper before projecting.'
+  - 'Gains require a STRONG separate optimizer model (GPT-5.5 main); target-matched optimizer recovers only 56-74% (Table 5). Our PromptForge already uses Claude CLI as optimizer so this aligns, but it means optimizer quality is a cost lever, not free.'
+  - 'Tier 2b note: confirmation-bias risk acknowledged — the family''s claims (SkillOpt, Trace2Skill, CoEvoSkills, EvoSkill) are mutually reinforcing and all from 2026; no skeptical/failed-replication source surfaced for the text-space-skill-optimizer paradigm as of 2026-05-27.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    User-supplied 2026-05-27. Single URL, inline Phase 1+2 path (no parallel sub-agents).
+    ar5iv had no HTML build yet (paper 5 days old); extraction from arxiv.org/abs + PDF + alphaXiv/HF/GitHub search.
+
+    Open-source: github.com/microsoft/SkillOpt (MIT), project page microsoft.github.io/SkillOpt.
+    Authors are Microsoft Research Asia (Dongdong Chen, Bei Liu, Qi Dai, Chong Luo, Yuqing Yang, Xue Yang).
+
+    Credibility 2/6: arXiv preprint no venue yet (+0), <12mo (+1), MSRA major lab (+1),
+    no commercial product promotion (open MIT research, 0), no independent corroboration yet (0).
+
+    DEEP-DIVE 2026-05-27 (full HTML arxiv.org/html/2605.23904 + microsoft/SkillOpt repo + registry check):
+    - Benchmarks CORRECTED: the initial-intake low-confidence list was half wrong. Real six (Sec 4 + repo
+      configs/): SearchQA, SpreadsheetBench, OfficeQA, DocVQA, LiveMathematicianBench, ALFWorld.
+      OlympiadBench/Omni-MATH are TRANSFER-only (Table 4c), not main benchmarks.
+    - Models CORRECTED/precise: GPT-5.5, GPT-5.4, 5.4-mini, 5.4-nano, 5.2, Qwen3.5-4B, Qwen3.6-35B-A3B.
+      Registry check confirms Qwen3.6-35B-A3B == our production frontdoor (qwen36_q8_0).
+    - Mechanism precision: textual LR budget bounds EDIT COUNT/step (L_t default 4, cosine->floor 2),
+      NOT tokens. Validation gating = strict improvement on a separate selection split, ties rejected,
+      default 2:1:7 train/sel/test. Optimizer O is a SEPARATE model from frozen target M (GPT-5.5 main).
+    - Ablation: epoch-wise slow/meta update is LOAD-BEARING (-22.5pts on SpreadsheetBench when removed);
+      textual LR is least critical. This REPRIORITIZES the meta-harness recommendation.
+    - Repo (MIT): runnable scripts/train.py + eval_only.py + optional skillopt_webui; targets OpenAI/
+      Azure/Anthropic/local-Qwen; does NOT ship pre-trained best_skill.md (users run train.py to produce one).
+
+    EvoSkill-IDENTITY CORRECTION: SkillOpt's "EvoSkill" baseline is Alzubi et al. arXiv:2603.02766
+    ("EvoSkill: Automated Skill Discovery for Multi-Agent Systems", Pareto-frontier selection) = now
+    intake-630. This is a DIFFERENT paper from CoEvoSkills (intake-628 / 2604.01687). The initial intake
+    conflated them — corrected after deep-read.
+
+    Phase 3 expansion (deep-read-corrected): intake-627 Trace2Skill (2603.25158), intake-629 TextGrad
+    (2406.07496), intake-630 EvoSkill (2603.02766) are the SkillOpt baselines not previously indexed
+    (GEPA already = intake-240). intake-628 CoEvoSkills (2604.01687) is a related co-evolutionary paper
+    found via search but is NOT a SkillOpt baseline. NOTE: SkillsBench (Li et al. 2026b, arXiv:2602.12670,
+    86 tasks / 11 domains) is the eval suite used by CoEvoSkills — already indexed as intake-096 (enriched
+    2026-05-27; methodology adopted 2026-03-03 per completed/07-skillsbench-eval-suite.md).
+
+    Phase 4a: meta-harness-optimization.md updated (Research Intake Update 2026-05-27 cohort section,
+    revised 2026-05-27 post-deep-read).
+    Phase 4b: no new stub — SkillOpt matches the existing meta-harness handoff, so updated rather than stubbed.
+- id: intake-627
+  arxiv_id: '2603.25158'
+  url: https://arxiv.org/abs/2603.25158
+  source_type: paper
+  title: 'Trace2Skill: Distill Trajectory-Local Lessons into Transferable Agent Skills'
+  authors:
+  - Jingwei Ni
+  - Yihao Liu
+  - Xinpeng Liu
+  - Yutao Sun
+  - Mengyu Zhou
+  - Pengyu Cheng
+  - Dexin Wang
+  - Erchao Zhao
+  - Xiaoxi Jiang
+  - Guanjun Jiang
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - swarm_techniques
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-626
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Dispatches a parallel fleet of sub-agents to analyze a diverse pool of executions in parallel (rather than reacting to trajectories sequentially), extracting trajectory-local lessons and hierarchically consolidating them into a single conflict-free skill directory via inductive reasoning.'
+  - 'Three-stage pipeline: frozen agent rolls out on the evolving set with an initial skill -> parallel error/success analysts independently propose skill patches -> all patches merged into one consolidated update.'
+  - 'Parameter-free: no weight updates, no external retrieval module, works with open-source models as small as 35B; skills are portable across model scales.'
+  techniques:
+  - parallel_sub_agent_trajectory_analysis
+  - hierarchical_inductive_consolidation
+  - error_and_success_analyst_split
+  - retrieval_free_portable_skill_directory
+  reported_results:
+  - 'BEST-CASE (the abstract''s own "up to" wording): Qwen3.5-35B-A3B trajectories improved a Qwen3.5-122B-A10B agent by +57.65 abs pp on WikiTableQuestions (cross-model + OUT-OF-DISTRIBUTION: skills evolved on SpreadsheetBench, transferred to WikiTQ). AVERAGE transfer is far lower (~+18pp for the 35B-authored Creation+Error condition) — +57.65 is a peak outlier, not representative.'
+  - 'Beats Anthropic''s official xlsx skill on SpreadsheetBench; math gains modest (~+3 to +5 on DAPO-Math/AIME-2026); DocVQA gains sizeable (~+13-15 acc pts)'
+  - 'Parallel consolidation beats SEQUENTIAL online editing (Seq-B=1/B=4) by ~+4.0/+6.8pp on SpreadsheetBench AND is ~20x faster (~3min vs ~60min); also beats ReasoningBank episodic-retrieval baseline. Paper does NOT compare against GEPA (does not mention it).'
+  - 'Cost: Stage-1 200 trajectories (50+ turns, 122B LLM) < 2 GPU-hours on 8x A800; Stage-2 dispatches 128 analyst sub-agents in parallel (merge batch 32); merge depth O(log N) sequential rounds, constant in N'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - swarm-dataset-distillation.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-626
+    - intake-240
+  novelty_justification: 'Medium — same text-space-skill-evolution family as SkillOpt (intake-626) and GEPA (intake-240); the novel angle is the parallel-fleet trajectory analysis (map-reduce over many rollouts) and explicit error/success analyst split, versus SkillOpt''s sequential validation-gated edit loop.'
+  relevance_justification: 'High, but narrowed after deep-read — the transfer TARGET (Qwen3.5-122B-A10B) IS our architect_general (registry: qwen35_122b_q4km); however the AUTHOR model (Qwen3.5-35B-A3B) is a 3.5-gen MoE we do NOT deploy (our 35B is the 3.6-gen frontdoor). So the exact +57.65pp config is not reproducible on our stack as-is, and that number is a best-case OOD peak (avg ~+18pp). Still relevant: parameter-free + retrieval-free fits CPU-served constraints, and the 128-way parallel-analyst decomposition is a reusable pattern for swarm-dataset-distillation and autopilot eval fan-out.'
+  verdict_justification: 'worth_investigating — SkillOpt reports beating it per-cell, so it is a baseline rather than the lead method. The directly testable claim for us is small->large skill transfer INTO architect_general; the parallel-analyst + LLM-merge-with-deterministic-guardrail decomposition is the reusable pattern. Note: the merge is LLM-based (operator M dedups/resolves conflicts), with deterministic checks only as a post-hoc validation guardrail.'
+  contradicting_evidence:
+  - 'SkillOpt (intake-626) reports beating Trace2Skill on all per-cell comparisons — its sequential validation-gated loop outperforms the parallel-consolidation approach in that head-to-head.'
+  - '+57.65pp is a single benchmark (WikiTableQuestions) best-case transfer number; average/worst-case transfer across the spreadsheet/VisionQA/math suite not headlined.'
+  - 'Parallel-fleet analysis multiplies LLM call count per evolution step; no cost/compute accounting surfaced at intake.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via Tier 1 reference chase from intake-626 (SkillOpt baseline).
+    arXiv 2603.25158, submitted 26 Mar 2026 (rev 27 Apr 2026). Jingwei Ni +9.
+    Credibility 2/6: preprint (+0), <12mo (+1), corroborated as baseline by SkillOpt (+1).
+    Note name collision: a separate "Trace2Skill: Verifier-Guided Skill Evolution for Long-Context
+    EDA Agents" (2605.21810) exists — NOT this paper.
+- id: intake-628
+  arxiv_id: '2604.01687'
+  url: https://arxiv.org/abs/2604.01687
+  source_type: paper
+  title: 'CoEvoSkills: Self-Evolving Agent Skills via Co-Evolutionary Verification'
+  authors:
+  - Hanrong Zhang
+  - Shicheng Fan
+  - Henry Peng Zou
+  - Yankai Chen
+  - Zhenting Wang
+  - Jiayu Zhou
+  - Chengze Li
+  - Wei-Chieh Huang
+  - Yifei Yao
+  - Kening Zheng
+  - Xue Liu
+  - Xiaoxiao Li
+  - Philip S. Yu
+  categories:
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-626
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Agents autonomously construct complex, multi-file skill PACKAGES (SKILL.md procedure doc + executable Python scripts, e.g. 64-line SKILL.md + 142 LOC / 9 callable functions) without manual authoring — vs human baseline that was doc-only.'
+  - 'A Skill Generator is coupled with a Surrogate Verifier (independent LLM session π_θ^V) that, seeing ONLY the task instruction + output files, generates its OWN deterministic test-assertion suite and returns proxy reward = fraction of self-authored assertions passing — never sees ground-truth test content. Info-isolation prevents inheriting the generator''s bias; the ground-truth oracle returns only an opaque pass/fail bit (no content) to stop overfitting to held-out tests.'
+  - 'Optimized skills generalize across 6 additional LLMs (+35.4 to +44.1pp over their no-skill baselines).'
+  techniques:
+  - skill_generator_surrogate_verifier_coupling
+  - self_authored_assertion_suite_proxy_reward
+  - opaque_oracle_bit_to_prevent_test_overfitting
+  - co_evolutionary_verification
+  - multi_file_skill_package_construction
+  reported_results:
+  - 'VERIFIED (deep-read of arxiv.org/html/2604.01687 v2): 71.1% pass rate on SkillsBench (no-skill 30.6%, +40.5pp; beats human-curated 53.5% by +17.6pp)'
+  - 'VERIFIED transfer: 6 additional LLMs +35.4 to +44.1pp (GPT-5.2 +35.4, Sonnet 4.5 +43.1, Haiku 4.5 +44.1, Qwen3-Coder +42.4, DeepSeek V3 +35.8, Mistral Large 3 +38.2)'
+  - 'ABLATION (Table B1): removing the surrogate verifier drops 71.1% -> 41.1% (-30.0pp) = the verifier is the load-bearing component; no-evolution 48.6%'
+  - 'Five baselines (Claude Opus 4.6 + Claude-Code, Fig 4): CoEvoSkills 71.1 / Human-Curated 53.5 / Skill-Creator 34.1 / Self-Generated 32.0 / CoT-Guided 30.7 / No-Skill 30.6'
+  referenced_arxiv_ids:
+  - '2603.02766'
+  - '2602.12670'
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - eval-tower-verification.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-626
+  novelty_justification: 'Medium — same self-evolving-skill family as SkillOpt/Trace2Skill; novel angle is the surrogate verifier that co-evolves to score skills WITHOUT ground-truth test access, and multi-file skill packages rather than a single document.'
+  relevance_justification: 'High — (1) primary backbones run on the Claude Code (Claude Opus 4.6) AND Codex (GPT-5.2) harnesses, matching this stack''s surface; (2) the surrogate-verifier-without-ground-truth pattern is directly relevant to eval-tower-verification and autopilot, where leak-free held-out scoring is a recurring concern, and it is ABLATION-PROVEN load-bearing here (-30pp without it); (3) multi-file skill packages (SKILL.md + executable scripts/) match how this project structures Claude Code skills.'
+  verdict_justification: 'worth_investigating — NOT a SkillOpt baseline (correction below), so not directly beaten by intake-626; it is an independent co-evolutionary-skill paper. The co-evolving surrogate verifier (self-authored assertion suite + opaque-oracle-bit anti-overfit) is the distinct, ablation-validated mechanism worth tracking for the eval side. Philip S. Yu authorship raises credibility.'
+  contradicting_evidence:
+  - 'AUTHOR-ACKNOWLEDGED surrogate-verifier failure modes (Appendix E case study): (1) the surrogate cannot replicate the ground-truth oracle''s exact precision requirements — it flagged a 0.00002-day discrepancy as failure when the agent was actually MORE accurate; (2) it cannot distinguish its own estimation error from the agent''s error. The ground-truth oracle remains necessary as authoritative arbiter (K=5 oracle interventions, M=15 surrogate retries).'
+  - 'No dedicated Limitations section; ablation rows are single runs "due to computational cost" (evolution timeout ~3000s/task, 4 parallel workers). Some hard tasks remain unsolved across all conditions.'
+  - 'There is NO ablation of surrogate-feedback vs using real ground-truth tests as feedback — the design premise is that ground-truth content is unavailable, so the proven comparison is surrogate vs opaque-bit-only (not vs an upper bound).'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via WebSearch while resolving SkillOpt''s "EvoSkill" baseline; turned out to be
+    a DISTINCT paper. arXiv 2604.01687, submitted 2 Apr 2026 (v2 12 Apr 2026, CC BY 4.0). Authors UIC/
+    MBZUAI/McGill/Columbia/Zhejiang/UBC, corresponding Yankai Chen, incl. Philip S. Yu. Project page
+    zhang-henry.github.io/CoEvoSkills.
+
+    IDENTITY CORRECTION (deep-read of full HTML, 2026-05-27): canonical title is "CoEvoSkills" (NOT
+    "EvoSkills"). It is NOT the baseline SkillOpt (intake-626) calls "EvoSkill" — that is Alzubi et al.
+    arXiv:2603.02766 (= intake-630), which CoEvoSkills itself cites as separate related work. The initial
+    intake wrongly equated the two. "SkillOpt" string does not appear in this paper (CoEvoSkills is Apr 2026,
+    SkillOpt May 2026 — could not cite it).
+
+    SkillsBench is PRE-EXISTING (Li et al. 2026b, arXiv:2602.12670, 86 tasks / 11 domains, deterministic
+    verifiers; = intake-096) — adopted as the sole eval suite here, NOT introduced by this paper. Added to referenced_arxiv_ids.
+
+    "Highest among five baselines on both Claude Code and Codex" nuance: the full 5-baseline sweep (Fig 4) is
+    Claude-Opus-4.6+Claude-Code ONLY; the Codex/GPT-5.2 number is the self-evolved 69.8% (+40.2pp over its
+    29.6% no-skill), not a separate 5-baseline table.
+
+    Credibility 3/6: preprint (+0), <12mo (+1), Philip S. Yu known contributor (+1), independent
+    corroboration via shared SkillsBench results vs human-curated baseline (+1).
+    Category benchmark_methodology used for the surrogate-verifier/eval angle (eval_methodology is not a taxonomy tag).
+- id: intake-629
+  arxiv_id: '2406.07496'
+  url: https://arxiv.org/abs/2406.07496
+  source_type: paper
+  title: 'TextGrad: Automatic "Differentiation" via Text'
+  authors:
+  - Mert Yuksekgonul
+  - Federico Bianchi
+  - Joseph Boen
+  - Sheng Liu
+  - Zhi Huang
+  - Carlos Guestrin
+  - James Zou
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-626
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Automatic "differentiation" via text: natural-language feedback from an LLM is backpropagated through a compound AI system to optimize its components, mirroring backprop in neural nets.'
+  - 'PyTorch-like API where the user supplies only an objective function; no per-component prompt tuning required.'
+  - 'General-purpose across QA, code optimization, molecular design, and radiation-oncology treatment planning.'
+  techniques:
+  - textual_gradients
+  - textual_feedback_backpropagation
+  - compound_ai_system_optimization
+  reported_results:
+  - 'GPT-4o on Google-Proof QA (GPQA): 51% -> 55%'
+  - 'LeetCode-Hard: ~20% relative performance gain'
+  - 'Demonstrated molecule and radiotherapy-plan optimization'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-626
+    - intake-240
+  novelty_justification: 'Medium — foundational 2024 method (textual gradients) repeatedly referenced across the index ("outperforms TextGrad" appears in two prior entries) but never itself entered; indexing it closes a citation gap and anchors the skill/prompt-optimization lineage that SkillOpt and GEPA extend.'
+  relevance_justification: 'Medium — the textual-gradient / textual-feedback-backprop primitive underlies the whole PromptForge / meta-harness optimization direction, but TextGrad operates on prompts/components rather than deployable skill documents and SkillOpt (intake-626) reports beating it. Reference-grade rather than directly actionable.'
+  verdict_justification: 'worth_investigating — establishes the textual-gradient baseline that newer skill optimizers (SkillOpt, GEPA) are measured against; useful conceptual anchor for meta-harness, not a new build target.'
+  contradicting_evidence:
+  - 'SkillOpt (intake-626) and GEPA (intake-240) both report outperforming TextGrad; it is the weaker baseline in current skill/prompt-optimization comparisons.'
+  - 'Textual-gradient updates are noisy/unstable and incur many LLM calls per optimization step — a cost concern for CPU-served, throughput-constrained deployment.'
+  - 'Headline gains are modest in absolute terms (GPQA 51->55, i.e. +4 points) relative to the +19 to +24.8 reported by SkillOpt on skill documents.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    Discovered 2026-05-27 via Tier 1 reference chase from intake-626 (TextGrad baseline).
+    arXiv 2406.07496, submitted 11 Jun 2024. Stanford (Carlos Guestrin, James Zou).
+    Credibility 3/6: not <12mo and not >24mo (Jun 2024, ~23.5mo, no penalty), major lab Stanford (+1),
+    widely corroborated/cited incl. SkillOpt + GEPA (+2). Venue not asserted (conservative).
+- id: intake-630
+  arxiv_id: '2603.02766'
+  url: https://arxiv.org/abs/2603.02766
+  source_type: paper
+  title: 'EvoSkill: Automated Skill Discovery for Multi-Agent Systems'
+  authors:
+  - Salaheddin Alzubi
+  - Noah Provenzano
+  - Jaydon Bingham
+  - Weiyuan Chen
+  - Tu Vu
+  categories:
+  - agent_architecture
+  - autonomous_research
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-626
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Self-evolving framework that automatically discovers and refines agent skills through iterative failure analysis, keeping the model FROZEN.'
+  - 'Uses PARETO-FRONTIER selection to retain skills that improve validation performance (same Pareto idea as GEPA, applied to skills rather than prompts).'
+  - 'Demonstrates zero-shot skill transfer across different tasks and benchmarks.'
+  techniques:
+  - failure_driven_skill_discovery
+  - pareto_frontier_skill_selection
+  - frozen_model_evolutionary_optimization
+  reported_results:
+  - 'OfficeQA: +7.3% exact-match (60.6% -> 67.9%)'
+  - 'SealQA: +12.1% (26.6% -> 38.7%)'
+  - 'Zero-shot transfer to BrowseComp: +5.3% without modification'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-626
+    - intake-240
+    - intake-628
+  novelty_justification: 'Medium — the actual "EvoSkill" baseline SkillOpt (intake-626) compares against. Pareto-frontier skill selection on a frozen model overlaps conceptually with GEPA (intake-240, also Pareto) but applied to multi-file agent skills with failure-driven discovery. Not architecturally novel beyond the GEPA/skill-evolution family.'
+  relevance_justification: 'Medium — frozen-model + validation-gated Pareto selection fits the CPU-served no-fine-tune constraint, and OfficeQA overlaps SkillOpt''s benchmark set. But it does NOT target the Claude Code/Codex harnesses (search found no mention), and SkillOpt reports beating it, so it is reference-grade for completing the cohort rather than a lead candidate.'
+  verdict_justification: 'worth_investigating — indexed to correctly capture the SkillOpt baseline cohort (this is the real "EvoSkill", not CoEvoSkills/intake-628). The Pareto-frontier-over-skills mechanism is the trackable idea; useful as a GEPA-adjacent comparison point for meta-harness.'
+  contradicting_evidence:
+  - 'SkillOpt (intake-626) reports beating EvoSkill per-cell — it is a baseline, not the lead method.'
+  - 'No evidence it runs on the Claude Code or Codex harnesses (targets general coding agents / Treasury-data grounded reasoning + search-augmented QA); harness-portability to our surface unproven.'
+  - 'Absolute scores are modest (OfficeQA 60.6->67.9, SealQA 26.6->38.7) and on different benchmarks than the rest of the cohort, limiting direct comparability.'
+  handoffs_updated:
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    Added 2026-05-27 as a CORRECTION during the deep-dive of intake-626. This (Alzubi, Provenzano,
+    Bingham, Chen, Tu Vu; submitted 3 Mar 2026) is the genuine "EvoSkill" baseline SkillOpt cites
+    (cite key alzubi2026evoskill). The initial intake had mis-assigned that baseline to CoEvoSkills
+    (intake-628 / 2604.01687) — see intake-626 and intake-628 notes. Extraction from arxiv.org/abs only
+    (abstract-grade); per-cell tables not deep-read. Credibility 3/6: preprint (+0), <12mo (+1), Tu Vu
+    known contributor (+1), corroborated as SkillOpt baseline (+1).
