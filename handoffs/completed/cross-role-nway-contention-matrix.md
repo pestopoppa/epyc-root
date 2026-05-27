@@ -1,14 +1,16 @@
 # Cross-Role N-Way Contention Matrix Closure
 
-**Status**: active
+**Status**: completed — archived 2026-05-27 (matrix closed + certified; runtime policy defensive, in `src/scheduling/contention_gate.py` + `orchestration/contention_matrix.yaml`)
 **Created**: 2026-05-26
 **Updated**: 2026-05-27
 **Categories**: orchestration, inference, scheduling, measurement
 **Priority**: HIGH
 **Owners**: bulk-inference-campaign Package J / routing-and-optimization
-**Related**: [bulk-inference-campaign.md](bulk-inference-campaign.md), [within-role-placement-state-machine.md](within-role-placement-state-machine.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
+**Related**: [bulk-inference-campaign.md](../active/bulk-inference-campaign.md), [within-role-placement-state-machine.md](../active/within-role-placement-state-machine.md), [routing-and-optimization-index.md](../active/routing-and-optimization-index.md)
 
 ---
+
+> **▶ ARCHIVED 2026-05-27 — COMPLETE.** N-way contention matrix closed + certified on disjoint quarters (topology_hash `df373c79cc4af06f`). All size-2 and size-3+ active sets re-benched **allow** on certified affinity; the `{frontdoor,ingest,vision}=0.847` "block" was a bad-affinity artifact (remeasured 1.731). The runtime N-way policy is **defensive** (no measured block currently exists) and lives in code — `src/scheduling/contention_gate.py` (fail-closed on stale/missing matrix vs live topology_hash) + `orchestration/contention_matrix.yaml`. J4a/J4b/J4c done. Moved from `handoffs/active/` during the bulk-inference-campaign doc refactor; sibling links above now point to `../active/`. Reopen only on a topology / stack / role / model / CPU-binding change (which invalidates the matrix → re-derive before any cross-role parallelism).
 
 ## Problem
 

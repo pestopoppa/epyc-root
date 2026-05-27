@@ -5,7 +5,7 @@
 **Updated**: 2026-05-26
 **Priority**: HIGH
 **Owner**: orchestrator/autopilot
-**Related**: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md), [`cross-role-nway-contention-matrix.md`](cross-role-nway-contention-matrix.md), [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md)
+**Related**: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md), [`cross-role-nway-contention-matrix.md`](../completed/cross-role-nway-contention-matrix.md), [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md)
 
 ---
 
