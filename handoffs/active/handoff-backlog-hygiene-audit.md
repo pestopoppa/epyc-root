@@ -57,7 +57,60 @@ Freshness recheck at execution start: **56 aging, 0 stale**.
 - `cpu-context-regime-coverage.md` → moved to `handoffs/completed/`
 - `cpu-uncore-fabric-attribution.md` → moved to `handoffs/completed/`
 
+## Second pass executed 2026-05-27 (evening)
+
+Freshness recheck: **37 aging, 0 stale** (down from 56 at first pass).
+
+Classification by 4 parallel Explore agents verifying against actual code/tests/commits. After operator review, **all 4 ARCHIVE candidates were rejected** — three are load-bearing reference anchors in other active handoffs, and the fourth (launcher) had unmet acceptance criteria. The audit method itself was right; the agents' verdicts conflated "code work finished" with "handoff has no remaining role."
+
+### EXCLUDED FROM ARCHIVE (4) — initial recommendations overturned 2026-05-27
+
+| Handoff | Audit verdict | Why rejected |
+|---|---|---|
+| `cpu-optimization-thesis-pause-2026-04-26.md` | ARCHIVE | Load-bearing reference in `cpu-benchmark-rigor-and-revalidation`, `cpu-kernel-env-flags-inventory`, `nps-reboot-runbook`, `cpu-inference-optimization-index` — anchors the Phase I→J→K→L→M track plan. Archive would break 4 active handoffs' references. |
+| `moe-dynamic-expert-selection.md` | ARCHIVE | Load-bearing reference in `moe-spec-cpu-spec-dec-integration` (Phase 3 follow-up) and `cpu-shape-specialized-gemv-decode`. Phase 0 NEGATIVE is a finding, but the handoff is a reference anchor. |
+| `outer-coordinator-learned-head.md` | ARCHIVE | Explicitly gated scoping per master-index #28 and routing-index P19.8. "Deferred pending TR/DAR/LRC Phase 4" ≠ "complete/dead." |
+| `launcher-numa-mode-gating.md` | ARCHIVE | Original acceptance criterion (`default --numa-mode quarter`) NOT MET — flag landed but default is `both`, so the 1.5× CPU oversubscription footgun still ships. Restored to active 2026-05-27 evening. |
+
+**Audit-method correction**: any future ARCHIVE recommendation must verify (a) the handoff is not a reference target in another active handoff, AND (b) all acceptance criteria are met as written, not just the underlying code path being landed.
+
+### DEREFERENCE (4) — trim master-index entries to outstanding TODOs only
+
+- `numa-prefill-decode-disaggregation.md` — only Phase 0 xGMI BW falsification test remains; Tier 2b counter-evidence noted.
+- `wdata-aware-mul-mat-coalescing-design.md` — Phase 0 design complete with honest NEGATIVE verdict (2-7% gain at 260-410 LOC + ABI cost); trim to decision statement only.
+- `qwen36-benchmark-fixes.md` — Qwen3.6 fixed (TIDE-gate `2ffbdbbba`, registry updates landed); bimodal throughput regression now tracked in progress notes, not this handoff.
+- `root-archetype-linter-templates-upstream.md` — core deliverables 1-4 DONE; remaining cleanup-only (test linter, update init-project.sh, document in root-archetype README).
+
+### NEEDS_REFRESH (6) — open but stale; owner should reconcile
+
+- `glm51-reap-cpu-evaluation.md` — 35d, Phase 1 audit incomplete; consolidation candidate with `llama-cpp-dsa-contribution` (DSA unlocks both V3.2 and GLM-5.1).
+- `agent-file-prose-compression.md` — Phase 3 eval inference-gated; 21d no activity; master-index should reflect suspended state.
+- `colbert-reranker-web-research.md` — S5 implementation gated on AR-3 data; 27d no progress signal.
+- `privacy-hygiene-precommit-hooks.md` — PII-3 30-day re-eval gate scheduled for 2026-05-24; today is 2026-05-27; no follow-up recorded.
+- `mathsmith-hc-formalizer-eval.md` — 69d old; S1 only DONE; S2-S5 untouched; no git commits since 2026-04-17.
+- `granite-97m-r2-bench-plan.md` — 27d old; Phase A/B/C NOT STARTED; gated on K2 chunker (still STUB); blockers unresolved.
+
+### KEEP_ACTIVE (rest)
+
+Remaining 23 aging handoffs verified as legitimately live (recent commits, code landed, or genuinely backburnered with explicit policy). Notable confirmations:
+
+- `triattention-kv-selection.md` — S1-S7 DONE; llama.cpp + autopilot wiring live; S8/S9 next.
+- `tri-role-coordinator-architecture.md` — TR-1/2/3 LANDED 2026-05-07 (`c4e0f64`, `44eedb5`); 27 tests pass.
+- `lightning-attention-port.md` — v1 COMPLETE 2026-04-30 (`33b60b925`); quality benchmarks pending.
+- `repl-turn-efficiency.md` — S7 ColGREP DONE 2026-04-29 (`0dc0d6d`); 260 commits past 2mo show continuous shipping.
+- `eval-tower-verification.md` — EV-1/2/6 DONE; EV-8 landed 2026-04-22.
+- `halo-trace-loop-spike.md` — OTLP support verified at `telemetry.py:57`; ready-to-claim.
+
+## Index pruning (second pass)
+
+Second pass surfaced **0 net archive moves** after operator review. Remaining actions, all pending operator approval:
+
+1. Trim 4 DEREFERENCE master-index entries to outstanding-TODO bullets only (no file moves).
+2. Flag 6 NEEDS_REFRESH handoffs to their owners via a single progress-log entry (no file moves).
+3. Re-verify any future ARCHIVE proposal against the corrected audit method (reference-target check + acceptance-criteria-as-written check).
+
 ## Notes
 
-- This pass only archived handoffs with explicit landed/closed dispositions and low ambiguity.
-- Open-but-aging handoffs were intentionally left alone for later review rather than force-closed.
+- First pass (morning 2026-05-27) only archived handoffs with explicit landed/closed dispositions and low ambiguity.
+- Second pass (evening 2026-05-27) used parallel code-verification agents; results above.
+- Open-but-aging handoffs intentionally left alone unless code verification confirms closure.

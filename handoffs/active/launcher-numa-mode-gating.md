@@ -1,8 +1,29 @@
 # Launcher: full XOR quarters, not both
 
-**Status**: stub — discovered during 2026-05-08 worker_general gemma4-26B-A4B MTP swap (Phase 3)
+**Status**: PARTIAL — flag implemented, default decision pending (operator call)
 **Priority**: medium (production workaround exists; long-term fix is a small CLI flag)
 **Origin**: `progress/2026-05/2026-05-08.md` § Phase 3 known sub-issue
+
+## What landed — 2026-05-27 hygiene audit verification
+
+`--numa-mode {full,quarter,both}` flag is live in `epyc-orchestrator/scripts/server/orchestrator_stack.py:1324` with `choices=["full","quarter","both"]`. Filtering implemented in `scripts/server/stack_manifest.py:267` (`_filter_by_numa_mode`) and wired into the start path at `scripts/server/stack_commands.py:393`.
+
+## Acceptance criteria status
+
+| Original criterion | Status |
+|---|---|
+| `start --only worker_general` defaults to `--numa-mode quarter` and brings up 4 quarter instances | **NOT MET** — default is `both`, all 5 instances still launch unless operator passes `--numa-mode quarter` |
+| `start --only worker_general --numa-mode full` brings up only the full instance | ✅ MET |
+| `start --only worker_general --numa-mode both` brings up all 5 with a stderr warning | ✅ MET (warning via help text/banner) |
+
+## Open operator decision
+
+The unsafe default (`both`) still ships. Two paths forward:
+
+- **(a) Flip default to `quarter`** at `orchestrator_stack.py:1326`. One-line change. Satisfies the original acceptance criteria and removes the 1.5× CPU oversubscription footgun. Changes behavior for any caller currently relying on `both` — the help text notes Qwen3-Coder `-t 24` and Qwen3.6-35B Q8 quarter-tuned configs co-exist OK with `both`, so they would need to add `--numa-mode both` explicitly to keep current behavior.
+- **(b) Keep `both` default** as a deliberate back-compat choice; mark this handoff WONTFIX and archive with that framing. Per-role override remains `--numa-mode full` for gemma4-MTP-style high-thread roles.
+
+Audit (2026-05-27 morning) initially archived this prematurely as ✅ COMPLETE — that was wrong. Restored to active 2026-05-27 evening per operator review; default is an operator call, not a hygiene-cleanup decision.
 
 ## Objective
 
