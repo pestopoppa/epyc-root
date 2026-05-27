@@ -334,6 +334,34 @@ Source: MiniMax M2.7 3-component self-evolution harness (100+ autonomous rounds)
 - [ ] AP-26: Test dspy.RLM for autopilot tasks — long-horizon benchmark analysis where metadata-first context exploration avoids context window limits
 - [ ] AP-27: Formalize eval tower tiers (T0/T1/T2) as RLVR verification functions with deterministic reward signals per tier (state matching, not LLM-as-judge). **Implementation plan**: See [eval-tower-verification.md](eval-tower-verification.md) EV-1–EV-7. Depends on EV-4 (calibration baseline) and P7 Ouro results.
 
+### P17 — Bradley-Terry Tiebreak Under Hypervolume Stagnation (intake-615)
+
+Source: arxiv:2510.24801 — Fortytwo: Swarm Inference with Peer-Ranked Consensus. The Bradley-Terry-style aggregation over pairwise rankings is the formal generalization of "pairwise comparison with confidence" that NumericSwarm currently approximates via 4D Pareto + hypervolume scalarization. Their published +17.21pp on GPQA-Diamond over majority voting is the empirical evidence that BT extracts ordering signal a scalar can't.
+
+**Concrete integration** (~50 LOC, falsifiable in one autopilot run):
+
+- [ ] AP-37: New shared module `scripts/autopilot/bradley_terry.py` (or equivalent location). Pure function: `bradley_terry_rank(items, pairwise_scores) -> ranking + confidence`. **Shared with [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) Phase 3 — do not duplicate.**
+- [ ] AP-38: Wire BT into stagnation handler at `scripts/autopilot/pareto_archive.py:188-200`. Trigger: existing `hypervolume_slope() < 0.001`. Action: pull top-K candidates from current Pareto front, run pairwise eval-tower comparisons among them, fit BT, let the BT ranking pick next sampling seed instead of (or in addition to) current scalarization fallback. Code reference for sampler init: `scripts/autopilot/species/numeric_swarm.py:99`.
+- [ ] AP-39: Falsification — over one autopilot run after stagnation triggers, log which seed BT picks vs which seed the existing fallback would have picked. If BT picks differ AND the BT-picked seed lands in a Pareto-dominant region within the next 10 trials, keep. Otherwise revert.
+
+**Cross-task interactions** (see § Scoring Upgrade Backlog below): the BT module here is the SAME algorithm that [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) Phase 3 needs for filtering swarm-generated candidate completions. Implementing AP-37 here unlocks that handoff's Phase 3 too.
+
+### Scoring Upgrade Backlog (consolidation 2026-05-27)
+
+Three "Research Intake Update" sections have surfaced **scoring-mechanism** upgrades for NumericSwarm over the past ~6 weeks. They are not three independent ideas — two of them operate on the *selection step* and partially substitute, one operates on *information sharing across species* and is orthogonal. Consolidating here so a future agent does not implement them redundantly.
+
+| # | Source | Operates on | What it changes | Status | Interactions |
+|---|---|---|---|---|---|
+| 1 | intake-248 (SiliconSwarm@Ensue) | Cross-species info-sharing | Shared-memory + insights publishing every iteration; one agent's dead-end prevents others repeating | **Applied** (B1, B4, B5 — see § Research Intake Update — 2026-04-18 and DD-strategy-store) | Orthogonal to the two below; do not subsume |
+| 2 | intake-269 (TPO / Cross-Entropy Method) | Selection step (sampler) | Replace NSGA-II/Optuna with CEM-style Gaussian-fit-to-elites on the 23-param numeric surface; particularly when hypervolume stagnates | **DESIGN NOTE only** — never operationalized; see § Research Intake Update — 2026-04-26 | Substitutes with the BT tiebreak on the same stagnation trigger; implement **one first**, A/B against the other |
+| 3 | intake-615 (Fortytwo BT) | Selection step (tiebreak) | When scalarization is the noisy step, BT-rank the top-K Pareto candidates and pick by ranking confidence | **P17 above (this section)** — implementation specified, falsification gate defined | See #2 — same trigger surface |
+
+**Recommended sequencing**:
+1. Land AP-37 (the shared BT module) — cheapest, ~50 LOC, also unblocks [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md).
+2. Land AP-38 (BT tiebreak wired to stagnation) — one autopilot run to falsify.
+3. **Only if BT tiebreak fails AP-39's falsification**, then revisit intake-269 TPO/CEM as an alternative selection mechanism. Implementing both simultaneously is over-engineering before either is known to help.
+4. Continue extending the SiliconSwarm cross-species sharing pattern as orthogonal optimization; do not bundle with #2/#3 work.
+
 ### DEFERRED (explicit reasons)
 
 2. ~~**GEPA integration** (intake-240)~~: **PROMOTED to P10** (2026-04-12). Deep-dive confirmed GEPA works with local inference, 35x cheaper than GRPO, 3-example minimum. No longer needs to wait for AR-3 PromptForge limitations — GEPA is strictly better.
@@ -812,3 +840,17 @@ Sibling: the **PEAF** item above (prediction-error-as-feature) is independent �
 **HLE-4 (J9) — observe-only first.** Pre-run wiring: HLE-1 metric computation over real traces + extend `EvalResult`/journal JSONL with `harness_metrics`, `oracle_adequacy`, `metric_schema_version` (shared schema owned by `unified-trace-memory-service.md`). Run metrics observe-only (no Pareto promotion). Per-metric decision: promote to a Pareto co-objective/guardrail ONLY if it separates accepted-vs-rejected (AUC ≥ target) AND correlates with future regressions AND missingness ≤20%; else keep diagnostic-only. Mitigation: observe-only first; low-signal/low-confidence metrics never gate; oracle-adequacy flags shortcut-prone suites so they can't drive promotion.
 
 **BSV-2 (J11) — mutation accept gate.** Pre-run wiring: `compute_behavior_signature` (done) wired into the archive accept-path + a paired-eval lane. Per candidate mutation, paired new-vs-old on the same sentinels → `diff_signatures` severity: `benign` → auto-accept; `watch` (route/tool changed, outcomes equal) → accept + log; `blocking` (prior-pass sentinel regressed, forbidden shortcut, or cost guardrail crossed) → **REJECT, do not promote**; shared-subsystem touch → BSV-3 conflict-ledger review. Mitigation: gate accept on BOTH scalar regression AND signature severity; partial-confidence signatures cannot certify `benign` (audit #4); git-committed revert remains the backstop. Operator decision trees mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+
+## Research Intake Update — 2026-05-27
+
+### New Related Research
+
+- **[intake-615] "Fortytwo: Swarm Inference with Peer-Ranked Consensus"** (arxiv:2510.24801)
+  - Relevance: closer formal analog to NumericSwarm Pareto scoring than the SiliconSwarm@Ensue entry (intake-248) already feeding B1/B4/B5. Bradley-Terry-style aggregation over peer rankings is the explicit version of "pairwise comparison with confidence" we approximate via 4D Pareto + hypervolume.
+  - Key technique: heterogeneous models generate independently → pairwise-rank each other's full completions → reputation-weighted Bradley-Terry aggregation → winner.
+  - Reported results: +17.21pp on GPQA-Diamond (85.90 vs 68.69 majority voting); 0.12% vs 6.20% prompt-injection degradation.
+  - Delta from current approach: NumericSwarm uses NSGA-II/Optuna over a 23-param numeric surface scored by an eval tower. A Bradley-Terry mode would replace the 4D scalarization with pairwise peer judgments on candidate configurations' eval-tower outputs — useful when the scalarization is the noisy step (high hypervolume variance) and the judging is cheap. Concrete integration probe: when `hypervolume_slope() < 0.001` triggers stagnation, instead of (or before) switching to CEM sampling per the intake-269 TPO note, run pairwise judging of the top-K candidates and let the BT-aggregated ranking break ties. Code reference: `numeric_swarm.py:99` (sampler init), `pareto_archive.py:188-200` (stagnation detection).
+  - Caveat: claim that the same swarm "beats GPT-5/Claude Opus/Gemini" is founder-marketing only — the paper's actual baseline is majority voting.
+
+- **[intake-614] Fortytwo Network — chunk-ranking pipeline (unpublished founder claim)**
+  - Relevance: if real and disclosed, chunk-ranking = mid-stream cross-model ranking against milestones during single-shot generation, which would let an ensemble vote without paying N-rounds latency. That is a primitive we currently do NOT have any analog of in the autopilot loop or the orchestrator. Tracked as a watch item until they publish.

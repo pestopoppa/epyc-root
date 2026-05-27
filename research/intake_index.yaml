@@ -29072,3 +29072,205 @@
   handoffs_created: []
   notes: |
     Discovered 2026-05-27 via WebSearch during agent-oss (intake-610) expansion. OSS Insight blog, 2026-04-13. NOTE: the "engram" here (2,389-star Go SQLite+FTS5 memory repo) is DISTINCT from the LongCat/paper Engram n-gram embedding layer tracked elsewhere (project_engram_vs_longcat_distinction) — name collision, different artifact. Article does not mention QuarqLabs/agent-oss, Mem0, Supermemory, Chronos, Mastra, or Emergence.
+- id: intake-614
+  arxiv_id: null
+  url: https://www.fortytwo.network/
+  source_type: blog
+  title: 'Fortytwo Network — Swarm Inference Company (homepage + sales-call intake)'
+  authors:
+  - Vladyslav Larin
+  - Ihor Naumenko
+  - Aleksei Ivashov
+  - Ivan Nikitin
+  - Alexander Firsov
+  categories:
+  - swarm_techniques
+  - inference_serving
+  - routing_intelligence
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Reputation-weighted heterogeneous-model swarm: each node a black-box model, new nodes mine reputation for ~1 week before staked opinions count; on-chain Sybil/proof-of-capability resistance.'
+  - 'Two inference pipelines: (1) original post-hoc PAIRWISE RANKING on full completions (published as arxiv:2510.24801, intake-615); (2) NEW "CHUNK RANKING" for agentic/tool-heavy workloads — ranks chunk-by-chunk during single-shot generation rather than aggregating full completions. Founder claim: 8 models running effectively as single-shot latency.'
+  - 'Reported 16 parallel inferences on vision tasks with "negligible" per-stream throughput hit via chunk ranking (unverified — no paper, no blog, no code).'
+  - 'On-prem product Harbor: $175k pilot for 4–8 CCUs @ 30–40 t/s ($142k hardware passthrough); 8 H100s or small DGX Spark cluster for Opus-4.7-quality @ ~100 t/s claim; up to $3–4M for 1000-employee enterprise.'
+  - 'Open-sourced specialist artifact: Strand-Rust-Coder-14B (intake-616) from Strandset-Rust-v1 dataset (191k samples, Apache-2.0), claimed #1 on RustEvo2 and to beat GPT-5 Codex on Rust.'
+  techniques:
+  - Peer-ranked pairwise consensus with Bradley-Terry aggregation (published, full-completion)
+  - 'Chunk ranking / continuous ranking (UNPUBLISHED; claimed mid-stream ranking against milestones, ~single-shot latency)'
+  - Reputation mining + staking for new nodes
+  - x402Escrow pay-per-token payment protocol extension
+  - Swarm-as-judge for recursive self-improvement of node-level agents
+  reported_results:
+  - 'PUBLISHED: +17.21pp (68.69 → 85.90) on GPQA-Diamond vs majority voting (arxiv:2510.24801)'
+  - 'PUBLISHED: 0.12% prompt-injection degradation vs 6.20% single-model'
+  - 'FOUNDER-CALL ONLY: 16-way parallel inference on vision tasks at "negligible" hit'
+  - 'FOUNDER-CALL ONLY: matches Opus-4.7 quality at ~100 t/s on a small DGX Spark cluster — no benchmark methodology disclosed'
+  - 'PRODUCT: 4-8 CCU pilot averages 30–40 t/s aggregate'
+  referenced_arxiv_ids:
+  - '2510.24801'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-248
+    - intake-615
+    - intake-616
+  novelty_justification: 'Swarm/ensemble inference itself is well-trodden (cf. intake-248 SiliconSwarm, multi-agent debate literature). The novel-to-our-index angle is CHUNK RANKING — claimed continuous mid-stream ranking that avoids the N×-rounds cost of post-hoc voting. If real, this is a meaningful primitive for agentic orchestration. Caveat: not in the published paper.'
+  relevance_justification: 'Two angles for EPYC: (1) Chunk-ranking pattern, if disclosed, could inform mid-stream quality gates in our orchestrator/decision-aware-routing pipeline (rank partial completions across coder/worker pool roles instead of full retries). (2) Reputation-weighted voting is structurally analogous to our autopilot NumericSwarm Pareto scoring (intake-248 already feeds B1/B4/B5 there). Not relevant: their on-prem product offering, token economics, network-launch compute story.'
+  verdict_justification: 'worth_investigating — chunk-ranking is the only meaningful unknown here. Track for paper/code disclosure; do NOT propose a stub handoff yet because the technique is undocumented and the +30-40% efficiency claim is founder-marketing without methodology. Re-evaluate if (a) Fortytwo publishes chunk-ranking details, (b) we hit a concrete orchestrator pain point that mid-stream cross-model ranking would solve. The company itself: founders are credentialed (ex-Temporal AI, NEOM spatial-reasoning model), product is plausible but commercial-bias-heavy; pre-seed Big Brain Holdings $20M, raising $4.5M strategic floor $15M.'
+  contradicting_evidence:
+  - 'The published arxiv:2510.24801 covers post-hoc pairwise ranking on full completions only — chunk-ranking is explicitly absent from the paper (verified 2026-05-27).'
+  - 'The "beats GPT-5/Claude Opus/Gemini" claim made on the sales call is NOT in the paper; the paper''s actual comparison baseline is majority voting (a much weaker bar). Founder verbal claims overstate the published evidence.'
+  - 'Ensemble/swarm latency math: N parallel models at ~single-shot latency is plausible only if (i) all N fit in RAM concurrently and (ii) the ranker is much cheaper than generation. Their 16-stream vision claim on consumer hardware is not obviously consistent with 27–31B dense models — need to verify whether quantization, smaller specialists, or different sampling were used.'
+  - 'Known Bradley-Terry / pairwise-ranking failure modes: Condorcet cycles among comparably capable peers, capability-skewed ranking bias (strongest model''s outputs dominate regardless of correctness), reputation system gameable via collusion. Not addressed in available material.'
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - decision-aware-routing.md
+  handoffs_created:
+  - strand-rust-coder-rustevo2-verification.md
+  - swarm-dataset-distillation.md
+  - peer-verifier-speculation-spike.md
+  notes: |
+    Discovered 2026-05-27 via user-provided URL + ~1hr sales call transcript with co-founder Ivan Nikitin (Daniele Pinna interviewing on behalf of an IC/board).
+
+    HEADLINE FINDING for follow-up: The interesting technical claim — chunk-ranking giving multi-model quality at single-shot latency — is unpublished. Their paper (arxiv:2510.24801, intake-615) is the older full-completion pipeline only. If a fund/IC is evaluating Fortytwo on technical merit, the published evidence is +17pp over majority voting on GPQA-Diamond, NOT the "matches Opus 4.7" or "16-stream vision at negligible cost" claims from the call.
+
+    COMMERCIAL CONTEXT (from transcript, retained for IC-style follow-up):
+    - Pre-seed Mar 2025: Big Brain Holdings (lead), CMT Digital, EV3 Escape Velocity, Course One, angels (Keoni Hon/Monet, Paul Taylor). Valuation $20M.
+    - Echo community round Nov 2025: $655k @ $100M.
+    - Current strategic round: $4.5M, valuation TBD by lead, floor $15M. "More flexible if lead is web2-AI fund with strategic value-add."
+    - Team: 15 FTE (mostly research/eng), in Abu Dhabi Hub71, customer-facing advisor ex-Deutsche Telekom CPIO / ex-VP Intel + ex-1inch BD.
+    - Pilot economics: $175k for 4–8 CCU on-prem (~$142k hardware passthrough; remainder license + integration). Enterprise $3–4M for 1000-employee org.
+    - Traction: signed LOI with SF robotics co (Walmart end-customer) for shelf-vision swarm; NY pilot in discussion; Abu Dhabi Ports exploratory (agentic workloads, prompt-injection robustness pitch).
+    - Compute story: needs centralized lift-off compute to seed OpenRouter API endpoint; G42-region but not necessarily on G42; explicitly cost-conscious / using compute partners.
+
+    TECHNICAL CONTEXT for our orchestrator:
+    - Optimal node-model size band stated as Gemma/Qwen 27–31B dense. Our worker_general is gemma4-26B-A4B MTP @ 76.5 t/s solo (project_worker_general_swap_2026_05_08) — same band.
+    - "Rust dataset → simplest fine-tune of Qwen2.5 → beats GPT-5 Codex on Rust in 8 days" — corresponds to Strand-Rust-Coder-14B / Strandset-Rust-v1 (intake-616). Dataset is the actionable artifact, not the model.
+    - Their reputation/judging-by-peers framing is the same shape as the SiliconSwarm@Ensue (intake-248) shared-memory + cross-agent-knowledge-transfer pattern already applied in B1/B4/B5 of autopilot-continuous-optimization.md.
+
+    NOT FOLLOWING UP:
+    - On-prem product (Harbor) commercial offering — not our business model.
+    - Token economics / Echo round / ADGM tokenized-equity discussion — out of scope.
+    - "Server Mind" comparable mentioned by buyer (Daniele) is the user's own local orchestration stack, not a competitor to track.
+- id: intake-615
+  arxiv_id: '2510.24801'
+  url: https://arxiv.org/abs/2510.24801
+  source_type: paper
+  title: 'Fortytwo: Swarm Inference with Peer-Ranked Consensus'
+  authors:
+  - Vladyslav Larin
+  - Ihor Naumenko
+  - Aleksei Ivashov
+  - Ivan Nikitin
+  - Alexander Firsov
+  categories:
+  - swarm_techniques
+  - inference_serving
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-614
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Distributed inference protocol: heterogeneous models generate independently, then pairwise-rank each other''s FULL completions; Bradley-Terry-style aggregation produces a reputation-weighted winner.'
+  - 'On-chain reputation tracking + proof-of-capability for Sybil resistance; nodes earn reputation over an onboarding period before votes are weighted.'
+  - 'Reported +17.21pp on GPQA-Diamond (85.90 vs 68.69 majority voting) and 0.12% vs 6.20% adversarial prompt-injection degradation.'
+  - 'Pipeline operates strictly post-hoc on full completions — does NOT cover mid-stream/chunk-level ranking (verified 2026-05-27 via direct ar5iv read).'
+  techniques:
+  - Pairwise ranking with Bradley-Terry-style aggregation
+  - Reputation-weighted voting with proof-of-capability staking
+  - Heterogeneous-model ensemble (sizes not disclosed in abstract)
+  reported_results:
+  - 'GPQA-Diamond: 85.90% (Fortytwo) vs 68.69% (majority voting) = +17.21pp / +25.1% relative'
+  - 'Prompt-injection degradation: 0.12% (Fortytwo) vs 6.20% (single-model baseline) — claimed emergent adversarial robustness'
+  - 'Additional benchmarks mentioned but not extracted: LiveCodeBench, AIME'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-248
+    - intake-614
+  novelty_justification: 'Pairwise-ranking ensembles and Bradley-Terry aggregation are textbook; the contribution is the reputation+staking layer and the empirical +17pp on GPQA-Diamond. Medium novelty: combines known primitives into a deployed system with non-trivial adversarial-robustness numbers, but no fundamentally new algorithm.'
+  relevance_justification: 'Closer analog to our autopilot NumericSwarm Pareto-scoring loop than the SiliconSwarm@Ensue entry (intake-248) — Bradley-Terry over peer rankings is the formal version of pairwise-comparison-with-confidence that could replace or augment the 4D Pareto scoring under stagnation. Also informs how decision-aware-routing could use multi-model cross-checks as a quality gate on uncertain prompts.'
+  verdict_justification: 'worth_investigating: real empirical claim on GPQA-Diamond is verifiable, but adoption requires N-way concurrent model serving which conflicts with our single-stack 1.1TB-RAM constraint. The adversarial robustness claim (6.20% → 0.12% prompt-injection degradation) is the most surprising data point — should be checked against existing prompt-injection literature before relying on it as a design rationale. Do NOT create a handoff stub; route into the existing autopilot/routing handoffs as a reference.'
+  contradicting_evidence:
+  - 'Comparison baseline is majority voting only — no comparison to single-model frontier baselines (GPT-5, Claude Opus, Gemini) despite founder verbal claim of beating them on the same call.'
+  - 'Pairwise ranking with N peers requires N(N-1)/2 pairwise judgments per turn at full sequence length — latency cost not addressed in abstract; deployed numbers (30–40 t/s aggregate for 4–8 CCU pilots) imply per-stream throughput is sharply reduced vs single-model.'
+  - 'No ablation on model heterogeneity vs homogeneous ensemble — the "diversity cancels blind spots" pitch is testable and absent.'
+  - 'Known failure modes of Bradley-Terry on peer-evaluating peers: capability skew (strongest model''s outputs win regardless of correctness on its weakness domains), Condorcet cycles, collusion among reputation-staked nodes. Not addressed in available material.'
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - decision-aware-routing.md
+  handoffs_created:
+  - swarm-dataset-distillation.md
+  notes: |
+    Discovered 2026-05-27 via Phase-3 expansion from intake-614 (Fortytwo homepage). Paper covers the OLDER of the two inference pipelines the company runs; the agentic chunk-ranking pipeline is unpublished as of this date.
+
+    For our purposes the +17pp GPQA-Diamond delta is the only hard empirical number. Treat the 0.12%/6.20% prompt-injection robustness number as interesting but unverified until the prompt-injection methodology is checked (which suite? which attack distribution? was the attacker adaptive against the ensemble?).
+- id: intake-616
+  arxiv_id: null
+  url: https://huggingface.co/mradermacher/Strand-Rust-Coder-14B-v1-GGUF
+  source_type: repo
+  title: 'Strand-Rust-Coder-14B-v1 (Fortytwo) — Qwen2.5-Coder-14B Rust fine-tune, GGUF mirror by mradermacher'
+  authors:
+  - Fortytwo-Network (original)
+  - mradermacher (GGUF re-quant)
+  categories:
+  - training_distillation
+  - local_inference
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - 'Qwen2.5-Coder-14B-Instruct → Strand-Rust-Coder-14B-v1 fine-tune for Rust coding (Fortytwo-Network/Strand-Rust-Coder-14B-v1), Apache-2.0.'
+  - 'Trained on Fortytwo-Network/Strandset-Rust-v1: 191k samples, Apache-2.0, open-sourced — generated by their swarm in 8 days per founder''s sales-call account.'
+  - 'Founder claim (call, not card): #1 on RustEvo2; beats GPT-5 Codex on Rust-specific tasks. Model card itself reports no benchmark numbers.'
+  - 'Full GGUF quant ladder available (Q2_K 5.77GB → Q8_0 15.7GB); Q4_K_M @ 8.99GB recommended.'
+  techniques:
+  - Standard Qwen2.5-Coder-Instruct fine-tune (method not detailed — implied full fine-tune, not LoRA)
+  - Swarm-generated synthetic dataset (Strandset-Rust-v1) as supervision source
+  reported_results:
+  - 'No benchmarks on model card. Founder verbal claim: #1 RustEvo2, > GPT-5 Codex on Rust.'
+  - '244 monthly downloads of GGUF mirror; 323 downloads / 34 likes on Strandset-Rust-v1 dataset (as of early Jan 2026).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-614
+  novelty_justification: 'Yet another Rust fine-tune of Qwen2.5-Coder is incremental; the genuinely novel artifact is the SYNTHETIC DATASET produced by their swarm in 8 days. If the swarm-as-dataset-factory pipeline generalizes (Rust → other narrow domains), the dataset-generation method is the actually-novel piece. The model itself is mid-tier evidence of that pipeline working.'
+  relevance_justification: 'Low direct relevance: Rust is not EPYC''s primary coding domain (worker_general is gemma4-26B-A4B MTP for general code; coder pool fronts coder_escalation at frontdoor :8070 — both Python/TS-heavy). Strand-Rust-Coder-14B Q4_K_M at ~9GB is in our specialist-role size band but adds Rust capability we don''t currently need. Indirect relevance: the open Strandset-Rust-v1 dataset is a sanity-check artifact for evaluating the "swarm produces good narrow-domain datasets" claim that underwrites intake-614.'
+  verdict_justification: 'worth_investigating: track as a data point for the Fortytwo swarm-as-dataset-generator pipeline (if RustEvo2 #1 claim holds up under independent eval, that''s the strongest commercial evidence of their thesis). Not a deployment candidate for our stack. No handoff stub needed.'
+  contradicting_evidence:
+  - 'No benchmark numbers on the model card — the RustEvo2 #1 and "beats GPT-5 Codex on Rust" claims are founder-call assertions only. RustEvo2 leaderboard should be checked independently before treating as evidence.'
+  - 'Mradermacher is a neutral re-quantizer (not affiliated with Fortytwo) which is mildly corroborating that the model exists and is downloadable, but says nothing about quality.'
+  handoffs_updated: []
+  handoffs_created:
+  - strand-rust-coder-rustevo2-verification.md
+  - swarm-dataset-distillation.md
+  notes: |
+    Discovered 2026-05-27 via user-provided URL alongside intake-614. The interesting artifact is the dataset, not the model: https://huggingface.co/datasets/Fortytwo-Network/Strandset-Rust-v1(191k samples, Apache-2.0). If we ever need a sanity test of synthetic-dataset-generation pipelines for narrow domains, this is a public reference point with a downloadable model.
+
+    Founder''s timeline claim ("8 days, simplest possible fine-tune, beats GPT-5 Codex on Rust") is the most testable Fortytwo claim in the entire transcript — RustEvo2 leaderboard rank is independently verifiable and would either strongly corroborate or strongly undermine the swarm-as-dataset-generator pitch.

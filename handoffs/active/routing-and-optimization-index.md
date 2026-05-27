@@ -673,6 +673,16 @@ Tasks added to [`meta-harness-optimization.md`](meta-harness-optimization.md) (H
 - **Uncertainty-routed escalation** → [`decision-aware-routing.md`](decision-aware-routing.md) URE-1/2/3 (calibrated decision uncertainty as a second escalation axis; bounded approval-as-harness-state; uncertainty as routing feature only after ECE/abstention gates) — intake-607 §5.2.5.
 - **Experiential memory** → [`unified-trace-memory-service.md`](unified-trace-memory-service.md) EXM-1/2/3 (index failed trajectories with root-cause/avoidance metadata; externalize lifecycle-managed working state; governed-experience tier) — intake-607 §3.2.1/§3.2.3.
 
+### P26 — Swarm Scoring & Routing Cluster (intake-614/615/616, 2026-05-27 research intake)
+
+Three interlocking tasks emerged from intake-614/615/616 (Fortytwo Network — swarm inference with peer-ranked consensus). They share a single Bradley-Terry implementation; do not duplicate it across handoffs.
+
+- [ ] **P26.1 — Bradley-Terry tiebreak in NumericSwarm**: ~50 LOC. Wire BT into the hypervolume-stagnation handler at `scripts/autopilot/pareto_archive.py:188-200`. Falsifiable in one autopilot run. Tracked as AP-37/AP-38/AP-39 in [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) § P17. **Implementing this first unlocks P26.2 and P26.3** (shared BT module).
+- [ ] **P26.2 — DAR-6 swarm-fanout routing mode**: 1–2 days + one eval run. Fan high-injection-risk prompts to N≥2 concurrent serves, BT-aggregate the winner. Gate on independent replication of intake-615's 0.12%/6.20% adversarial-degradation claim. Tracked as DAR-6 in [`decision-aware-routing.md`](decision-aware-routing.md). Depends on P26.1 and on concurrent-serve infra in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md).
+- [ ] **P26.3 — Swarm-as-dataset-generator pipeline** (HIGH-conditional): full multi-week pipeline at [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md). Gated on [`strand-rust-coder-rustevo2-verification.md`](strand-rust-coder-rustevo2-verification.md) (Phase 1 verification of the founder's RustEvo2 claim). If gate clears, this becomes the highest-value harvest from the Fortytwo intake.
+
+**Sibling consolidation**: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) § Scoring Upgrade Backlog now ties this entry together with prior intake-248 (SiliconSwarm) and intake-269 (TPO/CEM) scoring-mechanism upgrades. Read that section before starting any P26.x work to avoid redundant CEM / BT implementations.
+
 ### P25 — Regression-Safe Self-Improvement: Behavior-Signature Versioning (intake-607 §5.2.3 / §5.2.4)
 
 Tasks added to [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md). We are ahead on scalar regression gating but merge improvements syntactically — a new config can silently break a prior Pareto win.

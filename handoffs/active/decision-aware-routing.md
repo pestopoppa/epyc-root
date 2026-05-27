@@ -170,6 +170,33 @@ If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pat
 
 The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Options 2 and 3 are recorded for completeness, not roadmap commitments.
 
+### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run)
+
+**Source**: arxiv:2510.24801 (intake-615) — peer-ranked consensus across heterogeneous models reportedly shows 0.12% adversarial-degradation vs 6.20% for single-model baseline on prompt injection. If even a third of that delta survives independent replication on our suite, swarm-fanout is a routing **mode**, not just a research curiosity.
+
+**What this adds to DAR**: a new routing mode that fans high-injection-risk prompts to **N≥2 concurrent serves** and returns a Bradley-Terry-aggregated winner instead of escalating to a single stronger model. This is **post-hoc full-completion** swarm voting (the published method) — distinct from the unpublished chunk-ranking claim (which is scoped separately in [`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md), not buildable today).
+
+**Gate before any code**:
+- Replicate the 0.12% / 6.20% claim on our own injection suite. Candidate suites: [Garak](https://github.com/leondz/garak), [HouYi](https://github.com/LLMSecurity/HouYi), [PromptInject](https://github.com/agencyenterprise/PromptInject). Pick one with active maintenance + Apache/MIT license.
+- Roofline check: per memory `feedback_no_concurrent_inference.md`, request user approval before any concurrent-model inference; per memory `feedback_same_model_roles_share_server.md`, 2-of-N concurrent serve of DIFFERENT GGUFs requires N independent processes, each with its own RAM share. The 30–40 t/s aggregate Fortytwo quotes for 4–8 CCUs implies a real per-stream throughput penalty; verify ours empirically before committing the routing mode to production.
+
+**Implementation sketch** (~150–250 LOC):
+- [ ] DAR-6.1: Add `routing_mode = "swarm_fanout"` to `RoleResult`/router config; gate by a feature flag in `orchestration/`.
+- [ ] DAR-6.2: New trigger signal — extend the injection-risk classifier (or reuse the existing factual-risk classifier from [`routing-intelligence.md`](routing-intelligence.md) if it carries an injection axis) to produce a 0–1 score; threshold tunable.
+- [ ] DAR-6.3: When triggered, dispatch the prompt to N≥2 concurrent roles via the existing concurrent-serve infrastructure in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md). Roles must be heterogeneous (different base models) — same-family ensemble defeats the "diversity cancels blind spots" premise of intake-615.
+- [ ] DAR-6.4: BT-aggregate the N completions using the SAME shared BT module introduced by autopilot's P17 (`scripts/autopilot/bradley_terry.py` — do not reimplement).
+- [ ] DAR-6.5: Decision gate — run a 2-arm A/B on the chosen injection suite (single-model escalation vs swarm-fanout). Gate: must show ≥3pp absolute reduction in injection-success rate AND ≤30% per-stream throughput regression (roofline). If both met → enforce; otherwise stay shadow-only.
+
+**Cross-task interactions**:
+- BT aggregation module is shared with autopilot P17 (selection step) and [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) Phase 3 (training-data filtering). One implementation, three consumers.
+- Concurrent-serve infrastructure dependency is [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — verify Phase B observability is sufficient to detect 2-of-N inference-thread contention before relying on this mode.
+- Injection-risk classifier may not exist yet; if not, that's a prerequisite task that should be raised in [`routing-intelligence.md`](routing-intelligence.md) as a new RI-phase, not buried inside DAR-6.
+
+**Non-goals for DAR-6**:
+- Mid-stream / chunk-level peer verification ([`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md) covers that; treat it as future work pending the spike).
+- Replicating Fortytwo's reputation-staking / Sybil resistance (single-user single-host stack — out of scope).
+- Multi-model fan-out for general (non-injection) prompts — that's a latency burn without a clear quality justification at our scale.
+
 ## Dependency Graph
 
 ```
@@ -375,3 +402,16 @@ Decision tree (after J10 analysis):
 - ❌ any gate fails → stay shadow-only; recalibrate (re-weight the logged components / adjust threshold) on a **frozen shadow-calibration set**; do NOT enforce.
 
 Mitigation: shadow→enforce is a deliberate second flag flip (shadow logging alone never changes routing); keep a frozen calibration set; re-run calibration after any DAR-3/DAR-4 change (audit #4, avoid feedback loop); separate aleatoric vs epistemic components so "ask/approve" vs "route-to-stronger-model" interventions stay distinct. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+
+## Research Intake Update — 2026-05-27
+
+### New Related Research
+
+- **[intake-614] Fortytwo Network — chunk-ranking pipeline for agentic workloads (unpublished founder claim)**
+  - Relevance: chunk-ranking, if disclosed, is a candidate mid-stream quality gate — rank partial completions from multiple models against milestones during a single tool-calling turn, rather than retrying full completions post-hoc. Maps onto DAR's escalation question: instead of "should we escalate this whole prompt to a stronger model based on uncertainty?", a chunk-rank gate could ask "should we keep, swap, or branch the model mid-generation based on a peer's ranking of the chunk so far?"
+  - Status: claim has no paper, no blog, no code as of 2026-05-27 — the published Fortytwo paper (intake-615) is post-hoc pairwise on full completions only. Track for disclosure; do not design against it yet.
+  - Founder-claimed result: 16-way parallel inference on vision tasks at "negligible" per-stream throughput hit. Unverified.
+- **[intake-615] "Fortytwo: Swarm Inference with Peer-Ranked Consensus"** (arxiv:2510.24801)
+  - Relevance: the post-hoc full-completion version of the above — could inform a DAR escalation mode where high-uncertainty prompts are dispatched to N≥2 models concurrently and the Bradley-Terry winner returned, in lieu of (or alongside) the current single-model escalate-to-stronger flow.
+  - Reported result: +17.21pp on GPQA-Diamond over majority voting; 0.12% vs 6.20% prompt-injection degradation.
+  - Open question: latency cost — at our stack a 2-way concurrent serve already halves per-stream throughput; need explicit roofline before considering.
