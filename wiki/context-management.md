@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 24 documents (6 deep-dives, 3 active handoffs, 15 intake entries)
+**Last compiled**: 2026-05-27
+**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries)
 
 ## Summary
 
@@ -16,6 +16,10 @@ The research landscape is converging on a spectrum from text-level to KV-level c
 The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
 
 ## Key Findings
+
+### New Finding (2026-05-27)
+
+- **Delegation context pre-assembly is now an advisory seed bundle, not a hard firewall.** DCP-4 wires budget-bounded context assembly into the live specialist delegation path behind default-off `features().dcp_pre_assembly`: `chat_delegation._maybe_dcp_seed_context()` calls `assemble_delegation_bundle(...)`, renders the selected files/slices/codemap material, appends it to the specialist context, and falls back to the original reactive-discovery context on any assembly failure. This preserves the key context-management safety invariant: pre-assembly can reduce discovery latency and top-up count, but it must not remove the model's ability to discover missing context. DCP-6 remains the inference gate for whether this actually improves delegation latency/quality. [delegation-context-preassembly.md](../handoffs/active/delegation-context-preassembly.md), [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md) `verified`
 
 ### New Finding (2026-04-21)
 
