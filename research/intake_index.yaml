@@ -29820,3 +29820,100 @@
     Credibility: peer-reviewed venue ACL 2025 (+2), <12mo (+1), Intel major lab (+1),
     Intel commercial bias toward Gaudi/Core Ultra (-1), no independent corroboration of
     speedup numbers yet (0) = 3 baseline + 1 venue freshness = 4/6.
+- id: intake-625
+  arxiv_id: null
+  url: https://github.com/Lum1104/Understand-Anything
+  source_type: repo
+  title: 'Understand-Anything: Multi-agent Claude Code plugin that turns codebases/KBs into interactive knowledge graphs'
+  authors:
+  - Lum1104
+  categories:
+  - tool_implementation
+  - knowledge_management
+  - agent_architecture
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-27'
+  key_claims:
+  - Turns any code or markdown corpus into an interactive knowledge graph (files/functions/classes as clickable nodes with dependency edges) explorable through a local dashboard.
+  - Hybrid pipeline — Tree-sitter for deterministic structural extraction (imports/exports/calls), Claude LLM for semantic layer (summaries, tags, architectural layer, business-domain mapping).
+  - Five-agent pipeline orchestrated as a Claude Code plugin (project scanner → file analyzer → architecture analyzer → tour builder → graph reviewer).
+  - Auto-generated dependency-ordered "guided tours" for onboarding; impact view shows ripple effects of code changes pre-commit; business-logic view maps code to domain processes.
+  - Incremental updates via fingerprint-based change detection; graphs are committable artifacts (knowledge follows the repo).
+  - Distributed as a Claude Code plugin but also targets Cursor / VS Code Copilot / Codex / Gemini CLI surfaces.
+  techniques:
+  - tree_sitter_structural_extraction
+  - llm_semantic_layer_annotation
+  - multi_agent_analysis_pipeline
+  - dependency_ordered_guided_tour_generation
+  - business_domain_mapping_from_code
+  - fingerprint_based_incremental_reindex
+  - claude_code_plugin_distribution_surface
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-151
+    - intake-330
+    - intake-573
+  novelty_justification: 'Medium — overlaps directly with three prior entries: intake-151 (GitNexus: Tree-sitter + KuzuDB + 7 MCP tools, our production code-intelligence layer), intake-330 (code-review-graph: AST + 8.2× token reduction), and intake-573 (Repo Prompt CodeMaps: curated context builder). Genuinely new angle is the multi-agent LLM pipeline (5 specialized agents) layered on top of static parsing, plus first-class visual-dashboard + guided-tour + business-domain-mapping product surfaces. Mechanism is not algorithmically novel; the contribution is product packaging and the LLM-annotation-over-AST division of labor.'
+  relevance_justification: 'Medium — EPYC already runs GitNexus (intake-151) as the canonical code-intelligence layer (CLAUDE.md mandates `gitnexus impact` before edits and re-analyze via `scripts/gitnexus-analyze.sh`). Understand-Anything is a competing surface, not an unmet need. Genuine value is as a feature-ideas source for our stack: (a) dependency-ordered guided-tour generation could inform internal-kb-rag onboarding flows; (b) business-domain-mapping layer is something neither GitNexus nor our ColBERT KB does; (c) five-agent analysis pipeline is a pattern relevant to meta-harness-optimization (how to decompose codebase-analysis into specialized agents). No active handoff has an unmet need that this uniquely fills, so not high.'
+  verdict_justification: 'worth_investigating — adopt patterns, not the tool. DEEP-DIVE 2026-05-27 (research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md) confirmed all three lift-as-design-reference patterns are real and well-engineered: (1) LLM-annotation layered on Tree-sitter structural truth — file-analyzer.md:15 splits into deterministic extract-structure.mjs (334 LOC, 10 first-class Tree-sitter langs) + LLM-on-skeleton semantic phase + merge-batch-graphs.py canonical backstop; (2) dependency-ordered guided-tour generation — tour-builder.md Phase 1 is a deterministic graph-topology script (fan-in/fan-out, README+filename-heuristic entry-point scoring, BFS from entry point with depth-banded ordering, bidirectional-cluster detection), Phase 2 LLM does narrative wrapping only; (3) business-domain mapping — domain-analyzer.md produces 3-level domain/flow/step hierarchy with flow_step.weight monotonic ordering as schema artifact (caveat: filePath+lineRange anchor is soft rule, not enforced). Do NOT swap GitNexus: established mandate, 21555 symbols / 27 execution flows indexed, zero-LLM static cost, Understand-Anything has 39K stars but failed sustainability gate (Lum1104 = 83% commits, second contributor 9 commits, no CHANGELOG) and failed empirical gate (no published full-rebuild benchmark; deep-dive cost model estimates low-hundreds to low-thousands of cents per full rebuild on ~500-file repo). Refined revisit-trigger: requires ALL of (a) explicit internal-kb-rag pull for guided-onboarding or code→domain mapping, (b) sustained second-committer ≥30 commits/60d, (c) CHANGELOG.md + schema-stability commitment, (d) third-party published full-rebuild + incremental benchmark on >1k-file repo. Earliest realistic revisit: 2026-08. If trigger fires, lift-not-fork shopping list: port extract-structure.mjs as KB-chunking skeleton extractor + port tour-builder topology script as kb-tour skill over handoff graph + adopt domain-analyzer schema with enforced filePath/lineRange anchor. Do NOT install plugin on epyc-root; do NOT lift 9-agent decomposition (no ablation justifies it).'
+  contradicting_evidence:
+  - 'No published quantitative benchmarks (no token-reduction or onboarding-time numbers vs alternatives) — adoption signal is GitHub social metrics (39127 stars / 3116 forks / 84 open issues, repo only ~10 weeks old as of 2026-05-27) which suggests novelty hype rather than measured value.'
+  - 'Repo is ~10 weeks old (created 2026-03-15) — sustainability gate FAILS: 2026-05-27 deep-dive (research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md) found 547 commits / 30 contributors but Lum1104 dominates 83% (377+58+18=453/547 across two email aliases); second-largest contributor is Nikola Chetelyazov with 9 commits (1.6%) — no sustained co-maintainer. No CHANGELOG.md. Commit rate tapering 60→8/week over last six weeks suggests one-person enthusiasm curve, not a maintained team.'
+  - 'Multi-agent LLM analysis pipeline implies non-trivial Claude API spend per re-index — 2026-05-27 deep-dive characterized: full rebuild on epyc-root-sized repo (~500 code files, MAX_COMMUNITY_SIZE=35 Louvain batching, 5 concurrent file-analyzer dispatches) lands in low-hundreds to low-thousands of cents range; incremental update via git diff + fingerprints is cheap (single-digit cents for ≤5-file commits). GitNexus is zero-LLM for both paths, runs in seconds-to-minutes.'
+  - 'README says "5 agents" but repo ships 9 agents (project-scanner, file-analyzer, architecture-analyzer, domain-analyzer, tour-builder, graph-reviewer, assemble-reviewer, knowledge-graph-guide, article-analyzer) orchestrated by a 7-phase skill (SCAN→BATCH→ANALYZE→ASSEMBLE-REVIEW→ARCHITECTURE→TOUR→REVIEW→SAVE, 844-line SKILL.md). The decomposition itself is asserted as architecturally cleaner but no ablation comparing 1-agent vs 9-agent quality is published — do NOT lift the decomposition as a pattern, only the deterministic phase components.'
+  handoffs_updated:
+  - internal-kb-rag.md
+  - meta-harness-optimization.md
+  handoffs_created: []
+  notes: |
+    User-supplied 2026-05-27. Single URL, inline Phase 1+2 path (no parallel sub-agents needed).
+
+    Cross-reference cohort (code-intelligence / context-builder tools, ordered by EPYC relevance):
+    - intake-151 GitNexus — IN PRODUCTION (CLAUDE.md mandate; gitnexus-* skills auto-surface)
+    - intake-330 code-review-graph — characterized as "complement not replace GitNexus" for PR reviews
+    - intake-573 Repo Prompt CodeMaps — "pure product/packaging play" w/ MCP context-builder
+    - intake-625 (this entry) Understand-Anything — multi-agent LLM analysis layer + visual dashboards
+
+    GitHub metadata (gh api repos/Lum1104/Understand-Anything at fetch time):
+      stars=39127, forks=3116, open_issues=84, created_at=2026-03-15, language=TypeScript,
+      license=MIT, homepage=understand-anything.com. Sustainability metrics NOT checked
+      (commit-history depth, single-vs-multi committer, CHANGELOG presence) — flagged as
+      open question if revisit-trigger fires.
+
+    Credibility scored null per skill rubric (repo, no empirical claims). High social-traction
+    signals (39K stars in 10 weeks) are deliberately NOT promoted to credibility_score, per
+    feedback_credibility_from_source_not_readme — independent benchmarks or commit-history
+    audit needed to upgrade.
+
+    Phase 3 (literature expansion) skipped: no arXiv references on a repo entry, and the
+    three prior code-intelligence intake entries already cover the design space. No verdict
+    is new_opportunity, so Tier 2b contradicting-evidence search not triggered by rubric;
+    contradicting_evidence above is from inline analysis (cost, sustainability, missing
+    ablations) rather than Tier 2b websearch.
+
+    Phase 4 (handoff integration): no Active handoff updated. cross_references.handoffs
+    lists internal-kb-rag.md and meta-harness-optimization.md as the design-reference
+    targets (guided tours / agent decomposition), but relevance is medium not high so no
+    `## Research Intake Update` section appended and no stub created per skill threshold.
+
+    DEEP-DIVE 2026-05-27 (post-initial-intake, user-requested validation of 4 statements):
+    research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md. Confirmed: do-not-swap-GitNexus,
+    three patterns real and lift-as-design-reference, cost-flag validated with full-vs-incremental
+    refinement, revisit-trigger sharpened to require sustainability + stability + empirical gates
+    in addition to internal pull. Numbers from deep-dive: 547 commits / 30 contributors / Lum1104=83% /
+    second contributor=9 commits / 16340 prod LOC / 13034 test LOC (0.80 ratio) / 44 test files /
+    9 agents (README says 5) / 7-phase orchestrating skill / 10 first-class Tree-sitter langs /
+    Louvain batching MAX_COMMUNITY_SIZE=35 / 5 concurrent file-analyzer dispatches / incremental
+    via `git diff <lastCommitHash>..HEAD --name-only` + fingerprint change-detection.
+  deep_dive: research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md
