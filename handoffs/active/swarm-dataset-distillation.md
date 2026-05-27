@@ -66,7 +66,7 @@ The single largest design decision. The narrow domain governs every downstream c
 
 ### P3 — Pairwise ranking + filter [REUSES code from autopilot P17]
 
-- **Algorithm**: Bradley-Terry over pairwise comparisons. Use the **shared module** introduced by autopilot's P17 ("Bradley-Terry Tiebreak Under Hypervolume Stagnation") — `scripts/autopilot/bradley_terry.py` (or equivalent location settled by P17). The same BT machinery is the operative algorithm for both handoffs; **do not reimplement**.
+- **Algorithm**: Bradley-Terry over pairwise comparisons. Use the **shared module at `src/bradley_terry.py`** (introduced as autopilot P17.BT-1; moved from `scripts/autopilot/` to `src/` on 2026-05-27 during DAR-6 scaffolding to keep it a single source of truth for all three consumers). The same BT machinery is the operative algorithm for autopilot P17.BT-2 (axis-vote proxy), DAR-6.4 (peer-judged ensemble), and this Phase 3 (judge-model filtering); **do not reimplement**.
 - **Judge model selection**: a single instance of a strong reasoning model (Qwen3.5-122B architect or DeepSeek-V3 if available); judges are NOT the same models that generated the candidates (avoid same-model bias). One model judging is acceptable because pairwise comparisons amplify weak signals (per intake-615 the +17pp gain is partly this amplification).
 - **Selection threshold**: keep top-K per prompt by BT score where K balances dataset size vs quality. Strandset's 191k from a likely-larger candidate pool suggests an aggressive filter; gate on absolute BT-margin, not rank alone.
 - **Spot-check**: human-eyeball 50 random {selected, rejected} pairs before fine-tuning. If <90% of selections look correct on inspection, halt and re-tune.
