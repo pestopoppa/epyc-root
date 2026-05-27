@@ -154,9 +154,11 @@ Goal: prevent the bulk runner or runtime scheduler from treating all-pairwise-al
 
 Required policy:
 
+> **Traffic-class scoping (2026-05-27, reconciles #4 doc↔code).** The "fail closed / queue-serialize" rules below are the **BULK / background** policy. The live `ContentionGate` runtime applies a traffic-class split (see `contention.py` `nway_policy` + this handoff §Runtime policy): **FOREGROUND interactive fails OPEN** for unmeasured non-light sets (admit + log) so latency isn't sacrificed, while **BACKGROUND / bulk fails CLOSED** (serialize). Stale-topology / non-OK matrix is now hard fail-closed at the gate for both classes (background QUEUE, foreground degraded-admit) — see `ContentionGate.evaluate()` topology-freshness guard. So the wordings are not contradictory; they describe different traffic classes.
+
 - Before J4b closure: fail closed. Cross-role N-way task overlap is queue/serialize unless the exact active set is already measured and topology-valid.
 - After J4b closure: launch only exact active sets with `n_way.verdict: allow` and matching topology hash.
-- Treat `block`, `excluded_n_way`, missing N-way entries, stale topology hash, or missing matrix status as queue/serialize.
+- Treat `block`, `excluded_n_way`, missing N-way entries, stale topology hash, or missing matrix status as queue/serialize (BULK/background); foreground interactive fails open + logs.
 - Same-trial EvalTower fan-out is separate; it uses within-role topology-safe placement and concurrent speed semantics, not this cross-role N-way matrix.
 
 Implementation note: if the runtime remains pairwise only and the bulk runner is the only component launching cross-role overlap, J4c can be a bulk-runner guard plus documentation. If production admission itself can create N-way overlap, teach `ContentionGate` or its caller to evaluate the exact active-set union.
