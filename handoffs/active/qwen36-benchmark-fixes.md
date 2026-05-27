@@ -3,6 +3,8 @@
 **Date**: 2026-05-02
 **Status**: Partial — Qwen3.6 works, compiler optimization failed
 
+**Hygiene note (2026-05-27)**: Second-pass backlog audit flagged this handoff for DEREFERENCE. Qwen3.6 output and benchmark wiring are fixed; keep only the post-reboot confirmation/closeout task here. The bimodal-throughput regression is tracked separately in progress notes.
+
 ## What Was Accomplished
 
 ### 1. Qwen3.6 model output fixed (VERIFIED WORKING)

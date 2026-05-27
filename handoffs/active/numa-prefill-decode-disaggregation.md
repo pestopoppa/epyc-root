@@ -7,6 +7,8 @@
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 already pre-warms 1×96t prefill-favorable + 4×48t decode-favorable instances per role — closest existing analogue)
 
+**Hygiene note (2026-05-27)**: Second-pass backlog audit flagged this handoff for DEREFERENCE. Keep the active surface to the Phase 0 xGMI KV-transfer falsification test and the multi-tenant reopen condition; move chronology/literature context out of domain index rows.
+
 ## Objective
 
 Evaluate whether GPU-style prefill/decode disaggregation (DistServe, Splitwise, Mooncake) yields net throughput-under-SLO gains on EPYC 9655's 2-socket / 8-NUMA-node topology by routing prompt-prefill work to a compute-favorable instance and decode work to a bandwidth-favorable instance, with KV migration over xGMI.

@@ -6,6 +6,8 @@
 **Parent**: [`cpu4-deferred-avenues-design-note.md`](cpu4-deferred-avenues-design-note.md) — CPU4 Phase 1 closure (2026-04-29) introduced this variant.
 **Sibling Phase 0**: [`cpu22-hybrid-spillover-design.md`](cpu22-hybrid-spillover-design.md)
 
+**Hygiene note (2026-05-27)**: Second-pass backlog audit flagged this handoff for DEREFERENCE. The Phase 0 analysis is complete with a negative/low-ROI verdict; keep the active surface to the decision statement and explicit re-evaluation triggers.
+
 ## Why this variant exists
 
 CPU4 Phase 1 (2026-04-29) discovered that op-coalesced barriers cannot include MUL_MAT/MUL_MAT_ID due to the shared `params->wdata` buffer used for src1 quantization. Excluding MUL_MAT shrinks per-token barrier-count reduction from Phase 0's 24-29% estimate to ~5% (only 1 ROPE-Q→RMS_NORM-K coalescable per layer).

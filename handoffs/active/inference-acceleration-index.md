@@ -4,6 +4,8 @@
 **Created**: 2026-03-17
 **Updated**: 2026-05-19 (May 2026 research cluster integration — landscape table extended with `streaming-llm-baseline.md` cluster-wide KV-admission gate and `delta-mem-reproduction.md` released-checkpoint repro / M.3 KV-Extension topology spike; `rao-redel-substrate-spike.md` and `x-mas-text-routing.md` tracked in `routing-and-optimization-index.md`. KV-admission cluster gate note retained at body L132+. Earlier 2026-04-27 late-evening: closure-inflation remediation Phases 1-4 ALL EXECUTED. New CPU findings landed: **libomp +6.4% on Coder-30B Q4_K_M** (apples-to-apples vs gcc+libgomp+znver5; Phase 2.1); **first-decode TTFT amplification 9.6× on sync-bound MoE** under concurrent prefill, mild on BW-bound and dense (Phase 2.2); CPU24 attribution `compute_kernel_memory_stalled` confirmed across 4 architectural classes (Phase 2.3); Q6_K SIMD full 32-chunk PPL bit-exact (Phase 2.4); cross-architecture sanity confirms wins are MoE-architecture-specific, dense neutral (Phase 2.6); CPU22 work-stealing prototype gate FAILED -2.3%/-0.3%/-0.8% — closes via test (Phase 3); future-track triage classifies all CPU tracks (Phase 4). v5 cherry-pick implications updated in `cpu-kernel-env-flags-inventory.md`. CPU20 rigor gate + backfill policy in force.)
 
+**Hygiene note (2026-05-27)**: `numa-prefill-decode-disaggregation.md` is flagged by `handoff-backlog-hygiene-audit.md` for dereference; this index should retain only the Phase 0 xGMI KV-transfer falsification task until the domain trim lands.
+
 ## Agent Operating Instructions
 
 Every agent working on inference acceleration MUST follow these protocols:

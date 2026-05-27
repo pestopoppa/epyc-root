@@ -6,6 +6,8 @@
 **Parent**: [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (closed via test for #1 global tile-queue 2026-04-28; #2 token-to-expert and #3 hybrid spillover untested).
 **Sibling Phase 0**: [`wdata-aware-mul-mat-coalescing-design.md`](wdata-aware-mul-mat-coalescing-design.md)
 
+**Hygiene note (2026-05-27)**: The sibling `wdata-aware-mul-mat-coalescing-design.md` is flagged for DEREFERENCE; this file should keep only a lightweight comparison pointer after that trim.
+
 ## Phase 0 lesson applied
 
 Per CPU4 Phase 1 finding (2026-04-29), Phase 0 manual analyses MUST check **buffer-sharing constraints** in addition to dependency-graph independence. This note explicitly checks `params->wdata`, `params->wsize`, and threadpool atomics for shared mutable state.

@@ -74,12 +74,18 @@ Classification by 4 parallel Explore agents verifying against actual code/tests/
 
 **Audit-method correction**: any future ARCHIVE recommendation must verify (a) the handoff is not a reference target in another active handoff, AND (b) all acceptance criteria are met as written, not just the underlying code path being landed.
 
-### DEREFERENCE (4) — trim master-index entries to outstanding TODOs only
+### DEREFERENCE (4) — trim index entries to outstanding TODOs only
 
 - `numa-prefill-decode-disaggregation.md` — only Phase 0 xGMI BW falsification test remains; Tier 2b counter-evidence noted.
 - `wdata-aware-mul-mat-coalescing-design.md` — Phase 0 design complete with honest NEGATIVE verdict (2-7% gain at 260-410 LOC + ABI cost); trim to decision statement only.
 - `qwen36-benchmark-fixes.md` — Qwen3.6 fixed (TIDE-gate `2ffbdbbba`, registry updates landed); bimodal throughput regression now tracked in progress notes, not this handoff.
 - `root-archetype-linter-templates-upstream.md` — core deliverables 1-4 DONE; remaining cleanup-only (test linter, update init-project.sh, document in root-archetype README).
+
+**Tracking correction 2026-05-27**: only `root-archetype-linter-templates-upstream.md` was a master-index dereference and has already been trimmed there. The remaining dereference work is domain-scoped:
+
+- `numa-prefill-decode-disaggregation.md` — trim `inference-acceleration-index.md` and `cpu-inference-optimization-index.md` to the Phase 0 xGMI KV-transfer falsification task only.
+- `wdata-aware-mul-mat-coalescing-design.md` — trim the handoff to the Phase 0 negative decision and open re-evaluation triggers; keep only a lightweight sibling pointer from `cpu22-hybrid-spillover-design.md`.
+- `qwen36-benchmark-fixes.md` — trim or close after one post-reboot confirmation; the bimodal-throughput regression belongs in progress/future tracking, not this handoff.
 
 ### NEEDS_REFRESH (6) — open but stale; owner should reconcile
 
@@ -105,9 +111,10 @@ Remaining 23 aging handoffs verified as legitimately live (recent commits, code 
 
 Second pass surfaced **0 net archive moves** after operator review. Remaining actions, all pending operator approval:
 
-1. Trim 4 DEREFERENCE master-index entries to outstanding-TODO bullets only (no file moves).
-2. Flag 6 NEEDS_REFRESH handoffs to their owners via a single progress-log entry (no file moves).
-3. Re-verify any future ARCHIVE proposal against the corrected audit method (reference-target check + acceptance-criteria-as-written check).
+1. DONE 2026-05-27: trim the `root-archetype-linter-templates-upstream.md` master-index entry to outstanding-TODO bullets only (no file move).
+2. OUTSTANDING: trim the three domain-scoped DEREFERENCE entries above in `inference-acceleration-index.md`, `cpu-inference-optimization-index.md`, `cpu22-hybrid-spillover-design.md`, and/or their handoff bodies as appropriate.
+3. Flag 6 NEEDS_REFRESH handoffs to their owners via a single progress-log entry (no file moves).
+4. Re-verify any future ARCHIVE proposal against the corrected audit method (reference-target check + acceptance-criteria-as-written check).
 
 ## Notes
 
