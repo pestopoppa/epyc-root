@@ -31,10 +31,17 @@ Their proof-of-concept is the public artifact intake-616: Strand-Rust-Coder-14B-
 
 ## Gate
 
-**Do not start P1–P5** until [`strand-rust-coder-rustevo2-verification.md`](strand-rust-coder-rustevo2-verification.md) reaches one of:
-- **STRONG GO** (Strand-Rust-Coder-14B #1 on RustEvo2, ≥10pp over base) → promote to active, P1 starts immediately.
-- **QUALIFIED GO** (top-3, ≥5pp over base) → promote, but tighten Phase-3 ranking gate (raise BT margin threshold; add second human-spot-check sample).
-- **WEAK** or **NO-GO** → leave stub, write the kill-decision into this handoff's status line, citing intake-614/616.
+**Do not start P1–P5** until [`strand-rust-coder-rustevo2-verification.md`](strand-rust-coder-rustevo2-verification.md) Phase B lands a Pass@1 number. The bands below mirror that handoff's calibrated decision matrix — **the verification handoff's matrix is the source of truth**; this section is a reflection so the gate is visible in the distillation file too. If the bands drift, fix `strand-rust-coder-rustevo2-verification.md` § C-2 first and re-mirror here.
+
+Reference distribution from the public RustEvo² leaderboard (Claude-3.7-Sonnet 65.3% → Grok-3 40.5%; Qwen-2.5-72B at 5× Strand's param count = 50.9% / rank 8).
+
+- **≥65.3% Pass@1 (#1, matches founder claim)** → **STRONG GO + scrutinize methodology**: promote to active and start P1 immediately, BUT first verify the Strandset-Rust-v1 dataset has no overlap with RustEvo² eval tasks (data-contamination check) and that sampling parameters match the leaderboard protocol. Extraordinary claim warrants extraordinary checks.
+- **55–65% (top 3-5, clear overperform vs Qwen-2.5-72B + most frontier APIs)** → **STRONG GO**: promote, start P1; founder's "#1" framing was hype but the artifact is real.
+- **50–55% (top 5-8, matches base-family expectation)** → **QUALIFIED GO**: promote, but tighten Phase-3 ranking gate (raise BT margin threshold; add a second human-spot-check sample). The pipeline is validated but the founder's "#1" claim is materially overstated; treat that as a credibility marker on future claims.
+- **40–50% (rank 9-10, no better than Qwen-2.5-72B base)** → **WEAK** — leave stub, write a "paused" status with the exact Phase-B numbers; re-evaluate only if Fortytwo publishes pipeline details that explain how a 14B fine-tune adds value beyond its 72B sibling base.
+- **<40% (off leaderboard)** → **NO-GO** — write kill-decision into the status line citing intake-614/616 and the Phase-B log.
+
+Note: in all bands above, **also report the Qwen2.5-Coder-14B-Instruct base-model number on the same harness** (verification handoff A-3). If the base hits 50%+ on its own, much of Strand's claimed value is base capability not Strand dataset; treat that as additional Phase-3 BT-margin tightening above and beyond the band-default.
 
 ## Pipeline Phases
 
