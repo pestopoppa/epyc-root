@@ -306,7 +306,7 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 - `progress/2026-04/2026-04-24.md`
 - `progress/2026-04/2026-04-26.md` — Phase A-G + P1-P4 (next session reference)
 - Memory: `project_cpu1_nps2_ceiling.md`, `project_concurrent_split_throughput.md`, `feedback_cpu_decode_bw_bound.md`, `feedback_canonical_baseline_protocol.md`
-- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `cpu-hierarchical-barrier.md`, `cpu-optimization-thesis-pause-2026-04-26.md`, `large-moe-expert-parallelism.md`
+- Handoffs: `cpu-inference-optimization-index.md`, `intra-process-tensor-parallel-decode.md`, `single-instance-system-tuning.md`, `cpu-shape-specialized-gemv-decode.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/cpu-hierarchical-barrier.md`, `cpu-optimization-thesis-pause-2026-04-26.md`, `large-moe-expert-parallelism.md`
 
 ---
 

@@ -4,7 +4,7 @@
 **Created**: 2026-05-19 (post-KV-admission-cluster deep-dive)
 **Categories**: kv_cache, context_extension, hardware_optimization
 **Priority**: MEDIUM (gate for the entire May 2026 KV-reduction cluster — must land before PBKV/LU-KV/KVP/ForesightKV/SP-KV prioritization is meaningful)
-**Depends on**: `llama-cpp-fork-rebase.md` (KV-cache abstraction), `attention-matching-kv-compaction.md`
+**Depends on**: `../completed/llama-cpp-fork-rebase.md` (KV-cache abstraction), `attention-matching-kv-compaction.md`
 **Source deep-dive**: [`/workspace/research/deep-dives/2026-05-19-kv-admission-cluster.md`](../../research/deep-dives/2026-05-19-kv-admission-cluster.md)
 
 ## Objective
@@ -82,4 +82,4 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - StreamingLLM paper: `https://arxiv.org/abs/2309.17453` (Xiao et al., ICLR 2024)
 - StreamingLLM reference impl: `https://github.com/mit-han-lab/streaming-llm`
 - Steele falsification (sink+window beats learned scoring): `https://arxiv.org/abs/2601.14279`
-- Related handoffs: `attention-matching-kv-compaction.md`, `triattention-kv-selection.md`, `summary-token-attention-readiness.md`, `multiscreen-attention-evaluation.md`, `llama-cpp-fork-rebase.md`
+- Related handoffs: `attention-matching-kv-compaction.md`, `triattention-kv-selection.md`, `summary-token-attention-readiness.md`, `multiscreen-attention-evaluation.md`, `../completed/llama-cpp-fork-rebase.md`

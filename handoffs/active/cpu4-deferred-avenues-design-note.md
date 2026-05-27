@@ -1,8 +1,8 @@
 # CPU4 Deferred Avenues — Design Pick (2026-04-30)
 
 **Status**: Design analysis. No code written. Picks ONE avenue to advance to prototype if user agrees.
-**Parent**: [`cpu-hierarchical-barrier.md`](cpu-hierarchical-barrier.md) (CLOSED 2026-04-26 for the 2-level CCD-aware barrier variant — negative result).
-**Sibling**: [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) (CLOSED 2026-04-28 for design #1 global tile-queue work-stealing — negative result; designs #2 and #3 untested).
+**Parent**: [`cpu-hierarchical-barrier.md`](../completed/cpu-hierarchical-barrier.md) (CLOSED 2026-04-26 for the 2-level CCD-aware barrier variant — negative result).
+**Sibling**: [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (CLOSED 2026-04-28 for design #1 global tile-queue work-stealing — negative result; designs #2 and #3 untested).
 **Source**: user direction "CPU4 sync primitive" 2026-04-30.
 
 ## Why this note exists
@@ -107,9 +107,9 @@ If Phase 1 closes via prototype regression:
 
 ## Cross-references
 
-- Parent: [`cpu-hierarchical-barrier.md`](cpu-hierarchical-barrier.md) Implications section
-- Sibling (already-tested adjacent design): [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) — work-stealing + 2 untested designs
-- CPU24 sync ceiling: [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md)
+- Parent: [`cpu-hierarchical-barrier.md`](../completed/cpu-hierarchical-barrier.md) Implications section
+- Sibling (already-tested adjacent design): [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) — work-stealing + 2 untested designs
+- CPU24 sync ceiling: [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md)
 - v5 toolchain: [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) Build-time toolchain section
 
 

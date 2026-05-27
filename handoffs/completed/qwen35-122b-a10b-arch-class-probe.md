@@ -1,15 +1,17 @@
 # Qwen3.5-122B-A10B — Arch-Class Probe (Probe B)
 
+> Archived to `handoffs/completed/` on 2026-05-27 after Probe B, wiring, and verification all landed.
+
 **Status**: ✅ **CLOSED 2026-05-04**. Phases 1+2 measured. Wiring change LANDED in epyc-orchestrator (`64101fd`): `architect_general` switched from 2× cross-NUMA (4.3 t/s/instance) to 1× canonical full-machine (12.19 t/s, +184% per-request). c2 env block (`GGML_NUMA_REPACK_INTERLEAVE=0`) wired into `_ROLE_ENV_BLOCKS` + NUMA_CONFIG `numactl_policy: "interleave=all"`. 4× per-NUMA-node alternative (16.86 t/s aggregate) documented for future high-concurrency workload shift.
 **Created**: 2026-05-04
 **Closed**: 2026-05-04 (move to `completed/` after orchestrator restart applies the change)
 **Categories**: hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (only model in current 27B/31B/122B production trio with plausible 2× single-instance headroom)
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
 - [`model-registry-v5-deployment-draft.yaml`](model-registry-v5-deployment-draft.yaml) — `todo_or_undecided` slot for `architect_general`
-- [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md) — Per-Arch Deployment Matrix
-- [`single-instance-system-tuning.md`](single-instance-system-tuning.md) — host prerequisites
+- [`cpu-kernel-env-flags-inventory.md`](../active/cpu-kernel-env-flags-inventory.md) — Per-Arch Deployment Matrix
+- [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) — host prerequisites
 
 ## Why this exists
 

@@ -3,7 +3,7 @@
 **Status**: Phase 0 design analysis only. No code.
 **Date**: 2026-04-29
 **Source**: User direction "investigate both [CPU22 #3 + wdata-aware MUL_MAT] in sequence" 2026-04-29.
-**Parent**: [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) (closed via test for #1 global tile-queue 2026-04-28; #2 token-to-expert and #3 hybrid spillover untested).
+**Parent**: [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (closed via test for #1 global tile-queue 2026-04-28; #2 token-to-expert and #3 hybrid spillover untested).
 **Sibling Phase 0**: [`wdata-aware-mul-mat-coalescing-design.md`](wdata-aware-mul-mat-coalescing-design.md)
 
 ## Phase 0 lesson applied

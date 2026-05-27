@@ -61,7 +61,7 @@ python scripts/eval_locomo.py             # name TBD, check repo
 
 **Steps**:
 1. Train a small (4.2M-param) M.3 memory module on user_conclude/user_profile data harvested from existing orchestrator traces (consult `unified-trace-memory-service.md` for the harvest pipeline). Training is feasible on CPU at this scale.
-2. Wire the learned K/V vectors into llama-server's prefix-cache layer (similar to the prefix-tree integration tracked in `llama-cpp-fork-rebase.md`).
+2. Wire the learned K/V vectors into llama-server's prefix-cache layer (similar to the prefix-tree integration tracked in `../completed/llama-cpp-fork-rebase.md`).
 3. A/B against the current SQLite-prompt-injection B1 implementation on a held-out conversation suite.
 
 **Success criteria**: ≥1.2× recall on multi-session user-modeling tasks; zero degradation on single-session tasks.

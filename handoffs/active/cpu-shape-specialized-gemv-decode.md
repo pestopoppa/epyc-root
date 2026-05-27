@@ -971,7 +971,7 @@ Three URLs ingested as a single batch (paper + blog + repo, same research):
 
 ### Cross-references in the handoff cluster
 
-- [`moe-dynamic-expert-selection.md`](moe-dynamic-expert-selection.md), [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — adjacent (FFN-level sparsity vs expert-level routing; complementary not competing).
+- [`moe-dynamic-expert-selection.md`](moe-dynamic-expert-selection.md), [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — adjacent (FFN-level sparsity vs expert-level routing; complementary not competing).
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — primary parking lot if/when GPU hardware activates.
 - [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — would be the integration target for any CPU port of the TwELL format.
 - intake-528 (Kolinko Effort Engine deep-dive, 2026-05-08) — same dynamic-sparsity neighborhood; the deep-dive's re-surface trigger (c) is the explicit mechanism for re-opening this entire family.

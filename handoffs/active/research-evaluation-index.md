@@ -229,12 +229,12 @@ Pointer — source deep-dive at [`research/deep-dives/2026-05-20-rope-long-conte
 
 **Priority**: LOW — user-flagged "not urgent" (2026-05-20). Bulk pickup eligible.
 
-**Outcome**: per-model collapse point. Refines `cpu-context-regime-coverage.md` 32K test row, the YaRN gate criterion (intake-569 caveat already added), and informs whether any context-folding aggressiveness tier should kick in earlier for specific models.
+**Outcome**: per-model collapse point. Refines [`../completed/cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) 32K test row, the YaRN gate criterion (intake-569 caveat already added), and informs whether any context-folding aggressiveness tier should kick in earlier for specific models.
 
 - [x] **P10.1**: Write probe script (~30 LoC, no inference) — ✅ 2026-05-27. `scripts/benchmark/rope_position_probe.py` (4-element token-encoded list, neutral-filler padding to target ctx, 100-sample driver, `--dry-run` verified, `/completion` client). **P10.2 5×4 matrix run gated → bulk-inference-campaign Package K (K-ROPE-1)**, LOW priority / bulk-eligible.
 - [ ] **P10.2**: 5×4 matrix run (inference-gated)
 - [ ] **P10.3**: Record results + collapse-point per model into [`research/deep-dives/2026-05-20-rope-long-context-bounds.md`](../../research/deep-dives/2026-05-20-rope-long-context-bounds.md) Appendix
-- [ ] **P10.4**: Cross-link finding back to `cpu-context-regime-coverage.md` 32K row and `yarn-context-extension-research.md` gate
+- [ ] **P10.4**: Cross-link finding back to [`../completed/cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) 32K row and `yarn-context-extension-research.md` gate
 
 ### P11 — Fast-RLM REPL Output Truncation A/B (2000 vs 5000 chars; deferred since 2026-03-03)
 
@@ -287,7 +287,7 @@ P6 (REPL turn efficiency)            ──S1 independent; S2 depends on autopil
 P7 (Ouro LoopLM eval)               ──independent (download + benchmark)──
 P8 (eval tower verification)         ──EV-1/2/6 DONE (2026-04-15); EV-0/3 independent; EV-4/5 need inference; EV-7 depends on all + P7──
 GLM-5.1-REAP eval                    ──independent (download + benchmark); stack simplification depends on quality results──
-P10 (RoPE per-model probe)            ──independent (inference-gated, ~100 min); informs cpu-context-regime-coverage + yarn gate──
+P10 (RoPE per-model probe)            ──independent (inference-gated, ~100 min); informs completed CPU23 context-coverage findings + yarn gate──
 P11 (REPL truncation A/B)             ──independent (inference-gated, ~30–60 min); or promotable to NumericSwarm wire-in──
 Compaction gap analysis               ──independent (design task from intake-426)──
 TQ3 monitoring                    ──depends on upstream PR merges──

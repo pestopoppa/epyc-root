@@ -5,7 +5,7 @@
 **Priority**: MEDIUM-HIGH (likely the cheaper architectural win compared to CPU16 NUMA-disagg, and likely obsoletes it)
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU17)
-**Related**: [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 protocol gate)
+**Related**: [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (CPU16 — pursue this stub FIRST; if it works it likely closes CPU16), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (DS-7 quarter-scheduler interacts with chunked-prefill scheduling), [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — context/interference matrix gate), [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 protocol gate)
 
 ## Pipeline placement
 

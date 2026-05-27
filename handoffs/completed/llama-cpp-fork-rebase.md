@@ -1,11 +1,13 @@
 # llama.cpp Fork Rebase — Chat Template + Reasoning Fixes
 
-**Status**: superseded — merged into [llama-cpp-kernel-push-rebase.md](llama-cpp-kernel-push-rebase.md). v4 branch has all cherry-picks + full rebase + TIDE.
+> Archived to `handoffs/completed/` on 2026-05-27. This tracker was superseded once the kernel push/rebase path landed.
+
+**Status**: superseded — merged into [llama-cpp-kernel-push-rebase.md](../active/llama-cpp-kernel-push-rebase.md). v4 branch has all cherry-picks + full rebase + TIDE.
 **Created**: 2026-04-20
 **Updated**: 2026-04-20
 **Priority**: HIGH (blocking quality benchmarks for Qwen3.6, M2.7, Gemma4)
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md)
+**Parent index**: [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
+**Related**: [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md), [`bulk-inference-campaign.md`](../active/bulk-inference-campaign.md)
 
 ## Objective
 

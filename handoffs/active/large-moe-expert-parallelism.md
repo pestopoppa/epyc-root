@@ -59,8 +59,8 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 - [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
 - [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 — mandatory quality gate before closure claims)
-- [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) (CPU24 — required to close >150B root cause)
-- [`cpu-context-regime-coverage.md`](cpu-context-regime-coverage.md) (CPU23 — required before class-level production guidance)
+- [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) (CPU24 — required to close >150B root cause)
+- [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — required before class-level production guidance)
 
 ## Research Intake Update — 2026-04-26
 

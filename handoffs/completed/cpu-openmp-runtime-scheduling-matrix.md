@@ -1,11 +1,13 @@
 # CPU21 — OpenMP Runtime And Scheduling Matrix
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the tested CPU21 submatrix closed and the active backlog no longer depended on this as a live work item.
+
 **Status**: CLOSED 2026-04-28 **for the tested submatrix only** (libgomp affinity/wait-policy stack +3-8% landed; clean libomp build delivers +6.4% on Coder-30B Q4_K_M apples-to-apples vs libgomp; chunks 8/16 swept under both runtimes for 3 model proxies; cross-arch dense neutral). **Untested submatrix** (peer-review pass #2, 2026-04-27 evening): full Phase A affinity permutation table under libomp + Phase C wait-policy under libomp — only Phase B chunks ran under libomp. Closure scope is "tested submatrix"; the original full-matrix language (libgomp+libomp × {static,dynamic,guided} × {1,4,8,16} × full affinity perms × wait policy) is NOT entirely closed. Reopen ONLY if a future signal suggests libomp behaves differently under different affinity binds (no current evidence of this).
 **Priority**: HIGH
 **Categories**: hardware_optimization, inference_serving, runtime_tuning
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU21)
-**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 gate), [`cpu-hierarchical-barrier.md`](cpu-hierarchical-barrier.md) (single variant falsified), [`cpu-dynamic-moe-load-balancing.md`](cpu-dynamic-moe-load-balancing.md) (CPU22 follow-on)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) (CPU21)
+**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](../active/cpu-benchmark-rigor-and-revalidation.md) (CPU20 gate), [`cpu-hierarchical-barrier.md`](../completed/cpu-hierarchical-barrier.md) (single variant falsified), [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (CPU22 follow-on)
 
 ## Objective
 

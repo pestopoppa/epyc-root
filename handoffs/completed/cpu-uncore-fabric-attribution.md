@@ -1,11 +1,13 @@
 # CPU24 — Uncore/Fabric Counter Attribution For >150B Regressions
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the attribution closure landed.
+
 **Status**: CLOSED 2026-04-28 (Phase 2.3 of remediation, peer-review HIGH finding #4 addressed). MiniMax-M2.7 + dense/hybrid Qwen3.6-27B + 2-rep stability all measured. Attribution class confirmed across 4 architectural classes: dominant_bottleneck = compute_kernel_memory_stalled, IPC 0.17-0.28, ~25% cross-NUMA fill on MoE / ~9% on dense.
 **Priority**: HIGH
 **Categories**: profiling, hardware_optimization, benchmarking_methodology
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU24)
-**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 gate), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15 regressions), [`nps-reboot-runbook.md`](nps-reboot-runbook.md) (topology decisions)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) (CPU24)
+**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](../active/cpu-benchmark-rigor-and-revalidation.md) (CPU20 gate), [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) (CPU15 regressions), [`nps-reboot-runbook.md`](../active/nps-reboot-runbook.md) (topology decisions)
 
 ## Objective
 

@@ -1,11 +1,13 @@
 # CPU23 — Context-Regime Coverage Matrix
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the 3-proxy minimum-gate closure landed.
+
 **Status**: CLOSED 2026-04-28 **for the 3-proxy minimum-gate scope** (Phase 2.2 of remediation, peer-review CRITICAL finding #1 addressed). This is **NOT a class-wide exhaustion claim**. Full 5-model coverage explicitly deferred, NOT silently dropped — Qwen3-Next-80B Q4_K_M, REAP-246B Q4_K_M, gemma-4-26B-A4B Q4_K_M project from class assignments but were not measured. Dense/hybrid 32K throughput run was deferred (~30 min/run estimated). Multi-concurrent-decode (10 simultaneous decode streams) interference was deferred (only relevant for multi-tenant production). The 3-proxy data is sufficient for current single-user decode routing decisions; broader closure requires the deferred runs.
 **Priority**: MEDIUM-HIGH
 **Categories**: benchmarking_methodology, inference_serving, hardware_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU23)
-**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 protocol), [`sarathi-serve-cpu-evaluation.md`](sarathi-serve-cpu-evaluation.md) (CPU17 serving path), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15 class conclusions)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) (CPU23)
+**Related**: [`cpu-benchmark-rigor-and-revalidation.md`](../active/cpu-benchmark-rigor-and-revalidation.md) (CPU20 protocol), [`sarathi-serve-cpu-evaluation.md`](../active/sarathi-serve-cpu-evaluation.md) (CPU17 serving path), [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) (CPU15 class conclusions)
 
 ## Objective
 

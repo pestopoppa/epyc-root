@@ -1,12 +1,14 @@
 # Qwen3.6-35B-A3B — Production Upgrade Evaluation
 
-**Status**: in-progress (quality benchmark ready)
+> Archived to `handoffs/completed/` on 2026-05-27 after the production rollout landed and the active backlog no longer had open work here.
+
+**Status**: complete — archived 2026-05-27
 **Created**: 2026-04-17 (via research intake)
 **Updated**: 2026-04-17 (NUMA sweeps complete, quality benchmark infrastructure ready)
 **Categories**: moe_optimization, ssm_hybrid, inference_serving
 **Priority**: HIGH (direct production model successor)
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`log-linear-gated-deltanet-readiness.md`](log-linear-gated-deltanet-readiness.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md)
+**Parent index**: [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
+**Related**: [`log-linear-gated-deltanet-readiness.md`](../active/log-linear-gated-deltanet-readiness.md), [`bulk-inference-campaign.md`](../active/bulk-inference-campaign.md)
 
 ## Objective
 

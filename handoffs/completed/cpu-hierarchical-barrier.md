@@ -1,5 +1,7 @@
 # CPU4 — Hierarchical Barrier in OpenMP Path
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the tested barrier variant closed negative.
+
 **Status**: COMPLETE (single-variant test) — **NEGATIVE RESULT** (2026-04-26)
 **Goal**: Reclaim the ~30% of decode cycles currently spent in `#pragma omp barrier` (libgomp wait paths) on Q4_K_M sync-bound models.
 **Outcome**: Implementation works, measurements show consistent **net-negative** (-2 to -4%) across configs. libgomp's omp barrier is competitive with or better than this custom 2-level CCD-aware barrier on this hardware. Reverted; design preserved here as one falsified variant, not full sync-track closure.
@@ -156,4 +158,4 @@ This is a strong **negative result** for software-level sync optimization on the
 - Phase D evidence: `progress/2026-04/2026-04-26.md` REAP-246B perf stat
 - P2 evidence (sync-bound class): `progress/2026-04/2026-04-26.md` cross-model perf stat
 - Env-flag inventory: `cpu-kernel-env-flags-inventory.md`
-- Wave dependencies: `cpu-openmp-runtime-scheduling-matrix.md` (CPU21), `cpu-dynamic-moe-load-balancing.md` (CPU22)
+- Wave dependencies: [`cpu-openmp-runtime-scheduling-matrix.md`](../completed/cpu-openmp-runtime-scheduling-matrix.md) (CPU21), [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (CPU22)

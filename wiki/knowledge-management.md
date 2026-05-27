@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-04-28
-**Sources**: 3 active handoffs (internal-kb-rag, sliders-local-validation, colbert-reranker-web-research), 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
+**Last compiled**: 2026-05-27
+**Sources**: 4 active handoffs (internal-kb-rag, sliders-local-validation, colbert-reranker-web-research, handoff-backlog-hygiene-audit), 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
 
 ## Summary
 
@@ -49,12 +49,19 @@ Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING),
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
 
+## Active-handoff hygiene rule (2026-05-27)
+
+The 2026-05-27 backlog hygiene pass formalized a governance rule that matters for KB integrity: **active indices are for outstanding work only**. Completed work should be archived to `handoffs/completed/` at wrap-up cadence, and index cells should be trimmed to live TODOs rather than accumulating chronology. That keeps `handoffs/active/` queryable as an action surface instead of a mixed historical dump, and it reduces drift between active indices, wrap-up reports, and compiled wiki pages.
+
+The execution pass archived nine clearly closed aging handoffs and rewired active references to the completed copies. The important policy detail is procedural, not just structural: pruning happens **during operator-invoked wrap-up**, not ad hoc mid-session, so removals from the active tree remain reviewable in one place.
+
 ## Open Questions
 
 - What is the document-recall baseline via grep on our actual corpus? K7 will measure this against KB-RAG top-3.
 - Does SLIDERS' reconciliation pattern (provenance + rationale + metadata columns) yield governance insights useful for our wiki even if SQL-as-primary-path is not adopted? Worth investigating after KB-RAG K7 ships.
 - Can Flywheel's wikilink learning-loop scorer (accept/reject feedback updates link weights) be adapted for `wiki/INDEX.md` cross-reference quality? Deferred as K8.
 - What corpus scale threshold makes structured-DB alternatives (SLIDERS) viable vs ColBERT? Current rough estimate: >1M tokens; SLIDERS' headline gains are at 36M-token corpora, far above our scale.
+- Should the wiki compiler eventually auto-detect handoff moves and refresh stale source paths in compiled chapters, or is manual wrap-up-time repair sufficient? Current policy is manual review during wrap-up.
 
 ## Related Categories
 
@@ -68,6 +75,7 @@ The `research-intake` skill is the upstream complement — it ingests new papers
 - [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
 - [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
+- [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
 - [intake-492](https://github.com/velvetmonkey/flywheel-memory) Flywheel — local-first MCP memory layer (Apache-2.0); HotpotQA 90.0% doc recall on 4,960-doc sui-generis pool; LoCoMo 81.9% evidence recall on 695q; ~1 pp LLM-non-determinism variance band; credibility 3 (1,092 commits + 3,292 tests + 385 releases + dual-OS CI; capped by no peer review / no independent replication / contributor-graph unconfirmed)
 - [intake-494](https://arxiv.org/abs/2604.22294) SLIDERS (Joshi/Shethia/Dao/Lam, Stanford OVAL/Genie) — code released at `github.com/stanford-oval/sliders` (MIT, also on PyPI as `sliders-genie`); credibility 4; +6.6 pp avg over GPT-4.1 on FinanceBench / Loong / Oolong existing benchmarks; +~19 pp WikiCeleb100 (3.9M tokens); +~32 pp (abstract) / +~50 pp (repo README) FinQ100 (36M tokens, SEC 10-Q derived) — unresolved discrepancy

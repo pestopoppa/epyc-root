@@ -5,7 +5,7 @@
 **Categories**: local_inference, hardware_optimization, benchmark_methodology
 **Priority**: MEDIUM (potential coder/worker model candidate, not yet validated)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Distinct from**: [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md) (35B-A3B MoE, not this 27B dense-FFN hybrid)
+**Distinct from**: [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) (35B-A3B MoE, not this 27B dense-FFN hybrid)
 **Related**: [`gpu-acceleration-path.md`](gpu-acceleration-path.md) (where 4090 spec-dec numbers from intake-455 are bookmarked)
 
 ## Objective
@@ -94,7 +94,7 @@ After P1 completes, append measured numbers + comparison to baselines under a "R
 
 - Inference-blocked: P1 and P2 cannot run without a healthy llama-server. Queue accordingly.
 - P3 is a non-action recording an architectural foreclosure for future agents who might attempt it.
-- This handoff is intentionally separate from `qwen36-production-upgrade.md` (which targets the 35B-A3B MoE — different model, different role). Do not conflate.
+- This handoff is intentionally separate from `../completed/qwen36-production-upgrade.md` (which targets the 35B-A3B MoE — different model, different role). Do not conflate.
 
 ## Research Intake Update — 2026-04-28
 

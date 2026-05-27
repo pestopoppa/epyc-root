@@ -4,7 +4,7 @@
 **Created**: 2026-04-20
 **Priority**: HIGH
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`llama-cpp-fork-rebase.md`](llama-cpp-fork-rebase.md), [`tide-calibration-router-early-exit.md`](../../research/deep-dives/tide-calibration-router-early-exit.md)
+**Related**: [`llama-cpp-fork-rebase.md`](../completed/llama-cpp-fork-rebase.md), [`tide-calibration-router-early-exit.md`](../../research/deep-dives/tide-calibration-router-early-exit.md)
 **Repo**: `/mnt/raid0/llm/llama.cpp` (branch `production-consolidated-v4`)
 
 ## Objective

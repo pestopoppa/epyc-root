@@ -11,7 +11,7 @@
 - [`routing-intelligence.md`](routing-intelligence.md) — SAE-feature classifier as transparency primitive
 - [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md) — repetition-feature pre-activation as stuck-state precursor
 - [`reasoning-compression.md`](reasoning-compression.md) — same family of stuck/repeat failure modes
-- [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md) — Qwen3.5-35B-A3B SAE coverage; Qwen3.6 not yet covered
+- [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) — Qwen3.5-35B-A3B SAE coverage; Qwen3.6 not yet covered
 - [`learned-routing-controller.md`](learned-routing-controller.md) — SAE feature footprints as auxiliary classifier inputs
 - [`eval-tower-verification.md`](eval-tower-verification.md) — feature-coverage redundancy for benchmark suite pruning
 - [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) — same eval-suite pruning angle

@@ -118,7 +118,7 @@ These are *non-inference in nature* but gated on external signals. Listed so the
 - `root-archetype-linter-templates-upstream.md` — Gated on local clone of the `root-archetype` repo.
 - DAR-3/DAR-4 validation passes — code is NIB2-16/17; measurement is inference.
 - REPL S4 A/B — A/B itself is inference; scaffolding (not listed here) would be ~4h code.
-- Qwen3.6 benchmark — [`qwen36-production-upgrade.md`](qwen36-production-upgrade.md) — inference-gated. Download already done.
+- Qwen3.6 benchmark — [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) — inference-gated. Download already done.
 - Package D post-AR-3 analyses — blocked on AR-3 completion.
 - **NIB2-33 (retired 2026-04-21)**: Hermes outer shell auth — `hermes-outer-shell.md` L242 explicitly defers auth until a multi-user use case materializes ("No auth on any endpoint… Not implementing until there's a concrete multi-user use case"). Revisit when a second human user or a multi-tenant scenario is in sight.
 - MathSmith S2 HC benchmark + S3 drafter spec decode tests — inference-gated.

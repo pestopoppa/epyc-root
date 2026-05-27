@@ -1,11 +1,13 @@
 # CPU22 — Dynamic MoE Load Balancing
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the tested work-stealing design closed negative.
+
 **Status**: CLOSED via test 2026-04-28 (Phase 3 of remediation) **for the global-tile-queue work-stealing design only**. The handoff's original candidate list (Scope section below) has three designs: (1) global work-stealing queue, (2) token-to-expert runtime rebalance with bounded migration, (3) hybrid coarse-static + dynamic spillover. **Only design #1 was implemented and tested.** Work-stealing prototype implemented (`GGML_EP_WORK_STEALING=1`, env-gated default-off in `ggml/src/ggml-cpu/ggml-cpu.c`). PPL bit-exact at 12 chunks. Throughput gate (≥10% on 2 sync-bound Q4_K_M models) **NOT MET for design #1**: -2.3% Coder-30B, -0.3% Next-80B (noise), -0.8% REAP-246B (noise) at 5-rep proper canonical. Single-atomic contention overhead at 96 threads dominates over the limited (CPU24's 15% sync ceiling) imbalance-recovery gain. Track closes honestly via empirical measurement for design #1; replaces prior closure-by-inference. **Designs #2 and #3 remain untested** and are not closed by this evidence — they are deprioritized for current single-user NPS4 MoE decode given the 15% sync ceiling, but a future workload (multi-tenant batched, hardware change, or different MoE topology) could re-promote them.
 **Priority**: HIGH
 **Categories**: hardware_optimization, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU22)
-**Related**: [`cpu-openmp-runtime-scheduling-matrix.md`](cpu-openmp-runtime-scheduling-matrix.md) (CPU21 prerequisite), [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) (CPU24 prerequisite), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15 root mechanism context)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) (CPU22)
+**Related**: [`cpu-openmp-runtime-scheduling-matrix.md`](../completed/cpu-openmp-runtime-scheduling-matrix.md) (CPU21 prerequisite), [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) (CPU24 prerequisite), [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) (CPU15 root mechanism context)
 
 ## Objective
 

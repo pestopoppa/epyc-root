@@ -1,15 +1,17 @@
 # NUMA_MIRROR Fork Integration — vproxy-tools/llama.cpp port
 
+> Archived to `handoffs/completed/` on 2026-05-27 after the single-socket NPS4 investigation closed negative.
+
 **Status**: CLOSED 2026-04-27 — DECISIVE NEGATIVE on single-socket NPS4. Phases 0a/0b/1a/1b/1c all LANDED bit-exact in `/mnt/raid0/llm/llama.cpp-experimental` `feature/cpu-ep-inter-process`. **Phase 2 throughput gate FAILED**: −1.0% on Coder-30B Q4_K_M tg128, +0.6% on Qwen3.6-35B Q8 tg64 (both within run-to-run noise). Investigation closed; reopen only if a 2-socket configuration becomes relevant.
 **Priority**: ~~HIGH~~ → **CLOSED**
 **Categories**: hardware_optimization, inference_serving, numa_optimization
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
-- [`cpu-uncore-fabric-attribution.md`](cpu-uncore-fabric-attribution.md) — CPU24 perf-record finding that motivated this work
-- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) — CPU1 P1.3 per-region mbind (DEPRECATED earlier; mirror would have superseded it)
-- [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — CPU15 EP per-node anon mmap (would have partially overlapped for MoE; mirror's failure leaves CPU15 in place)
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — CPU2 SIMD kernels read via `tensor_data()` after the accessor migration
+- [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) — CPU24 perf-record finding that motivated this work
+- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) — CPU1 P1.3 per-region mbind (DEPRECATED earlier; mirror would have superseded it)
+- [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md) — CPU15 EP per-node anon mmap (would have partially overlapped for MoE; mirror's failure leaves CPU15 in place)
+- [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) — CPU2 SIMD kernels read via `tensor_data()` after the accessor migration
 
 ---
 

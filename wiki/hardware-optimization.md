@@ -905,10 +905,10 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 
 - [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — env-flag catalogue, P3 stability verdict, NUMA_WEIGHTS deprecation
 - [`handoffs/active/cpu-benchmark-rigor-and-revalidation.md`](../handoffs/active/cpu-benchmark-rigor-and-revalidation.md) — CPU20 protocol, canonical baseline config, replication rules
-- [`handoffs/active/cpu-openmp-runtime-scheduling-matrix.md`](../handoffs/active/cpu-openmp-runtime-scheduling-matrix.md) — CPU21 libomp +6.4% Coder, affinity stack +3–8%, schedule per-role opt-in
-- [`handoffs/active/cpu-context-regime-coverage.md`](../handoffs/active/cpu-context-regime-coverage.md) — CPU23 Phase 2.2 TTFT / interference findings
+- [`handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md`](../handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md) — CPU21 libomp +6.4% Coder, affinity stack +3–8%, schedule per-role opt-in
+- [`handoffs/completed/cpu-context-regime-coverage.md`](../handoffs/completed/cpu-context-regime-coverage.md) — CPU23 Phase 2.2 TTFT / interference findings
 - [`handoffs/active/cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — CPU2 Q8_0 8x8 AVX-512BW kernel +31.8% at 1t
-- [`handoffs/active/cpu-dynamic-moe-load-balancing.md`](../handoffs/active/cpu-dynamic-moe-load-balancing.md) — CPU22 work-stealing falsified (5-rep)
+- [`handoffs/completed/cpu-dynamic-moe-load-balancing.md`](../handoffs/completed/cpu-dynamic-moe-load-balancing.md) — CPU22 work-stealing falsified (5-rep)
 - [`handoffs/active/sarathi-serve-cpu-evaluation.md`](../handoffs/active/sarathi-serve-cpu-evaluation.md) — CPU17 chunked-prefill deprioritized single-user; re-promote on multi-tenant
 - [`handoffs/active/gpu-acceleration-path.md`](../handoffs/active/gpu-acceleration-path.md) — GPU parked, vLLM+Dflash, DGX Spark cost-effective, TileLang/BitBLAS GPU-day
 - [`research/deep-dives/tilelang-puzzles-kernel-dsl.md`](../research/deep-dives/tilelang-puzzles-kernel-dsl.md) — kernel-DSL evaluation matrix, BitBLAS path, AMD MI300X relevance

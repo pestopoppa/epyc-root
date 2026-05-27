@@ -199,7 +199,7 @@ Per-model curve becomes part of the model registry and enters routing decisions:
 
 ## 2026-05-04 Update — Probe B 4-config protocol formalized
 
-The 4-config Probe B methodology used throughout 2026-04-29/30 multi-arch coverage was applied formally on 2026-05-04 to close two `todo_or_undecided` slots in the v5 deployment draft (Qwen3.5-122B-A10B and Qwen3-Coder-REAP-246B-A35B). The protocol details are now explicit in [`handoffs/active/qwen35-122b-a10b-arch-class-probe.md`](../handoffs/active/qwen35-122b-a10b-arch-class-probe.md) — referenced here as the canonical methodology for any new model arch-class assignment.
+The 4-config Probe B methodology used throughout 2026-04-29/30 multi-arch coverage was applied formally on 2026-05-04 to close two `todo_or_undecided` slots in the v5 deployment draft (Qwen3.5-122B-A10B and Qwen3-Coder-REAP-246B-A35B). The protocol details are now explicit in [`handoffs/completed/qwen35-122b-a10b-arch-class-probe.md`](../handoffs/completed/qwen35-122b-a10b-arch-class-probe.md) — referenced here as the canonical methodology for any new model arch-class assignment.
 
 ### Pre-flight: reproducibility tripwire
 
