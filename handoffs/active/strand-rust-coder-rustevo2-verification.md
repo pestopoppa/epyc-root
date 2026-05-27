@@ -34,15 +34,38 @@ If the #1 claim holds, that is the strongest external evidence we'd have that th
 
 ### Phase A — Acquisition & sanity checks [~1–2 hours, no inference]
 
-#### A-1: Download the GGUF — IN PROGRESS 2026-05-27
+#### A-1: Download the GGUF — DONE 2026-05-27
 
-- Source: `mradermacher/Strand-Rust-Coder-14B-v1-GGUF`, quant **Q4_K_M** (~8.99 GB) — our standard band (memory `project_coder_quant_decision.md`).
-- Storage: **`/mnt/raid0/llm/models/strand-rust/Strand-Rust-Coder-14B-v1.Q4_K_M.gguf`** (raid0; ~338 GB free as of acquisition start).
-- Download status as of 2026-05-27 11:23 UTC: in progress (~2.1 GB / 9 GB ≈ 23%); background `curl` PID 2549931. Completion expected within ~10–15 min from start.
-- Outstanding A-1 sub-steps when download completes (operator can do or next session):
-  - Verify final file size ≈ 8.99 GB.
-  - SHA-256 + compare with mradermacher's posted hash on HF (if present).
-  - `python3 llama.cpp/gguf-py/scripts/gguf_dump.py <file>` to confirm Qwen2.5 14B arch + chat template presence.
+- Source: `mradermacher/Strand-Rust-Coder-14B-v1-GGUF`, quant **Q4_K_M**.
+- Storage: **`/mnt/raid0/llm/models/strand-rust/Strand-Rust-Coder-14B-v1.Q4_K_M.gguf`**.
+- File size: **8,988,111,296 bytes (8.37 GiB / 8.99 GB SI)** — matches mradermacher's advertised size.
+- SHA-256: `6abca8fd0c512bdb26600313d44aa9e950be78baa21a281735aa3c868d162046` (recompute against HF page hash before benching as a tamper check).
+- GGUF header inspection (`gguf_dump.py --no-tensors`) confirms identity + integrity:
+
+| Field | Value |
+|---|---|
+| `general.architecture` | `qwen2` |
+| `general.base_model.0.name` | `Qwen2.5 Coder 14B Instruct` |
+| `general.base_model.0.repo_url` | `https://huggingface.co/Qwen/Qwen2.5-Coder-14B-Instruct` |
+| `general.dataset.0.name` | `Strandset Rust v1` |
+| `general.dataset.0.organization` | `Fortytwo Network` |
+| `general.dataset.0.repo_url` | `https://huggingface.co/Fortytwo-Network/Strandset-Rust-v1` |
+| `general.license` | `apache-2.0` |
+| `general.size_label` | `14B` |
+| `qwen2.block_count` | 48 |
+| `qwen2.context_length` | 32768 |
+| `qwen2.embedding_length` | 5120 |
+| `qwen2.attention.head_count` / `head_count_kv` | 40 / 8 (GQA) |
+| `qwen2.rope.freq_base` | 1,000,000 |
+| `tokenizer.chat_template` | present (Qwen2 chat template with tool-use branch) |
+| `tokenizer.ggml.eos_token_id` | 151645 (`<|im_end|>`) |
+| Tensor count | 579 |
+
+Independent corroboration from the GGUF metadata:
+- The model is genuinely a Qwen2.5-Coder-14B-Instruct fine-tune (matches founder's claim).
+- The dataset reference matches intake-616's Strandset-Rust-v1 link.
+- Apache-2.0 license confirmed in the GGUF itself, not just on HF.
+- The fine-tune method is **not** recorded in the GGUF metadata (no LoRA / DPO / full-SFT marker) — only the base model + dataset are. Founder's "simplest possible fine-tune" framing remains an external claim.
 
 #### A-2: Locate the RustEvo2 benchmark and its leaderboard — DONE 2026-05-27
 
