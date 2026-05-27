@@ -677,3 +677,32 @@ executable code — to confirm the "emits-prose, never-calls-a-tool" hypothesis.
 interleaved prompt/few-shot that forces tool calls, or (ii) accept that batch-edit is the only viable mode for
 this coder and reframe BEP-2's claim accordingly. **(c) repl_tap→bep_ab artifacts and (d) full bep_ab row
 schema are downstream of a working OFF arm — deferred until then.** Smoke log: `logs/bep_smoke_*.log`.
+
+### RESOLVED (2026-05-27) — OFF arm fixed; the "emits-prose / not-its-natural-grain" diagnosis was WRONG
+
+Added flag-gated per-turn observability `_bep_turn_trace` (`helpers.py`, env `ORCHESTRATOR_BEP_TURN_TRACE=1`,
+default-off, commit `0958436`) capturing the raw model output + whether it calls `file_write_safe`/`open`/`FINAL`.
+It cracked the OFF-arm failure through **three** layers, each correcting a prior guess:
+1. **Layer 1 — empty output + timeout.** The OFF turns produced EMPTY model output and `chat_completions
+   stream … timed out`, NOT prose. The "emits-prose, never-calls-a-tool" writeup above was **wrong**. Cause:
+   the rider said "do NOT answer with a code block", but the REPL turn stops at the closing ```` ``` ```` fence
+   (`helpers.py:750-752`); with no fence the stop never fires → generation runs to the limit → timeout → empty.
+2. **Layer 2 — unclosed block.** A code-block rider made the model emit the correct
+   `file_write_safe(...)` + `FINAL("done")` in ONE block, but the REPL early-stops on `FINAL(` (`helpers.py:757`)
+   BEFORE the closing fence → unclosed block → extraction fails → no execute → loop → timeout (file_write_safe
+   was *present* in the output but never ran; the canary had already proven it works when executed).
+3. **Layer 3 — FIX.** One-action-per-turn rider (write in a CLOSED block, `FINAL` on a separate turn; commit
+   `f3fefd1`). The block closes → executes → file written.
+
+**Live smoke now PASS/PASS** (J6 paused, host quiet, affinity certified): **OFF arm turns=1, "Wrote 32 bytes
+… mathutil.py", verifier PASS**; ON arm turns=2, verifier PASS. `repl_tap` now captures the OFF turns (closed
+block reaches `execute()`). **The interleaved baseline IS viable for this coder** — the parked
+"not-its-natural-grain" reframe is retracted.
+
+**Status: UNPARKED for harness validation.** Gate items DONE: (a) leak fix, (b) rider, (e) regression, (f)
+canary, observability, (g) single-task smoke PASS/PASS. **Remaining before a decision-grade A/B:** (c) attach
+per-session `repl_tap`/`bep_turn_trace` slices to bep_ab artifacts; (d) expand bep_ab rows to the full schema
+(topology_hash/flags/transcripts/touched-files/parse-apply-promote); then run the full 5-task ABBA across both
+arms and evaluate the BEP-2 gate. (Note: the OFF arm's `file_write_safe` content must match the task exactly —
+multi-file/modify tasks t2/t3/t4 not yet smoke-tested; do that within the full ABBA.) Obs logs:
+`logs/bep_obs*.log`, `logs/bep_smoke2_*.log`; trace: `$tmp_dir/bep_turn_trace.jsonl`.
