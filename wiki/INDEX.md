@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-27 (manual incremental update: HALO-2 OTLP converter, domain dereference hygiene, and launcher default-decision correction)
+**Last compiled**: 2026-05-27 (manual incremental update: stalled-inference watchdogs and benchmark failure-class boundary)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 329 documents across 6 source types
 
@@ -32,7 +32,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
 | [Routing Intelligence](routing-intelligence.md) | 29 | Cross-role contention gate plus live-affinity proof and topology-hash enforcement are required before baseline-eligible parallel routing |
-| [Benchmark Methodology](benchmark-methodology.md) | 33 | Real-path canaries and live smoke tests are required before trusting model-facing harnesses; stubs that bypass `/chat`/REPL prove only schema shape |
+| [Benchmark Methodology](benchmark-methodology.md) | 33 | Real-path canaries and live smoke tests are required; stalled seeding now has explicit infra labels instead of generic timeout ambiguity |
 
 ## Agent & Architecture
 
