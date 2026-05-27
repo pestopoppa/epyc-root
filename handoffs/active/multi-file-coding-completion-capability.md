@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: DIAGNOSED 2026-05-27 — agentic protocol/tool-loop problem, NOT model coding capability (one-shot file-edit ablation passed 5/5 on the same tasks+verifiers while the REPL/BEP loop fails). Remediation = edit-protocol redesign; model swap is moot. Open = building/validating the protocol fix.
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + optional functional-verifier-in-the-loop (self-check is py_compile-only today).
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -120,19 +120,35 @@ confound for the diagnosed issue.
 backend outage, inference timeouts, and empty turns prevent treating its OFF/ON score as a clean rate. Use it
 only for failure-mode examples while designing the protocol fix.
 
-## Remediation (the ablation confirmed this is the right layer — fix the contract, not the model)
-The one-shot ablation passed 5/5, so the work is the **interaction contract**. In rough priority:
-- **First-class edit transaction for coding tasks (recommended fix shape).** Assemble the relevant files →
-  ask the model for full-file replacements (or a structured patch) → apply transactionally → run the
-  verifier/self-check → **auto-finalize on success**. The model demonstrably succeeds with exactly this
-  one-shot shape (5/5 above). **Keep the REPL for exploratory computation; do NOT route routine file edits
-  through the multi-turn read→write→`FINAL` choreography** — that brittle controller loop is the whole
-  problem. Highest-leverage fix.
-- **Edit affordance:** structured diff/patch tool (base-hash) vs free-form full-file `file_write_safe`.
-- **Termination cue:** auto-`FINAL` once all target files are written + a self-check passes (missing-FINAL is
-  a top failure mode in the REPL traces).
-- **In-loop verification feedback:** feed a quick self-check / verifier result back so the model can iterate.
-- **Explicit state machine:** read→plan→write→verify→`FINAL` scaffold vs free-form REPL.
+## Remediation — ✅ first-class edit transaction BUILT + validated (2026-05-27)
+The ablation localized the fix to the **interaction contract**, and the recommended fix shape is now
+implemented and validated end-to-end (flag-gated, default-OFF, zero production behavior change until enabled):
+
+- **`src/edit_transaction.py`** — assemble workspace files → ask the model **once** for the complete
+  new files (`<<<FILE: path>>>…<<<END>>>`, fenced-block fallback) → **transactional apply**
+  (snapshot → write/delete → `py_compile` self-check → promote, or **roll back** the whole transaction on
+  any failure) → return a concise summary. Path-safe (`_safe_join` preserves nested dirs, rejects
+  `..`/absolute escapes). The REPL is untouched — it stays for exploratory computation.
+- **Wired as `force_mode="edit"`** (chat.py `_handle_chat` branch 8b2): the model is called once via the
+  same `_execute_direct` path, the transaction is applied, and the turn **auto-finalizes** (`turns=1`,
+  no multi-turn read→write→`FINAL` choreography). gitnexus: `_handle_chat` LOW risk.
+  **Safety gate:** fires only when **both** `ORCHESTRATOR_EDIT_TRANSACTION=1` **and** a scoped
+  `ORCHESTRATOR_EDIT_ROOT` are set; otherwise it falls through to the REPL path. Without the scoped root,
+  assembly would read/rewrite the whole orchestrator repo — so the gate is mandatory.
+- **Validated:** `tests/unit/test_edit_transaction.py` 14/14 (incl. rollback-on-syntax-error, partial-txn
+  rollback, path-escape rejection); module end-to-end through the real coder **5/5**
+  (`scripts/benchmark/bep_edit_transaction_validate.py`); **live server `force_mode=edit` 3/3**
+  (`scripts/benchmark/bep_edit_mode_wiring.py` — create / read-first multi-file / rename+delete, response
+  `mode=='edit'` + verifier PASS on the scratch the server edited).
+
+**Open / not-yet-done (rollout decisions, not blockers):**
+- **Default routing.** Edit-mode is opt-in (`force_mode="edit"` + flags). Routine coding edits do NOT yet
+  auto-route to it — needs a routing decision (which tasks/roles, and a non-scratch edit-root policy).
+- **Functional verifier in the loop.** The self-check is **`py_compile` (syntax) only** — it does not run a
+  task's functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
+- **Edit affordance / target selection.** Full-file replacement is the shipped (proven-easy) shape; a
+  structured base-hash patch form and smart `target_files` selection (vs assembling the whole scoped root)
+  are options for large repos.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
 
 ## Reproduce
@@ -156,6 +172,9 @@ re-use as evidence): `data/bep_sandbox/results-readfix7/`.
 - `orchestration/model_registry.yaml:381` — `coder_escalation` OPERATIONAL role config (`chat_template_kwargs.enable_thinking: false`, `model_role: qwen36_q8_0`). The model-catalog block at ~903 (`disable_thinking: true`) is NOT the runtime role config — inspect line 381.
 - `orchestration/model_registry.yaml:920` — benchmark context: Qwen3.6 role is 29/30 coder, 26/30 agentic, 170/183 overall.
 - `scripts/benchmark/bep_oneshot_ablation.py` — protocol ablation driver; path-safe (preserves nested paths under scratch, rejects `..`/absolute escapes) so it is reusable beyond the 5 top-level sandbox tasks.
+- **`src/edit_transaction.py`** — the shipped one-shot edit-transaction module (assemble → one-shot → parse → transactional apply w/ rollback). Flag: `edit_transaction_enabled()` ⇐ `ORCHESTRATOR_EDIT_TRANSACTION=1`.
+- **`src/api/routes/chat.py`** branch **8b2** — `force_mode="edit"` wiring (`_execute_direct` llm_call closure → `run_edit_transaction` → auto-finalize). Allowlist + `force_mode` doc updated (`src/api/models/requests.py`).
+- **`tests/unit/test_edit_transaction.py`** (14) · **`scripts/benchmark/bep_edit_transaction_validate.py`** (module 5/5) · **`scripts/benchmark/bep_edit_mode_wiring.py`** (live server 3/3) — the validation ladder.
 - `src/llm_primitives/backend.py:76`, `src/backends/llama_server.py:493` — chat-completions route + chat_template_kwargs injection (code supports thinking-off).
 - `scripts/benchmark/bep_ab.py`; `data/bep_sandbox/tasks.jsonl` — harness + task defs.
 - `src/graph/helpers.py` `_execute_turn` — the LLM→REPL turn loop.
