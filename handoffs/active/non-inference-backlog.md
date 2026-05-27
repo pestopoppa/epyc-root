@@ -63,7 +63,7 @@ This is the "what can I pick up right now with no inference available?" list. It
 ## Infra & governance
 
 - [x] **NIB2-28**: Coverage gate floor raises per Phase B plan — [`integration-test-coverage.md`](integration-test-coverage.md). 1-2h. Policy-only bumps; tests already at the higher floors. **DONE 2026-04-17**: Raised 5 floors to 100% (seeding_infra, executor, registry, output_parser, onboard, seeding_orchestrator). Note: seeding_injection.py has pre-existing regression (53% vs 100% floor).
-- [ ] **NIB2-29**: `orchestrator_stack.py` port-doc update for 8080-8084 / 8180-8184 stream split (if NIB2-12 adopted) — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15. <1h.
+- [x] **NIB2-29**: `orchestrator_stack.py` port-doc update for 8080-8084 / 8180-8184 stream split (if NIB2-12 adopted) — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15. <1h. **DONE 2026-05-27**: Verified the old 8080-8084 / 8180-8184 framing is stale; added a doc-only clarification in `epyc-orchestrator/scripts/server/orchestrator_stack.py` pointing readers to `stack_manifest.PORT_MAP` for full/primary ports and `stack_numa.NUMA_CONFIG` for NUMA quarter/replica ports.
 - [x] **NIB2-30**: GitNexus post-commit hook embeddings-preservation verification — [`CLAUDE.md`](../../CLAUDE.md) § Keeping the Index Fresh. 1h. Verify hook handles `--embeddings` flag correctly. **DONE 2026-04-17**: No PostToolUse hook configured (only PreToolUse hooks exist). `.gitnexus/meta.json` shows `embeddings: 0` — no embeddings to preserve. Issue is moot; `--embeddings` flag only matters when embeddings exist.
 
 ---
