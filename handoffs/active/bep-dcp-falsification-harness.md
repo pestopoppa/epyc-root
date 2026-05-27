@@ -723,3 +723,21 @@ emits across the 8 turns) AFTER the run, then refine the rider for multi-file (l
 own closed block across turns, FINAL only after all writes confirmed). Gate verdict pending run completion. The
 **harness is validated** (single-file both arms PASS); the multi-file OFF-arm generalisation is the open item for
 a decision-grade A/B. DCP-6 still downstream (reuses harness).
+
+**ABBA stopped at 8/20 + multi-file finding (2026-05-27, evidence-grounded from traces).** Killed the run once
+the pattern was clear (saved ~20 min of timeout). Partial dataset preserved: `results-abba-20260527-074259/`
+(8 rows + `traces/` + `meta.json`, `orch_checkout_unchanged=true`). Results: only **t1_create_util passes (both
+arms)**; **t2–t5 fail the OFF arm** (turns=8, touched=0) and **t2 also fails the ON arm** (turns=3, touched=0).
+**Cause (observed in `traces/t2_add_and_use-off-blk0.jsonl`):** for tasks that require reading existing files
+first (modify/add/rename/bugfix), the OFF coder emits a `peek('calc.py')`/`peek('main.py')` read block — then
+re-emits the *identical* read block every turn for 8 turns, never calling `file_write_safe`, never `FINAL`. It
+loops on the READ step. t1 passes only because "create file with exactly X" needs no read. **OPEN (hypothesis,
+do not write as fact until confirmed from the tap):** whether the `peek` *result* is fed back into the next
+turn's prompt (`last_output`) or the model ignores it — confirm via `repl_tap.log` (which logs executed code +
+RESULT) for a t2 session, OR add the peek result to `_bep_turn_trace`. **Two other open items surfaced:** (i)
+`batch_edit_states` came back empty in rows (`be=-`) — the (d) telemetry parse from `orchestrator.log` isn't
+capturing the `batch_edit_state=` lines (offset/worker-log issue) — fix before trusting parse/apply rates; (ii)
+the ON/batch arm also fails the multi-file tasks (t2), so this is NOT purely an OFF-rider problem — the 5 tasks /
+verifiers / read-feedback path need review. **The harness mechanics are validated (t1 both arms); the read-loop
+on multi-file tasks is the next blocker for a decision-grade A/B — diagnose from the tap, do not blind-fix.**
+J6 resumed on production (pid 2350351).
