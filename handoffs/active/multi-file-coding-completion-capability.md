@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + optional functional-verifier-in-the-loop (self-check is py_compile-only today).
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — 63430b5). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -141,14 +141,26 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   (`scripts/benchmark/bep_edit_mode_wiring.py` — create / read-first multi-file / rename+delete, response
   `mode=='edit'` + verifier PASS on the scratch the server edited).
 
+**✅ Hardened (review 2026-05-27 — `harden(edit-transaction)` 63430b5):**
+- **Fail-closed edit mode** — explicit `force_mode="edit"` with the flag/root missing now returns **HTTP 412**
+  (was: silent REPL fall-through, which would reintroduce the loop this work avoids). Live-verified 412.
+- **Scope caps** — `assemble_context` fail-closes (no model call, no writes) above 50 files / 400 KB, bounding
+  the unscoped whole-root assembly.
+- **Clean syntax-check** — `compile(src, path, "exec")` (no `__pycache__`/`.pyc` side effects the rollback
+  wouldn't track).
+- **All-or-nothing** — any unsafe (escape/absolute) path aborts the WHOLE transaction (nothing written).
+- **cc-roles SoT** — `src/chat_completions_roles.py` is now the single source of truth; chat.py (3 sites) +
+  backend.py share it (was divergent inline defaults, and the env var is unset in prod → defaults were
+  load-bearing → latent double-templating for `coder_escalation`). Direct ablation **5/5** with the canonical
+  default confirms `coder_escalation` correctly relies on server-side jinja — no regression.
+
 **Open / not-yet-done (rollout decisions, not blockers):**
 - **Default routing.** Edit-mode is opt-in (`force_mode="edit"` + flags). Routine coding edits do NOT yet
   auto-route to it — needs a routing decision (which tasks/roles, and a non-scratch edit-root policy).
-- **Functional verifier in the loop.** The self-check is **`py_compile` (syntax) only** — it does not run a
-  task's functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
-- **Edit affordance / target selection.** Full-file replacement is the shipped (proven-easy) shape; a
-  structured base-hash patch form and smart `target_files` selection (vs assembling the whole scoped root)
-  are options for large repos.
+- **Smart target selection.** Scope caps are the safety *floor*; selecting the *relevant* files (vs assembling
+  the whole scoped root) is the enhancement for larger repos. A structured base-hash patch form is an option.
+- **Functional verifier in the loop.** The self-check is **syntax-only** (`compile`) — it does not run a task's
+  functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
 
 ## Reproduce
