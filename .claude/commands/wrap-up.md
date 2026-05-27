@@ -2,6 +2,8 @@
 
 Update all documentation artifacts to reflect work completed in this session, commit changes, and return commit hashes for manual push.
 
+> **⚠ MANUAL TRIGGER ONLY.** Run this routine only when the operator explicitly invokes `/wrap-up`. Nothing may auto-trigger it — there is no `Stop`/`SessionEnd`/`PreCompact` hook, cron, or nightshift task that calls it, and there must not be one. Autonomous, scheduled, or nightshift sessions **may commit progress directly** (a focused `git commit` of progress/handoff edits is fine and encouraged for checkpointing) but must **NOT** run the full wrap-up routine: it performs index pruning (Step 3) and broad doc/wiki sweeps the operator wants to review on a controlled, manually-chosen cadence.
+
 ## Steps
 
 ### 1. Progress Report
@@ -21,6 +23,13 @@ Update all documentation artifacts to reflect work completed in this session, co
 - Update relevant domain index files linked from `handoffs/active/master-handoff-index.md`
 - Update the master index priority queue if item status changed (completed, priority shift, new items)
 - Strikethrough completed items with checkmark and date
+
+**Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
+
+- **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and remove its index reference.
+- **Not complete, but the index entry has accreted stale completed-narration** → keep the handoff active, trim the index entry to its open items only. Chronology belongs in the progress log, not the index cell (don't append "Update (date):" into index cells).
+- Point handoff *status* at the machine-readable source of truth (`execution_manifest.jsonl`, test names) instead of re-narrating it in prose, so the index can't drift.
+- **Always archive, never delete.** **List everything you pruned/archived in the wrap-up output** under a `## Index pruning` heading so the operator can review it before it leaves the active tree.
 
 ### 4. Repository Documentation
 
