@@ -23,6 +23,16 @@
 # Determine script location to find the repo root (epyc-root).
 _ENV_SH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _PROJECT_ROOT="$(cd "${_ENV_SH_DIR}/../.." && pwd)"
+# If sourced via a bind alias OUTSIDE the raid prefix (e.g. /workspace, a bind mount of epyc-root —
+# same inode, so realpath/pwd -P do NOT resolve it to the source), prefer the canonical /mnt/raid0
+# spelling so prefix-guarded helpers (check_path_prefix/ensure_dir) and downstream tooling see a
+# consistent path. Inode-verified: only remaps when it is genuinely the same directory.
+_CANON_ROOT="${ORCHESTRATOR_PATHS_LLM_ROOT:-/mnt/raid0/llm}/epyc-root"
+if [[ "${_PROJECT_ROOT}" != /mnt/raid0/* && -d "${_CANON_ROOT}" \
+      && "$(stat -c %i "${_CANON_ROOT}" 2>/dev/null)" == "$(stat -c %i "${_PROJECT_ROOT}" 2>/dev/null)" ]]; then
+  _PROJECT_ROOT="${_CANON_ROOT}"
+fi
+unset _CANON_ROOT
 
 # Load .env file if present (repo-local overrides).
 if [[ -f "${_PROJECT_ROOT}/.env" ]]; then

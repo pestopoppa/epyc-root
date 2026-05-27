@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source environment library first (sets all path variables)
 source "$SCRIPT_DIR/../lib/env.sh"
 
-source "$SCRIPT_DIR/agent_log.sh"
+source "$SCRIPT_DIR/../utils/agent_log.sh"
 
 LOGS_DIR="${LLM_ROOT}/LOGS"
 INVENTORY_FILE="$LOGS_DIR/model_inventory.json"
