@@ -288,3 +288,16 @@ Requires **all four** of: (1) internal pull from `internal-kb-rag.md` for guided
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-625 — entry with deep_dive cross-link, refined verdict_justification, contradicting_evidence
 - [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) Research Intake Deep-Dive — 2026-05-27 section — gated lift-not-fork shopping list for Patterns A+B
 - [`handoffs/active/meta-harness-optimization.md`](../handoffs/active/meta-harness-optimization.md) Research Intake Update — 2026-05-27 — explicit do-not-lift record for the 9-agent decomposition
+
+## Wrap-up and index-hygiene guardrails (2026-05-27)
+
+The manual `$wrap-up` routine is the controlled cadence for broad index pruning. Active indices track outstanding TODOs only, but pruning should happen during wrap-up rather than mid-campaign so status changes are reviewable and logged. The 2026-05-27 hygiene audit also tightened the archive rule: a handoff cannot be archived unless it is not a live reference target and its acceptance criteria are met as written.
+
+Practical patterns:
+
+- Prefer dereference/trim over archive when open work remains; move completed chronology into progress logs.
+- If a direct domain index would otherwise hide a pending trim, add a short hygiene note in the affected index or handoff until the trim lands.
+- Never mark flag-implemented work complete if the behavioral default in the acceptance criteria is still pending operator decision.
+- Separate owner-refresh queues from direct edits: stale handoffs needing owner judgment should be logged, not silently rewritten.
+
+Sources: [`handoffs/active/handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md), [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md).

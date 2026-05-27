@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-27 (manual incremental update: Package J HLE metrics built, DCP-4 code-ready audit, and J8 keep/retire decision criteria)
+**Last compiled**: 2026-05-27 (manual incremental update: HALO-2 OTLP converter, domain dereference hygiene, and launcher default-decision correction)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 321 documents across 6 source types
+**Total sources**: 329 documents across 6 source types
 
 ---
 
@@ -22,7 +22,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 21 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); per-model serving configs critical for quality. Test-time compute (DeepConf) validated NEGATIVE on CPU — confidence anti-correlated with correctness, no gain over majority |
+| [Inference Serving](inference-serving.md) | 25 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); serving indices now distinguish unresolved action from stale narration, with NUMA disagg, wdata coalescing, Qwen3.6 fixes, and launcher defaults explicitly gated |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -39,7 +39,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 30 | Multi-file coding failure diagnosed as REPL/BEP protocol friction, not model capability; edit transactions solve practical remediation while J8 remains only a legacy batch-edit keep/retire experiment |
-| [Autonomous Research](autonomous-research.md) | 37 | AutoPilot HLE observe-only fields and rule metrics are in the journal; validity analysis still gates any Pareto promotion |
+| [Autonomous Research](autonomous-research.md) | 38 | AutoPilot HLE observe-only fields and rule metrics are in the journal; HALO-2 can convert live journals to OTLP spans, but analyzer runs remain operator/inference-gated |
 | [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
 
 ## Context & Compression

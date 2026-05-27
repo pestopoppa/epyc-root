@@ -330,3 +330,21 @@ Inference-gated verifications (WP-2/WP-3/WP-4 gates, WP-5 ratification, WP-6 mat
 - [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) § Package J — wires the inference gates with priority-zero sequencing
 - [`handoffs/active/within-role-placement-state-machine.md`](../handoffs/active/within-role-placement-state-machine.md) — handoff frontmatter `implementation_status` block tracks per-WP status
 - [`progress/2026-05/2026-05-25.md`](../progress/2026-05/2026-05-25.md) Session 14 + [`progress/2026-05/2026-05-26.md`](../progress/2026-05/2026-05-26.md) Session 15
+
+## 2026-05-27 — Handoff hygiene now separates live serving work from stale narration
+
+Second-pass handoff hygiene corrected an index-tracking failure: some active CPU/serving handoffs were still visible as broad work streams even though only narrow residual decisions remained. The durable serving rule is that domain indices should carry unresolved action only; completed chronology belongs in progress logs or the handoff body.
+
+Current examples:
+
+- `numa-prefill-decode-disaggregation.md` remains active only for the Phase 0 xGMI KV-transfer falsification gate and multi-tenant reopen condition. `inference-acceleration-index.md` and `cpu-inference-optimization-index.md` now carry explicit hygiene notes so direct readers see the pending trim.
+- `wdata-aware-mul-mat-coalescing-design.md` is a completed Phase 0 negative/low-ROI analysis; keep only the decision statement and re-evaluation triggers active. Its sibling `cpu22-hybrid-spillover-design.md` should retain only a lightweight comparison pointer after trim.
+- `qwen36-benchmark-fixes.md` should close or trim after one post-reboot confirmation. Qwen3.6 output and benchmark wiring are fixed; the separate bimodal-throughput regression belongs in progress/future tracking.
+- `launcher-numa-mode-gating.md` is PARTIAL, not complete: the `--numa-mode {full,quarter,both}` flag landed, but the original acceptance criterion that `start --only worker_general` default to `quarter` is still unmet because default remains `both`. That default is an operator decision, not a hygiene cleanup.
+
+### Sources (2026-05-27)
+
+- [`handoffs/active/handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — second-pass audit correction and outstanding domain-scoped dereferences
+- [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/active/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/active/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/active/qwen36-benchmark-fixes.md`](../handoffs/active/qwen36-benchmark-fixes.md) — active handoff notes
+- [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md) — partial status and default-decision gate
+- [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
