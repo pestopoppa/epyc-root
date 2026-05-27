@@ -557,3 +557,51 @@ Then run the 8 Phase-0 exit-gate tests. Phases 1b (BEP delete/rename promotion f
 - Then stub/fake dry-runs only. **STOP before real inference** (Phases 0-3 complete+tested+committed+explicit host-quiet go-ahead — hard gate).
 
 - **2026-05-26 Phases 1b/1c/2/3 — COMPLETE + dry-run-validated.** 1b: delete/rename promotion fixed in batch_edit_runner (ApplyResult.deleted_paths/renamed_paths; promote unlinks deletions+rename-sources) + 2 tests (`618d38a`). 1c: `_maybe_batch_edit_turn` records distinct states (absent vs malformed [the hard gate], applied/verify_failed/apply_failed/promote_failed) via `_BATCH_EDIT_STATE_COUNTS` + 2 tests (`618d38a`). 2: `data/bep_sandbox/tasks.jsonl` — 5 deterministic tasks (create/multi-file-modify×2/rename/bugfix), each verifier validated to fail-initial/pass-solution (`36cefeb`). 3: `scripts/benchmark/bep_ab.py` — ABBA arm-block ordering, fixed scratch reset per task×arm×rep, incremental JSONL, PYTHONDONTWRITEBYTECODE; HARD inference gate (real run refused without --host-quiet-confirmed + no autopilot); **stub dry-run: 20 rows all verifier-PASS** (`2729b11`). **All Phases 0-3 done; real BEP-2 A/B awaits J6-paused + operator host-quiet go-ahead.** (Note: the live A/B's ORCHESTRATOR_EDIT_ROOT changing topology will make the matrix "stale" — use the standalone path or accept diagnostic mode, as the dual-half probe did.)
+
+## BEP-2 Real-Run Investigation & PARKING (2026-05-27)
+
+Operator granted host-quiet go-ahead; J6 paused; ran the first real BEP-2 A/B. **The "stub-validated"
+harness had multiple real-path defects that stub mode structurally could not catch (stub bypasses
+`_chat` and the REPL entirely).** Four distinct issues found, in order:
+
+1. **mock_mode** (FIXED `22b03c0`) — `bep_ab._chat` payload omitted `mock_mode:false`/`real_mode:true`;
+   `ChatRequest.mock_mode` defaults True (safety), so every "response" was `[MOCK] Processed prompt…`
+   at ~0.02s. Real `/chat` verified working (`PONG`).
+2. **force_mode** (FIXED `c407137`) — payload omitted `force_mode:"repl"`; coder routed to `direct`
+   (turns=1, prose/code-block answer, no edits), so the batch-edit divergence (`helpers.py:852`) was
+   never reached and quality was 0 in BOTH arms.
+3. **baseline doesn't edit** — with real+repl, the OFF/baseline coder returned the code as a FINAL()
+   text answer and never wrote a file (turns=3, scratch empty). The ON arm only "won" because the
+   batch rider forces a structured patchset. Added a symmetric **`interleaved_edit_rider`** feature
+   flag + per-turn rider (`1bad0e1`: `batch_edit_parse` instruction/builder, `features` flag+field,
+   `helpers._execute_turn` gated `elif`, `bep_ab` per-arm wiring). Production-safe (default-off).
+   Result: model now ATTEMPTS edits but **loops to turns=8 max without writing**.
+4. **write target not redirected** — `_file_write_safe` (`file_mutation.py`) only *validated* the
+   resolved scratch path but *wrote to the raw `path`* (process-cwd-relative). Phase 1 wired path
+   VALIDATION but never rewrote the WRITE TARGET. Fixed to `resolve_task_path(path)` when
+   `task_root_active()` (`1bad0e1`, default-off parity, gitnexus LOW). **No effect on the symptom** —
+   baseline still turns=8, no file in scratch.
+
+**ROOT CAUSE UNCONFIRMED → PARKED.** After 4 fixes the baseline still cannot land a file in the
+scratch repo, and the model's actual per-turn REPL behavior is **not observable** from
+`logs/orchestrator.log` (HTTP access lines only) — so issue #3/#4 debugging was hypothesis-driven
+guessing, which is the symptom-chasing anti-pattern. **Do NOT attempt more fixes blind.**
+
+### Rework prerequisites (observability-first)
+1. Instrument the REPL turn loop to log, per turn for a given session: the model's emitted code/tool
+   calls, the dispatched tool, the resolved write path, and any `[ERROR …]` returned. Without this,
+   we cannot tell whether the OFF coder (a) never calls a write tool, (b) calls `_file_write_safe`
+   and errors, or (c) writes somewhere then it's lost.
+2. Only then decide the real fix for the interleaved baseline.
+3. Re-validate the full ABBA run; THEN evaluate the gate (batch latency ≥15% down, quality within
+   -1pp, parse ≤5%, apply ≤2% via `_BATCH_EDIT_STATE_COUNTS`).
+
+Prior fixes (`22b03c0`, `c407137`, `1bad0e1`) all stand and are production-safe (all flags default-off;
+`_file_write_safe` redirect is a genuine task-root-contract correctness fix). **DCP-6 stays parked**
+(it reuses this harness). Invalid runs quarantined under `data/bep_sandbox/INVALID-*`.
+
+### Also resolved this window (not BEP)
+- **n_way size-2 cross-role re-bench: NOT NEEDED** (closed). The `pairs:` matrix uses *full* instances
+  (idx0), which were always correctly pinned; the affinity bug only mis-pinned *quarters* (already
+  re-benched: within-role `9a414a9`, n_way size-3+ `4363dae`). The "J4b/J4c re-run pending" prose flag
+  was over-conservative for the size-2 full-pair cells.
