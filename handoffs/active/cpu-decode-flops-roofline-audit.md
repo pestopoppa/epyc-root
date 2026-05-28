@@ -166,10 +166,28 @@ Replace the placeholders in Step 2 below with:
 
 #### Phase 0 sign-off
 
-- **Date**: 2026-05-28
-- **Commit recording this calibration**: TBD (this commit)
+- **Date**: 2026-05-28 (first sign-off pre-reboot at 9d uptime)
+- **Commit recording this calibration**: `d387057`
 - **Host fingerprint**: AMD EPYC 9655, 6.14.0-37-generic kernel, NPS4 / 4 NUMA nodes / 96 cores. Any reboot, kernel upgrade, microcode update, or BIOS NPS change invalidates this calibration — rerun Phase 0 in that case.
 - **Status flip authorization**: gate criteria 0.6 (1)-(4) all satisfied above; Status header at top of this file flipped DRAFT → ready-to-run (user-gated) in the same commit.
+
+#### Phase 0 re-verification post-reboot (2026-05-28)
+
+- **Reboot date**: 2026-05-28 ~12:20 UTC (mid-session, operator-initiated to test the `feedback_host_throttle_check` policy)
+- **Host fingerprint post-reboot**: identical to pre-reboot — `EPYC 9655 96-Core Processor` / `6.14.0-37-generic` / NPS4 / 4 NUMA nodes / governor=performance / numa_balancing=0. Calibration carries forward.
+- **Quick re-verify**: same `perf list | grep` probes resolved the same event set. Trivial `sudo perf stat -e <events> -- sleep 1` returned numeric counts on all 5 events tested (vector_mac, vector_all, scalar_all, ls_dmnd_fills_from_sys.dram_io_all, ls_hw_pf_dc_fills.dram_io_all).
+- **Note on host defaults post-reboot**: `transparent_hugepage/enabled = [madvise]` (not `always`), `transparent_hugepage/defrag = [madvise]` (not `always`), `perf_event_paranoid = 4` (not ≤1). All reset to kernel defaults at boot. `orchestrator_stack.py start` re-applies them via `apply_host_prerequisites()`. The audit handoff itself does NOT depend on those (they affect bench results but not counter availability).
+
+#### Bench-recipe drift caught 2026-05-28 (must read before constructing any bench command)
+
+The post-reboot bench drift investigation surfaced multiple compounding problems with ad-hoc bench commands. **Codified path**: use `/mnt/raid0/llm/epyc-inference-research/scripts/lib/canonical_recipe.py` constants verbatim. Ad-hoc reconstruction from memory drifts on:
+
+1. **Binary selection**: ik_llama vs mainstream llama.cpp. The "60 t/s baseline" measurement was via `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench`. `llama.cpp-experimental/build_v5_clean/bin/llama-bench` is a different code path (~16% slower for gemma4).
+2. **libomp resolution**: ldd resolves to AOCC libomp by default (`/opt/AMD/aocc-compiler-5.0.0/lib`) — canonical recipe requires clang-20 libomp via `LD_LIBRARY_PATH=/usr/lib/llvm-20/lib:...`.
+3. **`OMP_DYNAMIC=false`**: missing from ad-hoc commands.
+4. **ik_llama `llama-bench` was broken** until 2026-05-28 rebuild: `undefined symbol: llama_set_offload_policy` because `DT_RUNPATH` lost to system `LD_LIBRARY_PATH`. **Fix**: rebuilt with `-Wl,--disable-new-dtags` → `DT_RPATH` (beats `LD_LIBRARY_PATH`). Affects `llama-server` too — production launches were silently susceptible to crash on any code path requiring the missing symbol.
+
+Cross-reference: new memory `feedback_use_codified_recipes_not_memory.md` for the general pattern. The companion roofline-audit Phase 2 measurements landed at 41.91 t/s post-rebuild + recipe-correct (vs 36-37 t/s with ad-hoc drift).
 
 ### 0.6 — Promote Status to "ready-to-run" (STRICT GATE — do not skip)
 
