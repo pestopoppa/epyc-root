@@ -246,6 +246,61 @@ bench_canonical.sh --v4-fork --perf -m /mnt/raid0/llm/models/deepseek-v4-flash/D
 
 If you set `HF_TOKEN` (via `hf auth login`) the download can complete in 30-60 min instead of ~4h, but this is not required — curl will keep going on its own.
 
+### Strategy B operational notes (gathered 2026-05-28 from antirez fork inspection)
+
+#### Chat template
+
+V4-Flash GGUF does NOT embed `tokenizer.chat_template` in the metadata (confirmed via `llama-gguf` on the partial download — none of the 62 metadata kv pairs is the template). The antirez fork ships the canonical template at:
+
+```
+/mnt/raid0/llm/llama.cpp-deepseek-v4/models/templates/deepseek-ai-DeepSeek-V4.jinja
+```
+
+(96 lines, added in commit `3ba61fbb4`). When launching `llama-server` or `llama-cli`, point at it via `--jinja --chat-template-file <path>`. The template:
+- Uses a custom `｜DSML｜` token wrapper for tool calls (similar pattern to Qwen3.6's frontdoor tokens)
+- Supports `enable_thinking` Jinja variable (similar to Qwen3.6) — default false, may need to be explicitly disabled per the `feedback_enable_thinking_requires_chat_completions_path` pattern if we observe `<think>` loops
+- Has separate tool-call schema in `<｜DSML｜tool_calls>` block format
+
+For the throughput gate we use bare prompt completion (no chat template needed). For the quality gate (uses /v1/completions, not /v1/chat/completions) we also don't need the template. The template only becomes load-bearing if we later wire V4 into the orchestrator chat-completions path.
+
+#### Long-context graph metadata fix (already in our build)
+
+Commit `188df615c` ("Fix DeepSeek V4 long-context graph metadata") bumps `llama_context::graph_max_nodes` for `LLM_ARCH_DEEPSEEK4` from `max(4096, n_tokens*64+32*n_tensors)` to `max(262144, n_tokens*192+64*n_tensors)`. Reason: V4's position-dependent compressed-attention decode path creates many temporary tensor objects per token (especially in non-prefill ubatches on long contexts); the visible graph node count is much smaller than the GGML objects actually allocated, so without this bump long-context decode would exhaust the metadata arena.
+
+This fix is in our build (tip `2f2d44052` includes the prior commit). **No operator action required**, but if we hit an arena-exhaustion assertion at long context, this is the area to look first.
+
+The commit also added `DSV4_COMPRESSED_DECODE_UBATCH_MAX = 128` to `llama-memory-hybrid-iswa.cpp` to bound the compressed-decode ubatch size — this is the kind of soft limit that interacts with our `-ub` setting (we use 512 for gemma4 production; for V4 we should follow antirez's recipe of `-ub 512` per the runner script).
+
+#### README disclaimers + recommended invocation
+
+From `llama.cpp-deepseek-v4/README.md`:
+
+> This is a fork of llama.cpp that implements DSv4 support, with generated GGUF that aims to target MacBooks with just 128GB of RAM using 2bit quantization of routed experts.
+>
+> Disclaimer:
+> - This code was written with heavy help from GPT 5.5 and the official DeepSeek v4 Flash as reference.
+> - The model quantized in this way behaves very very well in the chat, frontier-model vibes, but it was not extensively tested.
+> - The code runs both with CPU and Metal backends. With Metal is faster.
+
+Implications for us:
+- **"Not extensively tested"** — treat all results as exploratory. The quality gate is exactly the right tool for the situation.
+- **MacBook target** — antirez's tuning targets 128 GB unified memory on Apple Silicon. Our 1.1 TB EPYC + 12-channel DDR5 + NPS4 is a different regime; we should not expect the same numbers as antirez's Mac runs.
+- **CPU "works but Metal is faster"** — author has stress-tested Metal, not CPU. Our throughput floor (Q4 ≥ 18 t/s solo per §Merge Gates) is calibrated for a CPU-on-EPYC regime, not a Metal comparison.
+
+Recommended invocation from the README is `llama-cli -m DeepSeek-V4-Flash-IQ2XXS... -cnv` (interactive). Our automated flow is non-interactive; the smoke test (`v4_smoke_test.sh`) uses `--no-conversation` and the runner (`v4_quality_gate_runner.py`) uses `/v1/completions`.
+
+#### Tip commit (`2f2d44052`) — prompt replay speedup
+
+Latest antirez commit adds a "DeepSeek V4 HC weighted-sum ggml op with CPU, Metal, and meta backend support" used in the compressed attention path. Also batches resumed compressed-decode projections and increases the compressed-decode replay cap. Performance numbers cited: M3 Max ~127-128 → ~166 tok/s synthetic Metal server replay. **Generation speed cited as ~21.5 tok/s on M3 Max** — this is our nearest comparison point on the throughput axis (though architectures differ enough that we shouldn't anchor on it).
+
+#### Useful prep artifacts (committed alongside this section)
+
+- `scripts/benchmark/v4_quality_gate_runner.py` — capture EPYC-side logprobs (20 prompts × 64 tokens via /v1/completions)
+- `scripts/benchmark/v4_quality_gate_compare.py` — MAD + token-1 verdict; 27 unit tests
+- `scripts/benchmark/test_v4_quality_gate_compare.py` — comparator test suite
+- `scripts/benchmark/v4_smoke_test.sh` — preflight + metadata + 4-token decode (folds in option C preflight)
+- `benchmarks/prompts/v1/deepseek-v4-quality-gate.yaml` — 20-prompt set per §Merge Gates
+
 ### Notes carried forward from 2026-05-28 session
 
 - ik_llama branch `feature/deepseek4-port` preserved at `c04881fc0` (= `production-gemma4-mtp` tip). Used if/when Option A activates.
