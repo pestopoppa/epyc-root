@@ -31,6 +31,14 @@ The audited live state on 2026-05-26 showed:
 
 That specific idle dashboard state was therefore an autopilot-stopped/reload condition, not CPU lock contention.
 
+Follow-up 2026-05-28: a separate top-strip classification regression was fixed after the dashboard showed `run state
+quiet` while structured live tap and CPU-region lock panels still showed active frontdoor decode. The dashboard now
+treats active structured tap requests or held CPU-region locks as inference-active for the top run-state label, and
+shows `orphan inference` if those signals survive while autopilot itself is down. The same follow-up also scoped the
+GEPA/Pareto and hypervolume panels to the latest journal segment after the current trial-id reset, pruned deprecated
+pre-reset journal/state Pareto rows, and verified `/dashboard/api/pareto` as `source=journal_current_run` with frontier
+`[38,71,76,77]`, 61 entries, 61 hypervolume points, and monotonic HV through trial 77.
+
 ### Root latency sources
 
 1. **Invisible pre-planner work**
