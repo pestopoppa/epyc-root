@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 38 documents (added 2026-05-27 text-space skill-optimization cluster — SkillOpt + cohort + SkillsBench skill-efficacy evidence; plus bulk-campaign audit, BEP real-path harness lessons, HLE observe-only metrics, and wrap-up checkpoint)
+**Last compiled**: 2026-05-28
+**Sources**: 39 documents (added 2026-05-28 Pareto dashboard journal-backed freshness fix)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-28, Pareto dashboard freshness)
+
+- **Autopilot dashboards should reconstruct critical progress views from append-only journals when state caches can be stale.** The Pareto dashboard was polling successfully but showing old frontier and hypervolume data because `ParetoArchive.save(state)` wrote a fresh archive and a follow-up `save_state(state)` rewrote older `state["pareto_archive"]` over it. The fix both synchronizes the caller's in-memory state after archive writes and makes `/dashboard/api/pareto` reconstruct the current session from `autopilot_journal.jsonl`, falling back to cached state only when journal data is unavailable. The UI now exposes `journal` vs `state` as the plot source. Source: [progress 2026-05-28 Pareto dashboard](../progress/2026-05/2026-05-28-pareto-dashboard.md).
 
 ### New (2026-05-27, text-space skill optimization + the self-generated-skills caution)
 

@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 33 documents (added peer-verifier speculation spike)
+**Last compiled**: 2026-05-28
+**Sources**: 34 documents (added 2026-05-28 DeepSeek-V4 MTP sidecar reference)
 
 ## Summary
 
@@ -21,6 +21,7 @@ The current state of the art for our stack is not speculative decoding at all --
 
 ## Key Findings
 
+- **DeepSeek-V4-Flash ships an optional MTP sidecar that extends the self-drafting MoE pattern (2026-05-28).** The 3.6 GiB MTP-only GGUF side-file packages V4's multi-token-prediction head as a drafter for the V4 target, matching the broader "target family plus MTP sidecar" pattern already seen in Gemma4 and DeepSeek-V3-style work. It is a candidate reference only until `deepseek4` target loading and MTP sidecar API parity are verified in llama.cpp/ik_llama.cpp, followed by acceptance-rate measurement on EPYC workloads. Source: [moe-spec-cpu-spec-dec-integration.md](../handoffs/active/moe-spec-cpu-spec-dec-integration.md).
 - **Peer-verifier speculation is not draft-target speculative decoding.** The Fortytwo-derived spike concerns same-tier peers scoring partial generations mid-stream, possibly using a Bradley-Terry-style accept/reject loop. That is mechanically distinct from small-drafter/large-target speculation and is currently a scoping spike only; the first gate is whether the backend exposes enough mid-stream control to prototype it without multi-week llama.cpp surgery. Source: [peer-verifier-speculation-spike.md](../handoffs/active/peer-verifier-speculation-spike.md).
 
 - **Verification wall on hybrid recurrent models**: Multi-token verification on Qwen3.5 (75% Delta Net layers) costs approximately N times single-token decode. MTP-1 measured 0.56x throughput at batch-size 2. Tree speculation measured -53% to -66% across three implementation approaches (frozen multi-path, per-path sequential replay, checkpoint/clone-cell). DFlash projected approximately 0.3x (16 tokens at approximately 16x cost). The root cause is architectural: recurrent layers process tokens sequentially regardless of batch size, while GPU parallel scan hides this cost. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [Tree speculation handoff](../handoffs/completed/tree-speculation-numa-drafting.md)

@@ -2,8 +2,8 @@
 
 **Category**: `moe_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 25 documents (2 deep-dives, 4 handoffs, 19 intake entries)
+**Last compiled**: 2026-05-28
+**Sources**: 26 documents (added 2026-05-28 DeepSeek-V4-Flash GGUF heterogeneous MoE quant reference)
 
 ## Summary
 
@@ -22,6 +22,10 @@ Extending techniques include EvoESAP (non-uniform cross-layer budget allocation 
 A newer entrant is Leanstral (Mistral AI), a 119B MoE with 6.5B active parameters using DeepSeek V3-style architecture (MLA + 128 routed experts + 1 shared expert). Leanstral is a near-ideal REAP candidate: 95% of its parameters are routed expert weights. For specialized Lean 4 proof engineering, where expert activation patterns likely cluster on a subset of experts, aggressive pruning at 75% + Q4_K_M could shrink the model from 68 GB to approximately 20 GB with projected 40+ t/s on EPYC. The `deepseek2` architecture is fully supported in llama.cpp, and community GGUFs are available.
 
 ## Key Findings
+
+### DeepSeek-V4-Flash GGUF Heterogeneous MoE Quant Reference (2026-05-28)
+
+- **DeepSeek-V4-Flash GGUF is a concrete asymmetric MoE quantization reference, not yet a benchmarked deployment target.** The antirez GGUF card packages a 284B-parameter `deepseek4` MoE with per-tensor-role precision: routed experts at very low precision, shared/attention/output tensors at higher precision, and router tensors preserved in F16. The Q2 and Q4 variants are reported at 80.8 GiB and 153.3 GiB on disk, respectively, which fit the EPYC host, but the source provides no local throughput or quality numbers. Treat it as a transferable heterogeneous-MoE quant recipe gated on llama.cpp/ik_llama.cpp `deepseek4` support and workload-specific validation. Source: [large-moe-expert-parallelism.md](../handoffs/active/large-moe-expert-parallelism.md).
 
 ### REAP Core Technique
 

@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 25 documents (added Fortytwo swarm dataset gate and RustEvo2 verification)
+**Last compiled**: 2026-05-28
+**Sources**: 27 documents (added 2026-05-28 OPD diagnostics and SDAR/TIP training-only references)
 
 ## Summary
 
@@ -22,6 +22,11 @@ A critical finding from SFT generalization research (intake-374, intake-378) is 
 Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
 
 ## Key Findings
+
+### New (2026-05-28, OPD diagnostics and training-only agent RL references)
+
+- **OPD research now has a clearer "when does it help" diagnostic, but it remains training-side.** Intake-639 adds a per-token gradient-alignment framework for on-policy distillation, giving token/question/teacher granularity for where teacher guidance aligns with the ideal student-success gradient. This complements OPSDC/OPD survey notes but requires gradient access, so it is a future training-pipeline reference, not an inference-stack task. Source: [reasoning-compression.md](../handoffs/active/reasoning-compression.md).
+- **TIP is the canonical post-OPSDC token-selection refinement; SDAR is only a future agent-RL pointer.** TIP scores tokens with entropy plus teacher-student divergence and reports Qwen3-8B to 4B MATH-500 improvement at 50% retention, while SDAR layers a sigmoid-gated OPSD auxiliary loss on GRPO for multi-turn agent RL. Both are GPU/training-time techniques; swarm-dataset-distillation remains a data assembly and verification track, not a policy-training track. Sources: [reasoning-compression.md](../handoffs/active/reasoning-compression.md), [swarm-dataset-distillation.md](../handoffs/active/swarm-dataset-distillation.md).
 
 ### New (2026-05-27, swarm-as-dataset-generator gate)
 
