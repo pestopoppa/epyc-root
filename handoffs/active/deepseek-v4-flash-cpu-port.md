@@ -114,17 +114,33 @@ The good news from inspecting `06c504247 --stat`: the V4-specific changes are we
 
 The 17+ conflicting files seen during the cherry-pick attempt are antirez's UNRELATED refactors that landed in the same commit (Metal kernels, KV-cache lifetime changes, graph plumbing). None of those are required for CPU inference of V4 — they were antirez's path-of-least-resistance for his Mac-targeted build.
 
-**Plan for Phase 1.2** (next session, ~1-2 days):
-1. Apply the 6-file V4 delta manually onto `feature/deepseek4-port`:
-   - Copy `src/models/deepseek4.cpp` verbatim from `antirez/main`.
-   - Hand-merge the +200/+52/+30/+12/+8 deltas into ik_llama's matching files (these are mostly additive: new enum values, new dispatch case, new hparam fields).
-2. Adapt to ik_llama's API surface where it differs from antirez's base:
-   - ik_llama may use different `llama_graph_*` signatures; the V4 arch code in `deepseek4.cpp` will need its graph-building calls re-bound to ik_llama equivalents.
-   - ik_llama has KV-cache machinery that antirez's commit moved/refactored; the V4 KV reuses MLA which ik_llama already supports (gemma4 + DSv3 paths) — port the V4 `n_indexer` / `n_compressor` parameter wiring on top of existing MLA infra.
-3. Build verification: `cmake --build` under canonical Clang 20 + libomp + znver5 + PGO env. Expect 2-4 hours of iterative fix-build-fix for type/signature drift.
-4. THEN proceed to Phase 2 (Q2 smoke test) as documented.
+### Phase 1.2 scope revised 2026-05-28 — original "1-2 day manual hand-merge" estimate was WRONG
 
-**Hand-off note**: the branch `feature/deepseek4-port` is empty (= `production-gemma4-mtp` tip) until Phase 1.2 lands the manual port. If the upstream ggml-org/llama.cpp PR #22319 lands a deepseek4 implementation before Phase 1.2 starts, abort the manual port and pivot to the upstream PR + ik_llama backport (cheaper).
+**Survey of the actual API gap** (run on `feature/deepseek4-port` branch 2026-05-28 PM):
+
+- **Headers** `deepseek4.cpp` includes — `models.h`, `llama-kv-cache-iswa.h`, `llama-memory-hybrid-iswa.h`, `llama-memory-recurrent.h` — **none exist in ik_llama**. But: V4 actually only uses `models.h` for its base class `llm_graph_context`; the other three are transitive includes serving other archs (Mamba, ISWA, recurrent) that V4 doesn't touch.
+- **V4 actually uses ONLY** (from the graph-context refactor in mainstream): `llm_graph_context` (1 ref, as parent class), `llm_graph_input_i` (interface for input registration), `llm_graph_params` (constructor parameter struct). Plus V4-specific structs (`dsv4_hc_mix`, `dsv4_state_pair`, `dsv4_decode_compressor`, etc.) which are self-contained.
+- **ik_llama's paradigm** is `llama-build-context` — the older API. Models are member functions of `class llm_build_context` (e.g. `build_deepseek2()` member at line ~2399 of the 2915-LOC `llama-build-context.cpp`). The dispatch is `llm_build_context::build_<arch>()` returning `ggml_cgraph *`.
+- **Mainstream's paradigm** is `llama-graph` — the newer API. Models are subclasses of `llm_graph_context` (e.g. `llm_build_deepseek4 : public llm_graph_context`). The dispatch is via constructor + virtual functions on the graph context.
+
+**These are not the same shape.** Translating `deepseek4.cpp` (1392 LOC in graph-context idiom) into ik_llama's build-context idiom is a structural rewrite, not a hand-merge. Per-call-site mapping needed for every `ggml_*` graph operation. The V4-specific logic (CSA + HCA + indexer + compressor + manifold-constrained HC) stays the same; the API surface around it does not.
+
+**Realistic scope**: 3-5 days of careful translation by someone who understands BOTH APIs deeply enough to map calls 1:1. The previous "1-2 days" estimate assumed self-contained file + additive enum hand-merge — wrong on the first point. The arch enum + hparams deltas (+52/+30/+8/+12 LOC) ARE simple hand-merges; the work is the 1347-LOC model file.
+
+**Strategy options for the next session — operator decision needed**:
+
+| Option | What | Cost | Pro | Con |
+|---|---|---|---|---|
+| **A. Translate to ik_llama API** | Rewrite `deepseek4.cpp` against `llm_build_context` member-function paradigm | 3-5 days | V4 lands in production ik_llama tree; reuses ik_llama's MLA/MoE/CPU optimizations | Major engineering investment; iterative compile-fix cycles |
+| **B. Pivot to mainstream fork** | Fork `antirez/llama.cpp-deepseek-v4-flash` directly; add EPYC NUMA env/launch tuning; run V4 as a SEPARATE binary from production stack | 1-2 days | V4 serving today; preserves antirez's already-debugged code | Loses ik_llama's CPU optimizations for V4 specifically; two binaries to maintain; production stack still on ik_llama for everything else |
+| **C. Defer to upstream** | Wait for ggml-org/llama.cpp PR (currently #22319/#22376 WIP); evaluate then | weeks-to-months | Zero work; eventually best result | No V4 access in the interim |
+| **D. Hybrid: B now + A in background** | Run V4 on antirez fork as auxiliary binary while option A proceeds at slower pace | 1-2d short + 3-5d long | V4 access today + cleaner long-term integration | Two paths to maintain temporarily |
+
+**Recommendation (mine, operator overrides)**: **D** — get V4 functional today via option B (the antirez fork already builds and runs on x86 Linux per its README), evaluate whether it's useful enough to keep / consolidate into ik_llama via option A. Reduces risk of multi-day port investment on a model whose end-value is still uncertain.
+
+### Phase 1.2 execution (deferred pending strategy decision)
+
+The branch `feature/deepseek4-port` remains at the `production-gemma4-mtp` tip. The `antirez` remote is added + fetched. The 6-file delta is identified. The work has NOT started because the right thing to do is align on strategy first. Once decided, the relevant section below activates.
 
 ## Phased Port Plan
 
