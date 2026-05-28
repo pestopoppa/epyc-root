@@ -7,7 +7,7 @@
 **Priority**: LOW (activates when GPU hardware is acquired)
 **Workstream**: Future
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](kv-cache-quantization.md) (GPU KV strategy)
+**Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (GPU KV strategy)
 
 ## Status as of 2026-04-21
 

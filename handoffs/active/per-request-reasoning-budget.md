@@ -5,7 +5,7 @@
 **Priority**: MEDIUM (unblocks per-request reasoning control, autopilot tuning)
 **Categories**: llama.cpp, inference
 **Depends on**: None
-**Related**: [`v3-hybrid-ssm-regression.md`](v3-hybrid-ssm-regression.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md)
+**Related**: [`v3-hybrid-ssm-regression.md`](../completed/v3-hybrid-ssm-regression.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md)
 
 ---
 

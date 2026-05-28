@@ -515,7 +515,7 @@ Spun out to dedicated handoff: [`dynamic-stack-concurrency.md`](dynamic-stack-co
 
 **Key relationship**: Routing intelligence decides *which role* handles a request (quality decision); stack assembly decides *how that role is provisioned* (capacity decision). They compose but are developed independently. The Q-scorer's `baseline_tps_by_role` must become dynamic if stack assembly changes instance counts per role.
 
-See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](numa-orchestrator-deployment.md).
+See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](../completed/numa-orchestrator-deployment.md).
 
 ---
 

@@ -1,5 +1,7 @@
 # CPU22 #3 — Hybrid Static+Dynamic Spillover Design Analysis (Phase 0)
 
+**Completion note (2026-05-27)**: moved to `handoffs/completed/`. Phase 0 concluded the variants are low-ROI for current single-user NPS4 decode and should reopen only if sync attribution or workload shape changes.
+
 **Status**: Phase 0 design analysis only. No code.
 **Date**: 2026-04-29
 **Source**: User direction "investigate both [CPU22 #3 + wdata-aware MUL_MAT] in sequence" 2026-04-29.

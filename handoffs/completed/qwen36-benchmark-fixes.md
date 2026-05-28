@@ -1,5 +1,7 @@
 # Qwen3.6 Benchmark Fixes — Session Handoff
 
+**Completion note (2026-05-27)**: moved to `handoffs/completed/`. The Qwen3.6 output corruption, registry flag, canonical recipe, and libomp/taskset benchmark issues were fixed; the later bimodal-throughput/host-throttle thread is tracked separately in progress and host-health work.
+
 **Date**: 2026-05-02
 **Status**: Partial — Qwen3.6 works, compiler optimization failed
 

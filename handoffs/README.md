@@ -1,66 +1,53 @@
 # Handoff Documents
 
-Handoff documents track work-in-progress for future sessions or agents. They are **ephemeral** - once work completes, their content is extracted and they are deleted.
+Handoff documents track work-in-progress for future sessions or agents. Start with the active master index, then follow the domain index that owns the work.
 
 ## Directory Structure
 
 ```
 handoffs/
-├── active/       # Currently active work
-└── blocked/      # Work awaiting dependencies
-    └── BLOCKED.md
+├── active/       # Currently active work and active coordination indices
+├── blocked/      # Work awaiting dependencies or operator action
+├── completed/    # Completed work retained for historical reference
+└── archived/     # Historical or superseded work retained for reference
 ```
+
+## Current Entry Points
+
+As of 2026-05-27, `handoffs/active/` contains 84 non-index active handoffs plus 7 active coordination indices.
+
+| Scope | Entry Point |
+|-------|-------------|
+| All active work | [active/master-handoff-index.md](active/master-handoff-index.md) |
+| Routing, orchestration, autopilot, stack config | [active/routing-and-optimization-index.md](active/routing-and-optimization-index.md) |
+| Inference speed, benchmarks, model acceleration | [active/inference-acceleration-index.md](active/inference-acceleration-index.md) |
+| Single-instance CPU throughput, OpenMP, NUMA, kernel flags | [active/cpu-inference-optimization-index.md](active/cpu-inference-optimization-index.md) |
+| Agent UX, Hermes, conversation management | [active/hermes-agent-index.md](active/hermes-agent-index.md) |
+| Research, evaluation, monitoring | [active/research-evaluation-index.md](active/research-evaluation-index.md) |
+| Capability pipelines: vision, PDF, Lean, TTS, KB-RAG | [active/pipeline-integration-index.md](active/pipeline-integration-index.md) |
+| Blocked work | [blocked/BLOCKED.md](blocked/BLOCKED.md) |
 
 ## Handoff Lifecycle
 
 ```
-CREATE → handoffs/active/{topic}.md
-    │
-    ▼
-WORK → Update with progress, daily summary to progress log
-    │
-    ▼ (optional)
-BLOCKED → Move to handoffs/blocked/, update BLOCKED.md
-    │
-    ▼
-COMPLETE → Extract content, then DELETE
+CREATE   → handoffs/active/{topic}.md
+WORK     → update handoff, relevant index, and progress/YYYY-MM/YYYY-MM-DD.md
+BLOCKED  → move to handoffs/blocked/ when the work cannot proceed, or mark active handoff BLOCKED and list it in blocked/BLOCKED.md
+COMPLETE → extract findings, move to handoffs/completed/, and update every index that linked it
+ARCHIVE  → move superseded or historical material to handoffs/archived/
 ```
 
 ## On Task Completion
 
-When a handoff task is complete, follow this checklist:
+When a handoff task is complete:
 
-- [ ] **Technical findings** → appropriate `docs/chapters/` chapter
-- [ ] **Key metrics** → `docs/reference/benchmarks/RESULTS.md`
-- [ ] **Model quirks discovered** → `docs/reference/models/QUIRKS.md`
-- [ ] **Process summary** → today's `progress/YYYY-MM/YYYY-MM-DD.md`
-- [ ] **Handoff file deleted** from `handoffs/active/`
-- [ ] **BLOCKED.md updated** (mark complete, unblock dependents)
+- [ ] Extract durable technical findings to the relevant docs, wiki, or research deep-dive.
+- [ ] Record key metrics in the relevant benchmark/result artifact.
+- [ ] Record process summary in today's `progress/YYYY-MM/YYYY-MM-DD.md`.
+- [ ] Move the handoff from `active/` or `blocked/` to `completed/` or `archived/`.
+- [ ] Update the owning domain index and [active/master-handoff-index.md](active/master-handoff-index.md).
+- [ ] Update [blocked/BLOCKED.md](blocked/BLOCKED.md) if any dependency changed.
 
-## Current Active Handoffs
+## Validation
 
-7 handoffs in `active/`. Key active items:
-
-| Handoff | Purpose | Status |
-|---------|---------|--------|
-| [rlm-orchestrator-roadmap.md](active/rlm-orchestrator-roadmap.md) | Consolidated orchestrator roadmap and integration sequencing | Active |
-| ~~hybrid-lookup-spec-decode.md~~ | Prompt lookup + speculative decode + corpus strategy | **Archived** (2026-02-19) |
-| [routing-intelligence.md](active/routing-intelligence.md) | Routing quality and decision-policy improvements | Phase 1 COMPLETE, Phases 2-6 deferred |
-| [skillbank-distillation.md](active/skillbank-distillation.md) | Skill distillation/evolution planning | Active |
-| [multimodal-pipeline.md](active/multimodal-pipeline.md) | Multimodal and vision pipeline enhancements | Active |
-| [claude-code-local-constellation-routing.md](active/claude-code-local-constellation-routing.md) | Claude Code local constellation routing behavior | Active |
-| [open_source_orchestrator.md](active/open_source_orchestrator.md) | Open-source packaging and public orchestrator path | Active |
-
-> Note: Several COMPLETE handoffs need extraction per lifecycle above. Run `ls handoffs/active/` for full listing.
-
-**Last Updated**: 2026-02-19
-
-## Blocked Tasks
-
-See [blocked/BLOCKED.md](blocked/BLOCKED.md) for tasks awaiting dependencies.
-
-## Navigation
-
-- [Progress Logs](../progress/INDEX.md)
-- [Research Chapters](../docs/chapters/INDEX.md)
-- [Back to README](../README.md)
+Run `scripts/validate/check_handoff_freshness.sh` to find aging handoffs. Run a link-coverage audit before major wrap-up work so newly created handoffs are not stranded outside the indices.

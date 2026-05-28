@@ -1,5 +1,7 @@
 # wdata-aware MUL_MAT Coalescing Design Analysis (Phase 0)
 
+**Completion note (2026-05-27)**: moved to `handoffs/completed/`. Phase 0 completed with an honest low-ROI/high-risk verdict; no active implementation remains unless the user explicitly reopens the mechanism.
+
 **Status**: Phase 0 design analysis only. No code.
 **Date**: 2026-04-29
 **Source**: User direction "investigate both [CPU22 #3 + wdata-aware MUL_MAT] in sequence" 2026-04-29.

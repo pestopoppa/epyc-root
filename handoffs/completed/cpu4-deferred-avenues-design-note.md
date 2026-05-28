@@ -1,5 +1,7 @@
 # CPU4 Deferred Avenues — Design Pick (2026-04-30)
 
+**Completion note (2026-05-27)**: moved to `handoffs/completed/`. The selected op-coalesced-barrier path reached Phase 1 and missed the throughput gate under the corrected canonical OMP recipe; remaining variants are reopen criteria, not active work.
+
 **Status**: Design analysis. No code written. Picks ONE avenue to advance to prototype if user agrees.
 **Parent**: [`cpu-hierarchical-barrier.md`](../completed/cpu-hierarchical-barrier.md) (CLOSED 2026-04-26 for the 2-level CCD-aware barrier variant — negative result).
 **Sibling**: [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md) (CLOSED 2026-04-28 for design #1 global tile-queue work-stealing — negative result; designs #2 and #3 untested).

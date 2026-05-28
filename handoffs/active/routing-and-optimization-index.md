@@ -34,18 +34,18 @@ When making a routing-architecture proposal, name which of these four (and which
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
-| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete (RI-2–6) | RI-1 calibration dataset + RI-7 A/B test (need compute) |
-| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | **Phase 5 seeder refactor DONE** (2026-04-17). 3-way→per-role eval. Blacklist cleaned (6→1). Model signatures in controller. AR-3 needs restart. | Restart AR-3, accumulate per-role Q-values, then route_per_role() in retriever |
+| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete; RI-7 A/B done and underpowered; RI-10 canary remains active | RI-10 canary decision → RI-11/RI-12 rollout only if no regression |
+| AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Phase 5 seeder refactor done; AR-3 restart still outstanding; AP-28 active on restart, AP-29/30/31 wire-ins deferred | Restart AR-3, accumulate per-role Q-values, then route_per_role() in retriever |
 | Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
 | Within-Role Placement + KV Migration | [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md) | **WP-0/WP-1/WP-2/WP-3/WP-4/WP-5-scaffold IMPLEMENTED 2026-05-26** MERGED TO MAIN (`epyc-orchestrator` merge `fe6805c`; tip now `15350fe`; 155/155 dispatcher-adjacent tests at merge). WP-2/WP-3/WP-4 ship behind env flags (ORCHESTRATOR_PLACEMENT_STATE_MACHINE, ORCHESTRATOR_REVERSE_MIGRATION) defaulting off; WP-0/WP-1/WP-5-scaffold are live. WP-3 dropped the speculative load-transition trigger (could not preempt mid-decode); shipped transactional MigrationTransaction + policy gating + migration_budget_ms threading on the existing session-handover trigger. | **WP-6 / WP-7 / WP-5 full ratification** — all inference-gated, awaiting operator approval + measurement. WP-3/WP-4 gate verifications also inference-gated. |
-| KV Cache Quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Hadamard deployed, TQ/PQ abandoned | Monitor upstream TurboQuant |
+| KV Cache Quantization | [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) | COMPLETE — Hadamard deployed, TQ/PQ abandoned | Historical reference; monitor upstream TurboQuant from inference index |
 | Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
-| Conversation Management | [`orchestrator-conversation-management.md`](orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | All 7 modules done, 99 tests |
-| LangGraph Migration | [`langgraph-migration.md`](langgraph-migration.md) | Phase 3 infra complete (7 per-node flags + dispatch + 48 tests) | Phase 3: Flip flags per node + production validation |
+| Conversation Management | [`orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | Historical reference |
+| LangGraph Migration | [`langgraph-migration.md`](../completed/langgraph-migration.md) | COMPLETE / historical migration infrastructure | Historical reference; reopen only for a fresh LangGraph migration push |
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
-| ~~Retrain Routing Models~~ | ~~(blocked handoff removed; archival pending)~~ | SUPERSEDED by Learned Routing Controller Phase 1 (2026-04-15, 157K samples, 92% val acc, flag enabled). Duplicate `active/` copy removed 2026-04-17; blocked copy no longer present. | — |
+| Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | **BLOCKED 2026-05-25** after episodic-memory reset invalidated classifier/GAT/SkillBank artifacts | Wait for ~500+ fresh routing memories, then retrain classifier, GraphRouter, and SkillBank; also listed in [`../blocked/BLOCKED.md`](../blocked/BLOCKED.md) |
 | Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
-| Web Research Pipeline | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done; CA-1–5 ready now; SX-5/6 + CA-6/7 gated on AR-3/Camofox | CA-1–5 (Crawl4AI steps 2+3) can start independently |
+| Web Research Pipeline | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done; CA-1–5 ready now; SX-5/6 + CA-6/7 gated on AR-3/Camofox. Claude Code bash bridge moved to completed: [`searxng-bash-websearch-bridge.md`](../completed/searxng-bash-websearch-bridge.md). | CA-1–5 (Crawl4AI steps 2+3) can start independently; runtime/container activation stays here |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | Phase 1 P1.1-P1.4+P1.6 DONE — 92% val acc, per-class thresholds calibrated | P1.5 enable flag, Phase 1.5 logit probe |
 | Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
@@ -126,7 +126,7 @@ These unblock data-driven stack scheduling.
 
 - [x] **AR-2: Smoke test autoresearch loop** — ✅ 2026-03-29. Dry-run 5 trials passed: journal writes (JSONL + TSV), parent_trial linkage, consecutive_failures persistence, Pareto archive, safety gate all functional. matplotlib missing (non-fatal).
 
-- [x] **AR-3: First live autoresearch run** — Run 1 (2026-04-01): 9 wiring bugs fixed, program.md rewritten. Run 2 (2026-04-02–04): 44 trials, 6 Pareto frontier, 1 useful change (`get_direct_answer_prefix()` in resolver.py, q=3.0). **Corruption incident**: trial ~25 destroyed `escalation.py` (454→3 lines), API down 11h. Safety hardened with 5 fixes (deep validation, shrinkage guards, revert commits). **Run 3 (Package D)**: Relaunched 2026-04-11 with expanded 39-sentinel pool. Trial ~78 as of 2026-04-11. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
+- [ ] **AR-3: Relaunch live autoresearch run** — Runs 1–3 established the baseline and exposed the corruption incident; safety hardening is in place. Current outstanding state: restart AR-3 with expanded sentinel / Package J-K coverage, AP-28 active on restart, and AP-29/30/31 single-call wire-ins where safe. (→ [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 ### P6 — Routing Intelligence Phase 6 (controlled rollout)
 
@@ -525,7 +525,7 @@ This index consumes data and findings from:
 | Source | Handoff | What It Provides |
 |--------|---------|-----------------|
 | Inference acceleration | [`inference-acceleration-index.md`](inference-acceleration-index.md) | Benchmark results, model speed/quality data, NUMA deployment findings. Stack config changes originate from acceleration work. |
-| KV cache quantization | [`kv-cache-quantization.md`](kv-cache-quantization.md) | Production KV config (`--kv-hadamard -ctk q4_0 -ctv f16`), memory budget inputs for stack planning. |
+| KV cache quantization | [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) | Production KV config (`--kv-hadamard -ctk q4_0 -ctv f16`), memory budget inputs for stack planning. |
 
 Changes in upstream handoffs may invalidate assumptions in this index (e.g., model speed numbers, memory footprints). After any upstream deployment, verify RI-0 baseline and stack table in `dynamic-stack-concurrency.md`.
 

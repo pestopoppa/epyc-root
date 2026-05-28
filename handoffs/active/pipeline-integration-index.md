@@ -19,6 +19,7 @@
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, **TTS Path D candidate surfaced 2026-04-17** — LuxTTS/ZipVoice-Distill CPU benchmark) | LOW | 2026-04-17 |
+| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Self-hosted text-to-image / Hermes `image_generate` replacement | production on CPU via sd-server Q8 + conv-direct (~3 min/image @ 1024²); GPU/Spark is the next latency lever | MEDIUM | 2026-05-07 |
 | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
 | ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
@@ -33,6 +34,11 @@
 - [ ] Live validation with model servers (ports 8086/8087) — `--no-display-prompt` bug FIXED 2026-04-08 (removed from `vl_describe.py`). Re-test needed with VL servers.
 - [ ] Register vision tools in orchestrator tool surface
 - [x] Test OpenAI-compat multimodal API passthrough — ✅ FIXED 2026-04-08. `content: str | list` + `_extract_text()` helper. Re-test with actual multipart content needed.
+
+### P0.5 — Local Image Generation
+
+- [x] ERNIE-Image-Turbo Q8 local backend deployed through sd-server; Hermes `image_generate` plugin overrides disabled FAL path.
+- [ ] Prompt-enhancer heuristic, content-filter audit, LongTextBench spot-check, and Spark performance reality check remain in [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md).
 
 ### P1 — OpenDataLoader PDF
 

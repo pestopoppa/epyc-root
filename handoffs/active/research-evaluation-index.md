@@ -24,10 +24,10 @@
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Sub-quadratic attention survey + non-transformer recurrent eval cluster | active (literature survey complete, priority ranking established; HRM-Text intake-598 + actions HRM-1/2/3 queued 2026-05-22) | LOW | 2026-05-22 |
 | [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Log-Linear GDN readiness | stub (MONITORING) — blocked on pretrained models | HIGH | 2026-04-14 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
-| ~~[long-context-eval-datasets.md](long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
+| ~~[long-context-eval-datasets.md](../completed/long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | ~~[11-conceptlm-monitoring.md](../archived/11-conceptlm-monitoring.md)~~ | Concept-level LM monitoring | ARCHIVED (stale, no models available) | — | 2026-03-03 |
-| ~~[knowledge-base-governance-improvements.md](knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
+| ~~[knowledge-base-governance-improvements.md](../completed/knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) + ColGREP integration | in-progress (S1-S3a ✅, S5 design ✅, S6a-f bug fixes ✅ 2026-04-16, **S7 ColGREP replaces NextPLAID for code_search ✅ 2026-04-29** — default flipped after live A/B 10/14 vs 2/14 top-1, S4 A/B + cold-start daemon decision pending soak) | MEDIUM | 2026-04-29 |
 | [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |

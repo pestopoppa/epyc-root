@@ -262,6 +262,6 @@ Bench handoff at [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md).
 - **[intake-372] "Crawl4AI — Open-Source LLM-Friendly Web Crawler"** (github.com/unclecode/crawl4ai)
   - Relevance: **HIGH** — deep-dive (2026-05-05) resolved the step 2+3 question in the four-step chain. Crawl4AI is the chosen scraper; Firecrawl (intake-364/365) was evaluated and ruled out (verdict updated to `not_applicable`).
   - Key finding from deep-dive: Firecrawl self-hosted lacks fire-engine (cloud-only anti-bot), requires 5-service docker-compose (incompatible with `start_docker_container()`), and uses 4–8 GB idle RAM. Crawl4AI is a single container, Apache-2.0, ~1–2 GB idle, with undetected Chrome mode self-hosted.
-  - Integration: new handoff [`crawl4ai-web-scraper.md`](crawl4ai-web-scraper.md) has the full implementation plan (CA-1 through CA-7, port 8086).
+  - Integration: the [Crawl4AI Work Items](#crawl4ai-work-items-steps-23) section above has the full implementation plan (CA-1 through CA-7, port 8086).
   - Deep-dive: [`research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md`](../../research/deep-dives/firecrawl-vs-crawl4ai-web-pipeline-steps-2-3.md)
   - **Sequencing**: CA-1–5 (Crawl4AI step 2) are independent of SX-5/6 (ColBERT gate) and can proceed now. CA-6 (Camofox escalation wiring) waits for intake-524 Camofox integration.

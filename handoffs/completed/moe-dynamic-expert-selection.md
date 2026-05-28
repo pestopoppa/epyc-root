@@ -1,5 +1,7 @@
 # MoE — Dynamic Expert Selection (post-MoE-Spec follow-up)
 
+**Completion note (2026-05-27)**: moved to `handoffs/completed/`. Phase 0 found the entropy-gated-K path negative for current greedy-temp Coder/REAP workloads and re-scoped the remaining candidates as deprioritized reopen triggers, not active implementation tasks.
+
 **Status**: STUB created 2026-04-28 evening. **Phase 0 (research check + entropy probe)** queued. Sibling to [`moe-spec-cpu-spec-dec-integration.md`](moe-spec-cpu-spec-dec-integration.md) which delivered Phase 1 WIN on the per-batch top-B union-shrinkage mechanism.
 **Priority**: MEDIUM — explores per-token dynamic K reduction (orthogonal axis to MoE-Spec's per-batch mask). Could compound or supplant.
 **Categories**: moe_optimization, hardware_optimization, inference_serving

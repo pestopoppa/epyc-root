@@ -2,7 +2,7 @@
 
 **Status**: active
 **Created**: 2026-03-15 (split from hermes-agent-index.md on 2026-03-20)
-**Updated**: 2026-04-12
+**Updated**: 2026-05-27
 **Source**: intake-117 (hermes-agent), intake-172/173 (OpenGauss fork)
 **Purpose**: Entry point for agents working on agent UX, conversation management, and external frontend integration.
 
@@ -36,7 +36,8 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
 | [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills done, streaming validated (Package E). Auth deferred. | LOW | 2026-04-08 |
-| [orchestrator-conversation-management.md](orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
+| [orchestrator-conversation-management.md](../completed/orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
+| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Local image generation plugin | `image_generate` now resolves to self-hosted ERNIE/sd-server path; FAL remains disabled | MEDIUM | 2026-05-07 |
 | ~~[open_source_orchestrator.md](../archived/open_source_orchestrator.md)~~ | Future | ARCHIVED (dormant stub, 71 days) | — | 2026-02-02 |
 
 ---

@@ -13,7 +13,7 @@
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
 **Domain**: routing-and-optimization (primary — Phases B-E: stack exploration, QuarterScheduler, templates, autoresearch); inference-acceleration (Phase F KVCOMM cross-listed for discoverability — F1 blocks on AM compaction P2)
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row), [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (feasibility stub — disagg literature spawned 2026-04-26)
+**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row), [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (feasibility stub — disagg literature spawned 2026-04-26)
 
 ## Research Intake Update — 2026-04-26
 
@@ -900,7 +900,7 @@ IF q4_0 offset estimation preserves >95% quality on shared codebase tasks THEN p
 ### Cross-References
 
 - [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) — AM compaction compounds with KVCOMM
-- [kv-cache-quantization.md](kv-cache-quantization.md) — q4_0 interaction is the key open question
+- [kv-cache-quantization.md](../completed/kv-cache-quantization.md) — q4_0 interaction is the key open question
 - `research/deep-dives/kv-compaction-attention-matching-cluster.md` — full deep-dive analysis
 - `research/intake_index.yaml` intake-352 — KVCOMM paper details
 

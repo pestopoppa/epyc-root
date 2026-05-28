@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-27 (manual incremental update: stalled-inference watchdogs and benchmark failure-class boundary)
+**Last compiled**: 2026-05-28 (manual incremental update: handoff-index coverage invariant)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 329 documents across 6 source types
 
@@ -70,7 +70,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
-| [Knowledge Management](knowledge-management.md) | 6 | KB-RAG ColBERT architecture (K1–K8); Flywheel HotpotQA+LoCoMo eval methodology adopted for K7; wiki compilation governance |
+| [Knowledge Management](knowledge-management.md) | 9 | KB-RAG ColBERT architecture (K1–K8); handoff-index coverage invariant now requires every active non-index handoff to be owned by an index or top-level tracker |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
 | [Tool Implementation](tool-implementation.md) | 15 | GitNexus remains the required blast-radius tool; local `$wrap-up` skill now codifies progress/handoff/wiki/commit closeout discipline |
 

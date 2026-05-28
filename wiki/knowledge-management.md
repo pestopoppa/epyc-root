@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-05-27
-**Sources**: 4 active handoffs (internal-kb-rag, sliders-local-validation, colbert-reranker-web-research, handoff-backlog-hygiene-audit), 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
+**Last compiled**: 2026-05-28
+**Sources**: 7 active/blocking coordination docs, 6 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
 
 ## Summary
 
@@ -12,6 +12,8 @@ Knowledge management in EPYC encompasses two complementary architectures: **inte
 The core insight from the 2026-04-28 intake update is that *the right architecture depends on corpus scale*. At our scale (24 wiki articles + ~70 active handoffs + ~30 research/deep-dive notes + daily progress logs ≈ 4–5K markdown chunks after heading-aware split), ColBERT-based retrieval over a per-document `.npz` + SQLite catalog is the appropriate primary path. The structured-DB SLIDERS architecture is gated behind a Phase 0 falsification experiment (`sliders-local-validation.md`) and is positioned as an alternative architecture for orders-of-magnitude-larger corpora, NOT an upgrade lane on the ColBERT path.
 
 A third architectural pattern — **persistent compiled wikis** — is itself a knowledge-management approach. This very wiki is an instance: knowledge is pre-compiled by the `project-wiki` skill from handoffs/research/progress logs into curated topic articles, trading per-query synthesis latency for curation burden and staleness risk. EPYC uses a hybrid: `project-wiki` for stable / cross-cutting topics, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
+
+The 2026-05-27 handoff-index audit sharpened the governance side of that architecture: indices are executable coordination surfaces, not passive navigation pages. A coverage check now treats every non-index active handoff as requiring an owning index or top-level tracking entry, and the blocked index is kept as a live unblock queue rather than a historical graveyard. The latest audit closed the active coverage invariant at 84/84 active non-index handoffs linked, 0 missing index links, and 0 broken relative links across active/blocked/README surfaces.
 
 ## Internal KB-RAG Architecture (K1–K8 work items)
 
@@ -55,6 +57,12 @@ The 2026-05-27 backlog hygiene pass formalized a governance rule that matters fo
 
 The execution pass archived nine clearly closed aging handoffs and rewired active references to the completed copies. The important policy detail is procedural, not just structural: pruning happens **during operator-invoked wrap-up**, not ad hoc mid-session, so removals from the active tree remain reviewable in one place.
 
+## Handoff index coverage invariant (2026-05-27 late)
+
+The follow-on audit after the AR-3 tracking gap turned the hygiene rule into a measurable invariant: every active non-index handoff must be linked by `handoffs/README.md`, `master-handoff-index.md`, a domain index, or the blocked index. The audit found and fixed missing/stale tracking for AR-3 restart work, blocked routing-model retraining after episodic-memory reset, Engram conditional memory, ERNIE local image generation, and several completed-reference links.
+
+Six completed handoffs were moved from `active/` to `completed/` during the same pass: MoE dynamic expert selection, CPU22 hybrid spillover design, wdata-aware MUL_MAT coalescing design, CPU4 deferred avenues, Qwen3.6 benchmark fixes, and the SearXNG bash web-search bridge. The active tree now has 84 non-index active handoffs and 7 active coordination indices; validation reported 84/84 linked, 0 unlinked, 0 missing index links, 0 broken active/blocked/README relative links, and 0 stale handoffs over the 30-day freshness threshold.
+
 ## Open Questions
 
 - What is the document-recall baseline via grep on our actual corpus? K7 will measure this against KB-RAG top-3.
@@ -62,6 +70,7 @@ The execution pass archived nine clearly closed aging handoffs and rewired activ
 - Can Flywheel's wikilink learning-loop scorer (accept/reject feedback updates link weights) be adapted for `wiki/INDEX.md` cross-reference quality? Deferred as K8.
 - What corpus scale threshold makes structured-DB alternatives (SLIDERS) viable vs ColBERT? Current rough estimate: >1M tokens; SLIDERS' headline gains are at 36M-token corpora, far above our scale.
 - Should the wiki compiler eventually auto-detect handoff moves and refresh stale source paths in compiled chapters, or is manual wrap-up-time repair sufficient? Current policy is manual review during wrap-up.
+- Should the active-handoff coverage audit become a first-class validator alongside `check_handoff_freshness.sh`, or remain a wrap-up-time scriptlet?
 
 ## Related Categories
 
@@ -76,6 +85,8 @@ The execution pass archived nine clearly closed aging handoffs and rewired activ
 - [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
+- [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
+- [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
 - [intake-492](https://github.com/velvetmonkey/flywheel-memory) Flywheel — local-first MCP memory layer (Apache-2.0); HotpotQA 90.0% doc recall on 4,960-doc sui-generis pool; LoCoMo 81.9% evidence recall on 695q; ~1 pp LLM-non-determinism variance band; credibility 3 (1,092 commits + 3,292 tests + 385 releases + dual-OS CI; capped by no peer review / no independent replication / contributor-graph unconfirmed)
 - [intake-494](https://arxiv.org/abs/2604.22294) SLIDERS (Joshi/Shethia/Dao/Lam, Stanford OVAL/Genie) — code released at `github.com/stanford-oval/sliders` (MIT, also on PyPI as `sliders-genie`); credibility 4; +6.6 pp avg over GPT-4.1 on FinanceBench / Loong / Oolong existing benchmarks; +~19 pp WikiCeleb100 (3.9M tokens); +~32 pp (abstract) / +~50 pp (repo README) FinQ100 (36M tokens, SEC 10-Q derived) — unresolved discrepancy
