@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: Phase 1 partial — port AUTHORIZED; Strategy D agreed 2026-05-28 evening (B execution next session, then evaluate A); branch/remote prepared
+**Status**: Strategy B IN PROGRESS — binary side fully validated 2026-05-28; download in progress (~5%, ~4h ETA at anonymous HF rate, resumable curl in background); inference gates blocked on download completion
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -142,25 +142,118 @@ The 17+ conflicting files seen during the cherry-pick attempt are antirez's UNRE
 
 Operator selected **Option D**: Option B execution first (V4 functional today via antirez's mainstream-based fork as auxiliary binary); decision on Option A (3-5d translation into ik_llama) deferred until B-side evaluation produces evidence on whether V4 is production-meaningful enough to justify the longer ik_llama integration.
 
-### Next session entry point — Strategy B execution
+### Strategy B execution — 2026-05-28 evening progress
 
-1. **Strategy B build** — clone `antirez/llama.cpp-deepseek-v4-flash` into `/mnt/raid0/llm/llama.cpp-deepseek-v4` (separate tree from `llama.cpp`/`ik_llama.cpp`). Configure with:
-   - `-Wl,--disable-new-dtags` linker flag (the same RPATH fix from today's ik_llama rebuild; canonical for any binary on this host)
-   - clang-20 toolchain + LLVM-20 libomp via `LD_LIBRARY_PATH=/usr/lib/llvm-20/lib`
-   - znver5 march, Release, GGML_NATIVE=ON, GGML_OPENMP=ON
-2. **Q4 GGUF download** from `https://huggingface.co/antirez/deepseek-v4-gguf` to `/mnt/raid0/llm/models/`. Pre-flight `df` check on `/mnt/raid0/llm/models/` (need 153 GiB + working copy).
-3. **Quality gate execution** — 20-prompt set per §Merge Gates above. Reference engine side (antirez fork on Mac) is operator-coordinated; we provide the EPYC-side numbers.
-4. **Throughput gate** — run via `bench_canonical.sh -m /path/to/v4.gguf --perf`. The wrapper will need a small extension to recognize the V4 fork's binary path (add `V4_FORK_BENCH` + `EXPECTED_LIBS_V4_FORK` constants to `canonical_recipe.py`, alongside `IK_LLAMA_BENCH`/`V5_CLEAN_BENCH`). One-line addition + test update; do this BEFORE running the bench so reproducibility hardening covers V4 too.
-5. **Decision point at gate-pass**: if both gates pass and V4 demonstrates production-meaningful capability (top-tier model, 13B-active inside BW budget, replaces or augments a current role), THEN promote to Option A (3-5d translation). If V4 underperforms expectations, park at B-only or abandon.
-6. **Track upstream in parallel** — ggml-org/llama.cpp PRs #22319 (model request, open) + #22376 (WIP discussion). If a clean upstream lands during the evaluation, abort our manual port and adopt upstream.
+**Steps 1-2 + 4 COMPLETE; step 3 (download) in progress; steps 5-6 blocked on download.**
+
+#### ✓ Step 1: Antirez fork cloned
+
+- Path: `/mnt/raid0/llm/llama.cpp-deepseek-v4`
+- Tip: `2f2d44052` (antirez/main as of 2026-05-28)
+- `--depth 1` clone (we don't need the history)
+
+#### ✓ Step 2: Build with canonical hardening
+
+Configure:
+```
+cmake .. \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=clang-20 \
+  -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_EXE_LINKER_FLAGS="-Wl,--disable-new-dtags" \
+  -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--disable-new-dtags" \
+  -DGGML_NATIVE=ON \
+  -DGGML_OPENMP=ON \
+  -DLLAMA_CURL=OFF \
+  -DBUILD_SHARED_LIBS=ON
+cmake --build . -j 32
+```
+
+Verified post-build:
+- `readelf -d llama-bench` → `DT_RPATH` (not `DT_RUNPATH`) — beats `LD_LIBRARY_PATH`
+- `ldd llama-bench` → resolves to V4 fork's own `libllama.so.0`, `libggml.so.0`, plus `/usr/lib/llvm-20/lib/libomp.so.5` (clang-20 libomp)
+- All binaries built: `llama-bench`, `llama-server`, `llama-cli`, `llama-gguf`, etc.
+- `deepseek4.cpp.o` compiled (66 KB object, 1392 LOC source) — `LLM_ARCH_DEEPSEEK4` enum present
+
+#### ⏳ Step 3: Q4 GGUF download (~5%, ETA ~4h at anonymous rate)
+
+- File: `DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf` (153.3 GiB)
+- Target: `/mnt/raid0/llm/models/deepseek-v4-flash/`
+- Method: `curl -L -C - --retry 5 --retry-delay 5` (resumable; survived devcontainer rebuild)
+- Rate: stable ~10 MB/s (anonymous HF per-IP limit; **parallel range requests tested, no improvement** — confirmed per-IP not per-connection)
+- HF_TOKEN would speed this to ~100 MB/s (30-60 min) but no token set this session
+- The curl will resume on its own if killed; the partial file at `*.gguf.tmp` is the resume target
+
+#### ✓ Step 4: canonical_recipe.py V4-fork support (committed)
+
+Research-repo commit `77b5cbc`:
+- New constants `V4_FORK_BENCH` + `EXPECTED_LIBS_V4_FORK` pointing at the new build dir
+- New function `discover_v4_fork_bench()` — raises FileNotFoundError with the rebuild instructions if not built
+- `build_canonical_bench_command(..., use_v4_fork=False)` — new optional param; when True, picks V4_FORK_BENCH
+- CLI flags: `validate --v4-fork`, `emit-bench-command --v4-fork`
+- `bench_canonical.sh --v4-fork` flag pass-through
+- Tests: 3 new V4-fork tests, all pass; 22 total tests pass
+
+Verified at 2026-05-28 PM:
+- `python3 canonical_recipe.py validate --v4-fork` → OK
+- `bench_canonical.sh --v4-fork --help` → flag visible
+
+#### Diagnostic — binary side fully working
+
+Using `llama-gguf` from the new fork to inspect the partial download (only 8 GB of 153 GB):
+- Header parses cleanly: 62 metadata kv pairs, all `deepseek4.*` prefixed
+- V4-specific fields present: `attention.q_lora_rank`, `attention.output_lora_rank`, `attention.output_group_count`, `attention.compress_ratios`, `attention.compress_rope_freq_base`, `expert_count`, `expert_shared_count`, `hash_layer_count`
+- Tensor count: 1328 (consistent with 284B MoE Q4)
+- No parse errors, no symbol mismatches — the deepseek4 arch wiring is functional
+
+This means: **once the download completes, the bench should just work.** No expected debugging on the binary side.
+
+#### ⏭ Step 5 (after download): Throughput gate
+
+```bash
+bench_canonical.sh --v4-fork --perf -m \
+  /mnt/raid0/llm/models/deepseek-v4-flash/DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf
+```
+
+Validates host, picks V4 fork binary, runs canonical perf-stat recipe. Gate floor: Q4 ≥ 18 t/s solo (per §Merge Gates above).
+
+#### ⏭ Step 6 (after step 5 passes): Quality gate + decision
+
+20-prompt set per §Merge Gates. Reference engine (antirez fork on Mac) is operator-coordinated; we provide EPYC-side numbers. After both gates pass, decide:
+- If V4 is production-meaningful → promote to **Option A** (3-5d translation into ik_llama for production-tree consolidation)
+- If V4 underperforms → park at B-only or abandon
+
+### Resume / continue instructions (for next session)
+
+```bash
+# Confirm download still running:
+pgrep -af 'curl.*deepseek-v4-gguf'
+du -sh /mnt/raid0/llm/models/deepseek-v4-flash/*.tmp
+
+# If curl died, restart it (preserves resume):
+REDIRECT=$(curl -sI "https://huggingface.co/antirez/deepseek-v4-gguf/resolve/main/DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf" | grep -i '^location:' | awk '{print $2}' | tr -d '\r\n')
+cd /mnt/raid0/llm/models/deepseek-v4-flash && \
+  nohup curl -L -C - --retry 5 --retry-delay 5 -o "DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf.tmp" "$REDIRECT" \
+  > /tmp/v4-curl-resume.log 2>&1 &
+
+# Once size matches the 153.3 GiB target (check `du -h *.tmp`), rename:
+mv /mnt/raid0/llm/models/deepseek-v4-flash/*.gguf.tmp \
+   /mnt/raid0/llm/models/deepseek-v4-flash/DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf
+
+# Then run gates:
+bench_canonical.sh --v4-fork --perf -m /mnt/raid0/llm/models/deepseek-v4-flash/DeepSeek-V4-Flash-Q4KExperts-F16HC-F16Compressor-F16Indexer-Q8Attn-Q8Shared-Q8Out-chat-v2-imatrix.gguf
+```
+
+If you set `HF_TOKEN` (via `hf auth login`) the download can complete in 30-60 min instead of ~4h, but this is not required — curl will keep going on its own.
 
 ### Notes carried forward from 2026-05-28 session
 
 - ik_llama branch `feature/deepseek4-port` preserved at `c04881fc0` (= `production-gemma4-mtp` tip). Used if/when Option A activates.
 - `antirez` remote on ik_llama still present (harmless; used for the cherry-pick attempt + subsequent surveys).
-- ik_llama binaries already rebuilt with RPATH fix (today's commit). Production stack should keep using them.
-- `bench_canonical.sh` + validators live; future bench invocations on the V4 fork binary should go through the wrapper (after the small extension above).
+- ik_llama binaries already rebuilt with RPATH fix (today's commit). Production stack should keep using them when restarted.
+- `bench_canonical.sh` + `canonical_recipe.py` validators live and now support `--v4-fork`.
 - Strategy-decision diagnostics that informed D (1392 LOC graph-context → build-context translation, V4 only depends on 3 graph-context symbols not the broader Mamba/ISWA hierarchy) are recorded in the §"Phase 1.2 scope revised" block above.
+- Devcontainer was killed + rebuilt mid-session 2026-05-28; ALL persistent state (build artifacts, partial download, repo commits) survived on `/mnt/raid0/llm`. The ephemeral state lost was: `hf_transfer` Python package (couldn't reinstall — no pip in rebuilt container), `HF_TOKEN` env var (was never set), production llama-server stack (operator restart needed).
 
 ## Phased Port Plan (Option A only; superseded until decision)
 
