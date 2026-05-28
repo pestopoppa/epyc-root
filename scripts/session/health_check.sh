@@ -23,17 +23,17 @@ check() {
 
   if eval "$condition"; then
     echo "âœ… PASS: $test_name"
-    ((PASS++))
+    ((PASS+=1))
     return 0
   else
     if [[ -n "$fail_msg" ]]; then
       echo "❌ FAIL: $test_name - $fail_msg"
-      ((FAIL++))
+      ((FAIL+=1))
     else
       echo "⚠️  WARN: $test_name"
-      ((WARN++))
+      ((WARN+=1))
     fi
-    return 1
+    return 0  # don't trip outer `set -e` — failures are tracked via $FAIL/$WARN + the summary
   fi
 }
 
@@ -43,11 +43,23 @@ check() {
 
 echo "--- Filesystem Health ---"
 
-ROOT_USAGE=$(df / | awk 'NR==2 {print $5}' | sed 's/%//')
-check "Root FS usage <70%" "[ $ROOT_USAGE -lt 70 ]" "Currently at ${ROOT_USAGE}%"
-
-RAID_AVAIL=$(df /mnt/raid0 | awk 'NR==2 {print $4}')
-check "RAID0 available >100GB" "[ $RAID_AVAIL -gt 102400 ]"
+# Mount-aware free-GB check on the raid surface (replaces 2026-05-28 a hard <70% root-percentage
+# threshold + a "RAID0 available >100GB" check whose 102400 1K-blocks threshold was actually 100 MB).
+# Operator-set thresholds for the 3.7T shared surface: warn <750G, fail <500G.
+RAID_MOUNT=/mnt/raid0
+RAID_AVAIL_GB=$(df --output=avail -BG "$RAID_MOUNT" | awk 'NR==2 {gsub(/G/,""); print $1+0}')
+RAID_FREE_WARN_GB=750
+RAID_FREE_FAIL_GB=500
+if [ "$RAID_AVAIL_GB" -lt "$RAID_FREE_FAIL_GB" ]; then
+  echo "❌ FAIL: $RAID_MOUNT free ${RAID_AVAIL_GB}G < ${RAID_FREE_FAIL_GB}G fail threshold"
+  ((FAIL+=1))
+elif [ "$RAID_AVAIL_GB" -lt "$RAID_FREE_WARN_GB" ]; then
+  echo "⚠️  WARN: $RAID_MOUNT free ${RAID_AVAIL_GB}G < ${RAID_FREE_WARN_GB}G warn threshold"
+  ((WARN+=1))
+else
+  echo "✅ PASS: $RAID_MOUNT free ${RAID_AVAIL_GB}G (>= ${RAID_FREE_WARN_GB}G warn / ${RAID_FREE_FAIL_GB}G fail)"
+  ((PASS+=1))
+fi
 
 check "/mnt/raid0/llm exists" "[ -d /mnt/raid0/llm ]" "Create with: mkdir -p /mnt/raid0/llm"
 
@@ -97,18 +109,18 @@ echo "--- Process Status ---"
 if pgrep -f "claude" >/dev/null; then
   echo "⚠️  WARN: Claude process already running"
   ps aux | grep -i claude | grep -v grep
-  ((WARN++))
+  ((WARN+=1))
 else
   echo "âœ… PASS: No Claude processes running"
-  ((PASS++))
+  ((PASS+=1))
 fi
 
 if pgrep -f "monitor_storage" >/dev/null; then
   echo "âœ… PASS: Storage monitor is running"
-  ((PASS++))
+  ((PASS+=1))
 else
   echo "⚠️  WARN: Storage monitor not running - consider starting it"
-  ((WARN++))
+  ((WARN+=1))
 fi
 
 echo ""
@@ -157,8 +169,8 @@ if [ $FAIL -gt 0 ]; then
   echo "🚨 CRITICAL ISSUES DETECTED"
   echo ""
   echo "Recommended actions:"
-  if [ $ROOT_USAGE -ge 70 ]; then
-    echo "  1. Run emergency_cleanup.sh to free root FS"
+  if [ "$RAID_AVAIL_GB" -lt "$RAID_FREE_FAIL_GB" ]; then
+    echo "  1. Run emergency_cleanup.sh to free raid space (only ${RAID_AVAIL_GB}G free, < ${RAID_FREE_FAIL_GB}G fail threshold)"
   fi
   if ! mountpoint -q /tmp/claude 2>/dev/null; then
     echo "  2. Start Claude via: bash ${PROJECT_ROOT}/scripts/session/claude_safe_start.sh"
