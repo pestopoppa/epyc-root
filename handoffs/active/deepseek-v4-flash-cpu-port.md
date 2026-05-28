@@ -76,6 +76,56 @@ Merge `feature/deepseek4-port` → ik_llama production tree requires ALL of:
 
 If any of (1)-(3) or (5) fails, the branch stays in experimental and remediation goes into a follow-on phase log appended to this handoff.
 
+## Phase 1 Outcome — 2026-05-28
+
+### Done
+- Added `antirez` remote (https://github.com/antirez/llama.cpp-deepseek-v4-flash.git) to `/mnt/raid0/llm/ik_llama.cpp`; fetched `antirez/main` at `2f2d44052`.
+- Created branch `feature/deepseek4-port` off `production-gemma4-mtp` (tip `c04881fc0`); branch is clean and at the same tip (no commits applied — see below).
+- Identified 7 V4-relevant commits on `antirez/main`:
+  - `06c504247` Add DeepSeek V4 Flash inference support (THE base port, 6 files, +1649 LOC)
+  - `1e2752f88` README fork advertisement (skip — not our README)
+  - `b67f5db5c` Optimize DeepSeek V4 Metal HC decode (skip — Metal-only)
+  - `57c4283b5` Remove stale DeepSeek V4 quantize tool build entry (cleanup)
+  - `188df615c` Fix DeepSeek V4 long-context graph metadata (likely needed for ≥32K ctx)
+  - `3ba61fbb4` Add DeepSeek V4 tool-call chat template (needed for orchestrator)
+  - `2f2d44052` Speed up DeepSeek V4 prompt replay (optimization)
+
+### Finding — direct cherry-pick is infeasible due to fork divergence
+
+`git cherry-pick 06c504247` produced **17+ merge conflicts**, almost all of the `modify/delete` form: ik_llama's `production-gemma4-mtp` has DELETED files (post the ikawrakow tree's refactoring of `src/llama-graph.cpp`, `src/llama-kv-cache.cpp`, `src/models/models.h`, `src/llama-context.cpp`, `src/llama-memory-hybrid-iswa.*`, plus the entire Metal backend tree) that antirez's commit MODIFIES because his fork is from a recent mainline llama.cpp tree where those files still exist. Cherry-picked aborted cleanly; `feature/deepseek4-port` branch is back at the production tip.
+
+### Phase 1 actual delta vs documented plan
+
+- The handoff (and master-index #58) assumed a near-clean cherry-pick. Reality: antirez forked from mainline llama.cpp (build b8927), and ik_llama.cpp's lineage diverges substantially from mainline. **Phase 1 cannot be "cherry-pick the antirez commits" as drafted.**
+
+### Revised Phase 1.2 — manual port of the 6-file V4 delta (next session)
+
+The good news from inspecting `06c504247 --stat`: the V4-specific changes are well-isolated:
+
+| File | LOC change | Type |
+|---|---|---|
+| `src/models/deepseek4.cpp` | +1347 (new) | NEW arch implementation |
+| `src/llama-model.cpp` | +200 | dispatch + registry add |
+| `src/llama-arch.cpp` | +52 | arch enum entries |
+| `src/llama-arch.h` | +30 | arch enum constants |
+| `src/llama-hparams.h` | +12 | hyperparam fields |
+| `src/llama-hparams.cpp` | +8 | hyperparam defaults |
+| **Total** | **+1649 LOC** | **6 files** |
+
+The 17+ conflicting files seen during the cherry-pick attempt are antirez's UNRELATED refactors that landed in the same commit (Metal kernels, KV-cache lifetime changes, graph plumbing). None of those are required for CPU inference of V4 — they were antirez's path-of-least-resistance for his Mac-targeted build.
+
+**Plan for Phase 1.2** (next session, ~1-2 days):
+1. Apply the 6-file V4 delta manually onto `feature/deepseek4-port`:
+   - Copy `src/models/deepseek4.cpp` verbatim from `antirez/main`.
+   - Hand-merge the +200/+52/+30/+12/+8 deltas into ik_llama's matching files (these are mostly additive: new enum values, new dispatch case, new hparam fields).
+2. Adapt to ik_llama's API surface where it differs from antirez's base:
+   - ik_llama may use different `llama_graph_*` signatures; the V4 arch code in `deepseek4.cpp` will need its graph-building calls re-bound to ik_llama equivalents.
+   - ik_llama has KV-cache machinery that antirez's commit moved/refactored; the V4 KV reuses MLA which ik_llama already supports (gemma4 + DSv3 paths) — port the V4 `n_indexer` / `n_compressor` parameter wiring on top of existing MLA infra.
+3. Build verification: `cmake --build` under canonical Clang 20 + libomp + znver5 + PGO env. Expect 2-4 hours of iterative fix-build-fix for type/signature drift.
+4. THEN proceed to Phase 2 (Q2 smoke test) as documented.
+
+**Hand-off note**: the branch `feature/deepseek4-port` is empty (= `production-gemma4-mtp` tip) until Phase 1.2 lands the manual port. If the upstream ggml-org/llama.cpp PR #22319 lands a deepseek4 implementation before Phase 1.2 starts, abort the manual port and pivot to the upstream PR + ik_llama backport (cheaper).
+
 ## Phased Port Plan
 
 ### Phase 1 — Branch creation & cherry-pick (Day 1)

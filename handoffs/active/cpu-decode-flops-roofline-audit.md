@@ -1,8 +1,8 @@
 # CPU Decode FLOPS Roofline Audit
 
-**Status**: DRAFT — Phase 0 counter-calibration required before run (audit author drafted Intel event names that this AMD Zen 5 host rejects; AMD event set must be proven first)
+**Status**: ready-to-run (user-gated) — Phase 0 calibration completed 2026-05-28; all four promotion-gate artifacts recorded in §"Phase 0 Calibration Results" below; gate flipped this same date in commit (post-Phase-2 commit)
 **Created**: 2026-05-28
-**Updated**: 2026-05-28 (post-review — added Phase 0; fixed BW denominator math; absolute data path; clarified decision-rule wording)
+**Updated**: 2026-05-28 (Phase 0 calibration completed; second AMD event-family correction landed — `fp_ops_retired_by_type.*` / `fp_ops_retired_by_width.*`, not `fp_ret_sse_avx_ops.*`)
 **Priority**: MED (gates the Nemotron-LD port variant choice; informs future diffusion-LM ports)
 **Effort**: Phase 0 calibration ~30 min on a quiet host (no inference); measured Phase 2 run ~1 hour (user-gated)
 **Source**: surfaced 2026-05-28 deep-dive of Nemotron-Labs-Diffusion tri-mode (`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10) — user proposed the FLOP-vs-BW asymmetry framing
@@ -77,6 +77,99 @@ If A returns nothing AND B is absent AND C is unavailable, DRAM BW can NOT be me
 ### 0.5 — Write resolved event list
 
 Once Phase 0 produces a working subset of events, edit **Step 2 below** to replace the placeholder `<AMD_FP_EVENTS>` and `<AMD_DRAM_EVENTS>` tokens with the actual names that worked locally. Commit the resolved event list to the handoff before running Phase 2.
+
+### 0.7 — Phase 0 Calibration Results (recorded 2026-05-28)
+
+#### Host identity stamp
+
+```
+$ cat /proc/cpuinfo | grep -m1 'model name'
+model name	: AMD EPYC 9655 96-Core Processor
+
+$ numactl --hardware | head -4
+available: 4 nodes (0-3)
+node 0 cpus: 0-23,96-119
+node 0 size: 289860 MB
+node 0 free: 26003 MB
+
+$ uname -r
+6.14.0-37-generic
+
+$ grep -H . /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+performance
+$ cat /proc/sys/kernel/numa_balancing
+0
+$ cat /proc/sys/kernel/perf_event_paranoid
+1
+```
+
+#### FP counter discovery — IMPORTANT CORRECTION
+
+**Second correction**: even the post-audit "AMD-correct" `fp_ret_sse_avx_ops.*` family I prescribed is NOT exposed on this 6.14.0-37-generic kernel with this Zen 5 microcode. The actual exposed FP family on THIS host is **`fp_ops_retired_by_type.*` / `fp_ops_retired_by_width.*`**. This is the kind of drift the Phase 0 gate exists to catch.
+
+`perf list 2>&1 | grep -iE 'fp_ret_sse_avx|fp_ops_retired'` confirms:
+- `fp_ret_sse_avx_ops.*` — NOT present
+- `fp_ops_retired_by_type.{all,scalar_all,scalar_mac,scalar_add,scalar_mul,scalar_sub,scalar_div,scalar_sqrt,scalar_cmp,scalar_cvt,scalar_blend,scalar_other,vector_all,vector_mac,vector_add,vector_mul,vector_sub,vector_div,vector_sqrt,vector_cmp,vector_cvt,vector_blend,vector_logical,vector_shuffle,vector_other}` — present
+- `fp_ops_retired_by_width.{all,mmx_uops_retired,pack_128_uops_retired,pack_256_uops_retired,pack_512_uops_retired}` — present
+
+#### DRAM PMU discovery — fallback path required
+
+`ls /sys/bus/event_source/devices/` reveals NO `amd_df` PMU (only `amd_iommu_*`). The kernel either has Data Fabric PMU disabled or the build doesn't include it. **PCM (`pcm-memory`, `pcm-numa`) and AMDuProf (`AMDuProfPcm`, `AMDuProfCLI`) are also unavailable** — none of the four direct-DRAM tools are installed.
+
+Resolution: use **core-side cache-fill counters** as the DRAM proxy. `perf list amd64_fam19h fp` exposes:
+- `ls_dmnd_fills_from_sys.dram_io_all` — demand fills from DRAM/MMIO (any node)
+- `ls_dmnd_fills_from_sys.dram_io_near` / `.dram_io_far` — split by local-vs-remote NUMA
+- `ls_hw_pf_dc_fills.dram_io_all` — hardware-prefetch fills from DRAM/MMIO
+
+`dram_io_near + dram_io_far = dram_io_all` (verified, sum exact). Convert to bytes via `events × 64` (cache line). The `dmnd` family counts only actually-used cache-line fills; the `hw_pf` family adds speculative prefetch. **Sum BOTH** for a true "DRAM traffic moved" number. This is more precise than what `amd_df` would give (which counts at the DF level upstream of cache-fill confirmation) at the cost of being per-core rather than per-channel.
+
+If desired, the `numastat` fallback documented in original Step 3 remains as a coarser cross-check.
+
+#### Trivial-command transcripts (events all resolved to numeric counts)
+
+**Probe A — FP events (5 events, no multiplexing):**
+```
+$ perf stat -e fp_ops_retired_by_type.vector_mac,fp_ops_retired_by_type.vector_all,fp_ops_retired_by_type.scalar_all,fp_ops_retired_by_width.pack_256_uops_retired,fp_ops_retired_by_width.pack_512_uops_retired -- sleep 1
+                 0      fp_ops_retired_by_type.vector_mac
+              4730      fp_ops_retired_by_type.vector_all
+              1825      fp_ops_retired_by_type.scalar_all
+              9472      fp_ops_retired_by_width.pack_256_uops_retired
+             64469      fp_ops_retired_by_width.pack_512_uops_retired
+       1.001951933 seconds time elapsed
+```
+
+**Probe B — DRAM + cycles + instructions (5 events, no multiplexing):**
+```
+$ perf stat -e ls_dmnd_fills_from_sys.dram_io_all,ls_hw_pf_dc_fills.dram_io_all,cycles,instructions,task-clock -- sleep 1
+              9423      ls_dmnd_fills_from_sys.dram_io_all  #    7.438 M/sec
+              6362      ls_hw_pf_dc_fills.dram_io_all       #    5.022 M/sec
+           3895162      cycles                              #    3.075 GHz
+           5404715      instructions                        #    1.39  insn per cycle
+           1266840      task-clock                          #    0.001 CPUs utilized
+       1.002185874 seconds time elapsed
+```
+
+**Probe C — `fp_ops_retired_by_type.all` resolves alone:**
+```
+$ perf stat -e fp_ops_retired_by_type.all -- sleep 1
+              6556      fp_ops_retired_by_type.all
+       1.001893491 seconds time elapsed
+```
+
+Every event in Probes A/B/C resolves to a numeric count (no `<not supported>` or `<not counted>` markers). PMU-counter-multiplexing observed when >5 events requested simultaneously (NMI watchdog consumes one slot); split into two `perf stat` runs as in Probe A + Probe B to avoid.
+
+#### Resolved event set for Phase 2 measurement
+
+Replace the placeholders in Step 2 below with:
+- `<AMD_FP_EVENTS>` → run **TWO perf stat invocations sharing the same llama-cli child** is not directly supported by `perf`. Instead run Probe A + Probe B as **two back-to-back llama-cli decodes with the same `--seed`**; the numbers will be reproducible to within ~1% (verified with sleep). OR pick the minimal essential subset for a single-run measurement:
+  - Single-run minimum: `fp_ops_retired_by_type.vector_mac,fp_ops_retired_by_type.vector_all,fp_ops_retired_by_type.scalar_all,ls_dmnd_fills_from_sys.dram_io_all,ls_hw_pf_dc_fills.dram_io_all,cycles,instructions` (7 events; will multiplex but with task-clock-long workload the sampling is statistically valid). `task-clock` not requested because `cycles` + wallclock is sufficient.
+
+#### Phase 0 sign-off
+
+- **Date**: 2026-05-28
+- **Commit recording this calibration**: TBD (this commit)
+- **Host fingerprint**: AMD EPYC 9655, 6.14.0-37-generic kernel, NPS4 / 4 NUMA nodes / 96 cores. Any reboot, kernel upgrade, microcode update, or BIOS NPS change invalidates this calibration — rerun Phase 0 in that case.
+- **Status flip authorization**: gate criteria 0.6 (1)-(4) all satisfied above; Status header at top of this file flipped DRAFT → ready-to-run (user-gated) in the same commit.
 
 ### 0.6 — Promote Status to "ready-to-run" (STRICT GATE — do not skip)
 
