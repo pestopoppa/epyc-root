@@ -30370,3 +30370,921 @@
     (intake-628 / 2604.01687) — see intake-626 and intake-628 notes. Extraction from arxiv.org/abs only
     (abstract-grade); per-cell tables not deep-read. Credibility 3/6: preprint (+0), <12mo (+1), Tu Vu
     known contributor (+1), corroborated as SkillOpt baseline (+1).
+
+- id: intake-631
+  arxiv_id: null
+  url: https://github.com/vbuterin/messaging-daemon
+  source_type: repo
+  title: messaging-daemon — unified local daemon for Signal/email/Telegram with AI-agent HTTP API
+  authors:
+  - Vitalik Buterin
+  categories:
+  - tool_implementation
+  - agent_architecture
+  novelty: medium
+  relevance: none
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Consolidates Signal, email (IMAP/SMTP), and Telegram into one SQLite store with a localhost HTTP API on :6000
+  - Read access is immediate; outbound sends to anyone other than self require explicit human approval on a separate :7000 port
+  - Designed to give AI agents and local software safe, structured access to personal messaging without granting raw send capability
+  - 'Sandbox-ready: untrusted software can be confined with bwrap and given only the read port, enforcing approval boundary at network layer'
+  - 'Pluggable backends: signal-cli, Telethon (MTProto), IMAP/SMTP; Nix-based install path'
+  techniques:
+  - local-daemon mediator pattern
+  - port-split capability model (read vs write/approve)
+  - human-in-the-loop confirmation page for side-effectful actions
+  - SQLite unified store as agent-facing API
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Novel framing of a personal-messaging agent-safety boundary by a high-signal author (Buterin), but the underlying pattern (local daemon + approval gate + SQLite mirror) is well-trodden in agent-tooling space; not a new inference technique.
+  relevance_justification: EPYC stack is CPU/NUMA inference, MoE, spec-dec, KV/quant, routing, orchestrator agent architecture. This repo is a personal-comms integration daemon — no overlap with serving-side concerns. The orchestrator does not consume personal Signal/Telegram/email.
+  verdict_justification: Out of scope. No deployment role, no technique to port, no shared infrastructure. Worth a glance only if a future agent-frontend ever needs a generic "gated side-effect tool" pattern.
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Ingested 2026-05-28 via user-provided URL batch. Vitalik Buterin authorship is a signal-quality boost for the design itself but does not change EPYC applicability.
+- id: intake-632
+  arxiv_id: null
+  url: https://github.com/dmarzzz/VoxTerm
+  source_type: repo
+  title: VoxTerm — local-first private terminal transcription with diarization and P2P party mode
+  authors:
+  - dmarzzz
+  categories:
+  - tool_implementation
+  - multimodal
+  novelty: low
+  relevance: low
+  credibility_score: 3
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Local-first, offline terminal UI for real-time speech transcription with no cloud dependency
+  - Speaker diarization with persistent voice tagging across sessions
+  - P2P Party Mode transcript sharing over LAN via mDNS discovery with AES-256-CBC encryption
+  - 'Multi-backend ASR: MLX on Apple Silicon, faster-whisper on Intel'
+  - Auto-saved markdown transcripts written to local directories
+  techniques:
+  - VAD
+  - speaker diarization
+  - faster-whisper / MLX Whisper / Qwen ASR variants
+  - mDNS peer discovery
+  - AES-256-CBC encryption for transcripts
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: Thin TUI wrapper over off-the-shelf ASR backends. No new model, no new algorithm, no inference-stack optimization. UX-layer novelty (diarization persistence + encrypted P2P mDNS transcript sharing) only.
+  relevance_justification: EPYC is a Linux x86 multi-NUMA inference server; VoxTerm is macOS-exclusive (MLX-first). Our multimodal-pipeline handoff already runs faster-whisper large-v3-turbo in production. No inference-side techniques to adopt.
+  verdict_justification: macOS-only client-side TUI with off-the-shelf ASR; no technique to port. Already-superior coverage exists. Flagging for awareness only — not worth a handoff stub.
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Ingested 2026-05-28 via user-provided URL batch. macOS exclusivity rules out direct deployment.
+- id: intake-633
+  arxiv_id: '2511.08923'
+  url: https://arxiv.org/html/2511.08923v1
+  source_type: paper
+  title: 'TiDAR: Think in Diffusion, Talk in Autoregression'
+  authors:
+  - Jingyu Liu
+  - Xin Dong
+  - Zhifan Ye
+  - Rishabh Mehta
+  - Yonggan Fu
+  - Vartika Singh
+  - Jan Kautz
+  - Ce Zhang
+  - Pavlo Molchanov
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Unifies diffusion-based parallel token drafting and autoregressive sampling in ONE model and ONE forward pass via a hybrid causal-bidirectional attention mask
+  - Reports 4.71x speedup at 1.5B and 5.91x speedup at 8B in tokens/sec over standard AR baselines while preserving competitive quality
+  - Exploits free token slots on modern GPUs — extra drafted tokens incur minimal latency due to underutilized matmul throughput at batch=1 decode
+  - Uses one-step diffusion to pre-draft K tokens conditioned on all rejection-sampling outcomes; AR rejection sampling verifies in same pass
+  - Full-mask training strategy gives denser loss signal and simpler AR/diffusion balancing
+  techniques:
+  - hybrid causal-bidirectional attention mask (FlexAttention)
+  - single-pass dual-mode forward (AR verify + 1-step diffusion draft)
+  - rejection sampling against AR distribution within same forward pass
+  - full-mask diffusion training objective
+  - joint AR+diffusion pretraining/SFT loss
+  reported_results:
+  - 'TiDAR-1.5B: 4.71x tokens/sec vs AR; 7.45 tokens/NFE; 44.03% avg generative'
+  - 'TiDAR-8B (Trust-Diff): 5.91x tokens/sec vs AR; 8.25 tokens/NFE; 65.31% avg generative'
+  - ~2.5x over EAGLE-v3; quality competitive with pure-AR baselines
+  referenced_arxiv_ids:
+  - '2509.04185'
+  - '2509.24007'
+  - '2506.00413'
+  - '2503.09573'
+  - '2503.01840'
+  - '2502.09992'
+  - '2502.09622'
+  - '2412.19437'
+  - '2412.05496'
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    - gpu-acceleration-path.md
+    - dflash-block-diffusion-speculation.md
+    experiments: []
+    intake_entries:
+    - intake-576 (Nemotron-Labs-Diffusion tri-mode — explicit successor)
+    - DFlash/DART diffusion-speculation sibling deep-dive
+  novelty_justification: 'Deep-dive 2026-05-28 revised UP from low → medium. TiDAR is structurally distinct from Nemotron-Labs-Diffusion''s shipping Linear-SS mode: single forward pass per cycle (vs two-pass), with the unified causal+bidirectional mask. It IS the architectural ancestor of Nemotron''s underperforming Quad-SS mode, but the Quad-SS underperformance is GPU-FlexAttention-kernel-driven (unoptimized); on CPU we would write ggml ops either way, so that blocker does NOT carry over.'
+  relevance_justification: 'Deep-dive 2026-05-28 corrects the initial inverted reading. TiDAR''s "free token slots" mechanism is **latency-plateau exploitation at batch-1 decode** — the plateau exists because weight + KV-cache fetch dominates per-step cost. THAT IS OUR CPU REGIME (project_cpu_decode_bw_bound). One forward pass per cycle = one weight read amortized over K accepted tokens; on CPU each pass = full weight scan, so TiDAR''s pattern halves per-cycle weight traffic vs Nemotron Linear-SS. Mechanism is BW-favorable, not BW-neutral.'
+  verdict_justification: 'Revised superseded → worth_investigating 2026-05-28. Nemotron-Labs-Diffusion supersedes TiDAR on quality (closes the 6–9% HumanEval/MBPP gap), tri-mode flexibility, and acceptance length — by the *product*. But Nemotron''s shipping Linear-SS mode uses a *different* algorithm (two-pass). TiDAR''s one-pass mechanism is structurally distinct and, on CPU specifically, potentially more BW-favorable than Nemotron Linear-SS. Recommendation: evaluate TiDAR-pattern variant as part of the Nemotron CPU port plan. See updated `inference-acceleration-index.md` and `research/deep-dives/nemotron-labs-diffusion-tri-mode.md` for the open question.'
+  contradicting_evidence:
+  - 'CORRECTION (2026-05-28): The earlier "GPU free-token-slot framing inapplicable to CPU/DRAM-BW-bound decode" claim was wrong-direction. Per paper Fig.1 the per-step latency plateau exists *because* weight+KV load dominates at batch=1 decode — exactly our CPU regime. The mechanism is BW-amortization across K drafted tokens per forward pass.'
+  - 'TiDAR-8B Trust-Diff loses 6-9% on HumanEval/MBPP vs Qwen3-8B AR — explicit quality cost. Nemotron-Labs-Diffusion matches AR quality with Linear-SS at the cost of an extra forward pass. Quality-vs-passes tradeoff is the actual axis of choice.'
+  - 'Single H100, batch=1 only — paper does NOT evaluate batch>1 (explicit limitation §6). For our concurrent multi-instance setup this is an open question.'
+  - 'Block size 16 (8B); cosine LR 1e-5→3e-6; 150B-token continual pretrain from Qwen3-8B — non-trivial training budget for any model we would adapt to the TiDAR pattern.'
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28. Deep-dive revised verdict 2026-05-28: superseded → worth_investigating; novelty low → medium. Companion entries: intake-634 (project site) and intake-635 (community minimal reimpl).'
+- id: intake-634
+  arxiv_id: null
+  url: https://tidarlm.github.io/
+  source_type: blog
+  title: TiDAR project site — Think in Diffusion, Talk in Autoregression (paper landing page)
+  authors:
+  - Jingyu Liu
+  - Xin Dong
+  - Zhifan Ye
+  - Rishabh Mehta
+  - Yonggan Fu
+  - Vartika Singh
+  - Jan Kautz
+  - Ce Zhang
+  - Pavlo Molchanov
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'Hybrid single-forward-pass architecture: diffusion drafts tokens (bidirectional), AR head verifies and emits them (causal), unified via structured attention masks'
+  - Exploits GPU free token slots — underutilized compute during AR decode is repurposed for parallel diffusion drafting at no added latency
+  - Reports 4.71x–5.91x decoding tokens/sec vs AR baselines; ~2.5x over EAGLE-v3
+  - Claims first architecture to close quality gap with AR models while delivering self-spec speedup
+  - Standalone model — no separate drafter, minimal hyperparameter tuning
+  techniques:
+  - single-forward-pass self-speculation
+  - structured attention masks (bidirectional draft + causal verify)
+  - one-step diffusion drafting
+  - full-masking training strategy
+  - diffusion-AR hybrid head
+  reported_results:
+  - 5.8x decode tokens/s vs AR baseline
+  - ~2.5x vs EAGLE-v3
+  - beats Dream/Llada pure-diffusion on downstream tasks
+  referenced_arxiv_ids:
+  - '2511.08923'
+  - '2503.01840'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-633 (paper)
+    - intake-635 (community impl)
+    - intake-576 (Nemotron-Labs-Diffusion tri-mode successor)
+  novelty_justification: Project landing page mirrors arxiv:2511.08923 — the algorithmic novelty lives in the paper (intake-633). 2026-05-28 revised novelty from high → medium for that reason.
+  relevance_justification: 'Deep-dive 2026-05-28: the "free token slots" framing maps to *latency-plateau exploitation at batch=1 decode* (paper Fig.1) — exactly our CPU regime. One forward pass amortizes one full weight scan across K drafted tokens, which on EPYC at 1.1 TB DRAM is BW-favorable. See intake-633 for the corrected mechanism analysis.'
+  verdict_justification: 'worth_investigating — mirror site for intake-633; the paper is the canonical artifact. The shipped-product reading (Nemotron-Labs-Diffusion supersedes) holds for the model, but the *one-pass mechanism* is structurally distinct from Nemotron Linear-SS and deserves evaluation as a TiDAR-pattern variant in the Nemotron CPU port plan.'
+  contradicting_evidence:
+  - 'CORRECTION (2026-05-28): initial "GPU free-token-slot framing inapplicable to CPU" claim was wrong-direction; the plateau mechanism is exactly the CPU regime — see intake-633 contradicting_evidence.'
+  - 'Project site adds no detail beyond intake-633; novelty downgraded to medium accordingly.'
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created: []
+  notes: Ingested 2026-05-28. Project landing page mirrors arxiv:2511.08923 content (see intake-633).
+- id: intake-635
+  arxiv_id: null
+  url: https://github.com/irfannaqieb/TiDAR
+  source_type: repo
+  title: TiDAR — community minimal reimplementation of the NVIDIA TiDAR paper
+  authors:
+  - irfannaqieb
+  categories:
+  - speculative_decoding
+  - training_distillation
+  - inference_serving
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'Single compact Transformer trained with dual objective in one forward pass: AR causal-masked prefix + diffusion-style denoising masked back-sequence'
+  - Shared weights, combined AR + diffusion losses (one shared model, one forward pass, two losses)
+  - Educational/minimal reimplementation; no benchmarks reported in README
+  techniques:
+  - hybrid AR + diffusion training in single Transformer
+  - specialized attention mask (causal prefix + bidirectional suffix)
+  - MASK-token denoising objective
+  - quadratic self-speculative decoding (per parent paper)
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2511.08923'
+  cross_references:
+    chapters: []
+    handoffs:
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-633 (paper)
+    - intake-634 (project site)
+    - intake-576 (Nemotron-Labs-Diffusion deep dive)
+  novelty_justification: Community reimplementation; no algorithmic novelty over the parent paper. Pedagogical scaffolding (4 commits, 10 stars, demo/+models/ only).
+  relevance_justification: 'Deep-dive 2026-05-28: usable as a Rosetta-stone for the attention-mask construction when (a) we evaluate a TiDAR-pattern variant in the Nemotron CPU port plan, or (b) we write a ggml op for the unified causal+bidirectional mask. Pedagogical scaffolding rather than reproduction (4 commits, 10 stars, demo/+models/ only), but the mask formulation is exactly what we would lift.'
+  verdict_justification: 'worth_investigating — clean reference for the mask trick. Credibility raised 2 → 3 (minimal but verifiable). Not adopt_component (too thin for production). Paper (intake-633) remains the canonical artifact.'
+  contradicting_evidence: null
+  handoffs_updated:
+  - inference-acceleration-index.md
+  handoffs_created: []
+  notes: Ingested 2026-05-28. Companion to intake-633 (paper) and intake-634 (project site).
+- id: intake-636
+  arxiv_id: '2510.14961'
+  url: https://arxiv.org/html/2510.14961v1
+  source_type: paper
+  title: Efficient Parallel Samplers for Recurrent-Depth Models and Their Connection to Diffusion Language Models
+  authors:
+  - Jonas Geiping
+  - Xinyu Yang
+  - Guinan Su
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - context_management
+  novelty: high
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Recurrent-depth (Huginn-style) models can be efficiently parallelized using diffusion-forcing samplers — up to ~5x decode speedup
+  - Diagonal-wavefront sampler is strictly more expressive than baseline AR within equivalent compute budget
+  - Adaptive exit criterion in latent space (normalized z-distance) bounds wasted recurrence per token
+  - Recurrent-depth models behave as continuous latent diffusion LMs despite non-diffusion training objective — first formal bridge
+  - KV cache only needs latest recurrence step per token position under parallel sampling
+  techniques:
+  - diffusion-forcing sampler adapted to sequence x recurrence-depth grid
+  - diagonal wavefront parallel decoding (wavefront 128)
+  - adaptive per-token exit via normalized z-distance
+  - momentum-based embedding updates
+  - scheduled Gaussian noise injection during intermediate recurrence
+  - KV cache sharing across recurrence steps
+  reported_results:
+  - 'GSM8K: +0.31% accuracy, 4.36x decode speedup'
+  - 'MATH500: +0.40% accuracy, 4.73x speedup'
+  - 'HumanEval: -2.44% accuracy, 4.81x speedup'
+  - 'MBPP: -0.60% accuracy, 4.59x speedup'
+  referenced_arxiv_ids:
+  - '2502.05171'
+  - '2502.07827'
+  - '2506.21734'
+  - '2503.09573'
+  - '2410.20672'
+  - '2412.13171'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-332 (Ouro looped/recurrent-depth LM)
+    - OpenMythos / Claude Mythos RDT entry
+    - RLTT (RL for latent thought in Ouro/LoopLM)
+    - intake-555 (LatentMAS — references 2502.05171)
+  novelty_justification: First sampler exploiting sequence x recurrence-depth grid via diffusion-forcing wavefront and first formal bridge between recurrent-depth transformers and continuous latent diffusion LMs. Geiping is author of foundational RDT/Huginn (2502.05171), so this is the canonical follow-on.
+  relevance_justification: No recurrent-depth model in production registry. Prior Ouro deep-dive (intake-332) flagged llama.cpp GGUF/inference compatibility as doubtful for this class. Method requires per-step latent z access not exposed by llama.cpp + diffusion-forcing schedule machinery — none of which is reachable from frozen GGUF server.
+  verdict_justification: 'not_applicable for current stack: requires a recurrent-depth model in production (none exists), per-step latent-state access (no llama.cpp API surface), and diffusion-forcing schedule machinery (no scaffold). If an Ouro-class GGUF ever lands, this sampler becomes the obvious decode path. Flag for looped-arch watch.'
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Ingested 2026-05-28. Add to looped-arch watch maintained around intake-332/RLTT/OpenMythos.
+- id: intake-637
+  arxiv_id: null
+  url: https://huggingface.co/antirez/deepseek-v4-gguf
+  source_type: repo
+  title: antirez/deepseek-v4-gguf — DeepSeek-V4-Flash GGUF (Q2/Q4/MTP, imatrix, asymmetric routed-expert quantization)
+  authors:
+  - antirez (Salvatore Sanfilippo)
+  - deepseek-ai (upstream weights)
+  categories:
+  - quantization
+  - moe_optimization
+  - local_inference
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  credibility_score: 5
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'Community GGUF repack of deepseek-ai/DeepSeek-V4-Flash (284B-param MoE, deepseek4 arch, MLA with low-rank output projections) in two variants: Q2 at 80.8 GiB and Q4 at 153.3 GiB'
+  - 'Explicit asymmetric-MoE-quant rationale: routed experts dominate parameter count but each handles only a fraction of tokens — push routed experts to IQ2_XXS/Q2_K or Q4_K, keep router/shared/output at Q8_0+'
+  - Optional MTP-only side-file (3.6 GiB) packaging V4 multi-token-prediction head as speculative-decoding drafter — same MTP-as-drafter pattern as gemma4 / DSv3.2
+  - Targets 128 GB-RAM hosts at Q2 and ≥256 GB-RAM hosts at Q4; supports llama.cpp, llama-cpp-python, vLLM, Ollama, LM Studio, plus antirez/ds4 KV-on-disk reference engine
+  - Chat-tuned imatrix variant is the default file; high community adoption (438k monthly downloads, 192 likes)
+  techniques:
+  - asymmetric MoE quantization (routed IQ2_XXS/Q2_K or Q4_K, shared+attn+output Q8_0, router F16, norms F32)
+  - imatrix-calibrated low-bit quant
+  - MTP head packaged as separate GGUF for spec-dec drafter
+  - Multi-head Latent Attention (MLA) with low-rank output projections
+  - KV-cache-on-disk serving via antirez/ds4 (--kv-disk-dir/--kv-disk-space-mb)
+  reported_results:
+  - 'Q2 variant: 80.8 GiB on-disk, target 128 GB RAM'
+  - 'Q4 variant: 153.3 GiB on-disk, target ≥256 GB RAM'
+  - 'MTP sidecar: 3.6 GiB; F16 reference: 165 GB; F32 sidecar: 3.81 GB'
+  - No perplexity, no t/s, no quality-vs-quant ablation published on the card
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - inference-acceleration-index.md
+    - large-moe-expert-parallelism.md
+    - moe-spec-cpu-spec-dec-integration.md
+    - engram-conditional-memory.md
+    - llama-cpp-dsa-contribution.md
+    - hermes-outer-shell.md
+    - hermes-agent-index.md
+    experiments: []
+    intake_entries:
+    - intake-506 (DSv3.2 + DSA)
+    - intake-508 (DeepSeek-TUI Rust client)
+    - intake-600 (Engram Conditional Memory — V4 confirmed Engram-free)
+    - deepseek-v32-dsa-llamacpp-pr21149 deep dive
+  novelty_justification: 'Deep-dive 2026-05-28 raised medium → high. The V4 arch itself (CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections / Birkhoff polytope spectral-norm≤1 residuals) is substantively NEW — not a DSv3.2/DSA derivative. 27% of V3.2 FLOPs and 10% of V3.2 KV at 1M ctx. No llama.cpp/ik_llama.cpp support exists; this is a multi-thousand-line arch port, not an ops-add. The GGUF + quant recipe itself is medium-novelty (clean application of APEX-style heterogeneous quant), but the underlying model + porting effort is high-novelty for our stack.'
+  relevance_justification: '284B/13B-active Q4 at 153 GiB fits comfortably in 1.1 TB EPYC host. 13B active stays inside our BW envelope (gemma4-26B-A4B currently sustains 76.5 t/s). MTP sidecar slots into existing MoE-spec-CPU-spec-dec integration. Asymmetric quant recipe matches APEX paper findings independently. KV footprint (~70-100 MB at 32K ctx with V4''s dual CSA+HCA branches) is the LEAST concerning resource — RAM-fit dominated by weights, not KV. Hooks into three live tracks (large-moe-expert-parallelism, moe-spec-cpu-spec-dec-integration, llama-cpp-dsa-contribution) plus motivates a new arch-port handoff.'
+  verdict_justification: 'worth_investigating with experimental-branch port AUTHORIZED 2026-05-28 (user decision). Path: cherry-pick antirez/llama.cpp-deepseek-v4-flash fork into a feature/deepseek4-port branch off our ik_llama production tree, validate under canonical CPU stack (NPS4 + KMP_BLOCKTIME=10 + GGML_NUMA_WEIGHTS=1), run Q2 (80 GiB) smoke test and Q4 (153 GiB) quality + throughput gate, merge only after both gates pass. Credibility raised null → 5: antirez is a known systems author (Redis), quant recipe internally consistent with APEX, imatrix-segfault was openly documented and patched (epistemic honesty), upstream V4-Flash card from deepseek-ai org. See new handoff `handoffs/active/deepseek-v4-flash-cpu-port.md` for the port plan.'
+  contradicting_evidence:
+  - 'V4 arch (CSA + HCA + indexer + compressor + manifold-constrained HC) is NOT in llama.cpp or ik_llama.cpp. `grep -ri deepseek4 /mnt/raid0/llm/llama.cpp /mnt/raid0/llm/ik_llama.cpp` returns zero hits. Upstream ggml-org issue #22319 + discussion #22376 track 4+ WIP forks (nisparks, cdome94, Fringe210, antirez/llama.cpp-deepseek-v4-flash, draft PR #22378 explicitly "no intent to merge"). No merged PR.'
+  - 'antirez/llama.cpp-deepseek-v4-flash README says "not extensively tested" and targets MacBook 128GB. No NUMA, no AVX-512BW, no canonical-stack validation — direct cherry-pick into ik_llama production tree is high-risk. Hence the experimental-branch isolation.'
+  - 'ds4 reference engine has Metal primary, CUDA secondary, "CPU is reference/debug, non-production." Best ds4 numbers: M3 Max 21.5 t/s decode Q2, DGX Spark 13.75 t/s. There is NO EPYC / x86-AVX-512 production path published; we must derive ours.'
+  - 'Best community llama.cpp CPU number is 6.5 t/s on a ThinkPad-P16 128 GB (dual-channel DDR5). Our EPYC 9655 NPS4 should be substantially faster (12-channel DDR5 per node × 4 nodes), but no reference number exists. Baseline must be set by us.'
+  - 'MTP sidecar uses ds4-specific tensor naming and loader. Even after base V4 inference works in llama.cpp, MTP spec-dec integration is a SECOND integration task, not free with the base port.'
+  - 'V4-Flash GGUF lacks a built-in Jinja chat template per allthings.how — we need a template shim before orchestrator chat-completions path (ORCHESTRATOR_USE_CHAT_COMPLETIONS_ROLES) can route requests to it.'
+  - 'Sub-Q4 quant on V4-Flash faces inherent challenges because upstream ships mixed FP4+FP8 — Q2/Q3 conversions degrade severely. Q4 is the conservative target; Q2 is opportunistic.'
+  - 'APEX/MoE quant literature (apex-quant, MxMoE) supports the asymmetric direction but warns that downgrading shared experts costs measurable PPL — antirez stays Q8_0 on shared experts which aligns with that guidance.'
+  handoffs_updated:
+  - inference-acceleration-index.md
+  - large-moe-expert-parallelism.md
+  - moe-spec-cpu-spec-dec-integration.md
+  - llama-cpp-dsa-contribution.md
+  handoffs_created:
+  - deepseek-v4-flash-cpu-port.md
+  notes: 'Ingested 2026-05-28. Deep-dive 2026-05-28 revised: novelty medium → high, credibility null → 5. User authorized experimental-branch port (no merge until tested). Antirez has commit-level CPU-inference credibility (Redis author, public LLM-on-CPU work). Companion intake target: github.com/antirez/ds4 (KV-on-disk inference engine) — to be ingested separately if user requests. Companion port branch: feature/deepseek4-port off ik_llama.cpp production tree.'
+- id: intake-638
+  arxiv_id: '2604.27083'
+  url: https://arxiv.org/pdf/2604.27083
+  source_type: paper
+  title: Co-Evolving Policy Distillation (CoPD)
+  authors:
+  - Naibin Gu
+  - Chenxu Yang
+  - Qingyi Si
+  - Chuanyu Qin
+  - Dingyu Yao
+  - Peng Fu
+  - Zheng Lin
+  - Weiping Wang
+  - Nan Duan
+  - Jiaqi Wang
+  categories:
+  - training_distillation
+  - routing_intelligence
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Effective on-policy distillation requires teacher and student to remain behaviorally close, measured via top-k token overlap; post-OPD gains correlate strongly with overlap (r=0.89, R^2=0.79)
+  - Mixed RLVR multi-capability training pays inter-capability divergence cost; static sequential RLVR+OPD removes divergence but absorbs poorly due to behavioral mismatch
+  - CoPD interleaves branch-specific RLVR phases with mutual OPD phases over N cycles, keeping per-capability experts behaviorally aligned
+  - Final consolidation via simple parameter averaging of co-evolved branches
+  - 'Two-branch (text+image) CoPD: 57.71 overall vs 55.60-56.29 baselines; three-branch reaches 58.12 vs MOPD 56.99'
+  techniques:
+  - branch-specific RLVR with GRPO per capability
+  - mutual on-policy distillation (bidirectional OPD across branches)
+  - alternating S_RL RLVR + S_OPD distillation cycles
+  - top-k token-overlap behavioral-distance metric
+  - parameter averaging of co-evolved branches
+  reported_results:
+  - 'Two-branch CoPD: 57.71 overall'
+  - 'Three-branch CoPD: 58.12 overall'
+  - 'Overlap-vs-gain correlation: r=0.89, R^2=0.79'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Co-evolution of experts with mutual distillation has prior art (model-soup/branch-train-merge/multi-task RLHF). Specific contribution (top-k token overlap behavioral metric + alternating GRPO with mutual OPD) is sensible, ablation-validated, but not a paradigm shift; +1 to +2 pp gains.
+  relevance_justification: EPYC stack is CPU inference + serving-side optimization. We do not train multi-capability expert models from RLVR or run mutual OPD. The only adjacent surface (SkillBank/SkillOpt) is skill-library evolution, not branch-policy co-distillation. No spec-dec, serving, quant, NUMA, or routing-at-inference insight.
+  verdict_justification: Training-recipe paper for consolidating multi-modal expert policies via RLVR + mutual OPD. We do not run RLVR multi-expert training. Even if we did, the technique requires multi-modal experts (text/image/video) outside our text-only CPU serving scope. Distinct from the unrelated Co-Evolving LLM Decision and Skill Bank Agents paper already in intake (which is agent-architecture).
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Ingested 2026-05-28. Do not confuse with the existing intake entry on Co-Evolving LLM Decision + Skill Bank Agents (different paper, agent-architecture).
+- id: intake-639
+  arxiv_id: '2605.10889'
+  url: https://arxiv.org/html/2605.10889v1
+  source_type: paper
+  title: 'Unmasking On-Policy Distillation: Where It Helps, Where It Hurts, and Why'
+  authors:
+  - Mohammadreza Armandpour
+  - Fatih Ilhan
+  - David Harrison
+  - Ajay Jaiswal
+  - Duc N.M Hoang
+  - Fartash Faghri
+  - Yizhe Zhang
+  - Minsik Cho
+  - Mehrdad Farajtabar
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 6
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'OPD effectiveness varies with student performance: helps more when student struggles, weak/noisy guidance when student already succeeds'
+  - No single distillation configuration is universally optimal — depends jointly on student capacity and task
+  - Teacher distillation gradients align more with ideal per-node gradient on incorrect rollouts than correct ones — motivates asymmetric distillation
+  - Per-token/per-question/per-teacher diagnostic analysis is necessary; aggregate metrics hide where OPD helps vs hurts
+  - Training-free diagnostic framework with targeted-rollout algorithm makes gradient-alignment estimation tractable on long reasoning chains
+  techniques:
+  - training-free diagnostic framework (token/question/teacher granularity)
+  - ideal per-node gradient derivation (maximizes student success probability)
+  - cosine-similarity gradient alignment vs ideal
+  - targeted-rollout algorithm for efficient gradient estimation
+  - asymmetric distillation guidance (emphasize incorrect-rollout tokens)
+  reported_results:
+  - Methodological + qualitative findings on distillation dynamics; no headline benchmark table in abstract HTML
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC)
+    - intake-264 (SSD)
+    - intake-266 (OPD f-divergence survey)
+    - intake-286 (HPD hybrid policy distillation)
+  novelty_justification: Per-token gradient-alignment diagnostic and the empirical finding that teacher-distillation gradients align with ideal substantially better on incorrect-rollout tokens. OPD survey (intake-266) unified methods under f-divergence taxonomy and HPD (intake-286) proposed token-level FKL/RKL gating — neither derived ideal-gradient reference signal nor provided training-free per-node diagnostic. Targeted-rollout algorithm is also non-obvious. Deep-dive 2026-05-28 confirmed the convergent picture across concurrent 2026 diagnostic work (arxiv:2603.25562, 2604.13016) supports the "no universal recipe" thesis.
+  relevance_justification: 'Deep-dive 2026-05-28 revised low → medium. CRITICAL CORRECTION: the diagnostic is **logprobs-only** — it reconstructs an ideal per-node gradient empirically from rollout success-rates, then measures cosine similarity against the gradient any candidate objective WOULD produce. NO backprop, NO gradient access required. Our forward-only llama.cpp / ik_llama.cpp stack can run this against any (student, teacher) checkpoint pair we''re considering deploying — directly applicable to screening third-party OPD-distilled drafters or reasoning checkpoints before integration. Concrete falsifiable scaling rules (self-distill dominates at 0.6B, 8B teacher wins at 1.7B; 32B-generated solutions help 0.6B but HURT 1.7B; wrong demonstrations help AIME, hurt BoolQ) are a-priori usable for any third-party OPD-trained model release. Oracle ablation shows 10–15× headroom if token-selection is done well — frames the size of the prize for any compounded selection method.'
+  verdict_justification: 'worth_investigating, escalated relevance low → medium 2026-05-28. The diagnostic IS deployable on our stack — initial intake''s "requires per-token gradient access" claim was factually wrong. Cross-reference under reasoning-compression.md as the canonical when-does-OPD-help diagnostic and as a screening tool for any third-party OPD-distilled checkpoint we consider deploying (drafters, reasoning models). Rollouts are expensive (45K-200K per question) — too costly for inference-time gating, but cheap-enough as a one-off characterization.'
+  contradicting_evidence:
+  - 'arxiv:2603.25562 (Fu et al., CASIA — "Revisiting OPD: Empirical Failure Modes and Simple Fixes"): independently identifies the same three failure-mode taxonomy (imbalanced signal, unreliable teacher on off-distribution prefixes, tokenizer mismatch) WITHOUT crediting Apple — parallel discovery reduces 639''s novelty premium.'
+  - 'arxiv:2604.13016 (Li et al., Tsinghua — "Rethinking OPD") supplies a more PROXIMAL mechanism than 639''s narrative-level diagnostic: token-overlap concentration (72%→91% overlap ratio; 97-99% of useful gradient mass on overlap tokens at student-visited states). Overlap-ratio is a single scalar computable from logprobs over teacher top-K — strictly simpler and more falsifiable than 639''s gradient-alignment cosine. See intake-644.'
+  - 'arxiv:2605.11182 (Zhu et al. — "Many Faces of OPD") adds a theoretical bias term to the TopK reverse-KL objective that 639''s diagnostic does not surface (TopK-reverse-KL gradient is biased when teacher mass leaks outside K). Different abstraction layer, complementary not contradictory.'
+  - 'Largest student tested is 1.7B; teachers cap at Qwen3-32B. Scaling to larger student / teacher pairs is unverified.'
+  - 'Targeted-rollout cost (45K-200K rollouts per question) prohibitive for any inference-time-gating application — useful only as one-off offline characterization.'
+  - 'Net: when screening third-party OPD-distilled checkpoints, cross-validate 639''s diagnostic against the token-overlap-concentration metric from intake-644 (simpler scalar).'
+  handoffs_updated:
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28. Apple authors (Armandpour, Farajtabar). Deep-dive 2026-05-28 revised: relevance low → medium, credibility 5 → 6. Diagnostic IS deployable on our forward-only stack (logprobs-only). Tier-2b deep-dive 2026-05-28 surfaced 4 concurrent papers; 2 intaked as 644/645, 2 parked.'
+- id: intake-640
+  arxiv_id: '2510.08558'
+  url: https://arxiv.org/html/2510.08558v3
+  source_type: paper
+  title: Agent Learning via Early Experience
+  authors:
+  - Kai Zhang
+  - Xiangchao Chen
+  - Bo Liu
+  - Tianci Xue
+  - Zeyi Liao
+  - Zhihan Liu
+  - Xiyao Wang
+  - Yuting Ning
+  - Zhaorun Chen
+  - Xiaohan Fu
+  - Jian Xie
+  - Yuxuan Sun
+  - Boyu Gou
+  - Qi Qi
+  - Zihang Meng
+  - Jianwei Yang
+  - Ning Zhang
+  - Xian Li
+  - Ashish Shah
+  - Dat Huynh
+  - Hengduo Li
+  - Zi Yang
+  - Sara Cao
+  - Lawrence Jang
+  - Shuyan Zhou
+  - Jiacheng Zhu
+  - Huan Sun
+  - Jason Weston
+  - Yu Su
+  - Yifan Wu
+  categories:
+  - agent_architecture
+  - training_distillation
+  novelty: medium
+  relevance: low
+  credibility_score: 6
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'Introduces early experience paradigm: agent-generated interaction data where resulting future states serve as supervision without reward signals — middle ground between expert SFT and full RL'
+  - 'Two strategies: implicit world modeling (using collected next-states to ground policy in dynamics) and self-reflection (learning from agent suboptimal actions)'
+  - Consistent improvements in task effectiveness and OOD generalization across 8 environments × multiple model families
+  - In environments with verifiable rewards, early-experience pretraining yields stronger foundation for subsequent RL fine-tuning
+  - 'Addresses two RL blockers for language agents: lack of verifiable rewards (websites) and inefficient long-horizon rollouts'
+  techniques:
+  - early experience data generation (rollouts without reward labels)
+  - implicit world modeling via next-state prediction
+  - self-reflection fine-tuning on suboptimal trajectories
+  - SFT bootstrap from expert demos
+  - optional downstream RL on verifiable-reward subset
+  reported_results:
+  - Improvements across 8 environments × multiple model families
+  - Positive OOD generalization deltas vs SFT-only
+  - Early-experience pretraining improves subsequent RL on verifiable-reward subset
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  novelty_justification: Reframes a known direction (agent self-play / world-model pretraining / reflection tuning) into clean early-experience middle-ground between SFT and RL with two concrete instantiations. Strong author list (Yu Su, Jason Weston, Huan Sun, Shuyan Zhou) and broad 8-env evaluation, but each ingredient has prior art; contribution is paradigm framing + empirical breadth.
+  relevance_justification: EPYC stack is inference-serving + routing — we run frozen open-weight models, do not train agents. The orchestrator agentic loop (Hermes frontend, frontdoor/coder/worker routing) consumes models rather than produces fine-tunes. No training pipeline, no rollout-collection harness, no RL infra. Closest tangential hook is agent_architecture (Hermes) but adopting requires building a training stack explicitly scoped out.
+  verdict_justification: 'not_applicable: technique lives entirely on training side; no inference-serving, decoding, quantization, or routing component to extract. If a future direction adds agent fine-tuning (distilling routing policy or tool-use traces from production logs), revisit this as candidate SFT→RL bridge recipe.'
+  contradicting_evidence: null
+  handoffs_updated: []
+  handoffs_created: []
+  notes: Ingested 2026-05-28. Capped credibility at 6 (rubric max).
+- id: intake-641
+  arxiv_id: '2605.15155'
+  url: https://arxiv.org/html/2605.15155v1
+  source_type: paper
+  title: 'SDAR: Self-Distilled Agentic Reinforcement Learning'
+  authors:
+  - Zhengxi Lu
+  - Zhiyuan Yao
+  - Zhuowen Han
+  - Zi-Han Wang
+  - Jinyang Wu
+  - Qi Gu
+  - Xunliang Cai
+  - Weiming Lu
+  - Jun Xiao
+  - Yueting Zhuang
+  - Yongliang Shen
+  categories:
+  - training_distillation
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - RL trajectory-level rewards alone provide insufficient supervision for long-horizon multi-turn agent interactions
+  - Naive combinations of OPSD + RL produce multi-turn instability that corrupts supervision quality
+  - Asymmetric (gated) treatment of teacher guidance handles imperfect skill retrieval / teacher rejection
+  - Sigmoid-gated auxiliary distillation on detached token-level signals stabilizes training, beats direct OPSD+RL mixes
+  - Consistent gains over GRPO across Qwen2.5/Qwen3 on ALFWorld, Search-QA, WebShop
+  techniques:
+  - SDAR framework (OPSD as gated auxiliary objective + GRPO RL backbone)
+  - sigmoid gating over detached token-level teacher-student gaps
+  - dense token-level guidance from teacher with privileged context
+  - hybrid trajectory-level RL + token-level distillation objective
+  reported_results:
+  - 'ALFWorld: +9.4% over GRPO'
+  - 'Search-QA: +7.0% over GRPO'
+  - 'WebShop-Acc: +10.2% over GRPO'
+  - Consistent gains across Qwen2.5/Qwen3
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - swarm-dataset-distillation.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-105 (Agentic Critical Training ACT)
+    - intake-110 (OPSDC)
+    - intake-111 (AReaL async RL framework)
+    - intake-238 (Nemotron-Cascade 2)
+  novelty_justification: 'Incremental: combines two existing primitives (OPSD + agentic RL/GRPO) under sigmoid-gated auxiliary loss. Asymmetric gating on detached token-level gaps is a reasonable but small contribution; mid-single-digit to low-double-digit gains over a single baseline (GRPO) with no comparison to ACT or other recent agentic-RL methods.'
+  relevance_justification: 'Training-recipe paper for agent post-training; EPYC stack is inference-only (no in-house RL pipeline, no ALFWorld/WebShop/Search-QA workloads in production). Target models (Qwen2.5/3 small-scale agentic fine-tunes) are not deployed roles. Closest adjacency is conceptual: same OPSD primitive already tracked in intake-110.'
+  verdict_justification: 'worth_investigating (parked, low priority) — reclassified 2026-05-28 from not_applicable per feedback_dont_dismiss_creative_uses. Pure training-time method with no inference-side levers and no current training infrastructure, BUT preserved as a forward pointer for if/when a future agent-RL training track materializes (e.g. via cloud-GPU rental). Documented via cross-refs to ACT/OPSDC/AReaL/Nemotron-Cascade 2.'
+  contradicting_evidence: null
+  handoffs_updated:
+  - swarm-dataset-distillation.md
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: Ingested 2026-05-28.
+- id: intake-642
+  arxiv_id: '2604.14084'
+  url: https://arxiv.org/html/2604.14084v4
+  source_type: paper
+  title: 'TIP: Token Importance in On-Policy Distillation'
+  authors:
+  - Yuanda Xu
+  - Hejian Sang
+  - Zhengze Zhou
+  - Ran He
+  - Zhipeng Wang
+  - Alborz Geramifard
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 6
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Token informativeness in OPD depends on TWO axes — student entropy AND teacher-student divergence — not entropy alone; entropy-based selection is blind to overconfident-but-wrong tokens
+  - Retaining 50% of tokens via entropy-based sampling matches or exceeds all-token OPD while cutting peak training memory by up to 47%
+  - 'Low-entropy + high-divergence tokens (Q3 quadrant) carry dense corrective signal: <10% of tokens nearly matches full-token baselines, <20% surpasses on agentic planning'
+  - Parameter-free Soft-OR score combining two axes yields best aggregate accuracy across math + planning
+  - Findings generalize across math reasoning (MATH-500, AIME 2024/2025) and agentic planning (DeepPlanning), and across Qwen3/Qwen2.5/Llama-3 teacher/student pairs
+  techniques:
+  - two-axis (entropy × teacher-student divergence) token taxonomy
+  - Soft-OR parameter-free token scoring
+  - top-K deterministic token retention during OPD loss
+  - memory-efficient OPD implementation extending OPSD repo
+  - theoretical oracle-weight derivation under smoothness assumptions
+  reported_results:
+  - 'Qwen3-8B→4B MATH-500 mean@16: 76.7% (full) → 79.1% (Soft-OR 50%)'
+  - 'Llama-3-70B→8B MATH-500 mean@16: 71.0% → 74.7%'
+  - 'Qwen2.5-14B→1.5B MATH-500 mean@16: 55.1% → 56.2%'
+  - 'DeepPlanning Avg@16 (14B teacher): Q3-only at 20% retention 12.6 vs full-token 11.7'
+  - Peak training memory reduction up to 47% at 50% retention; up to 58% at aggressive retention
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC — same Sang/Xu/Zhou cluster)
+    - intake-266 (Survey of OPD for LLMs)
+    - intake-264 (SSD)
+    - intake-286 (HPD)
+    - intake-624 (FastDraft — direct deployment cohort; 14B→1.5B drafter regime matches TIP test scale)
+  novelty_justification: Two-axis taxonomy and parameter-free Soft-OR fusion are a clean, non-obvious refinement of OPD-survey (intake-266) f-divergence framing. Genuinely breaks entropy=importance assumption underpinning prior token-selection work and supplies theoretical oracle-weight derivation. Incremental within crowded family (HPD, GKD, MiniLLM, OPSDC) — algorithmic novelty is Soft-OR + Q3 empirical finding.
+  relevance_justification: 'Deep-dive 2026-05-28 revised low → medium. The 14B→1.5B regime tested in TIP is DIRECTLY drafter range (FastDraft / intake-624 trains Phi-3-mini and Llama-3.1-8B drafters at similar scale). 47% peak-memory cut halves cloud-rental cost for any drafter we''d actually fund. Q3-quadrant finding (low-entropy + high-divergence tokens ≤10% of all tokens nearly match full-token baselines) is structurally identical to the spec-dec rejection-token distribution — Soft-OR score is logprobs-only and may have an unexplored inference-time application as a spec-dec verify-gating signal. Same Sang/Xu/Zhou cluster as our highest-trust OPSDC (intake-110).'
+  verdict_justification: worth_investigating — same author cluster as intake-110 (OPSDC), natural successor to intake-266 OPD-survey caveat that flagged token-importance prioritization as open frontier. Compounds directly with FastDraft (intake-624) for any drafter we''d fund on rented cloud GPU. Not new_opportunity until a specific drafter-training decision is made; not not_applicable (deliberate addition to OPD reference set with concrete compound path).
+  contradicting_evidence:
+  - 'arxiv:2604.13016 (Li et al., Tsinghua — "Rethinking OPD"): on math reasoning, 97-99% of useful gradient mass sits on the teacher-student top-K overlap at student-visited states. Soft-OR is one heuristic to pick this support, but is dominated in practice by simply restricting to the overlap (simpler + theoretically backed). See intake-644.'
+  - 'arxiv:2605.10194 (Wang et al. — TRACE / Token-Routed Self On-Policy Alignment): per-token tri-routing among {FKL, RKL, ∅} beats all-token self-OPD by +2.76pp on Qwen3-8B with documented SCALE-INVERSION (FKL@8B → RKL@1.7B). TIP''s symmetric Soft-OR cannot express this scale-dependent routing. For ≤2B drafters specifically, TRACE''s RKL-on-error variant may dominate Soft-OR. See intake-645.'
+  - 'arxiv:2603.25562 (Fu et al., CASIA): top-K support restriction with renormalization already captures most of the available gain (41.5 vs sampled-token 36.4 on Qwen2.5-7B math). Soft-OR''s "two-axis" framing may add complexity without proportional benefit over the simpler top-K-with-renorm baseline.'
+  - 'TIP appendix admits divergence-only baseline (AdaKD) is competitive; TIP only wins by carefully tuning Q3 quadrant inclusion. The "Soft-OR is parameter-free and universal" framing is suggestive — confirmation-bias risk noted.'
+  - 'No drafter-acceptance-rate or KV-gating evaluation in the paper. The Soft-OR inference-time application is unexplored and may not hold.'
+  - 'Net for FastDraft (intake-624): Soft-OR remains a reasonable v1 token selector for 14B→1.5B drafter distillation, but (a) bench against intake-644 overlap selection (simpler), (b) for ≤2B drafters consider intake-645 TRACE RKL-on-error variant.'
+  handoffs_updated:
+  - reasoning-compression.md
+  - research-evaluation-index.md
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28. Deep-dive 2026-05-28 revised relevance low → medium; compounds with FastDraft (intake-624) for cloud-rental drafter training. Same Sang/Xu/Zhou cluster as OPSDC (intake-110). Tier-2b deep-dive 2026-05-28 found 2 stronger token-selection competitors (intake-644 overlap, intake-645 TRACE) — bench TIP against both before adopting.'
+- id: intake-643
+  arxiv_id: '2605.11739'
+  url: https://arxiv.org/html/2605.11739v3
+  source_type: paper
+  title: 'Learning to Foresee: Unveiling the Unlocking Efficiency of On-Policy Distillation (EffOPD)'
+  authors:
+  - Yuchen Cai
+  - Ding Cao
+  - Liang Lin
+  - Chunxi Luo
+  - Xin Xu
+  - Kai Yang
+  - Weijie Liu
+  - Saiyong Yang
+  - Tianxiang Zhao
+  - Guangzhong Sun
+  - Guiquan Liu
+  - Junfeng Fang
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - OPD efficiency stems from establishing stable update trajectories early in training, not just from denser supervision
+  - 'Module-allocation: OPD identifies low-utility regions and concentrates updates on critical reasoning modules'
+  - 'Update-direction: OPD exhibits stronger low-rank concentration aligned with final model subspaces'
+  - EffOPD achieves ~3x training acceleration without additional modules while preserving final performance
+  - Foresight (stable early-trajectory + low-rank alignment) is a transferable inductive bias for distillation
+  techniques:
+  - on-policy distillation (OPD)
+  - parameter-dynamics analysis
+  - module-level utility assessment / sparsified update allocation
+  - low-rank subspace alignment measurement
+  - adaptive extrapolation step sizing (EffOPD)
+  reported_results:
+  - ~3x average training acceleration with EffOPD vs baseline OPD
+  - Comparable downstream task performance
+  - Low-rank update concentration measurably higher in OPD vs SFT
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-110 (OPSDC)
+    - intake-266 (OPD f-divergence survey)
+  novelty_justification: 'Provides mechanistic explanation (foresight: module allocation + low-rank subspace alignment) for why OPD outperforms SFT, plus concrete EffOPD method delivering 3x speedup. Mechanism framing is novel; underlying OPD is well-established. No architectural innovation. Validated 1.5B / 4B / 14B / 32B; not at 70B+.'
+  relevance_justification: 'Deep-dive 2026-05-28 revised low → medium. The buried key finding is the DOWNSTREAM-CHECKPOINT artifact: SVD analysis shows OPD-trained checkpoints have effective rank 2,341 vs 2,754 for RL-trained at 8B, with top 1% capturing 94.7% of update energy. The natural corollary (authors stop short): **OPD-distilled models should LoRA-compress better than RL-trained ones**. Directly relevant to Doc-to-LoRA Phase B (which already commits to rank-8) — the finding is *evidence* for the existing rank-8 default rather than a guess. Also implies a screening heuristic for which third-party checkpoints to LoRA-target.'
+  verdict_justification: 'Revised not_applicable → worth_investigating 2026-05-28. Per feedback_dont_dismiss_creative_uses, "no in-house GPU training" is not sufficient grounds for not_applicable if the paper''s finding informs how we *consume* third-party checkpoints. The low-rank artifact lives on the trained checkpoint and is observable by any forward-only stack. Action: cross-reference in 08-doc-to-lora-prototype.md as evidence for rank-8 default; flag for OPD-trained-checkpoint preference when LoRA-targeting open-weight releases.'
+  contradicting_evidence:
+  - 'arxiv:2604.13016 (Li et al., Tsinghua) provides a competing PROXIMAL explanation: long-horizon OPD degrades because teacher advantage decays from +0.37 at 1K prefix to +0.02 at 16K, and useful supervision concentrates on top-K overlap. Both are TOKEN-LEVEL statistics, not representation-rank statistics. Token-level explanation is more proximal than 643''s representation-geometry framing. See intake-644.'
+  - 'arxiv:2605.10194 (TRACE) shows OOD GPQA-Diamond is PRESERVED by TRACE''s KL-anneal schedule (40-step decay to pure GRPO) where all-token self-OPD collapses — direct evidence the OOD-collapse signature 643 attributes to effective-rank compression can be eliminated by LOSS-FORMULATION alone, no rank-preserving regularizer required. See intake-645.'
+  - 'arxiv:2605.11182 (Zhu et al. — "Many Faces") attributes the same failure modes to TopK reverse-KL gradient bias and OPSD privileged-information leak — neither invokes representation geometry. Different abstraction layer; not invalidating 643 but reducing its mechanism story to "one of several concurrent hypotheses." Full text not yet available; parked for review-on-publish.'
+  - 'Lab cluster is USTC + Tencent + NUS + HKUST(GZ), 12 authors, internship-affiliated corresponding authors, no large prior OPD record. Medium-credibility cluster, not high. 3x speedup is reported on the authors'' own implementation only — no independent replication yet.'
+  - 'Theoretical analysis is local-only (near base model); multi-turn / multimodal applicability unknown. 3x speedup is validated up to 32B but NOT at 70B+.'
+  - 'The LoRA-compressibility corollary is INFERRED from the SVD analysis; authors did not test LoRA distillation directly. The inequality is plausible but not empirically demonstrated by this paper. Action: in Doc-to-LoRA Phase B, measure BOTH effective-rank AND top-K overlap-mass-fraction on candidate checkpoints to determine which better predicts LoRA fit quality.'
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  - reasoning-compression.md
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28. Deep-dive 2026-05-28 revised: verdict not_applicable → worth_investigating, relevance low → medium. Downstream-checkpoint artifact (low effective rank → LoRA-compressibility) is the inference-side angle the initial intake missed. Tier-2b deep-dive 2026-05-28 found competing proximal explanations (intake-644 overlap concentration; intake-645 TRACE loss-formulation) — mechanism story is "one of several" not unique.'
+- id: intake-644
+  arxiv_id: '2604.13016'
+  url: https://arxiv.org/html/2604.13016v1
+  source_type: paper
+  title: Rethinking On-Policy Distillation of Large Language Models
+  authors:
+  - Junnan Li
+  - Yifan Zuo
+  - Xuan He
+  - et al.
+  categories:
+  - training_distillation
+  novelty: medium
+  relevance: medium
+  credibility_score: 6
+  discovered_via: expansion
+  expanded_from: intake-639
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - 'Mechanistic: successful OPD progressively aligns the overlap of student and teacher top-K supports at student-visited states. Overlap ratio rises 72% → 91% during training'
+  - On overlap tokens, 97–99% of probability mass concentrates — optimizing ONLY overlap tokens matches full performance; non-overlap tokens are near-noise
+  - 'Two-stage recipe: (a) off-policy cold-start SFT on 200K teacher rollouts to close thinking-pattern gap, (b) OPD with teacher-aligned prompt selection'
+  - Top-1 OPD unstable; sampled-token and Top-4+ comparable
+  - Response-length sweet spot 3K-7K; degrades past 10K-15K. Teacher accuracy advantage decays from +0.37 at 1K prefix to +0.02 at 16K prefix
+  techniques:
+  - token-overlap concentration metric (computable from logprobs over teacher top-K)
+  - cold-start SFT then OPD two-stage recipe
+  - teacher-aligned prompt selection
+  - top-K overlap restriction during loss computation
+  - response-length-aware training schedule
+  reported_results:
+  - Overlap ratio 72% → 91% during training; 97-99% mass on overlap tokens
+  - Tested on Qwen3-1.7B/4B, DeepSeek-R1-Distill-1.5B/7B, JustRL-1.5B with DAPO-Math-17K / OpenThoughts3-1.2M / DeepMath
+  - Top-1 unstable; Top-4+ comparable to sampled
+  - Response-length sweet spot 3K-7K (degrades past 10K-15K)
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-639 (Unmasking OPD — more proximal than 639's gradient-alignment diagnostic)
+    - intake-642 (TIP — overlap selection dominates Soft-OR in their setting)
+    - intake-643 (EffOPD — token-level explanation competes with effective-rank)
+    - intake-624 (FastDraft — 2-stage recipe directly applicable)
+    - intake-110 (OPSDC)
+    - intake-266 (OPD survey)
+  novelty_justification: Token-overlap-concentration mechanism is a falsifiable, measurable proximal explanation for OPD success. Two-stage cold-start-SFT-then-OPD recipe with response-length sweet spot is a concrete deployable schedule. Indirectly subsumes / explains TIP (intake-642) Soft-OR selection.
+  relevance_justification: Overlap-ratio scalar is computable from logprobs over teacher top-K — deployable on our forward-only stack as a screening signal for any third-party OPD-distilled checkpoint. Two-stage recipe + response-length sweet spot directly applicable to FastDraft (intake-624) drafter training (14B→1.5B regime). Simpler and more theoretically backed than TIP Soft-OR for the same problem.
+  verdict_justification: worth_investigating. v1 token selector for any drafter we fund on cloud GPU should be teacher-student top-K overlap (simpler, theoretically backed), not TIP Soft-OR. Overlap metric is also a candidate screening tool for incoming OPD-distilled checkpoints — alternative to intake-639 logprobs-diagnostic with lower compute cost.
+  contradicting_evidence:
+  - Math reasoning only — generalization to code, agents, or multimodal not demonstrated.
+  - Anisotropy hypothesis (why overlap concentrates) is hypothesized but not directly verified.
+  - Response-length sweet spot is workload-specific (math); other domains may have different optimal lengths.
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28 via Tier-2b deep-dive expansion from intake-639. Tsinghua + ShanghaiTech + UIUC + RUC. Credibility 6/6: Tsinghua-led, broad model sweep, falsifiable token-overlap mechanism, honest scope caveats. Co-evolved with concurrent papers — does not cite Apple/Unmasking, TIP, EffOPD, or the other critique papers.'
+- id: intake-645
+  arxiv_id: '2605.10194'
+  url: https://arxiv.org/html/2605.10194v1
+  source_type: paper
+  title: 'TRACE: Distilling Where It Matters via Token-Routed Self On-Policy Alignment'
+  authors:
+  - Wang
+  - Ouyang
+  - Chen
+  - Hu
+  - Pan
+  - Li
+  - Guo
+  categories:
+  - training_distillation
+  - speculative_decoding
+  novelty: high
+  relevance: medium
+  credibility_score: 6
+  discovered_via: expansion
+  expanded_from: intake-639
+  verdict: worth_investigating
+  ingested_date: '2026-05-28'
+  key_claims:
+  - Three-way per-token routing among {FKL, RKL, ∅(GRPO)} based on annotator-marked critical spans. Forward-KL on key spans of correct rollouts; reverse-KL on error spans of failed rollouts; GRPO elsewhere
+  - KL channel annealed away over 40 steps (w₀=0.5, t_start=10, T_decay=30) — TRAINED MODEL HAS ZERO INFERENCE-TIME OVERHEAD
+  - Privileged annotator gives only coarse type label to teacher (not span text) — prevents content leak
+  - 'Scale-inversion: FKL dominates at 8B, RKL dominates at 1.7B — different optimal direction for different scales'
+  - Self-annotation (student-as-annotator) recovers ~69% of strong-API-annotator gain — method runs without paying for separate annotator API
+  techniques:
+  - per-token routing FKL/RKL/GRPO
+  - annealed KL schedule (40-step decay to pure GRPO)
+  - annotator-tier ablation (qwen3.5-plus vs frozen 32B vs self-online)
+  - coarse-label privileged guidance (no content leak)
+  - span coverage cap α=0.25
+  reported_results:
+  - TRACE-FKL 81.51 avg vs GRPO 78.75 vs base 78.95 on MATH-500/AIME24/AIME25/AMC23/GPQA-D with Qwen3-8B (+2.76pp over GRPO)
+  - AIME25 +4.58, GPQA-D +4.48 (largest gains)
+  - Preserves OOD GPQA-Diamond where GRPO and all-token self-OPD baselines degrade
+  - 'All-token self-OPD collapses: SDPO 64.04 (−14.71), SRPO 70.05 (−8.70) — 3-symptom collapse (response shortening 2027→1042, 4× entropy rise, 18-19pp val drop)'
+  - 'On 1.7B: TRACE-RKL 60.16 (only method exceeding base) — scale-inversion'
+  - Self-annotation recovers +1.90pp vs strong-API +2.76pp (~69%)
+  - 'Token-credit lift on key spans: TRACE-FKL +0.145 nats vs GRPO +0.054 (8.5× concentration)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - reasoning-compression.md
+    experiments: []
+    intake_entries:
+    - intake-639 (Unmasking OPD — TRACE provides loss-formulation answer to "where does it help")
+    - intake-642 (TIP — TRACE supersedes for ≤2B drafters; bench against TIP)
+    - intake-643 (EffOPD — TRACE preserves OOD without rank-regularizer, weakens effective-rank-as-mechanism claim)
+    - intake-624 (FastDraft — scale-inversion finding directly relevant to drafter training)
+    - intake-110 (OPSDC)
+  novelty_justification: Per-token tri-routing with scale-dependent direction (FKL on large, RKL on small) is structurally new — distinct from TIP (binary token mask) and from all-token KL methods. Anneal-to-GRPO schedule gives zero inference-time overhead with provable cleanup. Formal results (Lemma 1, Cor 2, Prop 3, Prop 4 with proofs) provide principled gating rule.
+  relevance_justification: Scale-inversion (FKL@8B, RKL@1.7B) is directly relevant to FastDraft drafter training (intake-624) — small drafters likely want RKL-on-error. Zero inference-time overhead means the trained model fits our forward-only stack. Self-annotation path eliminates third-party API dependency. Beats TIP-style and other concurrent self-OPD baselines (SDPO, SRPO, RLSD) on the same benchmarks.
+  verdict_justification: worth_investigating with strong applicability to drafter training. For any drafter ≤2B trained on rented cloud GPU, RKL-on-error TRACE variant is the v1 recipe candidate over TIP Soft-OR or sampled-token OPD. Annealed-KL schedule means the inference artifact has no extra cost.
+  contradicting_evidence:
+  - Single annotator-source ablation; downstream effectiveness of annotator-quality variance across domains beyond math/code not tested.
+  - Coverage cap α=0.25 and anneal schedule are tuned; transfer to other benchmarks unverified.
+  - Theoretical analysis (Lemma 1) gives asymptotic preference but does not bound finite-step convergence.
+  - Annotator-as-teacher couples training to annotator availability; self-annotation only recovers 69% of API gain — for our setting where we may not have access to a state-of-the-art annotator, the 31% gap matters.
+  handoffs_updated: []
+  handoffs_created: []
+  notes: 'Ingested 2026-05-28 via Tier-2b deep-dive expansion from intake-639. Nanjing U + Tsinghua + UW-Madison + Alibaba AMAP. Credibility 6/6: strong author roster, formal results with proofs, aggressive ablation, cites and beats concurrent SDPO/SRPO/RLSD baselines. Recommended as v1 drafter-training recipe candidate (alongside intake-644 two-stage) for FastDraft (intake-624) if/when drafter training is funded.'

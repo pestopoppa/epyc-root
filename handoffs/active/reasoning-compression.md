@@ -536,3 +536,40 @@ User-submitted GRAM paper (arxiv:2605.19376) ingested with two reference-chase e
 
 Full analysis at [`research/deep-dives/2026-05-21-recursive-reasoning-routing.md`](../../research/deep-dives/2026-05-21-recursive-reasoning-routing.md) — covers the lineage in detail, maps it onto our existing routing infrastructure (BGE+MLP, Phase 2 hidden-state probe, Trinity Phase 4 sep-CMA-ES), and proposes three hypotheses (TRM-as-router DO NOT pursue; GRAM-multi-trajectory via cheap MC-dropout proxy; **GRAM-as-verifier SCOPE FIRST** — the genuinely novel framing missing from `learned-routing-controller.md` / `decision-aware-routing.md` / `outer-coordinator-learned-head.md`).
 
+
+## Research Intake Update — 2026-05-28
+
+### New Related Research (OPD reference set — training-side, no executable EPYC task today)
+
+- **[intake-639] "Unmasking On-Policy Distillation: Where It Helps, Where It Hurts, and Why"** (arxiv:2605.10889) — verdict: **worth_investigating**
+  - Relevance: Per-token gradient-alignment diagnostic for OPD. Complements intake-110 (OPSDC), intake-266 (OPD survey), intake-286 (HPD) by providing the "when does OPD help" answer the survey flagged as open.
+  - Key technique: Training-free diagnostic framework with token/question/teacher granularity; "ideal per-node gradient" derivation (maximizes student success probability); targeted-rollout algorithm.
+  - Reported results: Qualitative — teacher gradients align with ideal more on incorrect-rollout tokens than correct ones; motivates asymmetric distillation guidance.
+  - Delta from current approach: Diagnostic, not an objective. Requires per-token gradient access — inference-only stack does not provide. Cross-reference here as the canonical OPD when-to-apply diagnostic; revisit if/when cloud-GPU rental opens.
+
+- **[intake-641] "SDAR: Self-Distilled Agentic Reinforcement Learning"** (arxiv:2605.15155) — verdict: **not_applicable**
+  - Relevance: Sigmoid-gated auxiliary OPSD on top of GRPO for multi-turn agent RL. Same OPSD primitive as intake-110.
+  - Reported results: +9.4% ALFWorld, +7.0% Search-QA, +10.2% WebShop-Acc over GRPO baseline (Qwen2.5/3).
+  - Delta: Training-only; we have no in-house RL pipeline. Documented for future agent-training initiative.
+
+- **[intake-642] "TIP: Token Importance in On-Policy Distillation"** (arxiv:2604.14084) — verdict: **worth_investigating**
+  - Relevance: Same Sang/Xu/Zhou cluster as OPSDC (intake-110). Direct successor to the intake-266 OPD-survey caveat that flagged token-importance as the open frontier.
+  - Key technique: Two-axis (entropy × teacher-student divergence) token taxonomy; parameter-free Soft-OR token scoring; top-K deterministic retention.
+  - Reported results: Qwen3-8B→4B MATH-500 76.7% → 79.1% at 50% retention; up to 47% peak training-memory reduction.
+  - Delta: Canonical post-OPSDC token-selection refinement. Gradient-time-only — cannot apply to inference stack. Note also for `research-evaluation-index.md`.
+
+### 2026-05-28 Deep-dive revisions to the OPD cluster
+
+The initial intake's blanket "training-only, EPYC has no GPUs" dismissal was too quick for the OPD-family entries. Deep-dive 2026-05-28 surfaced inference-time / downstream-checkpoint angles and four concurrent critique/competing papers.
+
+**Revised assessments**:
+- **intake-639 (Apple, Unmasking OPD)**: relevance low → **medium**. The diagnostic is **logprobs-only** (not gradient-access-requiring) — runs on our forward-only llama.cpp stack. Usable as a screening tool for any third-party OPD-distilled checkpoint we consider deploying. Rollouts expensive (45K-200K/question) — one-off offline use only.
+- **intake-642 (TIP)**: relevance low → **medium**. The 14B→1.5B test regime is **directly drafter range** (FastDraft / intake-624). 47% peak-memory cut compounds with FastDraft for any drafter we'd fund on cloud GPU. Soft-OR score is logprobs-only — possibly usable as a spec-dec verify-gating signal (unexplored by authors).
+- **intake-643 (EffOPD)**: verdict **not_applicable → worth_investigating**. SVD analysis shows OPD-trained checkpoints have effective rank 2,341 vs 2,754 for RL-trained at 8B (top 1% captures 94.7%). The buried downstream-checkpoint corollary: **OPD-distilled models should LoRA-compress better than RL-trained** — relevant to Doc-to-LoRA Phase B (`08-doc-to-lora-prototype.md`) rank-8 default.
+
+**New related research (Tier 2b expansion 2026-05-28)**:
+- **[intake-644] "Rethinking OPD" (Li et al., Tsinghua, arxiv:2604.13016)**: token-overlap-concentration mechanism (72%→91%, 97-99% mass on overlap tokens at student-visited states). Overlap-ratio is a single scalar **computable from logprobs over teacher top-K** — strictly simpler and more falsifiable than intake-639's gradient-alignment cosine. Two-stage cold-start-SFT-then-OPD recipe with response-length sweet spot (3K-7K) is directly applicable to FastDraft drafter training. **Likely v1 token selector** over TIP Soft-OR.
+- **[intake-645] "TRACE" (Wang et al., arxiv:2605.10194)**: per-token tri-routing among {FKL, RKL, ∅(GRPO)}. **Scale-inversion finding**: FKL dominates at 8B, RKL dominates at 1.7B — for any drafter ≤2B trained on rented cloud GPU, RKL-on-error is the v1 candidate. Anneal-to-GRPO schedule means trained model has **zero inference-time overhead**.
+- **Parked**: arxiv:2605.11182 (Zhu et al., "Many Faces") — full text not yet available, review-on-publish; arxiv:2603.25562 (Fu et al., CASIA) — overlapping content with intake-639, cross-ref only.
+
+**Net frame**: 2026 OPD is a maturing subfield converging on token-selective objectives. None of the four critique papers cite each other or 639/642/643 — concurrent parallel discovery. Pre-funding any cloud-GPU drafter training, bench candidate selectors (intake-644 overlap, intake-645 TRACE-RKL, intake-642 Soft-OR) on the same drafter target to pick a v1 recipe.

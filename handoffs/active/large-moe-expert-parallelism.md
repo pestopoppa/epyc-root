@@ -823,3 +823,13 @@ After each phase:
   - Relevance: PD-disaggregation State Transfer Channel for moving model-specific state (SSM hidden state alongside KV) across prefill/decode shards is a cousin of the EP master-worker shared-state coordination problem. The approach of separating state-class lifetime management (per-layer remap to skip allocation, request-bound pool) maps onto our planned EP-shard layer routing.
   - Key technique: HybridLinearKVPool (logical→physical KV layer remap to skip linear layers) + State Transfer Channel.
   - Delta from current approach: implementation is CUDA-/H200-bound; no kernel ports. The architectural pattern of "pool-per-state-class with logical→physical remap" is the take-away — already implicit in our master-worker PR_SET_PDEATHSIG design but worth keeping as a reference for the GGUF expert-shard loading path (Phase 3.2).
+
+## Research Intake Update — 2026-05-28
+
+### New Related Research
+
+- **[intake-637] "DeepSeek-V4-Flash GGUF (antirez)"** (huggingface.co/antirez/deepseek-v4-gguf) — verdict: **worth_investigating**
+  - Relevance: 284B-param MoE in `deepseek4` arch (MLA + low-rank output projections). Asymmetric routed-vs-shared-expert quantization recipe (routed IQ2_XXS+Q2_K or Q4_K, shared+attn+output Q8_0, router F16) is a concrete reference for the heterogeneous-MoE-quant pattern we have only partially exploited on Qwen3.6 and gemma4.
+  - Key technique: Per-tensor-role precision (routed experts ≪ shared experts ≪ router/embed) with explicit on-card justification; chat-tuned imatrix.
+  - Reported results: Q2 = 80.8 GiB, Q4 = 153.3 GiB on-disk (no benchmarks on card).
+  - Delta from current approach: Q4 variant fits on this 1.1 TB host (CPU-only). Pattern is transferable to other native `deepseek*` MoE arches in the registry (but NOT to dense DeepSeek-R1-Distill-* Llama/Qwen derivatives). Cross-reference also under `moe-spec-cpu-spec-dec-integration.md` (MTP sidecar drafter) and `llama-cpp-dsa-contribution.md` (arch support gating).

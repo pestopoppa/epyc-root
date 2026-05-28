@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-28 (manual incremental update: handoff-index coverage invariant)
+**Last compiled**: 2026-05-28 (manual incremental update: research-intake batch + TiDAR mechanism correction + OPD cluster Tier-2b expansion + DeepSeek-V4 port path + roofline audit BW/counter corrections)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 329 documents across 6 source types
 

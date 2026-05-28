@@ -349,3 +349,13 @@ After completing any task:
 | File exploration (REPL) | `epyc-orchestrator/src/repl_environment/file_exploration.py` |
 | Tool definitions | `epyc-orchestrator/src/prompt_builders/constants.py` |
 | TOON encoder | `epyc-orchestrator/src/services/toon_encoder.py` |
+
+## Research Intake Update — 2026-05-28
+
+### New Related Research
+
+- **[intake-642] "TIP: Token Importance in On-Policy Distillation"** (arxiv:2604.14084) — verdict: **worth_investigating**
+  - Relevance: Per-token diagnostic + selection refinement for OPD; reaches 47% peak training-memory reduction at 50% token retention with matching/better downstream accuracy.
+  - Key technique: Two-axis (entropy × teacher-student divergence) token taxonomy; parameter-free Soft-OR score; theoretical oracle-weight derivation.
+  - Reported results: Qwen3-8B→4B MATH-500 76.7% → 79.1% (Soft-OR 50%); Llama-3-70B→8B 71.0% → 74.7%; DeepPlanning Q3-only at 20% retention 12.6 vs full 11.7.
+  - Delta from current approach: Pure training-time technique — not deployable on inference stack today, but tracks the same Sang/Xu/Zhou cluster as OPSDC (intake-110). Logged here and under `reasoning-compression.md` as the canonical successor to the intake-266 OPD survey's open frontier.

@@ -136,3 +136,22 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 - [intake-187](https://huggingface.co/bartowski/cerebras_Qwen3-Coder-REAP-25B-A3B-GGUF) bartowski GGUF quants -- 26 variants of REAP-25B
 - [intake-182](https://arxiv.org/abs/2309.05516) AutoRound/SignRound -- Not applicable for llama.cpp/GGUF stack
 - [intake-165](https://arxiv.org/abs/2504.12285) BitNet b1.58 -- Ternary quantization, worth investigating for future architectures
+
+## Asymmetric MoE quantization recipe — DeepSeek-V4-Flash (intake-637, 2026-05-28)
+
+**The recipe.** antirez's community GGUF repack of DeepSeek-V4-Flash (284B / 13B-active MoE on the new `deepseek4` arch) ships Q2 (80.8 GiB) and Q4 (153.3 GiB) variants using explicit asymmetric per-tensor-role precision:
+- **Routed experts** (dominate parameter count, each token uses only a fraction): IQ2_XXS gate/up + Q2_K down (Q2 variant) OR Q4_K (Q4 variant)
+- **Shared experts + attention projections + output**: Q8_0
+- **Router/embed**: F16
+- **Norms / sinks / router-bias / indexer / compressor / Hyper-Connection blocks**: F32
+
+**Independently re-derived.** The recipe matches the APEX/MoE quant literature (APEX paper, MxMoE) — both warn that downgrading shared experts costs measurable PPL while routed experts have spare bits to give. Antirez stays Q8_0 on shared, which aligns. The recipe is transferable to other native `deepseek*` MoE arches but NOT to dense DeepSeek-R1-Distill-* Llama/Qwen derivatives.
+
+**Caveats:**
+- Upstream V4 weights ship mixed FP4+FP8, so sub-Q4 conversion is bounded — Q4 is the conservative target, Q2 is opportunistic.
+- `llama-imatrix` originally segfaulted on V4 activation collection; antirez's published GGUFs use a patched binary (`v4-port-I-imatrix`).
+- `deepseek4` arch is NOT in llama.cpp or ik_llama.cpp yet (zero `grep` hits as of 2026-05-28); upstream ggml-org issue #22319 + discussion #22376 track 4+ community WIP forks, no merged PR.
+
+**Port path.** User authorized 2026-05-28: experimental branch `feature/deepseek4-port` off ik_llama production tree with explicit dual quality + throughput merge gates ([`deepseek-v4-flash-cpu-port.md`](../handoffs/active/deepseek-v4-flash-cpu-port.md)) — 20-prompt × 5-category quality set with per-prompt MAD ≤ 0.05 nats + ≥ 15/20 token-1 exact-match; throughput floors Q4 ≥ 18 t/s solo, Q2 ≥ 35 t/s solo on canonical NPS4 stack.
+
+Sources: `research/intake_index.yaml` intake-637 + APEX/MxMoE cross-refs · [`handoffs/active/deepseek-v4-flash-cpu-port.md`](../handoffs/active/deepseek-v4-flash-cpu-port.md) · [`handoffs/active/large-moe-expert-parallelism.md` §2026-05-28](../handoffs/active/large-moe-expert-parallelism.md) · `progress/2026-05/2026-05-28.md` §research-intake-batch.

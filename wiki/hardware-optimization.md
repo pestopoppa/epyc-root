@@ -1128,3 +1128,21 @@ Pre-2026-05-08 (Qwen3-Coder-30B-A3B with `-t 24` per the 1.5B-era leftover), thi
 **Generalizes to any role with `-t` matching the canonical recipe**: any future role launched with full-canonical thread counts will hit the same overlap if its `NUMA_CONFIG` declares both a full-NUMA-node entry and quarter entries. The pattern is to restructure the role's instance list to one or the other, never both, gated by operator intent.
 
 **Cross-references**: [progress/2026-05/2026-05-08.md § session 2 § Phase 3](../progress/2026-05/2026-05-08.md), commit `e205309` (epyc-orchestrator).
+
+## CPU decode roofline measurement — BW math + AMD-correct counters (2026-05-28)
+
+Two reference numbers that anchor any CPU decode performance claim on this host:
+
+- **614 GB/s socket theoretical**: EPYC 9655 has 12 DDR5 channels at DDR5-6400 MT/s. `12 × 6400 × 8 = 614.4 GB/s`. Earlier text in some handoffs (now corrected) wrote 307 GB/s — that was wrong. Under NPS4 the 12 channels are split 3 per NUMA node → ~153.6 GB/s per-node theoretical.
+- **~460 GB/s aggregate practical ceiling** under `--interleave=all` (per `feedback_canonical_baseline_protocol`) — ~75% of theoretical. Report achieved BW against **both** numbers: one answers "am I close to physics?", the other answers "am I close to what this configuration actually achieves?".
+
+**AMD Zen 5 perf counters** (NOT Intel). Initial draft of [`cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) prescribed `fp_arith_inst_retired.*` + `uncore_imc/cas_count_*` which `perf list` on this AMD host rejects. The Zen-5-correct families are:
+- FP retire (sum sub-events; `mac_flops` counts FMAs as 2 ops): `fp_ret_sse_avx_ops.{all,mac_flops,add_sub_flops,mult_flops,div_flops}`
+- DRAM via Data Fabric PMU (if kernel-exposed): `amd_df/cs_dispatched_*/` — event codes are Zen-revision-specific, confirm with `perf list amd_df/*`
+- DRAM alternatives in priority order: PCM `pcm-memory` (recent builds support AMD) → AMD μProf `AMDuProfPcm` → `numastat` `numa_hit` pre/post-delta fallback (coarse but always available)
+
+The roofline audit handoff is **blocked at Status: DRAFT** until Phase 0 counter calibration on this host produces all four artifacts (tested `-e` string, `perf stat -- sleep 1` transcript with every event resolving to numeric, DRAM-path resolution evidence, host identity stamp from `/proc/cpuinfo` + `numactl --hardware` + `uname -r`) and persists them in the handoff body. Reboot or kernel/microcode change invalidates the calibration.
+
+**Decision rule (consistent across all referencing docs)**: achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of 614 GB/s socket theoretical → BW-bound; diffusion-LM port variants (Nemotron-LD Variant B TiDAR-pattern, C1/C2 hybrids) have FLOPS margin worth converting.
+
+Sources: [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · `feedback_canonical_baseline_protocol` · `feedback_no_concurrent_inference` · `progress/2026-05/2026-05-28.md` §research-intake-batch §Phase-6/7.

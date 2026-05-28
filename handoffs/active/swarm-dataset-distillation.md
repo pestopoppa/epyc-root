@@ -123,3 +123,12 @@ The single largest design decision. The narrow domain governs every downstream c
 - Multi-model serving / swarm inference at request time (that is [`decision-aware-routing.md`](decision-aware-routing.md) DAR-6's territory).
 - Chunk-ranking / mid-stream peer verification ([`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md)).
 - Tokenized payments, x402Escrow, enterprise on-prem product (out of scope for this project entirely).
+
+## Research Intake Update — 2026-05-28
+
+### New Related Research
+
+- **[intake-641] "SDAR: Self-Distilled Agentic Reinforcement Learning"** (arxiv:2605.15155) — verdict: **worth_investigating (parked — low priority forward pointer)** (reclassified 2026-05-28 from `not_applicable` per `feedback_dont_dismiss_creative_uses` — being preserved as a future-agent-training reference, not dismissed)
+  - Relevance: Conceptual neighbor — sigmoid-gated auxiliary OPSD layered on GRPO RL for multi-turn agent training. Different problem than swarm dataset distillation but adjacent training-side primitive.
+  - Reported results: +9.4% ALFWorld / +7.0% Search-QA / +10.2% WebShop-Acc over GRPO (Qwen2.5/3 families).
+  - Delta from current approach: Swarm-dataset-distillation focuses on data assembly for downstream model improvement, not on policy training. SDAR documented here as a forward pointer for if/when a future agent-RL training track materializes (e.g. via cloud-GPU rental). No current action; keep on the parked-reference list.

@@ -367,3 +367,13 @@ Companion `/research-intake` run for `gpu-drafter-mi200-investigation.md` surfac
 - **[intake-621] "DeepSeek-V3 Technical Report" (MTP section)** (arxiv:2412.19437) — cross-link only; main entry lives with the GPU-drafter handoff. DeepSeek-V3 MoE + MTP is the closest published reference architecture for "MoE target with MTP-style spec-dec head" — relevant for prior-art comparisons in the wiki page.
 
 See `gpu-drafter-mi200-investigation.md` § Research Intake Update for the full 9-entry intake batch.
+
+## Research Intake Update — 2026-05-28
+
+### New Related Research
+
+- **[intake-637] "DeepSeek-V4-Flash GGUF (antirez)"** (huggingface.co/antirez/deepseek-v4-gguf) — verdict: **worth_investigating**
+  - Relevance: Ships an optional MTP-only side-file (3.6 GiB) packaging V4's multi-token-prediction head as a spec-dec drafter — same MTP-as-drafter pattern as our gemma4 / DSv3.2 deployments.
+  - Key technique: Standalone MTP head GGUF, intended to drive a self-drafting MoE target (V4 verifier + V4-MTP drafter).
+  - Reported results: MTP sidecar 3.6 GiB; no acceptance-rate measurement on card.
+  - Delta from current approach: If `deepseek4` arch lands in llama.cpp/ik_llama.cpp, this becomes a candidate for a new MoE-spec target/drafter pair. Recipe directly extends the gemma4 MTP integration (see `project_gemma4_mtp_launch_recipe`). Pre-flight: verify (a) llama.cpp deepseek4 support, (b) MTP sidecar load API parity with gemma4 path, (c) acceptance-rate on representative workload (defer to user per `feedback_speed_verify_via_llama_bench`).

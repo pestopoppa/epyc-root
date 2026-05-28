@@ -444,3 +444,57 @@ A future intake pass should pick up Set Block Decoding (2509.04185) and Efficien
 **Decision criteria to revisit**: (a) community llama.cpp port appears, (b) AR-mode quality re-test on Q4_K_M matches the paper's claim that NLD-8B-AR > Qwen3-8B-AR, (c) DGX Spark acquired and we want a Day-0 self-spec validation, (d) MTP path in `gemma4-mtp-drafter-evaluation.md` stalls and we need an alternative direction.
 
 **Memory of contradicting evidence** (for the avoidance of closure-inflation): single-source numbers (NVIDIA-only), no third-party reproductions yet, no llama.cpp port, no Q4_K_M data, no batch>>1 data, sibling Nemotron-3-Nano has open llama.cpp Mamba assertion crashes. Re-run Tier 2b contradicting-evidence search at 30, 60, 90 days post-release.
+
+---
+
+## 10. Open Question (added 2026-05-28) — TiDAR-pattern one-pass variant for CPU
+
+### 10.1 The framing
+
+The user surfaced the right asymmetry: **EPYC 9655 has idle FLOPS and a saturated memory bus** (project_cpu_decode_bw_bound). Diffusion drafting trades BW limitations for FLOP limitations — exactly the opposite of our usual constraint. Worth exploring whether some hybrid arrangement can convert spare FLOPS into effective decode throughput by hiding weight-fetch latency behind diffusion-thinking compute.
+
+### 10.2 Why TiDAR (intake-633) re-enters the conversation
+
+Initial intake dismissed TiDAR as superseded by Nemotron-Labs-Diffusion. Deep-dive 2026-05-28 corrected that:
+- TiDAR's "free token slots" mechanism is **latency-plateau exploitation at batch=1 decode** (paper Fig.1). The plateau exists because weight + KV-cache fetch dominates per-step cost — **that is the CPU regime**, not the inverse.
+- TiDAR is **single forward pass per cycle**; Nemotron's shipping Linear-SS mode is two-pass. On CPU each pass = one full weight scan, so TiDAR halves per-cycle weight traffic vs Linear-SS.
+- TiDAR is the architectural ancestor of Nemotron's *underperforming* Quad-SS mode. Quad-SS underperforms on GPU because FlexAttention kernels for the quadratic mask are unoptimized — **on CPU we write ggml ops either way, so the FlexAttention blocker does NOT carry over**.
+
+### 10.3 Two specific variant proposals for the §6 port plan
+
+**Variant A — Linear-SS port (current §6 plan baseline)**
+- Two-pass: draft pass (diffusion) + verify pass (AR). Standard Nemotron shipping mode.
+- 5–10 days for the block-wise attention mask, then standard MTP-style integration.
+
+**Variant B — TiDAR-pattern one-pass on dense Ministral3 backbone (NEW)**
+- Single forward pass: unified causal+bidirectional mask handles draft + verify in one weight scan.
+- Halves per-cycle weight traffic vs Variant A on CPU.
+- Accepts the 6–9% HumanEval/MBPP quality cost TiDAR-8B Trust-Diff showed (we may need to verify under our quants).
+- Requires writing the structured mask as a ggml op — but we'd need to do something similar for Variant A's block-wise mask anyway.
+
+**Variant C — split-role hybrid (USER PROPOSAL — speculative)**
+> "Maybe there's a scenario where we can explore using a diffusion model for thinking and an AR model for generation? Or viceversa?"
+
+This is genuinely novel and worth scoping. Two specific candidates:
+
+- **C1 — diffusion-think + AR-generate**: route a "thinking-budget" prefix segment through a TiDAR/Nemotron diffusion path that fills idle FLOPS with parallel exploration of K candidate continuations, then commit to a single committed candidate and switch to standard AR for the final-answer segment. Aligns with `per-request-reasoning-budget.md` (active handoff): the reasoning budget can be spent on diffusion-thinking, the answer budget on AR-decoding. The roles need not share weights.
+- **C2 — AR-think + diffusion-generate**: invert C1. Use AR for the reasoning chain (where serial dependencies dominate and acceptance-length wins are smaller) and diffusion for the final-answer generation (where the answer is often K parallel near-independent tokens — code lines, list items, table cells). Less obviously beneficial because answer segments are usually shorter than reasoning segments on our workloads.
+
+### 10.4 What needs to be measured before any of these is chosen
+
+1. **EPYC decode FLOPS / BW roofline** [USER-GATED]: roofline measurement of compute and memory-bandwidth utilization during AR decode on Q4_K_M gemma4 (or whichever production model is the target backbone). Requires running a live llama-server / llama-cli at decode with AMD-correct perf counters attached (`fp_ret_sse_avx_ops.*` + `amd_df/cs_dispatched_*/` or `pcm-memory` or `AMDuProfPcm`) — see `handoffs/active/cpu-decode-flops-roofline-audit.md` for the resolved AMD Zen 5 event set and Phase 0 calibration steps. Per `feedback_no_concurrent_inference` and `feedback_speed_verify_via_llama_bench`: this is **NOT** an autonomous task — user must explicitly approve the run, and the agent must verify no other inference job is active. Expected output: **achieved FLOPS during decode as fraction of ~9.2 TFLOPS FP32 socket theoretical**; **achieved DRAM BW as fraction of ~614 GB/s socket theoretical (and as fraction of the 460 GB/s measured-aggregate practical ceiling)**. Promotion rule: if achieved FLOPS < 10% AND achieved BW > 70% of theoretical → BW-bound, FLOPS-for-BW trade has real margin. If achieved FLOPS > 30% (e.g. AVX-512 prefetch saturation or thread spin overhead) the trade is narrower.
+2. **TiDAR-pattern mask ggml-op complexity** vs Linear-SS mask ggml-op complexity [STATIC ANALYSIS, no inference required]. If they're comparable, Variant B is strictly cheaper than Variant A in long-term throughput on CPU. Read antirez fork + intake-635 minimal reimpl for the TiDAR mask; cross-reference Nemotron paper §4.2 for the Linear-SS mask shape.
+3. **Quality cost of TiDAR-pattern under aggressive quant** [USER-GATED, requires perplexity benchmark]: TiDAR loses 6–9% on HumanEval/MBPP at BF16; the gap could widen under Q4_K_M. Cannot be measured without an actual TiDAR or TiDAR-pattern checkpoint at Q4_K_M, which we don't have today — so this question is dormant until either Variant B is built or someone else releases a quantized TiDAR-pattern model.
+4. **C1/C2 routing decision overhead** [STATIC + DESIGN, no inference required]: every hybrid scheme has a phase-switch cost. For C1 specifically: how do we decide where the thinking budget ends and the generate budget begins? Per-request reasoning budget heuristic is the obvious gate (already tracked in `per-request-reasoning-budget.md`).
+
+### 10.5 Recommended decision sequence
+
+The sequence below interleaves cheap analytical work (which the agent can do) with user-gated inference work (which the user runs):
+
+1. **[Agent, no inference]** Static analysis of TiDAR-pattern vs Linear-SS mask ggml-op complexity (§10.4.2). One day of code reading.
+2. **[Agent, no inference]** C1/C2 routing-gate design sketch using `per-request-reasoning-budget.md` as the substrate (§10.4.4). One day of design note.
+3. **[USER]** Run the EPYC FLOPS headroom measurement (§10.4.1) when convenient — full protocol prepared in [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../../handoffs/active/cpu-decode-flops-roofline-audit.md) (exact `perf stat`/`pcm-memory` command, warmup + sustain protocol, findings.md template). Agent does not execute. One-shot, no follow-up bench needed unless the result is borderline.
+4. **[Agent]** Synthesize §10.4.1-2-4 outputs into a Variant A vs B vs C1/C2 decision memo. **Promotion rule (matches the audit handoff's decision rule exactly): if achieved FLOPS during decode < 10% of theoretical socket peak (~9.2 TFLOPS FP32) AND achieved DRAM BW > 70% of theoretical socket peak (~614 GB/s, i.e. > ~430 GB/s)** → scope Variant B (TiDAR-pattern one-pass) alongside Variant A (Nemotron Linear-SS) in the §6 port plan. Otherwise stay with Variant A baseline. Defer C1/C2 hybrids until a single-arch variant is working — they compose on top. (Previous "headroom ≥ 30%" wording was ambiguous: "headroom" could mean either idle-FLOPS or achieved-FLOPS. The rule above is in terms of **achieved** fractions of theoretical peak.)
+5. **[Agent]** If Variant B is chosen, re-flag intake-635 (community minimal reimpl) as the readable mask-trick reference.
+
+This open question is logged here rather than added to handoffs because (a) it's research-stage, not engineering-ready, and (b) per-project policy index changes require explicit user approval — this is a deep-dive annotation, not a handoff modification.

@@ -459,3 +459,15 @@ Independent of D2L pipeline. Purpose: baseline BitNet quality vs existing worker
 | QVAC LLM-Judge vs Q4 Qwen3-1.7B | 60-64% win rate | Quality gap remains |
 
 **Decision**: Not for production. Competitive with Qwen2.5-1.5B on general benchmarks but likely weaker than Qwen2.5-Coder-1.5B (code-specialized). The 5x memory advantage (0.4 vs 2 GB) is compelling only if quality holds — Phase A-bis provides the validation path.
+
+## Research Intake Update — 2026-05-28
+
+### Evidence supporting the rank-8 default
+
+**[intake-643] "Learning to Foresee: EffOPD"** (arxiv:2605.11739): SVD analysis of OPD-trained checkpoints shows effective rank 2,341 vs 2,754 for RL-trained at 8B; top 1% of singular components captures **94.7%** of update energy. Direct corollary (paper does not test directly but the inequality follows): **OPD-distilled checkpoints should LoRA-compress better than RL-trained ones**. This is *evidence* for our existing rank-8 default rather than a guess.
+
+**Caveat — competing proximal explanation**: intake-644 (Tsinghua "Rethinking OPD", arxiv:2604.13016) shows useful supervision concentrates on the teacher-student top-K overlap (97-99% of gradient mass). The same checkpoints may LoRA-compress well because they have a smaller off-overlap support tail, not because effective-rank is genuinely lower. Both explanations are consistent with the observed SVD.
+
+**Measurement task for Phase B (when cloud-GPU rental opens)**: before relying on the effective-rank → LoRA-compressibility chain, compute BOTH (a) effective rank from SVD and (b) top-K overlap-mass-fraction on candidate OPD checkpoints. Record which better predicts LoRA fit quality. If overlap-mass-fraction predicts as well as effective rank, prefer the simpler statistic.
+
+**Screening heuristic for OPD-trained third-party releases**: prefer OPD-distilled checkpoints as LoRA targets over RL-trained equivalents (per the predicted inequality). Easy filter at model-card scan time.

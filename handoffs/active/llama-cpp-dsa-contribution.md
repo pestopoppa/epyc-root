@@ -2,7 +2,7 @@
 
 **Status**: ACTIVE TRACKING — three sub-tracks defined, all gated on user inference approval per `feedback_no_concurrent_inference.md`
 **Created**: 2026-04-29 (via research-intake of intake-506 + PR #21149 audit)
-**Updated**: 2026-04-29 (initial)
+**Updated**: 2026-05-28 — Added "Adjacent Upstream Arch Work — deepseek4" section tracking ggml-org/llama.cpp issue #22319 + discussion #22376 + 4+ community WIP forks (antirez, nisparks, cdome94, Fringe210). Our sibling effort is `handoffs/active/deepseek-v4-flash-cpu-port.md` (port AUTHORIZED 2026-05-28, experimental branch isolation); if a core contributor opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution) and the experimental branch rolls back in favor of upstream. Earlier 2026-04-29 (initial).
 **Categories**: kv_cache, inference_serving, hardware_optimization, local_inference
 **Workstream**: Inference Acceleration + CPU Engineering (cross-cuts)
 **Parent indices**:
@@ -164,6 +164,15 @@ Optional: schedule a weekly background agent via `/schedule` to check PR state a
 - **Deep dive**: `/workspace/research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md` — full PR audit + "How we'd contribute" expansion
 - **Existing fork commit**: `1c0d9081f` (DeepSeek v3.2 chat parser, already on `production-consolidated-v3`)
 - **Comparison axis**: `triattention-kv-selection.md` S1 PPL-at-50%-eviction gate template — reusable for D1.6 quality validation
+
+## Adjacent Upstream Arch Work — deepseek4 (DeepSeek-V4-Flash)
+
+Tracked as a sibling effort, NOT folded into this handoff. V4 is a fundamentally new arch (CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections), not a DSA derivative — porting it is a multi-thousand-line arch addition, not an ops-add.
+
+- **Upstream issue**: ggml-org/llama.cpp#22319 (model request, open)
+- **WIP discussion**: ggml-org/llama.cpp#22376 (4+ community forks: nisparks `wip/deepseek-v4-support`, draft PR #22378 "no intent to merge", cdome94, Fringe210, antirez/llama.cpp-deepseek-v4-flash)
+- **Our port**: experimental branch `feature/deepseek4-port` off ik_llama production tree — see `handoffs/active/deepseek-v4-flash-cpu-port.md`
+- **Watch trigger**: if a core contributor (fairydreaming or similar) opens a deepseek4 upstream PR, our role mirrors D1 (CPU benchmark contribution against canonical NPS4 stack); roll back our experimental branch in favor of the upstream PR for review and merge.
 
 ## Notes
 
