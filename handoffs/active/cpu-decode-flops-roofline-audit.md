@@ -180,6 +180,14 @@ Replace the placeholders in Step 2 below with:
 
 #### Bench-recipe drift caught 2026-05-28 (must read before constructing any bench command)
 
+**As of 2026-05-28: the ONLY sanctioned bench entry point is `/mnt/raid0/llm/epyc-inference-research/scripts/benchmark/bench_canonical.sh`** — composes all validators automatically. Usage:
+
+```bash
+bench_canonical.sh -m /path/to/model.gguf [-n N_GEN] [-r REPS] [--perf]
+```
+
+If anything in the recipe has drifted (binary, libomp, env, host config), the wrapper fails fast with a clear error and the exact fix line. Do not reconstruct bench commands from memory; the codified path is the only path. See research-repo commit `3634c8a` for the hardening + the 19-test regression suite (`scripts/lib/test_canonical_recipe.py`).
+
 The post-reboot bench drift investigation surfaced multiple compounding problems with ad-hoc bench commands. **Codified path**: use `/mnt/raid0/llm/epyc-inference-research/scripts/lib/canonical_recipe.py` constants verbatim. Ad-hoc reconstruction from memory drifts on:
 
 1. **Binary selection**: ik_llama vs mainstream llama.cpp. The "60 t/s baseline" measurement was via `/mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench`. `llama.cpp-experimental/build_v5_clean/bin/llama-bench` is a different code path (~16% slower for gemma4).
