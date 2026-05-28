@@ -2,7 +2,7 @@
 set -euo pipefail
 # SearxNG bash bridge for Claude Code sessions.
 # Routes high-volume / multilingual / engine-diversity queries through the
-# self-hosted SearxNG instance at localhost:8090 instead of the built-in WebSearch.
+# self-hosted SearxNG instance at localhost:8888 instead of the built-in WebSearch.
 #
 # Per handoffs/active/searxng-bash-websearch-bridge.md (Approach #1).
 #
@@ -13,7 +13,7 @@ set -euo pipefail
 #   2 — SearxNG not reachable, fall back to built-in WebSearch
 #   3 — query failed (curl error, malformed response)
 
-SEARX_URL="${SEARX_URL:-http://localhost:8090}"
+SEARX_URL="${SEARX_URL:-http://localhost:8888}"
 TOP="${SEARX_TOP:-10}"
 ENGINES=""
 
