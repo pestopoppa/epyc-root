@@ -44,15 +44,25 @@ verify_branch() {
 }
 
 check_binary_exists() {
-  local binary="$LLAMA_CPP_DIR/build/bin/llama-cli"
-  if [[ -x "$binary" ]]; then
-    echo -e "${GREEN}✓ Production binary exists: $binary${NC}"
-    return 0
+  # llama-server is production-required (the orchestrator launches against it).
+  # llama-cli is a smoke/bench helper — useful but not needed for inference, so it warns
+  # instead of failing the gate (was: required, which false-warned every session_init.sh).
+  local server="$LLAMA_CPP_DIR/build/bin/llama-server"
+  local cli="$LLAMA_CPP_DIR/build/bin/llama-cli"
+  local rc=0
+  if [[ -x "$server" ]]; then
+    echo -e "${GREEN}✓ Production binary exists: $server${NC}"
   else
-    echo -e "${RED}✗ Production binary missing: $binary${NC}"
+    echo -e "${RED}✗ Production binary missing: $server${NC}"
     echo -e "${YELLOW}  Rebuild with: cd $LLAMA_CPP_DIR && cmake -B build && cmake --build build -j$(nproc)${NC}"
-    return 1
+    rc=1
   fi
+  if [[ -x "$cli" ]]; then
+    echo -e "${GREEN}✓ Smoke binary exists: $cli${NC}"
+  else
+    echo -e "${YELLOW}⚠ Smoke binary optional: $cli not built (only needed for llama-cli benches / smoke tests)${NC}"
+  fi
+  return $rc
 }
 
 main() {
