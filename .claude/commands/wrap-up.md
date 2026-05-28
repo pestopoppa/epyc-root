@@ -17,6 +17,7 @@ Update all documentation artifacts to reflect work completed in this session, co
 - Update any active handoffs in `handoffs/active/` that were advanced by this session's work
 - Check off completed items, add new findings, note any blockers discovered
 - If a handoff is fully complete, extract key findings to docs and move to `handoffs/completed/`
+- If a handoff is only partially complete but completed history is obscuring live work, do not force an all-or-nothing move; use the partial-compaction rules in Step 3.
 
 ### 3. Handoff Index Updates
 
@@ -29,7 +30,25 @@ Update all documentation artifacts to reflect work completed in this session, co
 - **Genuinely complete** handoff/section → archive it (`git mv` to `handoffs/completed/` + a completion banner; repoint its sibling links to `../active/`) and remove its index reference.
 - **Not complete, but the index entry has accreted stale completed-narration** → keep the handoff active, trim the index entry to its open items only. Chronology belongs in the progress log, not the index cell (don't append "Update (date):" into index cells).
 - Point handoff *status* at the machine-readable source of truth (`execution_manifest.jsonl`, test names) instead of re-narrating it in prose, so the index can't drift.
-- **Always archive, never delete.** **List everything you pruned/archived in the wrap-up output** under a `## Index pruning` heading so the operator can review it before it leaves the active tree.
+- **Always archive, never delete.** **List everything you pruned/archived in the wrap-up output** under the `## Index pruning / handoff compaction` heading defined in Output Format below so the operator can review it before it leaves the active tree.
+
+**Handoff compaction — split completed scope out of oversized active handoffs.** Active handoffs should optimize for the next implementer. If completed detail now hides the live task, compact the handoff during this wrap-up step:
+
+- **When to compact**: trigger is qualitative — the first screen of the active handoff no longer clearly answers "what do I do next?" Line count is only a prompt to evaluate: a 300+ line active handoff is worth a read-through, but many large handoffs are large because the open work is large. Do not split those.
+- **Active handoff stays authoritative for open work**: preserve the handoff's existing schema, but make sure current status, executor start-here guidance, outstanding tasks, dependencies, decision gates/forks, key files, reporting instructions, and a compact `Completed Scope` table remain easy to find. Keep those sections if present; otherwise use the local structure that already carries equivalent information.
+- **Move completed detail to a sibling**:
+  - Use `handoffs/completed/<handoff>-completed-through-YYYY-MM-DD.md` for landed/validated phases that remain useful as evidence.
+  - Use `handoffs/archived/<handoff>-history-through-YYYY-MM-DD.md` for superseded, obsolete, or no-longer-actionable history.
+  - Completed example: a benchmark harness phase passed, changed thresholds, and remains evidence for the next gate.
+  - Archived example: a prototype path passed locally but was superseded by a different architecture and is useful only to explain why not to revive it.
+- **Split mechanics**: for partial compaction, create or update the sibling file and edit the active handoff in place. Do not `git mv` the active handoff unless the whole handoff is complete. This preserves the active path and its blame/history for future implementers.
+- **Repeat compactions**: if a relevant sibling already exists, extend the newest sibling and update its date stamp plus reciprocal links if needed. Create a new dated sibling only when the older sibling is intentionally immutable or canonical.
+- **Add reciprocal banners**:
+  - Active file: link the completed/archived sibling under `Completed Scope`.
+  - Completed/archived sibling: add "Historical ledger only; current work lives in `../active/<handoff>.md`."
+- **Index handling after a split**: master and domain indices should point to the active handoff only, with at most a short "completed history linked from active handoff" note. Do not create separate index rows for completed siblings unless a sibling is itself a canonical reference.
+- **Safety check**: before moving content, verify no active task, blocker, gate, or key file location is being moved out of `handoffs/active/`.
+- **Report it**: list every split under the wrap-up output's `## Index pruning / handoff compaction` heading with active path, sibling path, and reason.
 
 ### 4. Repository Documentation
 
@@ -82,6 +101,16 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
 - **Return all commit hashes** so the user can manually push each repo
 
 ## Output Format
+
+If index pruning, archival, or handoff compaction happened, include this section before the commit table:
+
+```
+## Index pruning / handoff compaction
+
+| Active path | Sibling/archive path | Action | Reason |
+|-------------|----------------------|--------|--------|
+| ... | ... | ... | ... |
+```
 
 End your response with a summary block:
 
