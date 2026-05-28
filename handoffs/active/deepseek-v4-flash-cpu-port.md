@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: stub — port AUTHORIZED 2026-05-28 (experimental branch isolation, no merge until both gates pass)
+**Status**: Phase 1 partial — port AUTHORIZED, branch/remote prepared, Phase 1.2 paused 2026-05-28 pending strategy decision
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -25,7 +25,7 @@ DeepSeek-V4-Flash is a 284B / 13B-active MoE with a fundamentally new architectu
 
 Current state of upstream support (2026-05-28):
 - `grep -ri deepseek4 /mnt/raid0/llm/llama.cpp /mnt/raid0/llm/ik_llama.cpp` → zero hits. Neither tree supports the arch.
-- Upstream tracker: ggml-org/llama.cpp issue #22319 (model request, open) + discussion #22376 (WIP, 4+ community forks). No merged PR.
+- Upstream tracker: ggml-org/llama.cpp issue #22319 (model request, open) + discussion #22376 (WIP, 4+ community forks). PR #22378 is closed/reference-only, not a merge path. No merged PR.
 - Reference engine `antirez/ds4` (DwarfStar4) is from-scratch C (not llama.cpp-based). Backends: Metal primary, CUDA secondary, "CPU is reference/debug, non-production." Best ds4 numbers: M3 Max 21.5 t/s Q2; DGX Spark 13.75 t/s. **No EPYC / x86-AVX-512 production path published.**
 - Best community llama.cpp CPU number: 6.5 t/s on ThinkPad-P16 128 GB (dual-channel DDR5). Our NPS4 12-channel-per-node should be substantially faster but no reference exists.
 
@@ -98,7 +98,7 @@ If any of (1)-(3) or (5) fails, the branch stays in experimental and remediation
 
 - The handoff (and master-index #58) assumed a near-clean cherry-pick. Reality: antirez forked from mainline llama.cpp (build b8927), and ik_llama.cpp's lineage diverges substantially from mainline. **Phase 1 cannot be "cherry-pick the antirez commits" as drafted.**
 
-### Revised Phase 1.2 — manual port of the 6-file V4 delta (next session)
+### Phase 1.2 delta inventory — initial plan superseded by API-gap survey
 
 The good news from inspecting `06c504247 --stat`: the V4-specific changes are well-isolated:
 
@@ -142,14 +142,17 @@ The 17+ conflicting files seen during the cherry-pick attempt are antirez's UNRE
 
 The branch `feature/deepseek4-port` remains at the `production-gemma4-mtp` tip. The `antirez` remote is added + fetched. The 6-file delta is identified. The work has NOT started because the right thing to do is align on strategy first. Once decided, the relevant section below activates.
 
-## Phased Port Plan
+## Phased Port Plan (Option A only; superseded until decision)
 
-### Phase 1 — Branch creation & cherry-pick (Day 1)
+The original six-phase ik_llama integration plan below is retained as a scaffold, but it is not active while the A/B/C/D decision is pending. Do not run Phase 1 as originally drafted: direct cherry-pick already failed. If the operator selects Option A, rewrite Phase 1 as graph-context → build-context API translation. If the operator selects Option B or D, create a separate auxiliary-binary plan for the antirez fork before doing code work.
 
-1. Create `feature/deepseek4-port` branch off the ik_llama.cpp production tree's current head (NOT off antirez's fork directly).
-2. Cherry-pick from `antirez/llama.cpp-deepseek-v4-flash` the deepseek4 arch additions: tokenizer, model loader, tensor naming, indexer/compressor/HC ops.
-3. **Do NOT bring in any non-arch changes** from the antirez fork (per `feedback_minimum_imports`).
-4. Build verification under canonical stack: AOCC + KMP_BLOCKTIME=10 + GGML_NUMA_WEIGHTS=1.
+### Phase 1 — ik_llama API translation (Option A; replaces cherry-pick)
+
+1. Keep `feature/deepseek4-port` off the ik_llama.cpp production tree's current head (NOT off antirez's fork directly).
+2. Hand-merge the simple additive deltas from `antirez/llama.cpp-deepseek-v4-flash`: arch enum, hparams, loader/dispatch, tokenizer/template fields.
+3. Translate `src/models/deepseek4.cpp` from mainstream `llm_graph_context` idiom into ik_llama `llm_build_context::build_<arch>()` idiom, mapping each graph/KV call explicitly.
+4. **Do NOT bring in any non-arch changes** from the antirez fork (per `feedback_minimum_imports`).
+5. Build verification under canonical stack: AOCC + KMP_BLOCKTIME=10 + GGML_NUMA_WEIGHTS=1.
 
 ### Phase 2 — Q2 smoke test (Day 2)
 
