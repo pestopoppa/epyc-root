@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: Phase 1 partial — port AUTHORIZED, branch/remote prepared, Phase 1.2 paused 2026-05-28 pending strategy decision
+**Status**: Phase 1 partial — port AUTHORIZED; Strategy D agreed 2026-05-28 evening (B execution next session, then evaluate A); branch/remote prepared
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -138,9 +138,29 @@ The 17+ conflicting files seen during the cherry-pick attempt are antirez's UNRE
 
 **Recommendation (mine, operator overrides)**: **D** — get V4 functional today via option B (the antirez fork already builds and runs on x86 Linux per its README), evaluate whether it's useful enough to keep / consolidate into ik_llama via option A. Reduces risk of multi-day port investment on a model whose end-value is still uncertain.
 
-### Phase 1.2 execution (deferred pending strategy decision)
+### Phase 1.2 execution — Strategy D agreed 2026-05-28 evening
 
-The branch `feature/deepseek4-port` remains at the `production-gemma4-mtp` tip. The `antirez` remote is added + fetched. The 6-file delta is identified. The work has NOT started because the right thing to do is align on strategy first. Once decided, the relevant section below activates.
+Operator selected **Option D**: Option B execution first (V4 functional today via antirez's mainstream-based fork as auxiliary binary); decision on Option A (3-5d translation into ik_llama) deferred until B-side evaluation produces evidence on whether V4 is production-meaningful enough to justify the longer ik_llama integration.
+
+### Next session entry point — Strategy B execution
+
+1. **Strategy B build** — clone `antirez/llama.cpp-deepseek-v4-flash` into `/mnt/raid0/llm/llama.cpp-deepseek-v4` (separate tree from `llama.cpp`/`ik_llama.cpp`). Configure with:
+   - `-Wl,--disable-new-dtags` linker flag (the same RPATH fix from today's ik_llama rebuild; canonical for any binary on this host)
+   - clang-20 toolchain + LLVM-20 libomp via `LD_LIBRARY_PATH=/usr/lib/llvm-20/lib`
+   - znver5 march, Release, GGML_NATIVE=ON, GGML_OPENMP=ON
+2. **Q4 GGUF download** from `https://huggingface.co/antirez/deepseek-v4-gguf` to `/mnt/raid0/llm/models/`. Pre-flight `df` check on `/mnt/raid0/llm/models/` (need 153 GiB + working copy).
+3. **Quality gate execution** — 20-prompt set per §Merge Gates above. Reference engine side (antirez fork on Mac) is operator-coordinated; we provide the EPYC-side numbers.
+4. **Throughput gate** — run via `bench_canonical.sh -m /path/to/v4.gguf --perf`. The wrapper will need a small extension to recognize the V4 fork's binary path (add `V4_FORK_BENCH` + `EXPECTED_LIBS_V4_FORK` constants to `canonical_recipe.py`, alongside `IK_LLAMA_BENCH`/`V5_CLEAN_BENCH`). One-line addition + test update; do this BEFORE running the bench so reproducibility hardening covers V4 too.
+5. **Decision point at gate-pass**: if both gates pass and V4 demonstrates production-meaningful capability (top-tier model, 13B-active inside BW budget, replaces or augments a current role), THEN promote to Option A (3-5d translation). If V4 underperforms expectations, park at B-only or abandon.
+6. **Track upstream in parallel** — ggml-org/llama.cpp PRs #22319 (model request, open) + #22376 (WIP discussion). If a clean upstream lands during the evaluation, abort our manual port and adopt upstream.
+
+### Notes carried forward from 2026-05-28 session
+
+- ik_llama branch `feature/deepseek4-port` preserved at `c04881fc0` (= `production-gemma4-mtp` tip). Used if/when Option A activates.
+- `antirez` remote on ik_llama still present (harmless; used for the cherry-pick attempt + subsequent surveys).
+- ik_llama binaries already rebuilt with RPATH fix (today's commit). Production stack should keep using them.
+- `bench_canonical.sh` + validators live; future bench invocations on the V4 fork binary should go through the wrapper (after the small extension above).
+- Strategy-decision diagnostics that informed D (1392 LOC graph-context → build-context translation, V4 only depends on 3 graph-context symbols not the broader Mamba/ISWA hierarchy) are recorded in the §"Phase 1.2 scope revised" block above.
 
 ## Phased Port Plan (Option A only; superseded until decision)
 
