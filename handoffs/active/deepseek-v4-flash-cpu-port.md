@@ -227,7 +227,7 @@ Validates host, picks V4 fork binary, runs canonical perf-stat recipe. Gate floo
 
 ```bash
 # Confirm download still running:
-pgrep -af 'curl.*deepseek-v4-gguf'
+pgrep -af 'curl.*DeepSeek-V4-Flash'
 du -sh /mnt/raid0/llm/models/deepseek-v4-flash/*.tmp
 
 # If curl died, restart it (preserves resume):
@@ -250,13 +250,15 @@ If you set `HF_TOKEN` (via `hf auth login`) the download can complete in 30-60 m
 
 #### Chat template
 
-V4-Flash GGUF does NOT embed `tokenizer.chat_template` in the metadata (confirmed via `llama-gguf` on the partial download — none of the 62 metadata kv pairs is the template). The antirez fork ships the canonical template at:
+V4-Flash GGUF **does** embed `tokenizer.chat_template` in the metadata (`llama-gguf` on the partial download shows `kv[57]: key = tokenizer.chat_template`). The antirez fork ALSO ships a copy on-disk at:
 
 ```
 /mnt/raid0/llm/llama.cpp-deepseek-v4/models/templates/deepseek-ai-DeepSeek-V4.jinja
 ```
 
-(96 lines, added in commit `3ba61fbb4`). When launching `llama-server` or `llama-cli`, point at it via `--jinja --chat-template-file <path>`. The template:
+(96 lines, added in commit `3ba61fbb4`). The two should be identical — the on-disk file is the source antirez used during quantization. Diff against the GGUF-embedded copy with `llama-gguf <gguf> r` and `cat <jinja>` once the download finishes; if they match, prefer the GGUF-embedded path (`--jinja` alone, no `--chat-template-file` needed) since it travels with the model. If they diverge, the on-disk file is the authoritative source.
+
+The template:
 - Uses a custom `｜DSML｜` token wrapper for tool calls (similar pattern to Qwen3.6's frontdoor tokens)
 - Supports `enable_thinking` Jinja variable (similar to Qwen3.6) — default false, may need to be explicitly disabled per the `feedback_enable_thinking_requires_chat_completions_path` pattern if we observe `<think>` loops
 - Has separate tool-call schema in `<｜DSML｜tool_calls>` block format
