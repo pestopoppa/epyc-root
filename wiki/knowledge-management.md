@@ -109,6 +109,12 @@ Source files keep their existing writers; the new layer at `epyc-orchestrator/sr
 
 Sources: [`handoffs/active/unified-trace-memory-service.md`](../handoffs/active/unified-trace-memory-service.md), `epyc-orchestrator/src/trace/`.
 
+## Autopilot dashboard data-source rule (2026-05-28)
+
+The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state-cache-backed. The append-only `orchestration/autopilot_journal.jsonl` is the durable per-trial source that remains useful when autopilot is stopped; `autopilot_state.json` is operational state and can contain a stale `pareto_archive` cache if a writer path saves an older in-memory state after the archive write. The dashboard now reconstructs the current-session frontier and hypervolume from journal rows at or after `autopilot_fleet_started_at`, filters `bug_corrupted_by` rows, and falls back to `autopilot_state.json` only when journal data is unavailable.
+
+Operationally, apparent Pareto plot staleness should be diagnosed by checking the endpoint source and payload first: `/dashboard/api/pareto` now reports `source=journal_current_session` when it is using the durable journal, plus live totals for frontier size, entry count, and hypervolume points. Source: [`2026-05-28-pareto-dashboard.md`](../progress/2026-05/2026-05-28-pareto-dashboard.md).
+
 ## PII / secret hygiene pre-commit hook (2026-05-06)
 
 Regex-only pre-commit hook scanning staged git blobs (NOT working tree, so `git add -p` partial stages are caught) for accidentally-committed secrets and account-number-shaped strings. Installed at `.git/hooks/pre-commit` across the three EPYC repos via exec wrappers pointing to a single canonical `scripts/hooks/pii_precommit.sh` in epyc-root.
