@@ -1,10 +1,38 @@
 # Log-Linear Gated DeltaNet — Readiness Tracker
 
-**Status**: stub (MONITORING) — blocked on pretrained model availability
+**Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; blocked on pretrained checkpoint + inference reference + architecture docs
 **Created**: 2026-04-14 (via research intake deep dive)
-**Updated**: 2026-04-21 (monitoring confirmed — no pretrained release yet)
+**Updated**: 2026-05-28 (activation forks and no-code monitoring rules clarified)
 **Categories**: ssm_hybrid, context_extension, inference_serving
 **Priority**: HIGH (strategic) — activates when gate criteria met
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This is not an implementation queue yet. The highest-value action is a disciplined readiness check; starting a GGML port before the gate fires will create speculative code without a model to validate.
+
+| Gate state | Action |
+|---|---|
+| No checkpoint, no inference reference | Keep monitoring only. Update the status date when checked. |
+| Reference code appears but no pretrained checkpoint | Read the inference path and update expected GGML/state-management design, but do not implement. |
+| Checkpoint appears but docs/reference are incomplete | Run a transformers-library smoke only if the model card exposes enough tensor names; otherwise hold for docs. |
+| Checkpoint + inference code + architecture docs available | Activate the implementation plan below and open a concrete port branch. |
+
+Minimum activation evidence to paste into this handoff:
+
+```text
+Checkpoint:
+Reference inference entry point:
+Tensor/name mapping source:
+License:
+Expected first model size:
+Why this is Log-Linear Gated DeltaNet and not standard GDN:
+```
+
+Dependency and mitigation notes:
+
+- `delta-mem-reproduction.md` may produce delta-rule GGML scaffolding first. If so, reuse that primitive instead of creating a parallel op family.
+- `lightning-attention-port.md` is not a template for this implementation beyond "start from existing recurrence ops where possible"; Lightning's fixed-decay GLA path does not solve Log-Linear GDN's indexed state set.
+- If upstream publishes only training code for another month, keep this active but do not claim an implementation slot.
 
 ## Status as of 2026-04-21
 
@@ -72,7 +100,7 @@ Estimated effort: 2-3 weeks from gate activation.
 - **Survey**: `handoffs/active/multiscreen-attention-evaluation.md` (priority ranking, literature survey)
 - **Intake**: intake-356 (primary), intake-354 (related MC analysis)
 - **Chapters**: 10-advanced-speculative-decoding (Section 13: Delta Net speculation blocked)
-- **Handoffs**: routing-intelligence.md (Delta Net constraints, line 384)
+- **Handoffs**: routing-intelligence.md (historical Delta Net / reasoning-trace risk notes preserved in the completed ledger linked from the active handoff)
 - **Completed**: mtp-speculative-decoding.md, ssm-hybrid-acceleration.md (speculation exhausted on standard GDN)
 - **Ref impl**: github.com/HanGuo97/log-linear-attention (278 stars, Python/Triton, training-only)
 

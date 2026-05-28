@@ -1,7 +1,8 @@
 # Handoff: SLIDERS Local-LLM Validation
 
-**Status**: STUB / Phase 0 falsification gate not yet run
+**Status**: REFRESHED 2026-05-28 — parked Phase 0 falsification gate; does not block KB-RAG
 **Created**: 2026-04-28 (from intake-494, refined deep-dive 2026-04-28)
+**Updated**: 2026-05-28 (executor gate clarified; no integration before KB-RAG K7)
 **Priority**: LOW (speculative — does NOT block any production work)
 **Categories**: rag_alternatives, knowledge_management, context_management
 **Related**: [`internal-kb-rag.md`](internal-kb-rag.md), [`context-folding-progressive.md`](context-folding-progressive.md), [`research-evaluation-index.md`](research-evaluation-index.md)
@@ -9,6 +10,20 @@
 **Source code**: `github.com/stanford-oval/sliders` (MIT, also on PyPI as `sliders-genie`)
 
 > **Does NOT block `internal-kb-rag.md`. KB-RAG K1–K7 ships independently. SLIDERS is an ALTERNATIVE architecture (DB+SQL replacing retrieval), not an upgrade lane on the ColBERT path. Sequential evaluation only after KB-RAG K7 ships, and only if Phase 0 below passes.**
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This remains a bounded falsification gate, not a speculative integration project.
+
+| Condition | Action |
+|---|---|
+| KB-RAG K7 has not shipped | Do not prioritize SLIDERS unless the operator explicitly asks for a structured-DB alternative now. |
+| Phase 0 starts | Use upstream MIT SLIDERS in `/mnt/raid0/llm/scratch/sliders/`; do not vendor code. |
+| Coder-30B substitution fails API plumbing | Fix the adapter and rerun; do not call the verdict inconclusive. |
+| EDGAR is unreachable | Document the specific failure and propose one bounded replacement corpus before running 0.3. |
+| Schema hallucination >20% or call count >5x | Close `not_viable_local`; do not prompt-engineer around the gate. |
+
+Decision artifact must be `data/sliders_validation/04_phase0_verdict.md`. The closure claim is narrow: "SLIDERS as released on local Coder-30B at this corpus scale," not "structured DB QA is bad."
 
 ## Agent Operating Instructions
 

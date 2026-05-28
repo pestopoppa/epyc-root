@@ -1,12 +1,54 @@
 # GLM-5.1-555B-A14B-REAP — CPU Evaluation (Q4_K_M GGUF)
 
-**Status**: new (download pending)
+**Status**: refreshed 2026-05-28 — WAIT on DSA path or explicit storage/inference window; no autonomous download
 **Created**: 2026-04-22 (via research intake deep-dive revision of intake-427)
-**Updated**: 2026-04-22
+**Updated**: 2026-05-28
 **Categories**: moe_optimization, local_inference, model_evaluation
 **Priority**: MEDIUM (stack simplification candidate, storage-constrained)
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md), [`gpu-acceleration-path.md`](gpu-acceleration-path.md), [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) (**2-models-for-1 leverage** — DSA infrastructure work for V3.2 unlocks GLM-5.1 simultaneously; DSA forward-pass implementation tracked there, not here)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is still live, but it should not be treated as a simple "download and benchmark" task anymore.
+
+**Critique of the older structure**: it listed a 9-phase model-eval plan before making the DSA dependency and storage hazard operational. A fresh implementer could spend 325 GB and an inference window only to discover that short-context dense fallback does not answer the long-context DSA question this model is meant to test. The plan below narrows the first action to a no-inference readiness check and makes the DSA fork decision explicit.
+
+**Current decision state**:
+
+| Question | Current answer | Implementer action |
+|---|---|---|
+| Is the model downloaded? | No. Downloading leaves roughly 92 GB free under the old free-space estimate and should not happen incidentally. | Run Phase 1 audit only; do not download unless the storage branch below passes. |
+| Is llama.cpp DSA ready? | Not for the load-bearing long-context path. PR #21149 / DSA work is tracked in `llama-cpp-dsa-contribution.md`. | Prefer waiting for DSA smoke-test results before GLM-5.1 quality work, unless the user explicitly wants short-context dense-fallback data. |
+| What is the next useful no-inference task? | Reconcile actual disk free, deleted architect weights, and DSA readiness. | Complete Phase 0 below and update this handoff with a GO / WAIT / KILL disposition. |
+
+**Phase 0 — no-inference readiness fork (do before old Phase 1)**:
+
+1. Confirm current storage:
+   ```bash
+   df -h /mnt/raid0/llm
+   du -sh /mnt/raid0/llm/models/* 2>/dev/null | sort -h | tail -30
+   ```
+2. Confirm whether the old replacement premise still holds after registry cleanup:
+   ```bash
+   rg -n "architect_general|architect_coding|GLM-5.1|REAP-246B|Qwen3.5-122B" \
+     /mnt/raid0/llm/epyc-orchestrator/orchestration/model_registry.yaml \
+     /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+   ```
+3. Check DSA implementation status in the active llama.cpp trees:
+   ```bash
+   rg -n "GLM_DSA|DeepSeek.*Sparse|lightning.*index|DSA" /mnt/raid0/llm/llama.cpp /mnt/raid0/llm/ik_llama.cpp
+   ```
+4. Record one of these dispositions here:
+   - **GO-short-context**: user explicitly wants dense-fallback short-context data now; continue to Phase 1.
+   - **WAIT-DSA**: DSA is the gating dependency; keep this handoff active but park download.
+   - **KILL-storage**: current disk state cannot absorb a 325 GB artifact plus safe rollback room.
+
+**Mitigation forks**:
+
+- If storage is tight but the model is otherwise worth testing, offload only cold models with a recorded restore path; do not delete production or recently benchmarked artifacts.
+- If DSA lands first for DeepSeek-V3.2, reuse that build path for GLM-5.1 before any quality eval. That is the highest-leverage route because one sparse-attention implementation unlocks both model families.
+- If dense fallback is tested and passes short-context quality, label the result **short-context only**; it must not be used to claim 131K viability.
 
 ## Objective
 
@@ -74,6 +116,12 @@ Evaluate GLM-5.1-555B-A14B-REAP Q4_K_M GGUF as a potential single-model replacem
 | Storage during evaluation | Low | 92GB free is tight but manageable — no concurrent model downloads during eval. |
 
 ## Evaluation Plan
+
+### Phase 0 — Readiness fork [no inference, added 2026-05-28]
+- [ ] Reconcile current free space and cold-model offload candidates.
+- [ ] Re-check whether the two-role architect replacement premise is still true after recent registry deletions/deprecations.
+- [ ] Re-check DSA implementation status and decide GO-short-context / WAIT-DSA / KILL-storage.
+- [ ] Update this handoff, `inference-acceleration-index.md`, and `research-evaluation-index.md` with the disposition.
 
 ### Phase 1 — Pre-Download Storage Audit
 - [ ] Verify RAID0 free space (`df -h /mnt/raid0/llm/`)

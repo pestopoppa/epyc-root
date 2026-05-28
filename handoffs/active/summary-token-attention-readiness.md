@@ -1,8 +1,8 @@
 # Summary-Token Attention Readiness Tracker — KSA + GSA Cluster
 
-**Status**: stub (MONITORING) — gates not met as of 2026-04-29
+**Status**: REFRESHED 2026-05-28 — monitoring-only readiness tracker; no implementation until a gate fires
 **Created**: 2026-04-29 (via research-intake of intake-502 KSA + intake-507 GSA)
-**Updated**: 2026-04-29 (initial)
+**Updated**: 2026-05-28 (activation evidence and no-code rules clarified)
 **Categories**: kv_cache, context_extension, context_management, ssm_hybrid, training_distillation
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
@@ -12,6 +12,29 @@
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — related but RETROFIT (post-hoc), not architectural CPT
 - [`triattention-kv-selection.md`](triattention-kv-selection.md) — also RETROFIT KV selection
 - [`lightning-attention-port.md`](lightning-attention-port.md) — sibling architectural-port handoff (different mechanism family)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This is deliberately parked. KSA/GSA require either pretrained checkpoints, upstream inference support, or our own CPT capacity. None should be hand-ported against the current production Qwen stack without a gate.
+
+| Gate state | Action |
+|---|---|
+| No checkpoint / no upstream inference support / no GPU CPT budget | Monitoring only. Update the status date when checked. |
+| A checkpoint for a served family appears | Fill the activation evidence template below and open a concrete port/eval handoff. |
+| llama.cpp gets dynamic top-k chunk masking or summary-token KV layout support | Reassess whether GSA/KSA can ride upstream support; avoid duplicate GGML work. |
+| GPU/Spark arrives | Treat CPT as a budgeted training project, not an automatic implementation. Scope data, schedule, and quality gates first. |
+
+Activation evidence template:
+
+```text
+Gate fired:
+Model/checkpoint:
+Architecture family:
+Reference inference path:
+License:
+CPT requirement remaining? yes/no
+Why KSA/GSA is preferable to retrofit KV compression for this use case:
+```
 
 ## Objective
 

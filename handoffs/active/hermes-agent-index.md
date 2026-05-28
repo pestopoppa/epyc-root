@@ -37,7 +37,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 |---------|------|--------|----------|-------------|
 | [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills done, streaming validated (Package E). Auth deferred. | LOW | 2026-04-08 |
 | [orchestrator-conversation-management.md](../completed/orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
-| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Local image generation plugin | `image_generate` now resolves to self-hosted ERNIE/sd-server path; FAL remains disabled | MEDIUM | 2026-05-07 |
+| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Local image generation plugin | Refreshed 2026-05-28: `image_generate` resolves to self-hosted ERNIE/sd-server path; active follow-up is operational QA, not backend loading | MEDIUM | 2026-05-28 |
 | ~~[open_source_orchestrator.md](../archived/open_source_orchestrator.md)~~ | Future | ARCHIVED (dormant stub, 71 days) | — | 2026-02-02 |
 
 ---

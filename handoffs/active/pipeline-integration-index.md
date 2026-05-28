@@ -19,7 +19,7 @@
 | Handoff | Domain | Status | Priority | Last Updated |
 |---------|--------|--------|----------|-------------|
 | [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, **TTS Path D candidate surfaced 2026-04-17** — LuxTTS/ZipVoice-Distill CPU benchmark) | LOW | 2026-04-17 |
-| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Self-hosted text-to-image / Hermes `image_generate` replacement | production on CPU via sd-server Q8 + conv-direct (~3 min/image @ 1024²); GPU/Spark is the next latency lever | MEDIUM | 2026-05-07 |
+| [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Self-hosted text-to-image / Hermes `image_generate` replacement | Refreshed 2026-05-28: production on CPU via sd-server Q8 + conv-direct (~3 min/image @ 1024²); remaining work is prompt-enhancer/content-filter/typography spot-check + GPU/Spark rebench | MEDIUM | 2026-05-28 |
 | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
 | ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
@@ -116,7 +116,7 @@ P5 (internal KB-RAG)      ──independent (reuses colbert-reranker S3/S4 encod
 
 ## Cross-Cutting Concerns
 
-1. **RAM budget**: Each pipeline adds model footprint competing with production stack. Current production uses ~80GB across 4 NUMA quarters. Adding vision (7B VL model, ~5GB), Lean proving (Leanstral ~20GB pruned + Goedel-CP ~5GB), or TTS models requires careful NUMA quarter allocation. Coordinate with `dynamic-stack-concurrency.md` DS-6.
+1. **RAM budget**: Each pipeline adds model footprint competing with production stack. Current production uses ~80GB across 4 NUMA quarters. Adding vision (7B VL model, ~5GB), Lean proving (Leanstral ~20GB pruned + Goedel-CP ~5GB), or TTS models requires careful NUMA quarter allocation. Coordinate with `dynamic-stack-concurrency.md` DS-E1/DS-7-live; DS-6 scheduler work should only resume if the evidence gate triggers.
 
 2. **NUMA quarter allocation**: Pipeline models should run on the same quarter as the orchestrator role they serve. Vision → frontdoor quarter. Lean proving → architect quarter. TTS → separate quarter or time-shared. See `routing-and-optimization-index.md` for current quarter layout.
 

@@ -1,7 +1,8 @@
 # Single-Instance System-Level Throughput Tuning
 
-**Status**: ACTIVE — partial execution complete (status refreshed 2026-04-26 critique-integration pass)
+**Status**: REFRESHED 2026-05-28 — targeted CPU20-gated tuning only; zero-reboot blanket sweep already found no durable win
 **Created**: 2026-04-23 (user-identified gap — "leave nothing on the table" single-instance throughput)
+**Updated**: 2026-05-28 (current pickup rules clarified after CPU closure-inflation pass)
 **Priority**: HIGH — several knobs are zero-code changes with measurable gains, and some are prerequisites for the TP-sharding lever.
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Workstream**: Inference Acceleration → CPU Optimization
@@ -10,6 +11,23 @@
 - [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) — the big compute-parallelism lever; depends on NPS outcomes here
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — per-kernel compute lever
 - [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — multi-instance NUMA deployment (existing production config that some of these knobs might affect)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is a reference plus a targeted-tuning queue, not a license to rerun every system knob. Later CPU work already tested some zero-reboot knobs and found net effects within noise on the canonical baseline.
+
+| Current rule | Consequence |
+|---|---|
+| Use CPU20 before new claims | Every new knob needs env identity, process hygiene, baseline policy, rep-count policy, and artifact bundle. |
+| No broad sudo/reboot actions | `sysctl`, THP, IRQ, hugepage, BIOS, SMT, and C-state changes require explicit operator coordination. |
+| Zero-reboot knobs are not presumed open | THP->always, `numa_balancing=0`, and 1GB hugepage probes were partially applied in prior CPU work and did not produce a durable canonical win. |
+| Reopen only with a hypothesis | Start from a measured bottleneck or workload/topology shift, not from the original 2026-04 checklist. |
+
+Current useful next actions:
+
+- If CPU1/CPU15/large-MoE work needs a topology decision, produce a narrow NPS/L3aaN decision matrix with CPU20 artifacts.
+- If a new production model changes the memory/cache regime, rerun only the relevant thread/NUMA/hugepage slice.
+- If no new trigger exists, leave this as a reference anchor.
 
 ## 2026-04-23 Audit Cross-References (read before starting Phase 0)
 

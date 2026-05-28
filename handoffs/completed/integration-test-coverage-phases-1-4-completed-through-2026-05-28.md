@@ -1,10 +1,42 @@
+# Integration Test Coverage - Phases 1-4 Completion Ledger
+
+> Historical completion ledger only.
+> Current work lives in [integration-test-coverage.md](../active/integration-test-coverage.md).
+> This file preserves pre-compaction coverage history; active tasks, gates, and indices are authoritative in the active handoff.
+
 # Integration Test Coverage — Remaining Gaps
 
-**Status**: ACTIVE — Phases 1-4 integration tests written (61 new tests, all passing)
+**Status**: refreshed 2026-05-28 — active coverage backlog; Phases 1-4 are historical, remaining work is focused slices + inference-backed paths
 **Created**: 2026-04-13
-**Updated**: 2026-04-13 (Phase 1-4 integration tests implemented with mock LLM + real REPL)
+**Updated**: 2026-05-28
 **Priority**: MEDIUM
 **Primary repo**: `/mnt/raid0/llm/epyc-orchestrator`
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is still active, but the top-level "remaining gaps" table is partly historical. The integration scaffolding exists; the useful next work is to select a focused slice and add tests that close a real production risk.
+
+**Critique of older structure**: the document begins with the original refactoring-audit coverage gap and later accumulates tranches of must-test work. A fresh implementer could start from the stale module coverage table instead of the current remaining risks.
+
+**Current next-work options**:
+
+| Work item | When to pick | Validation |
+|---|---|---|
+| Focused seeding/orchestrator coverage tranche | Non-inference code session | Run the exact focused pytest target / coverage command documented near the latest tranche. |
+| Real LLM parsing paths | User-approved inference window | Add integration cases using production model outputs; mark as integration/inference-gated. |
+| Backend health / KV migration / slot paths | llama-server test fixture available | Use isolated dev ports; never touch production ports. |
+| API route regressions | No inference needed if dependency overrides suffice | FastAPI/httpx test client with dependency overrides. |
+
+**Rules for new tests**:
+
+- Do not chase 100% blanket coverage. Add tests only for behavior-changing branches or historically regressed control paths.
+- Keep real inference tests separate from mocked integration tests; label them so normal CI can skip.
+- If a test needs a live server, include port, startup, teardown, and stale-process checks in the test or fixture docstring.
+
+**Current executor checkpoint**:
+
+- Before adding code, run `git -C /mnt/raid0/llm/epyc-orchestrator status --short` and inspect current test layout.
+- After adding tests, update this handoff with the target command, test count, and any coverage delta.
 
 ## Context
 

@@ -1,10 +1,28 @@
 # MindDR Deep Research Mode
 
-**Status**: stub / in-planning (Phase 1 prompt-level only; Phase 2 GPU-gated; Phase 3 conditional)
+**Status**: REFRESHED 2026-05-28 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 GPU-gated and Phase 3 conditional
 **Created**: 2026-04-22 (split from `routing-intelligence.md` per deep-dive integration pass)
+**Updated**: 2026-05-28 (executor gate clarified after MD-1..MD-8 landed)
 **Categories**: agent_architecture, routing_intelligence, training_distillation
 **Priority**: MEDIUM (Phase 1 zero-infra; Phase 2/3 deferred)
 **Depends on**: `routing-intelligence.md` (classifier infrastructure), `eval-tower-verification.md` EV-9 (multi-dimensional rubric)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+Phase 1 is no longer a stub. The flag, classifier, prompts, pydantic_graph subpackage, rubric fields, and sentinel suite are already in place. The remaining question is whether the pipeline beats direct-answer mode enough to justify production dispatcher wiring.
+
+| Current gate | Executor rule |
+|---|---|
+| MD-9 A/B | Run the `deep_research_sentinel.yaml` suite with `ORCHESTRATOR_DEEP_RESEARCH_MODE=0` and `=1`; use EV-9 rubric scoring if available. |
+| EV-9 not implemented | Use the structural `expected_contains` hints as a fallback only; label the result "structural-only" and do not promote default-on from that alone. |
+| Web/search backend unavailable | Hold MD-9. A three-agent research pipeline without evidence retrieval is not the paper's claim. |
+| Dispatcher wiring | Keep deferred until MD-9 passes; the current graph is intentionally decoupled from production request handling. |
+
+Promotion rule:
+
+- Promote to production default only if aggregate rubric uplift is >= +5 percentage points, existing eval-tower sentinels do not regress, and tool calls stay <= 2x baseline.
+- Leave flag default-off if uplift <= 0, if rubric gains come only from longer answers, or if tool-call growth exceeds the cap.
+- Phase 2 RL work is unmotivated until Phase 1 shows a durable non-RL gain.
 
 ## Objective
 

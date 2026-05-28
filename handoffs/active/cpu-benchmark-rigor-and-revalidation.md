@@ -1,11 +1,45 @@
 # CPU20 — Benchmark Rigor And Revalidation Gate
 
-**Status**: ACTIVE (created 2026-04-26)
+**Status**: refreshed 2026-05-28 — ACTIVE PROTOCOL, not a one-off implementation task
+**Created**: 2026-04-26
+**Updated**: 2026-05-28
 **Priority**: CRITICAL
 **Categories**: hardware_optimization, inference_serving, benchmarking_methodology
 **Workstream**: Inference Acceleration → CPU Optimization
 **Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) (CPU20)
 **Related**: [`cpu-optimization-thesis-pause-2026-04-26.md`](cpu-optimization-thesis-pause-2026-04-26.md), [`cpu-kernel-env-flags-inventory.md`](cpu-kernel-env-flags-inventory.md), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is a standing benchmark protocol. Do not try to "finish" it by running every historical CPU track again. Instead, apply it as a mandatory preflight before any new CPU throughput claim, deployment claim, or closure claim.
+
+**Critique of older structure**: the document still looked like a dated implementation handoff because it begins with the original 2026-04-26 setup. That hides the current truth: CPU20 is a reusable gate and evidence standard. The old "Required Revalidation Set" is mostly historical; future work should only reopen it when a claim depends on those rows.
+
+**Current operating rule**:
+
+| Situation | Required action |
+|---|---|
+| New CPU benchmark, even "quick" | Capture P0-P5 identity/process/system/baseline artifacts. |
+| Sub-5% claimed gain | Use at least 5 reps and raw per-rep values; <=2% needs 10 reps. |
+| Closing a CPU track as exhausted | Provide a `decision.md` tied to a protocol-compliant artifact bundle. |
+| Comparing to historical April numbers | Label cache state, mmap mode, `numactl`/taskset mode, OMP env stack, and whether the baseline was warmed. |
+| Producing process snapshots | Use the credential scrubber before writing `process-pre.txt` / `process-post.txt`. |
+
+**Minimal artifact skeleton for a fresh run**:
+
+```bash
+DIR=/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/$(date +%F)-<track>-<purpose>
+mkdir -p "$DIR"
+numactl --hardware > "$DIR/system-state.txt"
+cat /proc/sys/kernel/numa_balancing >> "$DIR/system-state.txt"
+cat /sys/kernel/mm/transparent_hugepage/enabled >> "$DIR/system-state.txt"
+SCRUB='s/(AWS_[A-Z_]+|[A-Z_]*(TOKEN|KEY|SECRET|PASSWORD|PASSWD|CREDENTIAL)[A-Z_]*)=[^ ]+/\1=<redacted>/g'
+pgrep -af "llama" | sed -E "$SCRUB" > "$DIR/process-pre.txt"
+# run benchmark here
+pgrep -af "llama" | sed -E "$SCRUB" > "$DIR/process-post.txt"
+```
+
+**Index role**: keep this file active as the protocol source of truth until a successor benchmark-methodology document replaces it. It should remain referenced from `cpu-inference-optimization-index.md`, `inference-acceleration-index.md`, and master item #27e.
 
 ## Objective
 

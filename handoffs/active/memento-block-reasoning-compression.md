@@ -1,10 +1,42 @@
 # Memento: Block-Level Reasoning Compression with KV Cache Masking
 
-**Status**: active — S1 runtime PASSED (2026-04-14), S2 LoRA training unblocked
+**Status**: REFRESHED 2026-05-28 — S1 runtime PASSED; S2 LoRA validation is the only live implementation gate; S3 remains blocked
 **Created**: 2026-04-08 (via research intake)
-**Updated**: 2026-04-14 (S1 runtime validation: 5/5 tests passed on Qwen3-1.7B)
+**Updated**: 2026-05-28 (S2 decision fork and S3 block clarified)
 **Categories**: kv_cache, training_distillation, context_extension, inference_serving
 **Deep-dive**: `research/deep-dives/memento-iterative-reasoning-cluster.md`
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+S1 answered the llama.cpp feasibility question. The next executor should not touch deployment wiring until a trained adapter proves the model can emit reliable block/summary structure under quantized inference.
+
+| Live decision | Default |
+|---|---|
+| Which model first? | Start with a CPU-feasible Qwen3-0.6B format smoke if no GPU is available; use Qwen3-1.7B for the validation target. Do not start 8B/32B CPU training. |
+| Can S3 begin now? | No. S3 requires S2 evidence: format compliance, compression ratio, and no severe benchmark degradation. |
+| Is OpenMementos already staged? | Yes: `/mnt/raid0/llm/data/openmementos/`. Verify paths before training because dataset storage is outside this repo. |
+| Does block masking save peak memory? | In current llama.cpp it frees reusable KV cells; it does not shrink preallocated buffers. Phrase claims as effective context/batch capacity unless paged-attention metadata is fixed. |
+
+### S2 Minimal Runbook
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python scripts/benchmark/memento_sft.py --dry-run
+# Then run the smallest real Stage-1 format-learning job that fits the current host/GPU budget.
+```
+
+Record results in this table before promoting S3:
+
+| Model | Adapter | Format compliance | Compression ratio | MATH-500 delta | Decode stable with S1 masking? | Decision |
+|---|---|---:|---:|---:|---|---|
+| Qwen3-0.6B | TBD | TBD | TBD | TBD | TBD | smoke / continue / stop |
+| Qwen3-1.7B | TBD | TBD | TBD | TBD | TBD | promote / stop |
+
+Decision forks:
+
+- **Format fails**: fix prompts/data preprocessing; do not touch runtime masking.
+- **Format passes but accuracy drops hard**: keep S1 as reference, stop before S3.
+- **Format + accuracy pass on 1.7B**: schedule 32B QLoRA or equivalent GPU-backed validation before production integration.
 
 ## Objective
 

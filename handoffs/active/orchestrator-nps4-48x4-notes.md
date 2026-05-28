@@ -1,9 +1,27 @@
 # Orchestrator Rework Notes — NPS4 48×4t Concurrent Production Deployment
 
-**Status**: NOTES-ONLY (no implementation yet)
+**Status**: REFRESHED 2026-05-28 — notes-only topology reference; not an implementation queue
 **Created**: 2026-04-24 post-NPS4-reboot session
+**Updated**: 2026-05-28 (executor gate clarified; large-MoE topology contention cross-linked)
 **Owner**: follow-up after CPU1 Phase 1.3 evaluation completes
 **Parent**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This file should stay active as a reference because it captures the 48x4t NPS4 aggregate-throughput topology, but it should not be implemented opportunistically.
+
+| Trigger | Action |
+|---|---|
+| Current single-user interactive workload | Do nothing. Per-instance 48x4t latency is too low for first-token interactive routing. |
+| Multi-tenant or batch-serving demand appears | Reopen as an autoscaler/routing design, starting with mmap/mbind dedupe proof and staged-launch design. |
+| `large-moe-expert-parallelism.md` chooses per-NUMA expert parallelism | Treat this topology as a contention point, not a parallel default; both patterns want exclusive NUMA ownership. |
+| CPU15/CPU17 asks for aggregate-throughput fallback | Use these notes as constraints, then write a real implementation handoff with acceptance criteria. |
+
+Minimum pre-implementation evidence:
+
+- Confirm shared mmap page-cache dedupe still holds under `numactl --membind` for the current model and kernel.
+- Define latency-aware routing policy: large low-latency backend for first/cold requests, 48x4t pool only for load spill.
+- Define draft-sharing plan; 48 target instances cannot blindly imply 48 draft instances.
 
 ## Why this file exists
 

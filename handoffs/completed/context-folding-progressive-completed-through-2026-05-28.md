@@ -1,3 +1,9 @@
+# Context-Folding - Completed Implementation Ledger
+
+> Historical completion ledger only.
+> Current work lives in [context-folding-progressive.md](../active/context-folding-progressive.md).
+> This file preserves pre-compaction implementation, evaluation, and research-intake context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # Context-Folding: Progressive Session Compaction Upgrade
 
 **Status**: Phase 0 complete (2026-03-29), Phase 1 complete (2026-04-04), Phase 1+/2c/3a/3b code complete (2026-04-05), **Phase 2a DONE** (30B-A3B = minimum viable summarizer, 3.0/3.0), **Phase 2b L1-L4 DONE** (L3 sweet spot: 82% compression, 2.84/3 retention), L5 + Phase 3c pending
@@ -710,7 +716,7 @@ class CompactionQualityMonitor:
 - `consolidation_count` — how many consolidations since last check
 - `degradation_alert` — boolean, True if trend detected
 
-**Cross-ref (added 2026-04-24 from intake-454)**: the upstream-compressor anti-thrashing port tracked in [`tool-output-compression.md`](tool-output-compression.md) Phase 3d (action E) directly reduces the kind of compress→uncompress→re-compress oscillation that this monitor flags as a degradation signal. Sequencing recommendation: land Phase 3d before tuning Phase 3c's `degradation_alert` thresholds, otherwise we'd be calibrating against oscillation noise that Phase 3d will silence.
+**Cross-ref (added 2026-04-24 from intake-454)**: the upstream-compressor anti-thrashing port tracked in [`tool-output-compression.md`](../active/tool-output-compression.md) Phase 3d (action E) directly reduces the kind of compress→uncompress→re-compress oscillation that this monitor flags as a degradation signal. Sequencing recommendation: land Phase 3d before tuning Phase 3c's `degradation_alert` thresholds, otherwise we'd be calibrating against oscillation noise that Phase 3d will silence.
 
 ### Phase 3 Code Changes (all sub-phases)
 

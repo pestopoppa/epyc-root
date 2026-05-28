@@ -22,23 +22,23 @@
 | [reasoning-compression.md](reasoning-compression.md) | Reasoning token optimization | in-progress (Tier 1 deployed, Actions 12-15 done, TALE eval complete — static limits kept) | HIGH | 2026-04-11 |
 | [tool-output-compression.md](tool-output-compression.md) | Tool token optimization (output + definition) | Phase 2 done, A/B done (+4pp REPL), Phase 3a-b done (55% def compression). P3d A/B pending. **2026-04-20**: intake-414/415 deep dives add subprocess sandbox pattern (Phase 3 MCP workaround) + 5KB threshold gating + FTS5 indexing. | MEDIUM | 2026-04-20 |
 | [multiscreen-attention-evaluation.md](multiscreen-attention-evaluation.md) | Sub-quadratic attention survey + non-transformer recurrent eval cluster | active (literature survey complete, priority ranking established; HRM-Text intake-598 + actions HRM-1/2/3 queued 2026-05-22) | LOW | 2026-05-22 |
-| [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Log-Linear GDN readiness | stub (MONITORING) — blocked on pretrained models | HIGH | 2026-04-14 |
+| [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md) | Log-Linear GDN readiness | refreshed 2026-05-28 — monitoring-only; activate only when checkpoint + inference ref + architecture docs exist | HIGH | 2026-05-28 |
 | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Context extension via YaRN | stub | LOW | 2026-03-25 |
 | ~~[long-context-eval-datasets.md](../completed/long-context-eval-datasets.md)~~ | Eval dataset collection | COMPLETE (5 datasets, adapters integrated, moved to completed/) | — | 2026-04-05 |
 | [tq3-quantization-evaluation.md](tq3-quantization-evaluation.md) | TQ3/TurboQuant monitoring | monitoring (do NOT merge) | LOW | 2026-04-01 |
 | ~~[11-conceptlm-monitoring.md](../archived/11-conceptlm-monitoring.md)~~ | Concept-level LM monitoring | ARCHIVED (stale, no models available) | — | 2026-03-03 |
 | ~~[knowledge-base-governance-improvements.md](../completed/knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
-| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | active (S1 llama.cpp feasibility) | HIGH | 2026-04-09 |
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) + ColGREP integration | in-progress (S1-S3a ✅, S5 design ✅, S6a-f bug fixes ✅ 2026-04-16, **S7 ColGREP replaces NextPLAID for code_search ✅ 2026-04-29** — default flipped after live A/B 10/14 vs 2/14 top-1, S4 A/B + cold-start daemon decision pending soak) | MEDIUM | 2026-04-29 |
-| [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | in-progress | MEDIUM | 2026-04-09 |
+| [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | refreshed 2026-05-28 — S1 runtime passed; S2 LoRA validation live; S3 blocked | HIGH | 2026-05-28 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) + ColGREP integration | COMPACTED 2026-05-28 — completed implementation details moved to ledger; live gates are S4 Omega A/B, ColGREP soak/cold-start daemon decision, and version/index hygiene | MEDIUM | 2026-05-28 |
+| [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md) | Linter + brevity templates upstream | refreshed 2026-05-28 — epyc-root side done; cleanup-only tasks remain in `/mnt/raid0/llm/root-archetype` (local clone exists, dirty logs unrelated) | LOW | 2026-05-28 |
 | Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + process verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification, Scoring Verifiers benchmarks | MEDIUM | 2026-04-14 |
 | (intake-412) DeepPlanning benchmark | Agent planning eval methodology | Reference — rule-based automated scoring, 26-model leaderboard, reasoning gap 7-16pp | LOW | 2026-04-20 |
 | (intake-421) MAD confidence scoring | AutoPilot safety gate noise filter | **adopt_component** — ~20 LoC addition to safety_gate.py. Deep dive: [pi-autoresearch-mad-scoring.md](../../research/deep-dives/pi-autoresearch-mad-scoring.md) | MEDIUM | 2026-04-20 |
 | (intake-422) TIDE early exit | Calibration-router for per-token layer skip | **adopt_patterns** — implement on fork n_layer_exit. Deep dive: [tide-calibration-router-early-exit.md](../../research/deep-dives/tide-calibration-router-early-exit.md) | MEDIUM | 2026-04-20 |
-| [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **NEW** — download pending, storage-constrained (325GB model, 417GB free). 9-phase eval plan. | MEDIUM | 2026-04-22 |
+| [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **REFRESHED 2026-05-28** — Phase 0 no-inference readiness fork first: current storage, current registry replacement premise, DSA status. No autonomous 325GB download; default WAIT-DSA unless short-context dense fallback is explicitly requested. | MEDIUM | 2026-05-28 |
 | (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | Monitoring — design task from intake-426 deep dive | LOW | 2026-04-22 |
-| [sliders-local-validation.md](sliders-local-validation.md) | SLIDERS (structured-DB+SQL alt to RAG) Coder-30B viability | **STUB / NEW 2026-04-28** — Phase 0 falsification gate (catalogue GPT-4.1 call sites, substitute Coder-30B, FinQ5 run, gate on schema-hallucination >20% OR call-count >5×). **Does NOT block `internal-kb-rag.md`.** Sequential evaluation only after KB-RAG K7 ships. Source: intake-494. | LOW | 2026-04-28 |
+| [sliders-local-validation.md](sliders-local-validation.md) | SLIDERS (structured-DB+SQL alt to RAG) Coder-30B viability | refreshed 2026-05-28 — parked Phase 0 falsification gate; does not block `internal-kb-rag.md`; no integration or prompt tuning before a written FinQ5 gate verdict | LOW | 2026-05-28 |
 | (intake-574) Endless Terminals released-artifact re-eval (AW-7) | Independent TB-2.0 transfer-gap validation | **NEW 2026-05-20** — pull `obiwan96/endless-terminals` HF dataset + both PPO checkpoints (Qwen2.5-7B-instruct + Qwen3-8B-openthinker-sft); re-evaluate on TB-2.0 from EPYC inference-only. Confirms or refutes paper's +1-6pp transfer claim before pipeline mirroring (AW-8). Hours of inference. Deep dive in [agent-world-env-synthesis.md](agent-world-env-synthesis.md) Deep-Dive Refinement. | HIGH | 2026-05-20 |
 | (intake-571) ECHO 3-gate tracking | GPU-side adoption trigger watch | **NEW 2026-05-20, gated** — `microsoft/echo-rl` watch (currently HTTP 404), independent-reproduction watch, DGX-Spark acquisition watch. Pure tracking, no immediate work. Mirror entry in [gpu-acceleration-path.md](gpu-acceleration-path.md) §ECHO. | LOW | 2026-05-20 |
 | [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Independent RustEvo2 verification of Fortytwo's Strand-Rust-Coder-14B | **NEW 2026-05-27** — gate task for [swarm-dataset-distillation.md](swarm-dataset-distillation.md). Single-instance bench, ~half day, awaiting user approval to launch. Verifies founder claim of #1 on RustEvo2 / beats GPT-5 Codex on Rust (intake-616). Source: intake-614/615/616. | MEDIUM | 2026-05-27 |
@@ -87,8 +87,8 @@
 
 See [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md). Deep-dive: `research/deep-dives/memento-iterative-reasoning-cluster.md`.
 
-- [x] S1: llama.cpp block masking feasibility — ✅ 2026-04-13. **FEASIBLE**: `llama_memory_seq_rm()` (corrected API name) supports mid-sequence range eviction, position gaps preserved (correct for Memento dual-info-stream). Test skeleton at `llama.cpp-experimental/tests/test-memento-block-masking.cpp`. Paged attention block tracking has a gap for partial removal (metadata leak, non-blocking). Runtime validation awaiting model server.
-- [ ] S2: LoRA SFT on Qwen3-32B using OpenMementos-228K. Two-stage (format + compression learning). Blocked on S1.
+- [x] S1: llama.cpp block masking feasibility — ✅ 2026-04-13/14. **FEASIBLE + runtime validated**: `llama_memory_seq_rm()` supports mid-sequence range eviction, position gaps preserved (correct for Memento dual-info-stream), and 5/5 runtime tests passed on Qwen3-1.7B. Paged attention block tracking has a gap for partial removal (metadata leak, non-blocking).
+- [ ] S2: LoRA SFT using OpenMementos-228K. Default path after 2026-05-28 audit: CPU 0.6B format smoke → 1.7B validation target; 32B requires GPU-backed QLoRA, not CPU training.
 - [ ] S3: Deployment integration — block masking + Fold/Unfold toggle + m@k voting + Hadamard q4_0 stacking. Blocked on S1+S2.
 
 ### P3 — Long-Context Evaluation Datasets
@@ -144,7 +144,7 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged `REPL_FRECENCY`) — ✅ 2026-04-09. 7 wiring tests.
 - [x] S2a-b: Mine autopilot logs + implement combined ops — ✅ 2026-04-09. Finding: only web_search/search_wikipedia used (file tools never called). `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Flag: `REPL_COMBINED_OPS`. 18 tests.
 - **Note**: `batch_web_search` in `_CombinedOpsMixin` calls `web_search()` directly. When SearXNG backend is deployed (see [`searxng-search-backend.md`](/workspace/handoffs/active/searxng-search-backend.md), R&O P12), `batch_web_search` inherits SearXNG JSON API automatically — no code change needed in combined_ops.
-- [ ] S4: A/B benchmark turn count reduction on seeding harness
+- [ ] S4: A/B benchmark turn count reduction on seeding harness. 2026-05-28 status: this is now the controlling gate; S5 Gap 1/2/3 implementations have already landed via NIB2, and ColGREP is default-on with rollback env.
 
 ### P7 — Ouro LoopLM Evaluation (from intake-332/341)
 
@@ -193,7 +193,7 @@ Source: Deep-dive synthesis of intake-363 (LLM-as-a-Verifier), intake-367 (Scori
 - [x] **Action 13**: Model-tier-differentiated conciseness — ✅ 2026-04-09. Audit + thinking_reasoning suffix update.
 - [x] **Action 14**: Add OAA metric + per-token intelligence measurement to eval framework — ✅ 2026-04-07.
 - [x] **Action 15**: TALE eval — ✅ 2026-04-11 (Package C). Static limits (Action 12) outperform TALE on OAA (baseline 95%, static 75%, TALE 72.5%). TALE matches baseline on math but hurts general. **Decision: keep static limits, TALE deferred.**
-- [x] Upstream linter + templates to root-archetype — ✅ 2026-04-09. Generalized `lint_wiki.py` (dynamic root, configurable paths). 4 brevity templates in `_templates/prompts/`. Companion handoff: [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md).
+- [x] Upstream linter + templates to root-archetype — ✅ 2026-04-09. Generalized `lint_wiki.py` (dynamic root, configurable paths). 4 brevity templates in `_templates/prompts/`. Companion handoff: [root-archetype-linter-templates-upstream.md](root-archetype-linter-templates-upstream.md). 2026-05-28: remaining companion work is cleanup-only inside the root-archetype clone.
 
 ### P9 — Granite-97m-r2 Multilingual Embedder Bench (2026-04-30 deep-dive integration)
 
@@ -203,15 +203,16 @@ Pointer — full plan tracked in [`granite-97m-r2-bench-plan.md`](granite-97m-r2
 
 **Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy), end-to-end with ColBERT reranker.
 
-**Gate**: K2 chunker activation in `internal-kb-rag.md` (currently STUB). Fallback corpus path (code snippets) is available without K2.
+**Gate correction 2026-05-28**: K2 chunker activation is preferred for the final KB corpus but does **not** block Phase A. The fallback corpus path (code snippets + manual NL labels) and dry-run bench script can start now. Phase B model-serving remains inference-gated.
 
 **Outcome decides**: dense first-stage retriever for KB-RAG, web-research, SearXNG. Three branches — adopt granite, adopt BGE-M3, or defer both pending K2-produced multilingual corpus. Code-search angle (60.5 MTEB Code, 9 training languages) is a deferred sub-track.
 
+- [ ] **P9.0**: Choose Phase A branch: fallback corpus, K2 corpus, or no-download script-only path (see refreshed handoff).
 - [ ] **P9.1**: Phase A-1 GGUF + quantization
 - [ ] **P9.2**: Phase A-2 comparator deployments
 - [ ] **P9.3**: Phase A-3 server registry update
-- [ ] **P9.4**: Phase A-4 eval corpus build
-- [ ] **P9.5**: Phase A-5 bench script
+- [ ] **P9.4**: Phase A-4 eval corpus build (fallback path unblocked before K2)
+- [ ] **P9.5**: Phase A-5 bench script with dry-run mode
 - [ ] **P9.6**: Phase B-1/B-2/B-3 bench execution (gated, requires per-run inference approval)
 - [ ] **P9.7**: Phase C decision + deployment recommendation; update consuming handoffs
 
@@ -270,7 +271,7 @@ Pointer — completed handoff [`handoffs/completed/01-fast-rlm-budget-controls.m
 - ~~**ConceptLM**: Quarterly check for open-weight concept-level models or framework support~~ (archived)
 - [ ] **Multiscreen**: Monitor for community reproduction, model releases, or llama.cpp PRs
 - [ ] **Log-Linear GDN**: Watch github.com/HanGuo97/log-linear-attention and NVlabs/GatedDeltaNet for pretrained model releases. Activates [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
-- [ ] **Compaction gap analysis** (intake-426): Map Claude Code's five-layer pipeline (budget reduction, snip, microcompact, context collapse, auto-compact) against our L1-L5 tiers. Identify whether a "Budget Reduction" equivalent (per-message output size caps) is warranted. See [context-folding-progressive.md](context-folding-progressive.md) Research Intake Update 2026-04-21. Design task — no code until gap significance is assessed.
+- [ ] **Compaction gap analysis** (intake-426): Map Claude Code's five-layer pipeline (budget reduction, snip, microcompact, context collapse, auto-compact) against our L1-L5 tiers. Identify whether a "Budget Reduction" equivalent (per-message output size caps) is warranted. See [context-folding-progressive.md](context-folding-progressive.md) CF-DD8 / NIB2-40. Design task — no code until gap significance is assessed.
 
 ---
 

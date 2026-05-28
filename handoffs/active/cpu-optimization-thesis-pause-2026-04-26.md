@@ -1,6 +1,28 @@
 # CPU Optimization Pause & Reorganization — 2026-04-26
 
 **Purpose**: stop, take stock, separate what we KNOW from what we ASSUMED, and rebuild the priority queue from honest premises.
+**Status**: refreshed 2026-05-28 — historical correction ledger / reference anchor; do not execute old priority queues without checking newer CPU index state.
+**Updated**: 2026-05-28
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This file is intentionally still active because other CPU handoffs cite it as the correction ledger for the April 2026 baseline/closure-inflation incident. It is not a live task queue by itself.
+
+**Critique of older structure**: the document preserved the moment of the 2026-04-26 pause, including "what I'm asking the user to confirm" and old track priority queues. Those sections are historically valuable, but unsafe if read as current instructions after the v5 cleanup, CPU20 protocol, and later closure passes.
+
+**Current use**:
+
+| If you are... | Use this file for... | Then read... |
+|---|---|---|
+| Auditing a CPU claim | The original false-premise list and methodology debt. | `cpu-benchmark-rigor-and-revalidation.md` for the current protocol. |
+| Deciding whether to reopen EP/NUMA work | The downgrade history and baseline-artifact examples. | `cpu-inference-optimization-index.md` current landscape rows. |
+| Updating v5/vNext flag wiring | The rationale for caution around old wins. | `cpu-kernel-env-flags-inventory.md` deployment matrix. |
+
+**Do not run these old queues directly**:
+
+- "Track 1/2/3/4" below predates later v5 cleanup and multiple closures.
+- The user-confirmation questions are historical; newer decisions supersede them.
+- Any benchmark based on this file must first satisfy CPU20 and cite current canonical baselines.
 
 ---
 

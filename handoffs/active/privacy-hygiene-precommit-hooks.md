@@ -1,10 +1,52 @@
 # Privacy / Secret Hygiene — Pre-Commit Hooks
 
-**Status**: PII-1 + PII-2 LANDED 2026-05-06 — `scripts/hooks/pii_precommit.sh` (15 secret patterns + account_number with phone/timestamp/log/decimal-float disambiguation) + `research/fixtures/pii_hygiene_eval.jsonl` (40 examples, 19 TPs / 21 negatives) + 3-repo `.git/hooks/pre-commit` install. False-positive class on YAML config floats caught + fixed mid-session via `bc04c84`. PII-3 30-day re-eval scheduled for 2026-05-24.
+**Status**: refreshed 2026-05-28 — PII-1 + PII-2 landed; PII-3 re-eval is overdue and is now the only open task
 **Created**: 2026-04-24 (via research intake deep-dive — intake-452)
+**Updated**: 2026-05-28
 **Categories**: knowledge_management, document_processing, tool_implementation
 **Priority**: MEDIUM (no immediate incident, but cheap insurance against accidental commits)
 **Scope note**: NOT a close for [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) gap #5 (prompt-injection filter). PII span extraction is adjacent to, not a substitute for, adversarial-instruction detection. Gap #5 stays open.
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff should now be treated as a scheduled re-evaluation task, not an implementation task. The hook and fixture exist; the missed item is the 30-day checkpoint that was scheduled for 2026-05-24.
+
+**Critique of older structure**: the completion banner was detailed, but the overdue PII-3 task was buried in the original plan. A fresh implementer could accidentally redo PII-1/2 instead of checking whether regex-only operation is good enough after three weeks of use.
+
+**Verified landed evidence**:
+
+- Root commit `788dc3d`: `scripts/hooks/pii_precommit.sh` + 40-example fixture.
+- Root commit `bc04c84`: decimal-float false-positive fix.
+- Hook scope remains pre-commit only; no pre-push hook has been justified yet.
+
+**PII-3 re-eval runbook (no inference)**:
+
+1. Confirm hooks are still installed in all three repos:
+   ```bash
+   for repo in /mnt/raid0/llm/epyc-root /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research; do
+     printf '%s\n' "$repo"
+     ls -l "$repo/.git/hooks/pre-commit"
+     sed -n '1,40p' "$repo/.git/hooks/pre-commit"
+   done
+   ```
+2. Run the fixture against the current hook logic. If no harness exists, use a temporary branch and staged synthetic files, then reset only those temporary files.
+3. Search recent git history for bypass or complaint signals:
+   ```bash
+   rg -n "pii_precommit|--no-verify|false positive|secret hygiene|account_number" \
+     /mnt/raid0/llm/epyc-root/logs \
+     /mnt/raid0/llm/epyc-root/progress \
+     /mnt/raid0/llm/epyc-root/handoffs
+   ```
+4. Append a `PII-3 Re-evaluation — YYYY-MM-DD` block below with false positives, false negatives, bypasses, and decision.
+
+**Decision forks**:
+
+| Evidence | Decision |
+|---|---|
+| Zero observed false negatives and only known decimal-float false positive class | Stay regex-only; mark PII-3 done; archive after index update. |
+| >=2 novel missed shapes that a hybrid model would catch | Open a new hybrid/offline-batch handoff; keep pre-commit regex-only for speed. |
+| Recurring false positives in normal configs/docs | Tighten regex and extend fixture; rerun PII-3 after the fix. |
+| Users bypass with `--no-verify` | Add pre-push defense or clearer hook output, depending on bypass reason. |
 
 ## Objective
 
@@ -77,6 +119,8 @@ After 30 days of regex-only operation, evaluate whether to upgrade to `HybridPII
 - **Stay regex-only if**: zero false negatives observed AND zero/low false-positive complaints over 30 days
 
 This is intentionally a **schedule item, not a do-now task**. Set a reminder for 2026-05-24 (e.g. `/schedule` agent or calendar entry).
+
+**Audit update 2026-05-28**: this checkpoint is now overdue. Run the re-eval block above before any other work in this handoff.
 
 ## Reporting
 

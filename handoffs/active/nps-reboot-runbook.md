@@ -316,9 +316,11 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 
 **For the post-reboot agent — exact pickup point**: see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) **POST-REVERT PICKUP block at the very top** (numbered verification steps + smoke-test command + forward path to Phase H). Do not re-execute the L3aaN procedure below — it is complete and the answer is "revert".
 
+**CPU15 correction (2026-05-28)**: the old "EP frontdoor +17%" reference below is historical. The active CPU15 handoff now downgrades EP to default-off infrastructure unless a fresh CPU20 canonical matrix proves material gain. Do not use the procedure below to justify production `GGML_EP_*` wiring.
+
 ## Context as of 2026-04-26
 
-A full Phase A-G plan ran today: canonical baselines + regression bisect (no source regression — historical 49.34 was a transient) + REAP-246B perf profile + bottleneck classification across the 5 production models + CPU1 stack instability isolation + CPU2 mbind kill-switch + CPU4 hierarchical sync (NEGATIVE). All findings in `progress/2026-04/2026-04-26.md`. Strategic position: **EP +17% on Qwen3.6-35B Q8_0 frontdoor** is the only confirmed production gain from CPU1+CPU2+CPU15 work. The 4 Q4_K_M production models are sync-heavy with structural imbalance signals; next closure gates are CPU21 runtime matrix + CPU22 dynamic balancing, not barrier-only conclusions. Q8_0 frontdoor is bandwidth-bound (the remaining lever after EP is **L3aaN** — finer NUMA granularity).
+A full Phase A-G plan ran today: canonical baselines + regression bisect (no source regression — historical 49.34 was a transient) + REAP-246B perf profile + bottleneck classification across the 5 production models + CPU1 stack instability isolation + CPU2 mbind kill-switch + CPU4 hierarchical sync (NEGATIVE). All findings in `progress/2026-04/2026-04-26.md`. **Superseded framing warning**: this section originally treated EP +17% on Qwen3.6-35B Q8_0 as the remaining production gain; the CPU15 compaction corrected that to baseline-sensitive/noise-scale until revalidated under CPU20. The 4 Q4_K_M production models are sync-heavy with structural imbalance signals; later closures and CPU24 attribution should be used for current decisions, not this historical queue.
 
 ## Pre-reboot snapshot (canonical NPS4 baselines at HEAD `8cb04da9d`)
 
@@ -336,7 +338,7 @@ A full Phase A-G plan ran today: canonical baselines + regression bisect (no sou
 
 | Config | t/s ± std | vs canonical |
 |--------|-----------|--------------|
-| Qwen3.6-35B Q8_0 + `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1` | (+17% per prior session, 17.18 t/s) | reference for EP win |
+| Qwen3.6-35B Q8_0 + `GGML_EP_N_INSTANCES=2 GGML_EP_NUMA_PIN=1 GGML_EP_MASTER_ALL_NODES=1 GGML_EP_WORKER_DRONE=1 GGML_EP_SHARD=1` | historical reference only; later CPU15 correction downgraded the gain under canonical-baseline comparison | do not production-wire without CPU15-REVAL |
 
 **System state at snapshot time:**
 - NPS4 (4 NUMA nodes, distance 10/12)
@@ -392,7 +394,7 @@ LD_LIBRARY_PATH=... \
   -t 96 -fa 1 -p 0 -n 32 -r 3
 ```
 
-Expected: ≥17.18 t/s if L3aaN is neutral on EP. **>17.18 t/s = L3aaN wins; ship.** <17.18 t/s but no other regressions = L3aaN neutral, revert (cost > benefit).
+Historical expectation was ≥17.18 t/s if L3aaN was neutral on EP. This is now superseded: L3aaN evaluation is complete/revert-required, and EP production wiring requires a separate CPU15-REVAL canonical matrix.
 
 ### Step 5 — Optional: per-CCD weight pinning probe
 

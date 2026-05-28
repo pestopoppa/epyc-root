@@ -51,8 +51,8 @@ The design is backed by multiple guardrails:
    - `validate_agents_references.py`
    - `validate_claude_md_matrix.py`
 
-3. Aggregated check target
-   - `make check-agent-config`
+3. Drift checks
+   - `validate_doc_drift.py`
 
 ## CLAUDE Governance Boundaries
 

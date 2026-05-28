@@ -1,11 +1,28 @@
 # Root-Archetype: Linter Generalization + Brevity Templates Upstream
 
-**Status**: in-progress
+**Status**: REFRESHED 2026-05-28 — cleanup-only cross-repo upstreaming; local clone exists but has unrelated dirty files
 **Created**: 2026-04-09
+**Updated**: 2026-05-28 (blocker corrected; executor rules clarified)
 **Priority**: MEDIUM
 **Categories**: governance, upstream
 
 ---
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This is not a root-repo implementation task. The epyc-root side is already done; remaining work is in `/mnt/raid0/llm/root-archetype`.
+
+Current local state observed 2026-05-28:
+
+- `/mnt/raid0/llm/root-archetype` exists.
+- It has unrelated dirty log/progress files. Do not revert or fold those into this task.
+- Open work remains the three cleanup items below.
+
+Executor rules:
+
+- Touch only root-archetype files needed for the linter/template upstreaming task.
+- If the linter test fails because root-archetype's wiki layout differs, update the template/linter assumptions explicitly; do not special-case epyc-root paths.
+- Update this handoff, `research-evaluation-index.md`, and the progress log after cross-repo work.
 
 ## Objective
 

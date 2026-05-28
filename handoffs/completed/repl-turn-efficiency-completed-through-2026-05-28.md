@@ -1,12 +1,41 @@
+# REPL Turn Efficiency - Completion Ledger
+
+> Historical completion ledger only.
+> Current work lives in [repl-turn-efficiency.md](../active/repl-turn-efficiency.md).
+> This file preserves pre-compaction implementation and evaluation context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # REPL Turn Efficiency — Frecency Discovery + Combined Operations
 
-**Status**: in-progress (S1a-c done, S2a-b done, S3a done 2026-04-11, S4 pending inference, S5 analysis done 2026-04-12, S6a-f done 2026-04-16)
+**Status**: REFRESHED 2026-05-28 — core code landed; live work is S4 Omega A/B plus ColGREP soak/daemon gate
 **Created**: 2026-04-09 (from research intake: intake-295, intake-301)
+**Updated**: 2026-05-28 (NIB2 completions and current executor gates reconciled)
 **Priority**: MEDIUM
 **Categories**: agent_architecture
 **Depends on**: None (independent workstream)
 
 ---
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is large because it accumulated several shipped REPL changes. Current work is not broad REPL redesign.
+
+| Area | Current state |
+|---|---|
+| S1 frecency | Landed. |
+| S2 combined ops | Landed. |
+| S3 contextual suggestions | Prototype landed, default-off; still Omega-gated. |
+| S5 dspy.RLM gaps | Gap 3 `_batch_llm_query`, Gap 1 `workspace_scan`, and Gap 2 `STUCK` landed through NIB2 tasks on 2026-04-17. Treat the proposal section below as historical unless a regression is found. |
+| S6 bug fixes | Landed. |
+| S7 ColGREP | Landed; default flipped on 2026-04-29 with env rollback via `REPL_COLGREP=0`. |
+
+Live queue:
+
+- [ ] **S4 Omega A/B**: measure turns/task, token cost/task, and accuracy delta. This is the gate for any suggestion/verbosity/extra-tool surface changes.
+- [ ] **ColGREP soak check**: inspect `_exploration_log` or equivalent for fallback events, quality complaints, and p50/p95 `code_search()` latency.
+- [ ] **Cold-start daemon decision**: build only if the criteria in "S7: Cold-start daemon options" fire; otherwise subprocess-per-query remains the right operational shape.
+- [ ] **Version/index hygiene**: pin a versioned colgrep binary path and decide whether incremental re-index-on-commit is worth the complexity.
+
+Do not add new REPL tools before S4. The Omega finding is the controlling risk: fewer, higher-value turns matter more than a larger tool menu.
 
 ## Objective
 
@@ -276,16 +305,22 @@ Eval script + raw outputs preserved at `/mnt/raid0/llm/UTILS/colgrep_ab_eval.py`
 
 | Handoff | Relationship |
 |---------|-------------|
-| [tool-output-compression.md](tool-output-compression.md) | Complementary: definition compression + turn reduction |
-| [meta-harness-optimization.md](meta-harness-optimization.md) | AP-16 instruction budget tracking applies to combined-op descriptions |
-| [routing-and-optimization-index.md](routing-and-optimization-index.md) | WS-2 Omega re-measurement validates turn efficiency gains |
-| [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | ColGREP blocked; frecency is alternative temporal signal |
-| [research-evaluation-index.md](research-evaluation-index.md) | Tracked under P6 |
-| [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) | P11/AP-25: dspy.RLM integration — REPL patterns (metadata-first context, SUBMIT()) |
+| [tool-output-compression.md](../active/tool-output-compression.md) | Complementary: definition compression + turn reduction |
+| [meta-harness-optimization.md](../active/meta-harness-optimization.md) | AP-16 instruction budget tracking applies to combined-op descriptions |
+| [routing-and-optimization-index.md](../active/routing-and-optimization-index.md) | WS-2 Omega re-measurement validates turn efficiency gains |
+| [colbert-reranker-web-research.md](../active/colbert-reranker-web-research.md) | ColGREP blocked; frecency is alternative temporal signal |
+| [research-evaluation-index.md](../active/research-evaluation-index.md) | Tracked under P6 |
+| [autopilot-continuous-optimization.md](../active/autopilot-continuous-optimization.md) | P11/AP-25: dspy.RLM integration — REPL patterns (metadata-first context, SUBMIT()) |
 
 ## S5: dspy.RLM REPL Patterns (cross-ref autopilot P11)
 
-(cross-reference analysis complete 2026-04-12, implementation proposals ready for prioritization)
+Cross-reference analysis completed 2026-04-12. **Implementation status refreshed 2026-05-28**: all three proposed code items have landed via `non-inference-backlog.md` NIB2 tasks:
+
+- Gap 3 `_batch_llm_query()` — DONE 2026-04-17 (NIB2-01)
+- Gap 1 `workspace_scan()` frecency-only fallback — DONE 2026-04-17 (NIB2-23)
+- Gap 2 `STUCK("reason")` signal — DONE 2026-04-17 (NIB2-24)
+
+The analysis below is retained as rationale. The next gate is S4 Omega A/B, not more implementation.
 
 Source: intake-331 (predict-rlm), intake-349 (dspy.RLM). DSPy infrastructure installed in AP-18 (`src/dspy_signatures/`), RLM dual-LM config wired in AP-25 (`configure_rlm` — coder as main LM, frontdoor as sub_lm). AP-26 (RLM integration testing) still pending inference.
 

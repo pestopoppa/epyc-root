@@ -5,7 +5,7 @@
 **Categories**: agent_architecture, inference_serving, hardware_optimization, tool_implementation
 **Source**: intake-605 (Repo Prompt — think-then-act XML edits + parallel sandboxed apply)
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P23
-**BEP-2 falsification-harness construction**: [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (2026-05-26 — reviewed / ready to build; safe model-facing task-root override + workload + A/B driver needed to actually run BEP-2; the `_execute_turn` divergence is already wired `ea5f010`)
+**BEP-2 falsification-harness status**: [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (compacted 2026-05-28 — BEP-2 remediation is complete via default-off edit transaction; J8 is optional provenance for the legacy batch-edit path)
 
 ## Objective
 

@@ -1,12 +1,43 @@
+# KV Cache Selection/Eviction - Expected Attention Deployment Ledger
+
+> Historical completion ledger only.
+> Current work lives in [triattention-kv-selection.md](../active/triattention-kv-selection.md).
+> This file preserves pre-compaction evaluation and deployment context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # KV Cache Selection/Eviction (TriAttention / Expected Attention)
 
-**Status**: ACTIVE — Full production pipeline deployed. Autopilot control surfaces wired. Next: autopilot exploration → orchestrator auto-trigger.
+**Status**: REFRESHED 2026-05-28 — Expected Attention pipeline deployed; active only for S8 autopilot profiles and S9 auto-trigger
 **Created**: 2026-04-08 (via research intake)
-**Updated**: 2026-04-20 (EA eval script cleaned: dead LongBench code removed, use_covariance/use_vnorm wired, timing fields simplified)
+**Updated**: 2026-05-28 (historical eval gates separated from live S8/S9 queue)
 **Priority**: MEDIUM
 **Categories**: kv_cache, inference_serving, memory_bandwidth
 
 ## Current Work — Resume Here
+
+### 2026-05-28 Audit Reset — Executor Start Here
+
+Expected Attention is already the production path. Do not reopen S1/S4/S5/S6/S7 as if this were still an evaluation stub.
+
+| Live item | Executor rule |
+|---|---|
+| S8 autopilot exploration | Sweep `keep_ratio` and `layer_weights` per production role; persist Pareto profiles with quality/speed/cost/reliability axes. |
+| S9 orchestrator auto-trigger | Blocked until S8 produces stable role profiles. Wire learned profiles, not hardcoded defaults. |
+| S2 TriAttention concentration validation | Optional comparator only. It no longer blocks Expected Attention deployment. |
+| S3 selection + quantization stacking | Reopen after S8 if stacked compression is a production need; otherwise Attention Matching may be the better high-compression path. |
+
+Minimal S8 artifact:
+
+```text
+Role:
+Model:
+Context/workload:
+keep_ratio candidates:
+layer_weight candidates:
+Pareto winner:
+Quality delta:
+Speed/cost delta:
+Reliability notes:
+```
 
 ### What's Done (2026-04-08)
 
@@ -119,7 +150,7 @@ Wire `auto_compress_if_needed()` from `kv_compress.py` into the orchestrator's s
 - **Gate 1 (after S1)**: IF Expected Attention >= 90% RULER at 50% compression on Qwen2.5-7B THEN proceed to S3 stacking test. ELSE evaluate TriAttention via S2 before concluding.
 - **Gate 2 (after S2)**: IF Q/K concentration validates (R >= 0.95) THEN TriAttention remains a candidate. ELSE drop TriAttention, rely solely on Expected Attention.
 - **Gate 3 (after S3)**: IF selection + quantization stacking is quality-neutral at >= 4x combined compression THEN promote to implementation phase. ELSE **CONCLUDE** — KV quantization alone sufficient.
-- **Overall**: IF S1 AND S2 both fail gates THEN **CONCLUDE as NOT VIABLE** for token selection. However, Attention Matching compaction ([attention-matching-kv-compaction.md](attention-matching-kv-compaction.md)) provides 10-50x compression via latent-space construction rather than token selection. AM outperforms all selection baselines at 20x+; at 5-10x the gap narrows. AM is a viable replacement path, not just a complement — evaluate AM independently of S1/S2 outcomes.
+- **Overall**: IF S1 AND S2 both fail gates THEN **CONCLUDE as NOT VIABLE** for token selection. However, Attention Matching compaction ([attention-matching-kv-compaction.md](../active/attention-matching-kv-compaction.md)) provides 10-50x compression via latent-space construction rather than token selection. AM outperforms all selection baselines at 20x+; at 5-10x the gap narrows. AM is a viable replacement path, not just a complement — evaluate AM independently of S1/S2 outcomes.
 
 ## Composability: Triple-Stack KV Compression (intake-289, 2026-04-09)
 
@@ -129,11 +160,11 @@ Memento (intake-289) introduces a third orthogonal KV compression dimension — 
 |-------|--------|-------------|--------|
 | Selection (this handoff) | TriAttention / Expected Attention | 2-10x | S1/S2 evaluating |
 | Quantization | Hadamard + q4_0 | 2x | **Production** (`b51c905`) |
-| Block masking | Memento | 2-3x | Research (memento-block-reasoning-compression.md) |
+| Block masking | Memento | 2-3x | Research (../active/memento-block-reasoning-compression.md) |
 
 S3 (selection + quantization stacking) should also consider eventual triple-stack with block masking. Quality cliff under triple compression is the key unknown.
 
-See: [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.
+See: [memento-block-reasoning-compression.md](../active/memento-block-reasoning-compression.md), deep-dive at `research/deep-dives/memento-iterative-reasoning-cluster.md`.
 
 ## Open Questions
 
@@ -173,7 +204,7 @@ See `research/deep-dives/triattention-kv-selection-cluster.md` for full analysis
   - Relevance: Formalizes KV compaction as attention matching with closed-form solutions. 50x compression on QuALITY benchmark, Pareto-dominant over all token-selection baselines (H2O, SnapKV, PyramidKV, KVzip). **This is the academic formalization of the compaction paradigm that Latent Briefing implements.**
   - Key technique: Attention Matching — NNLS for bias β, OLS for values, OMP or RMS-heuristic for key selection
   - Reported results: 50x compression, ~71% QuALITY accuracy, 100-200x faster than Cartridges
-  - Delta from current approach: Token selection (this handoff) keeps original KV entries. Compaction constructs *new* compact KV representations in latent space. AM outperforms all selection baselines at high compression (20-100x). See new handoff: [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md).
+  - Delta from current approach: Token selection (this handoff) keeps original KV entries. Compaction constructs *new* compact KV representations in latent space. AM outperforms all selection baselines at high compression (20-100x). See new handoff: [attention-matching-kv-compaction.md](../active/attention-matching-kv-compaction.md).
   - **llama.cpp status**: Issue #20037 open — blocked on ggml pseudoinverse support. Reference implementation: github.com/adamzweiger/compaction
 
 - **[intake-352] "KVCOMM: Online Cross-context KV-cache Communication"** (arxiv:2510.12872)

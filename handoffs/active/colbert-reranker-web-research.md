@@ -1,11 +1,54 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: S1–S4 complete; S5 gated on AR-3 web_research data (go/no-go analysis)
+**Status**: refreshed 2026-05-28 — S1-S4 complete; S5 remains gated on an explicit irrelevant-page-rate decision
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
-**Updated**: 2026-04-14 (finalized: architecture resolved, model selected, work items sequenced)
+**Updated**: 2026-05-28
 **Priority**: MEDIUM
 **Effort**: Medium
 **Depends on**: AR-3 autopilot data — S5 requires the post-AR-3 irrelevant-page analysis to confirm >20% waste rate before implementation proceeds. No infrastructure dependency; this is a data gate. See "Post-AR-3 Analysis" section below for the go/no-go script and thresholds.
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is not blocked on library or model setup anymore. It is blocked on a measurement decision: does `web_research` currently waste enough synthesis work to justify a reranker in the request path?
+
+**Critique of older structure**: the file still read like a model-selection handoff, even though model setup and feature flag work already landed. The real ambiguity was the gate: implement S5 only if telemetry shows irrelevant-page synthesis is material. This reset puts that gate first and gives concrete forks.
+
+**Verified implementation context**:
+
+- Orchestrator commit `270d7317` added S1/S2 relevance instrumentation and `web_research_rerank` feature flag plumbing.
+- Orchestrator commit `41624699` wired `search_backend` into telemetry for the post-AR-3 analysis path.
+- Inference-research commit `f48dc05` added the baseline analyzer.
+- No reranker code should be added until the gate below is answered.
+
+**S5 go/no-go gate**:
+
+Run the analyzer on the most recent AR-3 / web-research eval bundle:
+
+```bash
+cd /mnt/raid0/llm/epyc-inference-research
+python3 scripts/benchmark/analyze_web_research_baseline.py benchmarks/results/eval
+```
+
+If the eval bundle is missing or too sparse, use production/orchestrator logs as a fallback:
+
+```bash
+rg -n "web_research relevance summary|irrelevant_rate|pages_irrelevant" \
+  /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research/benchmarks/results
+```
+
+**Decision forks**:
+
+| Observed irrelevant-page rate | Decision | Implementation path |
+|---:|---|---|
+| >20% with >=50 synthesized pages | GO | Implement S5 in `research.py` with lazy ONNX singleton, then run S6 A/B. |
+| 10-20% or <50 pages | HOLD | Add more web_research sentinel traffic; do not add request-path complexity yet. |
+| <10% with >=50 pages | NO-GO for S5 | Keep instrumentation; close this handoff as "reranker not justified"; optionally expose utility for offline analysis only. |
+
+**Risk controls if GO**:
+
+- Keep `ORCHESTRATOR_WEB_RESEARCH_RERANK=0` default-off.
+- Increase `max_results` only when the flag is on; legacy behavior must remain byte-for-byte close enough for existing tests.
+- Cache the ONNX session at module scope and fail open to baseline DDG/SearXNG ranking if model load fails.
 
 ## Objective
 

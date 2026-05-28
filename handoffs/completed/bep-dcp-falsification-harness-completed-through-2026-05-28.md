@@ -1,3 +1,9 @@
+# BEP-2 / DCP-6 Falsification Harness - Completion Ledger
+
+> Historical completion ledger only.
+> Current work lives in [bep-dcp-falsification-harness.md](../active/bep-dcp-falsification-harness.md).
+> This file preserves pre-compaction harness construction, failure analysis, and remediation context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # BEP-2 / DCP-6 Falsification-Harness Construction
 
 status: BEP-2 REMEDIATED 2026-05-27 (harness built+run; multi-file read-loop diagnosed as agentic protocol/tooling NOT capability, then bypassed by a shipped flag-gated `force_mode="edit"` edit-transaction — see the closing "RESOLVED" section). J8 batch-edit A/B now OPTIONAL; DCP-6 is a separate, now-unblockable track.
@@ -791,7 +797,7 @@ one-shot protocol ablation proved Qwen3.6 can solve the exact same 5 tasks with 
 files are supplied directly and the model returns complete final files: **5/5 PASS, no `<think>` leakage**.
 The **loop-guard firing is still proven** (the live probe + halt are independent of this), but the remaining
 wall is **agentic protocol/tooling**, not coding capability. Track remediation in
-[`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md): one-shot/full-file
+[`multi-file-coding-completion-capability.md`](../active/multi-file-coding-completion-capability.md): one-shot/full-file
 or structured-patch edit affordance + auto-`FINAL`; do not pursue a model swap for BEP-2.
 
 ---
@@ -802,7 +808,7 @@ The protocol/tooling diagnosis above was acted on — the remediation is **built
 
 - **Module + wiring:** `epyc-orchestrator/src/edit_transaction.py` + `src/api/routes/chat.py` (8b2 branch) + `src/chat_completions_roles.py`. Self-contained commit series `bd87ceb → 3c1f423 → d4fafdf → fba6c84 → 0f00708`.
 - **Validation:** module **5/5** through the real coder; live server `force_mode=edit` **3/3** (create / read-first multi-file / rename+delete); explicit-mode preconditions fail closed (HTTP **412**); **77 unit tests** (21 edit/cc-role + 55 chat route/endpoint/canary + 1 fail-closed regression).
-- Full detail + open rollout items: [`multi-file-coding-completion-capability.md`](multi-file-coding-completion-capability.md).
+- Full detail + open rollout items: [`multi-file-coding-completion-capability.md`](../active/multi-file-coding-completion-capability.md).
 
 **Impact on this harness's open gates:**
 - **BEP-2 read-loop:** the multi-file *completion* capability now exists via `force_mode="edit"`. The REPL/BEP loop itself is **not repaired — it is bypassed** (the edit path is opt-in, default-OFF; auto-routing is the open product decision). BEP-2's blocker is remediated.

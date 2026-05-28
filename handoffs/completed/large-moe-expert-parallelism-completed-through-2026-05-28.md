@@ -1,3 +1,5 @@
+> **Historical ledger only.** Current CPU15 disposition and reopen gates live in [`../active/large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md). This file preserves completed measurements, failed/neutral EP variants, implementation history, and baseline-correction evidence through 2026-05-28.
+
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
 **Status**: **ACTIVE (Phase 3 complete, 2026-04-26 evening) — EP wins DOWNGRADED to noise on proper baseline**. Inter-process EP is bit-correct but the historical "+17% on Qwen3.6-35B Q8_0" win was measured against the warmed mmap=1 reference; on the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all`) EP delivers **+1.6%** (noise). The "−47% regression on REAP-246B" was also a sub-baseline artifact — on proper canonical EP is **neutral** (5.92 vs 5.94, 0%). EP machinery is no longer a meaningful production gain on its own; production candidacy is now solely the canonical config change. See `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
@@ -54,11 +56,11 @@ The strategy works on the architectures where it's expected to. Phase 3.1 dispat
 **Priority**: HIGH
 **Categories**: hardware_optimization, local_inference, moe_optimization, inference_serving
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md)
 **Related**:
-- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
-- [`cpu-benchmark-rigor-and-revalidation.md`](cpu-benchmark-rigor-and-revalidation.md) (CPU20 — mandatory quality gate before closure claims)
+- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) (CPU1 — Phase 1.4 substrate reused in Phase 0; Phase 1.2 per-CCD work distribution is the direct substrate for intra-process EP)
+- [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) (CPU2 — Q8_0 AVX-512BW ukernel + auto-mbind stack with EP for Q8 experts)
+- [`cpu-benchmark-rigor-and-revalidation.md`](../active/cpu-benchmark-rigor-and-revalidation.md) (CPU20 — mandatory quality gate before closure claims)
 - [`cpu-uncore-fabric-attribution.md`](../completed/cpu-uncore-fabric-attribution.md) (CPU24 — required to close >150B root cause)
 - [`cpu-context-regime-coverage.md`](../completed/cpu-context-regime-coverage.md) (CPU23 — required before class-level production guidance)
 
@@ -74,9 +76,9 @@ MoE infrastructure literature ingested (intake batch 458-472). Direct relevance 
 1. **Phase 3.4 candidate**: 2DH ring-buffer redesign for inter-process EP shared-memory dispatch. Target: reduce sync count from ~96 to ~24/token via intra-NUMA-then-inter-NUMA aggregation.
 2. **CPU2 expert-GEMM investigation**: port MegaBlocks' blocked-CSR-COO + transpose-indices indexing into the AVX-512BW Q8_0 path. Indexing scheme is portable; kernel itself is not.
 3. **Variant 1/2/3 unified layout**: adopt Tutel's "one tensor layout that all parallelism strategies consume" so the orchestrator can switch EP topology per workload without weight re-layout.
-- [`single-instance-system-tuning.md`](single-instance-system-tuning.md) (CPU3 — NPS4 BIOS state is prerequisite)
-- [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) (**contention** — NUMA topology is exclusive; see Decision Point D2)
-- [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) (candidate model for Phase 0; master-index row 22)
+- [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) (CPU3 — NPS4 BIOS state is prerequisite)
+- [`orchestrator-nps4-48x4-notes.md`](../active/orchestrator-nps4-48x4-notes.md) (**contention** — NUMA topology is exclusive; see Decision Point D2)
+- [`glm51-reap-cpu-evaluation.md`](../active/glm51-reap-cpu-evaluation.md) (candidate model for Phase 0; master-index row 22)
 - [`../completed/ssm-hybrid-acceleration.md`](../completed/ssm-hybrid-acceleration.md) (precedent: large-MoE self-draft falsified — EP is a distinct mechanism)
 - [`../completed/reap-moe-expert-pruning.md`](../completed/reap-moe-expert-pruning.md) (precedent: expert-level manipulation is tractable)
 
@@ -103,7 +105,7 @@ Two linked tracks:
 | User observation 2026-04-24 | origin | Reframe surfaced in conversation — memory-bound single-instance + concurrent-throughput gap ⇒ large sparse MoE is the hardware-matched target |
 | `../completed/ssm-hybrid-acceleration.md` (2026-03-18) | precedent (doesn't foreclose) | Large-MoE **self-draft** on Qwen3-235B and 480B measured net-negative (2.9%/55% acceptance, 0.50–0.72× end-to-end). EP is a distinct mechanism — acceptance does not gate it. Reuse 235B/480B baseline measurements for orientation. |
 | `../completed/reap-moe-expert-pruning.md` (2026-03-29) | enabler | Expert-level manipulation is tractable in the llama.cpp fork (REAP removes whole experts by router-weighted saliency). Precedent for static per-CCD shard maps. |
-| master-index row 22 — [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) (intake-427 revised) | candidate | GLM-5.1-555B-A14B-REAP: 555B / 192 experts / 14B active / ~325 GB Q4_K_M. Storage-gated (~92 GB free). Primary Phase 0 candidate **if** download unblocks. |
+| master-index row 22 — [`glm51-reap-cpu-evaluation.md`](../active/glm51-reap-cpu-evaluation.md) (intake-427 revised) | candidate | GLM-5.1-555B-A14B-REAP: 555B / 192 experts / 14B active / ~325 GB Q4_K_M. Storage-gated (~92 GB free). Primary Phase 0 candidate **if** download unblocks. |
 | Qwen3-235B-A22B (registry: architect_general) | candidate | 128 experts / top-8 / ~22B active / ~130 GB Q4_K_M. Currently ~6.1 t/s at 1×96t (pre-NPS4 measurement; stale). Phase 0 re-measurement on NPS4 + `GGML_NUMA_WEIGHTS=1` is the cheapest experiment. |
 | Qwen3-Coder-480B-A35B (registry: architect_coding, pre-REAP) | candidate | 256 experts / top-20 / ~35B active / ~250 GB. Pre-NPS4 measurement 4.08 t/s at 1×96t. Replaced in prod by REAP-246B but GGUF still on disk. |
 | DeepSeek-V3.1 (671B MoE) | uncatalogued | ~350–400 GB Q4_K_M; 256 experts; top-8. Reference-class sparse MoE. Intake entry deferred (requires direct user request per `/workspace/CLAUDE.md`). |
@@ -677,8 +679,8 @@ Populate as phases execute.
 | CPU3 (NPS4 / L3aaN) | prerequisite | EP requires NPS4 topology; future L3aaN would expose 12 effective EP nodes instead of 4 |
 | CPU4 (per-CCD barrier) | synergy | Phase 1 intra-process EP wants per-CCD barriers; CPU4 infrastructure directly applies |
 | CPU8 (per-NUMA weight replication) | convergent | CPU8 and Variant 2 EP both imply per-NUMA weight placement; share implementation substrate |
-| [`orchestrator-nps4-48x4-notes.md`](orchestrator-nps4-48x4-notes.md) | **contention** | NUMA topology exclusive — see D2 |
-| [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) | feeds candidate | GLM-5.1-REAP is a Phase 0 tertiary candidate if downloaded |
+| [`orchestrator-nps4-48x4-notes.md`](../active/orchestrator-nps4-48x4-notes.md) | **contention** | NUMA topology exclusive — see D2 |
+| [`glm51-reap-cpu-evaluation.md`](../active/glm51-reap-cpu-evaluation.md) | feeds candidate | GLM-5.1-REAP is a Phase 0 tertiary candidate if downloaded |
 
 ---
 
@@ -699,7 +701,7 @@ After each phase:
 
 | Purpose | Location |
 |---|---|
-| Parent index | [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) |
+| Parent index | [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) |
 | llama.cpp MoE kernel (CPU) | `/mnt/raid0/llm/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c:1435–1690` |
 | llama.cpp MoE op signature | `/mnt/raid0/llm/llama.cpp/ggml/src/ggml.c:3264–3302` |
 | llama.cpp experimental worktree | `/mnt/raid0/llm/llama.cpp-experimental` |

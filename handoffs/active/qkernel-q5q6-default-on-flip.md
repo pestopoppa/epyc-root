@@ -1,7 +1,8 @@
 # Q5_K + Q6_K AVX-512BW 8x8 Kernels — Validation + Default-ON Flip
 
-**Status**: stub — pending user-approved bench window for Q6_K validation
+**Status**: REFRESHED 2026-05-28 — Phase A gate failed 2026-05-04; default flip NO-GO; Q5/blanket work deprioritized
 **Created**: 2026-05-04
+**Updated**: 2026-05-28 (master-index failure state reconciled into handoff)
 **Categories**: hardware_optimization, inference_serving
 **Priority**: MEDIUM (compounds with shipped Q8_0 8x8; unblocks blanket `Q{5,6,8}_K` repack default flip)
 **Parent**: [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md)
@@ -9,6 +10,24 @@
 - [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) Prioritized Task List CPU2 row
 - [`model-registry-v5-deployment-draft.yaml`](model-registry-v5-deployment-draft.yaml) — env block source
 - [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — v5 kernel push tracker
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+Do not run this as a fresh validation stub. The Q6_K default-on gate already ran and failed.
+
+| Item | Current disposition |
+|---|---|
+| Q6_K PPL gate | PASS: 5/5 bit-exact in `data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md`. |
+| Q6_K 96t perf gate | FAIL: aggregate geomean -0.28%, REAP-246B -1.01%; default stays OFF. |
+| Q6_K low-thread utility | Still valid as opt-in via `GGML_Q6_K_8X8_AVX=1` for low-thread or diagnostic runs. |
+| Q5_K body | Deprioritized until a fresh profile shows Q5_K remains material after Q6/Q8 state. |
+| Blanket `Q{5,6,8}_K` default-on | No-go under current production workload; compounding rationale falsified. |
+
+Reopen only if at least one condition changes:
+
+- Production workload shifts to low-thread decode where Q6_K's single-thread win matters.
+- A new kernel branch materially changes the Q6_K implementation.
+- CPU20-compliant profiling shows Q5_K/Q6_K scale/min paths are again a top bottleneck.
 
 ## Why this exists
 
@@ -37,7 +56,7 @@ git merge-base --is-ancestor 529fcbd6a production-consolidated-v5 && echo "Q6_K 
 
 ## Phased plan
 
-### Phase A — Q6_K validation under v5 (1-2 sessions, no code)
+### Phase A — Q6_K validation under v5 — CLOSED NO-GO 2026-05-04
 
 **Gate**: PPL bit-exact + multi-thread perf signal **before** flipping default-ON.
 

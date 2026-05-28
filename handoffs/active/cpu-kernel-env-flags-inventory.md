@@ -1,7 +1,30 @@
-# CPU Kernel Env-Flag Inventory — 2026-04-26 (updated 2026-04-30)
+# CPU Kernel Env-Flag Inventory — 2026-04-26 (updated 2026-05-28)
 
 **Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `aed8c1e` post-2026-04-30 wrap-up; experimental branch HEAD `d45126db5` includes Phase 1.1 dispatcher v1)
 **Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15, slot-promotion work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This is a reference inventory, not an open-ended optimization queue. Treat it as the authoritative "what each flag means and when it may be enabled" document for v5/vNext launch wiring.
+
+**Critique of older structure**: the file contains both historical cherry-pick planning and deployment recommendations. Since v5 cleanup/push work later landed, a fresh implementer could misread old "next step" language as permission to rerun the entire cherry-pick program. The current next work is narrower: reconcile actual orchestrator launch wiring against the per-role matrix and keep the flag table current when a kernel branch changes.
+
+**Current executor rule**:
+
+| Need | Use this file how |
+|---|---|
+| Add or change a `GGML_*` env var in launch config | Check the inventory class first: production-ready opt-in, default-off research, diagnostic, kill-switch, or deprecated. |
+| Enable a flag for a role | Verify the role's arch class in the deployment matrix and cite the source bundle. |
+| Benchmark a flag | Follow CPU20 first; do not accept sub-5% results without the rep-count policy. |
+| Update model registry/env wiring | Update this inventory, `model-registry-v5-deployment-draft.yaml`, and the relevant orchestrator stack handoff together. |
+
+**Do not resurrect deprecated flags**:
+
+- `GGML_NUMA_WEIGHTS=1` as a standalone production mechanism remains deprecated.
+- `GGML_NUMA_MIRROR` remains single-socket-negative; reopen only for 2-socket hardware.
+- Slot-promotion dispatcher stays disabled for the tested Qwen3.6 + 1.7B pair.
+
+**Next actionable audit**: compare the live `epyc-orchestrator` launcher env injection against the per-role v5 deployment recommendation below. If live launch wiring differs, update this file with either the live override rationale or a corrective task in `llama-cpp-kernel-push-rebase.md` / `model-registry-v5-deployment-draft.yaml`.
 
 ---
 
@@ -63,13 +86,13 @@ OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active \
 | **`GGML_NUMA_REPACK_INTERLEAVE`** | **on** | **kill-switch (CPU2 mbind)** | repack.cpp:5024 |
 | `GGML_NUMA_MIRROR` (compile flag, not env) | off (compile-time) | research/decisive-negative on single-socket NPS4 (CPU25) | ggml.h:733, repack.cpp guarded sections |
 | `LLAMA_ARG_SPEC_NUMA_QUARTERS` (CLI: `--spec-numa-quarters K`) | 1 (off) | **closed via test 2026-04-30 — mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B drafter; dispatcher v1 in tree disabled-by-default** | common/arg.cpp + tools/server/server-context.cpp |
-| `GGML_EP_ROLE` | off | EP control plane | ggml-ep-bootstrap.cpp:114 |
-| `GGML_EP_N_INSTANCES` | off | EP control plane | ggml-ep-bootstrap.cpp:124 |
-| `GGML_EP_NUMA_PIN` | off | EP control plane | ggml-ep-bootstrap.cpp:177 |
-| `GGML_EP_MASTER_ALL_NODES` | off | EP control plane | ggml-ep-bootstrap.cpp:184 |
-| `GGML_EP_SHARD` | off | EP feature | ggml-ep-shard.cpp:78 |
-| `GGML_EP_WORKER_DRONE` | off | EP feature | ggml-cpu.c:1671, 2259 |
-| `GGML_EP_MASTER_PARK` | off | EP feature | ggml-cpu.c:1688 |
+| `GGML_EP_ROLE` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:114 |
+| `GGML_EP_N_INSTANCES` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:124 |
+| `GGML_EP_NUMA_PIN` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:177 |
+| `GGML_EP_MASTER_ALL_NODES` | off | EP control plane; default-off experimental | ggml-ep-bootstrap.cpp:184 |
+| `GGML_EP_SHARD` | off | EP feature; default-off experimental | ggml-ep-shard.cpp:78 |
+| `GGML_EP_WORKER_DRONE` | off | EP feature; default-off experimental | ggml-cpu.c:1671, 2259 |
+| `GGML_EP_MASTER_PARK` | off | EP feature; default-off experimental | ggml-cpu.c:1688 |
 
 **Behavior changes that activate on every multi-NUMA host (no model-level opt-in):**
 
@@ -149,9 +172,9 @@ All seven flags default-off. Together control inter-process Expert Parallelism:
 - `GGML_EP_WORKER_DRONE=1` — workers skip non-MoE ops; master broadcasts src1+ids only.
 - `GGML_EP_MASTER_PARK=1` — master parker threads skip MoE expert loop to avoid oversubscription.
 
-**Phase 3.2 (g.1) state**: PPL bit-identical on Qwen3.6-35B-A3B Q8_0 with N=2 drone+shard. +17% honest baseline (vs canonical no-flags). Other production models (Coder-30B, Next-80B, REAP-246B, gemma-4-26B-A4B-it) regress or are at parity.
+**Phase 3.2 (g.1) state, corrected 2026-05-28**: PPL bit-identical on Qwen3.6-35B-A3B Q8_0 with N=2 drone+shard, but the historical +17%/+100% throughput claims were baseline-sensitive. The active CPU15 handoff now treats EP as default-off infrastructure only; no production routing should set these flags without a fresh CPU20 canonical matrix.
 
-**Recommendation**: cherry-pick all 7 flags into v5 default-off. Production routing wires them on for the frontdoor (Qwen3.6-35B-A3B) only, via orchestrator config (Phase L).
+**Recommendation**: keep the EP family default-off for experimental/reopen use. Do **not** wire it into frontdoor or any other role until [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) CPU15-REVAL passes on canonical no-EP vs EP comparisons.
 
 ## Per-Arch Deployment Matrix (2026-04-29/30 measurements)
 
@@ -167,7 +190,7 @@ Configs reference (env stack relative to canonical baseline):
 |---|---|---|---|---|---|
 | **MoE Q4_K_M (sync-bound)** | Coder-30B-A3B | c1 (CPU1 stack) +1.8% | not tested | CPU21 finding 2026-04-26; +1.8% on tg32. CPU22 work-stealing gate FAILED (-2.3%). | `2026-04-28-cpu21-libomp-chunks/` |
 | **MoE Q4_K_M (DRAM-bound)** | REAP-246B-A35B | default v5 (no opt-in) | not tested | DRAM-saturated; CPU2 AVX-512BW Q6_K at +6% pp32 if quantized; CPU22 -0.8% (noise) | `2026-04-28-cpu22-work-stealing/` |
-| **MoE Q8_0 (BW-bound frontdoor)** | Qwen3.6-35B-A3B | EP stack (per orchestrator wiring) | not tested | EP +17% honest baseline (g.1 = drone+shard, N=2); CPU22 -0.3% (noise) | `2026-04-26-asymmetry/` + EP bundles |
+| **MoE Q8_0 (frontdoor-class)** | Qwen3.6-35B-A3B | default v5 unless CPU15-REVAL passes | not tested | Historical EP +17%/+100% claims downgraded under canonical-baseline correction; do not set `GGML_EP_*` by default. CPU22 -0.3% (noise). | `2026-04-26-asymmetry/` + EP bundles + CPU15 completed ledger |
 | **Hybrid SSM (dense, Mamba2+attn)** | Nemotron-9B-v2 | c2 (mbind off) +1.78% | **c3 +8.9% pp512** / +3.7% pp2048 | Strongest robust signal in re-validation campaign. **Worth opt-in for prefill-heavy workload.** | `2026-04-29-multi-arch-coverage-canonical/` + `2026-04-29-workload-shape-canonical/` |
 | **Hybrid SSM (MoE)** | Qwen3-Next-80B-A3B | default v5 (no opt-in) | c3 +1.7% pp512 (within noise floor) | MoE structure (`mul_mat_id` per-token-varying expert subset) defeats CPU1's CCD-aware partitioning; +8.9% on Nemotron does NOT generalize | `2026-04-30-hybrid-ssm-next80b-followup/` |
 | **Dense Q8** | Qwen3.6-27B Q8 | default v5 (CPU1 actively HURTS) | default v5 | All probed configs negative: c1=-4.7%, c2=-3.3%, c3=-1.6%. Do NOT enable CPU1 or mbind-off. | `2026-04-29-multi-arch-coverage-canonical/` |
@@ -188,12 +211,7 @@ roles:
       GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
   frontdoor:            # Qwen3.6-35B-A3B Q8_0
     binary_path: build_libomp_pgo_use/   # universal PGO
-    env:
-      GGML_EP_N_INSTANCES: 2
-      GGML_EP_NUMA_PIN: 1
-      GGML_EP_MASTER_ALL_NODES: 1
-      GGML_EP_WORKER_DRONE: 1
-      GGML_EP_SHARD: 1
+    env: {}  # Do not set GGML_EP_* unless CPU15-REVAL passes on canonical baselines
   architect_coding:     # REAP-246B-A35B Q4_K_M
     binary_path: build_libomp_pgo_use/
     moe_spec_budget: 40             # MoE-Spec validated for REAP at +13-16% pp32
@@ -233,7 +251,7 @@ Production-push readiness across the whitelisted experimental kernel work, ranke
 | **CPU2 AVX-512BW Q8_0 8x8 kernel** | ✅ whitelisted opt-in | +31.8% @ 1t; +1-3% @ 12-96t (BW-saturated) | Cherry-pick `1d18efce3` default-off via `GGML_Q8_0_8X8_AVX` |
 | **CPU2 AVX-512BW Q6_K 8x8 kernel** | ✅ whitelisted opt-in | PPL bit-exact 32-chunk on Coder-30B + REAP-246B (2026-04-28) | Cherry-pick default-off via `GGML_Q6_K_8X8_AVX`; production-ready when activated |
 | **CPU2 NUMA_REPACK_INTERLEAVE auto-mbind** | ✅ whitelisted **default-on** with kill-switch | +6% AND stabilizing on Q8; -0.9% on Q4_K_M (kill-switch isolation 2026-04-26) | Cherry-pick `e84a5c82f` modified to add `GGML_NUMA_REPACK_INTERLEAVE=0` kill-switch |
-| **CPU15 inter-process EP (7 flags)** | ✅ whitelisted (default-off, orchestrator-wired for frontdoor) | Qwen3.6-35B-A3B Q8 +17% honest baseline (g.1 = drone+shard, N=2); REAP-246B regresses (-53%) | Cherry-pick `aa6476ab0` → `43c65b926`; production routing wires on for frontdoor only |
+| **CPU15 inter-process EP (7 flags)** | ✅ retained default-off only (not production-wired) | Correctness path bit-identical; historical Qwen3.6 frontdoor gains downgraded by canonical-baseline correction; REAP/MiniMax not production candidates. | Keep/cherry-pick only as default-off experimental infrastructure; no orchestrator env wiring until CPU15-REVAL passes |
 | **CPU11 PGO** (clang-20+libomp+znver5+PGO) | ✅ whitelisted **universal** | +1.3-6.6% across all 4 production model classes; PPL bit-exact | Default v5 production binary toolchain |
 | **CPU12 BOLT-libggml** | ✅ whitelisted **per-role only** (Coder-30B) | +2.1% Coder-30B (60.54 t/s); -0.9 to -1.2% on Q8/dense | Per-role opt-in binary for Coder-30B-A3B-Instruct |
 | **CPU12 BOLT-libomp** | ❌ NOT whitelisted (inconclusive under noise) | PPL bit-exact pipeline works; no throughput signal | Skip; reopen if noise floor improves |
@@ -245,7 +263,7 @@ Production-push readiness across the whitelisted experimental kernel work, ranke
 | **CPU4 op-coalesced barriers** | ❌ closed via test 2026-04-29 (gate not met) | Original "−19.7% Coder" was POISONED by missing OMP env baseline. Phase A re-test 2026-04-29 evening under canonical: **+0.19% NEUTRAL** on Coder. Patch is harmless, not regressive — gate ≥+5% still not met. MUL_MAT wdata race finding stands (correctness). | Stays in tree env-gated default-OFF (`GGML_BARRIER_COALESCE`). Allowlist excludes MUL_MAT/MUL_MAT_ID. Future work: extend allowlist beyond conservative set. |
 | **CPU25 NUMA_MIRROR** | ❌ closed via test 2026-04-27 (DECISIVE NEGATIVE on single-socket NPS4) | -1.0% Coder, +0.6% Q8 (Phase 2 throughput gate) | Compile flag default-OFF; reopen ONLY for 2-socket configs |
 
-**v5 cherry-pick scope summary (reconciled 2026-04-30 audit Phase 0)**: 8 CPU1 commits (KEEP) + 5 CPU1 commits STRIPPED with NUMA_WEIGHTS deletion; 1 CPU2 mbind kill-switch (already includes kill-switch — no modification); 2 CPU2 Q8_0 ukernel commits; 3 CPU2 Q6_K ukernel commits; 13 CPU15 EP family commits; 6 slot-promotion commits; 1 MoE-Spec budget commit; 1 CPU4 op-coalesced barriers commit. **Total KEEP = 35 commits**. Plus build-system commit (toolchain switch to clang-20+libomp+znver5+PGO) appended last. STRIPPED in addition to NUMA_WEIGHTS family: CPU22 work-stealing (`0bc793637`), rms_norm parallel (`383ec7345`), gated_delta_net (`c36e6ce3a`), CPU15 Phase 1+2 superseded (`ad97bef09`,`80b5da0e5`,`b0c0b3301`). All KEEP commits land default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch). See "Cherry-pick scope — reconciled 2026-04-30" section below for full per-commit table.
+**v5 cherry-pick scope summary (reconciled 2026-04-30 audit Phase 0; CPU15 posture corrected 2026-05-28)**: 8 CPU1 commits (KEEP) + 5 CPU1 commits STRIPPED with NUMA_WEIGHTS deletion; 1 CPU2 mbind kill-switch (already includes kill-switch — no modification); 2 CPU2 Q8_0 ukernel commits; 3 CPU2 Q6_K ukernel commits; 13 CPU15 EP family commits retained default-off only; 6 slot-promotion commits; 1 MoE-Spec budget commit; 1 CPU4 op-coalesced barriers commit. **Total KEEP = 35 commits**. Plus build-system commit (toolchain switch to clang-20+libomp+znver5+PGO) appended last. STRIPPED in addition to NUMA_WEIGHTS family: CPU22 work-stealing (`0bc793637`), rms_norm parallel (`383ec7345`), gated_delta_net (`c36e6ce3a`), CPU15 Phase 1+2 superseded (`ad97bef09`,`80b5da0e5`,`b0c0b3301`). All KEEP commits land default-off except `GGML_NUMA_REPACK_INTERLEAVE` (default-on with kill-switch), and **no `GGML_EP_*` flags are wired by default**. See "Cherry-pick scope — reconciled 2026-04-30" section below for full per-commit table.
 
 ### Cherry-pick scope — reconciled 2026-04-30 (v5 audit Phase 0)
 
@@ -293,7 +311,7 @@ Production-push readiness across the whitelisted experimental kernel work, ranke
 | 13 | `8d27e555f` | CPU2 Session 17: Q6_K 8x8 AVX-512BW SIMD body (PPL bit-exact 32-chunk on Coder-30B + REAP-246B) |
 | 14 | `ba84ca407` | CPU2 Session 18: Q6_K T1 prefetch (+0.7%) |
 
-**CPU15 inter-process EP family** (default-off via 7 env flags; orchestrator wires on for frontdoor only):
+**CPU15 inter-process EP family** (default-off via 7 env flags; no orchestrator wiring unless CPU15-REVAL passes):
 
 | Order | SHA | Description |
 |---|---|---|

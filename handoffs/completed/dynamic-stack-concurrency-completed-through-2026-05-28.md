@@ -1,3 +1,5 @@
+> **Historical ledger only.** Current implementation work lives in [`../active/dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md). This file preserves completed design notes, research intake, gap resolutions, and evidence through 2026-05-28.
+
 # Dynamic Stack Assembly & Concurrency Management
 
 **Status**: Phases B-D complete. DS-6 (QuarterScheduler) scaffolding implemented 2026-04-11, DS-7 (stack templates) scaffolding 2026-04-11 + Gap 3/4 closure 2026-04-21 (NIB2-19). Phase E awaiting AR-3 results.
@@ -13,7 +15,7 @@
 **Blocks**: Multi-session performance
 **Blocked by**: Nothing — Phase E (autoresearch exploration) can start
 **Domain**: routing-and-optimization (primary — Phases B-E: stack exploration, QuarterScheduler, templates, autoresearch); inference-acceleration (Phase F KVCOMM cross-listed for discoverability — F1 blocks on AM compaction P2)
-**Related**: [`routing-intelligence.md`](routing-intelligence.md), [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](inference-acceleration-index.md) (Phase F landscape row), [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) (feasibility stub — disagg literature spawned 2026-04-26)
+**Related**: [`routing-intelligence.md`](../active/routing-intelligence.md), [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md), [`routing-and-optimization-index.md`](../active/routing-and-optimization-index.md), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (DS-3 slot-save-path interacts with KV quant config), [`attention-matching-kv-compaction.md`](../active/attention-matching-kv-compaction.md) (Phase F KVCOMM compounds with AM compaction), [`inference-acceleration-index.md`](../active/inference-acceleration-index.md) (Phase F landscape row), [`numa-prefill-decode-disaggregation.md`](../active/numa-prefill-decode-disaggregation.md) (feasibility stub — disagg literature spawned 2026-04-26)
 
 ## Research Intake Update — 2026-04-26
 
@@ -26,7 +28,7 @@ Disaggregated-serving + scheduler literature ingested (intake batch 458-472). Di
 - **[intake-469] Sarathi v1** (arXiv:2308.16369): superseded by Sarathi-Serve (intake-048, already_integrated). Important as the **counter-architecture** to disagg — chunked prefill + piggybacking achieves prefill/decode interference elimination WITHOUT KV migration. Likely the more EPYC-appropriate path.
 - **[intake-471] Expert Choice Routing** (arXiv:2202.09368): not_applicable — training-time routing change, not retrofittable to pretrained Qwen3/REAP/GLM checkpoints.
 
-**Tier 2b critique (important)**: Disagg can REGRESS 20-30% on short-prompt / low-concurrency workloads (BentoML, vLLM docs). NVIDIA "Beyond the Buzz" (arXiv:2506.05508) shows disagg only wins on prefill-heavy + larger models and requires dynamic rate-matching. KV-transfer overhead on EPYC xGMI (~64 GB/s) will be proportionally worse than on NVLink. **Single-user CPU regime is the wrong regime for naive disagg adoption** — see [`numa-prefill-decode-disaggregation.md`](numa-prefill-decode-disaggregation.md) for the qualified feasibility study.
+**Tier 2b critique (important)**: Disagg can REGRESS 20-30% on short-prompt / low-concurrency workloads (BentoML, vLLM docs). NVIDIA "Beyond the Buzz" (arXiv:2506.05508) shows disagg only wins on prefill-heavy + larger models and requires dynamic rate-matching. KV-transfer overhead on EPYC xGMI (~64 GB/s) will be proportionally worse than on NVLink. **Single-user CPU regime is the wrong regime for naive disagg adoption** — see [`numa-prefill-decode-disaggregation.md`](../active/numa-prefill-decode-disaggregation.md) for the qualified feasibility study.
 
 **Concrete actions for DS-6/DS-7**:
 1. Adopt ORCA's selective-batching abstraction in the QuarterScheduler (which ops are batchable across heterogeneous KV).
@@ -182,7 +184,7 @@ void llama_memory_hybrid::state_write(io, seq_id, flags) {
 | Queue depth → routing decision | **TODO** | Small | Use DS-1 `_active_per_instance` data |
 | Fallback to full when idle | **TODO** | Small | Route to 96t when all quarters idle |
 
-> **Within-role placement state machine** (2026-05-25, audit-refined): the KV save/restore primitives documented here (`_slot_save` / `_slot_restore` / `_slot_erase` in `src/backends/concurrency_aware.py:69-120`) are reused by [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md). That handoff owns the *trigger* logic — specifically, the missing load-transition trigger ("evict full→quarter when a 2nd request arrives") — plus the placement state machine that prevents full↔overlapping-quarter co-placement in the first place. It also owns topology-vs-throughput separation (`placement_overlap` as hard safety veto; measured `same_role.instance_pairs` as throughput gate), topology_hash drift detection, queue reason telemetry, and migration transaction semantics. This handoff stays focused on KV mechanics and broader stack templates (DS-6/DS-7); the within-role placement work runs as a sibling under routing-and-optimization-index P7.
+> **Within-role placement state machine** (2026-05-25, audit-refined): the KV save/restore primitives documented here (`_slot_save` / `_slot_restore` / `_slot_erase` in `src/backends/concurrency_aware.py:69-120`) are reused by [`within-role-placement-state-machine.md`](../active/within-role-placement-state-machine.md). That handoff owns the *trigger* logic — specifically, the missing load-transition trigger ("evict full→quarter when a 2nd request arrives") — plus the placement state machine that prevents full↔overlapping-quarter co-placement in the first place. It also owns topology-vs-throughput separation (`placement_overlap` as hard safety veto; measured `same_role.instance_pairs` as throughput gate), topology_hash drift detection, queue reason telemetry, and migration transaction semantics. This handoff stays focused on KV mechanics and broader stack templates (DS-6/DS-7); the within-role placement work runs as a sibling under routing-and-optimization-index P7.
 
 ---
 
@@ -899,17 +901,17 @@ IF q4_0 offset estimation preserves >95% quality on shared codebase tasks THEN p
 
 ### Cross-References
 
-- [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md) — AM compaction compounds with KVCOMM
+- [attention-matching-kv-compaction.md](../active/attention-matching-kv-compaction.md) — AM compaction compounds with KVCOMM
 - [kv-cache-quantization.md](../completed/kv-cache-quantization.md) — q4_0 interaction is the key open question
 - `research/deep-dives/kv-compaction-attention-matching-cluster.md` — full deep-dive analysis
 - `research/intake_index.yaml` intake-352 — KVCOMM paper details
 
 ## See Also
 
-- [`routing-and-optimization-index.md`](routing-and-optimization-index.md) — umbrella index
-- [`routing-intelligence.md`](routing-intelligence.md) — role selection, factual risk
-- [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) — autoresearch framework
-- [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — KV compaction (compounds with Phase F)
+- [`routing-and-optimization-index.md`](../active/routing-and-optimization-index.md) — umbrella index
+- [`routing-intelligence.md`](../active/routing-intelligence.md) — role selection, factual risk
+- [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md) — autoresearch framework
+- [`attention-matching-kv-compaction.md`](../active/attention-matching-kv-compaction.md) — KV compaction (compounds with Phase F)
 - `src/backends/round_robin.py` — runtime instance routing (supports dynamic backend list)
 
 ## Research Intake Update — 2026-04-28

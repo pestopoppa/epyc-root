@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-05-08
-**Sources**: 44 documents
+**Last compiled**: 2026-05-28
+**Sources**: 45 documents
 
 ## Summary
 
@@ -1146,3 +1146,9 @@ The roofline audit handoff is **blocked at Status: DRAFT** until Phase 0 counter
 **Decision rule (consistent across all referencing docs)**: achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of 614 GB/s socket theoretical → BW-bound; diffusion-LM port variants (Nemotron-LD Variant B TiDAR-pattern, C1/C2 hybrids) have FLOPS margin worth converting.
 
 Sources: [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · `feedback_canonical_baseline_protocol` · `feedback_no_concurrent_inference` · `progress/2026-05/2026-05-28.md` §research-intake-batch §Phase-6/7.
+
+## CPU15 / CPU20 active-surface correction (2026-05-28)
+
+The handoff compaction pass corrected a recurring CPU-optimization ambiguity: completed CPU15 expert-parallelism infrastructure is not a production default. The active CPU15 handoff now treats EP as default-off infrastructure that requires CPU20-compliant canonical revalidation before any deployment claim is revived. Old frontdoor EP win/regression claims were softened across the CPU index, environment-flag inventory, NPS reboot runbook, MoE-Spec notes, and master-index history so future agents do not treat superseded measurements as current rollout instructions.
+
+The practical rule for hardware work is unchanged but now easier to find: CPU20 protocol compliance and current bottleneck proof are prerequisites for reopening TP/EP/kernel levers. The completed ledgers remain useful evidence, but the active handoffs hold the current gates and revalidation checklist. Sources: [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md), [`large-moe-expert-parallelism-completed-through-2026-05-28.md`](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md), [`cpu-benchmark-rigor-and-revalidation.md`](../handoffs/active/cpu-benchmark-rigor-and-revalidation.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).

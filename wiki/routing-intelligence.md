@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 31 documents (added 2026-05-27 bulk-inference audit + cross-role matrix consistency checkpoint + dashboard lock attribution checkpoint)
+**Last compiled**: 2026-05-28
+**Sources**: 32 documents (added routing-intelligence active/completed split and RI-13 gate clarification)
 
 ## Summary
 
@@ -244,3 +244,9 @@ The HRM → TRM → GRAM recursive-reasoning lineage (intakes 582-585) triggered
 - **Pre-requisite for production conditional routing**: an injection-risk classifier (DAR-6.2). Currently no such classifier exists in `src/classifiers/`; the cheap-first DAR-6.5 A/B variant runs the swarm-fanout UNCONDITIONALLY on a fixed injection-prompt set, decoupling the gate-replication question ("does swarm-fanout reduce injection success at all?") from the routing-trigger question ("is our classifier good enough to gate it?"). Only invest in the RI classifier if the unconditional A/B clears the +3pp / ≤30%-throughput-regression gate.
 
 Sources: [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) § DAR-6 · [`handoffs/active/bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) J14 · `epyc-orchestrator/src/swarm_fanout.py` + `tests/unit/test_swarm_fanout.py` (19/19 PASS) · `research/intake_index.yaml` intake-614/615 · `progress/2026-05/2026-05-27.md`.
+
+## Routing Intelligence active split (2026-05-28)
+
+The routing-intelligence handoff is now an active/completed twin. Completed RI-1 through RI-8 classifier, factual-risk, and routing scaffolding evidence lives in `handoffs/completed/routing-intelligence-completed-through-2026-05-28.md`; the active handoff now owns RI-10, RI-11, RI-12, and the gated RI-13 injection-risk fork. This avoids the prior failure mode where old Phase 4/5 "not started" prose contradicted the completed implementation state.
+
+RI-13 is explicitly conditional. The cheap-first path is the unconditional J14 swarm-fanout A/B over an injection-prompt suite; only if that clears the +3pp / <=30% throughput-regression gate should the project invest in an injection-risk classifier for conditional routing. Sources: [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md), [`routing-intelligence-completed-through-2026-05-28.md`](../handoffs/completed/routing-intelligence-completed-through-2026-05-28.md), [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) J14, [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).

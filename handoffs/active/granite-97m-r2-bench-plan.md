@@ -1,11 +1,40 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: gated on K2 chunker activation (currently STUB — see `internal-kb-rag.md`)
+**Status**: refreshed 2026-05-28 — ungated for Phase A fallback corpus; Phase B remains inference-gated
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
+**Updated**: 2026-05-28
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
 **Priority**: MEDIUM (becomes HIGH the moment any of K-track / web-research-rerank / SearXNG dense-stage activates)
-**Depends on**: `internal-kb-rag.md` (K2 chunker), `colbert-reranker-web-research.md` (downstream rerank), `searxng-search-backend.md` (web result ingest)
+**Depends on**: `internal-kb-rag.md` (K2 chunker for best corpus, but not required for fallback Phase A), `colbert-reranker-web-research.md` (downstream rerank), `searxng-search-backend.md` (web result ingest)
 **Source deep-dive**: [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff was too conservatively gated. K2 chunker output is the best corpus source, but Phase A already has a fallback code-corpus path and should not wait on K2.
+
+**Critique of older structure**: the status said "gated on K2" even though A-1/A-2/A-5 and the fallback A-4 corpus are inference-free and independently useful. That made a ready engineering task look blocked. The corrected structure is: Phase A can start now with a fallback corpus; Phase B requires an inference window.
+
+**Current next action**:
+
+1. Start with Phase A-4 fallback corpus and A-5 bench script, because those do not require model downloads or server launches.
+2. Keep GGUF conversion A-1/A-2 as a separate branch if storage/download budget is available.
+3. Use K2 output only if it lands before labels are complete; otherwise do not block.
+
+**Forked Phase A plan**:
+
+| Branch | Trigger | Work |
+|---|---|---|
+| A-fast fallback | K2 still not ready | Build `eval-corpus-v0.jsonl` from 100 code snippets + 30 manually labeled queries. |
+| A-K2 preferred | K2 chunker output available | Build corpus from handoffs/wiki/progress chunks plus 50 NL queries. |
+| A-no-download | operator wants no model artifacts yet | Land corpus schema + bench script only; defer GGUF conversion. |
+
+**Gate before Phase B**:
+
+- Corpus exists with labels.
+- Bench script can run in dry-run mode against a fake or existing embedding endpoint.
+- User-approved inference window exists for model server launches.
+
+**Mitigation**: if Granite underperforms but the corpus reveals multilingual or code-search gaps, do not close the whole retrieval track. Fork to BGE-M3 or Qwen3-Embedding comparator and update `internal-kb-rag.md` with the corpus result.
 
 ## Objective
 
@@ -76,10 +105,10 @@ Add `granite-97m-r2` to the embedder pool on port `8096` (matches existing BGE-l
 - Output: `eval-corpus-v0.jsonl` with `{query, doc, relevance_label}` triples
 - Total ~half day of manual labeling
 
-**Alternative** (only if K2 chunker activates first):
+**Alternative** (preferred if K2 chunker activates first, but not a blocker):
 - Use K2 chunker output on a slice of `/workspace/handoffs/active/*.md` + `/workspace/CLAUDE.md` as the doc corpus
 - ~50 NL queries against handoff content
-- Higher relevance to actual KB-RAG use case but blocks on K2
+- Higher relevance to actual KB-RAG use case; if unavailable, use the fallback code-corpus path above
 
 #### A-5: Bench script [~1 hour]
 

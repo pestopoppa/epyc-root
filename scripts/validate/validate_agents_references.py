@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parents[2]
 SCAN_FILES = [
     ROOT / "agents" / "README.md",
     ROOT / "agents" / "AGENT_INSTRUCTIONS.md",
-    ROOT / "handoffs" / "active" / "agent-files-refactor-complete.md",
     ROOT / "docs" / "guides" / "agent-workflows" / "INDEX.md",
     ROOT / "docs" / "reference" / "agent-config" / "CLAUDE_MD_MATRIX.md",
     ROOT / ".claude" / "commands" / "agent-files.md",

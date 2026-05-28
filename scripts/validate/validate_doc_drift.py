@@ -2,7 +2,7 @@
 """Detect documentation drift between CLAUDE.md and source code.
 
 Checks three high-value drift vectors:
-  1. Port mappings: PORT_MAP in orchestrator_stack.py vs port table in CLAUDE.md
+  1. Port mappings: PORT_MAP in the orchestrator repo vs port table in CLAUDE.md
   2. File path references: relative markdown links in CLAUDE.md vs actual filesystem
   3. Makefile targets: `make <target>` references in CLAUDE.md vs .PHONY targets
 """
@@ -10,13 +10,44 @@ Checks three high-value drift vectors:
 from __future__ import annotations
 
 import ast
+import os
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CLAUDE_MD = ROOT / "CLAUDE.md"
-ORCHESTRATOR = ROOT / "scripts" / "server" / "orchestrator_stack.py"
-MAKEFILE = ROOT / "Makefile"
+
+
+def resolve_repo(name: str, env_var: str, canonical: str) -> Path:
+    """Resolve a split-repo checkout, preferring env overrides then local symlinks."""
+    candidates = []
+    if override := os.environ.get(env_var):
+        candidates.append(Path(override).expanduser())
+    candidates.extend([
+        ROOT / "repos" / name,
+        Path("/workspace/repos") / name,
+        Path(canonical),
+    ])
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.resolve()
+    return candidates[0].resolve()
+
+
+ORCHESTRATOR_REPO = resolve_repo(
+    "epyc-orchestrator",
+    "EPYC_ORCHESTRATOR_REPO",
+    "/mnt/raid0/llm/epyc-orchestrator",
+)
+PORT_MAP_SOURCES = [
+    ORCHESTRATOR_REPO / "scripts" / "server" / "stack_manifest.py",
+    ORCHESTRATOR_REPO / "scripts" / "server" / "orchestrator_stack.py",
+    ROOT / "scripts" / "server" / "orchestrator_stack.py",
+]
+MAKEFILES = [
+    ROOT / "Makefile",
+    ORCHESTRATOR_REPO / "Makefile",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -50,16 +81,18 @@ def extract_port_map_from_code(path: Path) -> dict[int, str]:
     return {}
 
 
-def extract_port_table_from_docs(text: str) -> dict[int, str]:
+def extract_port_table_from_docs(text: str) -> tuple[bool, dict[int, str]]:
     """Extract port numbers from the Local Model Routing table in CLAUDE.md.
 
-    Returns {port_number: task_type_label}.
+    Returns (table_present, {port_number: task_type_label}).
     """
     ports: dict[int, str] = {}
+    table_present = False
     # Match table rows like: | Interactive chat | Qwen3-Coder-30B-A3B | 8080 | ...
     in_routing_table = False
     for line in text.splitlines():
         if "Local Model Routing" in line:
+            table_present = True
             in_routing_table = True
             continue
         if in_routing_table and line.startswith("|"):
@@ -77,22 +110,30 @@ def extract_port_table_from_docs(text: str) -> dict[int, str]:
         elif in_routing_table and not line.startswith("|") and line.strip() and not line.startswith(" "):
             # Exited the table
             break
-    return ports
+    return table_present, ports
 
 
 def check_port_drift() -> list[str]:
     """Compare ports in code vs docs, return list of drift messages."""
     errors: list[str] = []
-    if not ORCHESTRATOR.exists():
-        errors.append(f"port-drift: orchestrator_stack.py not found at {ORCHESTRATOR}")
+    doc_text = CLAUDE_MD.read_text(encoding="utf-8")
+    table_present, doc_ports = extract_port_table_from_docs(doc_text)
+    if not table_present:
+        return errors
+    if not doc_ports:
+        errors.append("port-drift: Local Model Routing table present but no ports parsed")
         return errors
 
-    code_ports = extract_port_map_from_code(ORCHESTRATOR)
-    doc_text = CLAUDE_MD.read_text(encoding="utf-8")
-    doc_ports = extract_port_table_from_docs(doc_text)
+    port_source = next((path for path in PORT_MAP_SOURCES if path.exists()), None)
+    if port_source is None:
+        checked = ", ".join(str(path) for path in PORT_MAP_SOURCES)
+        errors.append(f"port-drift: PORT_MAP source not found; checked {checked}")
+        return errors
+
+    code_ports = extract_port_map_from_code(port_source)
 
     if not code_ports:
-        errors.append("port-drift: could not parse PORT_MAP from orchestrator_stack.py")
+        errors.append(f"port-drift: could not parse PORT_MAP from {port_source}")
         return errors
 
     # Only check non-auxiliary ports documented in the routing table
@@ -175,15 +216,22 @@ def extract_make_refs_from_docs(text: str) -> set[str]:
 
 
 def check_makefile_drift() -> list[str]:
-    """Compare make targets referenced in docs vs actual Makefile .PHONY."""
+    """Compare make targets referenced in docs vs available Makefile .PHONY targets."""
     errors: list[str] = []
-    if not MAKEFILE.exists():
-        errors.append(f"makefile-drift: Makefile not found at {MAKEFILE}")
-        return errors
-
-    phony = extract_phony_targets(MAKEFILE)
     doc_text = CLAUDE_MD.read_text(encoding="utf-8")
     doc_refs = extract_make_refs_from_docs(doc_text)
+    if not doc_refs:
+        return errors
+
+    existing_makefiles = [path for path in MAKEFILES if path.exists()]
+    if not existing_makefiles:
+        checked = ", ".join(str(path) for path in MAKEFILES)
+        errors.append(f"makefile-drift: Makefile not found for documented make refs; checked {checked}")
+        return errors
+
+    phony: set[str] = set()
+    for makefile in existing_makefiles:
+        phony.update(extract_phony_targets(makefile))
 
     missing_targets = doc_refs - phony
     for target in sorted(missing_targets):

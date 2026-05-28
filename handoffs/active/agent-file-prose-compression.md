@@ -1,10 +1,53 @@
 # Per-Model Agent-File Prose Compression
 
-**Status**: Phase 1+2+4 LANDED 2026-05-06 — skill + 3 pilot artifacts + compliance task suite (15+12+15) + `/new-model` Step 6.5 + registry field + validator. Phase 3 per-model A/B eval inference-gated; Phase 5 roll-forward depends on Phase 3.
+**Status**: refreshed 2026-05-28 — Phase 1+2+4 LANDED; Phase 3 is the only blocker; Phase 5 must not start before a per-model curve exists
 **Created**: 2026-04-30 (via research intake — intake-509 deep-dive follow-up)
+**Updated**: 2026-05-28
 **Categories**: agent_architecture, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (cheap to pilot; high-amortization payoff if eval lands)
 **Depends on**: `agent-file-architecture` skill (thin-map structural compression upstream of this), `/new-model` onboarding skill (the deployment pipeline this hooks into)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff remains active because the high-value deployment decision is not the existence of compressed files; it is whether each production model can still obey the compressed agent files.
+
+**Critique of older structure**: completed implementation and future eval were mixed together. That made the handoff look close to done while the only safety-critical gate, Phase 3, had no executable runbook, no artifact path, and no fork for failed models.
+
+**Completed evidence to preserve**:
+
+- `/agent-file-compress` skill landed in root commit `40d8348`.
+- Compliance suite and `/new-model` Step 6.5 landed in root commit `0467891`.
+- Registry validator and field landed in root/research commits around `306fa66` / `a90b4ee`.
+- Pilot artifacts exist under `agents/shared/ENGINEERING_STANDARDS.compressed-{mild,medium,aggressive}.md`.
+
+**Next action: Phase 3 runbook, then eval**:
+
+1. Write or update a single runner command in this file once the live runner interface is confirmed:
+   ```bash
+   python -m tests.compliance.agent_file.live_runner \
+     --agent-file agents/shared/ENGINEERING_STANDARDS.md \
+     --compressed-level mild \
+     --model <model-id-or-role> \
+     --output progress/2026-05/agent-file-compression-phase3-<model>.json
+   ```
+2. Run the suite for at least one Tier-A model at all four levels: none, mild, medium, aggressive.
+3. Populate the `Phase 3 Results` table below.
+4. Only after the table exists, decide Phase 5 rollout.
+
+**Decision forks**:
+
+| Phase 3 result | Action |
+|---|---|
+| >=95% baseline compliance at medium or aggressive for Tier-A models | Roll Phase 5 to `agents/shared/*.md` first; keep role overlays for a second PR. |
+| Only mild passes | Adopt mild as conservative default; do not generate aggressive artifacts for role overlays. |
+| No compression level passes | Set registry operating point to `none`, archive the compressed artifacts as research evidence, and close this handoff as "abandoned by eval". |
+| Failures concentrated in directive polarity or process order | Patch the compression rider first; rerun only the failed class before broad eval. |
+
+**Phase 3 Results**:
+
+| Model / role | none baseline | mild | medium | aggressive | Operating point | Failure notes |
+|---|---:|---:|---:|---:|---|---|
+| _pending_ | | | | | | |
 
 ## Objective
 

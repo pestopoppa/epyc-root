@@ -1,13 +1,42 @@
 # Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)
 
-**Status**: STUB
+**Status**: REFRESHED 2026-05-28 — TR-1, TR-2, TR-3.1, and TR-3.2 landed; TR-3.3/3.4 telemetry gates next; TR-4/5 remain gated
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
+**Updated**: 2026-05-28 (active gate clarified after TR-1..3.2 landed)
 **Priority**: HIGH (architectural — unblocks Trinity's strongest empirical lever)
 **Categories**: agent_architecture, routing_intelligence, cost_aware_routing
 **Related**: [decision-aware-routing.md](decision-aware-routing.md), [learned-routing-controller.md](learned-routing-controller.md), [routing-intelligence.md](routing-intelligence.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
 
 ---
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This is no longer a fresh stub. The schema, storage field, backfill script, feature flag, classifier, and routing shadow hook have landed. The live work is to prove the shadow classifier produces usable telemetry before any role-aware dispatch behavior changes.
+
+| Gate | Required evidence | Fork |
+|---|---|---|
+| TR-3.3 shadow telemetry | >= 1 week of production-like `strategy=trinity_role_shadow` logs, or an explicitly labeled offline replay over representative requests | If no traffic/logs exist, collect before TR-4; do not infer from unit tests. |
+| TR-3.4 distribution diagnostic | Role distribution is not degenerate and examples match taxonomy intent | If >= 95-99% Worker, pause and revise classifier/taxonomy before dispatch wiring. |
+| TR-4 prompt/dispatch wiring | TR-3.4 pass plus clear per-role prompt templates | If telemetry is noisy, keep flag off and add better logging before wiring. |
+| TR-5 A/B | >= N=200/arm on role-sensitive benchmarks | If gains are flat or regressions exceed gate, leave `ROLE_AWARE_ROUTING` default-off and document the negative result. |
+
+Minimal telemetry extraction sketch:
+
+```python
+from collections import Counter
+import json
+
+roles = Counter()
+for line in open("routing.log"):
+    if "trinity_role_shadow" not in line:
+        continue
+    payload = json.loads(line[line.index("{"):])
+    roles[payload.get("assigned_role", "unknown")] += 1
+print(roles)
+```
+
+Adjust the parser to the actual log format; the important artifact is the count table plus representative true/false examples per role.
 
 ## Objective
 

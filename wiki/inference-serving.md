@@ -3,7 +3,7 @@
 **Category**: `inference_serving`
 **Confidence**: verified
 **Last compiled**: 2026-05-28
-**Sources**: 20 documents (added 2026-05-28 frontdoor streaming fix and stack lifecycle audit)
+**Sources**: 21 documents (added 2026-05-28 dynamic-stack compaction gate clarification)
 
 ## Summary
 
@@ -350,3 +350,9 @@ Current examples:
 - [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/active/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/active/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/active/qwen36-benchmark-fixes.md`](../handoffs/active/qwen36-benchmark-fixes.md) — active handoff notes
 - [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md) — partial status and default-decision gate
 - [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
+
+## 2026-05-28 — Dynamic-stack active gate clarified
+
+The active/completed split for `dynamic-stack-concurrency.md` separates already-landed serving mechanics from still-open scheduler decisions. DS-B through DS-D remain completed evidence in the sibling ledger. The active handoff now owns DS-6/DS-7 and explicitly gates scheduler rollout on Phase E evidence; KVCOMM is optional after Attention Matching / q4_0 feasibility rather than a deployment queue item.
+
+Operational implication: do not implement the quarter scheduler from old completed sections alone. Start from the active twin, confirm the current Phase E/autoresearch evidence, and only then decide whether DS-6 is code-ready. Sources: [`dynamic-stack-concurrency.md`](../handoffs/active/dynamic-stack-concurrency.md), [`dynamic-stack-concurrency-completed-through-2026-05-28.md`](../handoffs/completed/dynamic-stack-concurrency-completed-through-2026-05-28.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).

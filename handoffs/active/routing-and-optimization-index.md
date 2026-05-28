@@ -34,24 +34,24 @@ When making a routing-architecture proposal, name which of these four (and which
 
 | Subsystem | Handoff | Status | Next Action |
 |-----------|---------|--------|-------------|
-| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | Phase 4 code complete; RI-7 A/B done and underpowered; RI-10 canary remains active | RI-10 canary decision → RI-11/RI-12 rollout only if no regression |
+| Routing Intelligence | [`routing-intelligence.md`](routing-intelligence.md) | **COMPACTED 2026-05-28** — Phases 0-5 history moved to completed ledger; RI-10 canary remains the live decision | Pull current canary sample counts → RI-10 decision → RI-11/RI-12 only if no regression |
 | AutoPilot / AutoResearch | [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) | Phase 5 seeder refactor done; AR-3 restart still outstanding; AP-28 active on restart, AP-29/30/31 wire-ins deferred | Restart AR-3, accumulate per-role Q-values, then route_per_role() in retriever |
-| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | Phases B-D complete (pre-warm + KV migration) | Phase E: autoresearch exploration |
+| Dynamic Stack | [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) | **COMPACTED 2026-05-28** — Phases B-D complete; DS-6/DS-7 design ledger split to completed history | DS-E1 evidence packet → DS-7 profile codification; DS-6 only if evidence proves static pre-warm insufficient |
 | Within-Role Placement + KV Migration | [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md) | **WP-0/WP-1/WP-2/WP-3/WP-4/WP-5-scaffold IMPLEMENTED 2026-05-26** MERGED TO MAIN (`epyc-orchestrator` merge `fe6805c`; tip now `15350fe`; 155/155 dispatcher-adjacent tests at merge). WP-2/WP-3/WP-4 ship behind env flags (ORCHESTRATOR_PLACEMENT_STATE_MACHINE, ORCHESTRATOR_REVERSE_MIGRATION) defaulting off; WP-0/WP-1/WP-5-scaffold are live. WP-3 dropped the speculative load-transition trigger (could not preempt mid-decode); shipped transactional MigrationTransaction + policy gating + migration_budget_ms threading on the existing session-handover trigger. | **WP-6 / WP-7 / WP-5 full ratification** — all inference-gated, awaiting operator approval + measurement. WP-3/WP-4 gate verifications also inference-gated. |
 | KV Cache Quantization | [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) | COMPLETE — Hadamard deployed, TQ/PQ abandoned | Historical reference; monitor upstream TurboQuant from inference index |
-| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | Phase 0/1/1+/2c/3a/3b code complete. **Phase 2d DONE** (CF-P1–P4, 2026-04-12). | Phase 2a/2b eval (→ Package C), Phase 3c (→ Package D), Phase 2c ByteRover (design ready) |
+| Context Folding | [`context-folding-progressive.md`](context-folding-progressive.md) | **COMPACTED 2026-05-28** — core phases and Phase 2d preserved in completed ledger. | CF-L5 max-compression validation, CF-3c live quality-monitor validation, CF-2c.0 alpha sweep, CF-DD8 gap analysis. |
 | Conversation Management | [`orchestrator-conversation-management.md`](../completed/orchestrator-conversation-management.md) | COMPLETE (B1-B7 + integration) | Historical reference |
 | LangGraph Migration | [`langgraph-migration.md`](../completed/langgraph-migration.md) | COMPLETE / historical migration infrastructure | Historical reference; reopen only for a fresh LangGraph migration push |
 | ~~CC Local Integration~~ | ~~[`claude-code-local-constellation-routing.md`](../archived/claude-code-local-constellation-routing.md)~~ | ARCHIVED — superseded by Hermes outer shell | — |
 | Retrain Routing Models | [`retrain-routing-models.md`](retrain-routing-models.md) | **BLOCKED 2026-05-25** after episodic-memory reset invalidated classifier/GAT/SkillBank artifacts | Wait for ~500+ fresh routing memories, then retrain classifier, GraphRouter, and SkillBank; also listed in [`../blocked/BLOCKED.md`](../blocked/BLOCKED.md) |
-| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | Tier 1+2 done, MH-4 DONE (folded into AR-3), MH-5 DONE. Operator guide written. | Tier 3 outer loop rebuild (deferred) |
+| Meta-Harness Optimization | [`meta-harness-optimization.md`](meta-harness-optimization.md) | **COMPACTED 2026-05-28** — Tier 1/2, MH-4/5, and HLE-1/2 preserved in completed ledger. | MH-6/7/9 plus HLE-3/J9 observe-only validation; Tier 3 outer loop remains deferred. |
 | Web Research Pipeline | [`searxng-search-backend.md`](searxng-search-backend.md) | SX-1–4 done; CA-1–5 ready now; SX-5/6 + CA-6/7 gated on AR-3/Camofox. Claude Code bash bridge moved to completed: [`searxng-bash-websearch-bridge.md`](../completed/searxng-bash-websearch-bridge.md). | CA-1–5 (Crawl4AI steps 2+3) can start independently; runtime/container activation stays here |
 | Decision-Aware Routing | [`decision-aware-routing.md`](decision-aware-routing.md) | NEW — 4-phase experiment (regret → contrastive → SPO+ → bilinear) | DAR-1 offline regret analysis (no code changes) |
 | Learned Routing Controller | [`learned-routing-controller.md`](learned-routing-controller.md) | Phase 1 P1.1-P1.4+P1.6 DONE — 92% val acc, per-class thresholds calibrated | P1.5 enable flag, Phase 1.5 logit probe |
 | Environment Synthesis (5th species) | [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 training-free, Phase 2 GPU-gated (intake-444, DD6) | AW-1: scaffold `env_synth/` module |
-| Deep Research Mode | [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) | NEW 2026-04-22 — stub/in-planning; Phase 1 prompt-level, Phase 2 GPU-gated (intake-438, DD7) | MD-1: `deep_research_mode` feature flag |
-| Tri-Role Coordinator | [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) | NEW 2026-04-26 — stub; Trinity-derived (intake-474, ICLR 2026); architectural change orthogonal to optimizer choice; +5–8 points in Trinity ablation | TR-1.1: audit existing role-bearing fields and produce {T, W, V} mapping table |
-| Outer-Coordinator Learned Head | [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) | NEW 2026-04-26 — SCOPING ONLY (Trinity-derived, intake-474); speculative long-term replacement of part of the Claude-driven autopilot loop | OC-0: scoping document — gated until tri-role + DAR + LRC Phase 4 land |
+| Deep Research Mode | [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) | REFRESHED 2026-05-28 — Phase 1 scaffold landed; MD-9 A/B is the live gate; Phase 2 GPU-gated | MD-9: sentinel A/B with EV-9 rubric if available; keep dispatcher wiring deferred until pass |
+| Tri-Role Coordinator | [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) | REFRESHED 2026-05-28 — TR-1/2/3.1/3.2 landed; TR-3.3/3.4 telemetry gates next | TR-3.3: collect >=1 week role-shadow telemetry; TR-3.4 non-degenerate distribution check |
+| Outer-Coordinator Learned Head | [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) | REFRESHED 2026-05-28 — SCOPING/PARKING ONLY; no implementation until dependency gates or measured Claude-loop bottleneck | OC-0 only when triggered by measured ROI; archive as not_pursued if replaceable token fraction <20% |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
 ---
@@ -106,7 +106,7 @@ Medium priority. These improve autoresearch effectiveness before it starts runni
 
 - [x] **RI-8: Add risk fields to `RoleResult`** — ✅ Verified 2026-03-29. Fields exist at `seeding_types.py:230-234` with `factual_risk_` prefix: `factual_risk_score`, `factual_risk_adjusted`, `factual_risk_band`, `factual_risk_features`. Original probe used wrong naming convention; actual implementation is correct.
 
-- [ ] **RI-9: Threshold sweep in seeding harness** — Reuse existing `--suite` mechanism. Sweep risk thresholds and emit Pareto reports (factuality vs cost vs latency). (→ Package B, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
+- [ ] **RI-9b: Threshold/Pareto sweep if thresholds change** — Package B already produced initial risk-distribution profiling. Reuse the seeding `--suite` mechanism only if RI-10 indicates band thresholds or enforcement thresholds need adjustment. (→ Package B, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
 ### P4 — Observability Infrastructure (Dynamic Stack Phase B)
 
@@ -132,7 +132,7 @@ These unblock data-driven stack scheduling.
 
 Depends on Phase 4 A/B results.
 
-- [ ] **RI-10: Shadow → enforce canary** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Verified 23/77 split on 100-sample test. Window extended to 2026-04-27 (was 2026-04-09) — n=16 high-risk samples insufficient for decision, need ≥50. Monitor via `delegation_slo_report.py` + `chain_anomaly_detector.py`. Decision: compare enforce vs shadow latency/accuracy/escalation rate, then RI-11 if no regression.
+- [ ] **RI-10: Shadow → enforce canary decision** — 🔄 ACTIVE since 2026-04-06. Canary mode live: 25% enforce on frontdoor, 75% shadow. Before acting, pull current logs; elapsed time alone does not satisfy the gate. Require >=50 high-risk samples unless explicitly accepting a lower-powered decision, no p95 latency regression >10%, no cost regression >5% at equal factuality, no unexplained escalation/review inflation >20%, and no 5xx/error cluster attributed to factual-risk scoring. Then choose RI-11, threshold rework, or rollback to shadow.
 
 - [ ] **RI-11: Enforce expand** — Frontdoor 100% + worker_general, 7 days.
 
@@ -140,15 +140,17 @@ Depends on Phase 4 A/B results.
 
 ### P7 — Dynamic Stack Implementation (Phases C-F+)
 
-Depends on observability (P4) and autoresearch baseline (P5). **Phase F now includes KVCOMM cross-instance KV sharing** (intake-352, NeurIPS'25) for homogeneous worker pools — see `dynamic-stack-concurrency.md` § Phase F.
+Depends on observability (P4) and autoresearch baseline (P5). The active handoff is compacted: completed DS-B/DS-C/DS-D design and DS-6/DS-7 gap details live in [`../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md`](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md); current work lives in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md).
 
 > **Ownership note (2026-04-17)**: This handoff has dual relevance. Phases B-E (stack exploration, QuarterScheduler, templates, autoresearch) are routing-and-optimization concerns owned here. **Phase F (KVCOMM F1-F4) is inference-acceleration-adjacent** — it compounds with AM compaction L4b and affects cross-NUMA cache coherence. Phase F status is cross-listed in `inference-acceleration-index.md` landscape table for discoverability. Single source of truth remains this file + the underlying handoff.
 
-- [ ] **DS-5: Autoresearch-driven model exploration** — Test frontdoor candidates, instance counts, tier assignments via autoresearch loop. See `dynamic-stack-concurrency.md` § Part 6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
+- [ ] **DS-E1 / DS-5: Phase E evidence packet** — Before coding scheduler changes, collect Package B throughput baselines, RI-10 escalation data, DS-5/autoresearch model roster findings, production KV-size measurements, and mixed-role NUMA contention evidence. If these are missing, update the source handoffs instead of expanding DS-6. (→ Package D, see [`bulk-inference-campaign.md`](bulk-inference-campaign.md))
 
-- [ ] **DS-6: Deterministic quarter scheduler** — Event-driven NUMA quarter allocation. Design doc appended to `dynamic-stack-concurrency.md` (2026-04-08). **Design audit 2026-04-09**: 6 gaps identified. **Gap resolutions 2026-04-09**: All 6 gaps resolved with concrete specs (dynamic URL API, liveness heartbeat, quarter-fixed ports, 3-phase drain protocol, idle tracking, degradation via existing retry paths). See `dynamic-stack-concurrency.md` § DS-6 Gap Resolutions. Implementation deferred to Phase F.
+- [ ] **DS-6-live: Deterministic quarter scheduler revalidation gate** — Implement only if DS-E1 shows static pre-warm leaves material throughput/latency on the table. If triggered, use the completed ledger's resolved design: dynamic backend mutation API, liveness heartbeat, quarter-fixed ports, drain protocol, idle tracking, and retry-compatible degradation.
 
-- [ ] **DS-7: Stack templates in orchestrator config** — Encode autoresearch findings as selectable stack profiles. **Design audit 2026-04-09**: 4 gaps identified. **Gap resolutions 2026-04-09**: All 4 gaps resolved (formal YAML template schema, `--stack-profile` CLI selection, migration paths with/without DS-6, resource validation with fail-fast). See `dynamic-stack-concurrency.md` § DS-7 Gap Resolutions. Implementation deferred to Phase F.
+- [ ] **DS-7-live: Stack profile codification** — Encode one evidence-backed workload profile at a time, validate with `--validate-only`, and avoid speculative profile proliferation. Completed schema/CLI/migration/resource-budget details are in the completed ledger.
+
+- [ ] **DS-F1-F4: KVCOMM optional research fork** — Do not treat as a deployment queue item. Revisit only after Attention Matching P2 and then test q4_0 offset feasibility; continue only if shared-codebase quality remains >95%.
 
 #### Within-Role Placement + KV Migration (siblings to DS-6/DS-7; NEW 2026-05-25)
 
@@ -215,7 +217,7 @@ Source: intake-328/329 (MiniMax 3-component harness), intake-349 (dspy.RLM), int
 
 ### P10b — Context Folding Phase 2d (2026-04-12 research intake)
 
-Source: intake-316 (LTM Unsolved gap analysis: FORGETTING axis), intake-326 (MemPalace patterns). See [`context-folding-progressive.md`](context-folding-progressive.md) Phase 2d. All non-inference.
+Source: intake-316 (LTM Unsolved gap analysis: FORGETTING axis), intake-326 (MemPalace patterns). Phase 2d completion details now live in [`context-folding-progressive` completed ledger](../completed/context-folding-progressive-completed-through-2026-05-28.md). All non-inference.
 
 - [x] **CF-P1: Validity timestamps** — ✅ 2026-04-12. Fields + serialization + all 3 creation sites populated.
 - [x] **CF-P2: Supersession detection** — ✅ 2026-04-12. `check_supersession()` with 8 regex patterns.
@@ -224,7 +226,7 @@ Source: intake-316 (LTM Unsolved gap analysis: FORGETTING axis), intake-326 (Mem
 
 ### P10c — Meta-Harness Tier 2b (2026-04-12 research intake)
 
-Source: intake-338/345. See [`meta-harness-optimization.md`](meta-harness-optimization.md) Tier 2b.
+Source: intake-338/345. Tier 2b completion details now live in [`meta-harness-optimization` completed ledger](../completed/meta-harness-optimization-completed-through-2026-05-28.md).
 
 - [x] **MH-4: GEPA as search algorithm** — ✅ Folded into AR-3 Package D (2026-04-12). GEPA integrated as PromptForge mutation type. Journal collects Pareto frontier contributions by mutation source.
 - [x] **MH-5: Agent Lightning trace collection** — ✅ 2026-04-12. `telemetry.py` with TelemetryCollector, TransitionRecord, OTLP spans, JSONL export.
@@ -279,9 +281,9 @@ Pointer — full plan tracked in [`agent-world-env-synthesis.md`](agent-world-en
 
 ### P18 — Deep Research Mode (2026-04-22 deep-dive integration, DD7)
 
-Pointer — full plan tracked in [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report) is zero-infra and falsifiable under existing eval tower. Phase 2 adds the paper's four-stage RL recipe (SFT → Search-RL → Report-RL → preference alignment) post-DGX-Spark. Phase 3 conditionally refactors the orchestrator's Tier-B architect split.
+Pointer — full plan tracked in [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). As of the 2026-05-28 audit, Phase 1 scaffolding is already landed (flag, classifier, prompts, pydantic_graph package, rubric fields, sentinel suite). The live gate is MD-9 A/B; dispatcher wiring and Phase 2 RL remain blocked until that result exists.
 
-- [ ] **P18 rollup**: see `minddr-deep-research-mode.md` MD-1..MD-14 — entry points: MD-1 (`deep_research_mode` feature flag), MD-6 (pydantic_graph flow), MD-7 (multi-dimensional rubric — hands off to `eval-tower-verification.md` EV-9).
+- [ ] **P18 rollup**: see `minddr-deep-research-mode.md` MD-1..MD-14. Current entry point is MD-9: run `deep_research_sentinel.yaml` control/treatment A/B. Use EV-9 rubric scoring if available; otherwise structural-only scoring can inform but cannot promote default-on.
 
 ### P19 — Trinity-Derived Coordinator/Routing Tasks (2026-04-26 deep-dive integration)
 
@@ -291,7 +293,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Architectural change (orthogonal to optimizer)**:
 
-- [/] **P19.1**: TR-1 through TR-5 in [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md). Add per-call role axis (Thinker/Worker/Verifier) to routing decisions. Trinity ablation: removing tri-role costs −5 to −8 points across all four benchmarks; second-largest ablation effect after the feature-position swap. **TR-1 GATE PASSED 2026-05-07** — Role taxonomy section authored, all 5 open questions resolved with user. Decisions: (1) Roles are per-call NOT model-permanent — every model in stack participates in multiple roles by context. (2) Pool collapses to "cheapest TRUSTED model for the role" — NOT "most capable available". (3) Per-call surface area (matches Trinity, matches existing routing). (4) Verifier parallel to existing review pipeline initially — autopilot telemetry decides eventual collapse. (5) Decoupled `(L + 3)` action space — minimal extension of existing `RoutingClassifier` (+195 params on 200K baseline). **TR-2 LANDED 2026-05-07** — `assigned_role` field plumbed end-to-end across `RoleResult` + `RoutingResult` dataclasses, `episodic.db` schema migration, all four `MemoryEntry` reader SELECT paths, heuristic backfill script, 21 passing unit tests. Naming collision with existing `RoleResult.role` (model role) avoided via `assigned_role`. Feature flag `ROLE_AWARE_ROUTING` defaults OFF; TR-3 populates the field in shadow mode. **TR-3.1 + TR-3.2 LANDED 2026-05-07** — `src/classifiers/role_classifier.py` rule-based classifier wired into `_route_request`; field always populated regardless of flag; logged with `strategy=trinity_role_shadow`; 27 classifier unit tests + 7 routing-integration tests. TR-3.3 (≥1-week shadow telemetry) + TR-3.4 (non-degenerate distribution check) are the next inference/traffic-gated steps. **Independent of any optimizer work** — can ship under SFT, contrastive Q-update, or sep-CMA-ES alike.
+- [/] **P19.1**: TR-1 through TR-5 in [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md). **REFRESHED 2026-05-28**: TR-1 taxonomy, TR-2 data layer, and TR-3.1/3.2 heuristic shadow classifier have landed. Current gate is not more schema work; it is TR-3.3/3.4 telemetry: collect production-like `trinity_role_shadow` logs, prove role distribution is non-degenerate, and capture representative true/false examples. TR-4 prompt/dispatch wiring waits on that diagnostic. TR-5 remains paired A/B (>=N=200/arm) with `ROLE_AWARE_ROUTING` default-off unless the gain/regression gate passes.
 
 **Methodology audits on Learned Routing Controller**:
 
@@ -310,7 +312,7 @@ These tasks live across multiple handoffs. This section is the index roll-up —
 
 **Speculative scoping**:
 
-- [ ] **P19.8**: OC-0 in [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md). Scoping document for whether a learned-head replacement of part of the Claude-driven autopilot loop is worth pursuing. Speculative; gated until tri-role + DAR + LRC Phase 4 land. **Six sub-tasks** (OC-0.1–0.6 — OC-0.6 added 2026-04-28: design-space-reference table populating Conductor (intake-493) + Trinity (intake-474) rows as **competitive intelligence**, NOT target architectures, per user feedback) to produce a written scope before any implementation phases are even drafted.
+- [ ] **P19.8**: OC-0 in [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md). **REFRESHED 2026-05-28**: keep as scoping/parking only. Do not draft OC-1 or implementation work until tri-role/DAR/LRC dependency gates progress or a measured Claude-loop token/latency bottleneck exists. OC-0 outcome fork: <20% replaceable Claude decision cost -> close `not_pursued`; >50% and uniform decisions -> rules-first replacement; >50% and context-dependent decisions with a usable fitness signal -> learned-head spike proposal.
 
 **Bandit-feedback / IRT cold-start routing (intake-495/496 derived, NEW 2026-04-28)**:
 
@@ -650,7 +652,7 @@ New handoff [`delegation-context-preassembly.md`](delegation-context-preassembly
 
 New handoff [`batched-edit-parallel-apply.md`](batched-edit-parallel-apply.md). Think-then-act batch edit (collapse tool round-trips) + fan per-file apply across NUMA quarters.
 
-**2026-05-26 — P22/P23 code wired (default-off) + falsification-harness handoff reviewed.** BEP `_execute_turn` divergence (`ea5f010`) + DCP-4 advisory pre-assembly (`31ea6d4`) are wired behind `batch_edit_mode` / `dcp_pre_assembly` (both default-off, tested). Their inference falsification gates (BEP-2, DCP-6) need a safe task-root harness (no off-the-shelf multi-file-edit workload; the live edit/read/test paths otherwise target the orchestrator project root) — construction tracked in [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) (implements `ORCHESTRATOR_EDIT_ROOT` as model-facing task-root, not write-only redirect).
+**2026-05-26/28 — P22/P23 code wired (default-off) + falsification harness compacted.** BEP `_execute_turn` divergence (`ea5f010`) + DCP-4 advisory pre-assembly (`31ea6d4`) are wired behind `batch_edit_mode` / `dcp_pre_assembly` (both default-off, tested). BEP-2 remediation is now the separate default-off edit transaction; [`bep-dcp-falsification-harness.md`](bep-dcp-falsification-harness.md) remains active for DCP-6 and optional J8 provenance only, with task-root harness history in its completed ledger.
 
 **2026-05-27 — BEP-2 diagnosis superseded the original rework gate.** The direct one-shot ablation proved Qwen3.6 can solve the five multi-file/read-first tasks 5/5 with the same verifiers; the failure was the read->peek->edit->FINAL REPL/BEP contract. The default-off `force_mode="edit"` transaction is now built/hardened as the practical remediation. Therefore **J8/BEP-2 is optional**: run it only to decide the legacy structured patchset/batch-edit path's keep/retire/task-scope fate. **DCP-6 is separate and code-ready** because DCP-4 advisory attach is already wired/default-off.
 

@@ -21,7 +21,7 @@ def main() -> int:
 
     data = json.loads(matrix.read_text())
     governed = {item["path"] for item in data.get("governed", [])}
-    required = {"CLAUDE.md", "kernel-dev/llama-cpp-dev/CLAUDE.md"}
+    required = {"CLAUDE.md"}
 
     missing = sorted(required - governed)
     if missing:

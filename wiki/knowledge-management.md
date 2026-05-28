@@ -3,7 +3,7 @@
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
 **Last compiled**: 2026-05-28
-**Sources**: 7 active/blocking coordination docs, 6 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
+**Sources**: 8 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
 
 ## Summary
 
@@ -63,6 +63,14 @@ The follow-on audit after the AR-3 tracking gap turned the hygiene rule into a m
 
 Six completed handoffs were moved from `active/` to `completed/` during the same pass: MoE dynamic expert selection, CPU22 hybrid spillover design, wdata-aware MUL_MAT coalescing design, CPU4 deferred avenues, Qwen3.6 benchmark fixes, and the SearXNG bash web-search bridge. The active tree now has 84 non-index active handoffs and 7 active coordination indices; validation reported 84/84 linked, 0 unlinked, 0 missing index links, 0 broken active/blocked/README relative links, and 0 stale handoffs over the 30-day freshness threshold.
 
+## Active/completed twin compaction (2026-05-28)
+
+The next governance refinement is for partially complete handoffs whose live task is buried under validated history. The wrap-up routine now uses active/completed twins instead of all-or-nothing archival: the active handoff keeps current status, next actions, blockers, gates, key files, and reporting instructions, while completed or superseded detail moves to a sibling under `handoffs/completed/` or `handoffs/archived/`. Master and domain indices continue to point at the active handoff only.
+
+The first compaction pass created or refreshed 11 completed ledgers: Lightning Attention, integration-test coverage, REPL turn efficiency, TriAttention/KV selection, context folding, intra-process tensor parallel decode, meta-harness optimization, BEP/DCP harness, dynamic stack concurrency, large-MoE expert parallelism, and routing intelligence. Each active twin now contains a `Completed Scope` table and each historical sibling points back to `../active/<handoff>.md`. Validation after the pass reported 0 stale/aging handoffs, 0 missing active-index references, and 0 missing reciprocal ledger links.
+
+The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
+
 ## Open Questions
 
 - What is the document-recall baseline via grep on our actual corpus? K7 will measure this against KB-RAG top-3.
@@ -85,6 +93,7 @@ Six completed handoffs were moved from `active/` to `completed/` during the same
 - [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
+- [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
 - [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
 - [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1

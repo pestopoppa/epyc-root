@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 16 documents (added Understand-Anything code-intelligence cohort entry)
+**Last compiled**: 2026-05-28
+**Sources**: 17 documents (added split-repo validator cleanup and wrap-up compaction guardrails)
 
 ## Summary
 
@@ -301,3 +301,11 @@ Practical patterns:
 - Separate owner-refresh queues from direct edits: stale handoffs needing owner judgment should be logged, not silently rewritten.
 
 Sources: [`handoffs/active/handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md), [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md).
+
+## Split-repo validator and wrap-up tool updates (2026-05-28)
+
+The root governance validators now reflect the split-repo layout instead of assuming all code lives under epyc-root. `validate_doc_drift.py` resolves `epyc-orchestrator` through `repos/epyc-orchestrator`, `/workspace/repos/epyc-orchestrator`, or `EPYC_ORCHESTRATOR_REPO`, reads `PORT_MAP` from `scripts/server/stack_manifest.py`, and only requires a Makefile when root `CLAUDE.md` actually documents `make` targets. `validate_agents_references.py` no longer scans the archived `agent-files-refactor-complete` handoff as if it were active, and the CLAUDE accounting helper now requires only the root `CLAUDE.md` governed baseline.
+
+The wrap-up command and Codex wrap-up skill were updated together so handoff compaction behavior is consistent across Claude and Codex surfaces. The important tooling semantics: compaction is manual-wrap-up-only; the trigger is first-screen readability, not line count; partial splits create or extend a sibling while editing the active handoff in place; repeat compactions update the newest sibling's date stamp; and wrap-up output must include a `## Index pruning / handoff compaction` table when any split/prune/archive happened.
+
+Sources: [`scripts/validate/validate_doc_drift.py`](../scripts/validate/validate_doc_drift.py), [`scripts/validate/validate_agents_references.py`](../scripts/validate/validate_agents_references.py), [`wrap-up.md`](../.claude/commands/wrap-up.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).

@@ -1,16 +1,47 @@
+# Intra-Process Tensor-Parallel Decode - Completion Ledger
+
+> Historical completion ledger only.
+> Current work lives in [intra-process-tensor-parallel-decode.md](../active/intra-process-tensor-parallel-decode.md).
+> This file preserves pre-compaction CPU1 evidence and methodology; active tasks, gates, and indices are authoritative in the active handoff.
+
 # Intra-Process Tensor-Parallel Decode Across CCDs (Single-Instance Saturation)
 
-**Status**: ACTIVE — implemented phases with pending revalidation-gated follow-ons (status refreshed 2026-04-26 critique-integration pass)
+**Status**: refreshed 2026-05-28 — reference + revalidation-gated only; do not start new CPU1 work without a workload/topology trigger
 **Created**: 2026-04-23 (user-identified gap after single-vs-aggregate throughput discussion)
+**Updated**: 2026-05-28
 **Priority**: HIGH — the single largest uncharted single-instance lever on CPU. Makes 1×instance approach N×instance aggregate throughput for single-session decode.
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 **Related**:
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — per-thread kernel speed (orthogonal; composes multiplicatively)
-- [`single-instance-system-tuning.md`](single-instance-system-tuning.md) — NPS mode, hugepages, barrier primitive (sibling work — the NPS/pagesize knobs directly shape what TP-sharding can achieve)
-- [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — multi-instance aggregate path (current workaround; this handoff is the alternative)
-- [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — KV-side lever (independent; composes)
+- [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) — per-thread kernel speed (orthogonal; composes multiplicatively)
+- [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) — NPS mode, hugepages, barrier primitive (sibling work — the NPS/pagesize knobs directly shape what TP-sharding can achieve)
+- [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) — multi-instance aggregate path (current workaround; this handoff is the alternative)
+- [`attention-matching-kv-compaction.md`](../active/attention-matching-kv-compaction.md) — KV-side lever (independent; composes)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff is a large historical record of the CPU1 tensor-parallel exploration. It remains active because other CPU indices cite its findings, but it is not currently the top live implementation lever.
+
+**Critique of older structure**: the original HIGH framing and Phase 1.3 v2 plan still appear before later closure/reframing evidence. That can mislead a fresh implementer into restarting CPU1-specific work even though later index rows say the CPU1-specific software levers are exhausted for the current NPS4 single-user decode regime.
+
+**Current disposition**:
+
+| Question | Current answer |
+|---|---|
+| Should an agent start Phase 1.3 v2 now? | No, not by default. It needs a new workload/topology trigger and CPU20-compliant baseline. |
+| What is still valuable here? | Historical evidence: what was tried, what worked briefly, what collapsed under later canonical methodology, and why CPU1-specific levers are deprioritized. |
+| What can reopen it? | 2-socket hardware, new NPS/L3aaN topology decision, multi-tenant workload where single-session saturation is again the priority, or a CPU20-compliant profile showing barrier/locality is again dominant. |
+
+**Reopen checklist**:
+
+1. State the new trigger explicitly.
+2. Run CPU20 protocol first.
+3. Reproduce the current canonical baseline for the target model.
+4. Show that the bottleneck is locality/barrier dominated, not DRAM-channel dominated or model-architecture limited.
+5. Only then choose whether Phase 1.3 v2, a smaller profiling probe, or archive is the right action.
+
+**Index note**: keep referenced from `cpu-inference-optimization-index.md` and `inference-acceleration-index.md`, but describe it as revalidation-gated/reference rather than "top priority" unless the reopen checklist is satisfied.
 
 ## 2026-04-24 Phase 1.0 implementation — NEGATIVE/NEUTRAL on barrier-only change
 
@@ -234,7 +265,7 @@ Phase 1 prototype is gated as **GO**; implementation is ~1 week of work (per-CCD
 
 ## 2026-04-23 Audit Cross-References (read before starting Phase 0)
 
-Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) §Pickup Sequence):
+Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) §Pickup Sequence):
 
 - **`perf` is NOT installed** on the host. Phase 0 profiling must use `GGML_PERF=1` for per-op timers, `rdtsc`-bracketed micro-harness for tight loops, `/usr/bin/time -v` for wall + page-faults, `getrusage` for context-switch and RSS. Install `linux-tools-$(uname -r)` only with user approval.
 - **tinyBLAS is already in the fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` under `GGML_USE_LLAMAFILE`. Any TP-sharding work should measure on/off baselines so the TP gain is isolated from the sgemm gain.
@@ -345,7 +376,7 @@ The bandwidth win depends on each CCD reading its weight shard from its **local*
 - **NPS4**: 4 NUMA nodes, 3 CCDs + 3 channels each. 4-way locality.
 - **L3-as-NUMA (CCDaaN)**: 12 NUMA nodes, 1 CCD + 1 channel each. Full 12-way locality. **This is what TP-sharding wants**.
 
-Switching NPS mode requires a BIOS change and a reboot. It is a **prerequisite for the full bandwidth win**. See [`single-instance-system-tuning.md`](single-instance-system-tuning.md) for the NPS evaluation path.
+Switching NPS mode requires a BIOS change and a reboot. It is a **prerequisite for the full bandwidth win**. See [`single-instance-system-tuning.md`](../active/single-instance-system-tuning.md) for the NPS evaluation path.
 
 However, TP-sharding still produces gains in NPS2 mode: even with only 2-way memory locality, reducing thread barrier pressure and CCD cache coherence traffic helps. Phase 0 should measure both modes.
 

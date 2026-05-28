@@ -95,7 +95,7 @@ Re-flagged 2026-04-27 after peer-review pass #2 noted that "all software paths e
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md), [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md)
 **Related**:
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — research note that surfaced this technique (Session 2026-04-27)
-- [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15) — interaction analysis pending: MoE-Spec changes the verification step's expert dispatch pattern, which CPU15 EP is also modifying
+- [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) (CPU15) — compacted disposition gate; MoE-Spec only needs CPU15 coordination if `GGML_EP_*` is explicitly re-enabled after CPU15-REVAL
 - [`research/intake_index.yaml`](../../research/intake_index.yaml) — intake entry to be added (forthcoming)
 
 ## Background
@@ -205,7 +205,7 @@ Spec-dec drafts are produced via `common_speculative_draft()` (common/speculativ
 | Linear spec-dec (Coder-30B + REAP-246B production) | Aggregate routing scores across K=32 verification tokens; mask out-of-S experts | COMPATIBLE — algorithm trivially extends from tree-aggregation to batch-aggregation |
 | Tree spec-dec (DySpec, p_split>0) | Direct match for paper's algorithm | COMPATIBLE but production stack disables tree on the two target models |
 | `cparams.moe_n_expert_override` (per-token K reduction) | Both mask `selection_probs` before argsort; orderings: MoE-Spec mask first (per-batch), then existing override (per-token K) | COMPATIBLE — orthogonal masking; possibly compounding |
-| CPU15 EP (inter-process expert parallelism) | Master broadcasts src1+ids to workers; if budget masking happens at master before broadcast, workers see smaller `ids` array | COMPATIBLE — budget signal flows through cparams (no IPC ring change needed) — BUT CPU15 EP frontdoor only deployed on Qwen3.6-35B Q8_0; Coder/REAP do NOT use EP in production, so CPU15×MoE-Spec interaction is theoretical |
+| CPU15 EP (inter-process expert parallelism) | Master broadcasts src1+ids to workers; if budget masking happens at master before broadcast, workers see smaller `ids` array | COMPATIBLE if EP is explicitly enabled, but currently theoretical. CPU15 is default-off infrastructure after the 2026-05-28 compaction/canonical-baseline correction; no production role should assume `GGML_EP_*` is active without CPU15-REVAL. |
 | CPU22 work-stealing | Closed via test, default-OFF; if reopened, operates at tile-distribution layer below MoE-Spec's expert-selection layer | ORTHOGONAL |
 | `--draft-max=32 --p-split=0` (production Coder/REAP linear K=32) | Verification batch_size=32; MoE-Spec aggregates across the 32 tokens | COMPATIBLE |
 | PPL preservation | spec-dec produces bit-exact output by construction (verifier rejects mismatched draft tokens regardless of target's expert subset); MoE-Spec changes target's expert dispatch but not the acceptance rule | bit-exact PPL EXPECTED |

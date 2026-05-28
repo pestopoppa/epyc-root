@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-28 (manual incremental update: research-intake batch + TiDAR mechanism correction + OPD cluster Tier-2b expansion + DeepSeek-V4 port path + roofline audit BW/counter corrections)
+**Last compiled**: 2026-05-28 (manual incremental update: handoff compaction governance + split-repo validator cleanup + CPU/serving/routing active-surface clarifications)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 329 documents across 6 source types
+**Total sources**: 388 documents across 6 source types
 
 ---
 
@@ -16,13 +16,13 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 34 | Attention Matching achieves 50x compression; autopilot slot_compact integration complete with slot memory visibility |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 21 | NUMA 4-way quarter pinning delivers 6.9x aggregate throughput; DGX Spark ($4,699) is primary GPU path |
+| [Hardware Optimization](hardware-optimization.md) | 22 | CPU15 expert parallelism is default-off infrastructure; CPU20 revalidation and AMD-correct roofline counters gate future production claims |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 25 | Qwen3.6 drop-in upgrade (Q8 27.4tps, +11pp Terminal-Bench); serving indices now distinguish unresolved action from stale narration, with NUMA disagg, wdata coalescing, Qwen3.6 fixes, and launcher defaults explicitly gated |
+| [Inference Serving](inference-serving.md) | 26 | Dynamic stack serving work now distinguishes deployed B-D mechanics from DS-6/DS-7 scheduler gates; no scheduler rollout before Phase E evidence |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -31,7 +31,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
-| [Routing Intelligence](routing-intelligence.md) | 29 | Cross-role contention gate plus live-affinity proof and topology-hash enforcement are required before baseline-eligible parallel routing |
+| [Routing Intelligence](routing-intelligence.md) | 30 | RI-10/11/12 are the live rollout path; RI-13 injection-risk routing is gated behind the cheap unconditional J14 swarm-fanout A/B |
 | [Benchmark Methodology](benchmark-methodology.md) | 33 | Real-path canaries and live smoke tests are required; stalled seeding now has explicit infra labels instead of generic timeout ambiguity |
 
 ## Agent & Architecture
@@ -70,9 +70,9 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
-| [Knowledge Management](knowledge-management.md) | 9 | KB-RAG ColBERT architecture (K1–K8); handoff-index coverage invariant now requires every active non-index handoff to be owned by an index or top-level tracker |
+| [Knowledge Management](knowledge-management.md) | 10 | Active/completed handoff twins are now the wrap-up-only path for partially complete work whose live tasks are buried under validated history |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 15 | GitNexus remains the required blast-radius tool; local `$wrap-up` skill now codifies progress/handoff/wiki/commit closeout discipline |
+| [Tool Implementation](tool-implementation.md) | 16 | GitNexus remains the required blast-radius tool; split-repo validators now resolve child repos explicitly instead of assuming root-local code |
 
 ## Research & Analysis
 

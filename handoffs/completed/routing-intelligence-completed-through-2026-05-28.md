@@ -1,3 +1,5 @@
+> **Historical ledger only.** Current routing-intelligence rollout work lives in [`../active/routing-intelligence.md`](../active/routing-intelligence.md). This file preserves completed classifier/factual-risk implementation notes, old phase plans, research intake, and calibration evidence through 2026-05-28.
+
 # Routing Intelligence: Semantic Classifiers + Factual-Risk Routing
 
 **Created**: 2026-02-18 (consolidated from `classifier-refactoring.md` + `delegation-escalation-factual-risk-routing-track.md`)
@@ -511,11 +513,11 @@ Lookup was disabled on frontdoor 2026-03-19 (segfault after 1-3 prompts on Qwen3
 
 ## Future Direction: Dynamic Stack Assembly
 
-Spun out to dedicated handoff: [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (2026-03-24).
+Spun out to dedicated handoff: [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) (2026-03-24).
 
 **Key relationship**: Routing intelligence decides *which role* handles a request (quality decision); stack assembly decides *how that role is provisioned* (capacity decision). They compose but are developed independently. The Q-scorer's `baseline_tps_by_role` must become dynamic if stack assembly changes instance counts per role.
 
-See also: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](../completed/numa-orchestrator-deployment.md).
+See also: [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md), [`numa-orchestrator-deployment.md`](../completed/numa-orchestrator-deployment.md).
 
 ---
 
@@ -592,7 +594,7 @@ High branching density at inference time = the model is diverging rather than co
 
 ### Deep Research Mode → dedicated handoff
 
-DD7 (MindDR, intake-438) produces a three-agent specialization pattern (Planning / DeepSearch / Report) suitable for research-like queries. Phase 1 is prompt-level and zero-infra; Phase 2 four-stage RL GPU-gated. Full plan: [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md). Entry point: MD-1 `deep_research_mode` feature flag + MD-2 extends Category A classifier with `research_like` exemplars.
+DD7 (MindDR, intake-438) produces a three-agent specialization pattern (Planning / DeepSearch / Report) suitable for research-like queries. Phase 1 is prompt-level and zero-infra; Phase 2 four-stage RL GPU-gated. Full plan: [`minddr-deep-research-mode.md`](../active/minddr-deep-research-mode.md). Entry point: MD-1 `deep_research_mode` feature flag + MD-2 extends Category A classifier with `research_like` exemplars.
 
 Routing interaction: when `deep_research_mode` is on AND query matches `research_like`, the three-agent pydantic_graph pipeline supersedes the current direct/REPL/delegated mode selection for that request. Classifier-level decision — no changes to Q-scorer or escalation policy required for Phase 1.
 
@@ -608,8 +610,8 @@ This cross-cuts with P13 Decision-Aware Routing — STOP's expected-cost model f
 
 ### Cross-references
 
-- [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) — full Deep Research Mode plan
-- [`reasoning-compression.md`](reasoning-compression.md) Action 10a — STOP implementation
+- [`minddr-deep-research-mode.md`](../active/minddr-deep-research-mode.md) — full Deep Research Mode plan
+- [`reasoning-compression.md`](../active/reasoning-compression.md) Action 10a — STOP implementation
 - `routing-and-optimization-index.md` P13 (Decision-Aware Routing) + P18 (Deep Research Mode pointer)
 
 ## Research Intake Update — 2026-04-26
@@ -617,9 +619,9 @@ This cross-cuts with P13 Decision-Aware Routing — STOP's expected-cost model f
 ### New Related Research
 
 - **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, Sakana AI)
-  - Relevance to this handoff: Trinity formalises a per-call *role assignment* (Thinker/Worker/Verifier) that is orthogonal to model selection. Their Verifier role corresponds approximately to this handoff's review-trigger / escalation-policy machinery — both decide whether the current answer is acceptable. The taxonomy decision in [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) TR-1.2 explicitly hands off here: does our existing review/escalation pipeline subsume Trinity's Verifier, or are they parallel mechanisms?
+  - Relevance to this handoff: Trinity formalises a per-call *role assignment* (Thinker/Worker/Verifier) that is orthogonal to model selection. Their Verifier role corresponds approximately to this handoff's review-trigger / escalation-policy machinery — both decide whether the current answer is acceptable. The taxonomy decision in [`tri-role-coordinator-architecture.md`](../active/tri-role-coordinator-architecture.md) TR-1.2 explicitly hands off here: does our existing review/escalation pipeline subsume Trinity's Verifier, or are they parallel mechanisms?
   - Key Trinity ablation: removing the Thinker role alone costs −6.0 on Math500 and −4.57 on RLPR; removing tri-role entirely costs −5 to −8 across all benchmarks. Even *with* an existing review pipeline, if our orchestrator is collapsing the Thinker decision into "always Worker", we are leaving similar magnitude of headroom on the table.
-  - Cross-handoff coordination: when [`tri-role-coordinator-architecture.md`](tri-role-coordinator-architecture.md) reaches TR-1.2 (Verifier-vs-review decision), it must consult this handoff's Phase 6 risk-aware enforcement design — the existing factual-risk scorer + review trigger should be the substrate, with Verifier as either an explicit per-call action or a renaming of the existing trigger.
+  - Cross-handoff coordination: when [`tri-role-coordinator-architecture.md`](../active/tri-role-coordinator-architecture.md) reaches TR-1.2 (Verifier-vs-review decision), it must consult this handoff's Phase 6 risk-aware enforcement design — the existing factual-risk scorer + review trigger should be the substrate, with Verifier as either an explicit per-call action or a renaming of the existing trigger.
   - **TR-1.2 RESOLVED 2026-05-07**: Verifier role is treated as a **parallel mechanism** to the existing review/escalation pipeline (NOT a subsumption / rename). Rationale: avoid pre-deciding the relationship before observational data exists. TR-4.4 wires V-acceptance to **AND with** the existing review gate for early termination — both signals must agree before short-circuiting subsequent dispatches. TR-3.3 onward logs both signals on every dispatch so autopilot evolutionary memory can discover whether they collapse to one mechanism (after 1-2 weeks of telemetry) OR remain orthogonal. Implication for THIS handoff: the existing review-trigger machinery (P5/P6 in this handoff's roadmap) is unchanged; the Verifier role is an additional surface layered on top.
   - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (especially section 2.1 on the tri-role gap and the open questions in section 6).
 

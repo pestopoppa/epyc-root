@@ -1,18 +1,49 @@
+# Lightning Attention Port to llama.cpp - Completed v1 Ledger
+
+> Historical completion ledger only.
+> Current work lives in [lightning-attention-port.md](../active/lightning-attention-port.md).
+> This file preserves pre-compaction implementation context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # Lightning Attention Port to llama.cpp
 
-**Status**: ✅ **v1 COMPLETE 2026-04-30** — L1 scoping + L2 converter + L3 C++ load+graph + L4 inference smoke ALL PASSED. Coherent decode confirmed on Ring-mini-linear-2.0 Q4_K_M at 40.68 t/s. Commit `33b60b925` on `feature/lightning-attention-port`.
+**Status**: REFRESHED 2026-05-28 — v1 port COMPLETE; active only for quality, long-context, drafter, and profile-gated L5 validation. Do not redo L1-L4 unless the branch no longer builds.
 **Created**: 2026-04-29 (after audit of `llama.cpp-experimental` revealed Lightning Attention is essentially a constant-`g` GLA op)
-**Updated**: 2026-04-30 PM (L4 PASSED — full end-to-end validation including coherent factual output with native `<think>` reasoning format)
+**Updated**: 2026-05-28 (executor-facing validation slice added; historical implementation log retained below)
 **Categories**: ssm_hybrid, context_extension, kv_cache, training_distillation, inference_serving
 **Workstream**: Inference Acceleration (architectural research) + CPU Engineering (the actual port)
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 **Related**:
-- [`log-linear-gated-deltanet-readiness.md`](log-linear-gated-deltanet-readiness.md) — sibling architecture (different lineage: log-linear-state vs fixed-decay-state); both are CPU-friendly intermediate paths
-- [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-503 documented under same-day-expansion sub-section
-- [`qwen36-27b-cpu-feasibility.md`](qwen36-27b-cpu-feasibility.md) — sizing comparison anchor for Ring-mini
-- [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md) — sibling architectural-port handoff (DSA / V3.2)
+- [`log-linear-gated-deltanet-readiness.md`](../active/log-linear-gated-deltanet-readiness.md) — sibling architecture (different lineage: log-linear-state vs fixed-decay-state); both are CPU-friendly intermediate paths
+- [`multiscreen-attention-evaluation.md`](../active/multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-503 documented under same-day-expansion sub-section
+- [`qwen36-27b-cpu-feasibility.md`](../active/qwen36-27b-cpu-feasibility.md) — sizing comparison anchor for Ring-mini
+- [`llama-cpp-dsa-contribution.md`](../active/llama-cpp-dsa-contribution.md) — sibling architectural-port handoff (DSA / V3.2)
 - intake-503 (Ling-Linear-2.0 paper, arxiv:2510.19338)
 - [Lightning Attention deep-dive](../../research/deep-dives/ling-linear-lightning-attention-hybrid.md) — full architecture analysis + corrected effort estimate
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+The 788-line body below is mostly implementation history. Current work is not "port Lightning Attention" from scratch; the port already reached coherent decode on Ring-mini-linear-2.0 Q4_K_M at 40.68 t/s on commit `33b60b925`.
+
+| Current question | Executor rule |
+|---|---|
+| Is L1-L4 still open? | No. Treat them as historical unless the branch fails to build or the model no longer loads. |
+| What should be claimed next? | Pick one validation slice from QL-1/QL-2/QL-3 below; do not mix all three into one ambiguous bench run. |
+| Is L5 required now? | No. Dedicated `GGML_OP_LIGHTNING_ATTN` work is profile-gated; implement only if a trace shows constant-`g` materialization or current GLA threading is the dominant bottleneck. |
+| Does this affect Log-Linear GDN? | Only conceptually. Lightning uses existing GLA with fixed decay; Log-Linear GDN remains blocked on checkpoints and likely needs different state machinery. |
+
+### Current Validation Queue
+
+- [ ] **QL-0 branch sanity**: verify `/mnt/raid0/llm/llama.cpp` or the relevant experimental fork still contains commit `33b60b925` or an equivalent `LLM_ARCH_BAILINGMOE_LINEAR` implementation; rebuild once before any benchmark claim.
+- [ ] **QL-1 quality slice**: run a small paired benchmark on Ring-mini Q4_K_M vs the strongest cheap baseline available for the same task family. Minimum useful bundle: MATH-500/AIME-style math + GPQA-style reasoning + one coding sentinel set. Record exact prompt templates and pass/fail scorer.
+- [ ] **QL-2 long-context slice**: run 32K/64K context smoke with one retrieval-like prompt and one reasoning prompt. Gate is stable decode with no graph/state corruption and no catastrophic speed collapse versus 8K.
+- [ ] **QL-3 drafter slice**: only if Ring-mini is being considered for speculation. Test compatibility as a drafter candidate, not as a target replacement. Gate is acceptance-adjusted throughput, not raw Ring-mini t/s.
+- [ ] **QL-4 L5 profile decision**: if QL-1/2/3 produces a reason to keep the model, profile the graph. Promote L5 only when the profile names the redundant `g` tensor or head-thread underutilization as a material bottleneck.
+
+Decision forks:
+
+- **Quality pass + long-context stable**: keep active as candidate drafter/specialist and schedule QL-3/QL-4.
+- **Quality flat but long-context stable**: park as architectural reference; no dedicated op.
+- **Quality fail or unstable decode**: close as negative after preserving the port details; do not spend L5 effort.
 
 ## Objective
 

@@ -1,13 +1,39 @@
 # Outer-Coordinator Learned Head (Claude-driven loop)
 
-**Status**: SCOPING ONLY — no implementation tasks until OC-0 completes
+**Status**: REFRESHED 2026-05-28 — SCOPING/PARKING ONLY; no implementation and no OC-1 draft until dependency gates or a measured Claude-loop bottleneck exist
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
+**Updated**: 2026-05-28 (archive risk resolved; scoping gate and ROI fork clarified)
 **Priority**: SPECULATIVE (long-term; do not start before tri-role + DAR + LRC Phase 4 land)
 **Categories**: agent_architecture, autonomous_research, routing_intelligence
 **Related**: [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md), [meta-harness-optimization.md](meta-harness-optimization.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) (sections 2.3 and 3 — outer-coordination layer)
 
 ---
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This file is an intentional parking lot for a speculative outer-loop idea. It should stay active because it is referenced by the Trinity/DAR/LRC routing program, but it is not an implementation queue.
+
+| Condition | Action |
+|---|---|
+| Tri-role telemetry, DAR gates, or LRC Phase 4 are still unresolved | Do not start OC-1. Keep this as a reference and update only if new evidence changes the scoping inputs. |
+| A measured autopilot/Claude token bottleneck appears | Run OC-0 only: inventory decisions, classify which are codifiable, identify a fitness signal, and estimate replaceable token fraction. |
+| Claude decision tokens are <20% of autopilot run cost | Close as `not_pursued` after appending the OC-0 evidence. |
+| Claude decision tokens are >50% and decisions are routinely uniform | Escalate to a rules-first replacement before learned-head training. |
+| Claude decision tokens are >50% and decisions are context-dependent with a usable fitness signal | Draft OC-1+ implementation phases; do not skip OC-0 review. |
+
+OC-0 deliverable skeleton:
+
+```markdown
+### OC-0 Scope Result
+
+| Decision Claude makes | Current source/path | Uniform / context-dependent / arbitrary | Candidate replacement | Failure mode |
+|---|---|---|---|---|
+
+Fitness signal:
+Replaceable token-cost estimate:
+Recommendation: not_pursued / rules-first / learned-head spike
+```
 
 ## Objective
 

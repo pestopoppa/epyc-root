@@ -1,3 +1,9 @@
+# Meta-Harness - Completed Implementation Ledger
+
+> Historical completion ledger only.
+> Current work lives in [meta-harness-optimization.md](../active/meta-harness-optimization.md).
+> This file preserves pre-compaction implementation, intake, and deep-dive context; active tasks, gates, and indices are authoritative in the active handoff.
+
 # Meta-Harness: Automated Harness Optimization
 
 **Status**: Tier 1 + Tier 2 implemented. Ready for live validation via AR-3 autopilot run.
@@ -86,7 +92,7 @@ Source: Agent Lightning (Microsoft Research, intake-338/344) + GEPA Full Program
 - [ ] **MH-7**: Upgrade `eval_tower.capture_recent_traces()` → `capture_contrastive_traces(k_success, k_failure)` (~40 LoC; design non-inference, validation in AR-3). Directly addresses Open Question below ("What's the right trace granularity?"). Pair k_success successful trajectories with k_failure failed ones; feed both to the proposer. Default `k_success=2, k_failure=2` — tune in AR-3. Implementation: `epyc-orchestrator/scripts/autopilot/eval_tower.py`. Source: intake-451 deep-dive.
 - [ ] **MH-9**: Add `new_file` mutation type with directory-scoped allowlist (~80 LoC + tests; design non-inference, validation in AR-3). Current 4-file edit-only allowlist (Tier 2) cannot express whole-new-strategy-module candidates. New mutation: `dispatch_action({"type": "new_file", "path": "src/escalation_strategies/<name>.py", "content": "..."})`. Allowlist directories enumerated explicitly; deny anything outside the listed dirs. Tests: directory traversal protection, name collision handling, integration with existing safety gate. Implementation: `epyc-orchestrator/scripts/autopilot/species/prompt_forge.py` `dispatch_action()`. Source: intake-451 deep-dive.
 
-**MH-6/7/9 sequencing**: MH-6 → MH-7 → MH-9. MH-6 establishes the proposer's input/output contract (read order + cost/quality deltas); MH-7 enriches the input (contrastive traces) once the contract can absorb them; MH-9 widens the action space (new mutation type) once the proposer can predict cost/quality for novel candidate classes. All three implementation-non-inference, validation requires AR-3 restart (currently dead per [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md) Phase 5 status).
+**MH-6/7/9 sequencing**: MH-6 → MH-7 → MH-9. MH-6 establishes the proposer's input/output contract (read order + cost/quality deltas); MH-7 enriches the input (contrastive traces) once the contract can absorb them; MH-9 widens the action space (new mutation type) once the proposer can predict cost/quality for novel candidate classes. All three implementation-non-inference, validation requires AR-3 restart (currently dead per [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md) Phase 5 status).
 
 ### Tier 3: Full Outer Loop Rebuild — DEFERRED
 
@@ -218,13 +224,13 @@ Chelsea Finn + Omar Khattab (DSPy creator) co-authored. The TerminalBench-2 resu
 
 The long-deferred Tier 3 outer-loop rebuild now has two concrete forward paths, each with its own dedicated handoff:
 
-**1. [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) — Environment synthesis arena (DD6, intake-444)**
+**1. [`agent-world-env-synthesis.md`](../active/agent-world-env-synthesis.md) — Environment synthesis arena (DD6, intake-444)**
 
 - Phase 1 training-free and CPU-feasible today: LLM-orchestrated exploration of databases + MCP tool ecosystem → synthesized verifiable tasks with controllable difficulty → fed into AR-3 as additional benchmark input.
 - Phase 2 multi-env GRPO training: GPU-gated (post-DGX-Spark). Trains Qwen3-8B → Agent-World-8B-EPYC.
 - Entry point: AW-1 `env_synth/` module scaffold.
 
-**2. [`minddr-deep-research-mode.md`](minddr-deep-research-mode.md) — Three-agent RL specialization (DD7, intake-438)**
+**2. [`minddr-deep-research-mode.md`](../active/minddr-deep-research-mode.md) — Three-agent RL specialization (DD7, intake-438)**
 
 - Phase 1 prompt-level three-agent pipeline (Planning/DeepSearch/Report): zero-infra, falsifiable under eval tower, ~3w code.
 - Phase 2 four-stage training recipe: SFT → Search-RL (GSPO/GRPO) → Report-RL (DAPO) → preference alignment (DPO + Self-SFT). GPU-gated.
@@ -351,7 +357,7 @@ Files touched:
   - Key technique: 0.6B SLM + 10K-parameter linear head, trained with sep-CMA-ES against terminal binary task reward, picks `(LLM, role)` per turn from a 7-LLM pool with 3 roles {Thinker, Worker, Verifier}; Verifier-acceptance termination at K≤5 turns.
   - Reported results: 86.2% LiveCodeBench v6 (claimed coordinator-system record); 21.9% mean relative-error reduction over 2nd-best multi-agent baseline; ablations show tri-role removal costs −5 to −8 points and is the second-largest ablation effect in the paper.
   - Delta from current Meta-Harness: orthogonal scope. Meta-Harness's PromptForge searches over harness *components* (prompt text, tool definitions, routing logic). Trinity searches over per-call *decisions* with the components held fixed. **The two compose**: a Trinity-style learned coordinator could be one of the harness components Meta-Harness optimizes; conversely, Meta-Harness's role-specific prompt templates would be the per-role prompts Trinity dispatches.
-  - Outer-coordinator scoping: a separate handoff [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) holds the speculative idea of replacing part of the Claude-driven autopilot loop with a Trinity-style learned head. Phase OC-0 (scoping) is gated until tri-role + DAR + LRC Phase 4 land. Cross-link from this handoff because the outer layer is also the Meta-Harness target — if OC-0 escalates, the implementation will need to coordinate with PromptForge's harness-search to avoid stepping on each other's parameters.
+  - Outer-coordinator scoping: a separate handoff [`outer-coordinator-learned-head.md`](../active/outer-coordinator-learned-head.md) holds the speculative idea of replacing part of the Claude-driven autopilot loop with a Trinity-style learned head. Phase OC-0 (scoping) is gated until tri-role + DAR + LRC Phase 4 land. Cross-link from this handoff because the outer layer is also the Meta-Harness target — if OC-0 escalates, the implementation will need to coordinate with PromptForge's harness-search to avoid stepping on each other's parameters.
   - Deep-dive: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — sections 2.3 ("pool-homogeneity caveat … where does Claude fit?") and 3 ("portable / not portable") directly inform the boundary between Meta-Harness scope and outer-coordinator-learned-head scope.
 
 ## Research Intake Update — 2026-04-28
@@ -398,7 +404,7 @@ Files touched:
 
 #### Deep-dive refinement (2026-04-30) — concrete spike scoped, see halo-trace-loop-spike
 
-Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](halo-trace-loop-spike.md) — ready to claim.
+Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md`](../../research/deep-dives/halo-rlm-trace-loop-integration.md). Spike handoff at [`halo-trace-loop-spike.md`](../active/halo-trace-loop-spike.md) — ready to claim.
 
 **Key finding that changes Tier 3 scope**: `scripts/autopilot/telemetry.py:to_otlp_span` already produces OTLP-shaped JSON (since 2026-04-12). The HALO OTel converter is **~30 LoC** for autopilot telemetry, ~120 LoC for inference-tap. Total spike code including tests: ~200 LoC. This is cheap to validate.
 
@@ -436,7 +442,7 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
     - **Tree-GRPO** (intake-549, arxiv:2509.21240, ICLR 2026): GRPO variant where each tree node is a complete agent interaction step, sharing common prefixes across rollouts. Methodological alternative to RAO LOO baseline.
     - **@neural_avb X-post breakdown** (intake-541) — useful as onboarding/teaching asset alongside the paper.
   - **Concrete next step**: when Meta-Harness Tier 3 design solidifies, draft a spike that combines (a) ReDel as harness substrate, (b) RAO's three training tricks as the policy training recipe, (c) `max_depth=1` cap per RLM-reproduction caveat, (d) explicit stopping-decision experiment per orchestration-trace survey gap finding.
-  - **STUB DRAFTED 2026-05-19**: ready-to-claim spike at [`rao-redel-substrate-spike.md`](rao-redel-substrate-spike.md) (master priority queue #42). 3-step gated: Step 1 = 1-day ReDel pre-flight (~20 LoC glue, verify `OPENAI_BASE_URL` swap to llama-server drives `DelegateOne` against worker_general); Step 2 = 1-week paired A/B vs current `repl_executor`; Step 3 = 2-3 week feature-flagged substrate replacement (~800-1200 LoC) including 5-sub-decision taxonomy labelling on episodic store.
+  - **STUB DRAFTED 2026-05-19**: ready-to-claim spike at [`rao-redel-substrate-spike.md`](../active/rao-redel-substrate-spike.md) (master priority queue #42). 3-step gated: Step 1 = 1-day ReDel pre-flight (~20 LoC glue, verify `OPENAI_BASE_URL` swap to llama-server drives `DelegateOne` against worker_general); Step 2 = 1-week paired A/B vs current `repl_executor`; Step 3 = 2-3 week feature-flagged substrate replacement (~800-1200 LoC) including 5-sub-decision taxonomy labelling on episodic store.
 
 ### Latent multi-agent collaboration cluster — training-free frozen-stack candidate
 
@@ -444,7 +450,7 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
   - Relevance: directly addresses meta-harness's open question of whether sub-agent handoffs can avoid the text-detokenize/re-tokenize round-trip. LatentMAS claims 4× decode speedup + 70-83% output token reduction via training-free hidden-state handoff. Dead Weights claims a single learned linear projection suffices to translate activations between heterogeneous architectures (Llama/Qwen/Gemma → Phi/Mistral) — the bridge that would unlock frozen-GGUF deployment.
   - Tier 2b: requires llama.cpp HTTP server fork to surface last-layer hidden states across server boundaries — breaks compat with upstream rebases. Demonstrated only on homogeneous-tokenizer agent pools in the seed papers; cross-tokenizer claim rests on a single 3-author preprint (Dead Weights) without independent reproduction. Speedup is vs text-MAS baseline, not vs our well-tuned single-server prefix-cache-hit path.
   - **Action**: monitor — do NOT spin a handoff stub for the latent path. Re-evaluate when (a) Dead Weights independent reproduction lands (GPU rental for Dead Weights replication **DEFERRED** per user direction 2026-05-19), or (b) llama.cpp upstream exposes activation hooks across servers.
-  - **STUB DRAFTED 2026-05-19 for the text-MAS subset**: adjacent **X-MAS** (intake-557, arxiv:2505.16997) is the immediately actionable text-MAS heterogeneity adoption path — its (domain × function × model) optimal-assignment matrix could replace ad-hoc role-bench mapping in our heterogeneous stack. See [`x-mas-text-routing.md`](x-mas-text-routing.md) (master priority queue #44, HIGH, 2-3 dev-days). Cheap-kill failure mode: if 5×5 winner table shows gemma4-26B-A4B winning ~all cells, heterogeneity does not apply to our stack and we abort.
+  - **STUB DRAFTED 2026-05-19 for the text-MAS subset**: adjacent **X-MAS** (intake-557, arxiv:2505.16997) is the immediately actionable text-MAS heterogeneity adoption path — its (domain × function × model) optimal-assignment matrix could replace ad-hoc role-bench mapping in our heterogeneous stack. See [`x-mas-text-routing.md`](../active/x-mas-text-routing.md) (master priority queue #44, HIGH, 2-3 dev-days). Cheap-kill failure mode: if 5×5 winner table shows gemma4-26B-A4B winning ~all cells, heterogeneity does not apply to our stack and we abort.
 
 ## Research Intake Update — 2026-05-20
 
@@ -478,7 +484,7 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
 
 The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop optimizing the harness against final-task-success alone** (a noisy single bit that rewards shortcut configs) and instead score the harness's *intermediate* behavior. This sharpens the Tier-1 trace-feedback loop, which currently feeds a 50-line trace tail to PromptForge but does not score it on named axes. Audit pass converted the initial brainstorm into an implementation contract below.
 
-> **Schema dependency (gap-fix 2026-05-25):** the `harness_metrics` and `oracle_adequacy` record families HLE-1/HLE-2 produce are part of the **shared trace schema owned by [`unified-trace-memory-service.md`](unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** — do not define a private schema here. Implement the shared schema first; HLE writes into it.
+> **Schema dependency (gap-fix 2026-05-25):** the `harness_metrics` and `oracle_adequacy` record families HLE-1/HLE-2 produce are part of the **shared trace schema owned by [`unified-trace-memory-service.md`](../active/unified-trace-memory-service.md) § "Shared Harness/Trace Schema"** — do not define a private schema here. Implement the shared schema first; HLE writes into it.
 
 - [x] **HLE-1 — Per-component harness metrics.** From Tier-1 traces (`inference_tap.log`, unified trace store events, tool-call records), compute per-trial scores on the paper's named axes and persist them next to the existing eval result:
   - **Execution fidelity**: planned action matches executed action and resulting artifact; penalize stale-file edits, failed patch preconditions, tool calls whose observed result contradicts the plan, and "answer without evidence" shortcuts.
@@ -498,7 +504,7 @@ The Code-as-Agent-Harness survey's standout actionable idea lands here: **stop o
 3. **Shortcut detection belongs in oracle adequacy.** Web-search leakage, answer-key memorization, exact-match parsing artifacts, and "tests do not cover behavior" should be first-class blind spots, not prose notes.
 4. **HALO/P20 should consume the same schema.** The HALO analyzer surface should read `harness_metrics` and `oracle_adequacy` directly from the unified trace store instead of scraping ad hoc text.
 
-These compose with the existing Tier-1/Tier-2/Tier-2b work and the HALO trace-loop spike (P20); the per-component metrics are candidate fields for the HALO six-tool analyzer surface. Roll-up: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P24. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
+These compose with the existing Tier-1/Tier-2/Tier-2b work and the HALO trace-loop spike (P20); the per-component metrics are candidate fields for the HALO six-tool analyzer surface. Roll-up: [`routing-and-optimization-index.md`](../active/routing-and-optimization-index.md) P24. Source: intake-607 `deep_dive` in `research/intake_index.yaml`.
 
 ## Post-result conditional workflow + mitigation (HLE-1/2/3 — metric-validity gate, bulk-inference J9 lane)
 
@@ -506,7 +512,7 @@ HLE-1/HLE-2 are non-inference code (compute metrics + register oracle-adequacy i
 - ✅ metric shows signal → eligible for HLE-4 promotion (Pareto co-objective/guardrail in autopilot).
 - ❌ no signal / high missingness / low-confidence-for-most-trials → keep it a **dashboard diagnostic only**; never a hard gate.
 
-Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE-1 score carries evidence-event-ids + confidence; shortcut detection (web-search leakage, answer-key memorization, exact-match artifacts) lives in oracle-adequacy as first-class blind spots, not prose. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
+Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE-1 score carries evidence-event-ids + confidence; shortcut detection (web-search leakage, answer-key memorization, exact-match artifacts) lives in oracle-adequacy as first-class blind spots, not prose. Operator decision tree mirrored in [`bulk-inference-campaign.md`](../active/bulk-inference-campaign.md) Package J.
 
 ## Research Intake Update — 2026-05-26
 
@@ -514,7 +520,7 @@ Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE
 - **[intake-609] "FastMCP — Pythonic framework for building MCP servers and clients"** (`github.com/prefecthq/fastmcp`, Apache-2.0, v3.3.1)
   - Relevance: the curated-context MCP server pattern referenced alongside intake-414 ("15+ tool MCP server" for structural-map curation) and the Phase 1 "MCP tool ecosystem → synthesized verifiable tasks" thread (line 223) both presuppose an MCP-server scaffold. FastMCP is the framework.
   - 2026-05-26 update: standalone `fastmcp>=3` is now pinned in `epyc-orchestrator/pyproject.toml` and `src/mcp_server.py` runs on it (migration verified, 40 MCP tests pass). The framework choice is settled and v3-specific features (server composition, `FastMCP.from_fastapi`/`from_openapi`, around-style middleware) are now available without a further dep change. **No outstanding HLE work is unblocked** — HLE-1/HLE-2/HLE-3 are trace-schema and eval-methodology work, not MCP-tool work; the intake-605 "curate over auto-search" pattern was already verdict `adopt_patterns` (proprietary GUI, no component) so there is nothing here to build.
-  - When relevant: if HLE-1's "per-component harness metrics" ever needs to capture MCP-tool-call evidence (`@on_call_tool` middleware emitting evidence-event-ids), the precedent is [`tool-output-compression.md`](tool-output-compression.md) Phase 4 (P4b). Until then, this entry is reference-only.
+  - When relevant: if HLE-1's "per-component harness metrics" ever needs to capture MCP-tool-call evidence (`@on_call_tool` middleware emitting evidence-event-ids), the precedent is [`tool-output-compression.md`](../active/tool-output-compression.md) Phase 4 (P4b). Until then, this entry is reference-only.
 
 ## Research Intake Update — 2026-05-27
 
@@ -522,7 +528,7 @@ Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE
 - **[intake-625] "Understand-Anything: multi-agent Claude Code plugin"** (`github.com/Lum1104/Understand-Anything`, MIT) — verdict: **worth_investigating** (patterns only, gated)
   - Why this is here: UA orchestrates a 7-phase pipeline through **9 specialized agents** (project-scanner, file-analyzer, architecture-analyzer, domain-analyzer, tour-builder, graph-reviewer, assemble-reviewer, knowledge-graph-guide, article-analyzer). On the surface this is a candidate pattern for harness decomposition — exactly the kind of "split monolithic analysis into specialized agents" shape future harness searches will surface.
   - **Do NOT lift the decomposition as a pattern.** Deep-dive at `research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md` §3 found no published ablation comparing 1-agent vs 9-agent quality. The decomposition reads as natural-LLM-style framing of orthogonal concerns (analysis vs review vs guidance), not a measured win. The README claims "5 agents" while the repo ships 9 — even the project's own count of its agents is unstable.
-  - **What IS worth lifting** (handled in [`internal-kb-rag.md`](internal-kb-rag.md), not here): the deterministic phase components — `extract-structure.mjs` (Tree-sitter skeleton), `tour-builder.md` Phase-1 topology script (BFS-from-entry-point), and `domain-analyzer.md` 3-level schema. The decomposition is **not** on that list.
+  - **What IS worth lifting** (handled in [`internal-kb-rag.md`](../active/internal-kb-rag.md), not here): the deterministic phase components — `extract-structure.mjs` (Tree-sitter skeleton), `tour-builder.md` Phase-1 topology script (BFS-from-entry-point), and `domain-analyzer.md` 3-level schema. The decomposition is **not** on that list.
   - When the meta-harness search hits UA again (it will — 39 127 ★, viral GitHub Trending presence in 2026 Q2): the answer is "evaluated 2026-05-27, decomposition not adopted, see intake-625 deep_dive". Forestall re-discovery.
 
 ## Research Intake Update — 2026-05-27 (text-space skill-optimizer cohort)
@@ -550,4 +556,4 @@ Mitigation: don't replace one noisy scalar with five noisy scalars — every HLE
 ### Recommended next action (REVISED, no code change yet)
 When the meta-harness Tier-1/Tier-2 live-validation (AR-3 autopilot) run lands, the highest-value SkillOpt lift is the **epoch-wise slow/meta update** (its ablation-proven load-bearing mechanism), NOT the validation gate (PromptForge already has one) and NOT the LR budget (least critical). Secondary: confirm `eval_tower` uses a distinct held-out selection split for acceptance; extend `mutation_ledger.py` to a rejected-edit buffer. Reference impl `github.com/microsoft/SkillOpt` is MIT (`scripts/train.py`) — lift the epoch/meta-update loop, do not re-derive.
 
-**Cross-cutting prerequisite (eval side)**: this recommendation is only auditable once eval-tower can measure *paired, per-suite, negative-delta-guarded* skill efficacy — tracked as **EV-10a** in [eval-tower-verification.md](eval-tower-verification.md) / [research-evaluation-index.md](research-evaluation-index.md) P8. The SkillsBench finding (self-generated = −1.3pp; 16/84 curated regress) means an aggregate improvement can hide a per-suite regression; EV-10a is the instrument that catches it. For leak-constrained scoring, CoEvoSkills' (intake-628) surrogate-verifier pattern is EV-10b.
+**Cross-cutting prerequisite (eval side)**: this recommendation is only auditable once eval-tower can measure *paired, per-suite, negative-delta-guarded* skill efficacy — tracked as **EV-10a** in [eval-tower-verification.md](../active/eval-tower-verification.md) / [research-evaluation-index.md](../active/research-evaluation-index.md) P8. The SkillsBench finding (self-generated = −1.3pp; 16/84 curated regress) means an aggregate improvement can hide a per-suite regression; EV-10a is the instrument that catches it. For leak-constrained scoring, CoEvoSkills' (intake-628) surrogate-verifier pattern is EV-10b.

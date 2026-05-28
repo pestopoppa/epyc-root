@@ -1,9 +1,56 @@
 # MathSmith HC Formalizer Evaluation & A/B Testing
 
-**Status**: stub
+**Status**: refreshed 2026-05-28 — active but blocked on model availability check + S4 protocol; not a generic stub
 **Created**: 2026-03-20 (via research intake)
+**Updated**: 2026-05-28
 **Categories**: training_distillation, benchmark_methodology
 **Depends on**: ~~rlm-orchestrator-roadmap.md~~ (Phase 4 Formalizer — Done, roadmap archived 2026-03-29)
+
+## 2026-05-28 Audit Reset — Executor Start Here
+
+This handoff remains useful, but the old "stub" status understated both the deployed baseline and the real next decision. The open work is not to revisit the formalizer concept; it is to decide whether an HC model improves JSON consistency, math accuracy, and total-token cost enough to replace the current MathSmith-Hard formalizer.
+
+**Critique of older structure**: it mixed registry cleanup, model acquisition, spec decode, and formalize-then-solve A/B without a front-door gate. A fresh implementer should first prove that the HC artifact exists and is loadable, then run a small S4 protocol before any broad benchmark.
+
+**Current verified baseline**:
+
+- `input_formalizer` feature exists in orchestrator `src/features.py`.
+- Formalizer registry cleanup landed in inference-research commit `8cf5ada`.
+- Historical benchmark records show the current Q4 formalizer path exists; Q8 speed anomaly remains a known issue.
+- `MATHSMITH_CANONICALIZER_PROPOSAL.md` is retired; this file is the authority.
+
+**Next action: S2 artifact check, then S4 mini-protocol**:
+
+1. Check whether HC GGUFs already exist:
+   ```bash
+   huggingface-cli scan-cache | rg -i "MathSmith|HC|Jasaxion" || true
+   ls /mnt/raid0/llm/models | rg -i "MathSmith|HC|formalizer" || true
+   ```
+2. If no GGUF exists, inspect HF availability before downloading:
+   ```bash
+   huggingface-cli repo ls Jasaxion/MathSmith-HC-Problem-Synthesizer-Qwen3-8B
+   ```
+3. If the model exists and the user approves inference, run a **10-problem mini S4** before any full suite:
+   - 5 AIME-style problems
+   - 5 OlympiadBench-style problems
+   - same solver, same seed, two arms: direct solve vs HC formalize-then-solve
+   - score with Math-Verify, not exact match
+   - record both accuracy and total generated tokens
+
+**Decision forks**:
+
+| Mini S4 result | Action |
+|---|---|
+| Accuracy improves or ties and total tokens drop >=10% | Run full S4 on AIME/OlympiadBench. |
+| Accuracy improves but tokens rise | Keep as selective hard-problem tool; route only high-ambiguity math. |
+| Tokens drop but accuracy falls | Do not deploy; inspect formalization omissions before rerun. |
+| HC artifact unavailable or conversion fails | Park this handoff as monitoring; keep current formalizer. |
+
+**S4 mini-protocol table**:
+
+| Date | HC artifact | Solver | Direct acc/tokens | Formalized acc/tokens | Decision |
+|---|---|---|---:|---:|---|
+| _pending_ | | | | | |
 
 ## Objective
 
