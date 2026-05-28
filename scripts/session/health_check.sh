@@ -22,7 +22,7 @@ check() {
   local fail_msg="${3:-}"
 
   if eval "$condition"; then
-    echo "âœ… PASS: $test_name"
+    echo "✅ PASS: $test_name"
     ((PASS+=1))
     return 0
   else
@@ -111,12 +111,12 @@ if pgrep -f "claude" >/dev/null; then
   ps aux | grep -i claude | grep -v grep
   ((WARN+=1))
 else
-  echo "âœ… PASS: No Claude processes running"
+  echo "✅ PASS: No Claude processes running"
   ((PASS+=1))
 fi
 
 if pgrep -f "monitor_storage" >/dev/null; then
-  echo "âœ… PASS: Storage monitor is running"
+  echo "✅ PASS: Storage monitor is running"
   ((PASS+=1))
 else
   echo "⚠️  WARN: Storage monitor not running - consider starting it"
@@ -160,7 +160,7 @@ echo ""
 echo "=============================================="
 echo "Health Check Summary"
 echo "=============================================="
-echo "  Passed:   $PASS âœ…"
+echo "  Passed:   $PASS ✅"
 echo "  Warnings: $WARN ⚠️"
 echo "  Failed:   $FAIL ❌"
 echo ""
@@ -190,7 +190,7 @@ elif [ $WARN -gt 0 ]; then
   echo ""
   exit 0
 else
-  echo "âœ… ALL CHECKS PASSED - System ready for Claude session"
+  echo "✅ ALL CHECKS PASSED - System ready for Claude session"
   echo ""
   echo "Start Claude Code:"
   echo "  bash ${PROJECT_ROOT}/scripts/session/claude_safe_start.sh"
