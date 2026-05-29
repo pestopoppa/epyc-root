@@ -1,28 +1,59 @@
 # NUMA Page-Cache Prewarm for Shared GGUF Startup
 
-**Status**: IMPLEMENTED 2026-05-29 (P0-P4 landed + warm-path live-validation on the running J6 stack). P5 controlled cold-start validation remains as the only outstanding gate; defer to the next intentional cold start so the in-flight J6 24h soak is not disrupted.
+> **Historical ledger only.** Archived 2026-05-29 after P5 cold-cache validation closed all acceptance criteria. The codified `[1.5] Page-cache prewarm` phase lives at `epyc-orchestrator/scripts/server/stack_prewarm.py` + wire-up in `scripts/server/stack_commands.py::cmd_start`; tests at `tests/unit/test_stack_prewarm.py`. Re-open ONLY if a future cold start exhibits the NUMA-collapse symptom this handoff resolved.
+
+**Status**: COMPLETE 2026-05-29 (P0-P5 accepted; cold-cache validation PASS; archived in the 2026-05-29 wrap-up).
 **Priority**: HIGH for production stack reliability; low code volume.
 **Effort**: 0.5-1 day implementation + one controlled cold-start validation.
 **Owner**: epyc-orchestrator stack startup.
 **Repos**: `/mnt/raid0/llm/epyc-orchestrator` implementation; `/mnt/raid0/llm/epyc-root` tracking.
-**Parent indices**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md), [`routing-and-optimization-index.md`](routing-and-optimization-index.md), [`master-handoff-index.md`](master-handoff-index.md).
+**Parent indices**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md), [`routing-and-optimization-index.md`](../active/routing-and-optimization-index.md), [`master-handoff-index.md`](../active/master-handoff-index.md).
 
 ---
 
 ## Executor Start Here
 
-Implement a startup prewarm step that runs after model-path validation and before any new `llama-server` process is launched. The minimum viable fix is:
+This handoff is complete. The startup prewarm step now runs after model-path validation and before any new `llama-server` process is launched:
 
 ```bash
 numactl --interleave=all cat <unique target GGUF> >/dev/null
 ```
 
-Do this for each unique GGUF needed by the start command, deduped by device+inode. Do not automate `drop_caches`; normal stack startup must require no sudo beyond the existing host-prereq machinery.
+It runs once per unique GGUF needed by the start command, deduped by device+inode. `drop_caches` remains an optional manual validation step only; normal stack startup requires no sudo beyond the existing host-prereq machinery.
 
-Validation is not complete until a controlled cold start shows both:
+P5 cold-cache validation passed on 2026-05-29. A controlled cold start showed both:
 
 1. `/proc/<llama_pid>/numa_maps` reports near-even GGUF page placement across N0/N1/N2/N3 for the affected shared models.
 2. The next autopilot seed/eval trial returns to the pre-collapse aggregate speed envelope, approximately 55-70 t/s for the comparable seed trials seen before the 2026-05-28 slowdown.
+
+## Completion Result - P5 Cold-Cache PASS (2026-05-29)
+
+Cold-cache validation exercised the original bug path: page cache was dropped manually, then normal `orchestrator_stack.py start` ran the codified `[1.5] Page-cache prewarm` before server launch. The phase read 120.1 GiB of unique GGUFs in 27.3 s and reproduced the manual NUMA recovery automatically.
+
+| Model | Mapped pages | N0 | N1 | N2 | N3 | Max single-node share |
+|-------|-------------:|---:|---:|---:|---:|----------------------:|
+| Qwen3.6-35B (frontdoor) | 9,009,694 | 2,252,419 | 2,252,401 | 2,252,428 | 2,252,446 | 25.001% |
+| Qwen3-Next-80B (ingest) | 11,817,629 | 2,954,402 | 2,954,403 | 2,954,411 | 2,954,413 | 25.0003% |
+| Qwen3-VL-30B (vision_esc) | 4,501,337 | 1,125,327 | 1,125,330 | 1,125,344 | 1,125,336 | 25.001% |
+
+Variance per model is below 0.002%, far inside the acceptance threshold of no single node holding more than 30% of a shared model's pages. Per-node counters were also flat after startup:
+
+| Counter | N0 | N1 | N2 | N3 |
+|---------|---:|---:|---:|---:|
+| Unevictable MB | 38,063 | 38,060 | 38,061 | 38,061 |
+| FilePages MB | 118,865 | 118,316 | 118,270 | 117,917 |
+
+Side-by-side with the incident:
+
+| Stat | 2026-05-28 collapsed | 2026-05-28 manual recovery | 2026-05-29 codified `[1.5]` |
+|------|----------------------|----------------------------|-----------------------------|
+| frontdoor Node 0 share | 100% (9.0M pages) | 25.0% | 25.0% |
+| ingest Node 0 share | 100% (11.8M pages) | 25.0% | 25.0% |
+| vision_esc share | 100% on Node 2 | 25.0% | 25.0% |
+| Unevictable spread | 99 / 17 / 17 / 17 GB | about 38 GB x 4 | 38.06 / 38.06 / 38.06 / 38.06 GB |
+| `[1.5]` total time | n/a | n/a | 27.3 s |
+
+Autopilot throughput remained in the recovered range after validation. The latest checked journal entry was trial 123 at 66.74 aggregate t/s; recent post-fix trials stayed well above the collapsed 24-35 t/s floor and around the 55-70 t/s recovery envelope.
 
 ---
 
@@ -59,7 +90,7 @@ The process exposed a real automation gap: startup says host prerequisites are s
 - [x] **P2: Scope prewarm to the requested launch set.** `prewarm_all` is called with the post-filter `servers_to_start`. For each server entry it dispatches `build_server_command` (the same dispatcher the launcher uses), scans `-m` / `-md` / `--mmproj` flags, then dedupes by `(st_dev, st_ino)`. No WARM models warmed unless the start request asks for them.
 - [x] **P3: Add an explicit escape hatch.** `--skip-page-cache-prewarm` on `orchestrator_stack.py start`, plus the equivalent `ORCHESTRATOR_SKIP_PAGE_CACHE_PREWARM=1` env. Skip path prints `[1.5] Page-cache prewarm SKIPPED` and an inline recovery recipe.
 - [x] **P4: Test without real GGUF reads.** `tests/unit/test_stack_prewarm.py` — 15 tests covering flag extraction (3), inode dedupe / distinct inodes / unstatable paths / build-command failures (4), `prewarm_file` happy / CalledProcessError / missing-numactl (3), and `prewarm_all` orchestration including CLI-flag skip, env skip, happy path with size-ordered warm, mixed failure, and empty-target case (5). All 15 pass in 0.10 s.
-- [ ] **P5: Controlled cold-start validation.** Deferred — the in-flight J6 24h soak (PID 219740, etime 5h21m at landing) must not be disrupted. Path: after the soak finishes or at next intentional restart, `orchestrator_stack.py stop --all && sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches && orchestrator_stack.py start`, confirm `[1.5]` warm reports ~30s aggregate (cold), spot-check `/proc/<llama_pid>/numa_maps` for N0/N1/N2/N3 balance, then verify next autopilot trial speed lands in the 55-70 t/s envelope.
+- [x] **P5: Controlled cold-start validation.** PASS 2026-05-29. Manual `drop_caches` created the true cold-cache path; normal `orchestrator_stack.py start` ran `[1.5]`, warmed 120.1 GiB in 27.3 s, and all previously-collapsed shared GGUFs landed at about 25% per NUMA node. Latest checked autopilot trial: 123 at 66.74 aggregate t/s.
 
 ### Live-validation evidence (warm path, 2026-05-29)
 
@@ -136,18 +167,18 @@ This blocks reliable cold-start performance for:
 | epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_numa.py` | Existing NUMA launch policies; do not conflate process policy with page-cache warm policy. |
 | epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_host.py` | Existing host-prereq machinery; keep `drop_caches` out of normal startup. |
 | epyc-orchestrator | `/mnt/raid0/llm/epyc-orchestrator/tests/` | Add unit tests for prewarm helper and CLI skip flag. |
-| epyc-root | `/mnt/raid0/llm/epyc-root/progress/2026-05/2026-05-28.md` | Record implementation and validation results. |
+| epyc-root | `/mnt/raid0/llm/epyc-root/progress/2026-05/2026-05-29.md` | Record implementation and validation results. |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] `rg -n "page-cache|prewarm|numactl.*cat|interleave=all" scripts/server tests` in `epyc-orchestrator` finds the new codified prewarm path and tests.
-- [ ] `python3 -m pytest` target tests for the new helper pass.
-- [ ] `python3 scripts/server/orchestrator_stack.py start --help` documents the skip flag if a CLI flag is used.
-- [ ] A normal `orchestrator_stack.py start` prints a clear prewarm phase and reports each unique GGUF once.
-- [ ] A controlled cold-cache run shows model pages distributed across all four NUMA nodes for the affected GGUFs, with no single node holding more than 30% of the model pages unless the role intentionally uses a node-local policy.
-- [ ] The first comparable autopilot journal trial after validation lands at or above the recovery threshold agreed for that run. For the 2026-05-28 incident, use 55-70 aggregate t/s as the target envelope.
+- [x] `rg -n "page-cache|prewarm|numactl.*cat|interleave=all" scripts/server tests` in `epyc-orchestrator` finds the new codified prewarm path and tests.
+- [x] `python3 -m pytest` target tests for the new helper pass.
+- [x] `python3 scripts/server/orchestrator_stack.py start --help` documents the skip flag if a CLI flag is used.
+- [x] A normal `orchestrator_stack.py start` prints a clear prewarm phase and reports each unique GGUF once.
+- [x] A controlled cold-cache run shows model pages distributed across all four NUMA nodes for the affected GGUFs, with no single node holding more than 30% of the model pages unless the role intentionally uses a node-local policy.
+- [x] The first comparable autopilot journal trial after validation lands at or above the recovery threshold agreed for that run. For the 2026-05-28 incident, use 55-70 aggregate t/s as the target envelope.
 
 ---
 
