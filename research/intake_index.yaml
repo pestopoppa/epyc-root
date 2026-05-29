@@ -31288,3 +31288,452 @@
   handoffs_updated: []
   handoffs_created: []
   notes: 'Ingested 2026-05-28 via Tier-2b deep-dive expansion from intake-639. Nanjing U + Tsinghua + UW-Madison + Alibaba AMAP. Credibility 6/6: strong author roster, formal results with proofs, aggressive ablation, cites and beats concurrent SDPO/SRPO/RLSD baselines. Recommended as v1 drafter-training recipe candidate (alongside intake-644 two-stage) for FastDraft (intake-624) if/when drafter training is funded.'
+- id: intake-646
+  arxiv_id: null
+  url: https://www.llamaindex.ai/blog/liteparse-v2-0-runs-everywhere
+  source_type: blog
+  title: 'Up to 100x Fast Parsing with LiteParse v2.0 and Rust (LiteParse v2.0 Runs Everywhere)'
+  authors:
+  - Logan Markewich (LlamaIndex)
+  categories:
+  - document_processing
+  - multimodal
+  - local_inference
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/liteparse-document-parser-deep-dive.md
+  key_claims:
+  - 'Rust rewrite runs natively across Rust, Node, Python, and WASM (browser/edge) — fully local, no cloud, no LLMs, no API keys'
+  - '5-100x speedup on small documents and ~3x on larger documents vs the prior Node implementation'
+  - 'Parses a 457-page, 100MB PDF in 0.777 seconds end-to-end'
+  - 'Custom PDFium fork + tesseract-rs OCR; preserves spatial layout by projecting text onto a spatial grid (incl. reading order); tables kept as positioned text, not markdownified'
+  - 'Open-source (run-llama/liteparse), shipped via PyPI/npm/crates.io; runs entirely on-device incl. browser via WASM'
+  techniques:
+  - Rust core with Node/Python/WASM bindings
+  - Custom PDFium fork for born-digital extraction
+  - tesseract-rs OCR
+  - spatial-grid text projection for reading-order/layout preservation
+  - WASM compilation for browser/edge
+  reported_results:
+  - 5-100x speedup small docs / ~3x large docs vs prior Node version (VENDOR, unverified)
+  - 457-page / 100MB PDF in 0.777s
+  - No parsing-accuracy/quality benchmark (no NID/TEDS/MHS) reported
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - multimodal-pipeline.md
+    - pipeline-integration-index.md
+    experiments: []
+    intake_entries:
+    - intake-161
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  novelty_justification: 'Document-parsing-into-pipeline is well-covered (OpenDataLoader/docling/marker/pymupdf4llm, intake-161). LiteParse is a distinct design point not yet captured: pure-Rust, LLM-free, WASM/edge-deployable single binary using spatial-grid projection rather than table-to-markdown. New perspective, not novel research — medium.'
+  relevance_justification: 'Directly addresses the active document_processing handoff (opendataloader-pipeline-integration.md). Open-source + self-hostable + CPU/local-only, satisfying OSS-only/no-SaaS/CPU constraints. Credible JVM-free alternative to OpenDataLoader for the born-digital fast path — high.'
+  verdict_justification: 'Vendor (LlamaIndex) blog, self-reported speed-only numbers (457pg/100MB in 0.777s, 5-100x), no accuracy benchmark. Deep dive (2026-05-29) re-scored credibility null->2: the speed figure IS an empirical claim, but vendor-self-reported with no repro. OSS, self-hostable, CPU-only, on an active handoff critical path: worth_investigating. Bench LiteParse-local vs OpenDataLoader-local vs pdftotext with a LiteParse-output-aware harness before any adopt_component decision on the born-digital fast path.'
+  contradicting_evidence:
+  - 'LlamaIndex own docs concede LlamaParse cloud is significantly better for complex docs (dense tables, multi-column, charts, handwritten, scanned); LiteParse scoped to fast local born-digital text only.'
+  - 'LiteParse non-markdown layout-preserving output fails standard OCR benchmarks (e.g. OlmOCR) by construction — "not incorrect, but fails the benchmark format"; needs a LiteParse-aware quality harness for head-to-head scoring.'
+- id: intake-647
+  arxiv_id: null
+  url: https://github.com/run-llama/liteparse
+  source_type: repo
+  title: 'LiteParse — fast, open-source local document parser (PDF/Office/image -> text + bounding boxes)'
+  authors:
+  - run-llama (LlamaIndex)
+  categories:
+  - document_processing
+  - multimodal
+  - local_inference
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: input
+  verdict: adopt_component
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/liteparse-document-parser-deep-dive.md
+  key_claims:
+  - 'Fast fully-local document parser in Rust: extracts text with spatial positioning (bounding boxes) via PDFium, no cloud API key, runs offline'
+  - 'Flexible OCR: bundled Tesseract default, plus optional HTTP-server backends (EasyOCR, PaddleOCR) or custom OCR'
+  - 'Multi-format input (PDF/DOCX/XLSX/PPTX/images) via LibreOffice/ImageMagick conversion; output JSON or plain text'
+  - 'Grid-projection spatial layout reconstruction; generates page screenshots for downstream LLM/VL agents'
+  - 'Rust crate + Python (PyO3) + Node/TS (napi-rs) + browser WASM (wasm-bindgen) with unified CLI; LlamaParse cloud offered only as optional escalation for hard docs'
+  techniques:
+  - PDFium text extraction + rendering
+  - Tesseract OCR (pluggable HTTP/custom backends)
+  - grid-projection spatial layout reconstruction
+  - bounding-box spatial text parsing
+  - LibreOffice/ImageMagick format conversion
+  - page screenshot generation for VL agents
+  - native bindings (PyO3 / napi-rs / wasm-bindgen)
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - opendataloader-pipeline-integration.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-161
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  novelty_justification: 'Adds a distinct, lower-dependency option to the document-parsing design space opened by intake-161 (OpenDataLoader). Differs materially: pure Rust + PDFium/Tesseract (no JVM), native PyO3 bindings, screenshot-for-VL output. Not a duplicate, but problem space already represented — medium.'
+  relevance_justification: 'Directly targets opendataloader-pipeline-integration.md gaps (reading order, structured extraction, figure context, per-page routing) and the orchestrator pdf_router.py pipeline. Fully local, CPU-friendly, Apache-2.0, Python SDK — satisfies OSS/self-hosted-only + CPU target. Page screenshots also feed the VL multimodal pipeline — high.'
+  verdict_justification: 'Mature, directly-usable OSS library (Apache-2.0, 6.8k stars / 425 forks / 600 commits / 46 releases, v2.0.3 @ 2026-05-28, real 3-OS CI + HF regression + LLM-judge eval, LlamaIndex team) running fully local with Python bindings — adopt_component as the born-digital fast-path text+bbox+screenshot backend behind the pdf_router ABC, NOT an ODL structural replacement (no heading hierarchy / table DOM / figure semantic-type). Deep dive (2026-05-29) re-scored credibility null->4 (capped <5: only accuracy evidence is LLM-judge vs weak baselines pypdf/PyMuPDF/Markitdown, no independent NID/TEDS/OmniDocBench). PDFium fork + tesseract-rs compiled into the 13MB manylinux wheel — no JVM/system build on EPYC. Head-to-head bench vs ODL/pdftotext is the next step.'
+  contradicting_evidence:
+  - 'Vendor docs scope LiteParse to born-digital fast-path; complex/dense-table/scanned docs route to LlamaParse-cloud-class quality (our equivalent = ODL + VL-OCR path).'
+- id: intake-648
+  arxiv_id: '2506.14202'
+  url: https://arxiv.org/html/2506.14202v3
+  source_type: paper
+  title: 'DiffusionBlocks: Blockwise Training for Generative Models via Score-Based Diffusion'
+  authors:
+  - Makoto Shing
+  - Takuya Akiba
+  categories:
+  - training_distillation
+  - multimodal
+  novelty: high
+  relevance: low
+  credibility_score: 1
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-29'
+  key_claims:
+  - 'Partitioning a network into B independently trainable blocks, each a denoiser over a contiguous noise-level range, gives B-fold activation-memory reduction during training (no full end-to-end backprop graph)'
+  - 'Equi-probability partitioning (block boundaries at equal cumulative probability mass of the log-normal noise schedule) ensures each block faces an equally hard sub-problem — claimed key to matching/beating end-to-end'
+  - 'Matches or exceeds end-to-end backprop on BOTH image generation (CIFAR-10, ImageNet-256) and language modeling (LM1B)'
+  - '~3-4x faster generation for the diffusion-sampling pathway; controlled block overlap gamma=0.1 to stitch blocks'
+  - 'Generic over residual architectures (ResNets, Transformers, U-Nets) via Variance-Exploding score-based / Probability-Flow-ODE formulation'
+  techniques:
+  - blockwise independent training as score-based denoisers
+  - score-based diffusion (Variance-Exploding)
+  - Probability Flow ODE Euler discretization
+  - equi-probability noise-level partitioning from log-normal schedule
+  - controlled block overlap (gamma=0.1)
+  reported_results:
+  - 'CIFAR-10 FID 41.39 vs 41.87 end-to-end (lower better)'
+  - 'ImageNet-256 FID 15.55 vs 16.62 baseline'
+  - 'LM1B MAUVE 0.779 vs 0.595 baseline'
+  - '~4x training activation-memory reduction at B=4'
+  - 'LM generation cost O(K*M) forward passes (K tokens, M diffusion steps) — NOT a per-token AR latency win'
+  referenced_arxiv_ids:
+  - '2303.08797'
+  - '2310.16834'
+  - '2307.09288'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-493
+    - intake-511
+    - intake-530
+    - intake-531
+  novelty_justification: 'High as a TRAINING method — equi-probability noise partitioning to make each block an equally-hard independently-trainable denoiser is a genuinely new mechanism, validated across image + LM1B. Distinct from prior layerwise/greedy training and from Sakana Trinity/Conductor/sparser-faster-llms lines. Scoped to the training-memory-decomposition contribution, not extrapolated to inference.'
+  relevance_justification: 'Low for CPU-only serving. Training-time activation-memory lever (lands on training GPUs we do not have); the 3-4x is diffusion-SAMPLING speedup not AR CPU-decode (LM generation is O(K*M), worse for token serving); all evals are sub-1B toy benchmarks. Above NONE only because it shares the inference-time block-diffusion name-space tracked in chapter 10 (DFlash/Nemotron-Diffusion) and is a same-lab artifact worth indexing — must NOT be conflated with those spec-dec lines.'
+  verdict_justification: 'not_applicable. No production gate met: training-side memory decomposition, no AR CPU-inference pathway, requires from-scratch training, toy-scale evals. Unlike intake-530 (TwELL CPU kernel reference) it offers no transferable artifact for CPU serving; diffusion-for-inference value is covered by Nemotron-Diffusion (intake-576..578) and the closed DFlash NO-GO. Re-surface only if a future paper extends equi-probability blockwise training to a CPU-servable AR transformer with a measured decode-latency win. Credibility 1: arXiv preprint (0) + within 12mo (+1) + Sakana major lab (+1) - Sakana Fugu commercial bias (-1).'
+  contradicting_evidence:
+  - 'Name-collision with inference-time "block diffusion" spec-dec (DFlash intake-158, DART intake-159, Nemotron-Diffusion intake-576..578) — those are decoding paradigms, this is purely training; do not conflate.'
+- id: intake-649
+  arxiv_id: null
+  url: https://github.com/SakanaAI/DiffusionBlocks
+  source_type: repo
+  title: 'DiffusionBlocks: Blockwise Training for Generative Models (official code, ICLR 2026)'
+  authors:
+  - Makoto Shing
+  - Masanori Koyama
+  - Takuya Akiba
+  - Sakana AI
+  categories:
+  - training_distillation
+  - multimodal
+  - autonomous_research
+  novelty: medium
+  relevance: none
+  credibility_score: null
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-05-29'
+  key_claims:
+  - 'Partitions transformers into independently trainable blocks, each interpreted as a denoising/diffusion step, reducing peak memory proportional to block count'
+  - 'Maintains competitive performance vs end-to-end backprop across architectures/tasks despite decoupled block-local training'
+  - 'Aligns total training iterations with end-to-end baseline by multiplying epochs by block count (no compute free lunch, only memory)'
+  - 'Enables modular layer-parallel training without storing the full forward activation graph'
+  techniques:
+  - block-wise training via diffusion/denoising reinterpretation of forward passes
+  - memory-efficient decoupled (non-end-to-end) optimization of transformer blocks
+  - EDM-style diffusion framing (references Stability-AI/generative-models)
+  - RandAugment + cosine LR with warmup
+  reported_results:
+  - 'Demonstrated on image classification with Vision Transformers; competitive accuracy vs end-to-end at reduced peak memory (full metrics in paper 2506.14202)'
+  referenced_arxiv_ids:
+  - '2506.14202'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash-block-diffusion-speculation.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-493
+    - intake-511
+    - intake-530
+    - intake-531
+    - intake-648
+  novelty_justification: 'Reframing layer-wise/block-local training as a diffusion denoising process is a genuinely novel framing, distinct from block-diffusion DECODING (dflash handoff). Not high because the memory-saving idea (decoupled block training, forward-forward style) is an active known line and results are small-scale ViT/image.'
+  relevance_justification: 'Training-time memory-reduction method for from-scratch training, demonstrated on image classification, GPU/CUDA-targeted, no released weights. EPYC is CPU-only INFERENCE — no training, no image workloads, no inference/quant/KV/MoE hook. Block-diffusion name collides with block-diffusion DECODING (dflash) but mechanism is unrelated — flagged to prevent future name-confusion.'
+  verdict_justification: 'not_applicable: training-only, GPU/CUDA-only, image-domain, no checkpoints, orthogonal to CPU inference. No portable component or pattern. Logged for Sakana-tracking completeness, cross-linked to parent paper intake-648. Only conceivable hook (block-local training as a future fine-tune/distillation memory lever) too speculative and off-domain; surface only if a custom training initiative starts.'
+- id: intake-650
+  arxiv_id: null
+  url: https://www.liquid.ai/blog/lfm2-5-8b-a1b
+  source_type: blog
+  title: 'LFM2.5-8B-A1B: an Even Better on-Device Mixture-of-Experts'
+  authors:
+  - Liquid AI
+  categories:
+  - ssm_hybrid
+  - moe_optimization
+  - local_inference
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/lfm2-lfm25-family-deep-dive.md
+  key_claims:
+  - '8B-total / ~1B-active MoE from gated short-convolution blocks + grouped-query attention (LFM2 hybrid lineage), competitive with much larger dense/MoE models at a ~1B compute/memory footprint'
+  - 'Fast on consumer CPUs: 253 tok/s on Apple M5 Max, 146 tok/s on Ryzen AI Max+, under 6GB memory; ~30 tok/s mobile'
+  - '128K context (up from 32K); doubled 128K-token multilingual vocab; trained on 38T tokens (up from 12T)'
+  - 'Reliable agentic tool calling (BFCLv3 64.79, Tau2-Telecom 88.07) plus explicit chain-of-thought'
+  - 'Day-one GGUF/llama.cpp support, plus MLX/vLLM/SGLang/ONNX/Liquid LEAP; open weights on HuggingFace'
+  techniques:
+  - 'Hybrid MoE: gated short-conv blocks + GQA, sparse expert activation (8B total / ~1B active)'
+  - LFM2 architecture family (conv+attention)
+  - continued-BPE-merge tokenizer expansion (65K -> 128K vocab)
+  - context extension 32K -> 128K
+  reported_results:
+  - 'CPU: 253 tok/s (M5 Max, <6GB), 146 tok/s (Ryzen AI Max+), ~30 tok/s mobile'
+  - 'GPU: 18.5K output tok/s aggregate at high concurrency on a single H100'
+  - 'IFEval 91.84; MATH500 88.76; AIME25 42.53'
+  - 'BFCLv3 64.79; Tau2-Telecom 88.07'
+  - 'Compared vs Granite-4.0-H-Tiny (7B/A1B), Qwen3.5-4B, Qwen3-30B-A3B-Thinking, Gemma-4, gpt-oss-20b'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - lightning-attention-port.md
+    - gemma4-mtp-drafter-evaluation.md
+    experiments:
+    - hispec-external-draft-benchmark.md
+    intake_entries:
+    - intake-651
+    - intake-653
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  novelty_justification: 'First Liquid/LFM2 entry in the index. The conv+attention hybrid-MoE family with ~1B active is architecturally distinct from Qwen/Gemma/DeepSeek MoEs already tracked, and the on-device A1B framing is new to the compendium. Not high — incremental vendor point-release of an existing LFM2 lineage, no method disclosure in the blog.'
+  relevance_justification: 'Medium (deep dive 2026-05-29 downgraded from high). Open-weight, GGUF/llama.cpp-supported 8B-A1B sub-6GB hybrid MoE is interesting, but NO current production role has a gap it fills, and it is NOT a spec-dec drafter — its own 128K lfm2 vocab is incompatible with every target tokenizer (exact match required) and all production spec-dec is self-speculation. Realistically a standalone cheaper/lower-quality tier only; CPU-only + open-source satisfied but applicability limited.'
+  verdict_justification: 'worth_investigating not new_opportunity: claims vendor-reported, no peer review/corroboration, headline CPU speeds are Apple/Ryzen consumer SoCs NOT EPYC 9655. Deep dive (2026-05-29): no bench, no port, no deployment — no production role justifies it (respects feedback_no_concurrent_inference). Revisit only if a cheap-first/edge/router-triage role opens, then evaluate as a STANDALONE candidate (NOT a drafter). Credibility 1->2: blog (0) + within 12mo (+1) + Liquid AI known lab (+1) - commercial self-promotion (-1) + corroborated reproducible claims.'
+  contradicting_evidence:
+  - 'Headline CPU t/s are mobile/laptop SoC, not EPYC; MarkTechPost coverage merely restates vendor numbers (not independent measurement).'
+  - 'NOT a viable spec-dec drafter: LFM2.5 ships its own 128K lfm2 BPE vocab (convert_hf_to_gguf.py pretok "lfm2"), incompatible with every production target tokenizer (Qwen3.6, gemma4 ~256K SentencePiece); spec-dec requires exact tokenizer match (chapter 01). All production spec-dec is self-speculation (gemma4 MTP / REAP+draft) — no external-drafter slot. Standalone-only.'
+- id: intake-651
+  arxiv_id: null
+  url: https://huggingface.co/LiquidAI/LFM2.5-8B-A1B
+  source_type: repo
+  title: 'LFM2.5-8B-A1B (HuggingFace model card)'
+  authors:
+  - Liquid AI
+  categories:
+  - ssm_hybrid
+  - moe_optimization
+  - local_inference
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/lfm2-lfm25-family-deep-dive.md
+  key_claims:
+  - '8.3B-total / 1.5B-active hybrid MoE; competitive with much larger dense/MoE models on instruction following and agentic tasks'
+  - 'Fastest in size class on CPU and GPU; day-one llama.cpp/MLX/vLLM/SGLang support'
+  - '18.5K output tok/s at high concurrency (>1.6B tokens/day on a single H100)'
+  - 'On-device personal assistant: tool-call chaining + complex instruction following'
+  - '131072 context; trained on 38T tokens; major gains over LFM2-8B-A1B (Tau2 Telecom 13.6 -> 88.07, IFBench 26.0 -> 56.47)'
+  techniques:
+  - 'Hybrid MoE: 24 layers = 18 double-gated LIV (Linear Input-Varying) short-conv layers + 6 GQA attention layers'
+  - 'lfm2moe architecture in llama.cpp (confirmed supported)'
+  - 'sparse MoE, 1.5B active of 8.3B total (32 experts, expert count per card)'
+  - 'GGUF quants (Q4_0/Q4_K_M/Q5_K_M/Q6_K/Q8_0/BF16/F16), MLX, ONNX, native'
+  reported_results:
+  - 'IFEval 91.84 (vs 82.23 Granite-4.0-H-Tiny 7B/A1B, 87.80 Qwen3.5-4B)'
+  - 'IFBench 56.47; Multi-IF 79.93'
+  - 'MATH500 88.76; AIME25 42.53; AIME26 50.00'
+  - 'BFCLv3 64.79; BFCLv4 49.73; Tau2 Telecom 88.07; Tau2 Retail 39.82'
+  - 'AA-Omniscience Non-Hallucination Rate 63.47 (vs 6.38 Granite-4.0-H-Tiny)'
+  - 'Official GGUF Q4_K_M = 5.16 GB'
+  referenced_arxiv_ids:
+  - '2511.23404'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - gemma4-mtp-drafter-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-650
+    - intake-652
+    - intake-653
+    - intake-152
+    - intake-310
+    - intake-237
+    - intake-238
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  novelty_justification: 'First Liquid AI / LFM family entry. The LIV double-gated short-conv + GQA + sparse-MoE composition is architecturally distinct from our production hybrids (Qwen3.5 Delta Net, Nemotron Mamba2) and from pure-MoE gpt-oss — a new architecture class for us. Not high — incremental LFM2 -> LFM2.5 version bump with a published tech report, not a novel research mechanism.'
+  relevance_justification: 'Medium (deep dive 2026-05-29 downgraded from high): 1.5B-active/8.3B-total MoE with official GGUF (Q4_K_M 5.16 GB) and lfm2moe llama.cpp support already present in our HEAD — but NO current production role has a gap it fills, and it is NOT a drafter (own 128K lfm2 vocab incompatible with all targets; spec-dec needs exact tokenizer match; production spec-dec is self-speculation only). Standalone cheaper/lower-quality tier at best on a BW-bound CPU server where the active-param edge is muted.'
+  verdict_justification: 'worth_investigating (deep dive 2026-05-29 downgraded from adopt_component): lfm2moe support IS present in our llama.cpp HEAD (LLM_ARCH_LFM2MOE, Lfm2MoeForCausalLM; PR #16464) so no port is expected — but support-present is not a reason to adopt: there is no role to deploy into today and the drafter rationale is dead (vocab mismatch). License lfm1.0 = source-available, free commercial only <$10M revenue (non-blocker for self-host). Credibility 2: vendor self-reported table, not peer-reviewed, commercial bias (-1); comparators cherry-favorable; 18.5K tok/s is GPU/H100 NOT CPU.'
+  contradicting_evidence:
+  - 'Headline 18.5K tok/s is H100/GPU not CPU; comparator set (own prior LFM2-8B-A1B, Granite-4.0-H-Tiny) is cherry-favorable; vendor self-report, no independent corroboration.'
+  - 'Deep dive (2026-05-29) downgraded adopt_component -> worth_investigating: lfm2moe support IS already merged in our llama.cpp HEAD (LLM_ARCH_LFM2MOE, LLM_TYPE_8B_A1B, Lfm2MoeForCausalLM; PR #16464) so support is present and no port is expected (not yet smoke-loaded with a local GGUF) — but NO current production role has a gap it fills (frontdoor/coder=Qwen3.6, worker=gemma4 MTP, architect=Qwen3.5-122B, ingest=Qwen3-Next-80B).'
+  - 'NOT a drafter: own 128K lfm2 vocab incompatible with all targets + production spec-dec is self-speculation only. Strike "drafter candidate".'
+  - 'AA-Omniscience Non-Hallucination 63.47 (vs Granite 6.38) is a calibrated-ABSTENTION artifact (RL avg@k abstention reward), NOT knowledge superiority — paired Accuracy 8.67 / Index -24.70 (negative). License lfm1.0 = source-available, free commercial only <$10M revenue (non-blocker for self-host).'
+- id: intake-652
+  arxiv_id: null
+  url: https://docs.liquid.ai/lfm/models/complete-library
+  source_type: blog
+  title: 'Liquid Foundation Models — Complete Model Library (LFM2 / LFM2.5 catalog)'
+  authors:
+  - Liquid AI
+  categories:
+  - local_inference
+  - ssm_hybrid
+  - multimodal
+  - moe_optimization
+  - document_processing
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/lfm2-lfm25-family-deep-dive.md
+  key_claims:
+  - 'LFMs are multimodal foundation models built for fast inference / on-device deployment; all listed variants are open-weights on HuggingFace (no API-only models in the catalog)'
+  - 'Text (LFM2/LFM2.5): LFM2.5-1.2B (Instruct/Thinking/Base/JP), LFM2.5-350M, LFM2.5-8B-A1B (MoE, 128K ctx); prior LFM2-8B-A1B (MoE), LFM2-2.6B(-Exp), LFM2-1.2B (deprecated), LFM2-700M, LFM2-350M'
+  - 'Vision-language: LFM2.5-VL-1.6B/-450M, LFM2-VL-3B/-1.6B/-450M; Audio: LFM2.5-Audio-1.5B, LFM2-Audio-1.5B'
+  - 'Liquid Nanos (task-specialized sub-1.2B): LFM2-1.2B/350M-Extract, LFM2-1.2B-RAG, LFM2-ColBERT-350M (late-interaction reranker), LFM2-2.6B-Transcript, LFM2-350M-Math, PII-Extract-JP, ENJP-MT'
+  - 'CPU-friendly deployment: GGUF (llama.cpp/Ollama/LM Studio), Transformers, vLLM, MLX, ONNX; recommended Q4_K_M/8bit/Q4; trainable via SFT/DPO/GRPO (TRL, Unsloth)'
+  techniques:
+  - hybrid conv+attention LFM2 backbone (asserted; not detailed on page)
+  - small-MoE active-1B variant (8B total / ~A1B active)
+  - task-specialized small models (extraction, RAG, ColBERT late-interaction, PII, transcript, MT)
+  - edge/on-device quantized deployment (GGUF/MLX/ONNX, Q4-class)
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    - 02-moe-optimization.md
+    handoffs:
+    - internal-kb-rag.md
+    - multimodal-pipeline.md
+    - multiscreen-attention-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-650
+    - intake-651
+    - intake-653
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  novelty_justification: 'Vendor catalog/docs page aggregating already-announced LFM2/LFM2.5 models; introduces no new technique, benchmark, or architectural detail (arch and arxiv refs explicitly absent). Value is a consolidated model-shopping reference — low novelty.'
+  relevance_justification: 'Medium: most variants are open-weights and GGUF/llama.cpp-deployable on CPU (OSS-only constraint met), with one notable exception — LFM2-ColBERT-350M requires PyLate + PLAID (NOT GGUF/llama.cpp/ONNX, HF-only per Liquid docs), so it is a PyLate-path eval candidate not a drop-in for our GTE-ModernColBERT/MaxSim plumbing. LFM2-ColBERT-350M is still a direct architectural analogue to the GTE-ModernColBERT encoder in internal-kb-rag (now flagged there for K-eval); LFM2-VL/Audio feed multimodal-pipeline; Extract/RAG variants fit document/RAG work; the sub-1.2B + 8B-A1B text models are plausible STANDALONE cheap-worker/router-triage candidates — NOT drafters (the family uses its own lfm2 vocab, incompatible with our targets; spec-dec needs exact tokenizer match). Not high — models tiny relative to the production stack and no benchmarks shown here.'
+  verdict_justification: 'worth_investigating — a useful reference catalog for shortlisting small open-weight candidates (mostly GGUF/llama.cpp-deployable; LFM2-ColBERT-350M is PyLate/PLAID-only) — standalone cheap-worker/router-triage, ColBERT reranker, extraction/RAG specialist, edge multimodal; NOT drafters (vocab mismatch). No empirical claims of its own, so follow-up evaluation rather than direct integration. Next: pull HF model cards / LFM2 tech report for benchmark numbers before promoting any variant. The one already-propagated action is LFM2-ColBERT-350M -> internal-kb-rag.md K-eval.'
+- id: intake-653
+  arxiv_id: '2511.23404'
+  url: https://arxiv.org/abs/2511.23404
+  source_type: paper
+  title: 'LFM2 Technical Report'
+  authors:
+  - Liquid AI
+  categories:
+  - ssm_hybrid
+  - moe_optimization
+  - local_inference
+  - training_distillation
+  - multimodal
+  - benchmark_methodology
+  novelty: low
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-651
+  verdict: worth_investigating
+  ingested_date: '2026-05-29'
+  deep_dive: research/deep-dives/lfm2-lfm25-family-deep-dive.md
+  key_claims:
+  - 'A minimal hybrid suffices for edge/CPU: gated short convolutions for most layers plus a small minority of GQA layers — no SSM or linear-attention operators needed; adding them does not improve aggregate quality and typically worsens device metrics'
+  - 'Hardware-in-the-loop architecture search under latency/memory constraints repeatedly selects this minimal conv+GQA hybrid; benefits attributed to SSM/linear-attention captured by short-conv submodules plus a few global attention layers'
+  - 'LFM2-2.6B: 79.56% IFEval, 82.41% GSM8K; LFM2-8B-A1B MoE (1.5B active): 64.84% MMLU / 84.38% GSM8K, up to 2-3x faster CPU prefill/decode vs similar-size models'
+  - 'Tempered, decoupled Top-K knowledge-distillation objective avoids teacher/student support mismatch'
+  - 'Full family (350M-8.3B) open weights with ExecuTorch/llama.cpp/vLLM packages; VL and Audio (real-time S2S) variants competitive with 3x-larger models'
+  techniques:
+  - 'LIV double-gated short-conv layers (input-dependent gating around depthwise short conv)'
+  - 'GQA minority layers with QK-Norm; RoPE; RMSNorm pre-norm; 32768 context'
+  - 'MoE in 8B-A1B: 24 layers, 32 experts, Top-k=4, normalized-sigmoid router, ~1.5B active'
+  - 'hardware-in-the-loop NAS optimizing on-device latency+memory rather than param count'
+  - 'tempered decoupled Top-K knowledge distillation'
+  reported_results:
+  - 'LFM2-2.6B: MMLU 64.42, IFEval 79.56, GSM8K 82.41, MGSM 74.32'
+  - 'LFM2-8B-A1B: MMLU 64.84, IFEval 77.58, GSM8K 84.38, MGSM 72.40'
+  - 'On-device (Samsung S25): LFM2-350M 1067 tok/s prefill@1K / 194.1 decode; LFM2-2.6B 143 prefill / 33.8 decode; 2-3x vs baselines'
+  - 'LFM2-VL-3B: MMBench 79.81, OCRBench 822; LFM2-Audio-1.5B: LibriSpeech-clean WER 2.03%'
+  referenced_arxiv_ids:
+  - '2401.04658'
+  - '2501.08313'
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    - 01-speculative-decoding.md
+    handoffs:
+    - multiscreen-attention-evaluation.md
+    - log-linear-gated-deltanet-readiness.md
+    - lightning-attention-port.md
+    experiments: []
+    intake_entries:
+    - intake-650
+    - intake-651
+    - intake-503
+  handoffs_updated:
+  - multiscreen-attention-evaluation.md
+  novelty_justification: 'Operators (gated short conv = Hyena-family; GQA; sigmoid-routed MoE) all pre-existing. The genuinely new piece is a NAS selection claim (minimal conv+GQA beats SSM/linear-attention hybrids under on-device budgets) plus a tempered decoupled Top-K distillation objective — incremental, not a new architecture. Low.'
+  relevance_justification: 'Medium: kept as an architectural REFERENCE data point, not a deployment candidate. The NAS finding (minimal conv+GQA suffices on-device) is scoped to the 350M-2.6B / 32K-context edge regime that does not match our server targets, but it provides the small/short-context boundary that cleanly bounds the Ling-Linear/Minimax large/long-context linear-attention win (intake-503). Family is NOT a drafter source (vocab mismatch) and fills no production role gap.'
+  verdict_justification: 'worth_investigating as an architecture REFERENCE, not for deployment: novelty low (operators pre-existing; the NAS selection result is the contribution), claims vendor-sourced. Its "SSM/linear-attention does not help" finding does NOT contradict intake-503/Minimax — the paper explicitly scopes it to the on-device 350M-2.6B/32K regime, making it a clean regime boundary for the sub-quadratic survey. No bench/port/deployment action (family is not a drafter; no role gap). Credibility 2: arXiv preprint (0) + within 12mo (+1) + Liquid AI known lab (+1) - commercial bias (-1).'
+  contradicting_evidence:
+  - 'Architectural novelty low/incremental: gated short conv is core of Hyena (Poli 2023) and conv-mixer family; input-dependent gating around depthwise conv echoes Mamba/Mamba2 and Griffin/RecurrentGemma conv submodules. Contribution is a NAS selection result, not a new operator.'
+  - 'Conv+sparse-global-attention hybrids predate LFM2 (Griffin/Hawk DeepMind 2024 arXiv:2402.19427; Zamba/Jamba). LFM2 is a smaller-scale CPU-budget-tuned point in this established space.'
+  - 'LFM2 "no SSM/linear-attention needed" directly conflicts with intake-503 (Ling-Linear), Minimax-01 (2501.08313), Ling-Linear-2.0 (2510.19338) — those find linear-attention hybrids scale favorably and optimal hybrid ratio rises with size. Likely regime-dependent: LFM2 scoped to small/edge/short-context (<=32K); linear-attention wins are at 16B-104B and long-context (100K+). Treat "no SSM" as small-model-specific, not general.'
+  - 'Commercial source (Liquid AI), self-selected benchmark suite, 2-3x baseline not independently reproduced; no third-party CPU corroboration found for EPYC-relevant claims.'

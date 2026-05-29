@@ -2,7 +2,7 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-04-13
+**Last compiled**: 2026-05-29
 **Sources**: 4 documents
 
 ## Summary
@@ -72,3 +72,15 @@ New module `epyc-orchestrator/src/models/odl_structured.py` defines a normalized
 **Scope reduction vs original plan**: original Phase 2 plan called for replacing PyMuPDF figure extraction, replacing the regex chunker entirely, and refactoring `document_preprocessor.py`. Adopted the safer **additive helper functions** strategy — gated behind one feature flag, zero refactor risk to existing services, all 38 existing pdf_router + figure_analyzer tests still pass. The deeper integration (full PyMuPDF replacement, document_preprocessor refactor, end-to-end VL pipeline rewiring) is multi-day per-service work to land incrementally per service after Phase 2 is validated on real PDFs. 17 new unit tests cover the structured path with synthetic ODL JSON.
 
 Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), `epyc-orchestrator/src/models/odl_structured.py`, `epyc-orchestrator/src/services/pdf_router.py`, `epyc-orchestrator/tests/unit/test_odl_structured.py`.
+
+## LiteParse — JVM-free born-digital fast-path candidate (2026-05-29)
+
+LiteParse (run-llama/LlamaIndex, Apache-2.0, intake-646 blog / intake-647 repo) is a pure-Rust document parser that occupies a **different design point** from OpenDataLoader and is a *complement, not a replacement*. Deep dive: [`research/deep-dives/liteparse-document-parser-deep-dive.md`](../research/deep-dives/liteparse-document-parser-deep-dive.md).
+
+- **Deployment win vs ODL**: the custom PDFium fork + tesseract-rs are compiled into a self-contained ~13 MB manylinux x86_64 wheel (glibc 2.28+, Py 3.10–3.15). On EPYC, `pip install liteparse` needs **no JVM and no system PDFium/tesseract build** — sidestepping ODL's Java 11+ per-`convert()` JVM-spawn cold-start. LibreOffice (Office→PDF) + ImageMagick (image→PDF) + tessdata are conditional and untouched on the born-digital path.
+- **Algorithm**: spatial-grid projection ("preserve layout, don't detect structure") — tables emitted as positioned ASCII-grid text, NOT a markdown table DOM. Output = text + per-item bboxes (viewport 72-DPI `x/y/w/h`, top-left — needs an adapter vs ODL's PDF-point corner-pairs) + page PNGs. **Reading order is implicit; no heading-hierarchy, table, or figure-semantic-type objects.**
+- **Why it is NOT an ODL replacement**: it cannot supply Phase 2's structural context (headings → chunker, table DOM, figure semantic-type + caption → VL). It competes with `pdftotext` for the Phase 1 born-digital slot only; ODL stays for structure. Vendor concedes complex/dense-table/scanned/multi-column docs need LlamaParse-cloud-class quality (our equivalent = ODL + VL-OCR).
+- **Maturity / credibility**: 6.8k★ / 425 forks / 600 commits / 46 releases, v2.0.3 @ 2026-05-28; real 3-OS CI + HF regression suite + LLM-judge eval framework. Speed claims (457pg/100 MB in 0.777 s; 5–100× small / ~3× large vs the prior Node version) are vendor self-reported and **speed-only — no independent accuracy benchmark** (NID/TEDS/OmniDocBench); its non-markdown output fails standard OCR benchmarks by construction, so a LiteParse-output-aware harness is required for head-to-head scoring.
+- **Gated next action**: bench LiteParse-local vs ODL-local vs pdftotext on the born-digital corpus (text fidelity, JVM-free cold-start + RSS, multi-column reading order) under the opendataloader-pipeline-integration handoff (P1b). Verdict: 647 = adopt_component (born-digital fast-path backend), 646 = worth_investigating.
+
+Sources: [`research/deep-dives/liteparse-document-parser-deep-dive.md`](../research/deep-dives/liteparse-document-parser-deep-dive.md), [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), [`handoffs/active/pipeline-integration-index.md`](../handoffs/active/pipeline-integration-index.md), intake-646/647.

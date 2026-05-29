@@ -20,7 +20,7 @@
 |---------|--------|--------|----------|-------------|
 | [multimodal-pipeline.md](multimodal-pipeline.md) | Vision + TTS + ASR | mixed (vision done, **TTS Path D candidate surfaced 2026-04-17** — LuxTTS/ZipVoice-Distill CPU benchmark) | LOW | 2026-04-17 |
 | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Self-hosted text-to-image / Hermes `image_generate` replacement | Refreshed 2026-05-28: production on CPU via sd-server Q8 + conv-direct (~3 min/image @ 1024²); remaining work is prompt-enhancer/content-filter/typography spot-check + GPU/Spark rebench | MEDIUM | 2026-05-28 |
-| [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17) | P2 (medium) | 2026-04-17 |
+| [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17; **LiteParse born-digital fast-path candidate added 2026-05-29 → P1b**) | P2 (medium) | 2026-05-29 |
 | ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
 | [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
 | [internal-kb-rag.md](internal-kb-rag.md) | Internal markdown KB retrieval pipeline | STUB 2026-04-25 — sibling consumer of colbert-reranker-web-research's ONNX/MaxSim plumbing; no AR-3 gate | P5 (medium) | 2026-04-25 |
@@ -40,9 +40,10 @@
 - [x] ERNIE-Image-Turbo Q8 local backend deployed through sd-server; Hermes `image_generate` plugin overrides disabled FAL path.
 - [ ] Prompt-enhancer heuristic, content-filter audit, LongTextBench spot-check, and Spark performance reality check remain in [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md).
 
-### P1 — OpenDataLoader PDF
+### P1 — OpenDataLoader PDF (+ LiteParse born-digital fast path)
 
 - [ ] **Phase 1**: Replace pdftotext with ODL local; swap extraction call; handle JVM lifecycle; update tests
+- [ ] **Phase 1b (NEW 2026-05-29, via intake-646/647)**: Evaluate **LiteParse** (run-llama, Apache-2.0, JVM-free Rust, ~13 MB manylinux wheel) as the **born-digital fast-path** text+bbox+screenshot backend — a `pdftotext` competitor, NOT an ODL replacement (LiteParse has no heading/table/figure structure). Bench LiteParse-local vs ODL-local vs pdftotext with a LiteParse-output-aware harness. See [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) 2026-05-29 update + `research/deep-dives/liteparse-document-parser-deep-dive.md`.
 - [ ] **Phase 2**: Parse ODL JSON for figures/tables; enrich VL model prompts; improve chunker with heading hierarchy
 - [ ] **Phase 3**: Deploy hybrid sidecar; benchmark 3-way routing; run comparison suite (200 PDFs)
 - [ ] Clone opendataloader-bench; implement NID/TEDS/MHS scoring
@@ -122,7 +123,7 @@ P5 (internal KB-RAG)      ──independent (reuses colbert-reranker S3/S4 encod
 
 3. **Model server ports**: Vision 8086/8087, ASR 9000, TTS 9002 (target). Avoid collisions with production stack (8080-8083). Document port assignments in `orchestrator_stack.py`.
 
-4. **OpenDataLoader JVM**: The ODL PDF pipeline requires Java 11+. JVM startup adds ~2s cold-start latency. Consider persistent sidecar process vs. per-request launch.
+4. **OpenDataLoader JVM**: The ODL PDF pipeline requires Java 11+. JVM startup adds ~2s cold-start latency. Consider persistent sidecar process vs. per-request launch. **Note (2026-05-29)**: the **LiteParse** born-digital fast path (P1b) is **JVM-free** — a self-contained ~13 MB manylinux wheel (PDFium + tesseract-rs compiled in, no system build) — so for born-digital PDFs it sidesteps this JVM concern entirely. ODL stays required for the structural path (heading hierarchy, table DOM, figure semantic-type).
 
 ---
 

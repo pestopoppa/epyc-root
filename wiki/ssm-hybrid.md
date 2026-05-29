@@ -2,7 +2,7 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified
-**Last compiled**: 2026-04-30
+**Last compiled**: 2026-05-29
 **Sources**: 12 documents
 
 ## Summary
@@ -268,3 +268,15 @@ Ring-mini-linear-2.0 (16B/957M-active) opens **drafter territory** — 957M acti
 - [`handoffs/active/lightning-attention-port.md`](../handoffs/active/lightning-attention-port.md) — L1 scoping COMPLETE block + L2/L3 cleared
 - HF source verification: https://huggingface.co/inclusionAI/Ring-mini-linear-2.0/raw/main/{config.json,modeling_bailing_moe_linear_v2.py,configuration_bailing_moe_linear_v2.py}
 - GLA reference call site: `src/models/rwkv6-base.cpp:137` (qrwkv branch)
+
+## Liquid LFM2 / LFM2.5 family — conv+GQA hybrid (2026-05-29)
+
+The Liquid AI LFM2 family (intake-650 blog / 651 model card / 652 catalog / 653 tech report arXiv:2511.23404) is a conv+attention hybrid MoE distinct from the Qwen3.5 Delta Net and Nemotron Mamba2 lines tracked above. Deep dive: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md).
+
+- **Architecture**: LFM2.5-8B-A1B = 8.3B total / 1.5B active, 24 layers = 18 double-gated **LIV (Linear Input-Varying) short-conv** layers + 6 GQA attention layers (32 experts, Top-k=4, 131K context, own 128K `lfm2` BPE vocab). Tech report self-discloses the gated short-conv as "closely related to Mamba/Hyena/Griffin short-range components" — **novelty is LOW**; the real contribution is a hardware-in-the-loop NAS *finding*.
+- **Regime-boundary insight (the reusable takeaway)**: the report's "minimal conv+GQA suffices, SSM/linear-attention operators do NOT help" claim is explicitly scoped to the **on-device 350M–2.6B / 32K-context edge regime**. This does NOT contradict intake-503 (Ling-Linear) / Minimax-01, whose linear-attention wins are at 16B–104B / long-context (100K+) — the two cleanly bound each other's regime.
+- **llama.cpp**: `lfm2moe` arch support is **present in our HEAD** (`LLM_ARCH_LFM2MOE`, `LLM_TYPE_8B_A1B`, `Lfm2MoeForCausalLM`; upstream PR #16464 + follow-ups). Static source-tree check only — not yet smoke-loaded with a local GGUF. Official GGUF Q4_K_M = 5.16 GB. License `lfm1.0` = source-available (free commercial <$10M rev), non-blocker for self-host.
+- **NOT a spec-dec drafter**: its own 128K `lfm2` vocab is incompatible with every production target tokenizer (Qwen3.6, gemma4); spec-dec requires exact tokenizer match; all production spec-dec is self-speculation (gemma4 MTP / REAP+draft). Standalone-only.
+- **Deployment verdict**: no current production role has a gap a 1.5B-active edge model fills, so intake-651 was set to worth_investigating (not adopt_component). The 63.47 AA-Omniscience non-hallucination figure is a calibrated-**abstention** RL artifact (Accuracy 8.67, Index −24.70), not a knowledge win — though that calibrated-abstention behavior could suit a future router/triage role. **LFM2-ColBERT-350M** (late-interaction retriever) is a candidate vs GTE-ModernColBERT for `internal-kb-rag.md`, but is **PyLate/PLAID-only — NOT GGUF/llama.cpp/ONNX** (HF-only per Liquid docs).
+
+Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep-dives/lfm2-lfm25-family-deep-dive.md), [`handoffs/active/multiscreen-attention-evaluation.md`](../handoffs/active/multiscreen-attention-evaluation.md), [`handoffs/active/internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md), intake-650/651/652/653.
