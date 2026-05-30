@@ -1,0 +1,28 @@
+diff --git a/tools/cli/cli.cpp b/tools/cli/cli.cpp
+index 369c242..468f4cf 100644
+--- a/tools/cli/cli.cpp
++++ b/tools/cli/cli.cpp
+@@ -357,6 +357,7 @@ int main(int argc, char ** argv) {
+     if (params.conversation_mode == COMMON_CONVERSATION_MODE_DISABLED) {
+         console::error("--no-conversation is not supported by llama-cli\n");
+         console::error("please use llama-completion instead\n");
++        return 1;
+     }
+ 
+     // struct that contains llama context and inference
+@@ -509,8 +510,14 @@ int main(int argc, char ** argv) {
+             buffer.pop_back();
+         }
+ 
+-        // skip empty messages
++        // skip empty messages, but break on EOF — otherwise the loop spins
++        // forever printing `> ` (V4 fork bug 02b, EPYC inference research
++        // 2026-05-30 report). Matches llama-completion's EOF handling.
+         if (buffer.empty()) {
++            if (std::cin.eof()) {
++                console::log("\n> EOF by user\n");
++                break;
++            }
+             continue;
+         }
+ 

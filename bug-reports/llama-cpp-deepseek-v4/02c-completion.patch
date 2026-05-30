@@ -1,0 +1,14 @@
+diff --git a/tools/completion/completion.cpp b/tools/completion/completion.cpp
+index 1dc5df1..eaf6bf7 100644
+--- a/tools/completion/completion.cpp
++++ b/tools/completion/completion.cpp
+@@ -214,7 +214,8 @@ int main(int argc, char ** argv) {
+     const bool has_chat_template = common_chat_templates_was_explicit(chat_templates.get());
+     if (params.conversation_mode == COMMON_CONVERSATION_MODE_AUTO) {
+         if (has_chat_template) {
+-            LOG_INF("%s: chat template is available, enabling conversation mode (disable it with -no-cnv)\n", __func__);
++            LOG_WRN("%s: raw completion changed to chat mode because the model has a chat template; "
++                    "pass -no-cnv for raw prompt completion, or -st for a single chat turn\n", __func__);
+             params.conversation_mode = COMMON_CONVERSATION_MODE_ENABLED;
+         } else {
+             params.conversation_mode = COMMON_CONVERSATION_MODE_DISABLED;
