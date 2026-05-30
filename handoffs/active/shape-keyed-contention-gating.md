@@ -1,6 +1,6 @@
 # Shape-Keyed Contention Gating + Cross-Role Disjoint Placement
 
-**Status:** ACTIVE — A partially implemented behind a default-off flag (placement filter + size-ordering + dispatch wiring + tests done); **A NOT exit-ready** — cross-role mutual exclusion (TOCTOU) is open. B/C not started.
+**Status:** ACTIVE — A/A-1 code-complete behind default-off flags; B core + default-off authoritative gate seam code-complete and verified; C has pure backfill-selection prep only. **No production behavior is enabled yet**: live `admit()` still passes no candidate topology index, both shape-aware flags default off, and J6 remains flag-OFF. Remaining work is post-J6/operator-gated: live observation, dispatch-side candidate-index wiring, exact-region placement input, and C behavior changes under an epoch boundary.
 **Created:** 2026-05-30
 **Owner:** (operator-directed; implementation by assistant)
 **Repos:** `epyc-orchestrator` (src/scheduling, src/backends, src/runtime, scripts/benchmark)
@@ -10,9 +10,16 @@
 
 ## Current state (start here)
 
-- [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind flag; A-1 TOCTOU RESOLVED (global region mutex). Still LIVE-OBSERVATION-GATED before flag-on.** See "A-1 — RESOLVED" below. STOP for review before B.
-- [ ] **B — Shape-keyed admission decision** (`admit_set` in contention.py; gate + seeder both call it) — NOT STARTED
-- [ ] **C — Narrow legacy heavy-slot erase/idle barrier + backfill, then remove line-98 veto** — NOT STARTED
+- [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT`; A-1 TOCTOU RESOLVED** via the global region mutex (`cpu_region.GLOBAL.{region}.lock`). Still LIVE-OBSERVATION-GATED before flag-on.
+- [x] **B — Shape-keyed admission core + default-off gate seam** — `Placement`, `admit_set`, `held_regions_by_role`, `seam_admit`, dual-flag gate, and `ContentionGate.evaluate(candidate_topology_idx=...)` are code-complete and verified. The seam is **authoritative** when consulted (`worst = seam_decision`), not tightening-only. Production remains inert because no live caller supplies a candidate topology index.
+- [~] **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
+
+### Next actions (operator-gated)
+
+1. After J6 or in a bracketed observation window, run the live-observation gate: region-lock dashboard must show a heavy+light set landing on disjoint shapes before enabling cross-role placement.
+2. Wire the dispatch-side caller to pass the selected `candidate_topology_idx` into the gate. This is the remaining B behavior step; do not do it while preserving the current J6 archive.
+3. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
+4. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
 
 ### A — implementation record (2026-05-30)
 
