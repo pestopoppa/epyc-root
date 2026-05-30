@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-28 (manual incremental update: handoff compaction governance + split-repo validator cleanup + CPU/serving/routing active-surface clarifications)
+**Last compiled**: 2026-05-30 (manual incremental update: shape-keyed contention gating + off-tap lock-holder dashboard bridge)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 388 documents across 6 source types
 
@@ -31,7 +31,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
-| [Routing Intelligence](routing-intelligence.md) | 30 | RI-10/11/12 are the live rollout path; RI-13 injection-risk routing is gated behind the cheap unconditional J14 swarm-fanout A/B |
+| [Routing Intelligence](routing-intelligence.md) | 33 | Shape-keyed contention and cross-role mutual exclusion now gate safe disjoint co-residency; off-tap lock holders are surfaced in the live dashboard |
 | [Benchmark Methodology](benchmark-methodology.md) | 33 | Real-path canaries and live smoke tests are required; stalled seeding now has explicit infra labels instead of generic timeout ambiguity |
 
 ## Agent & Architecture
