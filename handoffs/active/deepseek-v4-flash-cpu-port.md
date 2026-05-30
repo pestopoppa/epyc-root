@@ -307,6 +307,48 @@ Latest antirez commit adds a "DeepSeek V4 HC weighted-sum ggml op with CPU, Meta
 - `scripts/benchmark/v4_smoke_test.sh` — preflight + metadata + 4-token decode (folds in option C preflight)
 - `benchmarks/prompts/v1/deepseek-v4-quality-gate.yaml` — 20-prompt set per §Merge Gates
 
+### Strategy B execution — 2026-05-30 update (provisional FAIL, gate semantics amended)
+
+- ✓ Download complete (153.32 GiB on disk; metadata verified — n_kv=62, n_tensors=1328, all 7 deepseek4.* kv fields, chat_template at kv[57])
+- ✓ Smoke test (`v4_smoke_test.sh`): preflight + metadata + 4-token decode via `llama-completion`, "Hello," → "I'm sorry,", clean exit
+- ✓ Throughput gate (`v4_throughput_gate.sh`): **9.13 t/s eval-time decode vs 18 t/s Q4 floor — provisional FAIL** (49% below). Three independent V4 measurements cluster 8-11 t/s (llama-cli interactive 10.7, llama-bench `-ub 1 -b 1` 8.47, this gate 9.13). Artifacts at `epyc-inference-research/data/cpu_optimization/2026-05-30-v4-throughput-gate-provisional/`.
+- ✓ §Throughput gate definition amended (epyc-root `d86eb4f`) — names llama-completion as the Strategy-B tool, defines "libllama eval-time t/s" as the metric (`common/sampling.cpp:507`), adds the provisional-evidence rule for runs predating quality. Floor unchanged.
+- ⏸ Quality gate (externally blocked on Mac/ds4 reference logprobs)
+- ✓ Fork bug reports + patches landed locally:
+  - bug 01 (llama-bench V4 sched_reserve assert): patched + rebuilt; reserve-mode guard at `deepseek4.cpp:~1147` clamps `n_comp_visible` to `n_comp_cache` when `ubatch.pos == nullptr`. Saves filing as `bug-reports/llama-cpp-deepseek-v4/01-deepseek4-sched-reserve.patch`.
+  - bug 02 (cluster, llama-cli `--no-conversation` + EOF loop + llama-completion auto-cnv WRN): patched + rebuilt. Saves at `02ab-cli.patch` + `02c-completion.patch`.
+  - bug 03 (llama-gguf `r` mode aborts on real models): patched + rebuilt — `r` is now metadata-only, new `rt` mode for round-trip. Saves at `03-llama-gguf-r-mode.patch`.
+
+#### Calibration logic critique (informs Strategy A decision)
+
+The 18 t/s floor was set as `gemma4 76.5 t/s × (4/13)` with a ~23% conservatism discount. The methodology ignores V4's per-token overhead from CSA + HCA + indexer + compressor + manifold-constrained Hyper-Connections — components absent in gemma4. Our 9.13 t/s suggests V4's effective per-active-param compute is ~2.5× gemma4's. The 18 t/s floor was set under a heuristic that doesn't model V4's arch overhead. If Strategy A is pursued, recalibrate the floor against a V4-arch-aware baseline (e.g., compute-density-normalized) before re-running.
+
+## Next Decisions (post-2026-05-30 provisional throughput FAIL)
+
+Three open decisions, all operator-gated:
+
+### D1. Strategy A go/park
+
+Strategy A (ik_llama API translation, ~3-5d) brings CPU-specific optimizations absent from the mainstream-lineage antirez fork:
+- AVX-512BW 8x8 Q8_0 kernels (+31.8% at 1t per `project_q8_8x8_avx512bw_outcome`)
+- CCD pools + GGML_BARRIER_LOCAL (per `project_cpu1_phase13_v1`)
+- The V4 gate-extra env stack (KMP_BLOCKTIME, GGML_NUMA_WEIGHTS) — Strategy B already uses these, so the gap to close is in kernel selection only
+
+For V4's mixed quant (Q4_K experts + F16 HC/Compressor/Indexer + Q8 attn/shared) the F16 components are 2× BW vs Q4_K and dominate the bw-budget. ik_llama's Q4_K repack helps the Q4 path but doesn't touch F16. Honest estimate: A could push to ~12-15 t/s. Still below an 18 t/s floor calibrated against gemma4, but possibly above a recalibrated V4-aware floor.
+
+**GO criterion**: D2 yields a recalibrated floor + A-uplift estimate brackets it.
+**PARK criterion**: even recalibrated, V4 doesn't beat smaller models in its role.
+
+### D2. Floor methodology revisit
+
+Recalibrate against a V4-arch-aware baseline. The current band (18-23 t/s) was likely too optimistic. Honest expected range based on cluster of 8-11 t/s measurements would land somewhere around 8-12 t/s on this hardware — close to what we measured.
+
+### D3. Quality gate as architect_general candidacy probe
+
+V4-Flash may not clear the worker_general throughput target, but architect_general has a different throughput tolerance (Qwen3.5-122B at 12 t/s is documented production). A quality run against a reference (Mac antirez or ds4) on the 20-prompt set is still informative IF V4 demonstrates SOTA-equivalent reasoning on long context. Quality GOOD + throughput 9.13 t/s → candidate for architect_general, not worker_general.
+
+Cost: reference logprobs are externally blocked. If reference side has no near-term path, parking the quality gate is honest.
+
 ### Notes carried forward from 2026-05-28 session
 
 - ik_llama branch `feature/deepseek4-port` preserved at `c04881fc0` (= `production-gemma4-mtp` tip). Used if/when Option A activates.
