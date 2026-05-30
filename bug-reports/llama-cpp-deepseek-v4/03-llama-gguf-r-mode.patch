@@ -1,0 +1,38 @@
+diff --git a/examples/gguf/gguf.cpp b/examples/gguf/gguf.cpp
+index 79ad387..022df8e 100644
+--- a/examples/gguf/gguf.cpp
++++ b/examples/gguf/gguf.cpp
+@@ -244,10 +244,13 @@ int main(int argc, char ** argv) {
+     std::setlocale(LC_NUMERIC, "C");
+ 
+     if (argc < 3) {
+-        printf("usage: %s data.gguf r|w [n]\n", argv[0]);
+-        printf("r: read data.gguf file\n");
+-        printf("w: write data.gguf file\n");
+-        printf("n: no check of tensor data\n");
++        printf("usage: %s data.gguf r|w|rt [n]\n", argv[0]);
++        printf("r:  read data.gguf file (metadata only; safe for real models)\n");
++        printf("w:  write data.gguf file\n");
++        printf("rt: round-trip test — read metadata AND tensor data, validating\n");
++        printf("    against the hardcoded pattern produced by this example's\n");
++        printf("    writer ('w' mode). NOT for real model files; use 'r' for those.\n");
++        printf("n:  no check of tensor data (only meaningful with 'rt')\n");
+         return -1;
+     }
+     bool check_data = true;
+@@ -260,12 +263,14 @@ int main(int argc, char ** argv) {
+     const std::string fname(argv[1]);
+     const std::string mode (argv[2]);
+ 
+-    GGML_ASSERT((mode == "r" || mode == "w") && "mode must be r or w");
++    GGML_ASSERT((mode == "r" || mode == "w" || mode == "rt") && "mode must be r, w, or rt");
+ 
+     if (mode == "w") {
+         GGML_ASSERT(gguf_ex_write(fname) && "failed to write gguf file");
+     } else if (mode == "r") {
+         GGML_ASSERT(gguf_ex_read_0(fname) && "failed to read gguf file");
++    } else if (mode == "rt") {
++        GGML_ASSERT(gguf_ex_read_0(fname) && "failed to read gguf file");
+         GGML_ASSERT(gguf_ex_read_1(fname, check_data) && "failed to read gguf file");
+     }
+ 

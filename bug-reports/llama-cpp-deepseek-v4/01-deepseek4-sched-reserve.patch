@@ -1,0 +1,36 @@
+diff --git a/src/models/deepseek4.cpp b/src/models/deepseek4.cpp
+index 56af970..17972b9 100644
+--- a/src/models/deepseek4.cpp
++++ b/src/models/deepseek4.cpp
+@@ -1145,12 +1145,27 @@ llm_build_deepseek4::llm_build_deepseek4(const llama_model & model, const llm_gr
+             }
+ 
+             if (!is_prefill) {
+-                const llama_pos first_pos = ubatch.pos ? ubatch.pos[0] : 0;
+-                const llama_pos last_pos  = ubatch.pos ? ubatch.pos[n_tokens - 1] : n_tokens - 1;
++                // Bug fix (EPYC 2026-05-30): sched_reserve calls this with a
++                // synthetic worst-case ubatch where ubatch.pos == nullptr and
++                // n_tokens == ubatch_size (default 512). That produces
++                // n_comp_visible = 512/compress_ratio, exceeding the
++                // initial n_comp_cache and tripping the original
++                // GGML_ASSERT(n_comp_visible <= n_comp_cache). During reserve
++                // the graph is constructed but not executed, so the
++                // out-of-bounds view/mask shapes don't materialize — we just
++                // need construction to succeed. Clamp on the reserve path so
++                // downstream graph construction stays bounded; real decode
++                // (is_reserve=false) keeps the strict invariant.
++                const bool is_reserve = (ubatch.pos == nullptr);
++                const llama_pos first_pos = is_reserve ? 0 : ubatch.pos[0];
++                const llama_pos last_pos  = is_reserve ? n_tokens - 1 : ubatch.pos[n_tokens - 1];
+                 const int64_t n_comp_before  = first_pos / compress_ratio;
+-                const int64_t n_comp_visible = (last_pos + 1) / compress_ratio;
+                 const int64_t n_comp_cache = mctx_dsv4->get_dsv4_n_comp(il);
+-                GGML_ASSERT(n_comp_visible <= n_comp_cache);
++                const int64_t n_comp_visible_raw = (last_pos + 1) / compress_ratio;
++                const int64_t n_comp_visible = is_reserve
++                    ? std::min<int64_t>(n_comp_visible_raw, n_comp_cache)
++                    : n_comp_visible_raw;
++                GGML_ASSERT(is_reserve || n_comp_visible <= n_comp_cache);
+ 
+                 dsv4_decode_compressor dec = n_tokens == 1
+                     ? dsv4_build_compressor_decode(ctx0, cur,

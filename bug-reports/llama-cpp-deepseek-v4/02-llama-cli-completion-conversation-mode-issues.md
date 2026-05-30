@@ -61,7 +61,7 @@ The flag is shared from `common/arg.cpp:1498` between `LLAMA_EXAMPLE_COMPLETION`
 
 Then register a CLI-only deprecated handler that fails during arg parsing with the same message, so model loading is never reached.
 
-This patch series applies the minimal fix (02a.patch). The better fix is deferred — it touches the LLAMA_EXAMPLE_* dispatch infrastructure and warrants its own PR.
+This patch series applies the minimal fix in `02ab-cli.patch`. The better fix is deferred — it touches the LLAMA_EXAMPLE_* dispatch infrastructure and warrants its own PR.
 
 ---
 
@@ -124,7 +124,7 @@ while (true) {
 
 This matches the message and behavior in `llama-completion` (which we verified outputs `> EOF by user` on stdin EOF during V4 smoke testing).
 
-**Better**: change `console::readline()` to return an enum (`{ MORE, DONE, EOF }`) and handle each explicitly in cli.cpp. Cleaner long-term but a wider API change. This patch series applies the minimal fix (02b.patch).
+**Better**: change `console::readline()` to return an enum (`{ MORE, DONE, EOF }`) and handle each explicitly in cli.cpp. Cleaner long-term but a wider API change. This patch series applies the minimal fix in `02ab-cli.patch`.
 
 ---
 
@@ -134,7 +134,7 @@ This matches the message and behavior in `llama-completion` (which we verified o
 
 The original draft of this report claimed the auto-enable behavior was undocumented in `--help`. **That was wrong.** Operator audit confirmed:
 
-- `common/arg.cpp:1505`: `--help` text for `-cnv`/`--conversation`/`-no-cnv`/`--no-conversation` ends with `(default: false)` — minor gap, doesn't mention the auto-enable rule directly on this line, but
+- `common/arg.cpp:1505`: `--help` text for `-cnv`/`--conversation`/`-no-cnv`/`--no-conversation` ends with `(default: auto enabled if chat template is available)`, and
 - `tools/completion/README.md:242`: README documents `(default: auto enabled if chat template is available)` for the same flag cluster
 
 So the rule IS discoverable. The remaining issue is the runtime notice's tone + content: it uses `LOG_INF`, which a non-interactive bench harness will not surface, and the message says only "enabling conversation mode (disable it with -no-cnv)" — it doesn't tell the user that this changes the semantic workload (template applied + multi-turn UI vs raw completion).
@@ -172,22 +172,16 @@ LOG_INF("%s: chat template is available, enabling conversation mode (disable it 
 +                    "pass -no-cnv for raw prompt completion, or -st for a single chat turn\n", __func__);
 ```
 
-Severity LOW — the default behavior stands, only the notice changes. This patch series applies the fix (02c.patch).
+Severity LOW — the default behavior stands, only the notice changes. This patch series applies the fix in `02c-completion.patch`.
 
 ---
 
-## Suggested patch snippets
+## Patches (in this directory)
 
-The three minimal diffs described above are independent:
+- [`02ab-cli.patch`](02ab-cli.patch) — `cli.cpp:359` `return 1` after `--no-conversation` warning, plus EOF detection at the empty-buffer guard
+- [`02c-completion.patch`](02c-completion.patch) — `completion.cpp:213` LOG_INF → LOG_WRN with semantic-change message
 
-- 02a — `cli.cpp:359` `return 1` after the `--no-conversation` warning
-- 02b — `cli.cpp` EOF detection at the empty-buffer guard
-- 02c — `completion.cpp:213` `LOG_INF` → `LOG_WRN` with semantic-change message
-
-No standalone `.patch` files are checked into this bug-report bundle yet. If
-filing upstream, create them from the snippets in the relevant sections and
-apply/test from the V4 fork root. They can be filed as three separate upstream
-PRs or as one bundled patch series.
+Each patch is independent and applies with `git apply <name>.patch` from the V4 fork root. They can be filed as separate upstream PRs or as one bundled patch series.
 
 ## Downstream workaround in use
 
