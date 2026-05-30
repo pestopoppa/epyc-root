@@ -10,7 +10,7 @@
 
 ## Current state (start here)
 
-- [~] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **PARTIAL 2026-05-30, behind flag. NOT exit-ready: cross-role mutual exclusion (A-1 TOCTOU) is OPEN.** See "A — implementation record" + "A-1 design fork" below.
+- [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind flag; A-1 TOCTOU RESOLVED (global region mutex). Still LIVE-OBSERVATION-GATED before flag-on.** See "A-1 — RESOLVED" below. STOP for review before B.
 - [ ] **B — Shape-keyed admission decision** (`admit_set` in contention.py; gate + seeder both call it) — NOT STARTED
 - [ ] **C — Narrow legacy heavy-slot erase/idle barrier + backfill, then remove line-98 veto** — NOT STARTED
 
@@ -150,7 +150,29 @@ Add a single placement-aware decision function and route both callers through it
 
 ---
 
-## A-1 — OPEN BLOCKER (cross-role mutual exclusion / TOCTOU)  [added 2026-05-30, operator audit]
+## A-1 — RESOLVED (cross-role mutual exclusion / global region mutex)  [implemented 2026-05-30, test-first]
+
+**Status of A:** CODE-COMPLETE, still LIVE-OBSERVATION-GATED (flag off; needs the region-lock dashboard showing a heavy+light set on disjoint shapes before flag-on). A-1 closes the TOCTOU — the behind-flag code now realizes both the *preference* AND the cross-role *guarantee*.
+
+### A-1 implementation (Option 1 — global region-mutex layer)
+
+- `src/runtime/cpu_region_lock.py` (+67/−13):
+  - `global_region_lock_path(region)` → `{tmp_dir}/cpu_region.GLOBAL.{region}.lock` (role-agnostic).
+  - `_cross_role_mutex_enabled()` reads `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT` (default off).
+  - `cpu_region_lock(...)`: when enabled, acquires the **GLOBAL** mutex for all regions first (sorted), THEN the per-role attribution locks (sorted) — consistent global ordering = deadlock-free; both layers on the same LIFO release stack. Flag off → GLOBAL layer skipped → byte-identical legacy behavior.
+  - Per-role locks UNCHANGED as the attribution layer. `active_region_holders` is driven by the topology table (real `(role, idx)` only) and never globs lock files, so the `GLOBAL` pseudo-role is automatically invisible to attribution.
+- Tests — `tests/unit/test_cross_role_region_mutex.py` (NEW, real **fork** processes for honest cross-process flock; spawn can't import the pytest module in the child):
+  - flag-OFF → two roles overlap on q0 (documents the TOCTOU; passes against the bug).
+  - flag-ON → windows serialize (disjoint) + GLOBAL lock acquirable after release (clean release).
+  - `active_region_holders` ignores a held GLOBAL lock (attribution stays role-only).
+  - **Hygiene (operator audit fix):** `_run_two_role_race` wraps start/join in try/finally with terminate→join→kill cleanup (mirrors `test_cpu_region_lock.py:400`) so a failed assertion or hung worker can never leak a child; the inert `@pytest.mark.timeout` marks were removed (pytest-timeout not in this venv) in favor of a hard 30s join bound + the finally-kill.
+- **Regression:** `test_cpu_region_lock.py` 23/23 pass (legacy lock path intact); full placement/dispatch/mutex suite **58 pass** (mutex 3 + cpu_region_lock 23 + placement 16 + dispatch_cross_role 2 + dispatch_sm 4 + quarter_pref 8 + migration_sm 2). Pre-existing unrelated failure unchanged: `test_placement_policy::test_live_call_with_no_arg_does_not_crash` (parallel agent's `get_placement_policy` default change; stash-proven not mine). [audit-fix re-verified 2026-05-30]
+
+**Remaining A gate (operator):** flip `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` only after a live region-lock/dashboard observation of a heavy+light set landing on disjoint shapes. **Nothing committed — working tree only.** Per operator instruction: **STOP here; do NOT start B (`admit_set`) until this is reviewed.**
+
+---
+
+## A-1 — original blocker writeup (now resolved; kept for context)
 
 **Status of A:** PARTIAL. The behind-flag code realizes the *preference* (placement filters + smallest-disjoint ordering + dispatch wiring + 48 passing tests) but NOT the cross-role *guarantee*. Do not flip `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` until A-1 is resolved.
 
@@ -225,3 +247,4 @@ Add a single placement-aware decision function and route both callers through it
 ### Standing operational context
 - Stack is UP (started this session, all 35 components healthy, `[1.5]` prewarm validated — NUMA balance 26/24.6/24.6/24.6%).
 - J6 autopilot soak RUNNING: daemon `autopilot.py start --no-controller --max-trials 2000`, state at `orchestration/autopilot_state.json` (NOT scripts/autopilot/), resumed at trial_counter=124. Log `logs/autopilot_relaunch15_*.log`. **Do NOT touch/restart autopilot or stack without explicit operator permission** (two standing CRITICAL constraints).
+- [shape-keyed-contention-gating-B-RESUME.md] Part B admit_set scaffolding resume checkpoint

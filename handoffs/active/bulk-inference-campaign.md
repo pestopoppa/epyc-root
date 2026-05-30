@@ -238,7 +238,7 @@ Initial regret analysis on 7,211 routing decisions (Apr 10-14):
 
 > **▶ STATUS UPDATE (2026-05-27) — supersedes the "Status" line below.** The 2026-05-26 status is stale. Current truth (reconciled against `orchestration/contention_matrix.yaml` + `data/bulk_inference_2026_05_26/execution_manifest.jsonl`):
 > - **Contention matrix: CLOSED + certified, ALL-ALLOW.** The famous `{frontdoor,ingest,vision}=0.847` "block" was a **bad-affinity artifact** (launcher `_numa_prefix` bug mis-pinned quarters); re-benched on certified disjoint quarters (`live_affinity_verified=true`) it is **1.731 allow**, and every measured N-way set allows (`4363dae`). **No measured N-way block remains.** New hard gate: `live_affinity_verified` + `affinity_preflight.py` artifact (topology_hash alone is insufficient).
-> - **J4b/J5: SUPERSEDED** by the certified re-bench (their verdicts were bad-affinity). **J4c: LIVE but now DEFENSIVE** (`nway_policy` wired; nothing currently queues). **J4: RATIFIED** (placement SM live; per-role policy decided). **J6: relaunched repeatedly** (current soak pid ~2350351 on `df373c79`, production API).
+> - **J4b/J5: SUPERSEDED** by the certified re-bench (their verdicts were bad-affinity). **J4c: LIVE but now DEFENSIVE** (`nway_policy` wired; nothing currently queues). **J4: RATIFIED** (placement SM live; per-role policy decided). **J6: relaunched repeatedly** (soak runs on `df373c79`, production API; the live daemon pid changes on every relaunch — discover it at runtime via `pgrep -af "autopilot.py start"`, do not trust any pid written here).
 > - **J1 core PASS; J2/J3 NOT live-closed** — migrations never naturally triggered in the ratification autopilot; a dedicated live migration probe is still pending.
 > - **BEP-2 status changed after the 2026-05-27 edit-transaction work**: the read-loop is no longer the active remediation blocker. Qwen3.6 passed the direct one-shot ablation 5/5, and the default-off `force_mode="edit"` transaction path is built + hardened. **J8 is now optional for a narrower decision**: whether to keep, retire, or task-scope the legacy structured patchset/batch-edit path. **DCP-6 is no longer gated on BEP's read-loop**, and DCP-4 advisory attach is already wired/default-off; only its offline replay + eval remain.
 > - **N-way runtime policy** is fail-OPEN for unmeasured foreground / closed-world for background-bulk (matches the code + cross-role-bw handoff); the older "closed-world serialize" wording is superseded.
@@ -481,3 +481,15 @@ When all Packages complete:
 - Move this handoff to `handoffs/completed/`
 - Extract reusable findings to docs/research
 - Update `CHANGELOG.md` with key results
+
+---
+
+## Cross-Role Contention + Placement (shape-keyed-contention-gating) — TRACKING [added 2026-05-30]
+
+Sibling to **Package J** (within-role placement). Where Package J makes *one role* fan out across disjoint quarters, this work (`handoffs/active/shape-keyed-contention-gating.md`) makes *different roles* co-reside on disjoint shapes — closing the seeder's non-work-conserving gap (heavy node-half runs while q2/q3 sit idle).
+
+**State:** Part A + A-1 CODE-COMPLETE behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT` (default OFF), uncommitted working tree; 58 placement/dispatch/mutex tests pass; A-1 global region-mutex closes the cross-role TOCTOU. B (`admit_set` shape-keyed admission) NOT started — operator-gated.
+
+**⏳ ACTION ON J6 END (do immediately):** the live-observation gate must run *while the stack is quiesced*, in a flag-on bracket, then **revert to flag-OFF before any resume** (flag-on + resume contaminates the Pareto frontier with a mixed dispatch regime — see that handoff's "frontier contamination" note). Sequence: J6 ends → (optionally commit A/A-1) → reload orchestrator with `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` → run multi-role fan-out probe (extend `scripts/benchmark/placement_fanout_probe.py` to a multi-role burst) → confirm region-lock dashboard shows heavy+light on disjoint shapes + queue-on-overlap → revert flag → reload. Adopting flag-on for production traffic is a SEPARATE decision requiring a `mark_epoch`/archive reset, not a silent resume.
+
+**Cross-ref:** Package J (`within-role-placement-state-machine.md`) J7 is the within-role analogue (`ORCHESTRATOR_PLACEMENT_STATE_MACHINE=1` rollout); this is the cross-role layer above it.
