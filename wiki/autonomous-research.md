@@ -404,3 +404,29 @@ Three fixes establish that invariant:
 Verification at wrap-up: 145 focused autopilot tests passed; `py_compile` and `git diff --check` passed. The first controller relaunch attempt exercised the active Claude+Codex path: trial 190 logged a Codex `revise` critique with confidence `0.89` and dispatched a rollback action. The process then received SIGTERM before journaling trial 190, so the current state is no autopilot process running, `in_flight_trial=190`, journal max `189`, and `consecutive_failures=0`. Next step is restart/recovery of the stale marker, then continue controller mode with `AUTOPILOT_PLANNER_MODE=draft_critique`.
 
 Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-42 · [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) § P5 · `progress/2026-05/2026-05-31.md`.
+
+## 2026-05-31 update - baseline, frontier, and distillation contamination closure
+
+The later relaunch audit found that the baseline gate-lock was not just a bad persisted baseline. Three
+independent state paths could preserve or recreate the same false quality target:
+
+- **Baseline persistence path**: `Baseline.save()` could write fixture-loaded test baselines to the
+  production baseline path. The path leak is fixed via `Baseline.source_path`; the load path now rejects
+  baseline quality above the eligible archive maximum, and baseline promotion must name a source trial
+  already admitted to the archive.
+- **Archive objective path**: the Pareto frontier had mixed Tier-0 sentinel evaluations with Tier-1
+  production evaluations on the same quality axis. The q=2.400 "best" was exactly 8/10 on a 10-question
+  T0 suite, not a T1 ceiling. T0 remains auditable in `all_entries`, but no longer contributes to
+  frontier, hypervolume, or archive-max baseline guards. The live production target is therefore the
+  honest T1 best (~1.895), not saturated T0 q=2.400.
+- **Knowledge distillation path**: legacy journal text containing the impossible 9.900/2.900 baseline
+  narrative bypassed the planner prompt scrub and could regenerate contaminated strategies during
+  `distill_knowledge`. `EvolutionManager.distill()` now sanitizes failure-analysis text before prompting
+  and before writing strategies.
+
+One-time cleanup scrubbed live journal JSONL/TSV and AP-22 short-term memory, purged six strategies with
+`source_trial_id >= 180`, and rebuilt DB/FAISS/id_map to 241 entries with zero remaining
+`9.900/-6.900` hits. Autopilot is intentionally stopped pending an operator-approved restart from trial
+569 against baseline `quality: 1.16`.
+
+Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-43 · [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) § Subsystem Status · `progress/2026-05/2026-05-31.md`.
