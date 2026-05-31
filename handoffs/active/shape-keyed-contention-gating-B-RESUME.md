@@ -2,15 +2,17 @@
 
 **Read this first, then `handoffs/active/shape-keyed-contention-gating.md` (the full design + A/A-1 record).**
 
-## Current resume point (wrap-up 2026-05-30)
+## Current resume point (UPDATED wrap-up 2026-05-31 — Step 1 staged, Step 2 dispatch-wiring DONE)
 
-- **A/A-1:** code-complete behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT` (default off). Global region mutex resolves the cross-role TOCTOU. Still live-observation-gated before flag-on.
-- **B:** pure core + default-off gate seam are code-complete and verified. `admit_set` and `seam_admit` are placement-aware; `ContentionGate.evaluate(candidate_topology_idx=...)` now treats a non-None seam verdict as **authoritative** (`worst = seam_decision`) when both dual flags are on. This fixed the audit bug where the earlier tightening-only draft could never unlock `frontdoor.q2` beside `ingest_long_context.{q0,q1}`.
-- **Runtime safety:** still triple-inert for live J6. Production `admit()` calls `evaluate(role, traffic_class)` with no candidate index; both dual flags default off; `seam_admit` returns `None` when disabled. No stack restart, flag flip, or autopilot relaunch happened.
+> **2026-05-31 supersedes the 2026-05-30 resume point below.** This session: (a) re-confirmed the dashboard "discrepancy" (frontdoor.half0 decoding on cores worker_general.full holds) is the EXPECTED role-keyed/placement-blind behavior, not rendering drift; (b) **staged Step 1** — `orchestrator_stack.py:1121` now defaults `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` (NOT reloaded; live autopilot mid-run); (c) **built Step 2** — the dispatch-side caller now passes a real `candidate_topology_idx`. B is code-complete end-to-end; remaining work is **rollout-only, no more code**.
+
+- **A/A-1:** code-complete behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT`. **Step 1 launcher default now staged** at `orchestrator_stack.py:1121` (`env.setdefault(...,"1")`), but the API was NOT reloaded — arms on next `orchestrator_stack.py reload`. Still live-observation-gated.
+- **B:** core + gate seam + **dispatch-side caller wiring all DONE.** `inference.py` defers the coarse role-keyed pre-gate for `ConcurrencyAwareBackend` when both flags armed; `concurrency_aware.py` `_dispatch` evaluates the gate per real `candidate_topology_idx` before lock acquisition (denied → skip/re-poll); `contention_gate.py` `admit()` threads `candidate_topology_idx` to `evaluate()`. Regression tests added (pre-gate deferral, real-candidate dispatch + denied-skip, admit() arg propagation); 146-test affected suite green; `git diff --check` clean.
+- **Runtime safety:** still inert. Both shape-aware flags default off; API not reloaded; no autopilot relaunch. Live env on pid 3229744 is still only `PER_REGION_LOCKS=1` + `PLACEMENT_STATE_MACHINE=1`.
 - **C:** pure `select_backfill_candidate` exists and is tested. The heavy-port veto, all-heavy idle barrier, and pressure skip remain untouched.
-- **GitNexus:** `gitnexus@1.6.5` is usable for root/orchestrator/research; wrappers use `--skip-agents-md --skip-skills`. `gitnexus impact seam_admit -r epyc-orchestrator -d upstream` reports runtime `impactedCount=4`, `risk=LOW`. llama.cpp re-index remains stale/hung and is a separate infra follow-up.
+- **GitNexus:** `gitnexus@1.6.5` usable for root/orchestrator/research; wrappers use `--skip-agents-md --skip-skills`. llama.cpp re-index remains stale/hung (separate infra follow-up).
 
-**Next authorized work, not yet done:** dispatch-side caller passes the selected `candidate_topology_idx`; A placement consumes the exact-region snapshot instead of the attribution map; C behavior changes happen only after B is live/observed and under an epoch boundary.
+**Next authorized work (rollout-only, no code):** (1) after the autopilot wraps, reload to arm Step 1 (GLOBAL region mutex); (2) observe blocked-pair/wait/throughput + verify dashboard attribution survives GLOBAL lock; (3) enable `ORCHESTRATOR_SHAPE_AWARE_CONTENTION=1` (needs BOTH flags) only after a live smoke confirms disjoint quarters admit while q-overlaps queue; (4) A placement consumes the exact-region snapshot instead of the attribution map; (5) C behavior changes only after B is live/observed and under an epoch boundary.
 
 > Historical notes below preserve the audit chain. Where they mention "pure only," "no call-site rewiring," "worse-of/tightening-only," or stale GitNexus 1.6.1 behavior, the current resume point above supersedes them.
 
@@ -54,8 +56,8 @@ B's pure core + wiring-seam prerequisites exist in `src/scheduling/contention.py
 ### Doc-drift fix 2026-05-30 (audit follow-up)
 `test_gate_seam_wiring.py` module docstring still said the seam "only TIGHTEN … never loosen" (described the removed tightening-only behavior). Corrected to describe the authoritative-replace semantics. No stale "only TIGHTEN / never loosen / tightening-only" strings remain in either the test or `contention_gate.py` (grep=0). 10/10 gate-wiring tests still green.
 
-### STOP POINT (operator-mandated)
-Held per the updated sequence: B core + default-off gate seam are verified, **no production caller passes a candidate topology index**, no flag flip, J6 untouched (flag-OFF). Remaining for B-live (NOT done): wire dispatch/admission at the candidate-selected point so the gate receives `candidate_topology_idx`. P3/C behavior changes (heavy veto / idle barrier / pressure skip removal) are NOT started — prep only until explicitly authorized.
+### STOP POINT (operator-mandated) — UPDATED 2026-05-31
+**Dispatch-side caller wiring is now DONE** (Step 2 above): the gate receives a real `candidate_topology_idx` from `_dispatch`. B is code-complete end-to-end. Held per the updated sequence: both shape-aware flags still default off, the API was NOT reloaded, no flag flip, autopilot untouched. Remaining is **rollout-only (no code)** — reload to arm Step 1, observe, then flip `SHAPE_AWARE_CONTENTION=1` after a live smoke. P3/C behavior changes (heavy veto / idle barrier / pressure skip removal) are NOT started — prep only until explicitly authorized.
 
 ### Original audit-fix notes (superseded by the section above, kept for trace)
 

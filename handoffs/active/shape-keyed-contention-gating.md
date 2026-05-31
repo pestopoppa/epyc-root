@@ -1,6 +1,6 @@
 # Shape-Keyed Contention Gating + Cross-Role Disjoint Placement
 
-**Status:** ACTIVE — A/A-1 code-complete behind default-off flags; B core + default-off authoritative gate seam code-complete and verified; C has pure backfill-selection prep only. **No production behavior is enabled yet**: live `admit()` still passes no candidate topology index, both shape-aware flags default off, and J6 remains flag-OFF. Remaining work is post-J6/operator-gated: live observation, dispatch-side candidate-index wiring, exact-region placement input, and C behavior changes under an epoch boundary.
+**Status:** ACTIVE — A/A-1 code-complete behind default-off flags; **B code-complete END-TO-END (dispatch-side caller wiring landed 2026-05-31, Step 2)**; C has pure backfill-selection prep only. **No production behavior is enabled yet**: both shape-aware flags default off and the API has not been reloaded, so live traffic is unaffected. Remaining work is now **rollout-only (no more code)**: live observation, flag-on, exact-region placement input (#3), and C behavior changes under an epoch boundary.
 **Created:** 2026-05-30
 **Owner:** (operator-directed; implementation by assistant)
 **Repos:** `epyc-orchestrator` (src/scheduling, src/backends, src/runtime, scripts/benchmark)
@@ -11,15 +11,16 @@
 ## Current state (start here)
 
 - [x] **A — Cross-role disjoint placement** (prerequisite; correctness-critical) — **CODE-COMPLETE 2026-05-30, behind `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT`; A-1 TOCTOU RESOLVED** via the global region mutex (`cpu_region.GLOBAL.{region}.lock`). Still LIVE-OBSERVATION-GATED before flag-on.
-- [x] **B — Shape-keyed admission core + default-off gate seam** — `Placement`, `admit_set`, `held_regions_by_role`, `seam_admit`, dual-flag gate, and `ContentionGate.evaluate(candidate_topology_idx=...)` are code-complete and verified. The seam is **authoritative** when consulted (`worst = seam_decision`), not tightening-only. Production remains inert because no live caller supplies a candidate topology index.
+- [x] **B — Shape-keyed admission core + default-off gate seam + dispatch-side caller wiring** — `Placement`, `admit_set`, `held_regions_by_role`, `seam_admit`, dual-flag gate, and `ContentionGate.evaluate(candidate_topology_idx=...)` are code-complete and verified. The seam is **authoritative** when consulted (`worst = seam_decision`), not tightening-only. **Dispatch-side caller wiring DONE 2026-05-31 (Step 2):** `inference.py` defers the coarse role-keyed pre-gate for `ConcurrencyAwareBackend` when both flags are armed (so it can't mask a later disjoint candidate); `concurrency_aware.py` `_dispatch` evaluates the gate per **real** `candidate_topology_idx` before acquiring the candidate lock (denied candidates skipped/re-polled); `contention_gate.py` `admit()` threads `candidate_topology_idx` through to `evaluate()`. B is now code-complete end-to-end; production remains **inert** only because both shape-aware flags default off and the API was not reloaded.
 - [~] **C — Backfill prep only** — pure `select_backfill_candidate` is implemented and tested; the heavy-port veto, all-heavy idle barrier, and pressure skip remain intact. Behavior-changing C work is not started.
 
 ### Next actions (operator-gated)
 
-1. After J6 or in a bracketed observation window, run the live-observation gate: region-lock dashboard must show a heavy+light set landing on disjoint shapes before enabling cross-role placement.
-2. Wire the dispatch-side caller to pass the selected `candidate_topology_idx` into the gate. This is the remaining B behavior step; do not do it while preserving the current J6 archive.
-3. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
-4. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
+1. **Step 1 staged, not live:** `orchestrator_stack.py:1121` now defaults `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1`, but the API was NOT reloaded (a live 185-trial autopilot was mid-run; reloading would contaminate its Pareto archive). After the autopilot wraps, `orchestrator_stack.py reload` arms the GLOBAL region mutex. Verify live env via `/proc/<api_pid>/environ` before trusting cross-role exclusion.
+2. **Observe Step 1 live:** region-lock dashboard must show a heavy+light set landing on disjoint shapes; quantify Step 1's throughput cost on the deliberate `frontdoor+worker_general allow` pair (correctness floor — likely costs some overlap throughput). Sanity-check `active_region_holders()` still attributes correctly with GLOBAL lock in play.
+3. ~~Wire the dispatch-side caller to pass the selected `candidate_topology_idx`~~ ✅ **DONE 2026-05-31 (Step 2, default-off).** Remaining: enable `ORCHESTRATOR_SHAPE_AWARE_CONTENTION=1` (requires BOTH flags) only after a live smoke confirms disjoint quarters admit while q-overlaps queue.
+4. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
+5. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
 
 > **2026-05-31 — dashboard-metrics holder accounting corrected (display only, gate unchanged).**
 > `active_region_holders()` (attribution view) over-counted the dashboard's active-role
