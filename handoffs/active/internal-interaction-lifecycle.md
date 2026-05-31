@@ -292,6 +292,94 @@ NEW files (created during phase execution):
 - `epyc-orchestrator/src/orchestration/consultation.py` (P2)
 - `epyc-orchestrator/orchestration/interaction_skills.yaml` (P2)
 
+## P2-0 Design Note — chosen attach point (2026-05-31)
+
+Discovery completed 2026-05-31. GitNexus is indexed only for `epyc-root` (not `epyc-orchestrator`), so upstream-caller analysis used grep + direct code read instead of `gitnexus impact`.
+
+### Candidate scorecard
+
+| Candidate | (a) Complete draft pre-commit | (b) Re-run capacity | (c) Stable requester | Verdict |
+|-----------|-------------------------------|---------------------|----------------------|---------|
+| `force_mode="edit"` → `run_edit_transaction()` at `src/edit_transaction.py:199` | ✅ `new_files: dict[str, str]` parsed at `:210` before apply at `:211` | ✅ in-memory draft; `apply_edit_transaction()` is a separate function — natural seam | ✅ routes to `coder_escalation` (Qwen3.6-35B-A3B Q8 @ :8071, shared mmap with frontdoor) per `model_registry.yaml:381,908` + CHANGELOG | **CHOSEN** |
+| REPL `_final()` at `src/repl_environment/context.py:169` | ◐ answer complete, but the wiki notes this path was bypassed for code-edit work (multi-turn read→peek→edit→FINAL loop failed BEP) | ✘ `FINAL()` terminates REPL execution; injecting a consult that may re-run is structurally invasive | ◐ role identity varies by REPL caller (worker_general / worker_explore / etc.) | rejected |
+| `worker_coder` default flow | — | — | ✘ `worker_coder` (port 8102, 30B alias) failed the BEP code-edit tasks; production code-edit producer is now `coder_escalation` per the 2026-05-27 protocol-fix work | rejected |
+| `coder_escalation` default flow | overlaps with Candidate A when `force_mode="edit"` is set | — | ✅ same role as Candidate A | folded into Candidate A |
+| Batched-edit pipeline (`batched-edit-parallel-apply`) | — | — | ✘ "implementation-scoped draft" status; BEP-2 was the falsification gate and is now optional provenance per its handoff banner — not a shipping production path | rejected |
+
+### Chosen attach point
+
+**`epyc-orchestrator/src/edit_transaction.py:199` `run_edit_transaction()`, between the one-shot draft `llm_call()` at `:209` and the transactional `apply_edit_transaction()` at `:211`.**
+
+### Why this is the right seam
+
+1. **Production-shipping path.** `force_mode="edit"` is the canonical multi-file code-edit surface (default-off via `ORCHESTRATOR_EDIT_TRANSACTION=1` + scoped `ORCHESTRATOR_EDIT_ROOT`, fail-closed with HTTP 412 if either is missing). The wiki names it as the remediation for the BEP read→peek→edit→FINAL failure class. Not a vapor target.
+2. **Complete structured draft pre-commit.** After `parse_edit_response(raw)` at `:210`, the draft is a fully-typed `(new_files: dict[str, str], deletes: list[str])`. Advisory feedback can be summarized against this structured artifact rather than against free-form prose.
+3. **Apply is a separate function.** `apply_edit_transaction()` (`:138`) handles snapshot / write / syntax-check / rollback as a discrete step. Inserting a consult between draft parse and apply is a single-statement change with no transaction-semantics risk — the rollback path is untouched.
+4. **Stable requester role.** `force_mode="edit"` per `chat.py:589` calls `run_edit_transaction(..., _edit_llm_call, ...)`; the `_edit_llm_call` closure at `chat.py:573-586` calls `_execute_direct()` against `initial_role`, which for `force_mode="edit"` resolves to `coder_escalation` per the production routing. Stable identity for `interaction_skills.yaml` registry + telemetry.
+5. **LOW blast radius.** Only TWO upstream callers of `run_edit_transaction` exist in the entire codebase:
+   - `epyc-orchestrator/src/api/routes/chat.py:589` (sole production caller)
+   - `epyc-orchestrator/tests/unit/test_edit_transaction.py:104` (`test_run_edit_transaction_with_stub_llm`)
+
+   Adding `primitives` as a keyword-only optional with `None` default preserves the test's existing call shape.
+
+### Wiring sketch (executed in P2-7)
+
+```python
+def run_edit_transaction(
+    llm_call: Callable[[str], str],
+    task_prompt: str,
+    root: Path | str,
+    target_files: list[str] | None = None,
+    self_check: bool = True,
+    *,
+    primitives: "LLMPrimitives | None" = None,   # NEW (P2-7)
+) -> tuple[EditResult, str]:
+    try:
+        files_ctx = assemble_context(root, target_files)
+    except EditScopeError as e:
+        return EditResult(ok=False, error=str(e)), ""
+    raw = llm_call(build_edit_prompt(task_prompt, files_ctx)) or ""
+    new_files, deletes = parse_edit_response(raw)
+
+    # NEW (P2-7): optional advisory consult between draft and apply
+    if primitives is not None and features().consult_skills_enabled.get("review_before_commit"):
+        try:
+            advisory, _stats = consult(
+                consultant_role="architect_general",
+                requester_role="coder_escalation",
+                skill="review_before_commit",
+                context=_summarize_draft(new_files, deletes, task_prompt),
+                primitives=primitives,
+            )
+            if advisory.get("blocking_issues") and advisory.get("confidence", 0.0) >= 0.6:
+                raw = llm_call(build_edit_prompt(task_prompt, files_ctx, advisory=advisory)) or ""
+                new_files, deletes = parse_edit_response(raw)  # one re-run cap
+        except ConsultationDenied:
+            pass  # event recorded upstream as consult_denied in interaction_events
+
+    return apply_edit_transaction(root, new_files, deletes, self_check=self_check), raw
+```
+
+### Wiring impact upstream
+
+- `chat.py:589` becomes `run_edit_transaction(_edit_llm_call, request.prompt, get_task_root(), None, primitives=primitives)` — `primitives` is already in scope (passed to `_execute_direct` etc.).
+- `build_edit_prompt()` gains an optional `advisory` parameter for the re-run path; default `None` preserves all existing call sites.
+- `_summarize_draft()` is a new helper (small, P2-7 scope) producing the bounded context the consultant sees — NOT the full file bodies (that's the consultant's job to reason about, gated by `tools_budget`).
+
+### Sanity gates before P2-1
+
+- ✅ Single production caller verified (`chat.py:589`).
+- ✅ Apply step is a separable function (`apply_edit_transaction` is called once at `:211`).
+- ✅ Requester role identity stable (`coder_escalation` per `force_mode="edit"` branch).
+- ✅ Test fixture impact LOW (keyword-only optional preserves `test_run_edit_transaction_with_stub_llm`).
+- Pending P1: `Interaction(kind="consult", ...)` substrate must land before P2-7 wiring (per phase ordering — P2-7 depends on P1's interaction abstraction).
+
+**Discovery status**: COMPLETE. P2-1 may proceed when P1 lifecycle refactor is gate-passed.
+
+### Inference-window scheduling (bulk-inference-campaign cross-ref)
+
+The P2 A/B (≥50 code-edit-turn comparison at the edit-transaction seam) is registered as **J17** in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) under the "Other agents' inference-gated work" table. That handoff carries the inference-window scheduling logic, model requirements (`coder_escalation` + `architect_general`), and prereq-chain visibility for the operator triggering the eval. The bulk-inference handoff's "Internal Interaction Lifecycle (consult sibling) — TRACKING" tail section mirrors the live status (P2-0 ✅ / P1 ⏳ / P2 ⏳ / J17 🔒 / P3+P4 🔒) so the inference-window agent can see exactly when to schedule J17 without reading this full handoff. Update both sides when phase state changes.
+
 ## Reporting
 
 - Tick checkboxes inline in this handoff after each phase task.
