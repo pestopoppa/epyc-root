@@ -2,10 +2,10 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-31 PM (gate-lock/frontier/distill contamination closed; autopilot stopped pending operator restart)
+**Updated**: 2026-05-31 PM (gate-lock/frontier/distill/planner-context contamination closed; autopilot stopped after trial 184 probe)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
-> ### ✅ 2026-05-31 — baseline gate-lock/frontier contamination CLOSED (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`)
+> ### ✅ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination CLOSED (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
 > The safety gate ran with a never-achieved `baseline.quality`, so the regression gate
 > force-reverted every honest trial and the planner looped on no-op `distill_knowledge`
 > (77/81 trials 190→271 ran zero inference). All corruption paths closed and the deferred
@@ -30,10 +30,17 @@
 >   failure text before prompting and before writing strategies. Live JSONL/TSV/AP-22 memory cleanup
 >   leaves 0 legacy `9.900/-6.900` hits; six re-contaminated `source_trial_id>=180` strategies purged
 >   and DB/FAISS/id_map are all 241.
+> - **Planner-context stale telemetry closed** (`ebd5647`): `ExperimentJournal.summary_text()` hides
+>   T0 production-quality metrics and all `bug_corrupted_by` metrics/reasons, so in-scale stale
+>   `q=2.400` / `2.900` claims cannot re-enter the planner through recent-trial summaries. Trials
+>   180–183 were tagged `bug_corrupted_by=ec9622d`; `summary_text(20)` verifies no `q=2.400` or
+>   `2.900` remains. HV history was backfilled from T1/T2 archive entries only and docs plots refreshed.
 >
-> **STOPPED pending operator restart**: no `autopilot.py start` process after cleanup. Restart from
-> trial 569 only on operator say-so, against the honest `quality: 1.16` baseline and T1-only archive
-> max (~1.895). Treat old `2.400` as T0 sentinel saturation, not the production quality target.
+> **STOPPED after restart probe**: no `autopilot.py start` process. A one-trial probe ran trial 184,
+> produced an unrelated tool-policy mutation (`d50b77c`), evaluated T1 q=1.816, and marked the trial
+> `mad_noise` (archive/AP-22 skipped). Existing tool-policy tests rejected that mutation, so it was
+> reverted in `12d6afb`. Current state: `trial_counter=185`, `in_flight_trial=None`,
+> `consecutive_meta_actions=0`. Treat old `2.400` as T0 sentinel saturation, not the production target.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 
@@ -817,6 +824,7 @@ Autopilot was running 8.5h producing garbage data. Quality had collapsed from th
 | **AP-41 (2026-05-28): dual-provider draft/critique planner** — planner invocation is now provider-coordinated: Claude remains the default drafter, Codex can serve as fallback drafter and secondary critic, provider failures trip a circuit breaker, and the executor still receives one canonical `autopilot_actions` block. Default mode is conservative `shadow_critique`: fallback is active, but critic revisions are logged rather than applied. Active critic reconciliation requires `AUTOPILOT_PLANNER_MODE=draft_critique`. | `scripts/autopilot/{autopilot.py, planner_providers.py, planner_coordinator.py}` + `tests/unit/{test_autopilot_planner_providers.py,test_autopilot_planner_coordinator.py}` | **52/52 focused tests passing**: controller IO, provider parsing, coordinator fallback/critique/circuit tests, recovery, and GEPA import coverage. `gitnexus impact invoke_controller --direction upstream --repo epyc-orchestrator --include-tests`: LOW, confined to Autopilot loop. README/wiki wrap-up note: wiki compile saw unrelated parallel handoff edits, so AP-41 is documented here and in progress only; no broad wiki synthesis was committed from this session. |
 | **AP-42 (2026-05-31): controller relaunch safety closure** — Closing fixes for running J6 in controller mode instead of seeder-only mode. Codex critic stdin handoff repaired; active `draft_critique` no longer approves parse/invoke failures; `_ACTION_SCHEMAS` covers all 14 controller actions so prompt/critic/executor field drift is rejected at the universal gate; `slot_compact` prompt/schema/handler agreement restored; mutation dirty-target fence blocks writes and forge commits when the exact target file/path already has pending shared-clone work. | `scripts/autopilot/{planner_coordinator.py,planner_providers.py,controller_io.py,autopilot.py,actions.py}` + `tests/unit/{test_autopilot_planner_coordinator.py,test_autopilot_controller_io.py,test_autopilot_actions_dirty_fence.py}` | Commits: `d5c3a2f` pushed; `af84514` and `e58a79c` local-only ready to push. **145/145 focused autopilot tests passing**, `py_compile` ok, `git diff --check` ok. Live relaunch was attempted after hardening: WAL recovery journaled killed trials 188/189; trial 190 produced a real Codex critique (`revise`, confidence 0.89) and dispatched `rollback`. Current wrap-up state: no autopilot process running, `in_flight_trial=190` still present, journal max `189`, `consecutive_failures=0`; restart/recovery is pending before J6 can continue. |
 | **AP-43 (2026-05-31): baseline/frontier/distillation contamination closure** — Closed the full re-contamination chain after the relaunch audit. `Baseline.save()` path leak fixed by `a231556`; `89e6c9f` adds load-path archive-max and archive-first baseline promotion; `ec9622d` excludes Tier-0 fast-reject trials from Pareto frontier/hypervolume/archive-max while retaining them in `all_entries`; `20ea4d5` scrubs legacy-scale failure text in `EvolutionManager.distill()` input and output. Live cleanup scrubbed journal JSONL/TSV + AP-22 memory, purged six `source_trial_id>=180` strategies, and rebuilt DB/FAISS/id_map to 241 with 0 legacy `9.900/-6.900` hits. | `scripts/autopilot/{safety_gate.py,pareto_archive.py,species/evolution_manager.py}` + `tests/unit/{test_safety_gate_baseline_eligibility.py,test_baseline_scale_guard.py,test_pareto_archive_tiers.py,test_evolution_manager_scrub.py}` + runtime backup `orchestration/legacy_scale_cleanup_backup_20260531_122902/` | Tests: 46 archive/safety/recovery, 23 actions/creativity, and 31 distill/scrub/safety checks passed. Autopilot is stopped after cleanup. Next restart should begin at trial 569 against baseline `quality: 1.16`, with the archive target anchored to T1 best quality ~1.895 instead of saturated T0 `2.400`. |
+| **AP-44 (2026-05-31): planner-context stale telemetry closure** — Closed the third leak: in-scale stale planner reasoning (`q=2.400`, `2.900`) in recent journal summaries and trials 180–183 could still bias draft planning even after archive/frontier/distill fixes. `summary_text()` now downclasses T0 as audit-only and hides all bug-corrupted metrics/reasons; progress plots use the same T1/T2 + trustworthy filters. Trials 180–183 were tagged `bug_corrupted_by=ec9622d`; HV history was backfilled from T1/T2 archive entries only; docs plots refreshed. | `scripts/autopilot/{experiment_journal.py,progress_plots.py}` + `tests/unit/{test_journal_prompt_sanitization.py,test_progress_plots_filters.py}` + `docs/autopilot/*.png` | Commit `ebd5647` passed 47 focused autopilot tests, `py_compile`, and `git diff --check`. A restart probe ran trial 184 to T1 q=1.816 and marked it `mad_noise`; unrelated autopilot tool-policy mutation `d50b77c` was reverted by `12d6afb` after existing `test_tool_policy.py` rejected it. No autopilot process is running. Current state: `trial_counter=185`, `in_flight_trial=None`, `consecutive_meta_actions=0`. |
 
 ### Journal data purged
 

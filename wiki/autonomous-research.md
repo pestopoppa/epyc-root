@@ -430,3 +430,19 @@ One-time cleanup scrubbed live journal JSONL/TSV and AP-22 short-term memory, pu
 569 against baseline `quality: 1.16`.
 
 Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-43 · [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) § Subsystem Status · `progress/2026-05/2026-05-31.md`.
+
+### Planner-context stale telemetry closure
+
+A final cleanup pass found one more planner contamination route: in-scale stale values in recent journal
+reasoning. Because `q=2.400` and `2.900` are valid 0–3 numbers, the legacy-scale scrubber correctly ignored
+them, but after Tier-0 was excluded from production frontier semantics those values were stale telemetry.
+The fix is semantic rather than numeric: journal summaries now render Tier-0 as audit-only with quality
+hidden, hide metrics/reasons for `bug_corrupted_by` entries, and plot generation uses T1/T2 + trustworthy
+rows for production-facing charts. Trials 180–183 were tagged `bug_corrupted_by=ec9622d`, and
+`summary_text(20)` was verified free of `q=2.400` and `2.900`.
+
+Operationally, a one-trial restart probe after the cleanup advanced runtime state to trial 185, produced an
+unrelated tool-policy mutation, and then reverted it after existing tests rejected the change. Autopilot is
+stopped with `trial_counter=185`, `in_flight_trial=None`, and `consecutive_meta_actions=0`.
+
+Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-44 · `progress/2026-05/2026-05-31.md`.
