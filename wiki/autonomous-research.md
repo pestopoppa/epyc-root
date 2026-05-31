@@ -390,3 +390,17 @@ Sources: [`handoffs/active/autopilot-dispatch-latency-optimization.md`](../hando
 Diagnostics returned with every BT fit: `comparison_graph_connected` (disconnected components flag), `condorcet_cycles` (transitive-skill violations), `dominance_skew` (>3 log-odds adjacent gap = intake-615 capability-skew failure mode). Stagnation handler logs these to journal + digest, so falsification (J13) can analyze BT-vs-hypervolume disagreement quality offline.
 
 Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § P17 · [`handoffs/active/swarm-dataset-distillation.md`](../handoffs/active/swarm-dataset-distillation.md) · [`handoffs/active/decision-aware-routing.md`](../handoffs/active/decision-aware-routing.md) § DAR-6 · `research/intake_index.yaml` intake-615 (arxiv:2510.24801) · `progress/2026-05/2026-05-27.md`.
+
+## 2026-05-31 update - controller-mode relaunch safety gates
+
+The J6 relaunch preparation changed the controller from "data-collection seeder loop" toward an LLM-directed optimization loop, so the safety invariant is stricter than ordinary PromptForge gating: the action approved by the planner and critic must be the action the executor actually runs, and a critic failure cannot become implicit approval.
+
+Three fixes establish that invariant:
+
+- **Codex critic failures fail closed in active draft/critique mode.** The planner coordinator now sends unparseable Codex output, provider timeout/nonzero exit, and empty response paths through reconciliation rather than letting a draft action through as an approve-by-default result. A forced-critique smoke produced a real structured `revise` with confidence `0.83` and empty `parse_error`; regression tests cover both happy path and failure path.
+- **Controller actions are schema-validated before dispatch.** A registry for all 14 action types rejects unknown keys, missing required fields, invalid enums, and bounded-range violations at the universal `validate_single_variable()` gate. This closes the silent-drop class where Claude/Codex could discuss `target_trial`, `suites`, `beta`, or other scoping fields that the executor ignored.
+- **Mutation actions are fenced against dirty shared-clone targets.** Before any write or forge commit, code mutation checks the exact allowlisted file, prompt mutation and GEPA check `orchestration/prompts/` because PromptForge stages that directory, and structural prune checks its exact prompt file. Any pending git status or git error skips the mutation, preventing autopilot commits from sweeping pre-existing parallel-agent hunks in the same target.
+
+Verification at wrap-up: 145 focused autopilot tests passed; `py_compile` and `git diff --check` passed. The first controller relaunch attempt exercised the active Claude+Codex path: trial 190 logged a Codex `revise` critique with confidence `0.89` and dispatched a rollback action. The process then received SIGTERM before journaling trial 190, so the current state is no autopilot process running, `in_flight_trial=190`, journal max `189`, and `consecutive_failures=0`. Next step is restart/recovery of the stale marker, then continue controller mode with `AUTOPILOT_PLANNER_MODE=draft_critique`.
+
+Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-42 · [`handoffs/active/routing-and-optimization-index.md`](../handoffs/active/routing-and-optimization-index.md) § P5 · `progress/2026-05/2026-05-31.md`.
