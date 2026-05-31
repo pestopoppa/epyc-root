@@ -3,7 +3,7 @@
 **Category**: `autonomous_research`
 **Confidence**: verified
 **Last compiled**: 2026-05-31
-**Sources**: 41 documents (added 2026-05-31 planner-context restart-blocker validation)
+**Sources**: 42 documents (added 2026-05-31 tiered baseline calibration)
 
 ## Summary
 
@@ -18,6 +18,14 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ## Key Findings
 
 ### New (2026-05-31, planner-context restart-blocker validation)
+
+- **Safety baselines must be tier-scoped before autonomous promotion is meaningful.** The final
+  tier-segregation step moved the legacy flat `quality: 1.16` seed into T2, calibrated the canonical
+  T1 gate from a live production-config EvalTower run (`q=1.4842105263157894`, reliability 0.958,
+  95 questions), and persisted both YAML seed and `baseline_state` while leaving autopilot paused at
+  trial 188. This closes the failure mode where an honest T1/T2 trial is compared against the wrong
+  evaluation distribution; baseline promotion and MAD significance now have same-tier state to act on.
+  Autopilot was deliberately not relaunched after calibration. Source: [progress 2026-05-31](../progress/2026-05/2026-05-31.md).
 
 - **Planner-context fixes must be retroactive or applied at read time; write-path-only sanitization is insufficient for autonomous loops.** The learning-excluded keep-signal patch prevented future `mad_noise` rows from journaling as `keep`, but a validation restart still read the already-poisoned rows. Trials 184, 186, and 187 were all `bug_corrupted_by=mad_noise` / `deficiency_category=mad_noise` while still carrying `keep_revert_decision=keep`; trials 186-187 also preserved "Numeric optimization working - continue exploring this surface." This proves autonomous planner context must derive trust from exclusion metadata at read time, not only from the natural-language self-criticism saved at write time. A clean restart also requires resetting stale `consecutive_meta_actions` and purging the strategy-store/distilled-insight state created during the contaminated loop. Sources: [progress 2026-05-31](../progress/2026-05/2026-05-31.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
 
