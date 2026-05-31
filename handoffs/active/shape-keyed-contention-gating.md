@@ -21,6 +21,16 @@
 3. Switch A placement from the attribution view (`active_region_holders`) to the exact-region view (`held_regions_by_role`) so flag-on placement does not overblock free quarters.
 4. Only after B is live and observed, perform C behavior work: narrow the legacy heavy-slot barrier/erase, add work-conserving backfill, then remove the line-98 heavy-port veto.
 
+> **2026-05-31 — dashboard-metrics holder accounting corrected (display only, gate unchanged).**
+> `active_region_holders()` (attribution view) over-counted the dashboard's active-role
+> readout: a single full-shape MTP worker holding q0–q3 rendered as ×5. Added
+> `active_region_holder_instances()` in `src/runtime/cpu_region_lock.py` (group held locks
+> by (role, PID) → resolve each PID's exact held-region set to its instance shape) and wired
+> it into `ContentionGate.active_decodes_by_role`/`active_instances_by_role`. The scheduler
+> attribution view `active_region_holders()` is **unchanged** (GitNexus HIGH-risk; still used
+> by A placement). This is a precedent for **Next-action #3** (exact-region view) but does not
+> itself change any gate/placement behavior. Commit `263b1b0`; see `progress/2026-05/2026-05-31.md`.
+
 ### A — implementation record (2026-05-30)
 
 - `src/scheduling/placement.py`: added `_cross_role_regions_union(self_role, cross_role_holders, instance_regions)` + a `cross_role_holders: dict[str,Iterable[int]] | None = None` kwarg on `evaluate_placement`. When supplied, holder regions are unioned across **all** roles (self-role entry skipped); `None` → empty union → byte-identical legacy same-role-only behavior. Overlap is computed from canonical region sets (`instance_regions`), never a shape label.
