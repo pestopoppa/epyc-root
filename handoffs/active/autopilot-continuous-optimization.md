@@ -2,7 +2,7 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-31 PM (gate-lock/frontier/distill/planner-context contamination mostly closed; restart blocked by retroactive learning-exclusion poison + stale meta-action/strategy-store state)
+**Updated**: 2026-05-31 evening (planner-context meta-loop FIXED `dcfc9eb` B/A/C + runtime pruned; restart VALIDATED ~22:53 — planner pivoted off the spiral; running toward trial 300)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > ### ⚠️ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination PARTIAL CLOSURE (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
@@ -37,29 +37,45 @@
 >   `2.900` remains. HV history was backfilled from T1/T2 archive entries only and docs plots refreshed.
 >
 >
-> **BLOCKED after validation restart**: no `autopilot.py start` process. The learning-exclusion fix was
-> forward-only: existing `mad_noise` rows still poison planner context. Verified rows:
-> trial 184 (`code_mutation`), trial 186 (`numeric_trial`), and trial 187 (`numeric_trial`) are all
-> `bug_corrupted_by=mad_noise` / `deficiency_category=mad_noise` but still carry
-> `keep_revert_decision=keep`; trials 186-187 also say "Numeric optimization working - continue
-> exploring this surface." The planner reads those rows as prior evidence and re-enters
-> `distill_knowledge`. Runtime state also carried `consecutive_meta_actions=5`, so the first new
-> meta action tripped the guard at 6 immediately (`trial_counter=188`, `in_flight_trial=None`,
-> `_dispatch_deficiency=meta_action_loop`). Before restart, implement either a one-time journal
-> backfill or read-time planner-context rule that treats excluded rows as non-actionable and never
-> as `keep`, reset stale meta-action state, and purge/rebuild the 299-entry strategy store plus
-> insights distilled during the contaminated loop per
-> `[[feedback_autopilot_rewind_must_purge_strategy_store]]`. Treat old `2.400` as T0 sentinel
-> saturation, not the production target.
->
 > **CONFIRMED empirically 2026-05-31 18:40** (capped restart, fix `e236327` committed): re-launched
 > `draft_critique` with `--max-trials 191` (note: `--max-trials` is an ABSOLUTE counter target, not
 > "N more" — `--max-trials 3` against `trial=188` exits instantly). The fix is **forward-only** and
 > did NOT break the loop: planner's first action was `distill_knowledge` again, re-halted at
 > `consecutive_meta=6`, critique still cited the stale `think_harder q=1.816` keep. Autopilot left
-> DOWN. So a read-time relabel (or journal backfill of rows 184/186/187) + meta-counter reset +
-> strategy-store purge are required before the next restart — the committed write-time fix alone is
-> insufficient.
+> DOWN. The committed write-time fix alone was insufficient.
+>
+> **CLEANED 2026-05-31 20:56-22:05 UTC**: one-time runtime state prune completed while autopilot was
+> stopped. Removed trial IDs 184/186/187 from active JSONL/TSV journals, removed `[t184]`/`[t186]`/
+> `[t187]` AP-22 short-term-memory bullets, pruned 65 active strategy-store rows from the contaminated
+> meta/distill window (`source_trial_id=184` and `188`), rebuilt SQLite FTS + FAISS/id-map to 241/241/241,
+> deleted dangling local tags `autopilot/trial-184`, `autopilot/trial-186`, and `autopilot/trial-187`,
+> and left `autopilot_state.json` at `paused=true`, `trial_counter=188`, `consecutive_meta_actions=0`,
+> with no `_dispatch_deficiency` / `_meta_halt_reason`. Verification: active journal has no
+> `bug_corrupted_by=mad_noise`; strategy retrieval has no active `#184`/`#186`/`#187`, `mad_noise`, or
+> "continue exploring this surface" hits. Backups live outside the repo at
+> `/mnt/raid0/llm/tmp/autopilot-prune-20260531-205634/`.
+>
+> **RESOLVED + RESTARTED 2026-05-31 ~22:53 UTC (orchestrator `dcfc9eb`).** The forward-only `e236327`
+> was superseded by the full B→A→C fix: **B** `safety_gate.py` adds `reproduction_confirmed` (within-noise
+> reproduction of an above-baseline established level) + drops reverted trials from the MAD window — MAD
+> statistic unchanged (the tested invariant "same level above baseline is not a NEW improvement" is
+> preserved; no baseline re-anchor); **B→C bridge** `classify_learning_exclusion`/`learning_exclusion_criticism`
+> emit a benign convergence reason and `BENIGN_LEARNING_EXCLUSIONS` keeps `bug_corrupted_by` EMPTY for it
+> (so `trustworthiness_score` no longer lumps confirmations with kills/reloads/SHA-invalidations); **A**
+> meta-loop halt now latches `paused=true` (terminal-until-resume; survives supervisor restart),
+> `_classify_meta_halt` labels converged-vs-stuck, and resume resets `consecutive_meta_actions`; **C** planner
+> trust block surfaces a reproduction-convergence count + an ATTRIBUTION GUARD ("exclusions are valid
+> classifications, NOT host noise; don't claim a noise window without host-health evidence") + a host-health
+> line. GitNexus impact LOW on all targets; 152 autopilot-suite tests pass. Verified the 5 tier-seg commits
+> (`c75b69d..f031e33`) landed on top with `dcfc9eb` as ancestor and `reproduction_confirmed`'s `base_q`
+> correctly rebased to `quality_for_tier(result.tier)`.
+> Staged restart (`--max-trials 300`, bg pid 3740635, log `/mnt/raid0/llm/tmp/autopilot-restart.log`): the
+> planner's first post-resume turn explicitly cited the ATTRIBUTION GUARD + host-health-nominal, abandoned
+> the host-noise narrative, read think_harder as CONVERGED, and pivoted to a NEW surface (`numeric_trial
+> monitor`) — real trial in flight, `consecutive_meta_actions=0`. Credits: planner calls `status:"allowed"`
+> within the 5h window despite `out_of_credits`/overage-rejected (~$3.4/turn). **Now running autonomously
+> toward trial 300.** Deferred: host-health auto-remediation on regression (separate follow-up; would not have
+> fixed this incident). Detail: `progress/2026-05/2026-05-31.md`.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 
@@ -845,6 +861,7 @@ Autopilot was running 8.5h producing garbage data. Quality had collapsed from th
 | **AP-43 (2026-05-31): baseline/frontier/distillation contamination closure** — Closed the full re-contamination chain after the relaunch audit. `Baseline.save()` path leak fixed by `a231556`; `89e6c9f` adds load-path archive-max and archive-first baseline promotion; `ec9622d` excludes Tier-0 fast-reject trials from Pareto frontier/hypervolume/archive-max while retaining them in `all_entries`; `20ea4d5` scrubs legacy-scale failure text in `EvolutionManager.distill()` input and output. Live cleanup scrubbed journal JSONL/TSV + AP-22 memory, purged six `source_trial_id>=180` strategies, and rebuilt DB/FAISS/id_map to 241 with 0 legacy `9.900/-6.900` hits. | `scripts/autopilot/{safety_gate.py,pareto_archive.py,species/evolution_manager.py}` + `tests/unit/{test_safety_gate_baseline_eligibility.py,test_baseline_scale_guard.py,test_pareto_archive_tiers.py,test_evolution_manager_scrub.py}` + runtime backup `orchestration/legacy_scale_cleanup_backup_20260531_122902/` | Tests: 46 archive/safety/recovery, 23 actions/creativity, and 31 distill/scrub/safety checks passed. Autopilot is stopped after cleanup. Next restart should begin at trial 569 against baseline `quality: 1.16`, with the archive target anchored to T1 best quality ~1.895 instead of saturated T0 `2.400`. |
 | **AP-44 (2026-05-31): planner-context stale telemetry closure** — Closed the third leak: in-scale stale planner reasoning (`q=2.400`, `2.900`) in recent journal summaries and trials 180–183 could still bias draft planning even after archive/frontier/distill fixes. `summary_text()` now downclasses T0 as audit-only and hides all bug-corrupted metrics/reasons; progress plots use the same T1/T2 + trustworthy filters. Trials 180–183 were tagged `bug_corrupted_by=ec9622d`; HV history was backfilled from T1/T2 archive entries only; docs plots refreshed. | `scripts/autopilot/{experiment_journal.py,progress_plots.py}` + `tests/unit/{test_journal_prompt_sanitization.py,test_progress_plots_filters.py}` + `docs/autopilot/*.png` | Commit `ebd5647` passed 47 focused autopilot tests, `py_compile`, and `git diff --check`. A restart probe ran trial 184 to T1 q=1.816 and marked it `mad_noise`; unrelated autopilot tool-policy mutation `d50b77c` was reverted by `12d6afb` after existing `test_tool_policy.py` rejected it. No autopilot process is running. Current state: `trial_counter=185`, `in_flight_trial=None`, `consecutive_meta_actions=0`. |
 | **AP-45 (2026-05-31): learning-excluded keep-signal closure** — Closed the planner-context poison that caused the trial-188 meta-loop halt: `mad_noise` trials already skipped archive/AP-22 learning, but the journal still stored self-criticism as `keep` with “continue exploring this surface,” which the planner interpreted as evidence while also seeing no trustworthy progress. Learning-excluded trials now get explicit `SelfCriticism(... keep_or_revert="excluded" ...)` before journaling, with controller-facing text saying not to treat the outcome as a keep/config-efficacy signal. | `scripts/autopilot/{autopilot.py,self_criticism.py,experiment_journal.py}` + `tests/unit/test_classify_learning_exclusion.py` | GitNexus impact LOW for `classify_learning_exclusion`, `_run_loop_inner`, `JournalEntry`, and `ExperimentJournal.summary_text`. Validation: 21 focused learning-exclusion/journal/MAD tests passed; 89 broader autopilot unit tests passed; `py_compile` and `git diff --check` passed. Autopilot remains down pending operator restart decision. |
+| **AP-46 (2026-05-31): historical poison-state prune** — Closed the forward-only gap left by AP-45. Existing rows 184/186/187 and the meta/distill strategy rows already written before the code fix were removed from the active runtime state so the next planner prompt cannot cite them as evidence. | Runtime state only: `orchestration/autopilot_journal.{jsonl,tsv}`, `orchestration/autopilot_state.json`, `scripts/autopilot/short_term_memory.md`, `orchestration/repl_memory/strategies/*`, and local tags `autopilot/trial-{184,186,187}`. Backups: `/mnt/raid0/llm/tmp/autopilot-prune-20260531-205634/`. | Verified active journal has no trial IDs 184/186/187 and no `bug_corrupted_by=mad_noise`; `ExperimentJournal.trustworthiness_score()` reports only `autopilot_killed_mid_trial:17` and `ec9622d:4`; strategy SQLite/FTS/FAISS/id-map all count 241 with no active `#184`/`#186`/`#187`, `mad_noise`, or “continue exploring this surface” hits; state is `paused=true`, `trial_counter=188`, `consecutive_meta_actions=0`, no dispatch/halt latch. No inference or live trial was run. |
 
 ### Journal data purged
 
@@ -862,13 +879,12 @@ But: even with the April 20 binary (pre-TIDE entirely, head `81df3f7c`), bench r
 
 ### Autopilot relaunch readiness
 
-- Stack healthy, all 13 servers including new same-GGUF consolidation on 8070
-- Validator gates `cmd_start` (will fail-fast on future cross-section drift)
-- Polluted journal entries gone
-- host_health.py + safety_gate wired (will auto-remediate throttle on regression detection)
-- Registry compile module ready (opt-in via `--compile-registry`; default off pending master/orchestrator port-plan reconciliation)
+- Runtime poison state cleared: active journal rows 184/186/187 removed; AP-22 short-term memory refs removed; 65 contaminated strategy rows pruned; strategy SQLite/FTS/FAISS/id-map aligned at 241.
+- State is restart-order-independent: `paused=true`, `trial_counter=188`, `consecutive_meta_actions=0`, no `_dispatch_deficiency`, no `_meta_halt_reason`.
+- Local dangling tags `autopilot/trial-184`, `autopilot/trial-186`, and `autopilot/trial-187` deleted.
+- Autopilot remains down/paused. No inference or live trial was run during cleanup.
 
-**Awaiting operator decision on autopilot restart timing.** Recommended: post-reboot, to also test the host-throttle hypothesis cleanly.
+**Awaiting operator decision on credits/overage and explicit restart/resume timing.**
 
 ## Research Intake Update — 2026-05-20
 

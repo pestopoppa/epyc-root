@@ -464,3 +464,44 @@ unrelated tool-policy mutation, and then reverted it after existing tests reject
 stopped with `trial_counter=185`, `in_flight_trial=None`, and `consecutive_meta_actions=0`.
 
 Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) § AP-44 · `progress/2026-05/2026-05-31.md`.
+
+## 2026-05-31 update — planner meta-action-loop: convergence-vs-corruption semantic split (fix `dcfc9eb`)
+
+After the contamination closure above, the planner still self-halted at trial 188 on the `meta_action_loop`
+guard, looping on `distill_knowledge` no-ops while narrating a "sustained exogenous host-load noise / eval-
+tower stuck" condition. Primitive evidence refuted the infra story: servers healthy, 172 GB free,
+`performance` governor, no OOM, idle load. The "noise window" was three unrelated causes mislabeled as one —
+operator commit `ec9622d` invalidating trials 180–183, the *same reproduced* think_harder win (q=1.816)
+MAD-excluded as 184/186/187, and one clean regression (185).
+
+### Design pattern this codifies
+
+A `mad_noise` exclusion means two different things the system was conflating: **(a)** a benign *reproduction*
+of an already-established above-baseline gain (convergence — the planner found a good config and re-confirmed
+it), versus **(b)** corrupted/untrustworthy data (kills, exogenous reloads, commit-invalidations). When both
+are written to the same `bug_corrupted_by` field, the trustworthiness score counts confirmations as
+"untrustworthy" and the planner pattern-matches the pile to "broken instrument → hold." The fix keeps the MAD
+statistic untouched (the tested invariant "same level above baseline is not a *new* improvement" is correct —
+no baseline re-anchor) and instead splits the *meaning*:
+
+- **`reproduction_confirmed`** — a new SafetyGate category for a within-noise improvement that reproduces an
+  above-baseline established level (`median_q − baseline > z·MAD`). It rides alongside `mad_noise` (still no
+  new Pareto point) but is a benign convergence signal.
+- **Benign-exclusion decouple** — `reproduction_confirmed` leaves `bug_corrupted_by` empty, so
+  `trustworthiness_score` never lumps confirmations with kills/reloads/SHA-invalidations; its self-criticism
+  says "config confirmed — explore a new surface or idle," not "noise, get a clean trial."
+- **Durable halt** — the meta-loop guard now latches `paused=true` (terminal-until-resume; survives a
+  supervisor restart, which previously re-entered the same lock), classifies the halt converged-vs-stuck, and
+  resets the meta-counter on resume.
+- **Attribution guard** — the planner trust block forbids a host-noise narrative without an actual host-health
+  signal (throttle/cache/load), and surfaces a reproduction-convergence count.
+
+### Outcome
+
+Restart validated: the planner's first post-resume turn explicitly cited the attribution guard + host-health-
+nominal, abandoned the host-noise narrative, read think_harder as **converged**, and pivoted to a genuinely
+new surface (`numeric_trial monitor`) — a real metric trial, not a no-op. The lesson generalizes: an
+autonomous optimizer needs an explicit representation of "converged on a good config" as a benign terminal
+state, distinct from "instrument failure," or it will manufacture an infra narrative from its own success.
+
+Sources: [`handoffs/active/autopilot-continuous-optimization.md`](../handoffs/active/autopilot-continuous-optimization.md) (RESOLVED banner) · `progress/2026-05/2026-05-31.md` · orchestrator commit `dcfc9eb`.
