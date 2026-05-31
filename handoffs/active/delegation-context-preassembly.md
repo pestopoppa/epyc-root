@@ -68,6 +68,7 @@ From the official blog + the open-source `w-winter/dot314` MCP wrapper source (r
 - **meta-harness-optimization / autopilot-continuous-optimization** — DCP-5 non-prescriptive prompt = PromptForge mutation; DCP-2 budget = candidate autopilot search-space knob.
 - **GitNexus** (DCP-3) and **ColGREP** (DCP-1/2 discovery).
 - **batched-edit-parallel-apply** (sibling RP-derived handoff) — a pre-assembled bundle feeds a clean think-then-act batch edit.
+- **internal-interaction-lifecycle** — P2 consult reuses DCP `_maybe_dcp_seed_context()` ranking / rendering for context packaging via `features().dcp_for_consult`; DCP does NOT own consult lifecycle. See [`internal-interaction-lifecycle.md`](internal-interaction-lifecycle.md).
 
 ## Key file locations (targets)
 

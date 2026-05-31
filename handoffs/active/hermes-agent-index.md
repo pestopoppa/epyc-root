@@ -290,3 +290,12 @@ After completing any task:
   - **Index-level relevance**: medium. A multi-backend VFS (S3/Drive/Slack/Gmail/Redis/SSH) with FUSE mounts and first-class adapters for OpenAI Agents, Vercel AI, LangChain, Pydantic AI, CAMEL, OpenHands, Mastra.
   - **Per-child-handoff lift**: **hermes-outer-shell** picks up the adapter-shim pattern (one VFS surface + N framework wrappers) as a reference for tool exposure. No lift to other child handoffs — multi-cloud connector breadth is outside our offline / GGUF / hermes-core scope.
   - **Delta**: not a runtime candidate (single-author, v0.0.1, 14-day-old, commercial-product-adjacent — credibility deferred per CLAUDE.md repo-credibility guidance). Recorded primarily to mark the design pattern as referenced and pending re-evaluation at v0.1 or second human contributor.
+
+## Research Intake Update — 2026-05-31
+
+### New Related Research
+
+- **[intake-655] "Agent2Agent (A2A) Protocol"** (github.com/a2aproject/A2A, Linux Foundation / Google-contributed, Apache-2.0, v1.0.1 2026-05-28, 24.1k★)
+  - **Index-level relevance**: medium. Canonical reference entry for the A2A protocol — previously cited as a building block in [intake-318] (Agentnetes) and [intake-394] (Evolver) but never indexed as a primary entry. v1.0.1 release under Linux Foundation governance + five-language SDK rollout (Python / Go / JS / Java / .NET) makes this the de-facto reference for agent-to-agent interop alongside MCP for agent-to-tool.
+  - **Per-child-handoff lift**: **hermes-outer-shell** — Path-A external-exposure question (Agent-Protocol compliance on our `/v1/chat/completions` surface, L313) gains a second concrete option alongside intake-145 Agent Protocol. No lift to other child handoffs: internal multi-agent coordination is single-host and does not need an external wire protocol.
+  - **Delta**: protocol-spec entry, not a runtime candidate. Track for revival when (a) hermes-outer-shell formally commits to external-agent exposure, or (b) a third intake entry surfaces an A2A-native counterpart we want to consume.

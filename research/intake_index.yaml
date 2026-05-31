@@ -31737,3 +31737,79 @@
   - 'Conv+sparse-global-attention hybrids predate LFM2 (Griffin/Hawk DeepMind 2024 arXiv:2402.19427; Zamba/Jamba). LFM2 is a smaller-scale CPU-budget-tuned point in this established space.'
   - 'LFM2 "no SSM/linear-attention needed" directly conflicts with intake-503 (Ling-Linear), Minimax-01 (2501.08313), Ling-Linear-2.0 (2510.19338) — those find linear-attention hybrids scale favorably and optimal hybrid ratio rises with size. Likely regime-dependent: LFM2 scoped to small/edge/short-context (<=32K); linear-attention wins are at 16B-104B and long-context (100K+). Treat "no SSM" as small-model-specific, not general.'
   - 'Commercial source (Liquid AI), self-selected benchmark suite, 2-3x baseline not independently reproduced; no third-party CPU corroboration found for EPYC-relevant claims.'
+- id: intake-655
+  arxiv_id: null
+  url: https://github.com/a2aproject/A2A
+  source_type: repo
+  title: 'Agent2Agent (A2A) Protocol — open agent-to-agent interop spec (Linux Foundation / Google)'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-05-31'
+  verdict: adopt_patterns
+  authors:
+  - A2A Project (originally Google; now Linux Foundation governance)
+  key_claims:
+  - 'Open protocol for cross-vendor agent-to-agent communication; agents collaborate as agents (not as tools) without exposing internal state, memory, or tools'
+  - 'JSON-RPC 2.0 over HTTP(S) with three interaction patterns: synchronous request/response, SSE streaming, and asynchronous push notifications'
+  - 'Agent Cards (JSON metadata documents) for dynamic capability discovery and connection negotiation — no pre-configuration required'
+  - 'Explicitly positioned as COMPLEMENTARY to MCP: MCP wires an agent to its tools/data; A2A wires agents to each other'
+  - 'Multi-language SDKs maintained in-tree: Python (a2a-sdk), Go, JavaScript, Java, .NET; Apache-2.0; v1.0.1 released 2026-05-28 under Linux Foundation governance'
+  techniques:
+  - Agent Card capability-discovery document (JSON)
+  - JSON-RPC 2.0 wire format over HTTP(S)
+  - SSE streaming + push-notification async patterns
+  - Opaque-agent collaboration model (no internal-state exposure across the protocol boundary)
+  - Multi-modality negotiation (text / forms / files / structured JSON)
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - hermes-outer-shell.md
+    - hermes-agent-index.md
+    - internal-interaction-lifecycle.md
+    experiments: []
+    intake_entries:
+    - intake-318
+    - intake-394
+    - intake-145
+  handoffs_updated:
+  - hermes-outer-shell.md
+  - hermes-agent-index.md
+  - internal-interaction-lifecycle.md
+  - delegation-context-preassembly.md
+  - routing-intelligence.md
+  - routing-and-optimization-index.md
+  novelty_justification: 'The A2A protocol has been REFERENCED in prior intake entries (intake-318 Agentnetes uses A2A Agent Cards; intake-394 Evolver uses A2A hub) but has never been the primary entry. v1.0.1 (2026-05-28) graduation under Linux Foundation governance + 24.1k stars + five-language SDK rollout (Python/Go/JS/Java/.NET) make this the canonical reference point. Operators (Agent Card JSON discovery, JSON-RPC over HTTP, SSE streaming) are individually well-known web primitives — the novelty is the consolidation into a Linux-Foundation-governed cross-vendor spec, not a new mechanism. Medium.'
+  relevance_justification: 'Our orchestrator is single-host: roles communicate in-process through the frontdoor and routing graph, not over an inter-agent wire protocol. A2A is therefore NOT actionable for internal routing. However, the Hermes outer-shell roadmap explicitly considers exposing our specialist roles to external callers (Agent-Protocol-compliance is already mentioned at hermes-outer-shell.md L313 as a Path-A path), and A2A is the agent-to-agent analog of MCP (which we already use via mempalace + searxng MCP servers). Two existing intake entries (318, 394) build on A2A; this entry becomes the canonical reference. Medium — tracking, not actionable today.'
+  verdict_justification: 'adopt_patterns (narrow): adopt A2A lifecycle SEMANTICS internally — Message vs Task, states (working/input_required/completed/failed/cancelled), artifacts, terminal-state guarantees — and Agent Card-style skill contracts (orchestration/interaction_skills.yaml). Do NOT adopt internal wire transport now: region-lock visibility (project_cross_role_contention_placement_blind), shared-backend topology_role aliasing (backend.py:90-140), and cross-role contention gating (inference.py:230-259) depend on cross-role state that A2A opacity would force into protocol metadata or hide entirely. External A2A adapter (inbound at hermes-outer-shell / outbound for cross-vendor consult) remains deferred per intake-655 notes. Canonical persistence: internal-interaction-lifecycle.md (created 2026-05-31).'
+  contradicting_evidence:
+  - 'A2A vs MCP boundary is positioned as complementary but is contested in practice: MCP servers can already expose other agents as tools (the inverse framing), and Anthropic has not formally endorsed A2A. Industry analysis treats the two as partially overlapping rather than cleanly orthogonal.'
+  - 'Production-deployment evidence absent from the repo: no public adopter list, no case studies, no empirical interop benchmarks. MCP at the equivalent maturity point already had hundreds of community servers; A2A SDK install counts and live Agent Card directories are not yet published.'
+  - 'Single-host multi-agent stacks (LangGraph, AutoGen, CrewAI, Claude Code subagents) do not need an external wire protocol. A2A''s market is cross-vendor interop, which is not on our active roadmap.'
+  - 'Linux Foundation governance reduces but does not eliminate vendor capture risk: spec decisions remain Google-led at the contributor level (commit and PR concentration); LF stewardship is recent (2026).'
+  notes: >
+    Canonical reference entry for the A2A protocol — previously only cited as a building block
+    in intake-318 (Agentnetes) and intake-394 (Evolver). v1.0.1 (2026-05-28) is the first
+    stable release under Linux Foundation governance.
+    Initial ingestion (2026-05-31 AM) marked this worth_investigating with no internal handoff,
+    because the orchestrator is single-host and inter-agent wire protocols were not on the
+    active roadmap; the hermes-outer-shell Path-A external-exposure question (hermes-outer-shell.md
+    L313 flags Agent-Protocol compliance as an option) was the only direct relevance.
+    2026-05-31 PM update — deep-dive on consultation-vs-delegation reframed the decision:
+    A2A's LIFECYCLE SEMANTICS (Message vs Task, working/input_required/completed/failed/
+    cancelled, artifacts, Agent Card-style skill contracts) cleanly model both delegation
+    and a new "consult larger model for input" interaction kind without paying for the
+    wire transport. Verdict bumped to adopt_patterns and a new stub created at
+    handoffs/active/internal-interaction-lifecycle.md (owns the four-phase internal refactor:
+    P1 lifecycle abstraction, P2 one-shot consult sibling, P3 gating, P4 integration-quality
+    eval). External A2A adapter (inbound at hermes-outer-shell / outbound for cross-vendor
+    consult) remains deferred (D3 in the new handoff).
+    Pair-with: MCP (which we already deploy via mempalace + mcp-searxng) is the agent-to-tool
+    half; A2A is the agent-to-agent half. Internal lifecycle work owned by
+    internal-interaction-lifecycle.md; external surface owned by hermes-outer-shell.md.
