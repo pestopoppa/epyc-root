@@ -2,24 +2,33 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-31 (controller-mode relaunch safety hardening: dual-provider critique fail-closed, action schema registry, dirty-target mutation fence)
+**Updated**: 2026-05-31 PM (gate-lock fully resolved: load-path guard, no-op anti-repeat, rewind-to-180, strategy-store purge, clean relaunch)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
-> ### ⚠ 2026-05-31 — baseline gate-lock fixed (orchestrator commit a231556)
+> ### ✅ 2026-05-31 — baseline gate-lock RESOLVED + clean relaunch (orchestrator `a231556`, `89e6c9f`)
 > The safety gate ran with a never-achieved `baseline.quality`, so the regression gate
 > force-reverted every honest trial and the planner looped on no-op `distill_knowledge`
-> (77/81 trials 190→271 ran zero inference). Three corruption paths closed: (1) out-of-scale
-> baseline rejected at load ([0,3]/[0,1]); (2) phantom promotion above the Pareto archive
-> max refused; (3) **the live trigger** — `Baseline.save()` wrote to `DEFAULT_BASELINE_PATH`
-> instead of its source path, so a test-configured gate (`test_safety_gate_baseline_eligibility`,
-> fixture q=2.9) overwrote the real `autopilot_baseline.yaml`. Plus legacy-scale text scrub so
-> the planner stops re-citing "baseline 9.900". Details: `progress/2026-05/2026-05-31.md`.
-> **BEFORE RELAUNCH**: confirm `orchestration/autopilot_baseline.yaml` is `quality: 1.16`
-> (the loader reads it live; a corrupt value re-locks the loop — the archive-max guard only
-> blocks writes, not reads).
-> **Open**: trial-counter rewind (275→~215) + orphan tag cleanup (autopilot/trial-215..274);
-> optional anti-repeat guard so no-op meta actions can't be dispatched N times without an
-> intervening real experiment.
+> (77/81 trials 190→271 ran zero inference). All corruption paths closed and the deferred
+> items cleared (details: `progress/2026-05/2026-05-31.md`):
+> - **Save-path leak** (live trigger): `Baseline.save()` wrote to `DEFAULT_BASELINE_PATH`, so running
+>   `test_safety_gate_baseline_eligibility` (fixture q=2.9) overwrote the real `autopilot_baseline.yaml`.
+>   Fixed via `Baseline.source_path` (`a231556`). Baseline restored to `quality: 1.16`.
+> - **Load guard** (`89e6c9f`): `Baseline.load()` now rejects a persisted quality above the Pareto
+>   frontier max (2.9 is within [0,3] scale but unachievable → would re-lock). `update_baseline()` takes
+>   `source_trial_id` + enforces archive-first ordering.
+> - **No-op anti-repeat** (`a231556`): `META_NOOP_ACTIONS` (distill_knowledge, reset_memories) no longer
+>   increment `trial_counter`; `MAX_CONSECUTIVE_META=5` halts a stuck planner.
+> - **Rewind to trial 180** (operator-chosen, pre-planner-launch): journal trimmed <180, archive
+>   `all_entries` 177→163 (frontier 8 intact ≤166), 226 orphan tags `trial-180..568` deleted.
+> - **Strategy-store purge**: distill spiral wrote 784/1025 strategies encoding the bogus 2.900/9.900
+>   gate-lock narrative (survives journal rewind). Purged to 241 clean (`source_trial_id<180`); FAISS
+>   rebuilt via `reconstruct()`; db==FAISS==241, 0 contamination.
+>
+> **RUNNING (verified clean)**: relaunched `AUTOPILOT_PLANNER_MODE=draft_critique` at trial 182,
+> dispatching real actions (`gepa_optimize`), planner reasoning about the correct 1.16 baseline, 0
+> gate-lock hits in log. Trial 180 passed q=2.400 > 1.16 (gate unlocked).
+> **Open flag**: quality plateaued at 2.400 since trial ~8 across the whole 569-trial run — decide
+> whether the eval resolves >2.4 gains, the space is quality-exhausted, or new action levers are needed.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 
