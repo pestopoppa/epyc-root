@@ -3,7 +3,7 @@
 **Category**: `autonomous_research`
 **Confidence**: verified
 **Last compiled**: 2026-05-31
-**Sources**: 40 documents (added 2026-05-31 learning-excluded keep-signal closure)
+**Sources**: 41 documents (added 2026-05-31 planner-context restart-blocker validation)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-31, planner-context restart-blocker validation)
+
+- **Planner-context fixes must be retroactive or applied at read time; write-path-only sanitization is insufficient for autonomous loops.** The learning-excluded keep-signal patch prevented future `mad_noise` rows from journaling as `keep`, but a validation restart still read the already-poisoned rows. Trials 184, 186, and 187 were all `bug_corrupted_by=mad_noise` / `deficiency_category=mad_noise` while still carrying `keep_revert_decision=keep`; trials 186-187 also preserved "Numeric optimization working - continue exploring this surface." This proves autonomous planner context must derive trust from exclusion metadata at read time, not only from the natural-language self-criticism saved at write time. A clean restart also requires resetting stale `consecutive_meta_actions` and purging the strategy-store/distilled-insight state created during the contaminated loop. Sources: [progress 2026-05-31](../progress/2026-05/2026-05-31.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
 
 ### New (2026-05-31, learning-excluded keep-signal closure)
 
@@ -108,7 +112,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
-1. **AR-3 continuation** -- relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval, DAR-2 contrastive Q-updates ON by default, ECE/AUC auto-accumulation, Phase 5 per-role seeder). State at trial_counter=46 (prior to Qwen3.5 crash at trial ~204). Both architect instances relaunched with patched binary. Verify routing diversity recovery before running trials.
+1. **AR-3 continuation is restart-blocked until planner-context cleanup is retroactive.** Before relaunch, neutralize excluded historical rows at read time or backfill them, reset stale `consecutive_meta_actions`, and purge/rebuild contaminated strategy-store/distilled-insight state. Then relaunch with all new infrastructure (GEPA optimizer, short-term memory, self-criticism, hybrid eval, DAR-2 contrastive Q-updates ON by default, ECE/AUC auto-accumulation, Phase 5 per-role seeder) against the honest T1 frontier.
 2. **AP-21: GEPA vs LLM mutation decision** -- after 50+ AR-3 trials, compare GEPA vs LLM mutation acceptance rates and Pareto frontier contributions. If GEPA dominates, increase ratio from 30% to 100%.
 3. **AP-14: Structured deficiency classification** -- add `deficiency_category` enum to JournalEntry. Auto-populate from SafetyGate violation type. Enables pattern detection (Omni-SimpleMem finding: structured defect classification is prerequisite for targeted fixes).
 4. **G9: M2.7 vs architect replacement eval** -- M2.7 Q8 at 11.1 tps is faster than both architects. Run standard eval suite (MATH, coding, general) to determine if M2.7 can replace architect_coding and architect_general. Frees ~380GB RAM and simplifies stack if quality holds.
@@ -179,6 +183,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [intake-421](https://github.com/davebcn87/pi-autoresearch) pi-autoresearch -- Extends karpathy/autoresearch with MAD confidence scoring, JSONL persistence, git branching. Verdict upgraded to adopt_component: MAD noise filter missing from safety_gate.py.
 - [pi-autoresearch-mad-scoring.md](../research/deep-dives/pi-autoresearch-mad-scoring.md) -- Deep dive: MAD-based significance testing (~20 lines) prevents false-positive improvements from wasting eval budget. Implementation sketch for safety_gate.py with persistence hook.
 - [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md) -- trial-188 meta-loop halt review and AP-45 learning-excluded keep-signal closure.
+- [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md) -- validation that the forward-only keep-signal fix still leaves historical `mad_noise` rows, stale meta-action state, and contaminated strategy-store/distilled-insight state blocking restart.
 
 ## 2026-04-28 — L1/L2/L3 + Laws vocabulary for autopilot, agent-world ETD, meta-harness (intake-498)
 

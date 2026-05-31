@@ -2,10 +2,10 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-31 PM (gate-lock/frontier/distill/planner-context contamination closed; learning-excluded keep-signal poison fixed; autopilot remains down after trial 188 meta-loop halt)
+**Updated**: 2026-05-31 PM (gate-lock/frontier/distill/planner-context contamination mostly closed; restart blocked by retroactive learning-exclusion poison + stale meta-action/strategy-store state)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
-> ### ✅ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination CLOSED (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
+> ### ⚠️ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination PARTIAL CLOSURE (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
 > The safety gate ran with a never-achieved `baseline.quality`, so the regression gate
 > force-reverted every honest trial and the planner looped on no-op `distill_knowledge`
 > (77/81 trials 190→271 ran zero inference). All corruption paths closed and the deferred
@@ -36,15 +36,30 @@
 >   180–183 were tagged `bug_corrupted_by=ec9622d`; `summary_text(20)` verifies no `q=2.400` or
 >   `2.900` remains. HV history was backfilled from T1/T2 archive entries only and docs plots refreshed.
 >
-> **STOPPED after operator-review halt**: no `autopilot.py start` process. A restart run reached
-> trials 185–187; trials 186–187 collected real T1 metrics but were tagged `mad_noise`
-> (archive/AP-22 skipped). The planner then emitted five consecutive metric-free
-> `distill_knowledge` actions at frozen trial 188, and `MAX_CONSECUTIVE_META=5` halted cleanly with
-> `_dispatch_deficiency=meta_action_loop`. Follow-up fix now prevents learning-excluded trials from
-> journaling `keep` / “continue this surface” self-criticism; they are recorded as
-> `Decision: excluded` instead. Current state remains stopped at `trial_counter=188`,
-> `in_flight_trial=None`, `consecutive_meta_actions=5`. Treat old `2.400` as T0 sentinel saturation,
-> not the production target.
+>
+> **BLOCKED after validation restart**: no `autopilot.py start` process. The learning-exclusion fix was
+> forward-only: existing `mad_noise` rows still poison planner context. Verified rows:
+> trial 184 (`code_mutation`), trial 186 (`numeric_trial`), and trial 187 (`numeric_trial`) are all
+> `bug_corrupted_by=mad_noise` / `deficiency_category=mad_noise` but still carry
+> `keep_revert_decision=keep`; trials 186-187 also say "Numeric optimization working - continue
+> exploring this surface." The planner reads those rows as prior evidence and re-enters
+> `distill_knowledge`. Runtime state also carried `consecutive_meta_actions=5`, so the first new
+> meta action tripped the guard at 6 immediately (`trial_counter=188`, `in_flight_trial=None`,
+> `_dispatch_deficiency=meta_action_loop`). Before restart, implement either a one-time journal
+> backfill or read-time planner-context rule that treats excluded rows as non-actionable and never
+> as `keep`, reset stale meta-action state, and purge/rebuild the 299-entry strategy store plus
+> insights distilled during the contaminated loop per
+> `[[feedback_autopilot_rewind_must_purge_strategy_store]]`. Treat old `2.400` as T0 sentinel
+> saturation, not the production target.
+>
+> **CONFIRMED empirically 2026-05-31 18:40** (capped restart, fix `e236327` committed): re-launched
+> `draft_critique` with `--max-trials 191` (note: `--max-trials` is an ABSOLUTE counter target, not
+> "N more" — `--max-trials 3` against `trial=188` exits instantly). The fix is **forward-only** and
+> did NOT break the loop: planner's first action was `distill_knowledge` again, re-halted at
+> `consecutive_meta=6`, critique still cited the stale `think_harder q=1.816` keep. Autopilot left
+> DOWN. So a read-time relabel (or journal backfill of rows 184/186/187) + meta-counter reset +
+> strategy-store purge are required before the next restart — the committed write-time fix alone is
+> insufficient.
 
 ## Autopilot Delegation Expansion — 2026-05-20
 
