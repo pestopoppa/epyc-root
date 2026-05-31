@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-30 (manual incremental update: shape-keyed contention gating + off-tap lock-holder dashboard bridge)
+**Last compiled**: 2026-05-31 (manual incremental update: learning-excluded keep-signal closure)
 **Articles**: 25 compiled, 5 stub categories
 **Total sources**: 388 documents across 6 source types
 
@@ -39,7 +39,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 30 | Multi-file coding failure diagnosed as REPL/BEP protocol friction, not model capability; edit transactions solve practical remediation while J8 remains only a legacy batch-edit keep/retire experiment |
-| [Autonomous Research](autonomous-research.md) | 38 | AutoPilot HLE observe-only fields and rule metrics are in the journal; HALO-2 can convert live journals to OTLP spans, but analyzer runs remain operator/inference-gated |
+| [Autonomous Research](autonomous-research.md) | 40 | Learning-excluded AutoPilot trials must journal as `excluded`, not `keep`, so MAD-noise results cannot feed planner meta-action loops |
 | [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
 
 ## Context & Compression

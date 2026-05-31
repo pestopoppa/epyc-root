@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-05-28
-**Sources**: 39 documents (added 2026-05-28 Pareto dashboard journal-backed freshness fix)
+**Last compiled**: 2026-05-31
+**Sources**: 40 documents (added 2026-05-31 learning-excluded keep-signal closure)
 
 ## Summary
 
@@ -16,6 +16,10 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-05-31, learning-excluded keep-signal closure)
+
+- **Learning-excluded trials must not emit "keep" guidance back into the planner.** The trial-188 halt showed a subtle planner-context poison: trials 186-187 collected real T1 metrics but were tagged `mad_noise`, so AutoPilot correctly skipped Pareto archive and AP-22 memory updates; however, the journal still stored self-criticism as `keep` with “continue exploring this surface.” The draft/critique planner then saw a contradictory state: no trustworthy frontier progress, but recent natural-language guidance claiming a valid keep, and retreated into five consecutive metric-free `distill_knowledge` actions until `MAX_CONSECUTIVE_META=5` halted cleanly. The fix makes learning-excluded trials journal as `Decision: excluded` with explicit controller-facing text that the outcome is not a keep or config-efficacy signal. Source: [progress 2026-05-31](../progress/2026-05/2026-05-31.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
 
 ### New (2026-05-28, Pareto dashboard freshness)
 
@@ -174,6 +178,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [autopilot-iteration-strategy-synthesis.md](../research/deep-dives/autopilot-iteration-strategy-synthesis.md) -- synthesizes HCC + Token Savior + Context Mode into P14 (AP-28–31): strategy memory upgrade, knowledge distillation pipeline, controller context budget, mutation knowledge graph
 - [intake-421](https://github.com/davebcn87/pi-autoresearch) pi-autoresearch -- Extends karpathy/autoresearch with MAD confidence scoring, JSONL persistence, git branching. Verdict upgraded to adopt_component: MAD noise filter missing from safety_gate.py.
 - [pi-autoresearch-mad-scoring.md](../research/deep-dives/pi-autoresearch-mad-scoring.md) -- Deep dive: MAD-based significance testing (~20 lines) prevents false-positive improvements from wasting eval budget. Implementation sketch for safety_gate.py with persistence hook.
+- [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md) -- trial-188 meta-loop halt review and AP-45 learning-excluded keep-signal closure.
 
 ## 2026-04-28 — L1/L2/L3 + Laws vocabulary for autopilot, agent-world ETD, meta-harness (intake-498)
 
