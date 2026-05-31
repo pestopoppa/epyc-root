@@ -1,6 +1,6 @@
 # Internal Interaction Lifecycle
 
-**Status**: planning (P1 spec written; no code changes yet)
+**Status**: queued behind contention/autopilot gate (P2-0 discovery complete; P1/P2 runtime work not started)
 **Priority**: P0 for substrate cleanup; downstream of intake-655 deep-dive
 **Created**: 2026-05-31
 **Owning index**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md)
@@ -18,6 +18,17 @@ Replace the implicit delegation loop shape in `epyc-orchestrator` with an explic
 - No streaming consult in v1. Current `/chat/stream` wraps pipeline events, not backend tokens (`stream_adapter` calls `primitives.llm_call()` then emits events) — true concurrent integration requires backend streaming callbacks first.
 - No multi-turn `input_required` consult in v1. Would require a local `ConsultationTask` store with terminal/interrupted states.
 - No behavior change in P1.
+
+## Current Execution Gate (2026-05-31)
+
+Sequencing is locked:
+
+1. **Now**: P2-0 discovery only — complete, no runtime change.
+2. **After contention/autopilot bake is clean**: P1 lifecycle refactor.
+3. **After P1 regression gate**: P2 one-shot consult at the P2-0 chosen attach point.
+4. **After A/B evidence**: P3 consult gating, then P4 reward/eval.
+
+Do not start P1 until the cross-role contention/autopilot bake gate is clean. P2-0 was safe because it was documentation/discovery only; P1 touches the delegation substrate and would otherwise contaminate live attribution.
 
 ## Core Model
 
@@ -89,7 +100,7 @@ INTERACTION_POLICY_VERSION = "1.0"
 
 **Goal**: Add `kind="consult"` as a narrow specialization on the same substrate, with typed output schema and scheduler defaults. **First and only consult site in v1: the code-edit drafting requester → `architect_general` for `review_before_commit`** (requester role identified in P2-0).
 
-- [ ] **P2-0**. **Discovery — identify the exact attach point** in the code-edit pipeline for the first consult site. Candidate paths to enumerate: the `force_mode="edit"` flow (`requests.py:force_mode` consumers), `batched-edit-parallel-apply` (sibling handoff), the REPL final-answer hook, `worker_coder` / `coder_escalation` drafting flows. Pick the single attach point where (a) the requester has a complete-enough draft to advise on, (b) integration of advisory feedback before commit is structurally possible (one re-run capacity), (c) the requester role identity is stable. Output: a one-paragraph design note appended to this handoff naming the chosen pipeline file:function. Validate with `gitnexus impact <chosen_function> --direction upstream` before P2-1 begins. **Do NOT assume `worker_general` is the requester** — the consultant skill `review_before_commit` is keyed by *consultant role*, not requester role; the requester is whatever role is at the attach point.
+- [x] **P2-0**. **Discovery — identify the exact attach point** in the code-edit pipeline for the first consult site. Candidate paths to enumerate: the `force_mode="edit"` flow (`requests.py:force_mode` consumers), `batched-edit-parallel-apply` (sibling handoff), the REPL final-answer hook, `worker_coder` / `coder_escalation` drafting flows. Pick the single attach point where (a) the requester has a complete-enough draft to advise on, (b) integration of advisory feedback before commit is structurally possible (one re-run capacity), (c) the requester role identity is stable. Output: a one-paragraph design note appended to this handoff naming the chosen pipeline file:function. Validate with `gitnexus impact <chosen_function> --direction upstream` before P2-1 begins. **Do NOT assume `worker_general` is the requester** — the consultant skill `review_before_commit` is keyed by *consultant role*, not requester role; the requester is whatever role is at the attach point. Completed 2026-05-31: chosen seam is `epyc-orchestrator/src/edit_transaction.py:199` `run_edit_transaction()`, between draft parse and transactional apply; requester role is `coder_escalation`.
 
 - [ ] **P2-1**. Create `orchestration/interaction_skills.yaml` (sibling to `model_registry.yaml`):
 
