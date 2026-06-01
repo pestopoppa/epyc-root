@@ -31737,6 +31737,71 @@
   - 'Conv+sparse-global-attention hybrids predate LFM2 (Griffin/Hawk DeepMind 2024 arXiv:2402.19427; Zamba/Jamba). LFM2 is a smaller-scale CPU-budget-tuned point in this established space.'
   - 'LFM2 "no SSM/linear-attention needed" directly conflicts with intake-503 (Ling-Linear), Minimax-01 (2501.08313), Ling-Linear-2.0 (2510.19338) — those find linear-attention hybrids scale favorably and optimal hybrid ratio rises with size. Likely regime-dependent: LFM2 scoped to small/edge/short-context (<=32K); linear-attention wins are at 16B-104B and long-context (100K+). Treat "no SSM" as small-model-specific, not general.'
   - 'Commercial source (Liquid AI), self-selected benchmark suite, 2-3x baseline not independently reproduced; no third-party CPU corroboration found for EPYC-relevant claims.'
+- id: intake-654
+  arxiv_id: null
+  url: https://unsloth.ai/docs/new/studio
+  source_type: blog
+  title: 'Introducing Unsloth Studio'
+  categories:
+  - training_distillation
+  - agent_architecture
+  - local_inference
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-05-30'
+  verdict: worth_investigating
+  authors:
+  - Unsloth AI
+  key_claims:
+  - 'Open-source no-code web UI for training, running and exporting open models in one unified 100%-local/offline interface (Mac/Windows/Linux)'
+  - 'Train 500+ text/vision/TTS-audio/embedding models 2x faster with 70% less VRAM (vendor claim, inherited from Unsloth core / intake-325)'
+  - 'Self-healing tool calling + advanced web search + code execution (Bash + Python); OpenAI-compatible API endpoint; Model Arena multi-model side-by-side comparison'
+  - 'Data Recipes: graph-node visual workflow for dataset transformation; auto-create datasets from PDF/CSV/DOCX with no dataset required'
+  - 'GGUF + safetensor export; llama.cpp-powered inference; MLX (Apple Silicon) support; one-click LoRA/FFT/FP8/PT training'
+  techniques:
+  - Data Recipes (graph-node dataset-transformation pipeline)
+  - LoRA / FFT / FP8 / PT training via Unsloth custom Triton kernels
+  - llama.cpp-powered GGUF chat/eval inference
+  - Model Arena (side-by-side multi-model comparison)
+  - Self-healing tool calling + Bash/Python code execution + web search
+  - OpenAI-compatible local API endpoint
+  reported_results:
+  - 'Fine-tune a 70B model on a single NVIDIA RTX 4090 (24 GB VRAM); 8B on RTX 3080 (10 GB)'
+  - 'First install 6x faster and 50% smaller (vendor figure, unverified)'
+  - 'Training requires NVIDIA GPU with CUDA capability >= 7.0; CPU supports chat inference + Data Recipes only (no training)'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - hermes-agent-index.md
+    experiments: []
+    intake_entries:
+    - intake-325
+  novelty_justification: 'New no-code local web-UI product over the Unsloth core (intake-325 covered only the training library). Adds previously-undocumented agentic capabilities (self-healing tool calling, code exec, web search, Model Arena, OpenAI-compatible API, Data Recipes) — a new perspective on existing work rather than a wholly novel technique, hence medium.'
+  relevance_justification: 'Training side is GPU-gated and not actionable on the CPU-only EPYC host. But the CPU-runnable parts (Data Recipes dataset synthesis from our doc corpus, GGUF chat/eval via llama.cpp) plus the agentic UI overlap two active handoffs: 08-doc-to-lora-prototype (anticipated a Studio UI to manage the pipeline) and the Hermes agent frontend (Model Arena / tool-calling / OpenAI API overlap). Related but not immediately actionable -> medium.'
+  verdict_justification: 'Per no-dismiss policy, track rather than reject. No single existing handoff is an exact match AND relevance is medium (not high), so no new stub created. worth_investigating: the doc-to-LoRA pipeline-manager use and Data Recipes/Model Arena patterns merit evaluation; full training value is contingent on GPU acquisition (see gpu-acceleration-path).'
+  contradicting_evidence:
+  - 'Studio TRAINING requires an NVIDIA GPU (CUDA cap >= 7.0); CPU-only hosts can run only chat inference + Data Recipes, not training (vendor docs + third-party reviews + open bug unslothai/unsloth#4949 "Studio using cpu inference backend instead of gpu"). Decisive for our CPU-only EPYC host.'
+  - 'BETA software; AMD ROCm not supported, MLX/AMD/multi-GPU "coming soon" with no confirmed timeline; macOS install via pip is clunky (Homebrew pending).'
+  - 'Full install footprint ~100 GB; vendor speed/VRAM figures (2x / 70%) are marketing numbers inherited from Unsloth core, not independently benchmarked here.'
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  notes: >
+    Web-UI companion to Unsloth core (intake-325, repo, verdict not_applicable on no-GPU grounds).
+    Studio re-frames Unsloth as a full local agentic + training + eval workbench rather than just a
+    training library. CPU-only relevance: Data Recipes (dataset synthesis from doc corpus, feeds
+    doc-to-LoRA), GGUF chat/eval via llama.cpp, Model Arena (overlaps the 06/07 benchmark framework),
+    and the agentic shell (self-healing tool calling + code exec + web search + OpenAI API) which
+    overlaps the Hermes outer-shell. hermes-agent-index.md cross-ref was NOT auto-appended in Phase 4a:
+    that file was actively being edited by a parallel agent at intake time (anti-clobber operating
+    constraint) — flagged for manual append in the report. Dual license: Apache-2.0 (core) + AGPL-3.0
+    (Studio UI); license is not a deployment blocker (analyze-only).
 - id: intake-655
   arxiv_id: null
   url: https://github.com/a2aproject/A2A
