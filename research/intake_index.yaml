@@ -31878,3 +31878,67 @@
     Pair-with: MCP (which we already deploy via mempalace + mcp-searxng) is the agent-to-tool
     half; A2A is the agent-to-agent half. Internal lifecycle work owned by
     internal-interaction-lifecycle.md; external surface owned by hermes-outer-shell.md.
+- id: intake-656
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/releases/tag/v0.22.0
+  source_type: repo
+  title: 'vLLM v0.22.0 release — 459 commits (DeepSeek V4 hardening, Model Runner V2, Rust frontend, multi-tier KV offloading)'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  - quantization
+  - moe_optimization
+  - ssm_hybrid
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-01'
+  verdict: adopt_patterns
+  authors:
+  - vLLM project (230 contributors, 63 new)
+  key_claims:
+  - 'CPU thread-utilization rework (#42666): reduce per-thread attention work for arbitrary thread counts (e.g. 31), KMP_BLOCKTIME=1 too short -> KMP_BLOCKTIME=5, remove BARRIER_PATTERN unless OMP crosses NUMA; +7-17% CPU throughput (Llama-3.1-8B w8a8)'
+  - 'reasoning_effort -> enable_thinking mapping (#43401): OpenAI reasoning.effort now translated to chat_template_kwargs.enable_thinking for Chat Completions + Responses API; fixes Gemma4 (template defaults enable_thinking=false) never entering thinking mode'
+  - 'Batch-invariant inference (#40408): deterministic output independent of batch size, +28.9% E2E latency via Cutlass FP8 (GPU-only impl); ships tests/v1/determinism/test_batch_invariance.py'
+  - 'Custom callable proposer backend for spec-dec (#39487): --custom-proposer-backend module.Class pluggable drafter (n-gram/retrieval/MCTS) via .propose() interface, no full HF drafter model required'
+  - 'CPU MXFP4 W4A16 fused MoE (#41922, adapted from SGLang csrc/cpu/sgl-kernels) + fused GDN for AMX CPU (#42707, Intel-AMX-only, no Zen5/EPYC path)'
+  techniques:
+  - KMP_BLOCKTIME / OMP barrier tuning for CPU attention
+  - reasoning_effort->enable_thinking chat-template kwarg translation
+  - batch-invariant (deterministic) inference + determinism test harness
+  - pluggable custom Proposer class for speculative decoding
+  - CPU MXFP4 W4A16 fused-MoE kernel (SGLang-derived)
+  - fused GatedDeltaNet kernel (AMX CPU)
+  reported_results:
+  - 'CPU thread util: 128/2048 ISL/OSL +17%, 128/128 +7%, 2048/128 +9% (num-prompts=128)'
+  - 'Batch invariance + Cutlass FP8: 0.515s vs 0.664s avg latency (+28.9% E2E) on Qwen3-1.7B fp8'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 03-prompt-lookup.md
+    - 10-advanced-speculative-decoding.md
+    - 06-benchmarking-framework.md
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-655
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Aggregate release, not a single technique. The bulk (DeepSeek V4 NVFP4 MoE, Blackwell/ROCm/XPU kernels, NIXL/Mooncake disaggregated serving, Model Runner V2, Rust frontend) is incremental GPU/cluster work already covered in spirit by prior vLLM intake entries. Novelty for our purposes is the small set of CPU/API patterns not previously indexed: the KMP_BLOCKTIME=5 CPU finding, reasoning_effort->enable_thinking mapping, batch-invariant determinism harness, and the pluggable proposer interface. Medium.'
+  relevance_justification: 'We are CPU-only (EPYC 9655, no GPU; DGX Spark not acquired). ~95% of the release is GPU/accelerator-bound and NOT harvestable. Four items touch our surface, all VERIFIED low-action after deep-dive: (1) #42666 only corroborates our KMP_BLOCKTIME tuning — its attention change is a vLLM-internal scheduler bugfix with no GGML transfer, and we must NOT adopt their KMP_BLOCKTIME=5 (we run =10 for gemma4 MTP wakeup); (2) #43401 reasoning_effort->enable_thinking is ALREADY implemented in our chat-completions path with override-wins semantics (llama_server.py:528-540) — no gemma4 bug, thinking-off is intentional; only the inbound reasoning_effort field mapping is unimplemented and we do not expose that field; (3) #40408 batch-invariant determinism is a methodology mirror only (GPU kernel not portable; our eval variance is primarily infra/throttle, not batch-numerics); (4) #39487 custom proposer — we already have n-gram drafting (prompt-lookup, chapter 03, 12.7x) native in llama.cpp, so the Python plugin interface does not apply. Medium relevance, but net-zero new work — value is corroboration + two corrections (no KMP=5; MXFP4 CPU kernel is AVX-512/EPYC-capable).'
+  verdict_justification: 'adopt_patterns, but DEEP-DIVE (2026-06-01, against actual PR diffs + live code) downgraded all four to near-zero net action; the real value is two corrections. (a) #42666 is a +1/-1 bugfix inside vLLM own AttentionScheduler (cpu_attn_impl.hpp:462, removed an erroneous num_heads multiplier in per-thread KV-len) — ZERO transfer to GGML, which partitions work differently. Its KMP part settled on KMP_BLOCKTIME=5; we deliberately run =10 (orchestrator_stack.py:944-953) because =0 breaks gemma4 MTP wakeup — DO NOT adopt their 5 (MTP regression risk). (b) reasoning_effort->enable_thinking (#43401) is ALREADY implemented: per-role chat_template_kwargs.enable_thinking with explicit-request-override-wins (llama_server.py:528-540, backend.py:68), gemma4/worker_general routed through /v1/chat/completions for exactly this. No gemma4 bug — worker_general has no enable_thinking override and runs thinking-off by template default, intentional (concise output). Only gap = mapping an inbound reasoning_effort field, which we do not expose. (c) batch-invariance (#40408) is GPU Cutlass FP8, not portable; our eval variance is primarily infra (throttle/contention) not batch-numerics — methodology mirror only, low priority. (d) custom proposer (#39487): we already have n-gram drafting (prompt-lookup, chapter 03, top technique, 12.7x summarization) native in llama.cpp; the Python module-path interface does not apply, residual value is the MCTS/retrieval-drafter idea only. NOT harvestable: all GPU/CUTLASS/FlashInfer/ROCm/XPU kernels, NVFP4, NIXL/Mooncake disaggregated serving, multi-tier KV offloading (moot at 1.1TB RAM), Model Runner V2, Rust frontend. Watch-only: CPU MXFP4 MoE (#41922 — kernels are AVX-512 not AMX per sgl-kernels vec.h, so Zen5/EPYC-CAPABLE; blockers are format MXFP4-vs-K-quant + model gpt-oss-not-in-stack; relevant IF we adopt gpt-oss/MXFP4 checkpoints) and AMX GDN (#42707 — CONFIRMED AMX-gated via torch.cpu._is_amx_tile_supported() in platforms/cpu.py, no Zen5 path). No handoff stub: new_opportunity+high-relevance threshold not met.'
+  contradicting_evidence:
+  - 'CPU items are a tiny minority of a GPU-first release; vLLM CPU backend remains second-class (experimental Triton-on-CPU #43225, no published EPYC/Zen5 benchmarks). The +7-17% #42666 numbers are on Intel/RedHat w8a8, not AMD EPYC - may not transfer.'
+  - 'reasoning_effort->enable_thinking (#43401) is a bugfix for vLLM''s own API surface, not a novel mechanism - we already control enable_thinking explicitly per feedback_qwen3x_enable_thinking_false; the value is confirmation, not new capability.'
+  - 'Batch-invariant inference impl (#40408) is Cutlass-FP8 GPU-specific; the determinism guarantee does not exist for llama.cpp CPU quantized kernels and cannot be ported, only conceptually mirrored.'
+  notes: >
+    Ingested via /research-intake from the GitHub release page (gh api releases/tags/v0.22.0
+    + per-PR gh api fetches for #42666, #42707, #41922, #39487, #43401, #40408, #43225, #42968).
+    No literature expansion: release is an aggregate of internal vLLM PRs, not a paper with a
+    references section; each harvestable pattern maps to existing internal work rather than new
+    external sources. Credibility null per rubric (repo release, not a peer-reviewed empirical
+    claim) though vLLM is a top-tier project. Two findings corroborate internal memory:
+    KMP_BLOCKTIME (ik_llama OMP idle-spin fix) and gemma4 enable_thinking=false default.
