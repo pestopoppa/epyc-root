@@ -2,8 +2,23 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-05-31 evening (planner-context meta-loop FIXED `dcfc9eb` B/A/C + runtime pruned; restart VALIDATED ~22:53 — planner pivoted off the spiral; running toward trial 300)
+**Updated**: 2026-06-01 (metric-free meta-repeat guard + dashboard live-state hardening; polluted 188/189/190 runtime entries pruned; restarted from trial 187; orchestrator reloaded; AutoPilot alive at PID 3793619, trial 208 `seed_batch` in flight at wrap-up)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
+
+> ### 2026-06-01 — metric-free meta-loop guard, dashboard repair, and live restart
+> Follow-up to the 2026-05-31 planner-context work: AutoPilot halted at 23:22 after five consecutive
+> metric-free `distill_knowledge` actions. The halt was correct as a final guard, but too late; the loop
+> now forces a measured `seed_batch` if the planner proposes a meta no-op after any prior consecutive meta
+> action (`scripts/autopilot/autopilot.py::_force_metric_action_after_meta`, covered in
+> `tests/unit/test_autopilot_actions.py`). Runtime pollution from trials 188/189/190 was backed up to
+> `orchestration/autopilot_rewind187_backup_20260531_232720/`, removed from live journal/state/memory, and
+> the daemon was relaunched from trial 187. Dashboard false "orphan inference"/blank-panel behavior was
+> hardened with no-store headers, cache-busted fetches, `autopilot_progress` fallbacks, visible render/stream
+> errors, and SSE initial-tail fetch fallbacks for planner/autopilot panels. Orchestrator was reloaded after
+> the fix (API PID 4104652) and no-store headers verified by curl. At wrap-up AutoPilot PID 3793619 was
+> alive, `process_status.phase=dispatch_action`, and `autopilot_progress` reported trial 208 `seed_batch`
+> in flight. Trial 207 completed with `q=0.395`; safety skipped baseline update versus baseline 1.484.
+> Details: `progress/2026-06/2026-06-01.md`.
 
 > ### ⚠️ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination PARTIAL CLOSURE (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
 > The safety gate ran with a never-achieved `baseline.quality`, so the regression gate

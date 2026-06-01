@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-05-31
-**Sources**: 42 documents (added 2026-05-31 tiered baseline calibration)
+**Last compiled**: 2026-06-01
+**Sources**: 43 documents (added 2026-06-01 metric-free meta-loop/dashboard hardening)
 
 ## Summary
 
@@ -16,6 +16,11 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-06-01, metric-free meta-loop and dashboard liveness hardening)
+
+- **Meta-action halts should be preceded by a forced measured action, not only detected after repeated no-op turns.** The five-consecutive-`distill_knowledge` halt showed that a terminal `MAX_CONSECUTIVE_META` guard prevents indefinite drift but still lets the planner spend multiple turns without new metrics. The deployed guard allows the first meta bookkeeping action, then replaces any repeated metric-free meta no-op with a small `seed_batch`, preserving rationale metadata so the planner sees that the action was forced back into measurement. Source: [progress 2026-06-01](../progress/2026-06/2026-06-01.md), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md).
+- **Operational dashboards for autonomous loops need redundant liveness sources and visible stream failures.** During the incident, curlable backend endpoints correctly reported AutoPilot/process state and SSE logs, while the browser dashboard could still show "orphan inference" or blank planner/autopilot panels. The hardened pattern is: no-store headers and cache-busted fetches; `autopilot_progress` as fallback when process phase markers are temporarily absent; visible region-lock/render errors instead of swallowed exceptions; and an initial-tail fetch fallback when EventSource stalls. This turns dashboard disagreement into observable diagnostics rather than silent stale UI. Source: [progress 2026-06-01](../progress/2026-06/2026-06-01.md).
 
 ### New (2026-05-31, planner-context restart-blocker validation)
 
@@ -192,6 +197,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - [pi-autoresearch-mad-scoring.md](../research/deep-dives/pi-autoresearch-mad-scoring.md) -- Deep dive: MAD-based significance testing (~20 lines) prevents false-positive improvements from wasting eval budget. Implementation sketch for safety_gate.py with persistence hook.
 - [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md) -- trial-188 meta-loop halt review and AP-45 learning-excluded keep-signal closure.
 - [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md) -- validation that the forward-only keep-signal fix still leaves historical `mad_noise` rows, stale meta-action state, and contaminated strategy-store/distilled-insight state blocking restart.
+- [progress/2026-06/2026-06-01.md](../progress/2026-06/2026-06-01.md) -- metric-free meta-repeat guard, polluted trial cleanup/rewind, dashboard liveness hardening, orchestrator reload verification, and live resume point at trial 208.
 
 ## 2026-04-28 — L1/L2/L3 + Laws vocabulary for autopilot, agent-world ETD, meta-harness (intake-498)
 
