@@ -2,7 +2,7 @@
 
 **Status**: **Phase 5 seeder refactor DONE** (2026-04-17). 3-way eval replaced with dynamic per-role eval. AR-3 killed — needs restart with new seeder. Blacklist cleaned (6→1 entry). Model quality signatures wired into controller prompt.
 **Created**: 2026-03-08
-**Updated**: 2026-06-01 (metric-free meta-repeat guard + dashboard live-state hardening; polluted 188/189/190 runtime entries pruned; restarted from trial 187; orchestrator reloaded; AutoPilot alive at PID 3793619, trial 208 `seed_batch` in flight at wrap-up)
+**Updated**: 2026-06-01 (gate-lock narrative FULL closure via journal-falsifier scrub `0d07da5`; tier-segregated Pareto dashboard `28d41a9`/`471b396`; T2 confirmed accessible — open item: seed the T2 frontier via a `deep_eval`. Earlier same-day: metric-free meta-repeat guard + dashboard live-state hardening; trial-187 rewind)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
 
 > ### 2026-06-01 — metric-free meta-loop guard, dashboard repair, and live restart
@@ -19,6 +19,20 @@
 > alive, `process_status.phase=dispatch_action`, and `autopilot_progress` reported trial 208 `seed_batch`
 > in flight. Trial 207 completed with `q=0.395`; safety skipped baseline update versus baseline 1.484.
 > Details: `progress/2026-06/2026-06-01.md`.
+
+> ### ✅ 2026-06-01 — gate-lock narrative FULL CLOSURE + tier-segregated dashboard (orchestrator `28d41a9`, `471b396`, `0d07da5`)
+> The 2026-05-31 closure was PARTIAL because it scrubbed the strategy store but missed the **actual
+> recurrence vector: the journal `falsifier` field**. The planner reads recent falsifiers every trial,
+> regenerates the "stale/gate-locked baseline" story, and re-distills it — so strategy-store-only scrubs
+> never held. Fixed by scrubbing ALL planner read-sources in one stopped pass (`scripts/maintenance/
+> scrub_gatelock_narrative.py`, `0d07da5`): journal falsifier (22 trials), `short_term_memory.md` (5 gate-lock
+> lines), `strategies.db` (16 rows + FTS + faiss + id_map rebuilt to 390). `episodic.db` left untouched
+> (its "2.900" hits were microsecond timestamps). No rewind — outcomes/Pareto preserved. **Verified it held
+> through a distill cycle**: 6 fresh insights, all narrative-free. Dashboard now renders all per-tier Pareto
+> frontiers with shape+color (T1 circle / T2 square / T0 dim triangle audit), dominated points tier-colored,
+> T0 audit frontier dashed, per-tier hypervolume (`28d41a9`, `471b396`). **T2 confirmed accessible** — pool
+> ~50k q across 15 suites, `deep_eval` action wired to `tower.evaluate(tier=2)`; T2 frontier empty only
+> because the planner hasn't elected a `deep_eval` yet (open item: seed it). Details: `progress/2026-06/2026-06-01.md`.
 
 > ### ⚠️ 2026-05-31 — baseline gate-lock/frontier/planner-context contamination PARTIAL CLOSURE (orchestrator `a231556`, `89e6c9f`, `ec9622d`, `20ea4d5`, `ebd5647`)
 > The safety gate ran with a never-achieved `baseline.quality`, so the regression gate
