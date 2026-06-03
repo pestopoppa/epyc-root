@@ -33795,3 +33795,106 @@
   - Ships no open benchmark suite (only illustrative example kernels) + a research-use-only code drop — cannot be adopted turnkey the way GEAK-eval can; verify actual license before any code reuse.
   - 3-module design drops GEAK v1's explicit Optimizer (LLM-as-Optimizer over historical metrics); no ablation on whether HIP optimization quality suffers vs the 4-module Triton agent.
   notes: 'Ingested via /research-intake GEAK-v2/HIP follow-up batch (parallel sub-agent), 2026-06-03. Expanded from intake-674. Blog-stage (no arXiv). RAW HIP/C++ optimization (not Triton) = directly on-path for our llama.cpp hand-HIP endgame; STRONGEST existence-proof that agentic kernel authoring can beat a human engineer (Voxelization 2.07x vs 1.84x). gfx942/CDNA3 only (no gfx90a). Ships no open benchmark => adopt_patterns. AUDIT REMINDER: watch for a GEAK-HIP arXiv/benchmark release + re-run on gfx90a when MI210 lands; pairs with llama-cpp-dsa-contribution.md (hand-HIP).'
+- id: intake-679
+  arxiv_id: '2605.16819'
+  url: https://github.com/AMD-AGI/AgentKernelArena
+  source_type: paper
+  title: 'AgentKernelArena: Generalization-Aware Benchmarking of GPU Kernel Optimization Agents'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - hardware_optimization
+  - tool_implementation
+  - autonomous_research
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-674
+  ingested_date: '2026-06-03'
+  verdict: adopt_component
+  authors:
+  - Sharareh Younesian (AMD)
+  - Wenwen Ouyang (AMD)
+  - Sina Rafati (AMD)
+  - Mehdi Rezagholizadeh (AMD, corresponding)
+  - Sharon Zhou (AMD)
+  - Ji Liu (AMD)
+  - Yue Liu (AMD)
+  - Yuchen Yang (AMD)
+  - Hao Li (AMD)
+  - Ziqiong Liu (AMD)
+  - Dong Li (AMD)
+  - Vikram Appia (AMD)
+  - Zhenyu Gu (AMD)
+  - Emad Barsoum (AMD)
+  key_claims:
+  - First open benchmark/arena to evaluate FULL agent workflows (not single LLM calls) on GPU-kernel optimization, running each agent in an isolated timestamped workspace with gated compile->correctness->performance scoring; 196 tasks across HIP-to-HIP (24), Triton-to-Triton (148 = 118 vLLM + 30 ROCmBench), and PyTorch-to-HIP/Torch2HIP (24).
+  - 'First benchmark to systematically test UNSEEN-CONFIGURATION generalization: an LLM inspects each kernel and generates 8 structurally diverse held-out input configs across 6 categories (edge/boundary, scale-up, scale-down, alignment-stress, asymmetric aspect-ratio, production-realistic), never released to prevent contamination — exposing whether reported speedups survive or are overfit/shape-hardcoded.'
+  - 'Best configs: 6.89x mean PyTorch-to-HIP (Cursor Agent / Opus 4.6 High), 6.69x HIP-to-HIP (Claude Code / Opus 4.6), 2.13x Triton-to-Triton (Cursor Agent / Opus 4.7 High); near-perfect compilation and high correctness on most categories.'
+  - 'Generalization headline: HIP-to-HIP (93.6-100%) and Triton-to-Triton (90.9-99.4%) optimizations largely transfer to unseen shapes, but PyTorch-to-HIP correctness DROPS to 59.7-90.3% — agents generating kernels from scratch frequently hardcode shape-specific assumptions (e.g. MAX_ROWS=32 baked into shared-memory allocs, breaks at 64 rows).'
+  - 'Modular registry-based agent-adapter harness (@register_agent decorator + AgentType enum): ships adapters for Cursor Agent, Claude Code, Codex/single_llm_call, SWE-agent, OpenEvolve(GEAK), geak_optimagentv2, geak_hip, geak_ourllm_kernel2kernel; pluggable LLMs via OpenAI/Anthropic/OpenRouter/vLLM.'
+  - 'Scoring identical-in-shape to Apex''s Magpie reward: Score = 20*compiles + 100*correct + 100*speedup*correct; baseline = stored expected perf. Specialized agents (GEAK, AutoTriton) were EXCLUDED from headline runs (architecture differs from general coding agents) though adapters exist.'
+  techniques:
+  - Registry-based agent-adapter harness (decorator + enum + prompt-builder/post-processor seams) = a ready-made multi-agent A/B comparison substrate
+  - Per-task isolated timestamped workspace duplication for reproducibility
+  - Gated compile -> correctness (torch.allclose) -> performance scoring pipeline (Magpie-shaped reward)
+  - LLM-generated unseen/held-out input-configuration generalization protocol (8 configs x 6 categories, withheld to prevent contamination)
+  - 'Task modalities: hip2hip, triton2triton, torch2hip, cuda2hip, instruction2triton, repository, flydsl2flydsl'
+  reported_results:
+  - 'PyTorch-to-HIP (Torch2HIP): up to 6.89x mean (Cursor Agent / Opus 4.6 High); unseen-config correctness drops to 59.7-90.3%'
+  - 'HIP-to-HIP: up to 6.69x (Claude Code / Opus 4.6); unseen-config correctness 93.6-100% (robust)'
+  - 'Triton-to-Triton: up to 2.13x (Cursor Agent / Opus 4.7 High); unseen-config correctness 90.9-99.4%'
+  - 'Hardware: ALL experiments on AMD Instinct MI300X (gfx942/CDNA3), ROCm 7.1.1 — NO gfx90a/MI250/MI210 results'
+  - Public leaderboard not yet released (placeholder table in repo); Torch2HIP + CUDA2HIP task sets slated to expand to 100+
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2507.23194'
+  - '2509.14279'
+  - '2507.17773'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-674
+    - intake-675
+    - intake-677
+    - intake-678
+    - intake-664
+    - intake-668
+    - intake-667
+    - intake-671
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created: []
+  amd_rocm_transferability: 'VERY HIGH at the methodology/harness level, BLOCKED at the measured-artifact level on our exact ISA. The harness, agent adapters, the three task suites, the torch-ROCm oracle, the Magpie-shaped scorer, and the unseen-config generalization protocol are all AMD-native ROCm code (ROCm 7.1.1), framework hardware-parameterized (target_gpu_model config) — should run on a gfx90a MI210 with re-tuning only, no porting. BUT every published number is on MI300X/gfx942/CDNA3; ZERO gfx90a/MI250/MI210 eval — the SAME gap as GEAK-v2 (677) and GEAK-HIP (678), a regression vs GEAK-v1 (674), still the only gfx90a-proven AMD reference. Apache-2.0 (vs GEAK/Apex MIT). First action when MI210 racks: set target_gpu_model to the gfx90a part and reproduce the three category numbers.'
+  what_is_it: 'A standardized, open-source (Apache-2.0) BENCHMARK + multi-agent A/B HARNESS (''arena'') by AMD-AGI to measure how well general-purpose AI coding AGENTS (not single LLM calls) perform on real GPU-kernel optimization. NOT itself an agent, NOT yet a public leaderboard. Standardizes: a 196-task suite over three modalities; per-task isolated workspaces; a gated compile->correctness->speedup pipeline (Magpie-shaped score); and a generalization-aware unseen-input-configuration evaluation distinguishing genuine optimizations from shape-overfit ones. The EVALUATION+COMPARISON counterpart to the same org''s GEAK (the agent) and Apex (the deploy harness).'
+  agent_adapters_and_ab: 'YES — precisely a ready-made controller-A/B / agent-comparison harness, the single most important finding. Ships registry adapters (@register_agent + AgentType enum + prompt-builder/post-processor) for Cursor Agent, Claude Code, Codex/single-LLM, SWE-agent, OpenEvolve(GEAK), geak_optimagentv2, geak_hip, geak_ourllm_kernel2kernel, pluggable LLMs (OpenAI/Anthropic/OpenRouter/vLLM); adding a custom agent is documented (~4 steps). This is materially the thing agentic-rocm-kernel-authoring.md planned to BUILD (the seam to A/B GEAK vs EvoEngineer vs K-Search vs Xe-Forge vs our Claude+Codex actor-critic against one backend). RECOMMENDATION: adopt it as the A/B comparison shell rather than hand-rolling one — register our controllers as new @register_agent adapters. Caveats: (1) it compares whole AGENTS at task level, not the fine-grained generate->profile->refine inner loop, so it complements rather than replaces the controller''s internal loop; (2) it currently runs on gfx942 — re-stand up on gfx90a. Its headline run EXCLUDED specialized kernel agents (GEAK/AutoTriton), so a GEAK-vs-general A/B on gfx90a is itself net-new data.'
+  task_categories_detail: '(1) HIP-to-HIP (24; ROCm examples/rocPRIM/customer HIP) — refine existing correct HIP for speed; most generalization-robust (93.6-100% unseen, up to 6.69x). (2) Triton-to-Triton (148 = 118 vLLM + 30 ROCmBench/TritonBench) — refine existing Triton; robust (90.9-99.4%, up to 2.13x). (3) PyTorch-to-HIP = Torch2HIP (24) — from-scratch translation, the category most relevant to our llama.cpp hand-HIP endgame: agent writes HIP from a torch reference. HIGHEST headline speedup (6.89x) but LEAST generalizable — unseen-config correctness collapses to 59.7-90.3% from shape-hardcoding (e.g. MAX_ROWS=32 in shared-memory sizing). This is the paper''s central cautionary result and directly validates our C6 multi/unseen-shape oracle plan: a Torch2HIP ''win'' is suspect until it passes held-out shapes. Repo also lists cuda2hip, instruction2triton, repository, flydsl2flydsl modalities.'
+  mi210_gfx90a_applicability: NOT DEMONSTRATED on gfx90a — stated plainly. All 196-task experiments ran on one MI300X (gfx942/CDNA3), ROCm 7.1.1. NO MI250/MI250X/MI210 (gfx90a/CDNA2) numbers — the SAME gap as GEAK-v2 (677)/GEAK-HIP (678), a regression from GEAK-v1 (674). The harness is hardware-parameterized (target_gpu_model) on portable torch-ROCm/hipcc, so it should RUN on the MI210 with autotune-level re-tuning; but speedup magnitudes (6.89x/6.69x/2.13x) and the generalization percentages are gfx942-measured and must be re-derived on our CDNA2 part. A runnable harness for our ISA, with unverified numbers until reproduced on the MI210.
+  metrics_and_anti_hacking: 'Score(k) = 20*1[compiles] + 100*1[correct] + 100*speedup*1[correct] — identical in shape to Apex''s Magpie reward, gated (no speedup credit without correctness). Correctness = torch.allclose vs a torch-ROCm reference; baseline = stored expected-perf. PRIMARY anti-gaming mechanism is NOT a robust-oracle exploit catalogue (no output-buffer-poisoning / backward-pass / stream-sync defenses like robust-kbench-668) but the GENERALIZATION protocol: 8 LLM-generated unseen input configs x 6 categories, withheld, re-checking correctness on shapes the agent never saw. A real, complementary anti-OVERFITTING defense targeting shape-hardcoding (the dominant Torch2HIP failure) — exactly the ''multiple/unseen shapes'' arm of our planned C6, with a concrete LLM-driven generator we can lift. Does NOT cover functional-hack classes (no-op via stale buffer, low-magnitude, library-passthrough, stream-timing) — so robust-kbench-668 hardening remains necessary AND complementary. Net: AgentKernelArena gives the unseen-shape half of C6; robust-kbench the exploit-class half.'
+  relationship_to_geak_apex: 'SAME org (AMD-AGI) as GEAK (674), GEAK-v2 (677), GEAK-HIP (678), Apex (675) — overlapping authors (Ziqiong Liu, Dong Li, Emad Barsoum recur). It WRAPS/COMPLEMENTS rather than subsumes: the standardized EVALUATION ARENA in which GEAK + variants appear as pluggable adapters (geak_optimagentv2, geak_hip, geak_ourllm_kernel2kernel, OpenEvolve) alongside general agents (Claude Code, Cursor, Codex, SWE-agent). Shares Apex''s Magpie-shaped scorer + ''real-workload kernel optimization'' framing, but Apex is the deploy/hot-patch/E2E harness while AgentKernelArena is the controlled task-level COMPARISON benchmark with the unseen-config generalization layer Apex lacks. AMD-AGI stack now reads: GEAK = the agent; Apex = the deploy harness; AgentKernelArena = the agent-comparison benchmark. Headline runs EXCLUDED GEAK/AutoTriton, so GEAK-vs-general numbers are unreported — open for us to run.'
+  plan_impact: 'Materially POSITIVE and plan-simplifying on the controller-A/B axis; NEUTRAL-to-reinforcing on backend and agent-backend. (1) CONTROLLER-A/B: strongest single de-risk yet for agentic-rocm-kernel-authoring.md — the agent-comparison HARNESS we planned to build now largely EXISTS, Apache-2.0, with Claude Code/Codex/Cursor/GEAK adapters wired + a documented custom-adapter path. Pivot the controller-A/B from ''build a harness'' to ''register our controllers (Claude+Codex actor-critic, EvoEngineer, K-Search, Xe-Forge) as AgentKernelArena adapters and A/B them on gfx90a.'' (2) BACKEND (rocm-verify-profile-backend.md): ADDS a second AMD-native C1/C2/C3/C5 substrate alongside GEAK-eval, and uniquely donates the unseen-shape generalization protocol into C6 (the half not covered by robust-kbench) + a concrete Torch2HIP suite (C5) seeding the llama.cpp endgame. Does NOT change C4 (not profiler-counter-fed). (3) AGENT-BACKEND: strongly CORROBORATES the Claude+Codex-actor-critic favored choice — best results come from Claude Code (Opus 4.6, HIP-to-HIP 6.69x) and Cursor/Codex agents; Claude Code is already an adapter. (4) Hard CAVEAT keeping verdict adopt_component not turnkey: gfx942-only eval — same gap as the rest of the GEAK family; GEAK-v1 stays the gfx90a keystone, MI210 reproduction is the gating first step.'
+  novelty_justification: 'high — NOT a duplicate (absent from index; arxiv 2605.16819 + repo new ~mid-2026). Introduces two genuinely novel things over the ingested GEAK/Apex cluster: (a) the first standardized multi-AGENT (whole-workflow) comparison ARENA for GPU-kernel optimization with a registry adapter pattern; (b) the first generalization-AWARE protocol (LLM-generated unseen input configs) quantifying shape-overfitting in agent-authored kernels — a failure mode prior AMD work (GEAK/Apex loose single-shape oracles) never measured. Capped just below maximal only because the scorer reuses Apex''s Magpie shape and the agents are off-the-shelf.'
+  relevance_justification: 'high — an AMD-native, ROCm, train-free, single-GPU-runnable arena that compares the EXACT agents (Claude Code, Codex, GEAK) on the EXACT task modalities (HIP, Triton, Torch2HIP) our two active handoffs are built around, from the same lab as our keystone (GEAK-674) and harness (Apex-675). Directly answers the operator''s central question: it could BECOME the controller-A/B harness rather than us building one. Tempered below maximal solely by gfx942-only eval (no gfx90a numbers) — a re-run gate, not a transfer blocker.'
+  verdict_justification: 'adopt_component — the Apache-2.0 harness + agent-adapter framework + three task suites + unseen-config generalization protocol are directly reusable artifacts: register our controllers as adapters for the controller-A/B in agentic-rocm-kernel-authoring.md, adopt the Torch2HIP/HIP/Triton suites as a C5 substrate alongside GEAK-eval, lift the unseen-shape generator into C6 in rocm-verify-profile-backend.md. Earns adopt_component (vs adopt_patterns for GEAK-v2/HIP) because it ships a runnable, permissively-licensed, AMD-native, hardware-parameterized harness — BUT gfx942-evaluated only, so the gfx90a reproduction is a mandatory first gate and GEAK-v1 remains the gfx90a-proven keystone. Do NOT auto-promote over GEAK-eval as primary substrate until reproduced on the MI210.'
+  contradicting_evidence:
+  - 'gfx90a EVALUATION GAP: all 196-task results on MI300X (gfx942/CDNA3), ROCm 7.1.1 — ZERO gfx90a/MI250/MI210. Same regression as GEAK-v2/HIP vs GEAK-v1''s MI250X line; headline 6.89x/6.69x/2.13x + generalization percentages unverified on our CDNA2 part.'
+  - 'Triple commercial bias: AMD authors the benchmark, the compared GEAK adapters, AND sells the MI300X hardware. Preprint, not peer-reviewed; no independent reproduction in Tier-2b (only the paper/repo/AMD-org pages surface).'
+  - Public leaderboard not yet released (placeholder table); benchmark 'actively under development' — Torch2HIP/CUDA2HIP still expanding to 100+, so current 24-task per-category coverage is thin (HIP-to-HIP and Torch2HIP are only 24 each).
+  - 'Anti-hacking is partial: NO output-buffer/backward-pass/stream-sync/library-passthrough defenses (robust-kbench-668 classes) — only the unseen-shape check. A no-op or library-passthrough kernel that is also shape-robust could still pass; robust-kbench hardening remains required.'
+  - Headline runs EXCLUDED specialized kernel agents (GEAK, AutoTriton) as 'architecturally different', so the arena does not yet validate that GEAK (our keystone) outperforms general agents on its own benchmark — the GEAK-vs-general A/B is unmeasured.
+  - 'Per FastKernels-671: speedups are isolated-op vs a stored baseline (efficiency/feature-parity unaudited); the 6.89x Torch2HIP figure especially needs a full-forward-pass re-score vs an honest vendor baseline — and its own unseen-config correctness drop (to 59.7%) already shows the isolated number overstates real robustness.'
+  notes: Ingested via /research-intake (operator-directed follow-up to the audit), 2026-06-03. Expanded from intake-674. AMD-AGI Apache-2.0 agent-comparison ARENA + peer-track arXiv 2605.16819. THE controller-A/B harness substrate we planned to build (Claude Code/Codex/Cursor/GEAK adapters, registry pattern, ~4-step custom adapter) -> pivot from build-a-harness to register-our-controllers-as-adapters. Three task suites (HIP/Triton/Torch2HIP) = C5 substrate; the unseen-shape generalization protocol = the multi-shape half of C6 (complements robust-kbench-668). gfx942-only (no gfx90a) => MI210 reproduction is the gating first step; GEAK-v1 stays the gfx90a keystone. Full reasoning in research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md.

@@ -457,7 +457,7 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
 
 ## Research Intake Update — 2026-06-03 (LLM-kernel-generation cluster deep-dive)
 
-Deep-dived the kernel-generation cluster referenced by intake-660 (CUDA Agent), all elevated for the incoming **MI210** (CDNA2/gfx90a, ~July 2026) custom-kernel path. All are NVIDIA/CUDA-targeted — value is **methodology transfer to ROCm**, not the released CUDA artifacts. Spun out two new handoffs: [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) (umbrella controller) + [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md) (long-pole backend that would replace the manual rocWMMA/AITER/hipBLASLt hand-port loop tracked here).
+Deep-dived the kernel-generation cluster (intake-660–679) for the incoming **MI210** (CDNA2/gfx90a, ~July 2026) custom-kernel path. The NVIDIA/Intel half (660–673) is methodology-transfer only; **the AMD-native half (GEAK 674, Apex 675, AgentKernelArena 679, MIT/Apache-2.0) is directly reusable on ROCm — GEAK is even demonstrated on gfx90a (MI250X = MI210 ISA).** Spun out two handoffs: [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) (umbrella) + [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md) (the verify+profile backend), which would automate the manual rocWMMA/AITER/hipBLASLt hand-port loop tracked here. Full reasoning: [deep-dive](../../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
 
 | Intake | Title | Paradigm | Rel. | Verdict | Transferable asset |
 |--------|-------|----------|------|---------|--------------------|
