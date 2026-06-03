@@ -163,6 +163,17 @@ CLEAN-UP / LOW-EFFORT:
 
 ---
 
+## 2026-06 cluster supplement (factory.ai harvest + earlyoom)
+
+From `/research-intake` deep-dive of factory.ai docs + earlyoom (intake-657/658/659). Full harvest: [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md). Each item has its own handoff stub.
+
+- [ ] **NIB2-53** (**HIGH** — lowest-hanging fruit): **Deploy earlyoom** userspace OOM daemon to prevent multi-model mlock OOM-freezes → [`earlyoom-oom-protection.md`](earlyoom-oom-protection.md). Ready-to-deploy: validate `--dryrun` against a live stack snapshot, then operator `apt install` + systemd unit with `--ignore` (control plane) / `--prefer` (benches) / `--sort-by-rss` / absolute `-M 40GiB,20GiB` thresholds. Mostly operator + a small `-N` audit hook; no code build.
+- [ ] **NIB2-54** (MED): **Repo-Readiness Scorer** (5-level / 9-pillar / 80%-unlock over our 4-repo map; feeds autopilot remediation) → [`repo-readiness-scorer.md`](repo-readiness-scorer.md). Deterministic detectors, no inference. New capability.
+- [ ] **NIB2-55** (MED): **Security-review skill** (two-pass STRIDE + OWASP Top10 + OWASP-LLM:2025 + supply-chain; exploit-path-gated severity) + adopt the **code-review 8-gate filter + P0–P3 + finding schema** into the existing code-review skill → [`security-review-skill.md`](security-review-skill.md).
+- [ ] **NIB2-56** (MED): **AutoWiki-style incremental KB generator** (topic-taxonomy pages + page→source manifest + change-driven ColBERT re-embed) → [`autowiki-incremental-kb-generator.md`](autowiki-incremental-kb-generator.md). Extends `internal-kb-rag.md`.
+
+---
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

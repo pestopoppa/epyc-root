@@ -31942,3 +31942,223 @@
     external sources. Credibility null per rubric (repo release, not a peer-reviewed empirical
     claim) though vLLM is a top-tier project. Two findings corroborate internal memory:
     KMP_BLOCKTIME (ik_llama OMP idle-spin fix) and gemma4 enable_thinking=false default.
+- id: intake-657
+  arxiv_id: null
+  url: https://docs.factory.ai/cli/user-guides/choosing-your-model
+  source_type: blog
+  title: 'Choosing Your Model — Factory CLI (Droid) Model Selection Guide'
+  categories:
+  - cost_aware_routing
+  - routing_intelligence
+  - agent_architecture
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Factory AI
+  key_claims:
+  - 'Exposes an explicit, human-readable model-tier taxonomy (18 models across Anthropic/OpenAI/Google + open-source "Droid Core" tier: MiniMax M2.7, GLM-5/5.1, Kimi K2.5/2.6) each tagged with a per-token cost multiplier (0.12x-12x) and a recommended use-class — a reproducible decision table we could encode directly as router priors over our own role pool.'
+  - 'Per-model tiered reasoning-effort control (Off/Low/Medium/High plus Max on flagship Claude and Extra-High on GPT-5.x) with the heuristic "reasoning effort increases latency and cost — start low for simple work and escalate as needed" — a per-request reasoning-budget knob plus an escalation policy we can reproduce on our SSM+MoE thinking toggle.'
+  - 'When-to-use heuristics are task-type-indexed (deep planning/architecture -> flagship; repeatable edits/summarization/boilerplate -> Haiku/Droid Core; CI-CD automation loops -> cheapest predictable model; high-volume quick turns -> cheapest-capable) — directly portable as a difficulty/task-class -> tier mapping for our learned router cold-start labels.'
+  - 'Manual selection (/model or settings menu, hot-swap mid-session preserving history) is the DEFAULT UX, but an opt-in automatic per-task router EXISTS — Factory Router (see /web/factory-router.md, Research Preview): a session+per-request hybrid that is prompt-cache-aware and claims ~20-25% cost reduction vs always-top-tier at frontier-level benchmark perf. [DEEP-DIVE 2026-06-03 correction: the original Phase-1+2 read "NO auto-routing exists" was wrong/stale.]'
+  - 'Cross-provider session portability: the CLI translates the transcript between Anthropic and OpenAI formats (explicitly lossy, drops provider-specific metadata) and supports BYOK including local servers — a transcript-normalization pattern relevant if we ever mix heterogeneous backend chat formats behind one session.'
+  techniques:
+  - model-tier taxonomy with per-token cost multipliers
+  - tiered reasoning-effort levels (Off/Low/Medium/High/Max/Extra-High)
+  - start-cheap-escalate-on-need heuristic
+  - task-type-indexed when-to-use decision table
+  - manual /model switching preserving chat history
+  - lossy cross-provider transcript translation
+  - BYOK including local-server backends
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - learned-routing-controller.md
+    - routing-intelligence.md
+    - per-request-reasoning-budget.md
+    - reasoning-compression.md
+    - tri-role-coordinator-architecture.md
+    - routing-and-optimization-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - decision-aware-routing.md
+  handoffs_created:
+  - repo-readiness-scorer.md
+  - autowiki-incremental-kb-generator.md
+  novelty_justification: 'No new technique or measurement — it is a vendor model-picker doc. Every mechanism (cost-tiered model pool, reasoning-effort knob, start-cheap-escalate heuristic, task-class->tier table) is already covered in 08-cost-aware-rewards.md and the routing handoff cluster, in more rigorous (learned/RL/ES) form. Value is as a competitor feature-map and a clean human-readable encoding of priors, not novel research.'
+  relevance_justification: 'Directly on-topic for our active routing program. We run a learned router with cost-aware rewards (quality_gap_penalty, memory_tier penalty, cost_lambda) that already mirrors Claude model x cache x thinking x batch pricing space (08-cost-aware-rewards.md). Factory explicit task-type->tier decision table is reproducible as cold-start label priors for learned-routing-controller.md and as the difficulty->escalation mapping that decision-aware-routing.md is trying to learn (our escalation rates are currently flat across difficulty bands — their hand-tuned heuristic is a useful sanity prior). Their per-model reasoning-effort levels + start-low-escalate rule map onto per-request-reasoning-budget.md (budget_tokens control) and reasoning-compression.md (escalate-low-first = concise-reasoning thesis).'
+  verdict_justification: 'adopt_patterns, not not_applicable (SaaS governs deploy, not analyze). HARVEST internally: (1) their task-type->model-tier decision table as explicit cold-start routing priors / a human-readable baseline policy to A/B our learned router against; (2) the per-model reasoning-effort taxonomy + start-low-escalate-on-need rule as a default reasoning-budget escalation policy wired into per-request-reasoning-budget.md and our thinking toggle; (3) the per-tier cost-multiplier framing to sanity-check our cost_lambda normalization across the heterogeneous pool. SKIP (SaaS-only): the proprietary Droid harness itself, the specific closed model lineup + promotional multipliers, BYOK billing, and the lossy Anthropic<->OpenAI transcript translator (only relevant if we mix chat formats — we standardize on one backend). Net competitive read [REVISED post-deep-dive]: Factory Router IS an opt-in auto-router (session+per-request, prompt-cache-aware, ~20-25% claimed savings) — we are NOT ahead on the existence of auto-routing, but it gives us a validated design + concrete savings target. Highest-value harvest is three router design patterns: (a) prompt-cache-aware routing reward term (favor the role-server already holding the prefix in slot-KV; penalize cold re-prefill) which directly attacks our flat-escalation-across-difficulty-bands open problem; (b) session-sticky + per-request hybrid (we decide per-request only -> add stickiness state); (c) phase-based spec/execution model split = make reasoning-level a first-class action (model x thinking-level) in the controller action space.'
+  contradicting_evidence:
+  - 'Vendor docs page with no empirical claims — the use-class recommendations and cost multipliers are unbenchmarked marketing guidance, not measured routing outcomes; treat as a hypothesis-generating prior, not validated policy.'
+  notes: >
+    Ingested via /research-intake (parallel sub-agent, Phase 1+2), then DEEP-DIVE 2026-06-03
+    mining the full docs.factory.ai site (~110 pages via /llms.txt). Full harvest +
+    verbatim model/cost table in research/factory-ai-harvest-2026-06-03.md.
+    KEY CORRECTION: Factory Router (opt-in auto-router) exists — see corrected key_claim #4 +
+    verdict_justification. Top reproducible harvest (Part 3A / Part 6 Tier-1 of the harvest doc):
+    prompt-cache-aware routing reward term + session-sticky/per-request hybrid + phase-based
+    reasoning-level-as-routing-action, all mapping to decision-aware-routing.md (flat-escalation
+    open problem) and learned-routing-controller.md. Also harvested: deterministic (non-LLM)
+    command risk-tiering + per-route autonomy ceiling (Off/Low/Medium/High). Verbatim cost
+    multipliers captured (baseline 1x=GPT-5.4; Droid Core open-weights tier 0.12-0.7x).
+- id: intake-658
+  arxiv_id: null
+  url: https://factory.ai/news/code-review-benchmark
+  source_type: blog
+  title: 'Which Model Reviews Code Best? (Factory Research code-review benchmark)'
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - cost_aware_routing
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Factory Research
+  - Nizar Alrifai
+  key_claims:
+  - 'Benchmark constructed from 50 real pull requests sampled from five major OSS projects (Sentry, Grafana, Keycloak, Discourse, Cal.com), each PR paired with a human-curated golden set of known bugs as ground truth — a real-PR sourcing model, not synthetic.'
+  - 'Scoring is LLM-as-judge on a SEMANTIC basis (explicitly not string matching): the judge matches each model findings against the golden set and computes F1 (precision = fraction of findings that are real bugs; recall = fraction of real bugs found). Each model is run >=3 times per PR with identical prompts and high reasoning effort, reporting Mean F1 + StdDev.'
+  - 'Self-favoring-bias control: they swapped the judge model and observed <=2 percentage-point impact — a cross-judge robustness check directly analogous to our eval-tower cross-family verification (EV-6).'
+  - 'Quality is largely decoupled from cost: cost explains only ~21% of quality variance, with per-PR cost and token consumption (56K to 4.2M tokens/PR) reported alongside F1 — enabling a cost-vs-quality Pareto for reviewer-model selection.'
+  - 'PARTIALLY reproducible [DEEP-DIVE 2026-06-03 correction of an overstated initial read]: the harness repo droid-code-review-evals/review-droid-benchmark has NO LICENSE file (all-rights-reserved) and the v3 golden set the scoring actually consumes is GITIGNORED/absent; only Augment upstream v1 (145 bugs, ai-code-review-evaluations/golden_comments) is genuinely open. The review step is bot-driven (@droid review via closed Droid Action with whole-repo agentic context), NOT a model-agnostic API call — so only the judge/scoring half (eval_common.py) + v1 data are portable. Dataset provenance is Greptile -> Augment -> Factory, not Factory-original.'
+  techniques:
+  - 'real-PR-sourced golden-set benchmark (harvest merged PRs from mature OSS repos, human-curate known/introduced bugs per PR as ground truth)'
+  - 'F1-over-findings scoring (precision/recall on bug findings) with an LLM judge doing semantic matching of free-text findings to golden-set bugs'
+  - 'multi-run averaging (>=3 runs/PR, fixed prompt + reasoning effort) to report Mean F1 and StdDev'
+  - 'judge-swap ablation to quantify self-favoring/self-evaluation bias'
+  - 'joint cost + token-consumption + F1 reporting for cost-aware reviewer-model selection (quality-vs-$/PR Pareto)'
+  reported_results:
+  - 'GPT-5.2: 60.5% Mean F1, $1.25/PR (top F1)'
+  - 'Opus 4.6: 59.8% F1, $3.11/PR'
+  - 'Sonnet 4.6: 57.4% F1, $1.15/PR'
+  - 'Kimi K2.5: 51.9% F1, $0.41/PR (value pick)'
+  - 'MiniMax M2.7: 45.6% F1, $0.15/PR (cheapest; lowest token use ~56K/PR)'
+  - '13 models compared across OpenAI/Anthropic/Google/OSS; table reports Mean F1, StdDev, Precision, Recall per model'
+  - 'Cost explains only ~21% of quality variance'
+  - 'Token consumption per PR ranges from 56K (MiniMax M2.7) to 4.2M (GPT-5.5)'
+  - 'Judge-swap self-favoring-bias impact <=2 percentage points'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 09-claude-debugger.md
+    handoffs:
+    - eval-tower-verification.md
+    - multi-file-coding-completion-capability.md
+    - integration-test-coverage.md
+    - research-evaluation-index.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - eval-tower-verification.md
+  handoffs_created:
+  - security-review-skill.md
+  novelty_justification: 'Medium. The individual ingredients exist in our compendium — F1 scoring (ch07), LLM-as-judge semantic grading (ch06), cross-family judge-swap bias control (eval-tower EV-6) — so the techniques are not new to us. What IS novel: a concrete, fully-released real-PR code-REVIEW benchmark (find-bugs-in-a-diff against a human-curated golden set), a task family we have NOT built (our suites are answer-correctness / debug-fix / agentic-coding, not review-finding-recall).'
+  relevance_justification: 'High. We run our own benchmark suite (ch06/07) and maintain code-review skills, and this is a turn-key, fully open-sourced methodology we could reproduce internally to score our coder/reviewer models (gemma4-26B-A4B worker_general, the coder roles, any peer-verifier). The golden-set + findings-F1 + judge-swap recipe is directly liftable into the eval-tower (which already wants cross-family verification and F1/AUC metrics) and into multi-file-coding-completion Claude-as-Judge harness. Only adaptation needed is pointing the judge at our local models instead of frontier APIs and reusing existing Claude-as-Judge plumbing.'
+  verdict_justification: 'adopt_patterns. Harvest the reproducible methodology, not a deployable artifact (the product itself is closed SaaS, but DEPLOYMENT constraints do not gate ANALYSIS). Concretely liftable: (1) real-PR golden-set construction from mature OSS repos with human-curated bug ground truth; (2) findings-F1 scoring with a semantic LLM judge — slots into ch07 F1 verifier and ch06 Claude-as-Judge; (3) the >=3-run Mean-F1+StdDev stability protocol; (4) the judge-swap self-favoring-bias ablation (<=2pp) — exactly the cross-family check eval-tower EV-6 already scaffolds; (5) joint F1 + $/PR + token-count reporting for a reviewer-model Pareto. Their data (droid-code-review-evals org) and scripts (review-droid-benchmark) are open and could seed a local reviewer-eval suite directly.'
+  contradicting_evidence:
+  - 'Vendor self-benchmark: Factory builds a closed-source code-review agent (Droid), so the benchmark serves marketing; absolute rankings may be cherry-picked (prompt tuning, repo/PR selection, golden-set curation favoring their framing). The ~2pp judge-swap check addresses judge bias but NOT golden-set or PR-selection bias.'
+  - 'Only 50 PRs from 5 repos — small sample, narrow language/domain coverage; the reported StdDev and the <=2pp robustness claim are not independently corroborated (single source).'
+  - 'No academic peer review and no arxiv backing; methodology described in a short blog post, so some construction details (judge prompt, exact match criteria, golden-set inter-annotator agreement) are under-specified and would need reverse-engineering from the released scripts to reproduce faithfully.'
+  - 'Best F1 is only ~60.5% — even the top frontier model misses ~40% of golden-set bugs, so the benchmark ceiling/recall calibration (and whether our smaller local models would land in a usable range) is unproven on our stack.'
+  - '[DEEP-DIVE] Self-curation bias: Factory v3 added 31 bugs that Droid (its own agent) surfaced, then human-validated — the golden set partly rewards Droid-style findings. The <=2pp judge-swap controls judge self-preference in MATCHING only, not the harness-is-the-product bias nor the curation bias.'
+  notes: >
+    Ingested via /research-intake (parallel sub-agent, Phase 1+2), then DEEP-DIVE 2026-06-03
+    (review-benchmark.md + blog + released repos + eval_common.py source). Full methodology +
+    internal reproduction plan in research/factory-ai-harvest-2026-06-03.md (Part 4).
+    CORRECTIONS: (1) judge model = claude-opus-4-6 hardcoded (Anthropic SDK), NOT Sonnet 4;
+    (2) "open source" overstated — harness repo unlicensed, v3 golden (167) gitignored, only
+    Augment v1 (145) open — see corrected key_claim #5; (3) provenance Greptile->Augment->Factory;
+    (4) low-severity golden comments scored as neither TP/FP/FN (load-bearing); (5) reasoning_effort=High
+    all 13 models, 3 runs (malfunction-excluded), MICRO-averaged P/R/F. Exact F1 formula + judge prompt
+    captured in harvest doc. Reproduction = reuse Augment v1 + 5 PR sets, re-implement scorer (~80 LOC,
+    do NOT vendor unlicensed file), drive LOCAL models via /v1/chat/completions over diff+context (document
+    divergence from their agentic whole-repo setup), judge with a LOCAL cross-family verifier (eval-tower
+    EV-6, run the <=2pp ablation locally), slot under multi-file-coding-completion-capability.md, index by
+    model/quant not role. Absolute F1 NOT comparable to their leaderboard — internal-only.
+- id: intake-659
+  arxiv_id: null
+  url: https://github.com/rfjakob/earlyoom
+  source_type: repo
+  title: 'earlyoom — Early OOM Daemon'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-03'
+  verdict: adopt_component
+  authors:
+  - Jakob Unterwurzacher (rfjakob)
+  - earlyoom contributors
+  key_claims:
+  - 'Polls available memory + free swap up to 10x/sec (backs off when memory is plentiful); uses kernel "available" (not "free") accounting so disk-cache pages are not mistaken for pressure; daemon footprint is ~2 MiB, fully pinned via mlockall() so it stays responsive under pressure.'
+  - 'Prevents the in-kernel OOM killer slow-path freeze: the kernel will swap out userland, drop the entire page cache, and empty every buffer before it finally kills something, leaving the box unresponsive for seconds-to-minutes; earlyoom intervenes earlier from userspace, before the kernel reclaim storm engages.'
+  - 'Two-stage threshold escalation: SIGTERM when BOTH mem and swap fall below the soft threshold (-m PERCENT / -s PERCENT, default 10%), then SIGKILL once below KILL_PERCENT (default PERCENT/2). Absolute-KiB variants -M / -S also supported.'
+  - 'Configurable victim selection: by default kills the highest oom_score process; --prefer REGEX biases toward matching process names, --avoid REGEX spares them, --sort-by-rss selects by RSS instead of oom_score. -p protects earlyoom itself (oom_score_adj -100); --ignore-root-user, --dryrun available.'
+  - 'Operational hooks: -n d-bus desktop notifications, -N /script (post-kill hook), -P /script (pre-kill hook), --syslog logging, and a shipped systemd unit; widely packaged (apt/dnf/pacman) so deployment is a one-line install.'
+  techniques:
+  - userspace early-OOM daemon
+  - available-memory + free-swap polling
+  - oom_score-based victim ranking
+  - prefer/avoid regex victim biasing
+  - SIGTERM-then-SIGKILL escalation
+  - mlockall self-pinning
+  - systemd-unit deployment
+  - pre/post-kill hook scripts
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - single-instance-system-tuning.md
+    - nps-reboot-runbook.md
+    - dynamic-stack-concurrency.md
+    - multi-model-page-cache.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated:
+  - single-instance-system-tuning.md
+  handoffs_created:
+  - earlyoom-oom-protection.md
+  novelty_justification: 'No existing intake entry covers OOM-killer tooling or host-level memory-safety daemons (grep of intake_index.yaml for earlyoom/oom-killer/memory-safety/host-health returned no operational-tool match). All prior memory work in the compendium is application-level (--mlock deployment, page-cache prewarm, ResourceBudget ceilings) and PREVENTS reaching the OOM boundary; earlyoom is an orthogonal last-line-of-defense at the boundary itself. New tool class for this repo.'
+  relevance_justification: 'Directly operationally relevant to our failure mode. We run many concurrent llama-server processes each mlock-ing multi-GB GGUFs on a single 1.1TB box; mlock-d/locked pages are exactly what makes the kernel OOM killer reclaim path slowest (it drops the entire page cache and empties buffers first — multi-model-page-cache.md confirms our stack is a zero-sum game at current memory pressure when models compete, and a hard --membind could cause OOM if other processes compete). dynamic-stack-concurrency already encodes max_mlock_gb / max_total_gb / reserve_kv_gb ceilings precisely because over-committing mlock crashes; sequential-load is mandatory because concurrent mlock crashes. earlyoom watches available-mem + swap and kills the worst offender in userspace BEFORE the kernel freeze, turning a multi-minute box-wide hang into a single targeted process kill. It complements (does not replace) the existing preventive ResourceBudget guardrails.'
+  verdict_justification: 'adopt_component — a mature, deployable daemon, not a technique to reimplement. ~4.1k stars, MIT, 11 releases (latest v1.9.0 Sep 2025), Go unit+integration test suite + CI + cppcheck, and first-class packaging in Debian/Ubuntu/Fedora-EPEL/Arch — so install is a one-liner and zero maintenance burden (no fork). Deploy feasibility: install via apt/dnf, run as the shipped systemd unit, configure victim policy via /etc/default/earlyoom (EARLYOOM_ARGS) — set --avoid "(orchestrator|llama-server|earlyoom|sshd|systemd)" to spare production servers + control plane, --prefer "(llama-bench|llama-cli|perplexity|run_benchmark|pytest)" to make runaway bench/eval first victims, and -p to protect the daemon itself. For a 1.1TB host tighten from the 10% default (110 GB is wasteful) toward absolute -M (e.g. SIGTERM ~30 GiB available, SIGKILL ~12 GiB). Wire the -N post-kill hook to log into logs/agent_audit.log + the autopilot host-health remediation path so an early-OOM kill is recorded as a host event rather than misattributed to the config-under-test (Pareto contamination). Caveat: --prefer/--avoid is best-effort over oom_score ranking — validate victim selection with --dryrun against a live stack snapshot before arming, and confirm it never targets a mlock-ing server mid-load (sequential-load window is the riskiest moment).'
+  contradicting_evidence:
+  - 'systemd-oomd (cgroup-v2 PSI-based) is a modern, already-installed alternative on systemd hosts — earlyoom and systemd-oomd can conflict if both armed; need to pick one. earlyoom is process-granular (oom_score) and cgroup-agnostic, systemd-oomd is cgroup/slice-granular and PSI-driven.'
+  - 'earlyoom does not understand cgroup memory limits or per-service accounting — it acts on global host memory only; a per-role memory budget would need cgroup/systemd slice limits, not earlyoom.'
+  - '--prefer/--avoid is a best-effort bias over oom_score, not a hard guarantee; under a fast allocation spike the highest-oom_score process may still be a protected one before the regex bias is evaluated.'
+  notes: >
+    Ingested via /research-intake (parallel sub-agent, Phase 1+2), then DEEP-DIVE 2026-06-03
+    (README + man page + kill.c + issues #344/#309 + systemd-oomd/nohang comparison). Full
+    deployment recipe in research/factory-ai-harvest-2026-06-03.md (Part 5).
+    DECISIVE SPECIFICS for our 1.1TB mlock box (live-verified 2026-06-03; full recipe in handoff earlyoom-oom-protection.md): (1) RECOMMEND earlyoom over systemd-oomd
+    (systemd-oomd swap/PSI-cgroup path is ineffective on hand-launched numactl llama-server with no
+    cgroup accounting); do NOT co-run two OOM daemons. (2) Use ABSOLUTE -M/-S thresholds, NEVER
+    percent (10% = fire with 110 GB free) — suggested SIGTERM 40 GiB / SIGKILL 20 GiB. (3) --sort-by-rss
+    is critical (default oom_score is gameable via oom_score_adj, issue #344). (4) Use --ignore (HARD
+    exclusion) for the orchestrator control plane, not --avoid (best-effort +-300; under true exhaustion
+    --avoid'd procs CAN still be killed). (5) 15-byte comm truncation: python3 run_benchmark.py shows comm
+    "python3" (cannot regex the script name) — rely on --sort-by-rss for the python case. (6) NO post-kill
+    backoff (issue #309) = cascade risk on a box of large mlock'd servers; set KILL far below SIGTERM and
+    pause new model loads after any kill via the -N hook. Wire -N -> logs/agent_audit.log. Validate with
+    --dryrun -d against a live full-stack snapshot BEFORE arming. Maturity: 4.1k stars, MIT, v1.9.0
+    (2025-09-16), tests+CI, packaged in every major distro (was Fedora 32 default).

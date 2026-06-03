@@ -284,4 +284,21 @@ A model currently at 50% of BW ceiling has 2× headroom. A model at 80% of BW ce
 - [ ] Run Phase 1 knob-by-knob, not all at once — isolate effects.
 - [ ] Coordinate reboot window with user before Phase 2.
 - [ ] Keep every change rollback-able.
+
+## Research Intake Update — 2026-06-03
+
+### New Related Research
+- **[intake-659] "earlyoom — Early OOM Daemon"** (https://github.com/rfjakob/earlyoom)
+  - Relevance: a **deployable** last-line-of-defense against the multi-model OOM-freeze failure mode on this box. We run many concurrent `llama-server` processes each `--mlock`'ing multi-GB GGUFs on 1.1TB RAM; mlock'd/locked pages are precisely what makes the **in-kernel OOM killer's reclaim path slowest** — it swaps out userland, drops the entire page cache, and empties buffers *before* it finally kills anything, freezing the box for seconds-to-minutes. earlyoom polls available-mem + free-swap (≤10×/sec) from userspace and SIGTERM→SIGKILLs the worst offender *before* the kernel reclaim storm. Complements (does not replace) the preventive `max_mlock_gb` / `max_total_gb` / `reserve_kv_gb` ceilings in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) and the sequential-load discipline.
+  - Maturity: 4.1k★ MIT, 11 releases (v1.9.0 Sep 2025), Go test suite + CI, first-class Debian/Ubuntu/Fedora-EPEL/Arch packaging → one-line install, no fork, zero maintenance.
+  - Suggested config for this host (to add as a Phase-2 candidate knob): install via apt/dnf, run the shipped **systemd unit**, set victim policy in `/etc/default/earlyoom` (`EARLYOOM_ARGS`): `--avoid '(orchestrator|llama-server|earlyoom|sshd|systemd)'` to spare prod + control plane, `--prefer '(llama-bench|llama-cli|perplexity|run_benchmark|pytest)'` so runaway bench/eval are first victims, `-p` to protect the daemon. Tighten thresholds from the 10% default (110 GB is wasteful) to **absolute** `-M`/`-S` (e.g. SIGTERM ~30 GiB available, SIGKILL ~12 GiB). Wire the `-N` post-kill hook into `logs/agent_audit.log` + the autopilot host-health path so an early-OOM kill is **recorded as a host event** (else it gets misattributed to the config-under-test and contaminates the Pareto archive — cf. `feedback_autopilot_host_health_remediation`).
+  - Caveats to validate before arming: `--prefer`/`--avoid` is *best-effort* over oom_score ranking — run `--dryrun` against a live stack snapshot first, and confirm it never targets a server mid-mlock-load (the sequential-load window is the riskiest moment). Verdict: adopt_component.
+
+#### Deep-dive: decisive specifics (2026-06-03)
+Full recipe in [`research/factory-ai-harvest-2026-06-03.md`](../../research/factory-ai-harvest-2026-06-03.md) (Part 5). Refinements that change the recommendation:
+  - [ ] **Choose earlyoom over systemd-oomd** for *our* box — systemd-oomd (currently inactive) needs cgroup-v2 `MemoryAccounting` our hand-launched `numactl llama-server` lacks. Do **not** co-run two OOM daemons. (Full verified recipe: [`earlyoom-oom-protection.md`](earlyoom-oom-protection.md).)
+  - [ ] **Absolute `-M` mem thresholds, never percent** (10% = fire with 110 GB free) — suggested SIGTERM ~40 GiB / SIGKILL ~20 GiB. **Live correction (2026-06-03)**: the box is **not** swapless — there's a vestigial 8 GB `/swap.img`, so use **`-s 100,100`** (percent) to neutralize the swap gate (default `-s 10` would make earlyoom never fire, since swap stays ~100% free).
+  - [ ] **`--sort-by-rss`** (default oom_score is gameable via `oom_score_adj`, issue #344) + **`--ignore` (hard) for the orchestrator control plane**, not `--avoid` (best-effort, can still kill under true exhaustion).
+  - [ ] **15-byte `comm` truncation**: `python3 run_benchmark.py` matches as `python3` — can't regex the script name; lean on `--sort-by-rss`. Verify protected comms by hand (`cat /proc/<pid>/comm`).
+  - [ ] **No post-kill backoff (issue #309)** = real cascade risk on a box of large mlock'd servers (freed pages lag). Set KILL far below SIGTERM and have the `-N` hook pause new model loads after any kill; wire `-N` → `logs/agent_audit.log`. `--dryrun -d` against a live full-stack snapshot **before** arming.
 - [ ] Update `progress/` daily during active phases.
