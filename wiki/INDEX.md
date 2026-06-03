@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-05-31 (manual incremental update: learning-excluded keep-signal closure)
+**Last compiled**: 2026-06-03 (manual incremental update: episodic FAISS durability and llama residency telemetry)
 **Articles**: 25 compiled, 5 stub categories
-**Total sources**: 388 documents across 6 source types
+**Total sources**: 389 documents across 6 source types
 
 ---
 
@@ -40,7 +40,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 30 | Multi-file coding failure diagnosed as REPL/BEP protocol friction, not model capability; edit transactions solve practical remediation while J8 remains only a legacy batch-edit keep/retire experiment |
 | [Autonomous Research](autonomous-research.md) | 40 | Learning-excluded AutoPilot trials must journal as `excluded`, not `keep`, so MAD-noise results cannot feed planner meta-action loops |
-| [Memory-Augmented Models](memory-augmented.md) | 20 | MemAgent 437x extrapolation but CPU-infeasible; MemPalace 96.6% recall with hierarchical organization |
+| [Memory-Augmented Models](memory-augmented.md) | 25 | Episodic FAISS writes require cross-process locking; llama RAM drift needs residency telemetry/recycle, not drop_caches |
 
 ## Context & Compression
 

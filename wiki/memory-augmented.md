@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-05-25
-**Sources**: 24 documents (2 deep-dives, 18 intake entries, 3 handoffs, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-06-03
+**Sources**: 25 documents (2 deep-dives, 18 intake entries, 3 handoffs, 1 progress log, 2 cross-referenced deep-dives)
 
 ## Summary
 
@@ -18,6 +18,12 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-06-03) — FAISS episodic-memory durability repair
+
+- **FAISS-backed episodic memory must treat index assignment as a cross-process critical section, not a local write-behind detail.** The 2026-06-03 repair found `episodic.db` current while `reembedded.npz`, `embeddings.faiss`, and `id_map.npy` were stale by six days; DB rows had many duplicate `embedding_idx` values because multiple long-lived `EpisodicStore` instances assigned from stale local FAISS `ntotal` state. The fix reloads the durable FAISS/id-map under an exclusive file lock, assigns the next vector index, saves immediately, then writes SQLite metadata. Rebuilding with temporary BGE servers restored routing-memory coverage from 31.9% to 93.4% (163,444 FAISS vectors / IDs for 174,932 routing memories). [2026-06-03 progress log](../progress/2026-06/2026-06-03.md) `verified`
+
+- **RAM drift from llama-server residency is observability/recycle territory, not page-cache remediation.** The same session found day-over-day RAM growth dominated by llama-server private-dirty KV/context arenas and mlocked model pages. `drop_caches` cannot reclaim that class of memory. Host-health telemetry now surfaces llama-server PSS, Private_Dirty, Locked, and system Mlocked as advisory signals to the planner; automatic role-aware idle server recycling remains the next implementation step. [2026-06-03 progress log](../progress/2026-06/2026-06-03.md) `verified`
 
 ### New Finding (2026-05-25) — Track A measured outcome
 
