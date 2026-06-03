@@ -50,17 +50,18 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
 - [ ] **Re-verify protected comm names at deploy time** (truncated to 15 bytes; **bash**): `for p in $(pgrep -x llama-server); do cat /proc/$p/comm; done` and likewise for the orchestrator/autopilot — process names can change across restarts. (Run under bash, e.g. `bash -c '...'`, if your interactive shell is fish.)
 - [ ] **Install**: `sudo apt install earlyoom` (or `dnf`/EPEL) — provides the hardened systemd unit + `/etc/default/earlyoom`.
 - [ ] **Configure** `/etc/default/earlyoom`:
+  ```ini
+  # ONE line — systemd EnvironmentFile does NOT honor backslash continuations.
+  # Inner single-quotes around the regexes = Debian's documented convention (systemd's $VAR splitter strips them); VERIFIED against the shipped 1.8.2 unit (ExecStart=/usr/bin/earlyoom $EARLYOOM_ARGS).
+  EARLYOOM_ARGS="-M 41943040,20971520 -s 100,100 -r 60 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -N /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh"
   ```
-  EARLYOOM_ARGS="-M 41943040,20971520 -s 100,100 -r 60 -p --sort-by-rss \
-  --ignore '^(llama-server|sd-server)$' \
-  --prefer '^llama-bench$' \
-  -N /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh"
-  ```
-  - `-M 41943040,20971520` = **absolute** 40 GiB SIGTERM / 20 GiB SIGKILL (NEVER percent at 1.1 TB — 10% fires with 110 GB free). With 445 GiB currently available this won't false-fire; raise SIGTERM (e.g. 64 GiB) for more reaction time if a single load can spike >40 GiB of *committed* (non-reclaimable) memory.
+  - `-M 41943040,20971520` = **absolute** 40 GiB SIGTERM / 20 GiB SIGKILL (NEVER percent at 1.1 TB — 10% fires with 110 GB free). With ~430 GiB currently available this won't false-fire; raise SIGTERM (e.g. 64 GiB) for more reaction time if a single load can spike >40 GiB of *committed* (non-reclaimable) memory.
   - `-s 100,100` = **percent** (lowercase). Neutralizes the swap gate so memory alone triggers both SIGTERM and SIGKILL (see live facts).
   - `--sort-by-rss` — deterministic RSS ranking (flat oom_score here makes default mode unsafe).
   - `--ignore '^(llama-server|sd-server)$'` — hard-protect production model-servers + embedders + the managed image service.
   - `--prefer '^llama-bench$'` — bias toward culling a runaway manual benchmark first.
+  - **`-p` dropped** — the shipped unit already self-protects earlyoom via `Nice=-20` + `OOMScoreAdjust=-100`, and under the `User=node` override `-p`'s `setpriority(-20)` would fail without `CAP_SYS_NICE`. (Also note the unit's `MemoryMax=50M`/`TasksMax=10` — fine for the tiny bash `-N` hook.)
+  - **VERIFIED 2026-06-03** by installing 1.8.2 in the (host-PID-sharing) devcontainer and running `--dryrun` against the live host: earlyoom accepted all flags, reported *"Will ignore … `^(llama-server|sd-server)$`"*, and the dry victim was the largest non-ignored proc (a 2 GB firefox content process) — it **skipped every 13–133 GB llama-server** and killed nothing. All host model-servers stayed protected.
 - [ ] **Protect the control plane — REQUIRED, not optional** (this is the load-bearing protection under `--sort-by-rss`; verified earlyoom skips `oom_score_adj==-1000` in both modes). `choom` takes a **single** `-p PID`, so loop (**bash**):
   ```bash
   # Bracketed regexes ([u]vicorn, [a]utopilot) so `pgrep -f` does NOT self-match the
@@ -82,7 +83,7 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   ```
   This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
 - [ ] **Post-arm: confirm a kill actually lands in the log** — during the stress-ng test, verify an `EARLYOOM_KILL` JSON line appears in `logs/agent_audit.log`. If not, the sandbox is still blocking the hook (re-check the override + file ownership).
-- [ ] **VALIDATE in `--dryrun -d` FIRST** (extended window), against a live full stack: `earlyoom --dryrun -d -M 41943040,20971520 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 5`. Confirm the would-kill candidate is always a non-protected runaway, **never** the orchestrator/autopilot/a model-server. Optionally drive a `stress-ng --vm` ramp in a quiet window and confirm it selects the stressor.
+- [x] **VALIDATE in `--dryrun -d`** (already done 2026-06-03 — see VERIFIED note above). Use `-m 99,99` (not `-M`) to force an **immediate** dry evaluation at current memory without waiting for real pressure: `sudo timeout 6 earlyoom --dryrun -d -m 99,99 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 2`. Confirm the would-kill candidate is always a non-protected proc, **never** a model-server or the −1000 control plane. (Re-run after setting the control-plane `oom_score_adj=-1000` to confirm the workers drop out of contention.)
 - [ ] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
 
 ## Open Questions
