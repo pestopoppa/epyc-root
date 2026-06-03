@@ -33614,3 +33614,184 @@
   - Authors acknowledge shallow exploration (trapped in performance-neutral variants) + weak profiling-gradient feedback — the same convergence limit flagged for the train-free cluster.
   - 'credibility tempered: arXiv preprint, no confirmed venue; recent + named Meta contributors but no independent replication of TritonForge''s specific numbers; repo claims partly via secondary sources, not first-party reproduction.'
   notes: 'Ingested via /research-intake GEAK keystone deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-672. Dual-faced (RLsys-Foundation/TritonForge SFT+RL repo + arXiv 2512.09196 train-free paper). CORRECTION to Xe-Forge''s grouping: AMD support is gfx942/MI300X (CDNA3) ONLY, NOT gfx90a/MI210, and AMD RL is unstable. AMD-SECONDARY, subordinate to GEAK. Unique pull: open SFT data-curation + RL reward recipe for an optional offline local-HIP-model branch (pairs with ConCuR-665) + corroborates Triton portability on-ramp.'
+- id: intake-677
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/artificial-intelligence/geak-agents-family/README.html
+  source_type: blog
+  title: 'GEAK-Triton v2 Family: GEAK-OptimAgentv2 + GEAK-OpenEvolve (AMD ROCm Blog)'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  - tool_implementation
+  - search_retrieval
+  novelty: high
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-674
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Jianghui Wang (AMD)
+  - Saptarshi Majumder (AMD)
+  - Umang Pandey (AMD)
+  - Chao Xu (AMD)
+  - Bin Ding (AMD)
+  - Manoj Rao (AMD)
+  - Ziqiong Liu (AMD)
+  - Pratik Prabhanjan Brahma (AMD)
+  - Dong Li (AMD)
+  - Zicheng Liu (AMD)
+  - Emad Barsoum (AMD)
+  key_claims:
+  - 'GEAK-v2 is TWO distinct train-free agents extending GEAK v1 (intake-674): GEAK-OptimAgentv2 (instruction->Triton generation) and GEAK-OpenEvolve (Triton->Triton optimization). Both drive off-the-shelf frontier LLMs (e.g. Claude Sonnet) with NO fine-tuning — gains are pure inference-time compute scaling.'
+  - 'GEAK-OptimAgentv2 upgrades v1''s 4-module agent with THREE new mechanisms: (1) Multi-Offspring Evolution (multiple variants per generation vs v1''s single candidate), (2) an Advanced LLM-based Evaluator scoring fusion intelligence / numerical stability / warp-wavefront utilization, (3) a Profiler-Analyzer hardware-aware feedback loop using rocprof-compute hardware counters which an LLM translates into structured natural-language performance intelligence fed back into generation — v1 had NO profiler in the loop.'
+  - GEAK-OpenEvolve is a population-based Quality-Diversity (MAP-Elites) search evolving thousands of diverse kernel variants in a 9-dimensional feature grid (fusion, autotuning coverage, memory-access efficiency, algorithmic complexity, warp/wavefront utilization, software pipelining, numerical stability, correctness/portability, optimization scope), with Hybrid Parent Selection (exploit vs explore) and Cascade Filtering (small->medium->full inputs). Explicitly adapts Google DeepMind's AlphaEvolve / the OpenEvolve clone to GPU kernels.
+  - GEAK-OptimAgentv2 reports +9.76% execution-accuracy over v1 (TritonBench-modified 53.80%->63.04%) and avg 3.32x speedup; the hardware-aware feedback loop is the decisive lever (ablation Base 1.38x -> +Profiler 1.98x -> +Profiler+LLM 3.32x).
+  - GEAK-OpenEvolve reports avg 3.42x (56.01% success) on TritonBench-modified and 7.02x (56.67% success) on the ROCm benchmark; per-kernel 1.02x-11.23x.
+  - 'CRITICAL HARDWARE GAP: every v2 number is on MI300X (gfx942/CDNA3) and MI325X (gfx942/CDNA3) ONLY. NO v2 result is on MI250/MI250X/gfx90a (CDNA2 = our MI210''s ISA family). v1 (intake-674) DID report a dedicated MI250X/gfx90a line; v2 dropped gfx90a coverage entirely.'
+  techniques:
+  - Multi-Offspring Evolution (parallel variant generation per iteration) — OptimAgentv2
+  - 'Profiler-Analyzer hardware-aware feedback loop: rocprof-compute counters -> LLM -> structured NL performance intelligence -> generator'
+  - Advanced LLM-based Evaluator with multi-dimensional scoring (fusion, numerical stability, warp/wavefront util)
+  - Quality-Diversity MAP-Elites search over a 9-dimensional behavioral feature grid (OpenEvolve)
+  - Hybrid Parent Selection (exploit + explore) — OpenEvolve
+  - 'Cascade Filtering: staged correctness/timing small->medium->full inputs'
+  - Train-free agentic scaffolding over off-the-shelf frontier LLMs (no fine-tuning/RL); AlphaEvolve/OpenEvolve adaptation to GPU kernels
+  reported_results:
+  - 'OptimAgentv2 TritonBench-modified (184 kernels, MI300X): call acc 97.83% (v1 60.87%); exec acc 63.04% (+9.76% vs v1 53.80%); speedup 5.31x (v1 4.28x)'
+  - 'OptimAgentv2 ROCm benchmark (31 kernels, MI300X): call acc 80.65%; exec acc 61.29% (+6.45% vs v1 54.84%); speedup 1.74x (v1 1.67x)'
+  - 'OptimAgentv2 hw-aware ablation (MI300X): avg Base 1.38x -> +Profiler 1.98x -> +Profiler+LLM 3.32x; Layer_norm_fwd 0.97x->3.62x->11.23x'
+  - 'OptimAgentv2 case studies: LLaMA feedforward 6.59x (MI300X); RoPE 3.12x w/ profiler vs 1.02x without (MI325X); RMS Norm 6.58x (MI325X)'
+  - 'OpenEvolve TritonBench-modified (MI325X): 56.01% success, avg 3.42x; ROCm benchmark (MI325X): 56.67% success, avg 7.02x, per-kernel 1.02x-11.23x'
+  - 'Config: MI300X (192GB) + MI325X (256GB); ROCm 6.4.3; Triton 3.3.0; published 2025-12-23. NO gfx90a/MI250 config tested.'
+  referenced_arxiv_ids:
+  - '2507.23194'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-674
+    - intake-675
+    - intake-669
+    - intake-673
+    - intake-666
+    - intake-672
+    - intake-668
+    - intake-671
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'HIGH-METHODOLOGY, LOWER-DIRECT-ARTIFACT than v1 for OUR hardware. v2 is AMD-native ROCm/Triton (ROCm 6.4.3, rocprof-compute counters, Triton-on-ROCm) so the whole stack is HIP/ROCm-real, not CUDA-methodology. The Profiler-Analyzer pattern (rocprof-compute -> LLM -> NL performance intelligence) is the single most transferable asset: a working instance of exactly the C4 (gfx90a profiler-metric feed) component rocm-verify-profile-backend flags as highest-risk, and it sidesteps the manual NCU-subset re-derivation by letting the LLM consume raw rocprof-compute output as NL. BUT all counters/tuning were captured on gfx942 (CDNA3); the metric SEMANTICS transfer, the specific tuned values do not. OpenEvolve''s 9-dim QD grid + Cascade Filtering + Hybrid Parent Selection are directly portable evolutionary machinery.'
+  mi210_gfx90a_applicability: 'KEY GAP — stated plainly: GEAK-v2 is NOT evaluated on gfx90a. Every v2 number (OptimAgentv2 + OpenEvolve) is on MI300X and/or MI325X (BOTH gfx942/CDNA3) — a REGRESSION vs v1 (intake-674), which reported a dedicated MI250X = gfx90a line (52.72% exec / 2.42x). MI250/MI250X are the gfx90a parts and v2 tests NEITHER. Consequences for our MI210: (1) the headline v2 speedups (3.32x/3.42x/7.02x, 11.23x tail) are NOT demonstrated on our ISA and may not carry — gfx942 adds CDNA3 MFMA/FP8 paths gfx90a lacks. (2) The Profiler-Analyzer''s counter vocabulary is rocprof-compute on CDNA3; the gfx90a/CDNA2 counter subset still needs the empirical re-derivation C4 scopes — v2 does NOT close C4 for us. (3) v1 remains the gfx90a-proven keystone; v2 is methodology to harvest, NOT a drop-in gfx90a artifact. ACTION when MI210 lands: re-run OptimAgentv2 + OpenEvolve on gfx90a via GEAK-eval and record the gfx90a delta — the missing measurement.'
+  relationship_to_geak_v1: 'Direct successor to GEAK v1 (intake-674). v1 = a SINGLE 4-module agent (Generator/Evaluator[cascaded]/Reflector[Reflexion memory]/Optimizer[LLM-as-Optimizer]) + 1-shot code-similarity retrieval + sequential/parallel best-of-K. v2 SPLITS into two specialized agents and adds: (a) OptimAgentv2 = v1''s instruction->Triton agent + Multi-Offspring Evolution + Advanced LLM-Evaluator + a Profiler-Analyzer hardware-aware loop (v1 had NO profiler counters — biggest delta, addresses C4); (b) OpenEvolve = a NEW Triton->Triton MAP-Elites QD searcher absent in v1. Both train-free, same authoring team. v1''s two open benchmarks reused (re-labeled TritonBench-modified, 184/31 kernels).'
+  v2_variants_detail: TWO variants, distinct roles. (1) GEAK-OptimAgentv2 — INSTRUCTION->TRITON (de-novo from a spec, like v1). Multi-Offspring Evolution + Advanced LLM-Evaluator (fusion/numerical-stability/warp-util scoring) + Profiler-Analyzer (rocprof-compute -> LLM -> NL intelligence looped to generator). +9.76% exec-acc over v1, avg 3.32x; profiler loop dominant (1.38x->3.32x). (2) GEAK-OpenEvolve — TRITON->TRITON (optimizes an already-correct kernel, NOT de-novo). MAP-Elites QD over a 9-dim feature grid (thousands of variants) + Hybrid Parent Selection + Cascade Filtering. Adapts AlphaEvolve/OpenEvolve. avg 3.42x (TritonBench-modified) / 7.02x (ROCm bench), 1.02x-11.23x per kernel. OptimAgentv2 = the generation agent (extends v1); OpenEvolve = a separate optimize-existing-kernel agent (new capability).
+  controller_impact: 'DOES NOT change the lead recommendation; adds two harvestable patterns + one cross-check. (A) OpenEvolve''s MAP-Elites QD is the SAME paradigm already chosen via KernelFoundry-669 (adopt-both-with-EvoEngineer-666). It does NOT displace 669 (669 ships validated profiler-gradient + per-arch template tuning + multi-vendor template); HARVEST OpenEvolve''s richer 9-DIMENSIONAL feature grid (vs 669''s 4^3/3-descriptor archive), Hybrid Parent Selection, and Cascade Filtering as QD-archive upgrades. (B) CROSS-CHECK with K-Search-673: K-Search explicitly reports beating OpenEvolve (and ShinkaEvolve) 2.1x avg / 14.3x MoE, arguing flat/population QD suffers mode-collapse on non-monotonic paths. GEAK-OpenEvolve IS an OpenEvolve derivative — K-Search''s critique applies, REINFORCING keeping K-Search-673 as the 3rd controller candidate. (C) OptimAgentv2''s Profiler-Analyzer (rocprof-compute -> LLM -> NL) is a cheaper LLM-reads-raw-profiler alternative to CudaForge-662/KernelFoundry-669''s structured metric-subset approach — record as an additional C4 de-risk alongside Xe-Forge-672''s static-constraint-KB. NET CONTROLLER CALL UNCHANGED.'
+  novelty_justification: high — NOT a duplicate of v1. v2 introduces (1) a profiler-counter-in-the-loop hardware-aware mechanism v1 lacked, (2) Multi-Offspring Evolution replacing single-candidate generation, (3) an entirely new agent (OpenEvolve) doing Triton->Triton MAP-Elites QD. First AMD-native QD/MAP-Elites kernel searcher in the index (KernelFoundry-669 is Intel, K-Search-673 NVIDIA) and the first first-party AMD profiler-LLM feedback loop. Tempered only by being a blog with no formal paper yet.
+  relevance_justification: high — AMD-native, ROCm, Triton, train-free, single-GPU-runnable, the direct evolution of keystone intake-674. The Profiler-Analyzer is a working instance of the backend handoff's highest-risk component (C4). Tempered below maximal ONLY by the gfx90a evaluation gap (all numbers on CDNA3/gfx942, none on our CDNA2/gfx90a) — high-relevance methodology to harvest, not a directly-runnable-on-MI210-as-measured artifact.
+  verdict_justification: 'adopt_patterns (NOT adopt_component, NOT supersedes-v1). High-value assets are PATTERNS — OptimAgentv2''s rocprof-compute->LLM->NL Profiler-Analyzer (C4 de-risk), OpenEvolve''s 9-dim QD grid + Hybrid Parent Selection + Cascade Filtering (QD-archive upgrades for the 669 layer), Multi-Offspring Evolution. NOT adopt_component (unlike v1, which earned it via a gfx90a-PROVEN open benchmark/oracle): v2 adds NO new gfx90a-proven artifact (regresses gfx90a coverage) and its code is the same GEAK-agent repo pinned under intake-674. NOT superseding the controller lead (composes with 666+669; K-Search''s measured win over OpenEvolve cautions against promoting it). credibility null (vendor blog, no peer review, commercial bias) keeps numbers provisional. ACTION: harvest the three patterns; flag a gfx90a re-run of both v2 agents via GEAK-eval as the missing measurement; watch arXiv for a formal v2 paper to re-score.'
+  contradicting_evidence:
+  - 'gfx90a EVALUATION GAP: zero v2 results on MI250/MI250X/gfx90a/CDNA2 — all on MI300X + MI325X (gfx942/CDNA3). REGRESSES v1''s gfx90a coverage; gfx942-tuned kernels may use CDNA3-only MFMA/FP8 paths that don''t carry to CDNA2.'
+  - Vendor-reported, no peer review, no independent replication — every source traces to AMD (authors the agent, benchmarks, AND hardware). credibility_score null.
+  - 'Reward-hacking structurally unaddressed: v2 (like v1) uses a tolerance-based oracle with NO anti-reward-hacking. The OpenReview ''Reward Hacking in Self-Improving Code Agents'' study finds 73.8% of KernelBench iterative optimizations show proxy gains WITHOUT real-task gains — implicating the 11.23x/7.02x tail as upper bounds until audited (robust-kbench-668 hardening still mandatory).'
+  - K-Search-673 reports BEATING OpenEvolve 2.1x avg / 14.3x MoE, arguing flat/population QD (the OpenEvolve paradigm) suffers mode-collapse — independent evidence OpenEvolve-style QD is not the frontier.
+  - 'Production-vs-sandbox (FastKernels-671): v2 speedups are vs benchmark references on isolated ops; the 7.02x ''over ROCm-bench'' figure needs a full-forward-pass re-score vs honest vendor baselines before being trusted.'
+  - 'Repo/branch ambiguity: live GEAK-agent HEAD (MIT, ''GEAK 3.2.0'', 2026-05-21) shows subagents (gemm-tuning, fp8-gemm-tuning) but NOT named OptimAgentv2/OpenEvolve modules — pin a blog-matching commit/branch before treating repo code as the v2 artifact.'
+  notes: 'Ingested via /research-intake GEAK-v2/HIP follow-up batch (parallel sub-agent), 2026-06-03. Expanded from intake-674. Blog-stage (no arXiv yet). Two train-free v2 agents: OptimAgentv2 (instruction->Triton, + Profiler-Analyzer rocprof-compute->LLM->NL = a C4 de-risk) + OpenEvolve (Triton->Triton MAP-Elites QD, 9-dim grid). CRITICAL GAP: all v2 numbers on gfx942/CDNA3 (MI300X/MI325X), NONE on gfx90a — a regression vs v1. AUDIT REMINDER: watch arXiv for a formal v2 paper + re-run on gfx90a via GEAK-eval when MI210 lands. K-Search-673 beats OpenEvolve (keep K-Search).'
+- id: intake-678
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/software-tools-optimization/geak-hip-optimizations/README.html
+  source_type: blog
+  title: 'GEAK-HIP: Expanding GEAK for HIP Code Optimization (AMD ROCm Blog)'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-674
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Ethan Yang (AMD)
+  - Chao Xu (AMD)
+  - Jianghui Wang (AMD)
+  - Bin Ding (AMD)
+  - Saptarshi Majumder (AMD)
+  - Ziqiong Liu (AMD)
+  - Pratik Prabhanjan Brahma (AMD)
+  - Dong Li (AMD)
+  - Zicheng Liu (AMD)
+  - Emad Barsoum (AMD)
+  key_claims:
+  - First AMD-native, train-free agentic framework that OPTIMIZES existing raw HIP/C++ kernels (not Triton) using off-the-shelf frontier LLMs — extends the GEAK Triton agent (intake-674) down to the HIP/C++ level, the layer our llama.cpp fork hand-writes.
+  - 'Three-module agentic loop adapted from GEAK-Triton: Generator (instructions + functional source HIP -> optimized HIP), Evaluator (compiles/executes, extracts perf + error traces), Reflector (activates on compile/exec failure); configurable 1..N parallel offspring per round. Train-free — gains from inference-time iteration, no weight updates.'
+  - Differs from GEAK-Triton by (a) consuming PRE-EXISTING HIP source rather than generating from a NL spec, (b) HIP-specific instruction syntax, (c) a compile/debug pipeline tailored to HIP/hipcc, (d) emphasis on iterative latency reduction of customer/production kernels.
+  - On a real customer Voxelization kernel the agent reached 2.07x speedup, BEATING the human engineer's manually optimized 1.84x; on SwiGLU 1.68x vs the engineer's 1.30x — the agent out-optimized hand-tuned HIP on production bottlenecks.
+  - On AMD GEMM heuristic-rule optimization (driven by Qwen3-32B) the agent-generated heuristic rules averaged 1.28x over handwritten rules.
+  - Open-sourced for research use under the AMD-AGI/GEAK repo family (GEAK-HIP); ships illustrative ROCm-example kernels (6) + 10 MMCV kernels as worked examples (NO open benchmark suite).
+  techniques:
+  - Train-free agentic Generator->Evaluator->Reflector optimization loop over off-the-shelf frontier LLMs (HIP-targeted)
+  - HIP-source-in / optimized-HIP-out (kernel-to-kernel refinement, not spec-to-kernel synthesis)
+  - hipcc compile/execute/profile harness with error-trace feedback into the Reflector
+  - Configurable parallel offspring (1..N) per round (best-of-N over HIP variants)
+  - LLM-driven GEMM heuristic-rule generation (Qwen3-32B) as a distinct optimization mode
+  reported_results:
+  - 'ROCm example kernels (6): average 1.08x, max 1.20x'
+  - 'MMCV kernels (10): average 1.20x, max 2.15x'
+  - 'Voxelization (customer bottleneck): agent 2.07x vs human-engineer manual 1.84x'
+  - 'SwiGLU (customer bottleneck): agent 1.68x vs human-engineer manual 1.30x'
+  - 'GEMM heuristic rules (Qwen3-32B): average 1.28x vs handwritten rules'
+  - 'Hardware: MI300X (192GB, ROCm 6.4.3) for ROCm/MMCV/Voxelization/SwiGLU; MI308X (206GB) for GEMM heuristics. NO gfx90a/MI250/MI210 results.'
+  referenced_arxiv_ids:
+  - '2507.23194'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-674
+    - intake-675
+    - intake-677
+    - intake-672
+    - intake-669
+    - intake-668
+    - intake-671
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'HIGH and more DIRECT than GEAK-Triton for our endgame. GEAK-HIP operates at the raw-HIP/C++ layer — exactly what our llama.cpp fork hand-writes — and is AMD-native/ROCm-native (hipcc compile/exec/profile harness, ROCm 6.4.3). The three-module loop (Generator/Evaluator/Reflector) and the HIP compile-debug pipeline are directly reusable patterns for rocm-verify-profile-backend C1/C2/C3 at the HIP level (GEAK-Triton only proved the harness at Triton level). Caveat: unlike GEAK v1 (open MIT GEAK-eval), GEAK-HIP ships only illustrative example kernels + a research-use code drop — NO open HIP benchmark/oracle to adopt as a substrate, so transfer is patterns-only.'
+  mi210_gfx90a_applicability: NOT DEMONSTRATED on gfx90a. All GEAK-HIP results are on MI300X (gfx942/CDNA3) and MI308X (gfx942-class/CDNA3); zero MI250/MI250X/MI210 (gfx90a/CDNA2). A regression vs GEAK v1, which DID report a dedicated MI250X (gfx90a) line. The METHOD is ISA-agnostic (it compiles HIP via hipcc and times it), so it should run on the MI210 with the harness retargeted, but the headline speedups (2.07x Voxelization etc.) are gfx942-measured and need an MI210 re-run. wavefront=64/MFMA/LDS semantics carry over (same CDNA family), but MI210's lower BW + single-die layout mean absolute speedups are unverified on our part.
+  relationship_to_geak_v1: DIRECT EXTENSION of intake-674 (GEAK v1, Triton). Same AMD-AGI/AIMA lab, overlapping authors. v1 = Triton, spec->kernel synthesis, 4 modules, two open MIT benchmarks, MI250X+MI300X. GEAK-HIP = HIP/C++, existing-kernel->optimized-kernel refinement, 3 modules (drops the explicit Optimizer; Generator+Evaluator+Reflector + parallel offspring), example kernels only, MI300X/MI308X. Part of the same Dec-2025 GEAK-family release as GEAK-Triton v2 (intake-677). GEAK-HIP is the HIP-level cousin of the Triton v2 agents.
+  hip_vs_triton_relevance: 'MATERIALLY more on-path than GEAK-Triton for our hand-HIP llama.cpp endgame, with an asterisk. Our fork ultimately authors raw HIP/C++, so an agent that ingests and refines existing HIP source is closer to our actual artifact than a Triton synthesizer — it proves the agentic loop closes at the C++/hipcc layer, validates ''HIP-source-in / faster-HIP-out'', and (most striking) shows the agent OUT-OPTIMIZING hand-tuned HIP on two production kernels (Voxelization 2.07x vs 1.84x, SwiGLU 1.68x vs 1.30x) — direct evidence the loop can improve on expert hand-HIP, exactly our goal. BUT: (1) GEAK-Triton remains the better-evaluated, open-benchmark, gfx90a-proven entry (intake-674) and Triton has a clean ROCm backend, so Triton stays the lower-risk ON-RAMP; (2) GEAK-HIP ships no open HIP oracle/benchmark, only research-use example code => adopt-PATTERNS not adopt-component; (3) it inherits GEAK''s loose-tolerance correctness gate (no backward-pass / anti-reward-hacking), making robust-kbench(668) hardening even more necessary at the HIP level where UB is easier. Net: strongest existence-proof that our hand-HIP authoring goal is agent-tractable; harvest its 3-module HIP loop + offspring + GEMM-heuristic patterns, but keep GEAK-eval (Triton, gfx90a, open) as the primary substrate and build the HIP benchmark/oracle ourselves.'
+  identity_resolution: 'CONFIRMED REAL and distinct from GEAK-Triton. Canonical source: AMD ROCm developer blog ''GEAK-HIP: Expanding GEAK for HIP Code Optimization'' (dated Dec 23 2025), 10-author AMD team. Code: AMD-AGI/GEAK repo family (GEAK-HIP branch/subdir), released for research purposes only. NO GEAK-HIP arXiv paper exists (only GEAK v1 Triton paper 2507.23194 + the v2-family + HIP blogs surface). Genuinely a HIP-LEVEL work (raw HIP/C++), not GEAK-Triton rebadged — different input modality (existing HIP source), module count (3 vs 4), hardware (MI300X/MI308X vs MI250X+MI300X), hipcc pipeline. Was explicitly flagged as the highest-value follow-up by intake-672/674.'
+  novelty_justification: medium — NOT a duplicate (appears in our index only as a forward-pointer inside intake-674's geak_v2_followup). First HIP-LEVEL (raw HIP/C++, not Triton) AMD-native kernel-optimization agent in the index, and the first to show an agent beating hand-tuned HIP on production kernels. Capped at medium because architecturally it is an incremental HIP-retargeting of the already-ingested GEAK v1 loop (same lab, same Generator/Evaluator/Reflector skeleton, fewer modules), ships no new open benchmark, and is a blog not an evaluated paper — the novel delta is the HIP modality + the out-optimizes-engineer result, not a new method.
+  relevance_justification: 'high — hits our two most active GPU gates: (1) raw-HIP, the layer our llama.cpp fork ultimately hand-writes (more on-path than any Triton-only entry), and (2) AMD-native/ROCm/train-free, matching our single-MI210 train-free constraint. Directly informs agentic-rocm-kernel-authoring (a HIP-level controller+loop reference) and rocm-verify-profile-backend (HIP compile/debug/profile harness patterns). Tempered only by the gfx90a-coverage gap (results gfx942/MI300-class), a re-run not a porting blocker.'
+  verdict_justification: 'adopt_patterns — harvest the HIP-level Generator/Evaluator/Reflector loop, the hipcc compile/debug feedback pipeline, the parallel-offspring best-of-N, and the LLM-GEMM-heuristic-generation mode as patterns for the HIP arm of agentic-rocm-kernel-authoring + rocm-verify-profile-backend. NOT adopt_component (unlike GEAK v1, GEAK-HIP ships only research-use example kernels — no reusable HIP oracle/benchmark substrate). NOT superseded/supersedes (complements GEAK-Triton: Triton on-ramp + HIP endgame). The net-new work we own is unchanged and reinforced: an open HIP benchmark+oracle + robust-kbench(668)-style anti-reward-hacking hardening, both of which GEAK-HIP lacks.'
+  contradicting_evidence:
+  - 'Triple commercial bias: AMD authors the agent, picks the benchmark kernels, AND sells the hardware; all speedups self-reported on a vendor blog with no peer review and no independent reproduction.'
+  - No gfx90a/MI210 results at all — a coverage regression vs GEAK v1; our exact target part is unvalidated, only the (ISA-agnostic) method transfers.
+  - Modest aggregate speedups on the systematic sets (ROCm examples avg 1.08x, MMCV avg 1.20x); the headline 2.07x/1.68x are two cherry-picked customer kernels vs a single human baseline, not a distribution — echoes FastKernels(671).
+  - Inherits GEAK's loose correctness oracle (tolerance comparison, no backward-pass / no anti-reward-hacking) — at the raw-HIP level UB and silent-miscompare risk is HIGHER than Triton, amplifying the uncertified-speedup concern (robust-kbench-668).
+  - Ships no open benchmark suite (only illustrative example kernels) + a research-use-only code drop — cannot be adopted turnkey the way GEAK-eval can; verify actual license before any code reuse.
+  - 3-module design drops GEAK v1's explicit Optimizer (LLM-as-Optimizer over historical metrics); no ablation on whether HIP optimization quality suffers vs the 4-module Triton agent.
+  notes: 'Ingested via /research-intake GEAK-v2/HIP follow-up batch (parallel sub-agent), 2026-06-03. Expanded from intake-674. Blog-stage (no arXiv). RAW HIP/C++ optimization (not Triton) = directly on-path for our llama.cpp hand-HIP endgame; STRONGEST existence-proof that agentic kernel authoring can beat a human engineer (Voxelization 2.07x vs 1.84x). gfx942/CDNA3 only (no gfx90a). Ships no open benchmark => adopt_patterns. AUDIT REMINDER: watch for a GEAK-HIP arXiv/benchmark release + re-run on gfx90a when MI210 lands; pairs with llama-cpp-dsa-contribution.md (hand-HIP).'
