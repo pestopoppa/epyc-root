@@ -63,12 +63,14 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   - `--prefer '^llama-bench$'` — bias toward culling a runaway manual benchmark first.
 - [ ] **Protect the control plane — REQUIRED, not optional** (this is the load-bearing protection under `--sort-by-rss`; verified earlyoom skips `oom_score_adj==-1000` in both modes). `choom` takes a **single** `-p PID`, so loop (**bash**):
   ```bash
-  master=$(pgrep -f 'uvicorn src.api' | head -1)
-  for pid in "$master" $(pgrep -P "$master") $(pgrep -f 'autopilot.py start'); do
+  # Bracketed regexes ([u]vicorn, [a]utopilot) so `pgrep -f` does NOT self-match the
+  # shell running it (its own argv contains the pattern string otherwise). [.] = literal dot.
+  master=$(pgrep -f '[u]vicorn src[.]api' | head -1)
+  for pid in "$master" $(pgrep -P "$master") $(pgrep -f '[a]utopilot[.]py start'); do
     [ -n "$pid" ] && sudo choom -n -1000 -p "$pid"
   done
   ```
-  Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — wire `OOMScoreAdjust=-1000` into the orchestrator launcher / systemd unit for durability.
+  Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — wire `OOMScoreAdjust=-1000` into the orchestrator launcher / systemd unit for durability. (The bracketed-regex form also avoids the `pgrep -f` self-match; a `ps … | awk` filter excluding the matcher's own PID is an equivalent alternative.)
 - [x] **`-N` audit hook written + tested**: `scripts/hooks/earlyoom_audit.sh` — fork-free (bash parameter-expansion + builtins), JSON-escapes **every** field incl. `EARLYOOM_NAME` (the manpage warns it may contain newlines/control chars; maps all C0 control chars → space under `LC_ALL=C`). Emits exactly one valid JSON-lines `EARLYOOM_KILL` record per kill (re-verified with a newline in NAME + control chars in all fields → `json.loads` passes). Off-by-default sentinel-write for a future pause-loads watcher.
 - [ ] **Unblock the `-N` hook under the packaged systemd sandbox — REQUIRED, else kills are silently NOT logged.** The Debian/upstream `earlyoom.service` runs **`DynamicUser=true` + `ProtectSystem=strict`** (with `AmbientCapabilities=CAP_KILL CAP_IPC_LOCK` — it kills via the capability, not via uid). So the `-N` hook inherits a **random transient UID with the entire filesystem read-only** → it **cannot** append to the node-owned `logs/agent_audit.log`. Add a drop-in (`sudo systemctl edit earlyoom` → `/etc/systemd/system/earlyoom.service.d/override.conf`):
   ```ini
