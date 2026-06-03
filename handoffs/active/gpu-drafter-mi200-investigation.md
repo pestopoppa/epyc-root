@@ -353,3 +353,20 @@ Companion `/research-intake` run completed in this session against the 7-paper r
 Chapter 01 § "Tokenizer Compatibility Constraints" currently states: *"Speculative decoding requires exact tokenizer compatibility between draft and target models."* This is **no longer accurate** as of ICML 2025 (Timor et al., intake-617) + HuggingFace Transformers PR #35029 (Algorithm 2 merged). The constraint is now: *"...unless using a heterogeneous-vocabulary algorithm (SLEM merged in HF; SLRS / TLI in active research)."* Flagged for chapter rewrite — handoff intake skill does NOT modify chapter files directly per its skill-boundary rule.
 
 Chapter 10 § "Heterogeneous Processor Partitioning" (line ~240) is the natural location for cross-referencing this entire GPU-drafter handoff once Stage 0/1 numbers exist.
+
+## Research Intake Update — 2026-06-03
+
+### New Related Research
+- **[intake-660] "CUDA Agent: Large-Scale Agentic RL for High-Performance CUDA Kernel Generation"** (arxiv:2602.24286, ByteDance Seed + Tsinghua AIR)
+  - Relevance: this handoff is **explicitly MI210-gated**, and the MI210 (CDNA2/gfx90a, 64 GB) is now expected ~July 2026 with active user intent to author custom AMD kernels. Beyond the spec-dec *topology* this handoff designs, the MI210 will need **hand-tuned HIP kernels** (attention, MoE dispatch, dequant) to hit the 100+ t/s frontdoor target — CUDA Agent is a methodology for generating exactly those, via an automated verify+profile reward loop, instead of manual authoring.
+  - Key technique: open, skill-augmented agentic kernel-dev harness (`verification.py` correctness gate vs torch reference + `profiling.py` speedup-vs-baseline reward + `compile.sh` build), multi-turn ReAct loop; reward design lessons (discrete schedule over raw speedup; multi-turn is load-bearing).
+  - Reported results: SOTA on KernelBench (2.11× geomean vs torch.compile; 100/100/92% faster-rate L1/L2/L3).
+  - Delta from current approach: complementary, not competing. This handoff allocates *which model runs where* on the MI210; CUDA Agent could *author the HIP kernels* that make those placements fast. **Caveats**: CUDA-only today (needs hipify/hipcc/rocprof port + a ROCm KernelBench analog); RL training needs a GPU cluster (single MI210 can't retrain — drive the open harness with an existing coder model instead); checkpoint unreleased + base model is closed SaaS (harness + 6K dataset are the open, usable parts). Tracked as a candidate spike for "once MI210 is racked."
+
+## Research Intake Update — 2026-06-03 (LLM-kernel-generation cluster deep-dive)
+
+The MI210 frontdoor/drafter placements this handoff designs will need hand-tuned **HIP kernels** (attention, MoE dispatch, dequant). Deep-dived the kernel-generation cluster (intake-660–666) for an *automated authoring* path; spun out [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) + its long-pole backend [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md). All cluster papers are NVIDIA/CUDA — value is methodology transfer to gfx90a (hipify/hipcc + rocprof/Omniperf + torch-ROCm + a ROCm KernelBench analog).
+
+- **Lead path** = train-free controller (EvoEngineer intake-666 + CudaForge profiler-Judge intake-662) driven by an existing coder model — runs on a single MI210, NO training cluster, opensource_only-compatible.
+- **Decline**: RL training of a bespoke kernel model (CUDA Agent 660 / CUDA-L1 661 / Kevin 663 need a multi-GPU cluster) — but harvest their reward design + anti-reward-hacking gates.
+- **Complementary, not competing** with this handoff: this allocates *which model runs where* on the MI210; the new handoffs *author the HIP kernels* that make those placements fast.

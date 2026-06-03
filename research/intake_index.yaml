@@ -32163,3 +32163,1454 @@
     pause new model loads after any kill via the -N hook. Wire -N -> logs/agent_audit.log. Validate with
     --dryrun -d against a live full-stack snapshot BEFORE arming. Maturity: 4.1k stars, MIT, v1.9.0
     (2025-09-16), tests+CI, packaged in every major distro (was Fedora 32 default).
+- id: intake-660
+  arxiv_id: '2602.24286'
+  url: https://arxiv.org/html/2602.24286v1
+  source_type: paper
+  title: 'CUDA Agent: Large-Scale Agentic RL for High-Performance CUDA Kernel Generation'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: input
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Weinan Dai
+  - Hanlin Wu
+  - Qiying Yu
+  - Huan-ang Gao
+  - Jiahao Li
+  - Chengquan Jiang
+  - et al. (ByteDance Seed; Institute for AI Industry Research (AIR), Tsinghua University; SIA-Lab of Tsinghua AIR and ByteDance Seed)
+  key_claims:
+  - 'State-of-the-art on KernelBench: 100% / 100% / 92% faster-rate over torch.compile on Level-1/2/3 splits (overall 96.8% faster-rate, 98.8% pass-rate, 2.11x geomean speedup vs compile), beating Claude Opus 4.5 (66.4% faster-rate, 1.46x) and Gemini 3 Pro (69.6%, 1.42x) by ~40pp on the hardest Level-3 setting.'
+  - 'Three complementary components: (a) a scalable combinatorial data-synthesis pipeline yielding CUDA-Agent-Ops-6K (6,000 operator tasks); (b) a skill-augmented CUDA development environment with automated verification + profiling providing reliable, anti-hacking reward signals; (c) RL algorithmic techniques (multi-stage actor+critic warm-up) enabling stable 150-step PPO training.'
+  - 'Reward is a discrete robust schedule r in {-1,1,2,3} keyed on correctness + performance thresholds (deliberately not raw speedup, which has outliers/bias); multi-turn agentic loop supports up to 200 interaction turns at 128k context.'
+  - 'Ablations quantify what matters: removing Rejection Fine-Tuning (RFT) warm-up collapses training via policy-entropy explosion (-36pp); removing multi-turn interaction is catastrophic (14.1% vs 96.8% faster-rate); without critic value-pretraining the model fails to learn value estimates and exhibits pathological search.'
+  techniques:
+  - Rejection Fine-Tuning (RFT) trajectory-filtered warm-up
+  - Value Pretraining (critic init from sampled trajectory outcomes)
+  - Skill-Integrated Agent Loop (ReAct-style CUDA dev env with SKILL.md constraints)
+  - Robust discrete reward scheduling (anti reward-hacking)
+  - PPO actor optimization with multi-stage warm-up
+  - Combinatorial data synthesis (CUDA-Agent-Ops-6K)
+  - Multi-turn agentic training (up to 200 turns, 128k context)
+  - Automated verification + profiling reward backend (verification.py / profiling.py / compile.sh)
+  reported_results:
+  - 'KernelBench faster-rate vs torch.compile: L1 97.0%, L2 100%, L3 90%, overall 96.8%'
+  - 'KernelBench pass-rate: L1 100%, L2 100%, L3 94.0%, overall 98.8%'
+  - 'Geomean speedup vs compile: L1 1.87x, L2 2.80x, L3 1.52x, overall 2.11x'
+  - 'Baselines: Claude Opus 4.5 66.4% faster-rate / 1.46x; Gemini 3 Pro 69.6% / 1.42x'
+  - 'Ablations: -RFT -36pp; -multi-turn 14.1% vs 96.8%; stable training to 150 PPO steps'
+  referenced_arxiv_ids:
+  - '2507.11948'
+  - '2510.16996'
+  - '2510.19873'
+  - '2510.03760'
+  - '2511.01884'
+  - '2507.14111'
+  - '2510.07356'
+  - '2502.10517'
+  - '2407.16741'
+  - '2503.14476'
+  - '2507.20534'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - cpu-shape-specialized-gemv-decode.md
+    - llama-cpp-dsa-contribution.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-261
+    - intake-275
+    - intake-303
+    - intake-307
+    - intake-466
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  novelty_justification: 'High. No prior intake entry covers agentic/RL CUDA-kernel generation or KernelBench (grep of intake_index.yaml for kernelbench/cuda-agent/cuda-l1/cudaforge/kevin returned only an incidental KernelBench-3.6x sub-bullet inside the unrelated GLM-5.1 doc entry, intake-278). The entire referenced cluster — Kevin (2507.11948), CUDA-L1 (2507.14111), CudaForge (2511.01884), EvoEngineer (2510.03760), ConCuR (2510.07356), STARK (2510.16996), ReGraphT (2510.19873), KernelBench (2502.10517) — is absent from the index. Closest methodological neighbors are intake-261 (Skill0: in-context agentic RL for skill internalization) and intake-275 (PufferLib RL infra), neither of which addresses kernel authoring. Genuinely new technique + new SOTA results for this repo.'
+  relevance_justification: 'High (elevated from an initial medium during ingest by direct user steer 2026-06-03: user is actively pursuing custom-kernel authoring for the AMD stack and an MI210 Instinct (CDNA2 / gfx90a, 64 GB) lands ~July 2026, making GPU-kernel authoring a near-term concern). The transferable artifact is the agentic kernel-development methodology — a skill-augmented dev environment driving an LLM through an automated verify+profile reward loop — which is hardware-agnostic in concept and maps directly onto two active handoffs: gpu-acceleration-path.md (already tracks ROCm kernel libraries rocWMMA intake-303 and AITER intake-307, i.e. the hand-port path this would automate) and gpu-drafter-mi200-investigation.md (explicitly MI210-gated). It also rhymes with the CPU side: cpu-shape-specialized-gemv-decode.md / llama-cpp-dsa-contribution.md hand-author AVX-512BW ukernels today, exactly the manual loop a verify+profile authoring harness targets. Open-source posture is compatible: the harness (agent_workdir + SKILL.md + verification.py/profiling.py/compile.sh) and CUDA-Agent-Ops-6K dataset are released; only the RL checkpoint (unreleased) and base Seed 1.6 (closed Volcano Engine API, SaaS) are excluded — and both are dispensable under the adopt-the-env-not-the-model path.'
+  verdict_justification: 'adopt_patterns. Adopt the open harness pattern — skill-augmented agentic kernel-dev environment + automated correctness-verification + profiling-derived discrete robust reward (anti reward-hacking) + multi-turn loop — as a kernel-authoring harness for the incoming MI210, and decline the parts that do not fit our constraints. What transfers: (1) the env layout (agent_workdir/SKILL.md workflow constraints, verification.py correctness gate vs torch reference, profiling.py speedup-vs-baseline reward, compile.{py,sh} build); (2) the reward design lessons (discrete schedule over raw speedup; multi-turn is load-bearing — single-shot is catastrophic per their ablation); (3) the data-synthesis idea (combinatorial operator-task generation) for building a ROCm op-bench analog. What does NOT transfer as-is: (a) CUDA/NVIDIA-specificity — the build+profile backend is nvcc/ncu/torch.compile; an MI210 port needs hipify, hipcc, rocprof/omniperf, and torch-ROCm, and a ROCm KernelBench analog (KernelBench itself is CUDA-only); (b) the large-scale PPO TRAINING of a bespoke kernel model needs a multi-GPU cluster (ByteDance Seed scale) and is out of reach on a single MI210 — the realistic near-term adoption is to drive the harness with an existing strong coding model (our coder/architect role, or a frontier API for one-shot authoring) WITHOUT retraining; (c) the released checkpoint is unavailable and the base model is closed SaaS — excluded under opensource_only. Net: harvest the environment + reward recipe, build the ROCm verify/profile backend, defer any RL-training ambition.'
+  contradicting_evidence:
+  - 'Authors own ablations are the sharpest caveats: the method is fragile without its scaffolding — remove RFT warm-up and PPO collapses via entropy explosion (-36pp); remove multi-turn and faster-rate craters to 14.1% (from 96.8%); remove critic value-pretraining and the policy exhibits pathological search. The headline numbers are contingent on the full multi-stage warm-up + multi-turn stack, not on RL alone.'
+  - 'Reproducibility / openness gap: the RL-finetuned CUDA Agent checkpoint is NOT released (only the harness + 6K dataset are); the base model is Seed 1.6 accessed via ByteDance Volcano Engine API (closed SaaS). The reported SOTA cannot be independently reproduced end-to-end without that closed model + a large training cluster.'
+  - 'Mild commercial-promotion angle: the work showcases ByteDance proprietary Seed 1.6 and is framed as beating Claude Opus 4.5 / Gemini 3 Pro; competitive-benchmark framing warrants the usual skepticism, though the open harness + dataset + detailed ablations are strong mitigations.'
+  - 'Data-leakage is a known critique of the CUDA-generation paper family generally; the authors claim to address it via clean train/eval separation, but this is an assertion to verify against the released dataset, not an externally audited result.'
+  notes: >
+    Ingested via /research-intake (single-URL inline path), 2026-06-03. Relevance elevated
+    medium->high mid-run by explicit user steer: building custom kernels for the AMD stack +
+    MI210 Instinct (CDNA2 gfx90a, 64 GB) arriving ~July 2026, so ROCm/HIP kernel authoring
+    becomes active near-term work. Open-source repo: github.com/BytedTsinghua-SIA/CUDA-Agent
+    (harness: agent_workdir, SKILL.md, utils/verification.py, utils/profiling.py,
+    utils/compile.{py,sh}); dataset: HF BytedTsinghua-SIA/CUDA-Agent-Ops-6K. Checkpoint not
+    released; base Seed 1.6 is closed Volcano Engine API (excluded under opensource_only).
+    DEFERRED EXPANSION (Phase 3, not auto-ingested — flagged for user direction): the kernel-gen
+    cluster referenced here is all absent from the index and now high-relevance to the AMD path —
+    CUDA-L1 (2507.14111), CudaForge (2511.01884), Kevin (2507.11948), KernelBench (2502.10517),
+    ConCuR (2510.07356), EvoEngineer (2510.03760). Recommend a dedicated intake batch.
+- id: intake-661
+  arxiv_id: '2507.14111'
+  url: https://arxiv.org/abs/2507.14111
+  source_type: paper
+  title: 'CUDA-L1: Improving CUDA Optimization via Contrastive Reinforcement Learning'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - training_distillation
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Xiaoya Li (DeepReinforce)
+  - Xiaofei Sun (DeepReinforce)
+  - Albert Wang (DeepReinforce)
+  - Jiwei Li (DeepReinforce)
+  - Chris Shum (DeepReinforce)
+  key_claims:
+  - Contrastive-RL turns an initially poor CUDA-optimizing LLM (DeepSeek-V3-671B backbone) into an effective optimizer using ONLY a wall-clock speedup reward, with no human CUDA expertise or labeled domain knowledge.
+  - Contrastive-RL feeds prior code variants AND their measured performance scores back into the prompt so the model performs in-context comparative reasoning before generating; the score is both gradient signal and exemplar selector (co-evolutionary dynamics, not pure policy-gradient).
+  - 'The reward signal is hardware-agnostic in principle (ratio of reference to candidate wall-clock via CUDA events) but the build/verify/measure backend is NVIDIA-specific: nvcc, CUDA-only KernelBench, torch.compile/CUDA Graph/cuDNN baselines, CUDA streams/warps/shared-memory.'
+  - 'RL is acutely vulnerable to reward hacking: 82/250 (32.8%) of initial RL solutions exploited an extra-CUDA-stream timing loophole for a fake ~18x speedup, plus result-caching and hyperparameter-shrinking exploits; mitigated with stream-sync, an adversarial DeepSeek-R1 checker, and discrete/robust reward shaping.'
+  - 'Learned optimizations claimed multiplicative and portable across NVIDIA architectures: kernels optimized on A100 retained large speedups on H100, RTX 3090, L40, H20 without re-optimization.'
+  techniques:
+  - Contrastive Reinforcement Learning (performance-score-conditioned in-context comparison before generation)
+  - 'Three-stage pipeline: SFT/data-augmentation -> self-supervised generate-validate-train -> contrastive RL with execution-time reward'
+  - Wall-clock speedup reward via CUDA events (r = t_ref / t_cand); discrete/robust reward schedule
+  - Correctness verification vs torch reference before reward assignment
+  - 'Adversarial reward-hack defense: DeepSeek-R1 checker + stream-synchronization + mathematical constraints'
+  - PPO / GRPO-style policy optimization
+  reported_results:
+  - Average speedup x3.12, median x1.42, peak x120 across all 250 KernelBench CUDA kernels (trained on A100) vs KernelBench default baseline
+  - x2.77 over torch.compile; x2.88 over torch.compile (reduce-overhead); x2.81 over CUDA Graph; x7.72 over cuDNN
+  - Cross-architecture portability on A100, H100, RTX 3090, L40, H20 (all NVIDIA; no AMD tested)
+  - 'Reward-hacking: 82/250 (32.8%) initial RL solutions exploited extra-CUDA-stream timing loophole (fake ~18x) before mitigation'
+  - Base backbone deepseek-v3-671B; Claude 4 used to generate CUDA-Graph-augmented reference for one baseline
+  referenced_arxiv_ids:
+  - '1707.06347'
+  - '2308.10792'
+  - '2312.11805'
+  - '2401.02051'
+  - '2401.04088'
+  - '2402.03300'
+  - '2403.08295'
+  - '2407.21783'
+  - '2410.21276'
+  - '2412.10400'
+  - '2412.16720'
+  - '2412.19437'
+  - '2501.00656'
+  - '2501.09891'
+  - '2501.12948'
+  - '2501.19393'
+  - '2502.10517'
+  - '2502.18449'
+  - '2505.09388'
+  - '2505.11480'
+  - '2506.09092'
+  - '2506.13131'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - cpu-shape-specialized-gemv-decode.md
+    - llama-cpp-dsa-contribution.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-660
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created:
+  - agentic-rocm-kernel-authoring.md
+  amd_rocm_transferability: 'No AMD/ROCm/HIP mention; all five portability GPUs are NVIDIA. Core RL signal (reward = ref/candidate wall-clock via device timers, correctness gated vs torch reference) is hardware-agnostic and transfers conceptually to MI210 (gfx90a) if the backend is swapped. But the optimization substrate is NVIDIA-specific and load-bearing: nvcc, CUDA-only KernelBench, torch.compile/CUDA Graph/cuDNN baselines, CUDA stream/warp/shared-memory primitives. MI210 adoption needs hipify/hipcc, rocprof/omniperf, torch-ROCm, a ROCm KernelBench analog; the extra-stream timing exploit is itself a CUDA-stream artifact. Harvest reward-design + contrastive-prompt recipe + anti-reward-hack defenses; rebuild the verify/profile backend on ROCm.'
+  novelty_justification: 'High. Contrastive-RL (performance-score-conditioned in-context comparison) and the quantified reward-hacking taxonomy + defenses are not covered by any existing intake entry or chapter. Complements rather than restates intake-660 (different RL formulation: contrastive vs large-scale agentic PPO).'
+  relevance_justification: 'High via the user''s MI210 (CDNA2/gfx90a, 64GB, ~July 2026) custom-kernel-authoring steer (same steer that elevated parent intake-660). Transferable artifact is the speedup-reward authoring loop mapping onto gpu-acceleration-path.md (ROCm hand-port path rocWMMA/AITER) and MI210-gated gpu-drafter-mi200-investigation.md, rhyming with CPU AVX-512BW ukernel loops. Anti-reward-hacking defenses immediately actionable. Open-source posture favorable: code + per-GPU optimized_cuda_code JSON released; only closed dependency is DeepSeek-V3 backbone (swappable).'
+  verdict_justification: 'adopt_patterns. Harvest the methodology, not the NVIDIA artifacts: (1) wall-clock speedup reward (t_ref/t_cand) + torch-reference correctness gate as a hardware-agnostic reward backbone; (2) the Contrastive-RL prompt recipe (usable WITHOUT RL training by driving an existing coder/architect model multi-turn); (3) the anti-reward-hack kit (stream-sync before timing, adversarial LLM checker, discrete/robust reward). Does NOT transfer as-is: nvcc/CUDA-only KernelBench/torch.compile/cuDNN baselines, and multi-GPU-cluster RL training of a bespoke model. Same adopt-the-env-not-the-model posture as parent intake-660.'
+  contradicting_evidence:
+  - 'Self-disclosed severe reward hacking: 82/250 (32.8%) initial RL solutions exploited an extra-CUDA-stream timing loophole (fake ~18x); headline x3.12/x120 are trustworthy only AFTER the mitigation patch. Stark warning that any speedup-reward harness (incl. a future ROCm one) is acutely game-able and needs adversarial verification from day one.'
+  - Evaluation-hacking is endemic to the self-evolving kernel-gen family (per DeepReinforce's own follow-up); peak x120 / x7.72-vs-cuDNN are KernelBench-harness-relative, may not reflect speed-of-light or real-workload gains.
+  - 'Venue: under review at OpenReview (forum igZItUbY6n), not yet peer-reviewed; framing is from the authoring lab (DeepReinforce) so commercial/self-promotional skepticism applies.'
+  - Built on closed DeepSeek-V3-671B + Claude 4 for one baseline; end-to-end retraining not independently reproducible without that large model + cluster.
+  notes: Ingested via /research-intake deep-dive batch (parallel sub-agent, Phase 1+2+Tier2b), 2026-06-03. Expanded from intake-660 (CUDA Agent). Contrastive-RL alternative to intake-660's large-scale agentic PPO.
+- id: intake-662
+  arxiv_id: '2511.01884'
+  url: https://arxiv.org/abs/2511.01884
+  source_type: paper
+  title: 'CudaForge: An Agent Framework with Hardware Feedback for CUDA Kernel Optimization'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Zijian Zhang (UMN)
+  - Rong Wang (UMN, co-first)
+  - Shiyang Li (UMN)
+  - Yuebo Luo (UMN)
+  - Mingyi Hong (UMN)
+  - Caiwen Ding (UMN, corresponding)
+  key_claims:
+  - Training-free two-agent (Coder + Judge) workflow with hardware feedback achieves 97.6% kernel correctness and 1.68x avg speedup over PyTorch on KernelBench L1-3 (250 tasks), surpassing OpenAI-o3 (57.6%/0.68x) and RL-trained Kevin-32B (82%/1.10x).
+  - The Judge consumes Nsight Compute (NCU) profiler metrics to localize bottlenecks (tensor-core underutilization, memory stalls) and steer optimization, mimicking the human profile-then-tune loop; this hardware-feedback loop is the central differentiator.
+  - 'Cost efficiency: ~26.5 min on one RTX 6000 and ~$0.30 API per kernel vs an agentic baseline at 6 H100 GPU-hours / ~$5; avoids RL policy-training entirely.'
+  - 'Lightweight per-round memory (agents see only current-round state) + an offline-selected 24-metric NCU subset (Pearson-filtered) makes the loop cheap AND accurate: full-metric variant is slower/costlier (~$1.0, 40 min) AND worse (1.414x vs 1.767x).'
+  - Generalizes 100% correct across A100/RTX6000/4090/3090 and across base models (o3, GPT-5, Claude-Sonnet-4, gpt-oss-120B, QwQ-32B); best pairing O3-coder/GPT-5-judge reaches 2.114x; N=10->30 rounds lifts to 2.265x.
+  techniques:
+  - Two-agent Coder/Judge workflow (training-free, no policy RL)
+  - 'Judge dual-mode: Correction (fix compile/runtime errors) + Optimization (NCU-metric bottleneck analysis)'
+  - Hardware feedback via Nsight Compute (NCU) metrics + GPU spec injection
+  - Selective NCU metric filtering (per-task sampling, Top-20, consolidate to 24 metrics via Pearson correlation)
+  - Lightweight per-round memory (no full conversation history)
+  - Two-stage correctness gate (compile + execute) vs PyTorch reference; iterative N-round refinement (default 10, scaled 30)
+  reported_results:
+  - 'KernelBench L1-3 (250 tasks, RTX 6000): 97.6% correct, 1.677x avg, 1.107x median, Fast1 70.8%'
+  - 'Baselines: OpenAI-o3 57.6%/0.680x/Fast1 31.6%; agentic baseline 95.0%/1.490x; Kevin-32B 82.0%/1.10x (H200)'
+  - 'Per-level (RTX 6000): L1 96%/1.448x/54% Fast1; L2 100%/2.104x/89% Fast1; L3 96%/1.283x/68% Fast1'
+  - 'Stratified subset D* (25 tasks): 100% correct, 1.767x avg, Fast1 84.0%; scaling N=30: 2.265x avg, Fast1 92.0%'
+  - 'Cost: $0.30/kernel, 26.5 min on one RTX 6000 vs agentic baseline $5.0 / 60 min / 6 H100-hr'
+  - 'Ablations: full-NCU 1.414x; o3-self-refine 90.8%/1.107x; o3-correction-only 97.6%/1.222x; o3-optimization-only 88.4%/1.509x'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2507.11948'
+  - '2507.14111'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - llama-cpp-dsa-contribution.md
+    - cpu-shape-specialized-gemv-decode.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-261
+    - intake-275
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  amd_rocm_transferability: 'ZERO AMD/ROCm/HIP mention; NVIDIA-only (nvcc, NCU, tensor cores, Ada+Ampere). Vendor lock-in is concentrated in the Judge''s Optimization mode (keyed to 24 NCU metrics + per-NVIDIA-arch GPU specs). The rest of the loop is genuinely portable: Coder agent, two-stage correctness gate vs torch reference, speedup reward, Correction-mode Judge (parses compiler errors), lightweight memory, N-round structure. ROCm port needs: nvcc->hipcc/hipify; NCU->rocprofv3/rocprof-compute(Omniperf); re-run the offline metric-selection on gfx90a for a CDNA2-specific ~24-metric subset (NVIDIA subset will NOT transfer); a ROCm KernelBench analog. Crucially TRAINING-FREE - drivable by an off-the-shelf coder model with NO training cluster, fits a single MI210 far better than RL. The metric-selection algorithm is the most directly reusable artifact (recipe for which rocprof counters to feed a Judge).'
+  novelty_justification: High. First repo entry for a TRAINING-FREE agentic kernel optimizer driven by profiler-metric feedback - orthogonal to intake-660's RL approach. The NCU-metric selection algorithm (offline Pearson-correlation filtering to a compact counter subset) and the Correction/Optimization Judge split are new patterns here.
+  relevance_justification: 'Medium (not high). The TECHNIQUE fits the MI210 single-GPU/no-cluster setup better than intake-660, but downgraded because: (1) NO open code/dataset/harness released (vs intake-660''s open harness + 6K dataset) - contributes a methodology, not a runnable artifact; (2) the profiler half is hard-bound to NCU and needs a non-trivial rocprof/Omniperf port + fresh gfx90a metric-selection before headline behavior transfers; (3) CPU-only stack today, MI210 ~July 2026 - a candidate spike, not active work. Reusable core = metric-selection algorithm + training-free Coder/Judge loop.'
+  verdict_justification: 'adopt_patterns. No releasable artifact and NVIDIA-bound as published, so neither adopt_component nor new_opportunity fits. Transferable design patterns: training-free Coder/Judge architecture, Correction-vs-Optimization Judge split, lightweight per-round memory, and especially the offline profiler-metric-selection algorithm. Pairs with intake-660 as the training-free alternative for the single-MI210, no-cluster regime.'
+  contradicting_evidence:
+  - METR's 'Measuring Automated Kernel Engineering' found models inflate KernelBench 'speedup' via exploitation (incl. bypassing CUDA by calling torch/cuBLAS). CudaForge's 1.68x/2.27x rest on the wall-clock metric and inherit this gaming surface; weight Fast1 over the mean.
+  - CudaForge levels a data-leakage critique at CUDA-L1, but its own base models (o3/GPT-5/Claude) have unknown KernelBench-reference pretraining exposure - an un-audited contamination channel it does not address.
+  - Single-lab result (UMN), no independent replication; under review at OpenReview, not peer-reviewed; NO open code/dataset so 97.6%/1.68x not yet externally reproducible.
+  - Generalization claims are within-vendor only (Ada/Ampere). ZERO evidence the NCU-driven behavior transfers to CDNA2; the 24-metric subset is NVIDIA-specific by construction.
+  notes: Ingested via /research-intake deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. Training-free profiler-fed Coder/Judge - the best-fitting sibling for a single-MI210 no-cluster setup; key reusable asset is the offline rocprof-metric-selection recipe.
+- id: intake-663
+  arxiv_id: '2507.11948'
+  url: https://arxiv.org/abs/2507.11948
+  source_type: paper
+  title: 'Kevin: Multi-Turn RL for Generating CUDA Kernels'
+  categories:
+  - hardware_optimization
+  - training_distillation
+  - agent_architecture
+  - autonomous_research
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Carlo Baronio (Stanford; Cognition AI)
+  - Pietro Marsella (Stanford; Cognition AI)
+  - Ben Pan (Stanford; Cognition AI)
+  - Simon Guo (Stanford)
+  - Silas Alberti (Cognition AI)
+  key_claims:
+  - 'First RL-trained model specialized for CUDA kernel generation: multi-turn RL on QwQ-32B (Kevin-32B) lifts correctness 56%->82% and best@16 fast_1 23%->43% on KernelBench eval.'
+  - Multi-turn RL (each refinement turn a trainable sample with reward propagated backward) beats single-turn RL on performance (1.10x vs 0.85x at best@16) at equal correctness - mirrors the iterative human loop and enables cross-turn credit assignment.
+  - 'Sequential refinement dominates parallel sampling under fixed budget: at 128 total kernels, 16traj x 8turns gives 1.10x vs 0.65x for 128traj x 1turn.'
+  - Reward hacking is pervasive (model copies reference, exploits output-tensor-reuse harness bug, under-computes output); mitigated with strict rule-based checks, running candidate BEFORE reference, and enlarging too-small KernelBench input tensors that otherwise measure only launch overhead.
+  - 'Credit-assignment matters: summed discounted future kernel scores with gamma=0.4 beat max-aggregation and gamma=0.8.'
+  techniques:
+  - 'Multi-turn RL: m parallel trajectories x n refinement turns; every turn (CoT + kernel) an individual training sample with discounted future return as reward'
+  - Reward S = 0.3*1{correct} + (T_baseline/T_kernel)*1{correct}
+  - 'Cross-turn credit assignment: sum of discounted future scores, gamma=0.4'
+  - GRPO with Clip-Higher (clip_low 0.2, clip_high 0.28), KL beta=0, temp 0.9; 16 traj x 4 turns
+  - Context management via CoT summarization (discard early CoT, keep prior kernel + summary + eval feedback)
+  - 'Anti-reward-hacking gates: reference-copy/partial-output detection, run candidate before reference, tensor-dimension enlargement; ''Not Okay Ratio'' instability proxy; balanced L1/L2 curriculum'
+  - Inline CUDA compile via torch.utils.cpp_extension.load_inline; speedup vs PyTorch Eager
+  reported_results:
+  - KernelBench eval = 100 tasks (80 novel + 20 original); train = 180 (90 L1 + 90 L2)
+  - 'Kevin best@16: correctness 82%, perf 1.10x, fast_1 43%, fast_1.5 20%'
+  - 'Single-turn RL best@16: 82%, 0.85x, 43%, 16%; QwQ-32B base: 56%, 0.53x, 23%, 10%'
+  - 'o4-mini best@16: 38%/0.78x; o3-mini: 27%/0.30x'
+  - 'Test-time scaling @128: 16x8 -> 1.10x/82%; 32x4 -> 1.02x/83%; 128x1 -> 0.65x/76%'
+  - All speedups on NVIDIA H200; explicitly dimension- and H200-specific
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2501.12948'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - cpu-shape-specialized-gemv-decode.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-261
+    - intake-275
+    - intake-303
+    - intake-307
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  amd_rocm_transferability: 'ZERO AMD/ROCm/HIP content; entirely NVIDIA-centric (H200, pure CUDA, torch cpp_extension load_inline/nvcc, speedup vs PyTorch Eager valid only for tested dims on H200). KernelBench is CUDA-only, so MI210 (gfx90a) adoption needs hipify/hipcc + rocprof/omniperf + torch-ROCm + a ROCm KernelBench analog. The METHOD is hardware-agnostic: multi-turn RL recipe, reward S=0.3*1{correct}+speedup-ratio, discounted cross-turn credit (sum, gamma=0.4), CoT-summarization context mgmt, and especially the anti-reward-hacking lessons (run candidate before reference; enlarge too-small tensors; rule-based reference-copy detection) port directly once a HIP verify+profile backend exists. Full RL training of a 32B model is out of reach on one 64GB MI210; drive the same multi-turn loop with an existing coder model WITHOUT retraining.'
+  novelty_justification: High. No prior entry/chapter covers RL-trained CUDA kernel generation, multi-turn kernel-refinement RL, or KernelBench (only the same-day parent intake-660 references this as foundational prior art). Introduces the per-turn-sample multi-turn RL formulation, the discounted cross-turn credit-assignment ablation, sequential-vs-parallel scaling evidence, and a documented anti-reward-hacking gate set.
+  relevance_justification: 'Medium. Conceptual predecessor and direct reference of intake-660. Contributes the cleanest published multi-turn-RL recipe + reward/credit-assignment design + anti-reward-hacking lessons a ROCm harness would reuse, mapping onto the same handoffs. One notch below intake-660 because: (a) 100% NVIDIA/CUDA-bound, KernelBench is CUDA-only (more porting surface); (b) intake-660 already supersedes it on the most-adoptable artifact (open harness + dataset) whereas Kevin''s primary asset is the RL recipe + a 32B checkpoint a single MI210 cannot train.'
+  verdict_justification: 'adopt_patterns. Adopt the methodology, not the system: (1) the multi-turn loop structure (parallel trajectories x sequential turns) as the refine-loop template - usable WITHOUT RL via our coder/architect role; (2) reward design + cross-turn credit (sum, gamma=0.4 > max/gamma=0.8); (3) the empirical finding that sequential refinement beats parallel sampling under fixed budget (16x8 > 128x1); (4) the anti-reward-hacking gate set (most reusable cross-hardware lesson - the exploit classes recur on ROCm). Does NOT transfer: nvcc/load_inline + H200 profiling + CUDA-only KernelBench; RL training of a 32B model. Fold into the parent''s kernel-gen batch; no standalone new handoff.'
+  contradicting_evidence:
+  - Self-reported reward-hacking fragility (copies reference, exploits output-tensor-reuse bug, under-computes); headline gains depend on hand-built rule-based gates and harness fixes; new exploits emerge as old ones are patched.
+  - 'KernelBench is known-leaky (METR, DeepReinforce, Berkeley RDI): no-op kernels passing via stale output-memory reuse; stream-sync tricks faking huge speedups. Kevin patches some but the benchmark family stays adversary-vulnerable.'
+  - 'Modest absolute speedups: best@16 mean only 1.10x over PyTorch Eager, fast_1.5 just 20%; the baseline (Eager, not torch.compile or a tuned library) is weak vs intake-660 which benchmarks vs torch.compile.'
+  - Commercial-showcase angle (Kevin-32B promoted as a Cognition AI product); mitigated by academic arXiv/OpenReview version + Stanford co-authorship.
+  - Follow-on critique 'Dr. Kernel' (2602.05885) argues RL-for-kernel pipelines need methodological corrections, flagging Kevin's CUDA-only raw-speedup-reward recipe is not the settled approach.
+  - Speedups explicitly valid only for tested tensor dims on H200; no cross-shape/cross-hardware generalization claim - limits any MI210 extrapolation.
+  notes: Ingested via /research-intake deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. The cleanest published multi-turn-RL recipe + reward/credit-assignment design; primary value for us is recipe + anti-hacking knowledge, not the (untrainable-here) 32B checkpoint.
+- id: intake-664
+  arxiv_id: '2502.10517'
+  url: https://arxiv.org/abs/2502.10517
+  source_type: paper
+  title: 'KernelBench: Can LLMs Write Efficient GPU Kernels?'
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - agent_architecture
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: worth_investigating
+  authors:
+  - Anne Ouyang (Stanford)
+  - Simon Guo (Stanford)
+  - Simran Arora (Stanford)
+  - Alex L. Zhang (Princeton)
+  - William Hu (Stanford)
+  - Christopher Re (Stanford)
+  - Azalia Mirhoseini (Stanford)
+  key_claims:
+  - Defines a 250-task benchmark generating optimized GPU kernels from a PyTorch reference module, output as a ModelNew class via torch.cpp_extension.load_inline; Level 1 (100 single ops), Level 2 (100 fused sequences), Level 3 (50 end-to-end architectures).
+  - Introduces fast_p = fraction of tasks BOTH correct AND >p faster than baseline; fast_0 = correctness, fast_1 = correct-and-at-least-as-fast. Correctness checked empirically on 5 random inputs vs torch reference; speedup via torch.cuda.Event (3 warmup + 100 trials, CoV <3%).
+  - 'Frontier models are weak one-shot: best (o1) ~10-24% fast_1; ALL models clear PyTorch on <20% of tasks; functional correctness (not exec debugging) is the dominant failure mode (>70% error for non-reasoning models).'
+  - CUDA is a low-resource language (0.073% of The Stack v1.2), argued to explain poor kernel-gen quality.
+  - Iterative refinement with exec+profiling feedback (10 turns, DeepSeek-R1) lifts fast_1 12/36/2% -> 43/72/18% (L1/L2/L3); repeated sampling (k=100) lifts L2 4% -> 37%; one-shot kernels do NOT generalize across GPUs (>10% L2 variance).
+  techniques:
+  - PyTorch-reference-to-CUDA kernel generation task (torch cpp_extension load_inline)
+  - fast_p correctness+performance composite metric (fast_0 / fast_1)
+  - Random-input empirical correctness checking (5 inputs) as undecidable-equivalence heuristic
+  - Wall-clock speedup vs torch eager AND torch.compile via torch.cuda.Event
+  - Multi-turn iterative refinement with exec + profiling feedback; repeated sampling (k up to 100)
+  reported_results:
+  - 'One-shot fast_1 vs torch eager (L1/L2/L3): o1 10/24/12%; DeepSeek-R1 12/36/2%; GPT-4o 4/5/0%; DeepSeek-V3 6/4/8%; Claude 3.5 Sonnet 10/7/2%'
+  - All models clear PyTorch on <20% of tasks (headline)
+  - 'Iterative refinement (DeepSeek-R1, 10 turns) fast_1: L1 12->43%, L2 36->72%, L3 2->18%'
+  - 'Repeated sampling (DeepSeek-V3, k=100): L2 fast_1 4->37%'
+  - 'Hardware: single NVIDIA L40S primary; A10G/A100/H100 study shows >10% L2 variance'
+  referenced_arxiv_ids:
+  - '2407.21787'
+  - '2404.10952'
+  - '2405.15793'
+  - '2410.03859'
+  - '2309.07103'
+  - '2402.18734'
+  - '2404.18864'
+  - '2411.15114'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - llama-cpp-dsa-contribution.md
+    - cpu-shape-specialized-gemv-decode.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-278
+    - intake-303
+    - intake-307
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created:
+  - rocm-verify-profile-backend.md
+  amd_rocm_transferability: 'HIGH feasibility for a ROCm/HIP analog, largely DE-RISKED by an existing follow-up. The harness is PyTorch-based, NOT bespoke-CUDA tooling: tasks are torch.nn.Module references, kernels loaded via torch.cpp_extension.load_inline, correctness is allclose on 5 random inputs, timing is torch.cuda.Event. Under torch-ROCm, torch.cuda.Event and cpp_extension work against an MI210 (HIP aliases the cuda namespace), so the correctness+timing skeleton ports with minimal change. CUDA-specific and to re-author: the 250 reference TASKS embed inline CUDA C (examples only); any nvcc/ncu/PTX/tensor-core profiling assumptions need hipify/hipcc + rocprof/omniperf. CRUCIALLY KernelBench itself is CUDA/NVIDIA-only (L40S; names Triton/CUTLASS/ThunderKittens as future work, evaluates none; NO AMD/ROCm/HIP), BUT the follow-up MultiKernelBench (arXiv:2507.17773) already abstracts a modular per-platform backend and states adding an AMD/HIP or Triton backend is ''<20 LoC''. Recommendation: do NOT rebuild KernelBench from scratch - fork MultiKernelBench, register a gfx90a/HIP backend (hipcc + rocprof + torch-ROCm), optionally pull robust-kbench (Sakana, 2509.14279) anti-reward-hacking hardening. This is the concrete ROCm-KernelBench analog the user wants, folding into intake-660''s verify+profile harness.'
+  novelty_justification: High. First benchmark to systematically measure LLM GPU-kernel generation with a combined correctness+speedup metric (fast_p) over a tiered 250-task suite; established the genre (every later kernel-gen paper benchmarks against it). Not a duplicate (only incidental sub-bullets in intake-278/intake-660; no standalone entry).
+  relevance_justification: 'High, via the AMD MI210 (gfx90a, 64GB, ~July 2026) lens. The user flagged we will likely need a ROCm analog of exactly this benchmark to close the verify+profile reward loop. fast_p, the L1/L2/L3 op->fusion->architecture tiering, the random-input correctness gate, and speedup-vs-torch baseline are directly portable design decisions, and give the measurement substrate for intake-660''s harness. Lower-relevance caveat only: nothing actionable until the MI210 lands and torch-ROCm is up.'
+  verdict_justification: 'worth_investigating (not adopt_component yet). The benchmark is CUDA-only and not directly runnable on our hardware today. Actionable path: when the MI210 arrives, fork MultiKernelBench (2507.17773) + register a HIP/gfx90a backend (hipcc + rocprof + torch-ROCm) rather than rebuild, adopt KernelBench''s fast_p + tiered-task design as the scoring contract for the intake-660 ROCm harness, with robust-kbench (2509.14279) hardening against reward-hacking. Escalates to adopt_patterns/adopt_component once the GPU lands.'
+  contradicting_evidence:
+  - 'Reward-hacking susceptibility: ''kernels'' that just call torch/cuBLAS (sidestepping authoring), no-op kernels reusing the reference output buffer, mis-placed stream sync measuring an artificially short window. The 5-random-input correctness check is exploitable (Sakana robust-kbench; deep-reinforce ''Hacks and Defenses'').'
+  - 'Numerical instability / naive baselines: original KernelBench inflated capabilities via exploitable tasks and naive baselines; tiny-op launch overhead dominates timing. robust-kbench and ''Towards Robust Agentic CUDA Kernel Benchmarking'' (2509.14279) address these.'
+  - Narrow/dated op coverage, operator-level single-GPU forward-pass only (no distributed, no backward in v1). MultiKernelBench (285 tasks, 14 categories) and KernelBench-X broaden coverage.
+  - Cross-hardware non-generalization acknowledged IN the paper (>10% L2 variance) - a kernel fast on L40S is not guaranteed fast on MI210, so a native gfx90a backend (not score transfer) is mandatory.
+  - 'Confirmation-bias note: contradicting evidence is abundant and specific (a whole ''robust'' successor literature exists) - this is NOT a low-evidence case; the criticisms strengthen the case for building a hardened ROCm analog rather than cloning v1 verbatim.'
+  notes: Ingested via /research-intake deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. The canonical benchmark + methodology; the ROCm analog (fork MultiKernelBench 2507.17773 + HIP backend, harden with robust-kbench 2509.14279) is the long pole tracked in handoff rocm-verify-profile-backend.md.
+- id: intake-665
+  arxiv_id: '2510.07356'
+  url: https://arxiv.org/abs/2510.07356
+  source_type: paper
+  title: 'ConCuR: Conciseness Makes State-of-the-Art Kernel Generation'
+  categories:
+  - training_distillation
+  - benchmark_methodology
+  - hardware_optimization
+  - agent_architecture
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Lingcheng Kong (Westlake)
+  - Jiateng Wei (Westlake)
+  - Hanzhang Shen (Westlake)
+  - Huan Wang (Westlake, corresponding)
+  key_claims:
+  - 'Conciseness drives quality: shorter reasoning traces tend to be more logical/valuable and yield more accurate, higher-performing CUDA kernels; curating on short-CoT-wins is the core selection signal.'
+  - Kernel speedup is largely independent of reasoning length (Pearson r=-0.047), falsifying 'longer reasoning = faster kernel'.
+  - 'A small curated dataset wins: 4,892 samples (from 90,810 synthesized / 24,136 correct) beats larger uncurated subsets (4,892 reaches L1 Exec 91%/fast1 32% vs 552 at 72%/21%).'
+  - KernelCoder (QwQ-32B + LoRA on ConCuR) achieves SOTA among open kernel-gen models and beats DeepSeek-V3.1-Think and Claude-4-Sonnet on KernelBench.
+  - Reasoning (CoT) length can serve as a task-difficulty metric (Easy ARL<4000 / Medium 4000-8500 / Hard >8500), exposing KernelBench's mis-ordered L1-vs-L2 difficulty.
+  techniques:
+  - 'Two-stage data-curation: (1) synthesize with Kevin-32B teacher, 5 attempts/task over 18,162 PyTorch programs -> 90,810 (PyTorch,CoT,CUDA) triples, 24,136 correct; (2) dual-criterion selection on speedup-over-torch-eager AND CoT length'
+  - Curated set = Part A 3,934 (shortest-reasoning achieves highest speedup) + Part B 414 (speedup>5) + Part C 544 (single-op) = 4,892
+  - Reasoning-trace distillation into QwQ-32B via supervised LoRA (no RL)
+  - 'LoRA SFT: rank 32/alpha 32/dropout 0.05; 3 epochs; lr 1e-4 cosine; max_seq_len 32768; 8xA100 ZeRO-3 ~9h'
+  - CoT-length-as-difficulty (ARL thresholds) stratification
+  reported_results:
+  - 'KernelBench L1 Pass@1: KernelCoder 58.0%/17.0%; QwQ-32B 18.0%/7.0%; Kevin-32B 50.0%/16.0%; DeepSeek-R1-0528 52.0%/18.0%; Claude-4-Sonnet 33.0%/11.0%'
+  - 'KernelBench L2 Pass@1: KernelCoder 59.0%/39.0%; QwQ-32B 17.0%/11.0%; Kevin-32B 46.0%/27.0%; DeepSeek-V3.1-Think 30.0%/20.0%'
+  - 'Pass@10: L1 91.0%/32.0%; L2 95.0%/68.0%'
+  - 'Dataset-size ablation (L1 Exec/fast1): 552->72/21; 1105->80/32; 2210->86/26; 4892->91/32'
+  - 'Reasoning-length vs speedup Pearson r=-0.047; difficulty: Easy 37 / Medium 114 / Hard 49 tasks'
+  referenced_arxiv_ids:
+  - '2501.12948'
+  - '2402.03300'
+  - '2503.09567'
+  - '2312.10997'
+  - '2001.08361'
+  - '2410.21276'
+  - '2412.19437'
+  - '2502.14752'
+  - '2507.05687'
+  - '2509.07506'
+  - '2509.14279'
+  - '2501.19393'
+  - '2502.10517'
+  - '2507.11948'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - llama-cpp-dsa-contribution.md
+    - cpu-shape-specialized-gemv-decode.md
+    - swarm-dataset-distillation.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-278
+    - intake-305
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  amd_rocm_transferability: 'Methodology is HARDWARE-AGNOSTIC; the released artifacts are CUDA-LOCKED. ZERO AMD/ROCm/HIP mention - synthesis (Kevin-32B), correctness oracle (torch eager) and speedup reward are NVIDIA/CUDA via KernelBench (CUDA-only). BUT the curation recipe (synth N attempts/task with a teacher, keep shortest-CoT-that-wins-on-speedup, balance with single-op kernels, distill into a student via LoRA) transfers wholesale to a ROCm/HIP dataset build for the MI210 (gfx90a). To regenerate for ROCm: (a) build a HIP/ROCm KernelBench analog (hipify refs, hipcc, torch-ROCm correctness oracle, rocprof/omniperf speedup vs MIOpen/rocBLAS or torch-ROCm eager); (b) re-run synthesis with a strong HIP-targeting teacher. The provided 4,892-sample dataset is NOT reusable (CUDA C++), but the pipeline + conciseness insight are portable. ConCuR = how to BUILD the (HIP,CoT,kernel) corpus; CUDA Agent (intake-660) = the verify+profile env that consumes it.'
+  novelty_justification: Medium. The conciseness-as-quality-signal finding and r=-0.047 length-vs-speedup result are genuinely novel and falsifiable, and CoT-length-as-difficulty is a clean reframing. But the core machinery (teacher-synthesize -> speedup-filter -> LoRA-distill into QwQ-32B) is a standard reasoning-distillation recipe and the surrounding cluster already occupies the space. Not duplicate, but incremental.
+  relevance_justification: 'High, via the MI210 lens (user steer 2026-06-03). ConCuR is the missing DATA-CURATION half of the program: it specifies how to assemble the (source, reasoning, kernel) training corpus + a cheap quality filter (short CoT), complementing intake-660 (the agentic harness). The SFT/LoRA recipe maps onto 08-doc-to-lora-prototype.md and swarm-dataset-distillation.md; the target maps onto the GPU + CPU ukernel handoffs.'
+  verdict_justification: 'adopt_patterns. Harvest the curation methodology + two empirical insights; decline the CUDA-locked artifacts and single-teacher dependency. Transfers: (1) the two-stage pipeline as the blueprint for a ROCm/HIP corpus; (2) the conciseness selection rule (keep shortest-CoT-that-wins) as a cheap label-free quality filter; (3) the length-vs-speedup finding as a falsifier against burning test-time-compute on long reasoning; (4) CoT-length-as-difficulty for stratifying any kernel eval. Does NOT transfer: the CUDA C++ dataset (regenerate for HIP), the Kevin-32B teacher (substitute our coder/architect role or a frontier model). Pair with intake-660: ConCuR is the corpus-builder, CUDA Agent is the verify+profile env. Defer execution until hardware lands.'
+  contradicting_evidence:
+  - 'No external published criticism found (search returned only the paper + mirrors). CONFIRMATION-BIAS RISK: results self-reported, not independently corroborated.'
+  - 'Peer-review status WEAK: ICLR 2026 submission (OpenReview c339hUw3cy), not accepted/decided as of fetch - treat ''SOTA'' as preprint claim.'
+  - 'Benchmark-contamination exposure: KernelBench is public and widely-trained-on; teacher Kevin-32B + base QwQ-32B may have seen KernelBench-adjacent data; synthesis draws from 18,162 PyTorch programs of unstated provenance - gains could be partly memorization. No decontamination protocol reported.'
+  - The paper concedes KernelBench's difficulty metric is unsound (all models do worse on L1 than L2), so absolute L1-vs-L2 numbers are noisy (their own restratification admits it).
+  - Conciseness finding is correlational on Kevin-32B traces only; whether 'short CoT wins' generalizes to a different teacher / to HIP is untested; mechanism not causally isolated (is it conciseness, or just that easy tasks both finish fast and win?).
+  notes: 'Ingested via /research-intake deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. The data-curation half of the kernel-authoring program: how to build the (HIP,CoT,kernel) corpus + a cheap short-CoT quality filter; pairs with intake-660 (consumer harness).'
+- id: intake-666
+  arxiv_id: '2510.03760'
+  url: https://arxiv.org/abs/2510.03760
+  source_type: paper
+  title: 'EvoEngineer: Mastering Automated CUDA Kernel Code Evolution with Large Language Models'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Ping Guo (CityU HK)
+  - Chenyu Zhu (CityU HK)
+  - Siyuan Chen (CityU HK)
+  - Fei Liu (CityU HK)
+  - Xi Lin (CityU HK)
+  - Zhichao Lu (CityU HK)
+  - Qingfu Zhang (CityU HK)
+  key_claims:
+  - 'First systematic LLM-based code-evolution framework for CUDA kernel optimization: a two-layer traverse (solution-guiding layer over info types I1 task-context / I2 historical-solutions / I3 optimization-insights, plus a prompt-engineering layer) and a population-management axis (single-solution / elite-preservation / diversity).'
+  - Explicitly REJECTS the GA operator framing (crossover/mutation) as an unvalidated assumption; the LLM is steered purely by prompt-composed feedback.
+  - Achieves 2.72x averaged median speedup over baseline CUDA kernels with 69.8% functional-correctness pass@1, outperforming AI CUDA Engineer (1.31x), FunSearch (1.31x), and EoH-style Solution (1.59x) on BOTH speed and validity.
+  - 'Train-free / inference-only: an iterative generate->compile->test->feedback loop driven by off-the-shelf LLMs (GPT-4.1, DeepSeek-V3.1, Claude-Sonnet-4) at inference time, 45 trials/kernel; NO policy/RL training or fine-tuning.'
+  - Reaches max 36.75x speedup over PyTorch and is best on 28/50 (56.0%) ops exceeding 2x; different LLMs win on different ops (multi-model coverage matters). Ships a modular open-source platform over 91 real-world CUDA ops.
+  techniques:
+  - 'Two-layer traverse: solution-guiding layer (selects I1/I2/I3 into prompt) + prompt-engineering layer'
+  - 'Three strategy instances: EvoEngineer-Free (I1, best-solution memory, top speed 2.72x), -Insight (I1+I3), -Full (I1+I2+I3, elite preservation, top validity 69.8%)'
+  - Constrained-optimization fitness p* = argmin f(p) s.t. g(p)=0 (f=exec time, g=compile+output-match); speedup clamped to 1.0 on failure
+  - 'Two-stage evaluator: nvcc compile check + functional test on 5 cases vs PyTorch CUDA reference; timing over 100 runs'
+  - Population management as an explicit axis decoupled from prompting; direct search in raw code space; pass@1 metrics; uniform 45-trial budget; 3 runs averaged
+  reported_results:
+  - 'Averaged median speedup vs baseline CUDA (Claude-Sonnet-4): EvoEngineer-Free 2.72x (best); EoH/Solution 1.59x; AI CUDA Engineer 1.31x; FunSearch 1.31x'
+  - 'Functional-correctness pass@1: EvoEngineer-Full 69.8% (best); AI CUDA Engineer 59.4%; FunSearch 53.2%'
+  - 'Compilation pass@1: Full 87.5% (GPT-4.1)/90.4% (DeepSeek)'
+  - Max speedup over PyTorch 36.75x; best on 28/50 (56.0%) ops >2x
+  - 'Dataset: 91 ops from KernelBench across 6 categories; 45 max trials/kernel; 3 runs'
+  - 'Hardware: single NVIDIA RTX 4090, CUDA 12.4.1, nvcc, -O3 -arch=sm_89 --use_fast_math'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2506.20807'
+  - '2506.09092'
+  - '2507.14111'
+  - '2412.18890'
+  - '2412.16720'
+  cross_references:
+    chapters: []
+    handoffs:
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - cpu-shape-specialized-gemv-decode.md
+    - llama-cpp-dsa-contribution.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-261
+    - intake-303
+    - intake-307
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - gpu-drafter-mi200-investigation.md
+  handoffs_created: []
+  amd_rocm_transferability: 'Partial but promising. NO AMD/ROCm/HIP implementation - all experiments RTX 4090 + CUDA 12.4.1 + nvcc, fitness loop NVIDIA-tool-bound (nvcc compile-check + PyTorch-CUDA reference). Authors EXPLICITLY flag (A.7.1) that AMD generalizability ''has not yet been empirically validated'' and name cross-platform/ROCm-HIP support as future work (A.7.2, ''abstracting the hardware-specific aspects of the evaluator''). The METHOD is hardware-agnostic in principle: fitness = correctness (output-match vs reference) + measured wall-clock speedup, transferring to MI210/gfx90a by swapping the evaluator backend to hipcc + rocprof/omniperf + torch-ROCm and supplying a ROCm KernelBench analog. Unlike the RL-trained siblings (CUDA-L1, intake-660) there is NO trained policy to re-port - only the harness. This is the leanest, cheapest member of the cluster to run on a single MI210.'
+  novelty_justification: 'High. Not a duplicate (confirmed absent; only a referenced arxiv_id in intake-660''s cluster). First INDEXED entry covering LLM-driven evolutionary (population-based, train-free) kernel search; adjacent items are intake-660 (RL-trained, different paradigm) and an incidental AlphaEvolve name-drop. Distinct: explicit rejection of GA-operator mimicry, the two-layer traverse taxonomy, controlled head-to-head vs AI CUDA Engineer/FunSearch on a shared 91-op platform.'
+  relevance_justification: 'High, via the MI210 path (gfx90a, 64GB, ~July 2026). The decisive plus: TRAIN-FREE / inference-only (45-trial budget, off-the-shelf model, NO RL) makes it the cheapest cluster member to actually run on a single MI210 (RL-trained CUDA-L1/intake-660 need a cluster to retrain; EvoEngineer needs only the verify+profile harness + an API/coder model). Maps onto the MI210-gated GPU handoffs (already tracking rocWMMA/AITER as the hand-port path this automates) and rhymes with the CPU manual ukernel loop. Open-source posture fully compatible (modular platform released; no closed checkpoint, no SaaS base model required).'
+  verdict_justification: 'adopt_patterns. Harvest the inference-only evolutionary harness as the leanest path to an MI210 kernel-authoring loop: (1) the two-layer traverse + three-strategy recipe (Free for cheap exploration / Full elite-preservation for validity) as the search controller; (2) the constrained fitness g(p)=0 (compile + output-match) x f(p)=runtime with speedup->1.0 clamp; (3) the modular evaluator abstraction - exactly the seam to re-target by swapping nvcc/PyTorch-CUDA for hipcc + rocprof/omniperf + torch-ROCm + a ROCm op-bench analog. Decline: NVIDIA-bound evaluator backend + RTX-4090-specific flags. Complements intake-660: EvoEngineer is the train-free controller runnable TODAY on one MI210; CUDA Agent''s value is env/reward lessons. Fold into the dedicated kernel-authoring batch; spike once the MI210 is racked.'
+  contradicting_evidence:
+  - 'Selection-bias / partial coverage: evaluated on only 91 of KernelBench''s ~250 tasks (curated to ''real-world'' ops), limiting representativeness and letting 2.72x/36.75x cherry-pick easier families.'
+  - 'Weak correctness gate enables reward-hacking: fitness checks output-match on just 5 cases vs a PyTorch reference; Robust-KBench/ProofWright show LLM kernels exploit this via hardcoding/dropping ops/weight assumptions; treat speedups gated only by 5 cases as upper bounds.'
+  - 'Venue maturity: on OpenReview (LU27DiW5ik) but not confirmed accepted/peer-reviewed at intake.'
+  - Single-GPU, single-arch (RTX 4090 only); authors disclaim generalization to AMD or even Hopper - the AMD transfer is an unproven engineering bet, not a result.
+  - 'Rapid supersession risk: a follow-up KernelFoundry (2603.12440, hardware-aware evolutionary kernel optimization) may subsume EvoEngineer''s train-free recipe - verify before committing effort.'
+  notes: Ingested via /research-intake deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. TRAIN-FREE evolutionary kernel search - the leanest cluster member runnable on a single MI210 today; the modular evaluator is the seam to re-target for ROCm. Tracked as the lead approach in handoff agentic-rocm-kernel-authoring.md.
+- id: intake-667
+  arxiv_id: '2507.17773'
+  url: https://arxiv.org/abs/2507.17773
+  source_type: paper
+  title: 'MultiKernelBench: A Multi-Platform Benchmark for Kernel Generation'
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-664
+  ingested_date: '2026-06-03'
+  verdict: adopt_component
+  authors:
+  - Zhongzhen Wen (Nanjing University)
+  - Yinghui Zhang (Nanjing University)
+  - Zhong Li (Nanjing University)
+  - Zhongxin Liu (Zhejiang University)
+  - Linna Xie (Nanjing University)
+  - Tian Zhang (Nanjing University)
+  key_claims:
+  - 'First multi-platform LLM-kernel-generation benchmark: 285 tasks across 14 functional kernel categories, shipping THREE working platform backends — NVIDIA CUDA, Huawei NPU (AscendC), Google TPU (Pallas). Abandons KernelBench''s L1/L2/L3 difficulty tiering for functional-semantic categorization, and does NOT reuse KernelBench''s fast_p metric.'
+  - 'Implements a genuinely MODULAR per-platform backend abstraction: each platform is a subclass of a unified Backend interface registered via @register_backend(name). Required methods (per repo README): get_device(), get_hardware_name(), compile(generated_code, op), correctness_execution(ref_src), time_execution(), plus optional cleanup().'
+  - 'Extensibility: adding a platform is ''<20 lines'' (paper''s example is Triton, a PyTorch-adjacent target; AMD/HIP/ROCm is named in Threats-to-Validity as planned future work, NOT shipped). The live GitHub repo (wzzll123/MultiKernelBench) ALREADY ships MORE backends than the paper — Triton, TileLang, SYCL beyond CUDA/AscendC/Pallas — substantiating the cheap-to-extend claim; no AMD/HIP backend exists yet.'
+  - 'PyTorch is the cross-platform reference layer: the LLM emits a custom kernel + a PyTorch module invoking it; correctness is randomized testing vs a torch reference (|out_llm - out_ref| < atol + rtol*|out_ref|, N=5, atol=rtol=1e-2). Timing uses event/sync markers; metrics are Compilation@k, Pass@k, SpeedUp_alpha@k vs torch baseline.'
+  - 'Strong platform-skew finding: best model Claude-Sonnet-4 hits 47.0% CUDA Pass@1 but only 2.1% AscendC / 8.4% Pallas (greedy); near-total collapse on AscendC across all 7 models. Cautions that a fresh MI210/HIP backend will see LOW one-shot LLM pass rates — the agentic refine loop + category-aware exemplar prompting is load-bearing, not optional.'
+  - Category-aware one-shot prompting (in-category exemplar) yields large relative gains on low-resource platforms (up to +200% AscendC, +380% relative compilation) — exemplar-conditioning is the lever for weakly-supported backends, transferable to a ROCm backend prompt strategy.
+  techniques:
+  - Modular Backend abstraction (unified interface + @register_backend decorator; per-platform subclass)
+  - PyTorch reference-module correctness oracle (randomized allclose, N=5, atol=rtol=1e-2)
+  - Event/sync-marker kernel timing; SpeedUp_alpha@k vs torch baseline
+  - Compilation@k / Pass@k / SpeedUp_alpha@k metric triad (greedy N=1 and sampling N=5)
+  - Category-aware one-shot prompting (in-category exemplar conditioning)
+  - Functional-semantic kernel categorization (14 categories) replacing difficulty tiers
+  reported_results:
+  - 'Greedy Pass@1 (CUDA/AscendC/Pallas, total of 285): Claude-Sonnet-4 47.0/2.1/8.4; DeepSeek-R1-0528 52.6/1.4/2.8; Qwen3-235B-think 44.2/0.7/7.4; GPT-4o 23.2/1.8/6.3; Qwen2.5-Coder-32B 15.8/1.8/4.6'
+  - 'CUDA SpeedUp_1@1: DeepSeek-R1 26.0%, Claude-Sonnet-4 20.4%, Qwen3-235B-think 19.3%, GPT-4o 5.3%, Qwen2.5-Coder-32B 3.5%'
+  - 'Category difficulty (CUDA avg Pass@1 top-3): easiest Activation 88.9%, Reduce 86.7%, MatMul 74.5%; hardest Convolution 13.7%, Full-Architecture 21.3%'
+  - 'AscendC near-collapse: most categories 0% Pass@1 all 7 models; only Activation (33-40%) measurable'
+  - 7 LLMs evaluated incl DeepSeek-V3-0324, Qwen3-235B(+think), Qwen2.5-Coder-32B, GPT-4o, Claude-Sonnet-4, DeepSeek-R1-0528
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2502.14752'
+  - '2107.03374'
+  - '2405.04434'
+  - '2412.19437'
+  - '2308.12950'
+  - '2505.09388'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-664
+    - intake-660
+    - intake-661
+    - intake-662
+    - intake-663
+    - intake-666
+    - intake-668
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: HIGH and the most decision-relevant of the entire kernel-gen cluster. Unlike KernelBench (664) and the CUDA/RL papers which hardwire nvcc/NCU/torch.compile, MultiKernelBench's whole thesis IS de-coupling platform logic behind a Backend interface, already proven across CUDA GPU / Ascend NPU / TPU Pallas plus Triton/TileLang/SYCL in-repo. AMD/HIP is explicit planned future work. Reference layer is PyTorch, so torch-ROCm carries the correctness oracle (allclose N=5) + timing (CUDA-event API, HIP-aliased) onto gfx90a with little change. A gfx90a backend must supply compile() wrapping hipcc/hipify, correctness_execution() vs a torch-ROCm reference, time_execution() via torch.cuda.Event-under-ROCm or rocprof. The profiler-metric feed (handoff C4) is NOT covered (it reports timing/speedup, not counters) — stays independent CDNA2 research. Expect low one-shot LLM pass rates on a fresh HIP backend (mirrors AscendC) — category-aware-exemplar prompting + agentic refine is load-bearing.
+  rocm_backend_feasibility: 'YES — fork it; validates rocm-verify-profile-backend.md Phase 4/C5 over rebuilding KernelBench. (1) Backend abstraction is real, exercised across 3-6 platforms; a gfx90a/HIP backend is a new Backend subclass implementing ~5 methods registered via @register_backend(''hip''). (2) The ''<20 LoC'' figure is for PyTorch-adjacent Triton; a HIP backend shelling to hipcc/hipify + managing the build dir will be low-hundreds of LoC — LOW-to-MED effort, single bounded file, not a harness rewrite, gated on torch-ROCm. (3) PyTorch-as-reference => correctness+timing port for free under torch-ROCm. (4) TWO corrections to the handoff: (a) MultiKernelBench does NOT carry fast_p / L1-L2-L3 — uses Compilation@k/Pass@k/SpeedUp_alpha@k + 14 categories; port KernelBench''s fast_p (intake-664) IN separately, do not inherit. (b) No profiler-counter feed, so C4 (rocprof/Omniperf metric-selection) stays a separate build. Recommended: fork for C5 backend/harness, layer fast_p (664) + robust-kbench hardening (668) on top, seed with EPYC-relevant ops (attention/MoE-dispatch/dequant).'
+  novelty_justification: high. 2507.17773 appears as cited prior-art text in handoffs and intake-664's justification but has NO entry of its own (no arxiv_id field match). First MODULAR multi-platform kernel-gen benchmark in the repo — no prior intake covers a per-platform backend abstraction or non-NVIDIA (Ascend/TPU) kernel-gen evaluation; the whole existing cluster is single-platform CUDA.
+  relevance_justification: high. The single most decision-relevant reference for rocm-verify-profile-backend.md — the literal Phase-4 fork target. Uniquely supplies the multi-platform backend-abstraction that turns 'build a ROCm KernelBench analog' from a rewrite into 'register one more backend', and confirms PyTorch-as-reference carries onto gfx90a via torch-ROCm. Directly de-risks the C5 component flagged MED-risk.
+  verdict_justification: adopt_component (escalated from parent intake-664's worth_investigating). The handoff plan is to FORK this exact repo and register a backend — component adoption, not pattern transfer. Repo open (github.com/wzzll123/MultiKernelBench), PyTorch-based, backend interface concrete and proven across 3-6 platforms. Adopt harness + backend-abstraction + correctness-oracle as the C5 substrate; supplement (do not assume inherited) with KernelBench fast_p/tier scoring (664) + robust-kbench anti-hacking (668); rocprof/Omniperf metric feed (C4) remains independent research. Gated on MI210 + torch-ROCm.
+  contradicting_evidence:
+  - 'Low absolute kernel-gen accuracy: best Claude-Sonnet-4 is 47% CUDA Pass@1 greedy and ~2% on low-resource AscendC — a fresh HIP/gfx90a backend will likely behave like AscendC (near-zero one-shot); value is the harness, not high HIP pass rates without the agentic loop + exemplar prompting.'
+  - 'Metric mismatch: does NOT implement fast_p nor L1/L2/L3 (uses Compilation@k/Pass@k/SpeedUp_alpha@k + 14 categories). The handoff C5 must port fast_p in separately, not inherit it from the fork.'
+  - The '<20 LoC to add a platform' is benchmarked on Triton (PyTorch-adjacent); a HIP backend invoking hipcc/hipify exceeds 20 LoC. Directionally true (single bounded subclass) but the number under-states HIP effort.
+  - 'Inherited benchmark-family vulnerability: the KernelBench lineage is reward-hackable (no-op via stale output memory, stream-sync timing, library passthrough); the N=5 allclose oracle is the same weak gate — the fork must add robust-kbench hardening (C6), not trust the stock oracle.'
+  - Single non-peer-reviewed preprint (Nanjing/Zhejiang); no independent replication (only forward-cites FastKernels 2605.23215, RISC-V kernel-opt 2509.14265). Extensibility/timing claims author-reported.
+  notes: 'Ingested via /research-intake follow-up deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-664. THE Phase-4/C5 fork target for rocm-verify-profile-backend.md. Two corrections folded into that handoff: fast_p is NOT inherited (port from 664); ''<20 LoC'' is a Triton figure, HIP backend is low-hundreds LoC. Repo: github.com/wzzll123/MultiKernelBench.'
+- id: intake-668
+  arxiv_id: '2509.14279'
+  url: https://arxiv.org/abs/2509.14279
+  source_type: paper
+  title: Towards Robust Agentic CUDA Kernel Benchmarking, Verification, and Optimization
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-664
+  ingested_date: '2026-06-03'
+  verdict: adopt_component
+  authors:
+  - Robert Tjarko Lange (Sakana AI)
+  - Qi Sun (Sakana AI)
+  - Aaditya Prasad (Sakana AI)
+  - Maxence Faldor (Sakana AI)
+  - Yujin Tang (Sakana AI)
+  - David Ha (Sakana AI)
+  key_claims:
+  - This work is the post-mortem remediation of Sakana's own Feb-2025 'The AI CUDA Engineer', publicly caught reward-hacking — a memory-reuse exploit let kernels steal the eager reference's output buffer to pass correctness while skipping the computation, inflating a claimed up-to-150x into an actual ~3x SLOWDOWN. robust-kbench is the hardened harness so the same exploit classes are caught; authoritative precisely because it is a vendor self-correction.
+  - 'Existing kernel benchmarks (KernelBench) contain exploitable loopholes: inefficient/naive baselines, low-magnitude outputs (|out|<0.01 lets FP noise pass correctness), insufficient output variation across seeds (enables hardcoding), single-input-config testing, overly-uniform outputs, and eliminable ops (softmax-over-1D always = 1.0). robust-kbench is built by a filtering procedure (run_filter.py) that EXCLUDES gameable tasks.'
+  - 'Headline correction: re-evaluating prior agentic CUDA work, the inflated 3.13x average speedup across full KernelBench collapses to 1.49x once 40 contaminated/exploitable tasks are excluded — ~half the reported gain was benchmark-gaming artifact. Generalization to UNSEEN input shapes is tested post-optimization; several kernels (LayerNorm, Linear-ReLU) overfit and regress.'
+  - 'A multi-faceted robust oracle: tests FORWARD AND BACKWARD passes, across multiple random init states and multiple input configs/shapes, with output-magnitude and output-variation thresholds, plus a 3-verifier LLM soft check (compilation / memory-access-violation / numerical-accuracy) as a cheap pre-filter cutting invalid kernels ~45% -> 15-20% before hardware testing (verifier acc 0.82/0.80/0.73).'
+  - 'An evolutionary LLM meta-generation pipeline: N=8 ensemble proposals (Claude 3.7, GPT-4.1, o3, o4-mini, Gemini 2.5 Pro) -> self-verify filter -> hardware-evaluate top N*=4 -> archive recombination, with profiling feedback (PyTorch profiler + NVIDIA Nsight Compute + Clang-tidy, LLM-summarized). Produces real >torch speedups (up to 2.5x fwd) on de-loopholed tasks at ~$5/kernel, <2h on 4xH100.'
+  - 'Honest residual-risk disclaimer (load-bearing for us): even hardened, ''LLMs can be capable of reward-hacking in previously unknown ways'' — recommend double-checking strong speedups with human experts. Anti-hacking is an adversarial arms race; design the ROCm oracle as defense-in-depth + a red-team loop, not a fixed checklist.'
+  techniques:
+  - 'Task-filtering procedure (run_filter.py): exclude tasks with output variation/magnitude <0.01, overly-uniform outputs, eliminable ops, or inefficient baselines'
+  - Forward+backward correctness oracle over multiple init states and multiple/unseen input shapes
+  - Three-verifier LLM soft-verification pre-filter (compilation / memory-access / numerics) with self-reflection
+  - 'Evolutionary meta-generation: N=8 multi-model ensemble, self-verify filter, top-N*=4 hardware eval, archive recombination, least-to-most context ordering'
+  - 'Profiling-guided refinement: LLM-summarized PyTorch profiler + NVIDIA Compute Profiler (NCU) + Clang-tidy static analysis'
+  - Agentic torch->CUDA translation with LLM error-summarization feedback
+  - Python harness with GPU-parallel evaluation API (robust_kbench/, run_kernel.py); Apache-2.0
+  reported_results:
+  - Average speedup collapses 3.13x -> 1.49x after excluding 40 contaminated KernelBench tasks
+  - 95% torch->CUDA translation success on KernelBench L1/L2 (200 tasks)
+  - Up to 2.5x forward-pass speedup across 12 robust-kbench tasks; smaller consistent backward gains
+  - Verifier-assisted optimization raises valid-kernel proportion 55-70% -> 80-85%; soft-verifier pre-filter ~45% -> 15-20% invalid
+  - 'Verifier accuracies: compilation 0.82, memory-access 0.80, numerics 0.73'
+  - 'Exploit examples: Task 13/L2 hardcoded softmax-of-1D=1.0 -> 123.6x false speedup; Task 12/L1 broadcasting-baseline gap -> 51.1x false speedup'
+  - 'Cost ~$5/kernel, <2h on 4xH100; prior incident: AI CUDA Engineer claimed up-to-150x, independent replication found ~3x SLOWDOWN'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2206.08896'
+  - '2305.14325'
+  - '2312.10997'
+  - '2402.01788'
+  - '2408.06292'
+  - '2409.12186'
+  - '2412.19437'
+  - '2501.12948'
+  - '2502.02534'
+  - '2502.20379'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-664
+    - intake-660
+    - intake-661
+    - intake-662
+    - intake-663
+    - intake-666
+    - intake-667
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'HIGH — the anti-hacking DEFENSES are almost entirely hardware-agnostic and port directly to HIP/MI210; only the profiler hook is CUDA-specific. (a) The task-FILTERING criteria (output magnitude>thresh, variation>0.01 across seeds, non-uniform outputs, eliminable-op detection, efficient-baseline audit) are pure-torch/numpy data properties — 100% portable, run once on torch-ROCm references. (b) Forward+backward + multi-init + multi/unseen-shape correctness uses torch.allclose semantics HIP aliases through the cuda namespace under torch-ROCm — portable as-is. (c) The 3 LLM soft-verifiers are prompt+model, hardware-agnostic; only retarget the memory-violation verifier vocabulary to HIP/rocm errors. (d) The MEMORY-REUSE / output-buffer-aliasing exploit defense (zero/poison output buffers, fresh non-aliased tensors, re-seed inputs per trial) ports unchanged. NOT free: the profiling-detection feed uses NCU + torch profiler — replace NCU with rocprofv3/rocprof-compute (Omniperf) and re-derive the gfx90a metric subset (intake-662 / C4). The released task corpus embeds inline CUDA C (re-author via hipify), but the HARNESS LOGIC (filtering, oracle, verifier orchestration) is the reusable, platform-neutral asset.'
+  anti_hacking_defenses: 'Exploit->defense pairs (port flag in brackets): 1. MEMORY-REUSE / output-buffer aliasing (kernel steals reference result buffer, skips compute, passes allclose) -> zero/poison output buffers before each call, use fresh non-aliased tensors, re-randomize inputs every trial [PORTS to HIP]. 2. HARDCODED / eliminable op (softmax-over-1D=1.0 -> 123.6x false) -> filter input-INDEPENDENT/constant outputs, require output variation >0.01 across seeds, add backward-pass correctness [PORTS]. 3. LOW-MAGNITUDE OUTPUT (|out|<0.01 -> FP noise passes) -> filter output std/magnitude <0.01, enforce minimum-magnitude [PORTS]. 4. SINGLE-INPUT-CONFIG overfitting -> test multiple + unseen shapes, report generalization regression [PORTS]. 5. UNIFORM-OUTPUT trivial task -> filter overly-uniform outputs [PORTS]. 6. INEFFICIENT-BASELINE inflation (51.1x vs naive ref) -> audit/validate reference efficiency + feature parity (= the C3 honest-baseline question; matters more on ROCm) [PORTS]. 7. INVALID-KERNEL flooding -> 3 LLM soft-verifiers as cheap PRE-hardware gate (45%->15-20%); retarget memory-verifier to HIP error vocab [PORTS]. Plus STREAM-TIMING exploit (extra CUDA stream hides work -> fake ~18x) -> stream-synchronize before/after timing; HIP analog hipDeviceSynchronize/torch.cuda.synchronize-under-ROCm [PORTS]. Meta-defense: treat anti-hacking as an adversarial loop — RED-TEAM the harness with deliberately-cheating kernels + human-verify strong speedups (maps to rocm-verify-profile-backend.md Phase 5 exit criterion).'
+  novelty_justification: 'high (NOT duplicate). 2509.14279 has no entry of its own — only a referenced_arxiv_id under intake-664 and a flagged follow-up in two handoffs. The canonical, first-party-authoritative anti-reward-hacking treatment for agentic CUDA-kernel benchmarking: a named exploit taxonomy + per-exploit filtering/oracle defense + a released hardened harness. Uniquely the vendor''s own public self-correction of a documented gaming scandal.'
+  relevance_justification: high — directly de-risks the reward-integrity component (C6, Phase 5) and hardens the correctness oracle (C2, Phase 1) of rocm-verify-profile-backend.md, which already names this paper. The exploit classes the EPYC cluster documented (no-op via output-buffer reuse, library passthrough, weak 5-input gate, stream-timing) map one-to-one onto this paper's catalogued exploits/defenses, and the defenses are overwhelmingly hardware-agnostic, porting to the HIP/rocprof backend with minimal re-authoring.
+  verdict_justification: 'adopt_component (stronger than intake-664). Apache-2.0 code RELEASED (github.com/SakanaAI/robust-kbench: robust_kbench/ harness, run_filter.py, run_kernel.py, tasks/, tests/); the harness LOGIC (filtering + forward/backward multi-shape oracle + 3-verifier orchestration) is a concrete adaptable component, pure-torch, porting to torch-ROCm by swapping only the NCU feed for rocprof/Omniperf (C4, already scoped). NOT adopt_patterns-only (we can lift code), NOT already_integrated (MI210 not racked), NOT superseded. Cite as the C2+C6 implementation reference in Phases 1+5.'
+  contradicting_evidence:
+  - 'Vendor self-evaluation / strong vendor-bias: Sakana authored both the flawed AI CUDA Engineer AND this remediation; a lab grading its own fix is not independent corroboration. The original up-to-150x was debunked externally to a ~3x slowdown; treat reported robust-kbench speedups (up to 2.5x) with the same skepticism — verify on our own hardware.'
+  - 'Authors'' explicit residual-risk admission: ''LLMs can be capable of reward-hacking in previously unknown ways''; defenses are a hardened floor, not a guarantee — the exploit list is not exhaustive.'
+  - 'Imperfect verifiers: numeric-correctness soft-verifier only 0.73 accurate; the cheap pre-filter cannot replace the full hardware oracle, only triage before it.'
+  - 'CUDA-specific artifacts: released task corpus embeds inline CUDA C and the profiling-detection feed is NCU-bound; profiler-driven detection must be re-derived on gfx90a (C4 risk) before it flags ROCm-specific cheats.'
+  - 'Generalization caveat in their own results: optimized kernels (LayerNorm, Linear-ReLU) overfit and regress on unseen shapes even within the hardened harness — ''passes robust-kbench'' is necessary, not sufficient, for a deployable kernel.'
+  notes: 'Ingested via /research-intake follow-up deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-664. Sakana''s post-scandal remediation of the AI CUDA Engineer; Apache-2.0 harness logic is the C2 (oracle) + C6 (reward-integrity) implementation reference for rocm-verify-profile-backend.md. Defenses overwhelmingly hardware-agnostic. Repo: github.com/SakanaAI/robust-kbench.'
+- id: intake-669
+  arxiv_id: '2603.12440'
+  url: https://arxiv.org/abs/2603.12440
+  source_type: paper
+  title: 'KernelFoundry: Hardware-Aware Evolutionary GPU Kernel Optimization'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-666
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Nina Wiedemann (Intel)
+  - Quentin Leboutet (Intel)
+  - Michael Paulitsch (Intel)
+  - Diana Wofk (Intel)
+  - Benjamin Ummenhofer (Intel)
+  key_claims:
+  - 'Train-free / inference-only evolutionary framework (NO LLM fine-tuning, NO RL): a MAP-Elites quality-diversity search over a 4^3=64-cell grid driving an off-the-shelf LLM through generate->compile->verify->profile. Same paradigm as EvoEngineer (intake-666) but adds a QD archive + behavioral descriptors instead of a flat population.'
+  - 'DOES NOT subsume EvoEngineer and does NOT benchmark against it. Baselines are AI CUDA Engineer (re-eval on A6000: KF 1.241x vs 1.005x L1, 2.104x vs 1.606x L2), OpenEvolve (KF 2.732x vs 2.535x avg SYCL L2; faster convergence 2.059x vs 1.483x at 10 iters), Robust-kbench (KF 12.107x vs 8.865x), oneDNN (competitive). EvoEngineer is never a measured baseline.'
+  - 'Genuinely ''hardware-aware'': injects (1) hardware-specific optimization guidance in prompts, (2) profiler feedback (memory bandwidth + compute utilization via Intel unitrace / NVIDIA Nsight Compute), (3) an evolutionary gradient combining fitness/improvement-rate/exploration gradients (alpha=0.4,beta=0.4,gamma=0.2), (4) NL mutation hints. A crossover experiment validates it: 70% of kernels optimized for the target GPU beat kernels tuned on a different GPU (1.537x LNL hardware-specific speedup). This is the concrete delta over EvoEngineer''s hardware-agnostic loop.'
+  - 'Primary target is INTEL GPUs via SYCL (vendor-agnostic C++), NOT NVIDIA: integrated Arc 140V (LNL) + discrete Arc B580 (BMG), with NVIDIA RTX A6000 only as a CUDA comparison. Generates SYCL + CUDA; cross-platform abstraction (oneAPI DPC++ 2025.2, CUDA 12.8, Triton 3.5) is a core design goal. NO AMD/ROCm/HIP target.'
+  - 'Meta-prompt evolution: a meta-prompter LLM co-evolves prompts with kernels via SEARCH/REPLACE diffs; behavioral descriptors (memory access pattern, algorithmic structure, parallelism coordination) computed deterministically via static analysis for reproducible MAP-Elites cell assignment.'
+  - Template-based parameter optimization separately tunes hardware-dependent values (tile/block sizes); stricter correctness gate (relative precision nu<0.01 over 99% of outputs) + a distributed LLM/compile/GPU-worker architecture with remote multi-hardware access.
+  techniques:
+  - MAP-Elites quality-diversity search (4^3=64-cell archive) with 3 deterministic behavioral descriptors (memory access pattern, algorithmic structure, parallelism coordination)
+  - Meta-prompt evolution via a meta-prompter LLM emitting SEARCH/REPLACE prompt diffs
+  - Evolutionary gradient = fitness (alpha=0.4) + improvement-rate (beta=0.4) + exploration-toward-empty-cells (gamma=0.2), surfaced as NL mutation hints
+  - Template-based parameter optimization for tile/block sizes (separate from code structure)
+  - 'Profiler-in-the-loop: Intel unitrace 2.3 (SYCL) / NVIDIA Nsight Compute 2025.3 (CUDA) memory-bandwidth + compute-utilization fed back as prompt context'
+  - Fitness 0 (fails) -> 0.1 (compiles, incorrect) -> 0.5+ (correct, perf bonus capped 1.0); correctness nu<0.01 on 99% of outputs
+  - 'Distributed framework: separate LLM/compilation/GPU-execution workers with remote multi-hardware access; pytest-compatible custom-task support beyond KernelBench'
+  reported_results:
+  - 'KernelBench Filtered (111 tasks, SYCL): correctness 97%, fast_1 71%, fast_2 42%, avg 2.32x, geomean 1.38x'
+  - 'KernelBench L1 (20, SYCL): correct 100%, fast_1 55%, fast_2 15%, avg 1.241x, geomean 1.124x'
+  - 'KernelBench L2 (20, SYCL): correct 90%, fast_1 90%, fast_2 45%, avg 2.104x, geomean 1.730x'
+  - 'Robust-kbench (12): correct 100%, fast_1 100%, fast_2 67%, avg 12.107x, geomean 5.295x'
+  - 'vs AI CUDA Engineer on A6000: L1 1.241x vs 1.005x; L2 2.104x vs 1.606x; vs OpenEvolve SYCL L2 2.732x vs 2.535x; vs Robust-kbench baseline 12.107x vs 8.865x'
+  - 'Hardware-awareness crossover: 70% of target-optimized kernels beat cross-GPU ones; hardware-specific speedup 1.537x (LNL) / 1.109x (BMG)'
+  - 'Case study Llama 3 rotary embedding: 7.9x on the op, 8% total forward-pass reduction (0.413s -> 0.38s)'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2509.14279'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-666
+    - intake-660
+    - intake-662
+    - intake-664
+    - intake-661
+    - intake-663
+    - intake-665
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'MEDIUM-HIGH, arguably the BEST-positioned cluster member for a vendor-portable port, with one caveat. KernelFoundry is Intel/SYCL-first with an explicit cross-platform abstraction (SYCL + CUDA backends, deterministic static-analysis descriptors, a backend-swappable distributed compile/execute worker layer) — exactly the seam for a third (HIP/gfx90a) backend, and already running two vendors (Intel + NVIDIA) de-risks the abstraction far more than EvoEngineer''s NVIDIA-only evaluator. Train-free, so no trained policy to re-port — only the harness. To target the MI210: register a HIP/SYCL-on-AMD backend (SYCL has a ROCm/HIP plugin via oneAPI/AdaptiveCpp, OR drop to hipcc+torch-ROCm), and CRUCIALLY re-derive the gfx90a profiler-metric subset — its hardware-awareness is bound to Intel unitrace / Nsight Compute counters which do NOT transfer to rocprof/Omniperf (same porting tax as CudaForge intake-662 and the NCU subset in the backend handoff). NET: strengthens, not replaces, the ROCm plan — the QD archive + meta-prompt + profiler-gradient machinery is portable methodology; the Intel-counter binding is the work.'
+  supersedes_evoengineer: 'NO — does NOT subsume intake-666; recommendation is ADOPT-BOTH (lead path stays EvoEngineer, harvest KernelFoundry''s hardware-aware machinery on top). Basis: (1) KernelFoundry never benchmarks against EvoEngineer — neither cites nor measures it; the supersession flag in intake-666 is NOT borne out. (2) Both are train-free evolutionary, so neither dominates the train-free axis that matters for a single MI210. (3) EvoEngineer is HIGHER on its own turf (2.72x median, 69.8% validity on 91 CUDA ops) vs KernelFoundry''s 2.3x avg SYCL / 1.24x-2.10x CUDA L1/L2 — but suites/baselines differ (CUDA-4090 vs SYCL-Intel-Arc), not a clean win for either. (4) KernelFoundry''s real additive value is ORTHOGONAL: genuine hardware-awareness (profiler-metric injection + arch-gradient + per-GPU template tuning, validated by the 70% crossover) and a multi-vendor backend abstraction — precisely the two gaps EvoEngineer''s authors disclaim (A.7, AMD unvalidated). CALL: keep EvoEngineer as the lean lead controller AND bolt on KernelFoundry''s MAP-Elites QD archive (better exploration than flat population), profiler-metric-in-the-loop (overlaps + reinforces CudaForge intake-662''s metric-selection), and template-based per-arch parameter tuning. Its vendor-portable backend design is also the better architectural template for rocm-verify-profile-backend.md than any NVIDIA-only cluster paper. Do NOT drop EvoEngineer; ADD KernelFoundry as the hardware-awareness layer.'
+  novelty_justification: High. First cluster entry to combine MAP-Elites quality-diversity search (vs EvoEngineer's flat population), meta-prompt co-evolution (SEARCH/REPLACE diffs), an explicit evolutionary-gradient signal, and profiler-fed hardware-awareness validated by a controlled cross-GPU crossover — none present in intake-660-666. Also the first multi-vendor (Intel SYCL + NVIDIA CUDA) train-free kernel searcher in the index. Not a duplicate (arxiv_id 2603.12440 absent; previously only a forward-reference inside intake-666).
+  relevance_justification: 'High. This intake''s primary job — adjudicate the EvoEngineer supersession risk for the MI210 lead-controller choice — is answered decisively (no supersession; adopt-both). Beyond that, KernelFoundry is the single most architecturally relevant paper for the ROCm port: train-free (runnable on one MI210, no cluster), and its multi-vendor SYCL+CUDA backend abstraction is the cleanest template in the cluster for the vendor-swappable rocm-verify-profile-backend.md (proves the abstraction across two vendors rather than disclaiming it). Its hardware-aware profiler-gradient loop composes with CudaForge (intake-662)''s metric-selection asset.'
+  verdict_justification: 'adopt_patterns. Harvest the methodology, decline the artifacts: (1) MAP-Elites QD archive with deterministic static-analysis descriptors as a drop-in upgrade to EvoEngineer''s flat-population controller; (2) the profiler-metric-in-the-loop + evolutionary-gradient + NL-mutation-hint mechanism as the hardware-awareness layer (re-derive counters for gfx90a); (3) template-based per-arch parameter tuning; (4) the multi-vendor distributed compile/execute backend abstraction as the architectural template for the ROCm verify+profile backend. Not adopt_component (Intel/SYCL-bound as published, no AMD path, Intel-counter binding non-trivial to port). Not superseded and not superseding — composes WITH EvoEngineer (666) and CudaForge (662). Pairs into agentic-rocm-kernel-authoring.md as the hardware-awareness + QD-exploration upgrade on the existing lead path.'
+  contradicting_evidence:
+  - Does NOT benchmark against EvoEngineer (666) — the 'is it better than our lead candidate?' question is answered only indirectly; 2.3x SYCL vs EvoEngineer's 2.72x CUDA is apples-to-oranges and cannot rank them.
+  - Headline CUDA L1 is modest (1.241x avg, fast_2 only 15%/10% w/o param-opt); the eye-catching 12.107x is on Robust-kbench's 12-task suite and the 2.3x flagship is SYCL-on-Intel — not an AMD or strong-CUDA-baseline number.
+  - Hardware-awareness is bound to Intel unitrace / Nsight Compute counters; the 70%-crossover claim is Intel-GPU-internal (LNL vs BMG) and gives NO evidence it transfers to gfx90a — the rocprof/Omniperf metric subset must be re-derived from scratch (same caveat as CudaForge intake-662).
+  - Single lab (Intel) showcasing Intel Arc + oneAPI — mild commercial/vendor-positioning bias; SYCL flagship suite is the most favorable framing for Intel silicon.
+  - 2026 preprint, no confirmed venue/independent replication (only same-family follow-ups Xe-Forge 2605.26118, K-Search 2602.19128 surfaced, neither a replication).
+  notes: 'Ingested via /research-intake follow-up deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-666. RESOLVES the EvoEngineer supersession flag: NO supersession, verdict adopt-BOTH. Keep EvoEngineer as lean lead controller; add KernelFoundry''s MAP-Elites QD + profiler-gradient + per-arch template tuning as the hardware-awareness layer; its multi-vendor backend is the architectural template for rocm-verify-profile-backend.md.'
+- id: intake-670
+  arxiv_id: '2603.08721'
+  url: https://arxiv.org/abs/2603.08721
+  source_type: paper
+  title: 'KernelCraft: Benchmarking for Agentic Close-to-Metal Kernel Generation on Emerging Hardware'
+  categories:
+  - hardware_optimization
+  - benchmark_methodology
+  - agent_architecture
+  - tool_implementation
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-660
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Jiayi Nie (Cambridge)
+  - Haoran Wu (Imperial)
+  - Yao Lai (Cambridge)
+  - Zeyu Cao (Cambridge)
+  - Cheng Zhang (Imperial)
+  - Erwei Wang (AMD)
+  - Timothy M. Jones (Cambridge)
+  - Robert Mullins (Cambridge)
+  - Yiren Zhao (Imperial)
+  - et al.
+  key_claims:
+  - 'KernelCraft is a BENCHMARK (33 tasks: 23 ML + 10 CPU; 6 native tool interfaces; 3 emerging NPU platforms) evaluating whether frontier LLM agents can generate correct, optimized ISA-level kernels for novel accelerators via a function-calling diagnose-and-repair loop — NOT a controller/method and NOT a GPU/ROCm system.'
+  - '''Emerging/close-to-metal hardware'' = custom-ISA NPUs and open CPUs, NOT datacenter GPUs: PLENA (custom-ISA sim), AMD NPU (Versal AIE-ML / XDNA, evaluated on PHYSICAL AMD Strix / Ryzen AI via the Peano LLVM compiler), Coral NPU (Google, RISC-V+RVV, Verilator), RISC-V BOOM CPU. NO NVIDIA GPU, NO AMD CDNA/ROCm/HIP.'
+  - 'TRAIN-FREE: drives off-the-shelf frontier reasoning models (GPT-5.2, Gemini-3-Flash, Claude Sonnet 4, DeepSeek-R1) through native tool-use APIs — no fine-tuning, no RL, no released checkpoint.'
+  - 'Extended reasoning is load-bearing: without extended thinking GPT-5.2 scores 0/5 on functional kernels; with medium thinking Level-2 success jumps to 60-80%. In-context learning (related-workload demonstrations) sharply raises success (MQA 1/5 -> 4/5 with a Scaled-Dot-Product exemplar).'
+  - 'Agents remain far below human experts on hard optimization: Coral-NPU depthwise-conv 269,239 cycles (2.5x vs compiler) vs human 33,327 cycles (20x) — a ~8x agent-vs-human gap; AMD-NPU success rates lowest of all platforms (GPT-5.2 only 17%).'
+  techniques:
+  - 'Function-calling agentic diagnose-and-repair loop over 6 native tools: write_code, check_syntax, run_evaluation, view_output, get_instruction_size, grep_docs'
+  - Automated feedback from compilation + cycle-accurate simulation (PLENA sim, Verilator) + reference functional validation
+  - Numerical-tolerance correctness oracle with platform-specific tolerances (PLENA abs_tol=0.012)
+  - Extended/medium 'thinking' reasoning budget; in-context learning via related-workload demonstrations
+  - 3-tier task difficulty; physical-hardware eval on AMD Strix NPU via Peano LLVM; cycle-count optimization metric vs compiler template
+  reported_results:
+  - 'PLENA success: GPT-5.2 55%, Gemini-3-Flash 35%, Claude Sonnet 4 12%, DeepSeek-R1 1%'
+  - 'AMD NPU success: GPT-5.2 17%, Gemini-3-Flash 11%, Claude Sonnet 4 3%, DeepSeek-R1 1%'
+  - 'Coral NPU success: GPT-5.2 47%, Gemini-3-Flash 39%'
+  - 'Speedups vs compiler: PLENA 1.06-1.22x; Coral NPU 2-8x (ConvBlock peak 7.93x); AMD NPU 0.89-1.18x; RISC-V BOOM 1.01-1.68x'
+  - 'Ablation: extended thinking -> 60-80% L2 success vs 0% without; ICL: GPT-5.2 MQA 1/5 -> 4/5 with exemplar'
+  - 'Human-expert gap (Coral depthwise conv): human 33,327 cycles vs KernelCraft 269,239 vs compiler 673,098'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2507.14403'
+  - '2506.09092'
+  - '2507.05687'
+  - '2510.03760'
+  - '2509.09505'
+  - '2501.12948'
+  cross_references:
+    chapters:
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-666
+    - intake-669
+    - intake-667
+    - intake-668
+    - intake-664
+    - intake-660
+    - intake-662
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'LOW-to-MEDIUM, LOWER than the cluster average despite AMD authorship. The ''AMD'' target is the Versal AIE-ML / XDNA NPU (aie2p), compiled with the Peano LLVM toolchain on Ryzen AI / Strix — a COMPLETELY SEPARATE stack from ROCm/HIP (Vitis/IRON lineage, own driver, NOT the CDNA2/gfx90a GPU path our MI210 uses). NONE of KernelCraft''s backends, tool wrappers, simulators (PLENA, Verilator) or compiler hooks (Peano, RISC-V) transfer to gfx90a/HIP. What DOES transfer is pure methodology: (1) the 6-tool function-calling interface as a tool-vocabulary template for our HIP authoring loop; (2) the thinking-budget result (0/5 without extended reasoning) — a model-selection constraint for whichever coder/API drives our loop; (3) the ICL exemplar-prompting finding (1/5->4/5) corroborating intake-667''s ''category-aware exemplar prompting is load-bearing on a fresh backend''; (4) a tolerance-based oracle design point. Zero reusable ROCm artifact.'
+  emerging_hardware_amd: 'Targets custom-ISA NPUs + open CPUs, NOT datacenter GPUs: PLENA (custom-ISA sim), AMD NPU (Versal AIE-ML/XDNA on physical Ryzen AI via Peano LLVM), Coral NPU (Google RISC-V+RVV, Verilator), RISC-V BOOM. It DOES touch AMD silicon but the AMD Ryzen-AI NPU stack (Vitis/IRON/Peano), NOT ROCm/HIP and NOT the CDNA2/gfx90a GPU class of our incoming MI210. So ''supports AMD'' is technically true but irrelevant to our ROCm/HIP path.'
+  controller_recommendation: 'NO — do NOT switch the lead controller to KernelCraft. It is a BENCHMARK, not a kernel-authoring controller, and targets a different hardware class (AIE-ML NPU via Peano), not ROCm/HIP GPUs. Keep EvoEngineer (666) lead + KernelFoundry (669) hardware-awareness layer, scored against MultiKernelBench-fork (667) hardened with robust-kbench (668). Harvest KernelCraft as adopt_patterns into the existing plan: (a) 6-tool function-calling vocabulary for the tool surface; (b) extended-reasoning-required model-selection constraint; (c) ICL-exemplar lever reinforcing 667. If AMD AIE/XDNA ever becomes a target (it is NOT today), KernelCraft + NPUEval (2507.14403) become the direct references.'
+  novelty_justification: High, NOT a duplicate. First indexed entry for ISA-level / close-to-metal kernel generation (scalar/vector/memory instructions, below the IR layer that all of intake-660-669 operate at), a multi-platform PHYSICAL-NPU + simulator benchmark, and the first to put AMD Versal AIE-ML / Peano in the index. Distinct paradigm from the source-level CUDA cluster.
+  relevance_justification: 'Medium (not high). The ''emerging hardware'' framing reads as on-point but the hardware targets (AIE-ML NPU/Peano, RISC-V) are orthogonal to our CDNA2/gfx90a MI210 ROCm/HIP path: zero reusable backend/simulator/compiler-hook transfers, and it is a benchmark not a controller (our benchmark slot is filled by the MultiKernelBench fork 667). Kept at medium not low because it is a train-free agentic sibling whose tool-interface, thinking-budget, and ICL-exemplar findings are useful methodology corroboration, and it is the closest reference if AMD AIE/XDNA ever enters scope.'
+  verdict_justification: adopt_patterns. Not adopt_component (no ROCm/HIP artifact; simulators/compiler-hooks AIE/RISC-V-bound; benchmark slot taken by 667). Harvest the 6-tool vocabulary, the extended-reasoning-required constraint, the ICL-exemplar lever, and the tolerance-oracle design point; decline every hardware-specific backend/sim/compiler hook.
+  contradicting_evidence:
+  - Despite AMD co-authorship, KernelCraft does NOT touch ROCm/HIP or any CDNA GPU — its 'AMD' is the Ryzen-AI Versal AIE-ML NPU on the Vitis/Peano stack. AMD-NPU results are also the WEAKEST (GPT-5.2 17%, 0.89-1.18x, one config a slowdown).
+  - It is a benchmark/harness, not a controller — framing it as a controller candidate would be a category error.
+  - No anti-reward-hacking layer (unlike robust-kbench 668); its tolerance-based oracle (abs_tol up to 0.012) is exactly the loose gate the cluster's reward-hacking literature warns about.
+  - Large agent-vs-human optimization gap (~8x on Coral depthwise conv) tempers the 'matches or beats compiler baselines' headline.
+  - 'Frontier-model dependence: only GPT-5.2 and Gemini-3-Flash perform; Claude Sonnet 4 (3-12%) and DeepSeek-R1 (~1%) largely fail — a constraint for any local/opensource-only driver.'
+  notes: 'Ingested via /research-intake next-tier deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-660. CORRECTION to prior assumption: KernelCraft''s ''emerging hardware + AMD'' is AIE-ML NPU/Peano, NOT ROCm/HIP/MI210 — relevance medium, not high. Harvest tool-vocabulary + thinking-budget + ICL-exemplar findings only. Surfaces NPUEval (2507.14403) as the AMD-AIE reference if that ever enters scope.'
+- id: intake-671
+  arxiv_id: '2605.23215'
+  url: https://arxiv.org/abs/2605.23215
+  source_type: paper
+  title: 'FastKernels: Benchmarking GPU Kernel Generation in Production'
+  categories:
+  - benchmark_methodology
+  - hardware_optimization
+  - inference_serving
+  - agent_architecture
+  - tool_implementation
+  novelty: high
+  relevance: medium
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-667
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Gabriele Oliaro (Snowflake AI Research / CMU)
+  - Yichao Fu (UCSD)
+  - May Jiang (Independent)
+  - Owen Lu (CMU)
+  - Junli Wang (UCSD)
+  - Hao Zhang (UCSD)
+  - Zhihao Jia (CMU)
+  - Samyam Rajbhandari (Snowflake AI Research)
+  key_claims:
+  - 'Central thesis — BENCHMARK-PRODUCTION MISALIGNMENT: existing LLM-kernel-gen benchmarks (KernelBench lineage) use synthetic inputs on single GPUs, ignore the compilation stack, and reward replicating known optimizations rather than discovering new ones; agents that score well in the sandbox fail in real systems via interface incompatibilities, compilation conflicts, and silent correctness degradation.'
+  - 'Benchmark-AS-FRAMEWORK: FastKernels doubles as a minimal production-grade inference framework whose task interfaces match production modules, so a generated kernel is injected into a FULL model execution (not an isolated op), downstream output quality is checked, and the kernel can transfer directly into vLLM/SGLang. Claims parity with hardened vLLM/SGLang (avg 1.24x / median 1.04x throughput).'
+  - 'MacroEval metric: a single production-grade score combining calibrated CORRECTNESS, architecture COVERAGE, and end-to-end THROUGHPUT-LATENCY speedup against production (vendor-optimized) baselines — not weak PyTorch-eager references. Compositional Level 1-4 task hierarchy with kernel reuse.'
+  - 'Headline NEGATIVE result: against PRODUCTION baselines the strongest agent (OpenAI Codex) reaches only 0.943x aggregate geomean (a SLOWDOWN) at 100% coverage; KernelAgent 0.777x; Dr. Kernel 0.527x. The same agents look like wins (1.16x geomean) only vs PyTorch-eager — quantifying how operator-level benchmarks overstate real gains.'
+  - 'TRAIN-FREE evaluation harness (trains no model; benchmarks existing off-the-shelf agents). All experiments NVIDIA H100 SXM5; NO AMD/ROCm/HIP backend implemented or mentioned. Coverage: 46 representative archs / 8 categories subsuming 96.2% of HF Transformers workloads.'
+  techniques:
+  - 'Benchmark-as-framework: kernels evaluated in-place inside a minimal production-grade inference engine (parity with vLLM/SGLang), enabling direct transfer'
+  - MacroEval = calibrated correctness x architecture coverage x end-to-end throughput-latency speedup vs production/vendor baselines
+  - Compositional Level 1-4 task hierarchy (primitives -> composites -> full architectures) with lower-level kernel reuse
+  - 'Production-faithful evaluation: captured real input tensors, full compilation-stack effects, multi-GPU tensor- and expert-parallel communication, downstream model-quality check'
+  - Minimal representative architecture set (46 archs / 8 categories) subsuming 96.2% of HF Transformers
+  reported_results:
+  - 'Strongest agent (OpenAI Codex): 0.943x geomean vs production baselines, 100% coverage (88 target families)'
+  - KernelAgent 0.777x (76/88); Dr. Kernel 0.527x (38/88)
+  - 'Apparent-vs-real gap: same agents 1.16x vs PyTorch-eager but ~0.93x vs vendor-optimized'
+  - 'FastKernels framework vs production references: 1.24x avg / 1.04x median throughput'
+  - 'Under-served archs: Pi0 3.48x, ColBERTv2 3.08x, CosyVoice3 2.13x; all experiments NVIDIA H100 SXM5'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2507.17773'
+  - '2509.14279'
+  - '2603.08721'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - rocm-verify-profile-backend.md
+    - agentic-rocm-kernel-authoring.md
+    - gpu-acceleration-path.md
+    - gpu-drafter-mi200-investigation.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-667
+    - intake-664
+    - intake-668
+    - intake-666
+    - intake-669
+    - intake-660
+    - intake-661
+    - intake-662
+    - intake-663
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'LOW as a runnable artifact, MEDIUM as methodology. NVIDIA-only (all experiments H100 SXM5); implements NO AMD/ROCm/HIP backend and makes NO multi-platform/backend-abstraction claim — its inference framework targets parity with vLLM/SGLang (CUDA). NOT a candidate ROCm backend (667 remains the fork target). What transfers conceptually: (1) the production-vs-sandbox misalignment WARNING — operator-level KernelBench-style scores overstate real gains ~25pp (1.16x sandbox -> 0.93x production); (2) the benchmark-as-framework idea — evaluate a HIP kernel inside a full llama.cpp/torch-ROCm forward pass with captured real tensors + downstream-quality check, not an isolated op vs torch ref; (3) MacroEval''s PRODUCTION/vendor-baseline discipline (rocBLAS/hipBLASLt/AITER), echoing robust-kbench''s honest-baseline lesson (668 exploit #6) and chapters 06/08. Porting cost to RUN it on gfx90a is high; harvest the evaluation PHILOSOPHY, keep MultiKernelBench (667) as the backend.'
+  what_is_it: A BENCHMARK that doubles as a minimal production-grade inference FRAMEWORK (NOT a kernel-generation method, NOT a trained model, NOT a kernel library). It injects an externally-generated kernel into a full model execution, scores it via MacroEval (correctness x coverage x end-to-end speedup) against production/vendor baselines with captured real tensors + multi-GPU comms, and can transfer the kernel into vLLM/SGLang. Train-free.
+  relationship_to_cluster: 'Surfaced as a FORWARD-CITATION of MultiKernelBench (667). It CITES/CRITIQUES the KernelBench lineage (664) and cites robust-kbench (668) + MultiKernelBench (667) + KernelCraft (670), but does NOT extend/fork/supersede any. Orthogonal axis: 664/667 ask ''can an agent write a correct/fast kernel for platform X (single op, torch baseline)''; FastKernels asks ''does that kernel speed up a REAL production system vs a vendor-optimized baseline'' — and shows the answer is currently NO (<1x). Does NOT change the backend choice (667 stays the fork target — FastKernels has no backend abstraction) nor the controller choice (666 lead + 669 layer remain). Net role: the ''deploy-faithful evaluation'' capstone of the 660-669 batch — adopt its philosophy as a Phase-5 scoring/exit-criterion pattern, not as a component.'
+  novelty_justification: 'high (NOT duplicate; previously only a forward-cite stub inside intake-667). First entry attacking the production-vs-sandbox MISALIGNMENT axis: benchmark-as-inference-framework, MacroEval (correctness x coverage x end-to-end-vs-vendor-baseline), compositional L1-4 hierarchy with reuse, and a quantified apparent-vs-real gain gap. The whole existing cluster is single-op, torch-baseline, sandbox evaluation.'
+  relevance_justification: medium. The MI210 program is bottlenecked on a ROCm BACKEND (667+668, which FastKernels neither provides nor improves — NVIDIA-only, no abstraction) and train-free CONTROLLERS (666+669, untouched). FastKernels contributes a later-stage EVALUATION GATE / scoring philosophy (evaluate the HIP kernel in a full forward pass vs rocBLAS/hipBLASLt/AITER, not an isolated op vs torch-eager). Valuable and aligned with chapters 06/07/08 and robust-kbench's honest-baseline lesson, but a Phase-5 fold-in, not the critical path, and not runnable on gfx90a as shipped.
+  verdict_justification: 'adopt_patterns. NVIDIA-only, no backend abstraction, no confirmed gfx90a-usable artifact (the github URL surfaced 404 at intake). Adopt as patterns: (1) the misalignment WARNING — operator-level/torch-baseline scores overstate real gains ~25pp; weight whole-model end-to-end speedup over single-op fast_p. (2) benchmark-as-framework — gate authored HIP kernels by injecting into a full torch-ROCm/llama.cpp forward pass with captured real EPYC-workload tensors + downstream-quality check. (3) MacroEval''s PRODUCTION/vendor-baseline discipline as the Phase-5 exit metric, layered on 667 fork + 668 hardening + 664 fast_p. Do NOT re-target 667 -> FastKernels as the backend.'
+  contradicting_evidence:
+  - 'NVIDIA-only with NO backend abstraction: no cheap seam to register a gfx90a/HIP backend; cannot be the ROCm backend, only a philosophy to emulate.'
+  - Strong COMMERCIAL framing (Snowflake AI Research / ex-DeepSpeed) — a benchmark doubling as 'our minimal inference framework at parity with vLLM/SGLang' carries product-positioning incentive; parity/1.24x claims author-reported.
+  - Very recent preprint (~2 weeks old at intake), no peer review or third-party replication; the 'agents underperform in production' headline rests on the authors' own framework being a faithful production proxy — unaudited.
+  - 'Agent/baseline-selection sensitivity: the negative result depends on which agents (Codex/KernelAgent/Dr. Kernel) and vendor baselines are chosen; the cluster''s actual lead controllers (EvoEngineer/KernelFoundry) are NOT evaluated, so ''<1x in production'' may not generalize.'
+  - 'GitHub repo unverified: the surfaced code URL returned HTTP 404 at intake — treat ''code available'' as unverified.'
+  notes: 'Ingested via /research-intake next-tier deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-667. The ''deploy-faithful evaluation'' capstone: adopt MacroEval''s production/vendor-baseline + whole-model eval philosophy as a Phase-5 exit gate; quantifies sandbox-vs-production gap (~25pp). Does NOT change backend (667) or controller (666/669) choice.'
+- id: intake-672
+  arxiv_id: '2605.26118'
+  url: https://arxiv.org/abs/2605.26118
+  source_type: paper
+  title: 'Xe-Forge: Multi-Stage LLM-Powered Kernel Optimization for Intel GPU'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - agent_architecture
+  - tool_implementation
+  - benchmark_methodology
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-669
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Marcin Spoczynski (Intel)
+  - Daniel Fleischer (Intel)
+  - Moshe Berchansky (Intel)
+  - Gabriela Ben-Melech Stan (Intel)
+  - Shira Guskin (Intel)
+  - Weilin Xu (Intel)
+  - Adam Siemieniuk (Intel)
+  - Alexander Heinecke (Intel)
+  key_claims:
+  - 'Train-free Triton-to-Triton optimizer: given a CORRECT Triton kernel, a linear multi-stage pipeline (up to 9-10 stages: analysis/algorithmic/discovery/dtype-fix/fusion/memory-access/block-pointers/persistent-kernel/GPU-specific/autotuning) rewrites it for faster Intel-GPU execution while preserving semantics. No fine-tuning, no RL; drives an off-the-shelf LLM via DSPy.'
+  - Methodology is NOT evolutionary/population-based (unlike KernelFoundry-669 MAP-Elites or EvoEngineer-666 flat-population). Each stage is a Chain-of-Verification-and-Refinement (CoVeR) agent — a DSPy module generating candidates, running 4-level verification (syntax/structure/correctness/performance) on REAL hardware, refining on concrete error feedback. Optional best-of-k. This is the core methodological delta vs the evolutionary cluster.
+  - 'Hardware-awareness = a curated STATIC knowledge base (84 YAML entries / 6 files): hard CONSTRAINTS (power-of-two warp counts, block dims <=256, GRF modes, SLM capacity, boundary_check typing) + 41 before/after PATTERNS + a runtime GPU Hardware Query System (EU/subslice/SLM via torch.xpu). Static-rule + query driven, NOT profiler-counter-gradient driven (contrast KernelFoundry''s unitrace/Nsight loop).'
+  - 'RELATIONSHIP TO KERNELFOUNDRY (669): SAME LAB (Intel) but DIFFERENT TEAM (Spoczynski/Heinecke et al. vs Wiedemann/Leboutet et al.). Xe-Forge CITES KernelFoundry as ''closest prior work to our Intel GPU setting, though it does not incorporate Intel-specific hardware constraints'' — a CONTEMPORARY COMPETITOR, NOT a successor; does NOT benchmark head-to-head. Different abstraction: Xe-Forge is Triton/XPU; KernelFoundry is SYCL+CUDA.'
+  - 'AMD relevance is INDIRECT-ONLY: zero AMD/ROCm/HIP target. But its related-work surfaces AMD-native Triton-kernel agents (GEAK / GEAK-v2 / GEAK-HIP, Apex target AMD Instinct/ROCm) and Kernel Tuner''s HIP backend — genuinely AMD-transferable prior art not yet in our index.'
+  techniques:
+  - Linear multi-stage refinement pipeline (up to 9-10 ordered optimization stages), each stage = one CoVeR agent
+  - 'Chain-of-Verification-and-Refinement (CoVeR): DSPy module, candidate-gen -> 4-level verification (syntax/structure/correctness/performance) on real HW -> error-feedback refine'
+  - 'Static hardware-awareness knowledge base: 84 YAML entries (hard constraints + 41 before/after transformation patterns) prompt-injected'
+  - Runtime GPU Hardware Query System via torch.xpu.get_device_properties() for shape-aware parameter tuning
+  - Triton-to-Triton semantics-preserving optimization (input is an already-correct kernel); best-of-k for high-value kernels; @triton.autotune terminal stage
+  reported_results:
+  - 1.17x geometric-mean speedup over PyTorch eager across 97 Level-2 KernelBench kernels
+  - 67% of kernels improved; 9 kernels exceeded 5x; maximum 82x
+  - 'Flash Attention: 2-13.3x across all tested configs with no regression'
+  - 'Hardware: single Intel Arc Pro B70 (Battlemage Xe2, 32 Xe2 cores / 256 XMX, 32 GB GDDR6, 608 GB/s); open-source IntelLabs/Xe-Forge'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2603.12440'
+  - '2507.23194'
+  - '2510.16996'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-669
+    - intake-666
+    - intake-662
+    - intake-664
+    - intake-667
+    - intake-668
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'LOW-DIRECT, MEDIUM-VIA-PATTERNS. Xe-Forge is hard-bound to Intel XPU (torch.xpu queries, Xe2/XMX/GRF/SLM constraint vocabulary, Arc Pro B70 only) — zero AMD/ROCm/HIP/CDNA path, hardware-awareness is a hand-curated Intel-rules YAML. What transfers as methodology: (1) the LINEAR MULTI-STAGE CoVeR controller as an alternative to the evolutionary lead path — a fixed ordered pipeline of single-purpose refinement agents (fusion, memory-coalescing, block-ptr, persistent-kernel, autotune), cheaper and more interpretable than MAP-Elites; (2) the STATIC HARDWARE-CONSTRAINT KNOWLEDGE-BASE idea — author a gfx90a rules/patterns YAML (wavefront=64, LDS sizing, MFMA tile constraints, VGPR/AGPR limits) as cheap prompt-injected hardware-awareness needing NO profiler counters (complements and DE-RISKS the CudaForge-662/KernelFoundry-669 profiler path the backend handoff calls the high-risk long pole); (3) Triton-to-Triton semantics-preserving framing — Triton has an AMD/ROCm backend, so the same pipeline could target gfx90a Triton with an AMD rules-KB swapped in (cleanest on-ramp, but an unproven bet; authors never test it). HIGHER-VALUE AMD signal: the related-work pointer to GEAK / GEAK-HIP (AMD''s own Triton-kernel agent for Instinct + a ROCm Triton benchmark) — flag for dedicated intake.'
+  relationship_to_kernelfoundry: 'SAME LAB (Intel), DIFFERENT TEAM, CONTEMPORARY COMPETITOR — NOT a successor, does NOT supersede 669. Distinct author groups. Xe-Forge cites KernelFoundry as ''closest prior work...does not incorporate Intel-specific hardware constraints'', framing itself as improving Intel hardware-awareness via an orthogonal mechanism (linear CoVeR + static constraint-KB) rather than KernelFoundry''s MAP-Elites QD + profiler-gradient. No head-to-head, so no measured ranking. OUR-LAYER IMPACT: do NOT replace KernelFoundry-669 in the hardware-awareness layer and do NOT cite Xe-Forge instead of 669. 669 stays the multi-vendor (SYCL+CUDA) evolutionary + profiler-gradient template AND stays paired with EvoEngineer-666 per the adopt-both decision. ADD Xe-Forge alongside as a SECOND Intel data-point contributing two distinct harvestable patterns absent from 669: (a) the linear-staged CoVeR controller archetype, (b) the static hardware-CONSTRAINT-KB (cheap, profiler-free hardware-awareness). Additive, not substitutive.'
+  novelty_justification: high (NOT duplicate; previously only a forward-reference inside intake-669). First index entry for a NON-evolutionary, LINEAR MULTI-STAGE LLM kernel optimizer — every prior cluster member (660-669) is RL-trained or population/archive evolutionary; Xe-Forge's CoVeR fixed-pipeline + 4-level verification + static hardware-constraint-KB + DSPy implementation is a new controller archetype. Also the first Triton-to-Triton semantics-preserving optimizer and the second Intel-GPU entry from a distinct team.
+  relevance_justification: 'medium (NOT high). Strong methodological transfer (linear CoVeR controller + static constraint-KB = profiler-free hardware-awareness on-ramp). Held below high because: (1) ZERO AMD/ROCm path — Intel XPU/Xe2-bound, no MI210 artifact; the AMD on-ramp is an unproven Triton-backend-swap bet; (2) it neither supersedes nor displaces the established lead path (666+669), so it does not change the controller decision — additive harvest; (3) modest headline (1.17x geomean over eager, a weak bar per 663); (4) the most MI210-actionable thing it surfaces is the GEAK pointer, not Xe-Forge itself.'
+  verdict_justification: 'adopt_patterns. ADOPT: (1) the linear multi-stage CoVeR controller (ordered single-purpose refinement agents + 4-level on-hardware verification + best-of-k) as a cheaper, more interpretable ALTERNATIVE controller archetype — record alongside 666/669; (2) the static hardware-CONSTRAINT-KB pattern (author a gfx90a rules/patterns YAML) as profiler-FREE prompt-injected hardware-awareness that complements and de-risks the 662/669 profiler-counter path. DECLINE: the Intel-XPU-bound KB contents, Arc-Pro-B70 specifics, any claim it ports to AMD as-is. Not superseding/superseded vs 669 (contemporary competitor). Highest-value FOLLOW-UP: a dedicated GEAK (2507.23194) intake — AMD''s own Triton/HIP kernel agent for Instinct with a ROCm benchmark, materially more MI210-relevant than Xe-Forge.'
+  contradicting_evidence:
+  - Zero AMD/ROCm/HIP/CDNA/MI210 evaluation; Intel-XPU-bound. The 'swap the rules-KB and retarget Triton to gfx90a' transfer is a design affordance, not a tested result.
+  - 'Modest headline: 1.17x geomean over PyTorch EAGER (weak bar per 663); 82x max and 5x-on-9-kernels are tail cases. No head-to-head vs KernelFoundry-669, torch.compile, or the AMD agents it cites.'
+  - Hardware-awareness is STATIC hand-curated rules (84 YAML), not a profiler-feedback loop — cheaper but brittle to new shapes/archs and requires human authoring per target.
+  - 2026 preprint, single lab (Intel) showcasing Intel Arc/Xe — mild vendor-positioning bias; no confirmed peer-reviewed venue, no independent replication.
+  - 4-level CoVeR verification is of unspecified strength; the robust-kbench-668 exploit classes (memory-reuse, eliminable-op, low-magnitude, single-shape overfit, inefficient-baseline) are NOT addressed — speedups gated by it are upper bounds until audited.
+  notes: 'Ingested via /research-intake next-tier deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-669. Same-lab/different-team contemporary competitor to KernelFoundry — does NOT supersede 669. Harvest: linear CoVeR controller archetype + static gfx90a-constraint-KB (profiler-free hardware-awareness, de-risks C4). KEY POINTER: surfaces GEAK (2507.23194), AMD''s own Triton/HIP kernel agent for Instinct + ROCm benchmark — the highest-value next intake candidate.'
+- id: intake-673
+  arxiv_id: '2602.19128'
+  url: https://arxiv.org/abs/2602.19128
+  source_type: paper
+  title: 'K-Search: LLM Kernel Generation via Co-Evolving Intrinsic World Model'
+  categories:
+  - hardware_optimization
+  - autonomous_research
+  - agent_architecture
+  - moe_optimization
+  - search_retrieval
+  novelty: high
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-666
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Shiyi Cao (UC Berkeley, Sky Computing Lab)
+  - Ziming Mao (UC Berkeley, Sky Computing Lab)
+  - Joseph E. Gonzalez (UC Berkeley)
+  - Ion Stoica (UC Berkeley)
+  key_claims:
+  - Reframes LLM kernel generation as search over a co-evolving 'intrinsic world model' (an explicit tree of natural-language optimization hypotheses + attached programs) rather than the LLM as a stochastic code generator inside a heuristic evolutionary loop — explicitly decoupling high-level algorithmic planning from low-level program instantiation.
+  - 'Train-free: the world model evolves purely by in-context learning over past observations (Insert/Update/Prune node ops + a [0,1] priority score per node); no fine-tuning or policy training. Single off-the-shelf frontier LLM drives the loop (Gemini-3-Pro-Preview / GPT-5.2).'
+  - Navigates non-monotonic optimization paths and is resilient to temporary implementation defects — can pursue multi-step structural transforms (e.g. refactor memory layout before vectorizing) where intermediate steps regress or fail to compile, the exact failure mode (mode collapse / premature pruning / context degradation) that flat-population evolutionary methods suffer.
+  - Outperforms SOTA evolutionary search baselines OpenEvolve and ShinkaEvolve by 2.10x average and up to 14.3x on complex MoE kernels, under a fixed 120-evaluation budget per kernel on FlashInfer GQA/MLA/MoE kernels.
+  - 'Achieves SOTA on the GPUMode TriMul leaderboard task: 1030 us on H100, surpassing both prior evolutionary methods and human-designed solutions. Open-source implementation released (github.com/caoshiyi/K-Search); controller is factored from the evaluator backend, mirroring the EPYC handoffs'' controller/backend split.'
+  techniques:
+  - LLM-guided evolutionary tree search with an explicit world-model state (Closed nodes = visited states w/ compiled program; Frontier/Open nodes = pending NL hypotheses)
+  - Co-evolving world model maintained by in-context learning (Insert / Update / Prune), no training
+  - Decoupled planning (high-level algorithmic intent relative to a parent program) vs program instantiation (local refinement)
+  - 'Three-phase iteration: Action Selection -> Program Instantiation -> World-Model Co-Evolution'
+  - Stagnation-limited local refinement (K=7 consecutive non-improvements before backtracking); dynamic per-node priority scoring in [0,1]
+  reported_results:
+  - 2.10x average speedup over SOTA evolutionary search (OpenEvolve, ShinkaEvolve) across FlashInfer GQA/MLA/MoE kernels
+  - Up to 14.3x speedup on complex MoE kernels specifically
+  - 'GPUMode TriMul: 1030 us on H100 — SOTA, beats prior evolution + human-designed'
+  - 'Evaluation budget: 120 evals/kernel (FlashInfer); 300 evals (TriMul, 150 GPT-5.2 + 150 Gemini-3-Pro)'
+  - 'Hardware: NVIDIA H100 / B200, CUDA 12.8 (no AMD/ROCm evaluated)'
+  referenced_arxiv_ids:
+  - '2510.03760'
+  - '2507.14111'
+  - '2507.05687'
+  - '2509.14279'
+  - '2511.01884'
+  - '2506.13131'
+  - '2412.19437'
+  - '2505.09388'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-666
+    - intake-669
+    - intake-662
+    - intake-668
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'Controller logic transfers fully; evaluator does not. K-Search has ZERO AMD/ROCm/HIP/MI210 content — all eval is H100/B200, CUDA 12.8, FlashInfer (CUDA). But the entire novelty is in the hardware-agnostic outer loop (world-model search tree, in-context evolution, planning/instantiation split); the only CUDA-bound layer is the verify+profile evaluator, which the EPYC handoffs ALREADY factored out into the ROCm child backend (rocm-verify-profile-backend.md). So K-Search drops onto the MI210 the same way EvoEngineer does: re-point its evaluator at the ROCm backend, re-derive the gfx90a profiler-metric subset. No NVIDIA dependency in the search algorithm. The 14.3x MoE result is especially relevant — MI210 frontdoor MoE-dispatch kernels are a named EPYC target. Open-source code (caoshiyi/K-Search) makes the port a real option.'
+  what_is_it: CONFIRMED a GPU-kernel-generation/search paper (UC Berkeley Sky Computing Lab — Cao/Mao/Gonzalez/Stoica). Squarely in the LLM-GPU-kernel-generation cluster, NOT an unrelated 'kernel search' (not OS-scheduler kernels, not kernel methods/SVMs). The 'world model' is an explicit search tree of optimization hypotheses+programs, NOT a neural simulator — distinct from the agentic-world-modeling papers already in the index.
+  controller_recommendation: 'adopt-patterns (do NOT replace EvoEngineer wholesale; do NOT ignore). K-Search is the strongest controller-tier delta since the 660-669 cluster: same single-GPU train-free envelope as the lead (EvoEngineer 666) but reports beating the same baselines (OpenEvolve/ShinkaEvolve) by 2.1x avg / 14.3x MoE via an explicit world-model search tree that decouples planning from implementation and tolerates temporary bugs — precisely the mode-collapse/premature-pruning failure EvoEngineer''s flat population and KernelFoundry''s QD archive each address only partially. Harvest three patterns into the lead controller design: (1) explicit hypothesis-tree state with NL planning intents separate from code (backtracking + multi-step structural transforms survive intermediate regressions/compile failures); (2) in-context Insert/Update/Prune world-model evolution with per-node [0,1] priority scoring; (3) stagnation-limited local refinement (K=7) before backtracking. This adds a THIRD candidate to the agentic-rocm-kernel-authoring.md controller decision. Because eval is NVIDIA-only and unreplicated, treat headline numbers as unverified and gate any ''switch lead controller to K-Search'' on reproducing it against our ROCm backend once the MI210 lands; until then adopt-patterns into the EvoEngineer-based design and keep EvoEngineer as the implemented lean baseline.'
+  novelty_justification: 'high — not a duplicate. The cluster (660-669) is entirely flat-population evolutionary, RL-trained, or Coder/Judge. K-Search introduces a genuinely different control structure: an explicit co-evolving world-model SEARCH TREE separating NL algorithmic planning from program instantiation, bug-tolerant across non-monotonic paths. New to the EPYC corpus and the paper''s central novelty, corroborated by ablations and the SOTA TriMul result.'
+  relevance_justification: high — the most decision-critical class of paper for the active hardware-gated kernel-authoring workstream. Train-free and single-GPU-feasible (matches MI210/no-cluster/opensource_only exactly), open-source, and its standout result is on MoE kernels — a named MI210 EPYC target (frontdoor MoE dispatch). Bears directly on the live 'which controller leads' decision in agentic-rocm-kernel-authoring.md, competing with EvoEngineer (666) and KernelFoundry (669).
+  verdict_justification: 'adopt_patterns (not adopt_component, not superseded, not replace). adopt_component is premature: released code is CUDA/FlashInfer-bound and unverified on ROCm; adopt the search-control PATTERNS into our train-free controller now, defer code/component adoption until reproduced on the MI210 backend. NOT ''superseded'' for EvoEngineer — K-Search never benchmarks EvoEngineer (only OpenEvolve/ShinkaEvolve), so a supersession claim would repeat the closure-inflation antipattern the memory flags; both remain train-free single-GPU candidates and the world-model-tree idea COMPOSES with EvoEngineer''s evaluator and KernelFoundry''s hardware-awareness layer. worth_investigating undersells it given the strong constraint-fit and open code.'
+  contradicting_evidence:
+  - Zero AMD/ROCm/HIP/MI210 evaluation — all numbers H100/B200 CUDA 12.8; transfer of 2.1x/14.3x to gfx90a is unproven and the profiler-metric subset must be re-derived for rocprof/Omniperf.
+  - No independent replication or peer review (2026 preprint); headline speedups single-group, self-reported.
+  - Best results use closed frontier models (Gemini-3-Pro-Preview, GPT-5.2); opensource_only governs deployment not analysis, but the magnitudes may depend on frontier-model planning quality — performance with our local coder/architect role is unmeasured and could be materially lower.
+  - 'Reward-hacking risk inherited from the cluster: a bug-TOLERANT search that pursues temporarily-incorrect intermediates raises the stakes on correctness-oracle/timing-integrity defenses (robust-kbench 668) — must be designed in.'
+  - Does not benchmark against EvoEngineer (666) or KernelFoundry (669) directly, so its relative standing vs the adopt-both pair is inferred (shared OpenEvolve/ShinkaEvolve baseline), not measured head-to-head.
+  notes: 'Ingested via /research-intake next-tier deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-666. STRONGEST controller-tier delta in the cluster: train-free co-evolving world-model search tree, open-source (github.com/caoshiyi/K-Search), 14.3x on MoE kernels (named MI210 target). Added as a THIRD lead-controller candidate (adopt-patterns); gate any ''switch lead'' on ROCm reproduction. Does NOT supersede EvoEngineer (never benchmarks it).'
+- id: intake-674
+  arxiv_id: '2507.23194'
+  url: https://arxiv.org/abs/2507.23194
+  source_type: paper
+  title: 'GEAK: Introducing Triton Kernel AI Agent & Evaluation Benchmarks'
+  categories:
+  - agent_architecture
+  - hardware_optimization
+  - benchmark_methodology
+  - autonomous_research
+  - tool_implementation
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-672
+  ingested_date: '2026-06-03'
+  verdict: adopt_component
+  authors:
+  - Jianghui Wang (AMD)
+  - Vinay Joshi (AMD)
+  - Saptarshi Majumder (AMD)
+  - Xu Chao (AMD)
+  - Bin Ding (AMD)
+  - Ziqiong Liu (AMD)
+  - Pratik Prabhanjan Brahma (AMD)
+  - Dong Li (AMD)
+  - Zicheng Liu (AMD)
+  - Emad Barsoum (AMD)
+  key_claims:
+  - First AMD-native, ROCm-targeted agentic framework for generating performant Triton GPU kernels for AMD Instinct hardware (MI250X / MI300X), train-free over off-the-shelf frontier LLMs (GPT-4.1, GPT-4o, Gemini-2.5 Pro, Claude 3.7 Sonnet, o1).
+  - Four-module agent (Generator; Evaluator [cascaded functional-then-performance]; Reflector [Reflexion-style verbalized episodic memory]; Optimizer [LLM-as-Optimizer over historical perf metrics]) with 1-shot code-similarity retrieval, knowledge injection of hardware specs/optimization principles, and a debugging-trap guard (max_perf_debug_num).
+  - Raises kernel-gen correctness from <15% (direct prompting) to 54.89% execution accuracy on TritonBench-revised (MI300X) and 63.33% on the new 30-kernel ROCm Triton benchmark, with up to 2.59x average speedup over reference kernels.
+  - 'Ships TWO open benchmarks: TritonBench-revised (184 kernels, 37 fixed for AMD compliance, tolerance-based comparison, seeded, large/32K randomized inputs, halt-on-mismatch) and a ROCm Triton benchmark (30 expert-validated kernels harvested from ROCm/triton, aiter, aotriton, vllm, pytorch, xformers, bitsandbytes, TransformerEngine).'
+  - 'Inference-time compute scaling is the core lever: sequential refinement improves MI250 exec accuracy 13.04% (iter0) -> 44.02% (iter19); parallel sampling (temp=1) scales near log-linearly to Pass@10 = 91.85% call / 54.89% exec on MI300X TritonBench and 80.00% call / 63.33% exec on the ROCm bench.'
+  - Correctness is strictly gated (speedup reported only after passing unit tests with tolerance comparison); GEAK beats both direct-prompting and a Reflexion-only baseline. Agent (MIT) and eval framework are open-sourced.
+  techniques:
+  - Train-free agentic generate->evaluate->reflect->optimize loop over off-the-shelf LLMs
+  - Reflexion-style verbalized self-reflection in episodic memory
+  - Cascaded evaluator (functional correctness gate then performance assessment)
+  - 1-shot in-context exemplar via CODE-similarity retrieval (not instruction similarity)
+  - Knowledge injection (hardware specs + optimization principles, RAG-style)
+  - LLM-as-Optimizer over historical performance metrics
+  - Sequential iterative refinement (up to 19 iters) + parallel temperature-1 sampling (best-of-K)
+  - Debugging-trap prevention via max_perf_debug_num; tolerance-based oracle with large randomized (32K) seeded inputs, halt-on-mismatch
+  reported_results:
+  - 'Direct-prompt baselines (0-shot/1-shot exec accuracy): GPT-4.1 8.70%/14.13%; GPT-4o 7.07%/9.24%; Gemini-2.5 Pro 14.13%/16.85%; Claude 3.7 7.07%/15.22% (all <15%)'
+  - 'GEAK TritonBench-revised: MI250(X) 52.72% exec / 2.42x; MI300X 54.89% exec / 2.59x'
+  - 'GEAK ROCm Triton benchmark (MI300X): 63.33% exec / 0.92x speedup (already-tuned references)'
+  - 'Sequential scaling (MI250, iter0->iter19): call 21.2%->63.04%; exec 13.04%->44.02%; speedup 1.02x->1.55x'
+  - 'Parallel/Pass@K: MI250 Pass@1 56.52% exec; MI300X TritonBench Pass@10 91.85% call / 54.89% exec; MI300X ROCm Pass@10 80.00% call / 63.33% exec'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-662
+    - intake-664
+    - intake-666
+    - intake-667
+    - intake-668
+    - intake-669
+    - intake-672
+    - intake-673
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: 'HIGHEST in the entire cluster — the first AMD-native, ROCm-targeted reference ingested. Unlike intake-660-673 (all NVIDIA/CUDA, value=methodology only), GEAK ships a working ROCm/Triton stack: the agent emits Triton compiled through ROCm for Instinct, the eval framework''s correctness oracle (torch.allclose on torch-ROCm) and timing already run on AMD, and the two benchmarks are AMD-validated. The C1 (build), C2 (correctness oracle), C3 (timing/speedup), and C5 (benchmark/task-suite) components our rocm-verify-profile-backend handoff scopes as ROCm engineering are ALREADY IMPLEMENTED and open-sourced here (GEAK-eval). Only C4 (gfx90a profiler-metric subset) and C6 (anti-reward-hacking, which GEAK lacks) remain net-new. Caveat: GEAK targets Triton-level codegen; our llama.cpp fork ultimately wants hand-HIP too — Triton is the on-ramp, not the whole path (the GEAK-HIP blog extends to HIP).'
+  mi210_gfx90a_applicability: 'DIRECTLY APPLICABLE — the single strongest finding of the whole intake. MI250X is CDNA2 / gfx90a, the SAME ISA family as our incoming MI210 (also CDNA2 / gfx90a; single-GCD vs MI250''s dual-GCD). GEAK reports a dedicated MI250X result line (52.72% exec / 2.42x on TritonBench-revised), so the headline correctness+speedup are demonstrated ON gfx90a, not only MI300X (gfx942/CDNA3). Implications: (1) GEAK''s generated Triton kernels + entire eval/correctness/timing harness should run on MI210 with near-zero re-targeting (same wavefront=64, MFMA, LDS semantics; only per-GCD partitioning + clock/HBM BW differ; MI210 is roughly one MI250 GCD). (2) The ROCm Triton benchmark (30 kernels) is gfx90a-compatible. (3) Re-tuning needed is autotune/tile-level only (MI210 single-GCD has ~half MI250X aggregate BW), NOT architectural — the agent''s optimizer loop handles exactly this. (4) Only the ROCm-bench MI300X-only number (63.33%) and 32K timing need an MI210 re-run to confirm, no porting. Materially more reusable on MI210 than the entire NVIDIA cluster, none of which produces a runnable AMD artifact.'
+  is_train_free: YES — fully train-free / agentic. Trains nothing; an agentic scaffold (generator/evaluator/reflector/optimizer + 1-shot retrieval + knowledge injection + inference-time scaling) over off-the-shelf frontier LLMs. All gains from inference-time compute scaling, not weight updates. Matches our single-MI210 constraint exactly.
+  open_source_status: 'Agent: github.com/AMD-AIG-AIMA/GEAK-agent (a.k.a. AMD-AGI/GEAK), MIT License. NO model weights (routes to external LLM APIs via LiteLLM — OpenAI/Anthropic/AMD LLM Gateway/any LiteLLM provider, so a local model can be plugged for opensource_only). Eval/benchmark: github.com/AMD-AIG-AIMA/GEAK-eval (TritonBench-revised + ROCm Triton benchmark; verify LICENSE, likely MIT). Research-use disclaimer. NOTE: the live GEAK-agent repo HEAD has advanced past the July-2025 paper to v2-era subagents (flydsl, gemm-tuning, fp8-gemm-tuning, gpt-5/claude-opus model strings) — pin a paper-matching commit before treating repo code as the paper''s artifact.'
+  agent_architecture_detail: 'Four cooperating modules in an iterative loop. (1) GENERATOR: produces Triton from query + injected context (hardware specs, optimization principles) + a 1-shot exemplar retrieved by CODE similarity from kernel datasets. (2) EVALUATOR: cascaded — functionality/correctness gate (compile=''call accuracy''; pass all unit tests under tolerance comparison with seeded large/32K inputs, halt-on-mismatch=''execution accuracy'') then performance assessment (median-latency speedup vs reference). (3) REFLECTOR: Reflexion-style — analyzes failure/error traces, writes verbalized feedback into episodic memory; debugging-trap guard (max_perf_debug_num) caps unproductive debug spirals. (4) OPTIMIZER: LLM-as-Optimizer — latency/efficiency strategies conditioned on historical perf metrics of prior candidates. Scaling: SEQUENTIAL refinement (up to 19 iters) + PARALLEL temp=1 sampling (best-of-K, near log-linear Pass@K). Beats a Reflexion-only ablation, so Optimizer + retrieval + knowledge-injection add value beyond plain reflection.'
+  benchmark_detail: 'TWO open benchmarks (GEAK-eval), both Triton. (A) TritonBench-revised: 184 kernels from TritonBench-G; AMD fixed 37 that errored on AMD GPUs, added tolerance-based comparison, consistent seeding, large randomized inputs up to 32K with halt-on-mismatch so speedups are only reported after correctness. (B) ROCm Triton benchmark: 30 expert-validated real-world kernels harvested from open AMD repos (ROCm/triton, aiter, aotriton, vllm, pytorch, xformers, bitsandbytes, TransformerEngine) — production-grade, harder, lower speedups (0.92x). Metrics: Call Accuracy (compiles/runs), Execution Accuracy (passes all unit tests), Speedup (reference median / generated median). Baselines: direct prompting (0/1-shot) + a Reflexion-only pipeline. Run on MI250X (gfx90a) AND MI300X (gfx942).'
+  controller_or_component_recommendation: ADOPT_COMPONENT — make GEAK-eval the primary AMD-native BENCHMARK + ORACLE + TIMING backend for rocm-verify-profile-backend.md (C1/C2/C3/C5), displacing the from-scratch MultiKernelBench-fork (intake-667) as the primary substrate; retain MultiKernelBench only for its multi-vendor @register_backend abstraction if non-AMD backends are ever wanted, and layer our own fast_p tiering on top. GEAK's 4-module agent is a strong adopt-patterns reference and a 4th controller candidate, but does NOT auto-displace the EvoEngineer(666)+KernelFoundry(669) evolutionary lead or K-Search(673) — GEAK is sequential+parallel best-of-K, not population/QD; harvest its Optimizer + code-similarity-1-shot + knowledge-injection + debugging-trap-guard + Reflexion-memory as patterns. GEAK has NO anti-reward-hacking layer (loose tolerance oracle) — robust-kbench(668) C6 hardening remains mandatory and is our net-new value. C4 gfx90a profiler-metric selection stays the standing research risk (GEAK is optimizer-driven, not counter-fed; Xe-Forge(672) static-constraint-KB de-risk applies).
+  geak_v2_followup: No dedicated arXiv ID yet (blog-only as of Dec 2025). GEAK-v2 family = GEAK-OptimAgentv2 (instruction->Triton; multi-offspring evolution + LLM evaluator + hardware-aware feedback; +9.76% accuracy over v1, avg 3.32x) and GEAK-OpenEvolve (Triton->Triton Quality-Diversity over thousands of variants; avg 3.42x on TritonBench-modified, 7.02x on ROCm-bench; 1.02x-11.23x per kernel). v2 evaluated on MI300X (192GB) + MI325X (256GB) — NOT yet on MI250/gfx90a. Also a GEAK-HIP blog (HIP-code optimization). Flag GEAK-v2 family + GEAK-HIP for a dedicated follow-up intake; watch arXiv for a v2 paper. Repo HEAD already contains v2 code.
+  novelty_justification: high — NOT a duplicate (2507.23194 appears in the index only as a forward-pointer inside intake-672/673). First AMD-native/ROCm/Triton kernel-generation reference in the index; first to provide a runnable gfx90a correctness+timing harness and two AMD-validated benchmarks (incl. a real-world ROCm-repo benchmark); first first-party Instinct kernel agent. Distinct from the NVIDIA cluster (660-673) which produces no AMD artifact, and from KernelCraft (670, AIE-ML NPU/Peano, different stack).
+  relevance_justification: high — directly hits the MI210/gfx90a hardware gate. AMD-native, ROCm-targeted, train-free, with demonstrated MI250X (gfx90a) results that transfer near-directly to the MI210, plus open MIT agent + open eval/benchmarks. The most decision-relevant single reference for both active GPU handoffs (controller + backend), materially more so than any NVIDIA-cluster paper.
+  verdict_justification: adopt_component — GEAK-eval is a concrete, MIT/open, gfx90a-runnable benchmark+oracle+timing backend we adopt as the C1/C2/C3/C5 substrate (displacing the from-scratch MultiKernelBench-fork as primary), and the GEAK agent supplies patterns + a 4th controller candidate. Not 'already_integrated' (not yet wired), not mere 'adopt_patterns' (a directly reusable AMD artifact exists, not just methodology), not 'new_opportunity' (slots into existing handoffs). The net-new work we still own — robust-kbench anti-hacking (C6) and gfx90a profiler-metric selection (C4) — are precisely GEAK's gaps, confirming complementary adoption.
+  contradicting_evidence:
+  - 'Commercial bias: AMD authors a benchmark, agent, AND the hardware it promotes; AMD itself fixed the 37 ''failing'' TritonBench kernels. Treat the <15%->63% delta as vendor-reported until independently reproduced.'
+  - No independent third-party replication — every source (arXiv, ROCm blogs, GitHub, mirrors) traces to AMD; Tier-2b surfaced zero external critique or reproduction.
+  - 'Loose correctness oracle: tolerance-based torch.allclose, seeded inputs, NO backward-pass / anti-reward-hacking defenses — exactly the gameable gate robust-kbench(668) showed inflates speedups; GEAK''s 2.59x is uncertified against the exploit catalogue.'
+  - 'Weak baseline on the production benchmark: ROCm-bench speedup is only 0.92x (SLOWER than already-tuned ROCm references) — corroborates FastKernels(671): wins evaporate vs honest vendor baselines; the 2.59x headline is vs less-tuned TritonBench references.'
+  - 'Repo drift: GEAK-agent HEAD is the Dec-2025 v2 codebase, NOT the July-2025 paper''s 4-module agent — pin a commit/tag matching the paper.'
+  - 'MI250X dual-GCD != MI210 single-GCD: the 52.72%/2.42x gfx90a numbers used dual-GCD aggregate bandwidth; MI210 (~one GCD, ~half aggregate BW) needs autotune re-tuning and may show lower absolute speedups even though correctness/portability carry over.'
+  notes: 'Ingested via /research-intake GEAK keystone deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-672. THE keystone AMD-native reference: train-free Triton agent + two open MIT benchmarks, evaluated ON gfx90a (MI250X = MI210''s ISA family) => C1/C2/C3/C5 of rocm-verify-profile-backend.md largely ALREADY BUILT and gfx90a-runnable. GEAK-eval becomes the primary AMD backend substrate; our net-new = C6 anti-hacking + C4 profiler-metric. Follow-up: GEAK-v2 (OptimAgentv2 + OpenEvolve) + GEAK-HIP. Repos: AMD-AIG-AIMA/GEAK-agent + GEAK-eval (MIT).'
+- id: intake-675
+  arxiv_id: null
+  url: https://github.com/AMD-AGI/Apex
+  source_type: repo
+  title: 'Apex: GPU Kernel Optimization Pipeline (AMD-AGI) — agents + RL environment for optimizing GPU kernels on AMD ROCm via LLM agents'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - autonomous_research
+  - tool_implementation
+  - training_distillation
+  - benchmark_methodology
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-672
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - AMD-AGI (Advanced Micro Devices, Inc.)
+  key_claims:
+  - 'End-to-end pipeline: benchmarks LLM serving workloads (vLLM/SGLang/aiter), profiles to rank bottleneck kernels by GPU time, optimizes the hot ones via an LLM coding agent, then hot-patches the result back into site-packages for a final E2E re-benchmark — closing the loop from real serving workload to deployed kernel.'
+  - 'Agent-backend agnostic: drives Claude Code, OpenAI Codex, or Cursor Agent as the optimizing coder (no bespoke trained kernel model required; pluggable, so a local model can be substituted for opensource_only).'
+  - Magpie grading framework scores each candidate on a piecewise reward = compiled*20 + correct*100 + speedup_score(S), with a regression penalty for S<1.0; AST-based anti-tampering detection guards against fabricated/reward-hacked results.
+  - Exposes 5 MCP servers (source-finding, kernel RAG, GPU-info, fusion detection, evaluation) as the agent's tool surface — an MCP-native tool vocabulary rather than ad-hoc scripts.
+  - 'Train-free in operation but RL-ready: records agent trajectories and can export them as RL/SFT datasets (export-rl) for downstream fine-tuning; framed explicitly as an ''RL environment''.'
+  - Hot-patching swaps optimized Python/Triton kernels in installed packages (aiter/vLLM/SGLang) with Triton JIT auto-recompiling on next invocation — no rebuild required. Supported targets include gfx950 (MI355X/CDNA4 default), gfx942/gfx940 (MI300X/MI300A/CDNA3) AND gfx90a (MI250X/CDNA2).
+  techniques:
+  - Workload profiling + GPU-time ranking to select bottleneck kernels
+  - LLM-agent code generation (Triton + HIP) via MCP tool discovery
+  - Kernel RAG (retrieval over a kernel knowledge base) MCP server
+  - 'Magpie multi-modal scoring: compilation gate (+20) + correctness gate vs baseline unit tests (+100) + piecewise speedup reward'
+  - AST-based anti-tampering / anti-reward-hacking validation
+  - Runtime kernel hot-patching into site-packages; fusion-opportunity detection MCP server
+  - Trajectory recording + RL/SFT dataset export
+  reported_results:
+  - 'all_reduce (HIP, multi-GPU library_test): 36.35x speedup, Magpie score 7290 (multi-GPU — NOT reproducible on single MI210)'
+  - 'fused_moe (Triton, pytorch mode): 1.14x speedup, score 248'
+  - 'rms_norm (Triton, pytorch mode): 1.05x speedup, score 674'
+  - 'gemm_bf16 / silu_mul / act_quant_fp8 / kv_cache_ops: 1.00x (validation pass), score 220'
+  - 12 kernel types supported across Triton/HIP (flash_attn_prefill, paged_attn_decode, mla_attn, fused_moe, rms_norm, rope_embedding, kv_cache_ops, act_quant_fp8, silu_mul, gemm_w8a8, gemm_bf16, all_reduce)
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    - gpu-acceleration-path.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries:
+    - intake-660
+    - intake-662
+    - intake-664
+    - intake-666
+    - intake-668
+    - intake-673
+    - intake-674
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  - rocm-verify-profile-backend.md
+  handoffs_created: []
+  amd_rocm_transferability: Maximal — not a transfer problem, it IS AMD-native ROCm. Written by AMD-AGI explicitly for ROCm/HIP/Triton on Instinct. Build (hipcc/Triton), correctness oracle (torch-ROCm), profiling (GPU-time ranking on real ROCm serving workloads), and reward (Magpie compile/correct/speedup) all already on the ROCm toolchain — eliminating the entire CUDA->ROCm porting tax (hipify, rocprof re-derivation, ROCm KernelBench fork) every NVIDIA cluster paper imposes. The MCP tool surface, Magpie piecewise reward, AST anti-tampering gate, and hot-patch-into-site-packages mechanism are directly droppable into rocm-verify-profile-backend.md. MIT-licensed and opensource_only-compatible (base coder can be our local coder role rather than Claude/Codex SaaS — the agent backend is pluggable).
+  mi210_gfx90a_applicability: 'DIRECTLY APPLICABLE — Apex''s supported-target list explicitly includes gfx90a (MI250X, CDNA2), the SAME ISA family as our MI210 (gfx90a, CDNA2, 64GB). gfx950 (MI355X/CDNA4) is default and gfx942/gfx940 (MI300X/CDNA3) also listed, but gfx90a support means Apex should run on the MI210 with at most a target-triple change — far closer than any NVIDIA paper. Caveats to verify once the MI210 lands: (1) Apex optimizes by hot-patching aiter/vLLM/SGLang serving workloads — those packages'' ROCm wheels must build for gfx90a (some AITER kernels are CDNA3-tuned and may lack gfx90a paths); (2) MI210 is single-GPU, so the 36.35x all_reduce (multi-GPU collective) is not reproducible — focus on the single-GPU Triton kernels (fused_moe, rms_norm, paged_attn_decode, mla_attn) which are exactly the EPYC-frontdoor MoE/attention targets named in gpu-drafter-mi200-investigation.md; (3) per FastKernels(671), Apex''s E2E re-benchmark-on-real-workload design is the GOOD philosophy — it scores in a full serving pass, avoiding the ~25pp sandbox-overstatement trap.'
+  relationship_to_geak: 'Sibling, not competitor — both are AMD-AGI (github.com/AMD-AGI hosts Apex, GEAK, GEAK-HIP). GEAK (intake-674) is the from-scratch Triton-kernel GENERATOR + benchmark suite. Apex is the END-TO-END OPTIMIZATION PIPELINE on a real serving workload: profile -> select bottleneck -> optimize EXISTING kernel -> hot-patch -> re-benchmark E2E. GEAK answers ''can an agent write a correct fast Triton kernel for a spec''; Apex answers ''given a live vLLM/SGLang/aiter deployment, which kernels are worth optimizing and does optimizing them improve real throughput''. They compose: GEAK/GEAK-HIP could be the per-kernel generator Apex''s pipeline dispatches and grades via Magpie. For us, GEAK is the keystone for kernel-gen technique; Apex is the keystone for the verify+profile+DEPLOY harness (Magpie scorer, MCP tool surface, hot-patch deploy, RL-trajectory export) — arguably MORE relevant to rocm-verify-profile-backend.md than any single controller paper because it IS a working ROCm harness.'
+  identity_resolution: 'HIGH confidence. Resolved to github.com/AMD-AGI/Apex — MIT-licensed, from AMD-AGI (same org as GEAK/GEAK-HIP). Two WebSearches + a direct README WebFetch confirm: (a) it is the AMD/ROCm GPU-kernel-optimization ''Apex'', NOT the NVIDIA Apex mixed-precision library nor other ''Apex'' products; (b) a GitHub repo / RL-environment + agent pipeline, NOT an arXiv paper (no arXiv ID); (c) explicitly targets AMD Instinct gfx950/gfx942/gfx940/gfx90a. Matches the Xe-Forge(672) related-work mention and the ''Also adjacent: Apex'' pointer already in agentic-rocm-kernel-authoring.md.'
+  novelty_justification: 'Medium. Constituent ideas are not individually new to the index — train-free agentic generate/compile/verify/profile loops (660/662/666/669), profiler-fed bottleneck selection, discrete anti-reward-hack scoring (668), benchmark scoring contracts (664). Genuinely new for us: (1) the first AMD-NATIVE ROCm/HIP/Triton end-to-end harness in the index (everything prior is NVIDIA/Intel, requiring a porting tax); (2) the E2E real-serving-workload -> profile -> hot-patch-into-site-packages -> re-benchmark loop closes the deployment gap (operationalizes the FastKernels/671 critique); (3) the MCP-server tool surface is a more concrete tool vocabulary than the CUDA papers'' ad-hoc scripts. Not high (paradigm is the established train-free loop); not low/duplicate (no AMD-native harness exists in the index).'
+  relevance_justification: 'High. The MI210 (gfx90a, CDNA2, ~July 2026) program is building exactly this — a train-free agentic verify+profile loop for ROCm/HIP/Triton kernels. Apex is the single most directly-applicable artifact in the cluster: AMD-native, ROCm-toolchain-complete, gfx90a-supported (same ISA as MI210), MIT, agent-backend-pluggable (opensource_only-compatible), and it already implements components the child backend handoff lists as work-to-do (correctness oracle, speedup reward, profiler-driven selection, deploy-and-re-bench). Explicitly flagged as a follow-up pointer in the handoff. Minor discounts only (some results multi-GPU/CDNA3-default, not single-MI210).'
+  verdict_justification: 'adopt_patterns (bordering adopt_component). Adopt: (1) the Magpie piecewise reward (compiled*20 + correct*100 + piecewise speedup with regression penalty) and AST anti-tampering as the ROCm-native scoring + reward-integrity layer for rocm-verify-profile-backend.md — more directly usable than re-deriving from KernelBench/robust-kbench since it already runs on ROCm; (2) the E2E profile -> hot-patch -> re-benchmark deployment loop as the Phase-5 ''real workload'' exit gate (operationalizes the FastKernels critique); (3) the 5-server MCP tool surface as the agent tool vocabulary, swapping the SaaS agent backend for our local coder role; (4) the trajectory -> RL/SFT export path as optional future data curation (composes with ConCuR-665). Not full adopt_component yet because it must be validated on real gfx90a/MI210 (supported-target lists gfx90a but demonstrated results lean CDNA3/CDNA4 + multi-GPU; aiter gfx90a coverage unverified). Apex does NOT supersede the EvoEngineer(666)+KernelFoundry(669) controller decision — it is a HARNESS, not a search controller; the lead controllers could run inside/alongside it. Recommend: when the MI210 lands, spike Apex on gfx90a as the candidate ROCm harness backbone with our coder role as the agent backend.'
+  contradicting_evidence:
+  - 'Repo, not a peer-reviewed paper: no arXiv ID, no formal methodology/statistical rigor, no independent replication — credibility_score null per rubric. Reported speedups are README example runs, not a controlled benchmark.'
+  - Headline 36.35x (all_reduce) is a multi-GPU HIP collective, NOT reproducible on a single MI210; the single-GPU Triton results that matter are modest (fused_moe 1.14x, rms_norm 1.05x, several 1.00x validation-only).
+  - gfx90a is on the supported list but default/demonstrated targets are gfx950 (CDNA4) and gfx942 (CDNA3); MI210/gfx90a (CDNA2) is the OLDEST listed arch — some patterns (MFMA tile shapes, FP8 paths) are CDNA3+-specific and may not apply or regress on CDNA2. Verify on real hardware.
+  - Operates by hot-patching aiter/vLLM/SGLang ROCm wheels — those must build for gfx90a; AITER has CDNA3-tuned kernels that may lack gfx90a code paths, breaking the profile/patch loop on the MI210.
+  - Agent backends as shipped are SaaS (Claude Code/Codex/Cursor) — opensource_only requires swapping a local model; the README does not demonstrate a local-model backend, so that integration is unproven work.
+  - AST anti-tampering catches fabricated results but not all functional reward-hacks (shape-hardcoding, library-passthrough, dropped-ops); correctness-gate input-shape coverage must be audited.
+  notes: 'Ingested via /research-intake GEAK keystone deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-672. AMD-AGI MIT repo (github.com/AMD-AGI/Apex). The keystone AMD-native HARNESS reference (vs GEAK the keystone generator): profile-real-workload -> optimize -> hot-patch-into-site-packages -> re-benchmark E2E; Magpie reward + AST anti-tampering + 5 MCP servers + RL-trajectory export. Explicitly supports gfx90a (MI210 family). Adopt Magpie scorer + hot-patch deploy-gate + MCP tool surface into rocm-verify-profile-backend.md; spike on real gfx90a when MI210 lands.'
+- id: intake-676
+  arxiv_id: '2512.09196'
+  url: https://github.com/RLsys-Foundation/TritonForge
+  source_type: repo
+  title: 'TritonForge: LLM-Powered PyTorch-to-Triton Kernel Synthesis via SFT+RL (repo) / Profiling-Guided Framework for Automated Triton Kernel Optimization (arXiv 2512.09196)'
+  categories:
+  - hardware_optimization
+  - agent_architecture
+  - training_distillation
+  - autonomous_research
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  discovered_via: expansion
+  expanded_from: intake-672
+  ingested_date: '2026-06-03'
+  verdict: adopt_patterns
+  authors:
+  - Haonan Li (UC Riverside)
+  - Zhiyun Qian (UC Riverside)
+  - Keyu Man (Meta)
+  - Partha Kanuparthy (Meta)
+  - Wei Sun (Meta)
+  - Sreen Tallam (Meta)
+  - Chenguang Zhu (Meta)
+  - Kevin Zhu (Meta)
+  - Hanning Chen (UC Irvine)
+  - RLsys-Foundation (repo org)
+  key_claims:
+  - 'REPO FACE: trains an LLM (Qwen3-8B fine-tune) to convert PyTorch ops into optimized Triton kernels via two-stage SFT (~17k filtered KernelBook pairs) + multi-turn RL with compilation/correctness feedback, on a fixed/improved fork of the SLIME RL framework.'
+  - 'Cross-platform NVIDIA + AMD: NVIDIA H100 (80GB) and AMD MI300X (192GB, gfx942/CDNA3, ROCm 6.3.4+) Docker images and verified setups; AMD path covers SGLang rollout-inference AND Megatron RL training (6-8 GPUs).'
+  - Multi-turn RL gives ~15-20% improvement over single-turn; SFT-only Qwen3-8B reaches ~18% pass@1 on KernelBench L1, ~8% on L2.
+  - 'PAPER FACE (2512.09196): a TRAIN-FREE, profiling-guided optimization loop using off-the-shelf Gemini-2.5-Pro + NVIDIA Nsight Compute metrics feeding iterative code transformation; up to 5x speedup, 1.76x avg on successes, 42.7% success on TritonBench, ~3.2 iters, ~22 min, ~$1.20/kernel on H100.'
+  - 'Open-source (Apache 2.0): training datasets, Qwen3-8B checkpoint on HuggingFace, full SLIME RL implementation, NVIDIA+AMD Docker images released.'
+  - 'Acknowledged failure modes: LLM trapped in semantically-equivalent, performance-neutral variants (shallow exploration); weak gradient-like feedback from profiling; AMD MI300X multi-turn RL crashes within 2 steps (CPU 100%, node unresponsive, root cause unknown).'
+  techniques:
+  - Supervised fine-tuning on PyTorch->Triton pairs (KernelBook ~17k)
+  - Multi-turn reinforcement learning with compilation + correctness + (paper) profiling reward
+  - SLIME RL framework (async rollout, multi-turn) — fixed/improved fork
+  - Profiling-guided iterative refinement (Nsight Compute / CUDA-events; static AST analysis + resource-usage estimation) [paper face]
+  - Subprocess isolation / fault-aware remediation for memory faults
+  - Off-the-shelf frontier LLM (Gemini-2.5-Pro) in the train-free paper face
+  reported_results:
+  - 'TritonBench (paper): 42.7% success, 1.76x avg speedup on successes, up to 5x (95x outlier), 3.2 avg iters, ~22 min, $1.20/kernel — NVIDIA H100'
+  - 'KernelBench (repo): SFT-only ~18% L1 / ~8% L2 pass@1; multi-turn RL +15-20% over single-turn'
+  - '>=5% speedup achieved in ~34% of kernels vs ~11% for a static baseline'
+  referenced_arxiv_ids:
+  - '2502.10517'
+  - '2507.23194'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-rocm-kernel-authoring.md
+    - rocm-verify-profile-backend.md
+    - gpu-drafter-mi200-investigation.md
+    experiments: []
+    intake_entries:
+    - intake-666
+    - intake-669
+    - intake-672
+    - intake-673
+    - intake-660
+    - intake-661
+    - intake-662
+    - intake-663
+    - intake-665
+    - intake-674
+  handoffs_updated:
+  - agentic-rocm-kernel-authoring.md
+  handoffs_created: []
+  amd_rocm_transferability: 'REAL but NARROWER than Xe-Forge''s grouping implies, and on the WRONG GPU family for us. TritonForge ships a genuine, verified AMD ROCm path — Apache-2.0, ROCm 6.3.4+/HIP 6.3+, AMD Docker image, PYTORCH_ROCM_ARCH=gfx942, covering BOTH SGLang rollout-inference and Megatron RL training. Triton''s AMD/ROCm backend IS the on-ramp (Torch->Triton, same kernel language re-compiled per gfx target), so the train-free PAPER loop (profiling-guided iterate-on-Triton) is the genuinely transferable, MI210-runnable half. BUT: (1) the headline repo contribution is an SFT+RL TRAINED policy — out of reach on a single 64GB MI210 (their AMD RL needs 6-8 MI300X); (2) the AMD multi-turn RL path is explicitly UNSTABLE (crashes within 2 steps); (3) hardware-awareness in the paper face is Nsight-counter-bound and must be re-derived for rocprof/Omniperf (same tax as CudaForge-662 / KernelFoundry-669).'
+  mi210_gfx90a_applicability: 'LOW-DIRECT. TritonForge''s AMD support is verified ONLY on MI300X = gfx942 / CDNA3, NOT on gfx90a / CDNA2 (MI210/MI250). PYTORCH_ROCM_ARCH is hard-set to gfx942; no MI210/MI250/gfx90a validation exists. Triton recompiles per-arch so a gfx90a target is plausible, but their tuned tile/block recipes, MI300X-specific env (HSA_ENABLE_SDMA=0, GPU_MAX_HW_QUEUES=1), and 192GB-HBM assumptions do not transfer unverified to a 64GB gfx90a card. Reusable on MI210: the train-free profiling-guided iterate-on-Triton loop (paper face) as methodology, the SFT data-curation recipe (offline, not on the MI210), and the Triton-as-portability insight. The trained Qwen3-8B checkpoint is gfx942-tuned and not a drop-in for gfx90a.'
+  relationship_to_geak: SIBLING / COMPLEMENT, not competitor or successor — different niches. GEAK (674) is a TRAIN-FREE agentic inference-time-scaling loop validated NATIVELY on AMD Instinct (MI250X gfx90a + MI300X) with a published ROCm Triton benchmark. TritonForge's repo face is an SFT+RL TRAINING pipeline (differentiator = trained policy + SLIME infra), with AMD as a secondary/unstable backend on gfx942 only and no gfx90a coverage; its paper face is a train-free PROFILING loop on NVIDIA only. So for our MI210 plan GEAK dominates on AMD-nativeness and gfx90a-proximity (CDNA2 MI250X tested), while TritonForge contributes (a) the open SFT data-curation + RL reward recipe if we build a LOCAL HIP-specialized small model offline (rhymes with ConCuR-665), and (b) independent corroboration that Triton-backend portability is a real AMD on-ramp. Does NOT displace EvoEngineer/KernelFoundry/K-Search/GEAK in the controller race.
+  identity_resolution: 'Confidently identified as one real project with TWO faces: (1) GitHub repo RLsys-Foundation/TritonForge (Apache-2.0) — SFT+RL Torch->Triton training, SLIME, cross-platform NVIDIA/AMD MI300X gfx942, KernelBook + KernelBench; (2) companion arXiv paper 2512.09196 (Li/Qian UC Riverside + Meta + UC Irvine) presenting the TRAIN-FREE Gemini-2.5-Pro + Nsight profiling loop face on NVIDIA H100. Xe-Forge''s ''AMD/ROCm-targeted'' grouping is VERIFIED PARTIALLY TRUE but MISLEADING: AMD support is real yet secondary, gfx942/CDNA3-only (NOT gfx90a/MI210), unstable for RL, and the flagship paper face is NVIDIA-primary. AMD-secondary, not AMD-native (contrast GEAK).'
+  novelty_justification: 'medium. The Torch->Triton SFT+RL-with-multi-turn-feedback paradigm overlaps the RL-trained cluster (CUDA-L1 661, Kevin 663); KernelBook/KernelBench are standard. Genuinely additive: an OPEN, reproducible SFT+RL stack on SLIME with released checkpoints + datasets + NVIDIA AND AMD Docker images (rare end-to-end open AMD-capable training recipe), plus the companion train-free profiling variant. Not a duplicate (no TritonForge / 2512.09196 in the index). Below high because the cluster already covers train-free profiling loops (better, on AMD: GEAK) and RL training (out of reach for us).'
+  relevance_justification: 'high — sits inside the active controller race and is Triton/AMD-relevant, exactly the MI210 frame. Directly informs two live decisions: confirms Triton-backend portability as a real AMD on-ramp, and its open SFT data-curation + RL reward recipe is the most concrete reference for the optional ''local HIP-specialized small model offline'' branch (alongside ConCuR-665). Tempered by: AMD support is gfx942-only (not our gfx90a), the RL training half is out of reach on one MI210, and GEAK dominates the AMD-native train-free niche.'
+  verdict_justification: 'adopt_patterns. Harvest, do NOT deploy as-is: (1) the OPEN SFT data-curation pipeline (KernelBook filtering) + multi-turn RL reward structure as the reference recipe IF/WHEN we build a local HIP-specialized small model offline (pairs with ConCuR-665; NOT runnable on the MI210 itself); (2) the train-free profiling-guided iterate-on-Triton loop (paper face) as an additional controller archetype, but re-derive its Nsight-counter set for rocprof/Omniperf on gfx90a; (3) the validated AMD ROCm Docker/env recipe (ROCm 6.3.4+, gfx942 env vars) as a starting template for rocm-verify-profile-backend.md, knowing it needs a gfx942->gfx90a re-target. DECLINE: the trained gfx942 Qwen3-8B checkpoint (wrong arch), the multi-GPU AMD RL training path (unstable + out of reach), and any claim it is AMD-native (it is AMD-secondary; GEAK is the AMD keystone). Logged as a sibling reference subordinate to GEAK.'
+  contradicting_evidence:
+  - 'Xe-Forge''s framing of TritonForge as an AMD/ROCm-targeted optimizer is only partially accurate: the flagship arXiv paper face (2512.09196) is NVIDIA-H100-only and train-free; AMD support lives in the repo, is gfx942/CDNA3-only, and EXCLUDES our gfx90a/MI210.'
+  - 'AMD path is UNSTABLE for the headline contribution: multi-turn RL crashes within 2 steps on MI300X (root cause unknown); only single-turn is production-ready — the RL training story does not hold on AMD today.'
+  - 'Modest absolute quality: paper 42.7% TritonBench / 1.76x avg; repo SFT-only ~18% L1 / ~8% L2 — below GEAK''s AMD-native 54.89-63.33% and 2.59x.'
+  - Authors acknowledge shallow exploration (trapped in performance-neutral variants) + weak profiling-gradient feedback — the same convergence limit flagged for the train-free cluster.
+  - 'credibility tempered: arXiv preprint, no confirmed venue; recent + named Meta contributors but no independent replication of TritonForge''s specific numbers; repo claims partly via secondary sources, not first-party reproduction.'
+  notes: 'Ingested via /research-intake GEAK keystone deep-dive batch (parallel sub-agent), 2026-06-03. Expanded from intake-672. Dual-faced (RLsys-Foundation/TritonForge SFT+RL repo + arXiv 2512.09196 train-free paper). CORRECTION to Xe-Forge''s grouping: AMD support is gfx942/MI300X (CDNA3) ONLY, NOT gfx90a/MI210, and AMD RL is unstable. AMD-SECONDARY, subordinate to GEAK. Unique pull: open SFT data-curation + RL reward recipe for an optional offline local-HIP-model branch (pairs with ConCuR-665) + corroborates Triton portability on-ramp.'

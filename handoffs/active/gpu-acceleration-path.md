@@ -444,3 +444,28 @@ DGX Spark's unified memory architecture sidesteps the PCIe bottleneck that makes
   - Sibling intake entries (URL-dedup): intake-577 (NVIDIA research landing), intake-578 (HF collection — 7 variants, BF16-only).
   - Action: tracked here as a parallel candidate alongside the DFlash path. No code action until DGX Spark lands or a credible community port surfaces. Re-run Tier 2b contradicting-evidence search in ~30 days when independent replications / llama.cpp issue tickets accumulate.
   - **Deep dive 2026-05-20**: [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md`](../../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) — full PDF parse, per-mode algorithms, verbatim benchmark tables (Tabs. 5–10), per-GPU speedups (Fig. 9), SOL ceiling (7.60× acceptance / 76.5% real-TPF headroom over Linear SS), 15–25 day CPU port effort estimate vs DFlash's 13–20 days but with better prerequisites. DGX Spark numbers honest read: INT4-vs-INT4 is 2.69× (not the 4.56× the model card implies by comparing INT4-SS to FP8-AR). Headline acceptance length is **5.46 native / 6.82 LoRA on SPEED-Bench** vs Eagle3's 2.75 and Qwen3-9B-MTP's 4.24.
+
+## Research Intake Update — 2026-06-03
+
+### New Related Research
+- **[intake-660] "CUDA Agent: Large-Scale Agentic RL for High-Performance CUDA Kernel Generation"** (arxiv:2602.24286, ByteDance Seed + Tsinghua AIR)
+  - Relevance: this is the **agentic-authoring counterpart** to the ROCm kernel-library entries already tracked here (rocWMMA intake-303, AITER intake-307). Those are hand-written libraries to *port*; CUDA Agent is a harness that *generates + verifies + profiles* kernels in a loop. With the MI210 (CDNA2/gfx90a) arriving ~July 2026 and active user interest in custom AMD-stack kernels, the harness pattern is a near-term lever for HIP kernel authoring rather than manual hipify.
+  - Key technique: skill-augmented agent dev environment (`agent_workdir` + `SKILL.md`) wrapping an automated **verify (`verification.py`) + profile (`profiling.py`) reward loop**, multi-turn (up to 200 turns / 128k ctx), discrete robust reward `r∈{-1,1,2,3}` (anti reward-hacking), trained with PPO + RFT/Value-Pretraining warm-up.
+  - Reported results: KernelBench faster-rate vs torch.compile 100/100/92% (L1/L2/L3), 2.11× geomean; beats Claude Opus 4.5 (1.46×) and Gemini 3 Pro (1.42×) by ~40pp on Level-3. Ablation: removing multi-turn drops faster-rate to 14.1% (from 96.8%).
+  - Delta from current approach: today this handoff plans to **hand-port / consume** ROCm kernel libraries (rocWMMA, AITER) when hardware lands. CUDA Agent suggests an *automated authoring* path instead. **Adopt-patterns, not adopt-whole**: the harness is open (repo `BytedTsinghua-SIA/CUDA-Agent` + HF dataset `CUDA-Agent-Ops-6K`) but CUDA/NVIDIA-only — an MI210 port needs hipcc/hipify + rocprof/omniperf + torch-ROCm and a ROCm KernelBench analog. The large-scale PPO *training* is multi-GPU-cluster scale (out of reach on one MI210); realistic near-term use is to drive the open harness with an existing strong coding model (coder/architect role) **without retraining**. Closed RL checkpoint + Seed-1.6 Volcano Engine API are excluded under `feedback_opensource_only`.
+  - Open question routed to `gpu-drafter-mi200-investigation.md`: is agentic HIP-kernel authoring worth a dedicated spike once the MI210 is racked?
+
+## Research Intake Update — 2026-06-03 (LLM-kernel-generation cluster deep-dive)
+
+Deep-dived the kernel-generation cluster referenced by intake-660 (CUDA Agent), all elevated for the incoming **MI210** (CDNA2/gfx90a, ~July 2026) custom-kernel path. All are NVIDIA/CUDA-targeted — value is **methodology transfer to ROCm**, not the released CUDA artifacts. Spun out two new handoffs: [`agentic-rocm-kernel-authoring.md`](agentic-rocm-kernel-authoring.md) (umbrella controller) + [`rocm-verify-profile-backend.md`](rocm-verify-profile-backend.md) (long-pole backend that would replace the manual rocWMMA/AITER/hipBLASLt hand-port loop tracked here).
+
+| Intake | Title | Paradigm | Rel. | Verdict | Transferable asset |
+|--------|-------|----------|------|---------|--------------------|
+| 661 | CUDA-L1 | Contrastive RL | high | adopt_patterns | Contrastive-prompt recipe (no-RL usable) + anti-reward-hack defenses |
+| 662 | CudaForge | Training-free Coder/Judge | med | adopt_patterns | Offline profiler-metric-selection algorithm (→ which rocprof counters to feed a Judge) |
+| 663 | Kevin | Multi-turn RL | med | adopt_patterns | Multi-turn loop + credit assignment; sequential-refine > parallel-sample |
+| 664 | KernelBench | Benchmark | high | worth_investigating | fast_p scoring contract; ROCm analog = fork MultiKernelBench (2507.17773) |
+| 665 | ConCuR | Data curation + LoRA | high | adopt_patterns | (HIP,CoT,kernel) corpus recipe + short-CoT quality filter; length ⟂ speedup |
+| 666 | EvoEngineer | Train-free evolutionary | high | adopt_patterns | **Lead controller** — leanest loop runnable on one MI210; modular evaluator = ROCm re-target seam |
+
+Delta from this handoff's current plan: gpu-acceleration-path tracks *consuming/hand-porting* ROCm kernel libraries; this cluster suggests *automated authoring* on top of them. New work is gated on the MI210 and tracked in the two new handoffs; this entry is the cross-reference anchor.
