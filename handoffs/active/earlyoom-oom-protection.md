@@ -82,7 +82,13 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   ReadWritePaths=/mnt/raid0/llm/epyc-root/logs
   ```
   This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
-- [ ] **Post-arm: confirm a kill actually lands in the log** — during the stress-ng test, verify an `EARLYOOM_KILL` JSON line appears in `logs/agent_audit.log`. If not, the sandbox is still blocking the hook (re-check the override + file ownership).
+- [ ] **Post-arm: confirm the `-N` hook writes under the live sandbox.** Pre-check the writer identity (use `sudo -u node env VAR=… cmd` — `env` avoids sudo env-policy edge cases vs assignments placed directly after `sudo -u node`):
+  ```bash
+  sudo -u node env EARLYOOM_NAME=hooktest EARLYOOM_PID=0 EARLYOOM_UID=1000 EARLYOOM_CMDLINE=selftest \
+    /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh
+  tail -1 /mnt/raid0/llm/epyc-root/logs/agent_audit.log    # expect an EARLYOOM_KILL test line
+  ```
+  Then confirm a **real** kill lands an `EARLYOOM_KILL` JSON line (`grep EARLYOOM_KILL logs/agent_audit.log`). If the real-kill line never appears, the sandbox is still blocking the hook (re-check the `ReadWritePaths` override + that the service runs `User=node`). Also verify `/etc/default/earlyoom` is **one physical line** (`grep -c llama-bench /etc/default/earlyoom` → `1`).
 - [x] **VALIDATE in `--dryrun -d`** (already done 2026-06-03 — see VERIFIED note above). Use `-m 99,99` (not `-M`) to force an **immediate** dry evaluation at current memory without waiting for real pressure: `sudo timeout 6 earlyoom --dryrun -d -m 99,99 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 2`. Confirm the would-kill candidate is always a non-protected proc, **never** a model-server or the −1000 control plane. (Re-run after setting the control-plane `oom_score_adj=-1000` to confirm the workers drop out of contention.)
 - [ ] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
 
