@@ -70,6 +70,16 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   ```
   Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — wire `OOMScoreAdjust=-1000` into the orchestrator launcher / systemd unit for durability.
 - [x] **`-N` audit hook written + tested**: `scripts/hooks/earlyoom_audit.sh` — fork-free (bash parameter-expansion + builtins), JSON-escapes **every** field incl. `EARLYOOM_NAME` (the manpage warns it may contain newlines/control chars; maps all C0 control chars → space under `LC_ALL=C`). Emits exactly one valid JSON-lines `EARLYOOM_KILL` record per kill (re-verified with a newline in NAME + control chars in all fields → `json.loads` passes). Off-by-default sentinel-write for a future pause-loads watcher.
+- [ ] **Unblock the `-N` hook under the packaged systemd sandbox — REQUIRED, else kills are silently NOT logged.** The Debian/upstream `earlyoom.service` runs **`DynamicUser=true` + `ProtectSystem=strict`** (with `AmbientCapabilities=CAP_KILL CAP_IPC_LOCK` — it kills via the capability, not via uid). So the `-N` hook inherits a **random transient UID with the entire filesystem read-only** → it **cannot** append to the node-owned `logs/agent_audit.log`. Add a drop-in (`sudo systemctl edit earlyoom` → `/etc/systemd/system/earlyoom.service.d/override.conf`):
+  ```ini
+  [Service]
+  DynamicUser=false
+  User=node
+  Group=node
+  ReadWritePaths=/mnt/raid0/llm/epyc-root/logs
+  ```
+  This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
+- [ ] **Post-arm: confirm a kill actually lands in the log** — during the stress-ng test, verify an `EARLYOOM_KILL` JSON line appears in `logs/agent_audit.log`. If not, the sandbox is still blocking the hook (re-check the override + file ownership).
 - [ ] **VALIDATE in `--dryrun -d` FIRST** (extended window), against a live full stack: `earlyoom --dryrun -d -M 41943040,20971520 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 5`. Confirm the would-kill candidate is always a non-protected runaway, **never** the orchestrator/autopilot/a model-server. Optionally drive a `stress-ng --vm` ramp in a quiet window and confirm it selects the stressor.
 - [ ] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
 
