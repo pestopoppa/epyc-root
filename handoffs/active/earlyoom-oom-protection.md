@@ -1,8 +1,8 @@
 # earlyoom — Userspace OOM Protection for the Multi-Model Box
 
-**Status**: ready-to-deploy (pending `--dryrun` validation + operator install)
+**Status**: ✅ **DEPLOYED 2026-06-04 on host `Beelzebub`** — source-built earlyoom (master, `/usr/local/bin/earlyoom`) armed via systemd as `User=daniele`, `--sort-by-rss --ignore '^(llama-server|sd-server)$'`, control plane at `oom_score_adj=-1000`, `-N` audit hook verified writing `EARLYOOM_KILL` JSON. Remaining follow-up: durable `oom_score_adj=-1000` in the orchestrator launcher (the one-shot `choom` doesn't survive control-plane restarts).
 **Priority**: HIGH — lowest-hanging-fruit orchestration-robustness win (per user, 2026-06-03)
-**Created**: 2026-06-03 (via research intake → deep-dive)
+**Created**: 2026-06-03 (via research intake → deep-dive); **Deployed**: 2026-06-04
 **Categories**: hardware_optimization, local_inference, inference_serving
 
 ## Objective
@@ -68,7 +68,7 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   - `--sort-by-rss` — deterministic RSS ranking (flat oom_score here makes default mode unsafe).
   - `--ignore '^(llama-server|sd-server)$'` — hard-protect production model-servers + embedders + the managed image service.
   - `--prefer '^llama-bench$'` — bias toward culling a runaway manual benchmark first.
-  - **`-p` dropped** — the shipped unit already self-protects earlyoom via `Nice=-20` + `OOMScoreAdjust=-100`, and under the `User=node` override `-p`'s `setpriority(-20)` would fail without `CAP_SYS_NICE`. (Also note the unit's `MemoryMax=50M`/`TasksMax=10` — fine for the tiny bash `-N` hook.)
+  - **`-p` dropped** — the shipped unit already self-protects earlyoom via `Nice=-20` + `OOMScoreAdjust=-100`, and under the unprivileged-user override `-p`'s `setpriority(-20)` would fail without `CAP_SYS_NICE`. (Also note the unit's `MemoryMax=50M`/`TasksMax=10` — fine for the tiny bash `-N` hook.)
   - **VERIFIED 2026-06-03** by installing 1.8.2 in the (host-PID-sharing) devcontainer and running `--dryrun` against the live host: earlyoom accepted all flags, reported *"Will ignore … `^(llama-server|sd-server)$`"*, and the dry victim was the largest non-ignored proc (a 2 GB firefox content process) — it **skipped every 13–133 GB llama-server** and killed nothing. All host model-servers stayed protected.
 - [ ] **Protect the control plane — REQUIRED, not optional** (this is the load-bearing protection under `--sort-by-rss`; verified earlyoom skips `oom_score_adj==-1000` in both modes). `choom` takes a **single** `-p PID`, so loop (**bash**):
   ```bash
@@ -82,23 +82,24 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — wire `OOMScoreAdjust=-1000` into the orchestrator launcher / systemd unit for durability. (The bracketed-regex form also avoids the `pgrep -f` self-match; a `ps … | awk` filter excluding the matcher's own PID is an equivalent alternative.)
 - [x] **`-N` audit hook written + tested**: `scripts/hooks/earlyoom_audit.sh` — fork-free (bash parameter-expansion + builtins), JSON-escapes **every** field incl. `EARLYOOM_NAME` (the manpage warns it may contain newlines/control chars; maps all C0 control chars → space under `LC_ALL=C`). Emits exactly one valid JSON-lines `EARLYOOM_KILL` record per kill (re-verified with a newline in NAME + control chars in all fields → `json.loads` passes). Off-by-default sentinel-write for a future pause-loads watcher.
 - [ ] **Unblock the `-N` hook under the packaged systemd sandbox — REQUIRED, else kills are silently NOT logged.** The Debian/upstream `earlyoom.service` runs **`DynamicUser=true` + `ProtectSystem=strict`** (with `AmbientCapabilities=CAP_KILL CAP_IPC_LOCK` — it kills via the capability, not via uid). So the `-N` hook inherits a **random transient UID with the entire filesystem read-only** → it **cannot** append to the node-owned `logs/agent_audit.log`. Add a drop-in (`sudo systemctl edit earlyoom` → `/etc/systemd/system/earlyoom.service.d/override.conf`):
+  ⚠ **`User=` must be the HOST user that owns `agent_audit.log` — NOT `node`.** `node` is the *devcontainer's* name for uid 1000; on the host (`Beelzebub`) **uid 1000 = `daniele`**, so `User=node` fails with `217/USER` ("Failed to determine user credentials"). Auto-detect it: `LU=$(stat -c '%U' /mnt/raid0/llm/epyc-root/logs/agent_audit.log); LG=$(stat -c '%G' …)` and substitute below.
   ```ini
   [Service]
   DynamicUser=false
-  User=node
-  Group=node
+  User=daniele        # = owner of agent_audit.log (uid 1000); NOT the container's "node"
+  Group=daniele
   ReadWritePaths=/mnt/raid0/llm/epyc-root/logs
   Nice=-20
   OOMScoreAdjust=-100
   ```
-  This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **`Nice=-20`+`OOMScoreAdjust=-100` are added** because the host's v1.7 unit (unlike the 1.8.2 unit) has no self-protect, and `-p` can't set them under the unprivileged service user (no `CAP_SYS_NICE`/`CAP_SYS_RESOURCE`) — systemd applies them with privilege before dropping to `node`. (The ≥1.8 source unit already includes them; re-stating in the override is idempotent.) **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
-- [ ] **Post-arm: confirm the `-N` hook writes under the live sandbox.** Pre-check the writer identity (use `sudo -u node env VAR=… cmd` — `env` avoids sudo env-policy edge cases vs assignments placed directly after `sudo -u node`):
+  This runs earlyoom as the log owner (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as that user, owns the file, and can append. `sudo systemctl daemon-reload`. **`Nice=-20`+`OOMScoreAdjust=-100`**: the ≥1.8 source unit already has them (idempotent here); a bare v1.7 unit does not, and `-p` can't set them under the unprivileged service user. **`Nice=-20`+`OOMScoreAdjust=-100` are added** because the host's v1.7 unit (unlike the 1.8.2 unit) has no self-protect, and `-p` can't set them under the unprivileged service user (no `CAP_SYS_NICE`/`CAP_SYS_RESOURCE`) — systemd applies them with privilege before dropping to `node`. (The ≥1.8 source unit already includes them; re-stating in the override is idempotent.) **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
+- [x] **Post-arm: `-N` hook verified writing under the live sandbox (2026-06-04).** Writer-identity check (use the HOST log-owner, e.g. `daniele`; `env` avoids sudo env-policy edge cases vs assignments placed directly after `sudo -u`):
   ```bash
-  sudo -u node env EARLYOOM_NAME=hooktest EARLYOOM_PID=0 EARLYOOM_UID=1000 EARLYOOM_CMDLINE=selftest \
+  sudo -u "$LU" env EARLYOOM_NAME=hooktest EARLYOOM_PID=0 EARLYOOM_UID=1000 EARLYOOM_CMDLINE=selftest \
     /mnt/raid0/llm/epyc-root/scripts/hooks/earlyoom_audit.sh
-  tail -1 /mnt/raid0/llm/epyc-root/logs/agent_audit.log    # expect an EARLYOOM_KILL test line
+  tail -1 /mnt/raid0/llm/epyc-root/logs/agent_audit.log    # → EARLYOOM_KILL JSON line (confirmed)
   ```
-  Then confirm a **real** kill lands an `EARLYOOM_KILL` JSON line (`grep EARLYOOM_KILL logs/agent_audit.log`). If the real-kill line never appears, the sandbox is still blocking the hook (re-check the `ReadWritePaths` override + that the service runs `User=node`). Also verify `/etc/default/earlyoom` is **one physical line** (`grep -c llama-bench /etc/default/earlyoom` → `1`).
+  For the full sandbox path, a transient unit mimics it without a real kill: `sudo systemd-run --quiet --wait --pipe -p User=$LU -p DynamicUser=false -p ProtectSystem=strict -p ReadWritePaths=/mnt/raid0/llm/epyc-root/logs /usr/bin/env EARLYOOM_NAME=sbtest … <hook>`. The first **real** kill also lands an `EARLYOOM_KILL` line (`grep EARLYOOM_KILL logs/agent_audit.log`). Sanity: `/etc/default/earlyoom` is one physical line (`grep -c llama-bench … → 1`).
 - [x] **VALIDATE in `--dryrun -d`** (already done 2026-06-03 — see VERIFIED note above). Use `-m 99,99` (not `-M`) to force an **immediate** dry evaluation at current memory without waiting for real pressure: `sudo timeout 6 earlyoom --dryrun -d -m 99,99 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 2`. Confirm the would-kill candidate is always a non-protected proc, **never** a model-server or the −1000 control plane. (Re-run after setting the control-plane `oom_score_adj=-1000` to confirm the workers drop out of contention.)
 - [ ] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
 
