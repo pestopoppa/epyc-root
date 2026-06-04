@@ -770,10 +770,12 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 **Problem**: intake-441 shows post-training diversity loss is structural (in weights). Our mutation search can exhaust "diverse-looking but weight-constrained" space quickly.
 
-**Fix**: add a diversity-coverage term to PromptForge's mutation scoring: penalize mutations that fall into FAISS-dense regions of the mutation embedding space. ~2h once DD4 baselines land (NIB2-42 / EV-8).
+**Fix**: add a diversity-coverage term to PromptForge's mutation scoring: penalize mutations that fall into FAISS-dense regions of the mutation embedding space. ~2h once the DD4 diversity baseline lands (NIB2-42 — inference-gated; EV-8 metric fns already landed 2026-04-22).
 
-- [ ] **AP-35**: Implement `diversity_coverage_penalty()` in `prompt_forge.py`. Use existing FAISS index of strategy_store embeddings. Penalty = -log(density) at the mutation's embedding location.
-- [ ] **AP-36**: Wire into `_score_mutation()` alongside quality/cost scores.
+- [ ] **AP-35**: Implement `diversity_coverage_penalty()` in `scripts/autopilot/species/prompt_forge.py` (⚠ path moved from `prompt_forge.py` in the `species/` refactor — verified 2026-06-04). Use existing FAISS index of strategy_store embeddings (live usage in `species/evolution_manager.py` / `species/structural_lab.py` / `actions.py`). Penalty = -log(density) at the mutation's embedding location.
+- [ ] **AP-36**: Wire into the mutation-scoring path. ⚠ **Stale (2026-06-04)**: `_score_mutation()` no longer exists — mutation scoring was refactored into the `species/` evolution framework; re-identify the current scoring site (`species/evolution_manager.py` / `structural_lab.py`) before wiring.
+
+> **EV-8 gate status (2026-06-04 review)**: AP-35/36/37 are gated on EV-8's **inference baseline**, not the whole of EV-8. EV-8's metric functions + `EvalResult` fields already **landed 2026-04-22** (`src/tools/diversity/metrics.py`, `src/safety_gate.py`); what remains is the 1-day diversity baseline run (NIB2-42, inference-gated) the `-log(density)` penalty calibrates against, plus the `to_grep_lines()` wiring.
 
 ### GEPA rebalance trigger (DD4-A8)
 
@@ -781,12 +783,12 @@ Agent-World (DD6, intake-444) env-synth is now a 5th autopilot species, tracked 
 
 **Fix**: extend MetaOptimizer with a diversity-stall signal. ~1-2h.
 
-- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials. **Amended 2026-04-22 post Tier 2b**: couple with `semantic_embedding_agreement` to avoid rebalancing on surface-level distinct-2 drops that don't reflect real diversity collapse (arXiv 2506.00514 metric-gaming critique). Rebalance trigger: distinct-2 drops AND semantic agreement drops AND Verbalized Sampling recovery probe fails to close >50% of the gap. Depends on amended EV-8 landing first.
+- [ ] **AP-37**: Add `distinct2_history` to MetaOptimizer state. Trigger rebalance when `distinct2_t / distinct2_baseline < 0.8` for 10 consecutive trials. **Amended 2026-04-22 post Tier 2b**: couple with `semantic_embedding_agreement` to avoid rebalancing on surface-level distinct-2 drops that don't reflect real diversity collapse (arXiv 2506.00514 metric-gaming critique). Rebalance trigger: distinct-2 drops AND semantic agreement drops AND Verbalized Sampling recovery probe fails to close >50% of the gap. Depends on EV-8's inference baseline (metric functions already landed 2026-04-22 — see EV-8 gate status note above).
 
 ### Cross-references
 
 - `routing-and-optimization-index.md` P14/P16/P17/P18
-- `eval-tower-verification.md` EV-8 (diversity metrics — required prerequisite for AP-35)
+- `eval-tower-verification.md` EV-8 (diversity metrics — required prerequisite for AP-35; metric fns landed 2026-04-22, inference baseline pending)
 - `agent-world-env-synthesis.md` (full env-synth plan)
 - `/workspace/research/deep-dives/diversity-collapse-posttraining.md`
 - `/workspace/research/deep-dives/agent-world-environment-synthesis.md`
