@@ -1,6 +1,6 @@
 # earlyoom — Userspace OOM Protection for the Multi-Model Box
 
-**Status**: ✅ **DEPLOYED 2026-06-04 on host `Beelzebub`** — source-built earlyoom (master, `/usr/local/bin/earlyoom`) armed via systemd as `User=daniele`, `--sort-by-rss --ignore '^(llama-server|sd-server)$'`, control plane at `oom_score_adj=-1000`, `-N` audit hook verified writing `EARLYOOM_KILL` JSON. Remaining follow-up: durable `oom_score_adj=-1000` in the orchestrator launcher (the one-shot `choom` doesn't survive control-plane restarts).
+**Status**: ✅ **DEPLOYED 2026-06-04 on host `Beelzebub`** — source-built earlyoom (master, `/usr/local/bin/earlyoom`) armed via systemd as `User=daniele`, `--sort-by-rss --ignore '^(llama-server|sd-server)$'`, control plane at `oom_score_adj=-1000`, `-N` audit hook verified writing `EARLYOOM_KILL` JSON. **Durable `oom_score_adj=-1000` DONE 2026-06-04** — wired into `orchestrator_stack.start_orchestrator` (sets it on the API master + uvicorn workers after every health-confirmed start; epyc-orchestrator `2a40260`, 5 unit tests). **Residual**: the **autopilot** process (`autopilot.py start`) sets its own `oom_score_adj` separately — not yet wired (keep one-shot `choom` for it, or add the same call to autopilot startup); optional: add `claude|codex` to `--ignore` to shield agent sessions.
 **Priority**: HIGH — lowest-hanging-fruit orchestration-robustness win (per user, 2026-06-03)
 **Created**: 2026-06-03 (via research intake → deep-dive); **Deployed**: 2026-06-04
 **Categories**: hardware_optimization, local_inference, inference_serving
@@ -46,7 +46,7 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
 ## Deployment plan (checklist) — Policy A
 
 - [x] **Audited (2026-06-03)**: earlyoom NOT installed; systemd-oomd inactive/absent; 8 GB swap present; 445 GiB available / 688 GiB used at audit; comm names + RSS captured (above).
-- [ ] **⚠ VERSION REQUIREMENT — needs earlyoom ≥1.8 for `--ignore` + `--sort-by-rss`.** Check: `earlyoom -h | grep -E -- '--ignore|--sort-by-rss'`. If empty, the packaged version is too old. **This host shipped v1.7 (Ubuntu/Debian lag master), which has NEITHER flag.** v1.7's `oom_score`/badness mode lets firefox renderers' self-elevated badness (822 for a 77 MB tab) dominate the real memory hog → it kills tabs before the runaway (poor backstop). **Resolution chosen 2026-06-04: build ≥1.8 from source** (zero-dep, ~2 min):
+- [x] **⚠ VERSION REQUIREMENT — needs earlyoom ≥1.8 for `--ignore` + `--sort-by-rss`.** Check: `earlyoom -h | grep -E -- '--ignore|--sort-by-rss'`. If empty, the packaged version is too old. **This host shipped v1.7 (Ubuntu/Debian lag master), which has NEITHER flag.** v1.7's `oom_score`/badness mode lets firefox renderers' self-elevated badness (822 for a 77 MB tab) dominate the real memory hog → it kills tabs before the runaway (poor backstop). **Resolution chosen 2026-06-04: build ≥1.8 from source** (zero-dep, ~2 min):
   ```bash
   sudo systemctl stop earlyoom; sudo apt-get remove -y earlyoom
   sudo apt-get install -y build-essential git pkg-config
@@ -55,9 +55,9 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   sudo systemctl daemon-reload; earlyoom --version; earlyoom -h | grep -E -- '--ignore|--sort-by-rss'
   ```
   Re-write `/etc/default/earlyoom` **AFTER** `make install` (it clobbers the file with the upstream default). **v1.7 fallback** (if you can't build): swap `--ignore`→`--avoid '^(llama-server|sd-server)$'` and drop `--sort-by-rss` — still freeze-safe and protects the stack (model-servers `--avoid`'d −300, control plane `-1000`), but kills firefox tabs before the real hog.
-- [ ] **Re-verify protected comm names at deploy time** (truncated to 15 bytes; **bash**): `for p in $(pgrep -x llama-server); do cat /proc/$p/comm; done` and likewise for the orchestrator/autopilot — process names can change across restarts. (Run under bash, e.g. `bash -c '...'`, if your interactive shell is fish.)
-- [ ] **Install**: `sudo apt install earlyoom` (or `dnf`/EPEL) — provides the hardened systemd unit + `/etc/default/earlyoom`.
-- [ ] **Configure** `/etc/default/earlyoom`:
+- [x] **Re-verify protected comm names at deploy time** (truncated to 15 bytes; **bash**): `for p in $(pgrep -x llama-server); do cat /proc/$p/comm; done` and likewise for the orchestrator/autopilot — process names can change across restarts. (Run under bash, e.g. `bash -c '...'`, if your interactive shell is fish.)
+- [x] **Install**: `sudo apt install earlyoom` (or `dnf`/EPEL) — provides the hardened systemd unit + `/etc/default/earlyoom`.
+- [x] **Configure** `/etc/default/earlyoom`:
   ```ini
   # ONE line — systemd EnvironmentFile does NOT honor backslash continuations.
   # Inner single-quotes around the regexes = Debian's documented convention (systemd's $VAR splitter strips them); VERIFIED against the shipped 1.8.2 unit (ExecStart=/usr/bin/earlyoom $EARLYOOM_ARGS).
@@ -70,7 +70,7 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   - `--prefer '^llama-bench$'` — bias toward culling a runaway manual benchmark first.
   - **`-p` dropped** — the shipped unit already self-protects earlyoom via `Nice=-20` + `OOMScoreAdjust=-100`, and under the unprivileged-user override `-p`'s `setpriority(-20)` would fail without `CAP_SYS_NICE`. (Also note the unit's `MemoryMax=50M`/`TasksMax=10` — fine for the tiny bash `-N` hook.)
   - **VERIFIED 2026-06-03** by installing 1.8.2 in the (host-PID-sharing) devcontainer and running `--dryrun` against the live host: earlyoom accepted all flags, reported *"Will ignore … `^(llama-server|sd-server)$`"*, and the dry victim was the largest non-ignored proc (a 2 GB firefox content process) — it **skipped every 13–133 GB llama-server** and killed nothing. All host model-servers stayed protected.
-- [ ] **Protect the control plane — REQUIRED, not optional** (this is the load-bearing protection under `--sort-by-rss`; verified earlyoom skips `oom_score_adj==-1000` in both modes). `choom` takes a **single** `-p PID`, so loop (**bash**):
+- [x] **Protect the control plane — REQUIRED, not optional** *(one-shot `choom` applied; durable fix pending — see open follow-up)* (this is the load-bearing protection under `--sort-by-rss`; verified earlyoom skips `oom_score_adj==-1000` in both modes). `choom` takes a **single** `-p PID`, so loop (**bash**):
   ```bash
   # Bracketed regexes ([u]vicorn, [a]utopilot) so `pgrep -f` does NOT self-match the
   # shell running it (its own argv contains the pattern string otherwise). [.] = literal dot.
@@ -79,9 +79,9 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
     [ -n "$pid" ] && sudo choom -n -1000 -p "$pid"
   done
   ```
-  Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — wire `OOMScoreAdjust=-1000` into the orchestrator launcher / systemd unit for durability. (The bracketed-regex form also avoids the `pgrep -f` self-match; a `ps … | awk` filter excluding the matcher's own PID is an equivalent alternative.)
+  Use exactly **−1000** (−900 does not protect). A one-shot `choom` does **not** survive uvicorn worker respawn — **✅ DONE 2026-06-04: `orchestrator_stack.start_orchestrator` now sets `oom_score_adj=-1000` on the API master + workers after every health-confirmed start** (epyc-orchestrator `2a40260`, via `stack_processes.set_oom_score_adj`, best-effort `sudo -n choom`). So the manual step-4 loop is only needed for the **autopilot** until its startup is wired too. (The bracketed-regex form also avoids the `pgrep -f` self-match; a `ps … | awk` filter excluding the matcher's own PID is an equivalent alternative.)
 - [x] **`-N` audit hook written + tested**: `scripts/hooks/earlyoom_audit.sh` — fork-free (bash parameter-expansion + builtins), JSON-escapes **every** field incl. `EARLYOOM_NAME` (the manpage warns it may contain newlines/control chars; maps all C0 control chars → space under `LC_ALL=C`). Emits exactly one valid JSON-lines `EARLYOOM_KILL` record per kill (re-verified with a newline in NAME + control chars in all fields → `json.loads` passes). Off-by-default sentinel-write for a future pause-loads watcher.
-- [ ] **Unblock the `-N` hook under the packaged systemd sandbox — REQUIRED, else kills are silently NOT logged.** The Debian/upstream `earlyoom.service` runs **`DynamicUser=true` + `ProtectSystem=strict`** (with `AmbientCapabilities=CAP_KILL CAP_IPC_LOCK` — it kills via the capability, not via uid). So the `-N` hook inherits a **random transient UID with the entire filesystem read-only** → it **cannot** append to the node-owned `logs/agent_audit.log`. Add a drop-in (`sudo systemctl edit earlyoom` → `/etc/systemd/system/earlyoom.service.d/override.conf`):
+- [x] **Unblock the `-N` hook under the packaged systemd sandbox — REQUIRED, else kills are silently NOT logged.** The Debian/upstream `earlyoom.service` runs **`DynamicUser=true` + `ProtectSystem=strict`** (with `AmbientCapabilities=CAP_KILL CAP_IPC_LOCK` — it kills via the capability, not via uid). So the `-N` hook inherits a **random transient UID with the entire filesystem read-only** → it **cannot** append to the node-owned `logs/agent_audit.log`. Add a drop-in (`sudo systemctl edit earlyoom` → `/etc/systemd/system/earlyoom.service.d/override.conf`):
   ⚠ **`User=` must be the HOST user that owns `agent_audit.log` — NOT `node`.** `node` is the *devcontainer's* name for uid 1000; on the host (`Beelzebub`) **uid 1000 = `daniele`**, so `User=node` fails with `217/USER` ("Failed to determine user credentials"). Auto-detect it: `LU=$(stat -c '%U' /mnt/raid0/llm/epyc-root/logs/agent_audit.log); LG=$(stat -c '%G' …)` and substitute below.
   ```ini
   [Service]
@@ -101,7 +101,7 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   ```
   For the full sandbox path, a transient unit mimics it without a real kill: `sudo systemd-run --quiet --wait --pipe -p User=$LU -p DynamicUser=false -p ProtectSystem=strict -p ReadWritePaths=/mnt/raid0/llm/epyc-root/logs /usr/bin/env EARLYOOM_NAME=sbtest … <hook>`. The first **real** kill also lands an `EARLYOOM_KILL` line (`grep EARLYOOM_KILL logs/agent_audit.log`). Sanity: `/etc/default/earlyoom` is one physical line (`grep -c llama-bench … → 1`).
 - [x] **VALIDATE in `--dryrun -d`** (already done 2026-06-03 — see VERIFIED note above). Use `-m 99,99` (not `-M`) to force an **immediate** dry evaluation at current memory without waiting for real pressure: `sudo timeout 6 earlyoom --dryrun -d -m 99,99 -s 100,100 --sort-by-rss --ignore '^(llama-server|sd-server)$' --prefer '^llama-bench$' -r 2`. Confirm the would-kill candidate is always a non-protected proc, **never** a model-server or the −1000 control plane. (Re-run after setting the control-plane `oom_score_adj=-1000` to confirm the workers drop out of contention.)
-- [ ] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
+- [x] **Arm**: `sudo systemctl enable --now earlyoom`; `systemctl status earlyoom`; confirm a periodic report line appears.
 
 ## Open Questions
 
