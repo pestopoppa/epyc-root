@@ -46,7 +46,15 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
 ## Deployment plan (checklist) — Policy A
 
 - [x] **Audited (2026-06-03)**: earlyoom NOT installed; systemd-oomd inactive/absent; 8 GB swap present; 445 GiB available / 688 GiB used at audit; comm names + RSS captured (above).
-- [ ] **Verify installed-version flags**: `earlyoom --help` (or `man earlyoom`) confirms `--sort-by-rss` + `--ignore` exist in the *packaged* version (distro packages can lag master). If `--ignore` is absent, do NOT proceed with Policy A as written — fall back to Policy B or set model-server `oom_score_adj` instead.
+- [ ] **⚠ VERSION REQUIREMENT — needs earlyoom ≥1.8 for `--ignore` + `--sort-by-rss`.** Check: `earlyoom -h | grep -E -- '--ignore|--sort-by-rss'`. If empty, the packaged version is too old. **This host shipped v1.7 (Ubuntu/Debian lag master), which has NEITHER flag.** v1.7's `oom_score`/badness mode lets firefox renderers' self-elevated badness (822 for a 77 MB tab) dominate the real memory hog → it kills tabs before the runaway (poor backstop). **Resolution chosen 2026-06-04: build ≥1.8 from source** (zero-dep, ~2 min):
+  ```bash
+  sudo systemctl stop earlyoom; sudo apt-get remove -y earlyoom
+  sudo apt-get install -y build-essential git pkg-config
+  cd /tmp && rm -rf earlyoom && git clone --depth 1 https://github.com/rfjakob/earlyoom
+  cd earlyoom && make && sudo make install     # -> /usr/bin/earlyoom + /lib/systemd/system + OVERWRITES /etc/default/earlyoom
+  sudo systemctl daemon-reload; earlyoom --version; earlyoom -h | grep -E -- '--ignore|--sort-by-rss'
+  ```
+  Re-write `/etc/default/earlyoom` **AFTER** `make install` (it clobbers the file with the upstream default). **v1.7 fallback** (if you can't build): swap `--ignore`→`--avoid '^(llama-server|sd-server)$'` and drop `--sort-by-rss` — still freeze-safe and protects the stack (model-servers `--avoid`'d −300, control plane `-1000`), but kills firefox tabs before the real hog.
 - [ ] **Re-verify protected comm names at deploy time** (truncated to 15 bytes; **bash**): `for p in $(pgrep -x llama-server); do cat /proc/$p/comm; done` and likewise for the orchestrator/autopilot — process names can change across restarts. (Run under bash, e.g. `bash -c '...'`, if your interactive shell is fish.)
 - [ ] **Install**: `sudo apt install earlyoom` (or `dnf`/EPEL) — provides the hardened systemd unit + `/etc/default/earlyoom`.
 - [ ] **Configure** `/etc/default/earlyoom`:
@@ -80,8 +88,10 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
   User=node
   Group=node
   ReadWritePaths=/mnt/raid0/llm/epyc-root/logs
+  Nice=-20
+  OOMScoreAdjust=-100
   ```
-  This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
+  This runs earlyoom as `node` (still kills any process via the inherited `CAP_KILL` ambient cap) and grants write to the log dir despite `ProtectSystem=strict`; the hook then runs as node, owns the file, and can append. `sudo systemctl daemon-reload`. **`Nice=-20`+`OOMScoreAdjust=-100` are added** because the host's v1.7 unit (unlike the 1.8.2 unit) has no self-protect, and `-p` can't set them under the unprivileged service user (no `CAP_SYS_NICE`/`CAP_SYS_RESOURCE`) — systemd applies them with privilege before dropping to `node`. (The ≥1.8 source unit already includes them; re-stating in the override is idempotent.) **Alternatives if you want to keep `DynamicUser` hardening**: (a) add `LogsDirectory=earlyoom` and point the hook at `/var/log/earlyoom/` (systemd creates it owned by the dynamic user), then reconcile into `agent_audit.log` separately; or (b) run earlyoom as a managed service under `orchestrator_stack.py` (per `feedback_stack_managed_services`) with `setcap cap_kill,cap_ipc_lock+ep` instead of the packaged unit.
 - [ ] **Post-arm: confirm the `-N` hook writes under the live sandbox.** Pre-check the writer identity (use `sudo -u node env VAR=… cmd` — `env` avoids sudo env-policy edge cases vs assignments placed directly after `sudo -u node`):
   ```bash
   sudo -u node env EARLYOOM_NAME=hooktest EARLYOOM_PID=0 EARLYOOM_UID=1000 EARLYOOM_CMDLINE=selftest \
