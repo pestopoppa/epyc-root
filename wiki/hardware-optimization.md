@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-05-28
-**Sources**: 45 documents
+**Last compiled**: 2026-06-05
+**Sources**: 50 documents (added 2026-06-05 MI210 ROCm kernel-authoring and GPU-drafter planning sources)
 
 ## Summary
 
@@ -16,6 +16,9 @@ Three runtime settings are non-negotiable: OMP_NUM_THREADS=1 (llama.cpp handles 
 The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture. HOT models (~701 GB with multi-instance copies) are always resident with --mlock, eliminating 15-90 second cold-start penalties. WARM models load on demand via mmap from NVMe (~12 GB/s, so a 140 GB model loads in ~12 seconds). COLD models remain on disk. The 120 GB OS SSD is strictly protected -- a December 2025 incident where Claude Code filled /tmp/claude with 20 GB crashed the machine, prompting a three-layer defense (bind mount, real-time monitoring, emergency cleanup). Another incident in January 2026 demonstrated that pytest -n auto on a 192-thread machine spawns 192 workers, each loading ~3 GB of embedding models, exhausting the full 1.13 TB of RAM.
 
 ## Key Findings
+
+- **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backend with reproducible artifacts, not an agent that writes kernels directly into production. This keeps generated GPU kernels behind correctness tests, profiler evidence, and an explicit backend contract before any routing or inference path consumes them. Sources: [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [agentic ROCm deep dive](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
+- **GPU drafter work is a frontdoor-acceleration path, not a replacement for CPU topology optimization.** The GPU acceleration sources keep MI210 drafter experiments separate from CPU serving claims: CPU NUMA/matrix gates still govern production placement, while GPU experiments need their own verify/profile evidence and quality-preserving acceptance criteria before they can alter frontdoor or spec-dec routes. Sources: [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [single-instance-system-tuning.md](../handoffs/active/single-instance-system-tuning.md).
 
 - **NUMA is the dominant optimization**: 4-way NUMA quarter pinning delivers 6-7x aggregate throughput on models up to 65 GB. Single-node (96 threads on one NUMA node) is 1.85x faster than all-cores (192 threads) for MoE models because cross-NUMA memory access penalty is devastating. [progress/2026-03-18, numa-orchestrator-deployment.md]
 - **MoE models are NUMA-sensitive, dense models are compute-sensitive**: Models with few active parameters (MoE) see 6-7x gains from NUMA pinning because cross-node memory access dominates cheap compute. Dense models see only ~2x because all parameters are active and 48 threads is not enough compute. Large hybrids (122B+) are recurrent-bottlenecked at ~12 t/s regardless of NUMA config. [numa-orchestrator-deployment.md]

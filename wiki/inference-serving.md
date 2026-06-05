@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-05-31
-**Sources**: 24 documents (added 2026-05-31 dashboard display, activity-accounting, and shape-aware contention rollout notes)
+**Last compiled**: 2026-06-05
+**Sources**: 27 documents (added 2026-06-05 earlyoom control-plane protection and stack lifecycle cleanup notes)
 
 ## Summary
 
@@ -16,6 +16,9 @@ The orchestrator uses a hierarchical configuration system with 15 independent fe
 Recent architectural improvements include REAP MoE expert pruning (deployed 246B REAP model as architect_coding, replacing the full 480B), attention-matching KV compaction (L1-L4 merged to production-consolidated-v3), and concurrent inference sweeps that determined optimal -np settings per role (frontdoor gets np=2, dense models stay at np=1 due to p95 latency degradation).
 
 ## Key Findings
+
+- **Userspace OOM protection must distinguish control plane from killable workload processes (2026-06-05).** The host earlyoom deployment protects long-lived orchestrator and AutoPilot processes by setting `oom_score_adj=-1000` after stack start, while leaving transient planner/eval subprocesses killable. Because uvicorn and AutoPilot appear as `comm=python`, process-name ignore rules are insufficient; the durable protection belongs in launcher code (`stack_processes.set_oom_score_adj` and the AutoPilot start path) plus a host-level earlyoom rule that ignores llama-server/sd-server and prefers disposable benchmark processes. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [earlyoom-oom-protection.md](../handoffs/active/earlyoom-oom-protection.md).
+- **Stack lifecycle helpers should be direct imports once circularity is removed.** The `stack_commands.py` cleanup moved away from lazy wrapper duplication for checkpoint and MemRL/tool initialization paths, keeping `orchestrator_stack.py` as the CLI shell while reusable process/checkpoint helpers live in focused modules. This preserves the operator-facing command surface while reducing import-shape drift for registry/compiler fallback tests. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md).
 
 - **Dashboard activity counts must use exact holder-instance accounting, not region-overlap attribution (2026-05-31).** The scheduler-facing `active_region_holders()` projection intentionally marks every configured instance whose region set overlaps a held lock; that is useful for admission/placement overlap checks, but it over-reports display activity. On a single-slot MTP worker holding all four quarter locks, the attribution view can surface `worker_general: [0,1,2,3,4]`, making the topology/contention panel show "×5 active" for one request. The dashboard-facing contention metrics now use `active_region_holder_instances()`, which groups held region locks by `(role, PID)` and resolves the exact region set to one configured topology instance, so the same worker reports `worker_general: [0]` while admission behavior remains unchanged. [progress 2026-05-31](../progress/2026-05/2026-05-31.md)
 - **Cross-role contention must be keyed to physical CPU regions, not just role pairs (2026-05-31).** A live dashboard/tap discrepancy showed `frontdoor.half0` streaming on q0/q1 while `worker_general.full` held q0-q3: same-role/full waits were serialized, but cross-role admission remained placement-blind and allowed a physically overlapping decode. The rollout now has two default-off/staged layers: Step 1 stages `ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT=1` in `orchestrator_stack.py` so the next reload arms a role-agnostic `cpu_region.GLOBAL.{qN}.lock`; Step 2 wires dispatch to evaluate the shape-aware gate against each real `candidate_topology_idx` when `ORCHESTRATOR_SHAPE_AWARE_CONTENTION=1` is explicitly enabled. No live reload was performed during the active autopilot run, so production traffic was unchanged. [shape-keyed contention handoff](../handoffs/active/shape-keyed-contention-gating.md), [progress 2026-05-31](../progress/2026-05/2026-05-31.md)

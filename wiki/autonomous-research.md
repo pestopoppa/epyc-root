@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-06-01
-**Sources**: 43 documents (added 2026-06-01 metric-free meta-loop/dashboard hardening)
+**Last compiled**: 2026-06-05
+**Sources**: 46 documents (added 2026-06-05 AutoPilot shared-core contracts and tool-use eval contract)
 
 ## Summary
 
@@ -16,6 +16,11 @@ A second critical insight comes from AgentRxiv (intake-131): retrieval-augmented
 A convergent wave of research in April 2026 brought four significant upgrades to the autopilot infrastructure: GEPA evolutionary prompt optimization (intake-327/335, 35x more efficient than GRPO, works with 3 examples, compatible with local inference), dspy.RLM metadata-first context exploration, MiniMax M2.7-style self-evolution with short-term memory and self-criticism (intake-328/329), and Unsloth RLVR environment-first RL design (intake-320). All four are integrated as of 2026-04-12 (AP-18 through AP-25).
 
 ## Key Findings
+
+### New (2026-06-05, AutoPilot contract extraction and planner signal hygiene)
+
+- **Archive admission, dashboard reconstruction, and planner-learning exclusions need one shared contract.** The MAD over-exclusion incident showed that independently maintained logic in the live AutoPilot archive, the dashboard's journal replay, and offline analysis can drift on the same policy question. The current pattern is to keep side effects in `scripts/autopilot/`, but centralize pure action identity, benign-vs-genuine exclusion policy, Pareto math, and journal reconstruction under `src/autopilot_core`. `mad_noise` and `reproduction_confirmed` remain suppressed as planner-learning signals while still allowing one robust-median representative per stable action fingerprint into Pareto geometry. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-06-04](../progress/2026-06/2026-06-04.md).
+- **Non-executing planner actions must be first-class feedback, not invisible counter increments.** The trial-500 dead end was a repeated invalid `graph_router` proposal that never reached the safety gate, so it was neither journaled nor blacklisted. The durable rule is that invalid/skipped actions need a structured outcome, stable fingerprint, repeat counter, auto-blacklist threshold, and next-prompt feedback. Binding critic authority is now the default on restart, but still routes revised actions through the same quota, blacklist, and skip-feedback machinery. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).
 
 ### New (2026-06-01, metric-free meta-loop and dashboard liveness hardening)
 

@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-05-28
-**Sources**: 8 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
+**Last compiled**: 2026-06-05
+**Sources**: 12 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
 
 ## Summary
 
@@ -50,6 +50,12 @@ This page itself is a product of the `project-wiki` skill compile operation (`/w
 Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING), contradictory status, un-actioned intake (verdict `worth_investigating`/`new_opportunity` with no `handoffs_created` and `ingested_date` >7d old), broken cross-references. Run `python3 .claude/skills/project-wiki/scripts/lint_wiki.py` before nightshift runs and after handoff sweeps.
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
+
+## Governance skill backlog (2026-06-05)
+
+Three active stubs extend the knowledge-management surface beyond retrieval: AutoWiki-style incremental KB generation, repo-readiness scoring, and security-review skill design. The shared pattern is that these are governance tools first: they should emit reviewable artifacts and explicit contracts before they become autonomous writers over handoffs, wiki pages, or code. For wiki/RAG work specifically, this preserves the current source-of-truth layering: intake and handoffs remain primary records, wiki pages are compiled derivatives, and readiness/security outputs are evidence attached to the relevant handoff rather than hidden state.
+
+Sources: [autowiki-incremental-kb-generator.md](../handoffs/active/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [security-review-skill.md](../handoffs/active/security-review-skill.md).
 
 ## Active-handoff hygiene rule (2026-05-27)
 

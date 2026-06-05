@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 38 documents
+**Last compiled**: 2026-06-05
+**Sources**: 41 documents (added 2026-06-05 tool-use eval and benchmark-first model-card corrections)
 
 ## Summary
 
@@ -16,6 +16,9 @@ Cost-aware reward design is layered on top of benchmark results for the MemRL ro
 Benchmark hardening in December 2025 addressed ceiling effects where top models scored 89-93%. Every tier was bumped up one difficulty level with post-doctoral T3 questions added, spreading the score distribution meaningfully across model classes. A mode-advantage suite (90 questions) was specifically designed to produce strong routing signal for MemRL by including tasks that structurally require specific execution modes (react, REPL, delegation, specialist escalation).
 
 ## Key Findings
+
+- **Tool-use experiments must prove the trial actually exercised tools before using the result as optimization signal (2026-06-05).** The active tool-use eval contract separates "model with tools available" from "model actually used the tool path." For AutoPilot/Pareto learning, the measurement contract needs per-trial evidence of tool invocation, helpfulness, and no-tool baseline comparison; otherwise a nominal tool-enabled trial can look like a tool result while measuring only ordinary text behavior. Sources: [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md), [progress 2026-06-03](../progress/2026-06/2026-06-03.md), [progress 2026-06-04](../progress/2026-06/2026-06-04.md).
+- **Model-card numbers are priors; local benchmark verdicts require the EPYC suite.** The Gemma 4 correction is a reusable benchmark rule: do not infer replacement viability from a newly released model card, and verify metric labels before comparing across modalities. The next action is a local suite run against the current frontdoor/vision baselines, not a prose verdict. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
 
 - **Real-path canaries are mandatory for model-facing harnesses.** The BEP-2 falsification harness passed stub dry-runs while still failing the real `/chat` + REPL path in multiple ways: mock/real payload flags, REPL mode forcing, forbidden `open()` instructions, task-root isolation, and per-turn extraction behavior. The corrected methodology is: no-inference real-path canary with deterministic mocked LLM output, then one live single-task smoke, then full A/B. Stub validation alone only proves row/schema shape. [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md)
 - **Root-cause claims require primitive evidence before narrative.** The BEP-2 retrospective logged several wrong but coherent diagnoses before per-turn trace evidence was inspected. The durable benchmark rule is to enumerate all observability artifacts first (`repl_tap`, structured tap, orchestrator log, scratch git diff, verifier output), cap blind fixes at one, and downgrade hypotheses to "suspected" until the primitive trace supports them. [progress 2026-05-27](../progress/2026-05/2026-05-27.md)

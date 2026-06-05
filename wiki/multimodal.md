@@ -2,8 +2,8 @@
 
 **Category**: `multimodal`
 **Confidence**: verified
-**Last compiled**: 2026-04-17
-**Sources**: 31 documents
+**Last compiled**: 2026-06-05
+**Sources**: 34 documents (added 2026-06-05 LocateAnything/Gemma 4 benchmark-first update)
 
 ## Summary
 
@@ -20,6 +20,9 @@ MiniCPM-O 4.5 (9B dense, Qwen3-8B backbone + SigLip2 + Whisper-medium + CosyVoic
 Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+audio unified). E4B (8B effective) could simplify the pipeline but is blocked by lack of GGUF support (MLX only). VoxCPM2 (intake-317) is a tokenizer-free multilingual TTS alternative requiring GPU (RTX 4090 for real-time), tracked for GPU upgrade path.
 
 ## Key Findings
+
+- **Benchmark deployed Qwen-VL field placement before adding LocateAnything (2026-06-05).** The LocateAnything-3B form-fill demo is dominated by the 35B-A3B controller's huge prefill and turn count, not by the 3B visual grounding model alone. Because the stack already has Qwen3-VL-30B and Qwen2.5-VL-7B vision roles, the correct next step is a field-placement IoU benchmark on the deployed VLMs first; LocateAnything becomes a CPU-transformers precision A/B only if the existing VLMs miss the needed grounding precision. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
+- **Gemma 4 should stay a benchmark candidate, not be dismissed from model-card priors.** The June 5 deep-dive corrected an overreach: Gemma 4 was newly released and had not been evaluated locally, so frontdoor/vision replacement claims must wait for EPYC suite results. The card metric previously read as MMMU was actually multilingual MMLU text; vision comparison should use the appropriate vision numbers and local tasks. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [multimodal-pipeline.md](../handoffs/active/multimodal-pipeline.md).
 
 - STT is production: faster-whisper large-v3-turbo, port 9000, int8, 2.8x RT [multimodal-pipeline.md]
 - Vision is code-complete: 4,500 lines, 23 files, 1,234 tests, 11 API endpoints. Needs live validation [multimodal-pipeline.md]

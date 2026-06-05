@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-05-30
-**Sources**: 36 documents (added shape-keyed contention B checkpoint and wrap-up state)
+**Last compiled**: 2026-06-05
+**Sources**: 38 documents (added decision-aware routing and AutoPilot shared-contract context)
 
 ## Summary
 
@@ -18,6 +18,11 @@ The broader routing stack comprises 9 production subsystems that must coordinate
 The 13 intake entries tagged as routing_intelligence are predominantly `already_integrated` foundational papers from the mixture-of-experts (arXiv:2206.01855), speculative decoding (arXiv:2207.10342), and learned routing (arXiv:2305.05176, arXiv:2309.11495) literatures. These informed the original MemRL design. The one `worth_investigating` entry is Reason-ModernColBERT (intake-174), a 150M-parameter late-interaction retriever that outperforms 7B+ dense retrievers on reasoning-intensive BRIGHT benchmarks by +7.3 NDCG@10 using MaxSim scoring on a ModernBERT backbone. This could improve the classification retriever's embedding quality for routing decisions.
 
 ## Key Findings
+
+### New Findings (2026-06-05 — decision-aware routing and AutoPilot signal boundaries)
+
+- **Decision-aware routing remains an offline-analysis-first track.** The current handoff scopes regret analysis, contrastive updates, SPO+, and bilinear prompt/model scoring as an experiment sequence, not a production router change. That keeps it aligned with the broader routing design-space references (Trinity, BaRP, LLM Bandit, Conductor) while preserving existing live routing behavior until measured regret and calibration data justify a rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md).
+- **AutoPilot metrics should feed routing only after exclusion policy is normalized.** The shared `autopilot_core` contracts make benign within-noise rows distinguishable from genuine corruption and provide stable action fingerprints. Routing analyses that reuse AutoPilot journal/archive data should depend on those shared classifications rather than re-parsing `bug_corrupted_by` or planner narrative text. Sources: [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md), [progress 2026-06-04](../progress/2026-06/2026-06-04.md).
 
 ### New Findings (2026-05-24 — cross-role BW-aware admission gate)
 

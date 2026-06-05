@@ -2,8 +2,8 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-05-28
-**Sources**: 27 documents (added 2026-05-28 OPD diagnostics and SDAR/TIP training-only references)
+**Last compiled**: 2026-06-05
+**Sources**: 30 documents (added 2026-06-05 MinT/LoRAX/S-LoRA adapter-serving update)
 
 ## Summary
 
@@ -22,6 +22,11 @@ A critical finding from SFT generalization research (intake-374, intake-378) is 
 Aletheia RLVR (intake-370) provides scale-dependent training recipes for verification models: 1.5B models need on-policy GRPO with negative samples but can skip thinking traces; 14B models require thinking traces and negative samples for stability; DPO is catastrophic at 1.5B scale (-23.4%) but viable at 14B with Easy-to-Hard data. Training is GPU-only (16 rollouts/step), making the 1.5B scale the sweet spot for CPU inference verification with training deferred to DGX Spark.
 
 ## Key Findings
+
+### New (2026-06-05, adapter-serving references)
+
+- **MinT is useful as a scaling reference, not an implementation target.** The June 5 intake corrected the provenance of the "Mind Lab" paper and found a concrete companion paper, but the implementation is closed-source. For EPYC's adapter-serving layer, LoRAX and S-LoRA are the code-backed primary references; MinT remains a conceptual scaling datapoint rather than the base of the local serving plan. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [08-doc-to-lora-prototype.md](../handoffs/active/08-doc-to-lora-prototype.md).
+- **Static small-adapter sets fit the single-user CPU host better than large dynamic adapter markets.** The actionable adapter-serving scope is a bounded set of known LoRA adapters plus per-request override, measured against bandwidth and memory behavior on this host. That keeps the design aligned with LoRAX/S-LoRA patterns while avoiding GPU-class assumptions that the current serving stack cannot satisfy. Sources: [progress 2026-06-05](../progress/2026-06/2026-06-05.md), [08-doc-to-lora-prototype.md](../handoffs/active/08-doc-to-lora-prototype.md).
 
 ### New (2026-05-28, OPD diagnostics and training-only agent RL references)
 
