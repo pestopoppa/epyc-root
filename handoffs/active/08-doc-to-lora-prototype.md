@@ -471,3 +471,31 @@ Independent of D2L pipeline. Purpose: baseline BitNet quality vs existing worker
 **Measurement task for Phase B (when cloud-GPU rental opens)**: before relying on the effective-rank → LoRA-compressibility chain, compute BOTH (a) effective rank from SVD and (b) top-K overlap-mass-fraction on candidate OPD checkpoints. Record which better predicts LoRA fit quality. If overlap-mass-fraction predicts as well as effective rank, prefer the simpler statistic.
 
 **Screening heuristic for OPD-trained third-party releases**: prefer OPD-distilled checkpoints as LoRA targets over RL-trained equivalents (per the predicted inequality). Easy filter at model-card scan time.
+
+## Research Intake Update — 2026-05-30
+
+### New Related Research
+- **[intake-654] "Introducing Unsloth Studio"** (unsloth.ai/docs/new/studio)
+  - Relevance: Unsloth Studio is the no-code web-UI front-end over the Unsloth core (intake-325) — exactly the kind of "Studio UI to manage the doc-to-LoRA pipeline" this handoff's value proposition implies. It bundles dataset creation ("Data Recipes" graph-node workflow + auto-create datasets from PDF/CSV/DOCX), LoRA/FFT/FP8 training, GGUF/safetensor export, and llama.cpp-powered chat/eval in one local interface.
+  - Key technique: Data Recipes (visual graph dataset-transformation pipeline) + one-click LoRA→GGUF export; "Model Arena" side-by-side multi-model comparison.
+  - Reported results: "fine-tune a 70B model on a single RTX 4090 (24 GB)"; "8B on RTX 3080 (10 GB)"; first-install 6× faster / 50% smaller (vendor figures, unverified).
+  - **Delta from current approach / decisive caveat**: Studio **training requires an NVIDIA GPU (CUDA cap ≥7.0)** — confirmed via vendor docs + third-party reviews + open bug unslothai/unsloth#4949. CPU-only hosts (our EPYC 9655 server, GT 1030 display-only) can run **only** chat inference + Data Recipes, **not** training. So the adapter-training step of doc-to-LoRA stays GPU-gated (consistent with this handoff's Phase B = cloud-GPU dependency, Finding 8). The CPU-runnable parts — Data Recipes dataset synthesis from our doc corpus, and GGUF chat/eval of resulting adapters via the LoRA hot-swap API in Finding 1 — ARE usable today. Beta status; AMD/MLX "coming soon"; ~100 GB install footprint; AGPL-3.0 (Studio UI) / Apache-2.0 (core).
+
+## Research Intake Update — 2026-06-04
+
+### New Related Research
+- **[intake-681] "On the Scaling of PEFT: Towards Million Personal Models of Trillion Parameters"** (arxiv:2606.02437)
+  - Relevance: Reframes PEFT/LoRA adapters as a persistent per-instance state substrate (preferences, skills, tool habits, memory-like updates) over a shared foundation — directly the conceptual layer above this handoff's doc-to-LoRA pipeline. Its Scale-Out axis (millions of coexistent adapters on one base) is the same serving-residency problem partially addressed here via llama.cpp LoRA hot-swap (Finding 1: load-at-startup, per-request adapter override, aLoRA auto-activate, selective KV-cache clearing).
+  - Key technique: three scaling axes (Scale Up / Down / Out) + **MinT**, an infrastructure example for adapter identity, revision, provenance, evaluation, and serving residency across many adapters.
+  - Reported results: position/infrastructure paper — no concrete numeric benchmarks; no released MinT code.
+  - Delta from current approach: this handoff's Finding 7 notes zero LoRA infra in the orchestrator (no `--lora` in build_server_command, no `lora_path` in ModelConfig). MinT's identity/revision/provenance/residency design is a blueprint for an orchestrator **adapter registry** — the missing serving-layer half above the training pipeline.
+  - Caveat: anonymous "Mind Lab" collective (~70 contributors), <1-month-old preprint, not peer-reviewed, no code, no reproducible numbers (credibility 1/6). Value is conceptual patterns, not a drop-in component.
+  - Action: mine MinT's lifecycle/residency design when scoping the orchestrator adapter-serving layer. Verdict: adopt_patterns.
+
+  - **⚠ DEEP-DIVE CORRECTION (2026-06-04, read-only investigation — supersedes the caveat/action above; intake-681 credibility 1→3):**
+    1. **"Mind Lab" is deanonymized** = the research arm of **Macaron AI** (funded personal-agent startup), NOT an anonymous collective; its framework is merged into **NVIDIA NeMo Megatron-Bridge + ByteDance VERL** (independent corroboration). Credibility 1→3.
+    2. **MinT has a separate, concrete companion paper** — arXiv **2605.13779** "MinT: Managed Infrastructure for Training and Serving Millions of LLMs" — with measured numbers (18.3× adapter handoff, 100K-adapter sweeps). But **MinT itself is closed-source** (managed SDK); not self-hostable.
+    3. **Better, code-backed mining targets exist and were ABSENT from the corpus** — now ingested:
+       - **LoRAX** (predibase/lorax, Apache-2.0, running code — **intake-684**): dynamic adapter loading, heterogeneous continuous batching, GPU↔CPU adapter exchange scheduling = the residency engine in readable code.
+       - **S-LoRA** (MLSys 2024, **intake-685**): Unified Paging (adapters + KV in one pool) + heterogeneous-batching kernels — the peer-reviewed foundation.
+    - **Refined action:** mine **LoRAX + S-LoRA as PRIMARY** references for the orchestrator adapter-serving layer; treat **MinT (2605.13779) as a SECONDARY** lifecycle reference (closed-source). Fold identity/revision/provenance into the existing `model_registry.yaml` + `ModelConfig` pattern. **SCOPE to a small static adapter set + per-request override** — the only BW-realistic mode on this single-user EPYC CPU host; the "millions of adapters" / heterogeneous-batched residency engine is a GPU-cluster optimization with no EPYC analog. Verdict: adopt_patterns (redirected).

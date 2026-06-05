@@ -33898,3 +33898,360 @@
   - Headline runs EXCLUDED specialized kernel agents (GEAK, AutoTriton) as 'architecturally different', so the arena does not yet validate that GEAK (our keystone) outperforms general agents on its own benchmark — the GEAK-vs-general A/B is unmeasured.
   - 'Per FastKernels-671: speedups are isolated-op vs a stored baseline (efficiency/feature-parity unaudited); the 6.89x Torch2HIP figure especially needs a full-forward-pass re-score vs an honest vendor baseline — and its own unseen-config correctness drop (to 59.7%) already shows the isolated number overstates real robustness.'
   notes: Ingested via /research-intake (operator-directed follow-up to the audit), 2026-06-03. Expanded from intake-674. AMD-AGI Apache-2.0 agent-comparison ARENA + peer-track arXiv 2605.16819. THE controller-A/B harness substrate we planned to build (Claude Code/Codex/Cursor/GEAK adapters, registry pattern, ~4-step custom adapter) -> pivot from build-a-harness to register-our-controllers-as-adapters. Three task suites (HIP/Triton/Torch2HIP) = C5 substrate; the unseen-shape generalization protocol = the multi-shape half of C6 (complements robust-kbench-668). gfx942-only (no gfx90a) => MI210 reproduction is the gating first step; GEAK-v1 stays the gfx90a keystone. Full reasoning in research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md.
+- id: intake-680
+  arxiv_id: null
+  url: https://huggingface.co/nvidia/LocateAnything-3B
+  source_type: repo
+  title: 'LocateAnything-3B — NVIDIA generalist vision-language grounding model (paper: 2605.27365)'
+  categories:
+  - multimodal
+  - tool_implementation
+  - agent_architecture
+  - document_processing
+  - local_inference
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  ingested_date: '2026-06-04'
+  verdict: worth_investigating
+  authors:
+  - NVIDIA (NVlabs / Eagle team)
+  key_claims:
+  - 'Generalist 3B visual-grounding model returning precise bounding boxes / points for referring-expression grounding, multi-object/dense detection, GUI grounding, and text/layout localization from natural-language queries.'
+  - 'Parallel Box Decoding (PBD): predicts complete box coordinates as atomic length-6 blocks in a single parallel step instead of autoregressive token-by-token, claiming ~2.5x higher throughput and preserved intra-box geometric coherence.'
+  - 'Three generation modes — Fast (MTP only), Slow (pure AR), Hybrid (MTP with AR fallback on uncertainty) — trade speed vs accuracy.'
+  - 'Built on Qwen2.5-3B-Instruct LM + MoonViT-SO-400M vision encoder; up to 2.5K-res images and 24K-token prompts; trained on 12M images / 138M+ queries / 785M boxes via a four-stage pipeline. Positioned as foundation for Nemotron 3 Nano Omni.'
+  - 'FIRST-PARTY EPYC DEMO (operator-submitted): Qwen3.6-35B-A3B (frontdoor / brain model) orchestrated LocateAnything-3B as a callable ''eyes'' tool — brain asks "where is the email field?", model returns exact x,y,w,h — to complete a blank paper form, placing all fields (name, DOB, ID, gender, marital status, nationality, email, phone, address, postal code) at the correct pixel areas. Qwen alone cannot finish this task; the small-specialist-as-tool combo can.'
+  techniques:
+  - Parallel Box Decoding (PBD) with fixed length-6 block structure
+  - Multi-Token-Prediction (MTP) fast path + autoregressive fallback (hybrid decoding)
+  - MoonViT vision encoder + Qwen2.5-3B-Instruct LM backbone
+  - Four-stage multi-domain grounding training pipeline
+  - 'Point- and box-based localization APIs (detect / ground_multi / ground_gui)'
+  - 'Small specialist model exposed as an orchestrator tool (brain-model calls grounding-model for pixel coordinates)'
+  reported_results:
+  - '~2.5x decoding throughput vs prior autoregressive grounding approaches (PBD)'
+  - 'Competitive F1 on general object detection (COCO/LVIS) at IoU 0.5 and 0.95; evaluated on ScreenSpot-Pro (GUI), dense detection, layout/OCR, referring-expression grounding, pointing'
+  - 'Efficiency reported as boxes-per-second on a single H100 batch-1 — NO CPU/EPYC numbers'
+  - 'EPYC first-party form-fill demo: form completed, all values in correct field areas (character-box alignment still slightly loose); 9m10s wall, 224.5k input tokens, 24.3k output tokens, 21 turns'
+  referenced_arxiv_ids:
+  - '2605.27365'
+  - '2510.12798'
+  - '2504.07491'
+  - '2504.07981'
+  - '2303.05499'
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    - opendataloader-pipeline-integration.md
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-683
+    - intake-121
+    - intake-575
+    - intake-113
+    - intake-114
+    - intake-139
+  handoffs_updated:
+  - multimodal-pipeline.md
+  handoffs_created: []
+  novelty_justification: 'high — PBD parallel box decoding with MTP fast/hybrid modes is a distinct throughput-oriented grounding mechanism not present in any chapter or intake entry. Prior grounding entries (Moondream 3 detect/point, SAM 3 segmentation, RynnBrain, Marlin-2B temporal grounding) are architecturally different; none cover a parallel-decode specialist box/point grounder. The CPU-orchestration-as-a-tool framing is new to the compendium.'
+  relevance_justification: 'medium (revised down from high after 2026-06-04 deep-dive). Still instantiates the EPYC thesis of small-specialist-as-tool, BUT the capability is largely REDUNDANT with deployed VLMs: worker_vision Qwen2.5-VL-7B (:8086) and vision_escalation Qwen3-VL-30B-A3B (:8087) already return bounding boxes via prompt, and Qwen3-VL is a recognized ScreenSpot-Pro grounding baseline. LocateAnything''s sole differentiator is PBD speed — which does NOT survive CPU/llama.cpp (see verdict). Relevance survives only as (a) a precision comparator if Qwen-VL field-placement IoU proves inadequate, and (b) PBD-as-a-technique worth a chapter cross-ref.'
+  verdict_justification: 'worth_investigating, re-scoped 2026-06-04. Original blockers were partly mis-stated: (1) MoonViT is ALREADY supported in mainline llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26) — it was never the blocker and the Moondream-3 encoder-support analogy is obsolete; (2) the REAL, likely-fatal blocker is Parallel Box Decoding — a custom block-diffusion generation_mode inside trust_remote_code generate() that llama-server cannot express; a GGUF would run only the AR-fallback path, forfeiting the ~2.5x PBD speedup that is the model''s entire value (cf. Qwen3-TTS MTP-codec custom-decode-loop precedent). So it is transformers-CPU-only by design. (3) NVIDIA non-commercial research license (flag-not-block). REFINED ACTION: first benchmark the DEPLOYED Qwen3-VL-30B (:8087) / Qwen2.5-VL-7B (:8086) on the form-fill loop for field-placement IoU; ONLY if precision is inadequate, stand up a throwaway HF-transformers (eager/SDPA, BF16) LocateAnything worker on CPU as a precision A/B — never a GGUF stack role unless someone first writes a custom C++ PBD decode loop in our fork (a research project, not a spike). The 9m10s demo wall-time is dominated by the 35B-A3B brain''s prefill (224.5k input tokens / 21 turns), not the grounding calls — it tells us little about per-call grounding latency.'
+  contradicting_evidence:
+  - 'PBD non-portability (the decisive finding): Parallel Box Decoding is a custom generation_mode (block-diffusion, MagiAttention on Hopper/Blackwell, SDPA fallback) — not a standard AR/MTP-draft stream llama-server can run. GGUF weights would only execute AR-fallback, losing the ~2.5x speedup. Model is transformers-only on CPU by design. Evidence: HF model card; cf. Qwen3-TTS precedent in research/deep-dives/multimodal-moondream3-qwen3tts.md.'
+  - 'Capability redundancy: deployed Qwen2.5-VL-7B (:8086) + Qwen3-VL-30B-A3B (:8087) already do bounding-box grounding via prompt (model_registry.yaml); Qwen3-VL is a ScreenSpot-Pro grounding baseline. A separate grounding tool is justified ONLY if Qwen-VL precision proves inadequate for pixel-exact form fields.'
+  - 'REC-2 premise correction: MoonViT IS supported in mainline llama.cpp (PR #15458, merged 2025-08-26; GGUF ggml-org/Kimi-VL-A3B-Thinking-2506-GGUF). Earlier "no verified GGUF path / same as Moondream 3" framing was stale — the blocker is PBD, not the encoder.'
+  - 'License/IP: NVIDIA non-commercial research license only; tech-press notes IP uncertainty if the 138M-sample training set contains scraped web content (commercial deploy risk; not a blocker for research-only use here). Components: Qwen2.5-3B (Qwen Research License) + MoonViT-SO-400M (MIT).'
+  - 'No CPU numbers anywhere — all throughput is single-H100 BPS. No failed-replication surfaced in Tier-2b, but coverage is NVIDIA pages + uncritical tech-press (Medium ''GoodBye YOLO'', AI-Weekly ''10x rival speed''); claims not independently reproduced.'
+  notes: 'Ingested via /research-intake (operator-submitted), 2026-06-04. #1 trending model on HuggingFace at submission. Operator''s first-party demo (Qwen3.6-35B-A3B brain + LocateAnything-3B eyes, paper-form fill) folded in per user decision. Companion paper intake-683 (arXiv 2605.27365). DEEP-DIVE 2026-06-04 (read-only, 3-agent): relevance high→medium, recs re-scoped — MoonViT already in llama.cpp (PR #15458), real blocker is PBD non-portability, capability redundant with deployed Qwen-VL, 9m10s demo dominated by brain prefill not eyes. Two arXiv links submitted alongside resolved to existing entries (2602.12670=intake-096 SkillsBench; text-albumentations=intake-250) — apparent mis-pastes.'
+- id: intake-681
+  arxiv_id: '2606.02437'
+  url: https://arxiv.org/abs/2606.02437
+  source_type: paper
+  title: 'On the Scaling of PEFT: Towards Million Personal Models of Trillion Parameters'
+  categories:
+  - inference_serving
+  - training_distillation
+  - memory_augmented
+  - cost_aware_routing
+  - knowledge_management
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  ingested_date: '2026-06-04'
+  verdict: adopt_patterns
+  authors:
+  - 'Mind Lab = research arm of Macaron AI (macaron.im) — deanonymized 2026-06-04; NOT an anonymous collective. ~70 contributors incl. Vin Bo, Song Cao, Andrew Chen, Jun Gao, Di Zhang, Ya Zhang, Wei Zhao, et al.'
+  key_claims:
+  - 'Reframes PEFT not as a cheap substitute for full fine-tuning but as a persistent local-state substrate: a strong shared foundation carries general competence while small per-instance adapters carry preferences, skills, tool habits, and memory-like updates.'
+  - 'Organizes the design space around three scaling axes — Scale Up (stronger shared priors make small local updates more useful), Scale Down (how small an adapter can be while staying reliable), Scale Out (millions of persistent adapted instances coexisting on one base).'
+  - 'Introduces MinT, an infrastructure example for managing adapter identity, revision, provenance, evaluation, and serving residency across many coexistent adapters.'
+  - 'Argues PEFT adapters can serve as a compact, durable per-user/per-task personalization layer rather than only a training-budget optimization.'
+  techniques:
+  - PEFT / LoRA-style adapters
+  - Shared-foundation + per-instance adapter architecture
+  - Adapter lifecycle management (identity / revision / provenance)
+  - Multi-tenant adapter serving and residency management
+  - Adapter evaluation harness
+  reported_results:
+  - 'Position/infrastructure paper (2606.02437) itself exposes no numeric benchmarks. BUT its MinT component has a SEPARATE concrete companion paper — arXiv 2605.13779 "MinT: Managed Infrastructure for Training and Serving Millions of LLMs" (May 2026) — with measured numbers: adapter-only handoff 18.3x faster (4B) / 2.85x (30B MoE), concurrent multi-policy training 1.77x/1.45x, packed MoE LoRA loading 8.5-8.7x, sweeps validated through 100K adapters / 1e6-scale catalogs / >1T total params.'
+  - 'Macaron AI / Mind Lab framework merged into NVIDIA NeMo Megatron-Bridge and ByteDance VERL (independent corroboration). MinT ships as a closed managed-service Python SDK (no open-source serving code); only a Claude Code migration skill is on GitHub.'
+  referenced_arxiv_ids:
+  - '2605.13779'
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - delta-mem-reproduction.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-684
+    - intake-685
+    - intake-539
+    - intake-568
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  handoffs_created: []
+  novelty_justification: 'medium — the ''adapter as persistent personal state'' + Scale-Out (millions of coexistent adapters) framing is a useful synthesis, but the underlying primitives (PEFT/LoRA, hot-swappable adapters, adapter-as-memory) are already represented in intake: Doc-to-LoRA (hypernetwork-generated adapters), delta-mem (adapter-as-memory, intake-539), Trained Persistent Memory (intake-568). MinT''s lifecycle/serving-residency angle (identity, revision, provenance, multi-tenant residency) is the genuinely new contribution vs prior intake.'
+  relevance_justification: 'medium — aligns with multi-model orchestration on EPYC: the Scale-Out serving-residency problem is the same one 08-doc-to-lora-prototype.md partially addresses (llama.cpp LoRA hot-swap: load-at-startup, per-request adapter override, aLoRA auto-activate, selective KV-cache clearing). Routing-to-adapter overlaps learned-routing-controller. NOT a multimodal/visual-grounding paper (unrelated to the LocateAnything material it was submitted beside). Capped at medium — position/infra paper, no CPU numbers, no released MinT code; value is conceptual (residency/lifecycle patterns), not a drop-in component.'
+  verdict_justification: 'adopt_patterns, REDIRECTED 2026-06-04. The conceptual frame (adapters as persistent per-instance state + lifecycle/residency management) is sound and informs the orchestrator adapter-serving layer (Finding 7 of 08-doc-to-lora: zero LoRA infra — no --lora in build_server_command, no lora_path in ModelConfig). BUT MinT itself is closed-source (managed SDK), so the PRIMARY mining targets should be the code-backed systems this deep-dive surfaced and which were ABSENT from the corpus: LoRAX (predibase/lorax, Apache-2.0, running code — dynamic adapter loading, heterogeneous continuous batching, GPU<->CPU adapter exchange scheduling = the residency engine in readable code; intake-684) and S-LoRA (MLSys 2024, Unified Paging + heterogeneous-batching kernels; intake-685). Use MinT (companion paper 2605.13779) as a SECONDARY architecture reference for adapter-only handoff + lifecycle (rollout->export->eval->rollback) patterns. Identity/revision/provenance fold into the existing model_registry.yaml + ModelConfig pattern. SCOPE to a small static adapter set + per-request override — the only BW-realistic mode on the single-user EPYC CPU host; the "millions of adapters" residency engine is a GPU-cluster optimization with no EPYC analog.'
+  contradicting_evidence:
+  - 'CREDIBILITY REVISED 1->3 (2026-06-04): "Mind Lab" is the research arm of Macaron AI (funded personal-agent startup), NOT an anonymous collective; framework merges into NVIDIA NeMo Megatron-Bridge + ByteDance VERL provide independent corroboration; companion paper 2605.13779 has hard measured numbers. Capped at 3: preprints not peer-reviewed, no open-source serving code, marketing-heavy sourcing, single-org claims.'
+  - 'MinT serving code is CLOSED (managed-service SDK only) — not self-hostable. The headline "millions of adapters" residency engine is a GPU batched-serving optimization (heterogeneous-batched GEMM across adapters) that a BW-bound single-user CPU host cannot exploit; only per-request adapter override is realistic on EPYC. Mine open code-backed LoRAX/S-LoRA instead for anything implementable.'
+  notes: 'Ingested via /research-intake (operator-submitted alongside LocateAnything material — but topically unrelated; PEFT/adapter-scaling position paper, not visual grounding), 2026-06-04. DEEP-DIVE 2026-06-04 (read-only): deanonymized Mind Lab=Macaron AI (credibility 1->3); found separate concrete MinT infra paper arXiv 2605.13779; REDIRECTED REC to code-backed LoRAX (intake-684) + S-LoRA (intake-685) as primary mining targets, MinT secondary (closed). Scope to per-request override on CPU; "millions of adapters" has no EPYC analog.'
+- id: intake-682
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/gemma-4-12b-it-GGUF
+  source_type: repo
+  title: 'unsloth/gemma-4-12b-it-GGUF — Unsloth Dynamic 2.0 GGUF quants of Google Gemma 4 12B (dense, multimodal, instruction-tuned)'
+  categories:
+  - quantization
+  - multimodal
+  - local_inference
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-04'
+  verdict: worth_investigating
+  authors:
+  - Google DeepMind (base model)
+  - Unsloth AI (GGUF quantization)
+  key_claims:
+  - 'Dense ~11.95B-param (48-layer) instruction-tuned model; encoder-free unified multimodal — text + image (70-1120 token budget) + audio (ASR/translation, <=30s) + video (<=60s); Apache 2.0.'
+  - 'Full GGUF quant ladder from UD-IQ2_M (4.2 GB) through Q4_K_M (7.1 GB), Q8_0 (12.7 GB), to BF16 (23.8 GB), including Unsloth Dynamic 2.0 (UD-*) variants claimed SOTA-accuracy-per-bit.'
+  - '256K context via hybrid attention (1024-token local sliding window interleaved with global layers) + proportional RoPE (p-RoPE); final layer always global.'
+  - 'Native thinking/reasoning mode (enable_thinking, <|think|> tokens), native function-calling/tool-use, native system-prompt support; llama.cpp/Ollama/vLLM/LM-Studio compatible.'
+  techniques:
+  - Unsloth Dynamic 2.0 quantization (per-layer mixed-precision UD-* GGUFs)
+  - Hybrid local-sliding + global attention
+  - Proportional RoPE (p-RoPE) for long context
+  - Encoder-free unified multimodal projection (raw image patches / audio waveforms direct to embedding space)
+  - Native thinking-mode reasoning + function calling
+  reported_results:
+  - 'Card benchmarks (upstream Google): MMLU-Pro 77.2%; GPQA-Diamond 78.8%; LiveCodeBench-v6 72.0%; AIME-2026(no-tools) 77.5%; Codeforces ELO 1659; Tau2 (tool-use) 69.0'
+  - 'CORRECTION (2026-06-04 deep-dive): the card''s "83.4" is multilingual MMLU (MMMLU, TEXT), NOT vision MMMU — earlier conflation fixed. Vision metrics: MMMU-Pro 69.1%; MATH-Vision 79.7%; OmniDocBench-1.5 0.164 edit-dist; MedXPertQA-MM 48.7%'
+  - 'Audio: CoVoST 38.5 (excl. Chinese); FLEURS 0.069 (audio capped <=30s, video <=60s @1fps). Long context: MRCR-v2 8-needle 128k 43.4%'
+  - 'ALL numbers are upstream Google card figures — NOT measured on our stack/eval suite. No CPU/EPYC throughput numbers (quant repo). The substitute verdicts below are unverified priors pending an on-stack benchmark.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries: []
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'low — GGUF re-quantization of an already-known Google model. The corpus already has extensive Gemma-4 coverage (MTP-drafter deep dive, mlx/uncensored intakes, the deployed 26B-A4B worker_general). No novel empirical/algorithmic claims; the only net-new artifact is that this is the dense 12B-it member, distinct from the 31B-dense and 26B-A4B-MoE variants previously analyzed. Family known, specific checkpoint new -> low (not duplicate, not high).'
+  relevance_justification: 'medium — Gemma-4 family is production-load-bearing (26B-A4B Q4_K_M MTP = worker_general since 2026-05-08). The just-released dense 12B-it is multimodal (text+image+audio+video) and llama.cpp ALREADY supports gemma-4 vision (PR #21309) and audio (PR #21421), so a multimodal spike is feasible. Operator-raised angles to TEST (not yet measured on our stack): (a) frontdoor substitute vs Qwen3.6-35B-A3B, (b) vision-escalation substitute vs Qwen3-VL-30B/Qwen2.5-VL-7B. Published card numbers are only a weak prior — per project policy we benchmark before deciding (feedback_always_sweep), so relevance stays medium pending an on-stack eval.'
+  verdict_justification: 'worth_investigating, not already_integrated: deployed Gemma-4 is the 26B-A4B MoE, not this dense 12B — no registry overlap. CONCRETE NEXT ACTION (2026-06-04, per operator): BENCHMARK gemma-4-12b-it on our eval suite — vision (vs Qwen3-VL-30B/Qwen2.5-VL-7B), tool-use/instruction-following (vs Qwen3.6-35B-A3B frontdoor), and text — AND measure CPU decode t/s, before any deployment verdict. Do NOT dismiss on spec-sheet numbers: the model was just released and is unbenchmarked here. CAVEATS to weigh, not blockers: (i) frontdoor Qwen3.6 is ITSELF multimodal (so a vision-substitute must beat an already-capable incumbent on OUR eval, not on cards); (ii) dense 12B reads ~12B params/token vs ~3B active for the MoE frontdoor — on a BW-bound CPU host it is likely slower per token, so measure t/s; (iii) needs enable_thinking handling like Qwen3.x. The ''drafter for 26B-A4B'' framing stays rejected (wrong drafter class; no deployed dense Gemma-4 target). credibility_score null: GGUF quant repo.'
+  contradicting_evidence:
+  - 'Submission hypothesis (dense 12B as drafter for the deployed 26B-A4B MoE) is structurally invalid per gemma4-mtp-drafter-deep-dive.md: Gemma-4 MTP drafting requires the purpose-built 4-layer ~500M Gemma4Assistant head; and no dense Gemma-4 target is deployed to draft for either. Spec-dec angle moot.'
+  - 'BW-bound CPU prior (UNVERIFIED, must measure): a dense 12B reads all ~12B params/token vs the MoE frontdoor''s ~3B active (measured 25.17 t/s), so expect the dense 12B to decode slower despite fewer TOTAL params. This is an estimate, not a benchmark — run it.'
+  - 'All card benchmarks are upstream Google''s, not measured on our stack; quant-quality (UD-* accuracy-per-bit) is vendor self-reported. The substitute verdicts are priors, not eval results — benchmark before deciding.'
+  notes: 'Ingested via /research-intake (operator-submitted), 2026-06-04. Dense 12B-it sibling of the deployed gemma-4-26B-A4B MoE worker_general. DEEP-DIVE 2026-06-04 + operator pushback: kept worth_investigating (NOT downgraded) — the model is just-released and UNBENCHMARKED on our stack, so the "frontdoor out-scores on vision" claim (from Google card numbers) is only a weak prior, not a verdict. NEXT ACTION = benchmark on our suite (vision/tool-use/text) + CPU t/s. Corrected: card 83.4 = multilingual MMLU text not vision MMMU; frontdoor Qwen3.6 is itself multimodal; llama.cpp supports gemma-4 vision (PR #21309) + audio (PR #21421). Drafter-for-26B framing rejected.'
+- id: intake-683
+  arxiv_id: '2605.27365'
+  url: https://arxiv.org/abs/2605.27365
+  source_type: paper
+  title: 'LocateAnything: Fast and High-Quality Vision-Language Grounding with Parallel Box Decoding'
+  categories:
+  - multimodal
+  - document_processing
+  - tool_implementation
+  - local_inference
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-680
+  ingested_date: '2026-06-04'
+  verdict: worth_investigating
+  authors:
+  - Shihao Wang
+  - Shilong Liu
+  - Yuanguo Kuang
+  - Xinyu Wei
+  - Yangzhou Liu
+  - Zhiqi Li
+  - Yunze Man
+  - Guo Chen
+  - Andrew Tao
+  - Guilin Liu
+  - Jan Kautz
+  - Lei Zhang
+  - Zhiding Yu
+  key_claims:
+  - 'Parallel Box Decoding (PBD): decodes geometric elements (bounding boxes) as atomic units in a single step rather than serializing 2D boxes into multiple sequentially-generated 1D tokens.'
+  - 'Prior VLM grounding serializes boxes token-by-token, creating a practical inference bottleneck due to strictly sequential generation; PBD removes it.'
+  - 'PBD preserves intra-box geometric coherence that token-by-token approaches forfeit.'
+  - 'Built LocateAnything-Data with 138M+ training samples for improved localization precision.'
+  - 'Achieves significantly higher decoding throughput while improving high-IoU localization quality across diverse benchmarks.'
+  techniques:
+  - Parallel Box Decoding (PBD)
+  - Atomic geometric-element decoding (boxes as single-step units)
+  - Large-scale multi-domain grounding dataset construction (LocateAnything-Data, 138M+ samples)
+  reported_results:
+  - '~2.5x decoding throughput vs prior autoregressive grounding (per model card / NVIDIA LPR page)'
+  - 'Improved high-IoU localization quality across referring-expression grounding, dense/multi-object detection, GUI grounding, layout/text localization'
+  - 'Efficiency measured as boxes-per-second on H100 — no CPU numbers'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    - opendataloader-pipeline-integration.md
+    experiments: []
+    intake_entries:
+    - intake-680
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'high — Parallel Box Decoding is a distinct, throughput-oriented grounding mechanism absent from any chapter or intake entry; the atomic-box decoding + 138M-sample dataset are new contributions vs existing grounding/VLM intakes.'
+  relevance_justification: 'medium (revised from high, 2026-06-04 deep-dive). Empirical backing for the grounding model the operator demoed, but per the companion repo entry (intake-680) the PBD throughput advantage is GPU-only / non-portable to CPU/llama.cpp, and the grounding capability is largely redundant with deployed Qwen-VL. PBD remains a high-novelty technique worth a chapter cross-ref.'
+  verdict_justification: 'worth_investigating, re-scoped 2026-06-04 — see intake-680. PBD is a custom block-diffusion decode loop llama-server cannot express (GGUF would run AR-fallback only, losing the ~2.5x speedup); MoonViT encoder is already supported in llama.cpp (PR #15458). Treat as a transformers-CPU precision A/B vs deployed Qwen3-VL, gated on Qwen-VL proving insufficient — not a GGUF stack role.'
+  contradicting_evidence:
+  - 'PBD is GPU-bound by design (block-diffusion / MagiAttention on Hopper-Blackwell, SDPA fallback); the ~2.5x speedup does not survive CPU/llama.cpp AR-fallback. All efficiency is GPU (H100) BPS — CPU viability unverified.'
+  - 'Coverage is NVIDIA/tech-press; no independent reproduction found in Tier-2b. License is non-commercial research-only. Capability largely covered by deployed Qwen-VL grounding (intake-680 redundancy finding).'
+  notes: 'Expanded from intake-680 (Tier-1 reference chase — the paper behind nvidia/LocateAnything-3B). NVIDIA LPR project page: research.nvidia.com/labs/lpr/locate-anything/. Companion repo entry intake-680 carries the operator''s first-party form-fill demo + the 2026-06-04 deep-dive refinements (relevance high→medium, PBD non-portability, Qwen-VL redundancy).'
+- id: intake-684
+  arxiv_id: null
+  url: https://github.com/predibase/lorax
+  source_type: repo
+  title: 'LoRAX (Predibase) — multi-LoRA inference server with dynamic adapter loading & heterogeneous continuous batching'
+  categories:
+  - inference_serving
+  - training_distillation
+  - local_inference
+  - cost_aware_routing
+  - memory_augmented
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  discovered_via: expansion
+  expanded_from: intake-681
+  ingested_date: '2026-06-04'
+  verdict: adopt_patterns
+  authors:
+  - Predibase
+  key_claims:
+  - 'Production multi-LoRA serving system (Apache-2.0): serves many fine-tuned LoRA adapters over ONE shared base model on a single GPU, with per-request adapter selection via an OpenAI-compatible API.'
+  - 'Dynamic adapter loading: adapters are JIT-loaded (non-blocking) from HuggingFace Hub / local filesystem / S3 at request time and unloaded under memory pressure — the identity/provenance/loading surface MinT (intake-681) describes, in running code.'
+  - 'Heterogeneous continuous batching: packs requests targeting DIFFERENT adapters into one batch (SGMV-style segmented gather-matmul), so multi-adapter serving keeps near-base throughput.'
+  - 'Adapter exchange scheduling: async prefetch/offload of adapters between GPU and CPU memory — a concrete, readable implementation of the "residency" engine the MinT paper frames abstractly.'
+  - 'Deployment: Docker/Helm, prebuilt images, quantization support; targets the "thousands of adapters, one base" cost-efficiency regime.'
+  techniques:
+  - Dynamic JIT adapter load/unload from HF/FS/S3
+  - Heterogeneous continuous batching across adapters (SGMV segmented matmul)
+  - GPU<->CPU adapter exchange scheduling (prefetch/offload)
+  - Per-request adapter override via OpenAI-compatible API
+  reported_results:
+  - 'No standardized paper benchmark in-repo; positions as serving 1000s of adapters at near-single-model cost/latency (vendor framing). GPU-oriented; CPU multi-adapter batched serving not its target regime.'
+  referenced_arxiv_ids:
+  - '2311.03285'
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - learned-routing-controller.md
+    experiments: []
+    intake_entries:
+    - intake-681
+    - intake-685
+    - intake-539
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  handoffs_created: []
+  novelty_justification: 'medium — multi-LoRA serving with dynamic loading + heterogeneous batching is established art (post-S-LoRA), but LoRAX is ABSENT from the corpus (grep s-lora/punica/dlora/lorax/predibase = 0 hits) and is the most concrete, code-backed embodiment of the adapter-serving-residency design the MinT paper (intake-681) only describes. Net-new to our intake; not a novel research technique.'
+  relevance_justification: 'medium — directly relevant to 08-doc-to-lora-prototype.md Phase B / Finding 7 (orchestrator has zero LoRA infra). LoRAX is the running-code reference to mine for dynamic loading, identity/provenance, and GPU<->CPU residency scheduling. Tempered: LoRAX is GPU-batched-serving-oriented; its heterogeneous-batching win does not transfer to the BW-bound single-user EPYC CPU host, where per-request adapter override is the realistic mode. Mine the design surface, not the batched-serving engine.'
+  verdict_justification: 'adopt_patterns — Apache-2.0, code-backed primary reference for the orchestrator adapter-serving layer (preferred over closed-source MinT, intake-681). Adopt the dynamic-load API surface + adapter identity/provenance model + per-request override pattern; fold metadata into model_registry.yaml + ModelConfig. Do NOT port the heterogeneous-batching residency engine (GPU optimization, no EPYC CPU analog). credibility_score null: code repo, no empirical paper claims to score.'
+  contradicting_evidence:
+  - 'GPU-oriented: the heterogeneous continuous-batching throughput win is a batched-GEMM-across-adapters optimization that a BW-saturated single-user CPU host cannot exploit; on EPYC only per-request adapter override + small static adapter sets are realistic.'
+  - 'Vendor (Predibase) project tied to a commercial managed offering; in-repo standardized benchmarks are limited — claims are framing, not peer-reviewed numbers.'
+  notes: 'Discovered via intake-681 deep-dive (2026-06-04) as the code-backed alternative to the closed-source MinT. Primary mining target for the orchestrator adapter-serving layer (doc-to-lora Phase B). Academic foundation = S-LoRA (intake-685).'
+- id: intake-685
+  arxiv_id: '2311.03285'
+  url: https://arxiv.org/abs/2311.03285
+  source_type: paper
+  title: 'S-LoRA: Serving Thousands of Concurrent LoRA Adapters'
+  categories:
+  - inference_serving
+  - training_distillation
+  - kv_cache
+  - local_inference
+  - cost_aware_routing
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-681
+  ingested_date: '2026-06-04'
+  verdict: adopt_patterns
+  authors:
+  - Ying Sheng
+  - Shuo Yang
+  - Lianmin Zheng
+  - 'Joseph E. Gonzalez (UC Berkeley)'
+  - 'Ion Stoica (UC Berkeley)'
+  - et al.
+  key_claims:
+  - 'Serves thousands of concurrent LoRA adapters over one base model by storing all adapters in host RAM and paging the active ones to GPU on demand.'
+  - 'Unified Paging: a single memory pool manages BOTH dynamic adapter weights AND KV-cache tensors with unified paging to reduce fragmentation and raise batch size.'
+  - 'Custom heterogeneous-batching CUDA kernels (MBGMM/MBGMV) compute the base-model batch and many different per-request adapters together, decoupled from the base GEMM.'
+  - 'Tensor-parallel strategy for batched LoRA adds minimal communication overhead; scales to thousands of adapters with low latency overhead vs base serving.'
+  techniques:
+  - Unified Paging (adapter weights + KV cache in one paged pool)
+  - Heterogeneous batched LoRA kernels (MBGMM / MBGMV)
+  - Host-RAM adapter store with on-demand GPU paging (the residency mechanism)
+  - LoRA-aware tensor parallelism
+  reported_results:
+  - 'Reports serving 2000+ adapters concurrently with substantially higher throughput than naive merged-weight or per-adapter serving (vs HF PEFT / vLLM-packed baselines) at the time of publication (MLSys 2024).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    experiments: []
+    intake_entries:
+    - intake-681
+    - intake-684
+    - intake-539
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  handoffs_created: []
+  novelty_justification: 'medium — foundational and well-known (the paper most multi-LoRA serving systems descend from), but ABSENT from the corpus and the peer-reviewed mechanism behind LoRAX/MinT-style residency. Cite for the residency/paging mechanism and credibility, not as a new technique.'
+  relevance_justification: 'medium — the academic grounding for the orchestrator adapter-serving layer (doc-to-lora Phase B). Unified Paging (adapters + KV in one pool) is conceptually interesting for llama.cpp''s KV-cache-clear-on-adapter-switch behavior, though S-LoRA''s batched-kernel win is GPU-only. On the single-user BW-bound CPU host the practical takeaway is the host-RAM-adapter-store + on-demand-load pattern, not the batched kernels.'
+  verdict_justification: 'adopt_patterns — peer-reviewed (MLSys 2024) reference for the residency/paging mechanism; pair with code-backed LoRAX (intake-684) for implementation and use MinT (intake-681, closed) only as a lifecycle reference. On EPYC scope to host-RAM adapter store + per-request override; the heterogeneous batched kernels and "thousands concurrent" regime are GPU-cluster features with no single-user CPU analog.'
+  contradicting_evidence:
+  - 'All gains are GPU batched-serving (custom CUDA kernels, GPU paging); none transfer to BW-bound CPU inference. Published Nov 2023 — >24 months old; specific throughput numbers are dated vs current vLLM/SGLang multi-LoRA.'
+  - 'The "thousands of concurrent adapters" target has no analog on a single-user stack; realistic EPYC use is a small static adapter set.'
+  notes: 'Discovered via intake-681 deep-dive (2026-06-04). Peer-reviewed (MLSys 2024) academic foundation for multi-LoRA serving; code at github.com/S-LoRA/S-LoRA. Pair with LoRAX (intake-684, running code) as the primary references for the orchestrator adapter-serving layer; MinT (intake-681) is the closed-source secondary lifecycle reference. credibility 4: peer-reviewed (+2), Berkeley/Stanford authors incl. Gonzalez/Stoica (+1), widely corroborated/foundational (+2), minus age (-1).'
