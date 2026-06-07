@@ -1017,3 +1017,26 @@ Sibling: the **PEAF** item above (prediction-error-as-feature) is independent �
 
 - **[intake-614] Fortytwo Network — chunk-ranking pipeline (unpublished founder claim)**
   - Relevance: if real and disclosed, chunk-ranking = mid-stream cross-model ranking against milestones during single-shot generation, which would let an ensemble vote without paying N-rounds latency. That is a primitive we currently do NOT have any analog of in the autopilot loop or the orchestrator. Tracked as a watch item until they publish.
+
+## 2026-06-07 — Per-suite regression gate made resolution-aware (trial-707 halt fixed)
+
+Autopilot self-halted 06-06 @ trial 708 (`critic_reject_loop`). Root cause: the per-suite
+regression gate used a fixed `-0.1` floor against per-suite scores quantized to `{0,1.5,3.0}`
+(~2 questions/suite on the hybrid T1 eval). One question flipping = a `-1.5` "regression" =
+15× the floor, so the gate fired every seeder trial → `mad_noise`-excluded → planner looped on
+`seed_batch` → critic halted it. The planner's eval-artifact diagnosis was correct; the codex
+critic's "broken-instrument, no evidence" rejection was wrong (evidence = the quantized per-suite
+METRIC lines). This is the concrete mechanism behind the long-standing **MAD over-exclusion** open item.
+
+Landed (epyc-orchestrator, uncommitted): `per_suite_regression_threshold()` widens the floor to
+the coarser single-flip quantum `3/n` using new `EvalResult.per_suite_counts` +
+`Baseline.per_suite_counts_by_tier` (empty ⇒ legacy `-0.1`); `classify_learning_exclusion()` now
+treats `mad_noise`/`reproduction_confirmed` as benign **only when `verdict.passed`** (trial 707
+failed 3 per-suite checks yet was admitted as a "trusted within-noise representative"); `autopilot.py`
+failed-but-not-benign trials skip the clean archive/baseline update. 11 new tests; patched gate
+clears the exact trial-707 numbers. Full write-up: `epyc-root/progress/2026-06/2026-06-07.md`.
+
+**Outstanding (operator):** (1) baseline-count refresh is optional — result-side counts already fix
+it and baseline counts self-populate on the next clean T1 trial; a live refresh eval is operator-run.
+(2) Restart is an operator call — `autopilot_state.json` was externally rewritten 06-07 16:04 to
+`paused=false`/counter=0 (already restart-ready, but not done by the fix session).
