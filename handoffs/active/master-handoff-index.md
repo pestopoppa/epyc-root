@@ -40,7 +40,7 @@
 |---|---|---|---|
 | F4 | HIGH (this month) | Backup irreplaceable evidence base — W1 manifest/git-state audit landed; W2 waits for real off-RAID/off-host target + backup tool | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) |
 | F5 | HIGH (this month) | Harden research-intake against instruction injection — root policy/validator/canary landed; `web_research` branch-ready (`205ca77`) but merge/attest still open | [frontier-f5-intake-injection-hardening.md](frontier-f5-intake-injection-hardening.md) |
-| F1 | MED | Real-task corpus as eval distribution — passive task_record capture, real-suite v1, wire into promotion/routing decisions | [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) |
+| F1 | MED | Real-task corpus as eval distribution — W1 workload taxonomy branch-ready (`feat/workload-model` `2211e29`); next passive `task_record` capture, real-suite v1, wire into promotion/routing decisions | [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) |
 | F2 | HIGH, gated: N1+N4, N2, F5 | Self-running lab — lab_jobs.yaml inventory, contract-validated runner with review queue, shadow→reviewed→autonomous ladder | [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) |
 | F3 | MED (W3 HW-GATED: MI210) | Data flywheel — planner-archive/triage capture hygiene + dataset builders now; planner-distill/drafter/judge fine-tunes after GPU | [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) |
 | F6 | MED | Upstream/publication yield-capture: D2 DSA PR spearhead, canonical-bench methodology post, protocol-tagged results page | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) |
