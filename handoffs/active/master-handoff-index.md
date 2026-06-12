@@ -24,7 +24,7 @@
 ## B. ACTIVE — claimable now (HIGH → LOW)
 | # | Item | Gate/note |
 |---|---|---|
-| A1 | **shape-keyed-contention rollout** — analyze Step-1 observation JSONL (free), then the quiesce-window flag bracket | bracket owns the reload (see §C) |
+| A1 | **shape-keyed-contention rollout** — Step-1 JSONL analyzed; next is the quiesce-window Step-2 smoke/flag bracket | bracket owns the reload (see §C) |
 | A2 | **multi-file edit-transaction rollout decision** (5/5 vs loop-failures proven; flag default-off) | operator A/B-then-enable; promotion-cohort candidate |
 | A3 | **within-role placement**: J2/J3 live migration probe | quiesce window (single-worker API) |
 | A4 | **eval-tower-verification** EV-8/9/10 | re-sequenced AFTER N2/N4 (EV-4 calibration explicitly waits for the redesigned tower) |
