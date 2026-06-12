@@ -25,7 +25,7 @@
 | N4 | **Instrument repair**: `expected=''` gate, pandas, trace one vl request, NFKD diacritics, persist Seeder per-question results | op | 8 dead questions of 43 (findings-01-impl §2.0) |
 | N5 | **α(Qwen3-1.7B→frontdoor) on CPU** | op | hardware-independent; forks the whole GPU program (findings-03 G1) |
 | N6 | **Objective replay**: task_rate axis over journal history; bloat-artifact report | op | zero inference (findings-05) |
-| N7 | **Zero-inference campaign analyses** (run today, alongside the live autopilot): J13 BT-hint verdict, J7 DCP-6 offline replay, K-RAG-1 recall sweep (CPU-only) | either | each closes or re-gates a decision at ~0 llama-hours; DAR-1, J9, and J12 wiring closed 2026-06-12 in the canonical master index |
+| N7 | **Zero-inference campaign analyses** (run today, alongside the live autopilot): J7 DCP-6 offline replay, K-RAG-1 recall sweep (CPU-only) | either | each closes or re-gates a decision at ~0 llama-hours; DAR-1, J9, J13, and J12 wiring closed 2026-06-12 in the canonical master index |
 | N8 | **autopilot-continuous-optimization**: hunk-stage the 4 uncommitted autopilot.py groups; `git add` tool-use-eval-contract.md + fable5 files (untracked coordination state) | op | uncommitted live-deployed code in a shared clone |
 | N9 | **retrain-routing-models unblock**: operator BGE re-embed (NOT lollms); verify the 0-byte `embeddings.faiss` observed 14:54 today | op | live routing-memory anomaly + named blocker |
 | N10 | Apply this index rewrite + §D hygiene batch; tri-role shadow-telemetry keep-or-kill decision | op | coordination surface for everything above |

@@ -17,7 +17,7 @@
 | N2 | **Per-question eval ledger + sequential e-process verdicts** + McNemar replay of 120 trials → [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (restart-bundle owner) | op | keystone; gates Queue 3 + CAP-REG |
 | N5 | **α(Qwen3-1.7B→frontdoor) on CPU** → [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) §Gating Measurement | op | hardware-independent; forks the whole GPU program (findings-03 G1) |
 | N6 | **Objective policy decision**: task_rate replay/report + doc-truth W4 are done; W3 flip is gated on 1/5 drop vs ≥2/5 proof threshold + raw-rate zero-quality frontier risk → [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | op | review before live dominance change (findings-05) |
-| N7 | **Zero-inference campaign analyses** (run today, alongside the live autopilot): J13 BT-hint verdict, J7 DCP-6 offline replay, K-RAG-1 recall sweep (CPU-only) | either | each closes or re-gates a decision at ~0 llama-hours (= campaign Queue 1); DAR-1, J9, and J12 wiring closed 2026-06-12 |
+| N7 | **Zero-inference campaign analyses** (run today, alongside the live autopilot): J7 DCP-6 offline replay, K-RAG-1 recall sweep (CPU-only) | either | each closes or re-gates a decision at ~0 llama-hours (= campaign Queue 1); DAR-1, J9, J13, and J12 wiring closed 2026-06-12 |
 | N9 | **retrain-routing-models unblock**: operator BGE re-embed (NOT lollms); verify the 0-byte `embeddings.faiss` observed 14:54 today | op | live routing-memory anomaly + named blocker |
 | N10 | **tri-role shadow-telemetry follow-through** — W7 persistence landed; next use the progress-log fields to close TR-3.3/3.4 instead of adding another shadow path → [routing-truth-restoration.md](routing-truth-restoration.md) | op | coordination surface (this index rewrite applied 2026-06-12) |
 
@@ -48,7 +48,7 @@
 
 ## C. The bulk-inference campaign, restructured
 Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-campaign.md) (restructured into 3 queues 2026-06-12).
-- **Queue 1 — offline-now** (≈0 llama-hours): remaining N7 analyses (J13/J7/K-RAG) + G12 tier calibration when G10/G11 data exists + campaign-doc hygiene. DAR-1, J9, and J12 wiring are closed.
+- **Queue 1 — offline-now** (≈0 llama-hours): remaining N7 analyses (J7/K-RAG) + G12 tier calibration when G10/G11 data exists + campaign-doc hygiene. DAR-1, J9, J13, and J12 wiring are closed.
 - **Queue 2 — ONE consolidated quiesce window** (at t1000 or operator SIGTERM; ~28–31h; ONE attested reload serves all): (1) reload with **declared production env** (fixes test-defaults; sets every flag this window needs — the only route around the 1-of-6 POST /config bug) + per-worker attestation; (2) **E2 then E1 batched-decode measurements first** (findings-06 — E2 makes every later eval cheaper); (3) shape-keyed flag-on bracket; (4) J2/J3 single-worker probe; (5) J12 probe + THINK-ABL-1 (best leverage/hour, +33pp class effect); (6) J15 MD-9; (7) J7 DCP-6 inference half; (8) J10 URE shadow env-flag rides the reload free; J16 only if N2+N4 landed and its leak premise re-verified.
 - **Queue 3 — restart bundle** (next autopilot restart, flag-isolated): per-question ledger + sequential verdicts (findings-01c) + J11/BSV-2 + K-SKILL-1; then H5/EV-4 calibration baselines the **redesigned** tower (K-EVAL-1 folded into H5 — single owner).
 - **Standalone model-batched windows** (~27h): group K-MEM-1 × K-ROPE-1 × G11 × G5 **by model** so each GGUF loads once; K-EMB-1 embedder-only; H7 transformers-CPU serial.
