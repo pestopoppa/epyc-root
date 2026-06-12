@@ -1,11 +1,12 @@
 # Decision-Aware Routing for Q-Scorer
 
-**Status**: IN PROGRESS — DAR-1 analysis complete (2026-04-15). 96% uniform Q-values confirmed. DAR-2 pending.
+**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — **the NOW item is the DAR-1 regret replay over current traffic** (offline, ~0 inference; fable5 master-index row N7): it is the gate for the entire learned-routing expansion cluster. Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/ε-greedy) and DAR-6 are FROZEN per fable5-findings-02** (prediction: regret <5% ⇒ stays frozen); **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
 **Created**: 2026-04-14 (from deep-dive research on intake-366)
-**Updated**: 2026-04-15
+**Updated**: 2026-06-12 (header refresh; prior body updates through 2026-04)
 **Priority**: HIGH
 **Categories**: routing_intelligence, reinforcement_learning, cost_aware_routing
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
+**Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are tracked in [routing-truth-restoration.md](routing-truth-restoration.md) W8 (avoid double-claiming; analysis itself runs here).
 
 ## Problem / Context
 
@@ -174,7 +175,7 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 
 **Source**: arxiv:2510.24801 (intake-615) — peer-ranked consensus across heterogeneous models reportedly shows 0.12% adversarial-degradation vs 6.20% for single-model baseline on prompt injection. If even a third of that delta survives independent replication on our suite, swarm-fanout is a routing **mode**, not just a research curiosity.
 
-**What this adds to DAR**: a new routing mode that fans high-injection-risk prompts to **N≥2 concurrent serves** and returns a Bradley-Terry-aggregated winner instead of escalating to a single stronger model. This is **post-hoc full-completion** swarm voting (the published method) — distinct from the unpublished chunk-ranking claim (which is scoped separately in [`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md), not buildable today).
+**What this adds to DAR**: a new routing mode that fans high-injection-risk prompts to **N≥2 concurrent serves** and returns a Bradley-Terry-aggregated winner instead of escalating to a single stronger model. This is **post-hoc full-completion** swarm voting (the published method) — distinct from the unpublished chunk-ranking claim (which is scoped separately in [`peer-verifier-speculation-spike.md`](../completed/peer-verifier-speculation-spike.md), resolved NO-GO and archived 2026-06-12).
 
 **Gate before any code**:
 - Replicate the 0.12% / 6.20% claim on our own injection suite. Candidate suites: [Garak](https://github.com/leondz/garak), [HouYi](https://github.com/LLMSecurity/HouYi), [PromptInject](https://github.com/agencyenterprise/PromptInject). Pick one with active maintenance + Apache/MIT license.
@@ -194,7 +195,7 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 - **Default-off safety**: `dispatch_swarm_fanout` requires no aggregator by default; if called without one, returns all N completions and the caller picks. This is deliberate — the most faithful Fortytwo-style aggregator (peer-judged pairwise) needs N*(N-1) extra inference calls and is exactly the cost the DAR-6.5 A/B is designed to measure. Picking a default would prejudge the experiment.
 
 **Non-goals for DAR-6**:
-- Mid-stream / chunk-level peer verification ([`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md) covers that; treat it as future work pending the spike).
+- Mid-stream / chunk-level peer verification ([`peer-verifier-speculation-spike.md`](../completed/peer-verifier-speculation-spike.md) covers that; spike resolved NO-GO 2026-05-27, archived 2026-06-12 with 4 re-eval triggers).
 - Replicating Fortytwo's reputation-staking / Sybil resistance (single-user single-host stack — out of scope).
 - Multi-model fan-out for general (non-injection) prompts — that's a latency burn without a clear quality justification at our scale.
 

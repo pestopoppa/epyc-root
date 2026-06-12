@@ -1,6 +1,13 @@
 # AutoWiki-Style Incremental KB Generator
 
-**Status**: stub
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+- **Final outcome**: never progressed beyond stub; no code written. The reproducible core (page→source-paths manifest, incremental ColBERT re-embed, CI/nightshift trigger) and its 4 open design questions remain valid future scope.
+- **Why archived**: fable5-findings-04 lists this among "index attention spent off-North-Star" slots; the content is an extension of the already-landed compiled-KB work, so it was merged into its natural parent rather than holding a standalone active slot.
+- **Where residual items now live**: [`../active/internal-kb-rag.md`](../active/internal-kb-rag.md) § "Incremental wiki/KB refresh (merged from autowiki stub, 2026-06-12)" — full mechanism + all 4 open design questions carried over. Research provenance stays at `research/factory-ai-harvest-2026-06-03.md` (Part 3E, intake-657).
+- **Reopen triggers**: none standalone — pick the work up through internal-kb-rag when the project-wiki staleness gap becomes a measured pain point or the K7 eval lands and incremental freshness becomes the next KB lever.
+
+**Status**: stub — MERGED into internal-kb-rag.md 2026-06-12
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: knowledge_management, rag_alternatives, search_retrieval
 

@@ -2,6 +2,8 @@
 
 > If registering a new model, run `/new-model` first.
 
+> **MEASUREMENT POLICY (read first — governs everything below):** benchmarks need explicit per-run operator approval (parallel agents/the autopilot may be running inference; concurrent runs poison both). Throughput numbers come ONLY from the codified recipes (`bench_canonical.sh`/`canonical_recipe.py`, epyc-inference-research) with host-health preflight; published numbers use the claim grammar from `/workspace/MEASUREMENT.md`; historical comparisons era-label first (`instrument_eras.yaml`). The step-by-step below covers model onboarding mechanics; where it conflicts with MEASUREMENT.md, MEASUREMENT.md wins.
+
 ## New Model Testing Order
 
 ### Step 1: Establish Reliable Launch

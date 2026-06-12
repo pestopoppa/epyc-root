@@ -6,6 +6,8 @@
 **Repos:** `epyc-orchestrator` (src/scheduling, src/backends, src/runtime, scripts/benchmark)
 **Depends on:** `contention_matrix.yaml` (topology_hash `df373c79cc4af06f`), `instance_topology.get_instance_regions()`
 
+> **Fable 5 review (2026-06-12)**: the flag-on bracket is item #3 in the consolidated quiesce-window manifest ([bulk-inference-campaign.md](bulk-inference-campaign.md) Queue 2) and owns the attested production-env reload the other window items piggyback on.
+
 ---
 
 ## Current state (start here)

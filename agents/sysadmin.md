@@ -30,6 +30,12 @@ Own host-level runtime configuration for stable, high-performance execution.
 4. Apply changes with audited commands.
 5. Validate effect and monitor stability.
 
+## Host-Health for Measurement Validity
+
+- Host state silently corrupts benchmarks: sustained multi-day load degrades throughput up to ~60%. Tiers: uptime ≤1wk → `drop_caches` then ALWAYS NUMA-interleave re-warm (a bare re-read pins the model to one node and halves t/s); ≥1wk → reboot required.
+- Check `kernel.numa_balancing` each session (it self-resets despite sysctl.d).
+- Any tuning change invalidates open measurement baselines — note it so trials spanning the change are excluded (`agents/shared/MEASUREMENT_POLICY.md`).
+
 ## Guardrails
 
 - Do not apply reboot-required changes without explicit warning.

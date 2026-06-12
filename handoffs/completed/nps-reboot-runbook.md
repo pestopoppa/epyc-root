@@ -1,9 +1,21 @@
 # NPS BIOS Reboot Runbook — CPU1 Unlock Gate
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Every reboot this runbook gates has been executed and decided. NPS2 → NPS4 reboot executed 2026-04-24/25 (NPS4 locked in: Phase 1.0+1.1 +12.5%, Phase 1.3 v1 GGML_NUMA_WEIGHTS +140%, 48t new single-instance best 46.6 t/s — see `project_cpu1_phase13_v1` / `project_cpu1_48t_new_best`). L3aaN reboot executed and evaluated 2026-04-26: **DECISIVE NEGATIVE** — all 5 production models regressed 30–52%, EP frontdoor −51%, even the designed-for 12-rank concurrent split −35% vs NPS4; reverted to NPS4 (see `project_l3aan_reverted` and `progress/2026-04/2026-04-26.md`).
+
+**Why archived**: no unchecked actionable item remains and no live reopen gate exists. The pre/post-reboot baseline tables, procedures, and decision matrices below are historical record; raw data lives in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`.
+
+**Where residuals now live**: generic post-reboot validation/recovery (re-apply non-persistent sysctls, throttle check, canonical smoke bench) overlaps [`cpu-kernel-env-flags-inventory.md`](../active/cpu-kernel-env-flags-inventory.md) and the memory entries `feedback_host_throttle_check` / `feedback_numa_balancing_self_reset` / `feedback_canonical_baseline_protocol`; the CPU15/EP disposition is owned by [`large-moe-expert-parallelism.md`](../active/large-moe-expert-parallelism.md).
+
+**Reopen triggers**: none. **L3aaN is do-not-re-propose without a new mechanism** (per `project_l3aan_reverted`); any future NPS-mode change gets a fresh runbook with fresh baselines.
+
+---
+
 **Status**: scheduled (pending user-initiated reboot window)
 **Priority**: HIGH — gates CPU1 TP-sharding real-world viability
 **Created**: 2026-04-24
-**Owner**: CPU-optimization workstream (see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md))
+**Owner**: CPU-optimization workstream (see [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md))
 **Scope**: change NPS mode from NPS2 → NPS4; conditionally to L3-as-NUMA
 
 ## Why this reboot
@@ -314,7 +326,7 @@ All artifacts in `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 
 **Status (2026-04-26 evening)**: **EVALUATION COMPLETE — L3aaN REVERT REQUIRED.** All 5 canonical production models regressed 30–52% vs NPS4; EP frontdoor regressed 51%; even L3aaN's "designed-for" 12-rank concurrent-split aggregate regressed 35% vs NPS4. Audit-driven supplemental tweak sweep (CPU1 3-flag, repack kill-switch, 12-way EP, `numactl --interleave=all`, thread sweep, literature `--no-mmap` recipe) recovered some ground but every model still 26–43% below NPS4 at the L3aaN optimum. Background literature review (subagent, 6 highest-quality sources) independently confirmed L3aaN is structurally for HPC/MPI rank-per-CCX, not OpenMP threaded inference, and does not change IOD/UMC interleave or aggregate BW. Awaiting user-driven BIOS reboot to NPS4. Raw data: `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/2026-04-26-l3aan/`. Full writeup: `progress/2026-04/2026-04-26.md`.
 
-**For the post-reboot agent — exact pickup point**: see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) **POST-REVERT PICKUP block at the very top** (numbered verification steps + smoke-test command + forward path to Phase H). Do not re-execute the L3aaN procedure below — it is complete and the answer is "revert".
+**For the post-reboot agent — exact pickup point**: see [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) **POST-REVERT PICKUP block at the very top** (numbered verification steps + smoke-test command + forward path to Phase H). Do not re-execute the L3aaN procedure below — it is complete and the answer is "revert".
 
 **CPU15 correction (2026-05-28)**: the old "EP frontdoor +17%" reference below is historical. The active CPU15 handoff now downgrades EP to default-off infrastructure unless a fresh CPU20 canonical matrix proves material gain. Do not use the procedure below to justify production `GGML_EP_*` wiring.
 

@@ -1,6 +1,6 @@
 # Blocked Tasks
 
-**Last Updated**: 2026-05-27
+**Last Updated**: 2026-06-12
 
 This index tracks work that cannot proceed until an external condition changes. It includes files physically in `handoffs/blocked/` and active handoffs whose status is explicitly `BLOCKED`.
 
@@ -9,7 +9,8 @@ This index tracks work that cannot proceed until an external condition changes. 
 | Task | Blocked On | Priority | Handoff | Current State |
 |------|------------|----------|---------|---------------|
 | Retrain routing models + GraphRouter + SkillBank | Accumulate ~500+ fresh routing memories after episodic-memory reset | HIGH | [`../active/retrain-routing-models.md`](../active/retrain-routing-models.md) | Active handoff marked `BLOCKED`; verify memory count before retraining. |
-| Ouroboros multi-model validation | Multiple validated worker models; old Nanbeige/MiroThinker dependencies need review against current model stack | MEDIUM | [`09-ouroboros-multi-model-validation.md`](09-ouroboros-multi-model-validation.md) | Historical blocked handoff still has open acceptance criteria; should be re-triaged before implementation. |
+
+Removed 2026-06-12 (Fable 5 portfolio pass): Ouroboros multi-model validation → moved to [`../archived/09-ouroboros-multi-model-validation.md`](../archived/09-ouroboros-multi-model-validation.md) — never executed, references a deprecated model stack (pre-30B-A3B/gemma4 worker swaps); closure note in the file.
 
 ## Reporting Instructions
 

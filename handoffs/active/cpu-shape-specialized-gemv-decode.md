@@ -7,11 +7,13 @@
 **Workstream**: Inference Acceleration
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**:
-- [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — current kernel-level work on the fork
+- [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — historical v4 kernel-push record (archived 2026-06-12)
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — orthogonal throughput lever (KV-side)
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — where TensileLite shape-specialization discussion originated
 - [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) — paged attention / OpenMP repack / MoE expert reduction context
 - [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — where the CPU18 MegaBlocks indexing port (below) compounds
+
+> **Fable 5 review (2026-06-12)**: E3 (the 8x8 GEMM SIMD body this file would land) is gated and owned by [batched-decode-measurement.md](batched-decode-measurement.md) — claim E3 there.
 
 ## Phase 4 candidate (CPU18, added 2026-04-26 from research-intake batch)
 
@@ -128,6 +130,24 @@ Without the NUMA fix, the repack path capped at ~1.6 t/s regardless of thread co
 - **Cross-check Q4_K_M at 1t** to confirm the +30% single-thread win extends there too — validates the tensor_traits path across all types.
 - **Upstream the NUMA fix** — `mbind(MPOL_INTERLEAVE)` on CPU_REPACK buffer is a real bug-fix affecting every multi-NUMA host running any repacked quant. Worth a PR to ggml-org/llama.cpp independent of the Q8_0 kernel.
 - **Flip default ON** — once Q6_K/Q5_K land, remove the `GGML_Q8_0_8X8` env gate and make x86 Q8_0/Q{5,6}_K repack the default.
+
+### Q5_K/Q6_K 8x8 disposition (merged from qkernel-q5q6-default-on-flip, 2026-06-12)
+
+The Q6_K/Q5_K follow-ups above were spun out into `qkernel-q5q6-default-on-flip.md`; its Phase A gate ran 2026-05-04 and the handoff is now closed (full record: [`../completed/qkernel-q5q6-default-on-flip.md`](../completed/qkernel-q5q6-default-on-flip.md)). Disposition of record:
+
+| Item | Verdict |
+|---|---|
+| Q6_K PPL gate (A.1) | **PASS** — 5/5 bit-exact across the production lineup (`data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md`) |
+| Q6_K 96t perf gate (A.2) | **FAIL** — aggregate geomean **−0.28%**, REAP-246B **−1.01%**; default-ON flip NO-GO |
+| Q6_K disposition | Stays env-gated **OFF** (`GGML_Q6_K_8X8_AVX=1` opt-in remains valid for low-thread or diagnostic runs) |
+| Q5_K body | **Unwritten** (generic scalar only) and deprioritized until a fresh profile shows the Q5_K path is still material after the Q6/Q8 state |
+| Blanket `Q{5,6,8}_K` default-on | NO-GO under current production workload; the compounding rationale was falsified |
+
+**Reopen only if at least one condition changes** (carried verbatim from the closed handoff):
+
+- Production workload shifts to low-thread decode where Q6_K's single-thread win matters.
+- A new kernel branch materially changes the Q6_K implementation.
+- CPU20-compliant profiling shows Q5_K/Q6_K scale/min paths are again a top bottleneck.
 
 ### Session 15 part 3 (2026-04-24): probing the 4.4 t/s ceiling
 
@@ -671,7 +691,7 @@ Every phase must pass:
 
 ### Related handoffs
 
-- [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — current kernel-level work on v4.
+- [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — historical v4 kernel-push record (archived 2026-06-12).
 - [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) — orthogonal lever; composes with ukernel speedup.
 - [`../completed/kv-cache-quantization.md`](../completed/kv-cache-quantization.md) — TurboQuant vs Hadamard result that shows fusion isn't automatically a win.
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — TensileLite reference; cross-reference for shape-specialization context.
@@ -973,7 +993,7 @@ Three URLs ingested as a single batch (paper + blog + repo, same research):
 
 - [`moe-dynamic-expert-selection.md`](../completed/moe-dynamic-expert-selection.md), [`cpu-dynamic-moe-load-balancing.md`](../completed/cpu-dynamic-moe-load-balancing.md), [`large-moe-expert-parallelism.md`](large-moe-expert-parallelism.md) — adjacent (FFN-level sparsity vs expert-level routing; complementary not competing).
 - [`gpu-acceleration-path.md`](gpu-acceleration-path.md) — primary parking lot if/when GPU hardware activates.
-- [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — would be the integration target for any CPU port of the TwELL format.
+- [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) (archived 2026-06-12) — the v4 push pattern would be the template for integrating any CPU port of the TwELL format.
 - intake-528 (Kolinko Effort Engine deep-dive, 2026-05-08) — same dynamic-sparsity neighborhood; the deep-dive's re-surface trigger (c) is the explicit mechanism for re-opening this entire family.
 
 ### Deep-Dive Addendum — 2026-05-08 (post-intake source-level audit)

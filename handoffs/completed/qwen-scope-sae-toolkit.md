@@ -1,5 +1,17 @@
 # Qwen-Scope SAE Toolkit — Production-Stack Interpretability
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Deep-dive complete (2026-05-04); the application matrix collapsed to one strong live candidate. Section 4 (eval-suite-redundancy probe) is the strongest application; Section 5 classifier is pilot-only-with-baselines; Section 8 SAE-DAPO is INFRA-BLOCKED (no RL/DGX); Section 7 SASFT is deferred (regressions + no motivating production failure); Section 3 steering is DO-NOT-ADOPT (stacked counter-evidence). No checked-box tasks ever existed — this was a diagnostic stub off the inference critical path.
+
+**Why archived**: diagnostic stub with no actionable queue; its one live application has been folded into the eval tower, and everything else is GPU/infra-gated or rejected.
+
+**Where residuals now live**: the Section-4 eval-suite-redundancy probe is registered as an EV-8 candidate in [`eval-tower-verification.md`](../active/eval-tower-verification.md) (note in the EV-8 section, 2026-06-12; full application recipe already in that file's 2026-05 Qwen-Scope research-intake block). The deep-dive remains at `research/deep-dives/qwen-scope-sae-suite.md` (storage map, license map, open questions preserved in this file below).
+
+**Reopen triggers**: RL training infra arrives (DGX Spark / MI210) for Section 8 SAE-DAPO; a documented Qwen-family stuck-in-think or code-switching production failure appears in EPYC logs (Section 8 / Section 7 respectively); or Qwen releases SAEs covering the Qwen3.6 family (closing the predecessor-transfer gap).
+
+---
+
 **Status**: stub (deep-dive complete 2026-05-04)
 **Created**: 2026-05-04 (via research intake)
 **Updated**: 2026-05-04 (post deep-dive — application priority order revised)
@@ -8,13 +20,13 @@
 **Deep dive**: `research/deep-dives/qwen-scope-sae-suite.md`
 **Parent index**: none yet (would slot under a future `interpretability-index.md`)
 **Related**:
-- [`routing-intelligence.md`](routing-intelligence.md) — SAE-feature classifier as transparency primitive
-- [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md) — repetition-feature pre-activation as stuck-state precursor
-- [`reasoning-compression.md`](reasoning-compression.md) — same family of stuck/repeat failure modes
+- [`routing-intelligence.md`](../active/routing-intelligence.md) — SAE-feature classifier as transparency primitive
+- [`per-request-reasoning-budget.md`](../active/per-request-reasoning-budget.md) — repetition-feature pre-activation as stuck-state precursor
+- [`reasoning-compression.md`](../active/reasoning-compression.md) — same family of stuck/repeat failure modes
 - [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) — Qwen3.5-35B-A3B SAE coverage; Qwen3.6 not yet covered
-- [`learned-routing-controller.md`](learned-routing-controller.md) — SAE feature footprints as auxiliary classifier inputs
-- [`eval-tower-verification.md`](eval-tower-verification.md) — feature-coverage redundancy for benchmark suite pruning
-- [`mathsmith-hc-formalizer-eval.md`](mathsmith-hc-formalizer-eval.md) — same eval-suite pruning angle
+- [`learned-routing-controller.md`](../active/learned-routing-controller.md) — SAE feature footprints as auxiliary classifier inputs
+- [`eval-tower-verification.md`](../active/eval-tower-verification.md) — feature-coverage redundancy for benchmark suite pruning
+- [`mathsmith-hc-formalizer-eval.md`](../active/mathsmith-hc-formalizer-eval.md) — same eval-suite pruning angle
 
 ## Objective
 

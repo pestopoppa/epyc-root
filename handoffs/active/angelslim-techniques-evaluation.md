@@ -4,7 +4,7 @@
 **Created**: 2026-05-21 (via research intake)
 **Categories**: quantization, hardware_optimization, speculative_decoding, context_management
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
-**Related**: [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md), [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md), [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md), [`reasoning-compression.md`](reasoning-compression.md)
+**Related**: [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md), [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) (archived 2026-06-12), [`per-request-reasoning-budget.md`](per-request-reasoning-budget.md), [`reasoning-compression.md`](reasoning-compression.md)
 
 ## Objective
 
@@ -50,7 +50,7 @@ This stub exists because the user explicitly framed Hy-MT2 itself as "useful spe
 
 ## Adoption Sequence
 
-1. **Block on PR #22836** — monitor `https://github.com/ggml-org/llama.cpp/pull/22836` (STQ1_0 kernel). When it merges or stabilizes, rebuild our fork with STQ1_0 enabled. Tracked on [[llama-cpp-kernel-push-rebase]].
+1. **Block on PR #22836** — monitor `https://github.com/ggml-org/llama.cpp/pull/22836` (STQ1_0 kernel). When it merges or stabilizes, rebuild our fork with STQ1_0 enabled. Watch consolidated on [`tq3-quantization-evaluation.md`](tq3-quantization-evaluation.md) (2026-06-12; formerly tracked on `llama-cpp-kernel-push-rebase`, now archived).
 2. **Bench Hy-MT2-1.8B-1.25bit-GGUF** — once STQ1_0 lands, llama-bench the 1.25-bit reference artefact on EPYC 9655 (NPS4, canonical baseline protocol per `feedback_canonical_baseline_protocol`). Verify the 1.5x decode speedup claim under our BW-bound regime. **Weights already on disk at `/mnt/raid0/llm/models/hy-mt2-1.8b/1.25bit/Hy-MT2-1.8B-1.25Bit.gguf`** (440 MiB, downloaded 2026-05-21 alongside the Q4_K_M and 2bit fallbacks; the multilingual ingest quality-gap test in [[internal-kb-rag]] uses the Q4_K_M variant since it works today).
 3. **Read SpecExit full paper** — OpenReview link in intake-592; compare against intake-566 (CGR) on the same reasoning benchmarks if any overlap is feasible.
 4. **Defer Tequila + DAQ** — no QAT cycle today, no sub-4-bit deployment today.

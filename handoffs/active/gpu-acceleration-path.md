@@ -9,6 +9,8 @@
 **Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Related**: [`llama-cpp-v3-upstream-rebuild.md`](../completed/llama-cpp-v3-upstream-rebuild.md) (HIP build path), [`kv-cache-quantization.md`](../completed/kv-cache-quantization.md) (GPU KV strategy)
 
+> **Fable 5 review (2026-06-12)**: fable5-findings-03 re-ranks MI210 uses: residency → eval-engine → embedder/classifier host → prefill offload → drafter farm; all HW-GATED per operator; pre-arrival prep = P-GPU-1 protocol in /workspace/MEASUREMENT.md before first number.
+
 ## Status as of 2026-04-21
 
 Backburner — no GPU hardware acquired (DGX Spark / RX 7900 XTX / alternate path). Plan of record is vLLM DDTree+Dflash spec-dec on CPU+GPU hybrid MoE when hardware lands (community benchmark 91 tok/s on GB10, added 2026-04-15). Activation trigger unchanged: acquisition of training-capable GPU. Per `project_dgx_spark_target` memory: DGX Spark external benchmark files are compiled reference data, not local measurements.

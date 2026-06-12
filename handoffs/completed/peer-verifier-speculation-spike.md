@@ -1,9 +1,26 @@
 # Peer-Verifier Speculation — Scoping Spike
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: SPIKE RESOLVED 2026-05-27 — **NO-GO on both gates**: NO-GO-backend (`LlamaServerBackend` exposes no prefix-score request mode and no mid-stream continuation handoff across heterogeneous models; the latter is multi-week, likely llama-server-side work) and NO-GO-roofline (35–50% per-stream regression vs the ≤30% gate, both sequential and parallel verification scheduling models). The negative result is recorded with full math in § Resolution below.
+
+**Why archived**: resolved spike with no actionable item; its only live content is the documented re-eval conditions, preserved verbatim here so a future re-evaluation is fast. The post-hoc full-completion form of the same idea remains DAR-6 territory in `decision-aware-routing.md` and was never blocked by this spike.
+
+**Where residuals now live**: nothing to extract — the re-eval triggers live in this file (quoted below and in § "Re-evaluation triggers"); intake-614/615 notes carry the kill-decision.
+
+**Reopen triggers** (verbatim from § Re-evaluation triggers; re-open if **any** change):
+
+1. **Fortytwo publishes the chunk-ranking method.** A real paper / blog / code release would replace our hypothesis-driven Variant 1 reconstruction with the actual mechanism — possibly cheaper than our roofline assumes.
+2. **DGX Spark (or other unified-memory hardware) arrives** (per memory `project_dgx_spark_target.md`). New hardware potentially changes the prefill-to-decode ratio (Spark's bandwidth/compute profile differs from EPYC NPS4). Re-do the roofline math at that point — the gate may flip.
+3. **The orchestrator backend grows mid-stream-control primitives for an unrelated reason** (e.g., RAO+ReDel substrate work in P#42 of `master-handoff-index.md` adds sub-decision handoff). If those primitives exist as a side effect, the Gate-1 cost drops from "multi-week" to "wire it up", and only Gate-2 remains binding.
+4. **Smaller specialist peers become the new norm** (e.g., the swarm-as-dataset-distillation pipeline in `swarm-dataset-distillation.md` produces 8B specialists). N=3 8B verifiers prefill faster (~400 t/s) than 26B verifiers, shrinking the per-chunk overhead from 0.51 s to ~0.32 s. Roofline at that point: 1.67 + 3 × 0.32 = 2.63 s → 49 t/s effective, **36% regression**. Still above the gate but much closer; combined with every-other-chunk verification (2x reduction) it lands at ~18% — under the gate.
+
+---
+
 **Status**: SPIKE RESOLVED — **NO-GO-roofline + NO-GO-backend** (2026-05-27). Re-eval triggers documented in § Resolution below. Keep in active/ as a frozen reference for the re-eval conditions; do NOT promote to implementation handoff.
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: speculative_decoding, swarm_techniques, agent_architecture, hardware_optimization
-**Priority**: LOW until the premise is verifiable; do NOT start before [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md) Phase-1 decision is in.
+**Priority**: LOW until the premise is verifiable; do NOT start before [`swarm-dataset-distillation.md`](../active/swarm-dataset-distillation.md) Phase-1 decision is in.
 **Depends on**: nothing for scoping; implementation would depend on backend introspection of `LlamaServerBackend`.
 
 ## Premise — fragile, source-call-only
@@ -73,7 +90,7 @@ If we were to prototype Variant 1 on EPYC, the high-level shape:
            leader = winner   # KV cache swap — see open question below
        prefix += chunk
    ```
-3. **Reuse**: Bradley-Terry implementation from autopilot's P17 (shared module across this handoff, [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md), and the autopilot scoring upgrade backlog).
+3. **Reuse**: Bradley-Terry implementation from autopilot's P17 (shared module across this handoff, [`swarm-dataset-distillation.md`](../active/swarm-dataset-distillation.md), and the autopilot scoring upgrade backlog).
 
 ## Backend gating questions — the actual go/no-go pivot
 
@@ -145,13 +162,13 @@ Re-open this spike if **any** of the following change:
 ### What was not investigated (deliberately out of scope for this spike)
 
 - Variant 2/3/4 alternative mechanisms (milestone-gated beams, continuation auction, hidden-state aggregation). The spike committed to Variant 1 as the most-plausible-real form. If a re-eval trigger fires, re-pick the variant against the new constraints rather than testing all four blind.
-- Production routing-mode design — that is DAR-6's territory in [`decision-aware-routing.md`](decision-aware-routing.md). DAR-6's post-hoc full-completion fanout is independently buildable; it is **not** blocked by this spike's negative result.
+- Production routing-mode design — that is DAR-6's territory in [`decision-aware-routing.md`](../active/decision-aware-routing.md). DAR-6's post-hoc full-completion fanout is independently buildable; it is **not** blocked by this spike's negative result.
 
 ## Out-of-scope (explicit non-goals for this spike)
 
 - **Not** implementing Variants 2, 3, or 4. Spike focuses on Variant 1 only because it's the most plausible-real form of the founder's claim.
 - **Not** chasing Fortytwo for source code. They've explicitly stated swarm-inference is closed-source even though models are open (intake-614, ~17:00 in transcript).
-- **Not** building a production routing mode. That is [`decision-aware-routing.md`](decision-aware-routing.md) DAR-6's territory and is the **post-hoc full-completion** form of the same idea (which is harvestable today, unlike this spike).
+- **Not** building a production routing mode. That is [`decision-aware-routing.md`](../active/decision-aware-routing.md) DAR-6's territory and is the **post-hoc full-completion** form of the same idea (which is harvestable today, unlike this spike).
 
 ## Why a spike instead of an immediate kill
 
@@ -163,9 +180,9 @@ The user explicitly flagged this for handling. The two reasons it's worth a scop
 ## Cross-references
 
 - **Source intakes**: intake-614 (Fortytwo Network with sales-call transcript), intake-615 (arxiv:2510.24801 — the OLD pipeline)
-- **Sibling at request-time level**: [`decision-aware-routing.md`](decision-aware-routing.md) DAR-6 covers the **published** full-completion swarm-routing form. That one is buildable today; this spike covers the speculative chunk-level form.
+- **Sibling at request-time level**: [`decision-aware-routing.md`](../active/decision-aware-routing.md) DAR-6 covers the **published** full-completion swarm-routing form. That one is buildable today; this spike covers the speculative chunk-level form.
 - **Related but different**: `tree-speculation-numa-drafting.md`, `hsd-hierarchical-self-speculation.md`, `gemma4-mtp-drafter-evaluation.md` — all draft-target speculation (small drafter, large target). Peer-verifier speculation is **same-tier peer cross-verification** — different mechanism, do not merge.
-- **Index entries**: registered in [`inference-acceleration-index.md`](inference-acceleration-index.md)
+- **Index entries**: registered in [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 
 ---
 

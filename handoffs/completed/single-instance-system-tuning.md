@@ -1,16 +1,31 @@
 # Single-Instance System-Level Throughput Tuning
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Batch=1 single-instance system-level levers are closed — properly, with evidence. The zero-reboot knob sweep (THP→always, `numa_balancing=0`, 1GB hugepage probes) produced no durable canonical win; the reboot-gated topology questions were settled by the NPS4/L3aaN cycle (NPS4 locked in, L3aaN decisively negative); fable5-findings-06 confirms the batch=1 lever set is exhausted and moves the kernel/throughput frontier to **batched-decode** (E1/E2 measurements, owned elsewhere).
+
+**Why archived**: no unconditional task remains — only trigger-gated actions (listed below). The lever catalog and audit-reset rules stay valuable as a reference anchor, citable from `completed/`.
+
+**Where residuals now live** (all trigger-gated, none claimable today):
+- **NPS/L3aaN decision matrix** — only if CPU1/CPU15/large-MoE work needs a topology decision; produce a narrow matrix with CPU20 artifacts (owners: `cpu-shape-specialized-gemv-decode.md`, `large-moe-expert-parallelism.md`). L3aaN itself is do-not-re-propose without a new mechanism (`project_l3aan_reverted`).
+- **Per-model slice re-run** — only if a new production model changes the memory/cache regime; rerun just the relevant thread/NUMA/hugepage slice under the current measurement protocol.
+- The batched-decode frontier is NOT this handoff: see fable5-findings-06 / `cpu-shape-specialized-gemv-decode.md` (E1/E2/E3).
+
+**Reopen triggers**: a measured bottleneck or workload/topology shift (per the in-file 2026-05-28 audit-reset rule: "Reopen only with a hypothesis — not from the original 2026-04 checklist").
+
+---
+
 **Status**: REFRESHED 2026-05-28 — targeted CPU20-gated tuning only; zero-reboot blanket sweep already found no durable win
 **Created**: 2026-04-23 (user-identified gap — "leave nothing on the table" single-instance throughput)
 **Updated**: 2026-05-28 (current pickup rules clarified after CPU closure-inflation pass)
 **Priority**: HIGH — several knobs are zero-code changes with measurable gains, and some are prerequisites for the TP-sharding lever.
 **Categories**: hardware_optimization, inference_serving, local_inference
 **Workstream**: Inference Acceleration → CPU Optimization
-**Parent index**: [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md), [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 **Related**:
-- [`intra-process-tensor-parallel-decode.md`](intra-process-tensor-parallel-decode.md) — the big compute-parallelism lever; depends on NPS outcomes here
-- [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — per-kernel compute lever
-- [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) — multi-instance NUMA deployment (existing production config that some of these knobs might affect)
+- [`intra-process-tensor-parallel-decode.md`](../active/intra-process-tensor-parallel-decode.md) — the big compute-parallelism lever; depends on NPS outcomes here
+- [`cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) — per-kernel compute lever
+- [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) — multi-instance NUMA deployment (existing production config that some of these knobs might affect)
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -31,7 +46,7 @@ Current useful next actions:
 
 ## 2026-04-23 Audit Cross-References (read before starting Phase 0)
 
-Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](cpu-inference-optimization-index.md) §Pickup Sequence):
+Facts established in the coordinated CPU-optimization pickup audit (see [`cpu-inference-optimization-index.md`](../active/cpu-inference-optimization-index.md) §Pickup Sequence):
 
 - **`perf` is NOT installed** on the host (`which perf` empty; `linux-tools-$(uname -r)` absent). This affects Phase 0 profiling here directly. Use fallbacks: `GGML_PERF=1` for per-op timers, `rdtsc`-bracketed micro-harness, `/usr/bin/time -v` for wall + page-faults, `cat /proc/<pid>/status` for VmLck/RSS, `getrusage`. Install `linux-tools-$(uname -r)` only with user approval.
 - **tinyBLAS is already in the fork** at `ggml/src/ggml-cpu/llamafile/sgemm.cpp` under `GGML_USE_LLAMAFILE`. Tuning-knob sweeps should be performed with the same macro setting throughout a sweep to avoid conflating system-tuning deltas with sgemm deltas.
@@ -289,7 +304,7 @@ A model currently at 50% of BW ceiling has 2× headroom. A model at 80% of BW ce
 
 ### New Related Research
 - **[intake-659] "earlyoom — Early OOM Daemon"** (https://github.com/rfjakob/earlyoom)
-  - Relevance: a **deployable** last-line-of-defense against the multi-model OOM-freeze failure mode on this box. We run many concurrent `llama-server` processes each `--mlock`'ing multi-GB GGUFs on 1.1TB RAM; mlock'd/locked pages are precisely what makes the **in-kernel OOM killer's reclaim path slowest** — it swaps out userland, drops the entire page cache, and empties buffers *before* it finally kills anything, freezing the box for seconds-to-minutes. earlyoom polls available-mem + free-swap (≤10×/sec) from userspace and SIGTERM→SIGKILLs the worst offender *before* the kernel reclaim storm. Complements (does not replace) the preventive `max_mlock_gb` / `max_total_gb` / `reserve_kv_gb` ceilings in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) and the sequential-load discipline.
+  - Relevance: a **deployable** last-line-of-defense against the multi-model OOM-freeze failure mode on this box. We run many concurrent `llama-server` processes each `--mlock`'ing multi-GB GGUFs on 1.1TB RAM; mlock'd/locked pages are precisely what makes the **in-kernel OOM killer's reclaim path slowest** — it swaps out userland, drops the entire page cache, and empties buffers *before* it finally kills anything, freezing the box for seconds-to-minutes. earlyoom polls available-mem + free-swap (≤10×/sec) from userspace and SIGTERM→SIGKILLs the worst offender *before* the kernel reclaim storm. Complements (does not replace) the preventive `max_mlock_gb` / `max_total_gb` / `reserve_kv_gb` ceilings in [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) and the sequential-load discipline.
   - Maturity: 4.1k★ MIT, 11 releases (v1.9.0 Sep 2025), Go test suite + CI, first-class Debian/Ubuntu/Fedora-EPEL/Arch packaging → one-line install, no fork, zero maintenance.
   - Suggested config: **SUPERSEDED by the live-verified recipe** in [`earlyoom-oom-protection.md`](earlyoom-oom-protection.md) (+ the deep-dive section below). The original `--avoid '(orchestrator|llama-server|…)'` idea does NOT work as written: control-plane procs are `comm=python` (collide with runaway evals → protect with `oom_score_adj=-1000`, not a comm regex), and under `--sort-by-rss` only `--ignore '^(llama-server|sd-server)$'` (not `--avoid`) can shield the 13–133 GB model-servers. Keep: `-p` (daemon self-protect) and wiring the `-N` hook into `logs/agent_audit.log` so a kill is recorded as a host event, not misattributed to the config-under-test (`feedback_autopilot_host_health_remediation`).
   - Caveats to validate before arming: `--prefer`/`--avoid` is *best-effort* over oom_score ranking — run `--dryrun` against a live stack snapshot first, and confirm it never targets a server mid-mlock-load (the sequential-load window is the riskiest moment). Verdict: adopt_component.

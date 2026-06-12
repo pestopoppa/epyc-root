@@ -8,6 +8,8 @@
 **Related**: [decision-aware-routing.md](decision-aware-routing.md), [learned-routing-controller.md](learned-routing-controller.md), [routing-intelligence.md](routing-intelligence.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
 
+> **Fable 5 review (2026-06-12)**: the shadow-telemetry keep-or-kill decision is owned by [routing-truth-restoration.md](routing-truth-restoration.md) W7 (master row N10); TR-4/5 remain frozen per fable5-findings-02 pending DAR-1 regret replay + per-question vectors.
+
 ---
 
 ## 2026-05-28 Audit Reset — Executor Start Here

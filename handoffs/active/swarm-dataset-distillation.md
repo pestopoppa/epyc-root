@@ -7,7 +7,7 @@
 **Depends on**: [`strand-rust-coder-rustevo2-verification.md`](strand-rust-coder-rustevo2-verification.md) (verification gate), [`bulk-inference-campaign.md`](bulk-inference-campaign.md) (fan-out infra), [`eval-tower-verification.md`](eval-tower-verification.md) (scoring infra)
 **Siblings (NOT this handoff — read to avoid scope confusion)**:
 - [`agent-world-env-synthesis.md`](agent-world-env-synthesis.md) — task-environment synthesis for **agentic RL training**; orthogonal problem despite shared `training_distillation` category.
-- [`08-doc-to-lora-prototype.md`](08-doc-to-lora-prototype.md) — LoRA-from-docs hypernetwork (BACKBURNER, GPU-gated); orthogonal mechanism.
+- [`08-doc-to-lora-prototype.md`](../completed/08-doc-to-lora-prototype.md) — LoRA-from-docs hypernetwork (archived 2026-06-12; GPU-gated Phase B reopen tag); orthogonal mechanism.
 
 ## Objective
 
@@ -80,7 +80,7 @@ The single largest design decision. The narrow domain governs every downstream c
 
 ### P4 — Fine-tune [GPU-gated]
 
-- **EPYC hardware constraint**: no training-capable GPU (per memory `user_hardware.md` and [`08-doc-to-lora-prototype.md`](08-doc-to-lora-prototype.md) Phase A constraint). Fine-tuning happens on **cloud rental or DGX Spark when acquired** (memory `project_dgx_spark_target.md`).
+- **EPYC hardware constraint**: no training-capable GPU (per memory `user_hardware.md` and [`08-doc-to-lora-prototype.md`](../completed/08-doc-to-lora-prototype.md) Phase A constraint). Fine-tuning happens on **cloud rental or DGX Spark when acquired** (memory `project_dgx_spark_target.md`).
 - **Base model**: depends on P1 domain.
   - Code-heavy domain → Qwen2.5-Coder-14B-Instruct (Fortytwo's exact choice, isolates the dataset variable).
   - General/text domain → Gemma-3-12B-Instruct or Qwen3-8B-Instruct.
@@ -121,7 +121,7 @@ The single largest design decision. The narrow domain governs every downstream c
 **This handoff does NOT cover**:
 - Fortytwo's reputation-staking / on-chain consensus (single-user single-host stack, no Sybil threat).
 - Multi-model serving / swarm inference at request time (that is [`decision-aware-routing.md`](decision-aware-routing.md) DAR-6's territory).
-- Chunk-ranking / mid-stream peer verification ([`peer-verifier-speculation-spike.md`](peer-verifier-speculation-spike.md)).
+- Chunk-ranking / mid-stream peer verification ([`peer-verifier-speculation-spike.md`](../completed/peer-verifier-speculation-spike.md), resolved NO-GO, archived 2026-06-12).
 - Tokenized payments, x402Escrow, enterprise on-prem product (out of scope for this project entirely).
 
 ## Research Intake Update — 2026-05-28

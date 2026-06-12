@@ -6,10 +6,11 @@ This directory is organized for agent legibility and low drift.
 
 1. Read `agents/AGENT_INSTRUCTIONS.md` for the global execution contract.
 2. Read `agents/shared/OPERATING_CONSTRAINTS.md` for safety and environment constraints.
-3. Read `agents/shared/ENGINEERING_STANDARDS.md` for coding invariants.
-4. Read `agents/shared/WORKFLOWS.md` for common operating procedures.
-5. Read workflow depth docs in `docs/guides/agent-workflows/`.
-6. Open only the role file needed for the current task.
+3. Read `agents/shared/MEASUREMENT_POLICY.md` if the task produces or consumes performance/quality numbers.
+4. Read `agents/shared/ENGINEERING_STANDARDS.md` for coding invariants.
+5. Read `agents/shared/WORKFLOWS.md` for common operating procedures.
+6. Read workflow depth docs in `docs/guides/agent-workflows/`.
+7. Open only the role file needed for the current task.
 
 ## Roles
 

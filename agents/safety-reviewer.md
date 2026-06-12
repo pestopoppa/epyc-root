@@ -36,3 +36,5 @@ Act as the risk gate before high-impact operations.
 - No rollback plan for risky system changes.
 - More than three retries without new diagnosis.
 - Destructive operations without explicit confirmation.
+- Any edit to the measurement trust boundary (`MEASUREMENT.md`, eval tower, scoring contracts, safety gates, `instrument_eras.yaml` row edits) by an autonomous process — these are human-amendment-only; era registry is append-only.
+- Historical-record edits that "fix" data in place — corrections are appended (supersession), never rewritten.

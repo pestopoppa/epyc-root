@@ -26,7 +26,7 @@ The critical correction is that historical EP wins were polluted by baseline cho
 
 ## Outstanding Tasks
 
-- [ ] **CPU15-DISP — Reconcile deployment-facing docs**: keep `cpu-inference-optimization-index.md`, `cpu-kernel-env-flags-inventory.md`, `nps-reboot-runbook.md`, and MoE-Spec cross-refs aligned with the downgraded EP verdict. No document should claim EP is production-wired for frontdoor without a current CPU20 canonical matrix.
+- [ ] **CPU15-DISP — Reconcile deployment-facing docs**: keep `cpu-inference-optimization-index.md`, `cpu-kernel-env-flags-inventory.md`, `../completed/nps-reboot-runbook.md` (archived 2026-06-12), and MoE-Spec cross-refs aligned with the downgraded EP verdict. No document should claim EP is production-wired for frontdoor without a current CPU20 canonical matrix.
 - [ ] **CPU15-REVAL — Fresh canonical matrix if reopening**: before enabling EP anywhere, run:
   - baseline canonical no-EP;
   - canonical config change without EP;

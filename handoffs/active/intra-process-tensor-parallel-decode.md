@@ -15,7 +15,7 @@ This handoff is active as a reference and reopen gate, not as an implementation 
 ## Reopen Checklist
 
 - [ ] State the new trigger: 2-socket hardware, NPS/L3aaN topology change, multi-tenant workload, prefill-heavy serving, or another concrete reason single-session saturation matters again.
-- [ ] Run [cpu-benchmark-rigor-and-revalidation.md](cpu-benchmark-rigor-and-revalidation.md) before making any throughput claim.
+- [ ] Apply the `/workspace/MEASUREMENT.md` P-BENCH protocols (historical CPU20 record: [cpu-benchmark-rigor-and-revalidation.md](../completed/cpu-benchmark-rigor-and-revalidation.md)) before making any throughput claim.
 - [ ] Reproduce the current canonical baseline for the target model/topology.
 - [ ] Prove the bottleneck is locality/barrier dominated, not DRAM-channel dominated or model-architecture limited.
 - [ ] Choose the smallest next action: archive, profiling probe, Phase 1.3 v2 warm-up/page-locality work, or a redesigned TP path.
@@ -43,7 +43,7 @@ This handoff is active as a reference and reopen gate, not as an implementation 
 - `/mnt/raid0/llm/llama.cpp/ggml/src/ggml-cpu/`
 - `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/`
 - [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md)
-- [single-instance-system-tuning.md](single-instance-system-tuning.md)
+- [single-instance-system-tuning.md](../completed/single-instance-system-tuning.md) (archived 2026-06-12)
 - [large-moe-expert-parallelism.md](large-moe-expert-parallelism.md)
 
 ## Reporting Instructions

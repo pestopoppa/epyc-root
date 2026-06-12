@@ -37,6 +37,7 @@ When adding or updating model entries in `model_registry.yaml`:
 - Set per-model serving config (`use_chat_api`, `reasoning`, `kv_cache`, `sampling.repeat_penalty`) before benchmarking — models that require chat templates will produce empty output via `/completion`.
 - Use absolute paths for model files, never relative.
 - Deprecated models keep their entry with `deprecated: true` and a reason note.
+- Throughput/quality fields carry provenance — prefer structured `measured: {date, protocol}`; never strip the legacy free-text date/protocol comments in reformats (they are the only witness for older values; see `agents/shared/MEASUREMENT_POLICY.md`).
 
 ## Guardrails
 

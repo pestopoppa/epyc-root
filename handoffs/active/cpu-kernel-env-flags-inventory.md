@@ -24,7 +24,7 @@ This is a reference inventory, not an open-ended optimization queue. Treat it as
 - `GGML_NUMA_MIRROR` remains single-socket-negative; reopen only for 2-socket hardware.
 - Slot-promotion dispatcher stays disabled for the tested Qwen3.6 + 1.7B pair.
 
-**Next actionable audit**: compare the live `epyc-orchestrator` launcher env injection against the per-role v5 deployment recommendation below. If live launch wiring differs, update this file with either the live override rationale or a corrective task in `llama-cpp-kernel-push-rebase.md` / `model-registry-v5-deployment-draft.yaml`.
+**Next actionable audit**: compare the live `epyc-orchestrator` launcher env injection against the per-role v5 deployment recommendation below. If live launch wiring differs, update this file with either the live override rationale or a corrective task in `model-registry-v5-deployment-draft.yaml` (the push-rebase handoff was archived 2026-06-12 → `../completed/llama-cpp-kernel-push-rebase.md`; new kernel-deployment tasks go here or in the CPU index, not there).
 
 ---
 
@@ -228,7 +228,7 @@ roles:
 
 **ALL roles inherit the canonical prerequisites** (OMP env stack + numa_balancing=0 + THP=always + numactl --interleave=all + --mmap 0). Those are NOT per-role — they're host-level prereqs that orchestrator_stack.py must enforce on every llama-server launch.
 
-**Status of the model_registry update**: **KERNEL PUSHED** — `production-consolidated-v5` tip `23bcd6aaf` pushed to GitHub on 2026-04-30. Production PGO and BOLT binaries built in `/mnt/raid0/llm/llama.cpp/` (see below). Model registry wiring (`binary_path` + env) is the next step; blocked on orchestrator-stack integration (not yet started). The push-rebase handoff (`llama-cpp-kernel-push-rebase.md`) will drive that phase.
+**Status of the model_registry update**: **KERNEL PUSHED** — `production-consolidated-v5` tip `23bcd6aaf` pushed to GitHub on 2026-04-30. Production PGO and BOLT binaries built in `/mnt/raid0/llm/llama.cpp/` (see below). Model registry wiring (`binary_path` + env) is the next step; blocked on orchestrator-stack integration (not yet started). The push-rebase handoff (`../completed/llama-cpp-kernel-push-rebase.md`, archived 2026-06-12) was the historical driver; per `project_orchestrator_stack_freeze`, the registry-stack rollout remains future work.
 
 **PGO/BOLT binary locations** (built 2026-04-30, `/mnt/raid0/llm/llama.cpp/`):
 
@@ -445,7 +445,7 @@ Build environment additions (one-time):
 ## Cross-references
 
 - Plan: `~/.claude/plans/glistening-toasting-snail.md`
-- Companion: `handoffs/active/cpu-optimization-thesis-pause-2026-04-26.md`
+- Companion: `handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md` (archived 2026-06-12)
 - Phase B+C results: `progress/2026-04/2026-04-26.md` (commit `1fd9c2c`)
 - CPU2 kernel handoff: `handoffs/active/cpu-shape-specialized-gemv-decode.md`
 - CPU15 EP handoff: `handoffs/active/large-moe-expert-parallelism.md`

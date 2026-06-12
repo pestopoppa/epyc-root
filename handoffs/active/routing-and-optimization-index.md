@@ -3,6 +3,9 @@
 **Created**: 2026-03-25
 **Purpose**: Actionable entry point for agents working on routing, optimization, and stack infrastructure. Read this first — it tells you what needs doing, in what order, and where to find the details.
 
+> **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
+> New owning handoffs in this domain: [routing-truth-restoration.md](routing-truth-restoration.md), [model-capability-descriptors.md](model-capability-descriptors.md), and the evidence-plane-* handoffs (autopilot).
+
 ---
 
 ## How to Use This Index

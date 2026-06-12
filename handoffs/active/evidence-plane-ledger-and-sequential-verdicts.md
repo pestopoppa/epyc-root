@@ -1,0 +1,40 @@
+# Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
+
+**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Created**: 2026-06-12
+**Priority**: HIGH — the keystone change; owner of the Queue-3 restart bundle
+**Spec**: [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) Phase 1 + Phase 5, and [fable5-findings-01c-sequential-verdict-spec.md](fable5-findings-01c-sequential-verdict-spec.md) (the full e-process: update rule, thresholds, state schema, exact wiring sites) — read before claiming any waypoint
+**Related**: [bulk-inference-campaign.md](bulk-inference-campaign.md) Queue 3 — **J11/BSV-2 + K-SKILL-1 co-land at the same restart, flag-isolated** (`AUTOPILOT_BSV2_ACCEPT_GATE` / `AUTOPILOT_SKILL_EFFICACY_GATE`) · [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (Phase 2.0/2.1 prereqs for full power) · [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) · [../../MEASUREMENT.md](../../MEASUREMENT.md) §P-QUAL-T1 (decision rule = this handoff)
+
+## Why
+
+Per-question outcomes are computed every trial and discarded at aggregation — pairing is free
+statistical power already paid for (spec §2.2). Persisting the 43-bit vector enables McNemar
+replay of 120 historical keep/revert decisions, and the 01c e-process (anytime-valid under the
+planner's own optional stopping/continuation) replaces the single-shot MAD argument:
+`mad_noise` and `reproduction_confirmed` collapse into `accumulating`, and the t775 ratchet
+class becomes impossible by construction (baseline raises require `confirmed_improvement`).
+This handoff owns the restart bundle: ledger + verdicts + the two campaign accept-path gates
+land at ONE autopilot restart, each behind its own flag.
+
+## Waypoints
+
+- [ ] **W1 — qid + outcome vectors** (impl 1.1–1.2, ~1–2 days): derived `qid` in `question_pool.py`; `eval_tower._aggregate` emits `question_results` into `eval_details` (~3KB/trial JSONL growth). Acceptance: per-question vectors journaled every trial; TSV untouched. Restart-bundle member.
+- [ ] **W2 — paired replay tool** (impl 1.3, ~1 day, zero inference): `scripts/autopilot/paired_stats.py` (`mcnemar`, `config_vs_baseline`). Decision gate: after ~2 weeks of vectors, replay historical keep/revert — ≥30% verdict flips ⇒ proceed to W3; <10% ⇒ hold and report (findings-01 §4).
+- [ ] **W3 — sequential_verdict.py** (01c §1–2,§4; 2–3 days): capped-Kelly e-process per config-fingerprint vs baseline per-qid profile; `confirmed` at E≥20 (α=0.05), futility floor E≤0.05, budget k_max=8; journal `seq` block + rebuildable per-candidate view. Acceptance: Ville bound verified empirically over 1e5 simulated null runs.
+- [ ] **W4 — joint verdict + wiring** (01c §3,§5; ~2 days): task_rate non-inferiority (m=0.05) paired with quality per declared `expected_axis`; `safety_gate.check` improvement branch swaps `_mad_significance` → verdict; `update_baseline` callable only on `confirmed_improvement` (promotion finalizes at combined E≥100 with the fresh-draw eval); `learning_exclusions` maps `accumulating`→benign; baseline-freshness cadence 1 baseline trial per ~10. Acceptance: regression protection unchanged — hard floors and the −5% gate stay immediate.
+- [ ] **W5 — planner power line + candidate blocks** (impl 1.5 + 01c §5.3, ~half day): generated instrument line (core n, quantum, MDE, typical k) + per-candidate `k/E/recommendation` block; dispatch gate requires a reproduction plan for below-MDE hypotheses.
+- [ ] **W6 — shadow rollout + cutover** (01c §5.5, 2 weeks passive): dual-log `seq` alongside MAD verdicts; `AUTOPILOT_LEGACY_MAD=1` keeps the old path one release; flip on the disagreement-analysis report.
+- [ ] **W7 — game layer** (impl 5.1–5.3, 2–3 days): critic measurement-view (`build_critique_prompt` stops echoing the 80KB planner prompt; gets per-question diffs, provenance flags, power analysis); PEAF surprise → `species_budget` credit by realized information gain, not frontier tags; audit-stream gaming alarm (needs instrument-repair W6); confirm the server-side `n`/`seed` clamp (hotfix 0.8) holds — question selection is never planner-chosen.
+
+## Gates & pitfalls
+
+- Restart discipline: W1 + J11/BSV-2 + K-SKILL-1 share ONE restart, each flag-isolated for attribution (one-change discipline; flags verified collision-free 2026-05-27 per the campaign doc).
+- W3–W4 are gated on W2's ≥30% flip-rate evidence — do not wire sequential verdicts on vibes; the spec predicts the gate passes, the replay is the proof.
+- Update the e-process per TRIAL, never per question (within-trial outcomes are dependent — 01c §1); core-version or policy-version change resets all `accumulating` candidates.
+- Works on the accidental 43-set at lower power, but instrument-repair W4/W5 should land first or R_eff stays ~10–14.
+- Sequential machinery credits improvements only — never let it delay damage control (01c §3).
+
+## Reporting
+
+Tick waypoints + one-line progress entry; verdicts claimed per MEASUREMENT.md grammar (`[P-QUAL-T1/seq-v1, E=…, k=…, date]`); on completion delete this handoff's master-index row and move to `completed/`.

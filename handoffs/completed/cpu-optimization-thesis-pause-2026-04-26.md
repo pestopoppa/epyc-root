@@ -1,5 +1,17 @@
 # CPU Optimization Pause & Reorganization — 2026-04-26
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: This was the correction ledger for the April 2026 baseline/closure-inflation incident (EP "+100%" downgraded to +1.6% noise on the proper cold canonical; wrong-baseline claims enumerated and corrected; the four-track recovery queue it proposed was subsequently executed and superseded by the v5 cleanup, the CPU20 protocol, and later closure passes). Its 2026-05-28 refresh already declared it "historical correction ledger / reference anchor — not a live task queue".
+
+**Why archived**: no actionable item and no reopen gate; pure reference/chronology. Other CPU handoffs cite it for the April closure-inflation incident — it remains citable from `completed/` (per the project's historical-documentation convention, verify any operational claim against current code/index state before reuse).
+
+**Where residuals now live**: the current benchmark protocol is `cpu-benchmark-rigor-and-revalidation.md` → `/workspace/MEASUREMENT.md` (per the fable5 MERGE verdict); the current CPU landscape is `cpu-inference-optimization-index.md`; flag dispositions are `cpu-kernel-env-flags-inventory.md`; the binding anti-closure-inflation policy is memory `feedback_closure_inflation`.
+
+**Reopen triggers**: none — cite, don't execute. Any benchmark referencing this file must first satisfy the current measurement protocol and canonical baselines.
+
+---
+
 **Purpose**: stop, take stock, separate what we KNOW from what we ASSUMED, and rebuild the priority queue from honest premises.
 **Status**: refreshed 2026-05-28 — historical correction ledger / reference anchor; do not execute old priority queues without checking newer CPU index state.
 **Updated**: 2026-05-28

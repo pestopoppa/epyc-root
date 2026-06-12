@@ -1,7 +1,9 @@
 # Retrain Routing Models
 
-**Status**: BLOCKED
-**Blocked on**: Accumulate ~500+ routing memories via seeding
+**Status**: BLOCKED — refreshed 2026-06-12 (Fable 5 portfolio pass)
+**Blocked on**: **Operator BGE re-embed of `episodic.db`** (`repair_episodic_embeddings.py --repair`) — NOT data accumulation: the store already holds 52K+ labeled routing memories; the gap is missing embeddings since the FAISS reset (`reembedded.npz` is a frozen 2026-04-15 snapshot). The lollms dataset is NOT the unblock (parked; see the 2026-06-12 deep-dive correction below).
+**⚠️ Verify first (live anomaly, 2026-06-12)**: `embeddings.faiss` observed **0 bytes** at 14:54 today with a lock file present, against ~287K episodic rows — determine rebuild-in-progress vs broken BEFORE any other step; KNN routing fallback depends on it.
+**Unblock sequence**: BGE re-embed → `extract_training_data.py` → `train_routing_classifier.py` → GAT retrain → SkillBank re-distill → flag verification (steps 1–5 below).
 **Created**: 2026-05-25
 
 ## Context

@@ -1,5 +1,17 @@
 # Ouroboros Multi-Model Validation
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Never executed — no acceptance criterion was ever checked. Archived to `handoffs/archived/` (not `completed/`) because it **references a deprecated model stack**: the named worker models (Qwen2.5-7B as worker, Nanbeige-3B, MiroThinker-8B) predate the worker swaps to 30B-A3B (2026-03-21) and then gemma4-26B-A4B MTP (2026-05-08), and both dependency handoffs (`02-nanbeige-3b-worker-eval.md`, `04-mirothinker-worker-eval.md`) are themselves in `archived/`. Per fable5-findings-04, this is a stale blocked stub, not live work.
+
+**Why archived**: stale premise + never started; the historical-documentation warning applies — verify everything against the current stack before reusing any detail below.
+
+**Where residuals now live**: the adoptable *pattern* (cross-model validation of worker outputs before acceptance) is not lost — verification-before-accept concerns are owned today by the eval-tower / accept-path redesign (`eval-tower-verification.md`, fable5-findings-01 sequential verdicts) and the multi-file edit-transaction work's optional functional-verifier-in-the-loop. None of those inherit this file's implementation steps.
+
+**Reopen triggers**: if a cross-model output-validation lever is wanted on the current stack, write a fresh handoff against today's roles and the per-question eval ledger — do not resume this plan.
+
+---
+
 **Status**: ACTIVE
 **Created**: 2026-03-03
 **Priority**: P2 — depends on worker model availability

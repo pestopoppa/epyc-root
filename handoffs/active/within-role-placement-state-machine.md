@@ -20,6 +20,8 @@ implementation_status:
 checkout_state: merged to epyc-orchestrator main at 15350fe; J4a/J4b/J4c/J5/J10/J12 + gemma4 parser fix + launcher -t fix landed 2026-05-26 (commits in progress/2026-05/2026-05-26.md). J6 24h rollout running.
 ---
 
+> **Fable 5 review (2026-06-12)**: [batched-decode-measurement.md](batched-decode-measurement.md) (E1/E2) measures the single-instance batched regime this placement layer would schedule; the J2/J3 probe shares its quiesce window.
+
 ## Executive summary
 
 The `ConcurrencyAwareBackend` dispatcher and `ContentionGate` admit and place requests by lock availability + NUMA disjointness, but they do not model the within-role full↔quarter cpuset overlap relation. Full and overlapping quarters share physical cores, so concurrent placement is catastrophic even though the same-role contention matrix verdict says "allow." The KV save/restore plumbing is built and live in both dispatch paths. The shipped forward-migration trigger is session-handover-based, transactional, and policy-gated; it is not load-transition-based mid-decode eviction. This handoff closes the gap end-to-end in eight gated phases (P0..P7), each shippable independently behind an env flag or metric guard. The end state is autopilot-grade per-role concurrency without overlap, sticky quarter affinity for handed-over sessions, reverse migration when load drops, and matrix-aware production rollout.

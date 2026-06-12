@@ -24,11 +24,12 @@ Cross-repo dependency map: `.claude/dependency-map.json`
 ## Read Order
 
 1. `agents/shared/OPERATING_CONSTRAINTS.md`
-2. `agents/shared/ENGINEERING_STANDARDS.md`
-3. `agents/shared/WORKFLOWS.md`
-4. `docs/guides/agent-workflows/INDEX.md`
-5. Role file in `agents/*.md` relevant to the task
-6. Domain docs in `docs/` and current status in `CLAUDE.md`
+2. `agents/shared/MEASUREMENT_POLICY.md` (any task that produces or consumes performance/quality numbers)
+3. `agents/shared/ENGINEERING_STANDARDS.md`
+4. `agents/shared/WORKFLOWS.md`
+5. `docs/guides/agent-workflows/INDEX.md`
+6. Role file in `agents/*.md` relevant to the task
+7. Domain docs in `docs/` and current status in `CLAUDE.md`
 
 ## Non-Negotiables
 
@@ -42,6 +43,7 @@ Cross-repo dependency map: `.claude/dependency-map.json`
 - Do not create monolithic "all numerics" files; keep tunables in owning subsystem configs.
 - Never silently swallow exceptions.
 - Keep changes small, testable, and documented.
+- Decisions gate on **claims**, not observations: a performance/quality number must cite a `MEASUREMENT.md` protocol; historical numbers are era-labeled first (`agents/shared/MEASUREMENT_POLICY.md`). Never edit historical records to "fix" them — append.
 
 ## Output Contract
 

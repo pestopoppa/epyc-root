@@ -73,6 +73,8 @@ Handoffs track cross-repo work items:
 
 **Start here**: [`handoffs/active/master-handoff-index.md`](handoffs/active/master-handoff-index.md) — single entry point for discovering all active work. Dispatches to 5 domain-specific sub-indices.
 
+**Current architecture review (2026-06-12)**: the `handoffs/active/fable5-findings-*` set is the standing strategic assessment — start at `fable5-findings-00-executive-summary.md`; the prioritized queue rewrite lives at `fable5-proposed-master-index-rewrite.md` until merged into the master index.
+
 ### Handoff Index Documents
 
 When creating an index that coordinates multiple handoffs, it must be an **actionable coordination point** — not a passive navigation document. Required sections:
@@ -102,6 +104,14 @@ agent_task_end "Description" "success|failure"
 
 Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyze.sh --summary`.
 
+## Measurement & Claims
+
+`/workspace/MEASUREMENT.md` is the instrument constitution (adopted 2026-06-12). The short form:
+- A decision-gating number = `(metric, protocol-id, n/reps, date, attestation ref)`. A number without a protocol citation is an **observation** — usable for hypotheses, never to gate keep/revert/deploy/promote/buy/close decisions.
+- **Historical numbers**: era-label first (`epyc-orchestrator/orchestration/instrument_eras.yaml`), then apply the verb — retro-certified → use; demoted-to-prior → hypothesis only (re-measure if it must gate); retired-view → consult the era-appropriate rebuilt view. Never edit historical records to "fix" them — append.
+- Benchmarks run only via the codified recipes (`bench_canonical.sh`/`canonical_recipe.py`) with operator approval; agent digest at `agents/shared/MEASUREMENT_POLICY.md`.
+- The measurement trust boundary (MEASUREMENT.md, eval tower, scoring, safety gates, era registry rows) is human-amendment-only.
+
 ## Session Management
 
 - `scripts/session/session_init.sh` — Discover models, verify llama.cpp
@@ -114,7 +124,7 @@ Audit trail in `logs/agent_audit.log`. Analysis: `scripts/utils/agent_log_analyz
 Two web-search paths are available in this session:
 
 1. **Built-in `WebSearch` tool** — Anthropic-hosted, opaque engine selection, US-only. Best for one-shot lookups where a single result suffices.
-2. **`bash scripts/search/searx.sh '<query>'`** — self-hosted SearxNG at `localhost:8090`, returns structured JSON with `engines[]`, `score`, `unresponsive_engines[]`. Best for engine-diversity / multilingual / bulk queries.
+2. **`bash scripts/search/searx.sh '<query>'`** — self-hosted SearxNG at `localhost:8888`, returns structured JSON with `engines[]`, `score`, `unresponsive_engines[]`. Best for engine-diversity / multilingual / bulk queries.
 
 **Prefer SearxNG when**:
 - Running ≥3 web searches in one phase (literature expansion, cluster surveys).
@@ -126,7 +136,7 @@ Two web-search paths are available in this session:
 - One-shot factual lookup; the auto-summary is fine.
 - SearxNG health check fails (script exits 2).
 
-Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8090` is unreachable. On exit 2, switch to `WebSearch` for that query.
+Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8888` is unreachable. On exit 2, switch to `WebSearch` for that query.
 
 ## Historical Documentation Warning
 
@@ -160,7 +170,7 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 <!-- gitnexus:keep -->
 # GitNexus — Code Intelligence
 
-Indexed as **epyc-root** (22071 symbols, 23703 relationships, 29 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
+Indexed as **epyc-root** (22192 symbols, 23900 relationships, 29 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
 
 **Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir).
 

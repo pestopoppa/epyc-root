@@ -1,9 +1,21 @@
 # llama.cpp Kernel Push + Full Rebase — Holistic Plan
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Marked COMPLETE since 2026-04-23 — the v4 production kernel (`production-consolidated-v4`) was finalized: 22 patches + build fix rebased onto upstream, TIDE post-hoc early-exit deprecated as a research dead end (adapters produce garbage on unseen prompts), Hadamard KV smoothing + f16 fix merged from experimental, 5-model sanity pass, registry/executor updates landed, reasoning-budget fix validated.
+
+**Why archived**: the only remaining items were a passive PR watch plus stale quality-bench checkboxes from the completed v4 push (superseded by subsequent stack changes). New kernel work is planned in the fable5 findings-06 batched-decode program, not here.
+
+**Where residuals now live**: the STQ1_0 PR #22836 watch (monitor → rebuild fork → llama-bench the Hy-MT1.5-1.8B-1.25bit artifact) is consolidated into [`tq3-quantization-evaluation.md`](../active/tq3-quantization-evaluation.md) § "Action Items (added 2026-05-21; STQ1_0 watch consolidated here 2026-06-12)" — single owner, per the tq3 MERGE verdict (it was previously double-tracked across both files). The stale v4 quality-bench checkboxes are superseded; current bench planning lives in the bulk-inference-campaign and findings-06.
+
+**Reopen triggers**: none — a future rebase/kernel-push gets its own handoff (per findings-06 for batched-kernel work).
+
+---
+
 **Status**: COMPLETE (v4 production kernel finalized 2026-04-23. TIDE post-hoc deprecated — research dead end. Hadamard KV smoothing + f16 fix merged from experimental. Quality benchmarks queued.)
 **Created**: 2026-04-20
 **Priority**: HIGH
-**Parent index**: [`inference-acceleration-index.md`](inference-acceleration-index.md)
+**Parent index**: [`inference-acceleration-index.md`](../active/inference-acceleration-index.md)
 **Related**: [`llama-cpp-fork-rebase.md`](../completed/llama-cpp-fork-rebase.md), [`tide-calibration-router-early-exit.md`](../../research/deep-dives/tide-calibration-router-early-exit.md)
 **Repo**: `/mnt/raid0/llm/llama.cpp` (branch `production-consolidated-v4`)
 

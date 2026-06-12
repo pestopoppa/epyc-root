@@ -12,6 +12,26 @@ related:
 
 # Handoff backlog hygiene audit
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Mission executed and superseded. The seven passes recorded below (2026-05-27 → 2026-05-28) brought the tree from 56 aging / 0 stale to 0 aging / 0 stale, archived 9 handoffs, refreshed ~30 more, and piloted the active/completed compaction split. The fable5 full-portfolio review (2026-06-12: 5 reviewer agents, 108 classified rows, master-index rewrite + §D hygiene batch) is the systematic successor that executed this handoff's remaining mission — keeping both would create duplicate prune queues.
+
+**Why archived**: superseded by the fable5 portfolio pass; its residual items (trim 3 domain-scoped DEREFERENCE entries, flag 6 NEEDS_REFRESH owners, next aging batch) are wholly subsumed by the fable5 index rewrite and its per-handoff verdicts.
+
+**Where residuals now live**: the prune queue is the fable5 master-index rewrite §D hygiene batch (`fable5-proposed-master-index-rewrite.md`, applied to `master-handoff-index.md`); future freshness enforcement is the new index's weekly freshness check (>14d untouched without a `gated:` tag = violation).
+
+**Method corrections — QUOTED VERBATIM as BINDING POLICY for all future prune passes** (from the second pass, after operator review overturned all 4 ARCHIVE recommendations):
+
+> **Audit-method correction**: any future ARCHIVE recommendation must verify (a) the handoff is not a reference target in another active handoff, AND (b) all acceptance criteria are met as written, not just the underlying code path being landed.
+
+> After operator review, **all 4 ARCHIVE candidates were rejected** — three are load-bearing reference anchors in other active handoffs, and the fourth (launcher) had unmet acceptance criteria. The audit method itself was right; the agents' verdicts conflated "code work finished" with "handoff has no remaining role."
+
+(The fable5 portfolio pass complies: each of its ARCHIVE verdicts named the extraction target for residuals and fixed inbound references at move time; where this handoff's second pass had rejected an archive — e.g. `cpu-optimization-thesis-pause-2026-04-26.md` as a load-bearing reference — the 2026-06-12 verdict re-archived it only with reference-fixing and a citable-from-completed closure note.)
+
+**Reopen triggers**: none — future prune passes are governed by the master index's reporting/freshness rules plus the quoted binding policy above.
+
+---
+
 ## Problem
 
 `handoffs/active/` holds ~101 handoffs; `scripts/validate/check_handoff_freshness.sh` flagged **56 aging** (>14d) and 0 stale (>30d) as of 2026-05-27. Many are likely complete or overtaken but remain inline + index-referenced. Per the operator's index-discipline rule (memory `feedback_index_tracks_outstanding_only`), indices should track **outstanding TODOs only**; completed work should be archived (if genuinely done) or its index entry dereferenced/trimmed (if open work remains).

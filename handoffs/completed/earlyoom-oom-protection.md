@@ -1,5 +1,17 @@
 # earlyoom — Userspace OOM Protection for the Multi-Model Box
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Objective fully achieved and verified live. earlyoom (source-built ≥1.8) deployed 2026-06-04 on host `Beelzebub` under Policy A (`--sort-by-rss --ignore '^(llama-server|sd-server)$'`, absolute `-M` thresholds, `-s 100,100` swap-gate neutralization); control plane durably protected at `oom_score_adj=-1000` via `stack_processes.set_oom_score_adj` wired into both launchers (epyc-orchestrator `2a40260`, `d806c41`, 6 unit tests); `-N` audit hook verified writing `EARLYOOM_KILL` JSON under the live systemd sandbox.
+
+**Why archived**: per prune-on-complete — every checklist item is checked, the deployment is verified live, and no live reopen gate remains. Only optional/non-blocking residuals were outstanding.
+
+**Where residuals now live**: the optional `--ignore 'claude|codex'` tweak and the two open hook questions (pause-loads-after-kill watcher, pre-kill `-P` host-health hook) were extracted to [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) § "Inherited from earlyoom-oom-protection closure (2026-06-12)".
+
+**Reopen triggers**: model-server over-commit becoming the actual OOM failure mode (would motivate Policy B — no `--ignore` on `llama-server`); steady-state peak resident set legitimately approaching the 40 GiB SIGTERM threshold (raise threshold / add load precheck); or a kill-cascade incident (escalate the pause-loads hook from open question to requirement).
+
+---
+
 **Status**: ✅ **DEPLOYED 2026-06-04 on host `Beelzebub`** — source-built earlyoom (master, `/usr/local/bin/earlyoom`) armed via systemd as `User=daniele`, `--sort-by-rss --ignore '^(llama-server|sd-server)$'`, control plane at `oom_score_adj=-1000`, `-N` audit hook verified writing `EARLYOOM_KILL` JSON. **Durable `oom_score_adj=-1000` DONE 2026-06-04** — wired into both control-plane launchers: `orchestrator_stack.start_orchestrator` (API master + uvicorn workers after health; `2a40260`) and `autopilot.cmd_start` (its own pid after the singleton lock; `d806c41`), both via `stack_processes.set_oom_score_adj` (best-effort `sudo -n`), with 6 unit tests. (Autopilot wiring takes effect on its next start; the running process keeps its manual `choom`.) **Residual (optional)**: add `claude|codex` to `--ignore` to shield agent sessions (a `claude`/`codex` session can otherwise be a victim before a small runaway).
 **Priority**: HIGH — lowest-hanging-fruit orchestration-robustness win (per user, 2026-06-03)
 **Created**: 2026-06-03 (via research intake → deep-dive); **Deployed**: 2026-06-04
@@ -7,7 +19,7 @@
 
 ## Objective
 
-Deploy [earlyoom](https://github.com/rfjakob/earlyoom) as a userspace early-OOM daemon so that memory overcommit (concurrent/sequential multi-GB `--mlock` GGUF loads on the 1.1 TB box) results in a **single targeted process kill** instead of a **multi-minute kernel-OOM-killer freeze** of the entire host. It complements — does not replace — the preventive `max_mlock_gb`/`max_total_gb`/`reserve_kv_gb` ceilings in [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) and the mandatory sequential-load discipline.
+Deploy [earlyoom](https://github.com/rfjakob/earlyoom) as a userspace early-OOM daemon so that memory overcommit (concurrent/sequential multi-GB `--mlock` GGUF loads on the 1.1 TB box) results in a **single targeted process kill** instead of a **multi-minute kernel-OOM-killer freeze** of the entire host. It complements — does not replace — the preventive `max_mlock_gb`/`max_total_gb`/`reserve_kv_gb` ceilings in [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) and the mandatory sequential-load discipline.
 
 ## Why this is the lowest-hanging fruit
 
@@ -113,4 +125,4 @@ Under `--sort-by-rss`, the largest RSS is *always* a production model-server (13
 
 - Maturity/credibility: high. Single primary maintainer (rfjakob) but long track record, broad distro adoption (was Fedora 32 default), real test/CI ratio, tiny attack surface.
 - This is an **operator action** (privileged `apt install` + `systemctl`). Prepare the exact commands; the user runs the install (suggest `! sudo apt install earlyoom` in-session).
-- Cross-refs: [`single-instance-system-tuning.md`](single-instance-system-tuning.md) (deep-dive correction section), [`dynamic-stack-concurrency.md`](dynamic-stack-concurrency.md) (preventive ceilings), `feedback_autopilot_host_health_remediation`, `feedback_use_orchestrator_stack_for_lifecycle`.
+- Cross-refs: [`single-instance-system-tuning.md`](single-instance-system-tuning.md) (deep-dive correction section), [`dynamic-stack-concurrency.md`](../active/dynamic-stack-concurrency.md) (preventive ceilings), `feedback_autopilot_host_health_remediation`, `feedback_use_orchestrator_stack_for_lifecycle`.

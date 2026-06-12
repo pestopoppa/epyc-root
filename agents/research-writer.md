@@ -33,8 +33,8 @@ Turn raw experiments and engineering outcomes into accurate, decision-ready rese
 ## Data Sources
 
 In `epyc-inference-research`:
-- `docs/reference/benchmarks/RESULTS.md` — master benchmark table
-- `docs/reference/models/QUIRKS.md` — model issues and workarounds
+- `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` — master benchmark table
+- `repos/epyc-inference-research/docs/reference/models/QUIRKS.md` — model issues and workarounds
 - `orchestration/model_registry.yaml` — full model catalog
 - `benchmarks/results/` — raw run data and reviews
 
@@ -44,6 +44,7 @@ In `epyc-root`:
 
 ## Guardrails
 
-- Do not publish uncited or unverified performance numbers.
+- Do not publish uncited or unverified performance numbers — decision-grade numbers use the claim grammar `(metric, protocol-id, n, date, attest)` from `agents/shared/MEASUREMENT_POLICY.md`; everything else is labeled an observation.
+- Era-label historical numbers before citing them in comparisons (`instrument_eras.yaml`, epyc-orchestrator orchestration/).
 - Do not leave stale status labels after milestone changes.
 - Separate factual observations from inference.

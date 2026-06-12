@@ -1,5 +1,14 @@
 # CPU20 — Benchmark Rigor And Revalidation Gate
 
+> **SUCCEEDED BY `/workspace/MEASUREMENT.md` (2026-06-12)** — this file is the historical record of the CPU20 protocol; the living protocol registry is MEASUREMENT.md. Do not update here.
+
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+- **Final outcome**: the declared successor condition fired — this handoff stated it stays active "until a successor benchmark-methodology document replaces it", and `/workspace/MEASUREMENT.md` (adopted 2026-06-12 from the Fable 5 review) subsumes the protocol: P0–P5 → P-BENCH-1/2 entry-point + preconditions + rep-count rules, plus P-BENCH-3 (batched), the quality/AB instrument cards, the claim grammar, and the instrument-era reconciliation that this protocol's E0→E1 boundary anchors.
+- **Why archived**: maintaining two protocol sources invites drift; MEASUREMENT.md is now the single source of truth (PR-reviewed, append-or-version).
+- **Where residual items now live**: the standing protocol → `/workspace/MEASUREMENT.md` §1 (P-BENCH-1/2/3) + §3 noise table + §5 retroactivity (era E0→E1 cites CPU20 as the boundary event). The Phase 2.5 artifact backfills for CPU21/23/24/25 were completed 2026-04-28 (see `cpu-inference-optimization-index.md` CPU20 row); the historical "Required Revalidation Set" stays here as record only — it was never a blanket rerun queue.
+- **Reopen triggers**: none — protocol amendments go to MEASUREMENT.md via its governance rules, never here.
+
 **Status**: refreshed 2026-05-28 — ACTIVE PROTOCOL, not a one-off implementation task
 **Created**: 2026-04-26
 **Updated**: 2026-05-28

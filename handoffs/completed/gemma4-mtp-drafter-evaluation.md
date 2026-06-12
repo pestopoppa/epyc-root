@@ -1,5 +1,17 @@
 # Gemma 4 MTP-Drafter Evaluation
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: The deploy-or-not decision this handoff existed to make was made and shipped 5 weeks ago — gemma4-26B-A4B Q4_K_M MTP is `worker_general` in production since 2026-05-08 (+18pp tool_compliance, +6pp full suite, 76.5 t/s verified solo). Key measured results: 31B Dense MTP = 2.98× pure-CPU speedup (7.05 → 21.02 t/s, 84.3% acceptance); 26B-A4B MoE MTP = 1.06× only (MoE expert-routing cancellation confirmed quantitatively) but promoted anyway on the quality lift; 1-line server-context.cpp fix pushed upstream to ik_llama.cpp PR #1744.
+
+**Why archived**: decision made and deployed; only residual follow-ups remained, none of which need this handoff's gate machinery.
+
+**Where residuals now live**: the 3 residuals (gemma4_31b_q4km_mtp quality bench; q-scorer `baseline_tps` refresh; R1b/R1c hybrid-MTP reopener sub-gates, parked) were extracted to [`inference-acceleration-index.md`](../active/inference-acceleration-index.md) § "Inherited from gemma4-mtp-drafter-evaluation closure (2026-06-12)". The SpecDec++ follow-on is covered by `feedback_measure_alpha_before_specdec_investment` (measure baseline α first). The launch recipe lives in `project_gemma4_mtp_launch_recipe` memory.
+
+**Reopen triggers**: R1b/R1c sub-gates clearing (hybrid-MTP reopener — see the extracted index entry); a community llama.cpp port of Nemotron-Diff tri-mode self-speculation (the documented MTP alternative if the 31B quality bench stalls); or a new Gemma drafter release changing the variant matrix.
+
+---
+
 **Status**: stub — expanded 2026-05-06 with per-variant gate analysis after deep dive
 **Created**: 2026-05-06 (via research intake)
 **Categories**: speculative_decoding, moe_optimization, inference_serving, local_inference

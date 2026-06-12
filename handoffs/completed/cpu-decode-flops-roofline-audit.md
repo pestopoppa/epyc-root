@@ -1,5 +1,17 @@
 # CPU Decode FLOPS Roofline Audit
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: The roofline question this handoff existed to answer is answered — the FLOPS-vs-BW results are canonicalized in `fable5-findings-06` (the batched-decode/kernel findings file), which now serves as the citable baseline for the BW-bound verdict and for the E1/E2 batched-decode measurement program. Phase 0 counter calibration (AMD `fp_ops_retired_by_type.*` / `fp_ops_retired_by_width.*` event families, DRAM BW counter discovery) was completed 2026-05-28 and is recorded in §"Phase 0 Calibration Results" below.
+
+**Why archived**: results live in findings-06; this file's remaining value is the calibrated measurement protocol (Phase 0 event lists, capture template, peak-calibration notes), which is reusable reference, not an open queue.
+
+**Where residuals now live**: one optional item remains — an **opportunistic clean-host re-run backfill** (re-run the Step 2/3 measured protocol on a freshly verified quiet host and file the full `findings.md` bundle to `/mnt/raid0/llm/epyc-inference-research/data/cpu_optimization/<date>-decode-roofline/`, per the artifact-bundle discipline in `feedback_closure_inflation`). It is NOT a queue item — pick it up only if a suitable operator bench window is already open for other reasons. Kernel-frontier consumers (Nemotron variant choice, deepseek-v4 port, E3 GEMM) cite findings-06, not this file.
+
+**Reopen triggers**: a kernel-level optimization claim that needs a fresh FLOPS/BW snapshot under a changed regime (new topology, new binary generation, batched-decode operating point) — in that case run the protocol below as a new dated bundle rather than reopening this handoff.
+
+---
+
 **Status**: ready-to-run (user-gated) — Phase 0 calibration completed 2026-05-28; all four promotion-gate artifacts recorded in §"Phase 0 Calibration Results" below; gate flipped this same date in commit (post-Phase-2 commit)
 **Created**: 2026-05-28
 **Updated**: 2026-05-28 (Phase 0 calibration completed; second AMD event-family correction landed — `fp_ops_retired_by_type.*` / `fp_ops_retired_by_width.*`, not `fp_ret_sse_avx_ops.*`)

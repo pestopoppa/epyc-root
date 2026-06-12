@@ -1,5 +1,17 @@
 # Doc-to-LoRA Prototype
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Self-described as solved — the core use case (avoiding context-stuffing for large reference material) is covered by existing REPL tooling (`peek()`, `file_read_safe()`, `web_search`, `web_research`); workers pull context on demand. Nothing actionable remained: Phase A (CPU format-conversion + LoRA hot-swap validation) was never triggered because the worker-model-compensation hypothesis never became interesting, and Phase B (hypernetwork retraining) is GPU-gated.
+
+**Why archived**: fable5-findings-04 names doc-to-LoRA among off-North-Star index slots ("self-described as solved"). **This archive deliberately overrides the in-file 2026-04-21 "backburner-no-archive" policy** — under the current portfolio discipline, reference-only items with no actionable queue live in `completed/`, not `active/`.
+
+**Where residuals now live**: **Findings 1–8 are preserved in full in this file** (LoRA hot-swap API surface in our fork, pretrained checkpoint inventory, D2L→PEFT format gap, CPU patch, Qwen3-4B/Qwen2.5 incompatibility, orchestrator LoRA-infrastructure gap, QVAC Fabric gap analysis) — cite them from here. The hardware-gated tail is registered in the master index HW-GATED section (§F of the 2026-06-12 rewrite).
+
+**Reopen triggers (Phase B reopen tag)**: **training-capable GPU available (cloud rental or MI210) AND a demonstrated need that REPL retrieval doesn't cover** (e.g., the small-model-compensation hypothesis becomes load-bearing for a production role). On reopen, start from Finding 5 (architecture compatibility) and the Phase B scope section — not from Phase A.
+
+---
+
 **Status**: BACKBURNER (reference material) — 2026-04-21 audit confirms: keep in `active/` per backburner-no-archive policy. Use case largely solved by existing REPL tooling; findings 1-8 retained as research reference. Phase B blocked on cloud GPU acquisition.
 **Created**: 2026-03-03
 **Revised**: 2026-03-17 (added QVAC Fabric/BitNet research context, Finding 8, Phase A-bis)

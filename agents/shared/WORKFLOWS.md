@@ -29,17 +29,18 @@
 
 ## Benchmark Update
 
-1. Run benchmark with explicit config capture.
-2. Record results and anomalies.
-3. Compare against baseline.
-4. Update `docs/reference/benchmarks/RESULTS.md` in `epyc-inference-research` when appropriate.
+1. Confirm operator approval + host-health preflight (`agents/shared/MEASUREMENT_POLICY.md`).
+2. Run via the codified recipe (`bench_canonical.sh`/`canonical_recipe.py`, epyc-inference-research) with explicit config capture; reps per `MEASUREMENT.md` (≥5 for ≥5% claims, ≥10 for ≤2%).
+3. Record results + anomalies with the claim grammar `(metric, protocol-id, n, date, attest)`.
+4. Compare against the era-matched baseline only (`instrument_eras.yaml`, epyc-orchestrator orchestration/); never across instrument eras.
+5. Update `repos/epyc-inference-research/docs/reference/benchmarks/RESULTS.md` when appropriate.
 
 ## Handoff Closure And Roadmap Refresh
 
 1. Reconcile handoff checklist against real code/tests before marking complete.
 2. Extract durable findings into docs and agent playbooks; keep handoff as execution log, not the only source of truth.
-3. Update roadmap/blocker trackers (`handoffs/README.md`, `coordination/BLOCKED_TASKS.md`) in `epyc-root`.
-4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used.
+3. Update the master index (`handoffs/active/master-handoff-index.md`): **delete** the completed row — terminal rows do not stay in the queue. Update `handoffs/blocked/BLOCKED.md` if a blocker changed.
+4. Record evidence in `CHANGELOG.md` and progress log (`progress/YYYY-MM/`) with exact commands/tests used; performance/quality numbers use the claim grammar (`agents/shared/MEASUREMENT_POLICY.md`).
 5. Move handoff from `handoffs/active/` to `handoffs/completed/` only after docs + trackers + evidence are in place.
 
 ## Orchestration Stabilization Closure (RLM)

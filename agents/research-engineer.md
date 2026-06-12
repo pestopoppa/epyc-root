@@ -40,5 +40,7 @@ Implement, debug, and validate novel or difficult engineering work, especially a
 ## Guardrails
 
 - Do not bypass feature flags for optional or expensive components.
-- Do not ship speculative optimization without measurement.
+- Do not ship speculative optimization without measurement — and measurement means a `MEASUREMENT.md` protocol, not an ad-hoc run (`agents/shared/MEASUREMENT_POLICY.md`).
+- Changes to evaluation/scoring/objective code are instrument changes: they require a policy/era version bump (`instrument_eras.yaml`) so historical comparisons stay valid.
+- Runtime flag changes via `POST /config` reach only the receiving worker process — verify all workers before trusting a flag-dependent measurement.
 - Do not leave unresolved TODOs in critical paths without tracking.

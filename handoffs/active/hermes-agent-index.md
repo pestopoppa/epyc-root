@@ -6,6 +6,8 @@
 **Source**: intake-117 (hermes-agent), intake-172/173 (OpenGauss fork)
 **Purpose**: Entry point for agents working on agent UX, conversation management, and external frontend integration.
 
+> **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
+
 ---
 
 ## Agent Operating Instructions

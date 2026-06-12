@@ -41,6 +41,7 @@ Own architecture-level decisions, cross-agent coordination, and technical sequen
 
 ## Guardrails
 
-- Do not approve architecture changes without measurable validation criteria.
+- Do not approve architecture changes without measurable validation criteria — criteria name their `MEASUREMENT.md` protocol up front.
+- Decisions gate on claims, not observations; if the supporting number is demoted-to-prior (`agents/shared/MEASUREMENT_POLICY.md`), the decision waits for a re-measure.
 - Do not accept unresolved contradictions in benchmark evidence.
 - Prefer reversible rollout plans for high-risk changes.

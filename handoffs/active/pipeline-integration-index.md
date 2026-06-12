@@ -4,6 +4,8 @@
 **Created**: 2026-04-04
 **Purpose**: Entry point for agents working on new capability pipelines being added to the EPYC stack. Each pipeline adds a new modality or data processing capability.
 
+> **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
+
 ---
 
 ## Agent Operating Instructions
@@ -22,7 +24,7 @@
 | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Self-hosted text-to-image / Hermes `image_generate` replacement | Refreshed 2026-05-28: production on CPU via sd-server Q8 + conv-direct (~3 min/image @ 1024²); remaining work is prompt-enhancer/content-filter/typography spot-check + GPU/Spark rebench | MEDIUM | 2026-05-28 |
 | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | PDF extraction | active (magika evaluated + skipped 2026-04-17; **LiteParse born-digital fast-path candidate added 2026-05-29 → P1b**) | P2 (medium) | 2026-05-29 |
 | ~~[lean-proving-pipeline.md](../completed/lean-proving-pipeline.md)~~ | Lean 4 theorem proving | merged into § P2 below (2026-04-21) | P2 (medium) | 2026-04-21 |
-| [08-doc-to-lora-prototype.md](08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | active (reference) | P3 (low) | 2026-03-18 |
+| [08-doc-to-lora-prototype.md](../completed/08-doc-to-lora-prototype.md) | Document → LoRA fine-tune | ARCHIVED 2026-06-12 (solved-by-REPL; Findings 1-8 preserved in file; Phase B reopen = training GPU + demonstrated need) | P3 (low) | 2026-06-12 |
 | [internal-kb-rag.md](internal-kb-rag.md) | Internal markdown KB retrieval pipeline | STUB 2026-04-25 — sibling consumer of colbert-reranker-web-research's ONNX/MaxSim plumbing; no AR-3 gate | P5 (medium) | 2026-04-25 |
 
 ---

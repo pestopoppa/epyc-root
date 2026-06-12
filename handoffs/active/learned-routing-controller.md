@@ -1,10 +1,10 @@
 # Learned Routing Controller: MLP Distillation from Episodic Memory
 
 **Created**: 2026-04-15
-**Status**: Phase 1 COMPLETE — 92% val acc, flag enabled. Phase 2 P2.1-P2.2 DONE (endpoint built), P2.3+ needs inference.
-**Priority**: HIGH (low-hanging fruit — infrastructure exists, just needs retraining with better data)
-**Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), SkillBank (completed handoff)
-**Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes.
+**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — **classifier fast-path is DEAD**: the weights file has been MISSING since the 2026-05-25 episodic reset while the flag remains ON (boot-log warning fires; every request silently falls through to the KNN/MemRL pipeline). The historical "Phase 1 COMPLETE — 92% val acc, flag enabled" claim below describes pre-reset state; do NOT claim the fast path works. Retrain is blocked on the operator BGE re-embed of `episodic.db` (see [retrain-routing-models.md](retrain-routing-models.md)). **Phases 1.5+ are FROZEN per fable5-findings-02** pending the DAR-1 regret replay + per-question eval vectors justifying routing as a bottleneck.
+**Priority**: FROZEN (was HIGH) — retrain unblocks only after the BGE re-embed; expansion only after the fable5 routing-freeze gates clear.
+**Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), [retrain-routing-models.md](retrain-routing-models.md), [decision-aware-routing.md](decision-aware-routing.md), SkillBank (completed handoff)
+**Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes. (With weights missing, flag-ON is already functionally equivalent to fallback — but the flag should be reconciled with reality.)
 
 ---
 

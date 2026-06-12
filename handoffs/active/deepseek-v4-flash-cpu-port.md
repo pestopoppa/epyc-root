@@ -1,6 +1,6 @@
 # DeepSeek-V4-Flash CPU Port — Experimental Branch
 
-**Status**: Strategy B IN PROGRESS — binary side fully validated 2026-05-28; download in progress (~5%, ~4h ETA at anonymous HF rate, resumable curl in background); inference gates blocked on download completion
+**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — **Strategy B executed 2026-05-30**: download complete (153.32 GiB), smoke PASS, canonical throughput gate **provisional FAIL** (9.13 t/s eval-time decode vs the 18 t/s Q4 floor; three independent measurements cluster 8–11 t/s), 4 fork bug patches landed locally + filing-ready (01 sched_reserve, 02ab/02c cli/completion, 03 llama-gguf r-mode). All remaining work is operator-gated: **D1** Strategy-A (ik_llama translation, 3–5d) go/park · **D2** recalibrate the 18 t/s floor V4-arch-aware (CSA/HCA/indexer/compressor overhead was not modeled; honest expected range ~8–12 t/s) · **D3** quality gate repurposed as architect_general candidacy probe. Quality gate **externally blocked** on Mac/ds4 reference logprobs. Do NOT restart the download narrative — see §"Strategy B execution — 2026-05-30 update" + §"Next Decisions".
 **Created**: 2026-05-28
 **Priority**: P2
 **Effort**: High (multi-thousand-line arch addition, mirroring/exceeding the DSv3.2 DSA work)
@@ -58,7 +58,7 @@ These gates are concrete and not subject to renegotiation mid-port. If a gate fa
 
 ### Throughput gate (end of Phase 3)
 
-- **Workload**: same 512-token decode prompt used by `cpu-decode-flops-roofline-audit.md` ("Write a Python function that computes the n-th Fibonacci number iteratively. Then explain it briefly.") at `--temp 0 --seed 42`.
+- **Workload**: same 512-token decode prompt used by `../completed/cpu-decode-flops-roofline-audit.md` (archived 2026-06-12) ("Write a Python function that computes the n-th Fibonacci number iteratively. Then explain it briefly.") at `--temp 0 --seed 42`.
 - **Stack**: canonical NPS4 (`taskset -c 0-95 -t 96 -fa 1`, `numactl --interleave=all`, OMP env stack per `feedback_omp_env_stack_required`, `KMP_BLOCKTIME=10`, `GGML_NUMA_WEIGHTS=1`, `--mlock`, `--no-mmap`).
 - **Tool (Strategy B)**: V4 fork `llama-completion` (`/mnt/raid0/llm/llama.cpp-deepseek-v4/build/bin/llama-completion`) at `2f2d44052`. NOT `llama-bench`: llama-bench's default synthetic reserve shape (worst-case `ubatch_size` with `ubatch.pos == nullptr` → `last_pos = n_tokens - 1`) trips the V4 cache-sizing assert at `deepseek4.cpp:1147` (`GGML_ASSERT(n_comp_visible <= n_comp_cache)`) during `llama_context::sched_reserve` at init time. llama-completion also calls sched_reserve but with reserve shapes that fit V4's compressed cache. (When Strategy A — ik_llama translation — is reached, the tool for THIS gate becomes `ik_llama llama-bench` again; numbers across tools are not directly comparable.)
 - **Mode**: raw prompt completion with `-no-cnv`. Required because the V4 GGUF embeds `tokenizer.chat_template` at kv[57] and llama-completion auto-enables conversation mode when a template is present (per `completion.cpp:213` "auto enable conversation mode if chat template is available; disable it with -no-cnv"). Conversation mode applies the chat template + multi-turn UI which is not the bare-completion workload the floor was calibrated against.

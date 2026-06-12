@@ -1,9 +1,21 @@
 # Reboot validation + resume — picking up from 2026-05-16 session
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: One-shot session-resume runbook whose steps were all carried out in the weeks following 2026-05-19: the four pre-reboot commits were pushed, the reboot happened, the isolation bench ran, the production stack restarted, and the autopilot relaunched (it has been running continuously since — trial ~777 as of this pass). The host-throttle finding it tested is canonicalized in memory `feedback_host_throttle_check` (tiered fix: ≥1wk uptime → REBOOT required, drop_caches insufficient — confirmed at 6d 18h) and `feedback_drop_caches_numa_eviction`.
+
+**Why archived**: pure chronology — a 3+-week-old resume procedure with no live item. Nothing here is a standing protocol; the durable lessons live in the memory entries above and in `progress/2026-05/`.
+
+**Where residuals now live**: the three "deferred until after this resume cycle" items were inherited by their owning handoffs at the time (`cmd_stop --all` traceback and `--compile-registry` default-on → orchestrator stack work; AP-28-31 wire-ins → `autopilot-continuous-optimization.md`); none are tracked here.
+
+**Reopen triggers**: none — future reboot/resume cycles get their own runbook.
+
+---
+
 **Status**: Pre-reboot. All in-flight code + docs committed (4 repos, 4 commits) but not yet pushed. After your reboot, follow this handoff in order to pick up exactly where we left off.
 
 **Created**: 2026-05-19
-**Predecessor**: [autopilot-continuous-optimization.md §Session 2026-05-16](autopilot-continuous-optimization.md)
+**Predecessor**: [autopilot-continuous-optimization.md §Session 2026-05-16](../active/autopilot-continuous-optimization.md)
 **Progress entry**: [`progress/2026-05/2026-05-16.md`](../../progress/2026-05/2026-05-16.md)
 
 ---

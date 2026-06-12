@@ -13,7 +13,7 @@
 - [`multiscreen-attention-evaluation.md`](multiscreen-attention-evaluation.md) — sub-quadratic attention survey, intake-506 documented under same-day-expansion sub-section
 - [`triattention-kv-selection.md`](triattention-kv-selection.md) — retrofit selection (Expected Attention) for comparison vs DSA's integrated selection
 - [`cpu-shape-specialized-gemv-decode.md`](cpu-shape-specialized-gemv-decode.md) — Phase 5 candidate (CPU26) AVX-512BW Lightning Indexer kernel; **D3 sub-track lives here**
-- [`llama-cpp-kernel-push-rebase.md`](llama-cpp-kernel-push-rebase.md) — superseded but format template
+- [`llama-cpp-kernel-push-rebase.md`](../completed/llama-cpp-kernel-push-rebase.md) — archived 2026-06-12; superseded but format template
 - intake-506 (DeepSeek-V3.2 paper, arxiv:2512.02556)
 - [V3.2 deep-dive](../../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md) — full mechanism analysis + "How we'd contribute" section
 
@@ -140,7 +140,7 @@ Cross-ref: [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) is the
 | **D2 START** | D1 complete + quality validated + author hasn't already merged a PP-extension PR | Begin D2 design |
 | **D3 START** | D1 complete + D3.1 profile confirms compute-bound | Begin D3 kernel work |
 | **D2 / D3 PARALLEL** | Both above gates met | Can run concurrently — different code paths |
-| **PR #21149 MERGED** | Upstream maintainer merges (or fairydreaming flips draft → ready) | Cherry-pick into our `production-consolidated-v3` branch via `llama-cpp-kernel-push-rebase.md` pattern |
+| **PR #21149 MERGED** | Upstream maintainer merges (or fairydreaming flips draft → ready) | Cherry-pick into our `production-consolidated-v3` branch via the `../completed/llama-cpp-kernel-push-rebase.md` pattern |
 | **GLM-5.1 ACTIVATION** | DSA path validated on V3.2 (D1 complete + quality OK) | Hand off to `glm51-reap-cpu-evaluation.md` Phase 1 |
 | **DEPRIORITIZE** | Author abandons PR OR upstream rejects DSA design | Re-evaluate; possibly maintain a fork-only path |
 

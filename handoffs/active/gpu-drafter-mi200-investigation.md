@@ -5,6 +5,8 @@
 **Categories**: speculative_decoding, hardware_optimization, inference_serving, local_inference
 **Hardware gate**: contingent on MI200-class GPU (MI210 or MI250/X) acquisition. GT 1030 (currently present) is BW-poorer than CPU and not viable for any role here — see § GT 1030 falsification.
 
+> **Fable 5 review (2026-06-12)**: per operator instruction ALL GPU stages remain HW-GATED (MI210 ~July). The α gating measurement (this file's §Gating Measurement) is CPU-testable NOW = master-index row N5. fable5-findings-03 reorders post-arrival priorities: frontdoor residency + eval-engine acceleration BEFORE the drafter farm (Stage 1 keeps its ≥1.3× kill-gate).
+
 ---
 
 ## Thesis

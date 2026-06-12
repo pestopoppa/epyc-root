@@ -227,6 +227,8 @@ Exit criterion: baseline file populated; warn-only rule live for 10 trials AND V
 
 **Reason for amended gate**: Verbalized Sampling evidence shows the "weights-only, inference-irrecoverable" framing was overstated. The amended multi-signal gate avoids false-negatives (rejecting checkpoints that just need better sampling prompts).
 
+**EV-8 candidate inherited from qwen-scope-sae-toolkit closure (2026-06-12)**: the Qwen-Scope SAE **Section-4 eval-suite-redundancy probe** (feature-coverage AUC + inter-benchmark overlap as an evaluation-free redundancy proxy; Spearman 0.85 vs performance redundancy across 17 benchmarks) is an EV-8 candidate — prune known-redundant benchmarks before any further harness-suite expansion. Application recipe, storage map (~3.34 GB single-layer pull), and caveats are in the Research Intake Update § Qwen-Scope below and in the deep-dive `research/deep-dives/qwen-scope-sae-suite.md`; the source handoff is archived at [`../completed/qwen-scope-sae-toolkit.md`](../completed/qwen-scope-sae-toolkit.md).
+
 ### EV-9: Multi-dimensional rubric (NEW 2026-04-22, DD7 / intake-438)
 
 **Source**: `/workspace/research/deep-dives/minddr-multi-agent-rl-specialization.md` (442 lines). Required dependency for `minddr-deep-research-mode.md` MD-7.
@@ -346,7 +348,7 @@ Deep-dive at [`/workspace/research/deep-dives/halo-rlm-trace-loop-integration.md
   - Concrete implication for EV-4/5/7: **the canonical EPYC eval suite (AA-Omniscience, KO-Bench, MathBench, harness candidates) can be analyzed for redundancy and inter-benchmark similarity using ONE SAE pull (~5 GB), without running any new model evaluations.** That gives a representation-level signal complementary to the dev/test_normal split discipline noted at the tail of this handoff: dev/test_normal guards against harness overfit; SAE feature-coverage guards against benchmark overlap (e.g., is GSM8K's contribution to the suite already subsumed by MATH? Section 4 example: 63% of GSM8K's features ARE covered by MATH, while only 10% the other way).
   - Reported asymmetric overlap signature (paper Section 4.3, Figure 6): code benchmarks (EvalPlus, MBPP, MultiPL-E) form a tight cluster; broad knowledge benchmarks (MMLU-Pro, SuperGPQA) subsume specialized ones like TheoremQA at 0.56-0.68 coverage. Useful template for what our EPYC suite should look like once analyzed.
   - **Application path** (recommended pull, lowest cost):
-    1. Pull SAE-Res-Qwen3.5-27B-W80K-L0_50 single layer in the middle band (e.g., layer 30 of 64) — ~3.34 GB. Storage estimate detailed in `qwen-scope-sae-toolkit.md` storage map.
+    1. Pull SAE-Res-Qwen3.5-27B-W80K-L0_50 single layer in the middle band (e.g., layer 30 of 64) — ~3.34 GB. Storage estimate detailed in the `../completed/qwen-scope-sae-toolkit.md` storage map (archived 2026-06-12).
     2. Encode the residual stream at that layer for every prompt in (a) AA-Omniscience, (b) KO-Bench, (c) MathBench, (d) any harness candidate in EV-4/5/7 evaluation campaigns.
     3. Compute per-benchmark feature-coverage curve c_n and feature-redundancy R-hat(D) per Section 4.2 equations 7-9.
     4. Compute pairwise asymmetric overlap (eq. 10) and min-normalized symmetric overlap (eq. 11) across benchmark pairs.

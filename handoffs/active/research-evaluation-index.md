@@ -4,6 +4,9 @@
 **Created**: 2026-04-04
 **Purpose**: Entry point for agents working on pre-production research, evaluation, and monitoring tasks. These handoffs track techniques and tools not yet targeting production deployment.
 
+> **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
+> New owning handoffs in this domain: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) + [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (eval instrument successors).
+
 ---
 
 ## Agent Operating Instructions

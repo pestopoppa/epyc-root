@@ -1,5 +1,12 @@
 # Q5_K + Q6_K AVX-512BW 8x8 Kernels — Validation + Default-ON Flip
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+- **Final outcome**: Phase A verdict reached 2026-05-04 — Q6_K PPL gate PASS (5/5 bit-exact) but 96t perf gate FAIL (aggregate geomean −0.28%, REAP-246B −1.01%). Default-ON flip NO-GO; Q6_K stays env-gated OFF (`GGML_Q6_K_8X8_AVX=1` opt-in); Q5_K body was never written and is deprioritized; blanket `Q{5,6,8}_K` flip falsified.
+- **Why archived**: verdict is closed-with-evidence (fable5 review: "do not reopen without new mechanism"); no live work item remains. Merged into the declared parent per the 2026-06-12 portfolio pass.
+- **Where residual items now live**: the disposition table + the three reopen conditions are folded into [`../active/cpu-shape-specialized-gemv-decode.md`](../active/cpu-shape-specialized-gemv-decode.md) § "Q5_K/Q6_K 8x8 disposition (merged from qkernel-q5q6-default-on-flip, 2026-06-12)". Phase A artifact bundle stays at `data/cpu_optimization/2026-05-04-q6k-default-on-validation/`.
+- **Reopen triggers**: (1) production workload shifts to low-thread decode where Q6_K's single-thread win matters; (2) a new kernel branch materially changes the Q6_K implementation; (3) CPU20-compliant profiling shows Q5_K/Q6_K scale/min paths are again a top bottleneck.
+
 **Status**: REFRESHED 2026-05-28 — Phase A gate failed 2026-05-04; default flip NO-GO; Q5/blanket work deprioritized
 **Created**: 2026-05-04
 **Updated**: 2026-05-28 (master-index failure state reconciled into handoff)

@@ -1,11 +1,25 @@
 # Autopilot Dispatch Latency Optimization
 
+## Closure note (2026-06-12, Fable 5 portfolio pass)
+
+**Final outcome**: Core implementation landed 2026-05-26 and has been live through the continuous autopilot run since: phase heartbeat (`phase_status.py` + `/mnt/raid0/llm/tmp/autopilot_phase.{json,jsonl}`), dashboard idle-explanation panel (incl. the 2026-05-28 top-strip classification fix and `orphan inference` state), async auxiliary tasks (plots/digest off the critical path, durable writes kept synchronous), shorter configurable idle sleeps, and conservative contention-aware seeder role fan-out. Focused tests passed (19 unit tests across phase status, seed waves, dashboard helpers).
+
+**Why archived**: core done; the remaining follow-ups are optional and none is a queue item. Operator policy + env knobs below remain the reference for interpreting dashboard idle states.
+
+**Where residuals now live** (all optional, recorded here):
+- **Request-level `trial_id`/`batch_id` stamping** through `call_orchestrator_forced` — **flagged HIGH blast-radius by GitNexus**; do this only with explicit operator acceptance and full regression tests across seeding legacy/per-role/EvalTower/model-grader callers. If accepted, coordinate with the fable5 per-question-ledger schema work (`autopilot-continuous-optimization.md` owns the autopilot evidence-plane changes).
+- Phase-timing analyzer over `autopilot_phase.jsonl` (B), broader heavy-heavy seeder fan-out (C — requires the CRITICAL `_eval_single_config` edit; do not attempt mid-run), event-driven pause/health waits (D) — opportunistic only.
+
+**Reopen triggers**: operator accepts the HIGH-risk request-level metadata edit, or a new dispatch-latency regression is measured at the autopilot layer (start from the phase heartbeat data, not from this file's queue).
+
+---
+
 **Status**: active implementation handoff; initial code landed 2026-05-26.
 **Created**: 2026-05-26
 **Updated**: 2026-05-26
 **Priority**: HIGH
 **Owner**: orchestrator/autopilot
-**Related**: [`autopilot-continuous-optimization.md`](autopilot-continuous-optimization.md), [`bulk-inference-campaign.md`](bulk-inference-campaign.md), [`cross-role-nway-contention-matrix.md`](../completed/cross-role-nway-contention-matrix.md), [`within-role-placement-state-machine.md`](within-role-placement-state-machine.md)
+**Related**: [`autopilot-continuous-optimization.md`](../active/autopilot-continuous-optimization.md), [`bulk-inference-campaign.md`](../active/bulk-inference-campaign.md), [`cross-role-nway-contention-matrix.md`](../completed/cross-role-nway-contention-matrix.md), [`within-role-placement-state-machine.md`](../active/within-role-placement-state-machine.md)
 
 ---
 
