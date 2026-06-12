@@ -272,3 +272,14 @@ The new internal interaction lifecycle makes consultation gating a downstream co
 The rollout mirrors existing shadow-first routing practice: log the consult-gate decision while still running the baseline, compare offline, then enforce one signal at a time only after quality and token-savings evidence exists. This keeps consultation from becoming a blanket extra decode path and preserves the cost/latency discipline of the router.
 
 **Sources**: [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md) forks table · [`internal-interaction-lifecycle.md`](../handoffs/active/internal-interaction-lifecycle.md) P3 · [`progress/2026-05/2026-05-31.md`](../progress/2026-05/2026-05-31.md)
+
+## LOLLMS Smart Router Dataset — and the real retrain blocker (2026-06-12)
+
+intake-687 (`ParisNeo/lollms_smart_router_dataset`, Apache-2.0) is a 464-row instruction-tuning set: `task_prompt` (task + enumerated candidate-model list with capability descriptions) → `task_solution` (selected model index + NL justification), generated via the lollms TTT (Task-To-Task) Dataset Builder. The deep-dive refined it from "cold-start data for the routing retrain" to **not the unblock**, on two independent grounds:
+
+1. **The retrain is not label-starved.** The live `episodic.db` already holds **52K+ labeled routing memories**; the actual blocker for `retrain-routing-models.md` is **missing BGE embeddings** (the FAISS store was reset; `reembedded.npz` is a frozen 2026-04-15 snapshot). A text dataset cannot fix an embedding gap — the unblock path is the operator **BGE re-embed** (`repair_episodic_embeddings.py --repair` → `extract_training_data.py` → `train_routing_classifier.py`).
+2. **Wrong surface + infeasible relabel.** lollms is generative-router SFT *text*, while our learned controller is a discriminative **BGE-embedding MLP** (1031-d feature = 1024-d BGE ⊕ task-type ⊕ ctx-len ⊕ has-images → 8 role classes). Its label is a *prompt-relative index into a per-row candidate list* — there is no stable `gpt-4 → architect_general` map to translate through, so "relabel to our 5 EPYC roles" means authoring fresh labels with synthetic (non-outcome) provenance that would pollute the Q-grounded store.
+
+The one durable takeaway is the **TTT generation methodology** (fixed candidate-list-with-capabilities + difficulty-tiered rationale) as a template if we ever build a *generative-router* surface — adapted to emit `(1031-d feature, role_index)` directly rather than lollms' text format. Verdict: parked as a generative-router/TTT-synthesis reference only.
+
+**Sources**: [`research/deep-dives/2026-06-12-lollms-smart-router-dataset.md`](../research/deep-dives/2026-06-12-lollms-smart-router-dataset.md), [`handoffs/active/retrain-routing-models.md`](../handoffs/active/retrain-routing-models.md), [`handoffs/active/learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md), intake-687.

@@ -34255,3 +34255,492 @@
   - 'All gains are GPU batched-serving (custom CUDA kernels, GPU paging); none transfer to BW-bound CPU inference. Published Nov 2023 — >24 months old; specific throughput numbers are dated vs current vLLM/SGLang multi-LoRA.'
   - 'The "thousands of concurrent adapters" target has no analog on a single-user stack; realistic EPYC use is a small static adapter set.'
   notes: 'Discovered via intake-681 deep-dive (2026-06-04). Peer-reviewed (MLSys 2024) academic foundation for multi-LoRA serving; code at github.com/S-LoRA/S-LoRA. Pair with LoRAX (intake-684, running code) as the primary references for the orchestrator adapter-serving layer; MinT (intake-681) is the closed-source secondary lifecycle reference. credibility 4: peer-reviewed (+2), Berkeley/Stanford authors incl. Gonzalez/Stoica (+1), widely corroborated/foundational (+2), minus age (-1).'
+- id: intake-686
+  arxiv_id: null
+  url: https://github.com/RyanCodrai/turbovec
+  source_type: repo
+  title: 'turbovec — Google TurboQuant vector index (Rust + Python, SIMD-accelerated quantized vector search)'
+  categories:
+  - search_retrieval
+  - quantization
+  - hardware_optimization
+  - tool_implementation
+  novelty: medium
+  relevance: high
+  credibility_score: 3
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: worth_investigating
+  authors:
+  - Ryan Codrai (RyanCodrai)
+  key_claims:
+  - 'Data-oblivious TurboQuant quantizer (Zandieh et al., ICLR 2026, arxiv:2504.19874) needs no training phase and matches a Shannon lower bound; a 10M-doc corpus fits in ~4 GB vs 31 GB as float32 (~8x; 16x raw at 2-bit).'
+  - 'Searches faster than FAISS IndexPQFastScan — 12-20% on ARM/NEON; competitive to +1-6% on x86 (4-bit configs).'
+  - 'Pipeline: vector normalization + random rotation, per-coordinate Lloyd-Max scalar quantization (TQ+), length-renormalized scoring to correct quantization bias.'
+  - 'Hand-written SIMD distance kernels: NEON (ARM) and AVX-512BW (x86) with AVX2 fallback and runtime ISA detection; nibble-split lookup-table inner products.'
+  - 'Fully local/private (Rust core + Python bindings, MIT); search-time allowlist filtering with no recall degradation.'
+  techniques:
+  - TurboQuant data-oblivious quantization
+  - Random rotation + per-coordinate Lloyd-Max scalar quantization (TQ+)
+  - Length-renormalized inner-product scoring
+  - 2-bit / 4-bit bit-packing; nibble-split LUT distance
+  - Hand-written AVX-512BW / NEON SIMD kernels, AVX2 fallback, runtime ISA detection
+  - Memory-mapped quantized index
+  reported_results:
+  - '16x compression (1536-dim: 6144 B -> 384 B at 2-bit); ~8x end-to-end RAM (31 GB -> 4 GB for 10M docs)'
+  - 'ARM/NEON: 12-20% faster than FAISS IndexPQFastScan; x86: 1-6% faster on 4-bit, within ~1% on 2-bit'
+  - 'Recall: +0.3 to +3.4 points R@1 vs FAISS PQ depending on dimensionality'
+  referenced_arxiv_ids:
+  - '2504.19874'
+  - '2405.12497'
+  cross_references:
+    chapters: []
+    handoffs:
+    - colbert-reranker-web-research.md
+    - internal-kb-rag.md
+    - kv-cache-quantization.md
+    experiments: []
+    intake_entries:
+    - intake-355
+    - intake-654
+    - intake-099
+  handoffs_updated:
+  - internal-kb-rag.md
+  handoffs_created: []
+  novelty_justification: 'TurboQuant (algorithm) and PLAID-style PQ retrieval are both already in the index (TurboQuant KV-cache cluster ~intake-654; NextPLAID intake-355 Rust+PQ local vector search). turbovec is a NEW artifact — first application of TurboQuant to standalone vector search (not KV cache), FAISS-competitive with its own AVX-512BW/NEON kernels and reproducible comparisons. Underlying quantizer + local-Rust-index pattern partially covered, so medium not high.'
+  relevance_justification: 'High: directly in the SIMD/quant/retrieval wheelhouse. (1) orchestrator uses FAISS for repl_memory/strategy_store — 8x RAM cut + FAISS-beating search is a drop-in candidate; (2) internal-kb-rag/ColBERT needs a low-RAM local index; (3) the AVX-512BW kernels overlap our own Q8_0 GEMV kernels on EPYC 9655. x86 gains are modest (1-6%; EPYC is AVX-512 not NEON) so the 12-20% headline doesn''t apply, but compression + FAISS-parity-at-1/8-RAM is high-value.'
+  verdict_justification: 'worth_investigating: NextPLAID is integrated, turbovec is not; the headline speed win is ARM-only and our hardware is AVX-512 x86 where gains are 1-6%, so benchmark before any swap. Next step: bench turbovec vs current FAISS repl_memory/strategy_store path at AVX-512 (recall + RAM + QPS) and evaluate for internal-kb-rag; separately mine its AVX-512BW nibble-LUT kernels against our Q8_0 kernels. credibility 3: recent + builds on published ICLR 2026 algorithm (+1 corroboration via reproducible FAISS comparison + independent third-party TurboQuant ports Firmamento-Technologies/0xSero), independent author, no commercial bias; repo benchmarks unaudited, no peer review of turbovec itself.'
+  contradicting_evidence:
+  - 'No refutation found in Tier 2b search; instead corroboration — TurboQuant (arxiv:2504.19874) is ICLR 2026 and has multiple independent reimplementations (Firmamento-Technologies/TurboQuant claims 5-8x compression at 95%+ recall; 0xSero/turboquant KV-cache port). turbovec''s own speed numbers remain unaudited by third parties.'
+  - 'x86/AVX-512 gains are only 1-6% (the 12-20% win is ARM/NEON-specific) — on EPYC the value is compression/RAM, not raw QPS; a swap must clear a recall+latency bench first.'
+  notes: 'User-provided input 2026-06-10. Rust+Python MIT vector index applying Google TurboQuant to retrieval. Adjacent to TurboQuant KV-cache cluster (~intake-654, same algorithm different application) and NextPLAID (intake-355, same Rust-local-PQ pattern). Not in index before this run. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-turbovec-vector-index.md): refined to NO-GO/parked. Prod baseline is exact faiss.IndexFlatIP not PQ; ~304 MB live footprint makes 8x-RAM irrelevant on 1.1 TB; AVX-512 QPS is PQ-parity not the ARM +12-20%; kernel-mining rejected (FastScan LUT scanner vs BW-bound Q8_0 GEMV); KB-RAG is MaxSim multi-vector. WATCH-gate: single-vector corpus >~1M under RAM pressure.'
+- id: intake-687
+  arxiv_id: null
+  url: https://huggingface.co/datasets/ParisNeo/lollms_smart_router_dataset
+  source_type: repo
+  title: 'LOLLMS Smart Router Dataset (ParisNeo/lollms_smart_router_dataset)'
+  categories:
+  - routing_intelligence
+  - cost_aware_routing
+  - training_distillation
+  novelty: low
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: worth_investigating
+  authors:
+  - ParisNeo (LOLLMS project)
+  key_claims:
+  - '464-row (446 kB) instruction-tuning dataset for training a "smart router" LLM that selects which model handles a task; generated via LOLLMS TTT (Task-To-Task) Dataset Builder by prompting multiple LLMs.'
+  - 'Two-column schema: task_prompt (task description + enumerated candidate-model list with capability descriptions) and task_solution (selected model index + natural-language justification).'
+  - 'Labels are a per-row numbered model index (0-6+) over an in-prompt candidate list spanning tiers — small general models up through GPT-4/Claude-2 and specialists (CodeLlama, StarCoder, BERT, T5, Whisper, DALL-E).'
+  - 'Difficulty/capability-matched routing — the data-artifact analog of RouteLLM/FrugalGPT-style cost-aware routing; Apache-2.0; two reference routers fine-tuned on it (Llama-3.2-1B/3B, Nov 2024).'
+  techniques:
+  - Synthetic routing-label generation via multi-LLM prompting (TTT Dataset Builder)
+  - Instruction-tuning a small LLM (1B/3B) as a generative router head emitting model index + rationale
+  - Capability/difficulty-matched model selection over an in-context candidate list
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - retrain-routing-models.md
+    - learned-routing-controller.md
+    - routing-intelligence.md
+    - routing-and-optimization-index.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-495
+    - intake-496
+  handoffs_updated:
+  - retrain-routing-models.md
+  handoffs_created: []
+  novelty_justification: 'Not in index (no lollms/ParisNeo/smart_router match) so not a duplicate, but the underlying idea (generative LLM router emitting a model index + rationale over a candidate list, trained on synthetic capability-matched labels) is well-covered prior art (RouteLLM, Trinity, xRouter, GraphRouter). Small community-scale instance of a known pattern — low.'
+  relevance_justification: 'High: directly intersects the EPYC learned routing controller. The BLOCKED retrain-routing-models handoff is gated on accumulating ~500+ routing examples; this is 464 labeled query->model-index examples with rationales — usable as bootstrap/eval data or a schema/format reference for a generative-router surface. Caveat: lollms taxonomy is generic public models (GPT-4/Claude-2/CodeLlama/DALL-E/Whisper), NOT our 5-role EPYC taxonomy (frontdoor/architect_general/architect_coding/coder_escalation/worker_explore), so labels need a relabel/translation step; transferable value is the difficulty-tier signal, prompt-with-candidate-list format, and rationale field.'
+  verdict_justification: 'worth_investigating — small, Apache-2.0, off-the-shelf, aligned with an actively-blocked retraining need, but the taxonomy mismatch and modest size (464 rows) mean no unmodified drop-in. Look at it as cold-start/eval data and as a reference design for a generative-router variant of our controller, with an explicit relabel-to-EPYC-roles step before any training use. credibility null — dataset card reports no empirical metrics.'
+  contradicting_evidence:
+  - 'No external evaluation of dataset quality/label correctness found; 464 synthetic multi-LLM-generated rows risk label noise and a taxonomy that does not map to EPYC roles. Treat as bootstrap/reference, not ground truth.'
+  notes: 'User-provided input 2026-06-10. Flagged for review per project "never dismiss without asking" policy. Pairs with the BLOCKED retrain-routing-models handoff (data-starved). DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-lollms-smart-router-dataset.md): NOT the retrain unblock. Live db already has 52K+ labeled routing memories; real blocker is missing BGE embeddings (FAISS reset), not labels. lollms is wrong surface (generative-router SFT text vs our BGE-embedding MLP) + infeasible relabel (per-row prompt-relative index). Fix = operator BGE re-embed. Keep parked as TTT-methodology reference only.'
+- id: intake-688
+  arxiv_id: null
+  url: https://mariozechner.at/posts/2026-05-30-shitty-robot/
+  source_type: blog
+  title: 'How to build a shitty robot (pibot / Pipi) — Gemma-4-26B-A4B + Qwen3.6 voice agent driving a EUR10 Octobot toy via llama.cpp'
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - multimodal
+  - local_inference
+  novelty: low
+  relevance: low
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: adopt_patterns
+  authors:
+  - Mario Zechner (badlogic)
+  key_claims:
+  - 'A EUR10 Silverlit Octobot toy (single H-bridge motor) is driven by an LLM voice agent; motor control is GPIO bit-banging pins D4/D5 on an Adafruit FT232H over USB.'
+  - 'Fully-local no-cloud voice loop on Apple Silicon (M1 Max 64GB) via llama.cpp: Gemma 4 26B A4B MoE Q4 default (Gemma 4 12B IT alt; Qwen3.6 35B A3B tested), Parakeet.cpp STT + Silero VAD, Qwen3-TTS with x-vector voice cloning.'
+  - 'Agent runtime exposes tools to the LLM: web search, photo capture (multimodal), motor/movement control, Spotify; a phone web client streams mic audio in and TTS back.'
+  - 'Honest failure modes: multi-child turn-taking needed; WebRTC echo cancellation inadequate so a custom barge-in detector was built; German TTS scarce; single motor limits movement.'
+  - 'Same author/agent-loop lineage as @mariozechner/pi-agent-core (pi-mono, intake-473) — pibot is the physical-robot application of that TS runtime.'
+  techniques:
+  - Local tool-use/function-calling loop (STT utterance -> tool exec -> TTS response)
+  - Multimodal vision via on-demand photo-capture tool
+  - Hardware actuation as an agent tool (FT232H GPIO -> H-bridge motor)
+  - Voice pipeline: Parakeet STT + Silero VAD + custom barge-in + Qwen3-TTS voice cloning
+  - Single-host multi-client serving (~4 concurrent users on M1 Max)
+  reported_results:
+  - 'Qwen3-TTS ~4x real-time on M-series Max, ~2x on M1 Max; Parakeet STT ~50x real-time'
+  - 'Serves ~4 children simultaneously on a single M1 Max (64GB); ~8-10 GB unified memory minimum'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - meta-harness-optimization.md
+    - tool-use-eval-contract.md
+    - multimodal-pipeline.md
+    experiments: []
+    intake_entries:
+    - intake-473
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Low. Core agent-loop/tool-execution machinery is the same lineage as intake-473 (pi-agent-core, same author). pibot adds no new inference/harness technique — a new application (hardware actuation as a tool, local voice I/O). Mildly novel: GPIO-bit-bang motor as an agent tool, custom barge-in detector replacing WebRTC echo cancellation.'
+  relevance_justification: 'Low. Hobbyist toy-robot voice agent on Apple Silicon is tangential to EPYC CPU inference — no quant/MoE/KV/spec-dec lever, no x86 CPU path (Metal target). Transferable value is the honest end-to-end agent-harness write-up: tool-use loop, multimodal photo-capture-on-demand, barge-in/turn-taking under concurrency, single-host multi-client serving. Notably runs the exact production models (Gemma-4-26B-A4B, Qwen3.6-35B-A3B) under llama.cpp, so its serving observations are a real-world cross-check.'
+  verdict_justification: 'adopt_patterns. No component to lift (TS/Apple-Silicon, hardware-specific) and no new technique, so not adopt_component/new_opportunity. Not dismissed as not_applicable per project policy: failure-mode-honest agent-harness and voice/tool-loop patterns are transferable references for meta-harness-optimization and multimodal-pipeline, and it extends the badlogic/pi-agent-core thread (intake-473) from runtime to deployed application.'
+  contradicting_evidence: null
+  notes: 'User-provided input 2026-06-10. Consolidated entry: blog (primary) + repo github.com/badlogic/pibot. Not a duplicate of intake-473 (that is the runtime; this is the application). DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-pibot-agent-harness.md): relevance LOW confirmed, read-once, nothing to integrate. Loop = pi-agent-core (intake-473) via npm @earendil-works/pi-agent-core (not forked); no new primitive; no LLM t/s published; barge-in is compiled-out voice C++. Only takeaway: independent corroboration our two prod GGUFs run under stock llama.cpp at -c 131072 with enable_thinking:false. No handoff opened.'
+- id: intake-689
+  arxiv_id: '2605.06235'
+  url: https://arxiv.org/html/2605.06235v2
+  source_type: paper
+  title: 'OBLIQ-Bench: Exposing Overlooked Bottlenecks in Modern Retrievers with Latent and Implicit Queries'
+  categories:
+  - benchmark_methodology
+  - search_retrieval
+  - rag_alternatives
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: worth_investigating
+  authors:
+  - Diane Tchuindjo
+  - Devavrat Shah
+  - Omar Khattab
+  key_claims:
+  - 'A retrieval-verification asymmetry exists: reasoning LLMs reliably verify latent relevance once a document is surfaced, but even sophisticated retrieval pipelines fail to surface most relevant documents — benchmarks look saturated only because easy-to-verify docs are also easy to retrieve.'
+  - 'Defines three "obliqueness" mechanisms where relevance depends on implicit patterns: descriptive queries (latent properties/stances), analogue queries (shared abstract structure), tip-of-the-tongue queries (fuzzy recollection).'
+  - 'Dense, lexical BM25, and agentic multi-hop pipelines score near zero on oblique tasks, while an oracle GPT-5.2 tournament listwise reranker achieves much higher NDCG — quantifying a large retrieval-verification gap.'
+  - 'Iterative query rewriting helps only some task types and harms performance when relevance is orthogonal to topic (e.g. authorship/writing-style detection).'
+  techniques:
+  - Oblique query benchmark construction (descriptive / analogue / tip-of-the-tongue families)
+  - LLM latent-attribute annotation over a single corpus pass
+  - Tournament-style listwise LLM reranking as a verification ceiling
+  - Retrieval-verification gap metric gap(t) = V_t - R_t
+  reported_results:
+  - 'Best single-stage retriever NDCG@10 vs oracle: Twitter-Conflict 0.132 -> 0.436; WildChat Errors 0.113 -> 0.431; Congress Hearings 0.102 -> 0.913; Writing-Style 0.220 -> 0.603'
+  - 'Systems evaluated: BM25, Gemini-Embedding-2, Qwen3 embeddings, LateOn, GPT-5.2 query rewriter, GPT-5.2 multi-hop agent'
+  referenced_arxiv_ids:
+  - '1611.09268'
+  - '2104.08663'
+  - '2004.12832'
+  - '2407.12883'
+  - '2004.04906'
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - internal-kb-rag.md
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-174
+    - intake-430
+    - intake-431
+    - intake-453
+  handoffs_updated:
+  - colbert-reranker-web-research.md
+  handoffs_created: []
+  novelty_justification: 'Introduces a new benchmark axis (oblique/latent/implicit queries) and a formal retrieval-verification gap metric, showing BEIR/BRIGHT-style saturation masks a real failure mode. Construction pipeline and the descriptive/analogue/tip-of-the-tongue taxonomy are new. From Khattab (ColBERT/DSPy) at MIT — credible and non-incremental.'
+  relevance_justification: 'Medium, not high: a retrieval EVALUATION paper, not a CPU-pullable inference lever. But EPYC runs an active retrieval/reranking line — web_research ColBERT reranker, internal KB-RAG (GTE-ModernColBERT), and an in-flight LateOn/DenseOn upgrade — and LateOn is literally a baseline here. The gap finding informs how we evaluate the reranker stage; the oblique-query taxonomy is a more discriminating eval than BEIR/HotpotQA for the KB-RAG flywheel eval.'
+  verdict_justification: 'worth_investigating: dataset + retrieval-verification gap metric usable as a harder eval for internal-KB-RAG and web_research reranker (sharpening beyond HotpotQA/LoCoMo). Oracle uses closed GPT-5.2 so not adopt_component, but the finding that single-stage retrieval (not verification) is the bottleneck argues for keeping the LLM-rerank stage we already run — relevant before the LateOn upgrade decision lands. credibility 4: arXiv preprint not yet peer-reviewed (+0 venue), <12mo (+1), Khattab/ColBERT-DSPy lineage at MIT (+1), base 2, no commercial bias, single-source.'
+  contradicting_evidence:
+  - 'No contradicting evidence found in Tier 2b — only the source plus a corroborating practitioner endorsement (LinkedIn). Possible confirmation bias risk. Caveat inherent to the paper: the verification ceiling uses a closed GPT-5.2 oracle, so the absolute gap magnitude is not reproducible on open/CPU stacks.'
+  notes: 'User-provided input 2026-06-10. LateOn (LightOn), a baseline here, is the retriever EPYC is evaluating in the LightOn DenseOn/LateOn retrieval-upgrade deep-dive. Use as a sharper eval for the reranker stage. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md): methodology-reuse, NOT dataset-reuse. Dataset released (HF dianetc/OBLIQ-Bench CC-BY-4.0) but corpora out-of-domain for code/doc retrieval; LateOn OBLIQ scores floor-level/not citable vs adoption; S3b/S4b/S5 gates unchanged. Reuse gap metric + oblique-query recipe to build a code/KB slice. Oracle GPT-5.2 not reproducible (open verifier = lower-bound gap_open).'
+- id: intake-690
+  arxiv_id: '2606.05405'
+  url: https://arxiv.org/html/2606.05405v1
+  source_type: paper
+  title: "Agents' Last Exam"
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  credibility_score: 4
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: not_applicable
+  authors:
+  - Yiyou Sun
+  - Xinyang Han
+  - Dawn Song
+  - et al. (~308 authors, 250+ industry experts)
+  key_claims:
+  - 'The gap between benchmark success and economically meaningful deployment is largely an evaluation problem — existing benchmarks do not measure sustained performance on real, economically valuable professional workflows.'
+  - 'Introduces "Agents Last Exam" (ALE): 1,000+ long-horizon real-world tasks across 55 subfields in 13 industry clusters, grounded in the O*NET/SOC 2018 occupational taxonomy, co-developed with 250+ industry experts.'
+  - 'Frontier agent configurations achieve only a 2.6% average full pass rate at the hardest difficulty tier.'
+  - 'Proposes a "living benchmark" that grows continuously as new workflows/industries are onboarded.'
+  techniques:
+  - Occupation-grounded task taxonomy (O*NET/SOC 2018) -> industry clusters/subfields
+  - Long-horizon agent evaluation with verifiable real-world outcomes
+  - Continuously expanding (living) task-pool mechanism
+  reported_results:
+  - '2.6% average full pass rate across mainstream harness+backbone configs (hardest tier)'
+  - '1,000+ tasks, 55 subfields, 13 industry clusters, 250+ industry experts'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - eval-tower-verification.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-104
+    - intake-412
+    - intake-001
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'A large occupation-taxonomy-grounded (O*NET/SOC 2018) living agent benchmark with 1K+ economically-valuable long-horizon tasks is fresh vs GAIA/SWE-bench/tau-bench, but sits in a crowded agent-eval space already represented (OneMillion-Bench intake-104, DeepPlanning intake-412, SkillsBench intake-001) — extends rather than redefines, so medium.'
+  relevance_justification: 'Pure evaluation artifact for long-horizon professional agent workflows. Touches no CPU-pullable inference lever. Only contact point is methodological — Ch06 portfolio + eval-tower/meta-harness lanes — so ALE is at most a candidate eval corpus, not a performance technique.'
+  verdict_justification: 'not_applicable as an inference optimization. The 2.6%-pass frontier benchmark is a heavyweight expert-authored eval we cannot run as a CPU lever, and there is no released method to adopt. Flagged (per "never dismiss" rule) only as a possible future agentic-eval corpus for the Ch06 portfolio/eval-tower harness; does not warrant a handoff or component adoption. credibility 4: arXiv preprint (+0 venue), <12mo (+1), Dawn Song / 250+ industry experts (+1), base 2, no clear bias.'
+  contradicting_evidence: null
+  notes: 'User-provided input 2026-06-10. Acronym note: meta-harness "HLE" = Harness Latent Evaluation, an incidental collision, not this work. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-agents-last-exam.md): not_applicable HOLDS. ALE is released+runnable with deterministic leak-resistant graders, BUT needs cloud-VM + CUA/GUI computer-use agents (outside our CPU text REPL). Only nugget: O*NET/SOC occupational-coverage frame as a Ch07 authoring lens. Sub-1% pass is non-commensurable, not an autopilot target. Defer a fortiori vs AppWorld (intake-516).'
+- id: intake-691
+  arxiv_id: null
+  url: https://huggingface.co/Hcompany/Holo-3.1-4B
+  source_type: blog
+  title: 'Holo-3.1-4B — H Company computer-use / GUI-grounding VLM (Holo3.1 family)'
+  categories:
+  - multimodal
+  - agent_architecture
+  - tool_implementation
+  - local_inference
+  novelty: low
+  relevance: low
+  credibility_score: 2
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: worth_investigating
+  authors:
+  - H Company (Hcompany)
+  key_claims:
+  - 'Holo-3.1-4B is a 4B vision-language model for computer-use/GUI-grounding agents (web, desktop, mobile), built on the Qwen3-VL lineage (Holo3.1 family; sibling 35B-A3B for SOTA, 4B for cost-effective/private local).'
+  - 'Adds native function-calling and "native execution" reaching near-parity with the function-calling path, with >25% improvement over Holo3 on OSWorld and internal benchmarks.'
+  - 'Strong across UI grounding (ScreenSpot-Pro, OSWorld-G), computer use (OSWorld), mobile automation (AndroidWorld); ships quantized checkpoints for local deployment.'
+  - 'Apache-2.0 open weights.'
+  techniques:
+  - GUI/UI element grounding (coordinate localization from screenshots)
+  - Native function-calling + native execution action interface
+  - Vision-language fine-tune over a Qwen3-VL-family backbone
+  - Quantized checkpoints for local/private deployment
+  reported_results:
+  - 'AndroidWorld (4B): 58% -> 71% vs Holo3; (35B-A3B): 67% -> 79.3%'
+  - 'OSWorld + internal: >25% improvement over Holo3; native execution near-parity with function-calling'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    - multiscreen-attention-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-481
+    - intake-315
+    - intake-316
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Incremental product release in an established lineage (Holo2 -> Holo3 -> Holo3.1) over a Qwen3-VL backbone; GUI-grounding VLMs already represented (intake-315 GUIWorld, intake-481 VLAA-GUI). Novel deltas are engineering (native-execution at function-calling parity, 4B local-deployable grounding, quantized checkpoints), not a new technique.'
+  relevance_justification: 'EPYC is CPU-inference/NUMA/quant/local-orchestration with a code-complete vision pipeline (Qwen2.5-VL-7B/Qwen3-VL-30B), but GUI/computer-use automation is NOT on the active roadmap — multimodal-pipeline is LOW priority and scoped to image/face/video + TTS/ASR, not screen grounding. A 4B Apache-2.0 grounding VLM is small enough to run and could be a creative add-on (a screen/UI grounding tool), so flagged not dismissed; practical relevance low today.'
+  verdict_justification: 'worth_investigating rather than not_applicable: not dismissed per project policy (small open-weight VLM, possible creative grounding-tool deployment), gated on whether GUI/computer-use automation enters the roadmap. Score against intake-481 (VLAA-GUI) as a candidate open-weight grounding backbone if that path is pursued. credibility 2: recent (<12mo +1), known lab (H Company +1), vendor blog/model-card commercial bias (-1), no peer review/corroboration; benchmark numbers mostly relative.'
+  contradicting_evidence:
+  - 'Benchmark numbers are vendor-reported and mostly relative (58->71%) rather than absolute; no independent third-party eval; no arxiv paper for this release. Verify on OSWorld-G/ScreenSpot-Pro independently before any reliance.'
+  notes: 'User-provided input 2026-06-10 (from the VictorM open-weights roundup self-reply). Base model = Qwen3-VL family. No arxiv paper published for this release. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md): PARKED (roadmap + runnability gated). Arch is Qwen3_5ForConditionalGeneration; the 4B is BF16-safetensors-only, NO GGUF/mmproj (official GGUF exists only for 35B-A3B); Qwen3.5 vision on llama.cpp still fragile. Grounding redundant with deployed Qwen3-VL-30B (:8087)/Qwen2.5-VL-7B (:8086). Apache-2.0 + native fn-calling make it a legit A/B vs LocateAnything-3B (intake-680) IF a GUI workload lands and Qwen-VLs prove inadequate; measure first, transformers-CPU only.'
+- id: intake-692
+  arxiv_id: '2606.02859'
+  url: https://arxiv.org/html/2606.02859v1
+  source_type: paper
+  title: 'Economy of Minds: Emerging Multi-Agent Intelligence with Economic Interactions (EoM)'
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - routing_intelligence
+  - cost_aware_routing
+  - autonomous_research
+  novelty: high
+  relevance: medium
+  credibility_score: 3
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: adopt_patterns
+  authors:
+  - Zhenting Qi
+  - Huangyuan Su
+  - Ao Qu
+  - Paul Pu Liang
+  - Himabindu Lakkaraju
+  - Sham Kakade
+  - Yilun Du
+  - et al.
+  key_claims:
+  - 'EoM (Economy of Minds) is a decentralized multi-agent system where agents compete via auctions for the right to act, exchange payments, and accumulate wealth from environmental rewards — inducing decentralized credit assignment without global orchestration or explicit communication protocols.'
+  - 'The agent population evolves through economic selection: wealthy (effective) agents are mutated via exploitation; bankrupt (ineffective) agents are replaced via exploration.'
+  - 'Initialized with weak agents, the economy produces emergent multi-step reasoning and outperforms stronger monolithic baselines across five agentic tasks (math, financial research, scientific research, accelerator design, distributed-system optimization).'
+  - 'Local economic incentives (auctions/payments/wealth) align with long-term global performance — a Hayekian decentralized-coordination framing.'
+  techniques:
+  - Auction-based action-right allocation among agents
+  - Peer-to-peer payment / wealth-accumulation economy (Hayekian decentralized coordination)
+  - Economic selection — exploitation-mutation of the wealthy, exploration-replacement of the bankrupt
+  - Decentralized credit assignment via economic signals (no explicit communication protocol)
+  - LLM-agnostic backends (litellm/vLLM/SGLang); Smolagents framework
+  reported_results:
+  - 'Outperforms stronger monolithic baselines across five agentic tasks (abstract-level; per-task numerics not in abstract/README)'
+  - 'Three implemented benchmark domains: CloudCast (multi-cloud routing code evolution), Frontier-Science-Research/ResearchWorld, Arch DSE World (Timeloop + Accelergy + DOSA)'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - decision-aware-routing.md
+    - tri-role-coordinator-architecture.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-544
+    - intake-555
+    - intake-558
+    - intake-248
+    - intake-269
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+  novelty_justification: 'First framework to cast LLM multi-agent coordination as a Hayekian market — auction-allocated action rights + wealth-based economic selection producing emergent credit assignment with no explicit communication protocol. Architecturally distinct from the latent-communication MAS cluster (RMAS/LatentMAS/Dead Weights, which optimize hidden-state exchange) and from text-debate/blackboard swarms. Genuinely new in our index.'
+  relevance_justification: 'Medium. The orchestrator routes across a heterogeneous multi-model stack and the autopilot runs a species/swarm population with Pareto/cost-aware scoring — EoM''s economic credit-assignment and economic-selection (exploit-the-rich/replace-the-bankrupt) map onto autopilot species lifecycle and cost-aware routing reward shaping. But EoM is a coordination/training paradigm over many concurrent agent instances with per-action auctions, which conflicts with our single-stack 1.1TB-RAM, sequential-load, no-concurrent-inference constraints. Value is conceptual/pattern-level, not a drop-in.'
+  verdict_justification: 'adopt_patterns. Transferable assets: the economic-selection population lifecycle (wealth-gated mutation vs bankruptcy-gated replacement) and decentralized credit assignment via local reward signals — both can inform autopilot-continuous-optimization species management and decision-aware-routing reward shaping without the literal auction/payment machinery (which needs N-way concurrent serving we don''t run). Not new_opportunity (no CPU primitive) nor worth_investigating-as-component (full system impractical single-stack). credibility 3: very recent preprint <12mo (+1), strong contributors Qi/Kakade/Lakkaraju/Du Harvard/MIT (+1), base +1; not peer-reviewed, no independent reproduction, abstract-level metrics only.'
+  contradicting_evidence:
+  - 'No refutation found in Tier 2b; only the source + project page. Possible confirmation bias risk. Structural caveat: the auction/payment/economic-selection machinery presumes many concurrent agent instances and per-action auctions — incompatible with the EPYC no-concurrent-inference, single-stack constraint, so only the conceptual lifecycle transfers, not the system.'
+  notes: 'User-provided input 2026-06-10. Consolidated: arxiv:2606.02859 + github.com/zhentingqi/EoM (project page zhentingqi.github.io/hayekmas/webpage/). "EoM" = Economy of Minds (Hayekian agent economy), NOT model-ensembling as initially hypothesized. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-economy-of-minds.md): refined adopt_patterns -> metaphor-mostly. Autopilot ALREADY runs EoM economic-selection in soft form (species_effectiveness.rate -> meta_optimizer.rebalance/select_species). Novel bucket-brigade temporal credit needs a concurrent multi-step live-reward episode we do not have -> non-portable; no decision-aware-routing action. One optional ~60-LOC SpeciesLedger (rent/reward softmax replacing rebalance() constants), shadow-gated >=80 trials, likely DROP.'
+- id: intake-693
+  arxiv_id: null
+  url: https://github.com/avbiswas/fast-rlm
+  source_type: blog
+  title: 'Structured outputs in Recursive Language Models — schema-validated subagent returns as an external attention mask (AVB / fast-rlm, 2026-06-08)'
+  categories:
+  - agent_architecture
+  - context_management
+  - tool_implementation
+  - swarm_techniques
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: adopt_patterns
+  authors:
+  - Avishek Biswas (AVB, @neural_avb)
+  key_claims:
+  - 'A common RLM failure mode: free-text subagent fan-out (e.g. 62 subagents each returning prose like "no mention of X here") overwhelms the aggregator, which cannot cleanly read the returns and hand-writes a wrong answer.'
+  - 'Forcing each subagent to return a JSON-Schema-constrained value (e.g. a boolean True/False per chunk) lets the parent read a single flag instead of parsing 40 prose variations — the booleans act as a direct attention mask / external sparsification of the input prompt.'
+  - 'fast-rlm validates the schema on every FINAL(answer): normalize (Pydantic/primitive/generic -> JSON Schema), show the contract to the agent at REPL step 0, validate on FINAL, and on failure return the exact validation errors so the agent retries (not restarts) — REPL work untouched.'
+  - 'Same total token cost (~$0.04 with Minimax-M3) as depth-0 head-on solving, but much lower hallucination because no agent reads large bodies of confounding text at once.'
+  techniques:
+  - Schema-validated subagent returns (validate-on-FINAL, retry-not-restart)
+  - Structured-output-as-attention-mask (boolean/typed flags driving parent chunk selection)
+  - Schema normalization (Pydantic/primitive/list-generic/raw-JSON-Schema -> plain JSON Schema)
+  - Contract-at-REPL-startup (show schema before any code is written)
+  reported_results:
+  - 'NarrativeQA/LongBench "Saltram living situation" over ~107K chars: free-text fan-out (62 subagents) FAILS; structured boolean-routed fan-out SUCCEEDS at equivalent ~$0.04 cost'
+  referenced_arxiv_ids:
+  - '2512.24601'
+  cross_references:
+    chapters: []
+    handoffs:
+    - tool-use-eval-contract.md
+    - meta-harness-optimization.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries:
+    - intake-153
+    - intake-331
+    - intake-349
+  handoffs_updated:
+  - tool-use-eval-contract.md
+  handoffs_created: []
+  novelty_justification: 'Medium. The fast-rlm library and the RLM paradigm are already in the index (intake-153 canonical RLM, intake-331 predict-rlm, intake-349 dspy.RLM, plus a prior already_integrated AVB fast-rlm recap blog). This is a DIFFERENT, later post (2026-06-08) distilling a specific new pattern not previously captured: schema-validated subagent contracts as a hallucination-reduction / attention-sparsification mechanism (validate-on-FINAL + retry-not-restart). Concrete pattern, not just a recap, so medium not low.'
+  relevance_justification: 'High. RLM is an active EPYC workstream (rlm-orchestrator-roadmap + 01-fast-rlm-budget-controls, both completed) and the ACTIVE tool-use-eval-contract handoff is specifically wiring ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT (ToolOutput envelope unwrap, structured tool returns). The "schema-validated return as attention mask" pattern is directly transferable to how our orchestrator should constrain subagent/tool returns to reduce aggregator hallucination.'
+  verdict_justification: 'adopt_patterns. No new component to import beyond fast-rlm (already referenced), but the validate-on-FINAL + retry-not-restart + structured-return-as-attention-mask pattern is a concrete design input for the structured-tool-output work and for any RLM subagent fan-out we build. credibility null — practitioner blog with a single anecdotal cost figure, no benchmark.'
+  contradicting_evidence:
+  - 'Single anecdotal example (one NarrativeQA sample), no systematic benchmark; the boolean-mask win may be sample-specific. The author is also the fast-rlm maintainer (mild promotional framing). Validate the pattern against a real eval before treating it as established.'
+  notes: 'User-provided input 2026-06-10 (pasted X post by @neural_avb, 2026-06-08). url points to the fast-rlm repo since the post has no canonical permalink; this is a SEPARATE later post from the already_integrated 2026-05-19 fast-rlm recap entry. Builds on RLM paper arxiv:2512.24601. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-rlm-structured-output-contracts.md): parent half ALREADY shipped (final_schema_validation, 2026-05-20: contract-at-step-0 + validate-on-FINAL + retry). Real remaining gap = child/sub-LM return schema on batch_llm_query/llm_query (combined_ops.py:302, no schema=) ~30-40 LoC, Phase-1 REPL, default-off, orthogonal to ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT; land post-cutover, gate on a fan-out eval.'
+- id: intake-694
+  arxiv_id: null
+  url: https://twitter.com/victormustar/status/1930000000000000000
+  source_type: blog
+  title: 'Open-weights week roundup (Victor M / HF, 2026-06-05) — 25+ notable open-weight drops across modalities'
+  categories:
+  - multimodal
+  - local_inference
+  - ssm_hybrid
+  - moe_optimization
+  - document_processing
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: input
+  ingested_date: '2026-06-10'
+  verdict: worth_investigating
+  authors:
+  - Victor Mustar (@victormustar, HF Head of Product)
+  key_claims:
+  - 'LLMs: NVIDIA Nemotron 3 Ultra (550B hybrid Mamba-MoE, 55B active, 1M ctx, MMLU 89.1, NVFP4 ~5x throughput on Blackwell); Google Gemma 4 12B (dense any-to-any, 256k ctx, encoder-free, 140+ langs, AIME 77.5, 23-checkpoint QAT wave); StepFun Step-3.7-Flash (198B MoE VLM ~11B active, SWE-Bench PRO 56.3, Apache-2.0); Liquid LFM2.5-8B-A1B (1.5B active edge MoE, 128k ctx); JetBrains Mellum2-12B-A2.5B-Thinking (coding MoE, Apache-2.0).'
+  - 'Image: Ideogram 4 (first open weights, 9.3B flow-matching DiT, #2 overall behind GPT Image 2).'
+  - 'Audio/TTS: Boson Higgs Audio v3 4B (102 langs, 21 emotions); RedNote dots.tts (continuous no-codec, Apache-2.0); Google Magenta RealTime 2 (<200ms music gen); NVIDIA Nemotron-3.5 ASR (600M streaming, 17x more concurrent streams vs Parakeet RNNT 1.1B).'
+  - 'Vision/VLM + doc: PaddleOCR-VL-1.6 (SOTA doc parsing at 1B, Apache-2.0); Baidu NAVA (6.3B joint audio-video). World/3D/video: NVIDIA Cosmos3-Super (64B omnimodal world model), VAST TripoSplat (single-image-to-3D Gaussian splats, MIT).'
+  techniques:
+  - Hybrid Mamba-MoE at scale (Nemotron 3 Ultra 550B/55B-active)
+  - Encoder-free dense any-to-any multimodal (Gemma 4 12B)
+  - Edge MoE with ~1.5B active (LFM2.5-8B-A1B)
+  - Continuous (no-codec) TTS (dots.tts); flow-matching DiT image gen (Ideogram 4)
+  - 1B-param SOTA document parsing (PaddleOCR-VL-1.6)
+  reported_results:
+  - 'Nemotron 3 Ultra: MMLU 89.1; Gemma 4 12B: AIME 2026 77.5; Step-3.7-Flash: SWE-Bench PRO 56.3; LFM2.5-8B-A1B: MATH500 88.8'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - multimodal-pipeline.md
+    - opendataloader-pipeline-integration.md
+    - log-linear-gated-deltanet-readiness.md
+    - multiscreen-attention-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-481
+  handoffs_updated: []
+  handoffs_created: []
+  novelty_justification: 'Low as an entry — a news digest, not a technique. Individual models may be novel but this entry is a pointer/catalog. Two of the listed models are already individually indexed (Gemma 4 12B via unsloth GGUF; LFM2.5-8B-A1B intake ~31504).'
+  relevance_justification: 'Medium: several listed models touch active EPYC interests — Nemotron 3 Ultra (550B Mamba-MoE hybrid; relevant to the ssm_hybrid / log-linear-GDN readiness tracker but GPU/NVFP4-bound), PaddleOCR-VL-1.6 (1B doc parsing -> opendataloader-pipeline-integration), Step-3.7-Flash / Mellum2 (Apache-2.0 coding/VLM MoE), and several TTS/ASR for the multimodal pipeline. As a roundup the entry itself is a tracking pointer, not actionable on its own.'
+  verdict_justification: 'worth_investigating — flag the individually-notable new drops for separate intake rather than dismissing (per project "never dismiss" policy). Highest-priority follow-ups for EPYC: PaddleOCR-VL-1.6 (doc pipeline), Step-3.7-Flash and Mellum2 (Apache-2.0 coding/VLM MoE candidates), Nemotron 3 Ultra (track for the SSM-hybrid readiness line, GPU-gated). credibility null — promotional digest, no empirical claims of its own.'
+  contradicting_evidence: null
+  notes: 'User-provided input 2026-06-10 (pasted X post by @victormustar, 2026-06-05; placeholder status URL — no canonical link provided). Digest entry; see recommended follow-ups for individual models warranting their own intake. Holo-3.1-4B from the same author''s self-reply is intake-691. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-open-weights-roundup-followups.md): triaged vs stack. Own-entry follow-ups: PaddleOCR-VL-1.6 (P1, GGUF+mmproj, doc pipeline), Nemotron-3-Ultra-550B (P1 — CORRECTION: not GPU-gated; BF16/Q4 GGUF runs CPU, Q4_K_M ~300 GB fits, does NOT fire Log-Linear-GDN gate), Step-3.7-Flash (P2, Apache-2.0 coder_escalation eval candidate), Mellum2-12B (P3 cheap FIM, not a drafter). Audio -> multimodal TTS/ASR shortlist; image/video/3D/music gen dismissed.'

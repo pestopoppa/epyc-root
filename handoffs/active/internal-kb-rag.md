@@ -409,3 +409,15 @@ Deep-dive of [intake-625](../../research/intake_index.yaml) at `research/deep-di
 **Earliest realistic revisit:** 2026-08. **Do NOT** install the `understand-anything` plugin on epyc-root, **do NOT** swap GitNexus, **do NOT** lift UA's 9-agent decomposition (no ablation justifies it). If gate 1 fires before 2026-08, the lift-not-fork shopping list above is the action plan — port the deterministic phase scripts, not the prompts.
 
 Cross-refs: [[meta-harness-optimization]] (parallel "do-not-lift the 9-agent decomposition" note), `research/deep-dives/2026-05-27-understand-anything-vs-gitnexus.md`, intake-625, [[project_gitnexus_cli_only_setup]] (GitNexus is the production code-intelligence layer; UA does not displace it).
+
+## Research Intake Update — 2026-06-10
+
+### New Related Research
+- **[intake-686] "turbovec — Google TurboQuant vector index (Rust + Python, SIMD-accelerated quantized vector search)"** (github.com/RyanCodrai/turbovec)
+  - Relevance: a low-RAM local vector index applying Google TurboQuant (arxiv:2504.19874, ICLR 2026) to standalone retrieval — ~8x RAM cut (31 GB → 4 GB for 10M docs) with FAISS-parity/better search. Candidate low-RAM index for the KB-RAG corpus and the orchestrator's FAISS repl_memory/strategy_store path.
+  - Key technique: data-oblivious quantization (no training), random rotation + per-coordinate Lloyd-Max (TQ+), 2/4-bit packing, hand-written AVX-512BW/NEON nibble-LUT distance kernels with runtime ISA detection.
+  - Reported results: 16x raw compression at 2-bit; +0.3–3.4 R@1 vs FAISS PQ; x86 search +1–6% (4-bit), ARM +12–20%.
+  - Delta from current approach: NextPLAID (intake-355) is the existing Rust-local-PQ comparable; turbovec is not yet integrated. **The 12–20% headline is ARM/NEON-specific — on EPYC's AVX-512 x86 the gain is only 1–6%, so the value is compression/RAM, not QPS.** Needs a recall+RAM+QPS bench at AVX-512 before any swap; separately mine its AVX-512BW kernels against our Q8_0 GEMV kernels. credibility 3 (TurboQuant has independent third-party ports).
+
+### Deep-Dive Refinement (2026-06-12) — refined to NO-GO / parked
+The intake premise doesn't hold against our **actual** baseline: repl_memory/strategy_store run `faiss.IndexFlatIP` (EXACT, dim=1024 BGE-large, `faiss_store.py:103`), **not** a PQ index — so turbovec's 8x-RAM/PQ-parity story has nothing to beat. Live footprint is ~304 MB (episodic ~72.8K vecs + strategy ~1.3K) of 1.1 TB → the ~266 MB saving is 0.024% of RAM; the 31 GB→4 GB headline is a 10M-doc corpus we don't have. The +12–20% QPS is ARM/NEON-only; on EPYC AVX-512 it's PQ-parity-to-negative. **Kernel-mining REJECTED** — turbovec's AVX-512BW kernel is a FastScan nibble-LUT *distance scanner* (LUT-throughput-bound); our Q8_0 kernel is a BW-bound 8x8 integer GEMV — different op/layout/bottleneck, nothing ports. KB-RAG is multi-vector MaxSim, which turbovec's single-vector MIPS API doesn't model. **WATCH-gate:** revisit only if a single-vector corpus exceeds ~1M vectors under real RAM pressure. Full: `research/deep-dives/2026-06-12-turbovec-vector-index.md`.

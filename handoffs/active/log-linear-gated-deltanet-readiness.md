@@ -124,3 +124,7 @@ Estimated effort: 2-3 weeks from gate activation.
   - Relevance: External SSM drafter is the inverse direction of GDN serving — uses an SSM as the cheap drafter rather than the expensive target. MAB-optimized tree-shape selector applies orthogonally.
   - Reported results: At 8k context, Mamba 52GB total memory vs EAGLE 72GB; throughput preserved while Transformer drafters degrade.
   - Delta: principle generalizes to GDN drafters once a small Delta-Net or hybrid is available. Track alongside readiness for log-linear GDN target inference.
+
+## Research Intake Update — 2026-06-12 (from the intake-694 open-weights roundup)
+
+- **NVIDIA Nemotron-3-Ultra-550B-A55B** (hybrid Transformer-**Mamba2** MoE, 55B active) — **CORRECTION to intake-694's "GPU/NVFP4-gated" framing: it has CPU-runnable GGUFs** (unsloth / DevQuasar BF16 + Q4; Q4_K_M ≈ 300 GB RAM, fits our 1.1 TB host; build `-DGGML_CUDA=OFF`). This is **not** Log-Linear Gated DeltaNet and **does NOT fire this readiness gate**, but it is the first in-RAM Mamba2-hybrid MoE available as a concrete artifact to smoke-test the hybrid-SSM CPU decode / state-management path on our fork. **Pre-req:** verify it doesn't hit the Nemotron-Nano `mamba-base.cpp:173 GGML_ASSERT` (ggml-org/llama.cpp#20570) first; MTP is unsupported in GGUF. **P1 follow-up — warrants its own intake entry.** See `research/deep-dives/2026-06-12-open-weights-roundup-followups.md`.

@@ -225,3 +225,8 @@ PDF Input
 
 - [ ] Bench **LiteParse-local vs OpenDataLoader-local vs pdftotext** on the orchestrator born-digital test corpus: reading order, table fidelity, speed, **JVM-free deploy footprint**. Use a LiteParse-output-aware quality harness (its non-markdown layout output breaks naive OlmOCR/TEDS scoring — confirmed in intake-646 Tier 2b). Decide adopt_component vs ODL-only for the fast path.
 - [ ] Route complex/dense-table/scanned docs **away** from LiteParse (vendor docs concede LlamaParse-cloud-class quality is needed there; our equivalent is the ODL + VL-OCR path) — LiteParse is a born-digital fast-path backend only.
+
+## Research Intake Update — 2026-06-12
+
+### New Related Research (deep-dived, from the intake-694 open-weights roundup)
+- **PaddleOCR-VL-1.6** (2026-06, Apache-2.0 — distinct from the pluggable PaddleOCR HTTP *engine*): a 1B-param VLM document parser (ERNIE-4.5-0.3B backbone), **OmniDocBench v1.6 overall 96.33 (SOTA: text / formula / tables / layout, + Real5 SOTA)**. Official **GGUF + mmproj** (`PaddlePaddle/PaddleOCR-VL-1.6-GGUF`), llama-mtmd CPU path — so it's runnable on our stack. Unlike the PaddleOCR engine (Phase-1 fast-path slot), this is a full VLM parser overlapping the **LightOnOCR slow-path + ODL structural extraction**. **Action (eval-gated):** bench PaddleOCR-VL-1.6 vs LightOnOCR on the doc test corpus for structured layout/table/formula extraction. **P1 follow-up — warrants its own intake entry.** See `research/deep-dives/2026-06-12-open-weights-roundup-followups.md`.
