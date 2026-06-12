@@ -1,6 +1,6 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
-**Status**: IN PROGRESS — W1-W6 immediate scope landed and live-attested/deployed 2026-06-12; W7-W8 remain; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
+**Status**: IN PROGRESS — W1-W7 immediate scope landed and live-attested/deployed 2026-06-12; W8 remains; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
 **Created**: 2026-06-12
 **Priority**: NOW/HIGH — master-index N3; every runtime-flag A/B under 6-worker uvicorn has measured a 5/6-unmutated system
 **Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
@@ -24,12 +24,12 @@ The live system must match SOME declared intent before any routing redesign.
 - [x] **W4 — attestation endpoint** (~1 day): `GET /config/attest` returns `{pid, flags, source}` for the answering worker; client `scripts/validate/attest_flags.py` polls ~N×20 to cover all worker PIDs, red on heterogeneity; `structural_lab.apply_flag_experiment` (`:404-412`) gets a post-apply attestation poll + journals the result with the trial. Acceptance: empty cross-worker diff after any POST /config; a structural trial journals uniform attestation.
 - [x] **W5 — q_scorer baseline_tps refresh** (afternoon): read `baseline_tps_by_role` from the lean registry's measured values at startup (`q_scorer.py:89-99` marked KNOWN STALE — frontdoor 12.7 vs measured ~21–27, spec 0.3). Stopgap until descriptors ([model-capability-descriptors.md](model-capability-descriptors.md) W3 replaces it).
 - [x] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`) and 3-way routing wrappers deleted; proof in spec §4. `ORCHESTRATOR_ROUTING_CLASSIFIER` is unset/off in the declared production env until weights exist. `dispatch_swarm_fanout` is deliberately retained for now because this waypoint's deletion condition is "if no handoff claims it within the month"; revisit ownership on 2026-07-12 before deleting it.
-- [ ] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows log to non-persisted INFO (outputs not found on disk) — either route shadow events into `logs/progress/*.jsonl` (the file QScorer already mines) or stop running them per-request; shadow without a ratification path is pure cost. Rides master-index N10.
+- [x] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows now route into `logs/progress/*.jsonl`, the file QScorer/replay tools already mine. Difficulty/risk were already present; W7 added Trinity `assigned_role` and URE `uncertainty_*` fields to the durable routing event while preserving the existing URE sidecar for backward compatibility.
 - [ ] **W8 — Phase 1 measurement** (1–2 days): DAR-1 regret replay on last-7-days traffic — executes via [decision-aware-routing.md](decision-aware-routing.md); link, do not duplicate. Plus `_try_cheap_first` accept/reject counters into progress JSONL (currently unobservable). Gate: regret ≥5% of requests opens Phase 3 (cascade); <5% freezes routing expansion indefinitely (re-run quarterly). Prediction on record: <5%.
 
 ## Gates & pitfalls
 
-- W1 blocks only W2; W3–W7 are parallelizable today. W8's counter half depends on W7; the replay runs on existing logs.
+- W1 blocks only W2; W3–W7 are complete. W8's replay runs on existing logs; the counter half is now unblocked by W7's progress-log telemetry path.
 - Long-dormant flags ARE new code: never enable wave-2 flags together; one observation window each.
 - Attestation results must be journaled WITH each autopilot flag trial — otherwise flag experiments remain unmeasurable (findings-01 §3.4).
 - Use `orchestrator_stack.py reload` for any restart — never manual PID kills.
@@ -86,6 +86,26 @@ Verification:
 - `git diff --check` in `epyc-orchestrator` passed.
 - GitNexus re-indexed commit `2a52740`: 48,679 nodes, 83,567 edges, 994 clusters, 300 flows.
 - Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`; new supervisor PID `2711818` healthy and prior PID `2702386` verified gone by `ps`. Post-reload `/config/attest` saw 6 workers, `errors={}`, `expected_diffs=[]`, and `heterogeneous={}`.
+
+## 2026-06-12 Checkpoint — W7 Shadow Telemetry Persistence
+
+Commit: `epyc-orchestrator` `e40df31` (`Persist routing shadow telemetry in progress logs`).
+
+Implementation:
+- Moved Trinity tri-role classification before the durable routing log call so `assigned_role` is written into each `routing_decision` progress event.
+- When `ure_uncertainty_shadow_log` is enabled, `routing_meta()` now computes and stores `uncertainty_score`, `uncertainty_components`, and `uncertainty_n_alternatives` directly on the progress event. The existing `data/trace/uncertainty_shadow.jsonl` sidecar remains for older ingest jobs.
+- Difficulty and factual-risk fields were already present in `logs/progress/*.jsonl`; W7 completes the missing Trinity + URE pieces.
+
+Verification:
+- Pre-edit GitNexus impacts were HIGH for `routing_meta`, `log_routing_start`, `classify_trinity_role`, and `emit_uncertainty_shadow` because they sit on the shared chat routing path (`generate_stream` / `chat_stream` upstream). Patch was additive-only: no routing decisions or flag behavior changed.
+- Live audit before the patch: today's progress log had 176 routing decisions with difficulty/risk fields, 0 with Trinity role fields, and 0 with URE fields; `data/trace/uncertainty_shadow.jsonl` had 93,232 URE sidecar rows.
+- `python3 -m py_compile src/api/routes/chat_pipeline/routing.py src/api/routes/chat_pipeline/routing_decision.py src/uncertainty_shadow.py` passed.
+- `uv run pytest tests/unit/test_pipeline_routing.py tests/unit/test_uncertainty_shadow.py tests/classifiers/test_difficulty_signal.py tests/unit/test_chat_pipeline_stages.py` -> 157 passed.
+- `uv run pytest tests/unit/test_chat_routes.py tests/unit/test_chat_endpoints.py tests/integration/test_chat_pipeline.py tests/unit/test_runtime_flags.py` -> 80 passed.
+- `git diff --check` for touched files passed.
+- Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`; new supervisor PID `2719260` healthy and prior PID `2711818` verified gone by `ps`. Post-reload `/config/attest` saw 6 workers, `errors={}`, `expected_diffs=[]`, and `heterogeneous={}`.
+- GitNexus re-indexed commit `e40df31`: 48,681 nodes, 83,579 edges, 992 clusters, 300 flows.
+- Live no-inference smoke: 24 mock-mode `/chat` requests wrote 24 new `routing_decision` rows; all had `assigned_role`, `uncertainty_score`, `uncertainty_components`, and `uncertainty_n_alternatives`.
 
 ## Reporting
 
