@@ -1,6 +1,6 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
-**Status**: IN PROGRESS — W1-W5 landed and live-attested/deployed 2026-06-12; W6-W8 remain
+**Status**: IN PROGRESS — W1-W6 immediate scope landed and live-attested/deployed 2026-06-12; W7-W8 remain; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
 **Created**: 2026-06-12
 **Priority**: NOW/HIGH — master-index N3; every runtime-flag A/B under 6-worker uvicorn has measured a 5/6-unmutated system
 **Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
@@ -23,7 +23,7 @@ The live system must match SOME declared intent before any routing redesign.
 - [x] **W3 — shared runtime_flags.json** (~1 day): atomic-write `orchestration/runtime_flags.json` recording `{flag, value, set_by, ts}`; `src/features.py` gains a 1s-TTL mtime re-read; `POST /config` (`src/api/routes/config.py`) writes the file. Precedence: env (boot intent) < runtime file (overrides). Acceptance: all 6 workers converge ≤1s.
 - [x] **W4 — attestation endpoint** (~1 day): `GET /config/attest` returns `{pid, flags, source}` for the answering worker; client `scripts/validate/attest_flags.py` polls ~N×20 to cover all worker PIDs, red on heterogeneity; `structural_lab.apply_flag_experiment` (`:404-412`) gets a post-apply attestation poll + journals the result with the trial. Acceptance: empty cross-worker diff after any POST /config; a structural trial journals uniform attestation.
 - [x] **W5 — q_scorer baseline_tps refresh** (afternoon): read `baseline_tps_by_role` from the lean registry's measured values at startup (`q_scorer.py:89-99` marked KNOWN STALE — frontdoor 12.7 vs measured ~21–27, spec 0.3). Stopgap until descriptors ([model-capability-descriptors.md](model-capability-descriptors.md) W3 replaces it).
-- [ ] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`), `HybridRouter.route_3way` (`hybrid_router.py:587-699`), `dispatch_swarm_fanout` (if no handoff claims it within the month) — proof in spec §4; un-set `ORCHESTRATOR_ROUTING_CLASSIFIER` until weights exist (stop the boot-warning lie). Expected −1.5–2K LoC + test files.
+- [x] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`) and 3-way routing wrappers deleted; proof in spec §4. `ORCHESTRATOR_ROUTING_CLASSIFIER` is unset/off in the declared production env until weights exist. `dispatch_swarm_fanout` is deliberately retained for now because this waypoint's deletion condition is "if no handoff claims it within the month"; revisit ownership on 2026-07-12 before deleting it.
 - [ ] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows log to non-persisted INFO (outputs not found on disk) — either route shadow events into `logs/progress/*.jsonl` (the file QScorer already mines) or stop running them per-request; shadow without a ratification path is pure cost. Rides master-index N10.
 - [ ] **W8 — Phase 1 measurement** (1–2 days): DAR-1 regret replay on last-7-days traffic — executes via [decision-aware-routing.md](decision-aware-routing.md); link, do not duplicate. Plus `_try_cheap_first` accept/reject counters into progress JSONL (currently unobservable). Gate: regret ≥5% of requests opens Phase 3 (cascade); <5% freezes routing expansion indefinitely (re-run quarterly). Prediction on record: <5%.
 
@@ -67,6 +67,25 @@ Verification:
 - `python3 -m py_compile orchestration/repl_memory/q_scorer.py` and `git diff --check` passed.
 - GitNexus re-indexed commit `41a6944` successfully: 48,739 nodes, 83,673 edges, 997 clusters, 300 flows.
 - Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`; new supervisor PID `2702386` healthy, prior PID `2692296` verified gone by `ps`. Post-reload flag attestation still saw 6 workers with no diffs/heterogeneity.
+
+## 2026-06-12 Checkpoint — W6 Zero-Caller Deletion Batch
+
+Commit: `epyc-orchestrator` `2a52740` (`Delete dead confidence and 3-way routing paths`).
+
+Implementation:
+- Deleted the confidence-routing API path in `src/api/routes/chat_routing.py`: `get_confidence_routing`, `_parse_confidence_response`, `_is_coding_task`, and `_select_role_by_confidence`.
+- Deleted `build_confidence_estimation_prompt`, its fallback prompt constant, the `prompt_builders` export, and `orchestration/prompts/confidence_estimation.md`.
+- Deleted `HybridRouter.route_3way` and `SkillAugmentedRouter.route_3way`, plus tests that only covered those removed entry points.
+- Retained `dispatch_swarm_fanout` because the waypoint names a month-long ownership condition rather than an immediate zero-caller proof; it remains default-off and should be revisited on 2026-07-12.
+
+Verification:
+- `rg` found no remaining references to `route_3way`, `get_confidence_routing`, `build_confidence_estimation_prompt`, `confidence_estimation`, `_parse_confidence_response`, or `_select_role_by_confidence` under `src/`, `orchestration/`, or `tests/`.
+- GitNexus impacts were LOW / 0 upstream for `get_confidence_routing`, `build_confidence_estimation_prompt`, exact `HybridRouter.route_3way`, and exact `SkillAugmentedRouter.route_3way`; removed helper impacts were limited to the dead confidence route.
+- `python3 -m py_compile src/api/routes/chat_routing.py src/prompt_builders/builder.py src/prompt_builders/__init__.py orchestration/repl_memory/hybrid_router.py orchestration/repl_memory/retriever.py` passed.
+- `uv run pytest tests/unit/test_chat_routing.py tests/unit/test_prompt_resolver.py tests/unit/test_skill_integration.py tests/unit/test_bilinear_scorer.py` -> 96 passed.
+- `git diff --check` in `epyc-orchestrator` passed.
+- GitNexus re-indexed commit `2a52740`: 48,679 nodes, 83,567 edges, 994 clusters, 300 flows.
+- Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`; new supervisor PID `2711818` healthy and prior PID `2702386` verified gone by `ps`. Post-reload `/config/attest` saw 6 workers, `errors={}`, `expected_diffs=[]`, and `heterogeneous={}`.
 
 ## Reporting
 
