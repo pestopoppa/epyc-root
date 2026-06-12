@@ -1,6 +1,6 @@
 # ATTESTATION — Generated Running-State Report
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: W1 branch-ready; W2/W3/W4 remain open
 **Created**: 2026-06-12
 **Priority**: HIGH — independent of other fable5 tracks; highest trust-per-effort; ~3–4 days total (consolidation of existing ad-hoc checks, not invention)
 **Spec**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §B — read before claiming any waypoint
@@ -17,7 +17,7 @@ and safety-gate decision can cite a machine-checked snapshot of running state.
 
 ## Waypoints
 
-- [ ] **W1 — generator + processes section** (~1 day): `scripts/attest/generate_attestation.py` (epyc-orchestrator) emitting `orchestration/attestation/latest.json` + rendered `.md`; section 1 per spec §B.1 — every llama-server/API/service PID with start time, binary path, binary sha + RUNPATH-resolution check (`readelf -d`), matched against its registry entry. Acceptance: artifact regenerates idempotently and flags a deliberately mis-resolved binary.
+- [x] **W1 — generator + processes section** (~1 day): branch-ready in `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/attestation-worktree`, branch `feat/running-state-attestation`, commit `aee2ae9` (`Add running-state attestation report`). Added `scripts/attest/generate_attestation.py`, tests, and live `orchestration/attestation/latest.{json,md}`. The live artifact generated 2026-06-12 reports 34 relevant processes (28 `llama_server`, 1 orchestrator API, 2 AutoPilot, 1 OCR, 1 whisper, 1 MCP), all dynamic-link checks `ok`; the false earlyoom `llama-server` text match was fixed. Remaining live drift surfaced by W1: 13 active llama-server ports lack a registry match (`8185`, `8285`, `8385`, `8485`, `8187`, `8287`, `8387`, `8487`, `8090`, `8091`, `8093`, `8094`, `8095`).
 - [ ] **W2 — flags + per-role serving config** (~1 day): §B.2 per-worker flag 3-way diff (intent / env / live via `GET /config/attest` ×N — blocked until the sibling handoff lands the endpoint) + §B.3 per-role config from `/proc/<pid>/cmdline` (model inode + sha-prefix, quant, spec-dec flags, KV quant) and live `Cpus_allowed` vs NUMA_CONFIG intent. Acceptance: an injected env/flag mismatch and an affinity mismatch both surface as diffs.
 - [ ] **W3 — eval-instrument + drift sections** (~half day): §B.4 (core version, sentinel hashes, tool-secret freshness, `AUTOPILOT_TOOL_SENTINELS` in both autopilot and orchestrator envs) + §B.5 (registry-vs-running diff, index-vs-reality spot checks). Acceptance: a stale sentinel and a stale index status row are each detected.
 - [ ] **W4 — cadence + consumers** (~1 day): generate on stack start, on reload, and 4-hourly via existing nightshift/cron infra; autopilot safety gate reads `latest.json` age as a trial-trust precondition; trials spanning an attestation change auto-tagged `exogenous_*` (classification machinery exists). Acceptance: one nightshift cycle produces fresh artifacts and a spanning trial is auto-excluded in the journal.
