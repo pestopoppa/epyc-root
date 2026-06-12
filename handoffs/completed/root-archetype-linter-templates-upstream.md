@@ -1,8 +1,8 @@
 # Root-Archetype: Linter Generalization + Brevity Templates Upstream
 
-**Status**: REFRESHED 2026-05-28 — cleanup-only cross-repo upstreaming; local clone exists but has unrelated dirty files
+**Status**: COMPLETE 2026-06-12 — root-archetype cleanup committed
 **Created**: 2026-04-09
-**Updated**: 2026-05-28 (blocker corrected; executor rules clarified)
+**Updated**: 2026-06-12 (remaining cleanup closed)
 **Priority**: MEDIUM
 **Categories**: governance, upstream
 
@@ -10,13 +10,13 @@
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
-This is not a root-repo implementation task. The epyc-root side is already done; remaining work is in `/mnt/raid0/llm/root-archetype`.
+This is not a root-repo implementation task. The epyc-root side was already done; the remaining root-archetype cleanup is now complete.
 
 Current local state observed 2026-05-28:
 
 - `/mnt/raid0/llm/root-archetype` exists.
-- It has unrelated dirty log/progress files. Do not revert or fold those into this task.
-- Open work remains the three cleanup items below.
+- It still has unrelated dirty log/progress files. They were not reverted or folded into this task.
+- Completion commit: `/mnt/raid0/llm/root-archetype` commit `b4102ab` (`Complete root archetype linter and brevity template upstreaming`).
 
 Executor rules:
 
@@ -55,10 +55,16 @@ Upstream proven governance patterns from epyc-root to root-archetype for use by 
 - Compiled 24 wiki articles (327KB) from 219 sources
 - Note: epyc-root version differs from root-archetype (flat dirs vs per-user dirs) — not a direct upstream candidate, but validates the pipeline design
 
-## Remaining Work
-- [ ] Test generalized linter against root-archetype's own wiki structure
-- [ ] Update init-project.sh to copy brevity templates during project scaffold
-- [ ] Document in root-archetype README
+## Completed Work
+- [x] Test generalized linter against root-archetype's own wiki structure. `python3 agents/skills/project-wiki/scripts/lint_wiki.py` now passes with handoff-specific passes skipped when the active handoff directory is absent.
+- [x] Update `init-project.sh` to copy brevity templates during project scaffold. Copy-mode smoke verified templates land in `local/prompt-templates/brevity/`.
+- [x] Document in root-archetype README. Updated both `README.md` and `scripts/utils/generate-readme.sh` so generated project READMEs retain the prompt-template section.
+
+## Verification
+- `python3 agents/skills/project-wiki/scripts/lint_wiki.py` -> pass
+- `python3 scripts/validate/validate_skills.py` -> pass
+- `bash -n init-project.sh scripts/utils/generate-readme.sh` -> pass
+- Copy-mode init smoke with `gh` hidden -> pass; generated project contained `local/prompt-templates/brevity/worker_general.md.template`, `BREVITY_ADOPTION.md`, and README `Prompt Templates` section.
 
 ## Cross-References
 | Handoff | Relationship |

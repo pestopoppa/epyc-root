@@ -115,7 +115,6 @@ Four cluster handoffs landed 2026-05-19 (post-research-intake-batch). Each entry
 These are *non-inference in nature* but gated on external signals. Listed so the gate is visible, not to pick up:
 
 - `readme-refresh.md` — GATED on AR-3 trial ≥100 (currently ~78). Pick up when autopilot journal hits 100 trials.
-- `root-archetype-linter-templates-upstream.md` — Gated on local clone of the `root-archetype` repo.
 - DAR-3/DAR-4 validation passes — code is NIB2-16/17; measurement is inference.
 - REPL S4 A/B — A/B itself is inference; scaffolding (not listed here) would be ~4h code.
 - Qwen3.6 benchmark — [`qwen36-production-upgrade.md`](../completed/qwen36-production-upgrade.md) — inference-gated. Download already done.
