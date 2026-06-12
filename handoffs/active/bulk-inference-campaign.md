@@ -2,7 +2,7 @@
 
 **Status**: active — see *Current State (2026-06-12) — Three-Queue Structure* below. Packages A-F complete + archived (`../completed/bulk-inference-2026-04-packages.md`); cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) closed/certified + archived. Live backlog: Queue-1 offline cleanup, the one consolidated quiesce window (Queue 2), the restart bundle (Queue 3), standalone model-batched windows, and the frozen Package I. K-EVAL-1 folded into H5; J6 superseded. BEP-2 remediation is built; J8 is an optional decision experiment for the legacy batch-edit path, not the critical remediation gate. J7 offline replay closed 2026-06-12; DCP-6a repair is branch-ready/replay-validated at `fix/dcp6a-context-depth` `1a33d72` but not merged into the live AutoPilot clone. K-RAG diagnostic ran but formal K7 remains open.
 **Created**: 2026-04-06
-**Updated**: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; K-EVAL-1 folded into H5; closed placement/matrix gates compacted. Prior: 2026-05-27.
+**Updated**: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted. Prior: 2026-05-27.
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -59,8 +59,8 @@ Ordered manifest (one reload, then everything rides it):
 
 ## Staleness corrections (2026-06-12 audit)
 - **J6 SUPERSEDED** — the continuous autopilot run already satisfied the 24h soak; close it by writing the rollout verdict from existing run data, and **verify the matrix-aware `_eval_concurrency()` default actually landed** (the J6 code half). Do not re-run as a fresh inference task.
-- **G9 references the REMOVED `architect_coding` role** — rescope to a live role or close; the MiniMax-M2.7 "replace both architects" premise no longer maps to the current stack.
-- **G10/G11 name pre-swap models** (Qwen3-32B frontdoor / Qwen3-30B-A3B worker). The live stack is **Qwen3.6-35B-A3B frontdoor + gemma4-26B-A4B worker** — respecify the model targets before spending any bench hours.
+- ✅ **G9 respecified 2026-06-12** — the removed `architect_coding` target is gone. G9 now asks only whether MiniMax M2.7 can replace or complement the live `architect_general` role; code-generation replacement is out of scope unless a separate coder-eval owner claims it.
+- ✅ **G10/G11 respecified 2026-06-12** — model targets now name the live stack: `architect_general` = Qwen3.5-122B-A10B, `frontdoor` = Qwen3.6-35B-A3B Q8, `worker_general` = gemma4-26B-A4B-it-Q4_K_M.
 - ✅ **J12 wiring verification closed 2026-06-12** against production `LlamaServerBackend` `/v1/chat/completions` (NOT `src/backends/openai.py`). Remaining J12 work is the quiesce-window empirical probe + THINK-ABL-1.
 - **ALL flag-flip A/Bs must set flags via launch env + per-worker attestation** — `POST /config` reaches only 1 of 6 workers, so any A/B that flips a flag at runtime is invalid. Flags go in the reload env; attest each worker before measuring.
 - **The speed-metric policy paragraph below changes when the `task_rate` objective lands** (fable5-findings-05) — the current aggregate-batch-t/s convention is provisional until the objective layer is redesigned.
@@ -146,7 +146,7 @@ These tasks are scattered across active handoffs and require inference compute b
 | G7 | MiniMax M2.7 download + launch | Research intake (intake-328/329) | ✅ DOWNLOADING: Q8_0 (243GB) + UD-Q4_K_XL (141GB) from unsloth/MiniMax-M2.7-GGUF → `/mnt/raid0/llm/models/MiniMax-M2.7-GGUF/`. MoE 230B-A10B, 256 experts, 200K ctx. Launch with `--spec-type ngram-simple --draft-max 64`, `numactl --interleave=all`. No spec-dec (200K vocab, no compatible draft). Expected: Q4_K_XL ~12-16 tps w/ ngram, Q8_0 ~9-13 tps w/ ngram. | Standalone | ~2h |
 | G7a | MiniMax M2.7 NUMA sweep | — | Sweep NUMA parallelization: 1×192t interleave vs 2×96t per-node vs 4×48t quarters. Model fits single node (~141-243GB vs ~560GB/node). 256-expert scatter pattern may favor interleave. | Standalone | ~3h |
 | G8 | MiniMax M2.7 tool-calling | Research intake (intake-328/329) | Evaluate tool-calling reliability vs Qwen3 stack. Test orchestrator function-calling pipeline. | Standalone | ~4h |
-| G9 | MiniMax M2.7 architect replacement eval | Research intake (intake-328/329) | **Goal: replace both architect_coding (Qwen3-Coder-480B, 3.79 tps) and architect_general (Qwen3-235B, 9.14 tps) with single M2.7.** Run standard eval suite (MATH, coding, general). Q4_K_XL is -6.0 pts from baseline (~22.8% more errors). M2.7 scored 56.22% SWE-Pro. Compare quality on architect-specific benchmarks. If quality ≥ both architects → consolidate to 1 model, freeing ~380GB RAM + simplifying stack. | Standalone | ~6h |
+| G9 | MiniMax M2.7 architect_general replacement eval | Research intake (intake-328/329) | **Goal: test whether MiniMax M2.7 can replace or complement the live `architect_general` role only.** The removed `architect_coding` role is no longer a target. Compare M2.7 against current `architect_general` (Qwen3.5-122B-A10B) on architecture/general-reasoning tasks plus any existing MiniMax G8 tool-calling evidence. Do not treat this as a coder replacement or RAM-consolidation decision unless a separate coder-eval owner reopens that scope. | Standalone | ~4-6h |
 
 ### Progress (updated 2026-04-13)
 
@@ -192,8 +192,8 @@ Scoring methodology (from paper): Omniscience Index = 50% accuracy + 50% (1 - ha
 
 | # | Task | Description | Models Needed | Effort |
 |---|------|-------------|--------------|--------|
-| G10 | AA-Omniscience: architect_general | Run 600 Qs through Qwen3-235B-A22B. Record per-domain accuracy + hallucination rate. Expect above-zero Omniscience Index. | architect_general (solo) | ~2h |
-| G11 | AA-Omniscience: frontdoor + worker | Run 600 Qs through Qwen3-32B (frontdoor) and Qwen3-30B-A3B (worker). Compare hallucination rates to establish tier separation. | frontdoor, worker_general (sequential) | ~3h |
+| G10 | AA-Omniscience: architect_general | Run 600 Qs through the live `architect_general` target, Qwen3.5-122B-A10B. Record per-domain accuracy + hallucination rate. Expect above-zero Omniscience Index. | architect_general (solo) | ~2h |
+| G11 | AA-Omniscience: frontdoor + worker | Run 600 Qs through the live `frontdoor` target, Qwen3.6-35B-A3B Q8, and the live `worker_general` target, gemma4-26B-A4B-it-Q4_K_M. Compare hallucination rates to establish tier separation. | frontdoor, worker_general (sequential) | ~3h |
 | G12 | Calibrate capability tiers | Use G10+G11 hallucination rates to compute empirical tier multipliers. Update `_DEFAULT_ROLE_TIERS` in `src/classifiers/factual_risk.py`. Augment with SimpleQA failures from seeding logs (`data/package_a/`, `data/package_b/`) for larger calibration set. | No inference — analysis only | ~1h |
 
 **Implementation notes**:
