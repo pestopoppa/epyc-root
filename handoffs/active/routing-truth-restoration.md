@@ -1,6 +1,6 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: IN PROGRESS — W1-W4 landed and live-attested 2026-06-12; W5-W8 remain
 **Created**: 2026-06-12
 **Priority**: NOW/HIGH — master-index N3; every runtime-flag A/B under 6-worker uvicorn has measured a 5/6-unmutated system
 **Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
@@ -18,10 +18,10 @@ The live system must match SOME declared intent before any routing redesign.
 
 ## Waypoints
 
-- [ ] **W1 — operator wave decision** (blocking, minutes): wave-1 = `specialist_routing` + `model_fallback` (low-risk: keyword priors + circuit-breaker fallback); wave-2 = plan_review / architect_delegation / parallel_execution / unified_streaming, EACH behind a one-week observation window — these code paths haven't run in months; treat as new code.
-- [ ] **W2 — PRODUCTION_FEATURE_ENV block** (~1 day): explicit env block in `orchestrator_stack.py` (next to env assembly `:1114-1193`) setting every registry flag from `default_prod` per the wave decision; then delete the `production=` ambiguity (env-only; param stays for tests). Acceptance: `/proc/<pid>/environ` is a complete attestable record; rollback = re-emit flag=0 + reload (one runbook line).
-- [ ] **W3 — shared runtime_flags.json** (~1 day): atomic-write `orchestration/runtime_flags.json` recording `{flag, value, set_by, ts}`; `src/features.py` gains a 1s-TTL mtime re-read; `POST /config` (`src/api/routes/config.py`) writes the file. Precedence: env (boot intent) < runtime file (overrides). Acceptance: all 6 workers converge ≤1s.
-- [ ] **W4 — attestation endpoint** (~1 day): `GET /config/attest` returns `{pid, flags, source}` for the answering worker; client `scripts/validate/attest_flags.py` polls ~N×20 to cover all worker PIDs, red on heterogeneity; `structural_lab.apply_flag_experiment` (`:404-412`) gets a post-apply attestation poll + journals the result with the trial. Acceptance: empty cross-worker diff after any POST /config; a structural trial journals uniform attestation.
+- [x] **W1 — operator wave decision** (blocking, minutes): wave-1 = `specialist_routing` + `model_fallback` (low-risk: keyword priors + circuit-breaker fallback); wave-2 = plan_review / architect_delegation / parallel_execution / unified_streaming, EACH behind a one-week observation window — these code paths haven't run in months; treat as new code. **Decision applied 2026-06-12**: wave-1 ON, wave-2 OFF, `routing_classifier` OFF until weights exist.
+- [x] **W2 — PRODUCTION_FEATURE_ENV block** (~1 day): explicit env block in `orchestrator_stack.py` (next to env assembly `:1114-1193`) setting every registry flag from `default_prod` per the wave decision; then delete the `production=` ambiguity (env-only; param stays for tests). Acceptance: `/proc/<pid>/environ` is a complete attestable record; rollback = re-emit flag=0 + reload (one runbook line). **Landed** via complete `ORCHESTRATOR_FEATURE_*` block; legacy `ORCHESTRATOR_*` remains supported but stack-managed feature intent uses the collision-safe namespace (`ORCHESTRATOR_REPL` conflicts with Pydantic `OrchestratorSettings.repl`).
+- [x] **W3 — shared runtime_flags.json** (~1 day): atomic-write `orchestration/runtime_flags.json` recording `{flag, value, set_by, ts}`; `src/features.py` gains a 1s-TTL mtime re-read; `POST /config` (`src/api/routes/config.py`) writes the file. Precedence: env (boot intent) < runtime file (overrides). Acceptance: all 6 workers converge ≤1s.
+- [x] **W4 — attestation endpoint** (~1 day): `GET /config/attest` returns `{pid, flags, source}` for the answering worker; client `scripts/validate/attest_flags.py` polls ~N×20 to cover all worker PIDs, red on heterogeneity; `structural_lab.apply_flag_experiment` (`:404-412`) gets a post-apply attestation poll + journals the result with the trial. Acceptance: empty cross-worker diff after any POST /config; a structural trial journals uniform attestation.
 - [ ] **W5 — q_scorer baseline_tps refresh** (afternoon): read `baseline_tps_by_role` from the lean registry's measured values at startup (`q_scorer.py:89-99` marked KNOWN STALE — frontdoor 12.7 vs measured ~21–27, spec 0.3). Stopgap until descriptors ([model-capability-descriptors.md](model-capability-descriptors.md) W3 replaces it).
 - [ ] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`), `HybridRouter.route_3way` (`hybrid_router.py:587-699`), `dispatch_swarm_fanout` (if no handoff claims it within the month) — proof in spec §4; un-set `ORCHESTRATOR_ROUTING_CLASSIFIER` until weights exist (stop the boot-warning lie). Expected −1.5–2K LoC + test files.
 - [ ] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows log to non-persisted INFO (outputs not found on disk) — either route shadow events into `logs/progress/*.jsonl` (the file QScorer already mines) or stop running them per-request; shadow without a ratification path is pure cost. Rides master-index N10.
@@ -34,6 +34,22 @@ The live system must match SOME declared intent before any routing redesign.
 - Attestation results must be journaled WITH each autopilot flag trial — otherwise flag experiments remain unmeasurable (findings-01 §3.4).
 - Use `orchestrator_stack.py reload` for any restart — never manual PID kills.
 - Record the W8 verdict either way: it gates the entire routing-expansion cluster (master-index gate table) and the Phase-3 tail of model-capability-descriptors.
+
+## 2026-06-12 Checkpoint — W1-W4 Landed
+
+Commit: `epyc-orchestrator` `b5f26e5` (`Restore runtime flag truth and attestation`).
+
+Live deployment:
+- Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`.
+- New supervisor PID `2692296` healthy on port 8000; failed intermediate supervisor PID `2687898` was terminated with SIGTERM and verified gone by `ps`.
+- `uv run python scripts/validate/attest_flags.py --polls 240 --delay-s 0.02 --min-workers 6 --expect specialist_routing=true --expect model_fallback=true --expect plan_review=false --expect architect_delegation=false --expect parallel_execution=false --expect unified_streaming=false --expect routing_classifier=false` saw 6 workers, `errors={}`, `expected_diffs=[]`, `heterogeneous={}`.
+
+Implementation notes:
+- `src/features.py` now reads legacy `ORCHESTRATOR_*` and preferred `ORCHESTRATOR_FEATURE_*`, then applies `orchestration/runtime_flags.json`, then explicit test overrides.
+- `POST /config` writes the shared runtime file; workers re-read by mtime with a 1s TTL.
+- `GET /config/attest` returns the answering PID, effective flags, and source map.
+- Structural experiments attach `flag_apply_result`, `flag_attestation`, and, when needed, `flag_revert_result` into eval details.
+- The standalone attestation client closes connections between polls and supports `--min-workers` so a keep-alive connection cannot falsely sample only one uvicorn worker.
 
 ## Reporting
 
