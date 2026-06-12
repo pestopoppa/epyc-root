@@ -1,6 +1,6 @@
 # Internal Knowledge-Base RAG
 
-**Status**: K1-K6 LANDED 2026-05-06 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + 15 unit tests. **Live build complete: 409 files / 13,537 chunks / 861 MiB / 17:01 wall-time** (~76 ms/chunk). Sample queries return 0.93+ MaxSim scores on relevant chunks. Existing `src/tools/web/colbert_reranker.py` left untouched — additive design avoided refactor risk on `research.py:322` import. K7 Flywheel-template eval (HotpotQA + LoCoMo) inference-gated; K8 wikilink scorer deferred.
+**Status**: K1-K6 LANDED 2026-05-06 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + 15 unit tests. **Live build complete: 409 files / 13,537 chunks / 861 MiB / 17:01 wall-time** (~76 ms/chunk). Sample queries return 0.93+ MaxSim scores on relevant chunks. Existing `src/tools/web/colbert_reranker.py` left untouched — additive design avoided refactor risk on `research.py:322` import. K7 Flywheel-template eval (HotpotQA + LoCoMo) remains open; 2026-06-12 diagnostic was non-certifying because no K7 harness/query set exists, the index is stale to 2026-05-30, and orchestrator `.venv` is missing `onnxruntime`. K8 wikilink scorer deferred.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack)
 **Categories**: search_retrieval, knowledge_management, document_processing
 **Priority**: MEDIUM
@@ -39,7 +39,7 @@ Stand up a ColBERT-based RAG over our own markdown knowledge base so every Explo
 | Component | Status | Location |
 |---|---|---|
 | GTE-ModernColBERT-v1 ONNX model | ✅ on disk | `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/` |
-| `onnxruntime` in orchestrator venv | ✅ installed | `epyc-orchestrator` venv |
+| `onnxruntime` in orchestrator venv | ⚠️ drifted missing 2026-06-12; `/mnt/raid0/llm/pace-env` works | restore orchestrator venv or explicitly bless `pace-env` before K7 |
 | MaxSim + per-token 128-dim embeddings | ✅ designed | colbert-reranker-web-research.md S3 |
 | EPYC latency probe | ✅ measured | 180 ms / 10-snippet rerank call (S4) |
 | `LATEON_MODEL_PATH` env override pattern | ✅ landed | NIB2-47 (extends to alternate ColBERT models) |
@@ -80,6 +80,7 @@ ColBERT encoder (shared)                           │
   - **Variance band**: per Flywheel README, ~1 pp run-to-run variance from LLM non-determinism is the noise floor. Any cross-paper or cross-config delta under ~2 pp is within noise — record this explicitly so KB-RAG decisions never chase noise.
   - Effort revised: ~2 sessions (vs original 1 h estimate). Output: `data/kb_rag/eval/hotpotqa_template_results.json` + `loco_template_results.json` + a one-page summary in `data/kb_rag/eval/SUMMARY.md`.
   - Cross-link: intake-492 (Flywheel) and `research/intake_index.yaml` entry. Harness code is NOT being lifted — only methodology.
+  - **2026-06-12 diagnostic note**: a small hand-curated 8-case sweep ran against the stale May-30 index with `/mnt/raid0/llm/pace-env`. It is not a K7 substitute. Before a decision-grade sweep: restore/bless runtime, refresh the index, create the K7 query/evidence set, then rerun configs.
 - [ ] **K8 (LOW priority, defer): wikilink learning-loop scorer** (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an accept/reject feedback loop that updates a graph-edge scorer over time (alias + co-occurrence + graph + semantic context). Adapt as a wiki-cross-reference quality signal for the existing wiki/INDEX.md compilation pipeline. Defer until KB-RAG K1–K7 ships and we have a measured wiki-cross-link gap to address. NOT blocking K1–K7.
 
 ## Open Questions
@@ -383,6 +384,17 @@ Source-level deep dive of intake-611 (agentmemory V4) + intake-610 (agent-oss) a
 - [x] **K9 — Cross-encoder rerank stage.** ✅ CODE LANDED 2026-05-27. New `src/retrieval/cross_encoder.py` (ONNX, mirrors `colbert_encoder.py`; graceful no-op when model absent) + `cross_encoder.rerank()` blend `(1−w)·maxsim + w·sigmoid(CE_logit)` (agentmemory `reranking.py:62`). Wired into `kb_rag.query(rerank=…, rerank_weight=…)` over the top-`4×K` pool (`KB_RAG_RERANK` / `_WEIGHT` / `_POOL_MULT` env overrides). Model downloaded: `cross-encoder/ms-marco-MiniLM-L-6-v2` ONNX int8 at `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx`. Live smoke: relevant logit +8.0 vs irrelevant −11.3; rerank flips a lower-base relevant doc to top. 4 unit tests (mocked + real-model skipif). **Win-validation gated on K7** → campaign K-RAG-1. Coordinates with [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) (same ONNX-runtime pattern).
 - [x] **K10 — Temporal Gaussian recency signal.** ✅ CODE LANDED 2026-05-27. `_recency_score(mtime, now, σ_days)` Gaussian + blend in `kb_rag.query(recency_weight=…, recency_sigma_days=…)`; `mtime` now SELECTed from the K3 catalog. Default `recency_weight=0.0` → identical to MaxSim-only (back-compat); env overrides `KB_RAG_RECENCY_WEIGHT` / `KB_RAG_RECENCY_SIGMA_DAYS` for the K7 sweep. 2 unit tests (monotonicity + tie-break reorder). **Tuning gated on K7** → campaign K-RAG-1.
 - [ ] **K11 (optional, measure-first) — FTS5 lexical signal.** SQLite FTS5 porter-stemmed `rank` as a third signal. ColBERT MaxSim is already lexical-strong, so marginal; only adopt if the K7 eval shows exact-match / variant-form misses. Low cost (SQLite already in the stack).
+
+### Diagnostic Update — 2026-06-12
+
+Tiny, non-certifying K-RAG diagnostic artifacts live at `/mnt/raid0/llm/tmp/k_rag_diag_20260612/` (`summary.json`, `rows.jsonl`, `cases.json`). Corpus state during the run: 137 files / 4,634 chunks, catalog max mtime `2026-05-30T11:22:46Z`, while current Fable/J9/J13/J7 docs are from 2026-06-12. Runtime state: orchestrator `.venv` failed to import `onnxruntime`; `/mnt/raid0/llm/pace-env` loaded both ColBERT and cross-encoder.
+
+Results over 8 hand-curated file-recall cases:
+- MaxSim baseline: mean recall@3 `0.5208`, @5 `0.5833`, @10 `0.7083`, perfect@10 `5/8`.
+- Recency-only sweeps (`weight=0.1/0.3`, `sigma=90`) were neutral on this stale set.
+- Cross-encoder rerank (`weight=0.3/0.6`) improved recall@10 to `0.75` and perfect@10 to `6/8`, with no @3 gain.
+
+Decision: keep K9 worth-testing in the formal K7 sweep, keep K10 neutral/default-off, and do not promote any KB-RAG default weights from this diagnostic.
 
 **Explicitly NOT adopting** (deep-dive rationale): spreading-activation graph signal (agentmemory's entity extraction is regex-based and brittle on structured markdown — would need spaCy/LLM NER at high cost for low gain), importance×confidence (all KB chunks ≈ equal importance by design), node-activation LRU recency (a static-doc corpus has no meaningful access-frequency signal). agentmemory's six-signal weights are hand-tuned to **conversational** QA over 46 iterations — any blend we adopt must be re-tuned on our query distribution via K7, not copied.
 
