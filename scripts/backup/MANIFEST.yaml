@@ -1,0 +1,128 @@
+version: 1
+updated: "2026-06-12"
+owner: epyc-root
+purpose: "Continuity manifest for irreplaceable EPYC evidence and governance state."
+
+policy:
+  backup_goal: "Nightly verifiable snapshot of T0 paths to a different failure domain plus one off-host target."
+  restore_goal: "Quarterly restore proof with checksum comparison and JSON/YAML/SQLite parse validation."
+  source_of_truth: "Git-pushed history is primary for tracked text. File backup covers untracked/generated state and unpushed commits."
+  sqlite_rule: "Live SQLite files must be copied through sqlite3 .backup or after the writer is stopped."
+  excluded_rule: "Do not back up GGUF/model caches or superseded embedding blobs unless a handoff explicitly promotes them."
+  attestation_hook: "scripts/backup/audit_git_state.sh"
+  current_blockers:
+    - "No off-RAID target is mounted in this environment: /workspace and /mnt/raid0/llm are both /dev/md127."
+    - "No off-host target is configured."
+    - "restic is not installed; W2 must install restic or use an operator-approved rsync hardlink target."
+
+repos:
+  epyc-root: /mnt/raid0/llm/epyc-root
+  epyc-orchestrator: /mnt/raid0/llm/epyc-orchestrator
+  epyc-inference-research: /mnt/raid0/llm/epyc-inference-research
+  epyc-llama: /mnt/raid0/llm/llama.cpp
+
+tiers:
+  T0_irreplaceable:
+    - id: root-governance
+      repo: epyc-root
+      paths:
+        - handoffs/
+        - progress/
+        - research/
+        - wiki/
+        - agents/
+        - .claude/commands/
+        - .claude/skills/
+        - logs/agent_audit.log
+      reason: "Cross-repo decisions, durable findings, agent roles, skills, and audit trail."
+      copy_mode: file
+
+    - id: orchestrator-ledger-state
+      repo: epyc-orchestrator
+      paths:
+        - orchestration/*.json
+        - orchestration/*.jsonl
+        - orchestration/*.yaml
+        - orchestration/*.yml
+        - orchestration/*.tsv
+        - orchestration/instrument_eras.yaml
+        - orchestration/model_registry.yaml
+      reason: "Autopilot journal/state, eras, model registry, baselines, and experiment metadata."
+      copy_mode: file
+
+    - id: orchestrator-memory-databases
+      repo: epyc-orchestrator
+      paths:
+        - orchestration/strategies.db
+        - orchestration/strategy_embeddings.faiss
+        - orchestration/episodic.db
+        - orchestration/embeddings.faiss
+        - repl_memory/**/*.db
+        - repl_memory/**/*.sqlite
+        - repl_memory/**/*.faiss
+      reason: "Strategy store, episodic memory, and routing memory that cannot be regenerated from pushed git alone."
+      copy_mode: sqlite_or_file
+
+    - id: orchestrator-operational-logs
+      repo: epyc-orchestrator
+      paths:
+        - logs/planner_archive*.jsonl
+        - logs/progress/*.jsonl
+        - logs/debug_changes.jsonl
+        - logs/seeding_diagnostics.jsonl
+        - logs/orchestrator_state.json
+      reason: "Planner traces, progress telemetry, and operational evidence used by F3/F7."
+      copy_mode: file
+
+    - id: research-registry-and-results
+      repo: epyc-inference-research
+      paths:
+        - orchestration/model_registry.yaml
+        - benchmarks/results/
+        - benchmarks/prompts/
+        - data/*/SUMMARY*
+        - data/*/*findings*
+        - data/research/
+        - docs/experiments/
+        - docs/chapters/
+      reason: "Benchmark evidence, prompts, experiment summaries, and model registry provenance."
+      copy_mode: file
+
+  T1_regenerable_expensive:
+    - id: internal-kb-rag-index
+      repo: epyc-orchestrator
+      paths:
+        - .kb_rag/
+        - orchestration/kb_rag/
+      reason: "Regenerable ColBERT/cross-encoder index; expensive enough to snapshot when space allows."
+      copy_mode: file
+
+    - id: current-routing-embedding-indices
+      repo: epyc-orchestrator
+      paths:
+        - orchestration/**/*.faiss
+        - repl_memory/**/*.npz
+      reason: "Regenerable embeddings; exclude superseded dump-list blobs unless promoted by a handoff."
+      copy_mode: file
+      exclude_notes:
+        - "MEASUREMENT.md flags about 1.2GB of superseded embedding blobs under repl_memory/sessions/ for consolidation before backup."
+
+  T2_excluded_or_redownloadable:
+    - id: model-weights-and-caches
+      paths:
+        - /mnt/raid0/llm/models/
+        - /mnt/raid0/llm/cache/
+      reason: "Large and redownloadable; not part of the critical evidence backup."
+
+    - id: build-artifacts
+      paths:
+        - "**/__pycache__/"
+        - "**/.venv/"
+        - "**/build/"
+        - "**/dist/"
+      reason: "Regenerable local build/cache output."
+
+validation:
+  manifest_parse: "python3 - <<'PY'\nimport yaml\nfrom pathlib import Path\nyaml.safe_load(Path('scripts/backup/MANIFEST.yaml').read_text())\nPY"
+  git_state_audit: "scripts/backup/audit_git_state.sh"
+  future_restore_check: "scripts/backup/verify_restore.sh"

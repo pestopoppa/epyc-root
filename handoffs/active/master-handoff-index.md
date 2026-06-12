@@ -38,7 +38,7 @@
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
 |---|---|---|---|
-| F4 | HIGH (this month) | Backup the irreplaceable <2GB evidence base off the raid0 (manifest, restic job, restore proof, ATTESTATION checks) | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) |
+| F4 | HIGH (this month) | Backup irreplaceable evidence base — W1 manifest/git-state audit landed; W2 waits for real off-RAID/off-host target + backup tool | [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) |
 | F5 | HIGH (this month) | Harden research-intake against instruction injection — root policy/validator/canary landed; `web_research` branch-ready (`205ca77`) but merge/attest still open | [frontier-f5-intake-injection-hardening.md](frontier-f5-intake-injection-hardening.md) |
 | F1 | MED | Real-task corpus as eval distribution — passive task_record capture, real-suite v1, wire into promotion/routing decisions | [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) |
 | F2 | HIGH, gated: N1+N4, N2, F5 | Self-running lab — lab_jobs.yaml inventory, contract-validated runner with review queue, shadow→reviewed→autonomous ladder | [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) |
