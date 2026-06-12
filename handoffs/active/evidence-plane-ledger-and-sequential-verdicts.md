@@ -1,6 +1,6 @@
 # Evidence Plane — Per-Question Ledger + Sequential Verdicts (+ game layer)
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: W1+W2 branch-ready; awaiting restart-bundle merge/deploy + vector history
 **Created**: 2026-06-12
 **Priority**: HIGH — the keystone change; owner of the Queue-3 restart bundle
 **Spec**: [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) Phase 1 + Phase 5, and [fable5-findings-01c-sequential-verdict-spec.md](fable5-findings-01c-sequential-verdict-spec.md) (the full e-process: update rule, thresholds, state schema, exact wiring sites) — read before claiming any waypoint
@@ -19,8 +19,8 @@ land at ONE autopilot restart, each behind its own flag.
 
 ## Waypoints
 
-- [ ] **W1 — qid + outcome vectors** (impl 1.1–1.2, ~1–2 days): derived `qid` in `question_pool.py`; `eval_tower._aggregate` emits `question_results` into `eval_details` (~3KB/trial JSONL growth). Acceptance: per-question vectors journaled every trial; TSV untouched. Restart-bundle member.
-- [ ] **W2 — paired replay tool** (impl 1.3, ~1 day, zero inference): `scripts/autopilot/paired_stats.py` (`mcnemar`, `config_vs_baseline`). Decision gate: after ~2 weeks of vectors, replay historical keep/revert — ≥30% verdict flips ⇒ proceed to W3; <10% ⇒ hold and report (findings-01 §4). **Branch-ready 2026-06-12**: `epyc-orchestrator` worktree branch `feat/paired-question-stats` commit `480ddfc` adds the replay tool + tests. Current live journal summary is 662 rows / 0 vector-bearing trials, as expected before W1 writes `eval_details.question_results`; W2 final acceptance remains gated on W1 plus enough vector history.
+- [x] **W1 — qid + outcome vectors** (impl 1.1–1.2, ~1–2 days): derived stable `qid` from `suite + "\0" + prompt`; `eval_tower._aggregate` carries compact `question_results` on `EvalResult`; AutoPilot mirrors it to `eval_details.question_results`; TSV untouched. **Branch-ready 2026-06-12**: `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/paired-stats-worktree`, branch `feat/paired-question-stats`, commit `3c17460` (`Journal per-question eval vectors`). GitNexus impact for `_aggregate` was HIGH (19 upstream impacts), so this remains a deliberate restart-bundle branch, not a live mid-run edit.
+- [x] **W2 — paired replay tool** (impl 1.3, ~1 day, zero inference): `scripts/autopilot/paired_stats.py` (`mcnemar`, `config_vs_baseline`). Decision gate: after ~2 weeks of vectors, replay historical keep/revert — ≥30% verdict flips ⇒ proceed to W3; <10% ⇒ hold and report (findings-01 §4). Branch head `3c17460` includes the replay tool originally added at `480ddfc`; current live journal summary remains 662 rows / 0 vector-bearing trials until W1 is merged/deployed and new evals accrue.
 - [ ] **W3 — sequential_verdict.py** (01c §1–2,§4; 2–3 days): capped-Kelly e-process per config-fingerprint vs baseline per-qid profile; `confirmed` at E≥20 (α=0.05), futility floor E≤0.05, budget k_max=8; journal `seq` block + rebuildable per-candidate view. Acceptance: Ville bound verified empirically over 1e5 simulated null runs.
 - [ ] **W4 — joint verdict + wiring** (01c §3,§5; ~2 days): task_rate non-inferiority (m=0.05) paired with quality per declared `expected_axis`; `safety_gate.check` improvement branch swaps `_mad_significance` → verdict; `update_baseline` callable only on `confirmed_improvement` (promotion finalizes at combined E≥100 with the fresh-draw eval); `learning_exclusions` maps `accumulating`→benign; baseline-freshness cadence 1 baseline trial per ~10. Acceptance: regression protection unchanged — hard floors and the −5% gate stay immediate.
 - [ ] **W5 — planner power line + candidate blocks** (impl 1.5 + 01c §5.3, ~half day): generated instrument line (core n, quantum, MDE, typical k) + per-candidate `k/E/recommendation` block; dispatch gate requires a reproduction plan for below-MDE hypotheses.
@@ -35,6 +35,10 @@ land at ONE autopilot restart, each behind its own flag.
 - Update the e-process per TRIAL, never per question (within-trial outcomes are dependent — 01c §1); core-version or policy-version change resets all `accumulating` candidates.
 - Works on the accidental 43-set at lower power, but instrument-repair W4/W5 should land first or R_eff stays ~10–14.
 - Sequential machinery credits improvements only — never let it delay damage control (01c §3).
+
+## Progress
+
+- 2026-06-12: W1+W2 branch-ready at `epyc-orchestrator` `feat/paired-question-stats` commit `3c17460`. Validation: 22 focused eval/journal/paired-stat tests passed; full ruff on new/nearby files passed; `ruff --select F821` on touched AutoPilot files passed; `py_compile`; `git diff --check`. Residual: merge/deploy at the restart bundle, then collect vector-bearing trial history before W3/W4.
 
 ## Reporting
 
