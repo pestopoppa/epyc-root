@@ -1,6 +1,6 @@
 # BEP-2 / DCP-6 Falsification Harness
 
-**Status**: COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair is branch-ready/replay-validated (`fix/dcp6a-context-depth` `1a33d72`) but not merged into the live AutoPilot clone; optional J8 provenance remains.
+**Status**: COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair is rebased/replay-validated (`fix/dcp6a-context-depth-current` `530128b7`) but not deployed into the live orchestrator; optional J8 provenance remains.
 **Created**: 2026-05-26
 **Updated**: 2026-06-12
 **Priority**: MEDIUM
@@ -14,8 +14,8 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 ## Outstanding Tasks
 
 - [x] **DCP-6 offline replay**: CLOSED 2026-06-12. Scratch/task-root replay over 5 historical BEP tasks confirmed bundles read task files, not orchestrator files; all 7 existing required files were selected and budgets 500/1000/2000 all fit.
-- [x] **DCP-6a content-depth/freshness repair**: branch `fix/dcp6a-context-depth` commit `1a33d72` changes task-root search/packing so tiny task files are included as full files or padded slices instead of one-line snippets, and populates manifest `content_sha256`. Focused tests: 59 passed.
-- [ ] **DCP-6 merge/deploy + inference gate**: merge/attest DCP-6a only after the live AutoPilot boundary; then use a host-quiet window for inference and record top-up rate, token overhead, and success deltas.
+- [x] **DCP-6a content-depth/freshness repair**: branch `fix/dcp6a-context-depth-current` commit `530128b7` changes task-root search/packing so tiny task files are included as full files or padded slices instead of one-line snippets, and populates manifest `content_sha256`. Focused tests: 70 passed after rebasing onto the current live lineage.
+- [ ] **DCP-6 merge/deploy + inference gate**: merge/attest DCP-6a at a clean boundary; then use a host-quiet window for inference and record top-up rate, token overhead, and success deltas.
 - [ ] **J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.
 - [ ] **Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md), not here.
 
@@ -23,7 +23,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 
 | Outcome | Next action |
 |---|---|
-| DCP-6a branch remains unmerged while AutoPilot owns the live clone | Wait for clean boundary; do not mutate loaded-code provenance mid-run. |
+| DCP-6a branch remains unmerged/deployed while K-RAG or other contention is active | Wait for a clean boundary; do not mutate loaded-code provenance or inference measurements mid-run. |
 | DCP-6a branch is merged, deployed, and attested | Proceed to host-quiet inference gate. |
 | DCP-6 inference improves success/top-up metrics within token budget | Promote DCP pre-assembly according to [delegation-context-preassembly.md](delegation-context-preassembly.md). |
 | DCP-6 inference is neutral or regressive | Keep DCP advisory/default-off and document the failure mode. |
@@ -39,7 +39,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 | BEP-2 read-loop investigation | Root cause corrected from model capability to protocol/tooling issue. | [completed ledger](../completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md) |
 | BEP-2 remediation | Default-off `force_mode="edit"` edit transaction built, hardened, and validated; rollout tracked elsewhere. | [completed ledger](../completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md) |
 | DCP-6 offline replay | Passed scratch-root/file-selection/budget correctness over 5 historical BEP tasks at budgets 500/1000/2000; exposed DCP-6a shallow-slice/hash blocker before inference. | `/mnt/raid0/llm/tmp/dcp6_offline_replay_20260612/summary.json` |
-| DCP-6a branch replay | Branch `fix/dcp6a-context-depth` (`1a33d72`) passed focused tests and replayed at budgets 500/1000/2000 with 100% file coverage, 100% line coverage, and 0 missing hashes. | `/mnt/raid0/llm/tmp/dcp6a_offline_replay_20260612/summary.json` |
+| DCP-6a branch replay | Branch `fix/dcp6a-context-depth-current` (`530128b7`) passed focused tests and replayed at budgets 500/1000/2000 with 100% file coverage, 100% line coverage, and 0 missing hashes. | `/mnt/raid0/llm/tmp/dcp6a_current_offline_replay_20260612/summary.json` |
 
 ## Key Files
 
