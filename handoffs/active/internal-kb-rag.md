@@ -1,6 +1,6 @@
 # Internal Knowledge-Base RAG
 
-**Status**: K1-K6 LANDED 2026-05-06 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + 15 unit tests. **Live build complete: 409 files / 13,537 chunks / 861 MiB / 17:01 wall-time** (~76 ms/chunk). Sample queries return 0.93+ MaxSim scores on relevant chunks. Existing `src/tools/web/colbert_reranker.py` left untouched — additive design avoided refactor risk on `research.py:322` import. K7 Flywheel-template eval (HotpotQA + LoCoMo) remains open; 2026-06-12 diagnostic was non-certifying because no K7 harness/query set exists, the index is stale to 2026-05-30, and orchestrator `.venv` is missing `onnxruntime`. K8 wikilink scorer deferred.
+**Status**: K1-K6 LANDED 2026-05-06 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + 15 unit tests. **Live build complete: 409 files / 13,537 chunks / 861 MiB / 17:01 wall-time** (~76 ms/chunk). Sample queries return 0.93+ MaxSim scores on relevant chunks. Existing `src/tools/web/colbert_reranker.py` left untouched — additive design avoided refactor risk on `research.py:322` import. K7 Flywheel-template eval (HotpotQA + LoCoMo) remains open; 2026-06-12 diagnostic was non-certifying because no K7 harness/query set exists, the index is stale to 2026-05-30, and orchestrator `.venv` is missing `onnxruntime`. **K7 harness branch-ready 2026-06-12**: `epyc-orchestrator` worktree branch `feat/kbrag-k7-eval` commit `280c092` adds `scripts/kb_rag/eval_k7.py`, `kb_rag eval`, a 20-case HotpotQA/LoCoMo-style seed suite, and unit tests; fresh full index/sweep still pending. K8 wikilink scorer deferred.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack)
 **Categories**: search_retrieval, knowledge_management, document_processing
 **Priority**: MEDIUM
@@ -395,6 +395,16 @@ Results over 8 hand-curated file-recall cases:
 - Cross-encoder rerank (`weight=0.3/0.6`) improved recall@10 to `0.75` and perfect@10 to `6/8`, with no @3 gain.
 
 Decision: keep K9 worth-testing in the formal K7 sweep, keep K10 neutral/default-off, and do not promote any KB-RAG default weights from this diagnostic.
+
+### K7 Harness Update — 2026-06-12
+
+Branch `feat/kbrag-k7-eval` in `/mnt/raid0/llm/tmp/kbrag-k7-worktree` is committed at `280c092` (`Add KB-RAG K7 eval harness`). It adds:
+- `scripts/kb_rag/eval_k7.py` plus `kb_rag eval` CLI subcommand.
+- `scripts/kb_rag/k7_seed_cases.json`: 20 curated multi-hop evidence-file recall cases (12 HotpotQA-template, 8 LoCoMo-template), validated against disk with zero missing evidence files.
+- Metrics: recall@3/5/10, perfect@k, first/all evidence ranks, protocol splits, config comparison across MaxSim, recency, rerank, and hybrid configs.
+- Validation: `ruff check`, `ruff format --check`, `tests/unit/test_kb_rag_eval.py` pass; existing retrieval suite passes with the known exception that orchestrator `.venv` lacks `onnxruntime` for the real cross-encoder test. `/mnt/raid0/llm/pace-env` loads ONNX Runtime and discriminates the real cross-encoder smoke (`4.79` relevant vs `-11.29` irrelevant logit).
+
+Operational note: the fresh index build is CPU-heavy under ONNX Runtime, not CPU-light. The first unconstrained attempt was stopped to avoid contaminating live AutoPilot timing; the current build writes to `/mnt/raid0/llm/tmp/kbrag_index_k7_20260612` under `nice=15`, `taskset`-constrained to CPUs `168-175`, with thread env caps. Full K7 sweep should run against that tmp index when complete, then document the result before any default-weight promotion.
 
 **Explicitly NOT adopting** (deep-dive rationale): spreading-activation graph signal (agentmemory's entity extraction is regex-based and brittle on structured markdown — would need spaCy/LLM NER at high cost for low gain), importance×confidence (all KB chunks ≈ equal importance by design), node-activation LRU recency (a static-doc corpus has no meaningful access-frequency signal). agentmemory's six-signal weights are hand-tuned to **conversational** QA over 46 iterations — any blend we adopt must be re-tuned on our query distribution via K7, not copied.
 
