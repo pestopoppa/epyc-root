@@ -1,6 +1,6 @@
 # Objective: task_rate Axis + Goodput Frontier Rebuild
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: IN PROGRESS — W1-W2 landed 2026-06-12; W3 vector flip gated by replay result
 **Created**: 2026-06-12
 **Priority**: HIGH — master-index N6; the replay is NOW-class (zero inference: both inputs already journaled)
 **Spec**: [fable5-findings-05-objective-design.md](fable5-findings-05-objective-design.md) — read before claiming any waypoint. Slots into [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) as Phase 1.6.
@@ -19,10 +19,10 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
 
 ## Waypoints
 
-- [ ] **W1 — axis + shadow journal** (~half day): add `task_rate` to `objectives_from` (`src/autopilot_core/tier_specs.py`, epyc-orchestrator) computed from `eval_wall_s`; journal old+new vectors side-by-side for one shadow period. Acceptance: both vectors present in every new journal row.
-- [ ] **W2 — historical replay + bloat-artifact diff report** (~half day, ZERO inference): replay the full journal under (quality, task_rate, reliability) via the existing `pareto_epoch` machinery; one-page diff report naming which historical "wins" were bloat artifacts. Decisive observation per spec: ≥2 of the 5 current frontier points fall off under goodput ⇒ case proven on own data.
-- [ ] **W3 — flip the vector** (~half day): archive/gate/baseline move to the 3-D vector behind a policy-version bump; retire t/s AND the tier-cost axis from dominance (tier-mix stays telemetry for capacity planning); record the E3→E4 retire-view per MEASUREMENT.md §5 (frontier restarts fresh; old view archived read-only). Acceptance: dominance runs on the new vector only; era table updated.
-- [ ] **W4 — telemetry + doc truth** (~half day): keep t/s as host-throttle diagnostic; add `tokens_per_solved_task` (planner-visible bloat diagnostic — makes compression/brevity experiments self-motivating); fix `scripts/autopilot/program.md:123` + system-card goal-metric text (it describes a wall-occupancy cost proxy the instrument does not compute). Acceptance: program/system-card match the running objective.
+- [x] **W1 — axis + shadow journal** (~half day): added task-rate helpers and policy constants in `src/autopilot_core/tier_specs.py`; `eval_tower._aggregate()` records `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task`; new journal rows include live legacy vector + shadow task-rate vector under policy labels.
+- [x] **W2 — historical replay + bloat-artifact diff report** (~half day, ZERO inference): replay implemented via `scripts/analysis/task_rate_goodput_replay.py` and `journal_reconstruction` objective-policy replay. Full-journal report: `epyc-orchestrator/orchestration/reports/task_rate_goodput_replay_2026-06-12.md`.
+- [ ] **W3 — flip the vector** (~half day): archive/gate/baseline move to the 3-D vector behind a policy-version bump; retire t/s AND the tier-cost axis from dominance (tier-mix stays telemetry for capacity planning); record the E3→E4 retire-view per MEASUREMENT.md §5 (frontier restarts fresh; old view archived read-only). **Gated**: W2 replay found 1/5 legacy T1 frontier points fall off under `task_rate_3d_v1`, not the spec's ≥2/5 proof threshold. Also note raw `task_rate` admits a zero-quality high-rate frontier point, so the live flip should wait for a policy decision (raw `task_rate` + quality floor/eligibility vs goodput-shaped axis vs shadow period evidence).
+- [ ] **W4 — telemetry + doc truth** (~half day): keep t/s as host-throttle diagnostic; add `tokens_per_solved_task` (planner-visible bloat diagnostic — makes compression/brevity experiments self-motivating); fix `scripts/autopilot/program.md:123` + system-card goal-metric text (it describes a wall-occupancy cost proxy the instrument does not compute). Partial: telemetry fields now exist; doc truth remains open.
 
 ## Gates & pitfalls
 
@@ -35,3 +35,8 @@ inputs are journaled, so the axis replays over FULL journal history at zero infe
 ## Reporting
 
 Tick waypoints here + one-line progress entry; delete master-index row N6 on completion; all rate numbers via the MEASUREMENT.md §2 claim grammar.
+
+## Checkpoints
+
+- 2026-06-12 W2 replay result: 656 journal rows parsed, 0 malformed skipped; legacy canonical T1 frontier = 5 points, task-rate replay frontier = 8 points, admitted entries = 247 in both views. Dropped legacy point: trial 776 (quality 1.884, wall 804.5s, task_rate 192.42 q/h, goodput 120.82 q/h) dominated by trial 775 under task-rate. Fable proof criterion (`>=2 of 5`) was **not met**.
+- Verification: `uv run pytest tests/unit/test_autopilot_core_contracts.py tests/unit/test_eval_tower_concurrency_metrics.py tests/unit/test_eval_tower_hybrid_eval.py tests/unit/test_autopilot_controller_io.py tests/unit/test_evolution_manager_scrub.py tests/unit/test_safety_gate_baseline_eligibility.py tests/unit/test_per_suite_regression_resolution.py tests/unit/test_self_criticism_resolution.py` → 81 passed; `git diff --check` clean.
