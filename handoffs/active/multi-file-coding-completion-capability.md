@@ -181,6 +181,45 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
 
+## A2 rollout contract (prepared 2026-06-12)
+
+This is a rollout decision surface, not a code gap. Until the gates below clear, production remains
+**explicit-only**: callers must request `force_mode="edit"`, and the runtime must have BOTH
+`ORCHESTRATOR_EDIT_TRANSACTION=1` and a scoped `ORCHESTRATOR_EDIT_ROOT`; otherwise the request fails closed
+with HTTP 412. Do not add broad automatic routing while the capability registry and evidence-plane ledger
+are still gated.
+
+**Initial eligible task shape (first cohort only):**
+- role: `coder_escalation`
+- task class: routine file edit, create, rename, import fix, or small multi-file mechanical change
+- scope: caller supplies a bounded workspace root; no implicit repo-root editing
+- context: scoped root is under the existing caps (`<=50` files, `<=400 KB`) or explicit `target_files`
+  are supplied by a future smart-selector
+- excluded: exploratory debugging, test-run-iterate tasks, research/document synthesis, image/document
+  multimodal requests, shell-heavy tasks, and any task that needs intermediate computation/tool feedback
+
+**Promotion route:** register `edit_transaction_auto_routing` as a first-cohort capability row under
+`capability-registry-and-promotion.md` once W1 exists. Keep `actionable_by=operator` until descriptor,
+applicator, validated range, kill condition, and one shadowed trial are present. Only then may the monthly
+promotion pass consider `actionable_by=autopilot` or `gated:<condition>`.
+
+**Required clean-window evidence before enablement:**
+- Fixed code-edit slice of at least 50 routine edit tasks, comparing current default mode vs edit mode on the
+  same task roots.
+- Quality gate: edit-mode pass rate is not worse than default by more than 1 percentage point; any destructive
+  delete/rename must be verifier-approved.
+- Reliability gate: HTTP 412/422, parse failures, rollback failures, unsafe-path rejects, and scope-cap rejects
+  are each reported separately; no unsafe-path reject may write any file.
+- Speed gate: report end-to-end latency, model calls, and turns. A latency win is desirable but not sufficient
+  to override a quality/reliability miss.
+- Attestation: record exact env (`ORCHESTRATOR_EDIT_TRANSACTION`, `ORCHESTRATOR_EDIT_ROOT`), role/model, repo
+  commit, and task-root hashes. Do not score runs collected during AutoPilot/BGE/K-RAG contention.
+
+**Kill condition for any canary:** immediately disable auto-routing if a request escapes the scoped root, a
+rollback fails to restore the pre-state, verifier-approved quality drops by more than 1pp, edit-mode 412/422
+exceeds 5% on eligible traffic, or an unscoped repo root is detected. These are capability-registry kill
+conditions, not planner suggestions.
+
 ## Reproduce
 ```bash
 cd /mnt/raid0/llm/epyc-orchestrator

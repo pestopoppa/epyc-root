@@ -25,7 +25,7 @@
 | # | Item | Gate/note |
 |---|---|---|
 | A1 | **shape-keyed-contention rollout** — Step-1 JSONL analyzed; next is the quiesce-window Step-2 smoke/flag bracket | bracket owns the reload (see §C) |
-| A2 | **multi-file edit-transaction rollout decision** (5/5 vs loop-failures proven; flag default-off) | operator A/B-then-enable; promotion-cohort candidate |
+| A2 | **multi-file edit-transaction rollout decision** — contract prepared; clean-window A/B + capability-registry promotion still required | operator A/B-then-enable; promotion-cohort candidate |
 | A3 | **within-role placement**: J2/J3 live migration probe | quiesce window (single-worker API) |
 | A4 | **eval-tower-verification** EV-8/9/10 | re-sequenced AFTER N2/N4 (EV-4 calibration explicitly waits for the redesigned tower) |
 | A7 | **Batched-decode measurement** — E1 CPU14 `-np` sweep + E2 single-instance eval A/B; conditional E3 8x8 GEMM SIMD → [batched-decode-measurement.md](batched-decode-measurement.md) | ACTIVE-HIGH; E1/E2 = quiesce-window Queue-2 item 2 |
