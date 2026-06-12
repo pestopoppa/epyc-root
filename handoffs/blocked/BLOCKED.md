@@ -8,9 +8,11 @@ This index tracks work that cannot proceed until an external condition changes. 
 
 | Task | Blocked On | Priority | Handoff | Current State |
 |------|------------|----------|---------|---------------|
-| Retrain routing models + GraphRouter + SkillBank | Accumulate ~500+ fresh routing memories after episodic-memory reset | HIGH | [`../active/retrain-routing-models.md`](../active/retrain-routing-models.md) | Active handoff marked `BLOCKED`; verify memory count before retraining. |
+| _None currently tracked here_ | — | — | — | BGE repair cleared the retrain-routing blocker on 2026-06-12; remaining work is active, not blocked. |
 
 Removed 2026-06-12 (Fable 5 portfolio pass): Ouroboros multi-model validation → moved to [`../archived/09-ouroboros-multi-model-validation.md`](../archived/09-ouroboros-multi-model-validation.md) — never executed, references a deprecated model stack (pre-30B-A3B/gemma4 worker swaps); closure note in the file.
+
+Removed 2026-06-12 (BGE repair complete): Retrain routing models + GraphRouter + SkillBank → returned to active work in [`../active/retrain-routing-models.md`](../active/retrain-routing-models.md). Post-repair diagnose-only report was HEALTHY with 275,960 FAISS vectors and 94.6% coverage.
 
 ## Reporting Instructions
 

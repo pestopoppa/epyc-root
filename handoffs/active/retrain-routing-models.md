@@ -1,22 +1,26 @@
 # Retrain Routing Models
 
-**Status**: BLOCKED — refreshed 2026-06-12 (Fable 5 portfolio pass)
-**Blocked on**: **Operator BGE re-embed of `episodic.db`** (`repair_episodic_embeddings.py --repair`) — NOT data accumulation: the store already holds 52K+ labeled routing memories; the gap is missing embeddings since the FAISS reset (`reembedded.npz` is a frozen 2026-04-15 snapshot). The lollms dataset is NOT the unblock (parked; see the 2026-06-12 deep-dive correction below).
-**⚠️ Verify first (live anomaly, 2026-06-12)**: `embeddings.faiss` observed **0 bytes** at 14:54 today with a lock file present, against ~287K episodic rows — determine rebuild-in-progress vs broken BEFORE any other step; KNN routing fallback depends on it.
-**Unblock sequence**: BGE re-embed → `extract_training_data.py` → `train_routing_classifier.py` → GAT retrain → SkillBank re-distill → flag verification (steps 1–5 below).
+**Status**: ACTIVE/UNBLOCKED — BGE repair completed 2026-06-12; classifier/GAT/SkillBank artifacts still need current-data retrain + verification.
+**Unblocked by**: `repair_episodic_embeddings.py --repair --servers 90 --batch-size 128 --base-port 8090` completed 2026-06-12. Post-repair diagnose-only report: 291,587 routing memories in DB, 275,960 FAISS vectors, 275,960 `reembedded.npz` IDs, 94.6% FAISS coverage, 94.6% live-overlap, 15,627 orphan IDs, **Status: HEALTHY**. The earlier 0-byte `embeddings.faiss` anomaly was the repair window, not the standing blocker.
+**Next sequence**: `extract_training_data.py` → `train_routing_classifier.py` → flag/weights verification → then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
 **Created**: 2026-05-25
 
 ## Context
-Episodic memory was reset. The routing classifier weights, GraphRouter GAT
-weights, and SkillBank skills were all invalidated. Normal FAISS retrieval
-is active as fallback. Once enough new episodic memories are collected
-(~500+ routing memories), retrain routing models and re-distill skills.
+Episodic memory was reset on 2026-05-25. The routing classifier weights,
+GraphRouter GAT weights, and SkillBank skills were invalidated. Normal
+FAISS retrieval is active as fallback. The former blocker was not label
+volume: by 2026-06-12 the store already held hundreds of thousands of routing
+rows, but FAISS/reembedded coverage was stale after reset. The BGE repair is
+now complete, so the immediate production-correctness task is to extract
+current training data, retrain the MLP classifier, and verify the live flag
+cannot silently claim a dead fast path.
 
 ## Steps
 
-### 1. Verify memory count
+### 1. Verify memory + embedding health
 ```bash
 python3 -c "from orchestration.repl_memory.episodic_store import EpisodicStore; s = EpisodicStore(); print(s.count('routing'))"
+python3 scripts/maintenance/repair_episodic_embeddings.py --diagnose-only
 ```
 
 ### 2. Retrain routing classifier (MLP)
@@ -25,7 +29,16 @@ python3 scripts/graph_router/extract_training_data.py
 python3 scripts/graph_router/train_routing_classifier.py
 ```
 
-### 3. Retrain GraphRouter (GAT)
+### 3. Verify classifier wiring before enabling
+```bash
+python3 scripts/maintenance/verify_routing_wiring.py
+```
+
+Only re-enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1` after weights exist,
+validation is acceptable, and `/config/attest` proves the flag is uniform
+across workers.
+
+### 4. Retrain GraphRouter (GAT) only if still justified
 ```bash
 python3 scripts/graph_router/train_graph_router.py --epochs 100
 python3 scripts/graph_router/onboard_model.py \
@@ -34,7 +47,11 @@ python3 scripts/graph_router/onboard_model.py \
     --port 9999 --tps 60.0 --memory-tier HOT --memory-gb 10
 ```
 
-### 4. Re-distill SkillBank
+Fable 5 froze routing-learning expansion until current-traffic DAR-1 regret
+reaches >=5% and per-question vectors exist. Treat GAT retraining as
+verification/backstop work unless a fresh gate says routing regret is real.
+
+### 5. Re-distill SkillBank only if trajectory volume and freeze gate pass
 ```bash
 # Dry-run to check trajectory volume
 python3 -m orchestration.repl_memory.distillation.pipeline --days 25 --teacher mock --dry-run
@@ -46,7 +63,7 @@ python3 -m orchestration.repl_memory.distillation.pipeline --days 25 --teacher c
 sqlite3 /mnt/raid0/llm/tmp/skills.db "SELECT skill_type, COUNT(*) FROM skills GROUP BY skill_type;"
 ```
 
-### 5. Enable features
+### 6. Enable features
 Set in `orchestrator_stack.py` or environment:
 ```bash
 export ORCHESTRATOR_ROUTING_CLASSIFIER=1
@@ -65,4 +82,4 @@ export ORCHESTRATOR_SKILLBANK=1
 ### Deep-Dive Refinement (2026-06-12) — correction: lollms is NOT the unblock
 **This retrain is NOT short on labels.** The live `episodic.db` already holds **52K+ labeled routing memories**; the real blocker is **missing BGE embeddings** (FAISS was reset; `reembedded.npz` is a frozen 2026-04-15 snapshot). The lollms dataset cannot fix an embedding gap, and it's the wrong surface: it's generative-router SFT *text* (per-row candidate-list → index+rationale), while our controller is a discriminative **BGE-embedding MLP** (1031-d feature → 8 roles). Its "relabel to 5 roles" is structurally infeasible — the label is a *prompt-relative index into a per-row candidate list*, with no stable model→role map — and synthetic labels would pollute the Q-grounded store. **Unblock path = operator BGE re-embed** (`repair_episodic_embeddings.py --repair` → `extract_training_data.py` → `train_routing_classifier.py`), not lollms. Keep lollms parked only as a TTT-synthesis / generative-router reference. Full: `research/deep-dives/2026-06-12-lollms-smart-router-dataset.md`.
 
-### 6. Delete this handoff
+### 7. Delete this handoff
