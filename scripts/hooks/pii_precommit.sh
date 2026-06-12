@@ -205,4 +205,8 @@ if [[ $EXIT_CODE -ne 0 ]]; then
   echo "[$HOOK_NAME] Allow-list (legitimate fixtures): research/fixtures/pii_*" >&2
 fi
 
+if [[ -x "$REPO_ROOT/scripts/validate/check_imperative_injection.py" ]]; then
+  "$REPO_ROOT/scripts/validate/check_imperative_injection.py" --cached --warn-only >&2 || true
+fi
+
 exit $EXIT_CODE
