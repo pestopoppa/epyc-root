@@ -1,6 +1,6 @@
 # Model-Capability Descriptors: The Model-Agnosticism Interface
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: W1 branch-ready; W2 compiler is next
 **Created**: 2026-06-12
 **Priority**: MED — compiler can start today (no blockers); the Phase-3 cascade tail is GATED and predicted to stay so
 **Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phase 2 (+ Phase 3 for the gated tail) and [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §3 — read both before claiming any waypoint
@@ -17,7 +17,7 @@ update: the predictor transfers, launch args travel with the model, routing surv
 
 ## Waypoints
 
-- [ ] **W1 — schema** (~1 day): `orchestration/model_descriptors.yaml`, one entry per MODEL (canonical id `family-params-quant`), NEVER per role; fields per spec 2.1: quality suite_vector with source/eval_protocol, speed with bench provenance, acceleration (spec_type, draft_compat, enable_thinking, kv), serving (binary, numa_policy, mlock), descriptor_version + compiled_at.
+- [x] **W1 — schema** (~1 day): `orchestration/model_descriptors.yaml`, one entry per MODEL (canonical id `family-params-quant`), NEVER per role; fields per spec 2.1: quality suite_vector with source/eval_protocol, speed with bench provenance, acceleration (spec_type, draft_compat, enable_thinking, kv), serving (binary, numa_policy, mlock), descriptor_version + compiled_at. Branch-ready in `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/model-descriptor-worktree`, branch `feat/model-capability-descriptors`, commit `578eb8a` (`Add model capability descriptor seed`). W1 deliberately records role/server conflicts as explicit `known_gaps` instead of resolving them by hand.
 - [ ] **W2 — compiler** (~2 days): `scripts/registry/compile_descriptors.py`; sources = research registry + lean registry + bench artifacts; REFUSES to emit a descriptor with missing load-bearing fields (lists gaps instead); runs at stack launch (compose with the existing `--compile-registry` path) and on registry change; converts free-text provenance comments into structured `measured: {date, protocol, value}` fields. Acceptance: clean compile for ≥80% of deployed models (spec §6 gate).
 - [ ] **W3 — first consumers** (~2 days, no router redesign): q_scorer cost model (replaces routing-truth-restoration W5 stopgap), seeder per-role eval config, `orchestrator_stack` acceleration args (spec/MTP/enable_thinking travel with the model — kills the `_NO_SPEC_DECODE`/ik-binary special-case class), eval-tower model signatures replacing hand-maintained `orchestration/model_quality_signatures.yaml` (stale since 2026-04-16, fed to the planner every trial). Acceptance: planner-prompt signatures show `compiled_at` within 7 days.
 - [ ] **W4 — simulated model-SWAP CI** (~1 day): replace one role's descriptor with a candidate model's; replay a day of routing decisions + launch-arg generation; PASS = data-only change, zero code edits. Acceptance: passes for 2 candidate models. This is the standing model-agnosticism gate and the precondition for autopilot-proposed model swaps (Stack-Config axis).
@@ -33,3 +33,7 @@ update: the predictor transfers, launch args travel with the model, routing surv
 ## Reporting
 
 Tick waypoints + one-line progress entry; delete the master-index row on completion; numbers via MEASUREMENT.md §2 claim grammar.
+
+## Progress
+
+- 2026-06-12: W1 branch-ready (`578eb8a`). Added the descriptor seed for 9 deployed/wired local inference targets plus schema tests. Validation: `pytest tests/unit/test_model_descriptors_schema.py -q` -> 4 passed; `ruff check`; `ruff format --check`; YAML type check; `git diff --check`.
