@@ -678,7 +678,7 @@ Tasks added to [`meta-harness-optimization.md`](meta-harness-optimization.md) (H
 - [x] **HLE-1** Per-component harness metrics from structured traces with evidence event IDs and confidence: execution fidelity, feedback interpretation, planning stability, memory coherence, recovery rate (meta-harness) — rule-based observe-only implementation landed in epyc-orchestrator `9222a19`
 - [x] **HLE-2** Oracle-adequacy meta-metric per suite including blind spots, shortcut risk, determinism, and review status (meta-harness; addresses P8b web-search-shortcut) — default oracle-adequacy registration landed in epyc-orchestrator `9222a19`
 - [ ] **HLE-3** Harness-isolating benchmark lane: fixed model/server/retrieval snapshot, vary one harness component at a time (meta-harness)
-- [ ] **HLE-4** Per-component metrics as observe-only fields first, then Pareto co-objectives/guardrails only after predictive-signal analysis (autopilot)
+- [x] **HLE-4** Per-component metrics as observe-only fields first, then Pareto co-objectives/guardrails only after predictive-signal analysis (autopilot) — 2026-06-12 analysis closed current rule metrics as diagnostic/advisory only; no Pareto promotion before N2 ledger/sequential verdict redesign.
 
 **Additional task additions (existing handoffs):**
 - **Uncertainty-routed escalation** → [`decision-aware-routing.md`](decision-aware-routing.md) URE-1/2/3 (calibrated decision uncertainty as a second escalation axis; bounded approval-as-harness-state; uncertainty as routing feature only after ECE/abstention gates) — intake-607 §5.2.5.
