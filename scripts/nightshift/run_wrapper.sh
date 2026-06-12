@@ -12,6 +12,7 @@
 #   NIGHTSHIFT_MAX_PROJECTS  — max projects per run (default: 3)
 #   NIGHTSHIFT_MAX_TASKS     — max tasks per project (default: 2)
 #   NIGHTSHIFT_INFERENCE_THRESHOLD_GB — RAM threshold for inference detection (default: 200)
+#   NIGHTSHIFT_ATTESTATION_MAX_AGE_S — refresh running-state attestation after this age (default: 14400)
 
 set -euo pipefail
 
@@ -24,6 +25,51 @@ DISABLE_FLAG="$PROJECT_ROOT/.nightshift_disabled"
 mkdir -p "$LOG_DIR"
 
 LOGFILE="$LOG_DIR/$(date +%Y-%m-%d_%H%M%S).log"
+
+refresh_attestation_if_stale() {
+  if [[ "${NIGHTSHIFT_ATTESTATION_REFRESH:-1}" == "0" ]]; then
+    echo "[wrapper] Attestation refresh disabled (NIGHTSHIFT_ATTESTATION_REFRESH=0)"
+    return 0
+  fi
+
+  local orch_root="${ORCHESTRATOR_ROOT:-/mnt/raid0/llm/epyc-orchestrator}"
+  local script="$orch_root/scripts/attest/generate_attestation.py"
+  local latest="$orch_root/orchestration/attestation/latest.json"
+  local max_age="${NIGHTSHIFT_ATTESTATION_MAX_AGE_S:-14400}"
+
+  if [[ ! -f "$script" ]]; then
+    echo "[wrapper] Attestation refresh skipped: missing $script"
+    return 0
+  fi
+
+  local now
+  now="$(date +%s)"
+  local mtime=0
+  if [[ -f "$latest" ]]; then
+    mtime="$(stat -c %Y "$latest" 2>/dev/null || echo 0)"
+  fi
+  local age=$((now - mtime))
+  if (( age < max_age )); then
+    echo "[wrapper] Attestation fresh (${age}s < ${max_age}s), skipping refresh"
+    return 0
+  fi
+
+  echo "[wrapper] Refreshing running-state attestation (age=${age}s, max=${max_age}s)"
+  local rc=0
+  (
+    cd "$orch_root"
+    uv run python scripts/attest/generate_attestation.py \
+      --trigger nightshift_4h \
+      --flag-polls "${NIGHTSHIFT_ATTESTATION_FLAG_POLLS:-120}" \
+      --flag-min-workers "${NIGHTSHIFT_ATTESTATION_MIN_WORKERS:-6}"
+  ) || rc=$?
+  if [[ "$rc" == "0" || "$rc" == "1" ]]; then
+    echo "[wrapper] Attestation refresh wrote artifact (rc=$rc)"
+    return 0
+  fi
+  echo "[wrapper] WARNING: attestation refresh failed (rc=$rc)"
+  return 0
+}
 
 {
   echo "=== Nightshift Run: $(date -Iseconds) ==="
@@ -62,6 +108,9 @@ LOGFILE="$LOG_DIR/$(date +%Y-%m-%d_%H%M%S).log"
   git -C "$WORKTREE" checkout --detach origin/main 2>/dev/null ||
     git -C "$WORKTREE" checkout --detach main 2>/dev/null || true
   echo "[wrapper] Worktree at: $(git -C "$WORKTREE" rev-parse --short HEAD)"
+
+  # 0.8. Keep running-state attestation fresh for AutoPilot trial-trust gates.
+  refresh_attestation_if_stale
 
   # 1. Check inference load
   source "$SCRIPT_DIR/inference_guard.sh"

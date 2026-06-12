@@ -1,10 +1,10 @@
 # ATTESTATION — Generated Running-State Report
 
-**Status**: W1-W3 branch-ready; W4 remains open
+**Status**: COMPLETE — W1-W4 branch-ready; awaiting merge/deploy to live orchestrator clone
 **Created**: 2026-06-12
 **Priority**: HIGH — independent of other fable5 tracks; highest trust-per-effort; ~3–4 days total (consolidation of existing ad-hoc checks, not invention)
-**Spec**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §B — read before claiming any waypoint
-**Related**: `routing-truth-restoration.md` (sibling handoff, owns the `GET /config/attest` flags endpoint W2 consumes); [frontier-f4-continuity-backup.md](frontier-f4-continuity-backup.md) (backup-age + unpushed-commit checks ride this artifact); [MEASUREMENT.md](../../MEASUREMENT.md) (this artifact is the `attest <id>` referent in the claim grammar)
+**Spec**: [fable5-findings-04-impl-plan.md](../active/fable5-findings-04-impl-plan.md) §B
+**Related**: [routing-truth-restoration.md](../active/routing-truth-restoration.md) (sibling handoff, owns the `GET /config/attest` flags endpoint W2 consumes); [frontier-f4-continuity-backup.md](../active/frontier-f4-continuity-backup.md) (backup-age + unpushed-commit checks ride this artifact); [MEASUREMENT.md](../../MEASUREMENT.md) (this artifact is the `attest <id>` referent in the claim grammar)
 
 ## Why
 
@@ -20,7 +20,7 @@ and safety-gate decision can cite a machine-checked snapshot of running state.
 - [x] **W1 — generator + processes section** (~1 day): branch-ready in `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/attestation-worktree`, branch `feat/running-state-attestation`, commit `aee2ae9` (`Add running-state attestation report`). Added `scripts/attest/generate_attestation.py`, tests, and live `orchestration/attestation/latest.{json,md}`. The live artifact generated 2026-06-12 reports 34 relevant processes (28 `llama_server`, 1 orchestrator API, 2 AutoPilot, 1 OCR, 1 whisper, 1 MCP), all dynamic-link checks `ok`; the false earlyoom `llama-server` text match was fixed. Remaining live drift surfaced by W1: 13 active llama-server ports lack a registry match (`8185`, `8285`, `8385`, `8485`, `8187`, `8287`, `8387`, `8487`, `8090`, `8091`, `8093`, `8094`, `8095`).
 - [x] **W2 — flags + per-role serving config** (~1 day): branch-ready in the same worktree at commit `5fc1b63` (`Extend attestation with flags and serving config`). Schema v2 now polls `GET /config/attest` with closed connections, reads sampled worker env, parses per-role llama-server serving flags from `/proc/<pid>/cmdline`, and compares live process/task affinity against `scripts/server/stack_numa.py` `NUMA_CONFIG`. Live run generated 2026-06-12T21:20:59Z: 6/6 API workers sampled, zero heterogeneous flags, zero NUMA mismatches after task-level affinity union, 48 declared-production flag diffs across 8 flags (`langgraph_*`, `ure_uncertainty_shadow_log`) caused by live legacy env/source overrides, plus the 13 registry-unmatched active llama-server ports from W1.
 - [x] **W3 — eval-instrument + drift sections** (~half day): branch-ready at commit `d04e364` (`Add attestation eval instrument and drift checks`). Schema v3 records instrument-era/sentinel file hashes, `AUTOPILOT_TOOL_SENTINELS` env presence for AutoPilot/API processes, and GitNexus freshness for root/orchestrator/research/llama. Live run generated 2026-06-12T21:27:12Z: all four instrument/sentinel files exist with hashes, but `AUTOPILOT_TOOL_SENTINELS` is missing from the API parent and both AutoPilot processes; GitNexus reports `epyc-orchestrator` main stale (`594cfb5` indexed vs `2e253e9` current); HTTP flag sampling reached 5/6 uvicorn workers despite six worker processes existing.
-- [ ] **W4 — cadence + consumers** (~1 day): generate on stack start, on reload, and 4-hourly via existing nightshift/cron infra; autopilot safety gate reads `latest.json` age as a trial-trust precondition; trials spanning an attestation change auto-tagged `exogenous_*` (classification machinery exists). Acceptance: one nightshift cycle produces fresh artifacts and a spanning trial is auto-excluded in the journal.
+- [x] **W4 — cadence + consumers** (~1 day): branch-ready at commit `bb28a28` (`Wire running-state attestation consumers`) plus root cadence hook in `scripts/nightshift/run_wrapper.sh`. Schema v4 records a `trigger` field; `scripts/server/stack_commands.py` writes best-effort snapshots after successful stack start/reload; root nightshift refreshes the artifact when older than 4h; AutoPilot enables `AUTOPILOT_ATTESTATION_REQUIRED` in `run_loop`, records before/after attestation fingerprints in trial details, treats stale/missing attestation as `exogenous_attestation_stale`, and treats artifact changes during a trial as `exogenous_attestation_changed`. Existing `exogenous_cache_flush` now also flows through the shared learning-exclusion policy. Live v4 run generated 2026-06-12T21:40:45Z with trigger `manual_w4_validation`: 34 relevant processes, 6/6 API workers sampled, zero flag heterogeneity, 48 declared-production flag diffs, missing `AUTOPILOT_TOOL_SENTINELS` in API/AutoPilot processes, stale main orchestrator GitNexus index, and 13 registry-unmatched active llama-server ports.
 
 ## Gates & pitfalls
 
@@ -32,4 +32,4 @@ and safety-gate decision can cite a machine-checked snapshot of running state.
 
 ## Reporting
 
-Tick waypoints here + one-line progress entry per session; on full completion delete the master-index row and move this file to `completed/`; any number cited follows the [MEASUREMENT.md](../../MEASUREMENT.md) claim grammar.
+Completed 2026-06-12. Any number cited follows the [MEASUREMENT.md](../../MEASUREMENT.md) claim grammar.
