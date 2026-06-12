@@ -8,11 +8,11 @@
 
 ## Current State & Next Action (TL;DR)
 
-**Where we are**: Track A LongCat-Flash-Lite CPU probe closed negative on 2026-05-25. The model ran at production-relevant CPU rates, but gemma4-MTP dominated it on both decode speed and sentinel quality for `worker_general`; it is not a production replacement candidate on this stack. Track B Phase 0a CPU prep is complete and remains a separate research bet.
-**Next action**: Track B Phase 0b GPU proxy only when ready to spend ~$50-150 on cloud/GPU time. The remaining inference-free debt is the Track A negative deep-dive/reporting update, not another Track A probe.
+**Where we are**: Track A LongCat-Flash-Lite CPU probe closed negative on 2026-05-25. The model ran at production-relevant CPU rates, but gemma4-MTP dominated it on both decode speed and sentinel quality for `worker_general`; it is not a production replacement candidate on this stack. Track A reporting is complete: `research/deep-dives/longcat-flash-lite-engram-cpu-poc.md` exists and `intake-504` records the contradictory measurement. Track B Phase 0a CPU prep is complete and remains a separate research bet.
+**Next action**: Track B Phase 0b GPU proxy only when ready to spend ~$50-150 on cloud/GPU time.
 **Owner**: TBD — needs assignment.
 
-If you are an agent landing on this doc and being asked to "make progress on Engram", do not restart Track A. Start with either the Track A negative deep-dive/reporting update, or Track B Phase 0b if a clean GPU budget/window has been explicitly authorized.
+If you are an agent landing on this doc and being asked to "make progress on Engram", do not restart Track A. The only open execution path is Track B Phase 0b if a clean GPU budget/window has been explicitly authorized.
 
 ## Objective
 
@@ -334,7 +334,7 @@ Copy this into a TaskCreate list when starting work:
 4. [x] **Track A Phase 3** — smoke test passed on 2026-05-25: LongCat Q4_K_M loaded and answered a basic prompt through `/v1/chat/completions`. ✅
 5. [x] **Track A Phase 4** — speed gate complete on 2026-05-25: LongCat Q4_K_M `tg128=37.08 t/s`, above abandon threshold but below gemma4-MTP production decode. ✅
 6. [x] **Track A Phase 5** — quality gate failed vs worker on 2026-05-25: LongCat 21/39 = 53.8%, gemma4-MTP 26/39 = 66.7%. ✅
-7. [x] **Track A Phase 6** — closed negative on 2026-05-25. Remaining debt: write `research/deep-dives/longcat-flash-lite-engram-cpu-poc.md` and update intake-504 contradicting evidence. ✅
+7. [x] **Track A Phase 6** — closed negative on 2026-05-25. Reporting complete: `research/deep-dives/longcat-flash-lite-engram-cpu-poc.md` exists and `intake-504` has the 2026-05-25 contradictory measurement. ✅
 
 Track B Phase 0a (non-inference prep — COMPLETE 2026-05-24):
 8. [x] Vendor + refactor the demo Engram module into a clean importable package with config dataclasses (no global state). Drop mocked attn/moe stubs. ✅
