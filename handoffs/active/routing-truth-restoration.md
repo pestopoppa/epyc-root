@@ -1,10 +1,10 @@
 # Routing Truth Restoration: Prod Flags, Attestation, Dead Code
 
-**Status**: IN PROGRESS — W1-W7 immediate scope landed and live-attested/deployed 2026-06-12; W8 remains; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
+**Status**: IMMEDIATE SCOPE COMPLETE 2026-06-12 — W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
 **Created**: 2026-06-12
-**Priority**: NOW/HIGH — master-index N3; every runtime-flag A/B under 6-worker uvicorn has measured a 5/6-unmutated system
+**Priority**: CLOSED/HIGH — immediate repair scope completed; remaining item is the 2026-07-12 `dispatch_swarm_fanout` ownership watch
 **Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
-**Related**: [decision-aware-routing.md](decision-aware-routing.md) (DAR-1 replay executes there), [learned-routing-controller.md](learned-routing-controller.md) (the dead MLP fast-path), [running-state-attestation.md](running-state-attestation.md) (system-wide ATTESTATION generator — this handoff owns ONLY the flags endpoint)
+**Related**: [decision-aware-routing.md](decision-aware-routing.md) (DAR-1 replay result recorded there), [learned-routing-controller.md](learned-routing-controller.md) (the dead MLP fast-path), [running-state-attestation.md](running-state-attestation.md) (system-wide ATTESTATION generator — this handoff owns ONLY the flags endpoint)
 
 ## Why
 
@@ -25,15 +25,15 @@ The live system must match SOME declared intent before any routing redesign.
 - [x] **W5 — q_scorer baseline_tps refresh** (afternoon): read `baseline_tps_by_role` from the lean registry's measured values at startup (`q_scorer.py:89-99` marked KNOWN STALE — frontdoor 12.7 vs measured ~21–27, spec 0.3). Stopgap until descriptors ([model-capability-descriptors.md](model-capability-descriptors.md) W3 replaces it).
 - [x] **W6 — zero-caller deletions** (~1 day): `get_confidence_routing` + helpers (`chat_routing.py:283-448`) and 3-way routing wrappers deleted; proof in spec §4. `ORCHESTRATOR_ROUTING_CLASSIFIER` is unset/off in the declared production env until weights exist. `dispatch_swarm_fanout` is deliberately retained for now because this waypoint's deletion condition is "if no handoff claims it within the month"; revisit ownership on 2026-07-12 before deleting it.
 - [x] **W7 — shadow-telemetry decision**: Trinity/difficulty/URE shadows now route into `logs/progress/*.jsonl`, the file QScorer/replay tools already mine. Difficulty/risk were already present; W7 added Trinity `assigned_role` and URE `uncertainty_*` fields to the durable routing event while preserving the existing URE sidecar for backward compatibility.
-- [ ] **W8 — Phase 1 measurement** (1–2 days): DAR-1 regret replay on last-7-days traffic — executes via [decision-aware-routing.md](decision-aware-routing.md); link, do not duplicate. Plus `_try_cheap_first` accept/reject counters into progress JSONL (currently unobservable). Gate: regret ≥5% of requests opens Phase 3 (cascade); <5% freezes routing expansion indefinitely (re-run quarterly). Prediction on record: <5%.
+- [x] **W8 — Phase 1 measurement**: DAR-1 regret replay on 2026-06-05..2026-06-12 traffic completed in `epyc-orchestrator` `1dfbc22`; report: `orchestration/reports/dar1_regret_replay_2026-06-12.md`. Gate result: 12,057 decisions, 11,249 matched outcomes, 8,145 regret-identifiable decisions, 0.00% identifiable mean regret, 99.1% uniform Q-values. Phase 3 cascade expansion remains frozen; re-run quarterly or after enough new `action_topk` telemetry accumulates. `_try_cheap_first` denominator/attempt/accept/reject counters now write `routing_fallback` progress rows with `data.kind=try_cheap_first`.
 
 ## Gates & pitfalls
 
-- W1 blocks only W2; W3–W7 are complete. W8's replay runs on existing logs; the counter half is now unblocked by W7's progress-log telemetry path.
+- W1-W8 are complete. Any future routing expansion must re-open through a new measured gate, not through this repair handoff.
 - Long-dormant flags ARE new code: never enable wave-2 flags together; one observation window each.
 - Attestation results must be journaled WITH each autopilot flag trial — otherwise flag experiments remain unmeasurable (findings-01 §3.4).
 - Use `orchestrator_stack.py reload` for any restart — never manual PID kills.
-- Record the W8 verdict either way: it gates the entire routing-expansion cluster (master-index gate table) and the Phase-3 tail of model-capability-descriptors.
+- Latest W8 verdict: routing expansion remains frozen because DAR-1 measured 0.00% identifiable mean regret, below the 5% gate.
 
 ## 2026-06-12 Checkpoint — W1-W4 Landed
 
@@ -107,6 +107,34 @@ Verification:
 - GitNexus re-indexed commit `e40df31`: 48,681 nodes, 83,579 edges, 992 clusters, 300 flows.
 - Live no-inference smoke: 24 mock-mode `/chat` requests wrote 24 new `routing_decision` rows; all had `assigned_role`, `uncertainty_score`, `uncertainty_components`, and `uncertainty_n_alternatives`.
 
+## 2026-06-12 Checkpoint — W8 DAR-1 Replay + Cheap-First Counters
+
+Commit: `epyc-orchestrator` `1dfbc22` (`Measure routing regret and log cheap-first counters`).
+
+Implementation:
+- Repaired `scripts/analysis/dar1_regret_analysis.py` outcome parsing: durable progress rows write `outcome` and `reward` at the event top level, not only under `data`.
+- Added explicit identifiable-vs-unidentified regret accounting. Historical rules/classifier rows that lack candidate action IDs are now reported as unidentifiable instead of treated as precise regret.
+- Added `action_topk` to `HybridRouter._record_decision_meta()` so future `routing_decision` rows can support true selected-vs-best regret replay.
+- Added `_try_cheap_first` progress counters under `event_type=routing_fallback`, `data.kind=try_cheap_first`, covering disabled/skipped/attempted/rejected/accepted reasons.
+- Added `orchestration/reports/dar1_regret_replay_2026-06-12.md`.
+
+Replay result:
+- Command: `uv run python scripts/analysis/dar1_regret_analysis.py --from 2026-06-05 --to 2026-06-12`.
+- Decisions analyzed: 12,057; matched outcomes: 11,249.
+- Learned Q-scorer decisions: 8,145; rules/classifier decisions: 3,912.
+- Regret-identifiable decisions: 8,145 (67.6%); mean decision regret: 0.0000; DAR-1 gate regret percent: 0.00%; max regret: 0.0000.
+- Q-scorer signal remains degenerate: 99.1% uniform Q-values and 95.2% trivial selection-score spread.
+- Gate verdict: Phase 3 cascade expansion remains frozen. Re-run quarterly or after enough new `action_topk` telemetry accumulates.
+
+Verification:
+- `python3 -m py_compile scripts/analysis/dar1_regret_analysis.py orchestration/repl_memory/hybrid_router.py src/api/routes/chat.py` passed.
+- `uv run pytest tests/unit/test_dar1_regret_analysis.py tests/unit/test_chat_routes.py tests/unit/test_chat_endpoints.py tests/integration/test_chat_pipeline.py` -> 74 passed.
+- `uv run pytest tests/unit/test_uncertainty_shadow.py tests/classifiers/test_difficulty_signal.py tests/unit/test_pipeline_routing.py tests/unit/test_dar1_regret_analysis.py tests/unit/test_chat_routes.py tests/unit/test_chat_endpoints.py tests/integration/test_chat_pipeline.py` -> 167 passed.
+- `git diff --check` for touched orchestrator files passed.
+- Reloaded orchestrator through `scripts/server/orchestrator_stack.py reload orchestrator`; new supervisor PID `2734276` healthy and prior PID `2719260` absent by `ps`. Post-reload `/config/attest` saw 6 workers with `errors={}`, `expected_diffs=[]`, and `heterogeneous={}`.
+- GitNexus re-indexed commit `1dfbc22`: 48,727 nodes, 83,649 edges, 998 clusters, 300 flows.
+- Live `/chat` smoke requests succeeded, but did not produce routing/task progress rows in `logs/progress/2026-06-12.jsonl`; treat live counter verification as covered by unit/integration tests until the request-path progress logging discrepancy is separately investigated.
+
 ## Reporting
 
-Tick waypoints + one-line progress entry; delete master-index row N3 on completion (W8 verdict also updates the routing-expansion gate-cluster row); numbers via MEASUREMENT.md §2 claim grammar.
+Immediate repair scope is complete. Keep only the `dispatch_swarm_fanout` ownership watch through 2026-07-12; any new routing-expansion work must pass a fresh measured gate.

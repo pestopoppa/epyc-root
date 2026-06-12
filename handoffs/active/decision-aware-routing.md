@@ -1,12 +1,12 @@
 # Decision-Aware Routing for Q-Scorer
 
-**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — **the NOW item is the DAR-1 regret replay over current traffic** (offline, ~0 inference; fable5 master-index row N7): it is the gate for the entire learned-routing expansion cluster. Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/ε-greedy) and DAR-6 are FROZEN per fable5-findings-02** (prediction: regret <5% ⇒ stays frozen); **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
+**Status**: REFRESHED 2026-06-12 (Fable 5 portfolio pass) — current-traffic DAR-1 replay completed 2026-06-12 and kept the routing-expansion gate CLOSED (0.00% identifiable mean regret; report in `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.md`). Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/ε-greedy) and DAR-6 are FROZEN per fable5-findings-02** until a future replay proves ≥5% regret; **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
 **Created**: 2026-04-14 (from deep-dive research on intake-366)
 **Updated**: 2026-06-12 (header refresh; prior body updates through 2026-04)
 **Priority**: HIGH
 **Categories**: routing_intelligence, reinforcement_learning, cost_aware_routing
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
-**Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are tracked in [routing-truth-restoration.md](routing-truth-restoration.md) W8 (avoid double-claiming; analysis itself runs here).
+**Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
 
 ## Problem / Context
 
@@ -60,6 +60,14 @@ Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing d
 **Next step**: DAR-2 contrastive training has limited Q-signal to work with. Two paths:
 1. Accumulate more routing memories via seeding (need 500+ updated memories; currently 419 with update_count > 0)
 2. Proceed with DAR-2 anyway — contrastive loss will sharpen the few memories that DO have signal, and new routing decisions will accumulate contrastive-trained Q-values faster than current TD learning
+
+### DAR-1 Current-Traffic Replay — ✅ 2026-06-12
+
+Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.md`.
+
+Replay window: 2026-06-05..2026-06-12 progress JSONL. Result: 12,057 routing decisions analyzed, 11,249 matched task outcomes, 8,145 regret-identifiable decisions, 0.00% identifiable mean regret, 99.1% uniform Q-values, 95.2% trivial selection-score spread.
+
+Gate verdict: DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing expansion remain frozen. Historical rules/classifier rows lacked candidate action IDs, so `epyc-orchestrator` `1dfbc22` added `action_topk` telemetry for future replays.
 
 ### DAR-2: Contrastive Q-Score Update — ✅ 2026-04-15
 
