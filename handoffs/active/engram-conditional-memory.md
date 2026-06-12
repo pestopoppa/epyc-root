@@ -1,18 +1,18 @@
 # Engram — Conditional Memory via Scalable Lookup
 
-**Status**: active (deep-dive complete, dual-track plan scoped)
+**Status**: active (Track A closed negative; Track B proxy open)
 **Created**: 2026-05-24 (via research intake)
-**Updated**: 2026-05-24 (deep-dive synthesis from three parallel agents)
+**Updated**: 2026-06-12 (stale Track A queue reconciled with decision log)
 **Categories**: memory_augmented, hardware_optimization, moe_optimization
 **Owner**: TBD
 
 ## Current State & Next Action (TL;DR)
 
-**Where we are**: deep-dive complete on 2026-05-24, no compute spent yet.
-**Next action**: Track A Phase 0 (confirm fork/GGUF freshness, ≤30 min, no compute).
+**Where we are**: Track A LongCat-Flash-Lite CPU probe closed negative on 2026-05-25. The model ran at production-relevant CPU rates, but gemma4-MTP dominated it on both decode speed and sentinel quality for `worker_general`; it is not a production replacement candidate on this stack. Track B Phase 0a CPU prep is complete and remains a separate research bet.
+**Next action**: Track B Phase 0b GPU proxy only when ready to spend ~$50-150 on cloud/GPU time. The remaining inference-free debt is the Track A negative deep-dive/reporting update, not another Track A probe.
 **Owner**: TBD — needs assignment.
 
-If you are an agent landing on this doc and being asked to "make progress on Engram", start at Track A Phase 0 below, not Track B. The sequencing rationale is in [Sequencing Decision](#sequencing-decision) — do not start Track B without checking that section first.
+If you are an agent landing on this doc and being asked to "make progress on Engram", do not restart Track A. Start with either the Track A negative deep-dive/reporting update, or Track B Phase 0b if a clean GPU budget/window has been explicitly authorized.
 
 ## Objective
 
@@ -329,12 +329,12 @@ Recurring failure modes worth pre-empting:
 Copy this into a TaskCreate list when starting work:
 
 1. [x] **Track A Phase 0** — `gh pr view 19167/19182 -R ggml-org/llama.cpp` + `gh api repos/InquiringMinds-AI/llama.cpp/branches/longcat-flash-ngram` confirm fork head `56abe85` and upstream PRs unchanged as of 2026-05-24. ✅
-2. [ ] **Track A Phase 1** — fetch the Q4_K_M GGUF (37.4 GB) to `/mnt/raid0/llm/models/longcat-flash-lite-q4km/`. Verify sha256. _(bandwidth-only, no inference approval needed; not done yet to avoid stranded disk if Phase 5 fails quality)_
+2. [x] **Track A Phase 1** — Q4_K_M GGUF present at `/mnt/raid0/llm/models/longcat-flash-lite-q4km/LongCat-Flash-Lite-Q4_K_M.gguf`. ✅
 3. [x] **Track A Phase 2** — InquiringMinds fork built in worktree `/mnt/raid0/llm/llama.cpp-longcat-probe` (branch `probe/longcat-build` tracking `inq/longcat-flash-ngram` at `56abe857d`). `llama-cli`, `llama-server`, full toolchain present. ✅
-4. [ ] **Track A Phase 3** — prepare smoke-test command. Request user approval before launching.
-5. [ ] **Track A Phase 4** — prepare `llama-bench` commands for 1K/4K/16K decode. Request user approval. Record results in Decision Log.
-6. [ ] **Track A Phase 5** — quality gate. 20-q MMLU subset + 5 internal agentic prompts vs Qwen3-30B-A3B. Record results.
-7. [ ] **Track A Phase 6** — apply gate. PASS → file Track A follow-on handoff and START Track B Phase 0 in parallel. FAIL → write negative deep-dive, stop.
+4. [x] **Track A Phase 3** — smoke test passed on 2026-05-25: LongCat Q4_K_M loaded and answered a basic prompt through `/v1/chat/completions`. ✅
+5. [x] **Track A Phase 4** — speed gate complete on 2026-05-25: LongCat Q4_K_M `tg128=37.08 t/s`, above abandon threshold but below gemma4-MTP production decode. ✅
+6. [x] **Track A Phase 5** — quality gate failed vs worker on 2026-05-25: LongCat 21/39 = 53.8%, gemma4-MTP 26/39 = 66.7%. ✅
+7. [x] **Track A Phase 6** — closed negative on 2026-05-25. Remaining debt: write `research/deep-dives/longcat-flash-lite-engram-cpu-poc.md` and update intake-504 contradicting evidence. ✅
 
 Track B Phase 0a (non-inference prep — COMPLETE 2026-05-24):
 8. [x] Vendor + refactor the demo Engram module into a clean importable package with config dataclasses (no global state). Drop mocked attn/moe stubs. ✅
