@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: refreshed 2026-05-28 — S1-S4 complete; S5 remains gated on an explicit irrelevant-page-rate decision
+**Status**: refreshed 2026-05-28; S5 gate analyzed 2026-06-12 — S1-S4 complete; S5 is **HOLD** because the latest analyzer-visible artifacts contain 33,424 web_research calls but 0 fetched/synthesized pages, so there is no irrelevant-page denominator. Do not implement request-path reranking until a fresh run produces >=50 synthesized pages.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-05-28
 **Priority**: MEDIUM
@@ -43,6 +43,22 @@ rg -n "web_research relevance summary|irrelevant_rate|pages_irrelevant" \
 | >20% with >=50 synthesized pages | GO | Implement S5 in `research.py` with lazy ONNX singleton, then run S6 A/B. |
 | 10-20% or <50 pages | HOLD | Add more web_research sentinel traffic; do not add request-path complexity yet. |
 | <10% with >=50 pages | NO-GO for S5 | Keep instrumentation; close this handoff as "reranker not justified"; optionally expose utility for offline analysis only. |
+
+**2026-06-12 gate analysis (read-only):** ran
+`python3 scripts/benchmark/analyze_web_research_baseline.py benchmarks/results/eval` in
+`/mnt/raid0/llm/epyc-inference-research`.
+
+- Questions with `web_research_baseline`: 1,274
+- Questions triggering `web_research`: 771 (60.5%)
+- Recorded `web_research` calls: 33,424
+- Pass rate with web_research: 671/771 (87.0%)
+- Pass rate without web_research: 440/503 (87.5%)
+- Aggregated page telemetry across files with `web_research_telemetry`: fetched=0, synthesized=0, irrelevant=0
+- No current orchestrator-log `web_research relevance summary` fallback rows were present.
+
+**Decision:** HOLD. The gate requires >=50 synthesized pages before a GO/NO-GO irrelevant-page-rate decision.
+This result also shows the existing analyzer-visible web_research data has source yield zero, so the next
+useful work is fresh sentinel traffic or web_research fetch/telemetry repair, not S5 implementation.
 
 **Risk controls if GO**:
 
@@ -180,7 +196,7 @@ grep "web_research relevance summary" /path/to/orchestrator.log | tail -20
   - **Note**: 180ms is well above the original <10ms target, but that target assumed pre-encoded embeddings. The 180ms includes full ONNX encoding through 150M params. Acceptable because each irrelevant page saved = 45s of synthesis. ROI: ~750x.
   - **Ranking quality**: Perfect separation on test data — all 5 relevant snippets ranked top 5, all 5 irrelevant ranked bottom 5. Score spread: relevant 0.93-0.96, irrelevant 0.91-0.92.
 
-- [ ] **S5: Implement reranker** — Add reranking to `research.py`, gated behind `web_research_rerank` flag. When flag is ON: increase `max_results` from 5 to 8-10, encode search snippets (from SearXNG JSON API when deployed per [`searxng-search-backend.md`](searxng-search-backend.md), else DDG HTML) via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. When using SearXNG, `engines[]`/`score` metadata available for multi-engine confidence weighting. Lazy model loading on first call. **Prerequisite**: post-AR-3 analysis confirms >20% irrelevant page rate.
+- [ ] **S5: Implement reranker** — HOLD as of 2026-06-12 gate analysis. Add reranking to `research.py`, gated behind `web_research_rerank` flag, only if a fresh analyzer run has >=50 synthesized pages and >20% irrelevant-page rate. When flag is ON: increase `max_results` from 5 to 8-10, encode search snippets (from SearXNG JSON API when deployed per [`searxng-search-backend.md`](searxng-search-backend.md), else DDG HTML) via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. When using SearXNG, `engines[]`/`score` metadata available for multi-engine confidence weighting. Lazy model loading on first call.
   - File: `epyc-orchestrator/src/tools/web/research.py` (modify `_web_research_impl`)
   - Encoding module: new `src/tools/web/colbert_reranker.py` (ONNX session, tokenizer, MaxSim)
   - Effort: ~2h, depends on S3/S4 (done) and AR-3 go/no-go
