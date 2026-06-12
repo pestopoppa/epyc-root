@@ -1,8 +1,8 @@
 # Retrain Routing Models
 
-**Status**: ACTIVE/UNBLOCKED — BGE repair completed 2026-06-12; classifier/GAT/SkillBank artifacts still need current-data retrain + verification.
+**Status**: ACTIVE/PARTIAL — BGE repair + current-data MLP retrain completed 2026-06-12; classifier weights are staged but production flag remains OFF pending rollout decision/clean-window attestation.
 **Unblocked by**: `repair_episodic_embeddings.py --repair --servers 90 --batch-size 128 --base-port 8090` completed 2026-06-12. Post-repair diagnose-only report: 291,587 routing memories in DB, 275,960 FAISS vectors, 275,960 `reembedded.npz` IDs, 94.6% FAISS coverage, 94.6% live-overlap, 15,627 orphan IDs, **Status: HEALTHY**. The earlier 0-byte `embeddings.faiss` anomaly was the repair window, not the standing blocker.
-**Next sequence**: `extract_training_data.py` → `train_routing_classifier.py` → flag/weights verification → then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
+**Next sequence**: decide `routing_classifier` rollout under a clean measurement window, then decide whether GAT and SkillBank retrains are still justified under the Fable 5 routing freeze.
 **Created**: 2026-05-25
 
 ## Context
@@ -13,7 +13,8 @@ volume: by 2026-06-12 the store already held hundreds of thousands of routing
 rows, but FAISS/reembedded coverage was stale after reset. The BGE repair is
 now complete, so the immediate production-correctness task is to extract
 current training data, retrain the MLP classifier, and verify the live flag
-cannot silently claim a dead fast path.
+cannot silently claim a dead fast path. That repair was staged on 2026-06-12;
+the live flag remains intentionally off until the rollout decision.
 
 ## Steps
 
@@ -26,8 +27,15 @@ python3 scripts/maintenance/repair_episodic_embeddings.py --diagnose-only
 ### 2. Retrain routing classifier (MLP)
 ```bash
 python3 scripts/graph_router/extract_training_data.py
-python3 scripts/graph_router/train_routing_classifier.py
+python3 scripts/graph_router/train_routing_classifier.py --batch-size 512
 ```
+
+**2026-06-12 result**:
+- Extracted 275,960 samples / 1,031 features from repaired `reembedded.npz`.
+- Label distribution: frontdoor 137,027; worker_explore 43,959; ingest_long_context 36,215; coder_escalation 30,382; architect_general 28,377; no architect_coding/worker_math/worker_vision rows in the repaired set.
+- First large-batch pass underfit (58.4% validation accuracy; non-frontdoor classes poor) and was archived at `/mnt/raid0/llm/tmp/routing_classifier_weights_b4096_20260612.npz`.
+- Batch-512 pass was promoted to `orchestration/repl_memory/routing_classifier_weights.npz`: 81.0% validation accuracy; per-class validation: frontdoor 92.7%, architect_general 83.2%, coder_escalation 82.0%, worker_explore 47.9%, ingest_long_context 74.3%.
+- Full-dataset threshold check: at global confidence >=0.8, coverage 61.6% and precision 94.4%; at >=0.9, coverage 45.6% and precision 97.7%.
 
 ### 3. Verify classifier wiring before enabling
 ```bash
@@ -37,6 +45,10 @@ python3 scripts/maintenance/verify_routing_wiring.py
 Only re-enable `ORCHESTRATOR_ROUTING_CLASSIFIER=1` after weights exist,
 validation is acceptable, and `/config/attest` proves the flag is uniform
 across workers.
+
+**2026-06-12 result**: `verify_routing_wiring.py` passed with the promoted
+weights and existing verifier head. `/config/attest` still saw 6 workers with
+`routing_classifier=false`, so the artifact is staged but not live.
 
 ### 4. Retrain GraphRouter (GAT) only if still justified
 ```bash
