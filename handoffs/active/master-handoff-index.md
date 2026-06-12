@@ -19,7 +19,7 @@
 | N6 | **Objective policy decision**: task_rate replay/report + doc-truth W4 are done; W3 flip is gated on 1/5 drop vs ≥2/5 proof threshold + raw-rate zero-quality frontier risk → [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | op | review before live dominance change (findings-05) |
 | N7 | **Zero-inference campaign cleanup**: K-RAG formal K7 prep/sweep + DCP-6a branch merge before J7 inference | either | DCP-6a is branch-ready/replay-validated (`fix/dcp6a-context-depth` `1a33d72`) but not merged while AutoPilot owns the live clone; K-RAG harness is branch-ready (`feat/kbrag-k7-eval` `280c092`), fresh constrained tmp index/sweep still running/pending |
 | N9 | **retrain-routing-models unblock**: operator BGE re-embed (NOT lollms); verify the 0-byte `embeddings.faiss` observed 14:54 today | op | live routing-memory anomaly + named blocker |
-| N10 | **tri-role shadow-telemetry follow-through** — W7 persistence landed; next use the progress-log fields to close TR-3.3/3.4 instead of adding another shadow path → [routing-truth-restoration.md](routing-truth-restoration.md) | op | coordination surface (this index rewrite applied 2026-06-12) |
+| N10 | **tri-role shadow-telemetry follow-through** — W7 persistence landed and analyzer/report are branch-ready (`feat/trinity-shadow-report` `43d93d9`): TR-3.4 preliminary non-degenerate pass, TR-3.3 pending clean 7-day window → [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md) | op | keep collection-window gate explicit; do not promote TR-4/5 from a same-day smoke sample |
 
 ## B. ACTIVE — claimable now (HIGH → LOW)
 | # | Item | Gate/note |

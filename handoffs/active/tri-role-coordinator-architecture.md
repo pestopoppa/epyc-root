@@ -1,14 +1,14 @@
 # Tri-Role Coordinator Architecture (Thinker / Worker / Verifier)
 
-**Status**: REFRESHED 2026-05-28 — TR-1, TR-2, TR-3.1, and TR-3.2 landed; TR-3.3/3.4 telemetry gates next; TR-4/5 remain gated
+**Status**: REFRESHED 2026-06-12 — TR-1, TR-2, TR-3.1, and TR-3.2 landed; progress-log telemetry now exists; TR-3.3 clean-window collection remains pending; TR-3.4 has a preliminary non-degenerate pass; TR-4/5 remain gated
 **Created**: 2026-04-26 (via Trinity deep-dive — intake-474, ICLR 2026)
-**Updated**: 2026-05-28 (active gate clarified after TR-1..3.2 landed)
+**Updated**: 2026-06-12 (N10 telemetry report added after routing-truth W7 persistence landed)
 **Priority**: HIGH (architectural — unblocks Trinity's strongest empirical lever)
 **Categories**: agent_architecture, routing_intelligence, cost_aware_routing
 **Related**: [decision-aware-routing.md](decision-aware-routing.md), [learned-routing-controller.md](learned-routing-controller.md), [routing-intelligence.md](routing-intelligence.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md)
 
-> **Fable 5 review (2026-06-12)**: the shadow-telemetry keep-or-kill decision is owned by [routing-truth-restoration.md](routing-truth-restoration.md) W7 (master row N10); TR-4/5 remain frozen per fable5-findings-02 pending DAR-1 regret replay + per-question vectors.
+> **Fable 5 review (2026-06-12)**: the shadow-telemetry keep-or-kill decision was resolved by [routing-truth-restoration.md](routing-truth-restoration.md) W7: keep the signal and persist it in progress JSONL. N10 follow-through branch `feat/trinity-shadow-report` commit `43d93d9` adds `scripts/analysis/trinity_shadow_telemetry.py` and report `orchestration/reports/trinity_shadow_telemetry_2026-06-12.md`: 742 role-bearing rows, worker 81.9% / thinker 14.0% / verifier 4.0%, TR-3.4 preliminary PASS, TR-3.3 PENDING because observed span is only 0.207d. TR-4/5 remain frozen per fable5-findings-02 until a clean production-like window exists, DAR evidence justifies routing expansion, and per-question vectors exist.
 
 ---
 
@@ -18,27 +18,18 @@ This is no longer a fresh stub. The schema, storage field, backfill script, feat
 
 | Gate | Required evidence | Fork |
 |---|---|---|
-| TR-3.3 shadow telemetry | >= 1 week of production-like `strategy=trinity_role_shadow` logs, or an explicitly labeled offline replay over representative requests | If no traffic/logs exist, collect before TR-4; do not infer from unit tests. |
-| TR-3.4 distribution diagnostic | Role distribution is not degenerate and examples match taxonomy intent | If >= 95-99% Worker, pause and revise classifier/taxonomy before dispatch wiring. |
+| TR-3.3 shadow telemetry | >= 1 week of production-like progress JSONL rows with `data.assigned_role`, or an explicitly labeled offline replay over representative requests | PENDING 2026-06-12: persistence works, but current observed role-bearing span is only 0.207d; collect a clean week before TR-4. |
+| TR-3.4 distribution diagnostic | Role distribution is not degenerate and examples match taxonomy intent | PRELIM PASS 2026-06-12: 742 role-bearing rows, top role worker at 81.9% (<95%); re-check after the TR-3.3 clean window. |
 | TR-4 prompt/dispatch wiring | TR-3.4 pass plus clear per-role prompt templates | If telemetry is noisy, keep flag off and add better logging before wiring. |
 | TR-5 A/B | >= N=200/arm on role-sensitive benchmarks | If gains are flat or regressions exceed gate, leave `ROLE_AWARE_ROUTING` default-off and document the negative result. |
 
-Minimal telemetry extraction sketch:
+Telemetry command:
 
-```python
-from collections import Counter
-import json
-
-roles = Counter()
-for line in open("routing.log"):
-    if "trinity_role_shadow" not in line:
-        continue
-    payload = json.loads(line[line.index("{"):])
-    roles[payload.get("assigned_role", "unknown")] += 1
-print(roles)
+```bash
+uv run python scripts/analysis/trinity_shadow_telemetry.py --log-dir logs/progress --from YYYY-MM-DD --to YYYY-MM-DD --output orchestration/reports/trinity_shadow_telemetry_YYYY-MM-DD.md
 ```
 
-Adjust the parser to the actual log format; the important artifact is the count table plus representative true/false examples per role.
+The report keeps the collection-window gate separate from the distribution gate so a short smoke sample cannot accidentally unlock TR-4/5.
 
 ## Objective
 
@@ -99,8 +90,8 @@ Tri-role removal is the second-largest ablation effect after the feature-positio
 
 - [x] **TR-3.1** ✅ **DONE 2026-05-07** — `src/classifiers/role_classifier.py`. Deterministic regex-only classifier. Returns `RoleClassification(role, reason)`. Rule precedence (first-match wins): VERIFIER (review/verify trigger AND prior-content cue), THINKER (architect-class routing OR force_role architect_* OR thinking_budget>0 OR plan/decompose/design keyword), WORKER (default). Word-boundary anchored so `checkmate`/`above the line` don't false-positive. 27 unit tests in `tests/unit/test_role_classifier.py` + 7 routing-integration tests in `tests/unit/test_pipeline_routing.py::TestTrinityRoleShadow` cover precedence, return shape, distribution-non-degeneracy.
 - [x] **TR-3.2** ✅ **DONE 2026-05-07** — wired into `_route_request` in `src/api/routes/chat_pipeline/routing.py`. Classifier invoked AFTER `routing_decision` is set so it can read the head model role. Field is **always** populated and logged via `task_extra(strategy="trinity_role_shadow")` regardless of the `ROLE_AWARE_ROUTING` flag — TR-4 gates *acting* on the role; TR-3.3 just collects telemetry. Defensive `try/except` around the classifier call falls back to `"worker"` on any failure (verified by integration test `test_classifier_failure_falls_back_to_worker`).
-- [ ] **TR-3.3** **Inference-gated.** Run for ≥1 week shadow mode (flag still default OFF, classifier active in shadow). Collect role-distribution telemetry from production traffic. Expected log line: `Trinity role classified: role=X reason=Y` with `strategy=trinity_role_shadow`.
-- [ ] **TR-3.4** **Inference-gated.** Diagnostic check: is the role distribution non-degenerate (e.g., not 99% Worker)? If degenerate, pause and revisit TR-1 taxonomy. (Will use the same telemetry pipeline that consumes factual_risk + difficulty_signal shadow data.)
+- [ ] **TR-3.3** **Inference-gated.** Run for ≥1 clean week shadow mode (flag still default OFF, classifier active in shadow). Collect role-distribution telemetry from production traffic via progress JSONL `data.assigned_role`. 2026-06-12 report branch `feat/trinity-shadow-report` commit `43d93d9` proves the parser/path but does not satisfy the clean-window gate (`0.207d` observed).
+- [/] **TR-3.4** **Preliminary pass, re-check after TR-3.3.** 2026-06-12 report: 742 role-bearing rows; worker 608 (81.9%), thinker 104 (14.0%), verifier 30 (4.0%). This is non-degenerate under the 95% top-role screen, but it is not enough to promote TR-4/5 until the one-week production-like window completes.
 
 ### TR-4: Per-Call Dispatch Wiring (Execution)
 
