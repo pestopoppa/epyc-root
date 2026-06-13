@@ -259,9 +259,9 @@ Likely files:
 - `src/graph/langgraph/graph.py`
 - `src/graph/langgraph/nodes.py`
 - `src/graph/nodes.py`
-- `src/parsing_config.py`
+- DONE in `c2b4437`: `src/parsing_config.py` no longer assigns an active parsing mode to retired `architect_coding`.
 - `src/roles.py`
-- `src/inference/llm_cache.py`
+- DONE in `c2b4437`: `src/inference/llm_cache.py` no longer lists retired `architect_coding` as a high-value cache target.
 - `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
 - related tests under `tests/unit/` and `tests/integration/`
 

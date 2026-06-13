@@ -64,7 +64,8 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Eleventh cleanup landed in `epyc-orchestrator` `5773777`: `seeding_eval.py`, `seeding_scoring.py`, `seeding_legacy.py`, and `corpus_quality_gate.py` no longer contain live benchmark retired-role/model assumptions; live guard warning count dropped from 62 to 56.
    - Twelfth cleanup landed in `epyc-orchestrator` `f24eab7`: active config URL/timeout maps no longer publish retired `architect_coding` endpoints or role timeouts; live guard warning count dropped from 56 to 46 and `--all-hardcoded-surfaces` dropped from 161 to 146.
    - Thirteenth cleanup landed in `epyc-orchestrator` `2967526`: the production launcher no longer force-enables `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING`; this removed a live startup hazard that the current lowercase hardcoded-surface scan did not count.
-   - Remaining risk: LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
+   - Fourteenth cleanup landed in `epyc-orchestrator` `c2b4437`: retired `architect_coding` no longer has an active parsing-mode entry and the llm-cache target comment no longer lists it; live guard warning count dropped from 46 to 44 and `--all-hardcoded-surfaces` dropped from 146 to 143.
+   - Remaining risk: LangGraph, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
 
 3. Config models no longer preserve dead URLs/timeouts as active live maps.
    - RESOLVED in `epyc-orchestrator` `f24eab7`: `src/config/models.py` and `src/config/__init__.py` no longer expose `architect_coding` through `ServerURLsConfig.as_dict()`, `TimeoutsConfig.role_timeouts_dict()`, or env-backed active settings.
@@ -199,6 +200,7 @@ Priority order:
    - PARTIAL cleanup in `6bc1f51`: removed retired `architect_coding` from inference lock/tap heavy-role classifications.
    - PARTIAL cleanup in `e6e10d8`: removed retired `architect_coding` from approval-gate high-cost classification.
    - PARTIAL cleanup in `2967526`: `scripts/server/orchestrator_stack.py` now enables only live LangGraph Phase 3 node env vars and no longer sets the retired `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` launch flag.
+   - PARTIAL cleanup in `c2b4437`: `src/parsing_config.py` no longer assigns an active parsing strategy to retired `architect_coding`, and `src/inference/llm_cache.py` no longer recommends it as a cache target.
    - Remaining follow-up: derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
 8. `scripts/benchmark/seeding_eval.py`, `scripts/benchmark/seeding_scoring.py`, `scripts/benchmark/analyze_routing_policy.py`, and `scripts/benchmark/corpus_quality_gate.py`
