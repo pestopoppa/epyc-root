@@ -1,10 +1,10 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: COMPACTED 2026-05-28. Phases B-D are complete; DS-6/DS-7 design gaps are resolved and scaffolding exists. Live work is evidence-gated Phase E stack exploration, profile codification after Phase E, and optional Phase F KV sharing after AM/q4_0 feasibility.
+**Status**: COMPACTED 2026-05-28; default template realigned 2026-06-13. Phases B-D are complete; DS-6/DS-7 design gaps are resolved and scaffolding exists. `epyc-orchestrator` `069f8c0` refreshed `stack_templates/default.yaml` to current live manifest topology with explicit aliases and retired-role rejection. Live work remains evidence-gated Phase E stack exploration, profile codification after Phase E, and optional Phase F KV sharing after AM/q4_0 feasibility.
 **Priority**: HIGH when Phase E evidence is available; otherwise blocked/monitor.
 **Domain**: routing-and-optimization primary; inference-acceleration cross-list for Phase F KVCOMM only.
 **Completed ledger**: [`../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md`](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md)
-**Updated**: 2026-05-28
+**Updated**: 2026-06-13
 
 ## Start Here
 
@@ -23,7 +23,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
   - DS-5/autoresearch model roster and role-quality findings.
   - Production KV size measurements at 2K/8K/32K tokens.
   - Mixed-role NUMA contention evidence, especially same-node cross-model interference.
-- [ ] **DS-7-live — Profile codification from evidence**: once DS-E1 exists, create or update a stack template that expresses one concrete workload profile. Run template validation before launch. Do not add speculative profiles without evidence.
+- [ ] **DS-7-live — Profile codification from evidence**: baseline hygiene is current after `069f8c0` aligned the default template with the live manifest topology (frontdoor/worker/ingest/vision escalation full-plus-quarter prewarm, shared-runtime aliases, one `architect_general`, 22 instances, about 653 GB). Once DS-E1 exists, create or update a stack template that expresses one concrete workload profile. Run template validation before launch. Do not add speculative profiles without evidence.
 - [ ] **DS-6-live — QuarterScheduler revalidation gate**: only implement dynamic quarter reassignment if DS-E1 shows static pre-warm leaves material throughput or latency on the table. If triggered, implement the already-resolved design:
   - Runtime backend mutation API: `add_instance(url)`, `remove_instance(url)`, `register_quarter(role, url)`, `unregister_quarter(url)`.
   - `QuarterScheduler` state machine with `HEALTHY/SUSPECT/DEAD/DRAINING/LAUNCHING/AVAILABLE`.
@@ -102,6 +102,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 | DS-D concurrency-aware routing | Session affinity, KV save/restore, and migration-thread design completed. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 | DS-6 design audit/gaps | Dynamic URL API, liveness, quarter-fixed ports, drain protocol, idle tracking, and degradation strategy resolved. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 | DS-7 template scaffolding | Template schema, selection mechanism, migration path, and resource validation designed; Gap 3/4 closure implemented 2026-04-21. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
+| DS-7 default-template realignment | `069f8c0` added explicit alias support/rejection of retired deployable roles and updated the checked-in default template to current live manifest topology. | `epyc-orchestrator` `069f8c0` |
 | Research intake | DistServe/Splitwise/Mooncake/ORCA/Sarathi and SGLang hybrid-memory implications captured. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 
 ## Reporting Instructions

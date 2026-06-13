@@ -42,7 +42,7 @@ Root GitNexus note before main-session review:
 
 ## 2026-06-13 Sidecar Continuation
 
-Four follow-up orchestrator commits continue the same live-role cleanup thread:
+Nine follow-up orchestrator commits continue the same live-role cleanup thread:
 
 - `4bf8061` routes `_formalize_output` to live `worker_general` instead of
   legacy `worker_explore`, removes stale speed/port wording, and adds
@@ -56,6 +56,26 @@ Four follow-up orchestrator commits continue the same live-role cleanup thread:
   plus explicit override behavior.
 - `4f9123f` updates debugger prompt documentation so `model_graded_evals`
   names `worker_general`, matching the model-grader default/spec migration.
+- `069f8c0` aligns the default stack template with live launch topology:
+  explicit alias roles, retired deployable-role rejection, current
+  full-plus-quarter prewarm roles, one `architect_general`, 22 instances, and
+  about 653 GB instance-counted RAM.
+- `22ea541` removes `architect_coding` from the lean registry, shortens the
+  coder escalation chain to `frontdoor -> coder_escalation`, updates lean code
+  routing hints to `coder_escalation`, and adds registry-loader regression
+  coverage for retired-role absence plus current coder acceleration
+  `type: none`.
+- `705065d` maps legacy ingress `architect_coding` labels to live
+  `architect_general` in chat pipeline routing normalization, with targeted
+  pipeline-routing coverage and delegated chat roundtrip validation.
+- `e61e61f` removes retired architect metadata references from
+  `source_registry.yaml` and `model_quality_signatures.yaml`, cleans a stale
+  delegation-depth comment, and intentionally defers `_fast_revise` because its
+  GitNexus impact is HIGH and reaches `generate_stream` / chat pipeline paths.
+- `828552f` adds stack-change-guard production-blocker rules for retired
+  architect metadata recurrence in `model_registry_lean.yaml`,
+  `source_registry.yaml`, and `model_quality_signatures.yaml`, with focused
+  regression tests.
 
 The routed-call changes kept `stack_change_guard.py` and focused unit suites green;
 active follow-up remains in `stack-change-governance-pipeline.md`,

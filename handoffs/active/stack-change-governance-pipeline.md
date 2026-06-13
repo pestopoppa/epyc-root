@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -152,6 +152,38 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `4f9123f`: `orchestration/prompts/debugger_system.md` now documents
   `model_graded_evals` with `worker_general`, matching the model-grader
   default/spec migration.
+- Default stack template alignment landed in `epyc-orchestrator` `069f8c0`:
+  `src/config/stack_templates.py` supports explicit aliases and rejects
+  retired deployable roles such as `architect_coding`; the default template now
+  mirrors the live manifest with frontdoor/worker/ingest/vision escalation
+  full-plus-quarter prewarm, aliases for shared runtime roles, one
+  `architect_general`, 22 launch instances, and about 653 GB instance-counted
+  RAM.
+- Lean registry retired-architect cleanup landed in `epyc-orchestrator`
+  `22ea541`: `model_registry_lean.yaml` no longer defines
+  `architect_coding`, the coder escalation chain is `frontdoor ->
+  coder_escalation`, code routing hints target `coder_escalation`, and
+  registry-loader tests cover retired-role absence plus current
+  `coder_escalation` acceleration `type: none`.
+- Retired architect ingress compatibility landed in `epyc-orchestrator`
+  `705065d`: chat pipeline ingress alias normalization now maps
+  `architect_coding` to live `architect_general`, with
+  `test_pipeline_routing.py` covering the legacy alias alongside delegated chat
+  roundtrip validation from the main track.
+- Retired architect metadata cleanup landed in `epyc-orchestrator`
+  `e61e61f`: `orchestration/source_registry.yaml` no longer grants
+  `architect_coding` role access, `orchestration/model_quality_signatures.yaml`
+  no longer carries the retired REAP architect fallback quality signature, and
+  `chat_delegation_config.py` now describes delegation re-entry against the
+  live architect. `_fast_revise` was explicitly deferred because GitNexus
+  impact on `_fast_revise` was HIGH and touches `generate_stream` / chat
+  pipeline behavior.
+- Retired architect metadata recurrence guard landed in `epyc-orchestrator`
+  `828552f`: `stack_change_guard.py` now has production-blocker rules for
+  `architect_coding` in `model_registry_lean.yaml`, `source_registry.yaml`, and
+  `model_quality_signatures.yaml`, with regression tests in
+  `tests/unit/test_stack_change_guard.py`. Main-track validation reported no
+  live warnings for those three rule IDs and 28 focused guard tests passing.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
@@ -428,7 +460,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.

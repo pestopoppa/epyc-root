@@ -77,6 +77,39 @@ Read-only audit and lightweight validation on 2026-06-13 found:
   `4f9123f`: `orchestration/prompts/debugger_system.md` now names
   `worker_general` for `model_graded_evals`, matching the model-grader
   default/spec migration.
+- Default stack-template topology alignment landed in `epyc-orchestrator`
+  `069f8c0`: `src/config/stack_templates.py` now supports explicit
+  template aliases via `alias_to` / `tier: ALIAS`, rejects retired deployable
+  roles such as `architect_coding`, and `stack_templates/default.yaml` now
+  matches the live manifest topology: full-plus-quarter prewarm for
+  frontdoor, `worker_general`, `ingest_long_context`, and
+  `vision_escalation`; aliases for `coder_escalation`, `worker_summarize`,
+  `worker_explore`, `worker_math`, and `toolrunner`; one
+  `architect_general` instance; 22 total launch instances at about 653 GB
+  instance-counted RAM.
+- Lean-registry retired-role cleanup landed in `epyc-orchestrator`
+  `22ea541`: `orchestration/model_registry_lean.yaml` no longer defines
+  `architect_coding`, the coder escalation chain is now
+  `frontdoor -> coder_escalation`, lean routing hints point code work back to
+  `coder_escalation`, and `tests/unit/test_registry_loader.py` now guards the
+  retired-role absence plus current `coder_escalation` acceleration
+  `type: none` / `lookup: false`.
+- Chat-pipeline ingress compatibility landed in `epyc-orchestrator`
+  `705065d`: `normalize_ingress_role()` maps legacy `architect_coding`
+  requests to live `architect_general`, with targeted routing tests covering
+  the alias and delegated chat roundtrip validation reported by the main track.
+- Retired architect metadata cleanup landed in `epyc-orchestrator`
+  `e61e61f`: `source_registry.yaml` no longer grants role access to
+  `architect_coding`, `model_quality_signatures.yaml` no longer carries the
+  retired REAP architect quality fallback signature, and a stale
+  delegation-depth comment now refers to the live architect. `_fast_revise`
+  cleanup was explicitly deferred because GitNexus impact on `_fast_revise`
+  was HIGH and reaches `generate_stream` / chat pipeline paths.
+- Retired architect metadata recurrence guards landed in `epyc-orchestrator`
+  `828552f`: `stack_change_guard.py` now flags `architect_coding` in
+  `model_registry_lean.yaml`, `source_registry.yaml`, and
+  `model_quality_signatures.yaml` with production-blocker rule IDs, with
+  regression coverage in `tests/unit/test_stack_change_guard.py`.
 
 ## Prior Pipeline Work Found
 
@@ -261,6 +294,7 @@ Minimal pipeline phases:
   - **2026-06-13 partial**: `7917535` bumped stack-prior contract v2 and added guarded `serving.launch.entries` witness data for launch mode, alias status, primary role, and optional NUMA/worker/vision instance metadata.
   - **2026-06-13 partial**: `a001017` bumped stack-prior contract v3 and added guarded `serving.effective_context_tokens` plus `serving.launch.requirements` for Gemma worker model/draft paths and VL model/mmproj paths.
   - **2026-06-13 partial**: `33c81ff` bumped stack-prior contract v4 and added guarded `serving.launch.runtime` effective runtime witness records with launcher/path/runtime source hashes.
+  - **2026-06-13 partial**: `069f8c0` aligned the checked-in default stack template with the current manifest topology, added alias-role validation semantics, and rejects retired deployable roles in templates.
   - **2026-06-13 partial**: `e7fab9d` normalized `scripts/autopilot/kv_compress.py` production port names and adaptive layer fallbacks so shared frontdoor roles share layer evidence and retired architect entries are inactive.
   - Continue with remaining hardcoded-surface cleanup and consumer migrations; the temporary retired-role enum waiver path is closed by `03ed49f`.
   - Ensure health/status/probe code reads stack-prior serving records or validated launch metadata.
@@ -375,8 +409,8 @@ Add launch/config/dashboard tests when touching those consumers.
 2. **DONE 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`, `4ca702d`, `a7b72a9`) - Resolve descriptor/compiler drift reported by the new command through shared-runtime alias semantics.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, retain domain modalities, block generated descriptor updates when role/server conflicts are present, and represent `worker_math`/`toolrunner` as live aliases on the Gemma worker runtime descriptor. `check --allow-known-gaps` now passes with expected known-gap warnings; remaining descriptor work is strict-contract field coverage, not the shared-runtime conflict blocker.
 3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, and GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
 4. **DONE 2026-06-13 (`837829f`, `b8477b0`, `2ea28dd`, `865b2b1`, `54b7c77`) - Close the current descriptor evidence/gap tranche.** Architect quality, GGUF-derived model context, REAP quality, thinking-control evidence, and shared-runtime alias provenance now compile cleanly; generated descriptors/priors are `status: compiled` and stack-prior `known_gaps` are empty.
-5. **DONE 2026-06-13 (`03ed49f`) - Close the temporary retired-architect production-waiver path.** `Role.ARCHITECT_CODING` is an enum alias of live `Role.ARCHITECT_GENERAL`, legacy `"architect_coding"` strings still normalize to `architect_general`, and the active prompt fallback / graph node map / prewarm special-cases no longer treat coding architect as a distinct live role. Default and strict guards are clean; `--all-hardcoded-surfaces` remains useful for legacy-test and historical-doc cleanup.
-6. **PARTIAL 2026-06-13 (`d4acf24`, `06ff53c`, `40d46ea`, `a5aaafb`, `60733c7`, `cf73ac1`, `312b28e`, `dc14196`, `7917535`, `a001017`, `33c81ff`, `fb0fd6d`, `53f452c`, `b8a1abc`, `e7fab9d`, `603ad6b`, `6062a57`) - Fix the serving/launch/runtime/controller drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings; the active vision ReAct path and AutoPilot preflight health probes now read ports from generated stack-prior serving records; shared `server_mode` alias rows now warn on stale ports for covered launch roles; the AutoPilot program prompt now derives compaction endpoints from stack priors and has guard coverage against static endpoint/tier recurrence; generated live serving endpoint/primary-port/tier drift, exact launch port sets, launch-entry witness data, effective launch context, worker/VL model-path requirements, and effective runtime/binary/cache/KV/flag state are checked against the computed launch manifest; the production launch wrapper and AutoPilot system card now derive current stack summaries from generated/validated sources, with launch-wrapper static-inventory recurrence guarded; status cleanup scans include manifest HOT/WARM, NUMA replica, Docker, `PORT_MAP`, and generated live stack-prior serving ports while excluding candidate/malformed stack-prior ports; KV adaptive compression now treats shared frontdoor roles and retired architect compatibility using current live role semantics; simulated data-only fixtures now exercise stack-change drift without production-code edits. Continue with remaining consumer migrations and classified hardcoded-surface cleanup.
+5. **DONE 2026-06-13 (`03ed49f`, `22ea541`, `705065d`, `e61e61f`, `828552f`) - Close the temporary retired-architect production-waiver path.** `Role.ARCHITECT_CODING` is an enum alias of live `Role.ARCHITECT_GENERAL`, legacy `"architect_coding"` strings still normalize to `architect_general`, chat pipeline ingress normalizes old `architect_coding` labels to `architect_general`, the active prompt fallback / graph node map / prewarm special-cases no longer treat coding architect as a distinct live role, lean/source registries and quality-signature metadata no longer define retired `architect_coding` as live metadata, recurrence guards now block retired architect reintroduction in those metadata surfaces, and coder escalation no longer routes through it. `_fast_revise` remains deliberately deferred because the main track found HIGH GitNexus impact. Default and strict guards are clean; `--all-hardcoded-surfaces` remains useful for legacy-test and historical-doc cleanup.
+6. **PARTIAL 2026-06-13 (`d4acf24`, `06ff53c`, `40d46ea`, `a5aaafb`, `60733c7`, `cf73ac1`, `312b28e`, `dc14196`, `7917535`, `a001017`, `33c81ff`, `fb0fd6d`, `53f452c`, `b8a1abc`, `e7fab9d`, `603ad6b`, `6062a57`, `069f8c0`) - Fix the serving/launch/runtime/controller drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings; the active vision ReAct path and AutoPilot preflight health probes now read ports from generated stack-prior serving records; shared `server_mode` alias rows now warn on stale ports for covered launch roles; the AutoPilot program prompt now derives compaction endpoints from stack priors and has guard coverage against static endpoint/tier recurrence; generated live serving endpoint/primary-port/tier drift, exact launch port sets, launch-entry witness data, effective launch context, worker/VL model-path requirements, and effective runtime/binary/cache/KV/flag state are checked against the computed launch manifest; the default stack template now mirrors the current manifest topology with explicit aliases and retired-role rejection; the production launch wrapper and AutoPilot system card now derive current stack summaries from generated/validated sources, with launch-wrapper static-inventory recurrence guarded; status cleanup scans include manifest HOT/WARM, NUMA replica, Docker, `PORT_MAP`, and generated live stack-prior serving ports while excluding candidate/malformed stack-prior ports; KV adaptive compression now treats shared frontdoor roles and retired architect compatibility using current live role semantics; simulated data-only fixtures now exercise stack-change drift without production-code edits. Continue with remaining consumer migrations and classified hardcoded-surface cleanup.
 
 ## Reporting Instructions
 
