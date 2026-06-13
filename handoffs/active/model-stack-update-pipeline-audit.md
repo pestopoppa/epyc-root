@@ -39,7 +39,7 @@ These are the real standardized-pipeline artifacts found in the current root/orc
 - `/mnt/raid0/llm/epyc-root/handoffs/active/stack-change-governance-pipeline.md`
   - The implementation track. W1/W2 are landed; W3 and W4 are partially landed; W5/W6 remain open.
 
-GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus-analyze.sh` to `24,182 nodes | 26,209 edges | 43 flows`. `gitnexus impact --repo epyc-root handoffs/active/model-stack-update-pipeline-audit.md --direction upstream` returned target not found, `UNKNOWN` risk, `impactedCount=0`, which is expected for this doc path.
+GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus-analyze.sh` to `24,180 nodes | 26,206 edges | 43 flows`. `gitnexus impact --repo epyc-root handoffs/active/model-stack-update-pipeline-audit.md --direction upstream` returned target not found, `UNKNOWN` risk, `impactedCount=0`, which is expected for this doc path.
 
 ## Current Drift Examples
 
@@ -60,6 +60,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Sixth cleanup landed in `epyc-orchestrator` `6bc1f51`: runtime inference lock/tap heavy-role classifications no longer include retired `architect_coding`, and the live guard warning count dropped from 78 to 76.
    - Seventh cleanup landed in `epyc-orchestrator` `e6e10d8`: approval-gate high-cost role classification no longer includes retired `architect_coding`, and the live guard warning count dropped from 76 to 75.
    - Eighth cleanup landed in `epyc-orchestrator` `eb4dac5`: `_heuristic_role_priors()` now filters its default candidate roles through live `stack_priors.yaml` roles and uses a non-retired degraded fallback; live guard warning count dropped from 75 to 74.
+   - Ninth cleanup landed in `epyc-orchestrator` `b5bf5eb`: `analyze_routing_policy.py` now derives specialist-utilization roles from live `stack_priors.yaml` roles with a non-retired fallback; live guard warning count dropped from 74 to 73.
    - Remaining risk: lower-level config, benchmark, LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
 
 3. Config models intentionally preserve dead URLs/timeouts for compatibility.
@@ -81,13 +82,30 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Risk: consumers need to preserve gaps and fail closed where decision-grade priors are required.
 
 6. The validator is finding the right problems, but it is not yet strict-green.
-   - `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces` currently reports 200 warnings, including production blockers in seeding/eval scripts, API/config/routing, LangGraph nodes, runtime inference lock/tap helpers, and historical docs/tests as separate categories.
+   - `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces` currently reports 184 warnings, including production blockers in seeding/eval scripts, config, LangGraph nodes, parsing/roles, q_scorer/seeding cost tables, and historical docs/tests as separate categories.
    - This is good machinery; it now needs exception metadata and consumer migration so strict mode can become a real launch gate.
 
 7. q_scorer is improved but still demonstrates the fallback-policy issue.
    - `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/q_scorer.py:55` keeps fallback TPS, quality, and memory tables for degraded scripts/tests.
    - Registry-derived TPS and memory paths begin at lines 259 and 304; these now prefer current registry/server mode and skip retired roles.
    - Risk: this is acceptable only if fallbacks are auditable degraded mode, not silent live truth.
+
+## Model-Specific Quantity Audit Matrix
+
+| Quantity | Current state | Canonical source | Required projection / guard |
+|---|---|---|---|
+| q_scorer TPS, quality, memory priors | `q_scorer.py` now prefers registry/descriptors but still has fallback tables; quality fallback is still local policy. | `stack_priors.yaml` role `priors` with descriptor evidence and measurement status. | Migrate q_scorer to stack-prior loader; fall back only as explicit degraded mode with provenance. |
+| Seeding reward TPS/cost assumptions | `seeding_rewards.py` still has stale `DEFAULT_BASELINE_TPS`, duplicate `coder_escalation`, and retired `architect_coding`. | Same stack-prior `priors.throughput_tps` plus per-role memory/admission costs. | First W2 implementation target; guard should fail any live seeding cost table that repeats role constants. |
+| Seeding scoring/architect assumptions | `seeding_eval.py` still evaluates/labels `architect_coding` for non-VL architect comparison; `seeding_scoring.py` comments still encode old architect split. | Live roles from stack priors; historical benchmark-only comparisons from research registry with non-live status. | Separate live seeding defaults from legacy replay fixtures; force retired-role examples into explicit legacy tests. |
+| Memory/admission costs | `src/api/admission.py` derives limits from stack-prior ports/slots with fallback; q_scorer memory still reads registry then fallback. | `server_mode.*.tier`, `slots`, shared mmap binding compiled into stack priors. | Add tests that frontdoor/coder_escalation share memory and admission truth; fail on role-level WARM overrides for live HOT roles. |
+| Hot/warm deployment status | `server_mode` is current truth; older research docs and role metadata still mention WARM `architect_coding`/`ingest_long_context`. | Orchestrator lean registry `server_mode.*`; research registry is comprehensive evidence/candidate history only. | Compiler must preserve conflict notes and prevent non-live research rows from satisfying live deployment. |
+| Context size / ctx limits | `stack_priors.yaml` has `ctx_max: null` for many live roles; research registry has model-level `max_context` and runtime defaults, but lean projection does not compile it reliably. | Physical descriptor `model.ctx_max` from research/lean registry, plus launch `-c` effective context from server_mode/stack manifest. | Extend contract with `ctx_model_max` and `ctx_launch_effective`; strict mode blocks live consumers that need context limits while null. |
+| TPS, latency, reward baselines | TPS partly structured; latency/admission history lives in comments/docs; reward baselines are split across q_scorer, seeding, eval tower, and AutoPilot artifacts. | Measurement-attested descriptor evidence and stack-prior priors; historical benchmark artifacts remain provenance only. | Add provenance status fields: decision-grade, observation, gap, stale. Decision gates must require protocol/date/ref per `MEASUREMENT.md`. |
+| Routing priors / role priors | `_heuristic_role_priors()` now filters through live stack priors; learned-routing handoffs/docs still contain `architect_coding` training labels. | Live role set from stack priors; learned/replay datasets must carry era labels. | Add simulated retired-role fixture proving `architect_coding` is ignored in live priors but preserved in historical replay with era metadata. |
+| OpenAI-compatible model listing | `/v1/models` now derives live model IDs from stack priors plus compatibility aliases. | Stack-prior live roles. | Keep compatibility aliases separate from live role IDs; guard any static live model list. |
+| Dashboard/runtime classification | Dashboard age overrides and inference lock/tap had recent cleanup; lock heavy roles and tap stream roles are still local policy tables. | Stack-prior tier/slots/model class plus explicit runtime policy hints. | Compile role policy hints or a generated runtime classification projection; local tables must be fallback/override only. |
+| Launch ports and shared servers | Stack manifest still has old `PORT_MAP["coder_escalation"] = 8071`; `ROLE_LAUNCH_META` and stack priors resolve shared frontdoor server at `8070`. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
+| Registry/derived YAML drift | `stack_priors.yaml` has a contract and freshness hash but is `compiled_with_gaps`; context and some quality fields remain null. | Lean registry + descriptors generated from research evidence. | One workflow command must compile descriptors/priors, sync procedure enums, run strict guard, and fail on stale generated hashes. |
 
 ## Proposed Source-Of-Truth Design
 
@@ -96,11 +114,12 @@ Adopt this rule for every stack/model change:
 1. **Edit structured truth only.**
    - Physical model identity and measured evidence: `orchestration/model_descriptors.yaml`.
    - Live serving topology, ports, slots, tiers, shared bindings, and deployment intent: `orchestration/model_registry.yaml` `server_mode.*`.
+   - Comprehensive benchmark/candidate history: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`; values imported from here must remain non-live until projected through orchestrator descriptors/stack priors with measurement status.
    - Temporary launch witness until fully generated: `scripts/server/stack_manifest.py` `ROLE_LAUNCH_META`.
 
 2. **Compile exactly one consumer contract.**
    - `orchestration/derived/stack_priors.yaml` is the generated contract for model-specific consumers.
-   - It must include role, model id, endpoint/ports/slots, tier/memory cost, TPS/quality priors with measurement provenance, context window, launch binary, draft/MTP/spec settings, KV settings, modality, shared mmap group, source hashes, and known gaps.
+   - It must include role, model id, endpoint/ports/slots, tier/memory cost, TPS/quality/latency/reward priors with measurement provenance, model max context, effective launch context, launch binary, draft/MTP/spec settings, KV settings, modality, shared mmap group, source hashes, and known gaps.
 
 3. **Consume through a typed API, not ad hoc YAML parsing.**
    - Add or extend a small loader, for example `src/registry/stack_priors.py` runtime helpers, so production code can ask for:
@@ -119,6 +138,7 @@ Adopt this rule for every stack/model change:
 
 5. **Require data-only simulated swaps.**
    - A model swap is not complete until fixture-based tests prove that changing registry/descriptors regenerates consumer outputs without code edits.
+   - Include a retired-role fixture where `architect_coding` is removed from live stack truth and a shared-server fixture where `frontdoor`/`coder_escalation` keep one model identity, one memory owner, and distinct role IDs.
 
 ## Work Packages
 
@@ -157,6 +177,7 @@ Priority order:
    - Replace `DEFAULT_BASELINE_TPS` with stack-prior-derived TPS/cost data.
    - Keep an explicit degraded fallback for offline tests.
    - Treat this as a separate blast-radius pass because `compute_comparative_rewards` was previously marked CRITICAL.
+   - Acceptance detail: no duplicate `coder_escalation`, no live `architect_coding`, and reward metadata records whether costs came from live priors or degraded fallback.
 2. `src/api/routes/chat_delegation_decision.py`
    - DONE first cleanup in `b1402a2`: removed `architect_coding` from live budget defaults.
    - Remaining follow-up: derive architect/delegation budget maps from stack-prior role policy or live architect roles instead of a local static table.
@@ -176,6 +197,10 @@ Priority order:
    - PARTIAL cleanup in `e6e10d8`: removed retired `architect_coding` from approval-gate high-cost classification.
    - Remaining follow-up: derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
+8. `scripts/benchmark/seeding_eval.py`, `scripts/benchmark/seeding_scoring.py`, and `scripts/benchmark/analyze_routing_policy.py`
+   - Split live seeding/eval behavior from historical replay comparisons.
+   - Architect comparisons should enumerate live architect-like roles from stack priors and treat removed roles as legacy benchmark fixtures only.
+   - DONE for `analyze_routing_policy.py` in `b5bf5eb`: specialist-utilization summary reads live stack-prior roles and the fallback excludes retired `architect_coding`.
 
 Acceptance:
 
@@ -212,6 +237,7 @@ Acceptance:
 - A model assignment can be changed in structured inputs, generated artifacts update, and no live consumer requires hand-editing.
 - Launch refuses stale generated priors unless an explicit diagnostic override is present.
 - Runtime attestation detects stale running processes after config/code changes.
+- Repeating the 2026-06 `architect_coding` retirement or q_scorer-cost drift pattern is impossible without a failing guard: retired roles are absent from live priors, shared mmap roles do not double-count cost, and live cost/TPS/context consumers either read the generated contract or declare degraded fallback.
 
 ## Validation Strategy
 
