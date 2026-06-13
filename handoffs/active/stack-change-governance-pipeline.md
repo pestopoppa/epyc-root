@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -87,6 +87,14 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   -> 65 passed; `py_compile`; direct derived-role assertions;
   `stack_change_guard.py --all-hardcoded-surfaces` -> same 90 known warnings;
   `git diff --check`.
+- Scheduling/contention role classes were pinned to the current stack matrix in
+  `epyc-orchestrator` `eed215d`: `src/scheduling/contention.py` no longer
+  carries an unused fallback heavy-role constant or stale same-role vision
+  comment, and real-matrix tests now assert current n-way light/heavy role
+  classes, `worker_fast` absence from matrix light roles, and same-role
+  `vision_escalation` ALLOW behavior. Validation: focused scheduling/admission/
+  lock tests -> 78 passed; `py_compile`; `stack_change_guard.py
+  --all-hardcoded-surfaces` -> same 90 known warnings; `git diff --check`.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
@@ -466,7 +474,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   classes now derive from generated live stack-prior roles when available;
   shared worker-pool/vision roles use shared locks, missing or unknown roles fail
   closed to exclusive locks, and explicit `shared=` overrides remain authoritative
-  (`822482b`).
+  (`822482b`). Scheduling/contention current-role assertions are now pinned to
+  the real stack matrix in `eed215d`, including current n-way light/heavy
+  classes, retired `worker_fast` absence from matrix light roles, and same-role
+  `vision_escalation` ALLOW behavior.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -551,6 +562,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/orchestration/procedures/add_model_to_registry.yaml`
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py`
 - `epyc-orchestrator/src/api/admission.py`
+- `epyc-orchestrator/src/scheduling/contention.py`
 - `epyc-orchestrator/src/runtime/inference_lock.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
 - `epyc-orchestrator/scripts/benchmark/seeding_rewards.py`
@@ -560,6 +572,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/scripts/server/stack_commands.py`
 - `epyc-orchestrator/scripts/server/stack_processes.py`
 - `epyc-orchestrator/orchestration/model_quality_signatures.yaml`
+- `epyc-orchestrator/tests/unit/test_scheduling_contention.py`
+- `epyc-orchestrator/tests/unit/test_scheduling_contention_gate.py`
+- `epyc-orchestrator/tests/unit/test_admit_set.py`
 - `epyc-orchestrator/tests/unit/test_q_scorer.py`
 - `epyc-orchestrator/tests/unit/test_inference_lock.py`
 - `epyc-orchestrator/tests/unit/test_model_descriptor_compiler.py`
