@@ -141,6 +141,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `40d46ea`: `validate_against_registry()` now checks registry rows that cover
   launch roles through `model_role` or `shared_with`, so stale shared worker
   ports warn before launch.
+- AutoPilot preflight health targets migrated in `epyc-orchestrator`
+  `a5aaafb`: `scripts/autopilot/preflight_audit.py` now groups live model
+  server probes from generated stack-prior serving endpoints instead of a raw
+  port table.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -215,7 +219,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   action spaces from stack priors/classifier artifacts (`1f16759`). Vision
   ReAct VL port routing now reads stack-prior serving records instead of a
   local `_VL_PORT_MAP` (`06ff53c`). Shared `server_mode` alias-port drift now
-  warns through `validate_against_registry()` (`40d46ea`).
+  warns through `validate_against_registry()` (`40d46ea`). AutoPilot preflight
+  model-server health targets now derive from stack-prior serving records
+  (`a5aaafb`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -232,7 +238,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   modalities are generated in `846c2d4`; shared-alias `PORT_MAP` drift is fixed
   and recurrence-tested in `d4acf24`; active VL ReAct port routing now consumes
   stack-prior serving records in `06ff53c`; shared `server_mode` alias-port
-  validation is covered in `40d46ea`.
+  validation is covered in `40d46ea`; AutoPilot preflight health probes consume
+  stack-prior endpoints in `a5aaafb`.
   Broader launch/start integration is still open.
 
 ## Dependency Graph
