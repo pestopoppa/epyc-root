@@ -187,7 +187,7 @@ Assessment: docs and generated public manifests need separate drift policy. They
 Priority order:
 
 1. [x] `scripts/benchmark/seeding_types.py`: default roles and active discovery cost tiers now consume stack-prior/default-live truth where available (`epyc-orchestrator` `72f7dc2`). Remaining seeding work: ports/heavy classification still come from registry/fallback maps; `scripts/benchmark/seeding_rewards.py` reward-cost migration is intentionally deferred because GitNexus marks `compute_comparative_rewards` CRITICAL.
-2. [ ] `orchestration/repl_memory/bilinear_scorer.py`: derive `ModelFeatures` from stack priors/descriptors instead of hardcoded `model_specs`.
+2. [x] `orchestration/repl_memory/bilinear_scorer.py`: `ModelFeatures` now prefer `orchestration/derived/stack_priors.yaml` for params/MoE/quant and fall back to a degraded non-retired table (`epyc-orchestrator` `10b3bce`).
 3. [ ] `orchestration/model_quality_signatures.yaml`: keep as legacy fallback only, or generate it from descriptors with a visible `_source` and `compiled_at`.
 4. [ ] `scripts/server/orchestrator_stack.py` / `stack_manifest.py`: consume stack-prior launch requirements or fail when descriptor/registry acceleration disagrees with hardcoded launch metadata.
 5. [ ] Operator docs/manifests: generate current stack tables from stack priors or mark snapshots as non-authoritative.
