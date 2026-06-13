@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -163,6 +163,15 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   records with `serving.tier: warm`. The current live stack has no warm worker
   burst role, so execution fails closed to sequential HOT execution unless a
   future generated stack explicitly marks a live warm worker.
+- Worker concurrency caps migrated in `epyc-orchestrator` `f41f956`:
+  `src/runtime/concurrency.py` now derives concurrent worker caps from generated
+  stack priors instead of hardcoded small-worker role tables. Only
+  `deployment_status: live_stack` records whose role starts with `worker_` and
+  whose `serving.tier` is `warm` are eligible; caps use `serving.slots`, default
+  to 1 when absent, and fail closed to no concurrent workers if priors are
+  missing or malformed. The current live stack has HOT workers only, so REPL
+  parallel delegation and primitive role semaphores remain single-lane until a
+  future generated stack promotes a live warm worker.
 - Shared `server_mode` alias-port validation landed in `epyc-orchestrator`
   `40d46ea`: `validate_against_registry()` now checks registry rows that cover
   launch roles through `model_role` or `shared_with`, so stale shared worker
@@ -428,7 +437,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   requirements (`a001017`). Parallel step executor burst-worker eligibility now
   derives from live warm worker records in stack priors and defaults unknown
   burst execution/error reporting to `worker_general` instead of retired
-  `worker_fast` (`cc401c0`).
+  `worker_fast` (`cc401c0`). Runtime worker concurrency caps now derive from
+  the same live warm-worker stack-prior criteria and fail closed to single-lane
+  execution when no live warm worker exists (`f41f956`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -459,7 +470,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack priors in `3dc21c5`; summarization chunk-digest worker selection now
   reads live stack-prior workers in `5b4f683`; parallel same-wave burst worker
   selection now reads live warm worker records from stack priors and fails
-  closed to sequential execution when none exist in `cc401c0`;
+  closed to sequential execution when none exist in `cc401c0`; runtime worker
+  concurrency caps now read live warm-worker stack-prior slots and fail closed
+  to single-lane execution in `f41f956`;
   GGUF-derived `ctx_max` projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
