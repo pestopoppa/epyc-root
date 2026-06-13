@@ -93,6 +93,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   compile/check, stack-prior compile/check, procedure enum sync/check, and
   loose/all-surface/strict guard passes into `check` and `update` modes. Focused
   tests landed in `tests/unit/test_stack_change_pipeline.py`.
+- Pipeline preview correctness was tightened in `epyc-orchestrator` `fe4b2aa`:
+  guard validation now honors explicit procedure/schema paths for temp previews
+  and CI fixtures, while stack-prior generation defaults to descriptor role
+  bindings unless an explicit role set is requested.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -171,8 +175,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   into `orchestrator_stack.py` compile/start paths and document the operator
   command sequence. Launch should fail closed unless descriptors and derived
   priors are fresh or an explicit diagnostic override is used. Current status:
-  command skeleton exists in `e01d64d`, but launch/start integration is still
-  open.
+  command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
+  launch/start integration is still open.
 
 ## Dependency Graph
 
