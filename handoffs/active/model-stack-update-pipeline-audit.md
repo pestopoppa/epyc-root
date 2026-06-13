@@ -73,9 +73,9 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Remaining risk: compatibility aliases or legacy tests can still mention dead ports, but they should stay explicit degraded/legacy surfaces rather than active stack truth.
 
 4. Raw launch maps can disagree with generated serving truth.
-   - `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py:30` maps `coder_escalation` to `8071`, while `ROLE_LAUNCH_META` says coder escalation was consolidated under frontdoor and stack priors resolve it to `8070`.
+   - RESOLVED for shared aliases in `epyc-orchestrator` `d4acf24`: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py` now maps `coder_escalation` and `worker_summarize` to `8070`, and `toolrunner` to `8072`, matching computed launch roles.
    - Current stack priors show `coder_escalation.serving.endpoint=http://localhost:8070`, `ports=[8070,8080,8180,8280,8380]`, `slots=1`, `shared_mmap=true`.
-   - Risk: any consumer reading `PORT_MAP` directly instead of stack priors can probe or gate a dead port.
+   - Remaining risk: broader launch metadata (`ROLE_LAUNCH_META`, NUMA wiring, binary paths, mmproj, slots, and acceleration flags) still needs generated-contract comparison; `validate_against_registry()` now catches future `PORT_MAP` alias drift.
 
 5. The generated contract now has explicit shape validation but remains semantically incomplete.
    - `epyc-orchestrator` `69057f3` embeds a versioned `epyc.stack_priors` contract and makes `stack_change_guard.py` reject artifacts missing required role/serving/prior fields.

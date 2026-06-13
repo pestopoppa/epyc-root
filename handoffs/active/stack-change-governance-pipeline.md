@@ -129,6 +129,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   live labels from stack priors, remaps legacy replay labels into current live
   roles, and removes fixed verifier `n_actions=8` defaults in favor of
   classifier-artifact inference.
+- Shared-alias launch port drift was fixed in `epyc-orchestrator` `d4acf24`:
+  `PORT_MAP` now agrees with computed launch roles for `coder_escalation`,
+  `worker_summarize`, and `toolrunner`; `validate_against_registry()` now warns
+  if future direct port hints diverge from `ROLE_LAUNCH_META + NUMA_CONFIG`.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -214,8 +218,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   descriptor compiler quality-key normalization in `3e7efce`, model-ID
   stabilization in `ca9af53`, and fail-closed descriptor removal protection in
   `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`; domain
-  modalities are generated in `846c2d4`.
-  Launch/start integration is still open.
+  modalities are generated in `846c2d4`; shared-alias `PORT_MAP` drift is fixed
+  and recurrence-tested in `d4acf24`.
+  Broader launch/start integration is still open.
 
 ## Dependency Graph
 

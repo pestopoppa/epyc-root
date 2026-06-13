@@ -37,8 +37,9 @@ Read-only audit and lightweight validation on 2026-06-13 found:
 - Domain modality derivation landed in `epyc-orchestrator` `846c2d4`: generated descriptors now retain model-derived `code`, `math`, and `long_context` modalities instead of collapsing those models to text-only.
 - GraphRouter training fleet discovery landed in `epyc-orchestrator` `8cf0310`: `scripts/graph_router/train_graph_router.py` now loads live LLMRole nodes from generated stack priors, skips benchmark/candidate roles, and keeps only a current non-retired degraded fallback.
 - GraphRouter extraction/verifier action-space discovery landed in `epyc-orchestrator` `1f16759`: `scripts/graph_router/action_space.py` centralizes live action labels from stack priors, remaps legacy replay labels into current live roles, and makes verifier one-hot widths infer from classifier artifacts instead of fixed `8`.
-- Supporting sidecar audit draft: `handoffs/active/model-stack-update-pipeline-audit-draft.md` captured the current pipeline/guard snapshot and reinforces the same next blockers: descriptor staleness, `PORT_MAP` launch drift, context/KV/mmproj descriptor gaps, worker shared-runtime semantics, and narrow hardcoded-surface scanner coverage.
-- Live read-only result after `1f16759`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because the descriptor artifact is stale, but REAP coverage, core domain modalities, and GraphRouter offline action-space consumers are no longer blockers. Stack priors and procedure enums are fresh; strict known gaps are warnings under the compatibility flag.
+- Launch alias port-map drift fix landed in `epyc-orchestrator` `d4acf24`: `PORT_MAP` now maps shared live aliases (`coder_escalation`, `worker_summarize`, `toolrunner`) to their computed shared server ports, and `validate_against_registry()` warns if future `PORT_MAP` values diverge from `ROLE_LAUNCH_META + NUMA_CONFIG`.
+- Supporting sidecar audit draft: `handoffs/active/model-stack-update-pipeline-audit-draft.md` captured the pipeline/guard snapshot and highlighted the now-fixed `PORT_MAP` alias drift plus remaining blockers: descriptor staleness, broader launch projection coverage, context/KV/mmproj descriptor gaps, worker shared-runtime semantics, and narrow hardcoded-surface scanner coverage.
+- Live read-only result after `d4acf24`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because the descriptor artifact is stale, but REAP coverage, core domain modalities, GraphRouter offline action-space consumers, and the concrete shared-alias `PORT_MAP` mismatch are no longer blockers. Stack priors and procedure enums are fresh; strict known gaps are warnings under the compatibility flag.
 
 ## Prior Pipeline Work Found
 
@@ -92,7 +93,7 @@ These are the current surfaces that must stay synchronized whenever model roles,
 
 Highest-risk live stale-value hazards today:
 
-1. `scripts/server/stack_manifest.py` still has raw `PORT_MAP["coder_escalation"] = 8071` while stack priors resolve `coder_escalation` to the shared frontdoor endpoint `http://localhost:8070`.
+1. RESOLVED 2026-06-13 in `d4acf24`: `scripts/server/stack_manifest.py` no longer maps `coder_escalation` to dead port `8071`; shared aliases now resolve through `PORT_MAP` to the same primary servers that computed launch roles use. Remaining launch risk is broader generated-contract coverage for `ROLE_LAUNCH_META`, NUMA, mmproj, binary paths, and acceleration flags.
 2. `ctx_max` is null for many live roles in descriptors and stack priors, while context-sensitive routing/compaction/launch decisions need both model max context and effective launch context.
 3. Vision descriptors currently lack descriptor-native `mmproj` fields even though server launch and VL request handling depend on model/projector pairs.
 4. Worker-family role-server conflicts remain explicit gaps: `worker_general`, `worker_math`, and `toolrunner` share runtime but role records can describe different models.
@@ -205,7 +206,7 @@ Minimal pipeline phases:
   - Target files: new `scripts/registry/stack_change_pipeline.py` or equivalent Make/CLI target, `scripts/registry/compile_descriptors.py`, `scripts/registry/compile_stack_priors.py`, `scripts/registry/sync_procedure_role_enums.py`, `scripts/validate/stack_change_guard.py`, `scripts/server/orchestrator_stack.py`, `tests/unit/test_stack_change_guard.py`, new workflow tests if needed.
 
 - [ ] **P2 - Make launch/serving projection consume the generated contract.**
-  - Reconcile or retire stale raw `PORT_MAP` entries such as `coder_escalation: 8071`.
+  - **2026-06-13 partial**: `d4acf24` reconciled stale raw `PORT_MAP` entries for shared aliases and added a registry validation warning if `PORT_MAP` drifts from computed launch roles again.
   - Add a guard that compares `PORT_MAP`, `ROLE_LAUNCH_META`, `NUMA_CONFIG`, and `server_mode` against generated serving records.
   - Ensure health/status/probe code reads stack-prior serving records or validated launch metadata.
   - Target files: `scripts/server/stack_manifest.py`, `scripts/server/stack_numa.py`, `scripts/server/stack_commands.py`, `scripts/server/orchestrator_stack.py`, `src/cli_orch.py`, `src/api/routes/dashboard_topology.py`, `tests/unit/test_model_server_coverage.py`, `tests/unit/test_stack_change_guard.py`, `tests/unit/test_build_server_command_helpers.py`.
@@ -314,7 +315,7 @@ Add launch/config/dashboard tests when touching those consumers.
 2. **IN PROGRESS 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`) - Resolve descriptor/compiler drift reported by the new command.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, and retain domain modalities. The current blocker is curated evidence/schema drift: generated descriptors still differ from the curated artifact on architecture labels, source/protocol text, shared-runtime classification, and P0 context/KV/mmproj fields. Target: make `check --allow-known-gaps` pass except for intentional strict warnings.
 3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, and GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
 4. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
-5. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
+5. **PARTIAL 2026-06-13 (`d4acf24`) - Fix the serving/launch drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings. Continue by comparing `ROLE_LAUNCH_META`, `NUMA_CONFIG`, binary/model/mmproj paths, slots, and acceleration flags against generated serving records.
 
 ## Reporting Instructions
 
