@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; descriptor-delta reporting complete through `d5cb80a`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -45,7 +45,7 @@ GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus
 
 The 2026-06-13 sidecar audit in `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md` found no reason to invent a parallel registry or process. It confirmed that the current descriptor -> stack-prior -> guard -> consumer-migration path is the right foundation, with three immediate hardening priorities:
 
-1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. The pipeline should name exact model IDs/fields and required operator decisions instead of only saying "run update".
+1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. PARTIAL RESOLUTION in `epyc-orchestrator` `d5cb80a`: check mode now reports changed model IDs, changed field paths, generated removals/additions, and top-level drift before the stale-artifact error. Remaining work is deciding which generated descriptor deltas should be accepted or recast as structured gap/severity policy.
 2. **q_scorer fallback provenance needs stricter semantics.** `q_scorer.py` now prefers stack priors, but degraded fallback TPS/quality/memory tables remain available. That is useful for offline scripts, but production/default scoring should not silently fill a live role from fallback when generated priors are present.
 3. **Generated semantics remain incomplete.** The next strict-mode blockers are structured `ctx_max`/effective launch context, vision `mmproj`, worker shared-runtime aliases, measurement status, and launch metadata beyond endpoint/primary port/tier.
 
@@ -264,7 +264,7 @@ Tasks:
   - consumer snapshot tests
   - simulated model-swap tests
   - source/derived artifact freshness checks
-- Improve descriptor freshness reporting so stale descriptor checks show exact changed model IDs/fields and whether update would remove any descriptor, instead of only reporting a generic stale artifact.
+- DONE in `d5cb80a`: descriptor freshness checks now show exact changed model IDs/field paths, generated add/remove model IDs, and top-level drift before the stale-artifact error.
 - Add fixture-based simulated swaps:
   - shared-mmap role swap, e.g. frontdoor/coder_escalation same-GGUF group
   - worker-family swap with launch requirements, e.g. gemma4 worker MTP/ik binary
