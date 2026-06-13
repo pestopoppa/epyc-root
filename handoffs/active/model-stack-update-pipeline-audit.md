@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `312b28e`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -41,6 +41,14 @@ These are the real standardized-pipeline artifacts found in the current root/orc
 
 GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus-analyze.sh` to `24,180 nodes | 26,206 edges | 43 flows`. `gitnexus impact --repo epyc-root handoffs/active/model-stack-update-pipeline-audit.md --direction upstream` returned target not found, `UNKNOWN` risk, `impactedCount=0`, which is expected for this doc path.
 
+## Sidecar Hardening Review
+
+The 2026-06-13 sidecar audit in `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md` found no reason to invent a parallel registry or process. It confirmed that the current descriptor -> stack-prior -> guard -> consumer-migration path is the right foundation, with three immediate hardening priorities:
+
+1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. The pipeline should name exact model IDs/fields and required operator decisions instead of only saying "run update".
+2. **q_scorer fallback provenance needs stricter semantics.** `q_scorer.py` now prefers stack priors, but degraded fallback TPS/quality/memory tables remain available. That is useful for offline scripts, but production/default scoring should not silently fill a live role from fallback when generated priors are present.
+3. **Generated semantics remain incomplete.** The next strict-mode blockers are structured `ctx_max`/effective launch context, vision `mmproj`, worker shared-runtime aliases, measurement status, and launch metadata beyond endpoint/primary port/tier.
+
 ## Current Drift Examples
 
 The following examples are evidence-backed reasons this work should stay high ROI and should not be handled as one-off cleanup.
@@ -77,6 +85,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Current stack priors show `coder_escalation.serving.endpoint=http://localhost:8070`, `ports=[8070,8080,8180,8280,8380]`, `slots=1`, `shared_mmap=true`.
    - EXTENDED in `epyc-orchestrator` `40d46ea`: `validate_against_registry()` now also checks `server_mode` rows that cover launch roles through `model_role` or `shared_with`, so a stale shared worker port warns before launch.
    - EXTENDED in `epyc-orchestrator` `312b28e`: `stack_change_guard.py` now validates live stack-prior `serving.endpoint`, primary `serving.ports`, and `serving.tier` against the current computed launch manifest, catching launch-manifest changes that registry/descriptor source hashes cannot see.
+   - EXTENDED in `epyc-orchestrator` `a6d1200`: generated stack priors now hash `scripts/server/stack_manifest.py` and `scripts/server/stack_numa.py`, and `stack_change_guard.py` requires those source artifacts. A launch topology/tier edit now forces stack-prior regeneration even if registry/descriptors did not change.
    - Remaining risk: broader launch metadata (`ROLE_LAUNCH_META`, NUMA wiring, binary paths, mmproj, slots, and acceleration flags) still needs generated-contract comparison; guards now catch future `PORT_MAP`, shared `server_mode` alias-port drift, and generated serving endpoint/port/tier drift.
 
 5. The generated contract now has explicit shape validation but remains semantically incomplete.
@@ -131,7 +140,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 | Routing priors / role priors | `_heuristic_role_priors()` now filters through live stack priors; learned-routing handoffs/docs still contain `architect_coding` training labels. | Live role set from stack priors; learned/replay datasets must carry era labels. | Add simulated retired-role fixture proving `architect_coding` is ignored in live priors but preserved in historical replay with era metadata. |
 | OpenAI-compatible model listing | `/v1/models` now derives live model IDs from stack priors plus compatibility aliases. | Stack-prior live roles. | Keep compatibility aliases separate from live role IDs; guard any static live model list. |
 | Dashboard/runtime classification | Dashboard age overrides and inference lock/tap had recent cleanup; lock heavy roles and tap stream roles are still local policy tables. | Stack-prior tier/slots/model class plus explicit runtime policy hints. | Compile role policy hints or a generated runtime classification projection; local tables must be fallback/override only. |
-| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`; shared `server_mode` alias-port drift is guarded in `40d46ea`; AutoPilot preflight health probes read stack-prior serving endpoints in `a5aaafb`; AutoPilot human program guidance now derives compaction endpoints from stack priors in `60733c7`; stack-prior endpoint/primary-port/tier drift from the computed launch manifest is guarded in `312b28e`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes and operator guidance should consume generated serving records or verified launch metadata. |
+| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`; shared `server_mode` alias-port drift is guarded in `40d46ea`; AutoPilot preflight health probes read stack-prior serving endpoints in `a5aaafb`; AutoPilot human program guidance now derives compaction endpoints from stack priors in `60733c7`; stack-prior endpoint/primary-port/tier drift from the computed launch manifest is guarded in `312b28e`; stack priors now hash `stack_manifest.py`/`stack_numa.py` in `a6d1200`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes and operator guidance should consume generated serving records or verified launch metadata. |
 | Registry/derived YAML drift | `stack_priors.yaml` has a contract and freshness hash but is `compiled_with_gaps`; context and some quality fields remain null. | Lean registry + descriptors generated from research evidence. | One workflow command must compile descriptors/priors, sync procedure enums, run strict guard, and fail on stale generated hashes. |
 
 ## Proposed Source-Of-Truth Design
@@ -184,7 +193,8 @@ Tasks:
   - KV/cache settings
   - shared mmap group id and memory-accounting owner
   - role policy hints needed by API budgets/routing if those remain role-specific
-- Add source metadata for research-registry/benchmark evidence where descriptors depend on research artifacts, not just the lean orchestrator registry.
+- DONE for launch topology in `a6d1200`: stack priors now include source hashes for `scripts/server/stack_manifest.py` and `scripts/server/stack_numa.py`, and the guard requires those artifacts.
+- Add source metadata for research-registry/benchmark evidence where descriptors depend on research artifacts, not just the lean orchestrator registry and launch topology.
 - DONE foundation in `e162c7c`: add an external exception allowlist for `stack_change_guard.py` with owner, category, rationale, expiry/review date, and whether the exception is live, degraded fallback, legacy test, or historical doc.
 - PARTIAL in `e162c7c`: strict mode now keeps valid waived hardcoded-surface findings visible as warnings instead of promoting them to errors; unresolved descriptor/global-gap policy still needs final strict-mode tightening.
 
@@ -192,6 +202,7 @@ Acceptance:
 
 - `uv run python scripts/registry/compile_stack_priors.py --allow-incomplete` preserves known gaps.
 - strict mode can distinguish "blocked live consumer" from "documented fallback" without hiding either.
+- changing stack manifest/NUMA launch metadata makes generated stack priors stale until regenerated.
 - Adding a retired live role to a production consumer fails the guard.
 
 ### W2 - Migrate highest-risk live consumers
@@ -231,6 +242,8 @@ Priority order:
    - Architect comparisons enumerate live architect-like roles from stack priors and treat removed roles as legacy benchmark fixtures only.
    - DONE for `analyze_routing_policy.py` in `b5bf5eb`: specialist-utilization summary reads live stack-prior roles and the fallback excludes retired `architect_coding`.
 
+q_scorer follow-up from the sidecar audit: split live/default prior loading from degraded fallback loading, or add provenance metadata that makes fallback use impossible to mistake for live stack truth. This is lower immediate drift risk than descriptor/launch-source freshness because `e3d967a` already moved live defaults onto stack priors, but it is required before strict promotion gates can trust scorer priors.
+
 Acceptance:
 
 - `stack_change_guard.py --all-hardcoded-surfaces` production-blocker count drops materially after each pass.
@@ -251,6 +264,7 @@ Tasks:
   - consumer snapshot tests
   - simulated model-swap tests
   - source/derived artifact freshness checks
+- Improve descriptor freshness reporting so stale descriptor checks show exact changed model IDs/fields and whether update would remove any descriptor, instead of only reporting a generic stale artifact.
 - Add fixture-based simulated swaps:
   - shared-mmap role swap, e.g. frontdoor/coder_escalation same-GGUF group
   - worker-family swap with launch requirements, e.g. gemma4 worker MTP/ik binary

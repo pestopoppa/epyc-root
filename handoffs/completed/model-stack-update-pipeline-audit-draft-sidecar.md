@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit Draft
 
-**Status**: DRAFT - sidecar audit only
+**Status**: COMPLETED historical sidecar audit - merged into active stack-change handoffs on 2026-06-13; some observations, including the shared-alias `PORT_MAP` drift, were later resolved
 **Created**: 2026-06-13
 **Scope**: Documentation/audit only. No inference, no orchestrator code edits, no index edits, no progress-log edits, no process restarts.
 **Primary follow-up**: Main long-horizon workflow should review, merge useful findings into the active stack-change governance handoffs, then implement in `epyc-orchestrator`.

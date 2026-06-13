@@ -146,10 +146,11 @@ These are not all bugs, but each is a place a future stack change can go stale.
    - It skips non-live stack-prior roles and keeps retired `architect_coding` absent from live priors.
    - Follow-up implication: preserve fallback tables, but expose explicit live-vs-degraded provenance if downstream consumers need auditability.
 
-2. `stack_manifest.py` still contains stale raw `PORT_MAP` entries.
+2. `stack_manifest.py` no longer contains the previously stale shared-alias `PORT_MAP` entries, but direct launch-map consumers remain a drift risk.
    - File: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py`
-   - `PORT_MAP["coder_escalation"] = 8071`, while `ROLE_LAUNCH_META` documents that coder escalation was consolidated under frontdoor and generated stack priors resolve it to `8070`.
-   - Implementation implication: direct `PORT_MAP` consumers are hazardous unless they go through launch metadata/stack priors or are marked legacy.
+   - RESOLVED in `epyc-orchestrator` `d4acf24`: `PORT_MAP["coder_escalation"]` and `PORT_MAP["worker_summarize"]` now resolve to the shared frontdoor server on `8070`; `toolrunner` resolves to the shared worker server on `8072`.
+   - EXTENDED in `epyc-orchestrator` `312b28e` and `a6d1200`: generated stack-prior endpoint/primary-port/tier records are checked against the computed launch manifest, and stack priors now hash `stack_manifest.py`/`stack_numa.py` so launch topology edits force regeneration.
+   - Implementation implication: direct `PORT_MAP` consumers are still hazardous unless they go through launch metadata/stack priors or are marked legacy.
 
 3. `model_registry.yaml` contains both live topology and older narrative/commentary fields.
    - `server_mode.*` is current live topology.
@@ -296,7 +297,7 @@ Tasks:
 
 - Audit direct `PORT_MAP` and `ROLE_LAUNCH_META` consumers.
 - Ensure status/health checks use generated serving records or launcher-classified metadata, not raw stale port maps.
-- Decide whether `PORT_MAP["coder_escalation"] = 8071` remains as historical compatibility or should be removed from live-facing maps.
+- Keep shared-alias `PORT_MAP` consistency guarded; do not reintroduce separate live `coder_escalation`/`worker_summarize`/`toolrunner` ports unless the stack-prior serving contract and launch manifest change together.
 - Extend stack priors or a generated launch manifest with binary family, draft/MTP/spec flags, KV settings, and shared mmap group.
 
 Dependencies: W3 for fuller launch fields.
