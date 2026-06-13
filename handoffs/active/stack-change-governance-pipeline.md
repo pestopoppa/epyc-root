@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, stack-change CLI acceptance/promotion-gate output and warning summaries, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, seeding role discovery from stack priors, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; default `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK, prints `acceptance:` / `promotion_gate:`, and keeps waived production-blocker, legacy-test, and historical-doc warning categories summarized
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, stack-change CLI acceptance/promotion-gate output and warning summaries, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, seeding role discovery from stack priors, test-only launch-command parity witnesses from stack priors, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; default `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK, prints `acceptance:` / `promotion_gate:` with simulated-fixture and launch-parity test targets, optional `--run-promotion-gate` executes those no-inference targets after earlier checks pass, and waived production-blocker, legacy-test, and historical-doc warning categories remain summarized
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -238,6 +238,42 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `worker_explore` now receives stack-prior quality from live `worker_general`,
   matching existing TPS/memory alias propagation and removing the degraded
   quality fallback residue.
+- Launcher parity witnesses landed in `epyc-orchestrator` `b026f7d`: the
+  `tests/unit/test_build_server_command_helpers.py` assertions for
+  `worker_general` MTP and VL launch commands now derive their expected launch
+  requirements from `orchestration/derived/stack_priors.yaml`. This is a
+  test-only follow-up to the promotion-gate work and does not alter startup
+  behavior. Validation: `uv run pytest -q
+  tests/unit/test_build_server_command_helpers.py` -> 37 passed; `python3 -m
+  py_compile tests/unit/test_build_server_command_helpers.py`; `uv run python
+  scripts/registry/stack_change_pipeline.py check` -> summary ok /
+  no-inference checks passed / same warning buckets; `uv run pytest -q
+  tests/unit/test_stack_change_pipeline_simulated_fixtures.py` -> 6 passed;
+  `git diff --check`.
+- Launch parity was promoted into the stack-change gate in `epyc-orchestrator`
+  `ebd929b`: `scripts/registry/stack_change_pipeline.py` now includes both
+  `tests/unit/test_stack_change_pipeline_simulated_fixtures.py` and
+  `tests/unit/test_build_server_command_helpers.py` in the printed
+  `promotion_gate:` command, with regression coverage in
+  `tests/unit/test_stack_change_pipeline.py`. Validation: `python3 -m
+  py_compile scripts/registry/stack_change_pipeline.py
+  tests/unit/test_stack_change_pipeline.py`; `uv run pytest -q
+  tests/unit/test_stack_change_pipeline.py
+  tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+  tests/unit/test_build_server_command_helpers.py` -> 53 passed; `uv run
+  python scripts/registry/stack_change_pipeline.py check` -> summary ok and
+  `promotion_gate:` prints both targets; `git diff --check`.
+- Executable stack promotion gate landed in `epyc-orchestrator` `3a20efd`:
+  `scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
+  executes the no-inference promotion targets only after earlier stack-change
+  checks pass. The default check mode still prints the targets as reference
+  steps. The simulated fixture step selection was updated to use names.
+  Validation: `python3 -m py_compile scripts/registry/stack_change_pipeline.py
+  tests/unit/test_stack_change_pipeline.py
+  tests/unit/test_stack_change_pipeline_simulated_fixtures.py`; `uv run pytest
+  -q tests/unit/test_stack_change_pipeline.py` -> 11 passed; `uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` ->
+  summary ok and promotion_gate ok, nested pytest 43 passed; `git diff --check`.
 - Descriptor compiler quality-key normalization landed in `epyc-orchestrator`
   `3e7efce`: generated descriptors now use stable suite-vector keys such as
   `overall`, `coder`, `agentic`, `math`, `vision_language`, and `long_context`
@@ -487,7 +523,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f` + `079ff30` + `2baaee5` + `a7927c2`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f` + `079ff30` + `2baaee5` + `a7927c2` + `b026f7d` + `ebd929b` + `3a20efd`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -534,6 +570,16 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   classifies the two intentional retired-role compatibility surfaces as waived
   exceptions (`2baaee5`), and summarizes hardcoded-surface warning categories in
   the footer (`a7927c2`).
+  Launch-command parity witnesses landed in `b026f7d`: test-only expected
+  command fragments for `worker_general` MTP and VL launch requirements now
+  come from generated stack priors instead of duplicated literals, while
+  launcher/startup behavior is unchanged.
+  The promotion gate was extended in `ebd929b` so the printed no-inference
+  command now includes both simulated data-only stack-change fixtures and
+  launcher-helper parity tests.
+  Optional execution landed in `3a20efd`: `check --run-promotion-gate` runs
+  those no-inference targets after the earlier stack-change checks pass, while
+  default `check` remains reference-only.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
   for measured roles landed in `bda46b1` with a post-commit metadata refresh in
@@ -644,7 +690,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `dc14196`; launch-entry witness contract v2 is projected in `7917535`;
   effective launch context and worker/VL model-path requirements are projected
   in `a001017`; effective runtime/binary/KV/flag witness records are projected
-  and guarded in `33c81ff`; stack status now attests expected concrete model
+  and guarded in `33c81ff`; launcher parity tests now derive `worker_general`
+  MTP and VL command witnesses from stack priors in `b026f7d`, the promotion
+  gate includes those parity tests in `ebd929b`, and `3a20efd` can execute the
+  no-inference promotion targets on request; stack status now attests expected
+  concrete model
   paths against live process cmdlines in `0573e02`; descriptor-native
   Qwen2.5-VL/Qwen3-VL projector requirements landed in `3e8121d`;
   auxiliary status-scan ports now derive from `PORT_MAP` in `d59029a`;
