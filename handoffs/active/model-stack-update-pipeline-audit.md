@@ -46,7 +46,7 @@ GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus
 The 2026-06-13 sidecar audit in `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md` found no reason to invent a parallel registry or process. It confirmed that the current descriptor -> stack-prior -> guard -> consumer-migration path is the right foundation, with three immediate hardening priorities:
 
 1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. PARTIAL RESOLUTION in `epyc-orchestrator` `d5cb80a`: check mode now reports changed model IDs, changed field paths, generated removals/additions, and top-level drift before the stale-artifact error. Remaining work is deciding which generated descriptor deltas should be accepted or recast as structured gap/severity policy.
-2. **q_scorer fallback provenance needs stricter semantics.** `q_scorer.py` now prefers stack priors, but degraded fallback TPS/quality/memory tables remain available. That is useful for offline scripts, but production/default scoring should not silently fill a live role from fallback when generated priors are present.
+2. **q_scorer fallback provenance is now visible.** RESOLVED in `epyc-orchestrator` `d6912e7`: `QScorerPriors` and default `ScoringConfig` now expose per-role source maps for TPS, quality, and memory priors plus an optional degraded reason. Degraded fallback tables remain available for offline/replay, but live/default scoring can now distinguish generated stack-prior values from fallback-filled values.
 3. **Generated semantics remain incomplete.** The next strict-mode blockers are structured `ctx_max`/effective launch context, vision `mmproj`, worker shared-runtime aliases, measurement status, and launch metadata beyond endpoint/primary port/tier.
 
 ## Current Drift Examples
@@ -242,7 +242,7 @@ Priority order:
    - Architect comparisons enumerate live architect-like roles from stack priors and treat removed roles as legacy benchmark fixtures only.
    - DONE for `analyze_routing_policy.py` in `b5bf5eb`: specialist-utilization summary reads live stack-prior roles and the fallback excludes retired `architect_coding`.
 
-q_scorer follow-up from the sidecar audit: split live/default prior loading from degraded fallback loading, or add provenance metadata that makes fallback use impossible to mistake for live stack truth. This is lower immediate drift risk than descriptor/launch-source freshness because `e3d967a` already moved live defaults onto stack priors, but it is required before strict promotion gates can trust scorer priors.
+DONE in `d6912e7`: q_scorer now exposes live/degraded provenance metadata. Follow-up, if strict promotion needs a harder failure mode, is to make selected production callers reject `PRIOR_SOURCE_DEGRADED_FALLBACK` for required live roles instead of only inspecting metadata.
 
 Acceptance:
 
