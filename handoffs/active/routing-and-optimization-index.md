@@ -382,38 +382,24 @@ Source: `/research-intake` of OptiLLM (intake-601) + expansion intakes 602/603/6
 
 **P21.C — out of autopilot scope (tracked, not scheduled here):** CoT-decoding (intake-602) + DeepConf-online → `epyc-llama-experimental` fork spike + BW roofline + **manual** speed bench, gated on P21.A proving worthwhile. Follow-up intake of 17 OptiLLM-cited papers + AutoThink SSRN 5253327 → future `/research-intake` run.
 
-### P15 — Parallel Seeding via NUMA Quarter Isolation (merged 2026-04-21 from `parallel-seeding-eval.md`)
+### P15 — Parallel Seeding via NUMA Quarter Isolation (retired/replaced 2026-06-13)
 
-Independent workstream — 2× AR-3 throughput by running 2 concurrent eval streams on dedicated port sets. No contention, no changes to existing seeding scripts, no inference dependency on implementation side. **Cross-ref**: `non-inference-backlog.md` NIB2-12 (implementation) and NIB2-29 (port-doc update).
+Original 2026-04-21 design proposed `parallel_seeding.py` + `seeding_port_sets.py` with two hard-coded streams on 8080-8084 and 8180-8184. Do **not** implement that design.
 
-**Problem**: AR-3 evaluates questions sequentially through the 3-way pipeline. With 192 CPU threads and 30 model servers, seeding utilization is ~13%. Each trial takes 20-40 minutes. Quarter instances (8180-8381) receive zero traffic from seeding.
+Current-state audit:
 
-**Design**: Run 2 concurrent eval streams (not 4 — architect_general and architect_coding each have only 2 instances).
+- The referenced seeding scripts were moved from `epyc-inference-research` to `epyc-orchestrator` in repo decontamination commit `49e9ce5`; `epyc-inference-research/scripts/benchmark/seed_specialist_routing.py` no longer exists.
+- Current `epyc-orchestrator/scripts/benchmark/seeding_eval.py` already has `AUTOPILOT_SEED_ROLE_CONCURRENCY`, role-wave packing, contention-policy checks, and a one-heavy-port-per-wave guard.
+- Current `seeding_eval._eval_single_config()` clears slots per actual role port, disables prompt cache for fairness, waits on all heavy ports, and can recover stuck heavy ports.
+- Current `seeding_checkpoint._atomic_append()` uses `fcntl` locking and fsync, so checkpoint safety is not the missing primitive.
+- Current stack topology is manifest-driven: `PORT_MAP` primary ports are 8070/8072/8083/... while quarter ports live in `NUMA_CONFIG`. `architect_coding` was removed. The old A/B stream table no longer describes the production stack.
+- The 2026-06-12 trial-787/788 contamination window proves that optimistic concurrent seeding can poison measurement if it competes with other background work.
 
-| Stream | frontdoor | coder | worker | architect_gen | architect_code |
-|--------|:---------:|:-----:|:------:|:-------------:|:--------------:|
-| A | 8080 | 8081 | 8082 | 8083 | 8084 |
-| B | 8180 | 8181 | 8182 | 8183 | 8184 |
+Decision: close NIB2-12 as a stale/unsafe implementation target. The replacement, if throughput still matters after the restart bundle, is a clean-window **manifest-aware seeding scheduler** that derives eligible instances from `NUMA_CONFIG` and the placement/contention policy, records an attested topology snapshot per run, and refuses to start when K-RAG/BGE/AutoPilot or other inference-bearing jobs are active. It should extend the current role-wave scheduler, not bypass it with hard-coded port sets.
 
-**New files** (existing scripts untouched):
-
-| File | Purpose |
-|------|---------|
-| `scripts/benchmark/parallel_seeding.py` | NEW — parallel orchestrator. Imports from existing seeding_eval/orchestrator. Splits questions across 2 streams. ThreadPoolExecutor(2). Thread-safe checkpoint. |
-| `scripts/benchmark/seeding_port_sets.py` | NEW — port set definitions (STREAM_A, STREAM_B). |
-
-**Key details**:
-- Pass `server_urls` dict in ChatRequest to pin each stream to its port set (field already exists)
-- Scope slot erasure to stream's own ports only
-- Thread lock around checkpoint JSONL writes
-- Ingest (1 instance, 8085) could contend — rare in seeding, acceptable
-
-**Expected impact**: 2× throughput (10-20 min trials instead of 20-40). Same quality/speed measurements (no cross-stream contention). Fallback: use original `seed_specialist_routing.py` if anything breaks.
-
-**Deferred**: 4-stream parallelism — requires adding 3rd/4th architect instances on remaining NUMA quarters.
-
-- [ ] **PS-1: Implement `parallel_seeding.py` + `seeding_port_sets.py`** — ~200 LoC total. Tracked as NIB2-12 in non-inference-backlog.
-- [ ] **PS-2: Update `orchestrator_stack.py` port docs** — reflect 8080-8084 / 8180-8184 stream split once PS-1 lands. Tracked as NIB2-29.
+- [x] **PS-1: Retire old `parallel_seeding.py` + `seeding_port_sets.py` plan** — NIB2-12 closed as stale/unsafe, no code shipped.
+- [x] **PS-2: Port-doc follow-up** — NIB2-29 already closed 2026-05-27 by pointing docs to `stack_manifest.PORT_MAP` and `stack_numa.NUMA_CONFIG`.
+- [ ] **PS-3: Manifest-aware clean-window seeding scheduler** — only if a future clean-window throughput audit shows current `AUTOPILOT_SEED_ROLE_CONCURRENCY` and role-wave packing leave material idle capacity. Requirements: derive port/instance choices from `NUMA_CONFIG`, use placement/contention policy, stamp topology + active-process health in output, and run only when uncontested.
 
 ### P9 — Legacy Cleanup & Operational Debt
 

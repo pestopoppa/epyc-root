@@ -1,6 +1,6 @@
 # Non-Inference Backlog — Round 2 (2026-05-19 audit refresh)
 
-**Status**: ACTIVE — 43 Round-2 baseline tasks catalogued + 4 May 2026 cluster supplements. 38/43 Round-2-baseline done. Open Round-2 baseline (5 items): NIB2-12, 15, 18, 43, 46. NIB2-33 moved to excluded (hermes-outer-shell auth deferral). May 2026 cluster supplement (4 items, ready-to-claim): NIB2-49 RAO+ReDel pre-flight, NIB2-50 δ-mem Phase 1 setup, NIB2-51 X-MAS routing scaffolding, NIB2-52 StreamingLLM C++ patch — see section below.
+**Status**: ACTIVE — 43 Round-2 baseline tasks catalogued + 4 May 2026 cluster supplements. 39/43 Round-2-baseline done. Open Round-2 baseline (4 items): NIB2-15, 18, 43, 46. NIB2-33 moved to excluded (hermes-outer-shell auth deferral). May 2026 cluster supplement (4 items, ready-to-claim): NIB2-49 RAO+ReDel pre-flight, NIB2-50 δ-mem Phase 1 setup, NIB2-51 X-MAS routing scaffolding, NIB2-52 StreamingLLM C++ patch — see section below.
 
 **Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 36 NIB2 + 6 standalone = 42 items.
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog.md`](../completed/non-inference-backlog.md))
@@ -43,7 +43,7 @@ This is the "what can I pick up right now with no inference available?" list. It
 
 ## Medium-effort implementation (multi-day, no inference required)
 
-- [ ] **NIB2-12**: `parallel_seeding.py` + `seeding_port_sets.py` — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15 (merged 2026-04-21 from parallel-seeding-eval.md). ~200 LoC, 1 day. Unlocks 2× AR-3 throughput. No blockers.
+- [x] **NIB2-12**: `parallel_seeding.py` + `seeding_port_sets.py` — [`routing-and-optimization-index.md`](routing-and-optimization-index.md) § P15 (merged 2026-04-21 from parallel-seeding-eval.md). ~200 LoC, 1 day. Unlocks 2× AR-3 throughput. No blockers. **CLOSED 2026-06-13 as stale/unsafe, no code shipped**: the referenced implementation target moved from `epyc-inference-research` to `epyc-orchestrator` during repo decontamination; current seeding already has `AUTOPILOT_SEED_ROLE_CONCURRENCY`, role-wave packing, heavy-port idle barriers, atomic checkpoint appends, and manifest-driven role discovery. The old hard-coded 8080/8180 two-stream design conflicts with current `PORT_MAP`/`NUMA_CONFIG` full+quarter topology and the resource-contamination lessons from trials 787/788. Replacement is a future clean-window, manifest-aware scheduler or measurement harness, not this NIB item.
 - [x] **NIB2-13**: OpenDataLoader Phase 1 swap in `pdf_router.py` — [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) L36-44. 1-2 days. JVM lifecycle + swap `pdftotext -layout` for `opendataloader_pdf.convert(...)`, retain entropy/garbage quality checks, update `tests/services/test_pdf_router.py`. **DONE 2026-04-17**: Added `_extract_with_opendataloader()` method, `PDF_EXTRACTOR=opendataloader` env var routing, fallback to pdftotext if ODL returns empty. Quality checks retained. ODL package install needed for production.
 - [x] **NIB2-14**: Clone `opendataloader-bench`, add `document_extraction` suite with NID/TEDS/MHS scoring — [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) L95-107. 1 day. **DONE 2026-04-17**: Created `document_extraction_adapter.py` with `DocumentExtractionAdapter` class, `score_nid()` (reading order), `score_teds()` (table structure), `score_mhs()` (heading hierarchy), `score_document()` (aggregate). Registered in dataset_adapters.py. 18 scoring tests. Repo clone deferred (Git LFS).
 - [ ] **NIB2-15**: Goedel-CP-8B GGUF conversion + Q4_K_M/Q8_0 quantization — [`pipeline-integration-index.md`](pipeline-integration-index.md) § P2.S1 (merged 2026-04-21 from lean-proving-pipeline.md). 4-6h conversion is non-inference; quality validation is inference-gated.
@@ -140,7 +140,7 @@ When you complete an NIB2-NN item:
 ```
 HIGHEST LEVERAGE (do first):
 ├── NIB2-01 (_batch_llm_query)          → unblocks REPL efficiency wins
-├── NIB2-12 (parallel seeding)           → 2× AR-3 throughput
+├── ~~NIB2-12 (parallel seeding)~~       → retired 2026-06-13; old two-stream design is stale/unsafe
 ├── NIB2-09 (</think> investigation)    → unblocks Qwen3.5 hybrid budget control
 └── NIB2-06 (vision tool register)      → proactive vision delegation
 
