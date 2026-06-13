@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-06-05
-**Sources**: 27 documents (added 2026-06-05 earlyoom control-plane protection and stack lifecycle cleanup notes)
+**Last compiled**: 2026-06-13
+**Sources**: 35 documents (added 2026-06-13 Fable 5 serving/kernel review, routing truth restoration, and batch-serving gap)
 
 ## Summary
 
@@ -49,6 +49,16 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
   Hadamard rotation auto-enables in v3 when KV types are quantized (PR #21038 landed upstream as `744c0c731`); the orchestrator's prior custom `--kv-hadamard` flag is redundant and was removed. Paged attention is registry-driven via `paged_attention.enabled_threshold_gb` — no `--paged-attention` CLI flag needed. The swap was binary-only; no config or model changes. [bulk-inference-campaign.md § Package F](../handoffs/active/bulk-inference-campaign.md), [completed/llama-cpp-v3-upstream-rebuild.md](../handoffs/completed/llama-cpp-v3-upstream-rebuild.md)
 
 - **Model-specific serving configurations are critical for correct behavior (2026-04-19).** Five new models each required unique configurations not documented in the codebase. Universal findings: (1) Gemma4 models need `use_chat_api + repeat_penalty 1.05 + reasoning off + KV q8_0` to avoid degenerate repetition (70-83% of responses without fix) and thought leakage; (2) Qwen3.6 needs `use_chat_api + reasoning off` to avoid `<think>` loops; (3) M2.7 needs `--jinja` for correct template (37% training data leakage without it) and must NOT use repeat_penalty (caused 52%->27% regression); (4) SG4-26b Q4KM proved irrecoverable (16.2%) due to fundamental MoE expert routing degradation at Q4 -- model deprecated and GGUF deleted. The benchmark infrastructure now supports per-model `disable_thinking`, `repeat_penalty`, and `reasoning` flags. [progress/2026-04-19](../progress/2026-04/2026-04-19.md)
+
+## 2026-06-13 Update — Serving Gaps After Fable 5
+
+Fable 5 confirmed the batch=1 CPU decode closure at the kernel level but found a serving-level evidence gap. The system has mature multi-instance concurrency: NUMA quartering, placement state machine, per-region locks, cross-role disjoint placement, measured contention matrix, session affinity, and reverse migration. What remains unmeasured is the eval/harness serving class: single-instance continuous batching and CPU14 `-np` sweeps were never run despite the dominant workload now being independent eval questions.
+
+The decisive next measurements are E1/E2 from the kernel/concurrency handoff: run `-np {1,2,4,8,16}` on frontdoor and a dense control, then A/B a T1 eval against a single full instance with continuous batching versus the current cross-quarter fanout. If that shows intermediate-batch decode is not per-thread bandwidth saturated, only then write the missing 8x8 GEMM SIMD body. This separates "batch=1 closed" from "batch/eval serving untested."
+
+Frontdoor speculative decoding is another unharvested config path. It is not a general GPU-drafter endorsement; it is the first cheap measurement that unlocks or kills several downstream hypotheses, including MoE-Spec reuse on frontdoor verification batches.
+
+Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-kernel-and-concurrency.md), [routing truth restoration](../handoffs/active/routing-truth-restoration.md).
 
 ## Actionable for EPYC
 

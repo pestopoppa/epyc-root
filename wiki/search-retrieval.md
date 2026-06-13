@@ -2,8 +2,8 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 25 documents (added intake-428/430/431 LightOn DenseOn/LateOn)
+**Last compiled**: 2026-06-13
+**Sources**: 31 documents (added 2026-06-13 internal KB-RAG K7 seed/certification status)
 
 ## Summary
 
@@ -60,6 +60,14 @@ A research intake deep-dive (2026-04-14) evaluated SearXNG (intake-359/360, 28.3
 - **WARP (intake-406, SIGIR'25, arXiv:2501.17788) achieves 3x speedup over ColBERTv2/PLAID and 41x over the XTR reference implementation** via two techniques: WARP_SELECT (dynamic similarity imputation that skips full MaxSim for low-scoring candidates) and implicit decompression (avoids materializing full PQ vectors during scoring). These are corpus-scale optimizations (millions of passages); for snippet-level reranking over 10 items, MaxSim already completes in <1ms so WARP's gains are immaterial to the current pipeline. Relevant if retrieval ever scales to large passage corpora. [confidence: verified — intake-406, colbert-reranker-web-research.md 2026-04-17 section]
 - Crawl4AI (intake-372, 51K+ stars, Apache-2.0) is the preferred deep page scraping tool under the open-source-only policy. Async Playwright-based, local LLM extraction via Ollama, Docker deployment, no API keys. Complements SearXNG (search aggregation) with page content extraction for JS-heavy pages and PDFs. Evaluation gated on post-AR-3 WebFetch failure rate data [searxng-search-backend.md]
 - Firecrawl (intake-364/365, 108K+ stars, AGPL-3.0) evaluation deferred: cloud-first SaaS model conflicts with self-hosted infrastructure philosophy. Self-hosted version lacks cloud parity. Credit-based pricing unpredictable [searxng-search-backend.md]
+
+## 2026-06-13 Internal KB-RAG Status
+
+The internal markdown KB-RAG path has moved from planned architecture to measurable retrieval system. K1-K6 are landed, and the fresh K7 build covers 577 files / 18,010 chunks / 1.2 GiB embeddings. The 20-case seed suite selected `recency_w0.1_s90` as the best recall@10 setting at 0.6417 overall; rerank variants improve early rank but can lose total recall and miss all evidence on some cases.
+
+The live decision remains open because the 20-case seed suite is not the certification pool. The final 70-case set now exists and validates evidence file paths, protocol counts, and duplicate IDs. Retrieval claims should use the upcoming certification sweep, not the seed calibration numbers.
+
+Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 
 ## Actionable for EPYC
 

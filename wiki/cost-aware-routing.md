@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 24 documents (2 deep-dives, 7 active handoffs, 17 intake entries)
+**Last compiled**: 2026-06-13
+**Sources**: 29 documents (added 2026-06-13 task-rate/goodput objective replay and Fable 5 objective-design update)
 
 ## Summary
 
@@ -107,6 +107,14 @@ The cost-aware-routing literature now divides cleanly into **four methodological
 ### Cross-references
 
 For the routing-architecture impact (tri-role axis, DAR phase plan, design-space comparison table) see [Routing Intelligence](routing-intelligence.md). For the optimizer-design-space (sep-CMA-ES vs REINFORCE vs GRPO; class-4 ES) see [Reinforcement Learning](reinforcement-learning.md).
+
+## 2026-06-13 Update — Task Rate, Goodput, And Bloat
+
+Fable 5 identified a cost blind spot in the live AutoPilot objective: `quality`, generated-token throughput, tier-cost proxy, and reliability can all fail to distinguish a terse correct config from a verbose correct config that consumes more wall time per task. The proposed replacement is `task_rate = questions / eval_wall_hours`, with `goodput = quality * task_rate / 3` reported as solved tasks per hour. This maps directly to cost-aware routing because the cost paid by the lab is wall time and scarce serving capacity, not tokens produced per second.
+
+The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proof gate did not pass: only 1 of 5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`, and raw task-rate admitted a zero-quality high-rate point. Live Pareto dominance stays on the existing vector until the evidence-plane restart, core/version boundary, and quality-eligible replay prevent that failure mode.
+
+Sources: [Fable 5 objective design](../handoffs/active/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
 
 ## Actionable for EPYC
 

@@ -2,8 +2,8 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-06-05
-**Sources**: 41 documents (added 2026-06-05 tool-use eval and benchmark-first model-card corrections)
+**Last compiled**: 2026-06-13
+**Sources**: 54 documents (added 2026-06-13 Fable 5 evidence-plane, instrument-repair, repo-readiness, and publication-methodology updates)
 
 ## Summary
 
@@ -124,6 +124,14 @@ A complementary tool, MathQ-Verify (arxiv:2505.13903), verifies question quality
 **NIB2-03 audit applied stages 1-3 to the EPYC question pool (2026-04-21)**: 5,670 math-suite questions (aime + math + olympiadbench + physreason) scanned via `scripts/benchmark/dataset_audit/mathq_verify_audit.py`; 251 flagged (4.43%). Stage 4 (symbolic consistency between atomic assumptions and conclusions) deferred because it requires LLM-based decomposition. Signal finding: GSM8K's use of `$` as a **currency** symbol (`$10`, `$68`) collides with LaTeX math delimiters — 244 flags on the `math` suite alone. The heuristic is correct but the prompts are legible; mitigation is to gate the unbalanced-`$` check on prompts that also contain LaTeX commands. Smaller false-positive signal on AIME's `\sqrt{N}` shapes (~10 flags) will be tightened in a v2 pass. Without a working `antlr4-python3-runtime`, sympy-level parse validation is skipped to avoid flooding false positives. [`progress/2026-04/mathq-verify-audit-2026-04-21.md`]
 
 > Source: [Math-Verify Integration Analysis](/workspace/research/deep-dives/math-verify-integration-analysis.md) -- intake-377/379, symbolic comparison, 66% underestimation fix, thread safety caveats
+
+### New Findings (2026-06-13 — Evidence Plane And Claim Discipline)
+
+- **The current T1 instrument had lower effective power than its nominal 43 questions implied.** Fable 5's review found that about 8 fixed T1 items could never pass under the live scoring path, while another large block was saturated. The effective discriminating set was closer to 10-14 items, with a fixed-set quality ceiling near 2.44/3.0. The instrument-repair handoff has landed the first repair batch: expected-free scorers are handled explicitly, pandas-backed code items are no longer silently broken, VL/OCR routing was traced and repaired, T0 sentinel scores are namespaced, and item analytics now classify pinned-zero suites. Core v2 selection still needs the calibration batch. Sources: [Fable 5 executive summary](../handoffs/active/fable5-findings-00-executive-summary.md), [evidence-plane-instrument-repair.md](../handoffs/active/evidence-plane-instrument-repair.md).
+- **Per-question outcome vectors are the next benchmark primitive.** The ledger branch derives stable question IDs and journals compact per-question outcomes so replay can use paired tests instead of aggregate-only comparisons. The branch is restart-bundle-ready, but the live journal still has 0 vector-bearing trials, so sequential verdicts remain gated on collecting history rather than theory alone. Source: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md).
+- **Goodput is a valid concern, but not yet a live objective.** The replayable `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` fields landed as shadow telemetry. The live Pareto vector did not flip because the replay only dropped 1 of 5 legacy frontier points under the proposed policy and raw task-rate admitted a zero-quality high-rate frontier candidate. Source: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
+- **Publication-grade benchmark claims now require protocol, reps, date, and attestation.** The public-methodology draft uses the CPU frontdoor example where an apparent +17% improvement collapses to +1.6% under canonical controls. Treat historical numbers without protocol IDs as observations or priors, not decision gates. Source: [canonical CPU benchmarking draft](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md).
+- **Repo-readiness scoring is deterministic evidence, not a qualitative review.** The first v1 scorer run rates the portfolio as Documented (L2), with root at Optimized (L4) and the three child repos at Documented (L2). This is useful as a backlog generator because criteria pass only on concrete artifact checks, but it does not certify artifact quality. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Open Questions
 

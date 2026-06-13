@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-05 (manual incremental update: AutoPilot contracts, earlyoom, MI210 ROCm, multimodal benchmark-first, adapter-serving)
-**Articles**: 25 compiled, 5 stub categories
-**Total sources**: 409 documents across 6 source types
+**Last compiled**: 2026-06-13 (manual incremental update: Fable 5 evidence-plane, routing truth, K-RAG K7, security hardening, repo-readiness, batch-serving gaps)
+**Articles**: 26 compiled, 4 stub categories
+**Total sources**: 513 scanned documents across 6 source types; 2026-06-13 pass compiled the highest-value Fable/evidence/routing/K-RAG clusters
 
 ---
 
@@ -16,13 +16,13 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
 | [KV Cache](kv-cache.md) | 34 | Attention Matching achieves 50x compression; autopilot slot_compact integration complete with slot memory visibility |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
-| [Hardware Optimization](hardware-optimization.md) | 50 | MI210 GPU work starts with verify/profile harnesses; CPU topology gates remain authoritative until GPU drafter evidence is measured |
+| [Hardware Optimization](hardware-optimization.md) | 58 | Batch=1 decode micro-opts are closed, but frontdoor spec-dec, DSA, batched eval serving, and MI210-as-eval-engine remain live angles |
 
 ## Serving & Systems
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 27 | earlyoom protects the control plane through launcher-applied `oom_score_adj`; transient eval/planner subprocesses stay killable |
+| [Inference Serving](inference-serving.md) | 35 | Multi-instance serving is mature; single-instance batched decode and eval-driver continuous batching are the unmeasured serving gap |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -30,16 +30,16 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 21 | 50-70% of reasoning tokens are redundant; difficulty signal has NO predictive spread at 0.15/0.35 thresholds; tool A/B slightly net-positive |
-| [Routing Intelligence](routing-intelligence.md) | 38 | Decision-aware routing remains offline-analysis-first; AutoPilot data should use shared exclusion/fingerprint contracts before feeding routing analysis |
-| [Benchmark Methodology](benchmark-methodology.md) | 41 | Tool-use trials must prove actual tool exercise; new model-card claims stay priors until local EPYC suite benchmarks run |
+| [Cost-Aware Routing](cost-aware-routing.md) | 29 | Task-rate/goodput telemetry now exposes token bloat, but live Pareto dominance stays unchanged until quality-eligible replay passes |
+| [Routing Intelligence](routing-intelligence.md) | 50 | Routing truth repair is live-attested; DAR-1 replay shows 0.00% identifiable regret, so routing expansion stays frozen |
+| [Benchmark Methodology](benchmark-methodology.md) | 54 | T1 instrument repair and per-question ledgers are the new benchmark priority; claims need protocol, reps, date, and attestation |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Agent Architecture](agent-architecture.md) | 30 | Multi-file coding failure diagnosed as REPL/BEP protocol friction, not model capability; edit transactions solve practical remediation while J8 remains only a legacy batch-edit keep/retire experiment |
-| [Autonomous Research](autonomous-research.md) | 46 | AutoPilot archive, dashboard, and offline replay now share core action identity, exclusion, Pareto, and journal reconstruction contracts |
+| [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
+| [Autonomous Research](autonomous-research.md) | 62 | AutoPilot's binding constraint is decision-grade evidence; hotfixes landed, ledger/event-sourcing work remains the restart inflection point |
 | [Memory-Augmented Models](memory-augmented.md) | 25 | Episodic FAISS writes require cross-process locking; llama RAM drift needs residency telemetry/recycle, not drop_caches |
 
 ## Context & Compression
@@ -63,16 +63,16 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Multimodal](multimodal.md) | 34 | Benchmark deployed Qwen-VL field-placement before adding LocateAnything; Gemma 4 stays benchmark-first, not model-card-dismissed |
 | [Document Processing](document-processing.md) | 4 | XY-Cut++ PDF parser: 0.84 accuracy at 0.05s/page; table extraction is the biggest gap |
-| [Formal Verification](formal-verification.md) | 5 | Goedel-Code-Prover 8B beats GPT-5.3-Codex at 62.0%; decomposition alone accounts for +28pp |
+| [Formal Verification](formal-verification.md) | 7 | Goedel-Code-Prover 8B beats GPT-5.3-Codex at 62.0%; RustEvo2 is now the gate for Rust specialist claims |
 
 ## Knowledge & Retrieval
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Search & Retrieval](search-retrieval.md) | 16 | ColBERT reranker S1-S4 complete (ONNX Runtime, 180ms encoding, perfect ranking separation); S5 LateOn drop-in code ready (NIB2-47); Reason-mxbai edge fallback queued |
-| [Knowledge Management](knowledge-management.md) | 12 | Governance tools should emit reviewable contracts/artifacts before becoming autonomous writers over handoffs, wiki pages, or code |
+| [Search & Retrieval](search-retrieval.md) | 31 | K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool |
+| [Knowledge Management](knowledge-management.md) | 18 | K-RAG has a fresh 18K-chunk index and certification pool; repo-readiness scoring turns governance gaps into deterministic criteria |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
-| [Tool Implementation](tool-implementation.md) | 16 | GitNexus remains the required blast-radius tool; split-repo validators now resolve child repos explicitly instead of assuming root-local code |
+| [Tool Implementation](tool-implementation.md) | 24 | Security-review, source-quarantine validation, and repo-readiness scoring extend governance tooling without autonomous index edits |
 
 ## Research & Analysis
 
@@ -80,6 +80,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [LLM Prompting](llm-prompting.md) | 14 | CoT controllability is 0.1-15.4% (safety positive); FlowSteer blocked on hybrid SSM |
 | [Mechanistic Interpretability](mechanistic-interpretability.md) | 6 | Qwen-Scope releases SAEs for production-stack Qwen3/3.5 (~687 GB FP32 full subset, qwen license); AxBench + Wang 2026 falsify SAE-steering against simpler baselines (DiffMean, prompting); Section 4 benchmark-redundancy is the strongest application — pilot first |
+| [Safety](safety.md) | 4 | External-source text is now quarantined as data; security review uses exploit-path-gated STRIDE/OWASP/LLM checks |
 
 ---
 
@@ -97,7 +98,7 @@ python3 .claude/skills/project-wiki/scripts/query_wiki.py "<category>" --human
 | ~~`knowledge_management`~~ | — | Promoted to full article 2026-04-28 → [Knowledge Management](knowledge-management.md) |
 | ~~`mechanistic_interpretability`~~ | — | Promoted to full article 2026-05-04 → [Mechanistic Interpretability](mechanistic-interpretability.md) |
 | ~~`rag_alternatives`~~ | — | Promoted to full article 2026-04-28 → [RAG Alternatives](rag-alternatives.md) |
-| `safety` | 4 | Covered by [LLM Prompting](llm-prompting.md) CoT monitorability findings |
+| ~~`safety`~~ | — | Promoted to full article 2026-06-13 → [Safety](safety.md) |
 | `swarm_techniques` | 7 | Partially covered by [Agent Architecture](agent-architecture.md) and [Autonomous Research](autonomous-research.md) |
 
 ---

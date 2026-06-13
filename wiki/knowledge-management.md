@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-06-05
-**Sources**: 12 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (intake-453 Reason-mxbai, intake-492 Flywheel, intake-494 SLIDERS)
+**Last compiled**: 2026-06-13
+**Sources**: 18 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-13 K-RAG K7 seed/certification status and repo-readiness governance)
 
 ## Summary
 
@@ -76,6 +76,20 @@ The next governance refinement is for partially complete handoffs whose live tas
 The first compaction pass created or refreshed 11 completed ledgers: Lightning Attention, integration-test coverage, REPL turn efficiency, TriAttention/KV selection, context folding, intra-process tensor parallel decode, meta-harness optimization, BEP/DCP harness, dynamic stack concurrency, large-MoE expert parallelism, and routing intelligence. Each active twin now contains a `Completed Scope` table and each historical sibling points back to `../active/<handoff>.md`. Validation after the pass reported 0 stale/aging handoffs, 0 missing active-index references, and 0 missing reciprocal ledger links.
 
 The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
+
+## K-RAG Validation Update (2026-06-13)
+
+K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query path has shipped, and K7 now has both a seed harness and a certification pool. The fresh K7 build indexed 577 files into 18,010 chunks with about 1.2 GiB of embeddings. On the 20-case seed suite, the best recall@10 config was `recency_w0.1_s90` at 0.6417 overall, with no missed-all-evidence cases. Rerank settings improved recall@3 and first-evidence rank but lost recall@10 and introduced missed-all-evidence failures.
+
+The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The next clean-window action is to run that certification pool against `/mnt/raid0/llm/tmp/kbrag_index_k7_20260612`; only that sweep should update the retrieval-quality claim.
+
+Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+
+## Governance Tooling Update (2026-06-13)
+
+The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
+
+Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Open Questions
 

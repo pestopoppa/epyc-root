@@ -2,8 +2,8 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-06-05
-**Sources**: 50 documents (added 2026-06-05 MI210 ROCm kernel-authoring and GPU-drafter planning sources)
+**Last compiled**: 2026-06-13
+**Sources**: 58 documents (added 2026-06-13 Fable 5 kernel/concurrency review and MI210 strategy refinement)
 
 ## Summary
 
@@ -54,6 +54,22 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 - **BOLT-rewriting libomp.so itself is FUNCTIONAL but does not deliver a measurable win under tested conditions**. Pipeline (CPU12 extension, 2026-04-28): downloaded `openmp-20.1.8.src.tar.xz` from the LLVM 20.1.8 release, built libomp from source with `clang-20 + -march=znver5 -O3 -Wl,--emit-relocs` (1.68 MB output, vs 1.21 MB system libomp — extra size from `.rela.text` for BOLT to consume), captured per-class perf data with `LD_PRELOAD=$CUSTOM_LIBOMP perf record -e cycles:u -j any,u`, generated 4 fdata files via `perf2bolt-20`, BOLT-rewrote with `llvm-bolt-20 -reorder-blocks=ext-tsp -reorder-functions=cdsort -split-functions -split-all-cold` using single-model coder fdata (the merged.fdata fell into legacy format and llvm-bolt rejected it). PPL bit-exact (Coder-30B chunks 1-12 = 11.1146, byte-identical to all prior PGO/BOLT runs). But under measurement: BOLTed libomp at warm position 2 (29.58 ± 0.04) is at parity OR slightly worse than system libomp at warm position 4 (31.95 ± 0.09); position effect ≥ BOLT delta. System noise was high (megasync at 95% CPU all afternoon, plus cumulative cache pressure from 4 build trees and LLVM source extraction caused 2× absolute throughput degradation vs morning). Decision: **do NOT add libomp-BOLT to v5**; reopen ONLY if a quieter measurement window confirms a clean signal. [cpu-inference-optimization-index.md, data/cpu_optimization/2026-04-28-cpu12-bolt-libomp/]
 - **Kolinko Effort/bucketMul (Apple Metal, 2024) audited and DECLINED for EPYC port** (intake-528, deep-dive 2026-05-08). The Apple-Silicon-only structured-sparse GEMV achieves 50-70% of M2 BW at 50% effort and ~2× at 25% effort, but author concedes via own KL-distance test that it does not beat plain quantization on quality-per-speed. Last code commit 2024-04-25 = 24+ months frozen; issue #5 still open on Mac-only compilation; no third-party port in 25 months. Three portable algorithmic ideas survive the audit but none individually justifies the ~1-staff-month direct-port cost (new ggml repack format + AVX-512 kernel): (1) **load-time trailing-bucket skip** as ad-hoc distillation in any sorted-bucket repack format, (2) **per-token effort-dial** as a quality-budget primitive that could compose with routing-intelligence / per-request-reasoning-budget / decision-aware-routing, (3) **probe-as-diagonal-sample** (`probes[i] = w[i + i·cols]`) as O(1)/row magnitude estimator vs. Deja Vu's learned predictor. Realistic best-case EPYC upside 1.2-1.5× at 30-50% quality cost vs Q4_K_M — below already-shipped MTP 2.98× (intake-527) and CPU2 31.8% @ 1t. The deep dive itself is the closure record. Re-surface triggers documented in intake-528 verdict_justification: (a) sorted-bucket repack lands in ggml for unrelated reason, (b) routing/budgeting handoff activates with a kernel that supports proportional effort, (c) dynamic-activation-sparsity (Deja Vu / PowerInfer / TEAL family) re-enters scope, (d) Apple-Silicon backend re-enters scope. [research/deep-dives/kolinko-effort-engine-deep-dive.md, intake-528]
 - **System noise can degrade absolute CPU throughput by 2× while leaving relative comparisons within a single sweep intact**. Same `clang+libomp+znver5+PGO` build measured 58.65 ± 0.24 t/s on Coder-30B Q4_K_M tg32 in the morning and 27.77-31.95 t/s in the afternoon of the same day. Causes identified: a single-thread heavy process (megasync at 95% CPU on 1 of 96 cores), 5-6 parallel claude/firefox/python processes holding 5-10% CPU each, and cumulative page-cache + NUMA pressure from 4 build trees + LLVM source extraction + 3 sequential bench sweeps. Critically, RELATIVE comparisons within a single sequential sweep (positions 2-4 of a 4-build sweep, all measured back-to-back inside <2 min) remain reliable: tight std (≤0.09) on warm positions, position effect ≤2 t/s. So sub-percent A/B testing within a single sweep is still possible even at degraded absolute throughput. Implication for measurement protocol: never compare absolute t/s across sessions hours apart; always measure A and B sequentially with a discarded warmup bench, and accept that the absolute scale may be 2× lower than another session. [data/cpu_optimization/2026-04-28-cpu12-bolt-libomp/]
+
+## 2026-06-13 Update — What Is Actually Exhausted
+
+The Fable 5 kernel review draws a sharper boundary than earlier shorthand. Batch=1 decode micro-optimization is genuinely exhausted under the current evidence: the CPU is compute-idle but per-thread bandwidth saturated, so kernels that stream the same bytes faster do not change the bottleneck. That closure does not exhaust the hardware program.
+
+Five live angles remain:
+
+- **One-pass draft+verify**: spend idle FLOPS to reduce weight passes, if a quality-viable TiDAR-class checkpoint exists.
+- **Low-bpw formats**: watch STQ1/Sherry-style releases and upstream support; build only after weights and llama.cpp support exist.
+- **Sparsity / DSA**: first CPU smoke datapoint for PR #21149 remains unrun.
+- **Frontdoor spec-dec**: measure alpha before treating GPU/CPU drafter ideas as viable.
+- **Batched decode and eval serving**: CPU14 and a T1 eval-driver A/B are the highest-value missing serving measurements.
+
+The MI210 hypothesis also changes emphasis. Dense frontdoor residency remains plausible, but GPU-as-eval-engine may compound more quickly: faster promotion evals increase statistical power per day, which directly addresses the evidence-plane bottleneck.
+
+Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-kernel-and-concurrency.md), [Fable 5 serving and GPU](../handoffs/active/fable5-findings-03-serving-and-gpu.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
 
 ## Actionable for EPYC
 

@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-05
-**Sources**: 38 documents (added decision-aware routing and AutoPilot shared-contract context)
+**Last compiled**: 2026-06-13
+**Sources**: 50 documents (added 2026-06-13 routing truth restoration, model descriptors, X-MAS scaffold, and Fable 5 routing architecture)
 
 ## Summary
 
@@ -157,6 +157,14 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 **Pattern worth reusing**: shadow-mode-default + flag-gated dispatch. Population of `RoutingResult.assigned_role` is *unconditional*; acting on the role is gated by `ROLE_AWARE_ROUTING`. This matches the way `factual_risk` and `difficulty_signal` already operate (off / shadow / enforce). It lets us collect ≥1-week of distribution telemetry (TR-3.3) and run the non-degeneracy diagnostic (TR-3.4) without committing to behavioural change. TR-4 (per-role prompt-template selection) and TR-5 (paired A/B at ≥N=200/arm) are the remaining gates.
 
 [Source: `handoffs/active/tri-role-coordinator-architecture.md` TR-1..5; commits epyc-orchestrator `edc31ac` (TR-2) + `f5c83d9` (TR-3.1+3.2)]
+
+### New Findings (2026-06-13 — Routing Truth, Descriptors, And X-MAS)
+
+- **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation reaching only one of six uvicorn workers. The repair handoff landed explicit stack-managed feature env, shared `runtime_flags.json`, `/config/attest`, and a validation client that samples all workers. The immediate repair scope is complete and live-attested. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
+- **Routing expansion is frozen by evidence, not indecision.** The 2026-06-12 DAR-1 replay over 12,057 decisions found 8,145 regret-identifiable learned decisions with 0.00% identifiable mean regret, while 99.1% of Q-values remained uniform. That keeps Phase 3 cascade work frozen until new action-top-k telemetry or a fresh gate changes the picture. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
+- **Model-capability descriptors are the model-agnosticism interface.** The descriptor schema and compiler scaffold are branch-ready: descriptors are keyed by model identity, not role, and intended to carry suite vectors, speed, context, acceleration, serving, and provenance. Strict compile still refuses most deployed identities because registry evidence gaps remain, which is the desired failure mode. Source: [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
+- **X-MAS is partially scaffolded, not yet a live router.** The deterministic 5-domain x 5-function classifier, winner-table schema, and tests landed in orchestrator, but the production hook is deliberately separate because GitNexus impact on `_classify_and_route` is HIGH. The next decision-grade step is still the full 5x5 sweep and a guarded `XMAS_ROUTING_ENABLED` integration. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
+- **Delete/freeze discipline is now part of routing architecture.** Dead confidence-routing and three-way routing paths were removed; `dispatch_swarm_fanout` remains under an ownership watch through 2026-07-12. Future shadow layers need durable telemetry and ratification paths or they should not run. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 
 ## Actionable for EPYC
 

@@ -2,8 +2,8 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-05-28
-**Sources**: 17 documents (added split-repo validator cleanup and wrap-up compaction guardrails)
+**Last compiled**: 2026-06-13
+**Sources**: 24 documents (added 2026-06-13 security-review skill, source-quarantine validator, and repo-readiness tooling)
 
 ## Summary
 
@@ -46,6 +46,12 @@ A 2026-04-17 deep dive (intake-398) investigated Magika, Google's AI-powered con
 - **Crawl4AI provides self-hosted deep page scraping for LLM consumption.** Async Playwright-based crawler (51K+ stars, Apache-2.0) with BM25 content filtering, local LLM extraction via Ollama, browser pool management, and Docker deployment. Selected over Firecrawl (108K+ stars) due to open-source-only infrastructure policy -- Firecrawl's cloud-first SaaS model and credit-based pricing conflict with self-hosted philosophy. Complements SearXNG (search aggregation) by handling JS-heavy pages and complex PDFs that WebFetch cannot process. Evaluation gated on post-AR-3 WebFetch failure rate data. [searxng-search-backend.md]
 
 - **Magika (intake-398, ICSE 2025, Apache 2.0) is a 1 MB byte-embedding MLP that outperforms libmagic on text-format discrimination, but is not_applicable to EPYC's pipeline.** Contrary to reviews describing it as a CNN, the model is a shallow MLP: three fixed 512-byte windows (beginning, middle, end) are embedded at the byte level into 128-dim vectors, reshaped, passed through two 256-d Dense+GELU layers, global max-pooled for size invariance, and classified over 200+ content types with per-class thresholds calibrated for 99% precision. Training set grew from 24 M to ~100 M samples (GitHub + VirusTotal). The threshold mechanism causes abstention (falls back to `txt`/`unknown`) when confidence is below per-class calibration point — this is how the paper reports 99% F1 without claiming that accuracy on all inputs. Cold-start on the EPYC host measured 225 ms (onnxruntime init dominates); amortized per-file latency is 2.8 ms (better than the paper's 5.77 ms, consistent with the hardware). libmagic is 5-8x faster per file and has <1 ms cold-start, but struggles with text-format discrimination (Python vs Ruby vs JS). **Not applicable to EPYC**: the orchestrator's document-ingestion corpus is a five-format, already-labeled set (arXiv PDF, GitHub MD, HTML, HuggingFace MD, user-uploaded PDF) where format is declared by URL pattern, HTTP Content-Type header, or file extension. No pipeline stage (`pdf_router.py`, `document_preprocessor.py`, `fetch.py`, `research.py`) requires generic filetype detection. A trivial extension-plus-4-byte-magic check has essentially zero false-positive rate on this corpus. Live measurement confirmed the JSON/JSONL confusion documented in external reviews: Magika classified a `.json` file as `jsonl` (JSONL is line-delimited JSON, a distinct format). Integration cost would be ~80 MB of transitive dependencies (onnxruntime) and 225 ms cold-start with no accuracy gain. Reconsider only if the pipeline begins ingesting truly arbitrary binary corpora (malware, forensic dumps, archives with unknown extensions). [confidence: verified — magika-filetype-detection.md deep dive, 2026-04-17]
+
+## 2026-06-13 Update — Review And Governance Tools
+
+- **Security-review is now a first-class skill scaffold.** The v1 skill uses STRIDE, OWASP Web/API Top 10, OWASP LLM Top 10 2025, and supply-chain checks, but only emits findings after exploit-path validation. This is the same anti-false-positive discipline as the eval tower: attacker capability, reachability, trust boundary, vulnerable sink, mitigation analysis, concrete impact, fix, and file/line evidence all have to pass. CI and slash-command wrappers remain deferred. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
+- **External-source quarantine is now tooled, not only policy.** Root policy, safety-reviewer guardrail, research-intake rendering convention, warn-mode validator, and a synthetic canary landed. The orchestrator `web_research` path also wraps source-derived synthesis in `SOURCE-QUARANTINE` blocks with URL/retrieved/SHA metadata. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
+- **Repo-readiness scoring gives agents a deterministic improvement queue.** The v1 scorer checks 45 criteria across 5 levels and 9 pillars using concrete artifacts. It should feed remediation planning only after humans decide which criteria matter; deterministic presence checks do not prove quality. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Actionable for EPYC
 

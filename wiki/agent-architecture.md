@@ -2,8 +2,8 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 34+ documents (10 deep-dives, 20 intake entries, 7 handoffs)
+**Last compiled**: 2026-06-13
+**Sources**: 48+ documents (added 2026-06-13 Fable 5 frontiers, X-MAS scaffold, and evidence-plane architecture)
 
 ## Summary
 
@@ -213,6 +213,18 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [Trinity deep-dive](../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — methodology cross-check vs our stack, portable-vs-not split, replication budget estimate, 9 refined recommended actions.
 - [intake-498](https://arxiv.org/abs/2604.22748) Agentic World Modeling: Foundations, Capabilities, Laws, and Beyond (Chu et al., 42 authors HKUST/NUS/Oxford/CUHK/NTU/HKU/UW; cs.AI 2026-04-24). Survey introducing **Levels × Laws** taxonomy: capability levels L1 Predictor / L2 Simulator / L3 Evolver × four governing-law regimes physical/digital/social/scientific. Synthesizes 400+ works, 100+ representative systems. Verdict: `adopt_patterns` (vocabulary + four-principle rubric, NOT full framework). EPYC stack mapping: autopilot = L3-Evolver / Digital, agent-world ETD = L2-Simulator → L3-Evolver bridge / Digital, meta-harness = L3-Evolver / Digital, q-scorer = L1-Predictor / Digital. Section 5.4 governance recipe (regression / robustness / rollback / canary gates) maps line-for-line onto autopilot SafetyGate. Section 6.1 four evaluation principles (long-horizon coherence, intervention sensitivity, constraint consistency, closed-loop use) testable in existing AR-3 today. MREP (Section E.6) proposed but not released; companion repo `matrix-agent/awesome-agentic-world-modeling` is bibliography-only.
 - [Agentic World Modeling deep-dive](../research/deep-dives/agentic-world-modeling-levels-laws-taxonomy.md) — full L×R taxonomy with EPYC-stack mapping, governance recipe alignment, four-principle rubric, Beyond-L3 framing for Species 3 with closure-inflation guard, MREP watch.
+
+## 2026-06-13 Update — Fable 5 Strategic Spine
+
+Fable 5 reframes the North Star as a lab architecture, not just a serving/router architecture. The highest-ROI frontier is F1 -> F2 -> F3:
+
+- **F1 real-task corpus**: define the demand side from recurring project work such as research intake, deep dives, benchmark analysis, code review, handoff hygiene, and ops runbooks. Public benchmarks remain useful, but they are supply-side proxies until real recurring tasks are captured with outcomes.
+- **F2 self-running lab**: local agents should first take over mechanical lab-maintenance jobs in shadow/reviewed modes: freshness reports, attestation drift, digest drafts, intake triage, and claims checks. Jobs write review-queue artifacts, not handoffs or indices directly.
+- **F3 data flywheel**: planner archives, intake decisions, per-question eval ledgers, and reviewed lab-job tuples become training corpora only after era labels and contamination filters are applied.
+
+Two architectural guardrails matter. First, the evidence plane comes before autonomy: lab jobs must inherit per-question ledger, attestation, and claims discipline, or they will amplify stale narratives. Second, external-source injection hardening is a prerequisite for intake-touching jobs, because arbitrary papers/blogs/READMEs can otherwise smuggle instructions into future executable handoffs.
+
+Sources: [Fable 5 strategic frontiers](../handoffs/active/fable5-findings-07-strategic-frontiers.md), [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 
 ## Updates — 2026-04-28
 
