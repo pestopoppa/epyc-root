@@ -1,0 +1,4 @@
+name: security-review
+display_name: Security Review
+short_description: Exploit-path-gated security review for code, diffs, deps, and agent tools.
+default_prompt: Use $security-review to audit the current diff for exploitable security issues.
