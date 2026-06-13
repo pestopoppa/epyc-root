@@ -81,8 +81,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   Current status: AutoPilot planner signatures (`73ed436`), q_scorer priors
   (`d5fe713`/`15d8cff`), and seeding default role/cost-tier discovery
   (`72f7dc2`) have migrated partially; bilinear model features now prefer
-  stack-prior model specs (`10b3bce`). `seeding_rewards.py` remains deferred
-  because GitNexus marks `compute_comparative_rewards` CRITICAL.
+  stack-prior model specs (`10b3bce`); `orch status` now derives probe targets
+  from stack priors (`1fe12ec`). `seeding_rewards.py` remains deferred because
+  GitNexus marks `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:

@@ -190,7 +190,7 @@ Priority order:
 2. [x] `orchestration/repl_memory/bilinear_scorer.py`: `ModelFeatures` now prefer `orchestration/derived/stack_priors.yaml` for params/MoE/quant and fall back to a degraded non-retired table (`epyc-orchestrator` `10b3bce`).
 3. [ ] `orchestration/model_quality_signatures.yaml`: keep as legacy fallback only, or generate it from descriptors with a visible `_source` and `compiled_at`.
 4. [ ] `scripts/server/orchestrator_stack.py` / `stack_manifest.py`: consume stack-prior launch requirements or fail when descriptor/registry acceleration disagrees with hardcoded launch metadata.
-5. [ ] Operator docs/manifests: generate current stack tables from stack priors or mark snapshots as non-authoritative.
+5. [ ] Operator docs/manifests and probes: `orch status` now derives live probe targets from stack priors with a current fallback (`epyc-orchestrator` `1fe12ec`); remaining work is generated operator-facing stack tables/manifests.
 
 ### Phase D - Strict guard and simulated model-swap CI
 
