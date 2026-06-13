@@ -45,11 +45,10 @@ GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus
 
 The following examples are evidence-backed reasons this work should stay high ROI and should not be handled as one-off cleanup.
 
-1. `scripts/benchmark/seeding_rewards.py` still owns a stale TPS table.
-   - `/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/seeding_rewards.py:46` defines `DEFAULT_BASELINE_TPS`.
-   - It has duplicate `coder_escalation` keys, stale `frontdoor: 18.3`, stale `coder_escalation: 39.44`, stale `architect_general: 6.75`, retired `architect_coding: 10.3`, and stale `ingest_long_context: 6.29`.
-   - Current stack priors say frontdoor/coder_escalation share `qwen3.6-35b-a3b-q8_0` on port `8070`, throughput `24.3`, memory cost `1.0`; `architect_general` is HOT with throughput `12.19`; `ingest_long_context` is HOT with `14.4-20.8` evidence compiled to `20.8`.
-   - Risk: seeding rewards train cost-aware memory/routing on a dead stack picture.
+1. `scripts/benchmark/seeding_rewards.py` previously owned a stale TPS table.
+   - RESOLVED in `epyc-orchestrator` `7ecf847`: `compute_comparative_rewards()` now reads live role throughput from `orchestration/derived/stack_priors.yaml`; missing priors fail closed to the existing no-TPS `0.3` branch unless a caller explicitly provides override/degraded data.
+   - The old `DEFAULT_BASELINE_TPS` export/import path is removed from active seeding wrappers, and live 3-way architect grouping now enumerates stack-prior architect-like roles instead of a static retired-role tuple.
+   - Validation dropped the live guard from 73 to 62 warnings; `--all-hardcoded-surfaces` now reports 177 warnings after this pass.
 
 2. API routing and delegation still contain retired live-role constants.
    - First cleanup landed in `epyc-orchestrator` `b1402a2`: `src/api/routes/chat_delegation_decision.py` no longer keeps `architect_coding` budget defaults, and the live guard warning count dropped from 85 to 83.
@@ -61,6 +60,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Seventh cleanup landed in `epyc-orchestrator` `e6e10d8`: approval-gate high-cost role classification no longer includes retired `architect_coding`, and the live guard warning count dropped from 76 to 75.
    - Eighth cleanup landed in `epyc-orchestrator` `eb4dac5`: `_heuristic_role_priors()` now filters its default candidate roles through live `stack_priors.yaml` roles and uses a non-retired degraded fallback; live guard warning count dropped from 75 to 74.
    - Ninth cleanup landed in `epyc-orchestrator` `b5bf5eb`: `analyze_routing_policy.py` now derives specialist-utilization roles from live `stack_priors.yaml` roles with a non-retired fallback; live guard warning count dropped from 74 to 73.
+   - Tenth cleanup landed in `epyc-orchestrator` `7ecf847`: `seeding_rewards.py` derives reward throughput and architect grouping from stack priors; live guard warning count dropped from 73 to 62.
    - Remaining risk: lower-level config, benchmark, LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
 
 3. Config models intentionally preserve dead URLs/timeouts for compatibility.
@@ -82,7 +82,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Risk: consumers need to preserve gaps and fail closed where decision-grade priors are required.
 
 6. The validator is finding the right problems, but it is not yet strict-green.
-   - `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces` currently reports 184 warnings, including production blockers in seeding/eval scripts, config, LangGraph nodes, parsing/roles, q_scorer/seeding cost tables, and historical docs/tests as separate categories.
+   - `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces` currently reports 177 warnings, including production blockers in seeding/eval scripts, config, LangGraph nodes, parsing/roles, and historical docs/tests as separate categories.
    - This is good machinery; it now needs exception metadata and consumer migration so strict mode can become a real launch gate.
 
 7. q_scorer is improved but still demonstrates the fallback-policy issue.
@@ -95,7 +95,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 | Quantity | Current state | Canonical source | Required projection / guard |
 |---|---|---|---|
 | q_scorer TPS, quality, memory priors | `q_scorer.py` now prefers registry/descriptors but still has fallback tables; quality fallback is still local policy. | `stack_priors.yaml` role `priors` with descriptor evidence and measurement status. | Migrate q_scorer to stack-prior loader; fall back only as explicit degraded mode with provenance. |
-| Seeding reward TPS/cost assumptions | `seeding_rewards.py` still has stale `DEFAULT_BASELINE_TPS`, duplicate `coder_escalation`, and retired `architect_coding`. | Same stack-prior `priors.throughput_tps` plus per-role memory/admission costs. | First W2 implementation target; guard should fail any live seeding cost table that repeats role constants. |
+| Seeding reward TPS/cost assumptions | DONE in `7ecf847`: `seeding_rewards.py` reads live `priors.throughput_tps`, keeps explicit override/degraded fallback for replay/tests, and no longer exports the stale baseline table. | Same stack-prior `priors.throughput_tps` plus per-role memory/admission costs. | Keep guard coverage so any future live seeding cost table or retired-role default fails. |
 | Seeding scoring/architect assumptions | `seeding_eval.py` still evaluates/labels `architect_coding` for non-VL architect comparison; `seeding_scoring.py` comments still encode old architect split. | Live roles from stack priors; historical benchmark-only comparisons from research registry with non-live status. | Separate live seeding defaults from legacy replay fixtures; force retired-role examples into explicit legacy tests. |
 | Memory/admission costs | `src/api/admission.py` derives limits from stack-prior ports/slots with fallback; q_scorer memory still reads registry then fallback. | `server_mode.*.tier`, `slots`, shared mmap binding compiled into stack priors. | Add tests that frontdoor/coder_escalation share memory and admission truth; fail on role-level WARM overrides for live HOT roles. |
 | Hot/warm deployment status | `server_mode` is current truth; older research docs and role metadata still mention WARM `architect_coding`/`ingest_long_context`. | Orchestrator lean registry `server_mode.*`; research registry is comprehensive evidence/candidate history only. | Compiler must preserve conflict notes and prevent non-live research rows from satisfying live deployment. |
@@ -174,10 +174,10 @@ Goal: eliminate model-specific hardcoding from live scoring/routing/config behav
 Priority order:
 
 1. `scripts/benchmark/seeding_rewards.py`
-   - Replace `DEFAULT_BASELINE_TPS` with stack-prior-derived TPS/cost data.
-   - Keep an explicit degraded fallback for offline tests.
+   - DONE in `7ecf847`: replaced the stale TPS table with stack-prior-derived live throughput.
+   - DONE in `7ecf847`: kept explicit override/degraded fallback paths for replay/offline tests without silent live fallback.
    - Treat this as a separate blast-radius pass because `compute_comparative_rewards` was previously marked CRITICAL.
-   - Acceptance detail: no duplicate `coder_escalation`, no live `architect_coding`, and reward metadata records whether costs came from live priors or degraded fallback.
+   - Follow-up: wire provenance metadata if downstream injection needs to record live-prior vs override/degraded cost source.
 2. `src/api/routes/chat_delegation_decision.py`
    - DONE first cleanup in `b1402a2`: removed `architect_coding` from live budget defaults.
    - Remaining follow-up: derive architect/delegation budget maps from stack-prior role policy or live architect roles instead of a local static table.
