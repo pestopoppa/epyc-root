@@ -121,14 +121,16 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
   - endpoint: `http://localhost:8083`
   - tier: `hot`
   - memory cost: `1.0`
-  - known gaps include missing structured overall quality prior and older role performance comments.
+  - quality prior: `0.857` after `bda46b1`.
+  - remaining known gaps include older role performance comments and gated-off spec-decoding metadata.
 
 - `ingest_long_context`
   - model: `qwen3-next-80b-a3b-q4_k_m`
   - endpoint: `http://localhost:8085`
   - tier: `hot`
   - memory cost: `1.0`
-  - known gaps include missing structured quality prior and context/prefill metrics.
+  - quality prior: `0.93` after `bda46b1`.
+  - remaining known gaps include context/prefill metrics and template-native `enable_thinking` behavior.
 
 - `architect_coding`
   - absent from generated live priors.
@@ -280,6 +282,7 @@ Tasks:
   - observation
   - stale
   - gap
+- DONE in `bda46b1` for measured single-purpose quality priors: architect, ingest, VL, and toolrunner roles now have generated `quality_overall`; worker_math and REAP remain explicit gaps until evidence exists.
 - Preserve research-registry evidence with MEASUREMENT.md-style protocol/date/ref metadata.
 - Teach strict mode which gaps block live consumers versus which are candidate/historical gaps.
 

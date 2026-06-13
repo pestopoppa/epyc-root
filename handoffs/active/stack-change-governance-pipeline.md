@@ -82,6 +82,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - The remaining `src/roles.py` compatibility enum line is now an explicit,
   expiring `intentional_live_exception` after `epyc-orchestrator` `fa6411c`;
   strict mode no longer promotes it as an unclassified hardcoded-surface error.
+- Evidence-backed descriptor quality priors landed in `epyc-orchestrator`
+  `bda46b1`: measured single-purpose suite scores now populate generated
+  `priors.quality_overall` for architect, ingest, VL, and toolrunner roles;
+  `762e6b0` refreshed the derived artifact metadata afterward.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -120,7 +124,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role/serving/prior fields fail validation. Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
-  retired-role exception commit in `cbaceec`.
+  retired-role exception commit in `cbaceec`; descriptor-backed quality priors
+  for measured roles landed in `bda46b1` with a post-commit metadata refresh in
+  `762e6b0`.
   Strict mode intentionally fails until descriptor gaps are resolved and the
   remaining model-specific consumers migrate or receive explicit exception
   metadata.
