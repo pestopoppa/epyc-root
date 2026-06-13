@@ -35,6 +35,7 @@ Read-only audit and lightweight validation on 2026-06-13 found:
 - Descriptor update fail-closed guard landed in `epyc-orchestrator` `022a0d1`: `check` now reports that generated output would remove `reap-qwen3-coder-25b-a3b-q4_k_m`, and `update` refuses to write descriptors, stack priors, or procedure enum updates unless `--allow-descriptor-model-removal` is passed after an explicit coverage decision.
 - REAP descriptor coverage landed in `epyc-orchestrator` `fbef837`: `roles.reap_25b_frontdoor` now mirrors `server_mode.reap_25b`, so compiler preview has no current-only or generated-only model IDs. `365e370` refreshed stack-prior source metadata afterward.
 - Domain modality derivation landed in `epyc-orchestrator` `846c2d4`: generated descriptors now retain model-derived `code`, `math`, and `long_context` modalities instead of collapsing those models to text-only.
+- GraphRouter training fleet discovery landed in `epyc-orchestrator` `8cf0310`: `scripts/graph_router/train_graph_router.py` now loads live LLMRole nodes from generated stack priors, skips benchmark/candidate roles, and keeps only a current non-retired degraded fallback.
 - Live read-only result after `846c2d4`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because the descriptor artifact is stale, but REAP coverage and core domain modalities are no longer blockers. Stack priors and procedure enums are fresh; strict known gaps are warnings under the compatibility flag.
 
 ## Prior Pipeline Work Found
@@ -215,9 +216,11 @@ Minimal pipeline phases:
   - Target tests: `tests/unit/test_stack_priors_compiler.py`, `tests/unit/test_stack_change_guard.py`, `tests/unit/test_q_scorer.py`, new `tests/unit/test_stack_change_workflow.py` if needed.
 
 - [ ] **P4 - Add provenance plumbing for live vs degraded consumer values.**
+  - **2026-06-13 partial**: `8cf0310` migrated GraphRouter training fleet discovery from a stale hardcoded model table to generated stack priors. Live smoke returned 10 HOT live roles with current shared ports and no retired `architect_coding`; `--all-hardcoded-surfaces` stayed at `WARN: 109`.
   - q_scorer should be able to expose whether values came from `stack_priors`, override, registry fallback, or degraded local fallback.
   - Seeding/replay reward paths should write cost-prior provenance when they use live priors vs replay overrides.
-  - Target files: `orchestration/repl_memory/q_scorer.py`, `scripts/benchmark/seeding_rewards.py`, `scripts/benchmark/seeding_eval.py`, `tests/unit/test_q_scorer.py`, `tests/unit/test_seeding_rewards.py`.
+  - Continue with GraphRouter extraction/replay scripts that still encode historical role mappings, classifying true historical labels separately from live training priors.
+  - Target files: `orchestration/repl_memory/q_scorer.py`, `scripts/benchmark/seeding_rewards.py`, `scripts/benchmark/seeding_eval.py`, `scripts/graph_router/extract_training_data.py`, `scripts/graph_router/extract_verifier_training_data_debiased.py`, `tests/unit/test_q_scorer.py`, `tests/unit/test_seeding_rewards.py`, graph-router tests.
 
 - [ ] **P5 - Generate current operator-facing stack summaries.**
   - Replace manual current-stack tables in docs/system cards/dashboards with generated output from stack priors plus running-state attestation.
@@ -306,8 +309,9 @@ Add launch/config/dashboard tests when touching those consumers.
 
 1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`) - Create the canonical stack-change command skeleton.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes.
 2. **IN PROGRESS 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`) - Resolve descriptor/compiler drift reported by the new command.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, and retain domain modalities. The current blocker is curated evidence/schema drift: generated descriptors still differ from the curated artifact on architecture labels, source/protocol text, shared-runtime classification, and P0 context/KV/mmproj fields. Target: make `check --allow-known-gaps` pass except for intentional strict warnings.
-3. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
-4. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
+3. **PARTIAL 2026-06-13 (`8cf0310`) - Migrate offline stack consumers away from hardcoded model rosters.** GraphRouter training now reads live stack priors. Continue with GraphRouter extraction/replay scripts and other low-risk offline consumers before touching HIGH-impact descriptor assembly.
+4. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
+5. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
 
 ## Reporting Instructions
 

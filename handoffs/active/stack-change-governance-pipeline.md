@@ -120,6 +120,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `846c2d4`: generated descriptors retain `code`, `math`, and `long_context`
   modalities from structured model metadata instead of collapsing those models
   to text-only.
+- GraphRouter training fleet discovery migrated in `epyc-orchestrator`
+  `8cf0310`: offline GAT training now reads live LLMRole model nodes from
+  generated stack priors, skips benchmark/candidate roles, and keeps a current
+  non-retired degraded fallback.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -188,7 +192,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   LangGraph topology no longer expose a retired architect-coding node
   (`0b1e5e9`, `3c7a85e`).
   Seeding reward TPS/cost priors migrated to stack-prior discovery in the
-  expanded CRITICAL-path pass `7ecf847`.
+  expanded CRITICAL-path pass `7ecf847`. GraphRouter training fleet discovery
+  now loads live stack-prior roles instead of a stale hardcoded model roster
+  (`8cf0310`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
