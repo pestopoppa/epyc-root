@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: NEW 2026-06-13 — handoff created after q_scorer memory-prior drift exposed the missing model-swap/update contract
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 loose guardrail live, strict mode blocked on descriptor evidence gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -28,6 +28,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - q_scorer descriptor/registry priors landed in `d5fe713` and were corrected in
   `15d8cff` so HOT memory residency and retired-role absence come from live
   registry truth instead of stale constants.
+- The first generated stack-priors contract landed in `epyc-orchestrator`
+  `a1e04d5`: `docs/reference/stack-truth-precedence.md`,
+  `src/registry/stack_priors.py`,
+  `scripts/registry/compile_stack_priors.py`,
+  `orchestration/derived/stack_priors.yaml`, and
+  `scripts/validate/stack_change_guard.py`.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -39,23 +45,27 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 
 ## Waypoints
 
-- [ ] **W1 — Stack truth precedence spec** (half day): document a single
+- [x] **W1 — Stack truth precedence spec** (completed in `a1e04d5`): document a single
   precedence order for live serving facts: `server_mode` / stack manifest
   outranks `roles.*` narrative fields, descriptors compile from both but mark
   contradictions, and generated consumers must record source + precedence.
-  Acceptance: a short spec in this handoff or a dedicated markdown states how
-  to resolve `server_mode.tier=hot` vs `roles.memory.residency=warm`, shared
-  mmap roles, retired roles, and benchmark-only roles.
-- [ ] **W2 — Derived stack-priors generator** (1-2 days): add a generator that
+  Acceptance met by
+  `epyc-orchestrator/docs/reference/stack-truth-precedence.md`, including
+  `server_mode.tier=hot` vs `roles.memory.residency=warm`, shared mmap roles,
+  retired roles, and benchmark/candidate roles.
+- [x] **W2 — Derived stack-priors generator** (completed in `a1e04d5`): add a generator that
   compiles one machine-readable artifact from registry + descriptors, e.g.
   `orchestration/derived/stack_priors.yaml`. It must include role -> model id,
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (1 day): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
+  Current loose mode passes with warnings and validates artifact freshness plus
+  hard live invariants. Strict mode intentionally fails until descriptor gaps
+  are resolved and the remaining model-specific consumers migrate.
 - [ ] **W4 — Consumer migration** (2-3 days): migrate q_scorer, AutoPilot
   planner signatures, seeder per-role eval config, bilinear scorer model
   features, eval-tower model signatures, and launch-arg assembly to the derived
@@ -105,7 +115,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/orchestration/model_registry.yaml`
 - `epyc-orchestrator/orchestration/model_descriptors.yaml`
 - `epyc-orchestrator/scripts/registry/compile_descriptors.py`
+- `epyc-orchestrator/scripts/registry/compile_stack_priors.py`
 - `epyc-orchestrator/src/registry/model_descriptors.py`
+- `epyc-orchestrator/src/registry/stack_priors.py`
+- `epyc-orchestrator/docs/reference/stack-truth-precedence.md`
+- `epyc-orchestrator/orchestration/derived/stack_priors.yaml`
+- `epyc-orchestrator/scripts/validate/stack_change_guard.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
 - `epyc-orchestrator/orchestration/repl_memory/bilinear_scorer.py`
 - `epyc-orchestrator/scripts/autopilot/state_store.py`
@@ -121,15 +136,17 @@ Run after any stack/model change and before an AutoPilot restart:
 
 ```bash
 cd /mnt/raid0/llm/epyc-orchestrator
-python3 -m py_compile orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
+python3 -m py_compile src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
 uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
-uv run --with pytest pytest -q tests/unit/test_model_descriptors_schema.py tests/unit/test_model_descriptor_compiler.py tests/unit/test_q_scorer.py
-uv run --with ruff ruff check orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
+uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
+uv run python scripts/validate/stack_change_guard.py
+uv run --with pytest pytest -q tests/unit/test_stack_priors_compiler.py tests/unit/test_stack_change_guard.py tests/unit/test_model_descriptors_schema.py tests/unit/test_model_descriptor_compiler.py tests/unit/test_q_scorer.py
+uv run --with ruff ruff check src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
 git diff --check
 ```
 
-Future W3/W6 should replace this with a single command, e.g.
-`uv run python scripts/validate/stack_change_guard.py --strict`.
+Future W3/W6 should replace this with a single strict command after descriptor
+gaps close, e.g. `uv run python scripts/validate/stack_change_guard.py --strict`.
 
 ## Acceptance Criteria
 
