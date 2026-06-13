@@ -256,11 +256,9 @@ Tasks:
 
 Likely files:
 
-- `src/graph/langgraph/graph.py`
-- `src/graph/langgraph/nodes.py`
-- `src/graph/nodes.py`
+- DONE in `3c7a85e`: `src/graph/langgraph/graph.py`, `src/graph/langgraph/nodes.py`, `src/graph/graph.py`, `src/graph/__init__.py`, and `src/graph/nodes.py` no longer expose a retired `ArchitectCodingNode` / `architect_coding_node`; the retired role aliases to the live architect node for direct/persisted compatibility.
 - DONE in `c2b4437`: `src/parsing_config.py` no longer assigns an active parsing mode to retired `architect_coding`.
-- `src/roles.py`
+- PARTIAL: `src/roles.py` doc/example cleanup landed in `0b1e5e9`; the compatibility enum and role-chain aliases remain and are the last default guard production blocker.
 - DONE in `c2b4437`: `src/inference/llm_cache.py` no longer lists retired `architect_coding` as a high-value cache target.
 - `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
 - related tests under `tests/unit/` and `tests/integration/`
@@ -359,7 +357,7 @@ Dependencies: W1-W4.
 
 ## Highest-ROI Next Steps
 
-1. Triage the production-blocker `architect_coding` guard findings in graph/parsing/roles code. Remove live references or classify them with expiring exceptions.
+1. Triage the remaining `src/roles.py` compatibility enum/chain surfaces and decide whether to keep them with expiring exceptions or remove them after persisted/direct-role compatibility audit.
 2. Add explicit q_scorer provenance plumbing if downstream consumers need to distinguish `stack_priors` from `degraded_fallback`.
 3. Add simulated stack-change tests before broad cleanup. A failing fixture will expose which consumers still bypass the generated contract.
 4. Extend stack-prior records with missing context/provenance fields needed for strict mode.

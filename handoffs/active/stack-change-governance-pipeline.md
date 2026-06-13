@@ -74,13 +74,19 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Chat routing heuristic priors migrated to live stack-prior role filtering in
   `epyc-orchestrator` `eb4dac5`, with a non-retired degraded fallback; live
   guard warnings dropped from 75 to 74 after broader routing/pipeline tests.
+- Role docs and active graph topology no longer expose the retired architect
+  coding node after `epyc-orchestrator` `0b1e5e9` and `3c7a85e`; PydanticGraph
+  and LangGraph now have six active nodes, while `Role.ARCHITECT_CODING`
+  direct/persisted compatibility starts on the live architect node. Live guard
+  warnings dropped from 44 to 23 in the later cleanup window.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
 - Known hardcoded/stale surfaces still include
-  `orchestration/model_quality_signatures.yaml`, seeding/eval scripts that
-  still name `architect_coding`, API/config/routing and LangGraph retired-role
-  paths, and docs/tests that can preserve outdated model assumptions.
+  `orchestration/model_quality_signatures.yaml`, the `src/roles.py`
+  compatibility enum/role-chain surfaces, feature-flag metadata for the removed
+  LangGraph architect-coding node, and docs/tests that can preserve outdated
+  model assumptions.
 
 ## Waypoints
 
@@ -133,9 +139,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   inference lock/tap heavy-role classifications no longer include retired roles
   (`6bc1f51`); approval-gate high-cost classification no longer includes
   retired roles (`e6e10d8`); chat routing heuristic priors now filter through
-  live stack-prior roles (`eb4dac5`).
-  `seeding_rewards.py` remains deferred because GitNexus marks
-  `compute_comparative_rewards` CRITICAL.
+  live stack-prior roles (`eb4dac5`); role docs and active PydanticGraph /
+  LangGraph topology no longer expose a retired architect-coding node
+  (`0b1e5e9`, `3c7a85e`).
+  Seeding reward TPS/cost priors migrated to stack-prior discovery in the
+  expanded CRITICAL-path pass `7ecf847`.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
