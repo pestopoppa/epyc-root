@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: ready-to-claim (2-3 dev-days + 1 day compute)
+**Status**: partial scaffold landed 2026-06-13; live routing hook + full 5x5 sweep pending
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -42,8 +42,32 @@ This is the only entry in the May 2026 latent-MAS cluster that's deployable on t
    - 5 domains × 5 functions × 4 models × ~15 tasks = ~1500 evals
    - Use existing eval-tower harness in `epyc-inference-research/scripts/benchmark/`
 3. **Build per-stack winner table**: 5×5 cells, each cell records the winning model. Compare to X-MAS-published winners as a shape sanity check.
-4. **Orchestrator integration**: add a coarse (domain, function) classifier on the frontdoor; each incoming task is classified, then routed to the cell winner. Fall back to current ad-hoc routing for unclassified tasks.
+4. **Orchestrator integration**: add a coarse (domain, function) classifier on the frontdoor; each incoming task is classified, then routed to the cell winner. Fall back to current ad-hoc routing for unclassified tasks. **Partial 2026-06-13**: side-effect-free taxonomy/classifier + winner-table loader landed in `epyc-orchestrator` commit `e9004a2`; production hook remains gated because GitNexus impact on `_classify_and_route` is HIGH (`_route_request` + streaming generation affected).
 5. **Hermes outer-shell agent uses the same routing for sub-task delegation** (`hermes-outer-shell.md`).
+
+## Implementation Progress
+
+### 2026-06-13 — inference-free scaffold
+
+Landed in `epyc-orchestrator` commit `e9004a2`:
+
+- `src/classifiers/xmas_routing.py`: 5-domain × 5-function taxonomy, deterministic lexical `(domain, function)` classifier, `XmasCell`, `XmasClassification`, `WinnerTable`, and `load_winner_table()`.
+- `orchestration/xmas_winner_table.example.yaml`: complete 5×5 table template using valid current role names.
+- `tests/classifiers/test_xmas_routing.py`: 8 unit tests for classification, nested YAML loading, fallback behavior, unknown-domain/role rejection, and completeness validation.
+
+Validation:
+
+- `.venv/bin/python -m pytest tests/classifiers/test_xmas_routing.py -q` → 8 passed.
+- `.venv/bin/python -m ruff check src/classifiers/xmas_routing.py tests/classifiers/test_xmas_routing.py` → passed.
+- `git diff --check` on touched files → passed.
+
+Not yet landed:
+
+- `XMAS_ROUTING_ENABLED` feature flag.
+- Live frontdoor override hook.
+- `model_registry.yaml` override semantics.
+
+Reason: `gitnexus impact _classify_and_route --direction upstream --repo epyc-orchestrator` reports HIGH risk because `_classify_and_route` feeds `_route_request` and `generate_stream`. Implement the runtime hook as a separate guarded patch with explicit rollback and integration tests.
 
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
