@@ -165,6 +165,7 @@ These are not all bugs, but each is a place a future stack change can go stale.
 
 5. Operator docs and prompt/planner inputs can become source truth by accident.
    - Fable 5 notes stale stack facts in narrative stores and recommends generated system cards from registry/state.
+   - `53f452c` fixed one live wrapper instance: `scripts/server/launch_production.sh` no longer carries hand-written RAM/model/retired-role inventory; its mode summaries derive from `scripts/server/stack_manifest.py`, and help points operators to `stack_manifest.py` plus `--status` for current inventory/residency.
    - Implementation implication: current stack tables in docs/runbooks should be generated from stack priors or labeled historical; do not let manual docs drive routing/scoring.
 
 ## Update Checklist For Any Model-Stack Change
@@ -397,7 +398,7 @@ Dependencies: W1-W4.
 2. Add explicit q_scorer provenance plumbing if downstream consumers need to distinguish `stack_priors` from `degraded_fallback`.
 3. Add or extend simulated stack-change tests for any newly discovered consumer surface that still bypasses the generated contract.
 4. Extend stack-prior records with missing context/provenance fields needed for strict mode where future launch gates require them.
-5. Generate planner/operator stack summaries from stack priors so manual prose stops acting as hidden source truth.
+5. Continue generated planner/operator stack summaries from stack priors and launch manifests so manual prose stops acting as hidden source truth; `53f452c` proves this pattern for `launch_production.sh`.
 
 ## Reporting Instructions
 
