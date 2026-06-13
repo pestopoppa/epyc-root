@@ -1,6 +1,6 @@
 # Standardized Stack Update Pipeline Finalization
 
-**Status**: READY FOR MAIN IMPLEMENTATION
+**Status**: READY FOR MAIN IMPLEMENTATION - stack-change CLI acceptance/promotion gate is visible, default check is green, and warning categories are summarized as of `epyc-orchestrator` `079ff30`/`2baaee5`/`a7927c2`
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific constants from corrupting scoring, routing, launch, planner context, and benchmark interpretation after model assignment changes
 **Scope**: Implementation-ready audit and handoff only. No inference, benchmarks, AutoPilot restart, server restart, or child-repo code changes were performed in this sidecar pass.
@@ -110,6 +110,30 @@ Read-only audit and lightweight validation on 2026-06-13 found:
   `model_registry_lean.yaml`, `source_registry.yaml`, and
   `model_quality_signatures.yaml` with production-blocker rule IDs, with
   regression coverage in `tests/unit/test_stack_change_guard.py`.
+- Stack-change promotion-gate output landed in `epyc-orchestrator` `079ff30`:
+  the command prints `acceptance:` and `promotion_gate:` lines after the
+  descriptor, stack-prior, procedure, and guard checks. Passing checks name the
+  simulated data-only fixture target; failed checks print the strict blocker
+  count and block promotion.
+- Intentional retired-role guard surfaces were classified in `epyc-orchestrator`
+  `2baaee5`: `stack_change_guard_exceptions.yaml` now marks the legacy ingress
+  alias in `routing_decision.py` and retired-role rejection constant in
+  `stack_templates.py` as owned, intentional exceptions. Default
+  `stack_change_pipeline.py check` passes without `--allow-known-gaps` while
+  keeping the waived warnings visible.
+- Stack-change warning footer summarization landed in `epyc-orchestrator`
+  `a7927c2`: the CLI now de-duplicates warning counts and reports
+  hardcoded-surface categories such as waived production blockers, legacy tests,
+  and historical docs in a compact footer.
+- Seeding per-role discovery migrated in `epyc-orchestrator` `2e31055`:
+  `scripts/benchmark/seeding_types.py` now prefers generated
+  `orchestration/derived/stack_priors.yaml`, restores live `worker_vision` and
+  `vision_escalation` eval coverage, excludes shared non-default aliases, and
+  preserves registry fallback for degraded mode.
+- q_scorer worker-alias quality propagation landed in `epyc-orchestrator`
+  `9ed177d`: `worker_explore` now receives stack-prior quality from live
+  `worker_general`, matching existing TPS/memory alias propagation and removing
+  that degraded fallback residue.
 
 ## Prior Pipeline Work Found
 
@@ -145,7 +169,7 @@ These are the current surfaces that must stay synchronized whenever model roles,
 |---|---|---|---|
 | Live role -> server, endpoint, ports, slots, tier, shared mmap | `orchestration/model_registry.yaml` `server_mode.*`; transitional witness in `scripts/server/stack_manifest.py` | `server_mode.*`, then generated `stack_priors.yaml` | Guard direct consumers of stale raw maps such as `PORT_MAP`; launch/status should read generated serving records or validated launch metadata. |
 | Role -> model identity | `model_descriptors.yaml`, lean/research registries | Descriptors keyed by physical model id | Compile from structured registry evidence; fail on role-keyed/manual consumer model tables. |
-| q_scorer TPS, quality, memory costs | `orchestration/repl_memory/q_scorer.py` | `stack_priors.yaml` `priors.*` | Already migrated for live defaults; add provenance for `stack_priors` vs override vs degraded fallback. |
+| q_scorer TPS, quality, memory costs | `orchestration/repl_memory/q_scorer.py` | `stack_priors.yaml` `priors.*` | Already migrated for live defaults; `9ed177d` propagates alias quality with TPS/memory for `worker_explore`; keep provenance for `stack_priors` vs override vs degraded fallback. |
 | Seeding reward TPS/cost priors | `scripts/benchmark/seeding_rewards.py` and related seeding files | `stack_priors.yaml` | Mostly migrated; guard future live local tables. |
 | Throughput/TPS and latency evidence | `server_mode.throughput`, descriptor speed blocks, benchmark artifacts, historical comments | Measurement-attested descriptor fields projected into stack priors | Add decision-grade/observation/stale status per `MEASUREMENT.md`; strict consumers must not use unproven values silently. |
 | Quality priors | Descriptor `quality.suite_vector`, generated stack priors | Descriptor evidence from lean/research registries and artifacts | Continue filling structured evidence; preserve gaps rather than inventing priors. |
@@ -220,7 +244,7 @@ Minimal pipeline phases:
 - run stack-change guard in loose, all-surface, and strict/strict-eligible modes
 - run no-inference simulated stack-change tests
 - report stale hardcoded surfaces grouped as production blocker, waived exception, legacy test, and historical doc
-- emit a concise acceptance summary for launch/autopilot decisions
+- DONE in `079ff30`/`2baaee5`/`a7927c2`: emit a concise acceptance summary for launch/autopilot decisions; default check now passes while preserving waived-warning visibility and summarizing hardcoded-surface warning categories
 
 1. Classify the change.
    - Role model swap, role retirement, shared-server consolidation, tier/hotness change, port/slot change, context change, acceleration/MTP/spec change, KV/cache change, vision/mmproj change, or benchmark-only candidate addition.
@@ -275,7 +299,7 @@ Minimal pipeline phases:
   - Target files: `src/registry/model_descriptors.py`, `scripts/registry/compile_descriptors.py`, `orchestration/model_descriptors.yaml`, `src/registry/stack_priors.py`, `scripts/registry/compile_stack_priors.py`, `tests/unit/test_model_descriptor_compiler.py`, `tests/unit/test_model_descriptors_schema.py`, `tests/unit/test_stack_priors_compiler.py`.
 
 - [ ] **P1 - Add the canonical stack-change command/procedure.**
-  - **2026-06-13 partial**: `e01d64d` added the initial command skeleton and unit tests; `fe4b2aa` fixed preview-path and role-scope handling; `3e7efce` normalized descriptor compiler quality suite keys without touching the HIGH-impact merge helper; `ca9af53` stabilized compiler model IDs against the current descriptor policy; `022a0d1` added fail-closed descriptor model-removal protection; `fbef837` closed REAP descriptor coverage; `365e370` refreshed stack-prior metadata; `846c2d4` restored generated code/math/long-context modalities.
+  - **2026-06-13 partial**: `e01d64d` added the initial command skeleton and unit tests; `fe4b2aa` fixed preview-path and role-scope handling; `3e7efce` normalized descriptor compiler quality suite keys without touching the HIGH-impact merge helper; `ca9af53` stabilized compiler model IDs against the current descriptor policy; `022a0d1` added fail-closed descriptor model-removal protection; `fbef837` closed REAP descriptor coverage; `365e370` refreshed stack-prior metadata; `846c2d4` restored generated code/math/long-context modalities; `079ff30` added `acceptance:` / `promotion_gate:` output; `2baaee5` classified the two intentional retired-role guard surfaces so default `check` passes with waived warnings visible; `a7927c2` added compact hardcoded-surface warning summaries.
   - Build one no-inference operator entrypoint with `check` and `update` modes.
   - `check` mode must be safe for CI and local preflight: read-only, deterministic, and nonzero on stale generated artifacts, enum drift, unwaived production blockers, or strict-eligible gaps.
   - `update` mode must regenerate descriptors, stack priors, procedure enums, and any generated stack summaries from structured sources only.
@@ -308,7 +332,9 @@ Minimal pipeline phases:
 - [ ] **P4 - Add provenance plumbing for live vs degraded consumer values.**
   - **2026-06-13 partial**: `8cf0310` migrated GraphRouter training fleet discovery from a stale hardcoded model table to generated stack priors. Live smoke returned 10 HOT live roles with current shared ports and no retired `architect_coding`; `--all-hardcoded-surfaces` stayed at `WARN: 109`.
   - **2026-06-13 partial**: `1f16759` migrated GraphRouter extraction/verifier action spaces to a shared helper backed by stack priors. Legacy `architect_coding`/`worker_explore` replay labels now remap to current live actions, verifier extraction infers action width from the classifier artifact, and focused GraphRouter/stack-change tests passed (`40 passed`).
+  - **2026-06-13 partial**: `2e31055` migrated seeding per-role discovery to generated stack priors, restoring live `worker_vision` / `vision_escalation` eval coverage while excluding shared non-default aliases and preserving registry fallback.
   - **2026-06-13 partial**: `6af8b3d` added public `throughput_prior_provenance(cost_config=None)` for comparative seeding reward throughput priors. It reports config override, legacy override, stack-prior, degraded fallback, or missing source plus role coverage/path/reason metadata while leaving `compute_comparative_rewards` math and return shape unchanged.
+  - **2026-06-13 partial**: `9ed177d` propagated q_scorer stack-prior quality from live `worker_general` to the `worker_explore` alias, matching existing TPS/memory alias behavior and eliminating the degraded quality fallback residue.
   - **2026-06-13 partial**: `6ec2686` normalized compact specialist delegation report preambles through `_normalize_delegate_role`; direct preambles now advertise live `coder_escalation`/`worker_general` while `worker_coder`, `worker_explore`, and `worker_fast` remain compatibility aliases that render live-role prompt text.
   - **2026-06-13 partial**: `09948db` aligned architect investigation prompt templates, fallback text, and architect examples with live roles only: `coder_escalation` for implementation/file-split delegation and `worker_general` for investigation/search. Prompt-builder tests assert retired worker labels are absent.
   - **2026-06-13 partial**: `4bf8061` routed `_formalize_output` through live `worker_general` instead of legacy `worker_explore`, removed stale model speed/port assumptions from the docstring, and added coverage asserting the `llm_call` role.
@@ -405,9 +431,9 @@ Add launch/config/dashboard tests when touching those consumers.
 
 ## Main Workflow Pickup
 
-1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`) - Create the canonical stack-change command skeleton.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes.
+1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`, `079ff30`, `2baaee5`, `a7927c2`) - Create the canonical stack-change command skeleton and acceptance gate.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes, then prints `acceptance:` / `promotion_gate:`. Passing checks name the simulated data-only fixture target; failures block promotion with a strict blocker count. The current default `check` path passes after `2baaee5` classified the two intentional retired-role guard surfaces as waived exceptions, and `a7927c2` summarizes warning categories in the footer.
 2. **DONE 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`, `4ca702d`, `a7b72a9`) - Resolve descriptor/compiler drift reported by the new command through shared-runtime alias semantics.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, retain domain modalities, block generated descriptor updates when role/server conflicts are present, and represent `worker_math`/`toolrunner` as live aliases on the Gemma worker runtime descriptor. `check --allow-known-gaps` now passes with expected known-gap warnings; remaining descriptor work is strict-contract field coverage, not the shared-runtime conflict blocker.
-3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, and GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
+3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`, `2e31055`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps, and seeding per-role discovery now prefers stack priors while keeping registry fallback. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
 4. **DONE 2026-06-13 (`837829f`, `b8477b0`, `2ea28dd`, `865b2b1`, `54b7c77`) - Close the current descriptor evidence/gap tranche.** Architect quality, GGUF-derived model context, REAP quality, thinking-control evidence, and shared-runtime alias provenance now compile cleanly; generated descriptors/priors are `status: compiled` and stack-prior `known_gaps` are empty.
 5. **DONE 2026-06-13 (`03ed49f`, `22ea541`, `705065d`, `e61e61f`, `828552f`) - Close the temporary retired-architect production-waiver path.** `Role.ARCHITECT_CODING` is an enum alias of live `Role.ARCHITECT_GENERAL`, legacy `"architect_coding"` strings still normalize to `architect_general`, chat pipeline ingress normalizes old `architect_coding` labels to `architect_general`, the active prompt fallback / graph node map / prewarm special-cases no longer treat coding architect as a distinct live role, lean/source registries and quality-signature metadata no longer define retired `architect_coding` as live metadata, recurrence guards now block retired architect reintroduction in those metadata surfaces, and coder escalation no longer routes through it. `_fast_revise` remains deliberately deferred because the main track found HIGH GitNexus impact. Default and strict guards are clean; `--all-hardcoded-surfaces` remains useful for legacy-test and historical-doc cleanup.
 6. **PARTIAL 2026-06-13 (`d4acf24`, `06ff53c`, `40d46ea`, `a5aaafb`, `60733c7`, `cf73ac1`, `312b28e`, `dc14196`, `7917535`, `a001017`, `33c81ff`, `fb0fd6d`, `53f452c`, `b8a1abc`, `e7fab9d`, `603ad6b`, `6062a57`, `069f8c0`) - Fix the serving/launch/runtime/controller drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings; the active vision ReAct path and AutoPilot preflight health probes now read ports from generated stack-prior serving records; shared `server_mode` alias rows now warn on stale ports for covered launch roles; the AutoPilot program prompt now derives compaction endpoints from stack priors and has guard coverage against static endpoint/tier recurrence; generated live serving endpoint/primary-port/tier drift, exact launch port sets, launch-entry witness data, effective launch context, worker/VL model-path requirements, and effective runtime/binary/cache/KV/flag state are checked against the computed launch manifest; the default stack template now mirrors the current manifest topology with explicit aliases and retired-role rejection; the production launch wrapper and AutoPilot system card now derive current stack summaries from generated/validated sources, with launch-wrapper static-inventory recurrence guarded; status cleanup scans include manifest HOT/WARM, NUMA replica, Docker, `PORT_MAP`, and generated live stack-prior serving ports while excluding candidate/malformed stack-prior ports; KV adaptive compression now treats shared frontdoor roles and retired architect compatibility using current live role semantics; simulated data-only fixtures now exercise stack-change drift without production-code edits. Continue with remaining consumer migrations and classified hardcoded-surface cleanup.

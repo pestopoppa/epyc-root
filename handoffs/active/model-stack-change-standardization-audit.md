@@ -280,6 +280,9 @@ Tasks:
 - Add or extend a runtime helper around `src/registry/stack_priors.py` for live role scorer priors.
 - DONE in `e3d967a`: `orchestration/repl_memory/q_scorer.py` live defaults now load generated stack priors first.
 - DONE in `e3d967a`: `FALLBACK_*` tables remain only for degraded/offline mode when the generated artifact is missing or invalid.
+- DONE in `9ed177d`: q_scorer stack-prior alias propagation now applies
+  quality to `worker_explore` from live `worker_general`, matching existing TPS
+  and memory alias propagation and removing that degraded fallback residue.
 - Return or log provenance: `stack_priors`, `override`, or `degraded_fallback`.
 - Add tests proving:
   - DONE in `e3d967a`: `frontdoor` and `coder_escalation` share stack-prior TPS/memory.
@@ -406,6 +409,13 @@ Tasks:
   - long-context model swap with context fields
 - Assert regenerated stack priors, q_scorer priors, procedure enums, admission limits, and generated summaries change without code edits.
 - Fail if any live consumer reads stale hardcoded values.
+- EXTENDED in `079ff30`/`2baaee5`/`a7927c2`: the canonical pipeline now prints
+  pass/block `acceptance:` and `promotion_gate:` lines, classifies the two
+  intentional retired-role production surfaces through expiring exception
+  metadata, and summarizes hardcoded-surface warning categories in the footer.
+  Default `stack_change_pipeline.py check` passes without `--allow-known-gaps`
+  while waived production-blocker, legacy-test, and historical-doc warnings
+  remain visible.
 
 Dependencies: W1-W4.
 

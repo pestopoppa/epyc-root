@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, stack-change CLI acceptance/promotion-gate output and warning summaries, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, seeding role discovery from stack priors, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; default `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK, prints `acceptance:` / `promotion_gate:`, and keeps waived production-blocker, legacy-test, and historical-doc warning categories summarized
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -184,6 +184,21 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `model_quality_signatures.yaml`, with regression tests in
   `tests/unit/test_stack_change_guard.py`. Main-track validation reported no
   live warnings for those three rule IDs and 28 focused guard tests passing.
+- Stack-change promotion-gate output landed in `epyc-orchestrator` `079ff30`:
+  `PipelineReport.acceptance_lines()` and `_print_report()` now emit
+  `acceptance:` and `promotion_gate:` lines. Passing checks name the simulated
+  data-only fixture target required before launch/AutoPilot promotion; failed
+  checks report the strict blocker count and keep promotion blocked.
+- Intentional retired-role guard surfaces were classified in `epyc-orchestrator`
+  `2baaee5`: `orchestration/stack_change_guard_exceptions.yaml` now waives the
+  legacy ingress alias map in `routing_decision.py` and retired-deployable
+  rejection constant in `stack_templates.py` with owner/rationale/expiry
+  metadata, so default `stack_change_pipeline.py check` passes while the waived
+  warnings remain visible.
+- Stack-change warning summaries landed in `epyc-orchestrator` `a7927c2`:
+  the pipeline footer now de-duplicates warning counts and summarizes
+  hardcoded-surface categories such as waived production blockers, legacy tests,
+  and historical docs.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
@@ -211,6 +226,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   guard validation now honors explicit procedure/schema paths for temp previews
   and CI fixtures, while stack-prior generation defaults to descriptor role
   bindings unless an explicit role set is requested.
+- Pipeline operator output was tightened in `epyc-orchestrator` `079ff30` /
+  `a7927c2`: the command now prints acceptance/promotion-gate lines and a compact
+  warning-category footer. `2baaee5` classifies the two intentional retired-role
+  guard surfaces so the default check path passes without `--allow-known-gaps`.
+- Seeding per-role discovery migrated in `epyc-orchestrator` `2e31055`:
+  `scripts/benchmark/seeding_types.py` now prefers generated stack-prior live
+  roles, restores `worker_vision` and `vision_escalation` eval coverage,
+  excludes shared non-default aliases, and preserves registry fallback.
+- q_scorer alias-quality propagation landed in `epyc-orchestrator` `9ed177d`:
+  `worker_explore` now receives stack-prior quality from live `worker_general`,
+  matching existing TPS/memory alias propagation and removing the degraded
+  quality fallback residue.
 - Descriptor compiler quality-key normalization landed in `epyc-orchestrator`
   `3e7efce`: generated descriptors now use stable suite-vector keys such as
   `overall`, `coder`, `agentic`, `math`, `vision_language`, and `long_context`
@@ -460,7 +487,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f` + `079ff30` + `2baaee5` + `a7927c2`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -503,6 +530,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior records have empty `known_gaps`.
   Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
+  The default pipeline acceptance gate now prints pass/block state (`079ff30`),
+  classifies the two intentional retired-role compatibility surfaces as waived
+  exceptions (`2baaee5`), and summarizes hardcoded-surface warning categories in
+  the footer (`a7927c2`).
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
   for measured roles landed in `bda46b1` with a post-commit metadata refresh in
@@ -516,8 +547,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   artifact or descriptor API. Keep fallbacks for degraded scripts, but require
   tests proving fallback mode is explicit and cannot mask live drift.
   Current status: AutoPilot planner signatures (`73ed436`), q_scorer priors
-  (`d5fe713`/`15d8cff`), and seeding default role/cost-tier discovery
-  (`72f7dc2`) have migrated partially; bilinear model features now prefer
+  (`d5fe713`/`15d8cff` plus alias-quality propagation in `9ed177d`), and seeding default role/cost-tier discovery
+  (`72f7dc2` plus live per-role discovery in `2e31055`) have migrated
+  partially; bilinear model features now prefer
   stack-prior model specs (`10b3bce`); `orch status` now derives probe targets
   from stack priors (`1fe12ec`); procedure role/schema enums sync from stack
   priors (`f49f14d`); admission limits now derive from stack-prior serving
@@ -597,7 +629,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   into `orchestrator_stack.py` compile/start paths and document the operator
   command sequence. Launch should fail closed unless descriptors and derived
   priors are fresh or an explicit diagnostic override is used. Current status:
-  command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
+  command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`,
+  acceptance/promotion-gate output in `079ff30`, intentional retired-role
+  exception metadata in `2baaee5`, and warning category summaries in `a7927c2`,
+  but
   descriptor compiler quality-key normalization in `3e7efce`, model-ID
   stabilization in `ca9af53`, and fail-closed descriptor removal protection in
   `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`; domain
@@ -675,6 +710,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/src/scheduling/contention.py`
 - `epyc-orchestrator/src/runtime/inference_lock.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
+- `epyc-orchestrator/scripts/benchmark/seeding_types.py`
 - `epyc-orchestrator/scripts/benchmark/seeding_rewards.py`
 - `epyc-orchestrator/orchestration/repl_memory/bilinear_scorer.py`
 - `epyc-orchestrator/scripts/autopilot/state_store.py`
