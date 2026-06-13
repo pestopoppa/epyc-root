@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -95,6 +95,20 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `vision_escalation` ALLOW behavior. Validation: focused scheduling/admission/
   lock tests -> 78 passed; `py_compile`; `stack_change_guard.py
   --all-hardcoded-surfaces` -> same 90 known warnings; `git diff --check`.
+- Legacy routing ingress alias normalization landed in `epyc-orchestrator`
+  `3e4ba7c`: `/chat` and OpenAI-compatible ingress now normalize
+  model-generated or legacy labels before config lookup, mapping `coder` to
+  `coder_escalation` and `worker_fast` / `worker_coder` / `worker_code` to
+  `worker_general`. Chat delegation parsing keeps live valid targets while
+  compatibility aliases normalize old labels, and REPL `delegate` / `my_role`
+  no longer advertise retired `worker_fast`, `worker_coder`, or
+  `worker_explore` as live targets while still resolving them to live roles.
+  The `_run_specialist_loop` return annotation/tests were updated to match the
+  existing 8-value contract surfaced by the expanded verification run.
+  Validation: expanded routing/chat/API suite -> 208 passed with 3 existing
+  SWIG warnings; focused rerun -> 180 passed with the same warnings;
+  `py_compile`; `stack_change_guard.py --all-hardcoded-surfaces` -> same 90
+  known warnings; `git diff --check`.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
@@ -477,7 +491,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (`822482b`). Scheduling/contention current-role assertions are now pinned to
   the real stack matrix in `eed215d`, including current n-way light/heavy
   classes, retired `worker_fast` absence from matrix light roles, and same-role
-  `vision_escalation` ALLOW behavior.
+  `vision_escalation` ALLOW behavior. Legacy/model-generated routing ingress
+  labels now normalize before config lookup in `3e4ba7c`: `/chat` and
+  OpenAI-compatible paths map `coder` to `coder_escalation` and retired/generated
+  worker aliases to `worker_general`, chat delegation keeps live targets while
+  normalizing compatibility aliases, and REPL `delegate` / `my_role` no longer
+  advertise retired worker aliases as live targets.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
