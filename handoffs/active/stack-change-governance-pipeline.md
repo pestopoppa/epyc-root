@@ -79,14 +79,17 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   and LangGraph now have six active nodes, while `Role.ARCHITECT_CODING`
   direct/persisted compatibility starts on the live architect node. Live guard
   warnings dropped from 44 to 23 in the later cleanup window.
+- The remaining `src/roles.py` compatibility enum line is now an explicit,
+  expiring `intentional_live_exception` after `epyc-orchestrator` `fa6411c`;
+  strict mode no longer promotes it as an unclassified hardcoded-surface error.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
 - Known hardcoded/stale surfaces still include
-  `orchestration/model_quality_signatures.yaml`, the `src/roles.py`
-  compatibility enum/role-chain surfaces, feature-flag metadata for the removed
-  LangGraph architect-coding node, and docs/tests that can preserve outdated
-  model assumptions.
+  `orchestration/model_quality_signatures.yaml`, `src/roles.py` compatibility
+  aliases that must be audited before the `2026-07-31` exception expiry,
+  feature-flag metadata for the removed LangGraph architect-coding node, and
+  docs/tests that can preserve outdated model assumptions.
 
 ## Waypoints
 
@@ -110,8 +113,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   generated-prior drift. It should print remediation paths, not silently patch.
   Current loose mode passes with warnings and validates artifact freshness plus
   hard live invariants. The hardcoded-surface scanner now exposes production
-  blockers in seeding/eval defaults, API/config/routing surfaces, LangGraph
-  nodes, and runtime helpers. Procedure input/schema role enums are now
+  blockers in seeding/eval defaults, API/config/routing surfaces, role
+  compatibility aliases, and runtime helpers. Procedure input/schema role enums are now
   exact-generated from stack priors and fail the guard on drift. The generated
   artifact now carries a versioned structural contract, and missing required
   role/serving/prior fields fail validation. Hardcoded-surface exceptions now
