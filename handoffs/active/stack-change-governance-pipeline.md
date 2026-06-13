@@ -151,6 +151,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - AutoPilot program hardcoded-surface coverage landed in `epyc-orchestrator`
   `cf73ac1`: `stack_change_guard.py --all-hardcoded-surfaces` now flags stale
   static endpoint/tier guidance in `scripts/autopilot/program.md`.
+- Launch-manifest semantic guard landed in `epyc-orchestrator` `312b28e`:
+  generated live stack-prior serving endpoint ports, primary port membership,
+  and tier are now compared against computed launch-manifest roles.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -229,7 +232,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   model-server health targets now derive from stack-prior serving records
   (`a5aaafb`), and AutoPilot human program guidance now derives compaction
   endpoints from stack priors (`60733c7`) with recurrence scanner coverage
-  (`cf73ac1`).
+  (`cf73ac1`). Generated live serving endpoint/primary-port/tier drift now
+  fails the stack-change guard against the computed launch manifest (`312b28e`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
