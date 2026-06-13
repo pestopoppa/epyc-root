@@ -1,6 +1,6 @@
 # Frontier F2 — The Self-Running Lab: Local Agents Take Over Lab Maintenance
 
-**Status**: W1 branch-ready; W2-W4 still open (created from the Fable 5 strategic-frontiers review)
+**Status**: W1 branch-ready; W2 runner branch-ready; W2 nightly shadow scheduling/scoring + W3-W4 still open (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: HIGH but GATED on N1–N4 instrument repair + F5 injection policy
 **Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F2 — read it before claiming any waypoint
@@ -19,7 +19,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
 ## Waypoints
 
 - [x] **W1 — job inventory** (1 day): `orchestration/lab_jobs.yaml`, one row per recurring job (`{job_id, input_spec, output_contract, risk, model_role, schedule, reference_skill}`); seed set per spec §F2-W1 ordered by mechanical-ness (hygiene lint → attestation watch → digest draft → intake triage → claims-grammar check → deep-dive drafting) — acceptance: every seed job has a JSON-schema output contract and a risk class. **Branch-ready 2026-06-12**: `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/lab-jobs-inventory-worktree`, branch `feat/lab-jobs-inventory`, commit `8b4b24b` (`Seed self-running lab job inventory`). Six shadow-stage jobs validate against required fields/risk classes and each embedded JSON Schema compiles under Draft 7.
-- [ ] **W2 — the runner** (3–5 days): `scripts/lab/run_job.py` — load job spec → assemble context (kb-search + DCP bundles, both BUILT) → local role via `/chat` `force_role` + structured output → validate against contract → write to `orchestration/lab_review_queue/` (NEVER directly to handoffs/indices) → log a `task_record` (feeds F1+F3); schedule via `scripts/nightshift/` — acceptance: 2 jobs running nightly in shadow (output produced, scored, discarded).
+- [ ] **W2 — the runner** (3–5 days): `scripts/lab/run_job.py` — load job spec → assemble context (kb-search + DCP bundles, both BUILT) → local role via `/chat` `force_role` + structured output → validate against contract → write to `orchestration/lab_review_queue/` (NEVER directly to handoffs/indices) → log a `task_record` (feeds F1+F3); schedule via `scripts/nightshift/` — acceptance: 2 jobs running nightly in shadow (output produced, scored, discarded). **Runner branch-ready 2026-06-13**: `feat/lab-runner` commit `450a366` adds the review-queue runner, contract validation, bounded source-context assembly, explicit `--execute-chat` gating, fixture/dry-run validation modes, immutable review artifacts, and `lab_task_record.v1` JSONL logging. Remaining W2 acceptance: wire richer kb-search/DCP context, add nightly shadow scheduling/scoring, then produce scored/discarded shadow outputs.
 - [ ] **W3 — reliability ladder** (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewed → autonomous from logged stats (shadow ≥10 runs scored vs a cloud-reference run; autonomous only for read_only report-class jobs at ≥90% accept-rate over 20 reviewed runs) — acceptance: promotion only via the script; every (input, local output, cloud reference, verdict) tuple saved as F3 gold data.
 - [ ] **W4 — expand** (weeks): intake triage joins after F5 lands; deep-dive drafting after triage proves; research-intake skill stays the orchestrator, local models take per-source extraction steps — acceptance: each expansion enters at shadow and climbs the ladder.
 
@@ -34,6 +34,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
 ## Progress
 
 - 2026-06-12: W1 branch-ready at `feat/lab-jobs-inventory` commit `8b4b24b`. Validation: YAML parse + required job-field/risk/`job_id` const checks passed for 6 jobs; `uv run --with pyyaml --with jsonschema` Draft 7 schema compilation passed for all 6 embedded `output_contract.json_schema` blocks; `git diff --cached --check` passed. The inventory is shadow/disabled only and does not create the runner or queue.
+- 2026-06-13: W2 runner branch-ready at `feat/lab-runner` commit `450a366`. Validation: `python3 -m py_compile scripts/lab/run_job.py tests/unit/test_lab_run_job.py` passed; `uv run --with pytest --with pyyaml --with jsonschema pytest -q tests/unit/test_lab_run_job.py` -> 4 passed, 1 pytest config warning; `uv run --with ruff ruff check scripts/lab/run_job.py tests/unit/test_lab_run_job.py` passed; `git diff --cached --check` passed; two no-inference smoke runs (`handoff_freshness_lint`, `claims_grammar_check`) wrote contract-valid review artifacts and task records under `/mnt/raid0/llm/tmp/lab-runner-smoke-20260612`.
 
 ## Reporting
 
