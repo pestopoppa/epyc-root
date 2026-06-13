@@ -178,7 +178,8 @@ Minimal pipeline phases:
 4. Run validation gates.
    - Loose guard: source hash, contract shape, live invariants.
    - All-surface guard: production blockers plus legacy tests and historical docs.
-   - Strict guard: only after current known gaps are resolved/classified.
+   - Strict guard / launch promotion: only after the temporary retired-role enum
+     compatibility waiver and remaining consumer surfaces are handled.
    - Focused tests for stack priors, descriptors, q_scorer, guard, admission, launch manifest, config/API maps, and any touched consumer.
 
 5. Run stale-value detection.
