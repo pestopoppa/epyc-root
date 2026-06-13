@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract drift checks live, strict mode blocked on descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live, strict mode blocked on descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -45,6 +45,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `69057f3`: generated `stack_priors.yaml` embeds versioned required
   top-level/role/serving/prior fields, and `stack_change_guard.py` rejects
   artifacts missing that contract shape.
+- Stack-change guard exception metadata landed in `epyc-orchestrator`
+  `e162c7c`: `orchestration/stack_change_guard_exceptions.yaml` is the default
+  documented exception file, invalid/expired entries are guard errors, and valid
+  waived hardcoded-surface findings remain visible without becoming strict-mode
+  errors.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -79,9 +84,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   nodes, and runtime helpers. Procedure input/schema role enums are now
   exact-generated from stack priors and fail the guard on drift. The generated
   artifact now carries a versioned structural contract, and missing required
-  role/serving/prior fields fail validation. Strict mode intentionally fails
-  until descriptor gaps are resolved and the remaining model-specific consumers
-  migrate or receive explicit exception metadata.
+  role/serving/prior fields fail validation. Hardcoded-surface exceptions now
+  require owner/rationale/expiry metadata and remain visible as waived warnings.
+  Strict mode intentionally fails until descriptor gaps are resolved and the
+  remaining model-specific consumers migrate or receive explicit exception
+  metadata.
 - [ ] **W4 — Consumer migration** (2-3 days): migrate q_scorer, AutoPilot
   planner signatures, seeder per-role eval config, bilinear scorer model
   features, eval-tower model signatures, and launch-arg assembly to the derived

@@ -31,7 +31,7 @@ These are the real standardized-pipeline artifacts found in the current root/orc
   - Writes `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`.
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/validate/stack_change_guard.py`
   - Validates generated artifact contract shape, freshness, live-role gaps, retired-role leakage, generated procedure enums, and curated hardcoded surfaces.
-  - `--all-hardcoded-surfaces` currently reports production blockers, legacy tests, and historical docs separately.
+  - `--all-hardcoded-surfaces` currently reports production blockers, legacy tests, and historical docs separately; `--surface-exceptions` reads documented, expiring exceptions (`e162c7c`).
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/sync_procedure_role_enums.py`
   - Syncs `add_model_to_registry.yaml` role choices and `procedure.schema.json` executor roles from stack priors.
 - `/mnt/raid0/llm/epyc-orchestrator/orchestration/model_descriptors.yaml`
@@ -132,8 +132,8 @@ Tasks:
   - shared mmap group id and memory-accounting owner
   - role policy hints needed by API budgets/routing if those remain role-specific
 - Add source metadata for research-registry/benchmark evidence where descriptors depend on research artifacts, not just the lean orchestrator registry.
-- Add an external exception allowlist for `stack_change_guard.py` with owner, category, rationale, expiry/review date, and whether the exception is live, degraded fallback, legacy test, or historical doc.
-- Make `--strict` fail only on unwaived production blockers and unresolved live-role gaps.
+- DONE foundation in `e162c7c`: add an external exception allowlist for `stack_change_guard.py` with owner, category, rationale, expiry/review date, and whether the exception is live, degraded fallback, legacy test, or historical doc.
+- PARTIAL in `e162c7c`: strict mode now keeps valid waived hardcoded-surface findings visible as warnings instead of promoting them to errors; unresolved descriptor/global-gap policy still needs final strict-mode tightening.
 
 Acceptance:
 
