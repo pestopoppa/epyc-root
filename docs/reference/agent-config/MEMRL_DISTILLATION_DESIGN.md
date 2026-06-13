@@ -128,16 +128,21 @@ LIMIT 3
 
 ```
 Input: task_features (120-dim)
-  → Linear(120, 64) + ReLU + Dropout(0.1)
-  → Linear(64, 32) + ReLU
-  → Linear(32, N_actions) + Softmax
+  -> Linear(120, 64) + ReLU + Dropout(0.1)
+  -> Linear(64, 32) + ReLU
+  -> Linear(32, N_actions) + Softmax
 
-N_actions ≈ 9 (frontdoor:direct, frontdoor:repl, coder_escalation,
-               architect_general, architect_coding, worker_explore,
-               worker_math, worker_vision, ingest_long_context)
+N_actions = len(live routing actions compiled from stack priors)
 ```
 
-Total parameters: ~120×64 + 64×32 + 32×9 = **10,016** (~40KB).
+Do not hardcode the action set from a historical model roster. Live action
+labels should be derived from `epyc-orchestrator/orchestration/derived/stack_priors.yaml`
+plus the router mode/action expansion used by the teacher. Retired roles such
+as `architect_coding` must not be reintroduced as active actions unless the
+generated stack-priors contract marks them live again.
+
+For a 9-action stack the classifier still has roughly **10,016** parameters
+(~40KB), but the output layer size must follow the compiled action contract.
 
 ### Loss Function
 
@@ -154,17 +159,14 @@ Where:
 
 ### Constants from Q-Scorer
 
-```python
-memory_cost_by_role = {
-    "frontdoor":           1.0,   # 19GB HOT
-    "coder_escalation":    1.05,  # 20GB HOT
-    "worker_explore":      0.5,   # 4.4GB HOT
-    "worker_math":         0.5,   # 4.4GB HOT
-    "architect_general":   3.0,   # 133GB WARM
-    "architect_coding":    5.0,   # 271GB WARM
-    "ingest_long_context": 1.5,   # 46GB WARM
-}
-```
+The q-scorer no longer owns a live hardcoded memory-cost table. Runtime
+defaults load from the generated stack-priors contract first, with degraded
+fallbacks only for offline tooling. Memory costs are tier costs, not raw
+model-size costs: HOT roles normalize to `1.0`, so shared/frontdoor roles,
+`architect_general`, `ingest_long_context`, and other HOT live roles do not
+receive WARM penalties. If a role changes model, tier, endpoint, or deployment
+status, update the registry and regenerate stack priors instead of editing this
+design document.
 
 ---
 
