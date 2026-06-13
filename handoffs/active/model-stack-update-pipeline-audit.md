@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `60733c7`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `cf73ac1`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -113,6 +113,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 11. AutoPilot human program guidance no longer carries dead endpoint examples.
    - RESOLVED in `epyc-orchestrator` `60733c7`: `scripts/autopilot/program.md` now tells autonomous operator sessions to derive compaction endpoints from `orchestration/derived/stack_priors.yaml` instead of copying a static target-port table.
    - Removed the stale coder `8071`, retired coding-architect `8084`, and obsolete fixed-RAM tier-demotion wording from the program prompt.
+   - GUARDED in `epyc-orchestrator` `cf73ac1`: `stack_change_guard.py --all-hardcoded-surfaces` now scans `scripts/autopilot/program.md` for stale static target-port, retired-role, and fixed-RAM tier guidance, with unit fixtures proving both the stale and stack-prior-derived cases.
    - Remaining risk: generated system-card/runtime summaries are healthier, but active operator docs and historical chapters still need generated current-stack summaries or explicit historical labels.
 
 ## Model-Specific Quantity Audit Matrix
