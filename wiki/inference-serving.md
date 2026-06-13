@@ -3,7 +3,7 @@
 **Category**: `inference_serving`
 **Confidence**: verified
 **Last compiled**: 2026-06-13
-**Sources**: 35 documents (added 2026-06-13 Fable 5 serving/kernel review, routing truth restoration, and batch-serving gap)
+**Sources**: 36 documents (added 2026-06-13 Fable 5 serving/kernel review, routing truth restoration, batch-serving gap, and stack-prior serving-truth audit)
 
 ## Summary
 
@@ -60,6 +60,14 @@ Frontdoor speculative decoding is another unharvested config path. It is not a g
 
 Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-kernel-and-concurrency.md), [routing truth restoration](../handoffs/active/routing-truth-restoration.md).
 
+## 2026-06-13 Update — Stack-Prior Serving Truth
+
+The stack-update audit established `stack_priors.yaml` as the generated serving contract for model-specific consumers. The live truth hierarchy is: orchestrator `server_mode` plus descriptors first, generated priors as the consumer contract, and research-registry/history only as provenance until explicitly projected. This matters because raw compatibility surfaces can still mention retired roles and dead ports while live serving has moved on.
+
+Concrete current examples: frontdoor and `coder_escalation` share the Qwen3.6 server and memory owner on port `8070`, while older maps and config compatibility fields can still mention dead `architect_coding`/`8084` surfaces. Consumers that need endpoint, slots, tier, shared mmap, context, launch binary, or memory accounting should read the generated serving record or a typed helper over it; direct role/port tables are acceptable only as documented degraded fallback or legacy fixtures.
+
+Source: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md).
+
 ## Actionable for EPYC
 
 - **Current deployed stack** has evolved beyond the 2026-04-13 snapshot: the later Qwen3.6 consolidation moved frontdoor, coder_escalation, and worker_summarize onto shared Qwen3.6-35B-A3B Q8 mmap, and Probe B rewired architect_general to a 1x96t canonical full-machine layout. Keep the older list below as historical context only.
@@ -101,6 +109,7 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-
 - Intake entries: 22 results across intake index and handoffs including Qwen3.5 serving recipe (intake-152), DFlash speculation (intake-158), REAP models (intake-181/184/186), and 7 active/completed handoffs
 - [intake-424](https://github.com/m0at/rvllm) rvllm -- Rust/CUDA+JAX/XLA engine, H100 +24% over vLLM at B=128, EAGLE-3 (450M draft K=5), validates no-framework philosophy. GPU-only, reference bookmark for hardware acquisition.
 - [rvllm deep-dive](../research/deep-dives/rvllm-gpu-inference-reference.md) -- Benchmark reference data (Gemma 4 31B: 8786 tok/s H100 FP8), CUDA graph capture strategy, draft/target ratio 1.5%
+- [Model Stack Update Pipeline Audit](../handoffs/active/model-stack-update-pipeline-audit.md) -- generated stack-prior contract for serving endpoints, ports, slots, hot/warm status, shared mmap ownership, context limits, and launch requirements.
 
 ## 2026-04-23 Additions — Single-instance throughput backlog
 

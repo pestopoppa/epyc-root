@@ -3,7 +3,7 @@
 **Category**: `cost_aware_routing`
 **Confidence**: verified
 **Last compiled**: 2026-06-13
-**Sources**: 29 documents (added 2026-06-13 task-rate/goodput objective replay and Fable 5 objective-design update)
+**Sources**: 30 documents (added 2026-06-13 task-rate/goodput objective replay, Fable 5 objective-design update, and stack-prior cost-contract audit)
 
 ## Summary
 
@@ -115,6 +115,14 @@ Fable 5 identified a cost blind spot in the live AutoPilot objective: `quality`,
 The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proof gate did not pass: only 1 of 5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`, and raw task-rate admitted a zero-quality high-rate point. Live Pareto dominance stays on the existing vector until the evidence-plane restart, core/version boundary, and quality-eligible replay prevent that failure mode.
 
 Sources: [Fable 5 objective design](../handoffs/active/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
+
+## 2026-06-13 Update — Stack-Prior Cost Contract
+
+The model-stack audit found that the next routing/scoring reliability problem is not a missing optimizer; it is stale model constants. `q_scorer.py` now prefers structured registry-derived TPS and memory data, but seeding rewards still carry a local `DEFAULT_BASELINE_TPS` table with duplicate `coder_escalation` and retired `architect_coding` entries. That can train cost-aware routing on a dead stack even when live serving has moved to shared frontdoor/coder Qwen3.6 and HOT architect/ingest roles.
+
+The durable rule is that stack-dependent quantities must flow through generated `orchestration/derived/stack_priors.yaml`: throughput, memory cost, hot/warm status, context limits, quality/latency priors, and provenance. Local tables are allowed only as explicit degraded-mode fallback and must exclude retired live roles. This makes model swaps data-only: edit registry/descriptors, regenerate priors, run `stack_change_guard.py`, and fail if a live consumer still owns hardcoded model facts.
+
+Source: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md).
 
 ## Actionable for EPYC
 
@@ -237,3 +245,4 @@ Package I in the bulk inference campaign consolidates the decision-aware routing
 - [intake-276](https://arxiv.org/abs/2604.00025) Brevity constraints -- Explicit word limits outperform vague conciseness instructions
 - [Decision-Aware Routing](/workspace/handoffs/active/decision-aware-routing.md) -- DAR-1 regret analysis (96% uniform Q-values), DAR-2 contrastive Q-score, DAR-3 SPO+ formulation, DAR-4 bilinear model-feature scorer
 - [Bulk Inference Campaign](/workspace/handoffs/active/bulk-inference-campaign.md) -- Package B validated findings: difficulty signal has no predictive spread at 0.15/0.35, risk signal counterintuitively anti-correlated with escalation (n=16 high too small), tool A/B compression slightly net-positive (+4pp), WS-3 routing bug fixed; Package I consolidates DAR-3/4 + EV-5 validation
+- [Model Stack Update Pipeline Audit](../handoffs/active/model-stack-update-pipeline-audit.md) -- stack-prior consumer contract for q_scorer/seeding cost priors, degraded fallback policy, and data-only model-swap guard.
