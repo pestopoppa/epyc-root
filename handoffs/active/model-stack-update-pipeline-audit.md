@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; descriptor-delta reporting complete through `d5cb80a`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; descriptor-delta reporting complete through `d5cb80a`; conflicted descriptor update guard complete through `4ca702d`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -45,7 +45,7 @@ GitNexus note before this handoff edit: root was refreshed via `scripts/gitnexus
 
 The 2026-06-13 sidecar audit in `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md` found no reason to invent a parallel registry or process. It confirmed that the current descriptor -> stack-prior -> guard -> consumer-migration path is the right foundation, with three immediate hardening priorities:
 
-1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. PARTIAL RESOLUTION in `epyc-orchestrator` `d5cb80a`: check mode now reports changed model IDs, changed field paths, generated removals/additions, and top-level drift before the stale-artifact error. Remaining work is deciding which generated descriptor deltas should be accepted or recast as structured gap/severity policy.
+1. **Descriptor check output remains the command-level blocker.** `stack_change_pipeline.py check --allow-known-gaps` still fails because `orchestration/model_descriptors.yaml` is stale, while stack priors and procedure enums are fresh. PARTIAL RESOLUTION in `epyc-orchestrator` `d5cb80a`: check mode now reports changed model IDs, changed field paths, generated removals/additions, and top-level drift before the stale-artifact error. SAFETY EXTENSION in `4ca702d`: `check` and `update` now fail closed when generated descriptors contain role/server conflicts, currently `worker_math` and `toolrunner` inheriting the shared `worker` runtime despite role-level model mismatch. Remaining work is a gated compiler/source-truth fix for shared-runtime aliases and then accepting/reclassifying the non-conflict descriptor deltas.
 2. **q_scorer fallback provenance is now visible.** RESOLVED in `epyc-orchestrator` `d6912e7`: `QScorerPriors` and default `ScoringConfig` now expose per-role source maps for TPS, quality, and memory priors plus an optional degraded reason. Degraded fallback tables remain available for offline/replay, but live/default scoring can now distinguish generated stack-prior values from fallback-filled values.
 3. **Generated semantics remain incomplete.** The next strict-mode blockers are structured `ctx_max`/effective launch context, vision `mmproj`, worker shared-runtime aliases, measurement status, and launch metadata beyond endpoint/primary port/tier.
 
@@ -90,6 +90,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 
 5. The generated contract now has explicit shape validation but remains semantically incomplete.
    - `epyc-orchestrator` `69057f3` embeds a versioned `epyc.stack_priors` contract and makes `stack_change_guard.py` reject artifacts missing required role/serving/prior fields.
+   - GUARDED in `epyc-orchestrator` `4ca702d`: the canonical `stack_change_pipeline.py` refuses descriptor updates when generated descriptors contain role/server conflicts, preventing a stale manual descriptor artifact from being replaced by output that misattributes alias roles to the shared runtime model.
    - `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml:1` is still compiled with gaps.
    - `architect_general` has `quality_overall: null` and gaps at lines 34-77.
    - `frontdoor` and `coder_escalation` record shared serving truth and memory cost correctly at lines 78-205, but still have `ctx_max` and quarter-TPS gaps.
@@ -265,6 +266,8 @@ Tasks:
   - simulated model-swap tests
   - source/derived artifact freshness checks
 - DONE in `d5cb80a`: descriptor freshness checks now show exact changed model IDs/field paths, generated add/remove model IDs, and top-level drift before the stale-artifact error.
+- DONE in `4ca702d`: descriptor update/check paths now fail closed on generated role/server conflict gaps instead of suggesting or performing an unsafe artifact update.
+- HIGH-risk gated next step: fix `src/registry/model_descriptors.py` shared-runtime alias semantics so `server_mode.shared_with` aliases with different role-level models do not inherit the shared runtime's ports, speed, binary, and acceleration as if they were served by that runtime. GitNexus marked `compile_model_descriptors` and `_descriptor_for_role` HIGH because they are launch-adjacent through the stack command path.
 - Add fixture-based simulated swaps:
   - shared-mmap role swap, e.g. frontdoor/coder_escalation same-GGUF group
   - worker-family swap with launch requirements, e.g. gemma4 worker MTP/ik binary
