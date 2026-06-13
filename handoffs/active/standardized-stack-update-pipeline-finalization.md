@@ -31,7 +31,8 @@ Read-only audit and lightweight validation on 2026-06-13 found:
 - Procedure role enum check: `python3 scripts/registry/sync_procedure_role_enums.py --check` exits 0.
 - Command skeleton landing: `epyc-orchestrator` `e01d64d` adds `scripts/registry/stack_change_pipeline.py` plus `tests/unit/test_stack_change_pipeline.py`; follow-up `fe4b2aa` fixes temp preview procedure/schema paths and default stack-prior role scoping.
 - Descriptor compiler quality-key normalization landed in `epyc-orchestrator` `3e7efce`: registry `quality_pct`/`quality_score` now become descriptor `overall`, `*_suite` keys become stable suite names such as `coder`/`agentic`/`math`, `vl_score` becomes `vision_language`, and `long_context_quality` becomes `long_context`. Role-specific `long_context` no longer overwrites an existing shared-model `overall` score.
-- Live read-only result after `3e7efce`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because `orchestration/model_descriptors.yaml` is semantically stale relative to compiler output. Stack priors and procedure enums are fresh; strict known gaps are reported as warnings under the compatibility flag.
+- Descriptor compiler model-ID stabilization landed in `epyc-orchestrator` `ca9af53`: generated IDs now preserve quant underscores and strip suffixes such as `-Instruct`/`-it`, matching every current generated/live descriptor identity except the existing REAP benchmark-only descriptor.
+- Live read-only result after `ca9af53`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because `orchestration/model_descriptors.yaml` is semantically stale relative to compiler output. Stack priors and procedure enums are fresh; strict known gaps are reported as warnings under the compatibility flag.
 
 ## Prior Pipeline Work Found
 
@@ -190,7 +191,7 @@ Minimal pipeline phases:
   - Target files: `src/registry/model_descriptors.py`, `scripts/registry/compile_descriptors.py`, `orchestration/model_descriptors.yaml`, `src/registry/stack_priors.py`, `scripts/registry/compile_stack_priors.py`, `tests/unit/test_model_descriptor_compiler.py`, `tests/unit/test_model_descriptors_schema.py`, `tests/unit/test_stack_priors_compiler.py`.
 
 - [ ] **P1 - Add the canonical stack-change command/procedure.**
-  - **2026-06-13 partial**: `e01d64d` added the initial command skeleton and unit tests; `fe4b2aa` fixed preview-path and role-scope handling; `3e7efce` normalized descriptor compiler quality suite keys without touching the HIGH-impact merge helper.
+  - **2026-06-13 partial**: `e01d64d` added the initial command skeleton and unit tests; `fe4b2aa` fixed preview-path and role-scope handling; `3e7efce` normalized descriptor compiler quality suite keys without touching the HIGH-impact merge helper; `ca9af53` stabilized compiler model IDs against the current descriptor policy.
   - Build one no-inference operator entrypoint with `check` and `update` modes.
   - `check` mode must be safe for CI and local preflight: read-only, deterministic, and nonzero on stale generated artifacts, enum drift, unwaived production blockers, or strict-eligible gaps.
   - `update` mode must regenerate descriptors, stack priors, procedure enums, and any generated stack summaries from structured sources only.
@@ -301,7 +302,7 @@ Add launch/config/dashboard tests when touching those consumers.
 ## Main Workflow Pickup
 
 1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`) - Create the canonical stack-change command skeleton.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes.
-2. **IN PROGRESS 2026-06-13 (`3e7efce`) - Resolve descriptor/compiler drift reported by the new command.** The first safe compiler fix normalized generated quality keys into the descriptor vocabulary. A temp preview still showed that regenerating descriptors as-is would discard curated evidence and candidate-role coverage, so do not run `update` in place until the compiler can preserve or structurally derive that evidence. Target: make `check --allow-known-gaps` pass except for intentional strict warnings.
+2. **IN PROGRESS 2026-06-13 (`3e7efce`, `ca9af53`) - Resolve descriptor/compiler drift reported by the new command.** Safe compiler fixes now normalize generated quality keys and model IDs into the descriptor vocabulary. A temp preview still showed that regenerating descriptors as-is would omit the REAP benchmark-only descriptor and still risks discarding curated evidence/candidate-role coverage, so do not run `update` in place until the compiler can preserve or structurally derive that evidence. Target: make `check --allow-known-gaps` pass except for intentional strict warnings.
 3. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
 4. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
 
