@@ -107,6 +107,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `ca9af53`: generated model IDs now match the current descriptor policy for
   every generated/live identity; only the existing REAP benchmark-only record is
   absent from compiler coverage and remains a coverage-policy drift item.
+- Stack-change pipeline fail-closed protection landed in `epyc-orchestrator`
+  `022a0d1`: `check` reports descriptor model removals explicitly and `update`
+  skips descriptor/stack-prior/procedure writes unless
+  `--allow-descriptor-model-removal` is passed after a coverage decision.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -186,8 +190,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   command sequence. Launch should fail closed unless descriptors and derived
   priors are fresh or an explicit diagnostic override is used. Current status:
   command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
-  descriptor compiler quality-key normalization in `3e7efce`, and model-ID
-  stabilization in `ca9af53`; launch/start integration is still open.
+  descriptor compiler quality-key normalization in `3e7efce`, model-ID
+  stabilization in `ca9af53`, and fail-closed descriptor removal protection in
+  `022a0d1`; launch/start integration is still open.
 
 ## Dependency Graph
 
