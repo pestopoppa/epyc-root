@@ -1,6 +1,6 @@
 # Capability Registry, Safe Role-Restart Applicator & Promotion Workflow
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: IN PROGRESS — W0 traffic-class interface branch-ready 2026-06-13; W1-W4 remain gated on evidence-plane ledger
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
 **Spec**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
@@ -18,7 +18,7 @@ interface with the biggest definitional payoff and rides along as W0.
 
 ## Waypoints
 
-- [ ] **W0 — workload model** (1 day, ungated): `orchestration/workload_model.yaml` per spec §D — traffic classes `{interactive, eval_batch, campaign}` with per-class volume share (seed from the 2026-06-11 tally), latency/throughput SLO, serving class, contention priority; extend `request_context` tagging to workload class. Acceptance: routing/placement/autopilot consumers named in §D can read it; eval traffic self-labels `eval_batch`.
+- [ ] **W0 — workload model** (1 day, ungated): `orchestration/workload_model.yaml` per spec §D — traffic classes `{interactive, eval_batch, campaign}` with per-class volume share (seed from the 2026-06-11 tally), latency/throughput SLO, serving class, contention priority; extend `request_context` tagging to workload class. Acceptance: routing/placement/autopilot consumers named in §D can read it; eval traffic self-labels `eval_batch`. **Interface branch-ready 2026-06-13**: `feat/workload-traffic-classes` commit `b62946d` extends the F1 workload model with `traffic_classes:` and `traffic_class_tagging:`, adds read-only `src/workload_model.py` loader/inference helpers, and validates the three required traffic classes. Live `request_context` wiring was deliberately deferred after GitNexus impact on `LLMPrimitives.request_context` returned HIGH.
 - [ ] **W1 — registry schema + seed rows** (~1 day): `orchestration/capability_registry.yaml` per §C.1 schema; seed with the first-cohort levers (W4 list) plus existing operator-only rows. Acceptance: schema-validates; every row names applicator, range, evidence with protocol id, risk, `actionable_by`.
 - [ ] **W2 — compilation targets** (~1 day): compile registry → planner Action-Availability section (generated allow/deny + reasons, replacing program.md's hand-maintained denylist) and → master-index `A-by` column (script per §E.4, not hand-edit). Acceptance: both outputs regenerate from the YAML; a row edit propagates to both.
 - [ ] **W3 — safe role-restart applicator** (~2–3 days): `config_applicator.restart_role(role, env_overrides, registry_overrides)` per §C.2 — pause autopilot dispatch via existing contention/queue path → `orchestrator_stack.py reload <role>` → health gate (`wait_for_health` + one canned smoke completion) → rollback to prior config on fail → journal `exogenous_role_restart` boundary (spanning trials auto-excluded). Batched restart-class trial protocol (one restart, several trials, restore) enforced by the dispatch gate, declared in the capability row. Acceptance: shadowed restart of one role passes attestation; a deliberately failed health gate rolls back.
@@ -43,3 +43,7 @@ must continue to fail closed rather than falling back to REPL.
 ## Reporting
 
 Tick waypoints here + one-line progress entry per session; on full completion delete the master-index row and move this file to `completed/`; any number cited follows the [MEASUREMENT.md](../../MEASUREMENT.md) claim grammar.
+
+## Checkpoints
+
+- 2026-06-13 W0 interface branch-ready: `feat/workload-traffic-classes` commit `b62946d`, based on F1 `feat/task-record-harvester` `40bde0d`. GitNexus re-indexed the worktree first (48,880 nodes, 83,890 edges, 300 flows). Formal graph impact could not resolve `orchestration/workload_model.yaml` (`UNKNOWN`); manual `rg` found only the F1 harvester reading it. Separate GitNexus impact on live `LLMPrimitives.request_context` was HIGH, so this pass avoided live request tagging. Validation: `python3 -m py_compile src/workload_model.py tests/unit/test_workload_model.py` passed; `uv run --with pytest --with pyyaml pytest -q tests/unit/test_workload_model.py tests/unit/test_task_harvester.py` -> 6 passed, 1 pytest config warning; `uv run --with ruff ruff check src/workload_model.py tests/unit/test_workload_model.py` passed; `git diff --cached --check` passed.
