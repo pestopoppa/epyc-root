@@ -134,7 +134,8 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
 
 - `architect_coding`
   - absent from generated live priors.
-  - still appears in guarded hardcoded surfaces and tests/docs, which need either migration, explicit legacy classification, or generated-doc replacement.
+  - normalized by `03ed49f`: `Role.ARCHITECT_CODING` is an enum alias of live `Role.ARCHITECT_GENERAL`, and old serialized/direct string input `"architect_coding"` is still accepted through `Role._missing_` / `_LEGACY_ROLE_ALIASES`.
+  - no longer has active prompt fallback, graph node map, or prewarm special-cases as a distinct live role; remaining mentions are legacy-test/historical-doc cleanup surfaces.
 
 ## Competing Sources And Drift Risks
 
@@ -157,11 +158,10 @@ These are not all bugs, but each is a place a future stack change can go stale.
    - `roles.*`, `process_layout.*`, comments, and docs can preserve older timeouts, memory residency, ports, and benchmark-era labels.
    - Implementation implication: compilers must record conflicts and consumers must not read prose/comments as live truth.
 
-4. LangGraph and role surfaces still reference retired `architect_coding`.
-   - Guard examples include `src/graph/langgraph/graph.py`, `src/graph/langgraph/nodes.py`, `src/graph/nodes.py`, `src/parsing_config.py`, and `src/roles.py`.
+4. LangGraph and role surfaces no longer preserve a distinct live `architect_coding` role after `03ed49f`.
    - `epyc-orchestrator` `2967526` removed one live launcher hazard: `scripts/server/orchestrator_stack.py` no longer force-enables `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` at API startup.
-   - Guard limitation discovered during that fix: the current hardcoded-surface regex is lowercase-only, so uppercase env-var references can bypass warning counts.
-   - Some may be active behavior, some may be legacy compatibility. The guard correctly reports them as production blockers until classified or removed.
+   - `03ed49f` normalized the enum itself: `Role.ARCHITECT_CODING` aliases live `Role.ARCHITECT_GENERAL`, legacy strings normalize through `_missing_`, and PydanticGraph/LangGraph tests prove legacy string routing reaches the architect node.
+   - The active prompt fallback, graph node map, and prewarm special-cases that treated coding architect as a distinct live role were removed. Remaining mentions belong in explicitly legacy tests or historical docs.
 
 5. Operator docs and prompt/planner inputs can become source truth by accident.
    - Fable 5 notes stale stack facts in narrative stores and recommends generated system cards from registry/state.
@@ -214,11 +214,15 @@ uv run --with pytest pytest -q \
 
 CI should initially allow loose mode but publish warning counts. Promotion to strict mode should happen after descriptor gaps and unclassified hardcoded surfaces are resolved or documented with expiring exceptions.
 
-Current lightweight guard result after `54b7c77`:
+Current lightweight guard result after `03ed49f`:
 
 - `uv run python scripts/validate/stack_change_guard.py`
-- Result: one expected warning, the waived production blocker for temporary
-  `ARCHITECT_CODING` enum compatibility.
+- Result: clean.
+- `uv run python scripts/validate/stack_change_guard.py --strict`
+- Result: clean.
+- `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces`
+- Result: legacy-test and historical-doc mentions remain visible, but the
+  production blocker waiver is gone.
 - Generated descriptors and stack priors now have `status: compiled`; stack
   prior records have empty `known_gaps`.
 
@@ -259,7 +263,8 @@ Likely files:
 
 - DONE in `3c7a85e`: `src/graph/langgraph/graph.py`, `src/graph/langgraph/nodes.py`, `src/graph/graph.py`, `src/graph/__init__.py`, and `src/graph/nodes.py` no longer expose a retired `ArchitectCodingNode` / `architect_coding_node`; the retired role aliases to the live architect node for direct/persisted compatibility.
 - DONE in `c2b4437`: `src/parsing_config.py` no longer assigns an active parsing mode to retired `architect_coding`.
-- PARTIAL: `src/roles.py` doc/example cleanup landed in `0b1e5e9`; the compatibility enum and role-chain aliases remain. `fa6411c` documents the enum line as a line-specific `intentional_live_exception` expiring `2026-07-31`, so removal/audit is still open but no longer unclassified.
+- DONE in `03ed49f`: `src/roles.py` now makes `Role.ARCHITECT_CODING` an enum alias of live `Role.ARCHITECT_GENERAL`; `Role._missing_` / `_LEGACY_ROLE_ALIASES` still accepts old `"architect_coding"` strings and normalizes them to `architect_general`.
+- DONE in `03ed49f`: active prompt fallback, graph node map, and prewarm special-cases no longer treat coding architect as a distinct live role; PydanticGraph and LangGraph tests cover legacy string routing to the architect node plus live architect fallback behavior.
 - DONE in `c2b4437`: `src/inference/llm_cache.py` no longer lists retired `architect_coding` as a high-value cache target.
 - `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
 - related tests under `tests/unit/` and `tests/integration/`
@@ -388,10 +393,10 @@ Dependencies: W1-W4.
 
 ## Highest-ROI Next Steps
 
-1. Audit the remaining `src/roles.py` compatibility enum/chain aliases before the `2026-07-31` exception expiry, then remove them or renew with evidence.
+1. Continue remaining hardcoded-surface cleanup by separating legacy tests and historical docs from current operator guidance; do not reintroduce a production waiver for retired architect routing.
 2. Add explicit q_scorer provenance plumbing if downstream consumers need to distinguish `stack_priors` from `degraded_fallback`.
-3. Add simulated stack-change tests before broad cleanup. A failing fixture will expose which consumers still bypass the generated contract.
-4. Extend stack-prior records with missing context/provenance fields needed for strict mode.
+3. Add or extend simulated stack-change tests for any newly discovered consumer surface that still bypasses the generated contract.
+4. Extend stack-prior records with missing context/provenance fields needed for strict mode where future launch gates require them.
 5. Generate planner/operator stack summaries from stack priors so manual prose stops acting as hidden source truth.
 
 ## Reporting Instructions
