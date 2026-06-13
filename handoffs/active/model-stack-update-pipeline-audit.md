@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; descriptor-delta reporting complete through `d5cb80a`; conflicted descriptor update guard complete through `4ca702d`; exact launch-port projection/guard complete through `dc14196`; launch-witness contract v2 complete through `7917535`; shared-runtime descriptor alias semantics complete through `a7b72a9`; launch-context/path witness contract v3 complete through `a001017`; launch-runtime witness contract v4 complete through `33c81ff`; simulated data-only stack-change fixtures complete through `fb0fd6d`; architect quality projection complete through `837829f`; retired architect enum waiver path closed through `03ed49f`; production launcher summary derived from manifest through `53f452c`; launch summary recurrence guarded through `b8a1abc`; stale role runtime surfaces normalized through `e7fab9d`; AutoPilot system card rendered from stack priors through `603ad6b`; stack-status live model/projector attestation complete through `3bdd506`; system-card launch requirements exposed through `6cfb2c7`; descriptor-native VL projector requirements complete through `3e8121d`; manifest-derived auxiliary/generated live port scanning complete through `d59029a`/`6062a57`; direct/ReAct vision chat URL resolution complete through `ee784f9`; API health backend probe discovery complete through `3dc21c5`; summarization worker selection complete through `5b4f683`; parallel burst-worker selection complete through `cc401c0`; worker concurrency caps complete through `f41f956`; inference lock role classes complete through `822482b`; contention role-class pinning complete through `eed215d`; proactive thinking-trigger routing complete through `53f12e0`; legacy routing ingress alias normalization complete through `3e4ba7c`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `a6d1200`; descriptor-delta reporting complete through `d5cb80a`; conflicted descriptor update guard complete through `4ca702d`; exact launch-port projection/guard complete through `dc14196`; launch-witness contract v2 complete through `7917535`; shared-runtime descriptor alias semantics complete through `a7b72a9`; launch-context/path witness contract v3 complete through `a001017`; launch-runtime witness contract v4 complete through `33c81ff`; simulated data-only stack-change fixtures complete through `fb0fd6d`; architect quality projection complete through `837829f`; retired architect enum waiver path closed through `03ed49f`; production launcher summary derived from manifest through `53f452c`; launch summary recurrence guarded through `b8a1abc`; stale role runtime surfaces normalized through `e7fab9d`; AutoPilot system card rendered from stack priors through `603ad6b`; stack-status live model/projector attestation complete through `3bdd506`; system-card launch requirements exposed through `6cfb2c7`; descriptor-native VL projector requirements complete through `3e8121d`; manifest-derived auxiliary/generated live port scanning complete through `d59029a`/`6062a57`; direct/ReAct vision chat URL resolution complete through `ee784f9`; API health backend probe discovery complete through `3dc21c5`; summarization worker selection complete through `5b4f683`; parallel burst-worker selection complete through `cc401c0`; worker concurrency caps complete through `f41f956`; inference lock role classes complete through `822482b`; contention role-class pinning complete through `eed215d`; proactive thinking-trigger routing complete through `53f12e0`; legacy routing ingress alias normalization complete through `3e4ba7c`; delegation report preamble alias normalization complete through `6ec2686`; architect investigation prompt live-role alignment complete through `09948db`; output formalizer live-worker routing complete through `4bf8061`; sidecar hardening audit merged from `handoffs/completed/model-stack-update-pipeline-hardening-sidecar.md`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -95,6 +95,23 @@ The following examples are evidence-backed reasons this work should stay high RO
      normalize legacy labels; and REPL `delegate` / `my_role` no longer
      advertise retired `worker_fast`, `worker_coder`, or `worker_explore` as
      live targets while still resolving them to live roles.
+   - Twenty-first cleanup landed in `epyc-orchestrator` `6ec2686`:
+     compact specialist delegation report prompts now canonicalize through
+     `_normalize_delegate_role`. Direct preamble sets are reduced to live
+     `coder_escalation` and `worker_general`, while legacy `worker_coder`,
+     `worker_explore`, and `worker_fast` aliases still resolve to live-role
+     prompt text without advertising retired labels.
+   - Twenty-second cleanup landed in `epyc-orchestrator` `09948db`:
+     architect investigation prompts now advertise only live delegation roles.
+     The active template, fallback constant, and architect system example use
+     `coder_escalation` for implementation/file-split delegation and
+     `worker_general` for investigation/search; the valid role list no longer
+     includes `worker_coder`, `worker_explore`, or `worker_fast`.
+   - Twenty-third cleanup landed in `epyc-orchestrator` `4bf8061`:
+     `_formalize_output` in `src/api/routes/chat_utils.py` now calls live
+     `worker_general` instead of the retired/legacy `worker_explore` label.
+     Its docstring no longer embeds stale model speed or port assumptions, and
+     coverage asserts `llm_call` receives `worker_general`.
    - Remaining risk: legacy tests and historical docs can still preserve old names unless classified or rewritten; they are no longer production blocker waivers.
 
 3. Config models no longer preserve dead URLs/timeouts as active live maps.
@@ -353,6 +370,24 @@ Priority order:
      retired `worker_fast`, `worker_coder`, or `worker_explore` as live
      targets, but legacy labels still resolve to current live roles for
      persisted/generated compatibility.
+12. Chat delegation report prompt preambles
+   - DONE in `6ec2686`: compact specialist report preambles now canonicalize
+     through `_normalize_delegate_role`. Direct preamble role sets advertise
+     only live `coder_escalation` and `worker_general`; legacy `worker_coder`,
+     `worker_explore`, and `worker_fast` aliases remain accepted but render
+     live-role prompt text rather than retired labels.
+13. Architect investigation prompt templates
+   - DONE in `09948db`: the active architect investigation prompt template,
+     fallback constant, and architect system example now name live roles only:
+     `coder_escalation` for implementation/file-split delegation and
+     `worker_general` for investigation/search. Prompt-builder tests assert the
+     resolved architect investigate prompt contains those live roles and omits
+     retired `worker_coder`, `worker_explore`, and `worker_fast`.
+14. Output formalizer worker routing
+   - DONE in `4bf8061`: `_formalize_output` now sends final formatting work to
+     live `worker_general` instead of the retired/legacy `worker_explore`
+     label. The helper docstring dropped stale model speed/port assumptions and
+     coverage asserts the role passed to `llm_call` is `worker_general`.
 
 DONE in `d6912e7`: q_scorer now exposes live/degraded provenance metadata. Follow-up, if strict promotion needs a harder failure mode, is to make selected production callers reject `PRIOR_SOURCE_DEGRADED_FALLBACK` for required live roles instead of only inspecting metadata.
 

@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -109,6 +109,30 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   SWIG warnings; focused rerun -> 180 passed with the same warnings;
   `py_compile`; `stack_change_guard.py --all-hardcoded-surfaces` -> same 90
   known warnings; `git diff --check`.
+- Delegation report role preamble normalization landed in `epyc-orchestrator`
+  `6ec2686`: compact specialist report prompts now canonicalize through
+  `_normalize_delegate_role`, direct preamble role sets are limited to live
+  `coder_escalation` and `worker_general`, and legacy `worker_coder` /
+  `worker_explore` / `worker_fast` aliases still produce live-role prompts
+  without advertising retired labels. Validation: `py_compile`; focused
+  delegation/architect pytest -> 87 passed; chat pipeline integration -> 28
+  passed; `stack_change_guard.py` OK; `git diff --check`.
+- Architect investigation prompt live-role alignment landed in
+  `epyc-orchestrator` `09948db`: the active architect investigation template,
+  fallback constant, and architect system example now name only
+  `coder_escalation` for implementation/file-split delegation and
+  `worker_general` for investigation/search. The valid role list excludes
+  `worker_coder`, `worker_explore`, and `worker_fast`, with a prompt-builder
+  regression asserting live roles are present and retired labels absent.
+  Validation: `py_compile`; focused prompt-builder/architect/plan-review tests
+  -> 11 passed; `stack_change_guard.py` OK; `git diff --check`.
+- Output formalizer live-worker routing landed in `epyc-orchestrator`
+  `4bf8061`: `_formalize_output` now calls live `worker_general` instead of
+  the retired/legacy `worker_explore` label, and its docstring no longer embeds
+  stale model speed or port assumptions. `tests/unit/test_chat_utils_coverage.py`
+  now asserts the role passed to `llm_call` is `worker_general`. Validation:
+  `py_compile`; focused chat-utils/stage tests -> 68 passed;
+  `stack_change_guard.py` OK; `git diff --check`.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
@@ -496,7 +520,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   OpenAI-compatible paths map `coder` to `coder_escalation` and retired/generated
   worker aliases to `worker_general`, chat delegation keeps live targets while
   normalizing compatibility aliases, and REPL `delegate` / `my_role` no longer
-  advertise retired worker aliases as live targets.
+  advertise retired worker aliases as live targets. Delegation report preambles
+  now use the same canonicalization in `6ec2686`: compact specialist report
+  prompts advertise only live `coder_escalation` / `worker_general` preambles
+  while `worker_coder`, `worker_explore`, and `worker_fast` remain compatibility
+  aliases that resolve to live-role prompt text. Architect investigation prompts
+  now match the same live-role policy in `09948db`: active templates, fallback
+  text, and system examples point implement/file-split work at
+  `coder_escalation`, investigation/search work at `worker_general`, and omit
+  retired worker labels from the valid role list. Output formalization now also
+  routes to live `worker_general` in `4bf8061` instead of the legacy
+  `worker_explore` label, and the helper docstring no longer carries stale
+  speed/port assumptions.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:

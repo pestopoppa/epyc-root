@@ -267,6 +267,9 @@ Likely files:
 - DONE in `03ed49f`: `src/roles.py` now makes `Role.ARCHITECT_CODING` an enum alias of live `Role.ARCHITECT_GENERAL`; `Role._missing_` / `_LEGACY_ROLE_ALIASES` still accepts old `"architect_coding"` strings and normalizes them to `architect_general`.
 - DONE in `03ed49f`: active prompt fallback, graph node map, and prewarm special-cases no longer treat coding architect as a distinct live role; PydanticGraph and LangGraph tests cover legacy string routing to the architect node plus live architect fallback behavior.
 - DONE in `c2b4437`: `src/inference/llm_cache.py` no longer lists retired `architect_coding` as a high-value cache target.
+- DONE in `6ec2686`: compact specialist delegation report preambles canonicalize through `_normalize_delegate_role`, advertise only live `coder_escalation` and `worker_general` direct preambles, and keep legacy `worker_coder`, `worker_explore`, and `worker_fast` aliases resolving to live-role prompt text.
+- DONE in `09948db`: architect investigation prompt templates, fallback text, and architect examples now use live roles only: `coder_escalation` for implementation/file-split delegation and `worker_general` for investigation/search; prompt-builder tests assert retired worker labels are absent.
+- DONE in `4bf8061`: `_formalize_output` now calls live `worker_general` instead of retired/legacy `worker_explore`; its docstring no longer carries stale model speed/port assumptions and coverage asserts the `llm_call` role.
 - `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
 - related tests under `tests/unit/` and `tests/integration/`
 
