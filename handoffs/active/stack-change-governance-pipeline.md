@@ -86,8 +86,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (`72f7dc2`) have migrated partially; bilinear model features now prefer
   stack-prior model specs (`10b3bce`); `orch status` now derives probe targets
   from stack priors (`1fe12ec`); procedure role/schema enums sync from stack
-  priors (`f49f14d`). `seeding_rewards.py` remains deferred because GitNexus
-  marks `compute_comparative_rewards` CRITICAL.
+  priors (`f49f14d`); admission limits now derive from stack-prior serving
+  ports/slots with a non-retired fallback (`1199f03`). `seeding_rewards.py`
+  remains deferred because GitNexus marks `compute_comparative_rewards`
+  CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -141,6 +143,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/orchestration/procedure.schema.json`
 - `epyc-orchestrator/orchestration/procedures/add_model_to_registry.yaml`
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py`
+- `epyc-orchestrator/src/api/admission.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
 - `epyc-orchestrator/orchestration/repl_memory/bilinear_scorer.py`
 - `epyc-orchestrator/scripts/autopilot/state_store.py`
