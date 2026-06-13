@@ -1,6 +1,6 @@
 # δ-mem Reproduction + Frozen-Memory Topology Spike
 
-**Status**: ready-to-claim (3-day reproduction → 3-week M.3 KV-Extension prototype → 6-week full δ-mem GGML port, gated)
+**Status**: Phase 1 setup/mechanical gates PASS; accuracy reproduction/gpu-scale gates remain open
 **Created**: 2026-05-19 (post-cluster-deep-dive)
 **Categories**: memory_augmented, context_management, ssm_hybrid
 **Priority**: HIGH (released code + adapter checkpoint = cheapest first-week validation in the May 2026 batch)
