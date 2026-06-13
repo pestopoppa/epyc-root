@@ -29,6 +29,8 @@ Read-only audit and lightweight validation on 2026-06-13 found:
 - All-surface guard result: `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces` exits 0 with `WARN: 109 stack-prior warning(s)`.
 - Strict guard result: `uv run python scripts/validate/stack_change_guard.py --strict` exits 1 with 22 strict errors, all from known role/global gaps; the retained `Role.ARCHITECT_CODING` compatibility enum is waived by expiring exception metadata.
 - Procedure role enum check: `python3 scripts/registry/sync_procedure_role_enums.py --check` exits 0.
+- Command skeleton landing: `epyc-orchestrator` `e01d64d` adds `scripts/registry/stack_change_pipeline.py` plus `tests/unit/test_stack_change_pipeline.py`.
+- Live read-only result after the skeleton: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` exits 1 because descriptors and stack priors are semantically stale relative to compiler output; strict known gaps are reported as warnings under the compatibility flag.
 
 ## Prior Pipeline Work Found
 
@@ -187,6 +189,7 @@ Minimal pipeline phases:
   - Target files: `src/registry/model_descriptors.py`, `scripts/registry/compile_descriptors.py`, `orchestration/model_descriptors.yaml`, `src/registry/stack_priors.py`, `scripts/registry/compile_stack_priors.py`, `tests/unit/test_model_descriptor_compiler.py`, `tests/unit/test_model_descriptors_schema.py`, `tests/unit/test_stack_priors_compiler.py`.
 
 - [ ] **P1 - Add the canonical stack-change command/procedure.**
+  - **2026-06-13 partial**: `e01d64d` added the initial command skeleton and unit tests.
   - Build one no-inference operator entrypoint with `check` and `update` modes.
   - `check` mode must be safe for CI and local preflight: read-only, deterministic, and nonzero on stale generated artifacts, enum drift, unwaived production blockers, or strict-eligible gaps.
   - `update` mode must regenerate descriptors, stack priors, procedure enums, and any generated stack summaries from structured sources only.
@@ -296,9 +299,10 @@ Add launch/config/dashboard tests when touching those consumers.
 
 ## Main Workflow Pickup
 
-1. **Create the canonical stack-change command skeleton.** Compose the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes, initially preserving current strict blockers as reported failures.
-2. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
-3. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
+1. **DONE 2026-06-13 (`e01d64d`) - Create the canonical stack-change command skeleton.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes.
+2. **Resolve the generated-artifact drift reported by the new command.** Decide whether to regenerate descriptors/priors from the compiler as-is or first close P0 schema gaps, then make `check --allow-known-gaps` pass except for intentional strict warnings.
+3. **Start P0 context/vision/KV descriptor gaps.** Extend descriptor and stack-prior schemas with `ctx_model_max`, `ctx_launch_effective`, descriptor-native `mmproj`, KV/cache, and launch-effective fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
+4. **Fix the serving/launch drift path.** Reconcile `PORT_MAP["coder_escalation"] = 8071` versus generated `coder_escalation.endpoint=http://localhost:8070`, then add a guard/test that would catch recurrence.
 
 ## Reporting Instructions
 

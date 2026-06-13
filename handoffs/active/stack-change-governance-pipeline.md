@@ -88,6 +88,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `bda46b1`: measured single-purpose suite scores now populate generated
   `priors.quality_overall` for architect, ingest, VL, and toolrunner roles;
   `762e6b0` refreshed the derived artifact metadata afterward.
+- The first canonical command skeleton landed in `epyc-orchestrator`
+  `e01d64d`: `scripts/registry/stack_change_pipeline.py` composes descriptor
+  compile/check, stack-prior compile/check, procedure enum sync/check, and
+  loose/all-surface/strict guard passes into `check` and `update` modes. Focused
+  tests landed in `tests/unit/test_stack_change_pipeline.py`.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -165,7 +170,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - [ ] **W6 — Stack-change runbook and launch hook** (1 day): wire the validator
   into `orchestrator_stack.py` compile/start paths and document the operator
   command sequence. Launch should fail closed unless descriptors and derived
-  priors are fresh or an explicit diagnostic override is used.
+  priors are fresh or an explicit diagnostic override is used. Current status:
+  command skeleton exists in `e01d64d`, but launch/start integration is still
+  open.
 
 ## Dependency Graph
 
