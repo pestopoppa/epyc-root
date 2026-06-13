@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live, strict mode blocked on descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v2 launch witness, strict mode blocked on descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -154,6 +154,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Launch-manifest semantic guard landed in `epyc-orchestrator` `312b28e`:
   generated live stack-prior serving endpoint ports, primary port membership,
   and tier are now compared against computed launch-manifest roles.
+- Stack-prior launch-source freshness landed in `epyc-orchestrator`
+  `a6d1200`: generated priors now hash `scripts/server/stack_manifest.py`
+  and `scripts/server/stack_numa.py`, and the guard requires those source
+  artifact hashes.
+- Exact launch-port projection landed in `epyc-orchestrator` `dc14196`:
+  generated serving records now use computed launch role port sets, preserve
+  slots, and fail guard validation on missing launch ports or extra
+  non-launch ports.
+- Launch witness contract v2 landed in `epyc-orchestrator` `7917535`:
+  generated priors now require `serving.launch.entries`, and the guard compares
+  launch mode, alias status, primary role, and optional NUMA/worker/vision
+  instance metadata against computed launch-manifest roles.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -179,7 +191,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -188,8 +200,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   blockers in seeding/eval defaults, API/config/routing surfaces, role
   compatibility aliases, and runtime helpers. Procedure input/schema role enums are now
   exact-generated from stack priors and fail the guard on drift. The generated
-  artifact now carries a versioned structural contract, and missing required
-  role/serving/prior fields fail validation. Hardcoded-surface exceptions now
+  artifact now carries a versioned structural contract, contract v2 requires
+  `serving.launch.entries`, and missing required role/serving/prior/launch
+  fields fail validation. Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
@@ -233,7 +246,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (`a5aaafb`), and AutoPilot human program guidance now derives compaction
   endpoints from stack priors (`60733c7`) with recurrence scanner coverage
   (`cf73ac1`). Generated live serving endpoint/primary-port/tier drift now
-  fails the stack-change guard against the computed launch manifest (`312b28e`).
+  fails the stack-change guard against the computed launch manifest (`312b28e`);
+  exact launch port sets are generated and guarded (`dc14196`), and contract v2
+  launch-entry witness data is generated and guarded (`7917535`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -251,8 +266,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   and recurrence-tested in `d4acf24`; active VL ReAct port routing now consumes
   stack-prior serving records in `06ff53c`; shared `server_mode` alias-port
   validation is covered in `40d46ea`; AutoPilot preflight health probes consume
-  stack-prior endpoints in `a5aaafb`.
-  Broader launch/start integration is still open.
+  stack-prior endpoints in `a5aaafb`; exact launch ports are projected in
+  `dc14196`; launch-entry witness contract v2 is projected in `7917535`.
+  Broader launch/start integration is still open for binary/model/mmproj,
+  context/KV, and acceleration semantics.
 
 ## Dependency Graph
 
