@@ -111,6 +111,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `022a0d1`: `check` reports descriptor model removals explicitly and `update`
   skips descriptor/stack-prior/procedure writes unless
   `--allow-descriptor-model-removal` is passed after a coverage decision.
+- Structured REAP descriptor coverage landed in `epyc-orchestrator` `fbef837`,
+  with stack-prior metadata refreshed in `365e370`. The descriptor compiler
+  preview now has no current-only or generated-only model IDs; remaining
+  descriptor staleness is curated-evidence/schema drift rather than missing
+  benchmark-only model coverage.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -192,7 +197,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
   descriptor compiler quality-key normalization in `3e7efce`, model-ID
   stabilization in `ca9af53`, and fail-closed descriptor removal protection in
-  `022a0d1`; launch/start integration is still open.
+  `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`.
+  Launch/start integration is still open.
 
 ## Dependency Graph
 
