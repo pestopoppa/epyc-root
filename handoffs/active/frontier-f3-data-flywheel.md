@@ -1,6 +1,6 @@
 # Frontier F3 — The Data Flywheel: Train on What the Lab Already Generates
 
-**Status**: W1 capture-hygiene partially branch-ready; W1 labels/tuples + W2 still open (created from the Fable 5 strategic-frontiers review)
+**Status**: W1 capture-hygiene partially branch-ready; W2 builder scaffolds branch-ready; W1 labels/tuples + W2 triage baseline still open (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
 **Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
@@ -19,7 +19,7 @@ Capture and curation cost nothing now; training waits for the GPU.
 ## Waypoints
 
 - [ ] **W1 — capture hygiene, NOW, zero cost** (1–2 days): patch `controller_io.py` so FAILED planner calls archive too (move `_append_planner_archive` before the early return — known gap); log intake-triage decisions as labeled `{source_features, verdict}` rows; confirm the per-question ledger (N2) journals per-trial outcome vectors; confirm F2-W3 tuple capture. Deliverable: `docs/reference/datasets.md` listing each corpus, schema, era-labeling rule, intended model — acceptance: page exists and every corpus has an era-labeling rule. **Partial branch-ready evidence**: failed Claude planner calls are archived in `feat/data-flywheel-capture` `5ea0fb4` and also covered by the W7 `feat/planner-session-hygiene` `69a41f7`; `docs/reference/datasets.md` is branch-ready in `feat/data-flywheel-capture` `9cdcf1e`; N2 per-question writer is branch-ready in `feat/paired-question-stats-current` `8dbdba5b`. Remaining W1 work: labeled intake-triage capture and F2-W3 tuple confirmation/deployment evidence.
-- [ ] **W2 — dataset builders, pre-GPU** (3–4 days): `scripts/datasets/build_planner_sft.py` (planner_archive → (context, action) pairs labeled by measured outcome — keep confirmed/critic-approved, drop contaminated eras) + `build_triage_set.py` (intake index → classification set); train the CPU-feasible triage baseline now (BGE embedding + small MLP, routing-classifier stack reused) — acceptance: triage baseline ≥85% agreement with operator verdicts on a held-out 100.
+- [ ] **W2 — dataset builders, pre-GPU** (3–4 days): `scripts/datasets/build_planner_sft.py` (planner_archive → (context, action) pairs labeled by measured outcome — keep confirmed/critic-approved, drop contaminated eras) + `build_triage_set.py` (intake index → classification set); train the CPU-feasible triage baseline now (BGE embedding + small MLP, routing-classifier stack reused) — acceptance: triage baseline ≥85% agreement with operator verdicts on a held-out 100. **Builder scaffolds branch-ready 2026-06-13**: `feat/data-flywheel-builders` tip `4a81d06` adds planner-SFT and intake-triage JSONL builders plus manifests; live smokes emitted 2,682 planner rows and 694 intake rows under `/mnt/raid0/llm/tmp/f3-datasets-smoke-20260613`. Remaining W2: train/evaluate the CPU triage baseline and create held-out agreement evidence once reviewed labels are available.
 - [ ] **W3 — GPU fine-tunes (HW-GATED — do not start before the MI210 card)**: (a) planner-distill — QLoRA a Qwen3.5-9B-class base on W2's SFT set, acceptance: shadow-draft mode with ≥80% cloud-critic approval over 100 trials before any binding use; (b) drafters per the α measurement (FastDraft path, already gated in backlog); (c) judge/rubric model for EV-9 (unblocks rubric-scored suites in F1-W3) — acceptance: each fine-tune gets a MEASUREMENT.md protocol entry before its first reported number.
 
 ## Gates & pitfalls
@@ -32,3 +32,7 @@ Capture and curation cost nothing now; training waits for the GPU.
 ## Reporting
 
 On completion of each waypoint: tick here, one-line progress entry, update master index row. W1/W2 can complete and be reported long before W3 ungates — do not hold the handoff open as "blocked" on the GPU; mark W3 gated explicitly.
+
+## Progress
+
+- 2026-06-13: W2 builder scaffolds branch-ready at `feat/data-flywheel-builders` tip `4a81d06`. Validation: `python3 -m py_compile scripts/datasets/_common.py scripts/datasets/build_planner_sft.py scripts/datasets/build_triage_set.py tests/unit/test_dataset_builders.py` passed; `uv run --with pytest --with pyyaml pytest -q tests/unit/test_dataset_builders.py` -> 3 passed, 1 pytest config warning; `uv run --with ruff ruff check scripts/datasets/_common.py scripts/datasets/build_planner_sft.py scripts/datasets/build_triage_set.py tests/unit/test_dataset_builders.py` passed; `git diff --cached --check` passed. Live-source smokes wrote planner and triage outputs/manifests under `/mnt/raid0/llm/tmp/f3-datasets-smoke-20260613`.
