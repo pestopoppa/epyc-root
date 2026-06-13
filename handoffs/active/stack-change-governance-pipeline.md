@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, and stack-prior-rendered AutoPilot system-card rows; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check --allow-known-gaps` reports descriptor/stack-prior/procedure/guard/strict OK, while `--all-hardcoded-surfaces` now reports only legacy-test/historical-doc classes for this cleanup track
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline attestation in stack status, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check --allow-known-gaps` reports descriptor/stack-prior/procedure/guard/strict OK, while `--all-hardcoded-surfaces` now reports only legacy-test/historical-doc classes for this cleanup track
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -249,6 +249,23 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   architect role/port, old model names, fixed RAM totals, and obsolete
   HOT/core wording. Focused guard tests cover both the stale and
   manifest-derived shapes.
+- Completed in `0573e02`: stack status now includes an `ATTEST` column backed
+  by read-only live process cmdline attestation. Concrete GGUF paths are
+  checked against `/proc/<pid>/cmdline`; basename or full-path matches report
+  `ok`, mismatched live GGUF paths report `model-drift` with an attestation
+  warning, Docker-managed rows report `docker`, preserved or non-concrete
+  model strings report `n/a`, unavailable cmdlines report `unknown`, and dead
+  processes report `dead`. Changed orchestrator files:
+  `scripts/server/stack_commands.py`, `scripts/server/stack_processes.py`,
+  `tests/unit/test_stack_processes.py`, and
+  `tests/unit/test_orchestrator_stack_reload.py`.
+- Completed in `6af8b3d`: comparative seeding reward throughput priors now
+  expose public provenance via `throughput_prior_provenance(cost_config=None)`
+  and a shared private resolver. Provenance reports source
+  (`config_override`, `legacy_config_override`, `stack_priors`,
+  `degraded_fallback`, or `missing`), role list/count, stack-priors path,
+  degraded-fallback flag, and missing/degraded reason. Reward math and the
+  `compute_comparative_rewards` return shape are unchanged.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -273,7 +290,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -292,6 +309,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   Simulated data-only stack-change fixtures landed in `fb0fd6d`, exercising
   shared-runtime swaps, retired-role removal, stale runtime requirements, and
   context/KV/acceleration drift without production-code edits.
+  Live stack status attestation landed in `0573e02`: the status table now
+  compares concrete expected GGUF paths with each live process cmdline and
+  flags mismatched live GGUFs as `model-drift` instead of treating a fresh
+  generated manifest as sufficient proof of deployment.
   Architect quality evidence landed in `837829f`; generated descriptors and
   stack priors now carry `quality_overall: 0.8567` for
   `architect_general`/`qwen35_122b_q4km`. GGUF header context extraction landed
@@ -343,10 +364,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   LangGraph topology no longer expose a retired architect-coding node
   (`0b1e5e9`, `3c7a85e`).
   Seeding reward TPS/cost priors migrated to stack-prior discovery in the
-  expanded CRITICAL-path pass `7ecf847`. GraphRouter training fleet discovery
-  now loads live stack-prior roles instead of a stale hardcoded model roster
-  (`8cf0310`), and GraphRouter classifier/verifier extraction now derives live
-  action spaces from stack priors/classifier artifacts (`1f16759`). Vision
+  expanded CRITICAL-path pass `7ecf847`; `6af8b3d` adds explicit throughput
+  prior provenance for config override, stack-prior, degraded fallback, and
+  missing paths without changing comparative reward math. GraphRouter training
+  fleet discovery now loads live stack-prior roles instead of a stale hardcoded
+  model roster (`8cf0310`), and GraphRouter classifier/verifier extraction now
+  derives live action spaces from stack priors/classifier artifacts (`1f16759`). Vision
   ReAct VL port routing now reads stack-prior serving records instead of a
   local `_VL_PORT_MAP` (`06ff53c`). Shared `server_mode` alias-port drift now
   warns through `validate_against_registry()` (`40d46ea`). AutoPilot preflight
@@ -382,7 +405,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `dc14196`; launch-entry witness contract v2 is projected in `7917535`;
   effective launch context and worker/VL model-path requirements are projected
   in `a001017`; effective runtime/binary/KV/flag witness records are projected
-  and guarded in `33c81ff`; GGUF-derived `ctx_max` projection landed in
+  and guarded in `33c81ff`; stack status now attests expected concrete model
+  paths against live process cmdlines in `0573e02`; GGUF-derived `ctx_max`
+  projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
   provenance landed in `54b7c77`. Broader stack-change work now moves to the
@@ -434,9 +459,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py`
 - `epyc-orchestrator/src/api/admission.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
+- `epyc-orchestrator/scripts/benchmark/seeding_rewards.py`
 - `epyc-orchestrator/orchestration/repl_memory/bilinear_scorer.py`
 - `epyc-orchestrator/scripts/autopilot/state_store.py`
 - `epyc-orchestrator/scripts/server/orchestrator_stack.py`
+- `epyc-orchestrator/scripts/server/stack_commands.py`
+- `epyc-orchestrator/scripts/server/stack_processes.py`
 - `epyc-orchestrator/orchestration/model_quality_signatures.yaml`
 - `epyc-orchestrator/tests/unit/test_q_scorer.py`
 - `epyc-orchestrator/tests/unit/test_model_descriptor_compiler.py`

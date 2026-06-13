@@ -246,6 +246,7 @@ Minimal pipeline phases:
 - [ ] **P4 - Add provenance plumbing for live vs degraded consumer values.**
   - **2026-06-13 partial**: `8cf0310` migrated GraphRouter training fleet discovery from a stale hardcoded model table to generated stack priors. Live smoke returned 10 HOT live roles with current shared ports and no retired `architect_coding`; `--all-hardcoded-surfaces` stayed at `WARN: 109`.
   - **2026-06-13 partial**: `1f16759` migrated GraphRouter extraction/verifier action spaces to a shared helper backed by stack priors. Legacy `architect_coding`/`worker_explore` replay labels now remap to current live actions, verifier extraction infers action width from the classifier artifact, and focused GraphRouter/stack-change tests passed (`40 passed`).
+  - **2026-06-13 partial**: `6af8b3d` added public `throughput_prior_provenance(cost_config=None)` for comparative seeding reward throughput priors. It reports config override, legacy override, stack-prior, degraded fallback, or missing source plus role coverage/path/reason metadata while leaving `compute_comparative_rewards` math and return shape unchanged.
   - q_scorer should be able to expose whether values came from `stack_priors`, override, registry fallback, or degraded local fallback.
   - Seeding/replay reward paths should write cost-prior provenance when they use live priors vs replay overrides.
   - Continue with remaining low-risk offline/replay consumers, classifying true historical labels separately from live training priors.
