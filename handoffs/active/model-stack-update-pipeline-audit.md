@@ -63,6 +63,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Tenth cleanup landed in `epyc-orchestrator` `7ecf847`: `seeding_rewards.py` derives reward throughput and architect grouping from stack priors; live guard warning count dropped from 73 to 62.
    - Eleventh cleanup landed in `epyc-orchestrator` `5773777`: `seeding_eval.py`, `seeding_scoring.py`, `seeding_legacy.py`, and `corpus_quality_gate.py` no longer contain live benchmark retired-role/model assumptions; live guard warning count dropped from 62 to 56.
    - Twelfth cleanup landed in `epyc-orchestrator` `f24eab7`: active config URL/timeout maps no longer publish retired `architect_coding` endpoints or role timeouts; live guard warning count dropped from 56 to 46 and `--all-hardcoded-surfaces` dropped from 161 to 146.
+   - Thirteenth cleanup landed in `epyc-orchestrator` `2967526`: the production launcher no longer force-enables `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING`; this removed a live startup hazard that the current lowercase hardcoded-surface scan did not count.
    - Remaining risk: LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
 
 3. Config models no longer preserve dead URLs/timeouts as active live maps.
@@ -197,6 +198,7 @@ Priority order:
 7. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
    - PARTIAL cleanup in `6bc1f51`: removed retired `architect_coding` from inference lock/tap heavy-role classifications.
    - PARTIAL cleanup in `e6e10d8`: removed retired `architect_coding` from approval-gate high-cost classification.
+   - PARTIAL cleanup in `2967526`: `scripts/server/orchestrator_stack.py` now enables only live LangGraph Phase 3 node env vars and no longer sets the retired `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` launch flag.
    - Remaining follow-up: derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
 8. `scripts/benchmark/seeding_eval.py`, `scripts/benchmark/seeding_scoring.py`, `scripts/benchmark/analyze_routing_policy.py`, and `scripts/benchmark/corpus_quality_gate.py`

@@ -156,6 +156,8 @@ These are not all bugs, but each is a place a future stack change can go stale.
 
 4. LangGraph and role surfaces still reference retired `architect_coding`.
    - Guard examples include `src/graph/langgraph/graph.py`, `src/graph/langgraph/nodes.py`, `src/graph/nodes.py`, `src/parsing_config.py`, and `src/roles.py`.
+   - `epyc-orchestrator` `2967526` removed one live launcher hazard: `scripts/server/orchestrator_stack.py` no longer force-enables `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` at API startup.
+   - Guard limitation discovered during that fix: the current hardcoded-surface regex is lowercase-only, so uppercase env-var references can bypass warning counts.
    - Some may be active behavior, some may be legacy compatibility. The guard correctly reports them as production blockers until classified or removed.
 
 5. Operator docs and prompt/planner inputs can become source truth by accident.
@@ -246,6 +248,7 @@ Goal: `architect_coding` cannot influence live routing, parsing, graph transitio
 Tasks:
 
 - Audit each `stack_change_guard.py --all-hardcoded-surfaces` production-blocker finding.
+- Extend or supplement the guard so uppercase retired-role env vars, enum constants, and launch flags cannot hide outside the lowercase `architect_coding` pattern.
 - For live code, remove/replace retired role references with stack-prior-derived role sets or current live architect role discovery.
 - For legacy compatibility, add explicit exception metadata with owner, rationale, classification, and expiry.
 - For tests, rename fixtures or label them as retired-role coverage.
@@ -258,6 +261,7 @@ Likely files:
 - `src/parsing_config.py`
 - `src/roles.py`
 - `src/inference/llm_cache.py`
+- `scripts/server/orchestrator_stack.py` and launch-env tests for any future legacy env-var recurrence
 - related tests under `tests/unit/` and `tests/integration/`
 
 Dependencies: W1 not required, but use the same stack-prior role helpers where practical.
