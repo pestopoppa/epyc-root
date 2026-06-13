@@ -44,8 +44,8 @@ Ordered manifest (one reload, then everything rides it):
 9. **J16** RI-ITG-1 ingest-triviality A/B — **only if** N2 per-question ledger landed AND its leak premise re-verified against the live routing path.
 
 ### Queue 3 — restart bundle (next autopilot restart; flag-isolated, one change per flag)
-- **Per-question eval ledger + sequential verdicts** (findings-01c) — the keystone; everything below gates on it. Ledger W1/W2 are current-lineage restart-bundle branch-ready at `feat/paired-question-stats-restart-current` `0855e3b` on current live base `ab5df87`; merge only at the restart bundle.
-- **J11/BSV-2** behavior-signature accept gate (flag `AUTOPILOT_BSV2_ACCEPT_GATE`).
+- **Per-question eval ledger + sequential verdicts** (findings-01c) — the keystone; everything below gates on it. Ledger W1/W2 are current-lineage restart-bundle branch-ready at `feat/paired-question-stats-restart-current` `0855e3b` on current live base `ab5df87`; combined N2+J11 observe-only BSV branch is `feat/restart-bundle-bsv-observe-current` `4c0e1b6`. Merge only at the restart bundle.
+- **J11/BSV-2** behavior-signature accept gate (final flag `AUTOPILOT_BSV2_ACCEPT_GATE`); observe-only diagnostic precursor is branch-ready at `4c0e1b6` behind `AUTOPILOT_BSV_OBSERVE`.
 - **K-SKILL-1** skill-efficacy gate (flag `AUTOPILOT_SKILL_EFFICACY_GATE`) — co-wired with J11 at the same restart but **flag-isolated** for attribution (verified collision-free 2026-05-27).
 - Then **H5/EV-4** calibration baseline against the **redesigned** tower (K-EVAL-1 folded into H5 — single owner; see the Package K note).
 
