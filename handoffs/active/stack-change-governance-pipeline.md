@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline attestation in stack status, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check --allow-known-gaps` reports descriptor/stack-prior/procedure/guard/strict OK, while `--all-hardcoded-surfaces` now reports only legacy-test/historical-doc classes for this cleanup track
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary port scanning, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -266,6 +266,16 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `degraded_fallback`, or `missing`), role list/count, stack-priors path,
   degraded-fallback flag, and missing/degraded reason. Reward math and the
   `compute_comparative_rewards` return shape are unchanged.
+- Completed in `3e8121d`: descriptor compilation now projects
+  `role.model.mmproj_path` into descriptor
+  `serving.requirements.mmproj_path`; generated descriptors carry
+  descriptor-native projector requirements for Qwen2.5-VL and Qwen3-VL roles,
+  and regenerated stack priors preserve those requirements for downstream
+  launch/status consumers.
+- Completed in `d59029a`: stack status auxiliary port scanning now derives the
+  scan set from `PORT_MAP.values()` instead of a hardcoded native aux-port set,
+  and tests cover manifest-only auxiliary ports so future launch-manifest
+  additions are scanned automatically.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -406,8 +416,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   effective launch context and worker/VL model-path requirements are projected
   in `a001017`; effective runtime/binary/KV/flag witness records are projected
   and guarded in `33c81ff`; stack status now attests expected concrete model
-  paths against live process cmdlines in `0573e02`; GGUF-derived `ctx_max`
-  projection landed in
+  paths against live process cmdlines in `0573e02`; descriptor-native
+  Qwen2.5-VL/Qwen3-VL projector requirements landed in `3e8121d`;
+  auxiliary status-scan ports now derive from `PORT_MAP` in `d59029a`;
+  GGUF-derived `ctx_max` projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
   provenance landed in `54b7c77`. Broader stack-change work now moves to the
