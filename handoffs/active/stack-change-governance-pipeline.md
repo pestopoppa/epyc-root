@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v2 launch witness and shared-runtime alias semantics, strict mode blocked on context/mmproj/KV/binary/acceleration descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v3 launch-context/path witness and shared-runtime alias semantics, strict mode blocked on remaining KV/binary/acceleration descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -173,6 +173,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   record ignored non-live alias metadata as known gaps instead of role/server
   conflicts. `stack_change_pipeline.py check --allow-known-gaps` now passes
   with expected known-gap warnings.
+- Stack-prior contract v3 launch requirements landed in `epyc-orchestrator`
+  `a001017`: generated serving records now include
+  `effective_context_tokens` plus `serving.launch.requirements` for worker
+  model/draft paths and VL model/mmproj paths, and the guard compares those
+  values against computed stack-manifest launch truth.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -198,7 +203,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -208,9 +213,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   compatibility aliases, and runtime helpers. Procedure input/schema role enums are now
   exact-generated from stack priors and fail the guard on drift. The generated
   artifact now carries a versioned structural contract, contract v2 requires
-  `serving.launch.entries`, and missing required role/serving/prior/launch
-  fields fail validation. Shared-runtime alias semantics now compile without
-  role/server conflict gaps for `worker_math` and `toolrunner`. Hardcoded-surface exceptions now
+  `serving.launch.entries`, contract v3 requires launch requirements and
+  effective context witness fields, and missing required
+  role/serving/prior/launch fields fail validation. Shared-runtime alias
+  semantics now compile without role/server conflict gaps for `worker_math`
+  and `toolrunner`. Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
@@ -258,7 +265,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   exact launch port sets are generated and guarded (`dc14196`), contract v2
   launch-entry witness data is generated and guarded (`7917535`), and
   shared-runtime descriptor aliases now preserve live role coverage without
-  standalone stale Qwen runtime descriptors (`a7b72a9`).
+  standalone stale Qwen runtime descriptors (`a7b72a9`). Contract v3 now
+  generates and guards effective launch context plus worker/VL model-path
+  requirements (`a001017`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -277,9 +286,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior serving records in `06ff53c`; shared `server_mode` alias-port
   validation is covered in `40d46ea`; AutoPilot preflight health probes consume
   stack-prior endpoints in `a5aaafb`; exact launch ports are projected in
-  `dc14196`; launch-entry witness contract v2 is projected in `7917535`.
-  Broader launch/start integration is still open for binary/model/mmproj,
-  context/KV, and acceleration semantics.
+  `dc14196`; launch-entry witness contract v2 is projected in `7917535`;
+  effective launch context and worker/VL model-path requirements are projected
+  in `a001017`. Broader launch/start integration is still open for binary/KV
+  and acceleration semantics.
 
 ## Dependency Graph
 
