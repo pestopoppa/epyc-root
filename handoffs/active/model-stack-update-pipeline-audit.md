@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; vision ReAct port migration complete through `06ff53c`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port migrations/guards complete through `40d46ea`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -75,7 +75,8 @@ The following examples are evidence-backed reasons this work should stay high RO
 4. Raw launch maps can disagree with generated serving truth.
    - RESOLVED for shared aliases in `epyc-orchestrator` `d4acf24`: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py` now maps `coder_escalation` and `worker_summarize` to `8070`, and `toolrunner` to `8072`, matching computed launch roles.
    - Current stack priors show `coder_escalation.serving.endpoint=http://localhost:8070`, `ports=[8070,8080,8180,8280,8380]`, `slots=1`, `shared_mmap=true`.
-   - Remaining risk: broader launch metadata (`ROLE_LAUNCH_META`, NUMA wiring, binary paths, mmproj, slots, and acceleration flags) still needs generated-contract comparison; `validate_against_registry()` now catches future `PORT_MAP` alias drift.
+   - EXTENDED in `epyc-orchestrator` `40d46ea`: `validate_against_registry()` now also checks `server_mode` rows that cover launch roles through `model_role` or `shared_with`, so a stale shared worker port warns before launch.
+   - Remaining risk: broader launch metadata (`ROLE_LAUNCH_META`, NUMA wiring, binary paths, mmproj, slots, and acceleration flags) still needs generated-contract comparison; `validate_against_registry()` now catches future `PORT_MAP` and shared `server_mode` alias-port drift.
 
 5. The generated contract now has explicit shape validation but remains semantically incomplete.
    - `epyc-orchestrator` `69057f3` embeds a versioned `epyc.stack_priors` contract and makes `stack_change_guard.py` reject artifacts missing required role/serving/prior fields.
@@ -118,7 +119,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 | Routing priors / role priors | `_heuristic_role_priors()` now filters through live stack priors; learned-routing handoffs/docs still contain `architect_coding` training labels. | Live role set from stack priors; learned/replay datasets must carry era labels. | Add simulated retired-role fixture proving `architect_coding` is ignored in live priors but preserved in historical replay with era metadata. |
 | OpenAI-compatible model listing | `/v1/models` now derives live model IDs from stack priors plus compatibility aliases. | Stack-prior live roles. | Keep compatibility aliases separate from live role IDs; guard any static live model list. |
 | Dashboard/runtime classification | Dashboard age overrides and inference lock/tap had recent cleanup; lock heavy roles and tap stream roles are still local policy tables. | Stack-prior tier/slots/model class plus explicit runtime policy hints. | Compile role policy hints or a generated runtime classification projection; local tables must be fallback/override only. |
-| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
+| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`; shared `server_mode` alias-port drift is guarded in `40d46ea`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
 | Registry/derived YAML drift | `stack_priors.yaml` has a contract and freshness hash but is `compiled_with_gaps`; context and some quality fields remain null. | Lean registry + descriptors generated from research evidence. | One workflow command must compile descriptors/priors, sync procedure enums, run strict guard, and fail on stale generated hashes. |
 
 ## Proposed Source-Of-Truth Design

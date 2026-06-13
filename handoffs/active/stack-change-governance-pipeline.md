@@ -137,6 +137,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `06ff53c`: `src/api/routes/chat_pipeline/vision_stage.py` now reads
   `worker_vision` and `vision_escalation` ports from generated stack-prior
   serving records, with explicit degraded fallback ports for missing priors.
+- Shared `server_mode` alias-port validation landed in `epyc-orchestrator`
+  `40d46ea`: `validate_against_registry()` now checks registry rows that cover
+  launch roles through `model_role` or `shared_with`, so stale shared worker
+  ports warn before launch.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -210,7 +214,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (`8cf0310`), and GraphRouter classifier/verifier extraction now derives live
   action spaces from stack priors/classifier artifacts (`1f16759`). Vision
   ReAct VL port routing now reads stack-prior serving records instead of a
-  local `_VL_PORT_MAP` (`06ff53c`).
+  local `_VL_PORT_MAP` (`06ff53c`). Shared `server_mode` alias-port drift now
+  warns through `validate_against_registry()` (`40d46ea`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -226,7 +231,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`; domain
   modalities are generated in `846c2d4`; shared-alias `PORT_MAP` drift is fixed
   and recurrence-tested in `d4acf24`; active VL ReAct port routing now consumes
-  stack-prior serving records in `06ff53c`.
+  stack-prior serving records in `06ff53c`; shared `server_mode` alias-port
+  validation is covered in `40d46ea`.
   Broader launch/start integration is still open.
 
 ## Dependency Graph
