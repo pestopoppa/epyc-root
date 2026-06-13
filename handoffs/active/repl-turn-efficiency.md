@@ -2,7 +2,7 @@
 
 **Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gates are S4 Omega A/B and ColGREP soak/daemon decisions.
 **Created**: 2026-04-09
-**Updated**: 2026-05-28
+**Updated**: 2026-06-13
 **Priority**: MEDIUM
 **Categories**: agent_architecture
 **Depends on**: None
@@ -16,7 +16,7 @@ Do not add new REPL tools before S4. The current risk is whether the shipped eff
 ## Outstanding Tasks
 
 - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes.
-- [ ] **ColGREP soak check**: inspect `_exploration_log` or equivalent telemetry for fallback events, quality complaints, and p50/p95 `code_search()` latency.
+- [ ] **ColGREP post-telemetry soak check**: rerun on a representative seeding or REPL window and inspect `_code_search_telemetry`, `_exploration_log`, and logs for fallback events, quality complaints, and p50/p95 `code_search()` latency.
 - [ ] **Cold-start daemon decision**: build only if the daemon criteria below fire; otherwise subprocess-per-query remains the operational default.
 - [ ] **Version/index hygiene**: pin a versioned ColGREP binary path and decide whether incremental re-index-on-commit is worth the complexity.
 
@@ -27,6 +27,10 @@ Do not implement a daemon unless at least one of these conditions is met during 
 - p50 `code_search()` latency is at least 600 ms across a full run.
 - At least 20% of REPL turns issue two or more `code_search()` calls.
 - One role issues at least one `code_search()` call per second for at least 30 seconds.
+
+## Current Telemetry State
+
+2026-06-13 audit: historical logs were not sufficient to answer the daemon gate. `/mnt/raid0/llm/tmp/repl_tap.log` had no durable `code_search()` latency/fallback records, and the existing ColGREP path only wrote successful calls to the in-memory exploration log without latency. The code path is now instrumented in `epyc-orchestrator` (pending commit in this session): each ColGREP call appends `artifacts["_code_search_telemetry"]`, success responses include `latency_ms`, success exploration-log args include `engine=colgrep`, `latency_ms`, and `fallback=false`, and fallback paths log `fallback_reason` (`missing_binary`, `timeout`, `oserror`, `nonzero_exit`, `bad_json`) plus elapsed time. Do not make the daemon decision from pre-2026-06-13 data; use the next clean representative run.
 
 ## Dependency Forks
 
