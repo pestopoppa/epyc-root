@@ -248,7 +248,8 @@ Goal: `architect_coding` cannot influence live routing, parsing, graph transitio
 Tasks:
 
 - Audit each `stack_change_guard.py --all-hardcoded-surfaces` production-blocker finding.
-- Extend or supplement the guard so uppercase retired-role env vars, enum constants, and launch flags cannot hide outside the lowercase `architect_coding` pattern.
+- DONE in `epyc-orchestrator` `a15bab7`: added a targeted `retired_role_env_flag` hardcoded-surface rule so server launch files cannot reintroduce `ORCHESTRATOR_LANGGRAPH_ARCHITECT_CODING` / `ORCHESTRATOR_FEATURE_LANGGRAPH_ARCHITECT_CODING` without a production-blocker warning.
+- Follow-up: decide whether to broaden uppercase retired-role scanning to enum constants after compatibility surfaces are classified.
 - For live code, remove/replace retired role references with stack-prior-derived role sets or current live architect role discovery.
 - For legacy compatibility, add explicit exception metadata with owner, rationale, classification, and expiry.
 - For tests, rename fixtures or label them as retired-role coverage.
