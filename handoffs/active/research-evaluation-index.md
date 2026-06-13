@@ -40,7 +40,7 @@
 | (intake-421) MAD confidence scoring | AutoPilot safety gate noise filter | **adopt_component** — ~20 LoC addition to safety_gate.py. Deep dive: [pi-autoresearch-mad-scoring.md](../../research/deep-dives/pi-autoresearch-mad-scoring.md) | MEDIUM | 2026-04-20 |
 | (intake-422) TIDE early exit | Calibration-router for per-token layer skip | **adopt_patterns** — implement on fork n_layer_exit. Deep dive: [tide-calibration-router-early-exit.md](../../research/deep-dives/tide-calibration-router-early-exit.md) | MEDIUM | 2026-04-20 |
 | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | GLM-5.1-555B-A14B-REAP CPU eval | **REFRESHED 2026-05-28** — Phase 0 no-inference readiness fork first: current storage, current registry replacement premise, DSA status. No autonomous 325GB download; default WAIT-DSA unless short-context dense fallback is explicitly requested. | MEDIUM | 2026-05-28 |
-| (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | Monitoring — design task from intake-426 deep dive | LOW | 2026-04-22 |
+| (intake-426) Compaction gap analysis | Map Claude Code five-layer pipeline vs our L1-L5 | DONE 2026-06-13 — no new CF-owned per-message cap; tool-output budget reduction remains in `tool-output-compression.md`; surgical snip is telemetry-gated | LOW | 2026-06-13 |
 | [sliders-local-validation.md](sliders-local-validation.md) | SLIDERS (structured-DB+SQL alt to RAG) Coder-30B viability | refreshed 2026-05-28 — parked Phase 0 falsification gate; does not block `internal-kb-rag.md`; no integration or prompt tuning before a written FinQ5 gate verdict | LOW | 2026-05-28 |
 | (intake-574) Endless Terminals released-artifact re-eval (AW-7) | Independent TB-2.0 transfer-gap validation | **NEW 2026-05-20** — pull `obiwan96/endless-terminals` HF dataset + both PPO checkpoints (Qwen2.5-7B-instruct + Qwen3-8B-openthinker-sft); re-evaluate on TB-2.0 from EPYC inference-only. Confirms or refutes paper's +1-6pp transfer claim before pipeline mirroring (AW-8). Hours of inference. Deep dive in [agent-world-env-synthesis.md](agent-world-env-synthesis.md) Deep-Dive Refinement. | HIGH | 2026-05-20 |
 | (intake-571) ECHO 3-gate tracking | GPU-side adoption trigger watch | **NEW 2026-05-20, gated** — `microsoft/echo-rl` watch (currently HTTP 404), independent-reproduction watch, DGX-Spark acquisition watch. Pure tracking, no immediate work. Mirror entry in [gpu-acceleration-path.md](gpu-acceleration-path.md) §ECHO. | LOW | 2026-05-20 |
@@ -274,7 +274,7 @@ Pointer — completed handoff [`handoffs/completed/01-fast-rlm-budget-controls.m
 - ~~**ConceptLM**: Quarterly check for open-weight concept-level models or framework support~~ (archived)
 - [ ] **Multiscreen**: Monitor for community reproduction, model releases, or llama.cpp PRs
 - [ ] **Log-Linear GDN**: Watch github.com/HanGuo97/log-linear-attention and NVlabs/GatedDeltaNet for pretrained model releases. Activates [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md).
-- [ ] **Compaction gap analysis** (intake-426): Map Claude Code's five-layer pipeline (budget reduction, snip, microcompact, context collapse, auto-compact) against our L1-L5 tiers. Identify whether a "Budget Reduction" equivalent (per-message output size caps) is warranted. See [context-folding-progressive.md](context-folding-progressive.md) CF-DD8 / NIB2-40. Design task — no code until gap significance is assessed.
+- [x] **Compaction gap analysis** (intake-426): Map Claude Code's five-layer pipeline (budget reduction, snip, microcompact, context collapse, auto-compact) against our L1-L5 tiers. Identify whether a "Budget Reduction" equivalent (per-message output size caps) is warranted. See [context-folding-progressive.md](context-folding-progressive.md) CF-DD8 / NIB2-40. **DONE 2026-06-13**: no new context-folding cap; tool-output caps/compression/spill own the budget-reduction layer, and any future snip API must be triggered by CF-3c telemetry.
 
 ---
 
@@ -295,7 +295,7 @@ P8 (eval tower verification)         ──EV-1/2/6 DONE (2026-04-15); EV-0/3 in
 GLM-5.1-REAP eval                    ──independent (download + benchmark); stack simplification depends on quality results──
 P10 (RoPE per-model probe)            ──independent (inference-gated, ~100 min); informs completed CPU23 context-coverage findings + yarn gate──
 P11 (REPL truncation A/B)             ──independent (inference-gated, ~30–60 min); or promotable to NumericSwarm wire-in──
-Compaction gap analysis               ──independent (design task from intake-426)──
+Compaction gap analysis               ──closed 2026-06-13 (decision recorded in context-folding-progressive)──
 TQ3 monitoring                    ──depends on upstream PR merges──
 ConceptLM monitoring              ──depends on external model releases──
 Multiscreen monitoring            ──depends on external adoption──
