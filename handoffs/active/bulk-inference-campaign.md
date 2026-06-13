@@ -43,10 +43,11 @@ Ordered manifest (one reload, then everything rides it):
 8. **J10** URE shadow env-flag rides the reload free (passive).
 9. **J16** RI-ITG-1 ingest-triviality A/B — **only if** N2 per-question ledger landed AND its leak premise re-verified against the live routing path.
 
-### Queue 3 — restart bundle (next autopilot restart; flag-isolated, one change per flag)
-- **Per-question eval ledger + sequential verdicts** (findings-01c) — the keystone; everything below gates on it. Ledger W1/W2 are current-lineage restart-bundle branch-ready at `feat/paired-question-stats-restart-current` `d32fafd` on current live base `9e5d861`; combined N2+J11 observe-only BSV branch is `feat/restart-bundle-bsv-observe-current` `c63816b`. Merge only at the restart bundle.
-- **J11/BSV-2** behavior-signature accept gate (final flag `AUTOPILOT_BSV2_ACCEPT_GATE`); observe-only diagnostic precursor is branch-ready at `c63816b` behind `AUTOPILOT_BSV_OBSERVE`.
-- **K-SKILL-1** skill-efficacy gate (flag `AUTOPILOT_SKILL_EFFICACY_GATE`) — default-off accept-path wiring landed on the live branch at `924ca50`; restart-bundle deployment still keeps it **flag-isolated** from J11 for attribution (verified collision-free 2026-05-27).
+### Queue 3 — restart bundle (live code; collect clean vector history)
+- **Per-question eval ledger + sequential verdicts** (findings-01c) — the keystone; everything below gates on it. Ledger W1/W2 are live in the current orchestrator lineage (`22a3874a`, `9f6fc8e`); W3 pure sequential-verdict math is live at `7e6ac9c`. W4 safety-gate/update-baseline wiring remains gated on more clean vector history.
+- **J11/BSV-2** behavior-signature accept gate — observe-only diagnostics are live (`fd84655e` + `d89b4a9`) and final accept gate remains flag-isolated behind `AUTOPILOT_BSV2_ACCEPT_GATE`.
+- **K-SKILL-1** skill-efficacy gate (flag `AUTOPILOT_SKILL_EFFICACY_GATE`) — default-off accept-path wiring landed on the live branch at `924ca50`; keep it flag-isolated from J11 for attribution until N2 W4 cutover.
+- **Current runtime evidence**: operator-conservative quarantine covers pre-clean-epoch artifacts `#786-#797`; `#798` is killed-startup audit. Clean completed rows `#799/#800` are vector-bearing but dominated; AutoPilot resumed from `#801` for more clean-history collection. Do not use raw paired-stats counts without filtering quarantined/killed rows.
 - Then **H5/EV-4** calibration baseline against the **redesigned** tower (K-EVAL-1 folded into H5 — single owner; see the Package K note).
 
 ### Standalone model-batched windows (~27h; group by model so each GGUF loads once)
