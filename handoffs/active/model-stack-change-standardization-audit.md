@@ -40,6 +40,28 @@ Root GitNexus note before main-session review:
 - Main-session review refreshed root GitNexus after the sidecar returned: `24,209 nodes`, `26,242 edges`, `33 clusters`, `43 flows`.
 - `gitnexus impact -r epyc-root handoffs/active/model-stack-change-standardization-audit.md --direction upstream` returned target not found, `impactedCount=0`, `risk=UNKNOWN`, expected for a markdown handoff path.
 
+## 2026-06-13 Sidecar Continuation
+
+Four follow-up orchestrator commits continue the same live-role cleanup thread:
+
+- `4bf8061` routes `_formalize_output` to live `worker_general` instead of
+  legacy `worker_explore`, removes stale speed/port wording, and adds
+  `llm_call` role coverage in the chat-utils tests.
+- `a9424a9` routes user-modeling preference extraction to live
+  `worker_general` instead of legacy `worker_explore`, updates adjacent docs,
+  and adds user-modeling test coverage for the LLM-call role.
+- `a7c9ac0` routes post-hoc model grading defaults/specs to live
+  `worker_general`, with all three grading specs explicitly using
+  `judge_role: worker_general` and model-grader tests covering fallback/default
+  plus explicit override behavior.
+- `4f9123f` updates debugger prompt documentation so `model_graded_evals`
+  names `worker_general`, matching the model-grader default/spec migration.
+
+The routed-call changes kept `stack_change_guard.py` and focused unit suites green;
+active follow-up remains in `stack-change-governance-pipeline.md`,
+`model-stack-update-pipeline-audit.md`, and
+`standardized-stack-update-pipeline-finalization.md`.
+
 ## Existing Machinery Found
 
 These are the current standardized-process artifacts. Do not build a second registry unless these prove insufficient.

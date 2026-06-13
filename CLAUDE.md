@@ -172,7 +172,7 @@ Documents in `handoffs/archived/`, `handoffs/completed/`, `progress/`, and `CHAN
 
 Indexed as **epyc-root** (22192 symbols, 23900 relationships, 29 execution flows). Use the `gitnexus` CLI; `gitnexus-*` skills auto-surface in the Skill tool.
 
-**Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir).
+**Re-index when stale:** `scripts/gitnexus-analyze.sh` — NOT bare `gitnexus analyze` (re-installs skills into a nested subdir). The wrapper takes a nonblocking per-repo lock at `/tmp/gitnexus-<repo>-analyze.lock`; exit `75` means another analyze is already running, so wait/retry rather than deleting `.gitnexus/` metadata. Interrupted incremental metadata should force GitNexus' normal rebuild path.
 
 ## Required before editing
 

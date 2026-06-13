@@ -64,6 +64,19 @@ Read-only audit and lightweight validation on 2026-06-13 found:
   `4bf8061`: `_formalize_output` now delegates final formatting to
   `worker_general` instead of legacy `worker_explore`, and the helper docstring
   no longer embeds stale model speed or port assumptions.
+- User preference deriver live-worker routing landed in `epyc-orchestrator`
+  `a9424a9`: user-modeling preference extraction now delegates to
+  `worker_general` instead of legacy `worker_explore`, user-modeling docs were
+  updated, and unit coverage asserts the LLM-call role.
+- Post-hoc model grading live-worker routing landed in `epyc-orchestrator`
+  `a7c9ac0`: model grading defaults to `worker_general`, the three
+  `orchestration/grading_specs/*.yaml` specs explicitly set
+  `judge_role: worker_general`, and model-grader tests cover fallback/default
+  plus explicit override behavior.
+- Debugger prompt grading-role wording landed in `epyc-orchestrator`
+  `4f9123f`: `orchestration/prompts/debugger_system.md` now names
+  `worker_general` for `model_graded_evals`, matching the model-grader
+  default/spec migration.
 
 ## Prior Pipeline Work Found
 
@@ -108,7 +121,7 @@ These are the current surfaces that must stay synchronized whenever model roles,
 | KV/cache settings | `server_mode.kv_quant`, descriptor acceleration `kv`, launcher args, model comments, `scripts/autopilot/kv_compress.py` | Descriptor/serving structured fields | `e7fab9d` normalized adaptive compression fallbacks for shared frontdoor roles and retired architect removal; continue compiling `kv.k`, `kv.v`, cache sizing, slot/KV implications and guard consumers reading comments. |
 | Server launch args and binary family | `scripts/server/stack_manifest.py`, `stack_numa.py`, `stack_commands.py`, `orchestrator_stack.py`, `server_mode.runtime_requirements` | Generated launch requirements from stack priors or a validated launch projection | Add compile/check for binary path, ik-llama requirements, MTP/spec knobs, mmproj paths, and stale running process attestation. |
 | Vision/mmproj metadata | `stack_manifest.py` `VISION_*`, registry role records, `src/vision/models.py`; `chat_pipeline/vision_stage.py` now reads serving ports from stack priors | Descriptor-native model + mmproj fields projected into serving records | Current descriptors note mmproj is not native; add fields before strict mode. |
-| Role aliases and retired compatibility | `src/roles.py`, tests, historical docs, graph aliases, legacy tool permission strings | Live roles from stack priors; compatibility aliases normalize to live roles; legacy mentions stay classified | Shared-runtime alias overrides are provenance after `54b7c77`; `03ed49f` removed the temporary `Role.ARCHITECT_CODING` production-waiver path by making it an enum alias of `architect_general`; `e7fab9d` makes legacy `ToolRegistry` permission strings canonicalize through live `Role` semantics; `6ec2686`, `09948db`, and `4bf8061` keep report/investigation/formalizer prompt surfaces on live role wording while preserving legacy worker alias compatibility where needed. |
+| Role aliases and retired compatibility | `src/roles.py`, tests, historical docs, graph aliases, legacy tool permission strings | Live roles from stack priors; compatibility aliases normalize to live roles; legacy mentions stay classified | Shared-runtime alias overrides are provenance after `54b7c77`; `03ed49f` removed the temporary `Role.ARCHITECT_CODING` production-waiver path by making it an enum alias of `architect_general`; `e7fab9d` makes legacy `ToolRegistry` permission strings canonicalize through live `Role` semantics; `6ec2686`, `09948db`, `4bf8061`, `a9424a9`, `a7c9ac0`, and `4f9123f` keep report/investigation/formalizer/user-modeling/grading prompt surfaces on live role wording while preserving legacy worker alias compatibility where needed. |
 | Graph nodes and routing topology | `src/graph/**`, `src/api/routes/chat_pipeline/**`, `src/api/routes/chat_routing.py` | Live role set and generated role classifications | Retired active node is removed; keep guard coverage for recurrence. |
 | Admission/runtime policy tables | `src/api/admission.py`, `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, dashboard routes, legacy executor permissions | Stack-prior serving/tier/slot records plus explicit policy hints | Migrate remaining local high-cost/lock/tap classifications or label as generated policy projection; `e7fab9d` removes the separate `architect_coding` executor permission row by canonicalizing compatibility strings. |
 | API/config model maps | `src/config/models.py`, `src/api/routes/openai_compat.py`, CLI/status probes | Stack-prior live roles and serving records | Recent cleanup removed retired active maps; finish replacing parallel static maps where practical. |
