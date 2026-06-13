@@ -97,6 +97,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   guard validation now honors explicit procedure/schema paths for temp previews
   and CI fixtures, while stack-prior generation defaults to descriptor role
   bindings unless an explicit role set is requested.
+- Descriptor compiler quality-key normalization landed in `epyc-orchestrator`
+  `3e7efce`: generated descriptors now use stable suite-vector keys such as
+  `overall`, `coder`, `agentic`, `math`, `vision_language`, and `long_context`
+  instead of leaking raw registry field names like `quality_pct` and
+  `coder_suite`. The remaining `check --allow-known-gaps` failure is descriptor
+  regeneration drift, not stack-prior/procedure-enum drift.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -176,7 +182,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   command sequence. Launch should fail closed unless descriptors and derived
   priors are fresh or an explicit diagnostic override is used. Current status:
   command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
-  launch/start integration is still open.
+  descriptor compiler quality-key normalization in `3e7efce`; launch/start
+  integration is still open.
 
 ## Dependency Graph
 
