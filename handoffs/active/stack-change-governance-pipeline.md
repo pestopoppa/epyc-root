@@ -133,6 +133,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `PORT_MAP` now agrees with computed launch roles for `coder_escalation`,
   `worker_summarize`, and `toolrunner`; `validate_against_registry()` now warns
   if future direct port hints diverge from `ROLE_LAUNCH_META + NUMA_CONFIG`.
+- Vision ReAct serving-port selection migrated in `epyc-orchestrator`
+  `06ff53c`: `src/api/routes/chat_pipeline/vision_stage.py` now reads
+  `worker_vision` and `vision_escalation` ports from generated stack-prior
+  serving records, with explicit degraded fallback ports for missing priors.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -204,7 +208,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   expanded CRITICAL-path pass `7ecf847`. GraphRouter training fleet discovery
   now loads live stack-prior roles instead of a stale hardcoded model roster
   (`8cf0310`), and GraphRouter classifier/verifier extraction now derives live
-  action spaces from stack priors/classifier artifacts (`1f16759`).
+  action spaces from stack priors/classifier artifacts (`1f16759`). Vision
+  ReAct VL port routing now reads stack-prior serving records instead of a
+  local `_VL_PORT_MAP` (`06ff53c`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -219,7 +225,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stabilization in `ca9af53`, and fail-closed descriptor removal protection in
   `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`; domain
   modalities are generated in `846c2d4`; shared-alias `PORT_MAP` drift is fixed
-  and recurrence-tested in `d4acf24`.
+  and recurrence-tested in `d4acf24`; active VL ReAct port routing now consumes
+  stack-prior serving records in `06ff53c`.
   Broader launch/start integration is still open.
 
 ## Dependency Graph

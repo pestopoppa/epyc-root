@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; vision ReAct port migration complete through `06ff53c`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -99,6 +99,11 @@ The following examples are evidence-backed reasons this work should stay high RO
    - RESOLVED for classifier/verifier extraction in `epyc-orchestrator` `1f16759`: `scripts/graph_router/action_space.py` derives live action labels from stack priors, remaps legacy replay labels into current live roles, and verifier extraction infers `n_actions` from classifier artifacts instead of a fixed `8`.
    - Remaining risk: other historical replay/offline scripts may still need explicit era labels, but the main GraphRouter extraction path no longer leaks retired live roles into new artifacts.
 
+9. Vision ReAct serving-port routing now consumes generated serving truth.
+   - RESOLVED in `epyc-orchestrator` `06ff53c`: `src/api/routes/chat_pipeline/vision_stage.py` now reads `worker_vision` and `vision_escalation` ports from `orchestration/derived/stack_priors.yaml` for multimodal ReAct calls.
+   - Fallback ports remain explicitly degraded-mode only; the helper reloads the generated artifact on each call rather than caching stale ports in a long-lived API process.
+   - Remaining risk: descriptors still lack native mmproj/projector fields, so launch/model-projector validation remains open.
+
 ## Model-Specific Quantity Audit Matrix
 
 | Quantity | Current state | Canonical source | Required projection / guard |
@@ -113,7 +118,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 | Routing priors / role priors | `_heuristic_role_priors()` now filters through live stack priors; learned-routing handoffs/docs still contain `architect_coding` training labels. | Live role set from stack priors; learned/replay datasets must carry era labels. | Add simulated retired-role fixture proving `architect_coding` is ignored in live priors but preserved in historical replay with era metadata. |
 | OpenAI-compatible model listing | `/v1/models` now derives live model IDs from stack priors plus compatibility aliases. | Stack-prior live roles. | Keep compatibility aliases separate from live role IDs; guard any static live model list. |
 | Dashboard/runtime classification | Dashboard age overrides and inference lock/tap had recent cleanup; lock heavy roles and tap stream roles are still local policy tables. | Stack-prior tier/slots/model class plus explicit runtime policy hints. | Compile role policy hints or a generated runtime classification projection; local tables must be fallback/override only. |
-| Launch ports and shared servers | Stack manifest still has old `PORT_MAP["coder_escalation"] = 8071`; `ROLE_LAUNCH_META` and stack priors resolve shared frontdoor server at `8070`. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
+| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
 | Registry/derived YAML drift | `stack_priors.yaml` has a contract and freshness hash but is `compiled_with_gaps`; context and some quality fields remain null. | Lean registry + descriptors generated from research evidence. | One workflow command must compile descriptors/priors, sync procedure enums, run strict guard, and fail on stale generated hashes. |
 
 ## Proposed Source-Of-Truth Design
