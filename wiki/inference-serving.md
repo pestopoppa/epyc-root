@@ -66,7 +66,9 @@ The stack-update audit established `stack_priors.yaml` as the generated serving 
 
 Concrete current examples: frontdoor and `coder_escalation` share the Qwen3.6 server and memory owner on port `8070`, while older maps and config compatibility fields can still mention dead `architect_coding`/`8084` surfaces. Consumers that need endpoint, slots, tier, shared mmap, context, launch binary, or memory accounting should read the generated serving record or a typed helper over it; direct role/port tables are acceptable only as documented degraded fallback or legacy fixtures.
 
-Source: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md).
+Follow-through on 2026-06-13 moved this from policy to working guardrails in three active serving consumers. Vision ReAct routing now reads `worker_vision` and `vision_escalation` endpoints from stack priors, shared `server_mode` alias-port drift is caught by `validate_against_registry()`, and AutoPilot preflight health probes are generated from live stack-prior serving URLs instead of a static health-port table. The remaining high-risk serving gap is broader launch projection: binary family, NUMA layout, mmproj/projector metadata, slots, acceleration flags, KV/cache settings, and launch-effective context still need strict generated-contract coverage before stack changes can be fully data-only.
+
+Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [standardized-stack-update-pipeline-finalization.md](../handoffs/active/standardized-stack-update-pipeline-finalization.md), [progress 2026-06-13](../progress/2026-06/2026-06-13.md).
 
 ## Actionable for EPYC
 

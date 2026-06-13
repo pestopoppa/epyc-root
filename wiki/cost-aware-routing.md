@@ -122,7 +122,9 @@ The model-stack audit found that the next routing/scoring reliability problem is
 
 The durable rule is that stack-dependent quantities must flow through generated `orchestration/derived/stack_priors.yaml`: throughput, memory cost, hot/warm status, context limits, quality/latency priors, and provenance. Local tables are allowed only as explicit degraded-mode fallback and must exclude retired live roles. This makes model swaps data-only: edit registry/descriptors, regenerate priors, run `stack_change_guard.py`, and fail if a live consumer still owns hardcoded model facts.
 
-Source: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md).
+The same rule applies to learned or distilled routing artifacts. Agent-config and MemRL distillation action spaces should be compiled from live stack priors, with historical labels preserved through era metadata, rather than letting a stale role roster leak into new policies. This keeps q_scorer, seeding rewards, GraphRouter, AutoPilot journals, and future distillation datasets on one model-stack contract.
+
+Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
 
 ## Actionable for EPYC
 

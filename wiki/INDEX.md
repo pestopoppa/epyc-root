@@ -22,7 +22,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 36 | Multi-instance serving is mature; stack-priors are the serving truth contract; single-instance batched decode remains the unmeasured gap |
+| [Inference Serving](inference-serving.md) | 36 | Stack-priors now drive concrete serving/preflight consumers; launch projection and single-instance batched decode remain the key gaps |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 
@@ -30,7 +30,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 30 | Task-rate/goodput telemetry exposes token bloat; stack-priors now anchor cost/TPS truth for q_scorer and seeding migrations |
+| [Cost-Aware Routing](cost-aware-routing.md) | 30 | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, and future distillation action spaces |
 | [Routing Intelligence](routing-intelligence.md) | 50 | Routing truth repair is live-attested; DAR-1 replay shows 0.00% identifiable regret, so routing expansion stays frozen |
 | [Benchmark Methodology](benchmark-methodology.md) | 54 | T1 instrument repair and per-question ledgers are the new benchmark priority; claims need protocol, reps, date, and attestation |
 
