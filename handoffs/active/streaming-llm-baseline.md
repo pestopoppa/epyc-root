@@ -1,6 +1,6 @@
 # StreamingLLM Baseline for KV Reduction Cluster
 
-**Status**: ready-to-claim (~200 LoC + 1 nightshift sweep)
+**Status**: code scaffold landed 2026-06-13; 4-axis inference sweep pending
 **Created**: 2026-05-19 (post-KV-admission-cluster deep-dive)
 **Categories**: kv_cache, context_extension, hardware_optimization
 **Priority**: MEDIUM (gate for the entire May 2026 KV-reduction cluster — must land before PBKV/LU-KV/KVP/ForesightKV/SP-KV prioritization is meaningful)
@@ -10,6 +10,8 @@
 ## Objective
 
 Land a clean **StreamingLLM (attention sink + sliding window)** baseline in our llama.cpp fork (`epyc-llama`) to measure the **easy-floor** that any KV reduction method must beat. Without this floor, the relative gains claimed by the May 2026 KV cluster (SP-KV / KVP / LU-KV / ForesightKV / PBKV) cannot be evaluated against the simplest possible competing technique.
+
+**2026-06-13 implementation checkpoint**: `llama.cpp` commit `632ce0f92` adds a low-invasive scaffold using the existing server context-shift path rather than patching core KV tensor layout. `--kv-streaming-sink` / `--kv-streaming-window` are exposed in `llama-cli` and `llama-server`, per-request JSON accepts `kv_streaming_sink` / `kv_streaming_window`, and middle eviction is performed with the existing `llama_memory_seq_rm` + `llama_memory_seq_add` sequence-shift mechanism. Defaults are disabled, preserving existing behavior until explicitly enabled.
 
 ## Why This is a Cluster-Wide Gate
 
@@ -37,9 +39,8 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 **Mechanism**: keep the first K_sink tokens permanently (attention sink), keep a sliding window of the last K_win tokens, evict everything in between. Standard implementation: `K_sink = 4`, `K_win = 1024–4096` tunable.
 
 **Steps**:
-1. Patch `llama_kv_cache_*` to support a sink + window eviction policy. Reference implementation: `github.com/mit-han-lab/streaming-llm` (MIT-licensed, ~500 LoC Python that we don't need — port the algorithm directly to GGML/C++).
-2. Add CLI flag `--kv-streaming-sink K_sink --kv-streaming-window K_win` to `llama-cli` and `llama-server`.
-3. Bench sweep on:
+1. **DONE 2026-06-13**: Add disabled-by-default sink + window policy through server context-shift (`llama_memory_seq_rm` / `llama_memory_seq_add`) plus CLI and per-request controls.
+2. **PENDING**: Bench sweep on:
    - **Long-context retrieval** (S-NIAH or RULER subset)
    - **Long-context reasoning** (LongBench or a coder-trace subset)
    - **Multi-session dialogue** (existing autopilot eval-tower trace samples)
@@ -55,7 +56,7 @@ Landing the floor first **changes the rank-order** of the cluster priorities, po
 - If StreamingLLM degrades significantly at 50% budget, **promote LU-KV** as the next-priority attention-kernel method (it's the only frozen-weights compatible candidate in the cluster).
 - Either way, **PBKV stays prioritized** because it operates at the orchestrator layer and composes with sink + window rather than competing.
 
-**Dev cost**: ~200 LoC C++ in `epyc-llama` + 50 LoC CLI plumbing. ~3 dev-days.
+**Dev cost**: code scaffold landed as 60 insertions / 2 deletions in `epyc-llama` commit `632ce0f92`.
 **Compute cost**: 1 nightshift (~8 hours) for the 4-axis sweep (3 budgets × 2 models × 4 workloads). Requires `feedback_no_concurrent_inference` per-bench approval per sweep cell.
 
 ## Non-Goals

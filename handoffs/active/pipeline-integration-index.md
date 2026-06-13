@@ -62,10 +62,11 @@
 
 **Deep dives**: `research/deep-dives/goedel-code-prover-analysis.md`, `research/deep-dives/leanstral-architecture-analysis.md`.
 
-- [ ] **S1: Convert Goedel-CP-8B to GGUF** — Download safetensors, `python convert_hf_to_gguf.py Goedel-LM/Goedel-Code-Prover-8B --outtype f16`, quantize Q4_K_M + Q8_0, validate proof generation via llama-server, add to model registry as `role: lean_prover`. Tracked as NIB2-15 (format conversion is non-inference; proof validation is inference-gated).
+- [x] **S1a: Convert Goedel-CP-8B to GGUF** — **DONE 2026-06-13**: HF snapshot revision `858f3b5e04bf24aca3a1a113ea1889a4de9ed4ef` converted to `/mnt/raid0/llm/models/Goedel-Code-Prover-8B-GGUF/Goedel-Code-Prover-8B-f16.gguf` and quantized to `Goedel-Code-Prover-8B-Q4_K_M.gguf` (4.7 GB, 4.90 BPW) plus `Goedel-Code-Prover-8B-Q8_0.gguf` (8.2 GB, 8.50 BPW). Tracked as NIB2-15.
+- [ ] **S1b: Validate and activate Goedel-CP-8B** — Run proof-generation smoke via llama-server, add validated model-registry entry as `role: lean_prover`, then promote to downstream pipeline tests. Inference-gated; do not register as production-routable until smoke passes.
 - [ ] **S2: Profile Leanstral expert activation** — Download `jackcloudman/Leanstral-2603-GGUF` Q4_K_M (~68GB), run with `--moe-expert-stats` on Lean 4 proof workloads. If ≤32 experts cover 95%: proceed with REAP. If spread is uniform: defer.
 - [ ] **S3: REAP-prune Leanstral** (depends on S2) — Top-N experts (from S2), quantize Q4_K_M (~20GB target), benchmark quality on FLTEval subset.
-- [ ] **S4: End-to-end pipeline test** (depends on S1) — Goedel-CP decomposition against local llama-server, FormalQualBench subset (5/23). Compare vs OpenGauss baseline (8/23).
+- [ ] **S4: End-to-end pipeline test** (depends on S1b) — Goedel-CP decomposition against local llama-server, FormalQualBench subset (5/23). Compare vs OpenGauss baseline (8/23).
 - [ ] **S5: Two-tier integration** (depends on S3+S4) — Routing: Leanstral planning → Goedel-CP execution. Adapter between MCP output and Goedel-CP input. Full FormalQualBench (23 theorems).
 
 **Open questions**:
