@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; benchmark live-surface cleanup complete through `epyc-orchestrator` `5773777`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; config live-map cleanup complete through `epyc-orchestrator` `f24eab7`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -62,12 +62,13 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Ninth cleanup landed in `epyc-orchestrator` `b5bf5eb`: `analyze_routing_policy.py` now derives specialist-utilization roles from live `stack_priors.yaml` roles with a non-retired fallback; live guard warning count dropped from 74 to 73.
    - Tenth cleanup landed in `epyc-orchestrator` `7ecf847`: `seeding_rewards.py` derives reward throughput and architect grouping from stack priors; live guard warning count dropped from 73 to 62.
    - Eleventh cleanup landed in `epyc-orchestrator` `5773777`: `seeding_eval.py`, `seeding_scoring.py`, `seeding_legacy.py`, and `corpus_quality_gate.py` no longer contain live benchmark retired-role/model assumptions; live guard warning count dropped from 62 to 56.
-   - Remaining risk: lower-level config, LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
+   - Twelfth cleanup landed in `epyc-orchestrator` `f24eab7`: active config URL/timeout maps no longer publish retired `architect_coding` endpoints or role timeouts; live guard warning count dropped from 56 to 46 and `--all-hardcoded-surfaces` dropped from 161 to 146.
+   - Remaining risk: LangGraph, parsing, role enum, and historical compatibility surfaces can still preserve retired-role assumptions unless migrated or explicitly classified.
 
-3. Config models intentionally preserve dead URLs/timeouts for compatibility.
-   - `/mnt/raid0/llm/epyc-orchestrator/src/config/models.py:411` documents `architect_coding` as removed but keeps `http://localhost:8084,http://localhost:8184` at line 417.
-   - Timeout config still has `architect_coding` at lines 488-490 and returns it from role maps at lines 552 and 572.
-   - Risk: compatibility fields can be mistaken for current stack truth unless generated consumers distinguish retired, degraded, and live roles.
+3. Config models no longer preserve dead URLs/timeouts as active live maps.
+   - RESOLVED in `epyc-orchestrator` `f24eab7`: `src/config/models.py` and `src/config/__init__.py` no longer expose `architect_coding` through `ServerURLsConfig.as_dict()`, `TimeoutsConfig.role_timeouts_dict()`, or env-backed active settings.
+   - `TimeoutsConfig.for_role("architect_coding")` now falls through to the default request timeout instead of advertising a retired-role-specific value.
+   - Remaining risk: compatibility aliases or legacy tests can still mention dead ports, but they should stay explicit degraded/legacy surfaces rather than active stack truth.
 
 4. Raw launch maps can disagree with generated serving truth.
    - `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py:30` maps `coder_escalation` to `8071`, while `ROLE_LAUNCH_META` says coder escalation was consolidated under frontdoor and stack priors resolve it to `8070`.
@@ -191,8 +192,8 @@ Priority order:
    - DONE cleanup in `d9c053c`: OpenAI-compatible `/v1/models` now reads deployed roles from stack priors and keeps only non-retired degraded fallback roles plus aliases.
    - DONE cleanup in `1b9db81`: dashboard in-flight task age overrides no longer include retired `architect_coding`.
 6. `src/config/__init__.py` and `src/config/models.py`
-   - Separate live role config from retired compatibility fields.
-   - Prefer stack-prior endpoints/timeouts where possible; make dead-port compatibility visibly retired.
+   - DONE in `f24eab7`: removed retired `architect_coding` from active server URL maps, role timeout maps, env-backed settings, and API import expectations.
+   - Follow-up: prefer stack-prior endpoints/timeouts where possible for generated config projections, rather than maintaining parallel role maps indefinitely.
 7. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
    - PARTIAL cleanup in `6bc1f51`: removed retired `architect_coding` from inference lock/tap heavy-role classifications.
    - PARTIAL cleanup in `e6e10d8`: removed retired `architect_coding` from approval-gate high-cost classification.
