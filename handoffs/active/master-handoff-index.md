@@ -42,7 +42,7 @@
 | F2 | HIGH, gated: N1+N4, N2, F5 | Self-running lab — W1 inventory (`8b4b24b`), W2 review-queue runner (`450a366`) + shadow batch wrapper, and W3 promotion/tuple-capture scaffold (`feat/lab-reliability-ladder` `5fad61d`) are branch-ready; next live nightly deployment/scoring + real verdict collection | [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) |
 | F3 | MED (W3 HW-GATED: MI210) | Data flywheel — planner-archive repair + dataset inventory (`feat/data-flywheel-capture` `9cdcf1e`) and builder scaffolds (`feat/data-flywheel-builders` `4a81d06`) are branch-ready; remaining W1 labels/tuples + W2 triage baseline; fine-tunes after GPU | [frontier-f3-data-flywheel.md](frontier-f3-data-flywheel.md) |
 | F6 | MED | Upstream/publication yield-capture: D2 DSA PR spearhead, canonical-bench methodology post, protocol-tagged results page | [frontier-f6-upstream-publication.md](frontier-f6-upstream-publication.md) |
-| F7 | LOW-MED | Economic ledger over existing logs: weekly cloud-spend/inference-hours/operator-latency + digest section + decision rules | [frontier-f7-economic-ledger.md](frontier-f7-economic-ledger.md) |
+| F7 | LOW-MED | Economic ledger over existing logs — W1 ledger branch-ready (`feat/economic-ledger` `95001e5b`, smoke planner spend `$94.4643`, local eval `22.36h`); digest wiring/rules scaffold branch-ready, live digest + first monthly review still open | [frontier-f7-economic-ledger.md](frontier-f7-economic-ledger.md) |
 
 ## C. The bulk-inference campaign, restructured
 Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-campaign.md) (restructured into 3 queues 2026-06-12).
