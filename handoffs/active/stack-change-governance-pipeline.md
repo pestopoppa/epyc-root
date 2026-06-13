@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, shared-runtime alias semantics, simulated data-only workflow fixtures, architect/REAP quality projection, and GGUF-derived model context projection; strict mode blocked on remaining enable_thinking semantics/evidence, shared-runtime alias notes, hardcoded-surface, and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, and shared-runtime alias provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; remaining guard warning is the waived temporary `ARCHITECT_CODING` enum compatibility surface
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -173,6 +173,16 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   record ignored non-live alias metadata as known gaps instead of role/server
   conflicts. `stack_change_pipeline.py check --allow-known-gaps` now passes
   with expected known-gap warnings.
+- Shared-runtime alias provenance landed in `epyc-orchestrator` `54b7c77`:
+  alias mismatch notes for `worker_general`, `worker_math`, and `toolrunner`
+  are now structured provenance, not blocking gaps. Descriptor records write
+  `role_bindings.alias_overrides` for ignored stale role-local model metadata;
+  stack priors expose the same records under `evidence.alias_overrides`; and
+  `docs/reference/stack-truth-precedence.md` documents the precedence rule.
+  Generated descriptors and stack priors now have `status: compiled`, stack
+  prior records have empty `known_gaps`, and the guard is reduced to the one
+  expected waived production blocker for temporary `ARCHITECT_CODING` enum
+  compatibility.
 - Stack-prior contract v3 launch requirements landed in `epyc-orchestrator`
   `a001017`: generated serving records now include
   `effective_context_tokens` plus `serving.launch.requirements` for worker
@@ -206,8 +216,20 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `agentic 26/30`, `coder 18/30`, and `instruction_precision 18/33`.
   Regenerated descriptors/priors project `quality_overall: 0.6011`; REAP
   `Missing quality suite_vector evidence` and `Missing overall quality prior`
-  warnings are gone. REAP now has only
-  `Missing enable_thinking compatibility evidence`.
+  warnings are gone. At that point REAP still had
+  `Missing enable_thinking compatibility evidence`, which was cleared by
+  `865b2b1`.
+- Completed in `865b2b1`: descriptor acceleration now carries structured
+  `thinking_control` evidence alongside legacy boolean `enable_thinking`.
+  Registry evidence was added for `ingest_long_context`, `worker_vision`,
+  `vision_escalation`, and `reap_25b_frontdoor`; generated descriptors and
+  stack priors now preserve native/no-toggle/template-ignored behavior without
+  forcing `enable_thinking` true/false. Enable-thinking compatibility gaps are
+  cleared for ingest, REAP, and VL roles.
+- Completed in `54b7c77`: shared-runtime alias mismatch notes for
+  `worker_general`, `worker_math`, and `toolrunner` are structured provenance,
+  not gaps. Generated descriptors and stack priors are now `status: compiled`;
+  stack-prior role records have empty `known_gaps`.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -233,7 +255,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -261,10 +283,15 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   class and reducing guard output to 15 known warnings. REAP quality evidence
   landed in `2ea28dd`; generated descriptors and stack priors now carry
   `quality_overall: 0.6011` from the existing Claude-as-Judge raw-score totals,
-  leaving REAP with only the enable_thinking compatibility evidence gap.
-  The enable-thinking explorer conclusion is not to force a boolean
-  `enable_thinking` for ingest/VL; the remaining gap needs tri-state
-  native/template-ignored semantics.
+  removing REAP quality gaps. Thinking-control evidence landed in `865b2b1`;
+  generated descriptors and stack priors now carry structured
+  `acceleration.thinking_control` for ingest, REAP, and VL roles while leaving
+  legacy `enable_thinking` unset when behavior is native/no-toggle or the
+  template ignores the toggle. Enable-thinking compatibility gaps are cleared.
+  Shared-runtime alias provenance landed in `54b7c77`; alias mismatch records
+  now live in descriptor `role_bindings.alias_overrides` and stack-prior
+  `evidence.alias_overrides`, generated descriptors/priors compile cleanly, and
+  stack-prior records have empty `known_gaps`.
   Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
@@ -338,10 +365,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   effective launch context and worker/VL model-path requirements are projected
   in `a001017`; effective runtime/binary/KV/flag witness records are projected
   and guarded in `33c81ff`; GGUF-derived `ctx_max` projection landed in
-  `b8477b0`; REAP quality projection landed in `2ea28dd`. Broader
-  stack-change work now moves to descriptor-native enable_thinking
-  tri-state/native/template-ignored semantics, shared-runtime alias notes, and
-  remaining consumer migrations.
+  `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
+  thinking-control evidence landed in `865b2b1`; shared-runtime alias
+  provenance landed in `54b7c77`. Broader stack-change work now moves to the
+  temporary retired-role enum waiver, remaining hardcoded-surface cleanup, and
+  consumer migrations.
 
 ## Dependency Graph
 

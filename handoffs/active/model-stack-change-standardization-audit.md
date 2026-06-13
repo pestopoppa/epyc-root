@@ -64,8 +64,8 @@ These are the current standardized-process artifacts. Do not build a second regi
   - CLI wrapper that writes `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`.
 
 - `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`
-  - Generated consumer contract with `stack_priors_version: 1`.
-  - Current status is `compiled_with_gaps`, but it already carries role -> model, serving endpoint/ports/slots/tier, priors, acceleration metadata, evidence, source hashes, and known gaps.
+  - Generated consumer contract.
+  - Current status is `compiled` after `54b7c77`; it carries role -> model, serving endpoint/ports/slots/tier, priors, acceleration metadata, evidence, source hashes, and structured alias provenance.
 
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/validate/stack_change_guard.py`
   - Validates source hashes, required contract shape, live-role invariants, procedure enum drift, retired-role leakage, and curated hardcoded surfaces.
@@ -106,7 +106,7 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
   - tier: `hot`
   - shared mmap: `true`
   - memory cost: `1.0`
-  - known gaps: `ctx_max` and quarter-TPS are not fully structured.
+  - known gaps: none in the generated stack-prior role record after `54b7c77`.
 
 - `coder_escalation`
   - model: `qwen3.6-35b-a3b-q8_0`
@@ -122,7 +122,7 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
   - tier: `hot`
   - memory cost: `1.0`
   - quality prior: `0.857` after `bda46b1`.
-  - remaining known gaps include older role performance comments and gated-off spec-decoding metadata.
+  - generated stack-prior role record has no `known_gaps` after `54b7c77`; older role performance comments and gated-off spec-decoding metadata are no longer blocking generated gaps.
 
 - `ingest_long_context`
   - model: `qwen3-next-80b-a3b-q4_k_m`
@@ -130,7 +130,7 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
   - tier: `hot`
   - memory cost: `1.0`
   - quality prior: `0.93` after `bda46b1`.
-  - remaining known gaps include context/prefill metrics and template-native `enable_thinking` behavior.
+  - thinking control: structured native/template-ignored evidence after `865b2b1`; generated stack-prior role record has no `known_gaps` after `54b7c77`.
 
 - `architect_coding`
   - absent from generated live priors.
@@ -214,15 +214,13 @@ uv run --with pytest pytest -q \
 
 CI should initially allow loose mode but publish warning counts. Promotion to strict mode should happen after descriptor gaps and unclassified hardcoded surfaces are resolved or documented with expiring exceptions.
 
-Current lightweight guard result to improve from:
+Current lightweight guard result after `54b7c77`:
 
-- `uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces`
-- Result: `WARN: 146 stack-prior warning(s)`, exit 0.
-- Major categories:
-  - known gaps in generated priors
-  - production-blocker retired-role references in graph/parsing/roles surfaces
-  - legacy-test retired-role fixtures
-  - historical-doc retired-role references
+- `uv run python scripts/validate/stack_change_guard.py`
+- Result: one expected warning, the waived production blocker for temporary
+  `ARCHITECT_CODING` enum compatibility.
+- Generated descriptors and stack priors now have `status: compiled`; stack
+  prior records have empty `known_gaps`.
 
 ## Implementation Work Packages
 
@@ -293,12 +291,26 @@ Tasks:
 - DONE in `2ea28dd` for REAP quality projection: existing REAP-25B
   Claude-as-Judge raw-score evidence now projects `quality_overall: 0.6011`
   from overall `110/183 (60%)` plus suite totals.
-- Current REAP state after `2ea28dd`: quality suite-vector and overall-quality
-  warnings are gone; REAP has only `Missing enable_thinking compatibility
-  evidence`.
-- Enable-thinking explorer conclusion: do not force boolean `enable_thinking`
-  for ingest/VL; the remaining gap needs tri-state native/template-ignored
-  semantics.
+- DONE in `865b2b1` for thinking-control evidence: the descriptor compiler now
+  supports structured `acceleration.thinking_control` alongside legacy boolean
+  `enable_thinking`, preserving native/no-toggle/template-ignored evidence
+  without forcing a boolean when a model has native behavior.
+- Registry evidence now covers `ingest_long_context`, `worker_vision`,
+  `vision_escalation`, and `reap_25b_frontdoor`; generated descriptors and
+  stack priors now include `thinking_control` for all descriptors.
+- Enable-thinking compatibility gaps are cleared for ingest, REAP, and VL
+  roles. At that point remaining guard warnings were shared-runtime alias known
+  gaps for `worker_general`, `worker_math`, and `toolrunner`, plus the waived
+  retired role enum surface.
+- DONE in `54b7c77` for shared-runtime alias provenance: alias mismatch notes
+  for `worker_general`, `worker_math`, and `toolrunner` are structured
+  provenance rather than blocking gaps.
+- Descriptor compiler records these as `role_bindings.alias_overrides` when
+  `server_mode.shared_with` binds an alias to a primary live server; stack
+  priors expose them under `evidence.alias_overrides`.
+- Generated descriptors and stack priors now have `status: compiled`; stack
+  prior records have empty `known_gaps`; `docs/reference/stack-truth-precedence.md`
+  states this precedence rule.
 - Preserve research-registry evidence with MEASUREMENT.md-style protocol/date/ref metadata.
 - Teach strict mode which gaps block live consumers versus which are candidate/historical gaps.
 
