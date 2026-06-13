@@ -275,8 +275,12 @@ Goal: `stack_priors.yaml` is complete enough for decision-grade consumers.
 Tasks:
 
 - Add structured context fields:
-  - model max context
-  - effective launch context
+  - DONE in `b8477b0`: local GGUF headers project structured
+    `roles.*.model.ctx_max` for Qwen3-Next 80B, Qwen3.5-122B,
+    Qwen2.5-VL 7B, Qwen3-VL 30B, and REAP-Qwen3-Coder 25B; regenerated
+    descriptors/priors removed `Missing structured ctx_max` warnings.
+  - DONE in `a001017`: effective launch context is generated and guarded in
+    stack-prior launch requirements.
   - prefill/long-context metrics where needed
 - Add quality/TPS provenance status:
   - decision-grade
@@ -284,6 +288,17 @@ Tasks:
   - stale
   - gap
 - DONE in `bda46b1` for measured single-purpose quality priors: architect, ingest, VL, and toolrunner roles now have generated `quality_overall`; worker_math and REAP remain explicit gaps until evidence exists.
+- DONE in `837829f` for architect quality projection: `architect_general` /
+  `qwen35_122b_q4km` now carry `quality_overall: 0.8567`.
+- DONE in `2ea28dd` for REAP quality projection: existing REAP-25B
+  Claude-as-Judge raw-score evidence now projects `quality_overall: 0.6011`
+  from overall `110/183 (60%)` plus suite totals.
+- Current REAP state after `2ea28dd`: quality suite-vector and overall-quality
+  warnings are gone; REAP has only `Missing enable_thinking compatibility
+  evidence`.
+- Enable-thinking explorer conclusion: do not force boolean `enable_thinking`
+  for ingest/VL; the remaining gap needs tri-state native/template-ignored
+  semantics.
 - Preserve research-registry evidence with MEASUREMENT.md-style protocol/date/ref metadata.
 - Teach strict mode which gaps block live consumers versus which are candidate/historical gaps.
 

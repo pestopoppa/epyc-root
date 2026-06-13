@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, shared-runtime alias semantics, simulated data-only workflow fixtures, and architect quality projection; strict mode blocked on remaining descriptor-native context/KV/other classified gaps, hardcoded-surface, and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, shared-runtime alias semantics, simulated data-only workflow fixtures, architect/REAP quality projection, and GGUF-derived model context projection; strict mode blocked on remaining enable_thinking semantics/evidence, shared-runtime alias notes, hardcoded-surface, and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -190,6 +190,24 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `derived/stack_priors.yaml` were regenerated, and stack priors project
   `quality_overall: 0.8567` for `architect_general` and `qwen35_122b_q4km`.
   Their known gaps narrowed from quality+ctx to structured ctx only.
+- Completed in `b8477b0`: GGUF header metadata was extracted from local model
+  files and projected into `roles.*.model.ctx_max` for Qwen3-Next 80B,
+  Qwen3.5-122B, Qwen2.5-VL 7B, Qwen3-VL 30B, and REAP-Qwen3-Coder 25B.
+  `orchestration/model_descriptors.yaml` and
+  `orchestration/derived/stack_priors.yaml` were regenerated; the prior
+  `Missing structured ctx_max` warnings are gone, and the stack-change guard
+  warning count dropped to 15 known warnings. Remaining descriptor/strict gaps
+  at that point were enable_thinking evidence, REAP quality, and
+  shared-runtime alias notes.
+- Completed in `2ea28dd`: existing REAP-25B Claude-as-Judge raw-score evidence
+  from `epyc-inference-research` was promoted into
+  `roles.reap_25b_frontdoor.performance` with overall `110/183 (60%)` and
+  suite totals `thinking 14/30`, `general 21/30`, `math 13/30`,
+  `agentic 26/30`, `coder 18/30`, and `instruction_precision 18/33`.
+  Regenerated descriptors/priors project `quality_overall: 0.6011`; REAP
+  `Missing quality suite_vector evidence` and `Missing overall quality prior`
+  warnings are gone. REAP now has only
+  `Missing enable_thinking compatibility evidence`.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -215,7 +233,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -236,8 +254,17 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   context/KV/acceleration drift without production-code edits.
   Architect quality evidence landed in `837829f`; generated descriptors and
   stack priors now carry `quality_overall: 0.8567` for
-  `architect_general`/`qwen35_122b_q4km`, leaving structured ctx as their known
-  gap.
+  `architect_general`/`qwen35_122b_q4km`. GGUF header context extraction landed
+  in `b8477b0`; generated descriptors and stack priors now project structured
+  `ctx_max` for Qwen3-Next 80B, Qwen3.5-122B, Qwen2.5-VL 7B, Qwen3-VL 30B,
+  and REAP-Qwen3-Coder 25B, clearing the `Missing structured ctx_max` warning
+  class and reducing guard output to 15 known warnings. REAP quality evidence
+  landed in `2ea28dd`; generated descriptors and stack priors now carry
+  `quality_overall: 0.6011` from the existing Claude-as-Judge raw-score totals,
+  leaving REAP with only the enable_thinking compatibility evidence gap.
+  The enable-thinking explorer conclusion is not to force a boolean
+  `enable_thinking` for ingest/VL; the remaining gap needs tri-state
+  native/template-ignored semantics.
   Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
@@ -310,8 +337,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `dc14196`; launch-entry witness contract v2 is projected in `7917535`;
   effective launch context and worker/VL model-path requirements are projected
   in `a001017`; effective runtime/binary/KV/flag witness records are projected
-  and guarded in `33c81ff`. Broader stack-change work now moves to simulated
-  data-only fixtures, descriptor-native model-context/measurement gaps, and
+  and guarded in `33c81ff`; GGUF-derived `ctx_max` projection landed in
+  `b8477b0`; REAP quality projection landed in `2ea28dd`. Broader
+  stack-change work now moves to descriptor-native enable_thinking
+  tri-state/native/template-ignored semantics, shared-runtime alias notes, and
   remaining consumer migrations.
 
 ## Dependency Graph
