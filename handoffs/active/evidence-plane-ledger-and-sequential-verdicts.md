@@ -29,7 +29,7 @@ land at ONE autopilot restart, each behind its own flag.
 
 ## Gates & pitfalls
 
-- Restart discipline: W1 + J11/BSV-2 + K-SKILL-1 share ONE restart, each flag-isolated for attribution (one-change discipline; flags verified collision-free 2026-05-27 per the campaign doc). Current combined branch `feat/restart-bundle-bsv-observe-current` tip `4c0e1b6` includes N2 W1/W2 plus observe-only BSV diagnostics (`AUTOPILOT_BSV_OBSERVE`), not the final blocking accept gate.
+- Restart discipline: W1 + J11/BSV-2 + K-SKILL-1 share ONE restart, each flag-isolated for attribution (one-change discipline; flags verified collision-free 2026-05-27 per the campaign doc). Current combined branch `feat/restart-bundle-bsv-observe-current` tip `4c0e1b6` includes N2 W1/W2 plus observe-only BSV diagnostics (`AUTOPILOT_BSV_OBSERVE`), not the final blocking accept gate. K-SKILL-1 default-off wiring landed separately on the live branch at `924ca50`; rebase the restart bundle onto that live tip before deployment.
 - W3–W4 are gated on W2's ≥30% flip-rate evidence — do not wire sequential verdicts on vibes; the spec predicts the gate passes, the replay is the proof.
 - GitNexus impact for `EvalTower._aggregate` is HIGH (19 impacted symbols/modules across all eval/action paths on the 2026-06-13 current index), so W1 writer changes should land in a deliberate restart-bundle branch with focused aggregate/journal compatibility tests, not as opportunistic mid-run edits.
 - Update the e-process per TRIAL, never per question (within-trial outcomes are dependent — 01c §1); core-version or policy-version change resets all `accumulating` candidates.
