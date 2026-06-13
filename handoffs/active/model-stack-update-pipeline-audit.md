@@ -55,6 +55,8 @@ The following examples are evidence-backed reasons this work should stay high RO
    - First cleanup landed in `epyc-orchestrator` `b1402a2`: `src/api/routes/chat_delegation_decision.py` no longer keeps `architect_coding` budget defaults, and the live guard warning count dropped from 85 to 83.
    - Second cleanup landed in `epyc-orchestrator` `481516c`: `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py` no longer treat retired `architect_coding` as an architect entrypoint, and the live guard warning count dropped from 83 to 81.
    - Third cleanup landed in `epyc-orchestrator` `519f710`: `_role_to_task_type()` no longer contains the redundant retired-role check, and the live guard warning count dropped from 81 to 80.
+   - Fourth cleanup landed in `epyc-orchestrator` `d9c053c`: `/v1/models` now derives live model IDs from `stack_priors.yaml` plus compatibility aliases, and the live guard warning count dropped from 80 to 79.
+   - Fifth cleanup landed in `epyc-orchestrator` `1b9db81`: `dashboard_snapshot.py` no longer carries a retired in-flight age override, and the live guard warning count dropped from 79 to 78.
    - `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat_routing.py:260` still seeds `_heuristic_role_priors` with `architect_coding`; GitNexus marks that function HIGH impact because it feeds streamed chat routing.
    - Risk: production routing surfaces can still emit or score a retired role even though stack priors omit it as live.
 
@@ -161,10 +163,13 @@ Priority order:
 4. `src/api/routes/chat_routing.py`
    - PARTIAL cleanup in `519f710`: removed the redundant retired-role check from `_role_to_task_type()` and added live-role mapping coverage.
    - Remaining HIGH-impact follow-up: build `_heuristic_role_priors()` from live stack-prior roles, not a static dict containing retired roles.
-5. `src/config/__init__.py` and `src/config/models.py`
+5. `src/api/routes/openai_compat.py` and `src/api/routes/dashboard_snapshot.py`
+   - DONE cleanup in `d9c053c`: OpenAI-compatible `/v1/models` now reads deployed roles from stack priors and keeps only non-retired degraded fallback roles plus aliases.
+   - DONE cleanup in `1b9db81`: dashboard in-flight task age overrides no longer include retired `architect_coding`.
+6. `src/config/__init__.py` and `src/config/models.py`
    - Separate live role config from retired compatibility fields.
    - Prefer stack-prior endpoints/timeouts where possible; make dead-port compatibility visibly retired.
-6. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
+7. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
    - Derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
 

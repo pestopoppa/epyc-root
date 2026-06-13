@@ -59,6 +59,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   current live-role mapping coverage, reducing live guard warnings from 81 to
   80. The remaining `_heuristic_role_priors()` retired-role prior is still open
   as a separate HIGH-impact routing patch.
+- OpenAI-compatible model listing now derives live roles from stack priors in
+  `epyc-orchestrator` `d9c053c`, preserving compatibility aliases and using a
+  non-retired degraded fallback; live guard warnings dropped from 80 to 79.
+- Dashboard in-flight age overrides no longer include retired
+  `architect_coding` after `epyc-orchestrator` `1b9db81`; live guard warnings
+  dropped from 79 to 78.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -113,7 +119,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   delegation budgets have been cleaned up (`5e7d774`, `b1402a2`); chat pipeline
   architect branch checks now exclude retired `architect_coding` (`481516c`);
   chat routing task-type mapping no longer hardcodes the retired role
-  (`519f710`).
+  (`519f710`); `/v1/models` reads live roles from stack priors (`d9c053c`);
+  dashboard task-liveness overrides no longer include retired roles (`1b9db81`).
   `seeding_rewards.py` remains deferred because GitNexus marks
   `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
