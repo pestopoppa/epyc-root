@@ -54,7 +54,8 @@ The following examples are evidence-backed reasons this work should stay high RO
 2. API routing and delegation still contain retired live-role constants.
    - First cleanup landed in `epyc-orchestrator` `b1402a2`: `src/api/routes/chat_delegation_decision.py` no longer keeps `architect_coding` budget defaults, and the live guard warning count dropped from 85 to 83.
    - Second cleanup landed in `epyc-orchestrator` `481516c`: `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py` no longer treat retired `architect_coding` as an architect entrypoint, and the live guard warning count dropped from 83 to 81.
-   - `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat_routing.py:229` maps role names to task types and still checks `architect_coding`; `_heuristic_role_priors` includes `architect_coding` at line 260.
+   - Third cleanup landed in `epyc-orchestrator` `519f710`: `_role_to_task_type()` no longer contains the redundant retired-role check, and the live guard warning count dropped from 81 to 80.
+   - `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat_routing.py:260` still seeds `_heuristic_role_priors` with `architect_coding`; GitNexus marks that function HIGH impact because it feeds streamed chat routing.
    - Risk: production routing surfaces can still emit or score a retired role even though stack priors omit it as live.
 
 3. Config models intentionally preserve dead URLs/timeouts for compatibility.
@@ -158,7 +159,8 @@ Priority order:
 3. `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py`
    - DONE cleanup in `481516c`: retired `architect_coding` no longer triggers delegated/proactive architect branch behavior.
 4. `src/api/routes/chat_routing.py`
-   - Build heuristic priors from live stack-prior roles, not a static dict containing retired roles.
+   - PARTIAL cleanup in `519f710`: removed the redundant retired-role check from `_role_to_task_type()` and added live-role mapping coverage.
+   - Remaining HIGH-impact follow-up: build `_heuristic_role_priors()` from live stack-prior roles, not a static dict containing retired roles.
 5. `src/config/__init__.py` and `src/config/models.py`
    - Separate live role config from retired compatibility fields.
    - Prefer stack-prior endpoints/timeouts where possible; make dead-port compatibility visibly retired.

@@ -54,6 +54,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `delegation_stage.py` and `proactive_stage.py` now treat only
   `architect_general` as the live architect branch trigger, dropping live guard
   warnings from 83 to 81.
+- A low-risk chat routing cleanup landed in `epyc-orchestrator` `519f710`:
+  `_role_to_task_type()` dropped a redundant retired-role check and added
+  current live-role mapping coverage, reducing live guard warnings from 81 to
+  80. The remaining `_heuristic_role_priors()` retired-role prior is still open
+  as a separate HIGH-impact routing patch.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -106,7 +111,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   priors (`f49f14d`); admission limits now derive from stack-prior serving
   ports/slots with a non-retired fallback (`1199f03`); retired API examples and
   delegation budgets have been cleaned up (`5e7d774`, `b1402a2`); chat pipeline
-  architect branch checks now exclude retired `architect_coding` (`481516c`).
+  architect branch checks now exclude retired `architect_coding` (`481516c`);
+  chat routing task-type mapping no longer hardcodes the retired role
+  (`519f710`).
   `seeding_rewards.py` remains deferred because GitNexus marks
   `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
