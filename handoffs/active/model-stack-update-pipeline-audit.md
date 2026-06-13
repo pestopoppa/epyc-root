@@ -26,11 +26,11 @@ These are the real standardized-pipeline artifacts found in the current root/orc
   - Explicitly states that `server_mode.*.tier` overrides stale `roles.*.memory.residency`, shared mmap roles must not double-count memory, and retired roles such as `architect_coding` must not appear in active live priors.
 - `/mnt/raid0/llm/epyc-orchestrator/src/registry/stack_priors.py`
   - Compiles role records from lean registry, model descriptors, and stack manifest.
-  - Current output includes serving endpoint/ports/slots/tier, priors for throughput/quality/memory, acceleration metadata, model identity, source evidence, and known gaps.
+  - Current output includes a versioned consumer contract plus serving endpoint/ports/slots/tier, priors for throughput/quality/memory, acceleration metadata, model identity, source evidence, and known gaps (`69057f3`).
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/compile_stack_priors.py`
   - Writes `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`.
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/validate/stack_change_guard.py`
-  - Validates generated artifact freshness, live-role gaps, retired-role leakage, generated procedure enums, and curated hardcoded surfaces.
+  - Validates generated artifact contract shape, freshness, live-role gaps, retired-role leakage, generated procedure enums, and curated hardcoded surfaces.
   - `--all-hardcoded-surfaces` currently reports production blockers, legacy tests, and historical docs separately.
 - `/mnt/raid0/llm/epyc-orchestrator/scripts/registry/sync_procedure_role_enums.py`
   - Syncs `add_model_to_registry.yaml` role choices and `procedure.schema.json` executor roles from stack priors.
@@ -66,8 +66,9 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Current stack priors show `coder_escalation.serving.endpoint=http://localhost:8070`, `ports=[8070,8080,8180,8280,8380]`, `slots=1`, `shared_mmap=true`.
    - Risk: any consumer reading `PORT_MAP` directly instead of stack priors can probe or gate a dead port.
 
-5. The generated contract is useful but still incomplete.
-   - `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml:1` is compiled with gaps.
+5. The generated contract now has explicit shape validation but remains semantically incomplete.
+   - `epyc-orchestrator` `69057f3` embeds a versioned `epyc.stack_priors` contract and makes `stack_change_guard.py` reject artifacts missing required role/serving/prior fields.
+   - `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml:1` is still compiled with gaps.
    - `architect_general` has `quality_overall: null` and gaps at lines 34-77.
    - `frontdoor` and `coder_escalation` record shared serving truth and memory cost correctly at lines 78-205, but still have `ctx_max` and quarter-TPS gaps.
    - `worker_general` has ik-llama launch metadata and MTP metadata, but the descriptors still report role/server conflicts for aliases that share the runtime.
@@ -121,7 +122,7 @@ Goal: make `stack_priors.yaml` complete enough to be the only model-specific con
 
 Tasks:
 
-- Add an explicit schema or typed validation layer for stack priors.
+- DONE foundation in `69057f3`: add an explicit versioned contract plus structural validation for stack priors.
 - Extend compiled records with missing consumer fields:
   - context window / effective max context
   - decision-grade TPS and quality status
