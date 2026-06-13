@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 loose guardrail live, strict mode blocked on descriptor evidence gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner live, strict mode blocked on descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -34,6 +34,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `scripts/registry/compile_stack_priors.py`,
   `orchestration/derived/stack_priors.yaml`, and
   `scripts/validate/stack_change_guard.py`.
+- Phase A hardcoded-surface scanning landed in `epyc-orchestrator` `bfa90fa`;
+  normal guard output now reports categorized production-blocker model/stack
+  constants, with `--all-hardcoded-surfaces` for docs/tests audit mode.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -59,13 +62,17 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
   Current loose mode passes with warnings and validates artifact freshness plus
-  hard live invariants. Strict mode intentionally fails until descriptor gaps
-  are resolved and the remaining model-specific consumers migrate.
+  hard live invariants. The hardcoded-surface scanner now exposes production
+  blockers in seeding/eval defaults, bilinear specs, legacy port probes,
+  procedure enums, API/config/routing surfaces, LangGraph nodes, and runtime
+  helpers. Strict mode intentionally fails until descriptor gaps are resolved
+  and the remaining model-specific consumers migrate or receive explicit
+  exception metadata.
 - [ ] **W4 — Consumer migration** (2-3 days): migrate q_scorer, AutoPilot
   planner signatures, seeder per-role eval config, bilinear scorer model
   features, eval-tower model signatures, and launch-arg assembly to the derived
@@ -140,6 +147,7 @@ python3 -m py_compile src/registry/stack_priors.py scripts/registry/compile_stac
 uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
 uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
 uv run python scripts/validate/stack_change_guard.py
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
 uv run --with pytest pytest -q tests/unit/test_stack_priors_compiler.py tests/unit/test_stack_change_guard.py tests/unit/test_model_descriptors_schema.py tests/unit/test_model_descriptor_compiler.py tests/unit/test_q_scorer.py
 uv run --with ruff ruff check src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
 git diff --check

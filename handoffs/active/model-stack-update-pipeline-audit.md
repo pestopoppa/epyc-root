@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: DRAFT 2026-06-13 - parallel audit complete; implementation belongs to main workflow
+**Status**: IN PROGRESS 2026-06-13 - Phase A scanner landed; implementation continues in main workflow
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, or launch the wrong stack after a model change
 **Scope**: Documentation/audit only. No orchestrator or research code was changed for this draft.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [model-registry-v5-deployment-draft.yaml](model-registry-v5-deployment-draft.yaml), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -27,6 +27,10 @@ The desired future shape is not a second registry system. Treat the current stac
   - `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors.yaml`
   - `/mnt/raid0/llm/epyc-orchestrator/tests/unit/test_stack_priors_compiler.py`
   - `/mnt/raid0/llm/epyc-orchestrator/tests/unit/test_stack_change_guard.py`
+- Phase A hardcoded-surface scanning landed in `epyc-orchestrator` `bfa90fa`:
+  `stack_change_guard.py` now reports categorized production-blocker,
+  legacy-test, and historical-doc surfaces, with normal guard output scoped to
+  production blockers and `--all-hardcoded-surfaces` available for full audits.
 - `progress/2026-06/2026-06-13.md` records the exact lineage: descriptor consumers for AutoPilot and q_scorer landed first, then `a1e04d5` added the derived stack-prior guardrail. Strict mode is intentionally not green until descriptor gaps and remaining consumers are closed.
 - `handoffs/active/model-capability-descriptors.md` is the model-agnostic interface. W3 still lists seeder per-role eval config and stack-launch acceleration args as open consumers.
 - The research master registry explicitly says the active per-role stack lives in the orchestrator lean registry: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`. Current stack-priors compilation reads the lean orchestrator registry, not the research master.
@@ -167,10 +171,10 @@ Assessment: docs and generated public manifests need separate drift policy. They
 
 ### Phase A - Inventory and classify hardcoded surfaces
 
-- Add a no-inference scanner under `epyc-orchestrator/scripts/validate/` or extend `stack_change_guard.py`.
-- Inputs: generated stack priors, descriptor known gaps, a small YAML allowlist.
-- Output categories: production blocker, degraded fallback, legacy test, historical docs, candidate/research-only.
-- Initial targets: `q_scorer.py`, `bilinear_scorer.py`, `seeding_types.py`, `model_quality_signatures.yaml`, `stack_manifest.py`, procedure YAMLs, `docs/ARCHITECTURE.md`, research `MODEL_MANIFEST.md`.
+- [x] Add a no-inference scanner under `epyc-orchestrator/scripts/validate/` or extend `stack_change_guard.py`.
+- [x] Output categories: production blocker, legacy test, and historical docs.
+- [ ] Add an external allowlist/config once production blockers start being closed and intentional exceptions need owner/review metadata.
+- Initial live findings from `bfa90fa`: production blockers remain in seeding/eval defaults, seeding reward TPS fallback, bilinear model specs, legacy CLI probing, procedure role enums, API/config/routing surfaces, LangGraph nodes, runtime tap/lock helpers, and OpenAI compatibility docs. These are now machine-visible instead of a manual `rg` checklist.
 
 ### Phase B - Expand stack-prior coverage
 
@@ -222,6 +226,7 @@ python3 -m py_compile \
 uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
 uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
 uv run python scripts/validate/stack_change_guard.py
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
 uv run python scripts/validate/stack_change_guard.py --strict
 
 uv run --with pytest pytest -q \
