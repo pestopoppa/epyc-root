@@ -145,6 +145,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `a5aaafb`: `scripts/autopilot/preflight_audit.py` now groups live model
   server probes from generated stack-prior serving endpoints instead of a raw
   port table.
+- AutoPilot program endpoint guidance migrated in `epyc-orchestrator`
+  `60733c7`: `scripts/autopilot/program.md` now queries generated stack priors
+  for live compaction endpoints instead of carrying stale target-port examples.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -221,7 +224,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   local `_VL_PORT_MAP` (`06ff53c`). Shared `server_mode` alias-port drift now
   warns through `validate_against_registry()` (`40d46ea`). AutoPilot preflight
   model-server health targets now derive from stack-prior serving records
-  (`a5aaafb`).
+  (`a5aaafb`), and AutoPilot human program guidance now derives compaction
+  endpoints from stack priors (`60733c7`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:

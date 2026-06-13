@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port migrations/guards complete through `a5aaafb`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`; serving-port/operator-guidance migrations/guards complete through `60733c7`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -110,6 +110,11 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Fallback targets are current degraded mode only: no retired `architect_coding`, no dead `8071`, and both VL servers included.
    - Remaining risk: broader AutoPilot/system-card/operator summaries should keep moving to generated stack-prior summaries instead of manual tables.
 
+11. AutoPilot human program guidance no longer carries dead endpoint examples.
+   - RESOLVED in `epyc-orchestrator` `60733c7`: `scripts/autopilot/program.md` now tells autonomous operator sessions to derive compaction endpoints from `orchestration/derived/stack_priors.yaml` instead of copying a static target-port table.
+   - Removed the stale coder `8071`, retired coding-architect `8084`, and obsolete fixed-RAM tier-demotion wording from the program prompt.
+   - Remaining risk: generated system-card/runtime summaries are healthier, but active operator docs and historical chapters still need generated current-stack summaries or explicit historical labels.
+
 ## Model-Specific Quantity Audit Matrix
 
 | Quantity | Current state | Canonical source | Required projection / guard |
@@ -124,7 +129,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 | Routing priors / role priors | `_heuristic_role_priors()` now filters through live stack priors; learned-routing handoffs/docs still contain `architect_coding` training labels. | Live role set from stack priors; learned/replay datasets must carry era labels. | Add simulated retired-role fixture proving `architect_coding` is ignored in live priors but preserved in historical replay with era metadata. |
 | OpenAI-compatible model listing | `/v1/models` now derives live model IDs from stack priors plus compatibility aliases. | Stack-prior live roles. | Keep compatibility aliases separate from live role IDs; guard any static live model list. |
 | Dashboard/runtime classification | Dashboard age overrides and inference lock/tap had recent cleanup; lock heavy roles and tap stream roles are still local policy tables. | Stack-prior tier/slots/model class plus explicit runtime policy hints. | Compile role policy hints or a generated runtime classification projection; local tables must be fallback/override only. |
-| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`; shared `server_mode` alias-port drift is guarded in `40d46ea`; AutoPilot preflight health probes read stack-prior serving endpoints in `a5aaafb`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes should consume generated serving records or verified launch metadata. |
+| Launch ports and shared servers | DONE for shared aliases in `d4acf24`; active VL ReAct ports now read stack-prior serving records in `06ff53c`; shared `server_mode` alias-port drift is guarded in `40d46ea`; AutoPilot preflight health probes read stack-prior serving endpoints in `a5aaafb`; AutoPilot human program guidance now derives compaction endpoints from stack priors in `60733c7`. Broader launch projection still needs binary/mmproj/slots/acceleration comparison. | `server_mode` plus generated stack priors should outrank raw port maps. | Guard direct `PORT_MAP` consumers; launch/health probes and operator guidance should consume generated serving records or verified launch metadata. |
 | Registry/derived YAML drift | `stack_priors.yaml` has a contract and freshness hash but is `compiled_with_gaps`; context and some quality fields remain null. | Lean registry + descriptors generated from research evidence. | One workflow command must compile descriptors/priors, sync procedure enums, run strict guard, and fail on stale generated hashes. |
 
 ## Proposed Source-Of-Truth Design
