@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -143,6 +143,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior live `serving.endpoint` / `serving.ports` records. The degraded
   config fallback remains explicit, and `full:` URL prefixes are normalized to
   concrete endpoints before `httpx` calls.
+- API health backend probes migrated in `epyc-orchestrator` `3dc21c5`:
+  `src/api/routes/health.py` now derives live backend probe targets from
+  generated stack-prior `deployment_status: live_stack` records, groups shared
+  endpoints under slash-joined role labels, and probes each shared server once.
+  Missing or malformed stack priors fall back to the old `frontdoor` plus
+  `architect_general` config URL behavior.
 - Shared `server_mode` alias-port validation landed in `epyc-orchestrator`
   `40d46ea`: `validate_against_registry()` now checks registry rows that cover
   launch roles through `model_role` or `shared_with`, so stale shared worker
@@ -432,7 +438,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   Qwen2.5-VL/Qwen3-VL projector requirements landed in `3e8121d`;
   auxiliary status-scan ports now derive from `PORT_MAP` in `d59029a`;
   generated live stack-prior serving ports are included in status scanning in
-  `6062a57`;
+  `6062a57`; API health backend probes now derive grouped live targets from
+  stack priors in `3dc21c5`;
   GGUF-derived `ctx_max` projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
