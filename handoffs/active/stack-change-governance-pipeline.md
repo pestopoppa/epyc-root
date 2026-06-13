@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -137,6 +137,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `06ff53c`: `src/api/routes/chat_pipeline/vision_stage.py` now reads
   `worker_vision` and `vision_escalation` ports from generated stack-prior
   serving records, with explicit degraded fallback ports for missing priors.
+- Direct and ReAct vision chat URL resolution migrated in `epyc-orchestrator`
+  `ee784f9`: `src/api/routes/chat_vision.py` now resolves
+  `worker_vision` and `vision_escalation` backend URLs from generated
+  stack-prior live `serving.endpoint` / `serving.ports` records. The degraded
+  config fallback remains explicit, and `full:` URL prefixes are normalized to
+  concrete endpoints before `httpx` calls.
 - Shared `server_mode` alias-port validation landed in `epyc-orchestrator`
   `40d46ea`: `validate_against_registry()` now checks registry rows that cover
   launch roles through `model_role` or `shared_with`, so stale shared worker
