@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; config live-map cleanup complete through `epyc-orchestrator` `f24eab7`
+**Status**: IN PROGRESS 2026-06-13 - W1/W2 stack-prior consumer migration active; GraphRouter offline action-space cleanup complete through `epyc-orchestrator` `1f16759`
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, launch the wrong stack, or corrupt AutoPilot/replay data after a model change
 **Scope**: Audit and implementation handoff. No inference, AutoPilot, orchestrator code, research code, or index files were changed by this pass.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -93,6 +93,11 @@ The following examples are evidence-backed reasons this work should stay high RO
    - RESOLVED in `epyc-orchestrator` `e3d967a`: `orchestration/repl_memory/q_scorer.py` loads live TPS, quality, and memory priors from `orchestration/derived/stack_priors.yaml` before falling back to degraded local tables.
    - `frontdoor` and `coder_escalation` now share generated TPS/memory truth; `worker_explore` inherits worker-server TPS/memory from the live `worker_general` stack-prior record; `architect_coding` remains absent from live scorer priors.
    - Remaining risk: fallback tables are still intentionally present for degraded/offline mode and should eventually expose explicit provenance if downstream consumers need to distinguish live vs fallback scoring.
+
+8. GraphRouter offline consumers no longer own stale live action/model rosters.
+   - RESOLVED for GAT training in `epyc-orchestrator` `8cf0310`: `train_graph_router.py` loads live `LLMRole` nodes from `stack_priors.yaml` and skips benchmark/candidate roles.
+   - RESOLVED for classifier/verifier extraction in `epyc-orchestrator` `1f16759`: `scripts/graph_router/action_space.py` derives live action labels from stack priors, remaps legacy replay labels into current live roles, and verifier extraction infers `n_actions` from classifier artifacts instead of a fixed `8`.
+   - Remaining risk: other historical replay/offline scripts may still need explicit era labels, but the main GraphRouter extraction path no longer leaks retired live roles into new artifacts.
 
 ## Model-Specific Quantity Audit Matrix
 

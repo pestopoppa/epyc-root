@@ -124,6 +124,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `8cf0310`: offline GAT training now reads live LLMRole model nodes from
   generated stack priors, skips benchmark/candidate roles, and keeps a current
   non-retired degraded fallback.
+- GraphRouter extraction/verifier action spaces migrated in `epyc-orchestrator`
+  `1f16759`: a shared `scripts/graph_router/action_space.py` helper now derives
+  live labels from stack priors, remaps legacy replay labels into current live
+  roles, and removes fixed verifier `n_actions=8` defaults in favor of
+  classifier-artifact inference.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -194,7 +199,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   Seeding reward TPS/cost priors migrated to stack-prior discovery in the
   expanded CRITICAL-path pass `7ecf847`. GraphRouter training fleet discovery
   now loads live stack-prior roles instead of a stale hardcoded model roster
-  (`8cf0310`).
+  (`8cf0310`), and GraphRouter classifier/verifier extraction now derives live
+  action spaces from stack priors/classifier artifacts (`1f16759`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
