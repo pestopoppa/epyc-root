@@ -1,6 +1,6 @@
 # Evidence Plane — Event-Sourced Runtime + Narrative Regeneration
 
-**Status**: SPEC'D, not started (from the Fable 5 architecture review)
+**Status**: W7 branch-ready; W1-W6/W8 still open (from the Fable 5 architecture review)
 **Created**: 2026-06-12
 **Priority**: HIGH — sequenced after [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md); the adoption gate is already MET (T2 drift observed, see Why)
 **Spec**: [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) Phase 3 + Phase 4, and [fable5-findings-01-measurement-and-integrity.md](fable5-findings-01-measurement-and-integrity.md) §2.1/§2.4/§4 — read before claiming any waypoint
@@ -25,7 +25,7 @@ provenance-checked view so refuted stories cannot re-enter the planner.
 - [ ] **W4 — baseline as fold + acceptance suite** (impl 3.4–3.5, ~2 days): `Baseline` computed at load; `update_baseline` becomes a `baseline_promotion` ledger event; YAML = cold-start seed only. Acceptance: kill -9 mid-trial → WAL recovery reproduces identical views; full-journal replay (existing `bug_corrupted_by` tags as implicit supersessions) reproduces today's T1 frontier.
 - [ ] **W5 — STM as generated view** (impl 4.1, ~1–2 days, needs W1): `short_term_memory.md` rebuilt each trial from the ledger (trustworthy last-N, hypotheses with falsifiers + provenance trial-ids); read-modify-write path deleted; per-section render budgets (kills mid-word truncation structurally).
 - [ ] **W6 — strategy provenance** (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidence_trial_ids`; `retrieve()` filters rows citing superseded/excluded trials (extend the AP-28 staleness pattern, ledger-keyed); distill must cite trial-ids per insight or the insight stores quarantined.
-- [ ] **W7 — session hygiene** (impl 4.3, ~half day, anytime): default `supports_resume=False` for the draft provider (delete `session_id` persistence); replace with a generated prior-decisions digest from `planner_archive.jsonl`; archive failed draft calls (move `_append_planner_archive` before the early-return).
+- [x] **W7 — session hygiene** (impl 4.3, ~half day, anytime): default `supports_resume=False` for the draft provider (delete `session_id` persistence); replace with a generated prior-decisions digest from `planner_archive.jsonl`; archive failed draft calls (move `_append_planner_archive` before the early-return). **Branch-ready 2026-06-12**: `epyc-orchestrator` worktree `/mnt/raid0/llm/tmp/planner-session-hygiene-worktree`, branch `feat/planner-session-hygiene`, commit `69a41f7` (`Harden planner session hygiene`) on live-paused base `fix/substring-scorer-digit-separators` `2e253e9`. Not deployed while AutoPilot is paused for resource-contention contamination.
 - [ ] **W8 — program.md split** (impl 4.4, ~2 days, anytime — this month per findings-01 §4): human-authored `constitution.md` (~150 lines) + `scripts/autopilot/gen_system_card.py` regenerating `system_card.md` at restart from live registry/state/instrument spec; prompt assembly swaps in the pair. Acceptance: prompt share ~46%→~20% while refuted facts (architect_coding:8084 class) become structurally impossible.
 
 ## Gates & pitfalls
@@ -35,6 +35,10 @@ provenance-checked view so refuted stories cannot re-enter the planner.
 - Migration risk is bounded: reconstruction is battle-tested on the dashboard path and already caught real drift; run acceptance 3.5c (full historical replay) BEFORE deleting the dual-write.
 - Append-only means append-only: no new sanitizers/scrubbers/gates bolted onto the old pipeline (findings-01 §4 hold-list); fixes become policy-version bumps + view recompute.
 - `autopilot_state.json` still carries genuinely operational state (counters, halts, circuit breakers — `feedback_checkpoint_pareto_state`); only derived views move out.
+
+## Progress
+
+- 2026-06-12: W7 branch-ready at `feat/planner-session-hygiene` commit `69a41f7`. GitNexus impacts were LOW for `plan_with_providers`, `ClaudePlannerProvider`, exact `controller_io.invoke_controller`, and `_run_loop_inner` (index stale vs current branch, treated conservatively). Validation: `python3 -m py_compile` on touched AutoPilot/test files passed; focused suite `tests/unit/test_autopilot_planner_providers.py tests/unit/test_autopilot_planner_coordinator.py tests/unit/test_autopilot_controller_io.py tests/unit/test_autopilot_actions.py` -> 84 passed, 1 pytest config warning; focused `ruff check` passed on non-debt touched files, and `ruff check --ignore F401` passed on `autopilot.py`/`test_autopilot_actions.py` due pre-existing F401 debt; `git diff --check` passed.
 
 ## Reporting
 
