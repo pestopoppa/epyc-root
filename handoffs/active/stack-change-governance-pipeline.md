@@ -116,6 +116,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   preview now has no current-only or generated-only model IDs; remaining
   descriptor staleness is curated-evidence/schema drift rather than missing
   benchmark-only model coverage.
+- Descriptor domain modality derivation landed in `epyc-orchestrator`
+  `846c2d4`: generated descriptors retain `code`, `math`, and `long_context`
+  modalities from structured model metadata instead of collapsing those models
+  to text-only.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -197,7 +201,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   command skeleton exists in `e01d64d` with preview fixes in `fe4b2aa`, but
   descriptor compiler quality-key normalization in `3e7efce`, model-ID
   stabilization in `ca9af53`, and fail-closed descriptor removal protection in
-  `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`.
+  `022a0d1`; REAP coverage is structured through `fbef837`/`365e370`; domain
+  modalities are generated in `846c2d4`.
   Launch/start integration is still open.
 
 ## Dependency Graph
