@@ -71,6 +71,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Approval-gate high-cost role classification dropped retired
   `architect_coding` in `epyc-orchestrator` `e6e10d8`; live guard warnings
   dropped from 76 to 75.
+- Chat routing heuristic priors migrated to live stack-prior role filtering in
+  `epyc-orchestrator` `eb4dac5`, with a non-retired degraded fallback; live
+  guard warnings dropped from 75 to 74 after broader routing/pipeline tests.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -129,7 +132,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   dashboard task-liveness overrides no longer include retired roles (`1b9db81`);
   inference lock/tap heavy-role classifications no longer include retired roles
   (`6bc1f51`); approval-gate high-cost classification no longer includes
-  retired roles (`e6e10d8`).
+  retired roles (`e6e10d8`); chat routing heuristic priors now filter through
+  live stack-prior roles (`eb4dac5`).
   `seeding_rewards.py` remains deferred because GitNexus marks
   `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
