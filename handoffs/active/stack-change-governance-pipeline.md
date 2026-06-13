@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, and shared-runtime alias provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; remaining guard warning is the waived temporary `ARCHITECT_CODING` enum compatibility surface
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, and stack-prior-rendered AutoPilot system-card rows; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check --allow-known-gaps` reports descriptor/stack-prior/procedure/guard/strict OK, while `--all-hardcoded-surfaces` now reports only legacy-test/historical-doc classes for this cleanup track
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -180,9 +180,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack priors expose the same records under `evidence.alias_overrides`; and
   `docs/reference/stack-truth-precedence.md` documents the precedence rule.
   Generated descriptors and stack priors now have `status: compiled`, stack
-  prior records have empty `known_gaps`, and the guard is reduced to the one
-  expected waived production blocker for temporary `ARCHITECT_CODING` enum
-  compatibility.
+  prior records have empty `known_gaps`; the temporary `ARCHITECT_CODING`
+  production waiver was later closed in `03ed49f`.
 - Stack-prior contract v3 launch requirements landed in `epyc-orchestrator`
   `a001017`: generated serving records now include
   `effective_context_tokens` plus `serving.launch.requirements` for worker
@@ -230,14 +229,33 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `worker_general`, `worker_math`, and `toolrunner` are structured provenance,
   not gaps. Generated descriptors and stack priors are now `status: compiled`;
   stack-prior role records have empty `known_gaps`.
+- Completed in `03ed49f`: `Role.ARCHITECT_CODING` is now an enum alias of live
+  `Role.ARCHITECT_GENERAL`, legacy `"architect_coding"` strings normalize to
+  `architect_general`, and default/strict guards are clean.
+- Completed in `e7fab9d`: KV adaptive compression and legacy tool permission
+  lookup now normalize stale role runtime surfaces. `coder_escalation` and
+  `worker_summarize` use shared frontdoor layer evidence, retired
+  `architect_coding` is absent from active KV layer tables, roles without
+  current layer evidence fall back to uniform compression, production port
+  helpers use live role names, and `ToolRegistry` compatibility strings
+  canonicalize via `Role.from_string()`.
+- Completed in `603ad6b`: AutoPilot system-card generation now renders active
+  `live_stack` role rows from `orchestration/derived/stack_priors.yaml`,
+  including shared aliases and launch port sets. Raw registry rows are
+  degraded fallback only; tests prove stale registry/candidate rows do not leak
+  into the controller prompt.
+- Completed in `b8a1abc`: hardcoded-surface scanner coverage now flags stale
+  launch-wrapper static inventory in `scripts/server/*.sh`, including removed
+  architect role/port, old model names, fixed RAM totals, and obsolete
+  HOT/core wording. Focused guard tests cover both the stale and
+  manifest-derived shapes.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
-- Known hardcoded/stale surfaces still include
-  `orchestration/model_quality_signatures.yaml`, `src/roles.py` compatibility
-  aliases that must be audited before the `2026-07-31` exception expiry,
-  feature-flag metadata for the removed LangGraph architect-coding node, and
-  docs/tests that can preserve outdated model assumptions.
+- Known hardcoded/stale surfaces now exclude this low-risk runtime/controller
+  cleanup class. Remaining tracked surfaces are legacy-test/historical-doc
+  references and other classified consumer migrations that still need
+  generated-source ownership.
 
 ## Waypoints
 
@@ -255,7 +273,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
