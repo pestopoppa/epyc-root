@@ -244,7 +244,7 @@ Source: intake-338/345. Tier 2b completion details now live in [`meta-harness-op
 
 Source: intake-359/360/361 (SearXNG), intake-372 (Crawl4AI). Full four-step chain: SearXNG (step 1, search) → Crawl4AI (steps 2+3, scrape+crawl) → Camofox (step 4, browser, intake-524). SX-1–4 done. CA-1–5 (Crawl4AI steps 2+3) are independent — no AR-3 gate, no Camofox dependency, can start now. See [`searxng-search-backend.md`](searxng-search-backend.md).
 
-- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14. SearXNG in `DOCKER_SERVICES` (port 8090). Config: `config/searxng/settings.yml`.
+- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14; port drift audited 2026-06-13. SearXNG in `DOCKER_SERVICES` on host port `8888` (container port `8080`). Config: `config/searxng/settings.yml`. Do not probe `8090`; that is part of the BGE embedding pool and returns llama-server 404s for `/search`.
 - [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. JSON API backend in `search.py` with DDG fallback.
 - [x] **SX-3: Engine tuning** — ✅ 2026-04-14. Google inactive, DDG/Brave/Wikipedia/Qwant weighted, per-engine timeout 3.0s.
 - [x] **SX-4: `unresponsive_engines[]` telemetry** — ✅ 2026-04-14. Logged on every call with failures.

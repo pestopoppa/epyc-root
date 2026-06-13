@@ -2,14 +2,14 @@
 
 **Status**: SX-1–4 done; CA-1–5 ready to start; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
-**Updated**: 2026-05-05 (merged Crawl4AI steps 2+3; renamed from "SearXNG Search Backend")
+**Updated**: 2026-06-13 (port drift audit: managed SearXNG host port is 8888, not 8090)
 **Categories**: search_retrieval, tool_implementation
 **Tracked in**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P12
 
 ## Four-Step Chain
 
 ```
-Step 1: SearXNG  (port 8090) — search, returns candidate URLs           SX-1–4 done, SX-5/6 gated on AR-3
+Step 1: SearXNG  (host port 8888) — search, returns candidate URLs      SX-1–4 done, SX-5/6 gated on AR-3
 Step 2: Crawl4AI (port 8086) — single-page markdown extraction          CA-1–5 ready now
 Step 3: Crawl4AI (port 8086) — limited multi-page crawl (docs/logs)    CA-7 (deferred)
 Step 4: Camofox  (port 9377) — full browser, last resort only           CA-6 (deferred, intake-524)
@@ -43,7 +43,7 @@ Problems: (1) Layout changes break regex parsers, (2) Bot detection blocks after
 ## Proposed Architecture
 
 ```
-SearXNG Docker container (port 8090, ~183MB)
+SearXNG Docker container (host port 8888, container port 8080, ~183MB)
   GET /search?q=...&format=json&engines=duckduckgo,brave,wikipedia,qwant
   → JSON: {results: [{url, title, content, engines[], positions[], score}], suggestions[], unresponsive_engines[]}
   → ColBERT reranker (S5): MaxSim on snippet content field, top-3
@@ -58,7 +58,7 @@ Add to `DOCKER_SERVICES` list alongside NextPLAID containers:
 ```python
 {
     "name": "searxng",
-    "port": 8090,
+    "port": 8888,
     "image": "docker.io/searxng/searxng:latest",
     "description": "Metasearch aggregator (JSON API)",
     "volumes": [
@@ -110,7 +110,7 @@ The `engines=` API parameter also allows per-request engine selection — could 
 def _search_searxng(query: str, max_results: int = 5) -> list[dict[str, str]]:
     params = {"q": query, "format": "json"}
     resp = urllib.request.urlopen(
-        urllib.request.Request(f"http://localhost:8090/search?{urllib.parse.urlencode(params)}"),
+        urllib.request.Request(f"http://localhost:8888/search?{urllib.parse.urlencode(params)}"),
         timeout=10,
     )
     data = json.loads(resp.read())
@@ -178,7 +178,7 @@ Verdict is `PROCEED` / `HOLD` / `INSUFFICIENT_DATA`. Thresholds: bad-query rate 
 
 Mirrors P12 in [`routing-and-optimization-index.md`](routing-and-optimization-index.md). Both locations must stay in sync.
 
-- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14. SearXNG in `DOCKER_SERVICES` (port 8090, ~183MB). Config: `config/searxng/settings.yml`. Health check fix: `health_path: "/"` (SearXNG has no `/health`). **TESTED**: Container starts, health check passes, serves JSON on `/search?format=json`.
+- [x] **SX-1: Docker container deployment** — ✅ 2026-04-14; port drift audited 2026-06-13. SearXNG in `DOCKER_SERVICES` on host port `8888` (container port `8080`, ~183MB). Config: `config/searxng/settings.yml`. Health check fix: `health_path: "/"` (SearXNG has no `/health`). **TESTED**: Container starts, health check passes, serves JSON on `/search?format=json`. **Launch hygiene note**: do not use host port `8090`; `8090-8095` are BGE embedding servers and return llama-server 404s for `/search`.
 - [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. Added to `search.py`. Returns `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper tries SearXNG first when flag enabled, falls back to DDG on failure. **TESTED**: 3/3 query types pass (normal 908ms, domain-filtered 653ms, niche 836ms). Multi-engine consensus confirmed (3-engine score ~9.9, 2-engine ~3.3, 1-engine <1).
 - [x] **SX-3: Engine tuning** — ✅ 2026-04-14. `config/searxng/settings.yml`: Google `inactive: true`, DDG weight 1.2, Brave 1.1, Wikipedia 1.0, Qwant 0.9. Per-engine timeout 3.0s, Qwant `retry_on_http_error: true`.
 - [x] **SX-4: `unresponsive_engines[]` telemetry** — ✅ 2026-04-14. `_search_searxng()` logs `searxng unresponsive_engines: ...` on every call with failures. Folded into AR-3 Package D Phase 6b for production validation.
