@@ -119,6 +119,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   artifact now carries a versioned structural contract, and missing required
   role/serving/prior fields fail validation. Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
+  The generated artifact source metadata was refreshed after the latest
+  retired-role exception commit in `cbaceec`.
   Strict mode intentionally fails until descriptor gaps are resolved and the
   remaining model-specific consumers migrate or receive explicit exception
   metadata.
