@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, proactive thinking-trigger routing to live architect, and seeding throughput-prior provenance; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK with known retired-role all-surface warnings
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -56,6 +56,14 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `delegation_stage.py` and `proactive_stage.py` now treat only
   `architect_general` as the live architect branch trigger, dropping live guard
   warnings from 83 to 81.
+- Proactive deep-reasoning trigger cleanup landed in `epyc-orchestrator`
+  `53f12e0`: `/think` / `/ultrathink`-style triggers now route to live
+  `architect_general` instead of the removed dedicated thinking role, stale
+  comments were updated, and a unit regression covers the routing behavior.
+  Validation: proactive/langgraph focused pytest -> 98 passed; `py_compile`;
+  no active proactive stale thinking-role strings by `rg`;
+  `stack_change_guard.py --all-hardcoded-surfaces` -> 90 known warnings only;
+  `git diff --check`.
 - A low-risk chat routing cleanup landed in `epyc-orchestrator` `519f710`:
   `_role_to_task_type()` dropped a redundant retired-role check and added
   current live-role mapping coverage, reducing live guard warnings from 81 to
@@ -317,6 +325,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior ports and malformed port values are excluded, while prior-only
   live ports are included alongside manifest HOT/WARM, NUMA replica, Docker,
   and `PORT_MAP` cleanup ports.
+- Completed in `53f12e0`: proactive delegation now routes `/think`,
+  `/ultrathink`, and related deep-reasoning trigger phrases to live
+  `architect_general` instead of the removed dedicated thinking role. Adjacent
+  comments were updated and `tests/unit/test_proactive_delegator.py` carries
+  the regression.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -413,7 +426,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   retired roles (`e6e10d8`); chat routing heuristic priors now filter through
   live stack-prior roles (`eb4dac5`); role docs and active PydanticGraph /
   LangGraph topology no longer expose a retired architect-coding node
-  (`0b1e5e9`, `3c7a85e`).
+  (`0b1e5e9`, `3c7a85e`); proactive deep-reasoning trigger routing now targets
+  live `architect_general` instead of the removed thinking role (`53f12e0`).
   Seeding reward TPS/cost priors migrated to stack-prior discovery in the
   expanded CRITICAL-path pass `7ecf847`; `6af8b3d` adds explicit throughput
   prior provenance for config override, stack-prior, degraded fallback, and
