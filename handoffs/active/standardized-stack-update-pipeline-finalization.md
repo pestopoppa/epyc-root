@@ -48,7 +48,7 @@ Read-only audit and lightweight validation on 2026-06-13 found:
 - Launch witness contract v2 landed in `epyc-orchestrator` `7917535`: generated stack priors now require `serving.launch.entries` and the guard compares launch mode, alias status, primary role, and optional NUMA/worker/vision instance metadata against the computed manifest.
 - Launch-context/path witness contract v3 landed in `epyc-orchestrator` `a001017`: generated stack priors now require `serving.effective_context_tokens` and `serving.launch.requirements`, and the guard compares Gemma worker model/draft paths plus VL model/mmproj paths against computed stack-manifest launch truth.
 - Launch-runtime witness contract v4 landed in `epyc-orchestrator` `33c81ff`: generated stack priors now require `serving.launch.runtime`, include launcher/path/runtime source hashes, and guard effective binary, runtime requirements, cache/KV, slot/save, and launch flag/spec state against computed stack-manifest launch truth.
-- Supporting sidecar audits are retained under `handoffs/completed/`; active follow-up now lives in `model-stack-update-pipeline-audit.md`. Shared-runtime alias semantics are resolved as of `epyc-orchestrator` `a7b72a9`: `worker_math` and `toolrunner` are generated as aliases on the Gemma worker runtime descriptor, not standalone live Qwen servers. Runtime witness coverage is resolved as of `33c81ff`; the remaining blockers are simulated data-only swap fixtures, descriptor-native model context/KV and measurement gaps, and scanner coverage for launch/feature/tool permission surfaces. q_scorer live/degraded provenance is available as of `d6912e7`; unsafe conflicted descriptor updates are blocked as of `4ca702d`.
+- Supporting sidecar audits are retained under `handoffs/completed/`; active follow-up now lives in `model-stack-update-pipeline-audit.md`. Shared-runtime alias semantics are resolved as of `epyc-orchestrator` `a7b72a9`: `worker_math` and `toolrunner` are generated as aliases on the Gemma worker runtime descriptor, not standalone live Qwen servers. Runtime witness coverage is resolved as of `33c81ff`; simulated data-only stack-change fixtures are resolved as of `fb0fd6d`; the remaining blockers are descriptor-native model context/KV and measurement gaps plus scanner coverage for launch/feature/tool permission surfaces. q_scorer live/degraded provenance is available as of `d6912e7`; unsafe conflicted descriptor updates are blocked as of `4ca702d`.
 - Live read-only result after `60733c7`: `uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps` still exits 1 because the descriptor artifact is stale, but REAP coverage, core domain modalities, GraphRouter offline action-space consumers, the concrete shared-alias `PORT_MAP` mismatch, active VL ReAct port consumer, shared `server_mode` alias-port validation, AutoPilot preflight health targets, and AutoPilot program endpoint guidance are no longer blockers. Stack priors and procedure enums are fresh; strict known gaps are warnings under the compatibility flag.
 
 ## Prior Pipeline Work Found
@@ -227,16 +227,14 @@ Minimal pipeline phases:
   - **2026-06-13 partial**: `7917535` bumped stack-prior contract v2 and added guarded `serving.launch.entries` witness data for launch mode, alias status, primary role, and optional NUMA/worker/vision instance metadata.
   - **2026-06-13 partial**: `a001017` bumped stack-prior contract v3 and added guarded `serving.effective_context_tokens` plus `serving.launch.requirements` for Gemma worker model/draft paths and VL model/mmproj paths.
   - **2026-06-13 partial**: `33c81ff` bumped stack-prior contract v4 and added guarded `serving.launch.runtime` effective runtime witness records with launcher/path/runtime source hashes.
-  - Continue by adding simulated data-only stack-change fixtures and closing descriptor-native context/KV/measurement strict gaps.
+  - Continue by closing descriptor-native context/KV/measurement strict gaps and remaining hardcoded-surface cleanup.
   - Ensure health/status/probe code reads stack-prior serving records or validated launch metadata.
   - Target files: `scripts/server/stack_manifest.py`, `scripts/server/stack_numa.py`, `scripts/server/stack_commands.py`, `scripts/server/orchestrator_stack.py`, `src/cli_orch.py`, `src/api/routes/dashboard_topology.py`, `tests/unit/test_model_server_coverage.py`, `tests/unit/test_stack_change_guard.py`, `tests/unit/test_build_server_command_helpers.py`.
 
-- [ ] **P3 - Add simulated data-only stack-change CI fixtures.**
-  - Fixture A: shared-mmap role swap where `frontdoor` and `coder_escalation` keep one model identity and one memory owner.
-  - Fixture B: role retirement where `architect_coding` remains historical/compatibility-only and cannot appear in live priors.
-  - Fixture C: worker-family shared runtime with launch-specific requirements such as gemma4 MTP / ik binary.
-  - Acceptance: changing fixture registry/descriptor inputs regenerates consumer outputs with no production-code edits.
-  - Target tests: `tests/unit/test_stack_priors_compiler.py`, `tests/unit/test_stack_change_guard.py`, `tests/unit/test_q_scorer.py`, new `tests/unit/test_stack_change_workflow.py` if needed.
+- [x] **P3 - Add simulated data-only stack-change CI fixtures.**
+  - DONE in `fb0fd6d`: `tests/unit/test_stack_change_pipeline_simulated_fixtures.py` covers frontdoor/coder shared-runtime swaps, worker-family aliases, retired-role enum cleanup, stale runtime requirements, and context/KV/acceleration drift.
+  - `stack_change_pipeline.py check` now prints the simulated fixture pytest target as a reference step.
+  - Acceptance: fixture registry/descriptor inputs regenerate consumer outputs with no production-code edits; stale drift is rejected before promotion.
 
 - [ ] **P4 - Add provenance plumbing for live vs degraded consumer values.**
   - **2026-06-13 partial**: `8cf0310` migrated GraphRouter training fleet discovery from a stale hardcoded model table to generated stack priors. Live smoke returned 10 HOT live roles with current shared ports and no retired `architect_coding`; `--all-hardcoded-surfaces` stayed at `WARN: 109`.
@@ -270,12 +268,12 @@ P0 descriptor/contract gaps
   -> P4 provenance plumbing
   -> P5 generated operator summaries
 
-P3 simulated swaps
+P3 simulated swaps (complete in fb0fd6d)
   -> strict guard promotion
   -> launch gate enforcement
 ```
 
-P1 can begin immediately by composing existing scripts and preserving current gaps as failures/warnings. P2 can also begin before P0 is completely done for obvious stale maps such as `coder_escalation: 8071`, but strict launch enforcement should wait until P0 and P3 are green.
+P1 can begin immediately by composing existing scripts and preserving current gaps as failures/warnings. P2 can also begin before P0 is completely done for obvious stale maps such as `coder_escalation: 8071`; P3 is complete as of `fb0fd6d`, so strict launch enforcement now waits on P0 strict-gap closure and the P6 launch gates.
 
 ## Cross-Cutting Concerns
 
@@ -335,7 +333,7 @@ Add launch/config/dashboard tests when touching those consumers.
 2. **DONE 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`, `4ca702d`, `a7b72a9`) - Resolve descriptor/compiler drift reported by the new command through shared-runtime alias semantics.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, retain domain modalities, block generated descriptor updates when role/server conflicts are present, and represent `worker_math`/`toolrunner` as live aliases on the Gemma worker runtime descriptor. `check --allow-known-gaps` now passes with expected known-gap warnings; remaining descriptor work is strict-contract field coverage, not the shared-runtime conflict blocker.
 3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, and GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
 4. **Start P0 descriptor-native strict gaps.** Extend descriptor and stack-prior schemas with model-native `ctx_model_max`, KV/cache, binary/runtime family, acceleration flags, measurement status, and any remaining descriptor-native projector fields. Regenerate with `--allow-incomplete` first, then shrink strict warnings.
-5. **PARTIAL 2026-06-13 (`d4acf24`, `06ff53c`, `40d46ea`, `a5aaafb`, `60733c7`, `cf73ac1`, `312b28e`, `dc14196`, `7917535`, `a001017`, `33c81ff`) - Fix the serving/launch drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings; the active vision ReAct path and AutoPilot preflight health probes now read ports from generated stack-prior serving records; shared `server_mode` alias rows now warn on stale ports for covered launch roles; the AutoPilot program prompt now derives compaction endpoints from stack priors and has guard coverage against static endpoint/tier recurrence; generated live serving endpoint/primary-port/tier drift, exact launch port sets, launch-entry witness data, effective launch context, worker/VL model-path requirements, and effective runtime/binary/cache/KV/flag state are checked against the computed launch manifest. Continue with simulated data-only stack-change fixtures and descriptor-native strict-gap closure.
+5. **PARTIAL 2026-06-13 (`d4acf24`, `06ff53c`, `40d46ea`, `a5aaafb`, `60733c7`, `cf73ac1`, `312b28e`, `dc14196`, `7917535`, `a001017`, `33c81ff`, `fb0fd6d`) - Fix the serving/launch drift path.** The concrete shared-alias `PORT_MAP` mismatch is fixed and covered by tests/registry warnings; the active vision ReAct path and AutoPilot preflight health probes now read ports from generated stack-prior serving records; shared `server_mode` alias rows now warn on stale ports for covered launch roles; the AutoPilot program prompt now derives compaction endpoints from stack priors and has guard coverage against static endpoint/tier recurrence; generated live serving endpoint/primary-port/tier drift, exact launch port sets, launch-entry witness data, effective launch context, worker/VL model-path requirements, and effective runtime/binary/cache/KV/flag state are checked against the computed launch manifest; simulated data-only fixtures now exercise stack-change drift without production-code edits. Continue with descriptor-native strict-gap closure and hardcoded-surface cleanup.
 
 ## Reporting Instructions
 

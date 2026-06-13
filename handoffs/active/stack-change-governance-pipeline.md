@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness and shared-runtime alias semantics; strict mode blocked on remaining descriptor-native context/measurement, hardcoded-surface, and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, shared-runtime alias semantics, and simulated data-only workflow fixtures; strict mode blocked on remaining descriptor-native context/measurement, hardcoded-surface, and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -181,6 +181,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Completed in `33c81ff`: contract v4 launch-runtime projection adds an
   effective runtime witness under `serving.launch.runtime`, with
   launcher/path/runtime source hashes and guard comparison.
+- Completed in `fb0fd6d`: simulated data-only stack-change fixtures now cover
+  frontdoor/coder shared-runtime swaps, worker-family aliases, retired-role enum
+  cleanup, runtime-requirement drift, and context/KV/acceleration drift. The
+  canonical pipeline now prints the fixture pytest target as a reference step.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -206,7 +210,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -222,6 +226,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   semantics now compile without role/server conflict gaps for `worker_math`
   and `toolrunner`. Contract v4 runtime witness projection landed in
   `33c81ff`; generated priors now include guarded effective runtime records.
+  Simulated data-only stack-change fixtures landed in `fb0fd6d`, exercising
+  shared-runtime swaps, retired-role removal, stale runtime requirements, and
+  context/KV/acceleration drift without production-code edits.
   Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
