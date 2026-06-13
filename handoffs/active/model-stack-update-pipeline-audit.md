@@ -1,6 +1,6 @@
 # Model Stack Update Pipeline Audit
 
-**Status**: IN PROGRESS 2026-06-13 - Phase A scanner landed; implementation continues in main workflow
+**Status**: IN PROGRESS 2026-06-13 - Phase A scanner and procedure-role sync landed; implementation continues in main workflow
 **Priority**: HIGH - stale model constants can silently misroute, mis-score, or launch the wrong stack after a model change
 **Scope**: Documentation/audit only. No orchestrator or research code was changed for this draft.
 **Related**: [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [running-state-attestation.md](../completed/running-state-attestation.md), [model-registry-v5-deployment-draft.yaml](model-registry-v5-deployment-draft.yaml), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -31,6 +31,10 @@ The desired future shape is not a second registry system. Treat the current stac
   `stack_change_guard.py` now reports categorized production-blocker,
   legacy-test, and historical-doc surfaces, with normal guard output scoped to
   production blockers and `--all-hardcoded-surfaces` available for full audits.
+- Procedure role/schema enum sync landed in `epyc-orchestrator` `f49f14d`:
+  `scripts/registry/sync_procedure_role_enums.py` syncs
+  `add_model_to_registry.yaml` and `procedure.schema.json` from
+  `stack_priors.yaml`, and `stack_change_guard.py` now errors on drift.
 - `progress/2026-06/2026-06-13.md` records the exact lineage: descriptor consumers for AutoPilot and q_scorer landed first, then `a1e04d5` added the derived stack-prior guardrail. Strict mode is intentionally not green until descriptor gaps and remaining consumers are closed.
 - `handoffs/active/model-capability-descriptors.md` is the model-agnostic interface. W3 still lists seeder per-role eval config and stack-launch acceleration args as open consumers.
 - The research master registry explicitly says the active per-role stack lives in the orchestrator lean registry: `/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml`. Current stack-priors compilation reads the lean orchestrator registry, not the research master.
@@ -45,7 +49,7 @@ Evidence:
 - `stack_priors.py` compiles role records with model id, endpoint, tier, throughput, quality prior, memory cost, acceleration metadata, source hashes, and known gaps.
 - `stack_change_guard.py` currently validates source hashes, missing live role basics, retired live role `architect_coding`, HOT memory cost, and strict-mode known gaps.
 
-Assessment: this is the right foundation. The main missing pieces are broader consumer migration, stricter drift scanning, simulated swaps, and launch/runbook enforcement.
+Assessment: this is the right foundation. The main missing pieces are broader consumer migration, explicit exception metadata, simulated swaps, and launch/runbook enforcement.
 
 ### Model-capability descriptor pipeline
 
@@ -76,7 +80,7 @@ Evidence:
 - `/mnt/raid0/llm/epyc-orchestrator/orchestration/procedures/update_registry_performance.yaml`
 - `/mnt/raid0/llm/epyc-orchestrator/docs/chapters/11-procedure-registry.md`
 
-Assessment: these are partial rollback/YAML recipes, not a safe stack-update pipeline. `add_model_to_registry.yaml` still has stale role enums including `architect_coding` and duplicated `coder_escalation`, and neither procedure compiles descriptors/stack priors, checks consumers, simulates swaps, or validates launch truth.
+Assessment: these are partial rollback/YAML recipes, not a safe stack-update pipeline. The `add_model_to_registry.yaml` role enum and procedure schema permission enum now compile from stack priors (`f49f14d`), but neither procedure compiles descriptors/stack priors, checks consumers, simulates swaps, or validates launch truth.
 
 ### Benchmarking and server-mode practices
 
@@ -143,7 +147,7 @@ Assessment: docs and generated public manifests need separate drift policy. They
    - Needed guard: stack priors must include launch requirements and `orchestrator_stack.py` must either consume them or fail closed when they are unresolved.
 
 6. **The current stack-change guard is too narrow for model-swap safety.**
-   - Evidence: `stack_change_guard.py` validates hashes, basic live role shape, retired live roles, HOT memory cost, and strict known gaps. It does not yet scan hardcoded model specs, procedure enums, docs/runbooks, seeder defaults, bilinear features, or launch constants.
+   - Evidence: `stack_change_guard.py` validates hashes, basic live role shape, retired live roles, HOT memory cost, strict known gaps, curated hardcoded surfaces, and generated procedure role/schema enums. It does not yet provide owner/review metadata for intentional exceptions or cover launch constants with generated launch requirements.
    - Risk: generated artifact is fresh while a downstream consumer remains stale.
    - Needed guard: W3 strict mode needs a curated hardcoded-surface scanner with allowlist categories: production blocker, degraded fallback, legacy test, historical doc.
 
@@ -173,8 +177,9 @@ Assessment: docs and generated public manifests need separate drift policy. They
 
 - [x] Add a no-inference scanner under `epyc-orchestrator/scripts/validate/` or extend `stack_change_guard.py`.
 - [x] Output categories: production blocker, legacy test, and historical docs.
+- [x] Add generated procedure role/schema enum sync plus exact drift checks (`f49f14d`).
 - [ ] Add an external allowlist/config once production blockers start being closed and intentional exceptions need owner/review metadata.
-- Initial live findings from `bfa90fa`: production blockers remain in seeding/eval defaults, seeding reward TPS fallback, bilinear model specs, legacy CLI probing, procedure role enums, API/config/routing surfaces, LangGraph nodes, runtime tap/lock helpers, and OpenAI compatibility docs. These are now machine-visible instead of a manual `rg` checklist.
+- Live findings after `f49f14d`: production blockers remain in seeding/eval defaults, seeding reward TPS fallback, API/config/routing surfaces, LangGraph nodes, runtime tap/lock helpers, and OpenAI compatibility docs. These are machine-visible instead of a manual `rg` checklist.
 
 ### Phase B - Expand stack-prior coverage
 
@@ -191,6 +196,7 @@ Priority order:
 3. [ ] `orchestration/model_quality_signatures.yaml`: keep as legacy fallback only, or generate it from descriptors with a visible `_source` and `compiled_at`.
 4. [ ] `scripts/server/orchestrator_stack.py` / `stack_manifest.py`: consume stack-prior launch requirements or fail when descriptor/registry acceleration disagrees with hardcoded launch metadata.
 5. [ ] Operator docs/manifests and probes: `orch status` now derives live probe targets from stack priors with a current fallback (`epyc-orchestrator` `1fe12ec`); remaining work is generated operator-facing stack tables/manifests.
+6. [x] Procedure registry role choices: `add_model_to_registry.yaml` and `procedure.schema.json` now sync from stack priors and fail the guard on drift (`epyc-orchestrator` `f49f14d`).
 
 ### Phase D - Strict guard and simulated model-swap CI
 
@@ -218,6 +224,7 @@ cd /mnt/raid0/llm/epyc-orchestrator
 python3 -m py_compile \
   src/registry/stack_priors.py \
   scripts/registry/compile_stack_priors.py \
+  scripts/registry/sync_procedure_role_enums.py \
   scripts/validate/stack_change_guard.py \
   scripts/registry/compile_descriptors.py \
   src/registry/model_descriptors.py \
@@ -225,6 +232,7 @@ python3 -m py_compile \
 
 uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
 uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
+python3 scripts/registry/sync_procedure_role_enums.py --check
 uv run python scripts/validate/stack_change_guard.py
 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
 uv run python scripts/validate/stack_change_guard.py --strict
@@ -232,6 +240,7 @@ uv run python scripts/validate/stack_change_guard.py --strict
 uv run --with pytest pytest -q \
   tests/unit/test_stack_priors_compiler.py \
   tests/unit/test_stack_change_guard.py \
+  tests/unit/test_sync_procedure_role_enums.py \
   tests/unit/test_model_descriptors_schema.py \
   tests/unit/test_model_descriptor_compiler.py \
   tests/unit/test_q_scorer.py
@@ -266,8 +275,8 @@ Expected current state: strict stack-prior validation may fail until descriptor 
 ## Explicit Next Steps for Main Workflow
 
 1. In `stack-change-governance-pipeline.md`, keep W4 focused on consumer migration and cite this audit as the hardcoded-surface inventory.
-2. Implement the Phase A scanner first. It is no-inference, gives immediate drift visibility, and prevents W4 from becoming a manual grep checklist.
-3. Migrate `seeding_types.py` and `bilinear_scorer.py` next; they are the clearest remaining live-or-near-live hardcoded consumers after q_scorer and AutoPilot planner signatures.
+2. Add external allowlist/owner metadata before suppressing any remaining production-blocker warnings.
+3. Tackle API/config/routing and LangGraph retired-role cleanup as separate blast-radius passes; keep `seeding_rewards.py` separate because GitNexus marks the reward path CRITICAL.
 4. Extend `stack_priors.py` to include launch requirements before changing `orchestrator_stack.py`. Launcher migration without generated launch facts would just move the hardcoding.
 5. Add simulated model-swap tests before marking W4/W5 complete. The acceptance criterion is data-only model substitution with no stale role/model/port/cost leakage.
 6. Wire strict guard + attestation into launch only after strict mode can pass or produce intentional, operator-readable exceptions.

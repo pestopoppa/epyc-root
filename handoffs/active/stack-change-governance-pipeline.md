@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner live, strict mode blocked on descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum drift checks live, strict mode blocked on descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -37,14 +37,17 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Phase A hardcoded-surface scanning landed in `epyc-orchestrator` `bfa90fa`;
   normal guard output now reports categorized production-blocker model/stack
   constants, with `--all-hardcoded-surfaces` for docs/tests audit mode.
+- Procedure role choices are now generated/guarded in `epyc-orchestrator`
+  `f49f14d`: `scripts/registry/sync_procedure_role_enums.py` syncs
+  `add_model_to_registry.yaml` and the procedure JSON schema from
+  `stack_priors.yaml`; `stack_change_guard.py` now errors on drift.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
 - Known hardcoded/stale surfaces still include
-  `orchestration/model_quality_signatures.yaml`,
-  `orchestration/repl_memory/bilinear_scorer.py` model features,
-  seeding/eval scripts that still name `architect_coding`, and docs/tests that
-  can preserve outdated model assumptions.
+  `orchestration/model_quality_signatures.yaml`, seeding/eval scripts that
+  still name `architect_coding`, API/config/routing and LangGraph retired-role
+  paths, and docs/tests that can preserve outdated model assumptions.
 
 ## Waypoints
 
@@ -62,17 +65,17 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
   Current loose mode passes with warnings and validates artifact freshness plus
   hard live invariants. The hardcoded-surface scanner now exposes production
-  blockers in seeding/eval defaults, bilinear specs, legacy port probes,
-  procedure enums, API/config/routing surfaces, LangGraph nodes, and runtime
-  helpers. Strict mode intentionally fails until descriptor gaps are resolved
-  and the remaining model-specific consumers migrate or receive explicit
-  exception metadata.
+  blockers in seeding/eval defaults, API/config/routing surfaces, LangGraph
+  nodes, and runtime helpers. Procedure input/schema role enums are now
+  exact-generated from stack priors and fail the guard on drift. Strict mode
+  intentionally fails until descriptor gaps are resolved and the remaining
+  model-specific consumers migrate or receive explicit exception metadata.
 - [ ] **W4 — Consumer migration** (2-3 days): migrate q_scorer, AutoPilot
   planner signatures, seeder per-role eval config, bilinear scorer model
   features, eval-tower model signatures, and launch-arg assembly to the derived
@@ -82,8 +85,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   (`d5fe713`/`15d8cff`), and seeding default role/cost-tier discovery
   (`72f7dc2`) have migrated partially; bilinear model features now prefer
   stack-prior model specs (`10b3bce`); `orch status` now derives probe targets
-  from stack priors (`1fe12ec`). `seeding_rewards.py` remains deferred because
-  GitNexus marks `compute_comparative_rewards` CRITICAL.
+  from stack priors (`1fe12ec`); procedure role/schema enums sync from stack
+  priors (`f49f14d`). `seeding_rewards.py` remains deferred because GitNexus
+  marks `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
@@ -129,10 +133,13 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - `epyc-orchestrator/orchestration/model_descriptors.yaml`
 - `epyc-orchestrator/scripts/registry/compile_descriptors.py`
 - `epyc-orchestrator/scripts/registry/compile_stack_priors.py`
+- `epyc-orchestrator/scripts/registry/sync_procedure_role_enums.py`
 - `epyc-orchestrator/src/registry/model_descriptors.py`
 - `epyc-orchestrator/src/registry/stack_priors.py`
 - `epyc-orchestrator/docs/reference/stack-truth-precedence.md`
 - `epyc-orchestrator/orchestration/derived/stack_priors.yaml`
+- `epyc-orchestrator/orchestration/procedure.schema.json`
+- `epyc-orchestrator/orchestration/procedures/add_model_to_registry.yaml`
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py`
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
 - `epyc-orchestrator/orchestration/repl_memory/bilinear_scorer.py`
@@ -149,13 +156,14 @@ Run after any stack/model change and before an AutoPilot restart:
 
 ```bash
 cd /mnt/raid0/llm/epyc-orchestrator
-python3 -m py_compile src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
+python3 -m py_compile src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/registry/sync_procedure_role_enums.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
 uv run python scripts/registry/compile_descriptors.py --dry-run --allow-incomplete
 uv run python scripts/registry/compile_stack_priors.py --allow-incomplete
+python3 scripts/registry/sync_procedure_role_enums.py --check
 uv run python scripts/validate/stack_change_guard.py
 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
-uv run --with pytest pytest -q tests/unit/test_stack_priors_compiler.py tests/unit/test_stack_change_guard.py tests/unit/test_model_descriptors_schema.py tests/unit/test_model_descriptor_compiler.py tests/unit/test_q_scorer.py
-uv run --with ruff ruff check src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
+uv run --with pytest pytest -q tests/unit/test_stack_priors_compiler.py tests/unit/test_stack_change_guard.py tests/unit/test_sync_procedure_role_enums.py tests/unit/test_model_descriptors_schema.py tests/unit/test_model_descriptor_compiler.py tests/unit/test_q_scorer.py
+uv run --with ruff ruff check src/registry/stack_priors.py scripts/registry/compile_stack_priors.py scripts/registry/sync_procedure_role_enums.py scripts/validate/stack_change_guard.py orchestration/repl_memory/q_scorer.py scripts/registry/compile_descriptors.py src/registry/model_descriptors.py
 git diff --check
 ```
 
