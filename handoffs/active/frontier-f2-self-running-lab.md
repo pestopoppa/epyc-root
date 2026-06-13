@@ -2,9 +2,9 @@
 
 **Status**: W1 branch-ready; W2 runner + shadow-batch wrapper branch-ready; W3 promotion-gate scaffold branch-ready; W2 live nightly deployment/scoring + W3 evidence collection + W4 still open (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
-**Priority**: HIGH but GATED on N1–N4 instrument repair + F5 injection policy
+**Priority**: HIGH but GATED on N1–N4 instrument repair + N2 ledger; F5 injection policy is complete
 **Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F2 — read it before claiming any waypoint
-**Related**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) (capability registry); frontier-f5 (injection policy, spec §F5 — handoff not yet opened); [internal-kb-rag.md](internal-kb-rag.md) (kb-search context assembly); [delegation-context-preassembly.md](delegation-context-preassembly.md) (DCP bundles)
+**Related**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) (capability registry); [frontier-f5-intake-injection-hardening.md](../completed/frontier-f5-intake-injection-hardening.md) (injection policy, COMPLETE); [internal-kb-rag.md](internal-kb-rag.md) (kb-search context assembly); [delegation-context-preassembly.md](delegation-context-preassembly.md) (DCP bundles)
 
 ## Why
 
@@ -25,7 +25,7 @@ rewrite) now exist or are queued; this is the 10× on the lab itself.
 
 ## Gates & pitfalls
 
-- HARD GATES: N1–N4 instrument repair done; F5 injection policy landed before any intake-touching job runs.
+- HARD GATES: N1–N4 instrument repair done; N2 ledger/restart-bundle gates satisfied for live promotion. F5 injection policy is complete; intake-touching jobs must preserve the `SOURCE-QUARANTINE` convention.
 - Review queue is mandatory — CLAUDE.md forbids sub-agent index modifications without approval; the queue IS the compliance mechanism. No job writes directly to handoffs/indices.
 - No job may self-modify `lab_jobs.yaml` or any trust-boundary file (add to safety-reviewer guardrails).
 - Context assembly is the cost center — budget it (DCP bundles, per-job token caps); lab jobs share the stack with the autopilot — run in the contention gate's background class, off-peak.
