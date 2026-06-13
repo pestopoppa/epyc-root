@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v2 launch witness, strict mode blocked on descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v2 launch witness and shared-runtime alias semantics, strict mode blocked on context/mmproj/KV/binary/acceleration descriptor and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -166,6 +166,13 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   generated priors now require `serving.launch.entries`, and the guard compares
   launch mode, alias status, primary role, and optional NUMA/worker/vision
   instance metadata against computed launch-manifest roles.
+- Shared-runtime descriptor alias semantics landed in `epyc-orchestrator`
+  `a7b72a9`: generated descriptors now merge `worker_math` and `toolrunner`
+  into the primary Gemma worker runtime descriptor, remove standalone live Qwen
+  math/toolrunner descriptors, retain live role bindings in stack priors, and
+  record ignored non-live alias metadata as known gaps instead of role/server
+  conflicts. `stack_change_pipeline.py check --allow-known-gaps` now passes
+  with expected known-gap warnings.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -191,7 +198,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -202,7 +209,8 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   exact-generated from stack priors and fail the guard on drift. The generated
   artifact now carries a versioned structural contract, contract v2 requires
   `serving.launch.entries`, and missing required role/serving/prior/launch
-  fields fail validation. Hardcoded-surface exceptions now
+  fields fail validation. Shared-runtime alias semantics now compile without
+  role/server conflict gaps for `worker_math` and `toolrunner`. Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
@@ -247,8 +255,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   endpoints from stack priors (`60733c7`) with recurrence scanner coverage
   (`cf73ac1`). Generated live serving endpoint/primary-port/tier drift now
   fails the stack-change guard against the computed launch manifest (`312b28e`);
-  exact launch port sets are generated and guarded (`dc14196`), and contract v2
-  launch-entry witness data is generated and guarded (`7917535`).
+  exact launch port sets are generated and guarded (`dc14196`), contract v2
+  launch-entry witness data is generated and guarded (`7917535`), and
+  shared-runtime descriptor aliases now preserve live role coverage without
+  standalone stale Qwen runtime descriptors (`a7b72a9`).
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
