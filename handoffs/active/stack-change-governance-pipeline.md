@@ -65,6 +65,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - Dashboard in-flight age overrides no longer include retired
   `architect_coding` after `epyc-orchestrator` `1b9db81`; live guard warnings
   dropped from 79 to 78.
+- Runtime inference lock/tap heavy-role classifications dropped retired
+  `architect_coding` in `epyc-orchestrator` `6bc1f51`; live guard warnings
+  dropped from 78 to 76.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -120,7 +123,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   architect branch checks now exclude retired `architect_coding` (`481516c`);
   chat routing task-type mapping no longer hardcodes the retired role
   (`519f710`); `/v1/models` reads live roles from stack priors (`d9c053c`);
-  dashboard task-liveness overrides no longer include retired roles (`1b9db81`).
+  dashboard task-liveness overrides no longer include retired roles (`1b9db81`);
+  inference lock/tap heavy-role classifications no longer include retired roles
+  (`6bc1f51`).
   `seeding_rewards.py` remains deferred because GitNexus marks
   `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference

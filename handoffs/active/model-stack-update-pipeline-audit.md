@@ -57,6 +57,7 @@ The following examples are evidence-backed reasons this work should stay high RO
    - Third cleanup landed in `epyc-orchestrator` `519f710`: `_role_to_task_type()` no longer contains the redundant retired-role check, and the live guard warning count dropped from 81 to 80.
    - Fourth cleanup landed in `epyc-orchestrator` `d9c053c`: `/v1/models` now derives live model IDs from `stack_priors.yaml` plus compatibility aliases, and the live guard warning count dropped from 80 to 79.
    - Fifth cleanup landed in `epyc-orchestrator` `1b9db81`: `dashboard_snapshot.py` no longer carries a retired in-flight age override, and the live guard warning count dropped from 79 to 78.
+   - Sixth cleanup landed in `epyc-orchestrator` `6bc1f51`: runtime inference lock/tap heavy-role classifications no longer include retired `architect_coding`, and the live guard warning count dropped from 78 to 76.
    - `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat_routing.py:260` still seeds `_heuristic_role_priors` with `architect_coding`; GitNexus marks that function HIGH impact because it feeds streamed chat routing.
    - Risk: production routing surfaces can still emit or score a retired role even though stack priors omit it as live.
 
@@ -170,7 +171,8 @@ Priority order:
    - Separate live role config from retired compatibility fields.
    - Prefer stack-prior endpoints/timeouts where possible; make dead-port compatibility visibly retired.
 7. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
-   - Derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
+   - PARTIAL cleanup in `6bc1f51`: removed retired `architect_coding` from inference lock/tap heavy-role classifications.
+   - Remaining follow-up: derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
 
 Acceptance:
