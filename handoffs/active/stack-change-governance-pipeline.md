@@ -50,6 +50,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   documented exception file, invalid/expired entries are guard errors, and valid
   waived hardcoded-surface findings remain visible without becoming strict-mode
   errors.
+- Chat pipeline retired-role cleanup landed in `epyc-orchestrator` `481516c`:
+  `delegation_stage.py` and `proactive_stage.py` now treat only
+  `architect_general` as the live architect branch trigger, dropping live guard
+  warnings from 83 to 81.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -100,9 +104,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior model specs (`10b3bce`); `orch status` now derives probe targets
   from stack priors (`1fe12ec`); procedure role/schema enums sync from stack
   priors (`f49f14d`); admission limits now derive from stack-prior serving
-  ports/slots with a non-retired fallback (`1199f03`). `seeding_rewards.py`
-  remains deferred because GitNexus marks `compute_comparative_rewards`
-  CRITICAL.
+  ports/slots with a non-retired fallback (`1199f03`); retired API examples and
+  delegation budgets have been cleaned up (`5e7d774`, `b1402a2`); chat pipeline
+  architect branch checks now exclude retired `architect_coding` (`481516c`).
+  `seeding_rewards.py` remains deferred because GitNexus marks
+  `compute_comparative_rewards` CRITICAL.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:

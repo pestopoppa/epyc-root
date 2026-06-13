@@ -53,6 +53,7 @@ The following examples are evidence-backed reasons this work should stay high RO
 
 2. API routing and delegation still contain retired live-role constants.
    - First cleanup landed in `epyc-orchestrator` `b1402a2`: `src/api/routes/chat_delegation_decision.py` no longer keeps `architect_coding` budget defaults, and the live guard warning count dropped from 85 to 83.
+   - Second cleanup landed in `epyc-orchestrator` `481516c`: `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py` no longer treat retired `architect_coding` as an architect entrypoint, and the live guard warning count dropped from 83 to 81.
    - `/mnt/raid0/llm/epyc-orchestrator/src/api/routes/chat_routing.py:229` maps role names to task types and still checks `architect_coding`; `_heuristic_role_priors` includes `architect_coding` at line 260.
    - Risk: production routing surfaces can still emit or score a retired role even though stack priors omit it as live.
 
@@ -154,12 +155,14 @@ Priority order:
 2. `src/api/routes/chat_delegation_decision.py`
    - DONE first cleanup in `b1402a2`: removed `architect_coding` from live budget defaults.
    - Remaining follow-up: derive architect/delegation budget maps from stack-prior role policy or live architect roles instead of a local static table.
-3. `src/api/routes/chat_routing.py`
+3. `src/api/routes/chat_pipeline/delegation_stage.py` and `src/api/routes/chat_pipeline/proactive_stage.py`
+   - DONE cleanup in `481516c`: retired `architect_coding` no longer triggers delegated/proactive architect branch behavior.
+4. `src/api/routes/chat_routing.py`
    - Build heuristic priors from live stack-prior roles, not a static dict containing retired roles.
-4. `src/config/__init__.py` and `src/config/models.py`
+5. `src/config/__init__.py` and `src/config/models.py`
    - Separate live role config from retired compatibility fields.
    - Prefer stack-prior endpoints/timeouts where possible; make dead-port compatibility visibly retired.
-5. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
+6. `src/runtime/inference_lock.py`, `src/runtime/inference_tap.py`, and `src/graph/**`
    - Derive high-cost/streaming/exclusive-role classifications from stack priors or explicit role policy.
    - Confirm whether LangGraph retired-role nodes are dead code or active; either remove from live graph or label legacy/test-only.
 
