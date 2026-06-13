@@ -92,7 +92,7 @@ Adopt this as the implementation rule.
 | Live role -> server/endpoint/port/slot/tier/shared binding | `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*`, reconciled with `scripts/server/stack_manifest.py` `ROLE_LAUNCH_META` | `orchestration/derived/stack_priors.yaml` serving block | `server_mode` outranks old role metadata. |
 | Physical model identity, modality, context, speed/quality evidence, acceleration compatibility | `orchestration/model_descriptors.yaml`, generated from lean/research evidence where possible | `stack_priors.yaml` model/evidence/acceleration blocks | Descriptors must be model-keyed, not role-keyed. |
 | Comprehensive benchmark/candidate history | `epyc-inference-research/orchestration/model_registry.yaml` and benchmark artifacts | Imported into descriptors with provenance/status | Research rows are evidence/candidates, not live deployment truth. |
-| q_scorer/reward throughput and memory priors | `stack_priors.yaml` `priors.*` | Typed helper API in `src/registry/stack_priors.py` or a small runtime loader | Current q_scorer still primarily uses registry/descriptors plus fallbacks; migrate to stack priors. |
+| q_scorer/reward throughput and memory priors | `stack_priors.yaml` `priors.*` | `q_scorer.py` stack-prior loader plus existing degraded fallbacks | DONE for q_scorer live defaults in `e3d967a`; reward paths were already migrated in `7ecf847`. |
 | Procedure role enums and executor permissions | Generated from `stack_priors.yaml` | `procedure.schema.json`, `procedures/add_model_to_registry.yaml` | Already guarded by `sync_procedure_role_enums.py` and `stack_change_guard.py`. |
 | Operator/planner stack summary | Generated from stack priors + attestation | Future system-card/runbook generator | Fable 5 specifically calls out stale prompt/system-card facts as an integrity issue. |
 
@@ -138,11 +138,11 @@ Grounded in `/mnt/raid0/llm/epyc-orchestrator/orchestration/derived/stack_priors
 
 These are not all bugs, but each is a place a future stack change can go stale.
 
-1. `q_scorer.py` still has fallback tables.
+1. `q_scorer.py` has stack-prior live priors plus fallback tables.
    - File: `/mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/q_scorer.py`
-   - Current code names them `FALLBACK_BASELINE_TPS_BY_ROLE` and `FALLBACK_MEMORY_COST_BY_ROLE`, and does skip retired `architect_coding`.
-   - It reads live `server_mode` for TPS/memory and overlays descriptors, but it does not yet consume the generated `stack_priors.yaml` contract directly.
-   - Implementation implication: keep fallbacks for offline/degraded scripts, but make the live path prefer stack priors with explicit provenance.
+   - DONE in `epyc-orchestrator` `e3d967a`: live defaults read `orchestration/derived/stack_priors.yaml`; `FALLBACK_BASELINE_TPS_BY_ROLE` and `FALLBACK_MEMORY_COST_BY_ROLE` remain for explicit degraded/offline mode.
+   - It skips non-live stack-prior roles and keeps retired `architect_coding` absent from live priors.
+   - Follow-up implication: preserve fallback tables, but expose explicit live-vs-degraded provenance if downstream consumers need auditability.
 
 2. `stack_manifest.py` still contains stale raw `PORT_MAP` entries.
    - File: `/mnt/raid0/llm/epyc-orchestrator/scripts/server/stack_manifest.py`
@@ -230,13 +230,13 @@ Goal: q_scorer and reward/cost consumers read the generated contract first.
 Tasks:
 
 - Add or extend a runtime helper around `src/registry/stack_priors.py` for live role scorer priors.
-- Migrate `orchestration/repl_memory/q_scorer.py` live defaults from registry/descriptors to stack priors.
-- Keep `FALLBACK_*` tables only for explicit degraded/offline mode.
+- DONE in `e3d967a`: `orchestration/repl_memory/q_scorer.py` live defaults now load generated stack priors first.
+- DONE in `e3d967a`: `FALLBACK_*` tables remain only for degraded/offline mode when the generated artifact is missing or invalid.
 - Return or log provenance: `stack_priors`, `override`, or `degraded_fallback`.
 - Add tests proving:
-  - `frontdoor` and `coder_escalation` share memory cost and model identity.
-  - `architect_general` and `ingest_long_context` are HOT cost `1.0`.
-  - `architect_coding` is absent from live priors.
+  - DONE in `e3d967a`: `frontdoor` and `coder_escalation` share stack-prior TPS/memory.
+  - DONE in `e3d967a`: `architect_general` and `ingest_long_context` are HOT cost `1.0`.
+  - DONE in `e3d967a`: `architect_coding` is absent from live priors.
   - missing stack priors fail closed for production-like callers.
 
 Dependencies: existing stack-priors contract and guard.
@@ -359,8 +359,8 @@ Dependencies: W1-W4.
 
 ## Highest-ROI Next Steps
 
-1. Migrate q_scorer live priors to `stack_priors.yaml` first. This directly addresses the stale memory-cost issue and de-biases routing/reward updates.
-2. Triage the production-blocker `architect_coding` guard findings in graph/parsing/roles code. Remove live references or classify them with expiring exceptions.
+1. Triage the production-blocker `architect_coding` guard findings in graph/parsing/roles code. Remove live references or classify them with expiring exceptions.
+2. Add explicit q_scorer provenance plumbing if downstream consumers need to distinguish `stack_priors` from `degraded_fallback`.
 3. Add simulated stack-change tests before broad cleanup. A failing fixture will expose which consumers still bypass the generated contract.
 4. Extend stack-prior records with missing context/provenance fields needed for strict mode.
 5. Generate planner/operator stack summaries from stack priors so manual prose stops acting as hidden source truth.
