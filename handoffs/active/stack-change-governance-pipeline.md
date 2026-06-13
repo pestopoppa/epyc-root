@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v3 launch-context/path witness and shared-runtime alias semantics, strict mode blocked on remaining KV/binary/acceleration descriptor and consumer gaps
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness and shared-runtime alias semantics; strict mode blocked on remaining descriptor-native context/measurement, hardcoded-surface, and consumer gaps
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -178,6 +178,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `effective_context_tokens` plus `serving.launch.requirements` for worker
   model/draft paths and VL model/mmproj paths, and the guard compares those
   values against computed stack-manifest launch truth.
+- Completed in `33c81ff`: contract v4 launch-runtime projection adds an
+  effective runtime witness under `serving.launch.runtime`, with
+  launcher/path/runtime source hashes and guard comparison.
 - The lean registry already has competing source sections: `server_mode.*`
   reflects live launch intent, while older `roles.*.memory` and
   `process_layout.*` can lag. Consumers need declared precedence and validators.
@@ -217,7 +220,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   effective context witness fields, and missing required
   role/serving/prior/launch fields fail validation. Shared-runtime alias
   semantics now compile without role/server conflict gaps for `worker_math`
-  and `toolrunner`. Hardcoded-surface exceptions now
+  and `toolrunner`. Contract v4 runtime witness projection landed in
+  `33c81ff`; generated priors now include guarded effective runtime records.
+  Hardcoded-surface exceptions now
   require owner/rationale/expiry metadata and remain visible as waived warnings.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
@@ -288,8 +293,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   stack-prior endpoints in `a5aaafb`; exact launch ports are projected in
   `dc14196`; launch-entry witness contract v2 is projected in `7917535`;
   effective launch context and worker/VL model-path requirements are projected
-  in `a001017`. Broader launch/start integration is still open for binary/KV
-  and acceleration semantics.
+  in `a001017`; effective runtime/binary/KV/flag witness records are projected
+  and guarded in `33c81ff`. Broader stack-change work now moves to simulated
+  data-only fixtures, descriptor-native model-context/measurement gaps, and
+  remaining consumer migrations.
 
 ## Dependency Graph
 
