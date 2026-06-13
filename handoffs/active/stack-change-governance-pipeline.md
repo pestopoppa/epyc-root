@@ -78,6 +78,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   features, eval-tower model signatures, and launch-arg assembly to the derived
   artifact or descriptor API. Keep fallbacks for degraded scripts, but require
   tests proving fallback mode is explicit and cannot mask live drift.
+  Current status: AutoPilot planner signatures (`73ed436`), q_scorer priors
+  (`d5fe713`/`15d8cff`), and seeding default role/cost-tier discovery
+  (`72f7dc2`) have migrated partially. `seeding_rewards.py` remains deferred
+  because GitNexus marks `compute_comparative_rewards` CRITICAL; bilinear
+  model features are the next lower-risk consumer target.
 - [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
