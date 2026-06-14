@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION
+**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, but the broader W2 consumer ownership manifest and remaining migrations are still open.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or index edits were performed in this sidecar pass.
@@ -24,6 +24,7 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - `epyc-orchestrator/docs/reference/stack-truth-precedence.md` already defines the precedence rule: live serving topology first, model descriptors second, role metadata third, historical/benchmark records last.
 - `epyc-orchestrator/orchestration/derived/stack_priors.yaml` is the generated consumer contract. Current contract version is `4`, with required role, serving, launch, runtime, and prior fields.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py` already composes descriptor check/update, stack-prior check/update, procedure enum sync/check, loose guard, all-surface guard, strict guard, and simulated fixture references.
+- `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes a machine-readable hardcoded-surface rule inventory in `34a0407`: `hardcoded_surface_rule_inventory()` plus `--list-hardcoded-surface-rules --surface-inventory-format yaml|json`. The inventory reports `version`, `rule_count`, `categories`, and per-rule `rule_id`, category, pattern, path/exclude globs, comment-line handling, and remediation. The same commit fixed direct-by-path CLI import hygiene so `python scripts/validate/stack_change_guard.py ...` works outside pipeline imports.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
 - Root GitNexus was refreshed before this edit. New handoff path impact is `UNKNOWN` with `impactedCount=0` because the file did not exist yet; nearby `model-stack-change-standardization-audit.md` is a MEDIUM coordination surface, so this pass avoids modifying it or shared indices.
@@ -99,9 +100,12 @@ Likely targets:
 
 Goal: every live model-specific quantity has an owner and validator.
 
+Current increment: `34a0407` exposes the existing hardcoded-surface scanner rules as a machine-readable inventory through `hardcoded_surface_rule_inventory()` and the `stack_change_guard.py --list-hardcoded-surface-rules` CLI. This gives operators and docs sidecars an auditable rule catalog, but it is not yet the full W2 manifest of every model-specific consumer surface and owner.
+
 Tasks:
 
 - Add a machine-readable manifest of model-specific consumer surfaces: q_scorer, seeding, routing priors, admission, lock/tap policy, config URLs, health probes, launch maps, dashboards, system card, planner prompts, procedure enums, and docs summaries.
+- Use the `34a0407` guard-rule inventory as the scanner-rule input to that manifest; keep the distinction clear between "scanner rules known" and "all model-specific consumer surfaces owned".
 - Classify each surface as generated, typed consumer, explicit degraded fallback, legacy test, historical doc, or open production blocker.
 - Teach the guard to report unclassified model-specific surfaces as actionable drift.
 
@@ -183,6 +187,8 @@ uv run python scripts/registry/stack_change_pipeline.py check
 uv run python scripts/registry/stack_change_pipeline.py check --allow-known-gaps
 uv run python scripts/registry/stack_change_pipeline.py update
 uv run python scripts/validate/stack_change_guard.py
+uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format yaml
+uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format json
 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
 uv run python scripts/validate/stack_change_guard.py --strict
 python3 scripts/registry/sync_procedure_role_enums.py --check

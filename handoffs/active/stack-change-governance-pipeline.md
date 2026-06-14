@@ -1,6 +1,6 @@
 # Stack Change Governance Pipeline
 
-**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, stack-change CLI acceptance/promotion-gate output and warning summaries, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, seeding role discovery from stack priors, test-only launch-command parity witnesses from stack priors, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; default `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK, prints `acceptance:` / `promotion_gate:` with simulated-fixture and launch-parity test targets, optional `--run-promotion-gate` executes those no-inference targets after earlier checks pass, and waived production-blocker, legacy-test, and historical-doc warning categories remain summarized
+**Status**: IN PROGRESS 2026-06-13 — W1/W2 landed; W3 guardrail/scanner/procedure-enum/contract/exception checks live through stack-prior contract v4 launch-runtime witness, simulated data-only workflow fixtures, stack-change CLI acceptance/promotion-gate output and warning summaries, machine-readable hardcoded-surface scanner rule inventory, architect/REAP quality projection, GGUF-derived model context projection, descriptor-native VL projector requirements, structured thinking-control evidence, shared-runtime alias provenance, retired-role alias normalization, legacy routing ingress alias normalization, retired architect ingress alias normalization, retired architect metadata cleanup and recurrence guard, delegation report preamble alias normalization, architect investigation prompt live-role alignment, output formalizer live-worker routing, user preference deriver live-worker routing, post-hoc grading spec/debugger prompt live-worker routing, stale role runtime-surface cleanup, launch-wrapper static-inventory recurrence guard, stack-prior-rendered AutoPilot system-card rows, read-only live process cmdline/projector attestation in stack status, manifest-derived auxiliary and generated live serving port scanning, direct/ReAct vision chat URL resolution from stack priors, API health backend probes from stack priors, summarization worker selection from stack priors, parallel burst-worker selection from stack priors, worker concurrency caps from stack priors, runtime inference lock classes from stack priors, current contention role-class pinning, proactive thinking-trigger routing to live architect, seeding throughput-prior provenance, seeding role discovery from stack priors, test-only launch-command parity witnesses from stack priors, default stack-template alias/topology alignment, and lean-registry retired architect removal; generated descriptors/priors are `status: compiled` with empty stack-prior `known_gaps`; default `stack_change_pipeline.py check` reports descriptor/stack-prior/procedure/guard/strict OK, prints `acceptance:` / `promotion_gate:` with simulated-fixture and launch-parity test targets, optional `--run-promotion-gate` executes those no-inference targets after earlier checks pass, and waived production-blocker, legacy-test, and historical-doc warning categories remain summarized
 **Created**: 2026-06-13
 **Priority**: HIGH — prevents silent stale model constants after stack changes; no inference required for W1-W4
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-capability-descriptors.md](model-capability-descriptors.md), [routing-truth-restoration.md](routing-truth-restoration.md), [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md), [bulk-inference-campaign.md](bulk-inference-campaign.md), [MEASUREMENT.md](../../MEASUREMENT.md)
@@ -274,6 +274,20 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   -q tests/unit/test_stack_change_pipeline.py` -> 11 passed; `uv run python
   scripts/registry/stack_change_pipeline.py check --run-promotion-gate` ->
   summary ok and promotion_gate ok, nested pytest 43 passed; `git diff --check`.
+- Hardcoded-surface scanner rule inventory exposure landed in
+  `epyc-orchestrator` `34a0407`: `scripts/validate/stack_change_guard.py`
+  now exposes `hardcoded_surface_rule_inventory()` and
+  `--list-hardcoded-surface-rules --surface-inventory-format yaml|json`.
+  The output reports inventory `version`, `rule_count`, categories, and
+  per-rule ID/category/pattern/path globs/exclude globs/comment handling/
+  remediation. Direct-by-path import hygiene was also fixed so
+  `python scripts/validate/stack_change_guard.py ...` works without relying on
+  pipeline imports. Validation: `py_compile` passed; `ruff` passed;
+  `git diff --check` passed; `uv run pytest -q
+  tests/unit/test_stack_change_guard.py tests/unit/test_stack_change_pipeline.py`
+  -> 41 passed; direct JSON inventory smoke passed; `uv run python
+  scripts/registry/stack_change_pipeline.py check` remained summary ok with
+  existing warning buckets.
 - Descriptor compiler quality-key normalization landed in `epyc-orchestrator`
   `3e7efce`: generated descriptors now use stable suite-vector keys such as
   `overall`, `coder`, `agentic`, `math`, `vision_language`, and `long_context`
@@ -523,7 +537,7 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   role -> serving endpoint/server, TPS, quality priors, memory residency cost,
   acceleration/launch requirements, and source evidence. No consumer should
   re-parse free-text registry comments independently.
-- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f` + `079ff30` + `2baaee5` + `a7927c2` + `b026f7d` + `ebd929b` + `3a20efd`): add a CI/local validator that
+- [ ] **W3 — Stack drift validator** (PARTIAL in `a1e04d5` + `bfa90fa` + `f49f14d` + `69057f3` + `7917535` + `a7b72a9` + `a001017` + `33c81ff` + `fb0fd6d` + `837829f` + `b8477b0` + `2ea28dd` + `865b2b1` + `54b7c77` + `03ed49f` + `e7fab9d` + `603ad6b` + `b8a1abc` + `0573e02` + `6062a57` + `069f8c0` + `22ea541` + `705065d` + `e61e61f` + `828552f` + `079ff30` + `2baaee5` + `a7927c2` + `b026f7d` + `ebd929b` + `3a20efd` + `34a0407`): add a CI/local validator that
   fails on retired active roles, server/role topology contradictions, stale
   hardcoded role lists, missing descriptor evidence, unindexed model ids, and
   generated-prior drift. It should print remediation paths, not silently patch.
@@ -580,6 +594,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   Optional execution landed in `3a20efd`: `check --run-promotion-gate` runs
   those no-inference targets after the earlier stack-change checks pass, while
   default `check` remains reference-only.
+  Scanner rule inventory exposure landed in `34a0407`: the guard now returns a
+  machine-readable inventory through `hardcoded_surface_rule_inventory()` and
+  prints YAML or JSON via `--list-hardcoded-surface-rules`, giving operators a
+  stable catalog of hardcoded-surface rules without changing enforcement
+  semantics.
   The generated artifact source metadata was refreshed after the latest
   retired-role exception commit in `cbaceec`; descriptor-backed quality priors
   for measured roles landed in `bda46b1` with a post-commit metadata refresh in
