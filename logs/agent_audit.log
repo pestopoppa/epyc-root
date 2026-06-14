@@ -3925,3 +3925,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-06-14T16:21:08+00:00","session":"ses_20260614_162108_1913391","level":"INFO","cat":"TASK_END","msg":"Checkpoint stack-change W5/W6 handoff status","details":"outcome=success"}
 {"ts":"2026-06-14T16:25:35+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Document Reason-mxbai export scaffold","details":"Record orchestrator 8711c60 and remaining ONNX dependency/export/parity blocker"}
 {"ts":"2026-06-14T16:25:35+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Document Reason-mxbai export scaffold","details":"outcome=success"}
+{"ts":"2026-06-14T16:32:29+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Document Reason-mxbai export parity latency","details":"Record successful model.onnx/model_int8.onnx generation, parity pass, S4c latency, and loadability hardening"}
+{"ts":"2026-06-14T16:32:29+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Document Reason-mxbai export parity latency","details":"outcome=success"}
