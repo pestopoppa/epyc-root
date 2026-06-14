@@ -52,6 +52,11 @@ wins to collapse, and that made the remaining wins more credible.
 | Claim grammar rule: claim = metric + protocol-id + n/reps + date + host-attestation ref | `MEASUREMENT.md` section 2 | Publishable project policy. |
 | Retroactivity rule: pre-canonical CPU bench claims demote-to-prior at E0->E1 | `MEASUREMENT.md` section 5 | Publishable methodology policy, but keep internal artifact counts private unless scrubbed. |
 
+### Protocol-backfill Status
+
+- `RESULTS.md` now marks the `Production Throughput - NUMA Deployment (verified 2026-03-21)` section with `Protocol: P-BENCH-2, n=5, 2026-03-21`.
+- `public-results-draft.md` will surface rows as `publish_candidate` only when protocol metadata is complete (`protocol-id`, `n/reps`, `date`, `attestation`); all others remain on hold for protocol backfill.
+
 ## Backfilled Evidence State
 
 | Evidence item | Current state | Remaining work |
@@ -65,6 +70,7 @@ wins to collapse, and that made the remaining wins more credible.
 
 - Replace internal paths with scrubbed artifact labels or public repo links.
 - Backfill protocol IDs for every retained number; otherwise remove the number.
+- Add public-safe protocol metadata when promoting rows into publication-ready tables (protocol id + `n/reps`, date, and attestation).
 - Add the exact benchmark recipe from `bench_canonical.sh` / `canonical_recipe.py`
   rather than hand-written commands. Use the wrapper's `--dry-run` output during
   the final prep pass.

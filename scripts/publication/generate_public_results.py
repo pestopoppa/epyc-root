@@ -30,6 +30,14 @@ class ResultRow:
     action: str
 
 
+@dataclass(frozen=True)
+class ProtocolRef:
+    protocol_id: str
+    n: str | None
+    date: str | None
+    attestation: str | None
+
+
 def default_results_path() -> Path:
     candidates = [
         Path("/mnt/raid0/llm/epyc-inference-research"),
@@ -56,6 +64,60 @@ def strip_markdown(text: str) -> str:
     text = re.sub(r"`([^`]*)`", r"\1", text)
     text = text.replace("**", "").replace("__", "").replace("*", "")
     return re.sub(r"\s+", " ", text).strip()
+
+
+def _first_match(pattern: str, text: str) -> str | None:
+    match = re.search(pattern, text)
+    return match.group(1) if match else None
+
+
+def _clean_protocol_payload(payload: str) -> str:
+    payload = re.sub(r"^protocol[-\s]*id\b[:=]?\s*", "", payload, flags=re.I)
+    payload = re.sub(r"^protocol:\s*", "", payload, flags=re.I)
+    return payload.strip()
+
+
+def _parse_protocol_payload(payload: str) -> ProtocolRef | None:
+    payload = _clean_protocol_payload(payload)
+    match = re.search(r"\b(P-[A-Z][A-Z0-9-]*(?:/[^,\]]+)?)\b", payload, re.I)
+    if not match:
+        return None
+
+    protocol_id = match.group(1).upper()
+    n = _first_match(r"\b(?:n|reps)\s*[:=]?\s*(\d+)\b", payload)
+    date = _first_match(r"\b(20\d{2}-\d{2}-\d{2})\b", payload)
+    attestation = _first_match(r"\battest(?:ation)?\s+([A-Za-z0-9._-]{3,})\b", payload)
+
+    return ProtocolRef(protocol_id=protocol_id, n=n, date=date, attestation=attestation)
+
+
+def parse_protocol_reference(text: str) -> ProtocolRef | None:
+    for bracket in re.findall(r"\[(.*?)\]", text):
+        protocol = _parse_protocol_payload(bracket)
+        if protocol:
+            return protocol
+
+    if re.search(r"protocol(?:-\s*id)?\b|\bprotocol:", text, flags=re.I):
+        return _parse_protocol_payload(text)
+    return None
+
+
+def protocol_complete_for_publish(protocol: ProtocolRef) -> bool:
+    return bool(protocol.n and protocol.date and protocol.attestation)
+
+
+def format_protocol(protocol: ProtocolRef | None) -> str:
+    if protocol is None:
+        return ""
+
+    pieces = [protocol.protocol_id]
+    if protocol.n:
+        pieces.append(f"n={protocol.n}")
+    if protocol.date:
+        pieces.append(protocol.date)
+    if protocol.attestation:
+        pieces.append(f"attest {protocol.attestation}")
+    return "; ".join(pieces)
 
 
 def split_table_row(line: str) -> list[str]:
@@ -89,10 +151,17 @@ def looks_like_result_table(headers: list[str], section: str) -> bool:
 
 
 def classify_protocol(section: str, row_cells: list[str], nearby: str) -> tuple[str, str]:
-    evidence = " ".join([section, nearby, " ".join(row_cells)]).lower()
-    if "p-bench" in evidence or "protocol-id" in evidence:
+    evidence = " ".join([section, nearby, " ".join(row_cells)])
+    protocol = parse_protocol_reference(evidence)
+    if protocol:
+        if protocol_complete_for_publish(protocol):
+            return f"protocol-tagged [{format_protocol(protocol)}]", "publish_candidate"
+        return f"protocol-tagged (needs protocol backfill) [{format_protocol(protocol)}]", "hold_for_protocol_backfill"
+
+    evidence_l = evidence.lower()
+    if "p-bench" in evidence_l or "protocol-id" in evidence_l:
         return "protocol-tagged", "publish_candidate"
-    if any(token in evidence for token in ("verified", "benchmarked", "sweep", "quality scored", "canonical")):
+    if any(token in evidence_l for token in ("verified", "benchmarked", "sweep", "quality scored", "canonical")):
         return "evidence-linked; needs protocol tag", "hold_for_protocol_backfill"
     return "unverified historical row", "hold_for_protocol_backfill"
 
