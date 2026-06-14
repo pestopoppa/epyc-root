@@ -87,6 +87,12 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   -> 65 passed; `py_compile`; direct derived-role assertions;
   `stack_change_guard.py --all-hardcoded-surfaces` -> same 90 known warnings;
   `git diff --check`.
+- Runtime stack-prior helper centralization landed in `epyc-orchestrator`
+  `d0960b0` and `dfcd280`: `src/registry/stack_priors.py` now exposes shared
+  live-role/serving/endpoint/port/primary-port/warm-slot helpers. Concurrency,
+  parallel step execution, vision-stage serving ports, inference lock, and
+  inference tap now reuse those helpers instead of duplicate YAML parsing;
+  lock/tap fallback constants remain unchanged.
 - Scheduling/contention role classes were pinned to the current stack matrix in
   `epyc-orchestrator` `eed215d`: `src/scheduling/contention.py` no longer
   carries an unused fallback heavy-role constant or stale same-role vision
