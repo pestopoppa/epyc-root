@@ -201,12 +201,12 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 
 **Operational implications**:
 
-- One Rust binary (80 MB at `/mnt/raid0/llm/UTILS/bin/colgrep`) replaces one Docker container (~31 GB resident). Single-binary deployment removes the `orchestrator_stack.py` Docker entry for `nextplaid-code` after soak.
-- Subprocess-per-query: every `_code_search()` call pays full ONNX runtime + ColBERT model load (~770 ms p50, up to ~2.3 s on first invocation). Acceptable for human-paced REPL; daemon options (homegrown sidecar vs upstream `next-plaid-client[cli]` SDK) documented in handoff S7 with concrete build-trigger criteria.
+- One Rust binary (80 MB) replaces one Docker container (~31 GB resident). Runtime now defaults to the version-pinned local copy `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0` (`sha256:833e52aa6c40d090142fa132e3c75d3e792a4707474682a2496e3471f646f956`); `REPL_COLGREP_BIN` remains the override.
+- Subprocess-per-query: every `_code_search()` call pays full ONNX runtime + ColBERT model load. A 2026-06-14 warmed production-wrapper soak measured p50 208.5 ms / p95 213 ms / max 224 ms with zero wrapper fallbacks across 32 calls after a 52s `src/` index init. Acceptable for human-paced REPL; daemon work is not active unless future live turn-frequency gates fire.
 - `REPL_COLGREP_ALPHA=0.95` (overridable). Default 0.75 over-ranks `__init__.py` re-exports for symbol queries in this corpus; 0.95 weights ColBERT semantic over FTS5 keyword and recovers correct top-1 on validated cases.
 - Hybrid scoring quirk: ColGREP returns FTS5+ColBERT fused scores in ~1–5 range, not NextPLAID's normalized 0–1. Frecency boost (0.3 × score multiplier) is rank-stable but downstream code that assumes 0–1 scale would need normalization.
 
-**Soak gate**: NextPLAID code container kept running for one rollout window. `_exploration_log` records `engine: colgrep` per query; missing field signals fallback. If clean for ~1 week of normal traffic, retire the Docker container (free ~31 GB RAM). Apples-to-apples comparison (NextPLAID re-indexed on `src/` only) deferred — fairness exercise, not a production blocker.
+**Soak/version gate**: closed 2026-06-14. `_exploration_log` and `_code_search_telemetry` now record ColGREP engine, latency, fallback status, and fallback reason. The warmed soak did not justify a daemon, and the default binary path is version pinned. Do not add ColGREP re-index-on-commit yet: ColGREP auto-updates on search, manual `colgrep init /mnt/raid0/llm/epyc-orchestrator/src` is enough after large source reshapes, and a hook would add CPU contention without current evidence of stale-index failures.
 
 ### Sources
 

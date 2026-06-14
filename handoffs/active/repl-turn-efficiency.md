@@ -1,6 +1,6 @@
 # REPL Turn Efficiency - Active Gates
 
-**Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gates are S4 Omega A/B and ColGREP version/index hygiene.
+**Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gate is S4 Omega A/B.
 **Created**: 2026-04-09
 **Updated**: 2026-06-14
 **Priority**: MEDIUM
@@ -18,7 +18,7 @@ Do not add new REPL tools before S4. The current risk is whether the shipped eff
 - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes.
 - [x] **ColGREP post-telemetry soak check**: 2026-06-14 warmed synthetic REPL soak closed the latency/fallback/quality portion; see telemetry below.
 - [x] **Cold-start daemon decision**: do not build now. The measured latency gate did not fire; revisit only if a future live workload trips the multi-search or sustained-call-rate gates.
-- [ ] **Version/index hygiene**: pin a versioned ColGREP binary path and decide whether incremental re-index-on-commit is worth the complexity.
+- [x] **Version/index hygiene**: `epyc-orchestrator` `9b209d3` pins the default runtime path to `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0`; no ColGREP re-index-on-commit hook for now.
 
 ## Cold-Start Daemon Gate
 
@@ -34,13 +34,15 @@ Do not implement a daemon unless at least one of these conditions is met during 
 
 2026-06-14 warmed synthetic soak: initialized the ColGREP index for `/mnt/raid0/llm/epyc-orchestrator/src` in 52s (`382` source units), then ran 32 `REPLEnvironment._code_search()` calls through the production wrapper with `REPL_COLGREP=1`, `REPL_COLGREP_BIN=/mnt/raid0/llm/UTILS/bin/colgrep`, and `REPL_COLGREP_PATH=/mnt/raid0/llm/epyc-orchestrator/src`. Results: `32/32` telemetry events, `0` wrapper fallbacks, p50 `208.5ms`, p90 `212ms`, p95 `213ms`, max `224ms`, every successful call returned 5 results, effective sequential throughput `2.44 calls/s`. A six-query quality smoke (`FinalSignal`, `ASTSecurityVisitor`, `create_repl_environment`, `_record_colgrep_telemetry`, `OpenAIChatRequest x_disable_repl`, and `execute_parallel_calls`) found the expected source file in top-5 for `6/6` queries. This closes the daemon latency gate for now: subprocess-per-query remains the default. Because this was a synthetic code-search soak, it does not prove future live turn-frequency behavior; revisit only if live `_exploration_log` data shows at least 20% of REPL turns issuing 2+ searches or a role sustaining at least 1 `code_search()`/s for 30s.
 
+2026-06-14 version/index hygiene: installed a local versioned binary copy at `/mnt/raid0/llm/UTILS/bin/colgrep-1.2.0` and pinned `COLGREP_BIN` to that path in `epyc-orchestrator` `9b209d3`; `REPL_COLGREP_BIN` remains the override/rollback escape hatch. Runtime metadata records `COLGREP_VERSION=1.2.0` and expected SHA-256 `833e52aa6c40d090142fa132e3c75d3e792a4707474682a2496e3471f646f956`. Decision: do not add a commit hook or PostToolUse hook for ColGREP indexing yet. The measured full `src/` init cost was 52s, warmed search is fast, ColGREP auto-updates on search, and there is no evidence that a hook's CPU contention would buy enough freshness over manual `colgrep init /mnt/raid0/llm/epyc-orchestrator/src` after large source reshapes.
+
 ## Dependency Forks
 
 | Outcome | Next action |
 |---|---|
 | Omega shows fewer turns and neutral/better accuracy | Keep the feature path and consider the next narrow suggestion/verbosity change. |
 | Omega shows token savings but accuracy loss | Revert or gate the risky surface; keep only independently useful telemetry. |
-| ColGREP soak is clean and latency acceptable | Leave subprocess-per-query in place; focus on version pinning and index hygiene. |
+| ColGREP soak is clean and latency acceptable | Leave subprocess-per-query in place; version pinning is complete. |
 | ColGREP latency or call frequency trips daemon gate | Design the smallest daemon interface and add rollback controls before implementation. |
 
 ## Completed Scope
