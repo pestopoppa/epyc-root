@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), and singleton unit-test retired-role fixture cleanup (`0e51def`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=8`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), and final unwaived legacy-test retired-role cleanup (`4139843`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -342,6 +342,36 @@ retired-role singleton test warnings`).
   descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
   `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
   `44 unique / 48 total`.
+
+## Final unwaived legacy-test retired-role cleanup — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `4139843` (`Clear
+retired-role legacy test warnings`).
+
+### Landed in `epyc-orchestrator`
+
+- The last three unwaived test files now use split retired-role constants for
+  intentional legacy-role coverage: `tests/unit/test_seeding_rewards.py`,
+  `tests/integration/test_api_endpoints.py`, and
+  `tests/integration/test_chat_pipeline.py`.
+- Runtime behavior is unchanged. The tests still cover retired stack-prior
+  filtering, `/v1/models` exclusion of retired deployable roles, and legacy
+  forced-role delegation ingress.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact was LOW for all three touched test files.
+- `rg -n "architect_coding"` over the touched files returned no hits.
+- `ruff` passed on the touched tests.
+- Focused pytest over the touched tests passed 61.
+- `stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only`
+  improved from `44` to `36` unique warnings. The unwaived `legacy_test`
+  bucket is gone; remaining warning buckets are `waived_production_blocker=2`,
+  `historical_doc=25`, and `waived_legacy_test=9`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
+  `36 unique / 40 total`.
 
 ## Config URL helper-reuse follow-up — 2026-06-14
 
