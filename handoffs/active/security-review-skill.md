@@ -51,4 +51,4 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 ## Notes
 
 - Pairs with the **code-review 8-gate bug filter + P0–P3 + finding schema** upgrade to our existing code-review skill (harvest Part 3E) — adopt both together so they share the finding schema.
-- Cross-refs: `eval-tower-verification.md` (two-pass = verifier), code-review skill, `privacy-hygiene-precommit-hooks.md` (secret scanning overlap), `feedback_observe_before_diagnosing`.
+- Cross-refs: `eval-tower-verification.md` (two-pass = verifier), code-review skill, [`privacy-hygiene-precommit-hooks.md`](../completed/privacy-hygiene-precommit-hooks.md) (secret scanning overlap), `feedback_observe_before_diagnosing`.

@@ -5,7 +5,7 @@ set -euo pipefail
 # Two label categories: `secret` and `account_number`.
 # Exits 1 on match (blocks commit). Exits 0 on clean staged set.
 #
-# Per handoffs/active/privacy-hygiene-precommit-hooks.md (PII-1).
+# Per handoffs/completed/privacy-hygiene-precommit-hooks.md (PII-1).
 # Allow-pattern: research/fixtures/pii_* (the PII-2 fixture itself contains realistic-shape fake secrets).
 # Skip: files >1MB, .gitignore'd files (defense in depth — Git already excludes these from index).
 #

@@ -1,11 +1,19 @@
 # Privacy / Secret Hygiene — Pre-Commit Hooks
 
-**Status**: PII-3 completed 2026-06-14 — regex-only retained; archive after index cleanup
+**Status**: COMPLETE 2026-06-14 — regex-only retained; no pre-push or hybrid scanner justified
 **Created**: 2026-04-24 (via research intake deep-dive — intake-452)
-**Updated**: 2026-05-28
+**Updated**: 2026-06-14
 **Categories**: knowledge_management, document_processing, tool_implementation
 **Priority**: MEDIUM (no immediate incident, but cheap insurance against accidental commits)
-**Scope note**: NOT a close for [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) gap #5 (prompt-injection filter). PII span extraction is adjacent to, not a substitute for, adversarial-instruction detection. Gap #5 stays open.
+**Scope note**: NOT a close for [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md) gap #5 (prompt-injection filter). PII span extraction is adjacent to, not a substitute for, adversarial-instruction detection. Gap #5 stays open.
+
+## Completion Note — 2026-06-14
+
+PII-3 re-evaluation is complete. The hook remains regex-only and
+pre-commit-only: fixture replay is 40/40, all three local repo wrappers are
+installed, recent logs show no bypass/false-positive complaint signal, and no
+evidence justifies a pre-push hook or hybrid model scanner. This handoff moved
+from active to completed after index cleanup.
 
 ## 2026-05-28 Audit Reset — Executor Start Here
 
@@ -92,8 +100,8 @@ hybrid/model-based scanner yet.
 
 - Keep pre-commit-only coverage. The missing-hook drift and fixture mismatches
   were fixed without evidence that a pre-push hook or hybrid scanner is needed.
-- A future wrap-up/index-pruning pass can move this handoff to completed once
-  the active indices are updated deliberately.
+- Reopen only if a future fixture replay or real commit incident shows >=2
+  novel missed shapes or recurring normal-workflow false positives.
 
 ## Objective
 
@@ -112,7 +120,7 @@ Deep-dives:
 
 ## Why this slot, not opendataloader Phase 2
 
-The [`opendataloader-pipeline-integration.md`](opendataloader-pipeline-integration.md) handoff covers PDF → structured-context ingestion for the orchestrator's research/RAG path. Its **gap #5** is *prompt injection filtering*, which is adversarial-instruction detection — a different problem class from PII span extraction.
+The [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md) handoff covers PDF → structured-context ingestion for the orchestrator's research/RAG path. Its **gap #5** is *prompt injection filtering*, which is adversarial-instruction detection — a different problem class from PII span extraction.
 
 This handoff covers a **different slot**: pre-commit hygiene across three repos to prevent accidentally-committed credentials/secrets/account-numbers from entering git history. That's a workflow-level concern, not an inference-pipeline concern.
 

@@ -154,4 +154,4 @@ Regex-only pre-commit hook scanning staged git blobs (NOT working tree, so `git 
 
 Allow-list: `research/fixtures/pii_*`, `.gitignore`, the hook itself. Bypass via `git commit --no-verify` is intentionally available; document the reason if used. Smoke fixture: 40 examples (19 TPs across 7 secret types + 4 account_number types, 21 negatives covering phones / timestamps / log lines / version tags / hex hashes / decimal floats).
 
-Sources: [`handoffs/active/privacy-hygiene-precommit-hooks.md`](../handoffs/active/privacy-hygiene-precommit-hooks.md), `scripts/hooks/pii_precommit.sh`, `research/fixtures/pii_hygiene_eval.jsonl`.
+Sources: [`handoffs/completed/privacy-hygiene-precommit-hooks.md`](../handoffs/completed/privacy-hygiene-precommit-hooks.md), `scripts/hooks/pii_precommit.sh`, `research/fixtures/pii_hygiene_eval.jsonl`.
