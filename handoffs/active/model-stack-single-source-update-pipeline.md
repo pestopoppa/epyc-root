@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, but the broader W2 consumer ownership manifest and remaining migrations are still open.
+**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407` and the canonical preflight advertises the inventory command as of `b82ae3d`, but the broader W2 consumer ownership manifest and remaining migrations are still open.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or index edits were performed in this sidecar pass.
@@ -25,6 +25,7 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - `epyc-orchestrator/orchestration/derived/stack_priors.yaml` is the generated consumer contract. Current contract version is `4`, with required role, serving, launch, runtime, and prior fields.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py` already composes descriptor check/update, stack-prior check/update, procedure enum sync/check, loose guard, all-surface guard, strict guard, and simulated fixture references.
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes a machine-readable hardcoded-surface rule inventory in `34a0407`: `hardcoded_surface_rule_inventory()` plus `--list-hardcoded-surface-rules --surface-inventory-format yaml|json`. The inventory reports `version`, `rule_count`, `categories`, and per-rule `rule_id`, category, pattern, path/exclude globs, comment-line handling, and remediation. The same commit fixed direct-by-path CLI import hygiene so `python scripts/validate/stack_change_guard.py ...` works outside pipeline imports.
+- `epyc-orchestrator/scripts/registry/stack_change_pipeline.py check` now prints `surface_inventory: run uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules` in the passing acceptance block as of `b82ae3d`, so the canonical stack-change preflight points operators at the machine-readable scanner-rule catalog. No enforcement semantics changed.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
 - Root GitNexus was refreshed before this edit. New handoff path impact is `UNKNOWN` with `impactedCount=0` because the file did not exist yet; nearby `model-stack-change-standardization-audit.md` is a MEDIUM coordination surface, so this pass avoids modifying it or shared indices.
@@ -85,6 +86,7 @@ Goal: one operator command replaces scattered manual steps.
 Tasks:
 
 - Extend `scripts/registry/stack_change_pipeline.py` output with an acceptance summary: descriptor freshness, stack-prior freshness, source hashes, loose/all-surface/strict guard counts, stale surface categories, simulated fixture target, and exact remediation commands.
+- Keep the `b82ae3d` `surface_inventory:` acceptance hint in the passing `check` output so operators can discover the scanner-rule catalog before launch or AutoPilot resume review.
 - Add a "promotion gate" mode for launch/AutoPilot decisions that refuses on production hardcoded surfaces, missing decision-grade priors, stale generated summaries, or unattested live processes.
 - Ensure update mode writes generated summaries only after structured artifacts are fresh.
 

@@ -1,6 +1,6 @@
 # Standardized Stack Update Pipeline Finalization
 
-**Status**: READY FOR MAIN IMPLEMENTATION - stack-change CLI acceptance/promotion gate is visible, default check is green, warning categories are summarized as of `epyc-orchestrator` `079ff30`/`2baaee5`/`a7927c2`, test-only launch parity witnesses are present as of `b026f7d`, promotion output names both no-inference fixture targets as of `ebd929b`, optional executable promotion-gate mode is present as of `3a20efd`, and the hardcoded-surface scanner rule inventory is machine-readable as of `34a0407`
+**Status**: READY FOR MAIN IMPLEMENTATION - stack-change CLI acceptance/promotion gate is visible, default check is green, warning categories are summarized as of `epyc-orchestrator` `079ff30`/`2baaee5`/`a7927c2`, test-only launch parity witnesses are present as of `b026f7d`, promotion output names both no-inference fixture targets as of `ebd929b`, optional executable promotion-gate mode is present as of `3a20efd`, the hardcoded-surface scanner rule inventory is machine-readable as of `34a0407`, and the canonical acceptance block advertises that inventory command as of `b82ae3d`
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific constants from corrupting scoring, routing, launch, planner context, and benchmark interpretation after model assignment changes
 **Scope**: Implementation-ready audit and handoff only. No inference, benchmarks, AutoPilot restart, server restart, or child-repo code changes were performed in this sidecar pass.
@@ -185,6 +185,25 @@ Read-only audit and lightweight validation on 2026-06-13 found:
   -> 41 passed; direct JSON inventory smoke passed; `uv run python
   scripts/registry/stack_change_pipeline.py check` remained summary ok with
   existing warning buckets.
+- Stack-change preflight inventory advertisement landed in `epyc-orchestrator`
+  `b82ae3d`: `scripts/registry/stack_change_pipeline.py check` now prints
+  `surface_inventory: run uv run python
+  scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules` in
+  the passing acceptance block. This points operators from the canonical
+  no-inference preflight to the machine-readable surface-rule inventory; no
+  enforcement semantics changed. Validation: `py_compile` passed; `ruff`
+  passed; `git diff --check` passed;
+  `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q -p no:cacheprovider
+  tests/unit/test_stack_change_pipeline.py tests/unit/test_stack_change_guard.py`
+  -> 41 passed; `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check` -> summary ok and printed
+  the new `surface_inventory` line. Follow-up
+  `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
+  completed `summary: ok`, executed the combined no-inference promotion target,
+  and nested pytest reported 43 passed. Follow-up `stack_change_guard.py
+  --all-hardcoded-surfaces` retained the expected historical-doc/legacy-test
+  buckets plus two waived production blockers, with no failure.
 
 ## Prior Pipeline Work Found
 
@@ -483,7 +502,7 @@ Add launch/config/dashboard tests when touching those consumers.
 
 ## Main Workflow Pickup
 
-1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`, `079ff30`, `2baaee5`, `a7927c2`, `ebd929b`, `3a20efd`) - Create the canonical stack-change command skeleton and acceptance gate.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes, then prints `acceptance:` / `promotion_gate:`. Passing checks name both no-inference fixture targets: the simulated data-only stack-change fixtures and the launch-command parity helper tests. The default check remains a reference step, while `--run-promotion-gate` executes those targets only after earlier checks pass. Failures block promotion with a strict blocker count. The current default `check` path passes after `2baaee5` classified the two intentional retired-role guard surfaces as waived exceptions, `a7927c2` summarizes warning categories in the footer, `ebd929b` adds launch parity to the printed promotion gate, and `3a20efd` makes the gate optionally executable.
+1. **DONE 2026-06-13 (`e01d64d`, `fe4b2aa`, `079ff30`, `2baaee5`, `a7927c2`, `ebd929b`, `3a20efd`, `b82ae3d`) - Create the canonical stack-change command skeleton and acceptance gate.** `scripts/registry/stack_change_pipeline.py` now composes the existing descriptor compiler, stack-prior compiler, enum sync, and guard into read-only `check` and generated-artifact `update` modes, then prints `acceptance:` / `promotion_gate:`. Passing checks name both no-inference fixture targets: the simulated data-only stack-change fixtures and the launch-command parity helper tests. The default check remains a reference step, while `--run-promotion-gate` executes those targets only after earlier checks pass. Passing checks also print `surface_inventory: run uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules`, pointing operators to the scanner-rule inventory introduced in `34a0407`. Failures block promotion with a strict blocker count. The current default `check` path passes after `2baaee5` classified the two intentional retired-role guard surfaces as waived exceptions, `a7927c2` summarizes warning categories in the footer, `ebd929b` adds launch parity to the printed promotion gate, `3a20efd` makes the gate optionally executable, and `b82ae3d` advertises the inventory command without changing enforcement semantics.
 2. **DONE 2026-06-13 (`3e7efce`, `ca9af53`, `022a0d1`, `fbef837`, `365e370`, `846c2d4`, `4ca702d`, `a7b72a9`) - Resolve descriptor/compiler drift reported by the new command through shared-runtime alias semantics.** Safe compiler fixes now normalize generated quality keys and model IDs, fail closed on descriptor model-ID removal, preserve REAP coverage through structured registry metadata, retain domain modalities, block generated descriptor updates when role/server conflicts are present, and represent `worker_math`/`toolrunner` as live aliases on the Gemma worker runtime descriptor. `check --allow-known-gaps` now passes with expected known-gap warnings; remaining descriptor work is strict-contract field coverage, not the shared-runtime conflict blocker.
 3. **PARTIAL 2026-06-13 (`8cf0310`, `1f16759`, `2e31055`) - Migrate offline stack consumers away from hardcoded model rosters/action spaces.** GraphRouter training now reads live stack priors, GraphRouter extraction/verifier data now derives its action space from stack priors/classifier artifacts while preserving explicit legacy replay remaps, and seeding per-role discovery now prefers stack priors while keeping registry fallback. Continue with any remaining low-risk offline consumers before touching HIGH-impact descriptor assembly.
 4. **DONE 2026-06-13 (`837829f`, `b8477b0`, `2ea28dd`, `865b2b1`, `54b7c77`) - Close the current descriptor evidence/gap tranche.** Architect quality, GGUF-derived model context, REAP quality, thinking-control evidence, and shared-runtime alias provenance now compile cleanly; generated descriptors/priors are `status: compiled` and stack-prior `known_gaps` are empty.
