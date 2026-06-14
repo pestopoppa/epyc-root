@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired and a targeted 60-page web_research probe produced real fetched/synthesized counters. S5 remains **HOLD / no GO evidence** because the fresh probe was ColBERT-focused tool telemetry, not a representative AR-3/web_research benchmark sample, and it showed 0/60 irrelevant synthesized pages.
+**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live role-path web_research still has a soft Gate-3 timeout follow-up, so keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-05-28
 **Priority**: MEDIUM
@@ -70,6 +70,52 @@ useful work is fresh sentinel traffic or web_research fetch/telemetry repair, no
 - Results: 20/20 successful queries; 100 search results; 60/60 pages attempted, fetched, and synthesized; fetch failures 0; synthesis failures 0; irrelevant pages 0; search backend `searxng`.
 
 Decision: the telemetry denominator is now healthy, but this targeted probe does **not** justify S5. It is biased toward relevant ColBERT pages and observed `irrelevant_rate=0.0`. Keep request-path reranking off. The next gate should be a representative web_research sentinel/eval sample using the same repaired counters; implement S5 only if that sample crosses the existing >20% irrelevant-page threshold.
+
+**2026-06-14 representative direct-tool sentinel + synthesis hardening:** landed
+in `epyc-orchestrator` `93c4a09` (`Harden web research telemetry probe`).
+
+- Added `scripts/benchmark/web_research_telemetry_probe.py`, a direct
+  tool-only probe for `web_research` counters. It can run the
+  `orchestration/deep_research_sentinel.yaml` query set without invoking
+  orchestrator role routing, emits metadata-only `records.jsonl` plus
+  `summary.json`, supports `--shard-count/--shard-index`, and can pin a shard
+  to a specific worker endpoint.
+- Baseline representative run:
+  `/mnt/raid0/llm/epyc-orchestrator/benchmarks/results/eval/web-research-direct-deep-sentinel-20260614T1936Z`.
+  It ran all 20 deep-research sentinel prompts through SearXNG + the
+  `http://localhost:8082/completion` worker with serial synthesis. Result:
+  20/20 successful calls, 100 search results, 60 pages attempted, 57 pages
+  fetched successfully, 55 pages synthesized, 3 fetch failures, 2 worker
+  synthesis failures, 0 irrelevant pages (`irrelevant_rate=0.0`).
+- Sharded mitigation validation:
+  `web-research-direct-deep-sentinel-mitigated-s{0,1,2,3}-20260614T1953Z`.
+  Four probe processes ran across `8082/8182/8282/8382`, serial within each
+  worker. Result: 20/20 successful calls, 75 search results, 45 pages attempted,
+  43 pages synthesized, 2 fetch failures, 0 synthesis failures, 0 irrelevant
+  pages. This validated the faster tool-working pattern and the synthesis
+  hardening, but it is not the canonical S5 denominator because parallel
+  SearXNG returned fewer results.
+- Validation policy: use serial single-slot runs only for canonical denominators,
+  latency, reliability, or quality comparisons. For "does the tool work?"
+  checks, prefer bounded parallel shards across independent worker slots/ports
+  or explicitly multi-slot servers; keep at most one in-flight synthesis request
+  per single-slot endpoint to avoid manufacturing timeout failures.
+- Worker synthesis hardening: `_synthesize_page()` now logs bounded HTTP error
+  detail and retries one worker HTTP 5xx with a reduced `n_predict=256`.
+  Regression coverage proves a 500 on the primary 512-token call can recover on
+  the reduced-cap retry.
+- Live request-path check: Gate-3 hard telemetry passed after the HOT stack was
+  started (`get_eval_secret` counted 8, all timing rows successful, no-tool
+  isolation clean). The soft `web_research` structured-output probe timed out
+  at 180s, so live role-path web_research remains an infra/latency follow-up,
+  not a reranker GO signal.
+
+Decision update: representative direct-tool evidence now crosses the >=50
+synthesized-page denominator with `<10%` irrelevant pages, so S5 request-path
+reranking is a current **NO-GO**. Keep `web_research_rerank` default-off and do
+not implement request-path reranking unless future AR-3/live role traffic shows
+material irrelevant-page waste above the existing threshold. Next useful work is
+the role-path web_research timeout/latency follow-up, not ColBERT insertion.
 
 **Risk controls if GO**:
 
