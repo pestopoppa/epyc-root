@@ -1,4 +1,4 @@
-# CPU Kernel Env-Flag Inventory — 2026-04-26 (updated 2026-05-28)
+# CPU Kernel Env-Flag Inventory — 2026-04-26 (updated 2026-06-14)
 
 **Repo**: `/mnt/raid0/llm/llama.cpp-experimental` (`feature/cpu-ep-inter-process` HEAD `aed8c1e` post-2026-04-30 wrap-up; experimental branch HEAD `d45126db5` includes Phase 1.1 dispatcher v1)
 **Purpose**: classify every env-gated knob the experimental kernel has accumulated across CPU1, CPU2, CPU15, slot-promotion work, so Phase I (production-consolidated-v5 cherry-pick) knows what's safe to default-on, what stays default-off, and what should be stripped.
@@ -24,9 +24,31 @@ This is a reference inventory, not an open-ended optimization queue. Treat it as
 - `GGML_NUMA_MIRROR` remains single-socket-negative; reopen only for 2-socket hardware.
 - Slot-promotion dispatcher stays disabled for the tested Qwen3.6 + 1.7B pair.
 
-**Next actionable audit**: compare the live `epyc-orchestrator` launcher env injection against the per-role v5 deployment recommendation below. If live launch wiring differs, update this file with either the live override rationale or a corrective task in `model-registry-v5-deployment-draft.yaml` (the push-rebase handoff was archived 2026-06-12 → `../completed/llama-cpp-kernel-push-rebase.md`; new kernel-deployment tasks go here or in the CPU index, not there).
+**Launcher audit (completed 2026-06-14)**: live `epyc-orchestrator` launch env wiring was checked against the per-role v5 recommendation. The active source of truth is now `scripts/server/stack_env.py::build_launch_env` plus the `worker_pool_mode` binary-override strip in `scripts/server/orchestrator_stack.py`. No corrective code change is pending from this audit.
+
+**Future upkeep**: when a role changes model, binary fork, or arch class, update this inventory, `stack_env.py`, `model-registry-v5-deployment-draft.yaml`, and the relevant stack handoff together. The push-rebase handoff was archived 2026-06-12 (`../completed/llama-cpp-kernel-push-rebase.md`); new kernel-deployment tasks go here or in the CPU index, not there.
 
 ---
+
+## 2026-06-14 Live launcher env audit
+
+Audit target: `epyc-orchestrator` commit `9b209d3`, `scripts/server/stack_env.py`, and the worker-pool launch branch in `scripts/server/orchestrator_stack.py`.
+
+All llama-server launches now inherit the canonical runtime env from `build_launch_env`: `LD_LIBRARY_PATH=/usr/lib/llvm-20/lib`, `OMP_PROC_BIND=spread`, `OMP_PLACES=cores`, `OMP_WAIT_POLICY=active`, `OMP_DYNAMIC=false`, and `KMP_BLOCKTIME=10`. Host-level prerequisites (`numa_balancing=0`, THP=always, numactl interleave/taskset, `--mmap 0`) remain outside env-dict construction and must still be enforced by the stack launcher / operator runbook.
+
+Live role projection:
+
+| Role / alias | Extra `GGML_*` env from `build_launch_env` | Actual launch nuance | Audit verdict |
+|---|---|---|---|
+| `frontdoor`, `coder_escalation`, `worker_summarize` | none | The historical EP block is retained only under inert key `frontdoor_ep_stack_disabled_2026_05_11`. | Matches Qwen3.6 Q8 default-v5 recommendation; no `GGML_EP_*` production wiring. |
+| `worker`, `worker_general`, `worker_explore`, `toolrunner` | CPU1 3-flag stack: `GGML_CCD_POOLS=1`, `GGML_CCD_WORK_DIST=1`, `GGML_BARRIER_LOCAL_BETWEEN_OPS=1` | In `worker_pool_mode`, if a per-role `binary_override` is active for the ik_llama.cpp Gemma4 MTP fork, `orchestrator_stack.py` strips all `GGML_*` env before launch and leaves the OMP/KMP/libomp baseline intact. | Intentional divergence: production ggml CPU1 stack remains available, but it is not forced onto the MTP fork that was validated with bare OMP env. |
+| `architect_general` | `GGML_NUMA_REPACK_INTERLEAVE=0` | Replaces the removed `architect_coding`/REAP-specific block. | Matches the 2026-05-04 Qwen3.5-122B mbind-sensitive probe. |
+| `hybrid_ssm_dense` | CPU1 3-flag stack plus `GGML_NUMA_REPACK_INTERLEAVE=0` | Arch-class block is ready but only applies when such a role is rostered. | Matches Nemotron dense-SSM c3 recommendation. |
+| `ingest_long_context` | none | Alias to `hybrid_ssm_moe`. | Matches Qwen3-Next hybrid-SSM MoE default-v5 recommendation. |
+| `formalizer` | none | Alias to `dense_q8`. | Matches dense-Q8 default-v5 recommendation. |
+| `general_gemma_3_27b_it_qat` | none | Alias to `dense_q4`. | Matches dense-Q4 default-v5 recommendation. |
+
+Negative checks: no live production role enables deprecated `GGML_NUMA_WEIGHTS`; no live production role enables the EP family (`GGML_EP_*`). The only EP env values in `stack_env.py` are under the disabled historical block and are not returned by `_role_env_overrides` for any production role.
 
 ## ⚑ CANONICAL PREREQUISITES (read before any env-flag is interpreted)
 
@@ -196,39 +218,70 @@ Configs reference (env stack relative to canonical baseline):
 | **Dense Q8** | Qwen3.6-27B Q8 | default v5 (CPU1 actively HURTS) | default v5 | All probed configs negative: c1=-4.7%, c2=-3.3%, c3=-1.6%. Do NOT enable CPU1 or mbind-off. | `2026-04-29-multi-arch-coverage-canonical/` |
 | **Dense Q4_K_M** | gemma-4-31B Q4_K_M | default v5 (within noise) | default v5 | All probed configs within ±2% under tight Probe B measurement; "+3.9% c2" from multi-arch n=15 was baseline-drift artifact (gemma c0 std 6.4% CV) | `2026-04-29-multi-arch-coverage-canonical/` + `2026-04-29-workload-shape-canonical/` |
 
-### Per-role v5 deployment recommendation (read by push-rebase agent)
+### Per-role v5 deployment recommendation
 
-When v5 ships and `model_registry.yaml` is updated, populate per-role env as follows:
+The historical push-rebase handoff is complete. Live launch env is now centralized in `epyc-orchestrator/scripts/server/stack_env.py`; keep this sketch aligned with that file when roles change:
 
 ```yaml
-# Sketch — not yet committed to model_registry until v5 lands
+# Live sketch as of 2026-06-14. Source of truth: stack_env.py.
 roles:
-  coder_explore:        # Coder-30B-A3B Q4_K_M
-    binary_path: build_libomp_pgo_bolt/  # per-role BOLT (CPU12)
-    env:
-      GGML_CCD_POOLS: 1
-      GGML_CCD_WORK_DIST: 1
-      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
-  frontdoor:            # Qwen3.6-35B-A3B Q8_0
-    binary_path: build_libomp_pgo_use/   # universal PGO
+  frontdoor:
     env: {}  # Do not set GGML_EP_* unless CPU15-REVAL passes on canonical baselines
-  architect_coding:     # REAP-246B-A35B Q4_K_M
-    binary_path: build_libomp_pgo_use/
-    moe_spec_budget: 40             # MoE-Spec validated for REAP at +13-16% pp32
-  hybrid_dense_ssm:     # Nemotron-9B-v2 (if added to roster)
-    binary_path: build_libomp_pgo_use/
+  coder_escalation:
+    alias: frontdoor
+    env: {}
+  worker_summarize:
+    alias: frontdoor
+    env: {}
+
+  worker:
     env:
       GGML_CCD_POOLS: 1
       GGML_CCD_WORK_DIST: 1
       GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
-      GGML_NUMA_REPACK_INTERLEAVE: 0  # mbind off
-  # NO opt-in env for: Qwen3-Next-80B-A3B, Qwen3.6-27B Q8, gemma-31B Q4
-  # All three perform best (or tie) at default v5 stack.
+  worker_general:
+    alias: worker
+    # In worker_pool mode, a per-role binary_override strips GGML_* before
+    # launch for the ik_llama.cpp Gemma4 MTP fork.
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+  worker_explore:
+    alias: worker
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+  toolrunner:
+    alias: worker
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+
+  architect_general:
+    env:
+      GGML_NUMA_REPACK_INTERLEAVE: 0
+
+  hybrid_ssm_dense:
+    env:
+      GGML_CCD_POOLS: 1
+      GGML_CCD_WORK_DIST: 1
+      GGML_BARRIER_LOCAL_BETWEEN_OPS: 1
+      GGML_NUMA_REPACK_INTERLEAVE: 0
+
+  ingest_long_context:  # hybrid_ssm_moe
+    env: {}
+  formalizer:           # dense_q8
+    env: {}
+  general_gemma_3_27b_it_qat:
+    env: {}
 ```
 
 **ALL roles inherit the canonical prerequisites** (OMP env stack + numa_balancing=0 + THP=always + numactl --interleave=all + --mmap 0). Those are NOT per-role — they're host-level prereqs that orchestrator_stack.py must enforce on every llama-server launch.
 
-**Status of the model_registry update**: **KERNEL PUSHED** — `production-consolidated-v5` tip `23bcd6aaf` pushed to GitHub on 2026-04-30. Production PGO and BOLT binaries built in `/mnt/raid0/llm/llama.cpp/` (see below). Model registry wiring (`binary_path` + env) is the next step; blocked on orchestrator-stack integration (not yet started). The push-rebase handoff (`../completed/llama-cpp-kernel-push-rebase.md`, archived 2026-06-12) was the historical driver; per `project_orchestrator_stack_freeze`, the registry-stack rollout remains future work.
+**Status of the model_registry update**: **KERNEL PUSHED** — `production-consolidated-v5` tip `23bcd6aaf` pushed to GitHub on 2026-04-30. Production PGO and BOLT binaries built in `/mnt/raid0/llm/llama.cpp/` (see below). Launcher env integration is no longer "not started": the live path is `stack_env.py::build_launch_env`, imported by `orchestrator_stack.py`. Remaining registry-stack rollout work is model/binary-path lifecycle hygiene, not a missing env-injection implementation.
 
 **PGO/BOLT binary locations** (built 2026-04-30, `/mnt/raid0/llm/llama.cpp/`):
 
