@@ -73,7 +73,7 @@ fi
 echo "$RESPONSE" | jq --argjson top "$TOP" '
   {
     query: .query,
-    number_of_results: .number_of_results,
+    reported_number_of_results: .number_of_results,
     unresponsive_engines: .unresponsive_engines,
     results: [.results[:$top] | .[] | {
       title,
@@ -82,5 +82,5 @@ echo "$RESPONSE" | jq --argjson top "$TOP" '
       engines,
       content: (.content // "" | .[0:240])
     }]
-  }
+  } | . + {number_of_results: (.results | length)}
 '
