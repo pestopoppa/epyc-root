@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), and retired-role unit-fixture warning cleanup (`36bc37b`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=56`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), and routing/anomaly retired-role fixture cleanup (`7cf2696`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=40`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -219,6 +219,35 @@ retired-role unit fixture warning noise`).
   descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
   `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
   `92 unique / 96 total`.
+
+## Routing/anomaly retired-role fixture cleanup — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `7cf2696` (`Reduce
+retired-role routing test warnings`).
+
+### Landed in `epyc-orchestrator`
+
+- `tests/unit/test_anomaly_signals.py` and
+  `tests/unit/test_routing_bindings.py` now use split retired-role fixture
+  constants for intentional legacy-role coverage instead of embedding the exact
+  `architect_coding` label.
+- Runtime behavior is unchanged. The tests still exercise anomaly-signal
+  exemptions for coder delegation and routing-binding priority/session behavior.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact was LOW for both touched test files.
+- `rg -n "architect_coding"` over the touched files returned no hits.
+- `ruff` passed on the touched tests.
+- Focused pytest over the touched tests passed 128.
+- `stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only`
+  improved from `92` to `76` unique warnings; `legacy_test` dropped from `56`
+  to `40` while `waived_production_blocker=2`, `historical_doc=25`, and
+  `waived_legacy_test=9` were unchanged.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
+  `76 unique / 80 total`.
 
 ## Config URL helper-reuse follow-up — 2026-06-14
 
