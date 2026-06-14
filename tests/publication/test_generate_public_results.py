@@ -5,7 +5,12 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "publication"))
 
-from generate_public_results import collect_rows, parse_protocol_reference, render_page  # noqa: E402
+from generate_public_results import (  # noqa: E402
+    collect_rows,
+    missing_protocol_fields,
+    parse_protocol_reference,
+    render_page,
+)
 
 
 def test_collect_rows_marks_unprotocolled_results_for_backfill():
@@ -75,8 +80,32 @@ def test_collect_rows_marks_protocol_tagged_rows_for_hold_when_incomplete():
     rows = collect_rows(text)
 
     assert len(rows) == 1
-    assert rows[0].protocol_status == "protocol-tagged (needs protocol backfill) [P-BENCH-2; n=5; 2026-04-26]"
+    assert rows[0].protocol_status == "protocol-tagged (missing attestation) [P-BENCH-2; n=5; 2026-04-26]"
     assert rows[0].action == "hold_for_protocol_backfill"
+
+
+def test_collect_rows_lists_each_missing_protocol_component():
+    text = """# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Qwen-test | Q4_K_M | 42.0 | [P-BENCH-2] |
+"""
+
+    rows = collect_rows(text)
+
+    assert len(rows) == 1
+    assert rows[0].protocol_status == "protocol-tagged (missing n/reps, date, attestation) [P-BENCH-2]"
+    assert rows[0].action == "hold_for_protocol_backfill"
+
+
+def test_missing_protocol_fields_reports_attestation_gap():
+    protocol = parse_protocol_reference("Protocol: P-BENCH-2, n=5, 2026-04-26")
+
+    assert protocol is not None
+    assert missing_protocol_fields(protocol) == ["attestation"]
 
 
 def test_collect_rows_holds_unparseable_protocol_markers():
@@ -119,5 +148,7 @@ def test_render_page_is_generated_claim_triage_surface():
     page = render_page(rows, Path("RESULTS.md"))
 
     assert "Status: generated draft, not publication-ready." in page
+    assert "- Total rows: 1" in page
+    assert "- `hold_for_protocol_backfill`: 1" in page
     assert "Rows without explicit protocol tags are held for backfill" in page
     assert "| Results / Bench | A |  | PPL: 6.1; Throughput: 100 tok/s" in page

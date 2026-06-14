@@ -106,6 +106,17 @@ def protocol_complete_for_publish(protocol: ProtocolRef) -> bool:
     return bool(protocol.n and protocol.date and protocol.attestation)
 
 
+def missing_protocol_fields(protocol: ProtocolRef) -> list[str]:
+    missing = []
+    if not protocol.n:
+        missing.append("n/reps")
+    if not protocol.date:
+        missing.append("date")
+    if not protocol.attestation:
+        missing.append("attestation")
+    return missing
+
+
 def format_protocol(protocol: ProtocolRef | None) -> str:
     if protocol is None:
         return ""
@@ -156,7 +167,8 @@ def classify_protocol(section: str, row_cells: list[str], nearby: str) -> tuple[
     if protocol:
         if protocol_complete_for_publish(protocol):
             return f"protocol-tagged [{format_protocol(protocol)}]", "publish_candidate"
-        return f"protocol-tagged (needs protocol backfill) [{format_protocol(protocol)}]", "hold_for_protocol_backfill"
+        missing = ", ".join(missing_protocol_fields(protocol))
+        return f"protocol-tagged (missing {missing}) [{format_protocol(protocol)}]", "hold_for_protocol_backfill"
 
     evidence_l = evidence.lower()
     if "p-bench" in evidence_l or "protocol-id" in evidence_l:
@@ -274,7 +286,15 @@ def display_source(source: Path) -> str:
     return source.name
 
 
+def action_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row.action] = counts.get(row.action, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def render_page(rows: list[ResultRow], source: Path) -> str:
+    counts = action_counts(rows)
     lines = [
         "# Public Results Draft",
         "",
@@ -284,9 +304,21 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
         "",
         "This page is generated from `RESULTS.md`. Rows without explicit protocol tags are held for backfill under `MEASUREMENT.md`; do not publish them as claims.",
         "",
-        "| Section | Entity | Quant/size | Metrics | Protocol status | Action | Source line |",
-        "|---|---|---|---|---|---|---|",
+        "## Summary",
+        "",
+        f"- Total rows: {len(rows)}",
     ]
+    for action, count in counts.items():
+        lines.append(f"- `{action}`: {count}")
+    lines.extend(
+        [
+            "",
+            "## Rows",
+            "",
+            "| Section | Entity | Quant/size | Metrics | Protocol status | Action | Source line |",
+            "|---|---|---|---|---|---|---|",
+        ]
+    )
     for row in rows:
         lines.append(
             "| "
