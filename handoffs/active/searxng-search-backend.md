@@ -1,8 +1,8 @@
 # Web Research Pipeline — SearXNG + Crawl4AI
 
-**Status**: SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa`; CA-1–5 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97`; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
+**Status**: SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa`; CA-1–7 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97` + `6424d05`; SX-5/6 + CA-6 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
-**Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; old 8086 hint conflicts with `worker_vision`; root `searx.sh` fallback hardening landed)
+**Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; limited CA-7 Crawl4AI docs crawl helper landed; old 8086 hint conflicts with `worker_vision`; root `searx.sh` fallback hardening landed)
 **Categories**: search_retrieval, tool_implementation
 **Tracked in**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P12
 
@@ -11,7 +11,7 @@
 ```
 Step 1: SearXNG  (host port 8888) — search, returns candidate URLs      SX-1–4 done, SX-5/6 gated on AR-3
 Step 2: Crawl4AI (port 11235) — single-page markdown extraction        CA-1–5 landed/smoked
-Step 3: Crawl4AI (port 11235) — limited multi-page crawl (docs/logs)   CA-7 (deferred)
+Step 3: Crawl4AI (port 11235) — limited multi-page crawl (docs/logs)   CA-7 landed/tested
 Step 4: Camofox  (port 9377) — full browser, last resort only           CA-6 (deferred, intake-524)
 ```
 
@@ -196,9 +196,9 @@ Chosen over Firecrawl after deep-dive (2026-05-05): single container, Apache-2.0
 - [x] **CA-4**: Route `_fetch_page()` through Crawl4AI `/crawl` first when enabled; keep urllib / `html.parser` fallback if Crawl4AI is disabled, unreachable, blocked, or returns no extractable content — ✅ 2026-06-14 in `0dadb2e`.
 - [x] **CA-5**: Live smoke / activation — ✅ 2026-06-14. After `38ddc97`, the real `unclecode/crawl4ai:latest` container started through the stack helper on port `11235`; `/health` returned ok; `POST /crawl` extracted `https://example.com`; and `_fetch_page("https://example.com", max_length=500)` returned `success=True`, `fetch_backend="crawl4ai"`, and non-empty Example Domain markdown. The ad hoc smoke container was removed afterward and `docker inspect crawl4ai` confirmed no such object.
 - [ ] **CA-6** *(deferred — needs Camofox, intake-524)*: Wire `escalate_to_camofox` signal from `_is_blocked_page()` into step 4 call [2h]
-- [ ] **CA-7** *(deferred — post CA-5)*: `_fetch_docs_crawl_crawl4ai()` for step 3 limited BFS crawl, `limit=5`, `maxDiscoveryDepth=2` [2h]
+- [x] **CA-7**: `_fetch_docs_crawl_crawl4ai()` for step 3 limited BFS crawl — ✅ 2026-06-14 in `epyc-orchestrator` `6424d05`. Opt-in helper builds a bounded `BFSDeepCrawlStrategy` payload with default `limit=5`, default `max_depth=2`, `include_external=false`, and hard caps at `limit<=20` / `max_depth<=3`; returns provenance-rich page records and preserves default `_fetch_page()` / `web_research` behavior. Validation used mocked Crawl4AI responses because the service was not running during this pass.
 
-CA-6 waits for Camofox. CA-7 waits for a deliberate step-3 limited-crawl implementation pass; the single-page backend smoke is complete.
+CA-6 waits for Camofox. CA-7 helper is present but not wired into default synthesis; the single-page backend smoke is complete.
 
 ### Implementation Update — 2026-06-14 (`epyc-orchestrator` `0dadb2e`)
 
@@ -231,9 +231,23 @@ After `38ddc97`, the real Crawl4AI container started successfully through the st
 - `PYTHONDONTWRITEBYTECODE=1 uv run python` smoke calling `_fetch_page("https://example.com", max_length=500)` returned `success=True`, `fetch_backend="crawl4ai"`, `cached=False`, and non-empty Example Domain markdown.
 - Cleanup: `docker rm -f crawl4ai` succeeded, `docker ps -a --filter name=crawl4ai` returned no rows, and `docker inspect crawl4ai` returned `no such object`.
 
+### Limited Crawl Helper — 2026-06-14 (`epyc-orchestrator` `6424d05`)
+
+`6424d05` adds opt-in `_fetch_docs_crawl_crawl4ai()` in `src/tools/web/research.py` for step-3 docs/log crawls without changing the default `_fetch_page()` or `web_research` synthesis path. The helper builds a bounded Crawl4AI `BFSDeepCrawlStrategy` payload (`max_pages=limit`, `max_depth`, `include_external=False`) with defaults `limit=5` and `max_depth=2`, hard caps `limit<=20` and `max_depth<=3`, and polls async task ids when `/crawl` returns a task envelope.
+
+The result parser walks common Crawl4AI response shapes, normalizes relative URLs, deduplicates URLs, skips blocked pages, truncates per-page content, and records `url`, `success`, `retrieved`, `content_sha256`, `fetch_backend="crawl4ai_crawl"`, and `depth` per page. Live smoke was not rerun because no Crawl4AI service was listening on `localhost:11235` in this window.
+
+Validation recorded by the main lane:
+- GitNexus impact for `_fetch_page_crawl4ai`, `_extract_crawl4ai_markdown`, and the test file was LOW.
+- Focused ruff on `src/tools/web/research.py` and `tests/unit/test_web_research_crawl4ai.py` passed.
+- `tests/unit/test_web_research_crawl4ai.py` passed 7 tests.
+- Adjacent web/docker/manifest suite passed 77 tests.
+- `py_compile` and `git diff --check` passed.
+- `epyc-orchestrator` GitNexus refreshed after commit at `53,173 nodes`, `91,274 edges`, `1117 clusters`, `300 flows`.
+
 ## Dependencies
 
-- **Blocks**: CA-6 blocked on intake-524 Camofox; CA-7 waits for a scoped limited-crawl implementation pass
+- **Blocks**: CA-6 blocked on intake-524 Camofox; SX-5/6 remain AR-3 gated; CA-7 live service smoke or integration into synthesis remains optional/future if needed
 - **Composes with**: `colbert-reranker-web-research.md` S5 (SearXNG snippets → ColBERT reranking → Crawl4AI fetch)
 - **Replaces**: `_search_duckduckgo()` in `search.py` (SX) and `html.parser` fetch in `research.py` (CA)
 
