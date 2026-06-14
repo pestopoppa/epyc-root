@@ -1,6 +1,7 @@
 # Model Stack Single-Source Update Pipeline
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - 2026-06-14 follow-up `epyc-orchestrator` `1148ff6` closes live q_scorer prior-source promotion gating and the no-inference data-only fixture gaps for the stale frontdoor/coder and context/KV/acceleration cases. Follow-up `e31ebe1` wires the canonical no-inference promotion gate into production `orchestrator_stack.py start` before host prereqs/model launch, with dev/validate-only/migration dry-run skips and explicit emergency bypass. Follow-up `e02930f` wires the same canonical promotion gate into AutoPilot preflight before model/web/inference checks. Follow-up `dbcae29` lands generated current-stack operator summaries from stack priors (`docs/generated/current_stack_summary.md`, `scripts/registry/render_stack_summary.py`, stack pipeline and system-card integration). Follow-up `6474204` expands the executable promotion gate to include benchmark/seeding preflight suites. Follow-up `1457e58` adds the first `runtime_attestation` promotion step for concrete live model/mmproj drift. Follow-up `3065b8b` extends that gate to unmanaged known-stack listeners/state gaps and concrete live runtime flag drift. Follow-up `d3643eb` lands the first enforced P2 model-specific consumer-surface ownership manifest. Follow-up `a0a251d` updates `epyc-orchestrator/src/runtime/inference_lock.py` degraded role fallbacks to match current stack shape (`worker_fast` removed from shared fallback; `worker_summarize` explicit heavy/exclusive fallback). Follow-up `0cdc15e` migrates the tap safe-streaming non-stream role table to stack-prior-derived truth. Follow-up `f41b1f3` migrates `config_model_catalog` defaults to generated stack-prior server URL truth while preserving environment overrides and explicit degraded fallbacks. Follow-up `c7928cf` migrates dashboard/status port labels to generated stack-prior launch-entry truth while preserving explicit service-only fallbacks. Follow-up `211746d` migrates AutoPilot cache-flush rewarm target discovery to launcher-derived prewarm targets for HOT+WARM servers, retaining the stale hardcoded tuple only as degraded fallback. Follow-up `1f002ae` migrates AutoPilot planner slot-memory query ports to live stack-prior primary launch entries, cleans stale planner/program model-speed guidance, and expands planner prompt guidance surface ownership/scanner coverage. Follow-up `91601d0` migrates AutoPilot KV compaction and config-applicator physical primary role ports to stack-prior launch entries, preserves alias-aware explicit lookup, treats `ik-pr1744` / `llama-server` runtime entries as slot-capable for planner slot queries, and adds guard coverage for static `PRODUCTION_PORTS = {` in `scripts/autopilot/kv_compress.py` under the surface manifest. Follow-up `d0960b0`/`dfcd280`/`91c7cba` centralizes runtime stack-prior helper consumption across concurrency, parallel executor, vision-stage, lock/tap, API health, and chat-vision probe URL consumers. Follow-up `82f136b` removes duplicated hardcoded degraded status/preflight target tuples and moves manifest-driven alias-group fallback to `scripts.server.stack_manifest` `PORT_MAP` + `HOT_ROLES` in `cli_orch.py` and `preflight_audit.py` with embedder-filtering preserved. Follow-up `d5e81f1` adds hardcoded-surface guard coverage so those same degraded target fallbacks remain production-safe if reintroduced and ensures ownership is recorded in the surface manifest. Follow-up `1624969` aligns `src/api/routes/openai_compat.py` `/v1/models` degraded fallback roles to the live/public surface contract after stack-prior parsing failure. Remaining work is broader static lock/tap policy cleanup, other high-risk consumer migrations, and direct benchmark runtime enforcement where needed.
+**Status**: PARTIAL IMPLEMENTATION LANDED - 2026-06-14 follow-up `epyc-orchestrator` `1148ff6` closes live q_scorer prior-source promotion gating and the no-inference data-only fixture gaps for the stale frontdoor/coder and context/KV/acceleration cases. Follow-up `e31ebe1` wires the canonical no-inference promotion gate into production `orchestrator_stack.py start` before host prereqs/model launch, with dev/validate-only/migration dry-run skips and explicit emergency bypass. Follow-up `e02930f` wires the same canonical promotion gate into AutoPilot preflight before model/web/inference checks. Follow-up `dbcae29` lands generated current-stack operator summaries from stack priors (`docs/generated/current_stack_summary.md`, `scripts/registry/render_stack_summary.py`, stack pipeline and system-card integration). Follow-up `6474204` expands the executable promotion gate to include benchmark/seeding preflight suites. Follow-up `1457e58` adds the first `runtime_attestation` promotion step for concrete live model/mmproj drift. Follow-up `3065b8b` extends that gate to unmanaged known-stack listeners/state gaps and concrete live runtime flag drift. Follow-up `d3643eb` lands the first enforced P2 model-specific consumer-surface ownership manifest. Follow-up `a0a251d` updates `epyc-orchestrator/src/runtime/inference_lock.py` degraded role fallbacks to match current stack shape (`worker_fast` removed from shared fallback; `worker_summarize` explicit heavy/exclusive fallback). Follow-up `0cdc15e` migrates the tap safe-streaming non-stream role table to stack-prior-derived truth. Follow-up `f41b1f3` migrates `config_model_catalog` defaults to generated stack-prior server URL truth while preserving environment overrides and explicit degraded fallbacks. Follow-up `c7928cf` migrates dashboard/status port labels to generated stack-prior launch-entry truth while preserving explicit service-only fallbacks. Follow-up `211746d` migrates AutoPilot cache-flush rewarm target discovery to launcher-derived prewarm targets for HOT+WARM servers, retaining the stale hardcoded tuple only as degraded fallback. Follow-up `1f002ae` migrates AutoPilot planner slot-memory query ports to live stack-prior primary launch entries, cleans stale planner/program model-speed guidance, and expands planner prompt guidance surface ownership/scanner coverage. Follow-up `91601d0` migrates AutoPilot KV compaction and config-applicator physical primary role ports to stack-prior launch entries, preserves alias-aware explicit lookup, treats `ik-pr1744` / `llama-server` runtime entries as slot-capable for planner slot queries, and adds guard coverage for static `PRODUCTION_PORTS = {` in `scripts/autopilot/kv_compress.py` under the surface manifest. Follow-up `d0960b0`/`dfcd280`/`91c7cba` centralizes runtime stack-prior helper consumption across concurrency, parallel executor, vision-stage, lock/tap, API health, and chat-vision probe URL consumers. Follow-up `82f136b` removes duplicated hardcoded degraded status/preflight target tuples and moves manifest-driven alias-group fallback to `scripts.server.stack_manifest` `PORT_MAP` + `HOT_ROLES` in `cli_orch.py` and `preflight_audit.py` with embedder-filtering preserved. Follow-up `d5e81f1` adds hardcoded-surface guard coverage so those same degraded target fallbacks remain production-safe if reintroduced and ensures ownership is recorded in the surface manifest. Follow-up `1624969` aligns `src/api/routes/openai_compat.py` `/v1/models` degraded fallback roles to the live/public surface contract after stack-prior parsing failure. Follow-up `dda9c1e` aligns `scripts/benchmark/corpus_quality_gate.py` model fallback discovery with stack-prior-first loading and manifest-derived fallbacks before stale hardcoded role/model defaults. Remaining work is broader static lock/tap policy cleanup, other high-risk consumer migrations, and direct benchmark runtime enforcement where needed.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -55,6 +56,44 @@ Documentation sidecar for `epyc-orchestrator` commit `71206cb` (`Derive seeding 
   `71206cb` validation and heavy-port/memory policy context.
 - `progress/2026-06/2026-06-14.md`: added the same seeding-topology dispatch
   note and validation summary.
+
+## Corpus quality gate fallback derivation follow-up — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `dda9c1e` (`Derive corpus quality
+gate model fallbacks`). Scope remained root documentation only; no orchestrator code
+was edited in this lane.
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/benchmark/corpus_quality_gate.py` now derives live model targets from
+  stack priors first (using `live_stack_role_records` and `stack_prior_serving`),
+  then falls back to manifest-driven `PORT_MAP` + `HOT_ROLES` entries for
+  `frontdoor`, `worker_general`, and `architect_general` when priors are unavailable.
+- Fallbacks now use role-derived labels (no copied/embedded stale model names).
+- The CLI `--models` default list now derives from loaded role keys rather than the
+  obsolete hardcoded `7b`/`32b` labels.
+- `tests/unit/test_corpus_quality_gate.py` was added to validate live-prior and
+  fallback behavior plus role-key defaults.
+
+### Validation recorded from the implementation lane
+
+- `ruff` passed on touched files.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_corpus_quality_gate.py`
+  -> 4 passed.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/benchmark/corpus_quality_gate.py --help`
+  succeeded and showed current role choices.
+- No-inference focused suite (`66`) passed including:
+  `test_corpus_quality_gate.py`, `test_analyze_routing_policy.py`,
+  `test_cli_orch.py`, `test_autopilot_preflight_audit.py`,
+  `test_stack_change_guard.py`.
+- `git diff --check` passed.
+
+### Root docs updated
+
+- `handoffs/active/model-stack-single-source-update-pipeline.md`: records this
+  commit’s fallback/model-default correction as N11a scope.
+- `progress/2026-06/2026-06-14.md`: adds matching `dda9c1e` dispatch notes and
+  validation summary.
 
 ## Operational-consumer helper reuse follow-up — 2026-06-14
 
