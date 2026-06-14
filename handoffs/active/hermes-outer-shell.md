@@ -253,10 +253,11 @@ Single-user only for now. No auth on any endpoint. When multi-user is needed, ad
 
 Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../../research/deep-dives/veniceai-skills-cross-runtime-authoring.md). Three non-inference work items, mostly independent. Apply Venice's cross-runtime SKILL.md authoring discipline before our skill corpus grows.
 
-- [ ] **A — `scripts/hermes/skills/TEMPLATE.md` + ≤500-line authoring rubric** (~30 min)
+- [x] **A — `scripts/hermes/skills/TEMPLATE.md` + ≤500-line authoring rubric** (~30 min) — DONE 2026-06-14
   - Codify: short lead paragraph → endpoint/override table → curl + one SDK example → explicit "Gotchas" section → ≤500 line cap
   - Reference Venice's pattern at `github.com/veniceai/skills` (any individual skill is the canonical example)
   - Write the rubric as a separate `scripts/hermes/skills/AUTHORING.md` next to the template if the template itself would be too cluttered
+  - Delivered `TEMPLATE.md` (81 lines) and `AUTHORING.md` (98 lines), checked against the current `OpenAIChatRequest` `x_*` schema. The rubric explicitly warns against stale model IDs and records boolean override types.
 - [ ] **B — `scripts/hermes/skills/check_drift.py` + pre-commit hook wire** (~2 h, depends on A)
   - Parse `x_*` field declarations in `OpenAIChatRequest` (under `epyc-orchestrator/src/api/models/openai.py` per our overrides — confirm path on implementation)
   - Regex-scan all `scripts/hermes/skills/**/*.md` for documented `x_*` references
