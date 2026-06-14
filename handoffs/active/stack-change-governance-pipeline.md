@@ -788,12 +788,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   live `worker_general` in `a7c9ac0`, with fallback/default and explicit
   override behavior covered by model-grader tests; debugger prompt grading-role
   documentation follows the same `worker_general` contract in `4f9123f`.
-- [ ] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
+- [x] **W5 — Simulated model-swap CI gate** (1 day): implement a no-inference
   CI test that swaps one deployed role to a candidate descriptor/registry record
   and proves all derived consumers update with zero code edits. Acceptance:
   at least two simulated swaps pass, including one shared-mmap role and one
-  retired-role removal.
-- [ ] **W6 — Stack-change runbook and launch hook** (1 day): wire the validator
+  retired-role removal. Current status: landed through
+  `tests/unit/test_stack_change_pipeline_simulated_fixtures.py`. The current
+  no-inference fixture set covers the frontdoor/coder shared-runtime swap,
+  shared alias runtime descriptor provenance, retired `architect_coding` enum
+  removal, generated operator-summary refresh, q_scorer source provenance, and
+  runtime/context/KV/acceleration drift rejection. The full promotion gate now
+  executes those fixtures as part of the canonical stack-change check.
+- [x] **W6 — Stack-change runbook and launch hook** (1 day): wire the validator
   into `orchestrator_stack.py` compile/start paths and document the operator
   command sequence. Launch should fail closed unless descriptors and derived
   priors are fresh or an explicit diagnostic override is used. Current status:
@@ -835,9 +841,14 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   GGUF-derived `ctx_max` projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
-  provenance landed in `54b7c77`. Broader stack-change work now moves to the
-  temporary retired-role enum waiver, remaining hardcoded-surface cleanup, and
-  consumer migrations.
+  provenance landed in `54b7c77`; production launch now runs
+  `stack_change_pipeline.py check --run-promotion-gate` before host prereqs and
+  model start as of `e31ebe1`, skipping only dev/validate-only/migration dry-run
+  paths unless an operator explicitly uses the diagnostic bypass; the operator
+  runbook landed in `b0e7a29` under
+  `docs/reference/stack-change-launch-runbook.md`. Broader stack-change work now
+  moves to remaining hardcoded-surface cleanup, direct benchmark runtime
+  enforcement, and high-risk consumer migrations.
 
 ## Dependency Graph
 
@@ -845,8 +856,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - W2 blocks W4/W5 because consumers need one artifact/API to consume.
 - W3 can proceed after W1 and should run before each W4 migration.
 - W4 and W5 are parallel after W2/W3.
-- W6 depends on W2-W5 because launch hooks must enforce the final generated
-  contract, not an intermediate one.
+- W6 depended on W2-W5 because launch hooks needed to enforce the generated
+  contract. The production launch hook and runbook are now live; future
+  consumer migrations should extend the same promotion gate instead of adding
+  separate launch checks.
 
 ## Cross-Cutting Concerns
 
