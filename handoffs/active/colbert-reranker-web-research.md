@@ -377,7 +377,7 @@ Tasks:
 
 - [ ] **S3c**: ONNX INT8 export of `Reason-mxbai-colbert-v0-32m` + parity test vs PyLate reference (~1 h, non-inference). Unblocked independent of AR-3. Reuses the same `[colbert-export]` venv + path as S3b; add a `--model-id DataScience-UIBK/Reason-mxbai-colbert-v0-32m` switch to `export_lateon_onnx_int8.py` (or fork to `export_reason_mxbai_onnx_int8.py` if the existing script is too LateOn-specific). Parity tolerance: `1e-2` L2.
 - [ ] **S4c**: CPU latency benchmark with Reason-mxbai INT8 at 48 threads for 10 snippets (~30 min once the bench harness exists). Target median ≤80 ms. **Prereq**: `scripts/benchmark/bench_colbert_rerank.py` does not yet exist — needs ~1 h of harness work, which also unblocks S4b's deferred LateOn-INT8 latency run.
-- [ ] **S5-amend**: extend `src/tools/web/colbert_reranker.py` with `REASON_MXBAI_MODEL_PATH` env var alongside the existing `LATEON_MODEL_PATH`. Three-slot operating-point selector documented in code comments + this handoff. (~minor, non-inference for the config; full A/B inference-gated on AR-3 Package D, same gate as S5.)
+- [x] **S5-amend**: **LANDED 2026-06-14** in `epyc-orchestrator` `107a8db`. `src/tools/web/colbert_reranker.py` now has a three-slot selector documented in code comments: `LATEON_MODEL_PATH` primary, `REASON_MXBAI_MODEL_PATH` 32M fallback, and GTE-ModernColBERT-v1 default. Unit coverage verifies default, Reason-mxbai-only, and LateOn-over-Reason precedence. Full A/B remains inference-gated on AR-3 Package D, same gate as S5.
 
 ### Independence note
 
