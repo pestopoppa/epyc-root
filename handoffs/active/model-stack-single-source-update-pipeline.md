@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), and q_scorer stack-prior loader helper reuse (`07c8906`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), and generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -298,6 +298,54 @@ only.
 This is the enforcement companion to the q_scorer prior-source migration:
 q_scorer still enforces stack-prior provenance for live roles, but now uses the
 shared stack-prior loader instead of owning a local artifact parser.
+
+## Generated-doc stack-prior loader helper-reuse follow-up - 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `c1f22cc` (`Reuse
+stack-prior loader in generated docs`). Scope remained root governance
+documentation only.
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/registry/render_stack_summary.py` now loads stack-prior artifacts via
+  `src.registry.stack_priors.load_stack_priors_artifact()` instead of local YAML
+  parsing for the generated current-stack summary.
+- `scripts/autopilot/gen_system_card.py` reuses that generated-summary helper for
+  stack-prior role rows while leaving unrelated registry/baseline YAML reads
+  unchanged.
+- `scripts/validate/stack_change_guard.py` adds
+  `local_generated_docs_stack_prior_yaml_reader`, owned in
+  `orchestration/stack_change_surface_manifest.yaml`, so generated stack docs and
+  AutoPilot system-card code cannot regress to local stack-prior YAML readers.
+- `tests/unit/test_stack_change_guard.py` covers the old generated-doc/system-card
+  local-reader shapes.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact was LOW for `generate_system_card`, `_load_yaml`,
+  `render_current_stack_summary`, and `load_yaml`; no named processes were
+  impacted.
+- `ruff` passed on generated-summary, system-card, stack-change guard, and guard
+  test files.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python -m pytest -q
+  tests/unit/test_autopilot_system_card.py tests/unit/test_stack_change_pipeline.py
+  tests/unit/test_stack_change_guard.py` -> 71 passed.
+- All-surface summary stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Hardcoded-surface inventory now reports `rule_count=22` and includes
+  `local_generated_docs_stack_prior_yaml_reader`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed:
+  descriptors/stack-priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate 163 tests
+  passed, and acceptance reported no-inference checks passed.
+
+### Progress note
+
+This closes the low-risk generated-doc/system-card loader-reuse gap: current
+operator/planner summaries still come from generated stack-prior truth, but their
+loader path now uses the same typed helper family as other migrated consumers.
 
 ## Vision fallback drift reduction follow-up — 2026-06-14
 
