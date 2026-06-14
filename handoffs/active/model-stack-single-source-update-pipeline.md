@@ -95,6 +95,36 @@ was edited in this lane.
 - `progress/2026-06/2026-06-14.md`: adds matching `dda9c1e` dispatch notes and
   validation summary.
 
+## Corpus quality gate fallback guard follow-up — 2026-06-14
+
+Manual docs checkpoint for `epyc-orchestrator` commit `1bd1144` (`Guard corpus
+quality gate model fallbacks`). Scope remained root documentation only; no
+orchestrator code was edited in this lane.
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/validate/stack_change_guard.py` adds the `stale_corpus_quality_gate_models`
+  hardcoded-surface scanner rule for stale `FALLBACK_MODELS = {...}` tables and
+  old `default=["7b", "32b"]` corpus quality gate model defaults.
+- `orchestration/stack_change_surface_manifest.yaml` owns that rule under
+  `benchmark-governance`, keeping scanner-rule ownership complete.
+- `tests/unit/test_stack_change_guard.py` proves reintroducing those stale
+  corpus-gate fallback/default shapes is a production-blocker scanner finding.
+
+### Validation recorded from the implementation lane
+
+- `ruff` passed on the guard and test files.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_stack_change_guard.py`
+  -> 45 passed.
+- The hardcoded-surface rule inventory includes `stale_corpus_quality_gate_models`.
+- `git diff --check` passed.
+
+### Progress note
+
+This is the enforcement companion to `dda9c1e`: the corpus quality gate now both
+uses stack-prior/manifest-derived model choices and has scanner coverage to stop
+stale copied fallback model tables or invalid legacy model labels from returning.
+
 ## Operational-consumer helper reuse follow-up — 2026-06-14
 
 Documentation sidecar for `epyc-orchestrator` commit `0a46c1c` (`Reuse stack-prior helpers in operational surfaces`). Scope remains root documentation; no orchestrator code was edited in this lane.
