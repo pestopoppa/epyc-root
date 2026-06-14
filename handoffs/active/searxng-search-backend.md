@@ -1,6 +1,6 @@
 # Web Research Pipeline — SearXNG + Crawl4AI
 
-**Status**: SX-1–4 done; CA-1–4 landed in `epyc-orchestrator` `0dadb2e`; Crawl4AI first-run timeout handling landed in `38ddc97`; CA-5 live Crawl4AI smoke/activation remains; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
+**Status**: SX-1–4 done; CA-1–5 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97`; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
 **Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; old 8086 hint conflicts with `worker_vision`)
 **Categories**: search_retrieval, tool_implementation
@@ -10,7 +10,7 @@
 
 ```
 Step 1: SearXNG  (host port 8888) — search, returns candidate URLs      SX-1–4 done, SX-5/6 gated on AR-3
-Step 2: Crawl4AI (port 11235) — single-page markdown extraction        CA-1–4 landed, timeout hardening done, CA-5 smoke pending
+Step 2: Crawl4AI (port 11235) — single-page markdown extraction        CA-1–5 landed/smoked
 Step 3: Crawl4AI (port 11235) — limited multi-page crawl (docs/logs)   CA-7 (deferred)
 Step 4: Camofox  (port 9377) — full browser, last resort only           CA-6 (deferred, intake-524)
 ```
@@ -193,11 +193,11 @@ Chosen over Firecrawl after deep-dive (2026-05-05): single container, Apache-2.0
 - [x] **CA-2**: Add Crawl4AI to `DOCKER_SERVICES` — ✅ 2026-06-14 in `0dadb2e` + `38ddc97`; host/container port is `11235`, not the earlier `8086` plan, because the current stack already assigns `8086` to `worker_vision`; Crawl4AI has `run_timeout: 180` for first-run image startup.
 - [x] **CA-3**: Implement `_fetch_page_crawl4ai()`, `_is_blocked_page()`, `_poll_crawl4ai_task()`, flexible Crawl4AI response parsing, cache helpers, and provenance-preserving fetch envelopes in `src/tools/web/research.py` — ✅ 2026-06-14 in `0dadb2e`.
 - [x] **CA-4**: Route `_fetch_page()` through Crawl4AI `/crawl` first when enabled; keep urllib / `html.parser` fallback if Crawl4AI is disabled, unreachable, blocked, or returns no extractable content — ✅ 2026-06-14 in `0dadb2e`.
-- [ ] **CA-5**: Live smoke / activation — rerun the Crawl4AI container smoke and verify static, JS-heavy, and blocked/interstitial pages. First attempt exposed the old 30s `docker run` timeout for `unclecode/crawl4ai:latest`; `38ddc97` now returns `None` and cleans up on timeout instead of crashing, and sets Crawl4AI `run_timeout: 180`. This item remains open until a successful real container smoke is recorded.
+- [x] **CA-5**: Live smoke / activation — ✅ 2026-06-14. After `38ddc97`, the real `unclecode/crawl4ai:latest` container started through the stack helper on port `11235`; `/health` returned ok; `POST /crawl` extracted `https://example.com`; and `_fetch_page("https://example.com", max_length=500)` returned `success=True`, `fetch_backend="crawl4ai"`, and non-empty Example Domain markdown. The ad hoc smoke container was removed afterward and `docker inspect crawl4ai` confirmed no such object.
 - [ ] **CA-6** *(deferred — needs Camofox, intake-524)*: Wire `escalate_to_camofox` signal from `_is_blocked_page()` into step 4 call [2h]
 - [ ] **CA-7** *(deferred — post CA-5)*: `_fetch_docs_crawl_crawl4ai()` for step 3 limited BFS crawl, `limit=5`, `maxDiscoveryDepth=2` [2h]
 
-CA-5 remains **independent** — no AR-3 gate, no Camofox dependency. CA-6 waits for Camofox; CA-7 waits for the single-page backend smoke.
+CA-6 waits for Camofox. CA-7 waits for a deliberate step-3 limited-crawl implementation pass; the single-page backend smoke is complete.
 
 ### Implementation Update — 2026-06-14 (`epyc-orchestrator` `0dadb2e`)
 
@@ -221,9 +221,18 @@ Additional validation recorded by the main lane:
 - Adjacent manifest/web/docker pytest passed 85 tests.
 - `stack_change_pipeline.py check --run-promotion-gate` passed with promotion gate 48 tests and known warnings only.
 
+### Live Smoke — 2026-06-14
+
+After `38ddc97`, the real Crawl4AI container started successfully through the stack helper:
+
+- `curl -fsS http://localhost:11235/health` returned `{"status":"ok", ...}` with Crawl4AI `version: 0.8.9`.
+- `POST http://localhost:11235/crawl` against `https://example.com` returned `success: True` with extracted content.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python` smoke calling `_fetch_page("https://example.com", max_length=500)` returned `success=True`, `fetch_backend="crawl4ai"`, `cached=False`, and non-empty Example Domain markdown.
+- Cleanup: `docker rm -f crawl4ai` succeeded, `docker ps -a --filter name=crawl4ai` returned no rows, and `docker inspect crawl4ai` returned `no such object`.
+
 ## Dependencies
 
-- **Blocks**: None for CA-5 (live Crawl4AI smoke); CA-6 blocked on intake-524 Camofox; CA-7 waits for CA-5 evidence
+- **Blocks**: CA-6 blocked on intake-524 Camofox; CA-7 waits for a scoped limited-crawl implementation pass
 - **Composes with**: `colbert-reranker-web-research.md` S5 (SearXNG snippets → ColBERT reranking → Crawl4AI fetch)
 - **Replaces**: `_search_duckduckgo()` in `search.py` (SX) and `html.parser` fetch in `research.py` (CA)
 
