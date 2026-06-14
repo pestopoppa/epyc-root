@@ -79,6 +79,23 @@ def test_collect_rows_marks_protocol_tagged_rows_for_hold_when_incomplete():
     assert rows[0].action == "hold_for_protocol_backfill"
 
 
+def test_collect_rows_holds_unparseable_protocol_markers():
+    text = """# Results
+
+## Production
+
+| Model | Quant | t/s | Notes |
+|---|---|---|---|
+| Qwen-test | Q4_K_M | 42.0 | protocol-id pending |
+"""
+
+    rows = collect_rows(text)
+
+    assert len(rows) == 1
+    assert rows[0].protocol_status == "protocol marker present; needs structured protocol backfill"
+    assert rows[0].action == "hold_for_protocol_backfill"
+
+
 def test_parse_protocol_reference_from_protocol_id_prefix():
     protocol = parse_protocol_reference("Protocol: P-BENCH-2, n=5, 2026-04-26, attest a3f2")
 

@@ -160,7 +160,7 @@ def classify_protocol(section: str, row_cells: list[str], nearby: str) -> tuple[
 
     evidence_l = evidence.lower()
     if "p-bench" in evidence_l or "protocol-id" in evidence_l:
-        return "protocol-tagged", "publish_candidate"
+        return "protocol marker present; needs structured protocol backfill", "hold_for_protocol_backfill"
     if any(token in evidence_l for token in ("verified", "benchmarked", "sweep", "quality scored", "canonical")):
         return "evidence-linked; needs protocol tag", "hold_for_protocol_backfill"
     return "unverified historical row", "hold_for_protocol_backfill"
