@@ -33,7 +33,7 @@
 | ~~[11-conceptlm-monitoring.md](../archived/11-conceptlm-monitoring.md)~~ | Concept-level LM monitoring | ARCHIVED (stale, no models available) | — | 2026-03-03 |
 | ~~[knowledge-base-governance-improvements.md](../completed/knowledge-base-governance-improvements.md)~~ | KB linter, credibility scoring, anti-bias, project-wiki skill | COMPLETE (moved to completed/) | — | 2026-04-07 |
 | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | Block-level reasoning compression (KV masking) | refreshed 2026-05-28 — S1 runtime passed; S2 LoRA validation live; S3 blocked | HIGH | 2026-05-28 |
-| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) + ColGREP integration | COMPACTED 2026-05-28 — completed implementation details moved to ledger; live gates are S4 Omega A/B, ColGREP soak/cold-start daemon decision, and version/index hygiene | MEDIUM | 2026-05-28 |
+| [repl-turn-efficiency.md](repl-turn-efficiency.md) | REPL turn reduction (frecency + combined ops) + ColGREP integration | COMPACTED 2026-05-28 — completed implementation details moved to ledger; live gates are S4 Omega A/B plus ColGREP version/index hygiene. The 2026-06-14 warmed soak did not justify a daemon. | MEDIUM | 2026-06-14 |
 | ~~[root-archetype-linter-templates-upstream.md](../completed/root-archetype-linter-templates-upstream.md)~~ | Linter + brevity templates upstream | COMPLETE 2026-06-12 — root-archetype commit `b4102ab`; linter pass, skills validation, shell syntax, and copy-mode init smoke passed | — | 2026-06-12 |
 | Ouro LoopLM Evaluation (P7) | Looped LM reasoning verifier | NEW — download + CPU benchmark + T0 sentinel eval | MEDIUM | 2026-04-12 |
 | [eval-tower-verification.md](eval-tower-verification.md) | Eval tower calibration + process verification | NEW — ECE/AUC metrics, ThinkPRM T2, cross-family verification, Scoring Verifiers benchmarks | MEDIUM | 2026-04-14 |
@@ -148,7 +148,7 @@ See [repl-turn-efficiency.md](repl-turn-efficiency.md). Addresses the Omega find
 - [x] S1b-c: Wire into `_list_dir()` + `code_search()` (feature-flagged `REPL_FRECENCY`) — ✅ 2026-04-09. 7 wiring tests.
 - [x] S2a-b: Mine autopilot logs + implement combined ops — ✅ 2026-04-09. Finding: only web_search/search_wikipedia used (file tools never called). `_CombinedOpsMixin` with `batch_web_search`, `search_and_verify`, `peek_grep`. Flag: `REPL_COMBINED_OPS`. 18 tests.
 - **Note**: `batch_web_search` in `_CombinedOpsMixin` calls `web_search()` directly. When SearXNG backend is deployed (see [`searxng-search-backend.md`](/workspace/handoffs/active/searxng-search-backend.md), R&O P12), `batch_web_search` inherits SearXNG JSON API automatically — no code change needed in combined_ops.
-- [ ] S4: A/B benchmark turn count reduction on seeding harness. 2026-05-28 status: this is now the controlling gate; S5 Gap 1/2/3 implementations have already landed via NIB2, and ColGREP is default-on with rollback env.
+- [ ] S4: A/B benchmark turn count reduction on seeding harness. 2026-06-14 status: this remains the controlling gate; S5 Gap 1/2/3 implementations have already landed via NIB2, ColGREP is default-on with rollback env, and the warmed post-telemetry soak found p50 `208.5ms` / p95 `213ms` with zero wrapper fallbacks, so no ColGREP daemon work is active unless future live turn-frequency gates fire.
 
 ### P7 — Ouro LoopLM Evaluation (from intake-332/341)
 

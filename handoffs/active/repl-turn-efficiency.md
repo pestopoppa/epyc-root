@@ -1,8 +1,8 @@
 # REPL Turn Efficiency - Active Gates
 
-**Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gates are S4 Omega A/B and ColGREP soak/daemon decisions.
+**Status**: COMPACTED 2026-05-28 - core REPL efficiency changes landed; active gates are S4 Omega A/B and ColGREP version/index hygiene.
 **Created**: 2026-04-09
-**Updated**: 2026-06-13
+**Updated**: 2026-06-14
 **Priority**: MEDIUM
 **Categories**: agent_architecture
 **Depends on**: None
@@ -16,8 +16,8 @@ Do not add new REPL tools before S4. The current risk is whether the shipped eff
 ## Outstanding Tasks
 
 - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes.
-- [ ] **ColGREP post-telemetry soak check**: rerun on a representative seeding or REPL window and inspect `_code_search_telemetry`, `_exploration_log`, and logs for fallback events, quality complaints, and p50/p95 `code_search()` latency.
-- [ ] **Cold-start daemon decision**: build only if the daemon criteria below fire; otherwise subprocess-per-query remains the operational default.
+- [x] **ColGREP post-telemetry soak check**: 2026-06-14 warmed synthetic REPL soak closed the latency/fallback/quality portion; see telemetry below.
+- [x] **Cold-start daemon decision**: do not build now. The measured latency gate did not fire; revisit only if a future live workload trips the multi-search or sustained-call-rate gates.
 - [ ] **Version/index hygiene**: pin a versioned ColGREP binary path and decide whether incremental re-index-on-commit is worth the complexity.
 
 ## Cold-Start Daemon Gate
@@ -30,7 +30,9 @@ Do not implement a daemon unless at least one of these conditions is met during 
 
 ## Current Telemetry State
 
-2026-06-13 audit: historical logs were not sufficient to answer the daemon gate. `/mnt/raid0/llm/tmp/repl_tap.log` had no durable `code_search()` latency/fallback records, and the existing ColGREP path only wrote successful calls to the in-memory exploration log without latency. The code path is now instrumented in `epyc-orchestrator` (pending commit in this session): each ColGREP call appends `artifacts["_code_search_telemetry"]`, success responses include `latency_ms`, success exploration-log args include `engine=colgrep`, `latency_ms`, and `fallback=false`, and fallback paths log `fallback_reason` (`missing_binary`, `timeout`, `oserror`, `nonzero_exit`, `bad_json`) plus elapsed time. Do not make the daemon decision from pre-2026-06-13 data; use the next clean representative run.
+2026-06-13 audit: historical logs were not sufficient to answer the daemon gate. `/mnt/raid0/llm/tmp/repl_tap.log` had no durable `code_search()` latency/fallback records, and the existing ColGREP path only wrote successful calls to the in-memory exploration log without latency. The code path is now instrumented in `epyc-orchestrator`: each ColGREP call appends `artifacts["_code_search_telemetry"]`, success responses include `latency_ms`, success exploration-log args include `engine=colgrep`, `latency_ms`, and `fallback=false`, and fallback paths log `fallback_reason` (`missing_binary`, `timeout`, `oserror`, `nonzero_exit`, `bad_json`) plus elapsed time. Do not make daemon decisions from pre-2026-06-13 data.
+
+2026-06-14 warmed synthetic soak: initialized the ColGREP index for `/mnt/raid0/llm/epyc-orchestrator/src` in 52s (`382` source units), then ran 32 `REPLEnvironment._code_search()` calls through the production wrapper with `REPL_COLGREP=1`, `REPL_COLGREP_BIN=/mnt/raid0/llm/UTILS/bin/colgrep`, and `REPL_COLGREP_PATH=/mnt/raid0/llm/epyc-orchestrator/src`. Results: `32/32` telemetry events, `0` wrapper fallbacks, p50 `208.5ms`, p90 `212ms`, p95 `213ms`, max `224ms`, every successful call returned 5 results, effective sequential throughput `2.44 calls/s`. A six-query quality smoke (`FinalSignal`, `ASTSecurityVisitor`, `create_repl_environment`, `_record_colgrep_telemetry`, `OpenAIChatRequest x_disable_repl`, and `execute_parallel_calls`) found the expected source file in top-5 for `6/6` queries. This closes the daemon latency gate for now: subprocess-per-query remains the default. Because this was a synthetic code-search soak, it does not prove future live turn-frequency behavior; revisit only if live `_exploration_log` data shows at least 20% of REPL turns issuing 2+ searches or a role sustaining at least 1 `code_search()`/s for 30s.
 
 ## Dependency Forks
 
