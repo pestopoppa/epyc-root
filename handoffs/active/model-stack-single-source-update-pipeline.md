@@ -19,6 +19,25 @@ The immediate trigger was stale q_scorer/model-stack quantities: `frontdoor` and
 
 This handoff is a concise pickup contract. The long historical audit lives in `model-stack-update-pipeline-audit.md`; implementation should extend the existing descriptor -> stack-prior -> guard -> consumer-migration path instead of inventing a parallel registry.
 
+## Operational-consumer helper reuse follow-up — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `0a46c1c` (`Reuse stack-prior helpers in operational surfaces`). Scope remains root documentation; no orchestrator code was edited in this lane.
+
+### Landed in `epyc-orchestrator`
+
+- `orchestration/repl_memory/bilinear_scorer.py`, `scripts/autopilot/autopilot.py`, `scripts/server/orchestrator_stack.py`, and `scripts/server/stack_commands.py` now reuse shared stack-prior helper paths that were previously maintained with local constants or duplicated parsing.
+- `orchestration/model_descriptors.yaml` and `orchestration/derived/stack_priors.yaml` were regenerated as part of the same tranche to keep generated contracts aligned.
+
+### Validation recorded from the implementation lane
+
+- `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed.
+- Artifacts/validation state: descriptors and stack priors were fresh; `q_scorer_priors: ok`; `runtime_attestation: ok`; acceptance no-inference checks passed; promotion gate `163` passed.
+- Warning summary: `108 unique / 112 total`, `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`.
+
+### Progress note
+
+- This closes another operational-surface tranche on N11/N11a. Remaining work remains higher-risk: static lock/tap policy cleanup and any direct benchmark runtime enforcement follow-up if required.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
