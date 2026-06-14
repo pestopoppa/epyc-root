@@ -3913,3 +3913,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-06-14T15:45:07+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"ColBERT Reason-mxbai selector slot","details":"outcome=success"}
 {"ts":"2026-06-14T15:53:27+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Add ColBERT rerank latency harness","details":"Record orchestrator b37de4a benchmark harness, no-inference validation, and open measurement follow-ups"}
 {"ts":"2026-06-14T15:53:27+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Add ColBERT rerank latency harness","details":"outcome=success"}
+{"ts":"2026-06-14T15:59:52+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"ColBERT export artifact profiles","details":"Record orchestrator ea29d79 profile-aware LateOn/Reason-mxbai export helper and remaining source-only ONNX export work"}
+{"ts":"2026-06-14T15:59:52+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"ColBERT export artifact profiles","details":"outcome=success"}
