@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), and config service URL manifest derivation (`1bf1935`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), config service URL manifest derivation (`1bf1935`), and seeding reward fallback test hardening (`3cb56f9`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -971,6 +971,41 @@ Implementation follow-up landed in `epyc-orchestrator` commit `1bf1935`
   incremental attempts and then refreshed successfully: `53,141 nodes`,
   `91,212 edges`, `1117 clusters`, `300 flows`.
 
+## Seeding reward fallback test hardening — 2026-06-14
+
+Test-only follow-up landed in `epyc-orchestrator` commit `3cb56f9`
+(`Harden seeding reward prior fallback tests`).
+
+### Landed in `epyc-orchestrator`
+
+- `tests/unit/test_seeding_rewards.py` now directly covers
+  `stack_prior_architect_reward_roles()` live-role filtering: live
+  `architect_general` and `vision_escalation` are included, regular worker
+  roles and retired architect labels are excluded.
+- 3-way reward tests now prove missing stack priors use the explicit
+  `FALLBACK_ARCHITECT_REWARD_ROLES` behavior for `vision_escalation`.
+- No production reward logic changed. GitNexus marks the production
+  `stack_prior_architect_reward_roles` symbol HIGH because it feeds 3 benchmark
+  processes, so this pass intentionally stayed test-only.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `tests/unit/test_seeding_rewards.py` was LOW; production
+  `stack_prior_architect_reward_roles` was HIGH and left unchanged.
+- `PYTHONDONTWRITEBYTECODE=1 uv run ruff check tests/unit/test_seeding_rewards.py`
+  passed.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_seeding_rewards.py`
+  passed `25`.
+- `git diff --check` passed for the touched test.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, promotion gate `163`, warning summary
+  `36 unique / 40 total`, and unchanged buckets:
+  `waived_production_blocker=2`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- `epyc-orchestrator` GitNexus refreshed after commit: `53,145 nodes`,
+  `91,218 edges`, `1117 clusters`, `300 flows`.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
@@ -1330,6 +1365,8 @@ helper/data centralization tranche. `4afe47f` also populates generated
 prefer generated limits over static fallbacks. `1bf1935` then layers
 stack-manifest-derived service and warm compatibility URL defaults under
 generated config URL defaults, leaving literal values as degraded fallback only.
+`3cb56f9` adds no-inference regression coverage around seeding architect-role
+fallbacks without changing the HIGH-impact benchmark reward implementation.
 This is still not the broader W3 surface.
 
 Tasks:
