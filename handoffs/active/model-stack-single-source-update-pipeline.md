@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), and final unwaived legacy-test retired-role cleanup (`4139843`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), and KV layer-count stack-prior population (`a54aba4`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -369,6 +369,44 @@ retired-role legacy test warnings`).
   bucket is gone; remaining warning buckets are `waived_production_blocker=2`,
   `historical_doc=25`, and `waived_legacy_test=9`.
 - `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
+  `36 unique / 40 total`.
+
+## KV layer-count stack-prior population — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `a54aba4` (`Promote KV
+layer counts to stack priors`).
+
+### Landed in `epyc-orchestrator`
+
+- `orchestration/model_registry.yaml` now records `attention_layers` for the
+  current KV-adaptive live runtimes: Qwen3.6 shared roles (`28`),
+  `ingest_long_context` (`32`, SSM layers excluded), and
+  `architect_general` (`64`).
+- The canonical stack-change update regenerated
+  `orchestration/model_descriptors.yaml` and
+  `orchestration/derived/stack_priors.yaml`; live role records now expose
+  `model.attention_layers` for those roles.
+- `scripts/autopilot/kv_compress.py` keeps its local layer-count table, but the
+  comment now marks it degraded-only because normal operation reads generated
+  stack-prior metadata first.
+- `tests/unit/test_kv_compress_adaptive.py` now asserts current live and shared
+  roles expose layer counts through stack priors before fallback.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact: `_layer_count_for_role` was MEDIUM with direct AutoPilot
+  slot-compaction callers; `_stack_prior_layer_count_for_role` was LOW. The
+  patch preserved existing counts and moved the truth into generated priors.
+- `ruff` passed for `scripts/autopilot/kv_compress.py` and
+  `tests/unit/test_kv_compress_adaptive.py`.
+- Focused pytest passed 36 tests across KV compression, descriptor compiler,
+  and stack-prior compiler suites.
+- `stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only`
+  remained `36 unique / 36 total`, with only `waived_production_blocker=2`,
+  `historical_doc=25`, and `waived_legacy_test=9`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed after commit:
   descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
   `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
   `36 unique / 40 total`.
@@ -1170,8 +1208,11 @@ warm-worker slots. It migrated `src/runtime/concurrency.py`,
 `src/parallel_step_executor.py`, and
 `src/api/routes/chat_pipeline/vision_stage.py` away from duplicate parsing.
 `dfcd280` then migrated `src/runtime/inference_lock.py` and
-`src/runtime/inference_tap.py` to the same helper layer. This closes the first
-helper-centralization tranche, not the broader W3 surface.
+`src/runtime/inference_tap.py` to the same helper layer. `a54aba4` then
+populated live `attention_layers` in registry-derived descriptors/stack priors
+so AutoPilot KV compression can use generated architecture metadata before its
+degraded fallback table. This closes more of the first helper/data
+centralization tranche, not the broader W3 surface.
 
 Tasks:
 
@@ -1182,13 +1223,20 @@ Tasks:
 
 Likely targets:
 
-- `src/registry/stack_priors.py`
-- `src/config/models.py`
-- `src/runtime/inference_lock.py`
-- `src/runtime/inference_tap.py`
-- `src/api/admission.py`
-- dashboard/status/health routes
-- q_scorer and seeding/replay consumers
+- `src/config/models.py` remaining static server-URL alias/fallback tables.
+- `src/api/routes/chat_vision.py` and
+  `src/api/routes/chat_pipeline/vision_stage.py` duplicated vision role/port
+  fallback policy.
+- `src/api/admission.py` degraded URL/slot fallback map and admission defaults.
+- `src/runtime/inference_tap.py` remaining safe-mode fallback role policy and
+  `scripts/benchmark/seeding_types.py` / `scripts/benchmark/seeding_rewards.py`
+  benchmark cost/tier fallback policy.
+- `src/runtime/inference_lock.py` remaining legacy lock-role buckets, after
+  lower-risk policy fallbacks are exhausted.
+- dashboard/status/health routes if later scanner or consumer-surface audits
+  find new local policy drift.
+- q_scorer and seeding/replay consumers if benchmark runtime enforcement needs
+  more direct fail-closed behavior beyond the promotion gate.
 
 ### W4 - Generate Current Docs And Planner Context
 
