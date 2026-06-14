@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), and guard coverage for stale corpus-gate model defaults (`1bd1144`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is broader static lock/tap policy cleanup, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), and config URL helper reuse (`66d9765`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is broader static lock/tap policy cleanup, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -123,6 +123,43 @@ orchestrator code was edited in this lane.
 This is the enforcement companion to `dda9c1e`: the corpus quality gate now both
 uses stack-prior/manifest-derived model choices and has scanner coverage to stop
 stale copied fallback model tables or invalid legacy model labels from returning.
+
+## Config URL helper-reuse follow-up — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `66d9765` (`Reuse
+stack-prior helpers for config URLs`). Scope remained root documentation only;
+no orchestrator code was edited in this lane.
+
+### Landed in `epyc-orchestrator`
+
+- `src/config/models.py` now builds `ServerURLsConfig` defaults through shared
+  `src.registry.stack_priors.live_stack_role_records` and
+  `stack_prior_serving` helpers instead of route-local YAML parsing.
+- `tests/unit/test_config.py` tightens the server-URL stack-prior fixture to
+  include `deployment_status: live_stack`, matching the generated contract that
+  the shared helper requires.
+- Existing env override precedence, alias defaults, and explicit degraded URL
+  fallbacks remain unchanged.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `_stack_prior_server_urls` and `_format_stack_prior_url`
+  was LOW (`impactedCount=2` and `3` respectively), limited to
+  `ServerURLsConfig`.
+- `ruff` passed for `src/config/models.py` and `tests/unit/test_config.py`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_config.py` ->
+  57 passed.
+- Broader config/registry/guard suite -> 137 passed.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  `promotion_gate=163`, `q_scorer_priors: ok`, `runtime_attestation: ok`, and
+  unchanged warning buckets (`waived_production_blocker=2`, `legacy_test=72`,
+  `historical_doc=25`, `waived_legacy_test=9`).
+
+### Progress note
+
+This is a low-risk P2 `config_model_catalog` follow-up: the surface had already
+derived URL defaults from stack priors, and now it uses the shared typed helper
+path instead of owning a local YAML reader.
 
 ## Operational-consumer helper reuse follow-up — 2026-06-14
 
