@@ -19,6 +19,7 @@ import glob
 import hashlib
 import json
 import os
+import shlex
 from collections import defaultdict
 import shutil
 import sqlite3
@@ -62,6 +63,34 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="emit missing path patterns as warnings instead of hard errors",
         default=True,
+    )
+
+    snapshot_parser = subparsers.add_parser(
+        "create-snapshot",
+        help="copy selected manifest tiers into a verify-restore-compatible snapshot layout",
+    )
+    snapshot_parser.add_argument(
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help="path to continuity backup manifest",
+    )
+    snapshot_parser.add_argument(
+        "--target-root",
+        required=True,
+        help="off-array/off-host directory that will receive timestamped snapshots",
+    )
+    snapshot_parser.add_argument(
+        "--tiers",
+        default="T0_irreplaceable",
+        help="comma-separated tier names to snapshot (default: T0_irreplaceable)",
+    )
+    snapshot_parser.add_argument(
+        "--snapshot-name",
+        help="explicit snapshot directory name; default is UTC timestamp",
+    )
+    snapshot_parser.add_argument(
+        "--report-json",
+        help="write JSON summary report to this path",
     )
 
     verify_parser = subparsers.add_parser(
@@ -363,6 +392,10 @@ def _snapshot_repo_dir(snapshot_root: Path, repo_name: str) -> Path:
     return snapshot_root / repo_name
 
 
+def _parse_tiers(tier_csv: str) -> set[str]:
+    return {tier.strip() for tier in tier_csv.split(",") if tier.strip()}
+
+
 def _check_age(snapshot_root: Path, max_age_days: int | None) -> list[str]:
     if max_age_days is None:
         return []
@@ -373,6 +406,232 @@ def _check_age(snapshot_root: Path, max_age_days: int | None) -> list[str]:
             f"snapshot exceeds max age: age={age_seconds / 86400:.1f} days, limit={max_age_days} days"
         )
     return errors
+
+
+def _target_failure_domain_errors(
+    target_root: Path,
+    repos: dict[str, object],
+    selected_repo_names: set[str],
+) -> list[str]:
+    errors: list[str] = []
+    target_resolved = target_root.resolve()
+    try:
+        target_resolved.stat()
+    except OSError as exc:
+        return [f"target root unavailable: {target_resolved} -> {exc}"]
+    target_mount = _mountinfo_for(target_resolved)
+    if target_mount and target_mount[0] == "overlay":
+        errors.append(
+            f"target root is on overlayfs, not a verifiable different failure domain: {target_resolved}"
+        )
+    target_devices = _storage_device_set(target_resolved)
+
+    for repo_name in sorted(selected_repo_names):
+        repo_path = repos.get(repo_name)
+        if not isinstance(repo_path, str):
+            errors.append(f"manifest repo path missing for selected repo: {repo_name}")
+            continue
+        repo_root = Path(repo_path).resolve()
+        try:
+            repo_root.stat()
+        except OSError as exc:
+            errors.append(f"repo root unavailable for {repo_name}: {repo_root} -> {exc}")
+            continue
+        repo_devices = _storage_device_set(repo_root)
+
+        shared_devices = sorted(target_devices & repo_devices)
+        if shared_devices:
+            errors.append(
+                f"target root shares storage/backing device with {repo_name}: "
+                f"target={target_resolved} repo={repo_root} st_dev={shared_devices}"
+            )
+
+        try:
+            target_resolved.relative_to(repo_root)
+        except ValueError:
+            pass
+        else:
+            errors.append(f"target root is inside source repo {repo_name}: {target_resolved}")
+
+    return errors
+
+
+def _decode_mount_path(path: str) -> str:
+    return path.replace("\\040", " ")
+
+
+def _mountinfo_for(path: Path) -> tuple[str, str, str] | None:
+    resolved = path.resolve()
+    best: tuple[int, str, str, str] | None = None
+    try:
+        lines = Path("/proc/self/mountinfo").read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    for line in lines:
+        fields = line.split()
+        if len(fields) < 10 or "-" not in fields:
+            continue
+        sep = fields.index("-")
+        mount_point = Path(_decode_mount_path(fields[4])).resolve()
+        try:
+            resolved.relative_to(mount_point)
+        except ValueError:
+            continue
+        fstype = fields[sep + 1]
+        source = fields[sep + 2]
+        super_options = fields[sep + 3] if len(fields) > sep + 3 else ""
+        depth = len(mount_point.parts)
+        if best is None or depth > best[0]:
+            best = (depth, fstype, source, super_options)
+    if best is None:
+        return None
+    return best[1], best[2], best[3]
+
+
+def _storage_device_set(path: Path) -> set[int]:
+    devices = {path.stat().st_dev}
+    mountinfo = _mountinfo_for(path)
+    if not mountinfo:
+        return devices
+
+    fstype, _source, super_options = mountinfo
+    if fstype != "overlay":
+        return devices
+
+    for option in super_options.split(","):
+        if not option.startswith(("upperdir=", "workdir=")):
+            continue
+        backing = Path(shlex.split(option, posix=True)[0].split("=", 1)[1])
+        try:
+            devices.add(backing.stat().st_dev)
+        except OSError:
+            continue
+    return devices
+
+
+def _backup_sqlite(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    source_conn = sqlite3.connect(f"file:{source}?mode=ro", uri=True)
+    try:
+        dest_conn = sqlite3.connect(str(destination))
+        try:
+            source_conn.backup(dest_conn)
+        finally:
+            dest_conn.close()
+    finally:
+        source_conn.close()
+
+
+def _copy_file_to_snapshot(source: Path, destination: Path) -> bool:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source.suffix.lower() in {".db", ".sqlite", ".sqlite3"}:
+        _backup_sqlite(source, destination)
+        shutil.copystat(source, destination, follow_symlinks=True)
+        return True
+    shutil.copy2(source, destination)
+    return False
+
+
+def create_snapshot(
+    manifest_path: Path,
+    target_root: Path,
+    *,
+    tier_csv: str = "T0_irreplaceable",
+    snapshot_name: str | None = None,
+    report_json: str | None = None,
+    allow_same_device: bool = False,
+) -> tuple[int, list[str]]:
+    try:
+        manifest = load_manifest(manifest_path)
+    except (TypeError, FileNotFoundError, yaml.YAMLError) as exc:
+        return 1, [f"manifest error: {exc}"]
+
+    validate = validate_manifest(manifest_path, warn_on_missing=True)
+    if validate.errors:
+        return 1, ["manifest invalid"] + validate.errors
+
+    selected_tiers = _parse_tiers(tier_csv)
+    if not selected_tiers:
+        return 1, ["no tiers selected"]
+
+    repos = manifest.get("repos")
+    if not isinstance(repos, dict) or not repos:
+        return 1, ["manifest repos map missing/empty"]
+
+    collected = _collect_selected_files(manifest, selected_tiers)
+    if not collected:
+        return 1, [f"no files selected for tiers {sorted(selected_tiers)}"]
+
+    target_root = target_root.resolve()
+    target_root.mkdir(parents=True, exist_ok=True)
+
+    selected_repo_names = {repo_name for repo_name, _pattern in collected}
+    if not allow_same_device:
+        domain_errors = _target_failure_domain_errors(target_root, repos, selected_repo_names)
+        if domain_errors:
+            return 1, ["target is not an approved different failure domain"] + domain_errors
+
+    if snapshot_name is None:
+        snapshot_name = datetime.now(tz=timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    snapshot_root = target_root / snapshot_name
+    if snapshot_root.exists():
+        return 1, [f"snapshot already exists: {snapshot_root}"]
+
+    metrics = defaultdict(int)
+    errors: list[str] = []
+
+    for (repo_name, pattern), sources in collected.items():
+        del pattern
+        repo_root = Path(cast(str, repos[repo_name]))
+        for source in sources:
+            rel_path = source.relative_to(repo_root)
+            destination = snapshot_root / repo_name / rel_path
+            try:
+                sqlite_backed_up = _copy_file_to_snapshot(source, destination)
+            except (OSError, sqlite3.DatabaseError) as exc:
+                errors.append(f"copy_failed: {source} -> {destination}: {exc}")
+                continue
+            metrics["files_copied"] += 1
+            if sqlite_backed_up:
+                metrics["sqlite_backups"] += 1
+
+    metadata = {
+        "created_at_utc": datetime.now(tz=timezone.utc).isoformat(),
+        "manifest": str(manifest_path),
+        "manifest_sha256": file_checksum(manifest_path),
+        "selected_tiers": sorted(selected_tiers),
+        "source_repos": {name: repos[name] for name in sorted(selected_repo_names) if name in repos},
+        "summary": dict(metrics),
+        "errors": errors,
+    }
+    snapshot_root.mkdir(parents=True, exist_ok=True)
+    (snapshot_root / "SNAPSHOT.json").write_text(
+        json.dumps(metadata, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    if report_json:
+        with Path(report_json).open("w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "target_root": str(target_root),
+                    "snapshot_root": str(snapshot_root),
+                    **metadata,
+                },
+                handle,
+                indent=2,
+                sort_keys=True,
+            )
+
+    summary = [
+        f"snapshot_root={snapshot_root}",
+        f"tiers={sorted(selected_tiers)}",
+        f"files_copied={metrics['files_copied']}",
+        f"sqlite_backups={metrics['sqlite_backups']}",
+    ]
+    if errors:
+        return 1, summary + ["errors:"] + errors
+    return 0, summary
 
 
 def verify_restore(
@@ -398,7 +657,7 @@ def verify_restore(
     errors: list[str] = []
     errors.extend(_check_age(snapshot_root, max_age_days))
 
-    selected_tiers = {tier.strip() for tier in tier_csv.split(",") if tier.strip()}
+    selected_tiers = _parse_tiers(tier_csv)
     if not selected_tiers:
         return 1, ["no tiers selected"]
 
@@ -530,6 +789,18 @@ def main() -> int:
             return 1
         print("validation: ok")
         return 0
+
+    if args.command == "create-snapshot":
+        exit_code, lines = create_snapshot(
+            manifest_path=Path(args.manifest),
+            target_root=Path(args.target_root),
+            tier_csv=args.tiers,
+            snapshot_name=args.snapshot_name,
+            report_json=args.report_json,
+        )
+        for line in lines:
+            print(line)
+        return exit_code
 
     if args.command == "verify-restore":
         exit_code, lines = verify_restore(

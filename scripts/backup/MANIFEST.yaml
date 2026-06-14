@@ -13,7 +13,7 @@ policy:
   current_blockers:
     - "No off-RAID target is mounted in this environment: /workspace and /mnt/raid0/llm are both /dev/md127."
     - "No off-host target is configured."
-    - "restic is not installed; W2 must install restic or use an operator-approved rsync hardlink target."
+    - "scripts/backup/backup_critical.sh refuses same-device and overlayfs targets; run it only after an operator-approved target is mounted."
 
 repos:
   epyc-root: /mnt/raid0/llm/epyc-root
@@ -124,5 +124,6 @@ tiers:
 
 validation:
   manifest_parse: "scripts/backup/validate_backup_manifest.sh"
+  snapshot_create: "scripts/backup/backup_critical.sh"
   git_state_audit: "scripts/backup/audit_git_state.sh"
   future_restore_check: "scripts/backup/verify_restore.sh"
