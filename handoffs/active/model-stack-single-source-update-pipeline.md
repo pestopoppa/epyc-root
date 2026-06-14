@@ -19,6 +19,79 @@ The immediate trigger was stale q_scorer/model-stack quantities: `frontdoor` and
 
 This handoff is a concise pickup contract. The long historical audit lives in `model-stack-update-pipeline-audit.md`; implementation should extend the existing descriptor -> stack-prior -> guard -> consumer-migration path instead of inventing a parallel registry.
 
+## Parallel Audit Addendum - 2026-06-14
+
+This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
+
+GitNexus was refreshed in `epyc-root` before this edit: `24,606 nodes`, `26,671 edges`, `34 clusters`, `44 flows`. The required impact check was:
+
+```bash
+gitnexus impact --repo epyc-root handoffs/active/model-stack-single-source-update-pipeline.md --direction upstream
+```
+
+Result: target not found, `impactedCount=0`, `risk=UNKNOWN`. This is expected for the markdown handoff path and does not imply code blast radius.
+
+### Current Canonical Sources
+
+Use these as the current stack-change authority chain:
+
+- `epyc-orchestrator/docs/reference/stack-truth-precedence.md` defines precedence: live serving topology first, descriptors second, role metadata third, historical/benchmark records last.
+- `epyc-orchestrator/orchestration/model_registry.yaml` `server_mode.*` plus `scripts/server/stack_manifest.py` own live endpoint, port, tier, shared-server, and launch truth.
+- `epyc-orchestrator/orchestration/model_descriptors.yaml` owns physical model identity, context evidence, quality/throughput evidence, modality, and known gaps.
+- `epyc-orchestrator/orchestration/derived/stack_priors.yaml` is the generated consumer contract. Current contract is `epyc.stack_priors` v4 and includes required role, serving, launch, runtime, and prior fields.
+- `epyc-orchestrator/orchestration/stack_change_surface_manifest.yaml` owns scanner rules and 13 model-specific consumer surfaces: q_scorer priors, seeding reward priors, routing, admission, lock/tap, config catalog, health/preflight probes, launch maps, dashboards/system cards, planner guidance, procedure enums, generated stack docs, and runtime attestation.
+- `epyc-inference-research/orchestration/model_registry.yaml` remains candidate/benchmark evidence. It must not override live deployment truth without a descriptor/stack-prior import path.
+
+### Current Generated Stack Facts
+
+Verified from `orchestration/derived/stack_priors.yaml` on 2026-06-14:
+
+| Role | Model | Endpoint/ports | Tier | Context | Priors |
+|---|---|---|---|---:|---|
+| `frontdoor` | `qwen3.6-35b-a3b-q8_0` | `8070`, `8080`, `8180`, `8280`, `8380` | hot | 32768 | tps `24.3`, quality `0.93`, memory `1.0` |
+| `coder_escalation` | `qwen3.6-35b-a3b-q8_0` | shared `8070` | hot | 32768 | tps `24.3`, quality `0.93`, memory `1.0` |
+| `architect_general` | `qwen3.5-122b-a10b-q4_k_m` | `8083` | hot | 16384 | tps `12.19`, quality `0.8567`, memory `1.0` |
+| `ingest_long_context` | `qwen3-next-80b-a3b-q4_k_m` | `8085`, `8185`, `8285`, `8385`, `8485` | hot | 32768 | tps `20.8`, quality `0.9259`, memory `1.0` |
+| `worker_general` | `gemma4-26b-a4b-q4_k_m` | `8072`, `8082`, `8182`, `8282`, `8382` | hot | 16384 | tps `60.7`, quality `0.9`, memory `1.0` |
+| `worker_vision` | `qwen2.5-vl-7b-q4_k_m` | `8086` | hot | 8192 | tps `20.0`, quality `0.9167`, memory `1.0` |
+| `vision_escalation` | `qwen3-vl-30b-a3b-q4_k_m` | `8087`, `8187`, `8287`, `8387`, `8487` | hot | 16384 | tps `27.6`, quality `0.9167`, memory `1.0` |
+
+`architect_coding` is absent from generated live priors. Compatibility handling remains only through explicit legacy alias normalization and retired-role deployability rejection.
+
+### Drift Surfaces Found
+
+- **q_scorer costs**: live defaults now use stack-prior provenance and `stack_change_pipeline.py check --run-promotion-gate` blocks promotion if live q_scorer priors fall back while valid stack priors exist. The old local q_scorer TPS table still exists by design as degraded/offline fallback; keep it named and audited as fallback only.
+- **Role memory and HOT/WARM semantics**: the guard enforces HOT live roles with `memory_cost: 1.0`, and the generated contract resolves `architect_general` / `ingest_long_context` as HOT despite older role/process-layout prose elsewhere.
+- **Retired `architect_coding`**: current production blockers are waived only for two intentional live exceptions: ingress alias normalization and retired deployable-role denial. All other scanner findings are legacy-test or historical-doc classes.
+- **Context, port, and launch assumptions**: context tokens, port sets, binary/runtime flags, MTP/draft paths, and VL projector paths are projected into stack-prior launch/runtime witnesses and checked by runtime attestation. Manual docs such as `docs/reference/commands/QUICK_REFERENCE.md`, historical research registry rows, and old benchmark docs still contain stale ports/models and must remain historical or generated.
+- **Scanner coverage gap**: `scripts/memory/seed_diverse_memories.py`, `scripts/memory/seed_decomposition_memories.py`, `scripts/memory/seed_failure_memories.py`, and `scripts/memory/seed_success_patterns.py` still contain retired-role seed labels, but current hardcoded-surface rules do not scan `scripts/memory/**`. Treat this as a W2 ownership/coverage gap: either classify memory seed scripts as historical/legacy seed fixtures or add a manifest-owned scanner rule and migrate any live seed generation to stack-prior role aliases.
+- **Research/full registry drift**: `orchestration/model_registry_full.yaml`, research docs, and benchmark reports retain old `architect_coding`, `8084`, Qwen2.5-Coder, Qwen3-Coder-30B, and older TPS facts. This is acceptable only as evidence/history; descriptor import must carry measurement status/provenance and must not become live truth.
+
+### Validation Snapshot
+
+Run from `/mnt/raid0/llm/epyc-orchestrator` on 2026-06-14:
+
+```bash
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only
+```
+
+Result: `99 unique stack-prior warning(s)`, categorized as `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`.
+
+```bash
+uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate
+```
+
+Result: descriptors, stack priors, procedure enums, operator summary, q_scorer prior provenance, and runtime attestation were OK; no concrete live process drift was detected; promotion gate ran 163 no-inference tests and passed.
+
+### Next Implementation Pickup
+
+The next main workflow step should be **W2 scanner/manifest coverage for memory seed scripts and remaining policy surfaces**, not another one-off q_scorer patch:
+
+- Add `scripts/memory/**` to the model-specific surface inventory with owner, classification, evidence command, and drift response.
+- Decide whether each seed file is historical fixture data or live seed-generation input. Historical fixtures should be labeled and excluded from live promotion semantics; live seed generation should normalize retired labels through stack-prior/role-alias helpers.
+- Extend `stack_change_guard.py` and `tests/unit/test_stack_change_guard.py` so unclassified memory-seed retired-role recurrence is visible in the same compact surface summary.
+- Re-run `stack_change_pipeline.py check --run-promotion-gate` and require the warning bucket to remain classified with no new unwaived production blockers.
+
 ## Start Here - 2026-06-14 Update
 
 Current implementation result:
