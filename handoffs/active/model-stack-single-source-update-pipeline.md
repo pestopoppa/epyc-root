@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), and AutoPilot program generated-card prompt guidance (`0f86cde`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), and chat-routing heuristic prior derivation (`d85660d`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -485,6 +485,59 @@ not start AutoPilot.
 This closes the low-risk planner-prompt local-reader gap left after generated
 system-card helper reuse: prompts now reference the generated current stack card
 instead of teaching AutoPilot to parse stack-prior YAML directly.
+
+## Chat-routing heuristic prior derivation follow-up - 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `d85660d` (`Derive chat
+routing heuristic priors from stack priors`). Scope remained no-inference and
+did not start AutoPilot or model servers.
+
+### Landed in `epyc-orchestrator`
+
+- `src/api/routes/chat_routing.py` removed the static
+  `_HEURISTIC_PRIOR_ROLE_CANDIDATES` table.
+- `_live_heuristic_prior_roles()` now derives the advisory prior role universe
+  from `src.registry.stack_priors.live_stack_role_records()`.
+- Baseline prior mass is spread across all live roles while keeping the
+  classifier-selected role at the prior strength used by the old four-role
+  table.
+- `_DEGRADED_HEURISTIC_PRIOR_ROLES` remains explicit fallback only when generated
+  priors are unavailable.
+- `scripts/validate/stack_change_guard.py` adds
+  `static_chat_routing_heuristic_prior_roles`, owned by
+  `orchestration/stack_change_surface_manifest.yaml`, so the old static
+  candidate tuple is a production-blocker finding.
+- `tests/unit/test_chat_routing.py` and `tests/unit/test_stack_change_guard.py`
+  cover live-derived role inclusion, degraded fallback, prior-mass preservation,
+  and static-table regression detection.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `src/api/routes/chat_routing.py` was LOW
+  (`impactedCount=9`, `direct=3`, no named processes). Guard/test/manifest
+  impacts were LOW; root docs remained navigation-only HIGH with no
+  process/module impact.
+- `ruff` passed on chat routing, stack-change guard, and touched tests.
+- Adjacent routing suite passed:
+  `tests/unit/test_chat_routing.py`,
+  `tests/unit/test_chat_routing_coverage.py`,
+  `tests/unit/test_pipeline_routing.py`,
+  `tests/unit/test_stack_change_guard.py` -> 208 passed.
+- All-surface warning buckets stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Hardcoded-surface inventory now reports `rule_count=25` and includes
+  `static_chat_routing_heuristic_prior_roles`; `consumer_surface_count=13`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed
+  with `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, and promotion gate 163 passed.
+
+### Progress note
+
+This closes the low-risk `routing_prior_consumers` candidate-table gap: newly
+live specialist roles now receive heuristic prior support automatically from
+generated stack truth, without changing explicit force/role/classifier routing.
 
 ## Vision fallback drift reduction follow-up — 2026-06-14
 
