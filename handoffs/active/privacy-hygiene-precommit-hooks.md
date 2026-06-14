@@ -1,6 +1,6 @@
 # Privacy / Secret Hygiene — Pre-Commit Hooks
 
-**Status**: refreshed 2026-05-28 — PII-1 + PII-2 landed; PII-3 re-eval is overdue and is now the only open task
+**Status**: PII-3 completed 2026-06-14 — regex-only retained; archive after index cleanup
 **Created**: 2026-04-24 (via research intake deep-dive — intake-452)
 **Updated**: 2026-05-28
 **Categories**: knowledge_management, document_processing, tool_implementation
@@ -47,6 +47,53 @@ This handoff should now be treated as a scheduled re-evaluation task, not an imp
 | >=2 novel missed shapes that a hybrid model would catch | Open a new hybrid/offline-batch handoff; keep pre-commit regex-only for speed. |
 | Recurring false positives in normal configs/docs | Tighten regex and extend fixture; rerun PII-3 after the fix. |
 | Users bypass with `--no-verify` | Add pre-push defense or clearer hook output, depending on bypass reason. |
+
+## PII-3 Re-evaluation — 2026-06-14
+
+**Decision**: stay regex-only for pre-commit. Do not add a pre-push hook or
+hybrid/model-based scanner yet.
+
+**Evidence collected**:
+
+- Hook installation was stale despite the 2026-05-06 completion note:
+  `epyc-root` had `.git/hooks/pre-commit`, but `epyc-orchestrator` and
+  `epyc-inference-research` only had `pre-commit.sample`. Reinstalled the same
+  wrapper in both missing repos and verified all three wrappers exec
+  `/workspace/scripts/hooks/pii_precommit.sh`.
+- Initial held-out fixture replay found 36/40 passing cases:
+  - false negatives: fixture cases 6 and 8 because GitHub fine-grained PAT and
+    Anthropic key length thresholds were stale;
+  - false negative: fixture case 16 because the YAML numeric-value exemption
+    treated `Account: <16 digits>` as harmless config;
+  - false positive: fixture case 39 because the account-number regex caught the
+    all-digit tail group of a UUID.
+- Patched `scripts/hooks/pii_precommit.sh` narrowly for those failure classes:
+  loosened the two stale secret-token lengths, prevented account/card/customer
+  identifiers from using the numeric-value exemption, and added UUID
+  disambiguation.
+- Added `scripts/validate/pii_fixture_eval.py` so future re-evals can replay
+  the fixture in a temporary git repo instead of relying on ad hoc staged files.
+
+**Verification**:
+
+- `python3 scripts/validate/pii_fixture_eval.py` -> 40/40 passed.
+- Temporary-repo smoke: clean staged file exits 0; staged GitHub PAT exits 1
+  with the expected `BLOCKED` message.
+- `bash -n scripts/hooks/pii_precommit.sh` passed.
+- `python3 -m py_compile scripts/validate/pii_fixture_eval.py` passed.
+- `git diff --check -- scripts/hooks/pii_precommit.sh
+  scripts/validate/pii_fixture_eval.py` passed.
+- Recent-log search for `pii_precommit|--no-verify|false positive|secret
+  hygiene|account_number` showed no documented bypass or user complaint signal;
+  matches were historical/contextual, plus the known decimal-float fix and this
+  handoff.
+
+**Follow-up**:
+
+- Keep pre-commit-only coverage. The missing-hook drift and fixture mismatches
+  were fixed without evidence that a pre-push hook or hybrid scanner is needed.
+- A future wrap-up/index-pruning pass can move this handoff to completed once
+  the active indices are updated deliberately.
 
 ## Objective
 

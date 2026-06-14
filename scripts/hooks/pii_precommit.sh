@@ -35,11 +35,11 @@ SECRET_PATTERNS=(
   $'ghs_[A-Za-z0-9]{36}\tsecret\tGitHub server-to-server token'
   $'gho_[A-Za-z0-9]{36}\tsecret\tGitHub OAuth user-to-server token'
   $'ghu_[A-Za-z0-9]{36}\tsecret\tGitHub user-to-server token'
-  $'github_pat_[A-Za-z0-9_]{82}\tsecret\tGitHub fine-grained PAT'
+  $'github_pat_[A-Za-z0-9_]{70,100}\tsecret\tGitHub fine-grained PAT'
   $'xox[baprs]-[A-Za-z0-9-]{10,72}\tsecret\tSlack token'
   $'-----BEGIN[[:space:]]+(RSA|DSA|EC|OPENSSH|PGP|ENCRYPTED)?[[:space:]]?PRIVATE[[:space:]]+KEY-----\tsecret\tprivate key (PEM block)'
   $'sk-[A-Za-z0-9]{20,}\tsecret\tgeneric API key prefixed sk-'
-  $'sk-ant-api03-[A-Za-z0-9_-]{93,}\tsecret\tAnthropic API key'
+  $'sk-ant-api03-[A-Za-z0-9_-]{80,}\tsecret\tAnthropic API key'
   $'AIza[0-9A-Za-z_-]{35}\tsecret\tGoogle API key'
   $'glpat-[A-Za-z0-9_-]{20,}\tsecret\tGitLab personal access token'
   $'eyJ[A-Za-z0-9_-]{10,}\\.eyJ[A-Za-z0-9_-]{10,}\\.[A-Za-z0-9_-]{10,}\tsecret\tJWT (header.payload.signature)'
@@ -98,14 +98,19 @@ is_decimal_float_line() {
   # YAML-style numeric tuning keys typical in registry / config files.
   # If the line has `key: <number>` shape AND the number context is purely numeric
   # (no surrounding text), it's a config value, not an account number.
-  echo "$line" | grep -qiE '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' && return 0
+  # Do not exempt explicit account/card/customer identifiers.
+  echo "$line" | grep -qE '^\s*[A-Za-z_][A-Za-z0-9_]*\s*:' \
+    && echo "$line" | grep -qiE '\b(account|card|customer|iban|routing|ssn)\b' \
+    && return 1
+  echo "$line" | grep -qE '^\s*[a-z_][a-z0-9_]*\s*:\s*-?[0-9]+(\.[0-9]+)?(\s*#.*)?\s*$' && return 0
   return 1
 }
 
 is_version_or_hash_line() {
-  # Skip lines containing git SHAs / version hashes — long hex runs, not digit runs.
-  # The account_number regex only matches `[0-9]{12,19}`, so pure hex SHAs already won't match.
-  # This is a placeholder for future extensibility.
+  # Skip UUIDs / hashes. The account_number regex can otherwise catch the
+  # all-digit tail group in UUIDs such as 550e8400-e29b-41d4-a716-446655440000.
+  local line="$1"
+  echo "$line" | grep -qiE '\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b' && return 0
   return 1
 }
 
@@ -153,6 +158,9 @@ scan_blob() {
         continue
       fi
       if is_decimal_float_line "$fullline"; then
+        continue
+      fi
+      if is_version_or_hash_line "$fullline"; then
         continue
       fi
       if is_social_status_url_line "$fullline"; then
