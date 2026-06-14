@@ -123,6 +123,6 @@ tiers:
       reason: "Regenerable local build/cache output."
 
 validation:
-  manifest_parse: "python3 - <<'PY'\nimport yaml\nfrom pathlib import Path\nyaml.safe_load(Path('scripts/backup/MANIFEST.yaml').read_text())\nPY"
+  manifest_parse: "scripts/backup/validate_backup_manifest.sh"
   git_state_audit: "scripts/backup/audit_git_state.sh"
   future_restore_check: "scripts/backup/verify_restore.sh"
