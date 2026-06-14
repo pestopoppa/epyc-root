@@ -846,9 +846,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   model start as of `e31ebe1`, skipping only dev/validate-only/migration dry-run
   paths unless an operator explicitly uses the diagnostic bypass; the operator
   runbook landed in `b0e7a29` under
-  `docs/reference/stack-change-launch-runbook.md`. Broader stack-change work now
-  moves to remaining hardcoded-surface cleanup, direct benchmark runtime
-  enforcement, and high-risk consumer migrations.
+  `docs/reference/stack-change-launch-runbook.md`. Direct benchmark runtime
+  enforcement landed in `09d9028` by running the canonical stack-change gate in
+  `scripts/benchmark/seeding_infra.py:run_preflight` before service mutation.
+  Broader stack-change work now moves to remaining hardcoded-surface cleanup and
+  high-risk consumer migrations.
 
 ## Dependency Graph
 
