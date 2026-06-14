@@ -804,7 +804,7 @@ Test coverage as of 2026-05-08: 46 unit tests across the four AP modules (`tests
 
 Tracked in `routing-and-optimization-index.md` P16. Three adoptable patterns:
 
-- **AP-32: Insight format audit** — adopt `(title, description, generalized_content)` format with no task-specific implementation details for new strategy_store entries. Audit existing entries for over-specificity. ~50 LoC in `strategy_store.py`. Converges with AP-28 (strategy memory upgrade, FTS5+RRF).
+- **AP-32: Insight format audit** — **LANDED 2026-06-14** in `epyc-orchestrator` `5d07e52`. `StrategyStore` now records normalized `(title, description, generalized_content)` metadata, exposes normalized fields on retrieval, stores explicit generalized content in the backward-compatible `insight` column, and provides `audit_insight_specificity()` for over-specific stored rows. Converges with AP-28 (strategy memory upgrade, FTS5+RRF). Validation: ruff passed; focused StrategyStore suite passed 24; adjacent StrategyStore/autopilot consumer suite passed 74; py_compile and path-scoped diff check passed.
 - **AP-33: Negative-transfer safety gates** for PromptForge — 3 mutation safety checks (domain-mismatched anchoring detector; false validation confidence flag when mutation success is based on <5 trials; misapplied best-practice filter rejecting mutations that generalize suite-specific patterns). ~100 LoC in `prompt_forge.py`.
 - **AP-34: Validate N=3 embedding retrieval** — confirm FAISS top-3 cosine matches or exceeds LLM reranking. Paper shows embedding similarity (0.630 avg) > LLM reranking (0.598) > adaptive rewriting (0.608). Zero code — configuration experiment on next AR-3.
 

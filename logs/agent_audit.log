@@ -3903,3 +3903,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-06-14T15:11:44+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Document Crawl4AI CA-7 helper","details":"outcome=success"}
 {"ts":"2026-06-14T15:15:33+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Reuse shared stack-prior loader in seeding rewards","details":"Replace local stack-prior YAML parsing in benchmark reward priors with shared fail-closed artifact loader while preserving reward math."}
 {"ts":"2026-06-14T15:15:33+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Reuse shared stack-prior loader in seeding rewards","details":"outcome=success"}
+{"ts":"2026-06-14T15:26:30+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"AP-32 StrategyStore insight format","details":"Record normalized StrategyStore insight metadata and audit hook after implementation"}
+{"ts":"2026-06-14T15:26:30+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"AP-32 StrategyStore insight format","details":"outcome=success"}
