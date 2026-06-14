@@ -231,6 +231,38 @@ retired-role unit fixture warning noise`).
   `runtime_attestation: ok`, promotion gate 163 passed, and warning summary
   `92 unique / 96 total`.
 
+## Research live-stack reference cleanup — 2026-06-14
+
+Documentation sidecar for `epyc-inference-research` live-stack reference docs.
+
+### Landed in `epyc-inference-research`
+
+- `docs/MODEL_MANIFEST.md` and `docs/reference/models/MODELS.md` now describe
+  the live stack as a snapshot sourced from
+  `epyc-orchestrator/orchestration/derived/stack_priors.yaml` contract v4
+  (`compiled_at: 2026-06-14T14:15:21Z`).
+- The stale March/May live-role tables were replaced with current generated
+  facts: `frontdoor`, `coder_escalation`, and `worker_summarize` share Qwen3.6
+  on `8070`; `worker_general`, `worker_math`, and `toolrunner` share the Gemma
+  worker runtime on `8072`; `architect_general` and `ingest_long_context` are
+  HOT; and `architect_coding` is retired as a distinct live role.
+- The research registry is now explicitly framed as benchmark/candidate
+  evidence, not live launch truth. Promotion into production must reconcile
+  through the orchestrator stack-change pipeline before routing, scoring,
+  launch, or benchmark interpretation.
+
+### Validation recorded
+
+- Research GitNexus was current at `5969427`; markdown path impact checks for
+  both docs returned expected `UNKNOWN` risk with `impactedCount=0`.
+- `git diff --check -- docs/MODEL_MANIFEST.md docs/reference/models/MODELS.md`
+  passed.
+- A read-only Spark verification sidecar checked the two docs against generated
+  stack priors and found no contradictory stale claims for old `8081`/`8084`
+  live ports, Qwen2.5-Coder live coder assignment, Qwen3.5 frontdoor assignment,
+  live `architect_coding`, WARM architect/ingest labels, worker-general
+  Qwen2.5-7B claims, or research-registry live-source wording.
+
 ## Routing/anomaly retired-role fixture cleanup — 2026-06-14
 
 Documentation sidecar for `epyc-orchestrator` commit `7cf2696` (`Reduce
