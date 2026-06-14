@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: refreshed 2026-05-28; S5 gate analyzed 2026-06-12 — S1-S4 complete; S5 is **HOLD** because the latest analyzer-visible artifacts contain 33,424 web_research calls but 0 fetched/synthesized pages, so there is no irrelevant-page denominator. Do not implement request-path reranking until a fresh run produces >=50 synthesized pages.
+**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired and a targeted 60-page web_research probe produced real fetched/synthesized counters. S5 remains **HOLD / no GO evidence** because the fresh probe was ColBERT-focused tool telemetry, not a representative AR-3/web_research benchmark sample, and it showed 0/60 irrelevant synthesized pages.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-05-28
 **Priority**: MEDIUM
@@ -59,6 +59,17 @@ rg -n "web_research relevance summary|irrelevant_rate|pages_irrelevant" \
 **Decision:** HOLD. The gate requires >=50 synthesized pages before a GO/NO-GO irrelevant-page-rate decision.
 This result also shows the existing analyzer-visible web_research data has source yield zero, so the next
 useful work is fresh sentinel traffic or web_research fetch/telemetry repair, not S5 implementation.
+
+**2026-06-14 telemetry repair/probe:** after `web_research` zero-page telemetry repair landed in
+`epyc-orchestrator`, ran a targeted source/fetch/synthesis probe with SearXNG plus only the
+`worker_general` quarter endpoint needed by `web_research` (`http://localhost:8082/completion`).
+
+- Artifact: `/mnt/raid0/llm/epyc-orchestrator/benchmarks/results/eval/web-research-telemetry-serial-20260614T1908Z`
+- Query set: 20 ColBERT/reranking-focused queries, `max_results=5`, `max_pages=3`
+- Runtime setting: serial synthesis (`_MAX_SYNTH_WORKERS=1`) because the default 3 concurrent synth calls against a single `-np 1` worker quarter timed out.
+- Results: 20/20 successful queries; 100 search results; 60/60 pages attempted, fetched, and synthesized; fetch failures 0; synthesis failures 0; irrelevant pages 0; search backend `searxng`.
+
+Decision: the telemetry denominator is now healthy, but this targeted probe does **not** justify S5. It is biased toward relevant ColBERT pages and observed `irrelevant_rate=0.0`. Keep request-path reranking off. The next gate should be a representative web_research sentinel/eval sample using the same repaired counters; implement S5 only if that sample crosses the existing >20% irrelevant-page threshold.
 
 **Risk controls if GO**:
 
