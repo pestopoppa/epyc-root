@@ -10,7 +10,7 @@ set -euo pipefail
 # Exit codes:
 #   0 — query succeeded, JSON results emitted
 #   1 — usage error (missing query)
-#   2 — SearxNG not reachable, fall back to built-in WebSearch
+#   2 — SearxNG not reachable/invalid, fall back to built-in WebSearch
 #   3 — query failed (curl error, malformed response)
 
 SEARX_URL="${SEARX_URL:-http://localhost:8888}"
@@ -61,6 +61,12 @@ if ! echo "$RESPONSE" | jq empty 2>/dev/null; then
   echo "malformed JSON from SearxNG" >&2
   echo "$RESPONSE" | head -5 >&2
   exit 3
+fi
+
+if ! echo "$RESPONSE" | jq -e '(.results | type) == "array"' >/dev/null 2>&1; then
+  echo "SearxNG search endpoint invalid at ${SEARX_URL} — fall back to built-in WebSearch tool." >&2
+  echo "Expected /search?format=json to return a JSON object with a results array." >&2
+  exit 2
 fi
 
 # Flatten top-N results: title | url | score | engines | content snippet.
