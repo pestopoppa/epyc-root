@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; first report generated, remediation queue not yet wired to AutoPilot
+**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; AutoPilot consumption remains future work
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -34,7 +34,7 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - Factory does **not** publish the full per-criterion list (only the 5 levels, 9 pillars, 80% rule, scoring format, one example) — so we authored a v1 criteria catalog: one concrete deterministic criterion per pillar per level (45 total).
 - Where do we already score *high* (Task Discovery = handoff-index + kb-search; Product&Experimentation = autopilot Pareto archive; Observability = `logs/agent_audit.log` + `unified-trace-memory-service.md`) vs *low*? A first pass may mostly confirm strengths.
 - Should detectors be pure shell/python file-presence + config-parse checks (cheap, deterministic) or LLM-judged (richer, noisier)? **Decision for v1**: deterministic only per `feedback_observe_before_diagnosing`; a pass means an artifact exists, not that quality is certified.
-- Integration target: a `/readiness-fix`-analog autopilot remediation queue, or a passive dashboard alongside the tier-segregated Pareto dashboard? **Still open**: report is generated; remediation queue/export to AutoPilot remains next work.
+- Integration target: a `/readiness-fix`-analog autopilot remediation queue, or a passive dashboard alongside the tier-segregated Pareto dashboard? **Partially answered**: `--output-remediation-json` now exports a deterministic remediation queue; wiring that queue into AutoPilot or a dashboard remains next work.
 
 ## Current Artifacts
 
@@ -42,6 +42,7 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - Tests: `/mnt/raid0/llm/epyc-root/tests/validate/test_repo_readiness_scorer.py`
 - JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-06-13.json`
 - Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-2026-06-13.md`
+- Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
 
 2026-06-13 first-run summary:
 
@@ -56,6 +57,13 @@ Validation:
 
 - `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`
 - `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 3 passed.
+
+2026-06-14 remediation-export update:
+
+- Root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2` added deterministic remediation queues via `--output-remediation-json`.
+- Changed files: `/workspace/scripts/validate/repo_readiness_scorer.py` and `/workspace/tests/validate/test_repo_readiness_scorer.py`.
+- Validation from the implementation sidecar: `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 5 passed.
+- Remaining integration work: feed the exported queue into AutoPilot remediation planning or a passive dashboard without letting the scorer become a decision gate without a protocol.
 
 ## Notes
 

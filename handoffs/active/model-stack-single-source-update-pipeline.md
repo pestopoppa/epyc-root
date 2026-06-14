@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - 2026-06-14 follow-up `epyc-orchestrator` `1148ff6` closes live q_scorer prior-source promotion gating and the no-inference data-only fixture gaps for the stale frontdoor/coder and context/KV/acceleration cases. Remaining work is broader model-specific consumer ownership, generated/current operator summaries, live process/runtime attestation, and actually wiring the executable promotion gate into launch/AutoPilot decisions.
+**Status**: PARTIAL IMPLEMENTATION LANDED - 2026-06-14 follow-up `epyc-orchestrator` `1148ff6` closes live q_scorer prior-source promotion gating and the no-inference data-only fixture gaps for the stale frontdoor/coder and context/KV/acceleration cases. Follow-up `e31ebe1` wires the canonical no-inference promotion gate into production `orchestrator_stack.py start` before host prereqs/model launch, with dev/validate-only/migration dry-run skips and explicit emergency bypass. Remaining work is broader model-specific consumer ownership, generated/current operator summaries, AutoPilot resume/benchmark-interpretation gating, and live process/runtime attestation.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, seeding, or heavy indexing were performed. This sidecar updated root handoff/index/progress docs only.
@@ -27,6 +27,8 @@ Current implementation result:
 - `scripts/registry/stack_change_pipeline.py check --run-promotion-gate` now reports `q_scorer_priors: ok/failed` and blocks promotion when any live q_scorer role uses degraded fallback provenance while stack priors are valid.
 - The simulated data-only `frontdoor`/`coder_escalation` swap fixture now verifies q_scorer source provenance, and the context/KV/acceleration fixture is complete with `architect_general` quality data.
 - Validation reported by the main orchestrator track: py_compile on touched files; ruff on touched files; `pytest -q tests/unit/test_q_scorer.py tests/unit/test_stack_change_pipeline.py tests/unit/test_stack_change_pipeline_simulated_fixtures.py` -> 82 passed; `stack_change_pipeline.py check --run-promotion-gate` -> `q_scorer_priors: ok`, promotion gate 48 passed; hardcoded-surface summary unchanged (`waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`).
+- `epyc-orchestrator` `e31ebe1` wires production `scripts/server/orchestrator_stack.py start` to run `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate` before host prereqs/model launch. Dev starts, `--validate-only`, and migration dry-run skip the gate; emergency diagnostics can bypass with `--skip-stack-change-gate` or `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1`.
+- The same update refreshed descriptor/stack-prior source hashes in the canonical pipeline artifacts. Validation reported by the main orchestrator track: py_compile on touched launcher/test files; focused pytest `tests/unit/test_orchestrator_stack_reload.py tests/unit/test_stack_change_pipeline.py` -> 27 passed; expanded pytest `tests/unit/test_orchestrator_stack_reload.py tests/unit/test_stack_change_pipeline.py tests/unit/test_build_server_command_helpers.py` -> 69 passed; parser smoke found `--skip-stack-change-gate`; `stack_change_pipeline.py check --run-promotion-gate` passed with promotion gate 48 tests and known warnings only.
 - AutoPilot clean window before this patch produced trial `805` as frontier and trial `806` as dominated/healthy. The main agent is separately repairing the archive-authority tail and refreshing orchestrator GitNexus; this sidecar did not run AutoPilot, inference, seeding, or orchestrator code.
 
 Prior lightweight audit result:
@@ -34,11 +36,11 @@ Prior lightweight audit result:
 - `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/registry/stack_change_pipeline.py check` passed in `epyc-orchestrator`: descriptors fresh, stack priors fresh, procedure enums checked, loose/all-surface/strict guard stages non-blocking, `summary: ok`, and the acceptance block printed the promotion-gate command plus surface-inventory command.
 - `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only` reported `WARN: 99 unique stack-prior warning(s) (99 total)` with `surface_warnings: waived_production_blocker=2, legacy_test=72, historical_doc=25`.
 - The live generated contract has the flagged facts correct: `frontdoor` and `coder_escalation` both use `qwen3.6-35b-a3b-q8_0`, port `8070`, HOT tier, shared mmap, and `memory_cost: 1.0`; `architect_general` and `ingest_long_context` are HOT with `memory_cost: 1.0`; `architect_coding` is absent from live stack-prior roles.
-- The risk is no longer "q_scorer is definitely wrong by default"; q_scorer now prefers stack priors and the promotion gate checks live prior-source provenance. The remaining risk is that non-launch consumers, generated/current docs, and live process/runtime state can still bypass or outlive generated truth unless P0/P2/P3/P5 are finished.
+- The risk is no longer "q_scorer is definitely wrong by default" or "production launch can skip the canonical stack-change gate by default"; q_scorer now prefers stack priors, the promotion gate checks live prior-source provenance, and production start runs that gate before launch. The remaining risk is that AutoPilot resume, benchmark interpretation, non-launch consumers, generated/current docs, and live process/runtime state can still bypass or outlive generated truth unless the remaining P0/P2/P3/P5 work is finished.
 
 Use this as the follow-up implementation order:
 
-- [ ] **P0 - Promote the canonical preflight to a launch/AutoPilot gate.** Treat `stack_change_pipeline.py check --run-promotion-gate` plus current process/runtime attestation as the required gate before stack-change launch, AutoPilot resume, or benchmark interpretation. `1148ff6` added the q_scorer-prior stage to executable gate mode; wrappers still need to enforce that mode before launch/AutoPilot decisions.
+- [ ] **P0 - Promote the canonical preflight to launch/AutoPilot/benchmark gates.** Production `orchestrator_stack.py start` now runs `stack_change_pipeline.py check --run-promotion-gate` before host prereqs/model launch as of `e31ebe1`, with dev/validate-only/migration dry-run skips and explicit emergency bypass. Keep this waypoint open for AutoPilot resume and benchmark-interpretation enforcement, and because current process/runtime attestation still lives in P5 rather than the production launch gate.
 - [x] **P1 - Close live-looking q_scorer fallback residue.** `1148ff6` keeps degraded/offline fallbacks but blocks promotion when valid stack priors exist and any live q_scorer role resolves TPS, quality, or memory priors from degraded fallback provenance. Tests now assert source provenance for the flagged roles.
 - [ ] **P2 - Expand surface ownership from scanner rules to consumer surfaces.** The current manifest owns scanner rules, not every model-specific consumer. Add ownership/validation for q_scorer, seeding, replay, routing priors, admission, lock/tap policy, config URLs/timeouts, health probes, launch maps, dashboards, system cards, planner prompts, procedure enums, and doc summaries.
 - [ ] **P3 - Generate current operator/planner stack summaries or mark them historical.** The all-surface guard still finds 25 historical-doc warnings. The next implementation should replace current-stack tables with generated summaries or add explicit historical labels so operator docs cannot become hidden source truth.
@@ -57,11 +59,11 @@ Structured truth
   -> process/runtime attestation
   -> launch / AutoPilot resume / benchmark interpretation
 
-P0 depends on the existing pipeline and no-inference promotion tests, including the `1148ff6` `q_scorer_priors` stage.
+P0 production-launch enforcement depends on the existing pipeline and no-inference promotion tests, including the `1148ff6` `q_scorer_priors` stage, and is wired in `e31ebe1`.
 P2 and P5 depend on stack-prior contract v4 staying fresh.
 P3 depends on P2 ownership classification so docs are generated/current or explicitly historical.
 P1 and P4 are closed for the current stale q_scorer/data-only fixture cases but should remain regression targets in the promotion gate.
-Launch/AutoPilot promotion depends on P0 + P2 + P5; P3 is required before operator docs are used as current-stack evidence.
+AutoPilot promotion and benchmark interpretation still depend on the remaining P0 scope plus P2 + P5; P3 is required before operator docs are used as current-stack evidence.
 ```
 
 Stale/hardcoded examples found in this audit:
@@ -71,6 +73,7 @@ Stale/hardcoded examples found in this audit:
 - `epyc-orchestrator/orchestration/derived/stack_priors.yaml:207` and `:326` show `coder_escalation` and `frontdoor` sharing model identity, port `8070`, HOT tier, and `memory_cost: 1.0`; `:469` shows `ingest_long_context` HOT with `memory_cost: 1.0`.
 - `epyc-orchestrator/scripts/server/stack_manifest.py:129` is the launcher tier/alias source; `:132` documents `coder_escalation`/`worker_summarize` sharing frontdoor, `:157`/`:158` classify `architect_general` and `ingest_long_context` as HOT, and `:177` documents `architect_coding` removal.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py:121` emits the acceptance/warning/promotion/surface-inventory block, while `:588` keeps executable promotion-gate mode behind `--run-promotion-gate`.
+- `epyc-orchestrator/scripts/server/orchestrator_stack.py start` runs the executable promotion gate before production host prereqs/model launch as of `e31ebe1`. Dev launches, validate-only, and migration dry-run skip it; bypass must be explicit through `--skip-stack-change-gate` or `ORCHESTRATOR_SKIP_STACK_CHANGE_GATE=1`.
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py:1240` enforces HOT live roles have `memory_cost: 1.0`; `:1273` promotes unwaived warnings to strict errors; `:1328`/`:1339` expose rule inventory and summary modes.
 
 ## Current Evidence
@@ -84,6 +87,7 @@ Stale/hardcoded examples found in this audit:
 - `epyc-orchestrator/orchestration/stack_change_surface_manifest.yaml` landed in `7815318` as the first enforced W2 ownership manifest for hardcoded model/stack scanner rules. Each rule now has exactly one manifest entry with rule ID, category, owner, consumer scope, promotion-blocker policy, review cadence, evidence command, and drift response. The guard validates manifest presence, coverage, duplicate or unknown rule IDs, category consistency, required text fields, and promotion-blocker policy, and `stack_change_pipeline.py check` now fails if scanner-rule ownership drifts.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
+- Production launch gating has started: `orchestrator_stack.py start` now runs the canonical no-inference promotion gate before host prereqs/model launch for production starts.
 - Root GitNexus status was current before this edit. Impact checks for this doc path and `master-handoff-index.md` returned target-not-found with `UNKNOWN` risk and `impactedCount=0`, which is expected for markdown coordination paths; no HIGH/CRITICAL impact was reported.
 
 ## Single-Source Contract
@@ -123,7 +127,7 @@ uv run python scripts/registry/stack_change_pipeline.py check --strict
 
 `update` must write only generated artifacts from structured truth: descriptors, stack priors, procedure role enums, and generated stack summaries once those exist. It must never invent missing measurements, classify hardcoded surfaces by default, or edit historical records.
 
-Before launch, AutoPilot resume, or benchmark interpretation, require:
+Before production launch, AutoPilot resume, or benchmark interpretation, require:
 
 - descriptor check/update clean;
 - stack-prior check/update clean;
@@ -132,6 +136,8 @@ Before launch, AutoPilot resume, or benchmark interpretation, require:
 - simulated data-only stack-change fixtures passing;
 - current process/port/runtime attestation compared against generated priors;
 - doc/planner/operator summaries generated or explicitly marked historical.
+
+As of `e31ebe1`, production `orchestrator_stack.py start` enforces the canonical no-inference promotion gate before host prereqs/model launch. This does not yet satisfy the full list above for AutoPilot resume, benchmark interpretation, or live process/runtime attestation.
 
 ## Implementation Work Packages
 
@@ -144,6 +150,7 @@ Tasks:
 - Extend `scripts/registry/stack_change_pipeline.py` output with an acceptance summary: descriptor freshness, stack-prior freshness, source hashes, loose/all-surface/strict guard counts, stale surface categories, simulated fixture target, and exact remediation commands.
 - Keep the `b82ae3d` `surface_inventory:` acceptance hint in the passing `check` output so operators can discover the scanner-rule catalog before launch or AutoPilot resume review.
 - Add a "promotion gate" mode for launch/AutoPilot decisions that refuses on production hardcoded surfaces, missing decision-grade priors, stale generated summaries, or unattested live processes.
+- Keep production launch enforcement wired through `orchestrator_stack.py start`; extend equivalent enforcement to AutoPilot resume and benchmark-interpretation paths once runtime attestation is available.
 - Ensure update mode writes generated summaries only after structured artifacts are fresh.
 
 Likely targets:
