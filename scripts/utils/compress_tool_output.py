@@ -17,11 +17,26 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Callable
 
 # Minimum output length to trigger compression. Short outputs are returned as-is.
 MIN_COMPRESS_CHARS = 500
+
+
+@dataclass(frozen=True)
+class CompressionResult:
+    """Compressed output plus dispatcher metadata for telemetry."""
+
+    text: str
+    strategy: str
+    original_chars: int
+    compressed_chars: int
+
+    @property
+    def changed(self) -> bool:
+        return self.compressed_chars != self.original_chars
 
 
 def compress_tool_output(text: str, command: str) -> str:
@@ -30,18 +45,44 @@ def compress_tool_output(text: str, command: str) -> str:
     Returns compressed text, or original text unchanged if no handler
     matches or input is below the compression threshold.
     """
+    return compress_tool_output_with_metadata(text, command).text
+
+
+def compress_tool_output_with_metadata(text: str, command: str) -> CompressionResult:
+    """Compress output and report which strategy was selected."""
+    original_chars = len(text or "")
     if not text or len(text) < MIN_COMPRESS_CHARS:
-        return text
+        return CompressionResult(
+            text=text,
+            strategy="passthrough_below_threshold",
+            original_chars=original_chars,
+            compressed_chars=original_chars,
+        )
 
     cmd = command.strip()
-    for matcher, handler in _HANDLERS:
+    for strategy, matcher, handler in _HANDLERS:
         if matcher(cmd):
             result = handler(text, cmd)
             # Only use compressed result if it's actually shorter
             if len(result) < len(text):
-                return result
-            return text
-    return text
+                return CompressionResult(
+                    text=result,
+                    strategy=strategy,
+                    original_chars=original_chars,
+                    compressed_chars=len(result),
+                )
+            return CompressionResult(
+                text=text,
+                strategy=f"{strategy}_passthrough_not_shorter",
+                original_chars=original_chars,
+                compressed_chars=original_chars,
+            )
+    return CompressionResult(
+        text=text,
+        strategy="passthrough_no_handler",
+        original_chars=original_chars,
+        compressed_chars=original_chars,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -404,14 +445,32 @@ def _compress_build_output(text: str, command: str) -> str:
 # Dispatcher
 # ---------------------------------------------------------------------------
 
-_HANDLERS: list[tuple[Callable[[str], bool], Callable[[str, str], str]]] = [
-    (lambda cmd: "pytest" in cmd or "python -m pytest" in cmd, _compress_pytest),
-    (lambda cmd: "cargo test" in cmd, _compress_cargo_test),
-    (lambda cmd: cmd.startswith("git status") or ("git -c" in cmd and "status" in cmd), _compress_git_status),
-    (lambda cmd: cmd.startswith("git diff") or ("git " in cmd and " diff" in cmd), _compress_git_diff),
-    (lambda cmd: cmd.startswith("git log"), _compress_git_log),
-    (lambda cmd: cmd.split("|")[0].strip().startswith("ls ") or cmd.strip() == "ls", _compress_ls),
-    (lambda cmd: any(kw in cmd for kw in ("cargo build", "make ", "tsc", "gcc ", "g++ ", "cmake --build")), _compress_build_output),
+_HANDLERS: list[tuple[str, Callable[[str], bool], Callable[[str, str], str]]] = [
+    ("pytest", lambda cmd: "pytest" in cmd or "python -m pytest" in cmd, _compress_pytest),
+    ("cargo_test", lambda cmd: "cargo test" in cmd, _compress_cargo_test),
+    (
+        "git_status",
+        lambda cmd: cmd.startswith("git status") or ("git -c" in cmd and "status" in cmd),
+        _compress_git_status,
+    ),
+    (
+        "git_diff",
+        lambda cmd: cmd.startswith("git diff") or ("git " in cmd and " diff" in cmd),
+        _compress_git_diff,
+    ),
+    ("git_log", lambda cmd: cmd.startswith("git log"), _compress_git_log),
+    (
+        "ls",
+        lambda cmd: cmd.split("|")[0].strip().startswith("ls ") or cmd.strip() == "ls",
+        _compress_ls,
+    ),
+    (
+        "build_output",
+        lambda cmd: any(
+            kw in cmd for kw in ("cargo build", "make ", "tsc", "gcc ", "g++ ", "cmake --build")
+        ),
+        _compress_build_output,
+    ),
 ]
 
 

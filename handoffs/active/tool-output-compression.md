@@ -1,8 +1,8 @@
 # Tool Token Optimization — Output Compression + Definition Reduction
 
-**Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-b done (definition audit + compression); A/B done (+4pp REPL, suite-dependent)
+**Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-b done (definition audit + compression); A/B done (+4pp REPL, suite-dependent); Phase 4a-b MCP wrapper + middleware landed 2026-06-14 (`epyc-orchestrator` `fe64140`)
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-04-11
+**Updated**: 2026-06-14
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)
@@ -309,6 +309,14 @@ Apply SkillReducer's compression principles to orchestrator tool definitions. We
 
 Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../research/deep-dives/hermes-agent-v2026-4-23-release.md). Upstream hermes-agent v2026.4.23 ships compressor improvements that **directly close a Phase 2b oscillation failure mode** flagged in our monitoring. All work non-inference (offline fixtures sufficient for unit-level validation).
 
+**2026-06-14 audit correction**: the local `/mnt/raid0/llm/hermes-agent` clone has no `v2026.4.23` / `v0.11.0` tag; available compression commits map mainly to `agent/context_compressor.py` history (`119bad65` prune-first, `548cedb8` role-aware summary insertion, `3e2ed18a` one-shot main-endpoint fallback). Those are context-compaction patterns, not a direct drop-in for the deterministic bash-output compressor. Current local targets are split:
+
+- `epyc-root/scripts/utils/compress_tool_output.py` — deterministic command-output compressor used by REPL output compression and the MCP wrapper.
+- `epyc-orchestrator/src/context_compression.py` — B2 history compaction cheap pre-pass; already has type-aware tool output summarization and tool-pair sanitization.
+- `epyc-orchestrator/src/tool_output_compressor_mcp.py` — Claude-Code-facing MCP wrapper; Phase 4a-b now owns compressed tool result telemetry.
+
+Do not port a model fallback chain into `compress_tool_output.py` without new evidence: that script has no model dependency by design. Use Phase 4c top-up telemetry to decide whether anti-thrashing/language-aware additions are still needed.
+
 ### Objective
 
 Port three upstream compressor patterns into our `scripts/utils/compress_tool_output.py`:
@@ -322,7 +330,7 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
 
 ### Work Items
 
-- [ ] **3d.1 — Inspect upstream patches** — locate the v0.10.0 → v0.11.0 commits touching the compressor module in `/mnt/raid0/llm/hermes-agent`. Identify the three patterns (anti-thrashing, language-aware, fallback chain) at the function/class level. Capture upstream's test fixtures if any. (~1 h)
+- [x] **3d.1 — Inspect upstream patches** — locate the v0.10.0 → v0.11.0 commits touching the compressor module in `/mnt/raid0/llm/hermes-agent`. Identify the three patterns (anti-thrashing, language-aware, fallback chain) at the function/class level. Capture upstream's test fixtures if any. (~1 h) **DONE 2026-06-14**: upstream local history maps to context-compressor commits, not a direct deterministic bash-output port; no upstream fixture should be blindly transplanted.
 - [ ] **3d.2 — Port anti-thrashing into `scripts/utils/compress_tool_output.py`** — minimal version: track recent compress/decompress operations on the same content hash; suppress the third operation in any A→B→A oscillation pattern within a turn. (~2 h)
 - [ ] **3d.3 — Port language-aware collapse** — extend the existing per-content-type routing with a language detector for code blocks (re-use existing fence-marker heuristics in the file); preserve fence boundaries when collapsing. (~2 h)
 - [ ] **3d.4 — Port fallback chain (503/404 → main model)** — when compressor model returns 503/404 or times out, route the input through the main model with a prompt template targeting summarization instead of compression-style condensation; cap fallback retries at 1. (~1–2 h)
@@ -385,7 +393,7 @@ Port three upstream compressor patterns into our `scripts/utils/compress_tool_ou
 
 ## Phase 4 — MCP Tool Wrapping (unblocked 2026-05-26)
 
-**Status**: ready to start. Promotes the line-49 "Future work: wrap compression as an MCP tool" note to actionable items now that `epyc-orchestrator/src/mcp_server.py` is on standalone FastMCP v3 (commit pending). Resolves the Bash-output gap that PostToolUse hooks cannot close (only MCP tools support `updatedMCPToolOutput`).
+**Status**: P4a/P4b landed 2026-06-14 (`epyc-orchestrator` `fe64140`); P4c/P4d/P4e remain. Resolves the Bash-output gap that PostToolUse hooks cannot close (only MCP tools support `updatedMCPToolOutput`).
 
 ### Objective
 
@@ -397,13 +405,13 @@ Add a new MCP server module that wraps the bash invocation as a `run_bash_compre
 
 ### Work Items
 
-- [ ] **P4a — Bash-compressor MCP server skeleton** (~1 h). New file `epyc-orchestrator/src/tool_output_compressor_mcp.py`. Single tool `run_bash_compressed(command: str, timeout_s: int = 60, working_dir: str = "") -> str` that shells out via `subprocess.run` with the same security envelope as the existing orchestrator bash path. Uses `from fastmcp import FastMCP` (v3, already pinned in pyproject after the 2026-05-26 migration). Add module-level test (`tests/unit/test_tool_output_compressor_mcp.py`) mirroring `test_mcp_server.py`'s direct-import pattern — v3 keeps `@mcp.tool()` callable, so existing test style transfers.
-- [ ] **P4b — Compressor middleware** (~2 h). Implement `CompressorMiddleware(Middleware)` with `on_call_tool(self, context, call_next)`:
+- [x] **P4a — Bash-compressor MCP server skeleton** (~1 h). New file `epyc-orchestrator/src/tool_output_compressor_mcp.py`. Single tool `run_bash_compressed(command: str, timeout_s: int = 60, working_dir: str = "") -> str` that shells out via `subprocess.run` with the same security envelope as the existing orchestrator bash path. Uses `from fastmcp import FastMCP` (v3, already pinned in pyproject after the 2026-05-26 migration). Add module-level test (`tests/unit/test_tool_output_compressor_mcp.py`) mirroring `test_mcp_server.py`'s direct-import pattern — v3 keeps `@mcp.tool()` callable, so existing test style transfers. **DONE 2026-06-14**.
+- [x] **P4b — Compressor middleware** (~2 h). Implement `CompressorMiddleware(Middleware)` with `on_call_tool(self, context, call_next)`:
   1. `result = await call_next(context)` — let the tool run.
   2. Detect content type from the command (re-use the existing routing logic in `scripts/utils/compress_tool_output.py` — import, don't duplicate).
   3. Run the compressor on `result.content` strings; rewrite the result with the compressed payload.
   4. Emit per-call telemetry (`command`, `pre_bytes`, `post_bytes`, `compression_ratio`, `compressor_strategy`) into the existing Phase 2b monitoring sink (`logs/tool_compression_monitor.jsonl`).
-  Wire via `mcp.add_middleware(CompressorMiddleware())` in the module's bottom. Use the FastMCP in-memory client (`from fastmcp import Client; Client(mcp)`) for the unit-test fixture so the middleware path is exercised without spawning a stdio subprocess.
+  Wire via `mcp.add_middleware(CompressorMiddleware())` in the module's bottom. Use the FastMCP in-memory client (`from fastmcp import Client; Client(mcp)`) for the unit-test fixture so the middleware path is exercised without spawning a stdio subprocess. **DONE 2026-06-14**: root compressor now exposes metadata (`compress_tool_output_with_metadata`); MCP middleware rewrites text content, preserves structured result content, attaches `tool_compression` metadata, and writes JSONL telemetry with env override `TOOL_COMPRESSION_MONITOR_PATH`.
 - [ ] **P4c — Downstream-top-up rate measurement** (~1 h). Per intake-605's audit refinement (line 373), vendor token-reduction claims must be measured by *downstream* effects, not headline %. Add a paired telemetry field `next_turn_followup_command` to the Phase 2b sink — populated by reading the next bash command in the same session journal; flag patterns that look like "re-run uncompressed for missing context" (e.g., the same command re-issued within 3 turns, or `cat`/`head`/`tail` against a file just listed). Compute weekly `top_up_rate = followups / compressed_calls` from the journal; gate any compression-strategy promotion on top_up_rate ≤ 10%.
 - [ ] **P4d — `.mcp.json` registration + Claude Code smoke test** (~30 min). Add a second entry to `epyc-orchestrator/.mcp.json` alongside `orchestrator`: `bash-compressor` → `python src/tool_output_compressor_mcp.py`, stdio. Restart Claude Code, run the smoke commands from §"Strategy Prioritization" via `run_bash_compressed`, verify each returns a visibly compressed result with the expected ratio band (60-90% per the table). Gate live use on a 1-week observation window of P4c top-up-rate before defaulting any high-frequency command to the compressed surface.
 - [ ] **P4e — Decision gate: roll-out scope** (no time estimate; data-driven). After 1 week of P4c data, decide per-command: (i) promote to default (Claude Code agent file overlay points the model at `run_bash_compressed` for that command), (ii) keep optional, or (iii) drop. Record decisions in this handoff under a "P4e results" subsection.

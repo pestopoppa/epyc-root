@@ -90,7 +90,7 @@ Source: [`research/deep-dives/hermes-agent-v2026-4-23-release.md`](../../researc
   - [ ] Ink TUI CLI contract: verify our scripted/headless invocations of `hermes` (in `scripts/hermes/launch.sh` and similar) still work with the Ink rewrite — flag any changed flags/exit-codes
   - [ ] ChatCompletions transport refactor probe: hit our orchestrator's `/v1/chat/completions` with the new client — **REQUIRES INFERENCE — Wave 2**
   - [ ] Compressor fallback-chain interaction: confirm the new fallback chain does not conflict with our `provider: "main"` auxiliary config; inspect config-loading order
-- [ ] **P2.6.3 — Downstream port to compressor** — see [`tool-output-compression.md`](tool-output-compression.md) Phase 3d (E)
+- [x] **P2.6.3 — Downstream port to compressor** — see [`tool-output-compression.md`](tool-output-compression.md) Phase 3d / Phase 4. **DONE 2026-06-14**: P3d.1 audit found the upstream commits map to context-compaction patterns rather than a direct bash-compressor port; P4a-b landed the downstream MCP wrapper and compressor middleware in `epyc-orchestrator` `fe64140`. Remaining measurement/registration work lives in `tool-output-compression.md` P4c-P4e.
 - [ ] **P2.6.4 — Downstream refactor of `x_*` overrides** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2+ Enhancement (F)
 - [ ] **P2.6.5 — Subagent + single-slot llama-server validation** — see [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 Validation (G); **REQUIRES INFERENCE — Wave 2**
 

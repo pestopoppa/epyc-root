@@ -7,7 +7,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from compress_tool_output import compress_tool_output, MIN_COMPRESS_CHARS
+from compress_tool_output import (
+    MIN_COMPRESS_CHARS,
+    compress_tool_output,
+    compress_tool_output_with_metadata,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -36,6 +40,15 @@ class TestPassthrough:
         text = " M file.py\n" * 100  # 1100 chars, but compression might not help
         result = compress_tool_output(text, "git status")
         assert len(result) <= len(text)
+
+    def test_metadata_below_threshold(self):
+        text = "short"
+        result = compress_tool_output_with_metadata(text, "pytest")
+        assert result.text == text
+        assert result.strategy == "passthrough_below_threshold"
+        assert result.original_chars == len(text)
+        assert result.compressed_chars == len(text)
+        assert not result.changed
 
 
 # ---------------------------------------------------------------------------
@@ -103,6 +116,13 @@ class TestPytest:
         # Individual PASSED lines should not appear
         assert "test_3 PASSED" not in result
         assert "test_50 PASSED" not in result
+
+    def test_metadata_records_strategy(self):
+        result = compress_tool_output_with_metadata(PYTEST_WITH_FAILURES, "pytest")
+        assert result.strategy == "pytest"
+        assert result.changed
+        assert result.compressed_chars < result.original_chars
+        assert result.text == compress_tool_output(PYTEST_WITH_FAILURES, "pytest")
 
 
 # ---------------------------------------------------------------------------
