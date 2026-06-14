@@ -545,3 +545,31 @@ If code touches API/runtime consumers, add the focused consumer tests for admiss
 - `stack_change_pipeline.py check` is the canonical no-inference preflight for launch, AutoPilot resume, and model-stack benchmark interpretation.
 - Simulated data-only fixtures prove shared-server swaps, role retirement, tier changes, launch/runtime changes, and VL projector changes without production source edits.
 - All current-stack docs/prompts are generated or labelled historical.
+
+## KV compression stack-prior architecture metadata documented
+
+Documentation-only sidecar for `epyc-orchestrator` commit `950fad7` (`Prefer stack-prior layer metadata for KV compression`). Scope remained `epyc-root` governance/progress docs only; no orchestrator code was edited.
+
+### Landed in `epyc-orchestrator`
+
+- `orchestration/model_descriptors` compiler now accepts optional architecture metadata from `registry.model`, including `n_layer`/`n_layers`/`num_hidden_layers`/`block_count` and `n_attention_layers`/`attention_layers`.
+- Stack-prior generation now propagates the model architecture metadata into `roles.*.model`.
+- `scripts/autopilot/kv_compress.py` now reads stack-prior `model.attention_layers` first, then `model.n_layers`; only after that does it fall back to
+  `MODEL_LAYER_COUNTS` / `MODEL_LAYER_COUNT_ALIASES`.
+- `orchestration/model_descriptors.yaml` and `orchestration/derived/stack_priors.yaml` were regenerated and now only emit optional architecture fields when populated, so current artifacts avoid empty/null layer fields.
+
+### Validation recorded from the implementation lane
+
+- `ruff` passed on touched files.
+- Focused pytest passed `35` tests in
+  `test_model_descriptor_compiler.py`, `test_stack_priors_compiler.py`,
+  `test_kv_compress_adaptive.py`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed `163` tests.
+- Warning baseline remained `108 unique / 112 total` with
+  `waived_production_blocker=2`, `legacy_test=72`,
+  `historical_doc=25`, `waived_legacy_test=9`.
+
+### Notes
+
+- `escalation_prewarmer` was deferred because `prewarm_if_complex` and `_send_prewarm` had CRITICAL GitNexus blast radius.
+- Sidecar review of `scripts/config/config/models.py` found URL defaults already mostly stack-prior aware; vision/OCR defaults were deferred to a later higher-risk tranche.
