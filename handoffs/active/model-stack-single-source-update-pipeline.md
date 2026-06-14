@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), config service URL manifest derivation (`1bf1935`), seeding reward fallback test hardening (`3cb56f9`), graph-router action-space contract hardening (`678aeee`), simulated stack-swap operator-summary coverage (`335dec7`), and admission malformed-prior fallback coverage (`f538dd3`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), config service URL manifest derivation (`1bf1935`), seeding reward fallback test hardening (`3cb56f9`), graph-router action-space contract hardening (`678aeee`), simulated stack-swap operator-summary coverage (`335dec7`), admission malformed-prior fallback coverage (`f538dd3`), and seeding reward stack-prior loader helper reuse (`3b2032b`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -1098,6 +1098,45 @@ Test-only W3/P2 follow-up landed in `epyc-orchestrator` commit `f538dd3`
 - `epyc-orchestrator` GitNexus refreshed after commit: `53,150 nodes`,
   `91,228 edges`, `1119 clusters`, `300 flows`.
 
+## Seeding reward stack-prior loader helper reuse — 2026-06-14
+
+W3/P2 helper-migration follow-up landed in `epyc-orchestrator` commit
+`3b2032b` (`Reuse stack prior loader in seeding rewards`).
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/benchmark/seeding_rewards.py` no longer owns a local
+  `yaml.safe_load()` parser for `orchestration/derived/stack_priors.yaml`.
+- `_read_stack_priors()` now lazily imports and reuses
+  `src.registry.stack_priors.load_stack_priors_artifact()`, preserving the same
+  fail-closed missing/malformed behavior and leaving comparative reward math,
+  throughput source precedence, and degraded fallback policy unchanged.
+- The import remains lazy so benchmark seeding script bootstrap order is not
+  changed.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `_read_stack_priors` was LOW with two direct callers and
+  no process-level impact beyond the seeding eval function path; file-level
+  impact was MEDIUM because benchmark seed entrypoints import
+  `seeding_rewards.py`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run ruff check scripts/benchmark/seeding_rewards.py tests/unit/test_seeding_rewards.py`
+  passed.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_seeding_rewards.py`
+  passed `25`.
+- Expanded seeding regression set
+  `tests/unit/test_seeding_rewards.py tests/unit/test_seeding_eval.py tests/unit/test_seed_specialist_routing_main_and_retry.py`
+  passed `113`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python -m py_compile scripts/benchmark/seeding_rewards.py tests/unit/test_seeding_rewards.py`
+  passed.
+- `git diff --check` passed for the touched file.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate `163`, and
+  unchanged warning summary `36 unique / 40 total`.
+- `epyc-orchestrator` GitNexus refreshed after commit: `53,172 nodes`,
+  `91,276 edges`, `1116 clusters`, `300 flows`.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
@@ -1459,6 +1498,9 @@ stack-manifest-derived service and warm compatibility URL defaults under
 generated config URL defaults, leaving literal values as degraded fallback only.
 `3cb56f9` adds no-inference regression coverage around seeding architect-role
 fallbacks without changing the HIGH-impact benchmark reward implementation.
+`3b2032b` then moves `scripts/benchmark/seeding_rewards.py` stack-prior
+artifact loading onto the shared fail-closed loader without changing reward
+math, source precedence, or degraded fallback policy.
 `678aeee` adds no-inference regression coverage around graph-router live action
 ordering and malformed-prior fallback behavior without changing production
 routing code.
