@@ -57,6 +57,7 @@ PILLARS = [
 
 UNLOCK_THRESHOLD = 0.80
 MAX_READ_BYTES = 256_000
+QUEUE_VERSION = 1
 IGNORED_PARTS = {
     ".git",
     ".pytest_cache",
@@ -443,8 +444,9 @@ def score_repositories(repos: dict[str, Path]) -> dict[str, object]:
         for level in LEVELS
     }
     portfolio_maturity = _repo_level(portfolio_level_rates)
-    return {
-        "generated_at": datetime.now(UTC).isoformat(),
+    generated_at = datetime.now(UTC).isoformat()
+    report = {
+        "generated_at": generated_at,
         "unlock_threshold": UNLOCK_THRESHOLD,
         "levels": LEVELS,
         "pillars": PILLARS,
@@ -454,6 +456,83 @@ def score_repositories(repos: dict[str, Path]) -> dict[str, object]:
             "maturity": portfolio_maturity,
             "level_rates": portfolio_level_rates,
         },
+    }
+    report["remediation_queue"] = build_remediation_queue(report)
+    return report
+
+
+def _queue_priority(criterion_level: int, next_level: int | None) -> str:
+    if next_level is not None and criterion_level == next_level:
+        return "P0"
+    if next_level is not None and criterion_level < next_level:
+        return "P1"
+    return "P2"
+
+
+def build_remediation_queue(report: dict[str, object]) -> dict[str, object]:
+    """Build deterministic agent-ready work items from failed readiness criteria."""
+    repos = report["repos"]  # type: ignore[index]
+    coverage = report["criterion_coverage"]  # type: ignore[index]
+    items: list[dict[str, object]] = []
+
+    priority_rank = {"P0": 0, "P1": 1, "P2": 2}
+    pillar_rank = {pillar: index for index, pillar in enumerate(PILLARS)}
+
+    for repo_name, repo_data in repos.items():  # type: ignore[union-attr]
+        maturity = repo_data["maturity"]
+        next_level = maturity["next_level"]
+        for criterion in repo_data["criteria"]:
+            if criterion["passed"]:
+                continue
+            criterion_id = criterion["id"]
+            criterion_coverage = coverage[criterion_id]
+            priority = _queue_priority(criterion["level"], next_level)
+            items.append(
+                {
+                    "id": f"readiness:{repo_name}:{criterion_id}",
+                    "status": "open",
+                    "priority": priority,
+                    "category": "repo_readiness",
+                    "repo": repo_name,
+                    "repo_path": repo_data["path"],
+                    "criterion_id": criterion_id,
+                    "level": criterion["level"],
+                    "level_label": LEVELS[criterion["level"]],
+                    "pillar": criterion["pillar"],
+                    "title": f"{repo_name}: satisfy {criterion_id}",
+                    "objective": criterion["description"],
+                    "acceptance": (
+                        f"`{criterion_id}` passes for `{repo_name}` on the next "
+                        "repo readiness scorer run."
+                    ),
+                    "reason": (
+                        f"{repo_name} is at {maturity['achieved_label']} "
+                        f"(L{maturity['achieved_level']}); next gate is "
+                        f"{maturity['next_label'] or 'complete'}."
+                    ),
+                    "blocking_next_gate": next_level is not None
+                    and criterion["level"] == next_level,
+                    "portfolio_coverage": criterion_coverage["coverage"],
+                    "evidence": criterion["evidence"],
+                    "source": "scripts/validate/repo_readiness_scorer.py",
+                }
+            )
+
+    items.sort(
+        key=lambda item: (
+            priority_rank[str(item["priority"])],
+            int(item["level"]),
+            -float(item["portfolio_coverage"]),
+            pillar_rank[str(item["pillar"])],
+            str(item["repo"]),
+            str(item["criterion_id"]),
+        )
+    )
+    return {
+        "version": QUEUE_VERSION,
+        "generated_at": report["generated_at"],
+        "item_count": len(items),
+        "items": items,
     }
 
 
@@ -575,6 +654,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-json", type=Path, help="Write JSON report to this path.")
     parser.add_argument("--output-md", type=Path, help="Write Markdown report to this path.")
     parser.add_argument(
+        "--output-remediation-json",
+        type=Path,
+        help="Write failed readiness criteria as deterministic remediation queue JSON.",
+    )
+    parser.add_argument(
         "--min-portfolio-level",
         type=int,
         default=0,
@@ -586,6 +670,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.output_json:
         args.output_json.parent.mkdir(parents=True, exist_ok=True)
         args.output_json.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    if args.output_remediation_json:
+        args.output_remediation_json.parent.mkdir(parents=True, exist_ok=True)
+        queue_json = json.dumps(report["remediation_queue"], indent=2, sort_keys=True)
+        args.output_remediation_json.write_text(queue_json, encoding="utf-8")
     markdown = render_markdown(report)
     if args.output_md:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)
