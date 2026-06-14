@@ -1,6 +1,6 @@
 # ColBERT Reranker for web_research Pipeline
 
-**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live role-path web_research still has a soft Gate-3 timeout follow-up, so keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
+**Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live Gate-3 now passes hard telemetry plus the `web_research` soft structured-output probe after `epyc-orchestrator` `9a220b9`; keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-05-28
 **Priority**: MEDIUM
@@ -104,18 +104,25 @@ in `epyc-orchestrator` `93c4a09` (`Harden web research telemetry probe`).
   detail and retries one worker HTTP 5xx with a reduced `n_predict=256`.
   Regression coverage proves a 500 on the primary 512-token call can recover on
   the reduced-cap retry.
-- Live request-path check: Gate-3 hard telemetry passed after the HOT stack was
-  started (`get_eval_secret` counted 8, all timing rows successful, no-tool
-  isolation clean). The soft `web_research` structured-output probe timed out
-  at 180s, so live role-path web_research remains an infra/latency follow-up,
-  not a reranker GO signal.
+- Live request-path check: Gate-3 hard telemetry initially passed after the HOT
+  stack was started (`get_eval_secret` counted 8, all timing rows successful,
+  no-tool isolation clean), while the old soft `web_research` structured-output
+  probe timed out at 180s. Follow-up `epyc-orchestrator` `9a220b9` tightened the
+  soft prompt to `max_results=1,max_pages=1` and made the soft classifier judge
+  successful `web_research` telemetry before post-tool final-answer errors. A
+  compact live role-path smoke then passed in 15.3s with one successful
+  `web_research` call, and full Gate-3 passed end to end:
+  `GATE3_HARD: PASS   WEB_RESEARCH: PASS`. The full run still over-called
+  `web_research` five times, so repeated web_research calls are a
+  prompt/control-efficiency follow-up, not a tool-plumbing blocker.
 
 Decision update: representative direct-tool evidence now crosses the >=50
 synthesized-page denominator with `<10%` irrelevant pages, so S5 request-path
 reranking is a current **NO-GO**. Keep `web_research_rerank` default-off and do
 not implement request-path reranking unless future AR-3/live role traffic shows
 material irrelevant-page waste above the existing threshold. Next useful work is
-the role-path web_research timeout/latency follow-up, not ColBERT insertion.
+role-loop efficiency around repeated `web_research` calls, not ColBERT
+insertion.
 
 **Risk controls if GO**:
 
