@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), and generated-slot admission limit derivation (`4afe47f`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), and config service URL manifest derivation (`1bf1935`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -928,6 +928,49 @@ Implementation follow-up landed in `epyc-orchestrator` commit `4afe47f`
   descriptors/stack priors fresh, `q_scorer_priors: ok`,
   `runtime_attestation: ok`, and promotion gate `163`.
 
+## Config service URL manifest derivation follow-up — 2026-06-14
+
+Implementation follow-up landed in `epyc-orchestrator` commit `1bf1935`
+(`Derive config service URLs from stack manifest`).
+
+### Landed in `epyc-orchestrator`
+
+- `src/config/models.py` now layers stack-manifest-derived service and
+  compatibility URL defaults under generated stack-prior URLs and above literal
+  degraded fallbacks.
+- `worker_fast` and `worker_coder` can default from
+  `stack_manifest.PORT_MAP["worker_fast"]` when generated stack priors omit
+  warm/deprecated compatibility labels.
+- `api_url`, `ocr_server`, and `vision_api` now default from manifest
+  `orchestrator` / `document_formalizer` ports when available.
+- Public `coder`/`worker` aliases and the generated `worker_coder` stack-prior
+  alias remain compatibility APIs; environment overrides remain authoritative.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact was LOW for `_server_url_default` and
+  `_stack_prior_server_urls`.
+- `ruff` passed for config code and focused tests.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_config_consolidation.py -k "server_url_defaults"`
+  passed `2`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_config.py::TestServerURLsConfig`
+  passed `7`.
+- A default-resolution probe confirmed current values derive as expected:
+  `worker_fast`/`worker_coder` -> `http://localhost:8102`,
+  `api_url` -> `http://localhost:8000`, `ocr_server` ->
+  `http://localhost:9001`, and `vision_api` ->
+  `http://localhost:8000/v1/vision/analyze`.
+- `git diff --check` passed for the touched files.
+- `stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only`
+  remained at `36 unique / 36 total` with `waived_production_blocker=2`,
+  `historical_doc=25`, and `waived_legacy_test=9`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, and promotion gate `163`.
+- `epyc-orchestrator` GitNexus required a full rebuild after interrupted
+  incremental attempts and then refreshed successfully: `53,141 nodes`,
+  `91,212 edges`, `1117 clusters`, `300 flows`.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
@@ -1284,8 +1327,10 @@ role/port degraded fallback helpers into `src/api/routes/vision_serving.py`, so
 path instead of duplicating policy tables. This closes more of the first
 helper/data centralization tranche. `4afe47f` also populates generated
 `serving.slots` for stack-manifest-only vision roles and makes admission defaults
-prefer generated limits over static fallbacks. This is still not the broader W3
-surface.
+prefer generated limits over static fallbacks. `1bf1935` then layers
+stack-manifest-derived service and warm compatibility URL defaults under
+generated config URL defaults, leaving literal values as degraded fallback only.
+This is still not the broader W3 surface.
 
 Tasks:
 
@@ -1296,12 +1341,17 @@ Tasks:
 
 Likely targets:
 
-- `src/config/models.py` remaining static server-URL alias/fallback tables.
-- `src/runtime/inference_tap.py` remaining safe-mode fallback role policy and
-  `scripts/benchmark/seeding_types.py` / `scripts/benchmark/seeding_rewards.py`
-  benchmark cost/tier fallback policy.
-- `src/runtime/inference_lock.py` remaining legacy lock-role buckets, after
-  lower-risk policy fallbacks are exhausted.
+- `scripts/benchmark/seeding_types.py` / `scripts/benchmark/seeding_rewards.py`
+  benchmark cost/tier fallback policy, but do not infer policy-only cost tiers
+  from memory alone; add a typed policy source field or keep explicit degraded
+  fallback semantics.
+- `src/config/models.py` only for any residual compatibility/literal fallback
+  cleanup proven by scanner or consumer-surface audit; generated and
+  manifest-derived service URL defaults are already covered by `f41b1f3`,
+  `66d9765`, `b1b5d00`, and `1bf1935`.
+- `src/runtime/inference_tap.py` and `src/runtime/inference_lock.py` remaining
+  explicit `_LEGACY_*` fallback buckets only if a new stack-prior policy field
+  exists; current generated-first behavior and scanner guards are already live.
 - dashboard/status/health routes if later scanner or consumer-surface audits
   find new local policy drift.
 - q_scorer and seeding/replay consumers if benchmark runtime enforcement needs
