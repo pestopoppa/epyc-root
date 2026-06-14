@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), and config URL helper reuse (`66d9765`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is broader static lock/tap policy cleanup, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), and guard coverage for config-local stack-prior YAML readers (`b1b5d00`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is broader static lock/tap policy cleanup, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -160,6 +160,39 @@ no orchestrator code was edited in this lane.
 This is a low-risk P2 `config_model_catalog` follow-up: the surface had already
 derived URL defaults from stack priors, and now it uses the shared typed helper
 path instead of owning a local YAML reader.
+
+## Config URL helper guard follow-up — 2026-06-14
+
+Manual docs checkpoint for `epyc-orchestrator` commit `b1b5d00` (`Guard config
+stack-prior URL helpers`). Scope remained root documentation only.
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/validate/stack_change_guard.py` adds the
+  `local_config_stack_prior_yaml_reader` hardcoded-surface rule.
+- `orchestration/stack_change_surface_manifest.yaml` owns the rule under
+  `config-governance`.
+- `tests/unit/test_stack_change_guard.py` proves that reintroducing
+  `yaml.safe_load(priors_path.read_text(...))` inside `src/config/models.py`
+  becomes a production-blocker finding.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `HARDCODED_SURFACE_RULES` was LOW (`impactedCount=0`);
+  `scan_hardcoded_surfaces` was LOW (`impactedCount=5`).
+- `ruff` passed on the guard and test files.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_stack_change_guard.py`
+  -> 46 passed.
+- The hardcoded-surface inventory reports `rule_count=18` and includes
+  `local_config_stack_prior_yaml_reader`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  `promotion_gate=163` and unchanged warning buckets.
+
+### Progress note
+
+This is the enforcement companion to `66d9765`: config server URL defaults now
+reuse the shared stack-prior helper path, and scanner coverage blocks the old
+local YAML-reader shape from returning unnoticed.
 
 ## Operational-consumer helper reuse follow-up — 2026-06-14
 
