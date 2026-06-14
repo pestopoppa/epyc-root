@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), and factual-risk role-tier derivation (`72dc18e`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), and OpenAI `/v1/models` stack-prior ordering (`63522df`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -393,6 +393,48 @@ documentation only.
 
 This closes another low-risk routing-prior consumer migration: factual-risk role
 capability adjustment no longer depends on a hand-maintained role-to-tier map.
+
+## OpenAI model-list stack-prior ordering follow-up - 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `63522df` (`Derive OpenAI
+model order from stack priors`). Scope remained root governance documentation
+only.
+
+### Landed in `epyc-orchestrator`
+
+- `src/api/routes/openai_compat.py` removed the hand-maintained
+  `PREFERRED_ROLE_ORDER` table for `/v1/models` live-role ordering.
+- Live OpenAI-compatible model IDs now keep compatibility aliases first, then
+  order live stack roles from generated stack-prior launch topology
+  (`frontdoor` first, then generated primary port and role name).
+- `DEGRADED_AVAILABLE_ROLES` remains explicit fallback only when generated
+  stack-prior records are unavailable.
+- `scripts/validate/stack_change_guard.py` adds
+  `static_openai_model_role_order`, owned in the surface manifest under
+  `api-governance`, so the old static preferred-order table shape is a
+  production-blocker finding.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `src/api/routes/openai_compat.py` was LOW
+  (`impactedCount=2`, `direct=1`, no named processes).
+- `ruff` passed on OpenAI compat and stack-change guard files/tests.
+- Focused OpenAI compat, `/v1/models`, and guard tests passed 79.
+- All-surface summary stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Hardcoded-surface inventory now reports `rule_count=24` and includes
+  `static_openai_model_role_order`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed:
+  descriptors/stack-priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate 163 tests
+  passed, and acceptance reported no-inference checks passed.
+
+### Progress note
+
+This closes a bounded API surface: `/v1/models` live-role ordering no longer
+depends on a hand-maintained current-stack role list.
 
 ## Vision fallback drift reduction follow-up — 2026-06-14
 
