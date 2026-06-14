@@ -135,7 +135,6 @@ def _expand_pattern(repo_root: Path, pattern: str, *, tolerate_missing: bool) ->
     else:
         base = repo_root / pattern
 
-    expanded: list[Path] = []
     if not _is_wildcard(pattern):
         if not base.exists():
             if not tolerate_missing:
@@ -453,14 +452,14 @@ def verify_restore(
                 metrics["files_copied"] += 1
 
                 try:
-                    src_hash = file_checksum(source)
+                    snapshot_hash = file_checksum(snapshot_file)
                     restore_hash = file_checksum(restore_file)
                 except OSError as exc:
-                    errors.append(f"checksum_error: {source} -> {exc}")
+                    errors.append(f"checksum_error: {snapshot_file} -> {exc}")
                     continue
-                if src_hash != restore_hash:
+                if snapshot_hash != restore_hash:
                     errors.append(
-                        f"checksum_mismatch: {source} (snapshot restored copy differs from source)"
+                        f"checksum_mismatch: {snapshot_file} (restored copy differs from snapshot)"
                     )
                     continue
 
