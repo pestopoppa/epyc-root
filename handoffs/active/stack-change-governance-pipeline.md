@@ -93,6 +93,14 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   parallel step execution, vision-stage serving ports, inference lock, and
   inference tap now reuse those helpers instead of duplicate YAML parsing;
   lock/tap fallback constants remain unchanged.
+- `epyc-orchestrator` `a800d8c` continued that trajectory by moving
+  `src/api/routes/openai_compat.py`, `src/api/admission.py`,
+  `scripts/graph_router/action_space.py`, `scripts/graph_router/train_graph_router.py`,
+  `scripts/autopilot/preflight_audit.py`, and `scripts/autopilot/kv_compress.py`
+  to shared stack-prior helper usage rather than local YAML parsing.
+- `epyc-orchestrator` `a858297` added stack-change guard retired-role legacy-test
+  exception coverage for `scripts/memory/**/*.py` and a dedicated `scripts/memory/*.py`
+  exception entry; the warning summary is now `108` with `waived_legacy_test=9`.
 - Scheduling/contention role classes were pinned to the current stack matrix in
   `epyc-orchestrator` `eed215d`: `src/scheduling/contention.py` no longer
   carries an unused fallback heavy-role constant or stale same-role vision
