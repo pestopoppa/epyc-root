@@ -1,9 +1,9 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, the canonical preflight advertises the inventory command as of `b82ae3d`, compact surface-warning summary mode is available as of `2cb3d6c`, and scanner-rule ownership is enforced as of `7815318`; broader consumer migrations remain open.
+**Status**: READY FOR IMPLEMENTATION - 2026-06-14 audit confirms the canonical stack-change check is green, generated descriptors/priors are fresh, and current hardcoded-surface warnings are classified; the open work is to turn remaining model-specific quantities into generated/typed truth and make launch/AutoPilot promotion fail closed.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
-**Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or index edits were performed in this sidecar pass.
+**Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, seeding, or heavy indexing were performed. This sidecar updated root handoff/index/progress docs only.
 **Related**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md), [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md), [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md), [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md)
 
 ## Objective
@@ -19,6 +19,52 @@ The immediate trigger was stale q_scorer/model-stack quantities: `frontdoor` and
 
 This handoff is a concise pickup contract. The long historical audit lives in `model-stack-update-pipeline-audit.md`; implementation should extend the existing descriptor -> stack-prior -> guard -> consumer-migration path instead of inventing a parallel registry.
 
+## Start Here - 2026-06-14 Audit
+
+Current lightweight audit result:
+
+- `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/registry/stack_change_pipeline.py check` passed in `epyc-orchestrator`: descriptors fresh, stack priors fresh, procedure enums checked, loose/all-surface/strict guard stages non-blocking, `summary: ok`, and the acceptance block printed the promotion-gate command plus surface-inventory command.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only` reported `WARN: 99 unique stack-prior warning(s) (99 total)` with `surface_warnings: waived_production_blocker=2, legacy_test=72, historical_doc=25`.
+- The live generated contract has the flagged facts correct: `frontdoor` and `coder_escalation` both use `qwen3.6-35b-a3b-q8_0`, port `8070`, HOT tier, shared mmap, and `memory_cost: 1.0`; `architect_general` and `ingest_long_context` are HOT with `memory_cost: 1.0`; `architect_coding` is absent from live stack-prior roles.
+- The risk is no longer "q_scorer is definitely wrong by default"; q_scorer now prefers stack priors. The remaining risk is that fallback tables and non-launch consumers still look like live truth when generated priors are missing, stale, or bypassed.
+
+Use this as the follow-up implementation order:
+
+- [ ] **P0 - Promote the canonical preflight to a launch/AutoPilot gate.** Treat `stack_change_pipeline.py check --run-promotion-gate` plus current process/runtime attestation as the required gate before stack-change launch, AutoPilot resume, or benchmark interpretation. Default `check` still prints promotion targets as reference; implementation must decide where wrappers enforce executable gate mode.
+- [ ] **P1 - Close live-looking q_scorer fallback residue.** Keep degraded/offline fallbacks, but make it impossible for valid live decisions to silently use `FALLBACK_BASELINE_TPS_BY_ROLE`, `BASELINE_QUALITY_BY_ROLE`, or `FALLBACK_MEMORY_COST_BY_ROLE` for live roles when stack priors are fresh. Tests should assert source provenance for the flagged roles.
+- [ ] **P2 - Expand surface ownership from scanner rules to consumer surfaces.** The current manifest owns scanner rules, not every model-specific consumer. Add ownership/validation for q_scorer, seeding, replay, routing priors, admission, lock/tap policy, config URLs/timeouts, health probes, launch maps, dashboards, system cards, planner prompts, procedure enums, and doc summaries.
+- [ ] **P3 - Generate current operator/planner stack summaries or mark them historical.** The all-surface guard still finds 25 historical-doc warnings. The next implementation should replace current-stack tables with generated summaries or add explicit historical labels so operator docs cannot become hidden source truth.
+- [ ] **P4 - Prove data-only swaps for the exact stale cases.** Simulated fixtures must cover `frontdoor`/`coder_escalation` shared-server swaps, `architect_coding` retirement, HOT/WARM tier flips for `architect_general` and `ingest_long_context`, q_scorer prior changes, launch/runtime arg changes, and VL model/mmproj changes.
+- [ ] **P5 - Wire runtime attestation into promotion.** Generated stack priors include launch runtime and requirements, but the final launch gate must compare live processes, ports, command args, binary, KV/cache settings, context, MTP/spec flags, and VL projector args against those priors before accepting a stack as current.
+
+Dependency graph:
+
+```text
+Structured truth
+  -> descriptor compile/check
+  -> stack-prior compile/check
+  -> procedure enum sync/check
+  -> guard + surface manifest
+  -> typed consumers and generated summaries
+  -> process/runtime attestation
+  -> launch / AutoPilot resume / benchmark interpretation
+
+P0 depends on the existing pipeline and no-inference promotion tests.
+P1, P2, and P5 all depend on stack-prior contract v4 staying fresh.
+P3 depends on P2 ownership classification so docs are generated/current or explicitly historical.
+P4 can run in parallel but must fail if production source edits are needed for data-only stack changes.
+Launch/AutoPilot promotion depends on P0 + P1 + P2 + P5; P3 is required before operator docs are used as current-stack evidence.
+```
+
+Stale/hardcoded examples found in this audit:
+
+- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py:58` still contains degraded TPS fallbacks including `frontdoor`, `coder_escalation`, `architect_general`, and `ingest_long_context`; `:71` contains quality fallbacks; `:80` contains memory-cost fallbacks. These are acceptable only as explicit degraded/offline sources.
+- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py:244` loads generated stack-prior live priors first and records source provenance; `:448` still has registry memory fallback loading. P1 should test that live roles use stack-prior sources when the artifact is valid.
+- `epyc-orchestrator/orchestration/derived/stack_priors.yaml:207` and `:326` show `coder_escalation` and `frontdoor` sharing model identity, port `8070`, HOT tier, and `memory_cost: 1.0`; `:469` shows `ingest_long_context` HOT with `memory_cost: 1.0`.
+- `epyc-orchestrator/scripts/server/stack_manifest.py:129` is the launcher tier/alias source; `:132` documents `coder_escalation`/`worker_summarize` sharing frontdoor, `:157`/`:158` classify `architect_general` and `ingest_long_context` as HOT, and `:177` documents `architect_coding` removal.
+- `epyc-orchestrator/scripts/registry/stack_change_pipeline.py:121` emits the acceptance/warning/promotion/surface-inventory block, while `:588` keeps executable promotion-gate mode behind `--run-promotion-gate`.
+- `epyc-orchestrator/scripts/validate/stack_change_guard.py:1240` enforces HOT live roles have `memory_cost: 1.0`; `:1273` promotes unwaived warnings to strict errors; `:1328`/`:1339` expose rule inventory and summary modes.
+
 ## Current Evidence
 
 - `epyc-orchestrator/docs/reference/stack-truth-precedence.md` already defines the precedence rule: live serving topology first, model descriptors second, role metadata third, historical/benchmark records last.
@@ -30,7 +76,7 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - `epyc-orchestrator/orchestration/stack_change_surface_manifest.yaml` landed in `7815318` as the first enforced W2 ownership manifest for hardcoded model/stack scanner rules. Each rule now has exactly one manifest entry with rule ID, category, owner, consumer scope, promotion-blocker policy, review cadence, evidence command, and drift response. The guard validates manifest presence, coverage, duplicate or unknown rule IDs, category consistency, required text fields, and promotion-blocker policy, and `stack_change_pipeline.py check` now fails if scanner-rule ownership drifts.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
-- Root GitNexus was refreshed before this edit. New handoff path impact is `UNKNOWN` with `impactedCount=0` because the file did not exist yet; nearby `model-stack-change-standardization-audit.md` is a MEDIUM coordination surface, so this pass avoids modifying it or shared indices.
+- Root GitNexus status was current before this edit. Impact checks for this doc path and `master-handoff-index.md` returned target-not-found with `UNKNOWN` risk and `impactedCount=0`, which is expected for markdown coordination paths; no HIGH/CRITICAL impact was reported.
 
 ## Single-Source Contract
 
