@@ -258,16 +258,18 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
   - Reference Venice's pattern at `github.com/veniceai/skills` (any individual skill is the canonical example)
   - Write the rubric as a separate `scripts/hermes/skills/AUTHORING.md` next to the template if the template itself would be too cluttered
   - Delivered `TEMPLATE.md` (81 lines) and `AUTHORING.md` (98 lines), checked against the current `OpenAIChatRequest` `x_*` schema. The rubric explicitly warns against stale model IDs and records boolean override types. Existing `/use`, `/escalation`, and `/nocode` skill docs were also refreshed to remove stale model assignments and align `x_disable_repl` with boolean schema.
-- [ ] **B — `scripts/hermes/skills/check_drift.py` + pre-commit hook wire** (~2 h, depends on A)
+- [x] **B — `scripts/hermes/skills/check_drift.py` + pre-commit hook wire** (~2 h, depends on A) — DONE 2026-06-14
   - Parse `x_*` field declarations in `OpenAIChatRequest` (under `epyc-orchestrator/src/api/models/openai.py` per our overrides — confirm path on implementation)
   - Regex-scan all `scripts/hermes/skills/**/*.md` for documented `x_*` references
   - Two-way diff: declared-but-undocumented and documented-but-undeclared
   - Exit 1 on drift with a clear message; exit 0 on clean
   - Wire as a hook in `epyc-orchestrator/.git/hooks/pre-commit` — references `feedback_handoff_driven_tracking` discipline
   - Modeled on Venice's `sync_from_swagger.py` pattern
-- [ ] **C — `scripts/hermes/skills/overview/SKILL.md` (entry-point inventory)** (~30 min, depends on A)
+  - Delivered `scripts/hermes/skills/check_drift.py` as a pure AST/text validator over request-side `OpenAIChatRequest` `x_*` fields only, plus `scripts/hooks/hermes_drift_precommit.sh` as the path-scoped hook wrapper. Installed local chained hooks in `epyc-root` and `epyc-orchestrator` so PII hygiene runs first and Hermes drift runs only when staged files touch `scripts/hermes/skills/*` or `src/api/models/openai.py`. Clean docs pass; a synthetic stale field (`x_not_real_override`) exits 1 with a clear file path.
+- [x] **C — `scripts/hermes/skills/overview/SKILL.md` (entry-point inventory)** (~30 min, depends on A) — DONE 2026-06-14
   - Lists every `x_*` override + what it does + which command-skill (`/use`, `/escalation`, `/nocode`) consumes it
   - Acts as the index for new readers + first thing the drift detector references
+  - Delivered `scripts/hermes/skills/overview/SKILL.md` with all five request overrides (`x_orchestrator_role`, `x_max_escalation`, `x_force_model`, `x_disable_repl`, `x_show_routing`), command-skill ownership, and the drift-check command. `x_force_model` and `x_show_routing` are explicitly recorded as advanced API overrides with no dedicated slash command.
 
 #### Phase 2+ Enhancement (added 2026-04-24 from intake-454 deep-dive)
 

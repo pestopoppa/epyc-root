@@ -75,12 +75,12 @@ operator behavior. At minimum, consider:
 For doc-only edits:
 
 ```bash
-python3 scripts/hermes/skills/check_authoring.py  # if present
+python3 scripts/hermes/skills/check_drift.py
 find scripts/hermes/skills -name '*.md' -print0 | xargs -0 wc -l
 git diff --check -- scripts/hermes/skills
 ```
 
-Until `check_authoring.py` exists, manually verify:
+Also manually verify:
 
 - every skill has YAML frontmatter;
 - every skill is under 500 lines;

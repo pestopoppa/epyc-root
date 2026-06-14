@@ -37,7 +37,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 
 | Handoff | Path | Status | Priority | Last Updated |
 |---------|------|--------|----------|-------------|
-| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills done, streaming validated (Package E). Auth deferred. | LOW | 2026-04-08 |
+| [hermes-outer-shell.md](hermes-outer-shell.md) | A — User-Facing Shell | Phase 2 routing API done, skills + authoring rubric + drift guard + override overview done, streaming validated (Package E). Auth deferred. | LOW | 2026-06-14 |
 | [orchestrator-conversation-management.md](../completed/orchestrator-conversation-management.md) | B — Cherry-Pick Patterns | ALL COMPLETE (B1-B7 + integration wiring) | Done | 2026-04-05 |
 | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Local image generation plugin | Refreshed 2026-05-28: `image_generate` resolves to self-hosted ERNIE/sd-server path; active follow-up is operational QA, not backend loading | MEDIUM | 2026-05-28 |
 | ~~[open_source_orchestrator.md](../archived/open_source_orchestrator.md)~~ | Future | ARCHIVED (dormant stub, 71 days) | — | 2026-02-02 |
@@ -62,7 +62,7 @@ Key findings from analysis (2026-03-15) and deep dive (2026-03-20):
 - [x] Phase 2: Config tuning — ✅ 2026-04-05. Config parameter mapping documented in handoff. Effective vs no-op params identified.
 - [x] Design routing API — ✅ 2026-04-05. 3 new fields on `OpenAIChatRequest`: `x_max_escalation`, `x_force_model`, `x_disable_repl`. Wired in `openai_compat.py`. Slash command → API mapping documented.
 - [ ] Auth flow for multi-user deployment — deferred (single-user only for now)
-- [x] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands — ✅ 2026-04-08. Three SKILL.md files in `scripts/hermes/skills/` (use/, escalation/, nocode/). Maps slash commands to `x_*` API override parameters.
+- [x] Hermes skill YAML files for `/use`, `/escalation`, `/nocode` commands — ✅ 2026-04-08; refreshed 2026-06-14 with `scripts/hermes/skills/AUTHORING.md`, `TEMPLATE.md`, `overview/SKILL.md`, and `check_drift.py`. Maps slash commands to `x_*` API override parameters and guards docs/schema drift.
 - [x] Streaming + override param validation — ✅ 2026-04-06 (Package E). SSE streaming works, `x_force_model`/`x_max_escalation`/`x_disable_repl` validated. Note: override params must be strings, not ints.
 
 ### P3 — Conversation Management (LOW value)
