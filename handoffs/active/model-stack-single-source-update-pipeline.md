@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), config service URL manifest derivation (`1bf1935`), seeding reward fallback test hardening (`3cb56f9`), and graph-router action-space contract hardening (`678aeee`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), vision serving fallback helper centralization (`8b3207a`), generated-slot admission limit derivation (`4afe47f`), config service URL manifest derivation (`1bf1935`), seeding reward fallback test hardening (`3cb56f9`), graph-router action-space contract hardening (`678aeee`), simulated stack-swap operator-summary coverage (`335dec7`), and admission malformed-prior fallback coverage (`f538dd3`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -1038,6 +1038,66 @@ Test-only follow-up landed in `epyc-orchestrator` commit `678aeee`
 - `epyc-orchestrator` GitNexus refreshed after commit: `53,148 nodes`,
   `91,225 edges`, `1118 clusters`, `300 flows`.
 
+## Simulated stack-swap operator-summary coverage — 2026-06-14
+
+Test-only W5 follow-up landed in `epyc-orchestrator` commit `335dec7`
+(`Assert stack swap refreshes operator summary`).
+
+### Landed in `epyc-orchestrator`
+
+- `tests/unit/test_stack_change_pipeline_simulated_fixtures.py` now asserts that
+  the simulated frontdoor/coder model swap updates the temporary generated
+  operator summary from stack priors.
+- The same fixture already checked generated descriptors, stack priors, and
+  q_scorer priors; this pass adds the missing human/planner-facing generated
+  summary assertion without changing production code.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for
+  `test_simulated_frontdoor_swap_updates_generated_consumers_with_approval`
+  was LOW with zero upstream impact.
+- `PYTHONDONTWRITEBYTECODE=1 uv run ruff check tests/unit/test_stack_change_pipeline_simulated_fixtures.py`
+  passed.
+- Focused simulated-swap pytest passed `1`; full simulated-fixture pytest
+  passed `7`.
+- `git diff --check` passed for the touched test.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate `163`, and
+  unchanged warning summary `36 unique / 40 total`.
+- `epyc-orchestrator` GitNexus refreshed after commit: `53,148 nodes`,
+  `91,225 edges`, `1118 clusters`, `300 flows`.
+
+## Admission malformed-prior fallback coverage — 2026-06-14
+
+Test-only W3/P2 follow-up landed in `epyc-orchestrator` commit `f538dd3`
+(`Assert admission fallback on malformed priors`).
+
+### Landed in `epyc-orchestrator`
+
+- `tests/unit/test_admission.py` now proves malformed generated stack-prior YAML
+  falls back to the explicit admission `FALLBACK_LIMITS` degraded policy.
+- No production admission code changed; the existing runtime helper already
+  fail-closes malformed artifacts through the shared stack-prior loader.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `_load_default_limits` was LOW with two direct test
+  callers and no process impact; the edited test method was LOW with zero
+  upstream impact.
+- `PYTHONDONTWRITEBYTECODE=1 uv run ruff check tests/unit/test_admission.py`
+  passed.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_admission.py`
+  passed `11`.
+- `git diff --check` passed for the touched test.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate `163`, and
+  unchanged warning summary `36 unique / 40 total`.
+- `epyc-orchestrator` GitNexus refreshed after commit: `53,150 nodes`,
+  `91,228 edges`, `1119 clusters`, `300 flows`.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
@@ -1402,6 +1462,9 @@ fallbacks without changing the HIGH-impact benchmark reward implementation.
 `678aeee` adds no-inference regression coverage around graph-router live action
 ordering and malformed-prior fallback behavior without changing production
 routing code.
+`f538dd3` adds no-inference regression coverage for malformed stack-prior YAML
+falling back to explicit admission degraded limits without changing production
+admission code.
 This is still not the broader W3 surface.
 
 Tasks:
@@ -1451,6 +1514,12 @@ Likely targets:
 ### W5 - Prove Data-Only Stack Changes
 
 Goal: model swaps and role retirements are data updates, not source edits.
+
+Current increment: `335dec7` extends the simulated frontdoor/coder swap fixture
+to prove the generated operator summary also follows the data-only stack-prior
+update. Earlier fixture coverage already proved descriptor, stack-prior,
+procedure enum, q_scorer prior, runtime/KV/spec/MTP, context, and VL/mmproj
+drift behavior without touching production source.
 
 Tasks:
 
