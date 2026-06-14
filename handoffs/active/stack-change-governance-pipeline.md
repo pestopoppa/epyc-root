@@ -67,8 +67,9 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - A low-risk chat routing cleanup landed in `epyc-orchestrator` `519f710`:
   `_role_to_task_type()` dropped a redundant retired-role check and added
   current live-role mapping coverage, reducing live guard warnings from 81 to
-  80. The remaining `_heuristic_role_priors()` retired-role prior is still open
-  as a separate HIGH-impact routing patch.
+  80. The follow-up `_heuristic_role_priors()` static role-prior cleanup landed
+  later in `d85660d`, deriving heuristic-prior roles from generated stack-prior
+  live role records.
 - OpenAI-compatible model listing now derives live roles from stack priors in
   `epyc-orchestrator` `d9c053c`, preserving compatibility aliases and using a
   non-retired degraded fallback; live guard warnings dropped from 80 to 79.
@@ -721,8 +722,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   delegation budgets have been cleaned up (`5e7d774`, `b1402a2`); chat pipeline
   architect branch checks now exclude retired `architect_coding` (`481516c`);
   chat routing task-type mapping no longer hardcodes the retired role
-  (`519f710`); `/v1/models` reads live roles from stack priors (`d9c053c`);
+  (`519f710`), and heuristic-prior roles now derive from stack-prior live role
+  records (`d85660d`); `/v1/models` reads live roles from stack priors (`d9c053c`);
   dashboard task-liveness overrides no longer include retired roles (`1b9db81`);
+  degraded CLI status exclusions now derive from `ROLE_LAUNCH_META` embedding
+  mode instead of a literal embedder denylist (`3b5a682`);
   inference lock/tap heavy-role classifications no longer include retired roles
   (`6bc1f51`); approval-gate high-cost classification no longer includes
   retired roles (`e6e10d8`); chat routing heuristic priors now filter through
