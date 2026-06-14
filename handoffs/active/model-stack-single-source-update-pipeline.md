@@ -19,6 +19,43 @@ The immediate trigger was stale q_scorer/model-stack quantities: `frontdoor` and
 
 This handoff is a concise pickup contract. The long historical audit lives in `model-stack-update-pipeline-audit.md`; implementation should extend the existing descriptor -> stack-prior -> guard -> consumer-migration path instead of inventing a parallel registry.
 
+## Seeding Topology Constants follow-up — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `71206cb` (`Derive seeding topology constants from stack priors`).
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/benchmark/seeding_types.py` now derives `ROLE_PORT`, `HEAVY_PORTS`, and
+  `MODEL_PORTS` from `orchestration/derived/stack_priors.yaml`, using primary
+  endpoint/non-alias launch ports instead of local-only assumptions.
+- Heavy-port classification uses `model.mem_gb >= 18.0`.
+- Static/legacy fallback constants remain, but are explicit and degraded/offline-only.
+- `tests/unit/test_seeding_types_state.py` now covers primary-port alias filtering and
+  heavy-port derivation behavior.
+- Intentional non-seeding topology constants (`ROLE_COST_TIER`, `stack_prior_architect_reward_roles`) were not changed to avoid unrelated high-impact migration.
+
+### Validation captured
+
+- `ruff` passed for `scripts/benchmark/seeding_types.py` and
+  `tests/unit/test_seeding_types_state.py`.
+- Focused test pass `85`: seeding-types/state, seeding-eval, seeding-legacy,
+  seeding-infra, seeding-infra_additional, seeding-infra_branching.
+- `stack_change_pipeline.py check --run-promotion-gate` pass (from implementation lane):
+  `descriptors`/`stack_priors` fresh, `runtime_attestation: ok`,
+  `promotion_gate=163`, `108 unique / 112 total` checks.
+- Warnings unchanged: `waived_production_blocker=2`, `legacy_test=72`,
+  `historical_doc=25`, `waived_legacy_test=9`.
+
+### Root docs updated
+
+- `handoffs/active/model-stack-single-source-update-pipeline.md`: records that
+  `71206cb` lands benchmark seeding topology derivation from stack priors and
+  leaves static fallbacks explicit.
+- `handoffs/active/master-handoff-index.md`: N11/N11a dispatch notes now include
+  `71206cb` validation and heavy-port/memory policy context.
+- `progress/2026-06/2026-06-14.md`: added the same seeding-topology dispatch
+  note and validation summary.
+
 ## Operational-consumer helper reuse follow-up — 2026-06-14
 
 Documentation sidecar for `epyc-orchestrator` commit `0a46c1c` (`Reuse stack-prior helpers in operational surfaces`). Scope remains root documentation; no orchestrator code was edited in this lane.
