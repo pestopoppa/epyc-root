@@ -75,6 +75,41 @@ Documentation sidecar for `epyc-orchestrator` commit `0a46c1c` (`Reuse stack-pri
 
 - This closes another operational-surface tranche on N11/N11a. Remaining work remains higher-risk: static lock/tap policy cleanup and any direct benchmark runtime enforcement follow-up if required.
 
+## Vision fallback drift reduction follow-up — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `cfe8204` (`Derive vision fallback ports from stack manifest`). Scope remained root governance documentation only; no orchestrator code was edited in this lane.
+
+### Landed in `epyc-orchestrator`
+
+- `src/api/routes/chat_vision.py` now derives VL fallback URL lookup through
+  stack-manifest-backed `PORT_MAP` (`_stack_prior_vl_urls`) before static fallback,
+  while preserving config URL fallback and keeping `_FALLBACK_VL_PORT_BY_ROLE` as
+  explicit degraded fallback.
+- `src/api/routes/chat_pipeline/vision_stage.py` now derives fallback VL ports from
+  stack-manifest data (`_stack_prior_vl_ports`) for `worker_vision` and
+  `vision_escalation`; local static role-port assumptions are now last-resort.
+- Tests now cover manifest-based fallback behavior in
+  `tests/unit/test_chat_vision.py` and `tests/unit/test_vision_routing.py`.
+
+### Validation recorded from the implementation lane
+
+- `ruff` passed for the two vision modules and tests.
+- `uv run pytest -q tests/unit/test_chat_vision.py tests/unit/test_vision_routing.py` ->
+  72 passed.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack_priors fresh, `q_scorer_priors: ok`, `runtime_attestation: ok`,
+  promotion_gate `163`, acceptance no-inference checks passed.
+- Warning summary remained `108 unique / 112 total` (`waived_production_blocker=2`,
+  `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`).
+- GitNexus impact was LOW for `_fallback_vl_url_for_role`, `_vl_port_for_role`,
+  `_stack_prior_vl_urls`, `_stack_prior_vl_ports`.
+
+### Root docs updated
+
+- `handoffs/active/master-handoff-index.md`: adds 2026-06-14 vision fallback dispatch note.
+- `progress/2026-06/2026-06-14.md`: adds dedicated 2026-06-14 vision fallback
+  dispatch notes and validation summary.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
