@@ -1,8 +1,8 @@
 # Web Research Pipeline — SearXNG + Crawl4AI
 
-**Status**: SX-1–4 done; CA-1–5 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97`; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
+**Status**: SX-1–4 done; root CLI fallback semantics hardened in `epyc-root` `fa75cfa`; CA-1–5 landed/validated in `epyc-orchestrator` `0dadb2e` + `38ddc97`; SX-5/6 + CA-6/7 gated on AR-3 / Camofox
 **Created**: 2026-04-14 (via research intake, deep-dive enriched)
-**Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; old 8086 hint conflicts with `worker_vision`)
+**Updated**: 2026-06-14 (Crawl4AI backend landed on host/container port 11235; old 8086 hint conflicts with `worker_vision`; root `searx.sh` fallback hardening landed)
 **Categories**: search_retrieval, tool_implementation
 **Tracked in**: [`routing-and-optimization-index.md`](routing-and-optimization-index.md) P12
 
@@ -182,6 +182,7 @@ Mirrors P12 in [`routing-and-optimization-index.md`](routing-and-optimization-in
 - [x] **SX-2: `_search_searxng()` implementation** — ✅ 2026-04-14. Added to `search.py`. Returns `{title, url, snippet, score, engines[]}` from JSON API. `web_search()` wrapper tries SearXNG first when flag enabled, falls back to DDG on failure. **TESTED**: 3/3 query types pass (normal 908ms, domain-filtered 653ms, niche 836ms). Multi-engine consensus confirmed (3-engine score ~9.9, 2-engine ~3.3, 1-engine <1).
 - [x] **SX-3: Engine tuning** — ✅ 2026-04-14. `config/searxng/settings.yml`: Google `inactive: true`, DDG weight 1.2, Brave 1.1, Wikipedia 1.0, Qwant 0.9. Per-engine timeout 3.0s, Qwant `retry_on_http_error: true`.
 - [x] **SX-4: `unresponsive_engines[]` telemetry** — ✅ 2026-04-14. `_search_searxng()` logs `searxng unresponsive_engines: ...` on every call with failures. Folded into AR-3 Package D Phase 6b for production validation.
+- [x] **SX-4b: Root SearXNG CLI fallback hardening** — ✅ 2026-06-14 in `epyc-root` `fa75cfa`. `scripts/search/searx.sh` now treats valid JSON without a `.results` array as an invalid SearXNG endpoint and exits documented fallback code `2`, matching the wrong-port `8090` / BGE-server case. Validation: `bash -n scripts/search/searx.sh`; `git diff --check -- scripts/search/searx.sh`; healthy `bash scripts/search/searx.sh 'Python programming language' --top 2`; wrong-port `SEARX_URL=http://localhost:8090 ...` returned fallback stderr/code `2`; orchestrator `uv run pytest -q tests/unit/test_web_search_searxng_config.py tests/unit/test_autopilot_preflight_audit.py` -> 12 passed.
 - [ ] **SX-5: Load test** — Folded into AR-3 Package D. Web_research sentinel suite (50q) provides realistic load validation. Post-AR-3: analyze engine failure rates + latency via Phase 6b checks.
 - [ ] **SX-6: Swap default** — Feature flag `ORCHESTRATOR_SEARXNG_DEFAULT=1` implemented. Gated on AR-3 warmup trial quality data. Post-AR-3: confirm no regression → lock in swap. See bulk-inference-campaign.md Phase 6b.
 

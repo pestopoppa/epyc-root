@@ -136,7 +136,7 @@ Two web-search paths are available in this session:
 - One-shot factual lookup; the auto-summary is fine.
 - SearxNG health check fails (script exits 2).
 
-Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8888` is unreachable. On exit 2, switch to `WebSearch` for that query. Do not probe `localhost:8090` for `/search`; ports `8090-8095` are BGE embedding servers and return llama-server 404s for SearXNG paths.
+Health-check / fallback semantics: `searx.sh` exits 2 with a fallback message if `localhost:8888` is unreachable or the endpoint returns valid JSON that is not a SearXNG payload with a `.results` array. On exit 2, switch to `WebSearch` for that query. Do not probe `localhost:8090` for `/search`; ports `8090-8095` are BGE embedding servers and return llama-server 404s for SearXNG paths.
 
 ## Historical Documentation Warning
 
