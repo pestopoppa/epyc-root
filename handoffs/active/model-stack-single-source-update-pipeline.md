@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, the canonical preflight advertises the inventory command as of `b82ae3d`, and compact surface-warning summary mode is available as of `2cb3d6c`; the broader W2 consumer ownership manifest and remaining migrations are still open.
+**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, the canonical preflight advertises the inventory command as of `b82ae3d`, compact surface-warning summary mode is available as of `2cb3d6c`, and scanner-rule ownership is enforced as of `7815318`; broader consumer migrations remain open.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or index edits were performed in this sidecar pass.
@@ -27,6 +27,7 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes a machine-readable hardcoded-surface rule inventory in `34a0407`: `hardcoded_surface_rule_inventory()` plus `--list-hardcoded-surface-rules --surface-inventory-format yaml|json`. The inventory reports `version`, `rule_count`, `categories`, and per-rule `rule_id`, category, pattern, path/exclude globs, comment-line handling, and remediation. The same commit fixed direct-by-path CLI import hygiene so `python scripts/validate/stack_change_guard.py ...` works outside pipeline imports.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py check` now prints `surface_inventory: run uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules` in the passing acceptance block as of `b82ae3d`, so the canonical stack-change preflight points operators at the machine-readable scanner-rule catalog. No enforcement semantics changed.
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes `hardcoded_surface_warning_counts()` and `--surface-summary-only` as of `2cb3d6c`, letting operators compact hardcoded-surface scan warnings into category counts such as waived production blockers, legacy tests, and historical docs while preserving the default detailed warning output. This is reporting hygiene only; canonical pipeline output and guard policy are unchanged.
+- `epyc-orchestrator/orchestration/stack_change_surface_manifest.yaml` landed in `7815318` as the first enforced W2 ownership manifest for hardcoded model/stack scanner rules. Each rule now has exactly one manifest entry with rule ID, category, owner, consumer scope, promotion-blocker policy, review cadence, evidence command, and drift response. The guard validates manifest presence, coverage, duplicate or unknown rule IDs, category consistency, required text fields, and promotion-blocker policy, and `stack_change_pipeline.py check` now fails if scanner-rule ownership drifts.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
 - Root GitNexus was refreshed before this edit. New handoff path impact is `UNKNOWN` with `impactedCount=0` because the file did not exist yet; nearby `model-stack-change-standardization-audit.md` is a MEDIUM coordination surface, so this pass avoids modifying it or shared indices.
@@ -103,18 +104,19 @@ Likely targets:
 
 Goal: every live model-specific quantity has an owner and validator.
 
-Current increment: `34a0407` exposes the existing hardcoded-surface scanner rules as a machine-readable inventory through `hardcoded_surface_rule_inventory()` and the `stack_change_guard.py --list-hardcoded-surface-rules` CLI. This gives operators and docs sidecars an auditable rule catalog, but it is not yet the full W2 manifest of every model-specific consumer surface and owner.
+Current increment: `34a0407` exposes the existing hardcoded-surface scanner rules as a machine-readable inventory through `hardcoded_surface_rule_inventory()` and the `stack_change_guard.py --list-hardcoded-surface-rules` CLI. `7815318` adds `orchestration/stack_change_surface_manifest.yaml` as the first enforced ownership map for those scanner rules, and the guard/pipeline now fail if the scanner-rule ownership manifest is missing, incomplete, duplicated, category-inconsistent, or promotion-policy inconsistent. This closes the first W2 implementation pass for scanner-rule ownership; the broader inventory of every model-specific consumer surface and remaining consumer migrations is still open.
 
 Tasks:
 
-- Add a machine-readable manifest of model-specific consumer surfaces: q_scorer, seeding, routing priors, admission, lock/tap policy, config URLs, health probes, launch maps, dashboards, system card, planner prompts, procedure enums, and docs summaries.
-- Use the `34a0407` guard-rule inventory as the scanner-rule input to that manifest; keep the distinction clear between "scanner rules known" and "all model-specific consumer surfaces owned".
+- Extend the enforced `7815318` scanner-rule ownership manifest toward all model-specific consumer surfaces: q_scorer, seeding, routing priors, admission, lock/tap policy, config URLs, health probes, launch maps, dashboards, system card, planner prompts, procedure enums, and docs summaries.
+- Keep the distinction clear between "scanner rules owned" and "all model-specific consumer surfaces owned"; the current manifest covers hardcoded-surface scanner rules, not every consumer API or generated summary.
 - Classify each surface as generated, typed consumer, explicit degraded fallback, legacy test, historical doc, or open production blocker.
 - Teach the guard to report unclassified model-specific surfaces as actionable drift.
 
 Likely targets:
 
 - `orchestration/stack_change_guard_exceptions.yaml`
+- `orchestration/stack_change_surface_manifest.yaml`
 - `scripts/validate/stack_change_guard.py`
 - `tests/unit/test_stack_change_guard.py`
 - root handoff/wiki docs after implementation lands
