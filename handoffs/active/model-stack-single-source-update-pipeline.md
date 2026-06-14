@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), and chat-routing heuristic prior derivation (`d85660d`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), and AutoPilot preflight exclusion derivation (`5f0f248`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -153,6 +153,43 @@ quality gate stack-prior ports`).
 - `scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed:
   descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
   `runtime_attestation: ok`, and promotion gate 163 passed.
+
+## AutoPilot preflight exclusion derivation — 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `5f0f248` (`Derive
+AutoPilot preflight exclusions from stack manifest`).
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/autopilot/preflight_audit.py` removed the literal
+  `FALLBACK_MODEL_SERVER_EXCLUDED_ROLES = {"embedder"}` table.
+- Degraded model-server preflight target discovery now excludes roles whose
+  `scripts.server.stack_manifest.ROLE_LAUNCH_META` launch mode is `embedding`,
+  while preserving alias grouping for roles without direct launch metadata.
+- `scripts/validate/stack_change_guard.py` and
+  `orchestration/stack_change_surface_manifest.yaml` add ownership for
+  `static_autopilot_preflight_excluded_roles`.
+- `tests/unit/test_autopilot_preflight_audit.py` and
+  `tests/unit/test_stack_change_guard.py` cover manifest-mode exclusion and
+  static-table recurrence detection.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `FALLBACK_MODEL_SERVER_EXCLUDED_ROLES`,
+  `_fallback_model_server_targets`, and `_model_server_targets` was LOW.
+- `ruff` passed on touched code and tests.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q
+  tests/unit/test_autopilot_preflight_audit.py tests/unit/test_stack_change_guard.py`
+  -> 72 passed.
+- Hardcoded-surface summary stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Rule inventory reports `rule_count=27`, `consumer_surface_count=13`, and
+  includes `static_autopilot_preflight_excluded_roles`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed:
+  descriptors/priors fresh, `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, promotion gate 163 passed.
 
 ## Config URL helper-reuse follow-up — 2026-06-14
 
@@ -762,6 +799,7 @@ Use this as the follow-up implementation order:
 - `d85660d` removes `src/api/routes/chat_routing.py`'s static heuristic-prior role table and derives advisory prior roles from generated stack-prior live role records, while preserving degraded fallback behavior.
 - `3b5a682` removes `src/cli_orch.py`'s literal `embedder` status-exclusion set; degraded CLI status now excludes roles whose `ROLE_LAUNCH_META` launch mode is `embedding`, and `static_cli_status_excluded_roles` prevents that table shape from returning.
 - `3a06791` hardens corpus quality gate stack-prior model discovery so malformed endpoint-port text falls back to structured `serving.ports` instead of crashing benchmark setup.
+- `5f0f248` removes `scripts/autopilot/preflight_audit.py`'s literal model-server exclusion table; degraded AutoPilot preflight now excludes `embedding` launch-mode roles from `ROLE_LAUNCH_META`, and `static_autopilot_preflight_excluded_roles` prevents that table shape from returning.
 - [x] **P3 - Generate current operator/planner stack summaries or mark them historical.** `dbcae29` adds generated `docs/generated/current_stack_summary.md`, `scripts/registry/render_stack_summary.py`, stack pipeline `operator_summary` check/update support, and system-card helper reuse. The primary current operator summary is now generated from stack priors and validated by `stack_change_pipeline.py check --run-promotion-gate`; the committed summary has 10 live HOT roles and no deployable `architect_coding` row. Any residual doc surfaces found by later scanner work should be handled under P2 consumer ownership / historical-label cleanup, not by reopening this primary-summary waypoint.
 - [x] **P4 - Prove data-only swaps for the exact stale cases.** Simulated fixtures now cover the stale shared-server, retired-role, runtime/context/KV/acceleration, q_scorer-provenance, and launch/VL fixture targets without production source edits. `1148ff6` specifically added q_scorer provenance assertions to the `frontdoor`/`coder_escalation` data-only swap and completed the context/KV/acceleration fixture with `architect_general` quality data.
 - [x] **P5 - Wire runtime attestation into promotion.** `1457e58` adds the first promotion-time `runtime_attestation` step and closes the concrete live model/mmproj drift acceptance gate; `3065b8b` extends it to unmanaged known-stack listeners/state gaps and concrete live runtime flag drift (`binary_path`, `-m`, `-md`, `--mmproj`, `-c`, `-np`, `-ub`, `-ctk`/`-ctv`, `--no-mmap`/`--mlock`, `--slot-save-path`, `--flash-attn`, `--jinja`, `--reasoning`, `--override-kv`, and MTP/spec flags). Current live check reported `runtime_attestation: ok`, detail `no concrete live process drift detected`, and live `runtime_attestation_warnings()` returned `warnings=0`.
@@ -830,6 +868,7 @@ Stale/hardcoded examples found in this audit:
 - `epyc-orchestrator` `d85660d` derives chat-routing heuristic-prior roles from generated stack-prior live records and guards the old `_HEURISTIC_PRIOR_ROLE_CANDIDATES` table shape.
 - `epyc-orchestrator` `3b5a682` derives CLI degraded-status non-model-server exclusions from `ROLE_LAUNCH_META` launch mode instead of a literal `embedder` set; scanner inventory now reports `rule_count=26`.
 - `epyc-orchestrator` `3a06791` hardens `scripts/benchmark/corpus_quality_gate.py` stack-prior port parsing by falling back from malformed endpoint text to structured serving ports, keeping no-inference benchmark discovery resilient to a single bad live-role record.
+- `epyc-orchestrator` `5f0f248` derives AutoPilot degraded preflight non-model-server exclusions from `ROLE_LAUNCH_META` launch mode instead of a literal `embedder` set; scanner inventory now reports `rule_count=27`.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
 - Production launch gating has started: `orchestrator_stack.py start` now runs the canonical no-inference promotion gate before host prereqs/model launch for production starts.
