@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION - 2026-06-14 audit confirms the canonical stack-change check is green, generated descriptors/priors are fresh, and current hardcoded-surface warnings are classified; the open work is to turn remaining model-specific quantities into generated/typed truth and make launch/AutoPilot promotion fail closed.
+**Status**: PARTIAL IMPLEMENTATION LANDED - 2026-06-14 follow-up `epyc-orchestrator` `1148ff6` closes live q_scorer prior-source promotion gating and the no-inference data-only fixture gaps for the stale frontdoor/coder and context/KV/acceleration cases. Remaining work is broader model-specific consumer ownership, generated/current operator summaries, live process/runtime attestation, and actually wiring the executable promotion gate into launch/AutoPilot decisions.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, seeding, or heavy indexing were performed. This sidecar updated root handoff/index/progress docs only.
@@ -19,22 +19,30 @@ The immediate trigger was stale q_scorer/model-stack quantities: `frontdoor` and
 
 This handoff is a concise pickup contract. The long historical audit lives in `model-stack-update-pipeline-audit.md`; implementation should extend the existing descriptor -> stack-prior -> guard -> consumer-migration path instead of inventing a parallel registry.
 
-## Start Here - 2026-06-14 Audit
+## Start Here - 2026-06-14 Update
 
-Current lightweight audit result:
+Current implementation result:
+
+- `epyc-orchestrator` `1148ff6` added `validate_live_q_scorer_prior_sources()` in `orchestration/repl_memory/q_scorer.py`.
+- `scripts/registry/stack_change_pipeline.py check --run-promotion-gate` now reports `q_scorer_priors: ok/failed` and blocks promotion when any live q_scorer role uses degraded fallback provenance while stack priors are valid.
+- The simulated data-only `frontdoor`/`coder_escalation` swap fixture now verifies q_scorer source provenance, and the context/KV/acceleration fixture is complete with `architect_general` quality data.
+- Validation reported by the main orchestrator track: py_compile on touched files; ruff on touched files; `pytest -q tests/unit/test_q_scorer.py tests/unit/test_stack_change_pipeline.py tests/unit/test_stack_change_pipeline_simulated_fixtures.py` -> 82 passed; `stack_change_pipeline.py check --run-promotion-gate` -> `q_scorer_priors: ok`, promotion gate 48 passed; hardcoded-surface summary unchanged (`waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`).
+- AutoPilot clean window before this patch produced trial `805` as frontier and trial `806` as dominated/healthy. The main agent is separately repairing the archive-authority tail and refreshing orchestrator GitNexus; this sidecar did not run AutoPilot, inference, seeding, or orchestrator code.
+
+Prior lightweight audit result:
 
 - `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/registry/stack_change_pipeline.py check` passed in `epyc-orchestrator`: descriptors fresh, stack priors fresh, procedure enums checked, loose/all-surface/strict guard stages non-blocking, `summary: ok`, and the acceptance block printed the promotion-gate command plus surface-inventory command.
 - `PYTHONDONTWRITEBYTECODE=1 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only` reported `WARN: 99 unique stack-prior warning(s) (99 total)` with `surface_warnings: waived_production_blocker=2, legacy_test=72, historical_doc=25`.
 - The live generated contract has the flagged facts correct: `frontdoor` and `coder_escalation` both use `qwen3.6-35b-a3b-q8_0`, port `8070`, HOT tier, shared mmap, and `memory_cost: 1.0`; `architect_general` and `ingest_long_context` are HOT with `memory_cost: 1.0`; `architect_coding` is absent from live stack-prior roles.
-- The risk is no longer "q_scorer is definitely wrong by default"; q_scorer now prefers stack priors. The remaining risk is that fallback tables and non-launch consumers still look like live truth when generated priors are missing, stale, or bypassed.
+- The risk is no longer "q_scorer is definitely wrong by default"; q_scorer now prefers stack priors and the promotion gate checks live prior-source provenance. The remaining risk is that non-launch consumers, generated/current docs, and live process/runtime state can still bypass or outlive generated truth unless P0/P2/P3/P5 are finished.
 
 Use this as the follow-up implementation order:
 
-- [ ] **P0 - Promote the canonical preflight to a launch/AutoPilot gate.** Treat `stack_change_pipeline.py check --run-promotion-gate` plus current process/runtime attestation as the required gate before stack-change launch, AutoPilot resume, or benchmark interpretation. Default `check` still prints promotion targets as reference; implementation must decide where wrappers enforce executable gate mode.
-- [ ] **P1 - Close live-looking q_scorer fallback residue.** Keep degraded/offline fallbacks, but make it impossible for valid live decisions to silently use `FALLBACK_BASELINE_TPS_BY_ROLE`, `BASELINE_QUALITY_BY_ROLE`, or `FALLBACK_MEMORY_COST_BY_ROLE` for live roles when stack priors are fresh. Tests should assert source provenance for the flagged roles.
+- [ ] **P0 - Promote the canonical preflight to a launch/AutoPilot gate.** Treat `stack_change_pipeline.py check --run-promotion-gate` plus current process/runtime attestation as the required gate before stack-change launch, AutoPilot resume, or benchmark interpretation. `1148ff6` added the q_scorer-prior stage to executable gate mode; wrappers still need to enforce that mode before launch/AutoPilot decisions.
+- [x] **P1 - Close live-looking q_scorer fallback residue.** `1148ff6` keeps degraded/offline fallbacks but blocks promotion when valid stack priors exist and any live q_scorer role resolves TPS, quality, or memory priors from degraded fallback provenance. Tests now assert source provenance for the flagged roles.
 - [ ] **P2 - Expand surface ownership from scanner rules to consumer surfaces.** The current manifest owns scanner rules, not every model-specific consumer. Add ownership/validation for q_scorer, seeding, replay, routing priors, admission, lock/tap policy, config URLs/timeouts, health probes, launch maps, dashboards, system cards, planner prompts, procedure enums, and doc summaries.
 - [ ] **P3 - Generate current operator/planner stack summaries or mark them historical.** The all-surface guard still finds 25 historical-doc warnings. The next implementation should replace current-stack tables with generated summaries or add explicit historical labels so operator docs cannot become hidden source truth.
-- [ ] **P4 - Prove data-only swaps for the exact stale cases.** Simulated fixtures must cover `frontdoor`/`coder_escalation` shared-server swaps, `architect_coding` retirement, HOT/WARM tier flips for `architect_general` and `ingest_long_context`, q_scorer prior changes, launch/runtime arg changes, and VL model/mmproj changes.
+- [x] **P4 - Prove data-only swaps for the exact stale cases.** Simulated fixtures now cover the stale shared-server, retired-role, runtime/context/KV/acceleration, q_scorer-provenance, and launch/VL fixture targets without production source edits. `1148ff6` specifically added q_scorer provenance assertions to the `frontdoor`/`coder_escalation` data-only swap and completed the context/KV/acceleration fixture with `architect_general` quality data.
 - [ ] **P5 - Wire runtime attestation into promotion.** Generated stack priors include launch runtime and requirements, but the final launch gate must compare live processes, ports, command args, binary, KV/cache settings, context, MTP/spec flags, and VL projector args against those priors before accepting a stack as current.
 
 Dependency graph:
@@ -49,17 +57,17 @@ Structured truth
   -> process/runtime attestation
   -> launch / AutoPilot resume / benchmark interpretation
 
-P0 depends on the existing pipeline and no-inference promotion tests.
-P1, P2, and P5 all depend on stack-prior contract v4 staying fresh.
+P0 depends on the existing pipeline and no-inference promotion tests, including the `1148ff6` `q_scorer_priors` stage.
+P2 and P5 depend on stack-prior contract v4 staying fresh.
 P3 depends on P2 ownership classification so docs are generated/current or explicitly historical.
-P4 can run in parallel but must fail if production source edits are needed for data-only stack changes.
-Launch/AutoPilot promotion depends on P0 + P1 + P2 + P5; P3 is required before operator docs are used as current-stack evidence.
+P1 and P4 are closed for the current stale q_scorer/data-only fixture cases but should remain regression targets in the promotion gate.
+Launch/AutoPilot promotion depends on P0 + P2 + P5; P3 is required before operator docs are used as current-stack evidence.
 ```
 
 Stale/hardcoded examples found in this audit:
 
-- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py:58` still contains degraded TPS fallbacks including `frontdoor`, `coder_escalation`, `architect_general`, and `ingest_long_context`; `:71` contains quality fallbacks; `:80` contains memory-cost fallbacks. These are acceptable only as explicit degraded/offline sources.
-- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py:244` loads generated stack-prior live priors first and records source provenance; `:448` still has registry memory fallback loading. P1 should test that live roles use stack-prior sources when the artifact is valid.
+- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` still contains degraded TPS/quality/memory fallbacks for offline/degraded operation, but `1148ff6` added `validate_live_q_scorer_prior_sources()` so live-role promotion fails if valid stack priors are bypassed for degraded fallback provenance.
+- `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` loads generated stack-prior live priors first and records source provenance; tests now assert that live roles use stack-prior sources when the artifact is valid.
 - `epyc-orchestrator/orchestration/derived/stack_priors.yaml:207` and `:326` show `coder_escalation` and `frontdoor` sharing model identity, port `8070`, HOT tier, and `memory_cost: 1.0`; `:469` shows `ingest_long_context` HOT with `memory_cost: 1.0`.
 - `epyc-orchestrator/scripts/server/stack_manifest.py:129` is the launcher tier/alias source; `:132` documents `coder_escalation`/`worker_summarize` sharing frontdoor, `:157`/`:158` classify `architect_general` and `ingest_long_context` as HOT, and `:177` documents `architect_coding` removal.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py:121` emits the acceptance/warning/promotion/surface-inventory block, while `:588` keeps executable promotion-gate mode behind `--run-promotion-gate`.

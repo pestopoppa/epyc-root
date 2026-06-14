@@ -63,6 +63,12 @@ When making a routing-architecture proposal, name which of these four (and which
 | Outer-Coordinator Learned Head | [`outer-coordinator-learned-head.md`](outer-coordinator-learned-head.md) | REFRESHED 2026-05-28 — SCOPING/PARKING ONLY; no implementation until dependency gates or measured Claude-loop bottleneck | OC-0 only when triggered by measured ROI; archive as not_pursued if replaceable token fraction <20% |
 | ~~Stack Audit~~ | ~~[`orchestrator-stack-audit.md`](../completed/orchestrator-stack-audit.md)~~ | ARCHIVED 2026-03-29 | Purpose fulfilled by NUMA + REAP deployments |
 
+### 2026-06-14 Sidecar Notes
+
+- Stack governance follow-up `epyc-orchestrator` `1148ff6` adds the executable `q_scorer_priors: ok/failed` promotion-gate stage via `validate_live_q_scorer_prior_sources()`. The gate blocks promotion if any live q_scorer role uses degraded fallback provenance while stack priors are valid; validation reported 82 focused tests passed, promotion gate 48 passed, and the hardcoded-surface summary unchanged (`waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`).
+- The model-stack SSoT row should now treat P1 q_scorer fallback-provenance closure and P4 data-only fixture coverage as complete for the current stale cases. Remaining open work is P0 launch/AutoPilot enforcement, P2 broader consumer ownership, P3 generated/current docs, and P5 live runtime attestation.
+- AutoPilot clean-window context before `1148ff6`: trial `805` produced a frontier point and trial `806` was dominated/healthy. The archive-authority tail repair and orchestrator GitNexus refresh are owned by the main agent; this sidecar did not run AutoPilot, inference, seeding, or orchestrator validation.
+
 ---
 
 ## Outstanding Tasks (Priority Order)
