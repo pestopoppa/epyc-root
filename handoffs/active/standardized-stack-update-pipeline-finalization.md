@@ -1,6 +1,6 @@
 # Standardized Stack Update Pipeline Finalization
 
-**Status**: READY FOR MAIN IMPLEMENTATION - stack-change CLI acceptance/promotion gate is visible, default check is green, warning categories are summarized as of `epyc-orchestrator` `079ff30`/`2baaee5`/`a7927c2`, test-only launch parity witnesses are present as of `b026f7d`, promotion output names both no-inference fixture targets as of `ebd929b`, optional executable promotion-gate mode is present as of `3a20efd`, the hardcoded-surface scanner rule inventory is machine-readable as of `34a0407`, and the canonical acceptance block advertises that inventory command as of `b82ae3d`
+**Status**: READY FOR MAIN IMPLEMENTATION - stack-change CLI acceptance/promotion gate is visible, default check is green, warning categories are summarized as of `epyc-orchestrator` `079ff30`/`2baaee5`/`a7927c2`, test-only launch parity witnesses are present as of `b026f7d`, promotion output names both no-inference fixture targets as of `ebd929b`, optional executable promotion-gate mode is present as of `3a20efd`, the hardcoded-surface scanner rule inventory is machine-readable as of `34a0407`, the canonical acceptance block advertises that inventory command as of `b82ae3d`, and the guard can emit compact surface-warning summaries as of `2cb3d6c`
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific constants from corrupting scoring, routing, launch, planner context, and benchmark interpretation after model assignment changes
 **Scope**: Implementation-ready audit and handoff only. No inference, benchmarks, AutoPilot restart, server restart, or child-repo code changes were performed in this sidecar pass.
@@ -204,6 +204,24 @@ Read-only audit and lightweight validation on 2026-06-13 found:
   and nested pytest reported 43 passed. Follow-up `stack_change_guard.py
   --all-hardcoded-surfaces` retained the expected historical-doc/legacy-test
   buckets plus two waived production blockers, with no failure.
+- Stack guard surface summary mode landed in `epyc-orchestrator` `2cb3d6c`:
+  `scripts/validate/stack_change_guard.py` now exposes reusable
+  `hardcoded_surface_warning_counts()` and CLI `--surface-summary-only` for
+  compact hardcoded-surface warning category counts. Default detailed warning
+  output and canonical `stack_change_pipeline.py check` output are unchanged;
+  this is operator/reporting hygiene, not a semantic guard-policy change. Live
+  smoke:
+  `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+  --surface-summary-only` -> `WARN: 99 unique stack-prior warning(s) (99
+  total)` and `surface_warnings: waived_production_blocker=2, legacy_test=72,
+  historical_doc=25`. Validation: `python3 -m py_compile
+  scripts/validate/stack_change_guard.py tests/unit/test_stack_change_guard.py`;
+  `uv run ruff check ...`; `git diff --check -- ...`;
+  `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q -p no:cacheprovider
+  tests/unit/test_stack_change_guard.py tests/unit/test_stack_change_pipeline.py`
+  -> 43 passed. Main-lane GitNexus was re-indexed after the commit: 51,877
+  nodes, 88,940 edges, 300 flows.
 
 ## Prior Pipeline Work Found
 
@@ -217,7 +235,7 @@ The standardized-pipeline foundation already exists in `epyc-orchestrator`:
 | `src/registry/model_descriptors.py` and `scripts/registry/compile_descriptors.py` | Descriptor compiler and CLI wrapper. | Present; needs stricter completeness policy and richer structured fields. |
 | `src/registry/stack_priors.py` and `scripts/registry/compile_stack_priors.py` | Generates the single consumer contract from lean registry, descriptors, and stack manifest. | Present; current generated records expose alias provenance under `evidence.alias_overrides` and have empty `known_gaps`. |
 | `orchestration/derived/stack_priors.yaml` | Generated consumer surface for role -> model, serving, priors, acceleration, evidence, known gaps. | Current no-inference contract; `status: compiled` after `54b7c77`. |
-| `scripts/validate/stack_change_guard.py` | Validates freshness, contract shape, live-role invariants, procedure enum drift, hardcoded surfaces, and exceptions. | Passes through `603ad6b`; stack-change pipeline check reports guard/strict OK and all-surface warnings classified legacy-test/historical-doc only. As of `34a0407`, the guard also exposes the hardcoded-surface scanner rule inventory via helper and YAML/JSON CLI. |
+| `scripts/validate/stack_change_guard.py` | Validates freshness, contract shape, live-role invariants, procedure enum drift, hardcoded surfaces, and exceptions. | Passes through `603ad6b`; stack-change pipeline check reports guard/strict OK and all-surface warnings classified legacy-test/historical-doc only. As of `34a0407`, the guard exposes the hardcoded-surface scanner rule inventory via helper and YAML/JSON CLI; as of `2cb3d6c`, `--surface-summary-only` emits compact warning counts for operator reports. |
 | `orchestration/stack_change_guard_exceptions.yaml` | Expiring metadata for hardcoded-surface exceptions. | Present; `03ed49f` removed the retired `src/roles.py` enum waiver from the default/strict guard path. |
 | `scripts/registry/sync_procedure_role_enums.py` | Generates/checks procedure role choices from stack priors. | Green on 2026-06-13. |
 | `scripts/server/orchestrator_stack.py start --compile-descriptors` | Launcher-side descriptor compile hook. | Exists, but does not replace a full canonical post-stack-change pipeline. |

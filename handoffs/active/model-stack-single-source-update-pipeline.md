@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407` and the canonical preflight advertises the inventory command as of `b82ae3d`, but the broader W2 consumer ownership manifest and remaining migrations are still open.
+**Status**: READY FOR IMPLEMENTATION - stack-change surface inventory exposure is live as of `epyc-orchestrator` `34a0407`, the canonical preflight advertises the inventory command as of `b82ae3d`, and compact surface-warning summary mode is available as of `2cb3d6c`; the broader W2 consumer ownership manifest and remaining migrations are still open.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or index edits were performed in this sidecar pass.
@@ -26,6 +26,7 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py` already composes descriptor check/update, stack-prior check/update, procedure enum sync/check, loose guard, all-surface guard, strict guard, and simulated fixture references.
 - `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes a machine-readable hardcoded-surface rule inventory in `34a0407`: `hardcoded_surface_rule_inventory()` plus `--list-hardcoded-surface-rules --surface-inventory-format yaml|json`. The inventory reports `version`, `rule_count`, `categories`, and per-rule `rule_id`, category, pattern, path/exclude globs, comment-line handling, and remediation. The same commit fixed direct-by-path CLI import hygiene so `python scripts/validate/stack_change_guard.py ...` works outside pipeline imports.
 - `epyc-orchestrator/scripts/registry/stack_change_pipeline.py check` now prints `surface_inventory: run uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules` in the passing acceptance block as of `b82ae3d`, so the canonical stack-change preflight points operators at the machine-readable scanner-rule catalog. No enforcement semantics changed.
+- `epyc-orchestrator/scripts/validate/stack_change_guard.py` now exposes `hardcoded_surface_warning_counts()` and `--surface-summary-only` as of `2cb3d6c`, letting operators compact hardcoded-surface scan warnings into category counts such as waived production blockers, legacy tests, and historical docs while preserving the default detailed warning output. This is reporting hygiene only; canonical pipeline output and guard policy are unchanged.
 - `epyc-orchestrator/orchestration/repl_memory/q_scorer.py` now loads live TPS, quality, and memory priors from stack priors first and labels local constants as degraded fallback.
 - Generated/system-card and launch-wrapper work has started: AutoPilot live-stack rows and production launch summaries are derived from stack priors or stack manifest instead of hand-written inventory.
 - Root GitNexus was refreshed before this edit. New handoff path impact is `UNKNOWN` with `impactedCount=0` because the file did not exist yet; nearby `model-stack-change-standardization-audit.md` is a MEDIUM coordination surface, so this pass avoids modifying it or shared indices.
@@ -192,6 +193,7 @@ uv run python scripts/validate/stack_change_guard.py
 uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format yaml
 uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format json
 uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces
+uv run python scripts/validate/stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only
 uv run python scripts/validate/stack_change_guard.py --strict
 python3 scripts/registry/sync_procedure_role_enums.py --check
 uv run --with pytest pytest -q \
