@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), and KV layer-count stack-prior population (`a54aba4`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), corpus quality gate stack-prior port hardening (`3a06791`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), AutoPilot program generated-card prompt guidance (`0f86cde`), chat-routing heuristic prior derivation (`d85660d`), AutoPilot preflight exclusion derivation (`5f0f248`), retired-role unit-fixture warning cleanup (`36bc37b`), routing/anomaly retired-role fixture cleanup (`7cf2696`), role/LangGraph retired-role fixture cleanup (`88c2320`), REPL/diagnostic retired-role fixture cleanup (`07231ba`), singleton unit-test retired-role fixture cleanup (`0e51def`), final unwaived legacy-test retired-role cleanup (`4139843`), KV layer-count stack-prior population (`a54aba4`), and vision serving fallback helper centralization (`8b3207a`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -861,6 +861,37 @@ Documentation sidecar for `epyc-orchestrator` commit `cfe8204` (`Derive vision f
 - `progress/2026-06/2026-06-14.md`: adds dedicated 2026-06-14 vision fallback
   dispatch notes and validation summary.
 
+## Vision serving fallback helper centralization follow-up — 2026-06-14
+
+Implementation follow-up landed in `epyc-orchestrator` commit `8b3207a`
+(`Centralize vision serving fallback policy`).
+
+### Landed in `epyc-orchestrator`
+
+- Added `src/api/routes/vision_serving.py` as the shared vision-serving
+  fallback helper for `worker_vision` and `vision_escalation`.
+- `src/api/routes/chat_vision.py` and
+  `src/api/routes/chat_pipeline/vision_stage.py` now import the same
+  manifest-first fallback-port helper instead of each carrying duplicate
+  `_VISION_ROLES`, `_manifest_vl_port_for_role`, and fallback role-port tables.
+- The explicit legacy port table remains only inside the shared helper as
+  degraded fallback after generated stack priors and `stack_manifest.PORT_MAP`.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for the touched vision helper/route symbols was LOW, with the
+  route file itself treated as MEDIUM because it is an API route importer.
+- `ruff` passed for the new helper, both vision modules, and adjacent tests.
+- `PYTHONDONTWRITEBYTECODE=1 uv run pytest -q tests/unit/test_chat_vision.py tests/unit/test_vision_routing.py`
+  passed `72`.
+- `git diff --check` passed for the touched files.
+- `stack_change_guard.py --all-hardcoded-surfaces --surface-summary-only`
+  remained at `36 unique / 36 total` with `waived_production_blocker=2`,
+  `historical_doc=25`, and `waived_legacy_test=9`.
+- `stack_change_pipeline.py check --run-promotion-gate` passed with
+  descriptors/stack priors fresh, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, and promotion gate `163`.
+
 ## Parallel Audit Addendum - 2026-06-14
 
 This pass audited the current standardization path without editing orchestrator production code. The existing handoff is still the right ownership point; no duplicate handoff was created.
@@ -1211,8 +1242,11 @@ warm-worker slots. It migrated `src/runtime/concurrency.py`,
 `src/runtime/inference_tap.py` to the same helper layer. `a54aba4` then
 populated live `attention_layers` in registry-derived descriptors/stack priors
 so AutoPilot KV compression can use generated architecture metadata before its
-degraded fallback table. This closes more of the first helper/data
-centralization tranche, not the broader W3 surface.
+degraded fallback table. `8b3207a` then centralized the remaining vision
+role/port degraded fallback helpers into `src/api/routes/vision_serving.py`, so
+`chat_vision.py` and `vision_stage.py` share the same manifest-first fallback
+path instead of duplicating policy tables. This closes more of the first
+helper/data centralization tranche, not the broader W3 surface.
 
 Tasks:
 
@@ -1224,9 +1258,6 @@ Tasks:
 Likely targets:
 
 - `src/config/models.py` remaining static server-URL alias/fallback tables.
-- `src/api/routes/chat_vision.py` and
-  `src/api/routes/chat_pipeline/vision_stage.py` duplicated vision role/port
-  fallback policy.
 - `src/api/admission.py` degraded URL/slot fallback map and admission defaults.
 - `src/runtime/inference_tap.py` remaining safe-mode fallback role policy and
   `scripts/benchmark/seeding_types.py` / `scripts/benchmark/seeding_rewards.py`
