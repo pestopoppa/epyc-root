@@ -257,7 +257,7 @@ Source: [`research/deep-dives/veniceai-skills-cross-runtime-authoring.md`](../..
   - Codify: short lead paragraph → endpoint/override table → curl + one SDK example → explicit "Gotchas" section → ≤500 line cap
   - Reference Venice's pattern at `github.com/veniceai/skills` (any individual skill is the canonical example)
   - Write the rubric as a separate `scripts/hermes/skills/AUTHORING.md` next to the template if the template itself would be too cluttered
-  - Delivered `TEMPLATE.md` (81 lines) and `AUTHORING.md` (98 lines), checked against the current `OpenAIChatRequest` `x_*` schema. The rubric explicitly warns against stale model IDs and records boolean override types.
+  - Delivered `TEMPLATE.md` (81 lines) and `AUTHORING.md` (98 lines), checked against the current `OpenAIChatRequest` `x_*` schema. The rubric explicitly warns against stale model IDs and records boolean override types. Existing `/use`, `/escalation`, and `/nocode` skill docs were also refreshed to remove stale model assignments and align `x_disable_repl` with boolean schema.
 - [ ] **B — `scripts/hermes/skills/check_drift.py` + pre-commit hook wire** (~2 h, depends on A)
   - Parse `x_*` field declarations in `OpenAIChatRequest` (under `epyc-orchestrator/src/api/models/openai.py` per our overrides — confirm path on implementation)
   - Regex-scan all `scripts/hermes/skills/**/*.md` for documented `x_*` references

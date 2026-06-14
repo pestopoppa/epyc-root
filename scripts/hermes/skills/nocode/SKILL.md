@@ -20,8 +20,8 @@ Skip REPL code execution and force direct text responses only.
 
 | Command | API Parameter | Value |
 |---------|--------------|-------|
-| `/nocode` | `x_disable_repl` | `"true"` |
-| `/nocode off` | `x_disable_repl` | `"false"` |
+| `/nocode` | `x_disable_repl` | `true` |
+| `/nocode off` | `x_disable_repl` | `false` |
 
 ## When to Use
 
@@ -32,6 +32,6 @@ Skip REPL code execution and force direct text responses only.
 
 ## Notes
 
-- Override parameter must be passed as a string (`"true"` not `true`)
+- Override parameter must be passed as a JSON boolean (`true` or `false`)
 - When REPL is disabled, the model generates a direct text answer instead of writing Python
 - This does not affect the model's reasoning ability, only its tool-use behavior

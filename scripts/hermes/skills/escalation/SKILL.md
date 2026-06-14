@@ -30,14 +30,15 @@ Control how far the orchestrator can escalate requests through the model tier ch
 ## Escalation Tiers
 
 ```
-A  — Frontdoor only (Qwen3.5-35B, fastest)
-B1 — + Coder escalation (Qwen2.5-Coder-32B)
-B2 — + Architect escalation (Qwen3.5-122B / REAP-246B)
-C  — + Worker specialist (full chain, default)
+A  - Frontdoor only
+B1 - + Coder escalation
+B2 - + Architect escalation
+C  - + Worker specialist (full chain, default)
 ```
 
 ## Notes
 
 - Override parameters must be passed as strings
 - Capping escalation reduces latency but may reduce quality on hard tasks
+- Current model assignments are registry-owned; verify live roles via `GET /v1/models`
 - Use `/escalation off` for quick factual queries where speed matters most
