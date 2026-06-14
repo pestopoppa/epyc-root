@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -139,6 +140,15 @@ def extract_title(path: Path) -> str:
     return path.stem
 
 
+def file_sha256(path: Path) -> str:
+    """Return a stable SHA-256 digest for source-file content."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def scan_sources(since: float, type_filter: str | None) -> list[dict]:
     """Walk source directories and collect files newer than `since`."""
     seen: set[Path] = set()
@@ -183,10 +193,24 @@ def scan_sources(since: float, type_filter: str | None) -> list[dict]:
                     mtime, tz=timezone.utc
                 ).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "size": md_file.stat().st_size,
+                "content_hash": file_sha256(md_file),
                 "title": extract_title(md_file),
             })
 
     return results
+
+
+def source_set_hash(sources: list[dict]) -> str:
+    """Hash the manifest's source membership and content hashes."""
+    payload = [
+        {
+            "path": source.get("path"),
+            "content_hash": source.get("content_hash"),
+        }
+        for source in sorted(sources, key=lambda item: str(item.get("path", "")))
+    ]
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def build_manifest(sources: list[dict], mode: str) -> dict:
@@ -202,6 +226,7 @@ def build_manifest(sources: list[dict], mode: str) -> dict:
         "sources": sources,
         "total_new": len(sources),
         "by_type": by_type,
+        "source_set_hash": source_set_hash(sources),
     }
 
 
