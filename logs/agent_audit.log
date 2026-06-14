@@ -3919,3 +3919,5 @@ Purpose: Handoff audit + Hermes Phase 2 routing API
 {"ts":"2026-06-14T16:03:39+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Integrate Frontier F2 lab scaffolds","details":"outcome=success"}
 {"ts":"2026-06-14T16:08:07+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Integrate Frontier F3 dataset builders","details":"Record builder scaffold commit, validation, live-source no-inference smokes, and reviewed-label follow-up boundary"}
 {"ts":"2026-06-14T16:08:07+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Integrate Frontier F3 dataset builders","details":"outcome=success"}
+{"ts":"2026-06-14T16:09:45+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_START","msg":"Stage Reason-mxbai ColBERT source artifacts","details":"Record successful source-only HF download and remaining model_int8.onnx blocker"}
+{"ts":"2026-06-14T16:09:45+00:00","session":"ses_20260614_121916_1640311","level":"INFO","cat":"TASK_END","msg":"Stage Reason-mxbai ColBERT source artifacts","details":"outcome=success"}
