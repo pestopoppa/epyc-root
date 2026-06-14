@@ -66,6 +66,48 @@ wins to collapse, and that made the remaining wins more credible.
 | `bench_canonical.sh` / `canonical_recipe.py` | Current recipe source of truth: taskset + NUMA interleave, `-t 96`, `-fa 1`, `-mmp 0`, canonical OMP env, libomp linkage checks, host validation. | Quote the recipe behavior, not local paths. If commands are included, generate them from the wrapper in `--dry-run` during the publication-prep pass. |
 | MEASUREMENT.md policy | Already expresses the claim grammar and the E0->E1 demotion precedent. | Keep policy excerpts short; link to public-safe policy text if this repo is published, otherwise summarize. |
 
+## Recipe Dry-run Snapshot
+
+Captured 2026-06-14 with:
+
+```bash
+bash scripts/benchmark/bench_canonical.sh \
+  -m /mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf \
+  -n 32 -p 0 -r 5 --dry-run
+```
+
+Validated dry-run output:
+
+```text
+Binary: /mnt/raid0/llm/ik_llama.cpp/build/bin/llama-bench
+Env: LD_LIBRARY_PATH=/usr/lib/llvm-20/lib:... OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active OMP_DYNAMIC=false
+Cmd: taskset -c 0-95 numactl --interleave=all .../llama-bench -t 96 -fa 1 -mmp 0 -m .../Qwen_Qwen3.6-35B-A3B-Q8_0.gguf -p 0 -n 32 -r 5 -o md
+DRY RUN -- skipping llama-bench execution.
+```
+
+Public-safe command shape:
+
+```text
+taskset -c <all-host-cores> numactl --interleave=all llama-bench \
+  -t <all-host-cores> -fa 1 -mmp 0 -m <model.gguf> -p <prompt_tokens> \
+  -n <decode_tokens> -r <repetitions> -o md
+```
+
+Public-safe environment shape:
+
+```text
+OMP_PROC_BIND=spread
+OMP_PLACES=cores
+OMP_WAIT_POLICY=active
+OMP_DYNAMIC=false
+LD_LIBRARY_PATH=<clang-libomp-first>
+```
+
+Publication note: the public post should cite the command shape and recipe
+requirements, not local absolute paths, local model filenames, or private build
+directories. Keep the dry-run transcript here as the internal witness for the
+generated recipe.
+
 ## Source Checklist Before Publication
 
 - Replace internal paths with scrubbed artifact labels or public repo links.
