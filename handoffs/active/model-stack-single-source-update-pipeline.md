@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), and generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), and factual-risk role-tier derivation (`72dc18e`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -346,6 +346,53 @@ documentation only.
 This closes the low-risk generated-doc/system-card loader-reuse gap: current
 operator/planner summaries still come from generated stack-prior truth, but their
 loader path now uses the same typed helper family as other migrated consumers.
+
+## Factual-risk role-tier derivation follow-up - 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `72dc18e` (`Derive
+factual-risk role tiers from stack priors`). Scope remained root governance
+documentation only.
+
+### Landed in `epyc-orchestrator`
+
+- `src/classifiers/factual_risk.py` now derives live role capability tiers from
+  generated stack-prior `model.mem_gb` via `live_stack_role_records()` instead of
+  a static `_ROLE_TO_TIER` table.
+- The factual-risk role adjustment now tracks live stack swaps; in the current
+  stack, `frontdoor` follows its shared Qwen3.6 35B server tier instead of the
+  stale worker-tier multiplier.
+- `_DEGRADED_ROLE_TO_TIER` remains explicit fallback only for missing/malformed
+  stack priors and compatibility labels.
+- `scripts/validate/stack_change_guard.py` adds
+  `static_factual_risk_role_tiers`, owned in the surface manifest under
+  `routing-governance`, so the old static role-tier table shape is a
+  production-blocker finding.
+- `tests/unit/test_factual_risk.py` covers stack-prior-derived live tiers,
+  candidate-role exclusion, and degraded fallback behavior.
+
+### Validation recorded from the implementation lane
+
+- GitNexus impact for `src/classifiers/factual_risk.py` was LOW
+  (`impactedCount=24`, `direct=4`, no named processes).
+- `ruff` passed on factual-risk and stack-change guard files/tests.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python -m pytest -q
+  tests/unit/test_factual_risk.py tests/unit/test_stack_change_guard.py` -> 98
+  passed.
+- All-surface summary stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Hardcoded-surface inventory now reports `rule_count=23` and includes
+  `static_factual_risk_role_tiers`.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed:
+  descriptors/stack-priors fresh, `operator_summary: ok`,
+  `q_scorer_priors: ok`, `runtime_attestation: ok`, promotion gate 163 tests
+  passed, and acceptance reported no-inference checks passed.
+
+### Progress note
+
+This closes another low-risk routing-prior consumer migration: factual-risk role
+capability adjustment no longer depends on a hand-maintained role-to-tier map.
 
 ## Vision fallback drift reduction follow-up — 2026-06-14
 
