@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), and OpenAI `/v1/models` stack-prior ordering (`63522df`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, and multiple consumer migrations are live. Recent 2026-06-14 follow-ups include degraded status/preflight fallback derivation (`82f136b`), scanner guards for those fallbacks (`d5e81f1`), OpenAI `/v1/models` degraded-role cleanup (`1624969`), corpus quality gate fallback derivation (`dda9c1e`), guard coverage for stale corpus-gate model defaults (`1bd1144`), config URL helper reuse (`66d9765`), guard coverage for config-local stack-prior YAML readers (`b1b5d00`), lock/tap static-policy guard coverage (`b015cec`), q_scorer stack-prior loader helper reuse (`07c8906`), generated-doc/system-card stack-prior loader helper reuse (`c1f22cc`), factual-risk role-tier derivation (`72dc18e`), OpenAI `/v1/models` stack-prior ordering (`63522df`), and AutoPilot program generated-card prompt guidance (`0f86cde`). Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient and other high-risk P2 consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -435,6 +435,56 @@ only.
 
 This closes a bounded API surface: `/v1/models` live-role ordering no longer
 depends on a hand-maintained current-stack role list.
+
+## AutoPilot program generated-card prompt guidance follow-up - 2026-06-14
+
+Documentation sidecar for `epyc-orchestrator` commit `0f86cde` (`Remove local
+stack-prior read from AutoPilot program`). Scope remained no-inference and did
+not start AutoPilot.
+
+### Landed in `epyc-orchestrator`
+
+- `scripts/autopilot/program.md` now points operators/planner prompts at
+  `uv run python scripts/autopilot/gen_system_card.py --stdout` for the live
+  stack endpoint surface instead of embedding a local
+  `yaml.safe_load(open("orchestration/derived/stack_priors.yaml"))` snippet.
+- The prompt explicitly says structured code paths should use shared
+  `src.registry.stack_priors` helpers rather than adding local YAML parsing to
+  planner prompts.
+- `scripts/validate/stack_change_guard.py` extends
+  `stale_autopilot_program_stack_guidance` to catch local `yaml.safe_load`
+  stack-prior readers in `scripts/autopilot/program.md`.
+- `tests/unit/test_stack_change_guard.py` covers the local-reader prompt
+  regression shape.
+- `scripts/autopilot/system_card.md` was regenerated after explicitly latching
+  AutoPilot paused; the tracked generated state remains `paused: true` at
+  `trial_counter: 813`.
+
+### Validation recorded from the implementation lane
+
+- AutoPilot process checks found no live planner/seeding process before and
+  after the pause latch.
+- `ruff` passed on the stack-change guard and guard tests.
+- `gen_system_card.py --check` passed after regeneration.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python -m pytest -q
+  tests/unit/test_stack_change_guard.py tests/unit/test_autopilot_system_card.py`
+  -> 59 passed.
+- All-surface warning buckets stayed unchanged:
+  `waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`,
+  `waived_legacy_test=9`.
+- Hardcoded-surface inventory remains `rule_count=24`; the existing
+  `stale_autopilot_program_stack_guidance` rule now covers local prompt YAML
+  readers.
+- `PYTHONDONTWRITEBYTECODE=1 uv run python
+  scripts/registry/stack_change_pipeline.py check --run-promotion-gate` passed
+  with `operator_summary: ok`, `q_scorer_priors: ok`,
+  `runtime_attestation: ok`, and promotion gate 163 passed.
+
+### Progress note
+
+This closes the low-risk planner-prompt local-reader gap left after generated
+system-card helper reuse: prompts now reference the generated current stack card
+instead of teaching AutoPilot to parse stack-prior YAML directly.
 
 ## Vision fallback drift reduction follow-up — 2026-06-14
 
