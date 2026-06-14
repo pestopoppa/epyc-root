@@ -6,6 +6,7 @@
 
 > **2026-06-12**: Fable 5 architecture review complete — verdicts + new owning handoffs in [master-handoff-index.md](master-handoff-index.md); standing reference [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md). Measurement claims now follow /workspace/MEASUREMENT.md.
 > New owning handoffs in this domain: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) + [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md) (eval instrument successors).
+> **2026-06-14 F1 note**: [frontier-f1-real-task-corpus.md](frontier-f1-real-task-corpus.md) is the active owner for the real-task eval distribution. Orchestrator `de07475` landed the real-task harvester, embedded `task_record_v1` preference, and explicit operator-verdict hash refs; W2 remains open until the 2-week soak yields >=100 real records, after which W3 curates the real suite.
 
 ---
 
