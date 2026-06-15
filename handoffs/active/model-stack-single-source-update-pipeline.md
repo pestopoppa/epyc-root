@@ -116,6 +116,10 @@ unowned local constants.
   rewarm GGUF list from generated stack priors before falling back to the last
   resort no-op path, so the page-cache remediation helper no longer carries a
   manual role/model tuple as its first degraded source.
+- `scripts/autopilot/kv_compress.py` now derives its degraded production-port
+  fallback from the live stack manifest instead of a literal role/port table,
+  while preserving the generated-priors primary path and the alias-aware
+  `production_ports_from_stack_priors()` behavior.
 - `scripts/graph_router/action_space.py` now canonicalizes raw labels through
   `Role.from_string()` before action lookup, so aliases like `worker_explore`,
   `worker_fast`, `coder`, and `architect_coding` resolve through the live
@@ -263,6 +267,8 @@ Any future stack update should be accepted only when these hold:
   preserving the distinct `worker_fast` profile via the raw role string.
 - [x] Keep host-health cache-flush rewarm fallback derived from generated stack
   priors before it drops to the final degraded no-op path.
+- [x] Keep KV-compression degraded production ports derived from the live
+  stack manifest instead of a manual fallback table.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
