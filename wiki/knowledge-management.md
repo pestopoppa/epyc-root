@@ -77,6 +77,8 @@ The first compaction pass created or refreshed 11 completed ledgers: Lightning A
 
 The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
 
+The 2026-06-15 wrap-up hygiene pass confirmed that a no-op compaction is an acceptable outcome when completed-history passages are still intertwined with live next actions, blockers, or reporting instructions. In that case, preserve the active handoff and record the decision in the progress log rather than splitting context prematurely. Source: [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md).
+
 ## K-RAG Validation Update (2026-06-13)
 
 K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query path has shipped, and K7 now has both a seed harness and a certification pool. The fresh K7 build indexed 577 files into 18,010 chunks with about 1.2 GiB of embeddings. On the 20-case seed suite, the best recall@10 config was `recency_w0.1_s90` at 0.6417 overall, with no missed-all-evidence cases. Rerank settings improved recall@3 and first-evidence rank but lost recall@10 and introduced missed-all-evidence failures.
@@ -120,6 +122,7 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
+- [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision for handoffs whose completed-history context still carries live operating instructions
 - [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
 - [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
