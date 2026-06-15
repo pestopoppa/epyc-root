@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T09:27:16Z
+**Last verified**: 2026-06-15T09:59:00Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -16,13 +16,12 @@
    ```
 
    Last verified state: PID `2730020` is a detached current-code AutoPilot W6
-   shadow-audit run (`--max-trials 832`), `trial_counter=823`, `paused=false`,
-   `in_flight_trial.trial_id=823`. Trial `823` is a `memrl_retrieval`
-   `numeric_trial` and had reached T1 progress `10/60` at `2026-06-15T09:27:16Z`.
-   Archive authority is aligned. The first W6 audit row landed on trial `822`
-   (`audit_block_report.py`: `trial_count=702`, `audited_trial_count=1`, core
-   `32/50`, audit `7/10`, `delta_audit_minus_core=+0.180`, overfit divergences
-   `0`).
+   shadow-audit run (`--max-trials 832`), `trial_counter=825`, `paused=false`,
+   `in_flight_trial.trial_id=825`. Trial `825` is a `memrl_retrieval`
+   `numeric_trial`. Archive authority is aligned. W6 audit rows have landed for
+   trials `#822-#824` (`audit_block_report.py`: `trial_count=704`,
+   `audited_trial_count=3`, core `94/150`, audit `18/30`,
+   `delta_audit_minus_core=-0.080`, overfit divergences `0`).
 
 2. Re-run the five-row selector from `/tmp` if you need to inspect the candidate/core shape:
 
@@ -43,13 +42,17 @@
 ## Current Live State
 
 - AutoPilot PID `2730020` is still alive under the detached max-trials-832 W6
-  shadow-audit run. Trial `822` completed at `2026-06-15T09:23:39Z` with
-  q=`1.920`, aggregate speed `26.779`, reliability `0.920`, dominated and
-  excluded as `reproduction_confirmed`. Current state at last verification:
-  `trial_counter=823`, `paused=false`, `in_flight_trial.trial_id=823`.
-- Trial `823` is a `memrl_retrieval` numeric trial. It restarted the API with
-  candidate `ORCHESTRATOR_MEMRL_RETRIEVAL_*` env params and had reached T1
-  progress `10/60` at `2026-06-15T09:27:16Z`.
+  shadow-audit run. Completed W6 live rows:
+  - `#822`: q/s/r=`1.920/26.779/0.920`, dominated/excluded as
+    `reproduction_confirmed`; code-mutation extraction failed, so no code patch
+    was applied.
+  - `#823`: q/s/r=`1.860/28.787/0.920`, dominated/excluded as
+    `reproduction_confirmed`; `memrl_retrieval` numeric trial.
+  - `#824`: q/s/r=`1.860/25.286/0.920`, dominated/excluded as `mad_noise`;
+    `ure_uncertainty_shadow_log=false` structural experiment.
+- Current state at last verification: `trial_counter=825`, `paused=false`,
+  `in_flight_trial.trial_id=825`; trial `825` is a `memrl_retrieval` numeric
+  trial.
 - Trial `822` was a `code_mutation` proposal for `src/tool_policy.py`; the
   planner-side code mutation failed to extract a patch (`Claude CLI rc=1`), so
   no code patch was applied. Orchestrator git dirt remained limited to runtime
@@ -83,11 +86,12 @@
   tests, 58 archive/recovery/preflight tests, no-trial start/shutdown, and full
   AutoPilot preflight `11/11`.
 - W6 live-tree row collection is attached to the detached max-trials-832 run
-  under shadow-only audit posture. Trial `822` produced the first real live
-  audit row: `audit_block_report.py` totals `core=32/50` (`1.920`),
-  `audit=7/10` (`2.100`), `delta_audit_minus_core=+0.180`, and overfit
-  divergences `0`. One row is mechanics/evidence that live shadow collection is
-  working, not enough for policy acceptance or an instrument-era decision.
+  under shadow-only audit posture. Trials `#822-#824` produced the first three
+  real live audit rows: `audit_block_report.py` totals `core=94/150`
+  (`1.880`), `audit=18/30` (`1.800`), `delta_audit_minus_core=-0.080`, and
+  overfit divergences `0`. This proves live shadow collection is working, but
+  remains an early sample rather than a policy acceptance or instrument-era
+  decision.
 
 For future W6 live collection, verify stack and archive gates before resuming any planning. Stale 2026-06-14 processes are cleared; keep the fresh max-trials-832 posture unless explicitly overridden.
 
@@ -119,8 +123,10 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
 - Orchestrator `a4d510a` added the W6 shadow-only guard so live audit collection can journal audit rows without rotating the paired-core decision metric by default.
 - AutoPilot trial `822` journaled the first real W6 shadow-audit row
   (`core=32/50`, `audit=7/10`, `delta=+0.180`, overfit divergences `0`) while
-  remaining dominated/excluded as `reproduction_confirmed`; the detached run is
-  still alive at `trial_counter=823`, with follow-on trial `823` in flight.
+  remaining dominated/excluded as `reproduction_confirmed`; follow-up rows
+  `#823-#824` brought the batch to `audited_trial_count=3`, core `94/150`,
+  audit `18/30`, `delta=-0.080`, overfit divergences `0`; the detached run is
+  still alive at `trial_counter=825`, with follow-on trial `825` in flight.
 - Generated stack metadata refresh and both stack/authority preflight checks are
   now passing at `11/11`; orchestrator `1bd9563` refreshed stack generated
   metadata and `51268f7` hardens startup archive authority.
