@@ -365,3 +365,18 @@ intake-687 (`ParisNeo/lollms_smart_router_dataset`, Apache-2.0) is a 464-row ins
 The one durable takeaway is the **TTT generation methodology** (fixed candidate-list-with-capabilities + difficulty-tiered rationale) as a template if we ever build a *generative-router* surface — adapted to emit `(1031-d feature, role_index)` directly rather than lollms' text format. Verdict: parked as a generative-router/TTT-synthesis reference only.
 
 **Sources**: [`research/deep-dives/2026-06-12-lollms-smart-router-dataset.md`](../research/deep-dives/2026-06-12-lollms-smart-router-dataset.md), [`handoffs/active/retrain-routing-models.md`](../handoffs/active/retrain-routing-models.md), [`handoffs/active/learned-routing-controller.md`](../handoffs/active/learned-routing-controller.md), intake-687.
+
+## Remaining parked consumer candidates (2026-06-15)
+
+The latest high-risk consumer sweep did not uncover a safe live-code seam beyond the
+already-landed canonicalization work. GitNexus impact on
+`scripts/autopilot/gen_system_card.py:generate_system_card` and
+`scripts/registry/render_stack_summary.py:render_current_stack_summary` stayed
+LOW, but the concrete stale-consumer tails that still surfaced were
+`scripts/registry/render_stack_summary.py:registry_role_rows` (HIGH) and
+`scripts/benchmark/seeding_rewards.py:detect_escalation_chains` (CRITICAL).
+
+Both parked candidates still have live callers:
+`registry_role_rows` feeds the Autopilot/controller summary path, and
+`detect_escalation_chains` fans out across the benchmark seeding mainlines.
+They remain deferred until an explicit high-blast follow-up is authorized.

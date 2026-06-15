@@ -317,6 +317,11 @@ Any future stack update should be accepted only when these hold:
   `Role.WORKER_GENERAL` rather than a local alias dict, so the remaining live
   tail should be another consumer with a concrete stale model fact or route
   boundary alias table.
+- [ ] The latest safe audit found only high-blast remaining candidates:
+  `scripts/benchmark/seeding_rewards.py:detect_escalation_chains`
+  (CRITICAL) and `scripts/registry/render_stack_summary.py:registry_role_rows`
+  (HIGH). Both are parked until an explicit high-risk follow-up is
+  authorized.
 - [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`
