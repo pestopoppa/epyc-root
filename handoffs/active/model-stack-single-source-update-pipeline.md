@@ -330,6 +330,8 @@ Any future stack update should be accepted only when these hold:
   cleanup exposed an unused `dataclasses.field` import.
 - [x] Keep `src/config/models.py` server-URL alias tables deduplicated behind
   a single shared `worker_coder -> worker_fast` compatibility constant.
+- [x] Keep session-log and dashboard comments aligned with the live worker
+  path instead of spelling the retired `worker_explore` alias directly.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
