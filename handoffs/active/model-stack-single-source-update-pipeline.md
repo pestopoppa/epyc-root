@@ -441,6 +441,8 @@ Any future stack update should be accepted only when these hold:
   those live examples.
 - [x] Keep the strategy-store epoch-hash note aligned with the canonical
   worker prompt path rather than naming the legacy prompt path inline.
+- [x] Keep the hardware-optimization production baseline row aligned with the
+  canonical worker spelling instead of the retired `worker_explore` label.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`

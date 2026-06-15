@@ -233,7 +233,7 @@ Systematic thread sweep on Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline model,
 
 | Threads | CPU set | t/s (avg) | stddev | Note |
 |---|---|---|---|---|
-| 24 | taskset 0–23 (node 0 Q0A physical) | 40.76 (2026-04-23) / 44.32 (2026-04-24) | 0.11 / 0.03 | Production worker_explore registry value = 39.1; measured higher today |
+| 24 | taskset 0–23 (node 0 Q0A physical) | 40.76 (2026-04-23) / 44.32 (2026-04-24) | 0.11 / 0.03 | Production worker_general registry value = 39.1; measured higher today |
 | 48 | taskset 0–47 (node 0 physical) | 39.59 / 45.80 | 0.21 / 0.10 | Barrier cost offsets BW gain over 24t |
 | **96** | **taskset 0–95 (ALL PHYSICAL, BOTH NODES)** | **49.11 / 49.34** | **0.08 / 0.09** | **Peak** — uses all 12 DDR5 channels, no SMT |
 | 96 (HT) | taskset 0-47,96-143 (node 0 phys+HT) | 44.63 (2026-04-24) | 0.04 | **-9.5% vs 96 all-physical** — HT hurts |
