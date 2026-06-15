@@ -362,7 +362,8 @@ Any future stack update should be accepted only when these hold:
   worker-general stack priors instead of a hardcoded `8082` endpoint and
   frozen chat-template hint.
 - [x] Keep health-route fallback backend URLs aligned with manifest-owned hot
-  roles instead of a static core-role tuple.
+  roles instead of a static core-role tuple; the helper now reads
+  `HOT_ROLES` directly instead of carrying a separate fallback tuple.
 - [x] Keep vision-serving fallback VL ports aligned with the manifest-backed
   port path instead of a file-local legacy table.
 - [x] Keep inference-lock degraded role policy aligned with canonical live
