@@ -77,7 +77,7 @@ The first compaction pass created or refreshed 11 completed ledgers: Lightning A
 
 The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
 
-The 2026-06-15 wrap-up hygiene pass confirmed that a no-op compaction is an acceptable outcome when completed-history passages are still intertwined with live next actions, blockers, or reporting instructions. In that case, preserve the active handoff and record the decision in the progress log rather than splitting context prematurely. Source: [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md).
+The 2026-06-15 wrap-up hygiene pass confirmed that a no-op compaction is an acceptable outcome when completed-history passages are still intertwined with live next actions, blockers, or reporting instructions. A later N11/N11a correction on the same day clarified the boundary: when commit-by-commit chronology starts burying the pickup contract, preserve that history in completed/archived siblings and compact the active handoff and master-index row back to current state plus next actions. Source: [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md).
 
 ## K-RAG Validation Update (2026-06-13)
 
@@ -96,7 +96,7 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 ## 2026-06-15 Update — K7 Moves To Certification
 
 - **K7 is now a certification problem, not just a build problem.** The fresh index covered 577 files / 18,010 chunks / ~1.2 GiB of embeddings, and the 20-case seed suite only established a provisional best setting (`recency_w0.1_s90` at 0.6417 recall@10). Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
-- **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
+- **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 - **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Open Questions
@@ -122,7 +122,7 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
 - [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
-- [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision for handoffs whose completed-history context still carries live operating instructions
+- [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md) — wrap-up hygiene no-op decision plus later N11/N11a active/archive compaction after completed chronology started burying next actions
 - [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
 - [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
