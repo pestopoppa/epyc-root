@@ -56,6 +56,10 @@ unowned local constants.
   `scripts/autopilot/program.md` explicitly treats the generated controller
   system card as the authoritative live view for role, port, context,
   throughput, memory, and tier facts.
+- QScorer live-role traversal was consolidated on 2026-06-15 so
+  `orchestration/repl_memory/q_scorer.py` now reuses one helper for both
+  prior extraction and live-source validation, preserving degraded fallback
+  behavior while trimming another local stack-prior walk.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -93,6 +97,8 @@ Any future stack update should be accepted only when these hold:
   duplicated stack-prior traversal.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
+- [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
+  state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
   closures in `progress/` and move closed handoff material to
   `handoffs/completed/` or `handoffs/archived/`.
