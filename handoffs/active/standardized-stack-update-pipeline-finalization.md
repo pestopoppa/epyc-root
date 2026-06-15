@@ -54,7 +54,8 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - W4 promotion-gate execution/failure coverage landed in Orchestrator
   `d9fd1eb`; system-card swap visibility landed in `4aed83d`;
   health/dashboard stack-prior witnesses landed in `8beaf79`; representative
-  swap-CI still needs broader consumer coverage.
+  routing/API role-surface witnesses landed in `edd20f7`; swap-CI can still be
+  broadened as new high-risk consumers are migrated.
 
 ## Outstanding Work
 
