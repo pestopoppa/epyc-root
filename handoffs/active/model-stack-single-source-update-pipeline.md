@@ -87,6 +87,11 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- The OpenAI `/v1/models` degraded compatibility surface in
+  `src/api/routes/openai_compat.py` now derives its fallback role list from
+  the computed `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of a
+  direct role→port fallback table, while still preferring live stack-prior
+  records when they exist.
 - `src.cli_orch.cmd_status()` and `scripts.autopilot.preflight_audit` now
   derive their degraded probe/health target lists from the computed
   `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of walking a direct
