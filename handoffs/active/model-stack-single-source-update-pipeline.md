@@ -245,6 +245,8 @@ Any future stack update should be accepted only when these hold:
   port path instead of a file-local legacy table.
 - [x] Keep inference-lock degraded role policy aligned with canonical live
   worker roles instead of a stale `worker_explore` fallback literal.
+- [x] Keep config-catalog `worker_explore` URL defaults aliased through the
+  canonical `worker_general` path instead of a duplicated legacy literal.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
