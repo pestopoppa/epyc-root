@@ -108,6 +108,10 @@ unowned local constants.
   `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of walking a direct
   role→port fallback table. The live stack-prior path still wins when
   generated records are present.
+- `src.cli_orch._fallback_status_targets()` now canonicalizes alias roles
+  through `Role.from_string()` before grouping status targets, so the
+  degraded CLI fallback no longer surfaces `worker_explore` as a separate
+  alias name.
 - `src.api.routes.chat_utils.apply_chat_template_for_role()` now canonicalizes
   role aliases through `Role.from_string()` before registry lookup, so
   `worker_explore` aliases resolve through the live `worker_general` model
