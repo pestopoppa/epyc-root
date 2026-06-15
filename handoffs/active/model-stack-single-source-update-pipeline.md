@@ -97,6 +97,10 @@ unowned local constants.
   specialist role names through `Role.from_string()` before computing the
   specialist-utilization summary, so legacy aliases in live priors do not get
   counted as new specialists.
+- `src.classifiers.factual_risk._role_tier_for_role()` now canonicalizes role
+  names through `Role.from_string()` before checking live stack priors or the
+  degraded tier map, and the degraded map no longer carries a redundant
+  `worker_explore` fallback entry.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
