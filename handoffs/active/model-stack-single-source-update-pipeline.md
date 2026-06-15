@@ -157,17 +157,10 @@ unowned local constants.
   `worker`, or `worker_coder` literals; those paths already resolve through
   the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
   chains.
-- `src.config.models._server_url_default()` now canonicalizes `coder`,
-  `worker`, `worker_explore`, and `worker_fast` directly, while keeping only
-  the `worker_coder -> worker_fast` special-case alias in the fallback map.
-- `scripts.server.stack_env._role_env_overrides()` now canonicalizes role
-  inputs through `Role.from_string()` before applying per-role env blocks, so
-  `worker_explore` and other aliases reuse the live worker env block instead
-  of a separate alias entry.
-- `scripts.benchmark.seeding_types` now canonicalizes the live
-  `worker_explore` seeding role to `worker_general` in active-role discovery
-  while preserving the compatibility cost-tier floor for legacy reward-chain
-  consumers.
+Recent completed cleanup details are compacted into
+[handoffs/archived/model-stack-single-source-update-pipeline-history-2026-06-15.md](../archived/model-stack-single-source-update-pipeline-history-2026-06-15.md)
+and the daily `progress/` log so this active handoff stays focused on the
+remaining open lanes.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate

@@ -1725,3 +1725,20 @@ Documentation-only sidecar for `epyc-orchestrator` commit `950fad7` (`Prefer sta
 
 - `escalation_prewarmer` was deferred because `prewarm_if_complex` and `_send_prewarm` had CRITICAL GitNexus blast radius.
 - Sidecar review of `scripts/config/config/models.py` found URL defaults already mostly stack-prior aware; vision/OCR defaults were deferred to a later higher-risk tranche.
+
+## Late-session compacted cleanups — 2026-06-15
+
+These follow-on implementation details were compacted out of the active handoff
+after they were validated and checkpointed in `progress/`:
+
+- `src.config.models._server_url_default()` canonicalized the common alias
+  names (`coder`, `worker`, `worker_explore`, `worker_fast`) directly and kept
+  only the `worker_coder -> worker_fast` special-case alias in the fallback
+  table.
+- `scripts.server.stack_env._role_env_overrides()` canonicalized role inputs
+  through `Role.from_string()` before applying per-role env blocks, so
+  `worker_explore` and other aliases reuse the live worker env block instead of
+  a separate alias entry.
+- `scripts.benchmark.seeding_types` canonicalized the live `worker_explore`
+  seeding role to `worker_general` in active-role discovery while preserving
+  the compatibility cost-tier floor for legacy reward-chain consumers.
