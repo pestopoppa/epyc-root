@@ -157,6 +157,10 @@ unowned local constants.
   `worker`, or `worker_coder` literals; those paths already resolve through
   the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
   chains.
+- `scripts.server.stack_env._role_env_overrides()` now canonicalizes role
+  inputs through `Role.from_string()` before applying per-role env blocks, so
+  `worker_explore` and other aliases reuse the live worker env block instead
+  of a separate alias entry.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
