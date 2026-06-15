@@ -341,8 +341,14 @@ Any future stack update should be accepted only when these hold:
   a single shared `worker_coder -> worker_fast` compatibility constant.
 - [x] Keep session-log and dashboard comments aligned with the live worker
   path instead of spelling the retired `worker_explore` alias directly.
+- [x] Keep proactive-delegation comments explicit about the canonical
+  worker-alias path and preserve the legacy fallback as a single local
+  compatibility branch.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
+- [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
+  until a broader review clears its HIGH blast radius; keep the current
+  filename-relative fallback intact for now.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
