@@ -61,11 +61,10 @@ Promote a `benchmarks/prompts/core_v2.jsonl` only if all of these hold on the se
 - candidate core metadata row has `__core_metadata__ == true`
 - candidate `selected_count` equals non-metadata row count
 
-The five-row selector is still short. Do not silently lower the target. Make an explicit W5 decision:
+The five-row selector is still short. **Operational decision 2026-06-15**: do not promote `core_v2`, do not silently lower the target, and do not spend another repeat on this lineage in the current window. W5 remains open/no-go with the strict target intact. Reopen only if one of these is intentionally chosen and documented:
 
-- run one more same-seed repeat if the 7-item shortfall is still worth the CPU time; or
-- lower the target with a new `core_id` and document why the smaller core is acceptable; or
-- leave W5 open and move to the next Fable5 Queue-2 clean-window task.
+- run a new calibration lineage or additional same-seed repeats when the CPU serving stack is clean enough to justify the inference cost; or
+- lower the target with a new `core_id` and documented rationale for why a smaller designed core is acceptable.
 
 ## Completed In This Run
 
@@ -82,9 +81,9 @@ The five-row selector is still short. Do not silently lower the target. Make an 
 
 ## Next High-ROI Queue
 
-1. Decide W5: one more repeat vs explicitly smaller core vs move on with W5 open.
+1. W5 is held open/no-go: no `core_v2` promotion, no smaller fallback core, no more repeats in this window.
 2. If W5 later promotes, run focused core-file validation and update `instrument_eras.yaml` only when an era/promotion decision is actually made.
-3. If W5 remains short, use the W6 plumbing probe as evidence that mechanics work, then choose live W6 audit cadence and collect real AutoPilot audit rows in a deliberate clean window.
+3. Use the W6 plumbing probe as evidence that mechanics work, then choose live W6 audit cadence and collect real AutoPilot audit rows in a deliberate clean window.
 4. Then resume Fable5 Queue 2 clean-window work in order: E2/E1 batched-decode measurement, shape-keyed contention bracket, J2/J3 migration probe, J12/THINK-ABL, DCP-6a attested reload, J10 shadow collection.
 5. Use inference-free gaps for repo hygiene: Orchestrator `archived_backups/`, `orchestration/optuna_study.db.bak-quarantine786-20260613_093831`, and runtime `scripts/autopilot/short_term_memory.md`.
 
