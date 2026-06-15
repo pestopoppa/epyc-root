@@ -87,6 +87,9 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- `scripts/autopilot/gen_system_card.py` now derives its legacy-role note from
+  live stack-prior role records instead of parsing the rendered markdown table,
+  and the checked-in system card was regenerated from the current live state.
 - `scripts.server.stack_manifest.validate_against_registry()` now derives its
   launcher-only skip set from the live hot/warm sets, and
   `scripts/registry/stack_change_pipeline.py update` refreshed the generated
