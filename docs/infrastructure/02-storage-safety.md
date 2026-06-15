@@ -216,7 +216,7 @@ The orchestrator uses a three-tier memory pool that takes advantage of the 1.13T
 | 8080 | frontdoor | Qwen3-Coder-30B-A3B-Q4_K_M | ~17GB | 18 t/s |
 | 8081 | coder_escalation | Qwen2.5-Coder-32B-Q4_K_M | ~19GB | 39 t/s (spec) |
 | 8082 | worker_general | Qwen2.5-7B-Instruct-f16 | ~14GB | 44 t/s (spec) |
-| 8084 | architect_coding | Qwen3-Coder-480B-A35B-Q4_K_M | ~280GB | 10.3 t/s |
+| 8083 | architect_general | Qwen3.5-122B-A10B-Q4_K_M | ~69GB | 12.19 t/s |
 | 8086 | worker_vision | Qwen2.5-VL-7B-Q4_K_M | ~4GB | ~15 t/s |
 | 8090-8095 | embedder (6x) | BGE-large-en-v1.5-F16 | ~4GB | probe-first |
 | 9001 | document_formalizer | LightOnOCR-2-1B | ~2GB | 19x PDF speedup |
@@ -232,7 +232,6 @@ The orchestrator uses a three-tier memory pool that takes advantage of the 1.13T
 
 | Role | Model | Size | When Loaded |
 |------|-------|------|-------------|
-| architect_general | Qwen3-235B-A22B-Q4_K_M | ~140GB | Escalation to B3 tier |
 | ingest_long_context | Qwen3-Next-80B-A3B-Q4_K_M | ~45GB | Long-context synthesis |
 | vision_escalation | Qwen3-VL-30B-A3B-Q4_K_M | ~17GB | Complex vision tasks |
 

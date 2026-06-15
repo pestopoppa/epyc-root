@@ -450,6 +450,9 @@ Any future stack update should be accepted only when these hold:
   canonical worker spelling instead of the retired `worker_explore` label.
 - [x] Keep the multimodal routing comparison aligned with the canonical
   worker spelling instead of the retired `worker_explore` label.
+- [x] Keep the storage-safety HOT tier row aligned with the live
+  `architect_general` 8083 slot instead of the retired architect-coding
+  row, and remove the stale warm duplicate entry.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
