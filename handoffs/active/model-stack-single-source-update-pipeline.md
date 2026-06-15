@@ -97,6 +97,10 @@ unowned local constants.
 - The resolver test module was restored after an accidental shrink during the
   checkpoint; the pre-existing prompt-resolver coverage remains intact with the
   new direct-answer assertions added in place.
+- The prompt resolver now also prefers the canonical `Role.from_string()`
+  family fallback before the older structural `<prefix>_general` fallback, so
+  legacy aliases such as `worker_explore` still resolve through the canonical
+  worker-family prompt file when a role-specific file is absent.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -136,6 +140,8 @@ Any future stack update should be accepted only when these hold:
   artifacts, promotion-gate execution, and selected consumers move together.
 - [ ] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
+- [ ] Keep prompt-family fallback logic aligned with canonical role truth, not
+  with ad hoc alias tables.
 - [ ] Keep delegation role normalization centralized in `src.roles` and avoid
   reintroducing scattered alias tables in route helpers.
 - [ ] Keep delegate-target validation tied to the live delegate allowlist, not
