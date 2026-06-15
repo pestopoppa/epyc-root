@@ -433,8 +433,9 @@ Any future stack update should be accepted only when these hold:
   worker spelling so the 96t production baseline is described as
   `worker_general` rather than `worker_explore`.
 - [x] Remove the last live-facing `worker_explore` mention from
-  `wiki/inference-serving.md` so the server-URL note now states the canonical
-  worker-general path without reintroducing the retired spelling.
+  `wiki/inference-serving.md` and normalize the production alias note to
+  `architect_general` so the current serving alias note stays canonical
+  without reviving the retired spelling.
 - [x] Remove the last live-facing `worker_explore` mention from
   `wiki/memory-augmented.md` and `handoffs/active/routing-truth-restoration.md`
   so the current docs only describe the canonical worker-general family in
