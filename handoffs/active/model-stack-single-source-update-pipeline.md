@@ -124,6 +124,11 @@ unowned local constants.
   live canonical roles before the fast-path serves them.
 - `RoutingClassifier.save()` now writes canonical label values too, so new
   classifier artifacts stop reintroducing stale alias spellings on disk.
+- `src.classifiers.role_classifier.classify_role()` now canonicalizes
+  architect-class routing inputs through `Role.from_string()` before deciding
+  whether a prompt should stay on the thinker path, so the retired
+  `architect_coding` alias follows the same canonical boundary as live
+  architect roles.
 - `src.cli_orch.cmd_status()` and `scripts.autopilot.preflight_audit` now
   derive their degraded probe/health target lists from the computed
   `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of walking a direct
