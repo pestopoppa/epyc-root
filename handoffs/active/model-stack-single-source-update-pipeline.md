@@ -47,6 +47,11 @@ unowned local constants.
   benchmark preflight all run the canonical stack-change gate before mutating
   runtime state.
 - Direct benchmark runtime enforcement is closed by Orchestrator `09d9028`.
+- Seeding reward-prior helpers were tightened on 2026-06-15: generated
+  stack-prior live-role records now drive both throughput-prior and
+  architect-action role extraction in `scripts/benchmark/seeding_rewards.py`,
+  removing duplicated live-role filtering while preserving explicit degraded
+  fallback behavior.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -79,6 +84,9 @@ Any future stack update should be accepted only when these hold:
   impact before touching production code.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config or runtime consumers.
+- [ ] Continue migrating remaining high-risk P2 consumers from the manifest,
+  starting with the next surface that still carries local model facts or
+  duplicated stack-prior traversal.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
 - [ ] Keep completed implementation logs out of active indices; record future
