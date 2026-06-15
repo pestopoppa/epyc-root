@@ -78,6 +78,10 @@ unowned local constants.
   `src/api/routes/chat_delegation_config.py`, and the architect decision parser
   clamps TOON/JSON delegate targets against that live set instead of a frozen
   literal.
+- Delegate-target validation now stays tied to the live helper
+  `_valid_delegate_roles()`; the compatibility export in
+  `src/api/routes/chat_delegation.py` remains only so older import paths do not
+  break.
 - The chat-completions skip surface in `src/chat_completions_roles.py` now
   derives its default from generated stack priors by reading live launch
   metadata (`launch.runtime.flags.jinja` plus
@@ -193,7 +197,7 @@ Any future stack update should be accepted only when these hold:
   pinned to canonical role constants instead of local alias strings.
 - [x] Keep delegation role normalization centralized in `src.roles` and avoid
   reintroducing scattered alias tables in route helpers.
-- [ ] Keep delegate-target validation tied to the live delegate allowlist, not
+- [x] Keep delegate-target validation tied to the live delegate allowlist, not
   to static route-local role sets.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
