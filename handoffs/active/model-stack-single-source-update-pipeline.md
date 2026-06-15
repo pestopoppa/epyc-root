@@ -153,9 +153,10 @@ unowned local constants.
   through the canonical `worker_general` alias path before falling back, so
   the config server-URL default no longer carries a separate worker-explore
   literal while preserving the compatibility URL.
-- The same server-URL fallback table no longer keeps a separate
-  `worker_coder` literal; that path already resolves through the canonical
-  `worker_fast` alias chain.
+- The same server-URL fallback table no longer keeps separate `coder`,
+  `worker`, or `worker_coder` literals; those paths already resolve through
+  the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
+  chains.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
