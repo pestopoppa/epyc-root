@@ -60,6 +60,9 @@ unowned local constants.
   `orchestration/repl_memory/q_scorer.py` now reuses one helper for both
   prior extraction and live-source validation, preserving degraded fallback
   behavior while trimming another local stack-prior walk.
+- Registry-based scorer fallbacks were also consolidated on 2026-06-15 via a
+  shared `_registry_role_records()` helper, reducing duplicate roles-map walks
+  without changing the fallback semantics.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -97,6 +100,8 @@ Any future stack update should be accepted only when these hold:
   duplicated stack-prior traversal.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
+- [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
+  seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
