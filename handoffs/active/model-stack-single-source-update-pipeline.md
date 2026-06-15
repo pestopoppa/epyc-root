@@ -112,6 +112,10 @@ unowned local constants.
   specialist role names through `Role.from_string()` before computing the
   specialist-utilization summary, so legacy aliases in live priors do not get
   counted as new specialists.
+- `scripts/autopilot/host_health.py` now derives its degraded cache-flush
+  rewarm GGUF list from generated stack priors before falling back to the last
+  resort no-op path, so the page-cache remediation helper no longer carries a
+  manual role/model tuple as its first degraded source.
 - `scripts/graph_router/action_space.py` now canonicalizes raw labels through
   `Role.from_string()` before action lookup, so aliases like `worker_explore`,
   `worker_fast`, `coder`, and `architect_coding` resolve through the live
@@ -257,6 +261,8 @@ Any future stack update should be accepted only when these hold:
   aliases like `worker_explore` and `worker_fast` follow live worker policy.
 - [x] Keep session-log compaction centralized on `worker_general` while
   preserving the distinct `worker_fast` profile via the raw role string.
+- [x] Keep host-health cache-flush rewarm fallback derived from generated stack
+  priors before it drops to the final degraded no-op path.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
