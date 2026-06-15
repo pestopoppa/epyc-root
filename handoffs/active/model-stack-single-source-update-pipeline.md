@@ -429,6 +429,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep live inference-serving docs aligned with the canonical worker
   spelling so current rows and examples use `worker_general` instead of the
   retired `worker_explore` label.
+- [x] Keep the local-inference operating-point note aligned with canonical
+  worker spelling so the 96t production baseline is described as
+  `worker_general` rather than `worker_explore`.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`

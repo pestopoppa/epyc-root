@@ -103,7 +103,7 @@ Phase 0 ran end-to-end on 2026-04-23 in `llama.cpp-experimental` on `cpu-optimiz
   - CPU4 (per-CCD sync primitive) promoted from MED-bundled to HIGH standalone on measured 32–45% barrier cost.
   - CPU2 (GEMV ukernels on quantized decode) deprioritized.
 - **CPU3 zero-reboot knobs applied via user sudo**: THP→always, numa_balancing=0, 1GB hugepage on node 1. Net within noise on canonical workload.
-- **96t-single-NUMA-node operating point** emerged as actionable: +26% vs production worker_explore (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1.
+- **96t-single-NUMA-node operating point** emerged as actionable: +26% vs production worker_general (1×24t, 39.1 t/s) with no code change. Worth a production sweep separately from CPU1.
 
 See `research/deep-dives/cpu-optimization-phase0-baseline.md` for full analysis + revised gate decisions. Auto-memory entry `feedback_cpu_decode_bw_bound.md` captures the lesson: when perf shows high overhead inside a quantized-decode inner dot loop on this hardware, those samples are typically DRAM-wait cycles; a cheap wider-SIMD A/B test resolves the question in hours before committing to shape-specialized ukernel work.
 
