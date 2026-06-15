@@ -157,6 +157,9 @@ unowned local constants.
   `worker`, or `worker_coder` literals; those paths already resolve through
   the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
   chains.
+- `src.config.models._server_url_default()` now canonicalizes `coder`,
+  `worker`, `worker_explore`, and `worker_fast` directly, while keeping only
+  the `worker_coder -> worker_fast` special-case alias in the fallback map.
 - `scripts.server.stack_env._role_env_overrides()` now canonicalizes role
   inputs through `Role.from_string()` before applying per-role env blocks, so
   `worker_explore` and other aliases reuse the live worker env block instead
