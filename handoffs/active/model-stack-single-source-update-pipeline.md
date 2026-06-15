@@ -360,6 +360,10 @@ Any future stack update should be accepted only when these hold:
   `docs/chapters/07-memrl-system.md` and
   `docs/chapters/10-escalation-and-routing.md`. Historical retired-role notes
   remain in place where they are explicitly labeled as historical context.
+- [x] Keep the top-level orchestration README and the 02/10 chapter examples
+  on canonical live spellings (`worker_general`) in visible role tables and
+  cheap-first examples. Historical `architect_coding` notes remain only where
+  they are clearly historical.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
