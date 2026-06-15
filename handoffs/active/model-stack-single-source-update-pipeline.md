@@ -80,6 +80,12 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- The generic legacy role aliases now resolve centrally through
+  `src.roles.Role` (`coder`, `coder_agent`, `researcher*`, `reviewer*`,
+  `math_agent`, `vision_agent`, `summarizer*`, `worker_explore`,
+  `worker_fast`), while `chat_pipeline.routing_decision` and
+  `repl_environment.routing` keep only the context-specific `worker_coder`
+  / `worker_code` override locally.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
