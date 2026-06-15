@@ -112,6 +112,10 @@ unowned local constants.
   through `Role.from_string()` before grouping status targets, so the
   degraded CLI fallback no longer surfaces `worker_explore` as a separate
   alias name.
+- `scripts.autopilot.preflight_audit._fallback_model_server_targets()` now
+  canonicalizes alias roles through `Role.from_string()` before grouping
+  degraded model-server targets, so the preflight fallback collapses worker
+  aliases onto the live `worker_general` role.
 - `src.api.routes.chat_utils.apply_chat_template_for_role()` now canonicalizes
   role aliases through `Role.from_string()` before registry lookup, so
   `worker_explore` aliases resolve through the live `worker_general` model
