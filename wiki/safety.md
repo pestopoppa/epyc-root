@@ -2,7 +2,7 @@
 
 **Category**: `safety`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 4 documents
 
 ## Summary
@@ -19,6 +19,12 @@ Security review has a separate but complementary tool surface. The v1 security-r
 - **Quarantine needs provenance.** New source-derived blocks carry URL, retrieval timestamp, and SHA prefix, making later review and validator warnings traceable. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 - **Security-review findings require exploit validation.** The security skill's two-pass design avoids listing theoretical issues unless attacker capability, reachability, trust boundary crossing, vulnerable sink, mitigation bypass, concrete impact, minimal fix, and file/line evidence are all present. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
 - **Safety work composes with the evidence plane.** Injection hardening prevents adversarial narrative contamination; the evidence plane prevents accidental narrative contamination from re-entering planner memory. Both are provenance problems. Sources: [Fable 5 executive summary](../handoffs/active/fable5-findings-00-executive-summary.md), [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+
+## 2026-06-15 Update — Safety Became Tooling
+
+- **Security review is now a dedicated skill scaffold.** The new review skill applies STRIDE, OWASP, and supply-chain checks, but only records findings after exploit-path validation succeeds. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
+- **Source quarantine is enforced in the intake/rendering path.** Source-derived synthesis now lands in `SOURCE-QUARANTINE` blocks with provenance metadata and a validator, so instruction injection is handled as data hygiene rather than implicit trust. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
+- **The evidence plane and quarantine solve adjacent problems.** Quarantine keeps external text from becoming instructions, while the evidence plane keeps stale or superseded trial evidence from becoming planner memory; both are provenance controls. Source: [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
 
 ## Open Questions
 

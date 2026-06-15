@@ -2,7 +2,7 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 50 documents (added 2026-06-13 routing truth restoration, model descriptors, X-MAS scaffold, and Fable 5 routing architecture)
 
 ## Summary
@@ -53,7 +53,7 @@ The 13 intake entries tagged as routing_intelligence are predominantly `already_
 - **Direct single-instance caching roles must still take CPU-region locks when per-region locking is enabled.** `ConcurrencyAwareBackend` owns its own regional locks, but direct `CachingBackend` roles need an outer `cpu_region_lock_for_instance` wrapper or the tap can show a stream with no matching lock holder. The dashboard now also separates `waiting_cpu_lock` rows from active holders and can briefly overlay tap-inferred active cells when structured tap SSE arrives ahead of the region-lock poll. Source: [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
 - **Dashboard first-viewport summaries should answer operator-state questions, not generic routing counters.** The old top cards (`decisions`, `classifier share`, `verifier verdicts`, `lock events`) were useful diagnostics but low-signal during GEPA/autopilot runs. They were replaced by a run strip that summarizes run state, current trial, inference load, and recent outcomes from existing snapshot/process/progress/region-lock/tap streams; routing/verifier counts remain secondary diagnostics. Source: [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
 - **J6 batch dispatch is intentionally conservative under uncertain contention.** Seed-role waves can run concurrently only when registry roles, port placement, live locks, pair policy, and N-way policy all agree. Timeout telemetry can temporarily collapse a role back to serial or skip it for a seed batch, which preserves frontier validity at the cost of slower campaign progress. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
-- **Fortytwo's published contribution maps to full-completion swarm routing, not chunk-level routing.** The buildable routing harvest is DAR-6: fan high-injection-risk prompts to heterogeneous roles, then Bradley-Terry aggregate full completions. The unpublished "chunk-ranking" founder claim is tracked separately as a spike and should not be treated as evidence for production routing until the backend-control gate clears. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [peer-verifier-speculation-spike.md](../handoffs/active/peer-verifier-speculation-spike.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
+- **Fortytwo's published contribution maps to full-completion swarm routing, not chunk-level routing.** The buildable routing harvest is DAR-6: fan high-injection-risk prompts to heterogeneous roles, then Bradley-Terry aggregate full completions. The unpublished "chunk-ranking" founder claim is tracked separately as a spike and should not be treated as evidence for production routing until the backend-control gate clears. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [peer-verifier-speculation-spike.md](../handoffs/completed/peer-verifier-speculation-spike.md), [progress 2026-05-27](../progress/2026-05/2026-05-27.md).
 
 ### New Findings (2026-05-30 — shape-keyed contention B checkpoint)
 
@@ -186,6 +186,12 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 
 ### Blocked
 11. **Phase 6 controlled rollout** -- progressive enforcement from frontdoor canary (25%) through global. Blocked on Phase 4 + RI-7 results.
+
+## 2026-06-15 Update — Generated Stack Priors And Frozen Expansion
+
+- **Routing priors now come from generated stack truth, not hand-maintained role tables.** Shared-runtime alias mismatches are recorded as provenance in the descriptor/stack-prior pipeline, and the q_scorer path reads stack priors through shared helpers so live routing, launch metadata, and scoring all see the same role contract. Sources: [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md), [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md).
+- **Learned-routing expansion is still frozen behind replay gates.** The current decision-aware routing posture treats DAR-1 regret replay (>=5%) plus per-question vectors as the threshold before Phase 3+ expansion resumes; until then, the safer CPU-feasible work is cost-ordered candidate selection and decision-aware loss shaping, not broader live router rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/active/fable5-findings-02-impl-plan.md).
+- **Lab-level cost metrics are now `task_rate` and `goodput`, but only as shadow telemetry.** The Fable 5 objective work frames wall-time and solved-task throughput as the right cost surface, yet live Pareto dominance stays on the existing vector until replay and evidence-plane gates clear. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/active/fable5-findings-05-objective-design.md).
 
 ## Open Questions
 

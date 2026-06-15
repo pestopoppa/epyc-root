@@ -2,7 +2,7 @@
 
 **Category**: `benchmark_methodology`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 54 documents (added 2026-06-13 Fable 5 evidence-plane, instrument-repair, repo-readiness, and publication-methodology updates)
 
 ## Summary
@@ -55,6 +55,12 @@ Benchmark hardening in December 2025 addressed ceiling effects where top models 
 - **≥5 reps required for sub-5% throughput deltas on this hardware**. Discovered via CPU22 Phase 3: an initial 3-rep Next-80B Q4_K_M measurement showed env=1 = 22.65 t/s vs env=0 = 21.31 t/s (+6.3%, would have been a positive signal for the work-stealing prototype). Re-running both at 5 reps converged to ~23.3 t/s (Δ -0.3%, neutral). The 3-rep result was a measurement artifact from cache-warmup state divergence between consecutive runs. **Rule**: 3 reps is fine for ≥10% deltas; for sub-5% deltas use ≥5 reps; for ≤2% claims consider ≥10 reps. Always report std alongside mean. [data/cpu_optimization/2026-04-28-cpu22-work-stealing/]
 - **First-decode TTFT amplification under concurrent prefill is class-dependent**. CPU23 Phase 2.2 measured the long-prompt-mid-stream interference scenario via `llama-server --parallel 2`: rep-1 decode under concurrent 30K-token prefill showed 9.6× TTFT amplification on sync-bound MoE Coder-30B (4.77 t/s vs baseline 47.99), 1.15× on BW-bound MoE Q8 frontdoor, 1.08× on dense/hybrid. Steady-state continuous batching is essentially baseline (±2%) on all 3 classes — rep-2-onward decodes interleave efficiently with ongoing prefill. Per-iter latency variance in single-user mode (no interference) is uniformly low (CV 0.24-0.57%), so variance alone is NOT a stall signal absent active interference — the rep-1 stall is specifically a continuous-batching scheduler-wait artifact. [cpu-context-regime-coverage.md, data/cpu_optimization/2026-04-28-cpu23-interference-metrics/]
 - **Sibling-directory `.md` references inside artifact-bundle READMEs need the agents_reference_guard hook to resolve relative-to-file-dir, not just relative-to-PROJECT_DIR**. Discovered when CPU21 Phase 2.1 README's reference to `decision.md` (sibling file in same dir) was rejected by the hook because it resolved to `$PROJECT_DIR/decision.md` (doesn't exist) instead of `$DIR/decision.md` (exists). Hook fix landed in commit `12b1e27`: try the file's own directory first, then fall back to `$PROJECT_DIR`. Strictly additive — anything that resolved before still resolves. [scripts/hooks/agents_reference_guard.sh]
+
+## 2026-06-15 Update — Measurement Contract Tightening
+
+- **Tool-use trials must prove they actually exercised tools before the result becomes optimization signal.** The live contract now separates "model had tools available" from "model actually used the tool path" and requires per-trial invocation evidence plus a no-tool baseline comparison. Sources: [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md), [progress/2026-06/2026-06-03.md](../progress/2026-06/2026-06-03.md), [progress/2026-06/2026-06-04.md](../progress/2026-06/2026-06-04.md).
+- **Real-path canaries are mandatory.** BEP-2 showed that stub validation can pass while the real `/chat` + REPL path still fails, so the durable method is no-inference canary, one live smoke, then the broader A/B. Source: [bep-dcp-falsification-harness.md](../handoffs/active/bep-dcp-falsification-harness.md).
+- **Publication-grade claims now require protocol, reps, date, and attestation.** The canonical CPU methodology draft treats historical numbers without a protocol citation as observations, not decision gates, and the public-results draft keeps the same line between attested and historical rows. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
 
 ## Actionable for EPYC
 
@@ -260,7 +266,7 @@ When the Phase A perf gate fails (Q6_K, 2026-05-04), the compounding rationale f
 ### Sources (2026-05-04)
 
 - [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) — full session log with all 3 probes (Q6_K Phase A, 122B-A10B Probe B Phase 1+2, REAP-246B Probe B)
-- [`handoffs/active/qkernel-q5q6-default-on-flip.md`](../handoffs/active/qkernel-q5q6-default-on-flip.md) — Q6_K Phase A failure documented
+- [`handoffs/completed/qkernel-q5q6-default-on-flip.md`](../handoffs/completed/qkernel-q5q6-default-on-flip.md) — Q6_K Phase A failure documented
 - [`data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-q6k-default-on-validation/findings.md) — Phase A.1+A.2 bundle
 - [`data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings.md) + [`findings_phase2.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-qwen35-122b-arch-probe/findings_phase2.md) — 122B Probe B
 - [`data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md`](../../epyc-inference-research/data/cpu_optimization/2026-05-04-reap246b-arch-probe/findings.md) — REAP-246B Probe B
@@ -277,7 +283,7 @@ The phenomenon matches `feedback_host_throttle_check.md` reset behavior — rebo
 
 Open instrumentation idea: capture full bench process state (numa_maps, smaps, vmstat delta, perf-stat) on tripwire FAIL so we have evidence next time the state appears. Tracked as deferred work in [`progress/2026-05/2026-05-04.md`](../progress/2026-05/2026-05-04.md) § "Evening session".
 
-Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/active/qwen36-benchmark-fixes.md](../handoffs/active/qwen36-benchmark-fixes.md) 2026-05-04 update.
+Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/completed/qwen36-benchmark-fixes.md](../handoffs/completed/qwen36-benchmark-fixes.md) 2026-05-04 update.
 
 ### Stack consolidation methodology (2026-05-04)
 
@@ -290,7 +296,7 @@ May-4 Claude-as-Judge scoring under canonical recipe + the morning's 9-model swe
 
 This methodology generalizes: **rank candidates per-suite, weight by traffic share, prefer single-model resident bindings when capability passes the floor for ALL traffic on that slot.** A single 16-GB MoE that hits 84% on all relevant suites beats a fleet of specialists each tuned to one suite.
 
-Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md) 2026-05-04 update, [`epyc-orchestrator` branch `feature/stack-swap-2026-05-04`](.../../) commits fee69b8 + 587219c.
+Source: [progress/2026-05/2026-05-04.md](../progress/2026-05/2026-05-04.md) § Evening session, [handoffs/completed/qwen36-production-upgrade.md](../handoffs/completed/qwen36-production-upgrade.md) 2026-05-04 update, `epyc-orchestrator` branch `feature/stack-swap-2026-05-04` commits fee69b8 + 587219c.
 
 ### Stack consolidation methodology — extended 2026-05-06 with role-elimination data
 
@@ -324,7 +330,7 @@ Quality essentially tied (93-95%) — but 122B-A10B is **2× faster** (MoE 10B-a
 
 **Methodology rule**: when quality scores are tied within ~3pp, **don't swap** — speed and long-context are real differentiators. Re-bench the existing candidate properly before treating it as inferior to "newer" alternatives.
 
-Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [handoffs/active/qwen36-production-upgrade.md](../handoffs/active/qwen36-production-upgrade.md) 2026-05-06 update, [`epyc-orchestrator` branch `feature/stack-swap-2026-05-04`](.../../) commits `7491a12` + `dad42a0`, [`benchmarks/results/reviews/may5_architect_candidates/`](../../epyc-inference-research/benchmarks/results/reviews/may5_architect_candidates/) per-question CSVs.
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [handoffs/completed/qwen36-production-upgrade.md](../handoffs/completed/qwen36-production-upgrade.md) 2026-05-06 update, `epyc-orchestrator` branch `feature/stack-swap-2026-05-04` commits `7491a12` + `dad42a0`, [`benchmarks/results/reviews/may5_architect_candidates/`](../../epyc-inference-research/benchmarks/results/reviews/may5_architect_candidates/) per-question CSVs.
 
 ### Multi-day uptime hysteresis recurs at <2d (2026-05-06)
 
@@ -379,7 +385,7 @@ Refactor (commit `bd2455d`):
 
 Result: adding a role is now 2 places (NUMA_CONFIG + ROLE_LAUNCH_META) with self-validation; removing/renaming catches dangling refs at module load instead of at launch.
 
-Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`epyc-orchestrator` merge `a268040`](../../epyc-orchestrator/), [`handoffs/active/qwen36-production-upgrade.md`](../handoffs/active/qwen36-production-upgrade.md).
+Source: [progress/2026-05/2026-05-06.md](../progress/2026-05/2026-05-06.md), [`epyc-orchestrator` merge `a268040`](../../epyc-orchestrator/), [`handoffs/completed/qwen36-production-upgrade.md`](../handoffs/completed/qwen36-production-upgrade.md).
 
 ## 2026-05-08 — Five bench harness fixes surfaced during gemma4 evaluation
 

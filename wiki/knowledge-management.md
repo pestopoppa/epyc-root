@@ -2,7 +2,7 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 18 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-13 K-RAG K7 seed/certification status and repo-readiness governance)
 
 ## Summary
@@ -55,7 +55,7 @@ The `research-intake` skill is the upstream complement — it ingests new papers
 
 Three active stubs extend the knowledge-management surface beyond retrieval: AutoWiki-style incremental KB generation, repo-readiness scoring, and security-review skill design. The shared pattern is that these are governance tools first: they should emit reviewable artifacts and explicit contracts before they become autonomous writers over handoffs, wiki pages, or code. For wiki/RAG work specifically, this preserves the current source-of-truth layering: intake and handoffs remain primary records, wiki pages are compiled derivatives, and readiness/security outputs are evidence attached to the relevant handoff rather than hidden state.
 
-Sources: [autowiki-incremental-kb-generator.md](../handoffs/active/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [security-review-skill.md](../handoffs/active/security-review-skill.md).
+Sources: [autowiki-incremental-kb-generator.md](../handoffs/completed/autowiki-incremental-kb-generator.md), [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md), [security-review-skill.md](../handoffs/active/security-review-skill.md).
 
 ## Active-handoff hygiene rule (2026-05-27)
 
@@ -75,7 +75,7 @@ The next governance refinement is for partially complete handoffs whose live tas
 
 The first compaction pass created or refreshed 11 completed ledgers: Lightning Attention, integration-test coverage, REPL turn efficiency, TriAttention/KV selection, context folding, intra-process tensor parallel decode, meta-harness optimization, BEP/DCP harness, dynamic stack concurrency, large-MoE expert parallelism, and routing intelligence. Each active twin now contains a `Completed Scope` table and each historical sibling points back to `../active/<handoff>.md`. Validation after the pass reported 0 stale/aging handoffs, 0 missing active-index references, and 0 missing reciprocal ledger links.
 
-The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
+The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
 
 ## K-RAG Validation Update (2026-06-13)
 
@@ -90,6 +90,12 @@ Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
 
 Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
+
+## 2026-06-15 Update — K7 Moves To Certification
+
+- **K7 is now a certification problem, not just a build problem.** The fresh index covered 577 files / 18,010 chunks / ~1.2 GiB of embeddings, and the 20-case seed suite only established a provisional best setting (`recency_w0.1_s90` at 0.6417 recall@10). Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+- **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
+- **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Open Questions
 
@@ -112,7 +118,7 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - [`internal-kb-rag.md`](../handoffs/active/internal-kb-rag.md) — ColBERT-based RAG architecture, K1–K8 work items, K7 Flywheel-template eval methodology, K8 deferred wikilink learning-loop scorer
 - [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate for SLIDERS local-LLM viability (does NOT block KB-RAG)
 - [`colbert-reranker-web-research.md`](../handoffs/active/colbert-reranker-web-research.md) — shared ONNX encoder (K1 coordinate), S5 LateOn drop-in candidate, S7 surprisal chunking proposal
-- [`handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
+- [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — wrap-up-only active-tree pruning rule; outstanding-only index discipline and archive/dereference procedure
 - [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md) — active/completed twin compaction pilot, validator cleanup, and wrap-up compaction rule tightening
 - [`handoffs/README.md`](../handoffs/README.md), [`master-handoff-index.md`](../handoffs/active/master-handoff-index.md), [`BLOCKED.md`](../handoffs/blocked/BLOCKED.md) — current entry points, coverage ownership, and live blocked-work queue after the 2026-05-27 audit
 - [`progress/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — handoff-index audit verification metrics, six handoffs archived, and link/freshness validation results

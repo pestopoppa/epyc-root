@@ -2,7 +2,7 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 30 documents (added 2026-06-13 task-rate/goodput objective replay, Fable 5 objective-design update, and stack-prior cost-contract audit)
 
 ## Summary
@@ -159,6 +159,12 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - **FlowSteer nonlinear activation steering**: MLP ODE solve at intervention points has no llama.cpp infrastructure. Only the weaker SEAL linear baseline is deployable, and only on dense models.
 - **CoLaR latent reasoning compression**: Model-level training at 1B-1.5B scale only. Incompatible with speculative decoding.
 - **TALE dynamic budget estimation**: A/B test (2026-04-11) showed static word limits outperform TALE on OAA metric (static -3.48 vs TALE -5.95). Pre-pass adds latency without benefit. Deferred.
+
+## 2026-06-15 Update — Decision-Aware Routing Stayed Frozen
+
+- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/active/fable5-findings-02-impl-plan.md).
+- **The practical CPU-feasible path is still decision-aware losses plus runtime cost weights.** Trinity anchors the black-box ES class, while BaRP/LLM Bandit-style knobs reinforce the idea that the local design surface is in decision shaping, not end-to-end router training. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
+- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/active/fable5-findings-05-objective-design.md).
 
 ## Open Questions
 

@@ -2,7 +2,7 @@
 
 **Category**: `tool_implementation`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 24 documents (added 2026-06-13 security-review skill, source-quarantine validator, and repo-readiness tooling)
 
 ## Summary
@@ -89,6 +89,12 @@ Key capabilities: async Playwright-based crawling with browser pool management, 
 **Policy context**: Selected over Firecrawl (intake-364/365, 108K+ stars) due to the open-source-only infrastructure preference. Firecrawl's cloud-first SaaS model, credit-based pricing, and reduced self-hosted feature parity conflict with the project's self-hosted philosophy. Crawl4AI evaluation is gated on post-AR-3 web_research sentinel data: if WebFetch succeeds on >90% of pages, neither tool is needed short-term.
 
 > Source: [SearXNG Search Backend](/workspace/handoffs/active/searxng-search-backend.md) -- intake-364/365/372, Crawl4AI Docker deployment, MCP integration, open-source-only policy
+
+## 2026-06-15 Update — Tool Surfaces Became More Explicit
+
+- **Security review is now a dedicated tool surface, not just an implied code-review habit.** The new skill scaffold runs STRIDE, OWASP, and supply-chain checks, but only records findings after exploit-path validation succeeds. Sources: [security-review-skill.md](../handoffs/active/security-review-skill.md).
+- **External-source quarantine is now enforced in tooling, not just policy prose.** The intake/rendering path now wraps source-derived synthesis in `SOURCE-QUARANTINE` blocks with provenance metadata and a warn-mode validator. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
+- **Token-compression middleware now extends the existing tool-output pipeline.** The downstream MCP wrapper/compressor path landed as a token-reduction layer on top of the current tool registry rather than a behavior change, so the implementation principle remains "compress outputs before they enter context." Source: [tool-output-compression.md](../handoffs/active/tool-output-compression.md).
 
 ## Open Questions
 
@@ -306,7 +312,7 @@ Practical patterns:
 - Never mark flag-implemented work complete if the behavioral default in the acceptance criteria is still pending operator decision.
 - Separate owner-refresh queues from direct edits: stale handoffs needing owner judgment should be logged, not silently rewritten.
 
-Sources: [`handoffs/active/handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md), [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md), [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md).
+Sources: [`handoffs/completed/handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md), [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md), [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md).
 
 ## Split-repo validator and wrap-up tool updates (2026-05-28)
 

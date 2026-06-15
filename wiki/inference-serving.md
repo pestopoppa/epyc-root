@@ -2,7 +2,7 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 36 documents (added 2026-06-13 Fable 5 serving/kernel review, routing truth restoration, batch-serving gap, and stack-prior serving-truth audit)
 
 ## Summary
@@ -17,7 +17,7 @@ Recent architectural improvements include REAP MoE expert pruning (deployed 246B
 
 ## Key Findings
 
-- **Userspace OOM protection must distinguish control plane from killable workload processes (2026-06-05).** The host earlyoom deployment protects long-lived orchestrator and AutoPilot processes by setting `oom_score_adj=-1000` after stack start, while leaving transient planner/eval subprocesses killable. Because uvicorn and AutoPilot appear as `comm=python`, process-name ignore rules are insufficient; the durable protection belongs in launcher code (`stack_processes.set_oom_score_adj` and the AutoPilot start path) plus a host-level earlyoom rule that ignores llama-server/sd-server and prefers disposable benchmark processes. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [earlyoom-oom-protection.md](../handoffs/active/earlyoom-oom-protection.md).
+- **Userspace OOM protection must distinguish control plane from killable workload processes (2026-06-05).** The host earlyoom deployment protects long-lived orchestrator and AutoPilot processes by setting `oom_score_adj=-1000` after stack start, while leaving transient planner/eval subprocesses killable. Because uvicorn and AutoPilot appear as `comm=python`, process-name ignore rules are insufficient; the durable protection belongs in launcher code (`stack_processes.set_oom_score_adj` and the AutoPilot start path) plus a host-level earlyoom rule that ignores llama-server/sd-server and prefers disposable benchmark processes. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [earlyoom-oom-protection.md](../handoffs/completed/earlyoom-oom-protection.md).
 - **Stack lifecycle helpers should be direct imports once circularity is removed.** The `stack_commands.py` cleanup moved away from lazy wrapper duplication for checkpoint and MemRL/tool initialization paths, keeping `orchestrator_stack.py` as the CLI shell while reusable process/checkpoint helpers live in focused modules. This preserves the operator-facing command surface while reducing import-shape drift for registry/compiler fallback tests. Sources: [progress 2026-06-04](../progress/2026-06/2026-06-04.md), [routing-and-optimization-index.md](../handoffs/active/routing-and-optimization-index.md).
 
 - **Dashboard activity counts must use exact holder-instance accounting, not region-overlap attribution (2026-05-31).** The scheduler-facing `active_region_holders()` projection intentionally marks every configured instance whose region set overlaps a held lock; that is useful for admission/placement overlap checks, but it over-reports display activity. On a single-slot MTP worker holding all four quarter locks, the attribution view can surface `worker_general: [0,1,2,3,4]`, making the topology/contention panel show "×5 active" for one request. The dashboard-facing contention metrics now use `active_region_holder_instances()`, which groups held region locks by `(role, PID)` and resolves the exact region set to one configured topology instance, so the same worker reports `worker_general: [0]` while admission behavior remains unchanged. [progress 2026-05-31](../progress/2026-05/2026-05-31.md)
@@ -78,6 +78,12 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - **Autopilot should dynamically assemble the orchestrator stack** based on workload rather than static configuration. Single-user constraints noted.
 - **Monitoring**: All servers expose /health endpoint. orchestrator_stack.py status shows component health, model, port, and PID. State persists to orchestrator_state.json for graceful recovery.
 
+## 2026-06-15 Update — Generated Serving Truth
+
+- **Serving truth now comes from generated stack priors.** The live contract for ports, launch shape, and role aliases is projected into the generated stack-prior view, and the major consumers now read that generated truth instead of stale handwritten role/port tables. Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md).
+- **Dashboard contention accounting is now exact per PID, not overlap-attribution by region.** The active-count view groups held locks by `(role, PID)` so one worker no longer renders as a multiplied set of holders just because its region spans multiple quarters. Source: [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md).
+- **The remaining serving question is still batch/eval serving, not batch=1 decode.** Fable 5 treats the current kernel closure as insufficient to infer continuous-batching behavior, so the next measurements are `-np` sweeps and single-instance-vs-fanout eval A/Bs rather than more same-shape kernel extrapolation. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
+
 ## Open Questions
 
 - Least-loaded routing (route to instance with shortest queue) would improve latency under uneven load but adds complexity over round-robin. Worth implementing when concurrent user count exceeds 1.
@@ -105,7 +111,7 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 - [Chapter 08: Cost-Aware Rewards](/mnt/raid0/llm/epyc-inference-research/docs/chapters/08-cost-aware-rewards.md) -- Infrastructure error handling, cost normalization per serving role
 - [Attention Matching KV Compaction](/workspace/handoffs/active/attention-matching-kv-compaction.md) -- L1-L4 merged, passive KV compression
 - [Progress 2026-03-21](/workspace/progress/2026-03/2026-03-21.md) -- Worker swap to 30B-A3B, registry updates
-- [Qwen3.6 Production Upgrade](/workspace/handoffs/active/qwen36-production-upgrade.md) -- intake-387/391, drop-in architecture, throughput benchmarks (25.6-76.8 tps), preserve_thinking feature, quality benchmark in progress
+- [Qwen3.6 Production Upgrade](/workspace/handoffs/completed/qwen36-production-upgrade.md) -- intake-387/391, drop-in architecture, throughput benchmarks (25.6-76.8 tps), preserve_thinking feature, quality benchmark in progress
 - [Progress 2026-04-19](/workspace/progress/2026-04/2026-04-19.md) -- Five-model quality benchmark campaign, per-model serving config discovery (Gemma4/Qwen3.6/M2.7/SG4), SG4-26b Q4KM deprecation, benchmark infrastructure upgrades
 - [Progress 2026-05-31](../progress/2026-05/2026-05-31.md) -- Dashboard active-count over-report fix; exact per-PID holder-instance accounting for contention metrics
 - Intake entries: 22 results across intake index and handoffs including Qwen3.5 serving recipe (intake-152), DFlash speculation (intake-158), REAP models (intake-181/184/186), and 7 active/completed handoffs
@@ -119,7 +125,7 @@ Deployment has leaned hard on NUMA 4-way multi-instance aggregate throughput (6.
 
 - **[CPU Inference Optimization Index](../handoffs/active/cpu-inference-optimization-index.md)** — forward-looking backlog umbrella listing all 14 unimplemented CPU throughput techniques (CPU1–CPU14), with dependency graph, composition matrix, and the 460 GB/s BW ceiling as physical cap. Start gate: CPU3 Phase 0 baseline (uncore counters + barrier profiling on 30B-A3B 192t).
 - **[Intra-Process Tensor-Parallel Decode](../handoffs/active/intra-process-tensor-parallel-decode.md)** — the largest single lever: shard each matmul across 12 CCDs with shared-L3 reduction and next-layer prefetch comm-hiding. Closes the 1×instance vs N×instance gap for single-session. Projected 2–5× single-instance depending on NPS mode. Would take 30B-A3B from 14 t/s → 28–70 t/s single-session. No known CPU prior art; GPU TP pattern ported to CPU.
-- **[Single-Instance System Tuning](../handoffs/active/single-instance-system-tuning.md)** — NPS mode audit (NPS2 current, NPS4/L3aaN candidates), THP (`madvise`→`always`), 1 GB hugepages, IRQ affinity, per-CCD sync primitive (replaces GGML global barrier), SMT, weight replication. Projected 15–40% alone. Some items (NPS, SMT) require reboot windows; others are zero-cost sysctls.
+- **[Single-Instance System Tuning](../handoffs/completed/single-instance-system-tuning.md)** — NPS mode audit (NPS2 current, NPS4/L3aaN candidates), THP (`madvise`→`always`), 1 GB hugepages, IRQ affinity, per-CCD sync primitive (replaces GGML global barrier), SMT, weight replication. Projected 15–40% alone. Some items (NPS, SMT) require reboot windows; others are zero-cost sysctls.
 
 Composition: TP × GEMV ukernel × system tuning multiply up to the 460 GB/s BW ceiling. Realistic 2.5× TP × 1.75× ukernel × 1.25× tuning = 5.5× single-instance; stretch 5× × 2.5× × 1.4× = 17.5× but clipped by ceiling on most production models. Beyond the ceiling requires reducing weights-read-per-token (KV work, speculation, sparsity).
 
@@ -374,8 +380,8 @@ Current examples:
 
 ### Sources (2026-05-27)
 
-- [`handoffs/active/handoff-backlog-hygiene-audit.md`](../handoffs/active/handoff-backlog-hygiene-audit.md) — second-pass audit correction and outstanding domain-scoped dereferences
-- [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/active/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/active/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/active/qwen36-benchmark-fixes.md`](../handoffs/active/qwen36-benchmark-fixes.md) — active handoff notes
+- [`handoffs/completed/handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md) — second-pass audit correction and outstanding domain-scoped dereferences
+- [`handoffs/active/numa-prefill-decode-disaggregation.md`](../handoffs/active/numa-prefill-decode-disaggregation.md), [`handoffs/completed/wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md), [`handoffs/completed/qwen36-benchmark-fixes.md`](../handoffs/completed/qwen36-benchmark-fixes.md) — handoff notes
 - [`handoffs/active/launcher-numa-mode-gating.md`](../handoffs/active/launcher-numa-mode-gating.md) — partial status and default-decision gate
 - [`progress/2026-05/2026-05-27.md`](../progress/2026-05/2026-05-27.md) — owner-refresh and dereference queue
 

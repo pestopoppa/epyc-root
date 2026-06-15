@@ -2,7 +2,7 @@
 
 **Category**: `agent_architecture`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 48+ documents (added 2026-06-13 Fable 5 frontiers, X-MAS scaffold, and evidence-plane architecture)
 
 ## Summary
@@ -117,6 +117,12 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 
 - **Harness engineering, not model capability, is the primary performance differentiator.** The "Skill Issue" practitioner study (intake-271) showed ~28 rank positions on TerminalBench-2 from harness changes alone on the same Opus model. The "Mismanaged Geniuses" hypothesis (intake-312) extends this: frontier LLMs are already superhuman on hardest exams (IMO, IOI), and the bottleneck is orchestration, not model power. A 4B RLM achieved 100% on MRCRv2 via composition. [intake-271, intake-312]
 
+## 2026-06-15 Update — Edit Transactions Beat Tool Choreography
+
+- **One-shot edit transactions are now the practical fix for multi-file coding.** The BEP-2 follow-up showed that the deployed coder role solved the scratch tasks directly when asked for full-file replacements, so the old read→peek→edit→FINAL REPL choreography is no longer the blocker; it is now an optional decision experiment. Sources: [multi-file-coding-completion-capability.md](../handoffs/active/multi-file-coding-completion-capability.md), [batched-edit-parallel-apply.md](../handoffs/active/batched-edit-parallel-apply.md), [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).
+- **The agent stack is moving toward explicit interaction kinds rather than looser prompt discipline.** The security-review skill scaffold, along with the edit-transaction path, shows the direction of travel: bounded tool surfaces, explicit contracts, and reviewable outputs instead of open-ended tool choreography. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
+- **The same pattern applies to broader delegation surfaces.** The architectural lesson is to treat complex interactions as typed primitives first and only then choose the transport or UI, because the hidden cost is usually in the protocol, not the model. Source: [hermes-agent-index.md](../handoffs/active/hermes-agent-index.md).
+
 ## Actionable for EPYC
 
 ### High Priority
@@ -189,7 +195,7 @@ The key architectural tension is between the current pydantic_graph's flat 7-nod
 - [repl-turn-efficiency.md](../handoffs/active/repl-turn-efficiency.md) -- Omega problem (7/10 suites worse with REPL), frecency discovery, combined operations
 - [tool-output-compression.md](../handoffs/active/tool-output-compression.md) -- 7-handler output compression, 60-90% token reduction per tool output
 - [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md) -- 4-species architecture, safety gates, evolution manager, GEPA optimizer
-- [claude-code-local-constellation-routing.md](../handoffs/active/claude-code-local-constellation-routing.md) -- MCP tool delegation, deterministic routing overrides
+- [claude-code-local-constellation-routing.md](../handoffs/archived/claude-code-local-constellation-routing.md) -- MCP tool delegation, deterministic routing overrides
 - [hermes-outer-shell.md](../handoffs/active/hermes-outer-shell.md) -- two-layer architecture with deterministic routing override flags, cross-layer preference propagation; 2026-04-17 update cross-references open-agents intake-397
 - [claude-mem-persistent-memory.md](../research/deep-dives/claude-mem-persistent-memory.md) -- observer-sidecar pattern, 7-hook lifecycle taxonomy, structured XML observation schema with mode-defined taxonomy, `<private>` tag edge-layer stripping, six-field Stop-hook summary schema, batched-ID MCP tool for progressive disclosure; AGPL-3.0, no code adoption
 - [genericagent-minimal-framework.md](../research/deep-dives/genericagent-minimal-framework.md) -- L0-L4 flat-file memory taxonomy, L1 ≤30-line always-in-context insight index, content-in-reply-body tool pattern, `no_tool` recovery handler, generator-based tool dispatch, L4 session archiver cron, LLM-driven promotion via SOP discipline; no sandbox, CN-market-first, not portable wholesale

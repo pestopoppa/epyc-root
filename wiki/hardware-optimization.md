@@ -2,7 +2,7 @@
 
 **Category**: `hardware_optimization`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 58 documents (added 2026-06-13 Fable 5 kernel/concurrency review and MI210 strategy refinement)
 
 ## Summary
@@ -18,7 +18,7 @@ The system's 1.13 TB RAM enables a HOT/WARM/COLD three-tier memory architecture.
 ## Key Findings
 
 - **MI210 GPU work should start with verify/profile harness discipline, not kernel generation alone (2026-06-05).** The active ROCm kernel-authoring cluster frames the first useful deliverable as a local MI210 verify/profile/benchmark backend with reproducible artifacts, not an agent that writes kernels directly into production. This keeps generated GPU kernels behind correctness tests, profiler evidence, and an explicit backend contract before any routing or inference path consumes them. Sources: [agentic-rocm-kernel-authoring.md](../handoffs/active/agentic-rocm-kernel-authoring.md), [rocm-verify-profile-backend.md](../handoffs/active/rocm-verify-profile-backend.md), [agentic ROCm deep dive](../research/deep-dives/agentic-rocm-kernel-authoring-geak-synthesis.md).
-- **GPU drafter work is a frontdoor-acceleration path, not a replacement for CPU topology optimization.** The GPU acceleration sources keep MI210 drafter experiments separate from CPU serving claims: CPU NUMA/matrix gates still govern production placement, while GPU experiments need their own verify/profile evidence and quality-preserving acceptance criteria before they can alter frontdoor or spec-dec routes. Sources: [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [single-instance-system-tuning.md](../handoffs/active/single-instance-system-tuning.md).
+- **GPU drafter work is a frontdoor-acceleration path, not a replacement for CPU topology optimization.** The GPU acceleration sources keep MI210 drafter experiments separate from CPU serving claims: CPU NUMA/matrix gates still govern production placement, while GPU experiments need their own verify/profile evidence and quality-preserving acceptance criteria before they can alter frontdoor or spec-dec routes. Sources: [gpu-acceleration-path.md](../handoffs/active/gpu-acceleration-path.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md), [single-instance-system-tuning.md](../handoffs/completed/single-instance-system-tuning.md).
 
 - **NUMA is the dominant optimization**: 4-way NUMA quarter pinning delivers 6-7x aggregate throughput on models up to 65 GB. Single-node (96 threads on one NUMA node) is 1.85x faster than all-cores (192 threads) for MoE models because cross-NUMA memory access penalty is devastating. [progress/2026-03-18, numa-orchestrator-deployment.md]
 - **MoE models are NUMA-sensitive, dense models are compute-sensitive**: Models with few active parameters (MoE) see 6-7x gains from NUMA pinning because cross-node memory access dominates cheap compute. Dense models see only ~2x because all parameters are active and 48 threads is not enough compute. Large hybrids (122B+) are recurrent-bottlenecked at ~12 t/s regardless of NUMA config. [numa-orchestrator-deployment.md]
@@ -80,6 +80,12 @@ Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-
 - **Architect 2-instance opportunity**: Qwen3.5-122B-A10B at 69 GB could run 2x96t for ~2x aggregate if architect throughput bottlenecks. Currently single-instance.
 - **Qwen3.5 hybrids are 2-3.6x faster than pure MoE at 122B+ scale** due to recurrent layers avoiding KV cache bandwidth costs. Consider replacing remaining MoE architect roles with hybrids if quality permits.
 - **Always sweep before deploying**: The bench_all_spec_sweeps.sh script produces comprehensive verification. Single-run extrapolations have been wrong by up to 3.6x.
+
+## 2026-06-15 Update — Benchmark Boundaries Stayed Narrow
+
+- **Canonical measurement now treats historical speed claims as observations unless the protocol is explicit.** The publication draft and public-results draft both separate protocol-tagged rows from claim-grade rows, so throughput claims can no longer float free of reps, date, and attestation. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
+- **Serving truth is generated, not hand-curated.** The live stack contract now flows through generated stack priors and exact holder accounting, which means hardware conclusions need to align with the actual launched topology instead of static model tables or stale role maps. Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [model-stack-single-source-update-pipeline.md](../handoffs/active/model-stack-single-source-update-pipeline.md).
+- **Batch=1 closure does not imply batch/eval closure.** Fable 5’s serving work keeps continuous batching and `-np` sweeps as separate measurements, so the remaining performance question is still the effect of concurrent prefill and eval fanout, not more extrapolation from the kernel-level decode result. Sources: [canonical-cpu-benchmarking-methodology-draft.md](../docs/publication/canonical-cpu-benchmarking-methodology-draft.md), [public-results-draft.md](../docs/publication/public-results-draft.md).
 
 ## Open Questions
 
@@ -168,7 +174,7 @@ Two paths to close the gap (both new 2026-04-23 handoffs):
 These become the baseline for CPU3 Phase 0 measurements under the new `cpu-inference-optimization-index.md` backlog.
 
 - [Intra-Process Tensor-Parallel Decode](/workspace/handoffs/active/intra-process-tensor-parallel-decode.md) -- new 2026-04-23, CCD sharding + comm-hiding, projected 2–5× single-instance
-- [Single-Instance System Tuning](/workspace/handoffs/active/single-instance-system-tuning.md) -- new 2026-04-23, NPS/THP/hugepages/barrier/IRQ audit, projected 15–40% alone
+- [Single-Instance System Tuning](/workspace/handoffs/completed/single-instance-system-tuning.md) -- new 2026-04-23, NPS/THP/hugepages/barrier/IRQ audit, projected 15–40% alone
 - [CPU Inference Optimization Index](/workspace/handoffs/active/cpu-inference-optimization-index.md) -- new 2026-04-23, backlog umbrella for all unimplemented CPU throughput techniques (CPU1–CPU14)
 - [HSD + Hierarchical Self-Speculation](/workspace/handoffs/completed/hsd-hierarchical-self-speculation.md) -- SSM checkpoint overhead analysis, self-speculation failure modes
 
@@ -923,7 +929,7 @@ v5 cherry-pick candidates have all passed PPL bit-exactness:
 ### Sources
 
 - [`handoffs/active/cpu-kernel-env-flags-inventory.md`](../handoffs/active/cpu-kernel-env-flags-inventory.md) — env-flag catalogue, P3 stability verdict, NUMA_WEIGHTS deprecation
-- [`handoffs/active/cpu-benchmark-rigor-and-revalidation.md`](../handoffs/active/cpu-benchmark-rigor-and-revalidation.md) — CPU20 protocol, canonical baseline config, replication rules
+- [`handoffs/completed/cpu-benchmark-rigor-and-revalidation.md`](../handoffs/completed/cpu-benchmark-rigor-and-revalidation.md) — CPU20 protocol, canonical baseline config, replication rules
 - [`handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md`](../handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md) — CPU21 libomp +6.4% Coder, affinity stack +3–8%, schedule per-role opt-in
 - [`handoffs/completed/cpu-context-regime-coverage.md`](../handoffs/completed/cpu-context-regime-coverage.md) — CPU23 Phase 2.2 TTFT / interference findings
 - [`handoffs/active/cpu-shape-specialized-gemv-decode.md`](../handoffs/active/cpu-shape-specialized-gemv-decode.md) — CPU2 Q8_0 8x8 AVX-512BW kernel +31.8% at 1t
@@ -963,9 +969,9 @@ Gate (≥+5%): NOT MET (was actually NEUTRAL, not regression). Patch stays in tr
 
 Two new design notes landed on 2026-04-29 enumerating the still-open CPU4 + CPU22 deferred avenues:
 
-- [`cpu22-hybrid-spillover-design.md`](../handoffs/active/cpu22-hybrid-spillover-design.md) — 3 variants of hybrid static+dynamic work distribution. Gain ceilings 1-7% (capped by CPU24's 15% sync share, mostly already captured by existing per-expert dynamic chunk-stealing). LOC 100-300. Single-atomic contention risk class same as failed CPU22 #1.
+- [`cpu22-hybrid-spillover-design.md`](../handoffs/completed/cpu22-hybrid-spillover-design.md) — 3 variants of hybrid static+dynamic work distribution. Gain ceilings 1-7% (capped by CPU24's 15% sync share, mostly already captured by existing per-expert dynamic chunk-stealing). LOC 100-300. Single-atomic contention risk class same as failed CPU22 #1.
 
-- [`wdata-aware-mul-mat-coalescing-design.md`](../handoffs/active/wdata-aware-mul-mat-coalescing-design.md) — architectural change to `ggml_cplan` (per-op wdata segments instead of shared `work_data`). Allows MUL_MAT pairs to coalesce safely. LOC 260-410. ABI implications. Gain ceiling 9.5-14% barrier reduction → 2-7% t/s estimate (universal across architectures).
+- [`wdata-aware-mul-mat-coalescing-design.md`](../handoffs/completed/wdata-aware-mul-mat-coalescing-design.md) — architectural change to `ggml_cplan` (per-op wdata segments instead of shared `work_data`). Allows MUL_MAT pairs to coalesce safely. LOC 260-410. ABI implications. Gain ceiling 9.5-14% barrier reduction → 2-7% t/s estimate (universal across architectures).
 
 Both have similar gain-per-LOC (~0.01-0.03% per LOC). Neither strongly compelling for Phase 1.
 
@@ -1155,7 +1161,7 @@ Two reference numbers that anchor any CPU decode performance claim on this host:
 - **614 GB/s socket theoretical**: EPYC 9655 has 12 DDR5 channels at DDR5-6400 MT/s. `12 × 6400 × 8 = 614.4 GB/s`. Earlier text in some handoffs (now corrected) wrote 307 GB/s — that was wrong. Under NPS4 the 12 channels are split 3 per NUMA node → ~153.6 GB/s per-node theoretical.
 - **~460 GB/s aggregate practical ceiling** under `--interleave=all` (per `feedback_canonical_baseline_protocol`) — ~75% of theoretical. Report achieved BW against **both** numbers: one answers "am I close to physics?", the other answers "am I close to what this configuration actually achieves?".
 
-**AMD Zen 5 perf counters** (NOT Intel). Initial draft of [`cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) prescribed `fp_arith_inst_retired.*` + `uncore_imc/cas_count_*` which `perf list` on this AMD host rejects. The Zen-5-correct families are:
+**AMD Zen 5 perf counters** (NOT Intel). Initial draft of [`cpu-decode-flops-roofline-audit.md`](../handoffs/completed/cpu-decode-flops-roofline-audit.md) prescribed `fp_arith_inst_retired.*` + `uncore_imc/cas_count_*` which `perf list` on this AMD host rejects. The Zen-5-correct families are:
 - FP retire (sum sub-events; `mac_flops` counts FMAs as 2 ops): `fp_ret_sse_avx_ops.{all,mac_flops,add_sub_flops,mult_flops,div_flops}`
 - DRAM via Data Fabric PMU (if kernel-exposed): `amd_df/cs_dispatched_*/` — event codes are Zen-revision-specific, confirm with `perf list amd_df/*`
 - DRAM alternatives in priority order: PCM `pcm-memory` (recent builds support AMD) → AMD μProf `AMDuProfPcm` → `numastat` `numa_hit` pre/post-delta fallback (coarse but always available)
@@ -1164,13 +1170,13 @@ The roofline audit handoff is **blocked at Status: DRAFT** until Phase 0 counter
 
 **Decision rule (consistent across all referencing docs)**: achieved FLOPS < 10% of ~9.2 TFLOPS FP32 socket theoretical AND achieved DRAM BW > 70% of 614 GB/s socket theoretical → BW-bound; diffusion-LM port variants (Nemotron-LD Variant B TiDAR-pattern, C1/C2 hybrids) have FLOPS margin worth converting.
 
-Sources: [`handoffs/active/cpu-decode-flops-roofline-audit.md`](../handoffs/active/cpu-decode-flops-roofline-audit.md) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · `feedback_canonical_baseline_protocol` · `feedback_no_concurrent_inference` · `progress/2026-05/2026-05-28.md` §research-intake-batch §Phase-6/7.
+Sources: [`handoffs/completed/cpu-decode-flops-roofline-audit.md`](../handoffs/completed/cpu-decode-flops-roofline-audit.md) · [`research/deep-dives/nemotron-labs-diffusion-tri-mode.md` §10](../research/deep-dives/nemotron-labs-diffusion-tri-mode.md) · `feedback_canonical_baseline_protocol` · `feedback_no_concurrent_inference` · `progress/2026-05/2026-05-28.md` §research-intake-batch §Phase-6/7.
 
 ## CPU15 / CPU20 active-surface correction (2026-05-28)
 
 The handoff compaction pass corrected a recurring CPU-optimization ambiguity: completed CPU15 expert-parallelism infrastructure is not a production default. The active CPU15 handoff now treats EP as default-off infrastructure that requires CPU20-compliant canonical revalidation before any deployment claim is revived. Old frontdoor EP win/regression claims were softened across the CPU index, environment-flag inventory, NPS reboot runbook, MoE-Spec notes, and master-index history so future agents do not treat superseded measurements as current rollout instructions.
 
-The practical rule for hardware work is unchanged but now easier to find: CPU20 protocol compliance and current bottleneck proof are prerequisites for reopening TP/EP/kernel levers. The completed ledgers remain useful evidence, but the active handoffs hold the current gates and revalidation checklist. Sources: [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md), [`large-moe-expert-parallelism-completed-through-2026-05-28.md`](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md), [`cpu-benchmark-rigor-and-revalidation.md`](../handoffs/active/cpu-benchmark-rigor-and-revalidation.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
+The practical rule for hardware work is unchanged but now easier to find: CPU20 protocol compliance and current bottleneck proof are prerequisites for reopening TP/EP/kernel levers. The completed ledgers remain useful evidence, but the active handoffs hold the current gates and revalidation checklist. Sources: [`large-moe-expert-parallelism.md`](../handoffs/active/large-moe-expert-parallelism.md), [`large-moe-expert-parallelism-completed-through-2026-05-28.md`](../handoffs/completed/large-moe-expert-parallelism-completed-through-2026-05-28.md), [`cpu-benchmark-rigor-and-revalidation.md`](../handoffs/completed/cpu-benchmark-rigor-and-revalidation.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
 
 ## 2026-06-03 — Agentic ROCm kernel authoring on MI210 (GEAK family, intake-660–679)
 

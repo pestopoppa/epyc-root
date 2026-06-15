@@ -2,7 +2,7 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-06-13
+**Last compiled**: 2026-06-15
 **Sources**: 31 documents (added 2026-06-13 internal KB-RAG K7 seed/certification status)
 
 ## Summary
@@ -68,6 +68,12 @@ The internal markdown KB-RAG path has moved from planned architecture to measura
 The live decision remains open because the 20-case seed suite is not the certification pool. The final 70-case set now exists and validates evidence file paths, protocol counts, and duplicate IDs. Retrieval claims should use the upcoming certification sweep, not the seed calibration numbers.
 
 Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+
+## 2026-06-15 Update — K7 Certification, Not Just Seed Calibration
+
+- **Internal KB-RAG has crossed from seed calibration to certification planning.** The fresh K7 build indexed 577 files into 18,010 chunks with roughly 1.2 GiB of embeddings; the 20-case seed suite chose `recency_w0.1_s90` at 0.6417 recall@10, but that number is explicitly calibration only until the 70-case certification pool runs. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+- **The search frontend remains SearXNG plus Crawl4AI.** SearXNG provides the structured multi-engine search layer, while Crawl4AI is the local extraction path for JS-heavy pages and PDFs; `localhost:8888` stays the search endpoint and `11235` the Crawl4AI service. Source: [searxng-search-backend.md](../handoffs/active/searxng-search-backend.md).
+- **RAG and search are explicitly separate from governance.** The wiki compilation pipeline still consumes handoffs and progress logs after curation, while KB-RAG handles ad hoc retrieval during agent runs; the two are complementary, not competing retrieval systems. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 
 ## Actionable for EPYC
 
