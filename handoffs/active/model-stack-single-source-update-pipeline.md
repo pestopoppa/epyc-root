@@ -170,6 +170,9 @@ unowned local constants.
   `Role.from_string()` and drops the duplicate `worker_explore` color entry,
   so dashboard status labels keep the live worker color without carrying the
   retired alias as a separate swatch.
+- Dashboard topology service hints now derive the `worker_fast` port from the
+  live stack manifest instead of a hardcoded `8102` literal, so the fallback
+  port label stays aligned with the manifest-backed service truth.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
@@ -219,6 +222,8 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
+- [x] Keep dashboard topology service hints aligned with the live manifest
+  instead of a hardcoded `worker_fast` port literal.
 - [x] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
   canonical live worker role, not the retired `worker_explore` alias.
 - [x] Keep ingress worker aliases in
