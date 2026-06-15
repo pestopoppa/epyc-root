@@ -294,6 +294,10 @@ RI-13 is explicitly conditional. The cheap-first path is the unconditional J14 s
 
 The worker-task routing layer in `src/llm_primitives/primitives.py` now points generic exploration/summarization/understanding work at `Role.WORKER_GENERAL` rather than carrying a local `worker_explore` literal. This is a small but useful example of the broader routing rule: generic worker-family paths should read canonical role truth, while specialized coding bursts can keep their explicit `worker_coder` target until that family is normalized separately.
 
+## Chat-completions fallback canonicalization (2026-06-15)
+
+The degraded `/v1/chat/completions` fallback set in `src/chat_completions_roles.py` now uses `Role` constants for the narrow compatibility table. That keeps the fallback aligned with the same canonical role definitions used by routing and backend setup, while still preserving the explicit degraded path when live stack priors are missing.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.

@@ -168,6 +168,8 @@ Any future stack update should be accepted only when these hold:
   artifacts, promotion-gate execution, and selected consumers move together.
 - [ ] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
+- [ ] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
+  expressed through canonical `Role` constants instead of duplicated literals.
 - [ ] Keep prompt-family fallback logic aligned with canonical role truth, not
   with ad hoc alias tables.
 - [ ] Keep worker-task routing defaults in `src/llm_primitives/primitives.py`
