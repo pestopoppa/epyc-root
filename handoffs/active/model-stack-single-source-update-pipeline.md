@@ -90,6 +90,10 @@ unowned local constants.
 - `scripts/autopilot/gen_system_card.py` now derives its legacy-role note from
   live stack-prior role records instead of parsing the rendered markdown table,
   and the checked-in system card was regenerated from the current live state.
+- `scripts/registry/render_stack_summary.py` now uses the typed
+  `stack_prior_endpoint_port()` helper for stack-prior rows instead of parsing
+  URLs with a local regex helper, so the generated summary path stays aligned
+  with the structured stack-prior API.
 - `scripts.server.stack_manifest.validate_against_registry()` now derives its
   launcher-only skip set from the live hot/warm sets, and
   `scripts/registry/stack_change_pipeline.py update` refreshed the generated
