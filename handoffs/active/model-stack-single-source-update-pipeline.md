@@ -453,6 +453,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the quantization summary aligned with the live
   `architect_general` production slot and mark the REAP `architect_coding`
   row as historical only.
+- [x] Keep the generated system card note aligned with the live
+  `architect_general` architect slot and mark `architect_coding` as historical
+  only.
 - [x] Keep the storage-safety HOT tier row aligned with the live
   `architect_general` 8083 slot instead of the retired architect-coding
   row, and remove the stale warm duplicate entry.
