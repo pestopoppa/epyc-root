@@ -116,7 +116,7 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 ## Open Questions
 
 - Does the ~15pp accuracy ceiling from text-only compression (vs. KV-retaining Memento) apply to non-reasoning workloads (code generation, general QA), or is it specific to competition math where reasoning chains carry dense information?
-- What is the quality threshold for our 7B `worker_explore` as a session summarizer? ReSum shows even 30B untrained models fail. Can prompt engineering compensate, or is SFT specialization mandatory?
+- What is the quality threshold for our 7B `worker_general` as a session summarizer? ReSum shows even 30B untrained models fail. Can prompt engineering compensate, or is SFT specialization mandatory?
 - How does segment retention scoring interact with observation masking? intake-274 suggests masking old observations is equivalent to high recency weight -- should we collapse these into a single mechanism?
 - Bullet-list vs. narrative consolidation format: intake-273 (context rot) finds shuffled content outperforms structured content for retrieval tasks, but this may reverse for reasoning. A/B test needed.
 - What is the break-even point for multi-layer compression stacking (KV quantization + block masking + compaction)? Each pair tested independently; quality cliff under triple stacking is the key unknown. Theoretical combined: up to 120x; conservative estimate: 40x.
