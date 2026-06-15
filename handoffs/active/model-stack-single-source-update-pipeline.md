@@ -169,6 +169,11 @@ unowned local constants.
   live `worker_general` registry role and `ingest` still resolves to the live
   `ingest_long_context` registry role instead of surviving as separate
   routing spellings.
+- `src.proactive_delegation.ProactiveDelegator` now canonicalizes step actors
+  through the same live-role helper plus chain-name fallback, so the
+  execution path no longer keeps a generic `worker` alias branch in the local
+  compatibility table; `worker_explore` still lands on `worker_general` and
+  `worker` still resolves through the chain helper.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
