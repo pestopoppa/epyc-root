@@ -317,6 +317,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep proactive-delegation actor lookup canonicalized at the role
   boundary so `worker_explore` resolves through the live `worker_general`
   path before the legacy fallback is applied.
+- [x] Keep chat timeout fallback lookup canonicalized at the role boundary so
+  `worker_explore` reuses the live `worker_general` timeout while
+  `worker_fast` keeps its distinct warm-tier timeout.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
