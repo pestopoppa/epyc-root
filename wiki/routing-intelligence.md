@@ -394,8 +394,9 @@ the stack-prior compiler before using the old dict-only degraded fallback, and
 `gen_system_card.py` shares that compiled path. The new tests prove missing
 stack priors no longer make operator summaries trust stale registry alias rows.
 
-The next characterized HIGH candidate is
-`scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`: preserve the
-current flat/roles/basename fallback ladder with characterization tests before
-adding any path-containment hardening. X-MAS enforce routing stays gated on a
-validated complete 5x5 winner table plus route-mutation tests.
+The HIGH PromptForge resolver was handled after characterization:
+`scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path` now preserves
+the current flat/roles/basename fallback ladder for prompt mutation and GEPA
+optimization while rejecting parent-directory and symlink escapes outside the
+prompt root. X-MAS enforce routing stays gated on a validated complete 5x5
+winner table plus route-mutation tests.

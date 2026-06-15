@@ -333,11 +333,12 @@ Any future stack update should be accepted only when these hold:
   renders those rows through the stack-prior row formatter. Orchestrator
   `a0179cc` added tests proving missing stack priors no longer make the
   operator summary trust stale registry alias rows.
-- [ ] Next characterized high-risk candidate:
+- [x] Handle the high-risk PromptForge path resolver:
   `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path` (HIGH).
-  Current behavior is an ordered flat/roles/basename fallback ladder used by
-  both prompt mutation and GEPA optimization. Add characterization tests for
-  that ladder before any containment hardening.
+  Orchestrator `4a21649` added characterization tests for the existing
+  flat/roles/basename fallback ladder, preserved read/write precedence for
+  prompt mutation and GEPA optimization, and added containment checks so
+  parent-directory and symlink escapes fail closed.
 - [ ] X-MAS production routing remains a larger gated move. The scaffold is
   metadata-only today; real enforce behavior needs a validated complete 5x5
   winner table, confidence/fallback semantics, and route-mutation tests that
@@ -474,9 +475,6 @@ Any future stack update should be accepted only when these hold:
   no longer re-adds shared aliases that `write_model_descriptors()` already expands.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
-- [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
-  until a broader review clears its HIGH blast radius; keep the current
-  filename-relative fallback intact for now.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
