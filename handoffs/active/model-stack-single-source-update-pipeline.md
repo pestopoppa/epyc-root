@@ -175,6 +175,9 @@ Any future stack update should be accepted only when these hold:
 - [ ] Keep delegation report helper role buckets in
   `src/api/routes/chat_delegation_reports.py` aligned with canonical `Role`
   constants and trace logging intact.
+- [ ] Keep fast-revise worker roles in `src/api/routes/chat_review.py`
+  pointed at the canonical live worker role rather than the retired
+  `worker_explore` alias.
 - [ ] Keep ingress worker aliases in
   `src/api/routes/chat_pipeline/routing_decision.py` pinned to canonical
   `Role.WORKER_GENERAL` values instead of local literals.
