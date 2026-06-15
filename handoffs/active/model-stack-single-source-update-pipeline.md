@@ -101,10 +101,13 @@ unowned local constants.
   family fallback before the older structural `<prefix>_general` fallback, so
   legacy aliases such as `worker_explore` still resolve through the canonical
   worker-family prompt file when a role-specific file is absent.
+- `src/config/stack_templates.py` now checks template roles against live
+  stack-prior role records instead of a local retired-role denylist, removing
+  the last active-code retired-role guard warning from the stack-change scan.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
-  `2 unique / 2 total`, both owned expiring `waived_production_blocker` guards.
+  `0 unique / 0 total`.
 - W4 promotion-gate execution/failure coverage landed in Orchestrator
   `d9fd1eb`; system-card swap visibility landed in `4aed83d`;
   health/dashboard stack-prior witnesses landed in `8beaf79`; routing/API
