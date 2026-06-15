@@ -439,6 +439,8 @@ Any future stack update should be accepted only when these hold:
   `wiki/memory-augmented.md` and `handoffs/active/routing-truth-restoration.md`
   so the current docs only describe the canonical worker-general family in
   those live examples.
+- [x] Keep the strategy-store epoch-hash note aligned with the canonical
+  worker prompt path rather than naming the legacy prompt path inline.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
