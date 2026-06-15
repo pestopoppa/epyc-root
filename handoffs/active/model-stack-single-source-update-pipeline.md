@@ -47,6 +47,7 @@ unowned local constants.
   benchmark preflight all run the canonical stack-change gate before mutating
   runtime state.
 - Direct benchmark runtime enforcement is closed by Orchestrator `09d9028`.
+- `src.api.admission.AdmissionController.from_defaults()` now loads the current stack-prior-derived backend limits at instantiation time, so new app-state admission controllers pick up fresh generated limits instead of reusing the import-time snapshot.
 - Seeding reward-prior helpers were tightened on 2026-06-15: generated
   stack-prior live-role records now drive both throughput-prior and
   architect-action role extraction in `scripts/benchmark/seeding_rewards.py`,
