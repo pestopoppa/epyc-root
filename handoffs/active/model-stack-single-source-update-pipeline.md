@@ -112,6 +112,10 @@ unowned local constants.
   the computed `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of a
   direct role→port fallback table, while still preferring live stack-prior
   records when they exist.
+- `orchestration.repl_memory.routing_classifier.RoutingClassifier.load()`
+  now canonicalizes loaded action labels through `Role.from_string()` so
+  serialized alias labels like `worker_explore` and `coder` rehydrate to the
+  live canonical roles before the fast-path serves them.
 - `src.cli_orch.cmd_status()` and `scripts.autopilot.preflight_audit` now
   derive their degraded probe/health target lists from the computed
   `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of walking a direct
@@ -265,7 +269,9 @@ Any future stack update should be accepted only when these hold:
   migrating config or runtime consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers from the manifest,
   starting with the next surface that still carries local model facts or
-  duplicated stack-prior traversal.
+  duplicated stack-prior traversal. The routing-classifier loader is covered
+  now; the next surface should be another live consumer with a stale local
+  model fact or alias table.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
