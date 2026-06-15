@@ -51,6 +51,8 @@ unowned local constants.
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
   `2 unique / 2 total`, both owned expiring `waived_production_blocker` guards.
+- W4 promotion-gate execution/failure coverage landed in Orchestrator
+  `d9fd1eb`; broader simulated swap coverage remains open.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
@@ -75,7 +77,7 @@ Any future stack update should be accepted only when these hold:
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config or runtime consumers.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
-  artifacts and selected consumers move together.
+  artifacts, promotion-gate execution, and selected consumers move together.
 - [ ] Keep completed implementation logs out of active indices; record future
   closures in `progress/` and move closed handoff material to
   `handoffs/completed/` or `handoffs/archived/`.

@@ -51,6 +51,8 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
   remaining retired-role doc mentions as historical notes, and `7ad5965` moved
   legacy seed fixtures to exact inline allowances.
+- W4 promotion-gate execution/failure coverage landed in Orchestrator
+  `d9fd1eb`; representative swap-CI still needs broader consumer coverage.
 
 ## Outstanding Work
 
@@ -58,9 +60,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
-- [ ] Add/finish W4 swap-CI so representative stack changes prove generated
-  descriptors, stack priors, q_scorer priors, operator summary, and selected
-  consumer witnesses move together.
+- [ ] Finish W4 swap-CI so representative stack changes prove generated
+  descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
+  execution, and selected consumer witnesses move together.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
