@@ -322,6 +322,10 @@ Any future stack update should be accepted only when these hold:
   (CRITICAL) and `scripts/registry/render_stack_summary.py:registry_role_rows`
   (HIGH). Both are parked until an explicit high-risk follow-up is
   authorized.
+- [ ] GitNexus impact on `scripts/registry/render_stack_summary.py:registry_role_rows`
+  is `impactedCount=13`, `processes_affected=1`, `modules_affected=3`,
+  with `_run_loop_inner` as the earliest broken step. Keep this parked unless
+  a narrower helper seam appears.
 - [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`
