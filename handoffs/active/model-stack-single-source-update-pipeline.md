@@ -90,6 +90,10 @@ unowned local constants.
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
   path.
+- `src.prompt_builders.resolver.get_direct_answer_prefix()` now canonicalizes
+  its role input through `Role.from_string()` and uses `frontdoor` +
+  `worker_general` as the stored direct-answer roles, replacing the old
+  `worker_explore` literal.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
