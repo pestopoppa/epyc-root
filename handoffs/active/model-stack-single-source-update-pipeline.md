@@ -236,6 +236,9 @@ Any future stack update should be accepted only when these hold:
   reintroducing scattered alias tables in route helpers.
 - [x] Keep delegate-target validation tied to the live delegate allowlist, not
   to static route-local role sets.
+- [x] Keep `src/tools/web/research.py` synthesis targeting aligned with live
+  worker-general stack priors instead of a hardcoded `8082` endpoint and
+  frozen chat-template hint.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
