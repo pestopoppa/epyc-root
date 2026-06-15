@@ -289,6 +289,9 @@ Any future stack update should be accepted only when these hold:
   priors before it drops to the final degraded no-op path.
 - [x] Keep KV-compression degraded production ports derived from the live
   stack manifest instead of a manual fallback table.
+- [x] Keep proactive-delegation actor lookup canonicalized at the role
+  boundary so `worker_explore` resolves through the live `worker_general`
+  path before the legacy fallback is applied.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
