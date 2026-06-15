@@ -281,8 +281,11 @@ Any future stack update should be accepted only when these hold:
   starting with the next surface that still carries local model facts or
   duplicated stack-prior traversal. The routing-classifier loader is covered
   now, and the classifier artifact saver follows the same canonical path;
-  the next surface should be another live consumer with a stale local model
-  fact or alias table.
+  the ingress-role normalizer in `src/api/routes/chat_pipeline/routing_decision.py`
+  now also resolves `worker_coder` / `worker_code` through canonical
+  `Role.WORKER_GENERAL` rather than a local alias dict, so the remaining live
+  tail should be another consumer with a concrete stale model fact or route
+  boundary alias table.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
