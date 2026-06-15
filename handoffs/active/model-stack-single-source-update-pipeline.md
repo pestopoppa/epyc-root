@@ -164,6 +164,10 @@ unowned local constants.
   canonicalizes its input through `Role.from_string()` before consulting the
   shared timeout table, so `worker_explore` / `worker_fast` callers route
   through the live worker timeout path instead of a raw alias lookup.
+- `TimeoutsConfig.for_role()` and `role_timeouts_dict()` now present
+  `worker_explore` / `worker_fast` through the live `worker_general`
+  timeout path when materializing shared timeout tables, keeping the runtime
+  role table and the role-boundary lookup aligned.
 - The same server-URL fallback table no longer keeps separate `coder`,
   `worker`, or `worker_coder` literals; those paths already resolve through
   the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
@@ -296,6 +300,8 @@ Any future stack update should be accepted only when these hold:
   `worker_general` timeout path instead of a separate alias-specific lookup.
 - [x] Keep chat timeout lookup canonicalized at the role boundary so worker
   aliases reuse the live worker timeout path instead of raw alias lookups.
+- [x] Keep the shared timeout table canonicalized for `worker_explore` and
+  `worker_fast` so it matches the live `worker_general` timeout path.
 - [x] Keep inference-tap stream policy canonicalized at the role boundary so
   aliases like `worker_explore` and `worker_fast` follow live worker policy.
 - [x] Keep the remaining lock/tap degraded fallback sets spelled through
