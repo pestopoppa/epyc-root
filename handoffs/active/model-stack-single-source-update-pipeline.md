@@ -164,9 +164,11 @@ unowned local constants.
   `worker_general` role instead of surfacing a separate alias path.
 - `src.orchestration.dispatcher.Dispatcher` now canonicalizes TaskIR
   `role`/`model_hint` values and step actors through the canonical role
-  helper before applying the local compatibility map, so alias inputs like
-  `worker_explore` collapse onto the live `worker_general` registry role
-  instead of surviving as separate routing spellings.
+  helper and generic chain-name fallback before applying the local
+  compatibility map, so alias inputs like `worker_explore` collapse onto the
+  live `worker_general` registry role and `ingest` still resolves to the live
+  `ingest_long_context` registry role instead of surviving as separate
+  routing spellings.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
