@@ -435,11 +435,10 @@ Any future stack update should be accepted only when these hold:
   `_build_worker_general_command()` while preserving the retired
   `_build_worker_explore_command()` wrapper for compatibility.
 - [x] Keep live inference-serving docs aligned with the canonical worker
-  spelling so current rows and examples use `worker_general` in live
-  examples.
+  spelling so current rows and examples use canonical live-worker wording.
 - [x] Keep the local-inference operating-point note aligned with canonical
-  worker spelling so the 96t production baseline is described as
-  `worker_general`.
+  worker spelling so the 96t production baseline is described with the live
+  worker name.
 - [x] Keep the current serving alias note canonical in `wiki/inference-serving.md`
   without reviving the retired spelling.
 - [x] Keep the current worker-general example docs aligned in
