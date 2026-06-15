@@ -116,6 +116,8 @@ unowned local constants.
   now canonicalizes loaded action labels through `Role.from_string()` so
   serialized alias labels like `worker_explore` and `coder` rehydrate to the
   live canonical roles before the fast-path serves them.
+- `RoutingClassifier.save()` now writes canonical label values too, so new
+  classifier artifacts stop reintroducing stale alias spellings on disk.
 - `src.cli_orch.cmd_status()` and `scripts.autopilot.preflight_audit` now
   derive their degraded probe/health target lists from the computed
   `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of walking a direct
@@ -270,8 +272,9 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers from the manifest,
   starting with the next surface that still carries local model facts or
   duplicated stack-prior traversal. The routing-classifier loader is covered
-  now; the next surface should be another live consumer with a stale local
-  model fact or alias table.
+  now, and the classifier artifact saver follows the same canonical path;
+  the next surface should be another live consumer with a stale local model
+  fact or alias table.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
