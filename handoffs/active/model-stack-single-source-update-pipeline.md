@@ -50,6 +50,7 @@ unowned local constants.
 - `src.api.admission.AdmissionController.from_defaults()` now loads the current stack-prior-derived backend limits at instantiation time, so new app-state admission controllers pick up fresh generated limits instead of reusing the import-time snapshot.
 - `src.config.models.TimeoutsConfig` now shares a single role-timeout mapping helper across `for_role()` and `role_timeouts_dict()`, so the backward-compatible alias surface is derived from one canonical timeout table instead of duplicate local dict literals.
 - `scripts.server.stack_manifest.LAUNCH_KV_QUANT_CONFIGS` now keeps only canonical worker KV entries, while `src.registry.stack_priors._launch_runtime_record()` canonicalizes `worker_explore` / `worker_general` before selecting KV types so alias callers still resolve through the live worker path without duplicating the manifest table.
+- `scripts.server.stack_commands._launch_contract_for_process()` now canonicalizes alias role names through `Role.from_string()` before runtime attestation resolves the live launch contract, so `worker_explore` can still attach to the canonical `worker_general` contract instead of relying only on the raw lookup or port scan fallback.
 - Seeding reward-prior helpers were tightened on 2026-06-15: generated
   stack-prior live-role records now drive both throughput-prior and
   architect-action role extraction in `scripts/benchmark/seeding_rewards.py`,
