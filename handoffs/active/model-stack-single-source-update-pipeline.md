@@ -158,6 +158,10 @@ unowned local constants.
   health/dashboard stack-prior witnesses landed in `8beaf79`; routing/API
   role-surface witnesses landed in `edd20f7`; broader simulated swap coverage
   remains open as new high-risk consumers are migrated.
+- Dashboard topology color resolution now canonicalizes role aliases through
+  `Role.from_string()` and drops the duplicate `worker_explore` color entry,
+  so dashboard status labels keep the live worker color without carrying the
+  retired alias as a separate swatch.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
