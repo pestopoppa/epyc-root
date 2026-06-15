@@ -63,6 +63,10 @@ unowned local constants.
 - Registry-based scorer fallbacks were also consolidated on 2026-06-15 via a
   shared `_registry_role_records()` helper, reducing duplicate roles-map walks
   without changing the fallback semantics.
+- The architect investigate prompt now renders its valid-role allowlist from
+  live stack truth in both `src/prompt_builders/review.py` and
+  `orchestration/prompts/architect_investigate.md`, keeping prompt labels in
+  sync with current delegation targets.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -100,6 +104,8 @@ Any future stack update should be accepted only when these hold:
   duplicated stack-prior traversal.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
+- [ ] Keep prompt-builder allowlists and delegation labels aligned with live
+  stack truth rather than static role lists.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
