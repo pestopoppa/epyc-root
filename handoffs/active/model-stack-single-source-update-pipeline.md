@@ -239,6 +239,8 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep `src/tools/web/research.py` synthesis targeting aligned with live
   worker-general stack priors instead of a hardcoded `8082` endpoint and
   frozen chat-template hint.
+- [x] Keep health-route fallback backend URLs aligned with manifest-owned hot
+  roles instead of a static core-role tuple.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
