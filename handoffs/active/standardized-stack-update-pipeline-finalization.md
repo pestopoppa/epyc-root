@@ -53,7 +53,8 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   legacy seed fixtures to exact inline allowances.
 - W4 promotion-gate execution/failure coverage landed in Orchestrator
   `d9fd1eb`; system-card swap visibility landed in `4aed83d`;
-  representative swap-CI still needs broader consumer coverage.
+  health/dashboard stack-prior witnesses landed in `8beaf79`; representative
+  swap-CI still needs broader consumer coverage.
 
 ## Outstanding Work
 
