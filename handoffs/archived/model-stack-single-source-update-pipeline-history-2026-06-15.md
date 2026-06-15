@@ -1742,3 +1742,10 @@ after they were validated and checkpointed in `progress/`:
 - `scripts.benchmark.seeding_types` canonicalized the live `worker_explore`
   seeding role to `worker_general` in active-role discovery while preserving
   the compatibility cost-tier floor for legacy reward-chain consumers.
+- `src.config.models.TimeoutsConfig` now resolves `worker_explore` through the
+  live `worker_general` timeout path, while `worker_fast` remains a distinct
+  warm-tier timeout in both the dataclass and the runtime config builder.
+- `src.api.routes.chat_utils.RoutingResult.timeout_for_role()` now canonicalizes
+  role inputs at the boundary before consulting the shared timeout table, so
+  `worker_explore` routes through the live worker timeout path while
+  `worker_fast` keeps its separate warm-tier timeout.

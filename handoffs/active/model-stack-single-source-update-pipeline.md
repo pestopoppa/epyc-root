@@ -157,18 +157,6 @@ unowned local constants.
   through the canonical `worker_general` alias path before falling back, so
   the config server-URL default no longer carries a separate worker-explore
   literal while preserving the compatibility URL.
-- `TimeoutsConfig.worker_explore` now inherits the live `worker_general`
-  timeout fallback instead of maintaining a separate alias-specific default,
-  and the runtime config builder follows the same canonical path.
-- `RoutingResult.timeout_for_role()` in `src/api/routes/chat_utils.py` now
-  canonicalizes its input through `Role.from_string()` before consulting the
-  shared timeout table, so `worker_explore` callers route through the live
-  worker timeout path instead of a raw alias lookup. `worker_fast` keeps its
-  distinct warm-tier timeout.
-- `TimeoutsConfig.for_role()` and `role_timeouts_dict()` now present
-  `worker_explore` through the live `worker_general` timeout path when
-  materializing shared timeout tables, while preserving the distinct
-  `worker_fast` warm-tier timeout in the compatibility table.
 - The same server-URL fallback table no longer keeps separate `coder`,
   `worker`, or `worker_coder` literals; those paths already resolve through
   the canonical `coder_escalation`, `worker_general`, and `worker_fast` alias
@@ -297,12 +285,6 @@ Any future stack update should be accepted only when these hold:
   worker roles instead of a stale `worker_explore` fallback literal.
 - [x] Keep config-catalog `worker_explore` URL defaults aliased through the
   canonical `worker_general` path instead of a duplicated legacy literal.
-- [x] Keep the `worker_explore` timeout default inherited from the live
-  `worker_general` timeout path instead of a separate alias-specific lookup.
-- [x] Keep chat timeout lookup canonicalized at the role boundary so worker
-  aliases reuse the live worker timeout path instead of raw alias lookups.
-- [x] Keep the shared timeout table canonicalized for `worker_explore` while
-  preserving the distinct `worker_fast` warm-tier timeout.
 - [x] Keep inference-tap stream policy canonicalized at the role boundary so
   aliases like `worker_explore` and `worker_fast` follow live worker policy.
 - [x] Keep the remaining lock/tap degraded fallback sets spelled through
