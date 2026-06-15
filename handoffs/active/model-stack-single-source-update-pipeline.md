@@ -285,6 +285,10 @@ remaining open lanes.
   live stack manifest instead of a hardcoded `8102` literal, so the fallback
   port label stays aligned with the manifest-backed service truth and no
   standalone service-port fallback remains in the dashboard helper.
+- Current handoff examples that still referenced the retired worker spelling
+  now use `worker_general` in the live comparison rows, keeping the active
+  docs aligned with the canonical worker role while leaving historical notes
+  untouched.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract

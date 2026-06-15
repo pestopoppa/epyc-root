@@ -59,7 +59,7 @@ Measure single-instance and NUMA-4-way decode throughput on `unsloth/Qwen3.6-27B
 - Persist results (per `feedback_incremental_persistence`)
 - Compare against:
   - Qwen3.5-27B baseline (validates architecture-class equivalence)
-  - Production `worker_explore` (30B-A3B Q4_K_M @ 49.1 t/s 96t-single-node — `project_96t_single_node_operating_point`)
+  - Production `worker_general` (30B-A3B Q4_K_M @ 49.1 t/s 96t-single-node — `project_96t_single_node_operating_point`)
 
 **Decision gate**: if measured throughput is materially below the BW-roofline projection (e.g. <5 t/s single-instance), abandon further evaluation.
 
