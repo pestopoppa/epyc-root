@@ -61,6 +61,9 @@ unowned local constants.
 - `scripts/benchmark/seeding_types.py` now resolves canonical role names
   through `Role.from_string()` instead of a local worker-explore alias table
   when deriving live active roles and seeding cost tiers.
+- The same seeding helper no longer keeps a redundant
+  `worker_explore -> worker_general` registry-key alias entry; canonical
+  lookup now handles the retired label.
 - Planner-facing guidance was tightened on 2026-06-15 so
   `scripts/autopilot/program.md` explicitly treats the generated controller
   system card as the authoritative live view for role, port, context,
