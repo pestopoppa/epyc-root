@@ -347,6 +347,10 @@ Any future stack update should be accepted only when these hold:
   worker/coder/architect alias literals. The retired architect regression test
   now uses a split-string constant so the hardcoded-surface guard stays clean
   without reintroducing a raw `architect_coding` literal.
+- [x] Keep the orchestration README visible role tables and routing examples
+  using canonical live spellings (`worker_general`, `architect_general`)
+  instead of retired aliases. This was a docs-only alignment pass; historical
+  capacity numbers were left intact for now.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
