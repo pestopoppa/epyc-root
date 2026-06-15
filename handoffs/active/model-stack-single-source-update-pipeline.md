@@ -181,6 +181,8 @@ Any future stack update should be accepted only when these hold:
 - [ ] Keep the chat cheap-first gate in `src/api/routes/chat.py` keyed to
   canonical live worker roles so it doesn't bypass when routing already chose a
   cheap worker.
+- [ ] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
+  canonical live worker role, not the retired `worker_explore` alias.
 - [ ] Keep ingress worker aliases in
   `src/api/routes/chat_pipeline/routing_decision.py` pinned to canonical
   `Role.WORKER_GENERAL` values instead of local literals.

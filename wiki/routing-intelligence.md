@@ -314,6 +314,10 @@ The chat-pipeline ingress normalizer in `src/api/routes/chat_pipeline/routing_de
 
 The speculative cheap-first gate in `src/api/routes/chat.py` now normalizes `initial_role` through `Role.from_string()` before deciding whether the request is already on a cheap worker. That keeps the cheap-first skip aligned with the canonical live worker roles and avoids rerunning a cheap path that routing has already selected.
 
+## Cheap-first default role canonicalization (2026-06-15)
+
+`ChatPipelineConfig.try_cheap_first_role` now defaults to `worker_general` rather than the retired `worker_explore` label. That makes the cheap-first path's default role selection line up with the live worker routing and keeps the config surface consistent with the runtime normalization fixes above.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.
