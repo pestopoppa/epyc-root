@@ -130,6 +130,10 @@ unowned local constants.
   fallback from the live stack manifest instead of a literal role/port table,
   while preserving the generated-priors primary path and the alias-aware
   `production_ports_from_stack_priors()` behavior.
+- `src.runtime.inference_lock.py` and `src.runtime.inference_tap.py` now spell
+  their remaining degraded fallback sets through canonical `Role` constants
+  instead of raw strings, keeping the final compatibility path aligned with
+  live role truth.
 - `scripts/graph_router/action_space.py` now canonicalizes raw labels through
   `Role.from_string()` before action lookup, so aliases like `worker_explore`,
   `worker_fast`, `coder`, and `architect_coding` resolve through the live
@@ -283,6 +287,8 @@ Any future stack update should be accepted only when these hold:
   canonical `worker_general` path instead of a duplicated legacy literal.
 - [x] Keep inference-tap stream policy canonicalized at the role boundary so
   aliases like `worker_explore` and `worker_fast` follow live worker policy.
+- [x] Keep the remaining lock/tap degraded fallback sets spelled through
+  canonical `Role` constants instead of raw strings.
 - [x] Keep session-log compaction centralized on `worker_general` while
   preserving the distinct `worker_fast` profile via the raw role string.
 - [x] Keep host-health cache-flush rewarm fallback derived from generated stack
