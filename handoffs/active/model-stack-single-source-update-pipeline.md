@@ -71,6 +71,10 @@ unowned local constants.
   now consults `src.roles.Role` before the small legacy alias set, so retired
   labels are handled through central role truth instead of duplicated routing
   branches.
+- The delegate-role allowlist itself is now derived from live stack truth in
+  `src/api/routes/chat_delegation_config.py`, and the architect decision parser
+  clamps TOON/JSON delegate targets against that live set instead of a frozen
+  literal.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -112,6 +116,8 @@ Any future stack update should be accepted only when these hold:
   stack truth rather than static role lists.
 - [ ] Keep delegation role normalization centralized in `src.roles` and avoid
   reintroducing scattered alias tables in route helpers.
+- [ ] Keep delegate-target validation tied to the live delegate allowlist, not
+  to static route-local role sets.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
