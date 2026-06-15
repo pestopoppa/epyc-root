@@ -104,6 +104,10 @@ unowned local constants.
   specialist role names through `Role.from_string()` before computing the
   specialist-utilization summary, so legacy aliases in live priors do not get
   counted as new specialists.
+- `scripts/graph_router/action_space.py` now keeps the legacy worker-explore
+  compatibility mapping inline in `RAW_TO_LIVE_ACTION` rather than via a
+  separate shim constant, while preserving the same canonical live action
+  order and degraded fallback set.
 - `src.classifiers.factual_risk._role_tier_for_role()` now canonicalizes role
   names through `Role.from_string()` before checking live stack priors or the
   degraded tier map, and the degraded map no longer carries a redundant
