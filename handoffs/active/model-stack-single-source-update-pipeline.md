@@ -52,7 +52,8 @@ unowned local constants.
   to exact inline allowances by `7ad5965`; current warning baseline is
   `2 unique / 2 total`, both owned expiring `waived_production_blocker` guards.
 - W4 promotion-gate execution/failure coverage landed in Orchestrator
-  `d9fd1eb`; broader simulated swap coverage remains open.
+  `d9fd1eb`; system-card swap visibility landed in `4aed83d`; broader
+  simulated swap coverage remains open.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
