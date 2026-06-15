@@ -83,6 +83,9 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
+  `worker_general` role in `src/config/models.py`; no separate mirror field in
+  `src/config/__init__.py` needed changes.
 - The generic legacy role aliases now resolve centrally through
   `src.roles.Role` (`coder`, `coder_agent`, `researcher*`, `reviewer*`,
   `math_agent`, `vision_agent`, `summarizer*`, `worker_explore`,
@@ -166,29 +169,29 @@ Any future stack update should be accepted only when these hold:
   duplicated stack-prior traversal.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
-- [ ] Keep prompt-builder allowlists and delegation labels aligned with live
+- [x] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
-- [ ] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
+- [x] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
   expressed through canonical `Role` constants instead of duplicated literals.
-- [ ] Keep prompt-family fallback logic aligned with canonical role truth, not
+- [x] Keep prompt-family fallback logic aligned with canonical role truth, not
   with ad hoc alias tables.
-- [ ] Keep delegation report helper role buckets in
+- [x] Keep delegation report helper role buckets in
   `src/api/routes/chat_delegation_reports.py` aligned with canonical `Role`
   constants and trace logging intact.
-- [ ] Keep fast-revise worker roles in `src/api/routes/chat_review.py`
+- [x] Keep fast-revise worker roles in `src/api/routes/chat_review.py`
   pointed at the canonical live worker role rather than the retired
   `worker_explore` alias.
-- [ ] Keep the chat cheap-first gate in `src/api/routes/chat.py` keyed to
+- [x] Keep the chat cheap-first gate in `src/api/routes/chat.py` keyed to
   canonical live worker roles so it doesn't bypass when routing already chose a
   cheap worker.
-- [ ] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
+- [x] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
   canonical live worker role, not the retired `worker_explore` alias.
-- [ ] Keep ingress worker aliases in
+- [x] Keep ingress worker aliases in
   `src/api/routes/chat_pipeline/routing_decision.py` pinned to canonical
   `Role.WORKER_GENERAL` values instead of local literals.
-- [ ] Keep worker-task routing defaults in `src/llm_primitives/primitives.py`
+- [x] Keep worker-task routing defaults in `src/llm_primitives/primitives.py`
   pinned to canonical role constants instead of local alias strings.
-- [ ] Keep delegation role normalization centralized in `src.roles` and avoid
+- [x] Keep delegation role normalization centralized in `src.roles` and avoid
   reintroducing scattered alias tables in route helpers.
 - [ ] Keep delegate-target validation tied to the live delegate allowlist, not
   to static route-local role sets.
