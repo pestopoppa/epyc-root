@@ -94,6 +94,9 @@ unowned local constants.
   its role input through `Role.from_string()` and uses `frontdoor` +
   `worker_general` as the stored direct-answer roles, replacing the old
   `worker_explore` literal.
+- The resolver test module was restored after an accidental shrink during the
+  checkpoint; the pre-existing prompt-resolver coverage remains intact with the
+  new direct-answer assertions added in place.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
