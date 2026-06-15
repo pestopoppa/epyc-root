@@ -114,7 +114,7 @@ The "fourth autoregressive stream with most-recent-wins semantics, mid-decode up
 | Pattern | Difference from KAME oracle stream |
 |---------|-----------------------------------|
 | Drafter / verifier speculative decoding | No token-level accept/reject; KAME oracle does not vote on tokens, it conditions generation |
-| `worker_explore` → `coder` routing | Sequential, not parallel mid-stream |
+| `worker_general` → `coder` routing | Sequential, not parallel mid-stream |
 | Hermes outer-shell + worker | Request-boundary coordination, not mid-utterance |
 | Trinity learned coordinator | Per-turn dispatch, not intra-turn |
 
