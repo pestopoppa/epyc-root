@@ -112,14 +112,12 @@ unowned local constants.
   specialist role names through `Role.from_string()` before computing the
   specialist-utilization summary, so legacy aliases in live priors do not get
   counted as new specialists.
-- `scripts/graph_router/action_space.py` now keeps the legacy worker-explore
-  compatibility mapping inline in `RAW_TO_LIVE_ACTION` rather than via a
-  separate shim constant, while preserving the same canonical live action
-  order and degraded fallback set.
-- `scripts/graph_router/action_space.py` now also inlines the legacy
-  `architect_coding` compatibility mapping in `RAW_TO_LIVE_ACTION` instead of
-  carrying a separate `LEGACY_ARCHITECT_CODING` shim constant, with the same
-  canonical live action order and degraded fallback set preserved.
+- `scripts/graph_router/action_space.py` now canonicalizes raw labels through
+  `Role.from_string()` before action lookup, so aliases like `worker_explore`,
+  `worker_fast`, `coder`, and `architect_coding` resolve through the live
+  canonical action paths instead of relying on duplicate role-specific
+  literals. The canonical live action order and degraded fallback set are
+  unchanged.
 - `orchestration/repl_memory/bilinear_scorer.py` now canonicalizes role keys
   through `Role.from_string()` at model-feature extraction and scorer lookup
   time, so legacy aliases like `worker_explore` collapse onto the live
@@ -225,9 +223,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the chat cheap-first gate in `src/api/routes/chat.py` keyed to
   canonical live worker roles so it doesn't bypass when routing already chose a
   cheap worker.
-- [x] Keep the graph-router action-space compatibility mapping inline in
-  `scripts/graph_router/action_space.py` instead of a standalone shim
-  constant.
+- [x] Keep GraphRouter action normalization canonicalized through
+  `Role.from_string()` before lookup instead of maintaining duplicate
+  worker/coder/architect alias literals.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
