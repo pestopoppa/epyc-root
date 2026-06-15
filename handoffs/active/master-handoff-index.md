@@ -8,7 +8,7 @@
 | CPU throughput | [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md) | | Research/eval | [research-evaluation-index.md](research-evaluation-index.md) |
 | Hermes/agent UX | [hermes-agent-index.md](hermes-agent-index.md) | | Pipelines | [pipeline-integration-index.md](pipeline-integration-index.md) |
 
-**Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row.
+**Standing contracts**: `/workspace/MEASUREMENT.md` (adopted) · `instrument_eras.yaml` (epyc-orchestrator orchestration/) · ATTESTATION (to build, findings-04 §B) · current architecture review: [fable5-findings-00-executive-summary.md](fable5-findings-00-executive-summary.md) — **the Fable 5 one-shot review is COMPLETE (2026-06-12)**; its 7 findings (-01..-07) + appendix are the standing reference, not an open row. Current transient pickup: [fable5-long-horizon-session-pickup.md](fable5-long-horizon-session-pickup.md).
 
 ## A. NOW — live damage, zero-inference quick wins, or this-week leverage
 | # | Item | A-by | Why now |
