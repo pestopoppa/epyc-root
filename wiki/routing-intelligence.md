@@ -302,6 +302,10 @@ The degraded `/v1/chat/completions` fallback set in `src/chat_completions_roles.
 
 The chat-pipeline ingress normalizer in `src/api/routes/chat_pipeline/routing_decision.py` now spells its worker-coder/code compatibility values through `Role.WORKER_GENERAL`. This is a small consistency fix, but it matters because the same normalizer feeds mock-mode, forced-role handling, and OpenAI-compatible routing entrypoints.
 
+## Delegation report helper canonicalization (2026-06-15)
+
+`src/api/routes/chat_delegation_reports.py` now uses `Role` constants for the coder-vs-search specialist prompt buckets. That keeps the report-compression helper's role taxonomy aligned with the rest of the orchestration stack without changing the actual delegated roles.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.

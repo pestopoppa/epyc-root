@@ -172,6 +172,9 @@ Any future stack update should be accepted only when these hold:
   expressed through canonical `Role` constants instead of duplicated literals.
 - [ ] Keep prompt-family fallback logic aligned with canonical role truth, not
   with ad hoc alias tables.
+- [ ] Keep delegation report helper role buckets in
+  `src/api/routes/chat_delegation_reports.py` aligned with canonical `Role`
+  constants and trace logging intact.
 - [ ] Keep ingress worker aliases in
   `src/api/routes/chat_pipeline/routing_decision.py` pinned to canonical
   `Role.WORKER_GENERAL` values instead of local literals.
