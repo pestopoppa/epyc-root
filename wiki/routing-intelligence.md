@@ -298,6 +298,10 @@ The worker-task routing layer in `src/llm_primitives/primitives.py` now points g
 
 The degraded `/v1/chat/completions` fallback set in `src/chat_completions_roles.py` now uses `Role` constants for the narrow compatibility table. That keeps the fallback aligned with the same canonical role definitions used by routing and backend setup, while still preserving the explicit degraded path when live stack priors are missing.
 
+## Ingress worker-alias normalization (2026-06-15)
+
+The chat-pipeline ingress normalizer in `src/api/routes/chat_pipeline/routing_decision.py` now spells its worker-coder/code compatibility values through `Role.WORKER_GENERAL`. This is a small consistency fix, but it matters because the same normalizer feeds mock-mode, forced-role handling, and OpenAI-compatible routing entrypoints.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.
