@@ -172,7 +172,8 @@ unowned local constants.
   retired alias as a separate swatch.
 - Dashboard topology service hints now derive the `worker_fast` port from the
   live stack manifest instead of a hardcoded `8102` literal, so the fallback
-  port label stays aligned with the manifest-backed service truth.
+  port label stays aligned with the manifest-backed service truth and no
+  standalone service-port fallback remains in the dashboard helper.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
