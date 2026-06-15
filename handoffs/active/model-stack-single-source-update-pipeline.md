@@ -91,6 +91,10 @@ unowned local constants.
   role aliases through `Role.from_string()` before registry lookup, so
   `worker_explore` aliases resolve through the live `worker_general` model
   path instead of a stale alias-specific template lookup.
+- `src.api.routes.dashboard_tasks._find_structured_request_by_task_id()` now
+  canonicalizes `expected_role` before filtering task sections, so dashboard
+  task-detail lookups for alias roles reuse the live `worker_general`
+  section path instead of depending on a stale alias-only compare.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
