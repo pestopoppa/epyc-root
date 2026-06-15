@@ -328,6 +328,8 @@ Any future stack update should be accepted only when these hold:
   instead of naming the retired `worker_explore` label directly.
 - [x] Keep the `src/features.py` import list minimal after the helper-comment
   cleanup exposed an unused `dataclasses.field` import.
+- [x] Keep `src/config/models.py` server-URL alias tables deduplicated behind
+  a single shared `worker_coder -> worker_fast` compatibility constant.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
