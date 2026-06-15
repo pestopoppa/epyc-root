@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T10:40:31Z
+**Last verified**: 2026-06-15T12:34:47Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -18,8 +18,8 @@
    Last verified state: PID `2730020` is a detached current-code AutoPilot W6
    shadow-audit run (`--max-trials 832`), `trial_counter=826`, `paused=false`,
    `in_flight_trial.trial_id=826`. Trial `826` is a `deep_eval` tier-2 run; it
-   had reached T2 progress `50/500` at `2026-06-15T10:27:09Z`, with request-level
-   logs still active at `10:40Z`. Archive authority is aligned. W6 audit rows
+   had reached T2 progress `400/500` at `2026-06-15T12:33:06Z`. Archive
+   authority is aligned. W6 audit rows
    have landed for trials `#822-#825` (`audit_block_report.py`:
    `trial_count=705`, `audited_trial_count=4`, core `126/200`, audit `25/40`,
    `delta_audit_minus_core=-0.015`, overfit divergences `1`).
@@ -54,7 +54,8 @@
   - `#825`: q/s/r=`1.920/26.654/0.940`, dominated/excluded as `mad_noise`;
     `memrl_retrieval` numeric trial.
 - Current state at last verification: `trial_counter=826`, `paused=false`,
-  `in_flight_trial.trial_id=826`; trial `826` is a `deep_eval` tier-2 run.
+  `in_flight_trial.trial_id=826`; trial `826` is a `deep_eval` tier-2 run with
+  T2 progress `400/500` at `2026-06-15T12:33:06Z`.
 - Trial `822` was a `code_mutation` proposal for `src/tool_policy.py`; the
   planner-side code mutation failed to extract a patch (`Claude CLI rc=1`), so
   no code patch was applied. Orchestrator git dirt remained limited to runtime
@@ -128,7 +129,8 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
   remaining dominated/excluded as `reproduction_confirmed`; follow-up rows
   `#823-#825` brought the batch to `audited_trial_count=4`, core `126/200`,
   audit `25/40`, `delta=-0.015`, overfit divergences `1`; the detached run is
-  still alive at `trial_counter=826`, with follow-on trial `826` in flight.
+  still alive at `trial_counter=826`, with follow-on trial `826` in flight and
+  T2 progress `400/500` at `2026-06-15T12:33:06Z`.
 - Generated stack metadata refresh and both stack/authority preflight checks are
   now passing at `11/11`; orchestrator `1bd9563` refreshed stack generated
   metadata and `51268f7` hardens startup archive authority.
