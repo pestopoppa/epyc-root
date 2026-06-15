@@ -128,7 +128,9 @@ unowned local constants.
 - `src.api.routes.chat_utils.apply_chat_template_for_role()` now canonicalizes
   role aliases through `Role.from_string()` before registry lookup, so
   `worker_explore` aliases resolve through the live `worker_general` model
-  path instead of a stale alias-specific template lookup.
+  path instead of a stale alias-specific template lookup. The helper comment
+  now says this generically for the alias family instead of naming the retired
+  alias inline.
 - `src.api.routes.dashboard_tasks._find_structured_request_by_task_id()` now
   canonicalizes `expected_role` before filtering task sections, so dashboard
   task-detail lookups for alias roles reuse the live `worker_general`
