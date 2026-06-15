@@ -459,6 +459,8 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the storage-safety HOT tier row aligned with the live
   `architect_general` 8083 slot instead of the retired architect-coding
   row, and remove the stale warm duplicate entry.
+- [x] Keep the descriptor compiler active-role set canonical so `stack_commands.py`
+  no longer re-adds shared aliases that `write_model_descriptors()` already expands.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
