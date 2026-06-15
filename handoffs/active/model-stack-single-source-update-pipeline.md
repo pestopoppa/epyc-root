@@ -356,6 +356,10 @@ Any future stack update should be accepted only when these hold:
   escalation-chain docstring. This is docs/example cleanup only; the runtime
   escalation detector remains parked because its live path is still
   CRITICAL.
+- [x] Keep chapter-level docs examples aligned with canonical live roles in
+  `docs/chapters/07-memrl-system.md` and
+  `docs/chapters/10-escalation-and-routing.md`. Historical retired-role notes
+  remain in place where they are explicitly labeled as historical context.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
