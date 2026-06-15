@@ -351,6 +351,11 @@ Any future stack update should be accepted only when these hold:
   using canonical live spellings (`worker_general`, `architect_general`)
   instead of retired aliases. This was a docs-only alignment pass; historical
   capacity numbers were left intact for now.
+- [x] Keep benchmark formatter examples aligned with canonical live roles in
+  `scripts/benchmark/eval_log_format.py` and the `seeding_rewards.py`
+  escalation-chain docstring. This is docs/example cleanup only; the runtime
+  escalation detector remains parked because its live path is still
+  CRITICAL.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
