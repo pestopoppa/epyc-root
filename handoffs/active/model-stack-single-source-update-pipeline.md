@@ -401,6 +401,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep proactive-delegation comments explicit about the canonical
   worker-alias path and preserve the legacy fallback as a single local
   compatibility branch.
+- [x] Keep the worker-pool launch helper canonicalized on
+  `_build_worker_general_command()` while preserving the retired
+  `_build_worker_explore_command()` wrapper for compatibility.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
