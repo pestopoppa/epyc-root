@@ -89,6 +89,10 @@ unowned local constants.
   `worker_fast`), while `chat_pipeline.routing_decision` and
   `repl_environment.routing` keep only the context-specific `worker_coder`
   / `worker_code` override locally.
+- `src.repl_environment.routing` now also spells its REPL delegate-target
+  worker list and delegatable-role set through `Role` constants instead of
+  local worker-role string literals; `vision_escalation` remains a literal
+  because it is not a first-class enum member.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
