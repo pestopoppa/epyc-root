@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T07:55:00Z
+**Last verified**: 2026-06-15T08:07:14Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -34,7 +34,7 @@
 ## Current Live State
 
 - AutoPilot is paused, not actively exploring: `trial_counter=822`, `paused=true`, `in_flight_trial=null` at last verification.
-- No standalone W5 calibration process was left running by this checkpoint.
+- No standalone W5 calibration, Gate-3 telemetry, or other matching evidence-plane runner was left running by this checkpoint.
 - Completed extension: `core_v2_calibration_ext2_20260615T050124Z`
   - command: `uv run python scripts/autopilot/core_v2_calibrate.py --calibration-id core_v2_calibration_ext2_20260615T050124Z --out-jsonl /mnt/raid0/llm/tmp/core_v2_calibration/core_v2_calibration_ext2_20260615T050124Z.jsonl --n 300 --repeats 2 --seed 4242 --trial-id-base 900003`
   - repeat 1/2 complete: trial `900003`, q=`2.060`, r=`0.920`, `n=300`
@@ -45,6 +45,7 @@
   - durable no-go report in `epyc-orchestrator` commit `3037ec2`: `orchestration/reports/core_v2_selection_core_v2_calibration_20260615T003043Z.no_go.json`
 - Five-row selector result: `selected_count=33`, `target_size=40`, `shortfall=7`, `unresolved_selected_count=0`; no `benchmarks/prompts/core_v2.jsonl` was promoted.
 - Durable five-row no-go report in `epyc-orchestrator` commit `8db5292`: `orchestration/reports/core_v2_selection_core_v2_calibration_20260615T003043Z_plus_ext2.no_go.json`
+- W6 live-tree no-inference check passed, but no real audit rows exist yet: focused pytest `7 passed, 15 deselected`; read-only report `trial_count=701`, `audited_trial_count=0`.
 
 ## Promotion Gate
 
@@ -70,7 +71,7 @@ The five-row selector is still short. Do not silently lower the target. Make an 
 - Orchestrator `3037ec2` recorded the W5 no-go selector artifact.
 - W5 2x300 extension completed; five-row selector improved to `33/40` but still no-go.
 - Orchestrator `8db5292` recorded the extended five-row no-go selector artifact.
-- Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the no-go.
+- Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the first no-go; `b027a67` recorded the extended no-go; `f40c74a` recorded the W6 audit baseline check.
 - Root `2ebfd3c` added this pickup handoff, and root `64a4430` recorded the full wrap-up routine notes.
 - Root and Orchestrator GitNexus indexes were current after the latest commits at the time of each checkpoint.
 
