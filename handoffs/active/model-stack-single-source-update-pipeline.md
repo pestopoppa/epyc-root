@@ -67,6 +67,10 @@ unowned local constants.
   live stack truth in both `src/prompt_builders/review.py` and
   `orchestration/prompts/architect_investigate.md`, keeping prompt labels in
   sync with current delegation targets.
+- Delegate-role normalization in `src/api/routes/chat_delegation_config.py`
+  now consults `src.roles.Role` before the small legacy alias set, so retired
+  labels are handled through central role truth instead of duplicated routing
+  branches.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
@@ -106,6 +110,8 @@ Any future stack update should be accepted only when these hold:
   artifacts, promotion-gate execution, and selected consumers move together.
 - [ ] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
+- [ ] Keep delegation role normalization centralized in `src.roles` and avoid
+  reintroducing scattered alias tables in route helpers.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
