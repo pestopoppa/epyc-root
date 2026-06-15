@@ -105,6 +105,9 @@ unowned local constants.
   names through `Role.from_string()` before checking live stack priors or the
   explicit degraded tier map, so alias inputs such as `worker_explore` no
   longer depend on a file-local legacy literal.
+- `scripts/benchmark/corpus_quality_gate.py` now derives its fallback model
+  order from live manifest membership at call time, instead of freezing the
+  preferred role tuple in a module constant.
 - `src/config/stack_templates.py` now checks template roles against live
   stack-prior role records instead of a local retired-role denylist, removing
   the last active-code retired-role guard warning from the stack-change scan.
