@@ -108,6 +108,10 @@ unowned local constants.
   compatibility mapping inline in `RAW_TO_LIVE_ACTION` rather than via a
   separate shim constant, while preserving the same canonical live action
   order and degraded fallback set.
+- `scripts/graph_router/action_space.py` now also inlines the legacy
+  `architect_coding` compatibility mapping in `RAW_TO_LIVE_ACTION` instead of
+  carrying a separate `LEGACY_ARCHITECT_CODING` shim constant, with the same
+  canonical live action order and degraded fallback set preserved.
 - `orchestration/repl_memory/bilinear_scorer.py` now canonicalizes role keys
   through `Role.from_string()` at model-feature extraction and scorer lookup
   time, so legacy aliases like `worker_explore` collapse onto the live
@@ -205,6 +209,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the chat cheap-first gate in `src/api/routes/chat.py` keyed to
   canonical live worker roles so it doesn't bypass when routing already chose a
   cheap worker.
+- [x] Keep the graph-router action-space compatibility mapping inline in
+  `scripts/graph_router/action_space.py` instead of a standalone shim
+  constant.
 - [x] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
   canonical live worker role, not the retired `worker_explore` alias.
 - [x] Keep ingress worker aliases in
