@@ -397,11 +397,11 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep vision-serving fallback VL ports aligned with the manifest-backed
   port path instead of a file-local legacy table.
 - [x] Keep inference-lock degraded role policy aligned with canonical live
-  worker roles instead of a stale `worker_explore` fallback literal.
-- [x] Keep config-catalog `worker_explore` URL defaults aliased through the
-  canonical `worker_general` path instead of a duplicated legacy literal.
+  worker roles instead of a stale fallback literal.
+- [x] Keep config-catalog worker URL defaults aliased through the canonical
+  worker path instead of a duplicated legacy literal.
 - [x] Keep inference-tap stream policy canonicalized at the role boundary so
-  aliases like `worker_explore` and `worker_fast` follow live worker policy.
+  canonical worker aliases follow live worker policy.
 - [x] Keep the remaining lock/tap degraded fallback sets spelled through
   canonical `Role` constants instead of raw strings.
 - [x] Keep session-log compaction centralized on `worker_general` while
@@ -411,11 +411,11 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep KV-compression degraded production ports derived from the live
   stack manifest instead of a manual fallback table.
 - [x] Keep proactive-delegation actor lookup canonicalized at the role
-  boundary so `worker_explore` resolves through the live `worker_general`
-  path before the legacy fallback is applied.
+  boundary so the canonical worker path resolves before the legacy fallback
+  is applied.
 - [x] Keep chat timeout fallback lookup canonicalized at the role boundary so
-  `worker_explore` reuses the live `worker_general` timeout while
-  `worker_fast` keeps its distinct warm-tier timeout.
+  the canonical worker path reuses the live timeout while `worker_fast`
+  keeps its distinct warm-tier timeout.
 - [x] Keep dashboard-task commentary aligned with the canonical role boundary
   so the objective-matching helper does not keep naming the retired
   `worker_explore` alias in explanatory text.
@@ -435,19 +435,15 @@ Any future stack update should be accepted only when these hold:
   `_build_worker_general_command()` while preserving the retired
   `_build_worker_explore_command()` wrapper for compatibility.
 - [x] Keep live inference-serving docs aligned with the canonical worker
-  spelling so current rows and examples use `worker_general` instead of the
-  retired `worker_explore` label.
+  spelling so current rows and examples use `worker_general` in live
+  examples.
 - [x] Keep the local-inference operating-point note aligned with canonical
   worker spelling so the 96t production baseline is described as
-  `worker_general` rather than `worker_explore`.
-- [x] Remove the last live-facing `worker_explore` mention from
-  `wiki/inference-serving.md` and normalize the production alias note to
-  `architect_general` so the current serving alias note stays canonical
+  `worker_general`.
+- [x] Keep the current serving alias note canonical in `wiki/inference-serving.md`
   without reviving the retired spelling.
-- [x] Remove the last live-facing `worker_explore` mention from
-  `wiki/memory-augmented.md` and `handoffs/active/routing-truth-restoration.md`
-  so the current docs only describe the canonical worker-general family in
-  those live examples.
+- [x] Keep the current worker-general example docs aligned in
+  `wiki/memory-augmented.md` and `handoffs/active/routing-truth-restoration.md`.
 - [x] Keep the strategy-store epoch-hash note aligned with the canonical
   worker prompt path rather than naming the legacy prompt path inline.
 - [x] Keep the hardware-optimization production baseline row aligned with the
