@@ -426,6 +426,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the worker-pool launch helper canonicalized on
   `_build_worker_general_command()` while preserving the retired
   `_build_worker_explore_command()` wrapper for compatibility.
+- [x] Keep live inference-serving docs aligned with the canonical worker
+  spelling so current rows and examples use `worker_general` instead of the
+  retired `worker_explore` label.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`
