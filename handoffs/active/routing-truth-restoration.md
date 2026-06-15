@@ -57,7 +57,7 @@ Commit: `epyc-orchestrator` `41a6944` (`Load q-scorer TPS baselines from registr
 
 Implementation:
 - `orchestration/repl_memory/q_scorer.py` now builds `ScoringConfig.baseline_tps_by_role` from the lean `orchestration/model_registry.yaml` at config construction time.
-- Live text roles prefer `server_mode.*.throughput`: frontdoor/coder escalation `24.3`, architect general `12.19`, ingest lower-bound `14.4`, and worker aliases (`worker_explore`, `worker_general`, `worker_math`, `toolrunner`) `60.7`.
+- Live text roles prefer `server_mode.*.throughput`: frontdoor/coder escalation `24.3`, architect general `12.19`, ingest lower-bound `14.4`, and worker aliases (`worker_general`, `worker_math`, `toolrunner`) `60.7`.
 - Vision roles use `roles.*.performance.optimized_tps`: worker vision `20.0`, vision escalation `27.6`.
 - Removed `architect_coding` remains as fallback `8.0` for legacy callers; degraded scripts fall back to the previous static table if the registry is unavailable.
 

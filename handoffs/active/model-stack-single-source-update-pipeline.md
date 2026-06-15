@@ -435,6 +435,10 @@ Any future stack update should be accepted only when these hold:
 - [x] Remove the last live-facing `worker_explore` mention from
   `wiki/inference-serving.md` so the server-URL note now states the canonical
   worker-general path without reintroducing the retired spelling.
+- [x] Remove the last live-facing `worker_explore` mention from
+  `wiki/memory-augmented.md` and `handoffs/active/routing-truth-restoration.md`
+  so the current docs only describe the canonical worker-general family in
+  those live examples.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Defer `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`

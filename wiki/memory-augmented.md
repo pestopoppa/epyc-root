@@ -71,7 +71,7 @@ The connection between memory and the autopilot is especially significant. Befor
 
 ### Medium Priority
 4. **Hybrid retrieval for episodic/strategy stores** -- add BM25 lexical matching alongside FAISS semantic search, using Reciprocal Rank Fusion (k=60) as demonstrated by GitNexus. Improves retrieval for exact function names, model names, and configuration keys that semantic search handles poorly.
-5. **RL-trained compaction quality** -- train a compaction model (could reuse existing worker_explore Qwen2.5-7B) where the reward signal is downstream task success, not just summary quality. MemAgent's DAPO training achieves this for segment reading; the same principle applies to session compaction. Depends on having a fast evaluation loop.
+5. **RL-trained compaction quality** -- train a compaction model (could reuse existing worker_general Qwen2.5-7B) where the reward signal is downstream task success, not just summary quality. MemAgent's DAPO training achieves this for segment reading; the same principle applies to session compaction. Depends on having a fast evaluation loop.
 6. **DAG-based session history** -- evaluate Lossless Claw/CMV patterns for the session_log. An immutable store (all turns verbatim, stored to disk) plus active context (summaries + recent turns) would enable lossless recovery of any prior turn while keeping the active context compact. Currently, compacted turns are lost.
 7. **Strategy store cross-species fertilization** -- when a PromptForge insight is relevant to NumericSwarm's parameter search (e.g., "higher temperature helps creative tasks"), the strategy store should surface it. Currently, retrieval is species-scoped.
 
