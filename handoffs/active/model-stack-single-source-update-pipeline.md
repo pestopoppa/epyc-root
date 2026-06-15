@@ -58,6 +58,9 @@ unowned local constants.
 - `scripts/benchmark/seeding_rewards.py` now canonicalizes throughput lookups
   and worker-role detection through `Role.from_string()`, and its degraded
   fallback throughput map no longer carries a stale `worker_explore` entry.
+- `scripts/benchmark/seeding_types.py` now resolves canonical role names
+  through `Role.from_string()` instead of a local worker-explore alias table
+  when deriving live active roles and seeding cost tiers.
 - Planner-facing guidance was tightened on 2026-06-15 so
   `scripts/autopilot/program.md` explicitly treats the generated controller
   system card as the authoritative live view for role, port, context,
