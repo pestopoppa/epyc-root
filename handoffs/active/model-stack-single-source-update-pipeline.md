@@ -108,6 +108,11 @@ unowned local constants.
   compatibility mapping inline in `RAW_TO_LIVE_ACTION` rather than via a
   separate shim constant, while preserving the same canonical live action
   order and degraded fallback set.
+- `orchestration/repl_memory/bilinear_scorer.py` now canonicalizes role keys
+  through `Role.from_string()` at model-feature extraction and scorer lookup
+  time, so legacy aliases like `worker_explore` collapse onto the live
+  `worker_general` model record instead of persisting as separate degraded
+  entries.
 - `src.classifiers.factual_risk._role_tier_for_role()` now canonicalizes role
   names through `Role.from_string()` before checking live stack priors or the
   degraded tier map, and the degraded map no longer carries a redundant
