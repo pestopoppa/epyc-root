@@ -75,6 +75,10 @@ unowned local constants.
 - Registry-based scorer fallbacks were also consolidated on 2026-06-15 via a
   shared `_registry_role_records()` helper, reducing duplicate roles-map walks
   without changing the fallback semantics.
+- QScorer fallback tables were canonicalized on 2026-06-15 so the module now
+  stores `worker_general` as the source key and materializes
+  `worker_explore` at the output boundary, keeping the degraded contract
+  intact without duplicating the fallback literals.
 - The architect investigate prompt now renders its valid-role allowlist from
   live stack truth in both `src/prompt_builders/review.py` and
   `orchestration/prompts/architect_investigate.md`, keeping prompt labels in
