@@ -73,6 +73,14 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
 - OpenAI-compatible model listing now derives live roles from stack priors in
   `epyc-orchestrator` `d9c053c`, preserving compatibility aliases and using a
   non-retired degraded fallback; live guard warnings dropped from 80 to 79.
+- Stack manifest vs registry drift gating landed in `epyc-orchestrator`
+  `3c18a17`: `stack_change_pipeline.py check` now runs a blocking
+  `stack_manifest_registry` step before q_scorer, runtime attestation, and the
+  promotion gate. The check calls `stack_manifest.validate_against_registry()`
+  with optional role scoping for simulated fixtures, fails on launch
+  `PORT_MAP`/`server_mode`/process-layout drift, and `stack-truth-precedence.md`
+  now states that validators consume topology evidence rather than acting as
+  alternate truth sources.
 - Dashboard in-flight age overrides no longer include retired
   `architect_coding` after `epyc-orchestrator` `1b9db81`; live guard warnings
   dropped from 79 to 78.

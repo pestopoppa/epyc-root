@@ -39,9 +39,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Canonical command:
   `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
   in `epyc-orchestrator`.
-- Default check after Orchestrator `7ad5965` is green:
-  `runtime_attestation: ok`, `q_scorer_priors: ok`, and descriptors/stack
-  priors fresh.
+- Default check after Orchestrator `3c18a17` is green:
+  `stack_manifest_registry: ok`, `runtime_attestation: ok`,
+  `q_scorer_priors: ok`, and descriptors/stack priors fresh.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
 - Current all-surface warning baseline: `2 unique / 2 total`; both remaining
@@ -54,8 +54,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - W4 promotion-gate execution/failure coverage landed in Orchestrator
   `d9fd1eb`; system-card swap visibility landed in `4aed83d`;
   health/dashboard stack-prior witnesses landed in `8beaf79`; representative
-  routing/API role-surface witnesses landed in `edd20f7`; swap-CI can still be
-  broadened as new high-risk consumers are migrated.
+  routing/API role-surface witnesses landed in `edd20f7`; stack-manifest vs
+  registry drift gating landed in `3c18a17`; swap-CI can still be broadened as
+  new high-risk consumers are migrated.
 
 ## Outstanding Work
 
