@@ -86,6 +86,10 @@ unowned local constants.
   `worker_fast`), while `chat_pipeline.routing_decision` and
   `repl_environment.routing` keep only the context-specific `worker_coder`
   / `worker_code` override locally.
+- `src.api.routes.chat_delegation_config.py` now resolves the remaining
+  generic delegate aliases through `Role.from_string()` and keeps only the
+  special-case `worker_coder` / `worker_code` override local to the delegate
+  path.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
