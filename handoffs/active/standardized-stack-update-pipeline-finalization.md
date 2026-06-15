@@ -2,8 +2,7 @@
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change command and
 promotion gates are live; current default check is green. Remaining work is
-residual classified-surface cleanup, high-risk consumer migrations, and W4
-swap-CI.
+waived legacy-fixture cleanup, high-risk consumer migrations, and W4 swap-CI.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack
@@ -40,23 +39,21 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Canonical command:
   `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
   in `epyc-orchestrator`.
-- Default check after Orchestrator `8221971` is green:
+- Default check after Orchestrator `d94954a` is green:
   `runtime_attestation: ok`, `q_scorer_priors: ok`, and descriptors/stack
   priors fresh.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
-- Current all-surface warning baseline: `29 unique / 33 total` with
-  `waived_production_blocker=2`, `historical_doc=18`, and
-  `waived_legacy_test=9`.
+- Current all-surface warning baseline: `11 unique / 15 total` with
+  `waived_production_blocker=2` and `waived_legacy_test=9`; historical-doc
+  findings are now explicitly marked as historical retired-role notes.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
-- Active operator topology docs were refreshed in `8221971`: escalation chains
-  now terminate at live `architect_general`, not retired `architect_coding`.
+- Active operator topology docs were refreshed in `8221971`, and `d94954a`
+  marked remaining retired-role doc mentions as historical notes.
 
 ## Outstanding Work
 
-- [ ] Reduce residual `historical_doc=18` warnings where current docs still
-  read like live topology or current operator guidance.
 - [ ] Reduce or retire `waived_legacy_test=9` fixture warnings when the fixture
   value is no longer needed for explicit retired-role compatibility coverage.
 - [ ] Keep the two `waived_production_blocker` surfaces intentional, owned, and
