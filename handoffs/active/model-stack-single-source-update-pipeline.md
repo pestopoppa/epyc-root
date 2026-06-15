@@ -164,6 +164,10 @@ unowned local constants.
   inputs through `Role.from_string()` before applying per-role env blocks, so
   `worker_explore` and other aliases reuse the live worker env block instead
   of a separate alias entry.
+- `scripts.benchmark.seeding_types` now canonicalizes the live
+  `worker_explore` seeding role to `worker_general` in active-role discovery
+  while preserving the compatibility cost-tier floor for legacy reward-chain
+  consumers.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
