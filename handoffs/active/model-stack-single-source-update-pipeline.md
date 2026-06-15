@@ -113,6 +113,10 @@ unowned local constants.
   time, so legacy aliases like `worker_explore` collapse onto the live
   `worker_general` model record instead of persisting as separate degraded
   entries.
+- `orchestration/repl_memory/strategy_store.py` now fingerprints the live
+  `worker_general.md` prompt file instead of the retired worker-explore prompt
+  path, so the AP-28 configuration-epoch hash follows the canonical worker
+  prompt.
 - `src.classifiers.factual_risk._role_tier_for_role()` now canonicalizes role
   names through `Role.from_string()` before checking live stack priors or the
   degraded tier map, and the degraded map no longer carries a redundant
