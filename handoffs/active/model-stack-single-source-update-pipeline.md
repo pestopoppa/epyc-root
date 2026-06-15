@@ -145,6 +145,10 @@ unowned local constants.
   canonicalizes `expected_role` before filtering task sections, so dashboard
   task-detail lookups for alias roles reuse the live `worker_general`
   section path instead of depending on a stale alias-only compare.
+- `src.api.routes.dashboard._gate_inflight_by_live_slots()` now canonicalizes
+  task roles through `Role.from_string()` before busy-slot matching, so
+  dashboard snapshot gating collapses alias labels onto the live
+  `worker_general` role instead of surfacing a separate alias path.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
