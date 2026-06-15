@@ -321,11 +321,13 @@ Any future stack update should be accepted only when these hold:
   `Role.WORKER_GENERAL` rather than a local alias dict, so the remaining live
   tail should be another consumer with a concrete stale model fact or route
   boundary alias table.
-- [ ] The latest safe audit found only high-blast remaining candidates:
-  `scripts/benchmark/seeding_rewards.py:detect_escalation_chains`
-  (CRITICAL) and `scripts/registry/render_stack_summary.py:registry_role_rows`
-  (HIGH). Both are parked until an explicit high-risk follow-up is
-  authorized.
+- [x] Handle the highest-ROI parked benchmark consumer despite CRITICAL
+  GitNexus impact: `scripts/benchmark/seeding_rewards.py:detect_escalation_chains`
+  now canonicalizes role aliases before cost-tier ordering and escalation
+  reward emission, so benchmark seeding no longer injects retired worker
+  action labels from alias-keyed role results.
+- [ ] The remaining high-blast parked consumer candidate is
+  `scripts/registry/render_stack_summary.py:registry_role_rows` (HIGH).
 - [ ] GitNexus impact on `scripts/registry/render_stack_summary.py:registry_role_rows`
   is `impactedCount=13`, `processes_affected=1`, `modules_affected=3`,
   with `_run_loop_inner` as the earliest broken step. Keep this parked unless

@@ -383,7 +383,11 @@ LOW, but the concrete stale-consumer tails that still surfaced were
 `scripts/registry/render_stack_summary.py:registry_role_rows` (HIGH) and
 `scripts/benchmark/seeding_rewards.py:detect_escalation_chains` (CRITICAL).
 
-Both parked candidates still have live callers:
-`registry_role_rows` feeds the Autopilot/controller summary path, and
-`detect_escalation_chains` fans out across the benchmark seeding mainlines.
-They remain deferred until an explicit high-blast follow-up is authorized.
+The CRITICAL benchmark detector was handled after explicit high-risk approval:
+`detect_escalation_chains` now canonicalizes alias-keyed role results before
+cost-tier ordering and escalation reward emission, so benchmark seeding no
+longer injects retired worker action labels from alias inputs.
+
+The remaining parked candidate is `registry_role_rows`, which feeds the
+Autopilot/controller summary path and stays deferred unless a narrower helper
+appears or a high-blast renderer follow-up is authorized.
