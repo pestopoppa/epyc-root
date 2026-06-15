@@ -93,6 +93,10 @@ unowned local constants.
   worker list and delegatable-role set through `Role` constants instead of
   local worker-role string literals; `vision_escalation` remains a literal
   because it is not a first-class enum member.
+- `scripts/benchmark/analyze_routing_policy.py` now canonicalizes live
+  specialist role names through `Role.from_string()` before computing the
+  specialist-utilization summary, so legacy aliases in live priors do not get
+  counted as new specialists.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
