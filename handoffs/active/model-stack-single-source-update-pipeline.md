@@ -52,6 +52,10 @@ unowned local constants.
   architect-action role extraction in `scripts/benchmark/seeding_rewards.py`,
   removing duplicated live-role filtering while preserving explicit degraded
   fallback behavior.
+- Planner-facing guidance was tightened on 2026-06-15 so
+  `scripts/autopilot/program.md` explicitly treats the generated controller
+  system card as the authoritative live view for role, port, context,
+  throughput, memory, and tier facts.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
