@@ -87,6 +87,10 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- `src.api.routes.chat_utils.apply_chat_template_for_role()` now canonicalizes
+  role aliases through `Role.from_string()` before registry lookup, so
+  `worker_explore` aliases resolve through the live `worker_general` model
+  path instead of a stale alias-specific template lookup.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
