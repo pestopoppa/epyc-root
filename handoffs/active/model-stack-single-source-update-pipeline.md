@@ -323,6 +323,11 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep dashboard-task commentary aligned with the canonical role boundary
   so the objective-matching helper does not keep naming the retired
   `worker_explore` alias in explanatory text.
+- [x] Keep helper comments in `src/features.py` and
+  `src/llm_primitives/inference.py` aligned with canonical worker aliases
+  instead of naming the retired `worker_explore` label directly.
+- [x] Keep the `src/features.py` import list minimal after the helper-comment
+  cleanup exposed an unused `dataclasses.field` import.
 - [ ] Defer the broad stack-summary renderer rewrite unless a narrower helper
   seam appears; GitNexus marks that surface as high impact.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
