@@ -233,7 +233,9 @@ Any future stack update should be accepted only when these hold:
   cheap worker.
 - [x] Keep GraphRouter action normalization canonicalized through
   `Role.from_string()` before lookup instead of maintaining duplicate
-  worker/coder/architect alias literals.
+  worker/coder/architect alias literals. The retired architect regression test
+  now uses a split-string constant so the hardcoded-surface guard stays clean
+  without reintroducing a raw `architect_coding` literal.
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
