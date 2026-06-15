@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T08:31:06Z
+**Last verified**: 2026-06-15T08:55:05Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -34,7 +34,8 @@
 ## Current Live State
 
 - AutoPilot is paused, not actively exploring: `trial_counter=822`, `paused=true`, `in_flight_trial=null` at last verification.
-- No standalone W5 calibration, Gate-3 telemetry, or other matching evidence-plane runner was left running by this checkpoint.
+- Stale paused `autopilot.py` processes from the 2026-06-14 restart window were killed and verified absent before the fresh launch.
+- Fresh AutoPilot run was launched from current code with W6 shadow-only audit enabled (`AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`) and `--max-trials 832`; no live evidence-plane process was left running by this checkpoint, and collection is now aligned to a fresh controlled-window posture.
 - Completed extension: `core_v2_calibration_ext2_20260615T050124Z`
   - command: `uv run python scripts/autopilot/core_v2_calibrate.py --calibration-id core_v2_calibration_ext2_20260615T050124Z --out-jsonl /mnt/raid0/llm/tmp/core_v2_calibration/core_v2_calibration_ext2_20260615T050124Z.jsonl --n 300 --repeats 2 --seed 4242 --trial-id-base 900003`
   - repeat 1/2 complete: trial `900003`, q=`2.060`, r=`0.920`, `n=300`
@@ -51,6 +52,11 @@
   - standalone probe `w6_audit_plumbing_20260615T082700Z`: `trial_id=910010`, `n_questions=7`, partition counts `core=5`, `audit=2`, reliability `1.000`; report in `epyc-orchestrator` `orchestration/reports/w6_audit_plumbing_20260615T082700Z.{json,md}`
   - follow-up Orchestrator `a4d510a` makes future W6 audit rows shadow-only by default (`AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1` unless explicitly set to `0`): audit rows stay in `question_results`/reports but decision metrics remain paired-core-only
   - AutoPilot state remained `trial_counter=822`, `paused=true`, `in_flight_trial=null`
+- Generated stack metadata was regenerated from source/derived inputs and stack preflight passed `11/11` after launch.
+- Archive authority was repaired from journal authority and archive-preflight passed `11/11`.
+- W6 live-tree row collection is now attached to the fresh max-trials-832 run under shadow-only audit posture.
+
+For future W6 live collection, verify stack and archive gates before resuming any planning. Stale 2026-06-14 processes are cleared; keep the fresh max-trials-832 posture unless explicitly overridden.
 
 ## Promotion Gate
 
@@ -75,9 +81,10 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
 - Orchestrator `3037ec2` recorded the W5 no-go selector artifact.
 - W5 2x300 extension completed; five-row selector improved to `33/40` but still no-go.
 - Orchestrator `8db5292` recorded the extended five-row no-go selector artifact.
-- Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the first no-go; `b027a67` recorded the extended no-go; `f40c74a` recorded the W6 audit baseline check.
+- Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the first no-go; `b027a67` recorded the extended no-go; `f40c74a` recorded the W6 audit baseline check. Current useful commits still anchored by orchestrator `086f4da` and `a4d510a` and root `3312189`, `6815a06`, `6e0e0ee`.
 - W6 standalone plumbing probe completed with partitioned core/audit rows and `audit_block_report.py` output; this is W6 mechanics evidence only, not an AutoPilot deployment/cutover row.
 - Orchestrator `a4d510a` added the W6 shadow-only guard so live audit collection can journal audit rows without rotating the paired-core decision metric by default.
+- Generated stack metadata refresh and both stack/authority preflight checks are now passing at `11/11`.
 - Root `2ebfd3c` added this pickup handoff, and root `64a4430` recorded the full wrap-up routine notes.
 - Root and Orchestrator GitNexus indexes were current after the latest commits at the time of each checkpoint.
 
@@ -92,6 +99,7 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
 ## Do Not
 
 - Do not resume AutoPilot until the next inference/restart window is deliberate and recorded.
+- Do not resume any stale `autopilot.py` process in place; verify stale-process cleanup before any fresh W6 live window.
 - Do not treat dashboard inference as AutoPilot unless `autopilot_state.json` and `logs/autopilot.log` contradict the paused state.
 - Do not promote a partial `core_v2` target without a new `core_id` and explicit handoff/progress rationale.
 - Do not run full `/wrap-up` pruning/wiki compilation unless the operator explicitly asks for `/wrap-up`.
