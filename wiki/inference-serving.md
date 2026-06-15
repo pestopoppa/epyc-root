@@ -43,7 +43,7 @@ Recent architectural improvements include REAP MoE expert-pruning evidence for t
 
 | Role | Model | v2 t/s | v3 t/s | Δ | Notes |
 |------|-------|--------|--------|---|-------|
-| worker_explore | Qwen3-Coder-30B-A3B Q4KM | 39.0 | 38.6 | −1% | Noise-level regression |
+| worker_general | Qwen3-Coder-30B-A3B Q4KM | 39.0 | 38.6 | −1% | Noise-level regression |
 | frontdoor | Qwen3.5-35B-A3B Q4KM moe6 | 12.7 | 14.3 | **+13%** | Single-instance baseline; 4× NUMA aggregate scales accordingly |
 | coder | Qwen2.5-Coder-32B + 0.75B draft | 10.8 | 21.7 | **+101%** | Spec-dec path received largest benefit |
 | architect_coding | REAP-246B + draft | 8.0 | 12.0 | **+50%** | Pruned MoE + draft stack |
@@ -145,11 +145,11 @@ Phase 0 of the CPU optimization pickup (see `hardware-optimization.md` §2026-04
 
 1. **The 1.75× ukernel factor in the composition above is falsified by measurement**. AVX-512VNNI port of the hottest Q8_0 decode function (`ggml_vec_dot_q8_0_q8_0`) delivered +1.7% end-to-end at 96t (not 1.46×), because quantized decode is BW-bound on this hardware — perf samples inside the dot loop are DRAM-wait, not ALU-bound. Revised composition is 2.5× TP × **1.0× ukernel** × 1.25× tuning = 3.1× single-instance. Still valuable; just smaller.
 
-2. **A new single-instance operating point emerged: 96t pinned to NUMA node 0.** On Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline), 96t taskset = **49.11 t/s** (quiet host, stddev 0.08) vs production worker_explore 1×24t = 39.1 t/s. **+26% single-session decode with zero code change.** Worth a production sweep before the CPU1 TP-sharding Phase 1 prototype (because: simpler to deploy, 0-cost validation, independent of CPU1 outcome).
+2. **A new single-instance operating point emerged: 96t pinned to NUMA node 0.** On Qwen3-Coder-30B-A3B Q4_K_M (canonical baseline), 96t taskset = **49.11 t/s** (quiet host, stddev 0.08) vs production worker_general 1×24t = 39.1 t/s. **+26% single-session decode with zero code change.** Worth a production sweep before the CPU1 TP-sharding Phase 1 prototype (because: simpler to deploy, 0-cost validation, independent of CPU1 outcome).
 
 | Config | Qwen3-Coder-30B-A3B Q4_K_M t/s | Notes |
 |---|---|---|
-| 1×24t (worker_explore current) | 39.1 | Production |
+| 1×24t (worker_general current) | 39.1 | Production |
 | 1×48t | 39.6 | Barrier-bound, no gain over 24t |
 | **1×96t taskset 0–95 (node 0)** | **49.11** | **+26% vs current production; unmeasured before today** |
 | 4×48t NUMA-pinned (frontdoor style) | 95.8 aggregate | Aggregate throughput across 4 sessions |
