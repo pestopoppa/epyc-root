@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T08:07:14Z
+**Last verified**: 2026-06-15T08:31:06Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -45,7 +45,11 @@
   - durable no-go report in `epyc-orchestrator` commit `3037ec2`: `orchestration/reports/core_v2_selection_core_v2_calibration_20260615T003043Z.no_go.json`
 - Five-row selector result: `selected_count=33`, `target_size=40`, `shortfall=7`, `unresolved_selected_count=0`; no `benchmarks/prompts/core_v2.jsonl` was promoted.
 - Durable five-row no-go report in `epyc-orchestrator` commit `8db5292`: `orchestration/reports/core_v2_selection_core_v2_calibration_20260615T003043Z_plus_ext2.no_go.json`
-- W6 live-tree no-inference check passed, but no real audit rows exist yet: focused pytest `7 passed, 15 deselected`; read-only report `trial_count=701`, `audited_trial_count=0`.
+- W6 live-tree no-inference check passed, and a standalone plumbing probe wrote one audited row without mutating AutoPilot state:
+  - focused pytest `7 passed, 15 deselected`
+  - current-journal read-only report: `trial_count=701`, `audited_trial_count=0`
+  - standalone probe `w6_audit_plumbing_20260615T082700Z`: `trial_id=910010`, `n_questions=7`, partition counts `core=5`, `audit=2`, reliability `1.000`; report in `epyc-orchestrator` `orchestration/reports/w6_audit_plumbing_20260615T082700Z.{json,md}`
+  - AutoPilot state remained `trial_counter=822`, `paused=true`, `in_flight_trial=null`
 
 ## Promotion Gate
 
@@ -72,6 +76,7 @@ The five-row selector is still short. Do not silently lower the target. Make an 
 - W5 2x300 extension completed; five-row selector improved to `33/40` but still no-go.
 - Orchestrator `8db5292` recorded the extended five-row no-go selector artifact.
 - Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the first no-go; `b027a67` recorded the extended no-go; `f40c74a` recorded the W6 audit baseline check.
+- W6 standalone plumbing probe completed with partitioned core/audit rows and `audit_block_report.py` output; this is W6 mechanics evidence only, not an AutoPilot deployment/cutover row.
 - Root `2ebfd3c` added this pickup handoff, and root `64a4430` recorded the full wrap-up routine notes.
 - Root and Orchestrator GitNexus indexes were current after the latest commits at the time of each checkpoint.
 
@@ -79,7 +84,7 @@ The five-row selector is still short. Do not silently lower the target. Make an 
 
 1. Decide W5: one more repeat vs explicitly smaller core vs move on with W5 open.
 2. If W5 later promotes, run focused core-file validation and update `instrument_eras.yaml` only when an era/promotion decision is actually made.
-3. If W5 remains short, move to W6 rotating-audit policy/default-off validation.
+3. If W5 remains short, use the W6 plumbing probe as evidence that mechanics work, then choose live W6 audit cadence and collect real AutoPilot audit rows in a deliberate clean window.
 4. Then resume Fable5 Queue 2 clean-window work in order: E2/E1 batched-decode measurement, shape-keyed contention bracket, J2/J3 migration probe, J12/THINK-ABL, DCP-6a attested reload, J10 shadow collection.
 5. Use inference-free gaps for repo hygiene: Orchestrator `archived_backups/`, `orchestration/optuna_study.db.bak-quarantine786-20260613_093831`, and runtime `scripts/autopilot/short_term_memory.md`.
 
