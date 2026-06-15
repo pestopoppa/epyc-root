@@ -87,6 +87,10 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- `scripts.server.stack_manifest.validate_against_registry()` now derives its
+  launcher-only skip set from the live hot/warm sets, and
+  `scripts/registry/stack_change_pipeline.py update` refreshed the generated
+  descriptors / stack priors so the source-artifact hashes stayed in sync.
 - The OpenAI `/v1/models` degraded compatibility surface in
   `src/api/routes/openai_compat.py` now derives its fallback role list from
   the computed `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of a

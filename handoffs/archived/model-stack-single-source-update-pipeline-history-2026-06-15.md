@@ -1749,3 +1749,8 @@ after they were validated and checkpointed in `progress/`:
   role inputs at the boundary before consulting the shared timeout table, so
   `worker_explore` routes through the live worker timeout path while
   `worker_fast` keeps its separate warm-tier timeout.
+- `scripts.server.stack_manifest.validate_against_registry()` now derives its
+  launcher-only skip set from the live hot/warm sets instead of a
+  hand-curated alias list, and `scripts/registry/stack_change_pipeline.py
+  update` regenerated descriptors / stack priors so the source-artifact hashes
+  stayed in sync after the manifest change.
