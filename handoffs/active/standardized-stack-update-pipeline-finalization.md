@@ -66,7 +66,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   checks. Use the stack-change surface manifest to pick the next consumer.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
-  execution, and selected consumer witnesses move together.
+  execution, and selected consumer witnesses move together. The simulated
+  frontdoor swap fixture now also exercises promotion-gate execution in the
+  same swapped state, so the remaining gap is broader representative coverage
+  rather than a missing end-to-end happy-path proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 

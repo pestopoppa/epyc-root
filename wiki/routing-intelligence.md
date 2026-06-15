@@ -329,6 +329,15 @@ The speculative cheap-first gate in `src/api/routes/chat.py` now normalizes `ini
 
 `ChatPipelineConfig.try_cheap_first_role` now defaults to `worker_general` rather than the retired `worker_explore` label. That makes the cheap-first path's default role selection line up with the live worker routing and keeps the config surface consistent with the runtime normalization fixes above.
 
+## W4 swap-CI coverage extension (2026-06-15)
+
+`tests/unit/test_stack_change_pipeline_simulated_fixtures.py` now exercises the
+promotion-gate command in the same swapped frontdoor fixture that already
+proves generated descriptors, stack priors, operator summary, q_scorer priors,
+runtime attestation, and selected consumer witnesses move together. This is a
+test-only reinforcement of the stack-change pipeline's representative swap
+coverage, not a production-path behavior change. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [standardized stack-update pipeline finalization](../handoffs/active/standardized-stack-update-pipeline-finalization.md), `tests/unit/test_stack_change_pipeline_simulated_fixtures.py`.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.
