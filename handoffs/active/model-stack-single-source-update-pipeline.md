@@ -108,6 +108,9 @@ unowned local constants.
 - `scripts/benchmark/corpus_quality_gate.py` now derives its fallback model
   order from live manifest membership at call time, instead of freezing the
   preferred role tuple in a module constant.
+- `src/api/routes/openai_compat.py` now derives its degraded `/v1/models`
+  fallback role order from live manifest membership at call time, instead of a
+  frozen degraded-role tuple.
 - `src/config/stack_templates.py` now checks template roles against live
   stack-prior role records instead of a local retired-role denylist, removing
   the last active-code retired-role guard warning from the stack-change scan.
