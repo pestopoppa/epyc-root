@@ -174,6 +174,10 @@ unowned local constants.
   execution path no longer keeps a generic `worker` alias branch in the local
   compatibility table; `worker_explore` still lands on `worker_general` and
   `worker` still resolves through the chain helper.
+- `src.graph.compaction` now uses `Role.WORKER_GENERAL` for compaction index
+  generation instead of the retired `worker_explore` role label, so the
+  summarizer path stays on canonical worker truth while preserving the same
+  compaction output shape.
 - `ChatPipelineConfig.try_cheap_first_role` now defaults to the canonical live
   `worker_general` role in `src/config/models.py`; no separate mirror field in
   `src/config/__init__.py` needed changes.
