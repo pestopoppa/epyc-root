@@ -133,7 +133,7 @@ content in `choices[0].message.content`.
 **Required for**: Gemma 4 (multi-channel format).
 
 **Available for**: any model launched with `--jinja`. Today's stack has
-this flag on for all worker_general / worker_explore / etc. instances
+this flag on for all worker_general / worker_fast / etc. instances
 (gemma-4-26B-A4B-it Q4_K_M).
 
 **Selection mechanism**: env var `ORCHESTRATOR_USE_CHAT_COMPLETIONS_ROLES`
