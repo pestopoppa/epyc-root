@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; enforcing route override + full 5x5 sweep pending
+**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; eval-populated 5x5 winner table + live A/B remain pending
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -42,7 +42,7 @@ This is the only entry in the May 2026 latent-MAS cluster that's deployable on t
    - 5 domains × 5 functions × 4 models × ~15 tasks = ~1500 evals
    - Use existing eval-tower harness in `epyc-inference-research/scripts/benchmark/`
 3. **Build per-stack winner table**: 5×5 cells, each cell records the winning model. Compare to X-MAS-published winners as a shape sanity check.
-4. **Orchestrator integration**: add a coarse (domain, function) classifier on the frontdoor; each incoming task is classified, then routed to the cell winner. Fall back to current ad-hoc routing for unclassified tasks. **Partial 2026-06-13/14**: side-effect-free taxonomy/classifier + winner-table loader landed in `epyc-orchestrator` commit `e9004a2`; default-off shadow/advisory telemetry hook landed in `edbe0d2`. The hook records X-MAS metadata without mutating `routing_decision`; enforcing override semantics remain gated on the 5x5 eval-populated winner table.
+4. **Orchestrator integration**: add a coarse (domain, function) classifier on the frontdoor; each incoming task is classified, then routed to the cell winner. Fall back to current ad-hoc routing for unclassified tasks. **Partial 2026-06-13/15**: side-effect-free taxonomy/classifier + winner-table loader landed in `epyc-orchestrator` commit `e9004a2`; default-off shadow/advisory telemetry hook landed in `edbe0d2`; guarded route-mutation semantics landed in `a87bd35`. Enforce mode remains inert unless a complete configured winner table is loaded, the classifier is confident, and the request is not explicitly forced; failure-veto and downstream guards still apply after any X-MAS rewrite.
 5. **Hermes outer-shell agent uses the same routing for sub-task delegation** (`hermes-outer-shell.md`).
 
 ## Implementation Progress
@@ -64,7 +64,6 @@ Validation:
 Still not landed after the scaffold:
 
 - Evidence-backed 5x5 winner table.
-- Enforcing route override semantics.
 - `model_registry.yaml` override behavior.
 
 Reason: the original 2026-06-13 override target, `_classify_and_route`, had HIGH upstream impact. The 2026-06-14 hook therefore shipped the safe path first: default-off shadow/advisory telemetry through `_route_request` and `routing_meta`, with no route mutation.
@@ -87,11 +86,39 @@ Validation:
 - `uv run pytest -q tests/classifiers/test_xmas_routing.py tests/unit/test_pipeline_routing.py tests/unit/test_chat_pipeline_stages.py tests/unit/test_stream_adapter.py tests/unit/test_chat_endpoints.py` -> 156 passed.
 - Post-commit GitNexus full rebuild completed after an interrupted incremental run: indexed `/mnt/raid0/llm/epyc-orchestrator` at `edbe0d2` with 52,168 nodes, 89,473 edges, 1,094 clusters, and 300 flows.
 
+### 2026-06-15 — guarded enforce semantics
+
+Landed in `epyc-orchestrator` commit `a87bd35`:
+
+- `src/classifiers/xmas_routing.py`: `mode=enforce` now requires a complete
+  5x5 winner table before metadata can report a loaded suggested role. Shadow
+  mode can still use partial tables for telemetry.
+- `src/api/routes/chat_pipeline/routing.py`: `_route_request()` can apply an
+  X-MAS suggestion only when mode is `enforce`, a complete table is loaded,
+  the classification is confident, and the request did not set `force_role`.
+  The rewrite happens before factual-risk/failure-veto/difficulty/ingest
+  guards, so existing safety guards still get final say.
+- `orchestration/classifier_config.yaml`: checked-in default remains `off`;
+  comments now document the complete-table/confidence contract.
+- Tests cover loaded/confident rewrites, low-confidence fail-open,
+  missing/incomplete table fail-open, forced-role precedence, and
+  failure-veto precedence.
+
+Validation:
+
+- `uv run pytest -q tests/classifiers/test_xmas_routing.py tests/unit/test_pipeline_routing.py tests/unit/test_chat_pipeline_stages.py tests/unit/test_stream_adapter.py tests/unit/test_chat_endpoints.py tests/unit/test_config.py` -> 221 passed.
+- `uv run ruff check src/classifiers/xmas_routing.py src/api/routes/chat_pipeline/routing.py tests/classifiers/test_xmas_routing.py tests/unit/test_pipeline_routing.py` -> passed.
+- `python3 -m py_compile src/classifiers/xmas_routing.py src/api/routes/chat_pipeline/routing.py` -> passed.
+- `git diff --check` -> passed.
+- GitNexus refreshed at `a87bd35`.
+
 Remaining:
 
 - Populate the 5x5 winner table from the eval sweep before any real override behavior.
-- Implement and validate an enforcing route override only after the table is evidence-backed.
-- Keep current production behavior unchanged while `xmas_routing.mode` remains `off`.
+- Run the held-out A/B before setting `xmas_routing.mode: enforce` in a live
+  config.
+- Keep current production behavior unchanged while `xmas_routing.mode` remains
+  `off` and `winner_table_path` remains empty.
 
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).

@@ -400,3 +400,13 @@ the current flat/roles/basename fallback ladder for prompt mutation and GEPA
 optimization while rejecting parent-directory and symlink escapes outside the
 prompt root. X-MAS enforce routing stays gated on a validated complete 5x5
 winner table plus route-mutation tests.
+
+- **X-MAS enforce semantics are now guarded, but still default-off.**
+  `src/api/routes/chat_pipeline/routing.py` can apply a table winner only in
+  `mode=enforce` when a complete configured 5x5 table is loaded, the
+  classifier is confident, and no explicit forced role is present. The rewrite
+  happens before failure-veto and downstream guards, so safety guards still get
+  final say. The eval-populated winner table and live A/B remain the open
+  X-MAS tail. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md),
+  `src/classifiers/xmas_routing.py`, `src/api/routes/chat_pipeline/routing.py`.

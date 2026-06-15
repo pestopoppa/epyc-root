@@ -339,10 +339,14 @@ Any future stack update should be accepted only when these hold:
   flat/roles/basename fallback ladder, preserved read/write precedence for
   prompt mutation and GEPA optimization, and added containment checks so
   parent-directory and symlink escapes fail closed.
-- [ ] X-MAS production routing remains a larger gated move. The scaffold is
-  metadata-only today; real enforce behavior needs a validated complete 5x5
-  winner table, confidence/fallback semantics, and route-mutation tests that
-  preserve failure-veto / ingest-triviality ordering.
+- [x] Land guarded X-MAS enforce semantics without enabling production
+  behavior. Orchestrator `a87bd35` keeps `xmas_routing.mode` default-off and
+  allows route mutation only when a complete configured winner table is loaded,
+  the classifier is confident, and the request is not explicitly forced;
+  failure-veto and downstream guards still run after the X-MAS rewrite.
+- [ ] Populate and validate the X-MAS 5x5 winner table through the canonical
+  inference/eval-gated handoff before enabling `mode: enforce` in any live
+  config.
 - [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`
