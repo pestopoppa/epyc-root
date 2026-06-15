@@ -55,6 +55,9 @@ unowned local constants.
 - `scripts/benchmark/seeding_types.py` now derives its default-role fallback
   order from active role discovery before falling back to the legacy literal
   tuple, keeping the shared seeding defaults aligned with current live roles.
+- `scripts/benchmark/seeding_rewards.py` now canonicalizes throughput lookups
+  and worker-role detection through `Role.from_string()`, and its degraded
+  fallback throughput map no longer carries a stale `worker_explore` entry.
 - Planner-facing guidance was tightened on 2026-06-15 so
   `scripts/autopilot/program.md` explicitly treats the generated controller
   system card as the authoritative live view for role, port, context,
