@@ -125,6 +125,10 @@ unowned local constants.
   names through `Role.from_string()` before checking live stack priors or the
   degraded tier map, and the degraded map no longer carries a redundant
   `worker_explore` fallback entry.
+- `src.config.models._server_url_default()` now resolves `worker_explore`
+  through the canonical `worker_general` alias path before falling back, so
+  the config server-URL default no longer carries a separate worker-explore
+  literal while preserving the compatibility URL.
 - `src.api.routes.chat_delegation_config.py` now resolves the remaining
   generic delegate aliases through `Role.from_string()` and keeps only the
   special-case `worker_coder` / `worker_code` override local to the delegate
@@ -212,6 +216,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep the graph-router action-space compatibility mapping inline in
   `scripts/graph_router/action_space.py` instead of a standalone shim
   constant.
+- [x] Keep server-URL defaults in `src.config.models._server_url_default()`
+  aligned with canonical worker alias truth instead of duplicating a
+  `worker_explore` literal fallback.
 - [x] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
   canonical live worker role, not the retired `worker_explore` alias.
 - [x] Keep ingress worker aliases in
