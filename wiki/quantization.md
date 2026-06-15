@@ -19,7 +19,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 ### Weight Quantization
 
-- **Q4_K_M is the production standard**: 4-bit k-quant with mixed-precision block structure. Used for all production models: Qwen3-Coder-30B-A3B frontdoor (approximately 18 GB), Qwen2.5-Coder-32B coder escalation (approximately 18.5 GB), REAP-246B architect_coding (139 GB), Qwen3-235B-A22B architect_general (approximately 140 GB). Quality is sufficient for agentic coding, tool calls, multi-turn reasoning, and mathematical problem solving. Q4_K_M was confirmed as the optimal coder quant in March 2026 after sweep testing. [Project memory: project_coder_quant_decision.md]
+- **Q4_K_M is the production standard**: 4-bit k-quant with mixed-precision block structure. Used for current production models such as Qwen3-Coder-30B-A3B frontdoor (approximately 18 GB), Qwen2.5-Coder-32B coder escalation (approximately 18.5 GB), and Qwen3.5-122B-A10B architect_general (approximately 69 GB). The retired REAP-246B architect_coding row is historical only. Quality is sufficient for agentic coding, tool calls, multi-turn reasoning, and mathematical problem solving. Q4_K_M was confirmed as the optimal coder quant in March 2026 after sweep testing. [Project memory: project_coder_quant_decision.md]
 
 - **Q4_K_M degrades DFlash conditioning signal**: DFlash speculative decoding requires extracting hidden states from specific target model layers as conditioning input to the drafter. On Q4_K_M, per-token acceptance drops from 6.49 (f16 GPU) to 27%, yielding only 1.4% block acceptance. The quantization noise in extracted hidden states -- which are dequantized f32 approximations of what would be exact f32 in an f16 model -- is sufficient to corrupt the DFlash conditioning beyond recovery. This was the decisive factor in concluding DFlash is not viable for our Q4_K_M stack. [DFlash deep-dive](../research/deep-dives/dflash-dart-diffusion-speculation.md), [DFlash handoff](../handoffs/completed/dflash-block-diffusion-speculation.md)
 
@@ -77,7 +77,7 @@ The quantization landscape in llama.cpp is evolving. The mainstream path is gger
 
 ## Actionable for EPYC
 
-- **Deployed**: Hadamard+q4_0 KV cache quantization (production since `b51c905`, auto-enabled in v3 upstream). Q4_K_M weight quantization across all production models. REAP+Q4_K_M double compression for architect_coding (246B)
+- **Deployed**: Hadamard+q4_0 KV cache quantization (production since `b51c905`, auto-enabled in v3 upstream). Q4_K_M weight quantization across all production models. REAP+Q4_K_M double compression for the retired architect_coding (246B) experiment.
 
 - **Monitor and rebuild**: When llama.cpp v3 upstream PR #21038 merges, rebuild production binary for automatic Hadamard rotation. Remove `--kv-hadamard` from orchestrator config -- rotation becomes automatic. Potential optimization over our manual implementation
 
