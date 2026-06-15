@@ -2,7 +2,7 @@
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change command and
 promotion gates are live; current default check is green. Remaining work is
-waived legacy-fixture cleanup, high-risk consumer migrations, and W4 swap-CI.
+high-risk consumer migrations and W4 swap-CI.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack
@@ -39,23 +39,21 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Canonical command:
   `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
   in `epyc-orchestrator`.
-- Default check after Orchestrator `d94954a` is green:
+- Default check after Orchestrator `7ad5965` is green:
   `runtime_attestation: ok`, `q_scorer_priors: ok`, and descriptors/stack
   priors fresh.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
-- Current all-surface warning baseline: `11 unique / 15 total` with
-  `waived_production_blocker=2` and `waived_legacy_test=9`; historical-doc
-  findings are now explicitly marked as historical retired-role notes.
+- Current all-surface warning baseline: `2 unique / 2 total`; both remaining
+  surfaces are owned, expiring `waived_production_blocker` compatibility guards.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
-- Active operator topology docs were refreshed in `8221971`, and `d94954a`
-  marked remaining retired-role doc mentions as historical notes.
+- Active operator topology docs were refreshed in `8221971`, `d94954a` marked
+  remaining retired-role doc mentions as historical notes, and `7ad5965` moved
+  legacy seed fixtures to exact inline allowances.
 
 ## Outstanding Work
 
-- [ ] Reduce or retire `waived_legacy_test=9` fixture warnings when the fixture
-  value is no longer needed for explicit retired-role compatibility coverage.
 - [ ] Keep the two `waived_production_blocker` surfaces intentional, owned, and
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact

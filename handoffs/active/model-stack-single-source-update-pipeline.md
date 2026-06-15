@@ -4,7 +4,7 @@
 runtime attestation, generated stack summaries, scanner-rule ownership,
 production launch gate, AutoPilot preflight gate, and direct benchmark runtime
 enforcement are live. Remaining work is other high-risk P2 consumer migrations
-plus waived legacy-fixture cleanup.
+and swap-CI coverage.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -47,10 +47,10 @@ unowned local constants.
   benchmark preflight all run the canonical stack-change gate before mutating
   runtime state.
 - Direct benchmark runtime enforcement is closed by Orchestrator `09d9028`.
-- Active operator docs were refreshed by `8221971` and historical retired-role
-  doc notes were explicitly marked by `d94954a`; current warning baseline is
-  `11 unique / 15 total`: `waived_production_blocker=2` and
-  `waived_legacy_test=9`.
+- Active operator docs were refreshed by `8221971`, historical retired-role doc
+  notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
+  to exact inline allowances by `7ad5965`; current warning baseline is
+  `2 unique / 2 total`, both owned expiring `waived_production_blocker` guards.
 - Guard inventory reports `consumer_surface_count=13` and `rule_count=27`.
 
 ## Required Contract
@@ -72,8 +72,6 @@ Any future stack update should be accepted only when these hold:
 - [ ] Pick the next high-risk P2 consumer from
   `orchestration/stack_change_surface_manifest.yaml`; run focused GitNexus
   impact before touching production code.
-- [ ] Finish or retire waived legacy-test fixture surfaces that no longer add
-  compatibility coverage.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config or runtime consumers.
 - [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
