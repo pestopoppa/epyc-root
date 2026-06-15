@@ -115,7 +115,9 @@ unowned local constants.
   `src/api/routes/openai_compat.py` now derives its fallback role list from
   the computed `HOT_SERVERS` / `WARM_SERVERS` manifest view instead of a
   direct role→port fallback table, while still preferring live stack-prior
-  records when they exist.
+  records when they exist. The helper now canonicalizes any recognized alias
+  spellings it sees in the server lists or live role IDs before deduping so
+  the fallback stays on live canonical names.
 - `orchestration.repl_memory.routing_classifier.RoutingClassifier.load()`
   now canonicalizes loaded action labels through `Role.from_string()` so
   serialized alias labels like `worker_explore` and `coder` rehydrate to the
