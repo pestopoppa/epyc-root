@@ -1,6 +1,6 @@
 # Model Stack Single-Source Update Pipeline
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, direct benchmark runtime enforcement (`09d9028`), and multiple consumer migrations are live. Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=25`, `waived_legacy_test=9`. Remaining work is other high-risk P2 consumer migrations after focused GitNexus impact checks, plus historical-doc cleanup.
+**Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change checks, generated stack summaries, runtime attestation, scanner-rule ownership, direct benchmark runtime enforcement (`09d9028`), and multiple consumer migrations are live. Current all-surface scan is clean except classified warnings: `waived_production_blocker=2`, `historical_doc=18`, `waived_legacy_test=9`. Remaining work is other high-risk P2 consumer migrations after focused GitNexus impact checks, plus historical-doc/waived-fixture cleanup.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific quantities from silently corrupting routing, scoring, launch, planner prompts, replay analysis, and operator docs after a stack change
 **Scope**: Documentation handoff only. No application code, inference, AutoPilot, server restarts, or seeding were performed. This sidecar updated root handoff/index/progress docs only; root GitNexus was refreshed before editing.
@@ -29,6 +29,28 @@ This handoff is a concise pickup contract. The long historical audit lives in `m
 - Validation: py_compile, ruff, path-scoped `git diff --check`, 116 focused seeding tests, and full `stack_change_pipeline.py check --run-promotion-gate` with 165 tests passed. GitNexus impact for `run_preflight` was HIGH, so future edits to this boundary still require focused impact checks.
 
 Treat older text saying direct benchmark enforcement is still open as superseded by this section. Remaining stack SSoT work is high-risk P2 consumer migrations plus historical-doc cleanup.
+
+## Active escalation topology doc cleanup — 2026-06-15
+
+`epyc-orchestrator` `8221971` refreshed active operator docs that were still
+drawing the retired `architect_coding` role as an escalation target.
+
+- `docs/ARCHITECTURE.md` escalation chains now terminate at
+  `architect_general`.
+- `docs/diagrams/orchestration_topology.md` no longer renders
+  `architect_coding` as an active specialist node and now shows
+  `coder_escalation -> architect_general`.
+- Validation: `git diff --check` on touched docs passed;
+  `uv run python scripts/validate/stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces`
+  improved from `36` to `29` unique warnings;
+  `tests/unit/test_stack_change_guard.py` passed `58`; and
+  `uv run python scripts/registry/stack_change_pipeline.py check` reported
+  `summary: ok`, `runtime_attestation: ok`, `q_scorer_priors: ok`, and
+  classified warnings only (`waived_production_blocker=2`,
+  `historical_doc=18`, `waived_legacy_test=9`).
+
+This was doc-only and did not touch live runtime, AutoPilot state, model
+servers, generated stack priors, or benchmark fixtures.
 
 ## Seeding Topology Constants follow-up — 2026-06-14
 

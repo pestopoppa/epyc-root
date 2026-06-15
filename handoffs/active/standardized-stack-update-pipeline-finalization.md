@@ -1,6 +1,6 @@
 # Standardized Stack Update Pipeline Finalization
 
-**Status**: PARTIAL IMPLEMENTATION LANDED - stack-change CLI acceptance/promotion gate is live, default check is green, warning categories are summarized, scanner-rule ownership is enforced, launcher/runtime/probe/dashboard/config/benchmark consumers have multiple stack-prior migrations, and recent N11a follow-ups through `5f0f248` keep rule inventory at `27` with only classified warning buckets (`waived_production_blocker=2`, `legacy_test=72`, `historical_doc=25`, `waived_legacy_test=9`). Remaining pickup work is residual test/historical-doc cleanup, direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient, and other high-risk consumer migrations after focused GitNexus impact checks.
+**Status**: PARTIAL IMPLEMENTATION LANDED - stack-change CLI acceptance/promotion gate is live, default check is green, warning categories are summarized, scanner-rule ownership is enforced, launcher/runtime/probe/dashboard/config/benchmark consumers have multiple stack-prior migrations, and recent N11a follow-ups through `8221971` keep rule inventory at `27` with only classified warning buckets (`waived_production_blocker=2`, `historical_doc=18`, `waived_legacy_test=9`). Remaining pickup work is residual historical-doc/waived-fixture cleanup and other high-risk consumer migrations after focused GitNexus impact checks.
 **Created**: 2026-06-13
 **Priority**: HIGH - prevents stale model-specific constants from corrupting scoring, routing, launch, planner context, and benchmark interpretation after model assignment changes
 **Scope**: Implementation-ready audit and handoff only. No inference, benchmarks, AutoPilot restart, server restart, or child-repo code changes were performed in this sidecar pass.
@@ -15,6 +15,15 @@ The recurring failure mode is clear: live stack changes have left stale role/mod
 Treat this file as a pickup bridge for the main workflow. Do not start a competing registry or a second guard system; finish and wire the existing stack-prior contract.
 
 Current operator posture: use `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate` as the canonical no-inference acceptance gate after stack changes. The highest-value remaining work is not a second pipeline; it is shrinking the remaining classified surfaces and migrating any still-live consumer that cannot yet derive model facts from stack priors or an explicit degraded fallback.
+
+2026-06-15 pickup note: `epyc-orchestrator` `8221971` refreshed the active
+escalation-chain documentation in `docs/ARCHITECTURE.md` and
+`docs/diagrams/orchestration_topology.md` so current diagrams terminate at
+`architect_general` instead of the retired `architect_coding` role. Validation
+reported `tests/unit/test_stack_change_guard.py` `58 passed`,
+`stack_change_pipeline.py check` `summary: ok`, and all-surface warnings reduced
+from `36` to `29` unique (`historical_doc` `25 -> 18`,
+`waived_production_blocker=2`, `waived_legacy_test=9`).
 
 ## Current State Snapshot
 
