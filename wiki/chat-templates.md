@@ -5,10 +5,13 @@
 > jinja), and how to wire a newly-onboarded model so it produces clean
 > output through the routing layer.
 
-**Compiled**: 2026-05-23
+**Compiled**: 2026-06-15
 **Primary sources**: `src/api/routes/chat_utils.py`, `src/backends/llama_server.py`,
 `src/llm_primitives/backend.py`, `scripts/server/stack_numa.py`,
-`progress/2026-05/2026-05-22.md`, `progress/2026-05/2026-05-23.md`
+`src/chat_completions_roles.py`,
+`progress/2026-05/2026-05-22.md`, `progress/2026-05/2026-05-23.md`,
+`progress/2026-06/2026-06-15.md`,
+`handoffs/active/model-stack-single-source-update-pipeline.md`
 
 ---
 
@@ -133,16 +136,24 @@ content in `choices[0].message.content`.
 this flag on for all worker_general / worker_explore / etc. instances
 (gemma-4-26B-A4B-it Q4_K_M).
 
-**Selection mechanism**: env var
-`ORCHESTRATOR_USE_CHAT_COMPLETIONS_ROLES` (comma-separated role names,
-default covers all 5 worker_* roles). `_init_caching_backends` reads
-this and sets `use_chat_completions=True` on each affected role's
-`ServerConfig`. `LlamaServerBackend.infer()` and
-`infer_stream_text()` dispatch to the chat-completions code paths
-when the flag is set.
+**Selection mechanism**: env var `ORCHESTRATOR_USE_CHAT_COMPLETIONS_ROLES`
+(comma-separated role names) still overrides everything, but the
+default set is now derived from generated stack priors rather than a
+frozen literal list. `src/chat_completions_roles.py` reads the live
+artifact and selects roles whose launch metadata says
+`launch.runtime.flags.jinja == true` and
+`acceleration.enable_thinking == false`. If the priors artifact is
+missing or malformed, the helper falls back to a narrow degraded set:
+`frontdoor`, `coder_escalation`, `worker_general`, `worker_math`,
+`worker_summarize`, `toolrunner`.
 
-`chat.py:498` and `_try_cheap_first` both check this env list and
-SKIP client-side templating for those roles — sending a pre-templated
+`_init_caching_backends` reads the shared set and sets
+`use_chat_completions=True` on each affected role's `ServerConfig`.
+`LlamaServerBackend.infer()` and `infer_stream_text()` dispatch to the
+chat-completions code paths when the flag is set.
+
+`chat.py` and `_try_cheap_first` both check this shared set and SKIP
+client-side templating for those roles — sending a pre-templated
 prompt as messages[].content would inject our markers as literal user
 input and confuse the model.
 

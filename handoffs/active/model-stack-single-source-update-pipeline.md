@@ -75,6 +75,11 @@ unowned local constants.
   `src/api/routes/chat_delegation_config.py`, and the architect decision parser
   clamps TOON/JSON delegate targets against that live set instead of a frozen
   literal.
+- The chat-completions skip surface in `src/chat_completions_roles.py` now
+  derives its default from generated stack priors by reading live launch
+  metadata (`launch.runtime.flags.jinja` plus
+  `acceleration.enable_thinking=false`), with a narrow degraded fallback when
+  priors are unavailable.
 - Active operator docs were refreshed by `8221971`, historical retired-role doc
   notes were explicitly marked by `d94954a`, and legacy seed fixtures were moved
   to exact inline allowances by `7ad5965`; current warning baseline is
