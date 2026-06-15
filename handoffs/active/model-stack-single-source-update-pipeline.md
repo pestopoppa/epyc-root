@@ -101,6 +101,10 @@ unowned local constants.
   family fallback before the older structural `<prefix>_general` fallback, so
   legacy aliases such as `worker_explore` still resolve through the canonical
   worker-family prompt file when a role-specific file is absent.
+- `src.classifiers.factual_risk._role_tier_for_role()` now canonicalizes role
+  names through `Role.from_string()` before checking live stack priors or the
+  explicit degraded tier map, so alias inputs such as `worker_explore` no
+  longer depend on a file-local legacy literal.
 - `src/config/stack_templates.py` now checks template roles against live
   stack-prior role records instead of a local retired-role denylist, removing
   the last active-code retired-role guard warning from the stack-change scan.
