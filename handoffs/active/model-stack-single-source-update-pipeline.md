@@ -48,6 +48,7 @@ unowned local constants.
   runtime state.
 - Direct benchmark runtime enforcement is closed by Orchestrator `09d9028`.
 - `src.api.admission.AdmissionController.from_defaults()` now loads the current stack-prior-derived backend limits at instantiation time, so new app-state admission controllers pick up fresh generated limits instead of reusing the import-time snapshot.
+- `src.config.models.TimeoutsConfig` now shares a single role-timeout mapping helper across `for_role()` and `role_timeouts_dict()`, so the backward-compatible alias surface is derived from one canonical timeout table instead of duplicate local dict literals.
 - Seeding reward-prior helpers were tightened on 2026-06-15: generated
   stack-prior live-role records now drive both throughput-prior and
   architect-action role extraction in `scripts/benchmark/seeding_rewards.py`,
