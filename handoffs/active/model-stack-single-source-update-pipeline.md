@@ -293,8 +293,11 @@ Any future stack update should be accepted only when these hold:
   `Role.WORKER_GENERAL` rather than a local alias dict, so the remaining live
   tail should be another consumer with a concrete stale model fact or route
   boundary alias table.
-- [ ] Extend W4 swap-CI coverage so representative stack swaps prove generated
+- [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
+  The replay meta-agent now also exposes `generate_candidate_swap_report()`
+  and `--swap-replay` so archive-backed candidate swaps can be replayed
+  directly without inventing a new replay subsystem.
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
 - [x] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
