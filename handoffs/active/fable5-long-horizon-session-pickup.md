@@ -2,7 +2,7 @@
 
 **Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
 **Created**: 2026-06-15
-**Last verified**: 2026-06-15T09:12:02Z
+**Last verified**: 2026-06-15T09:27:16Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)
 
 ## Resume First
@@ -16,10 +16,13 @@
    ```
 
    Last verified state: PID `2730020` is a detached current-code AutoPilot W6
-   shadow-audit run (`--max-trials 832`), `trial_counter=822`, `paused=false`,
-   `in_flight_trial.trial_id=822`. Archive authority is aligned. No W6 audit
-   row has landed yet because the trial is still in flight
-   (`audit_block_report.py`: `trial_count=701`, `audited_trial_count=0`).
+   shadow-audit run (`--max-trials 832`), `trial_counter=823`, `paused=false`,
+   `in_flight_trial.trial_id=823`. Trial `823` is a `memrl_retrieval`
+   `numeric_trial` and had reached T1 progress `10/60` at `2026-06-15T09:27:16Z`.
+   Archive authority is aligned. The first W6 audit row landed on trial `822`
+   (`audit_block_report.py`: `trial_count=702`, `audited_trial_count=1`, core
+   `32/50`, audit `7/10`, `delta_audit_minus_core=+0.180`, overfit divergences
+   `0`).
 
 2. Re-run the five-row selector from `/tmp` if you need to inspect the candidate/core shape:
 
@@ -39,11 +42,18 @@
 
 ## Current Live State
 
-- AutoPilot is running trial `822`: PID `2730020`, `trial_counter=822`,
-  `paused=false`, `in_flight_trial.trial_id=822` at last verification
-  (`2026-06-15T09:12:02Z`). The action is a `code_mutation` proposal for
-  `src/tool_policy.py`; the planner-side code mutation failed to extract a
-  patch, and orchestrator git status still showed no code dirt after dispatch.
+- AutoPilot PID `2730020` is still alive under the detached max-trials-832 W6
+  shadow-audit run. Trial `822` completed at `2026-06-15T09:23:39Z` with
+  q=`1.920`, aggregate speed `26.779`, reliability `0.920`, dominated and
+  excluded as `reproduction_confirmed`. Current state at last verification:
+  `trial_counter=823`, `paused=false`, `in_flight_trial.trial_id=823`.
+- Trial `823` is a `memrl_retrieval` numeric trial. It restarted the API with
+  candidate `ORCHESTRATOR_MEMRL_RETRIEVAL_*` env params and had reached T1
+  progress `10/60` at `2026-06-15T09:27:16Z`.
+- Trial `822` was a `code_mutation` proposal for `src/tool_policy.py`; the
+  planner-side code mutation failed to extract a patch (`Claude CLI rc=1`), so
+  no code patch was applied. Orchestrator git dirt remained limited to runtime
+  `scripts/autopilot/short_term_memory.md`.
 - Stale paused `autopilot.py` processes from the 2026-06-14 restart window were killed and verified absent before the fresh launch.
 - Fresh AutoPilot run was launched from current code with W6 shadow-only audit
   enabled (`AUTOPILOT_W6_AUDIT_SHADOW_ONLY=1`) and `--max-trials 832`;
@@ -73,8 +83,11 @@
   tests, 58 archive/recovery/preflight tests, no-trial start/shutdown, and full
   AutoPilot preflight `11/11`.
 - W6 live-tree row collection is attached to the detached max-trials-832 run
-  under shadow-only audit posture. Trial `822` is in flight, so no live audit
-  row has landed yet.
+  under shadow-only audit posture. Trial `822` produced the first real live
+  audit row: `audit_block_report.py` totals `core=32/50` (`1.920`),
+  `audit=7/10` (`2.100`), `delta_audit_minus_core=+0.180`, and overfit
+  divergences `0`. One row is mechanics/evidence that live shadow collection is
+  working, not enough for policy acceptance or an instrument-era decision.
 
 For future W6 live collection, verify stack and archive gates before resuming any planning. Stale 2026-06-14 processes are cleared; keep the fresh max-trials-832 posture unless explicitly overridden.
 
@@ -104,6 +117,10 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
 - Root `c86a49d` updated progress, the evidence-plane instrument handoff, and the master index with the first no-go; `b027a67` recorded the extended no-go; `f40c74a` recorded the W6 audit baseline check. Current useful commits still anchored by orchestrator `086f4da` and `a4d510a` and root `3312189`, `6815a06`, `6e0e0ee`.
 - W6 standalone plumbing probe completed with partitioned core/audit rows and `audit_block_report.py` output; this is W6 mechanics evidence only, not an AutoPilot deployment/cutover row.
 - Orchestrator `a4d510a` added the W6 shadow-only guard so live audit collection can journal audit rows without rotating the paired-core decision metric by default.
+- AutoPilot trial `822` journaled the first real W6 shadow-audit row
+  (`core=32/50`, `audit=7/10`, `delta=+0.180`, overfit divergences `0`) while
+  remaining dominated/excluded as `reproduction_confirmed`; the detached run is
+  still alive at `trial_counter=823`, with follow-on trial `823` in flight.
 - Generated stack metadata refresh and both stack/authority preflight checks are
   now passing at `11/11`; orchestrator `1bd9563` refreshed stack generated
   metadata and `51268f7` hardens startup archive authority.
@@ -114,10 +131,11 @@ The five-row selector is still short. **Operational decision 2026-06-15**: do no
 
 1. W5 is held open/no-go: no `core_v2` promotion, no smaller fallback core, no more repeats in this window.
 2. If W5 later promotes, run focused core-file validation and update `instrument_eras.yaml` only when an era/promotion decision is actually made.
-3. Keep monitoring PID `2730020` until it either records W6 audit rows or exits;
-   then run `audit_block_report.py` before treating W6 as evidence. The current
-   audit cadence is every trial (`AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`) with
-   shadow-only decision metrics.
+3. Keep monitoring PID `2730020` for additional W6 audit rows or exit. The first
+   real row landed on trial `822`, but W6 needs multiple clean rows before any
+   overfit/generalization acceptance claim. The current audit cadence is every
+   trial (`AUTOPILOT_W6_AUDIT_EVERY_N_TRIALS=1`) with shadow-only decision
+   metrics.
 4. Then resume Fable5 Queue 2 clean-window work in order: E2/E1 batched-decode measurement, shape-keyed contention bracket, J2/J3 migration probe, J12/THINK-ABL, DCP-6a attested reload, J10 shadow collection.
 5. Use inference-free gaps for repo hygiene: Orchestrator `archived_backups/`, `orchestration/optuna_study.db.bak-quarantine786-20260613_093831`, and runtime `scripts/autopilot/short_term_memory.md`.
 
