@@ -170,6 +170,8 @@ Any future stack update should be accepted only when these hold:
   stack truth rather than static role lists.
 - [ ] Keep prompt-family fallback logic aligned with canonical role truth, not
   with ad hoc alias tables.
+- [ ] Keep worker-task routing defaults in `src/llm_primitives/primitives.py`
+  pinned to canonical role constants instead of local alias strings.
 - [ ] Keep delegation role normalization centralized in `src.roles` and avoid
   reintroducing scattered alias tables in route helpers.
 - [ ] Keep delegate-target validation tied to the live delegate allowlist, not

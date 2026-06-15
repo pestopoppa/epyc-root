@@ -290,6 +290,10 @@ The routing-intelligence handoff is now an active/completed twin. Completed RI-1
 
 RI-13 is explicitly conditional. The cheap-first path is the unconditional J14 swarm-fanout A/B over an injection-prompt suite; only if that clears the +3pp / <=30% throughput-regression gate should the project invest in an injection-risk classifier for conditional routing. Sources: [`routing-intelligence.md`](../handoffs/active/routing-intelligence.md), [`routing-intelligence-completed-through-2026-05-28.md`](../handoffs/completed/routing-intelligence-completed-through-2026-05-28.md), [`bulk-inference-campaign.md`](../handoffs/active/bulk-inference-campaign.md) J14, [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md).
 
+## Worker routing canonicalization (2026-06-15)
+
+The worker-task routing layer in `src/llm_primitives/primitives.py` now points generic exploration/summarization/understanding work at `Role.WORKER_GENERAL` rather than carrying a local `worker_explore` literal. This is a small but useful example of the broader routing rule: generic worker-family paths should read canonical role truth, while specialized coding bursts can keep their explicit `worker_coder` target until that family is normalized separately.
+
 ## Consult gating as downstream signal consumer (2026-05-31)
 
 The new internal interaction lifecycle makes consultation gating a downstream consumer of routing-intelligence signals, not a new owner of those signals. P3 `should_consult()` is expected to consume `factual_risk_score`, `difficulty_band`, shadow-routing confidence, recent failure history, diff size, GitNexus touched-symbol blast radius, benchmark class, and remaining latency budget. Routing-intelligence remains responsible for signal quality and canary/enforcement decisions; the interaction-lifecycle handoff owns how those signals trigger consults.
