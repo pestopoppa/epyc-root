@@ -326,12 +326,22 @@ Any future stack update should be accepted only when these hold:
   now canonicalizes role aliases before cost-tier ordering and escalation
   reward emission, so benchmark seeding no longer injects retired worker
   action labels from alias-keyed role results.
-- [ ] The remaining high-blast parked consumer candidate is
-  `scripts/registry/render_stack_summary.py:registry_role_rows` (HIGH).
-- [ ] GitNexus impact on `scripts/registry/render_stack_summary.py:registry_role_rows`
-  is `impactedCount=13`, `processes_affected=1`, `modules_affected=3`,
-  with `_run_loop_inner` as the earliest broken step. Keep this parked unless
-  a narrower helper seam appears.
+- [x] Handle the high-blast renderer fallback consumer:
+  `scripts/registry/render_stack_summary.py:registry_role_rows` remains as the
+  last-ditch dict-only fallback, but normal file-backed summary/system-card
+  generation now tries a compiled registry+descriptor fallback first and
+  renders those rows through the stack-prior row formatter. Orchestrator
+  `a0179cc` added tests proving missing stack priors no longer make the
+  operator summary trust stale registry alias rows.
+- [ ] Next characterized high-risk candidate:
+  `scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path` (HIGH).
+  Current behavior is an ordered flat/roles/basename fallback ladder used by
+  both prompt mutation and GEPA optimization. Add characterization tests for
+  that ladder before any containment hardening.
+- [ ] X-MAS production routing remains a larger gated move. The scaffold is
+  metadata-only today; real enforce behavior needs a validated complete 5x5
+  winner table, confidence/fallback semantics, and route-mutation tests that
+  preserve failure-veto / ingest-triviality ordering.
 - [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`

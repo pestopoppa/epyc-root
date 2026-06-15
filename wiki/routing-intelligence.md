@@ -388,6 +388,14 @@ The CRITICAL benchmark detector was handled after explicit high-risk approval:
 cost-tier ordering and escalation reward emission, so benchmark seeding no
 longer injects retired worker action labels from alias inputs.
 
-The remaining parked candidate is `registry_role_rows`, which feeds the
-Autopilot/controller summary path and stays deferred unless a narrower helper
-appears or a high-blast renderer follow-up is authorized.
+The HIGH renderer fallback was handled after explicit high-risk approval:
+`render_stack_summary.py` now compiles registry+descriptor fallback rows via
+the stack-prior compiler before using the old dict-only degraded fallback, and
+`gen_system_card.py` shares that compiled path. The new tests prove missing
+stack priors no longer make operator summaries trust stale registry alias rows.
+
+The next characterized HIGH candidate is
+`scripts/autopilot/species/prompt_forge.py::_resolve_prompt_path`: preserve the
+current flat/roles/basename fallback ladder with characterization tests before
+adding any path-containment hardening. X-MAS enforce routing stays gated on a
+validated complete 5x5 winner table plus route-mutation tests.
