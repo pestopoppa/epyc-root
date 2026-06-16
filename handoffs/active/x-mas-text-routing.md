@@ -217,6 +217,36 @@ Remaining:
 - Consider a v2 manifest where `code:refine` uses native `debugbench_*` rows,
   per the explorer recommendation, after the v1 fixed-shard harness is proven.
 
+### 2026-06-16 — resumable runner and live smoke
+
+Landed in `epyc-inference-research` commit `8d97bc7`:
+
+- `scripts/research/xmas_function_axis_sweep.py` can now run the emitted
+  function-axis requests against the configured model endpoints, score
+  `source_auto`, `binary_validity`, and structural plan/rubric cells, append
+  completed rows incrementally, skip existing `(request_id, model_id)` rows on
+  resume, and enforce a per-call wall timeout.
+- `--allow-partial-summary` lets smoke artifacts summarize incomplete cell
+  coverage while the default summary path still requires all 25 cells.
+- Live smoke artifact:
+  `data/research/2026-06-16-xmas-function-axis-timeout-smoke-003338/` ran
+  `math:solve:gsm8k_00000` across all four configured models with a 45s
+  per-call wall timeout. All four answered correctly; the single-cell winner
+  was `worker_general` on latency tie-break (`4.8s` vs `frontdoor 11.8s`,
+  `ingest_long_context 13.1s`, `architect_general 21.2s`).
+
+Validation:
+
+- Direct Python tests for `xmas_function_axis_sweep.py` and
+  `xmas_winner_table.py` passed.
+- `python3 -m py_compile` and `git diff --check` passed.
+- The live model health gate passed before the smoke.
+
+Remaining:
+
+- Run the full 125-request x 4-model sweep in resumable chunks, then build the
+  enforce-eligible function-axis winner table and held-out A/B evidence.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
