@@ -652,6 +652,37 @@ Remaining:
 - Continue filtered chunks for the remaining 14 source-task/domain slices:
   four knowledge chunks plus five each for long_context and reasoning.
 
+### 2026-06-16 — second complete knowledge seed chunk
+
+Landed in `epyc-inference-research` commit `bc2e81c`:
+
+- `data/research/2026-06-16-xmas-function-axis-knowledge-simpleqa01111-022156/`
+  contains the second complete 20-row knowledge seed chunk: all five knowledge
+  functions for `simpleqa_general_01111` across all four models.
+- Winners on this seed chunk:
+  - `knowledge:solve` -> `frontdoor`
+  - `knowledge:verify` -> `worker_general`
+  - `knowledge:plan` -> `worker_general`
+  - `knowledge:refine` -> `worker_general`
+  - `knowledge:extract` -> `frontdoor`
+- No model answered solve, verify, or extract correctly on this seed; those
+  winners are tie-break winners from the all-zero accuracy rows. Worker won
+  plan/refine among correct rows.
+- This reinforces the known weak raw-knowledge behavior while still preserving
+  function-axis evidence for table construction.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 13 source-task/domain slices:
+  three knowledge chunks plus five each for long_context and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
