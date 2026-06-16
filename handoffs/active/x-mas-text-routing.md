@@ -588,6 +588,39 @@ Remaining:
 - Continue filtered chunks for the remaining 16 source-task/domain slices:
   one code chunk plus five each for knowledge, long_context, and reasoning.
 
+### 2026-06-16 — code domain coverage complete
+
+Landed in `epyc-inference-research` commit `f48a43b`:
+
+- `data/research/2026-06-16-xmas-function-axis-code-cruxeval0004-020414/`
+  contains the fifth and final complete 20-row code seed chunk: all five code
+  functions for `cruxeval_output_0004` across all four models.
+- Winners on this seed chunk:
+  - `code:solve` -> `worker_general`
+  - `code:verify` -> `worker_general`
+  - `code:plan` -> `frontdoor`
+  - `code:refine` -> `worker_general`
+  - `code:extract` -> `worker_general`
+- `worker_general` was the only correct model on solve, refine, and extract.
+  Frontdoor won plan on latency among the correct planner rows, and
+  `ingest_long_context` hit the 120-second timeout on solve/refine.
+- Coverage audit now proves all five code source tasks have complete 20-row
+  artifacts: `cruxeval_output_0000`, `cruxeval_output_0001`,
+  `cruxeval_output_0002`, `cruxeval_output_0003`, and
+  `cruxeval_output_0004`.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 15 source-task/domain slices:
+  five each for knowledge, long_context, and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
