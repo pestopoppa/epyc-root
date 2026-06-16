@@ -556,6 +556,38 @@ Remaining:
 - Continue filtered chunks for the remaining 17 source-task/domain slices:
   two code chunks plus five each for knowledge, long_context, and reasoning.
 
+### 2026-06-16 — fourth complete code seed chunk
+
+Landed in `epyc-inference-research` commit `b06c8dd`:
+
+- `data/research/2026-06-16-xmas-function-axis-code-cruxeval0003-015932/`
+  contains the fourth complete 20-row code seed chunk: all five code functions
+  for `cruxeval_output_0003` across all four models.
+- Winners on this seed chunk:
+  - `code:solve` -> `worker_general`
+  - `code:verify` -> `worker_general`
+  - `code:plan` -> `frontdoor`
+  - `code:refine` -> `frontdoor`
+  - `code:extract` -> `worker_general`
+- `worker_general` was the only correct model on solve and extract; all four
+  models passed verify. Frontdoor, worker, and ingest passed plan, and
+  frontdoor/worker passed refine.
+- This chunk restores a two-role function-axis split after the previous
+  all-worker seed, with frontdoor winning plan/refine on latency tie-breaks
+  and worker winning solve/verify/extract.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 16 source-task/domain slices:
+  one code chunk plus five each for knowledge, long_context, and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
