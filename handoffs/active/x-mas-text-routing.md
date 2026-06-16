@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; eval-populated 5x5 winner table + live A/B remain pending
+**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; true function-axis 5x5 sweep + live A/B remain pending
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -114,11 +114,65 @@ Validation:
 
 Remaining:
 
-- Populate the 5x5 winner table from the eval sweep before any real override behavior.
+- Promote the domain-proxy table to a true function-axis 5x5 winner table from
+  the eval sweep before any real override behavior.
 - Run the held-out A/B before setting `xmas_routing.mode: enforce` in a live
   config.
 - Keep current production behavior unchanged while `xmas_routing.mode` remains
   `off` and `winner_table_path` remains empty.
+
+### 2026-06-15 — evidence-backed domain-proxy table workflow
+
+Landed in `epyc-inference-research` commit `00f601b` and
+`epyc-orchestrator` commit `940d993`:
+
+- `epyc-inference-research/scripts/research/xmas_winner_table.py` builds an
+  orchestrator-compatible `cells:` table from X-MAS sweep `summary.table`
+  artifacts using the existing winner rule: highest `correct`, tie-break by
+  lowest `wall_mean_s`.
+- The current generated artifact is
+  `epyc-orchestrator/orchestration/xmas_winner_table.domain_proxy.yaml`, built
+  from
+  `epyc-inference-research/data/research/2026-05-20-xmas-v3-25tasks-nothink/results.json`.
+  It is a complete 5-domain x 5-function table, but its provenance records
+  `derivation_mode: domain_winner_reused_for_function` because the v3 source
+  artifact has five tasks per domain and does not independently vary the
+  function axis.
+- `src/classifiers/xmas_routing.py` now keeps old simple tables compatible in
+  shadow mode, but `mode=enforce` requires both a complete 5x5 table and
+  evidence-backed provenance: `provenance.source_results`, per-cell
+  `source_summary_path`, positive `sample_count`, winner-matching evidence,
+  and candidate metrics.
+- `scripts/validate/validate_xmas_winner_table.py` validates either the active
+  `classifier_config.yaml` enforce readiness or a table artifact directly. It
+  refuses `mode: enforce` without an evidence-backed table and also refuses
+  domain-proxy derivations for live enforce configs; direct artifact validation
+  can still pass the proxy table as a shadow/advisory evidence artifact.
+- Tests cover evidence-backed loading, missing provenance, stale winner/evidence
+  mismatch, config-level enforce refusal, and direct table acceptance.
+
+Validation:
+
+- `uv run pytest -q tests/unit/test_pipeline_routing.py tests/classifiers/test_xmas_routing.py tests/unit/test_validate_xmas_winner_table.py` -> 81 passed.
+- `python3 scripts/validate/validate_xmas_winner_table.py --table orchestration/xmas_winner_table.domain_proxy.yaml` -> passed as a direct artifact check.
+- `python3 scripts/validate/validate_xmas_winner_table.py` against checked-in
+  default-off config -> passed.
+- `uv run ruff check src/classifiers/xmas_routing.py scripts/validate/validate_xmas_winner_table.py tests/classifiers/test_xmas_routing.py tests/unit/test_validate_xmas_winner_table.py` -> passed.
+- `python3 -m py_compile` on the touched orchestrator and research Python files -> passed.
+- Research repo `uv run pytest` and `uv run ruff` could not run because those
+  executables are not present in that repo's uv environment; the builder was
+  smoke-tested with direct Python import/fixture execution.
+
+Remaining:
+
+- Replace the domain-proxy derivation with a real 5 domains x 5 functions
+  sweep, ideally 10-20 tasks per cell, with frontdoor/architect capture
+  settings pinned (`enable_thinking=false` for Qwen3.x, no accidental thinking
+  loops, failure classification preserved).
+- Preserve or promote the raw source result artifact used by the generated
+  table. The current v3 source JSON is present locally under `data/research/`
+  but is not tracked in the research repo.
+- Run held-out A/B before setting `xmas_routing.mode: enforce` in a live config.
 
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).

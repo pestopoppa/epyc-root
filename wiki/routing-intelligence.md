@@ -410,3 +410,14 @@ winner table plus route-mutation tests.
   X-MAS tail. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
   [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md),
   `src/classifiers/xmas_routing.py`, `src/api/routes/chat_pipeline/routing.py`.
+
+- **X-MAS winner-table production path now has evidence gates.** A research
+  builder converts existing X-MAS sweep summaries into an orchestrator winner
+  table with provenance and per-cell candidate metrics, and the generated
+  `xmas_winner_table.domain_proxy.yaml` captures the current v3 nothink domain
+  winners. The validator accepts that table as a shadow/advisory evidence
+  artifact, but refuses to validate `mode: enforce` against it because the
+  derivation reuses domain winners for all five functions. Live enforce now
+  requires true function-axis 5x5 sweep evidence plus the held-out A/B gate.
+  Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md).
