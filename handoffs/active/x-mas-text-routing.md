@@ -745,6 +745,40 @@ Remaining:
 - Continue filtered chunks for the remaining 11 source-task/domain slices:
   one knowledge chunk plus five each for long_context and reasoning.
 
+### 2026-06-16 — knowledge domain coverage complete
+
+Landed in `epyc-inference-research` commit `a5d0702`:
+
+- `data/research/2026-06-16-xmas-function-axis-knowledge-simpleqa02351-023525/`
+  contains the fifth and final complete 20-row knowledge seed chunk: all five
+  knowledge functions for `simpleqa_general_02351` across all four models.
+- Winners on this seed chunk:
+  - `knowledge:solve` -> `worker_general`
+  - `knowledge:verify` -> `worker_general`
+  - `knowledge:plan` -> `worker_general`
+  - `knowledge:refine` -> `worker_general`
+  - `knowledge:extract` -> `worker_general`
+- Worker was the only correct model on solve/extract and the fastest correct
+  model on verify/plan/refine, giving it all five cells on this seed.
+- Coverage audit now proves all five knowledge source tasks have complete
+  20-row artifacts: `simpleqa_general_03756`, `simpleqa_general_01111`,
+  `simpleqa_general_01587`, `simpleqa_general_01896`, and
+  `simpleqa_general_02351`.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The knowledge coverage audit reported all five source tasks with 20 rows,
+  five cells, and four models.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 10 source-task/domain slices:
+  five each for long_context and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
