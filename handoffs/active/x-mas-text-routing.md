@@ -807,6 +807,34 @@ Remaining:
 - Continue filtered chunks for the remaining 9 source-task/domain slices:
   four long_context chunks plus five reasoning chunks.
 
+### 2026-06-16 — second complete long_context seed chunk
+
+Landed in `epyc-inference-research` commit `4eb3fe7`:
+
+- `data/research/2026-06-16-xmas-function-axis-long_context-needle002-024337/`
+  contains the second complete 20-row long_context seed chunk: all five
+  long_context functions for `needle_002` across all four models.
+- Winners on this seed chunk:
+  - `long_context:solve` -> `worker_general`
+  - `long_context:verify` -> `worker_general`
+  - `long_context:plan` -> `worker_general`
+  - `long_context:refine` -> `worker_general`
+  - `long_context:extract` -> `worker_general`
+- All four models were correct on every function again; worker won all five
+  cells on latency.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 8 source-task/domain slices:
+  three long_context chunks plus five reasoning chunks.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
