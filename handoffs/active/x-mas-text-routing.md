@@ -458,6 +458,40 @@ Remaining:
   across code, knowledge, long_context, and reasoning before generating an
   enforce-eligible 5x5 winner table.
 
+### 2026-06-16 — first complete code seed chunk
+
+Landed in `epyc-inference-research` commit `82ffee9`:
+
+- `data/research/2026-06-16-xmas-function-axis-code-cruxeval0000-012817/`
+  contains the first complete 20-row code seed chunk: all five code functions
+  for `cruxeval_output_0000` across all four models.
+- Winners on this seed chunk:
+  - `code:solve` -> `worker_general`
+  - `code:verify` -> `architect_general`
+  - `code:plan` -> `frontdoor`
+  - `code:refine` -> `frontdoor`
+  - `code:extract` -> `worker_general`
+- This is the clearest function-axis split so far: three different roles win
+  across the five function cells. `worker_general` is the only correct model
+  on solve/extract; `architect_general` is the only model satisfying the
+  verify contract; `frontdoor` wins plan/refine by latency among correct
+  models.
+- `ingest_long_context` timed out at the 120-second bound on solve and extract
+  and failed the verify contract, so it is not a viable winner on this code
+  seed despite passing plan/refine.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 19 source-task/domain slices:
+  four code chunks plus five each for knowledge, long_context, and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
