@@ -492,6 +492,39 @@ Remaining:
 - Continue filtered chunks for the remaining 19 source-task/domain slices:
   four code chunks plus five each for knowledge, long_context, and reasoning.
 
+### 2026-06-16 — second complete code seed chunk
+
+Landed in `epyc-inference-research` commit `2d64e5d`:
+
+- `data/research/2026-06-16-xmas-function-axis-code-cruxeval0001-014123/`
+  contains the second complete 20-row code seed chunk: all five code functions
+  for `cruxeval_output_0001` across all four models.
+- Winners on this seed chunk:
+  - `code:solve` -> `architect_general`
+  - `code:verify` -> `worker_general`
+  - `code:plan` -> `worker_general`
+  - `code:refine` -> `worker_general`
+  - `code:extract` -> `frontdoor`
+- Unlike the first code seed, all four models solved and extracted the correct
+  source answer; the winning differences came from latency and output-contract
+  compliance. `ingest_long_context` failed the verify contract, and
+  `frontdoor` failed the plan rubric.
+- The first two code chunks together reinforce that code routing cannot be a
+  single-domain winner: solve/extract/verify/plan/refine winners have already
+  shifted across `worker_general`, `architect_general`, and `frontdoor`.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 18 source-task/domain slices:
+  three code chunks plus five each for knowledge, long_context, and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
