@@ -247,6 +247,41 @@ Remaining:
 - Run the full 125-request x 4-model sweep in resumable chunks, then build the
   enforce-eligible function-axis winner table and held-out A/B evidence.
 
+### 2026-06-16 — precise slice controls and function-axis smoke signal
+
+Landed in `epyc-inference-research` commit `fd7c447`:
+
+- `scripts/research/xmas_function_axis_sweep.py` now supports `--cell`,
+  `--domain`, `--function`, and `--source-task-id` filters for precise
+  resumable chunks. This avoids relying on request ordering for smoke or
+  partial sweeps.
+- Live smoke artifacts:
+  - `data/research/2026-06-16-xmas-function-axis-verify-smoke-003903/`
+    ran `math:verify:gsm8k_00000` across all four models. `frontdoor` won by
+    latency among correct models; `worker_general` failed the binary-validity
+    cell.
+  - `data/research/2026-06-16-xmas-function-axis-plan-smoke-003931/`
+    ran `math:plan:gsm8k_00000` across all four models. All four passed the
+    structural plan scorer; `worker_general` won by latency.
+- Combined with the earlier `math:solve` smoke, the first live signal already
+  shows function-axis variation inside one domain: `worker_general` wins
+  solve/plan latency ties, while `frontdoor` wins verify because
+  `worker_general` does not satisfy the binary-validity output contract on the
+  sampled cell.
+
+Validation:
+
+- Direct Python tests and `python3 -m py_compile` passed.
+- Filtered request emission for `--cell math:verify --limit-requests 1`
+  produced the expected single request with pinned frontdoor/architect nothink
+  capture profiles.
+- `git diff --check` passed.
+
+Remaining:
+
+- Run enough filtered chunks to cover the full 25-cell manifest, then generate
+  the function-axis winner table and held-out A/B evidence.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
