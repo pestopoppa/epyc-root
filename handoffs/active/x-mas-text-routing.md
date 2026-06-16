@@ -714,6 +714,37 @@ Remaining:
 - Continue filtered chunks for the remaining 12 source-task/domain slices:
   two knowledge chunks plus five each for long_context and reasoning.
 
+### 2026-06-16 — fourth complete knowledge seed chunk
+
+Landed in `epyc-inference-research` commit `da1f6b3`:
+
+- `data/research/2026-06-16-xmas-function-axis-knowledge-simpleqa01896-023107/`
+  contains the fourth complete 20-row knowledge seed chunk: all five knowledge
+  functions for `simpleqa_general_01896` across all four models.
+- Winners on this seed chunk:
+  - `knowledge:solve` -> `frontdoor`
+  - `knowledge:verify` -> `worker_general`
+  - `knowledge:plan` -> `worker_general`
+  - `knowledge:refine` -> `worker_general`
+  - `knowledge:extract` -> `frontdoor`
+- No model answered solve or extract correctly on this seed, so those winners
+  are tie-break winners from all-zero accuracy rows. Worker won verify, plan,
+  and refine among correct rows; architect failed the plan rubric.
+- This continues the pattern that raw knowledge solve/extract is weak across
+  the stack, while worker remains a reliable fast helper-function winner.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 11 source-task/domain slices:
+  one knowledge chunk plus five each for long_context and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
