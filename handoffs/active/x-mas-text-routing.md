@@ -282,6 +282,40 @@ Remaining:
 - Run enough filtered chunks to cover the full 25-cell manifest, then generate
   the function-axis winner table and held-out A/B evidence.
 
+### 2026-06-16 — first complete five-function seed chunk
+
+Landed in `epyc-inference-research` commit `65b0106`:
+
+- `scripts/research/xmas_function_axis_sweep.py` now uses `curl --max-time`
+  under a parent-side subprocess timeout for live POSTs. The earlier urllib
+  socket timeout was not a reliable wall-clock bound for long-running llama
+  responses.
+- `data/research/2026-06-16-xmas-function-axis-math-gsm8k00000-004300/`
+  contains a complete 20-row seed chunk: all five math functions for
+  `gsm8k_00000` across all four models.
+- Winners on this seed chunk:
+  - `math:solve` -> `worker_general`
+  - `math:verify` -> `frontdoor`
+  - `math:plan` -> `worker_general`
+  - `math:refine` -> `worker_general`
+  - `math:extract` -> `worker_general`
+- The chunk was completed via resume: the first attempt produced 14 rows before
+  being interrupted, then the hardened runner skipped those rows and appended
+  the six missing rows.
+
+Validation:
+
+- Direct Python tests and `python3 -m py_compile` passed.
+- `git diff --check` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary because the remaining domains/functions are
+  absent.
+
+Remaining:
+
+- Continue filtered chunks for the remaining 24 source-task/domain slices until
+  the full 125-request x 4-model result set is complete.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
