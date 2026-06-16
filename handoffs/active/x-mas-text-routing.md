@@ -683,6 +683,37 @@ Remaining:
 - Continue filtered chunks for the remaining 13 source-task/domain slices:
   three knowledge chunks plus five each for long_context and reasoning.
 
+### 2026-06-16 — third complete knowledge seed chunk
+
+Landed in `epyc-inference-research` commit `e4b8ceb`:
+
+- `data/research/2026-06-16-xmas-function-axis-knowledge-simpleqa01587-022700/`
+  contains the third complete 20-row knowledge seed chunk: all five knowledge
+  functions for `simpleqa_general_01587` across all four models.
+- Winners on this seed chunk:
+  - `knowledge:solve` -> `architect_general`
+  - `knowledge:verify` -> `worker_general`
+  - `knowledge:plan` -> `worker_general`
+  - `knowledge:refine` -> `worker_general`
+  - `knowledge:extract` -> `worker_general`
+- `architect_general` was the only correct solver on this seed. All four
+  models passed verify/plan/refine, where worker won on latency; no model
+  answered extract correctly, so the extract winner is a tie-break row.
+- This adds the first architect-winning knowledge solve cell while preserving
+  the worker preference for helper functions.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 12 source-task/domain slices:
+  two knowledge chunks plus five each for long_context and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
