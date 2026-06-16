@@ -621,6 +621,37 @@ Remaining:
 - Continue filtered chunks for the remaining 15 source-task/domain slices:
   five each for knowledge, long_context, and reasoning.
 
+### 2026-06-16 — first complete knowledge seed chunk
+
+Landed in `epyc-inference-research` commit `5421aeb`:
+
+- `data/research/2026-06-16-xmas-function-axis-knowledge-simpleqa03756-021735/`
+  contains the first complete 20-row knowledge seed chunk: all five knowledge
+  functions for `simpleqa_general_03756` across all four models.
+- Winners on this seed chunk:
+  - `knowledge:solve` -> `ingest_long_context`
+  - `knowledge:verify` -> `worker_general`
+  - `knowledge:plan` -> `worker_general`
+  - `knowledge:refine` -> `worker_general`
+  - `knowledge:extract` -> `ingest_long_context`
+- `ingest_long_context` was the only correct model on solve/extract, while
+  worker won verify/plan/refine on latency among correct rows.
+- This is the first non-math/non-code function-axis evidence chunk and shows
+  immediate domain heterogeneity: knowledge solve/extract prefer ingest, while
+  helper functions prefer worker.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 14 source-task/domain slices:
+  four knowledge chunks plus five each for long_context and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
