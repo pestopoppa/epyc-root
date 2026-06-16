@@ -525,6 +525,37 @@ Remaining:
 - Continue filtered chunks for the remaining 18 source-task/domain slices:
   three code chunks plus five each for knowledge, long_context, and reasoning.
 
+### 2026-06-16 — third complete code seed chunk
+
+Landed in `epyc-inference-research` commit `c7a915b`:
+
+- `data/research/2026-06-16-xmas-function-axis-code-cruxeval0002-015050/`
+  contains the third complete 20-row code seed chunk: all five code functions
+  for `cruxeval_output_0002` across all four models.
+- Winners on this seed chunk:
+  - `code:solve` -> `worker_general`
+  - `code:verify` -> `worker_general`
+  - `code:plan` -> `worker_general`
+  - `code:refine` -> `worker_general`
+  - `code:extract` -> `worker_general`
+- `worker_general` was the only correct model on solve, refine, and extract;
+  all four models passed verify, and frontdoor/worker/ingest passed plan.
+  `architect_general` again failed the plan rubric on this code seed.
+- This is the first code chunk where one model wins all five functions, but the
+  earlier two code chunks still show strong function-axis variation.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary (`domain metrics must be a non-empty mapping`).
+
+Remaining:
+
+- Continue filtered chunks for the remaining 17 source-task/domain slices:
+  two code chunks plus five each for knowledge, long_context, and reasoning.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
