@@ -174,6 +174,49 @@ Remaining:
   but is not tracked in the research repo.
 - Run held-out A/B before setting `xmas_routing.mode: enforce` in a live config.
 
+### 2026-06-15 — true function-axis sweep workflow
+
+Landed in `epyc-inference-research` commit `b25fcab`:
+
+- `data/research/xmas_function_axis_manifest.v1.yaml` defines all 25
+  domain/function cells and emits five current question-pool tasks per cell
+  (125 requests total) with explicit prompt wrappers, scoring families, failure
+  policies, and per-model capture profiles. It pins
+  `chat_template_kwargs.enable_thinking=false` for `frontdoor` and
+  `architect_general`, and leaves the Qwen3-Next ingest route on its separate
+  capture profile.
+- `scripts/research/xmas_function_axis_sweep.py` validates the manifest,
+  emits JSONL requests, and summarizes scored rows into
+  `summary.table.<domain>.<function>.<model_id>` with winner selection by
+  `correct` descending and `wall_mean_s` ascending.
+- `scripts/research/xmas_winner_table.py` now accepts both legacy
+  domain-summary results and true function-axis summaries. Function-axis
+  summaries produce `provenance.derivation_mode: function_axis_sweep` and
+  per-cell evidence paths such as
+  `summary.table.math.solve.worker_general`.
+
+Validation:
+
+- `python3 scripts/research/xmas_function_axis_sweep.py --manifest data/research/xmas_function_axis_manifest.v1.yaml` -> passed.
+- Request emission wrote 125 rows and pinned frontdoor/architect nothink
+  capture profiles.
+- Direct Python tests/smokes for `xmas_winner_table.py` and
+  `xmas_function_axis_sweep.py` passed.
+- Synthetic function-axis result rows summarized into a winner table with
+  `derivation_mode: function_axis_sweep`; the existing orchestrator validator
+  accepted that table for both direct table validation and an enforce-mode
+  config.
+- `python3 -m py_compile` and `git diff --check` passed. The research repo
+  still lacks runnable `uv run pytest` / `uv run ruff` executables.
+
+Remaining:
+
+- Run the actual 125-request x 4-model sweep when inference is allowed, score
+  the rows, generate the function-axis winner table, then run the held-out A/B
+  before any live enforce flip.
+- Consider a v2 manifest where `code:refine` uses native `debugbench_*` rows,
+  per the explorer recommendation, after the v1 fixed-shard harness is proven.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
