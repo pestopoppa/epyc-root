@@ -352,6 +352,42 @@ Remaining:
 - Continue filtered chunks for the remaining 23 source-task/domain slices until
   the full 125-request x 4-model result set is complete.
 
+### 2026-06-16 — third complete math seed chunk
+
+Landed in `epyc-inference-research` commit `b8441c1`:
+
+- `data/research/2026-06-16-xmas-function-axis-math-gsm8k00002-retry-010043/`
+  contains a third complete 20-row seed chunk: all five math functions for
+  `gsm8k_00002` across all four models.
+- A first 45-second attempt was discarded after frontdoor/architect/ingest
+  timed out on the `solve` prompt. The clean committed retry used a 120-second
+  per-call bound; frontdoor and architect then completed `solve` correctly,
+  while `ingest_long_context` still timed out at the wider bound.
+- Winners on this seed chunk:
+  - `math:solve` -> `worker_general`
+  - `math:verify` -> `ingest_long_context`
+  - `math:plan` -> `worker_general`
+  - `math:refine` -> `worker_general`
+  - `math:extract` -> `worker_general`
+- The chunk adds another function-axis variation point: `verify` favored
+  `ingest_long_context`, while the source-auto and rubric functions favored
+  `worker_general`. `ingest_long_context` should not be treated as a general
+  math winner because it timed out on `solve` and was slow on `refine` and
+  `extract`.
+
+Validation:
+
+- Health gate before the retry passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary because `summary.table.code` and the remaining
+  non-math cells are absent.
+
+Remaining:
+
+- Continue filtered chunks for the remaining 22 source-task/domain slices until
+  the full 125-request x 4-model result set is complete.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
