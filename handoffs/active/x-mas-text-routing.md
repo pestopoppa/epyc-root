@@ -421,6 +421,43 @@ Remaining:
 - Continue filtered chunks for the remaining 21 source-task/domain slices until
   the full 125-request x 4-model result set is complete.
 
+### 2026-06-16 — math domain coverage complete
+
+Landed in `epyc-inference-research` commit `9107be5`:
+
+- `data/research/2026-06-16-xmas-function-axis-math-gsm8k00004-011958/`
+  contains the fifth complete 20-row math seed chunk: all five math functions
+  for `gsm8k_00004` across all four models.
+- Winners on this seed chunk:
+  - `math:solve` -> `worker_general`
+  - `math:verify` -> `worker_general`
+  - `math:plan` -> `worker_general`
+  - `math:refine` -> `worker_general`
+  - `math:extract` -> `worker_general`
+- The `verify` cell had two contract failures: `frontdoor` and
+  `ingest_long_context` did not satisfy the binary-validity scorer, while
+  `worker_general` and `architect_general` did.
+- Coverage audit now proves all five math source tasks are complete:
+  `gsm8k_00000`, `gsm8k_00001`, `gsm8k_00002`, `gsm8k_00003`, and
+  `gsm8k_00004` each have 20 rows covering all five functions and four model
+  profiles.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary because `summary.table.code` and the remaining
+  non-math cells are absent.
+- A direct coverage audit over `data/research/2026-06-16-xmas-function-axis-math-gsm8k*`
+  reported no missing math source tasks.
+
+Remaining:
+
+- Continue filtered chunks for the remaining 20 source-task/domain slices
+  across code, knowledge, long_context, and reasoning before generating an
+  enforce-eligible 5x5 winner table.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
