@@ -388,6 +388,39 @@ Remaining:
 - Continue filtered chunks for the remaining 22 source-task/domain slices until
   the full 125-request x 4-model result set is complete.
 
+### 2026-06-16 — fourth complete math seed chunk
+
+Landed in `epyc-inference-research` commit `9b3c4b5`:
+
+- `data/research/2026-06-16-xmas-function-axis-math-gsm8k00003-011348/`
+  contains a fourth complete 20-row seed chunk: all five math functions for
+  `gsm8k_00003` across all four models.
+- Winners on this seed chunk:
+  - `math:solve` -> `worker_general`
+  - `math:verify` -> `worker_general`
+  - `math:plan` -> `worker_general`
+  - `math:refine` -> `worker_general`
+  - `math:extract` -> `worker_general`
+- The only incorrect row was `architect_general` on `math:plan`, where the
+  structural rubric classified the output as `rubric_unscored`. All source-auto
+  and binary-validity rows were correct across all four models.
+- This brings math coverage to four complete source tasks. The first and third
+  chunks still prove function-axis variation exists inside math, while the
+  second and fourth chunks favor `worker_general` across all five cells.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary because `summary.table.code` and the remaining
+  non-math cells are absent.
+
+Remaining:
+
+- Continue filtered chunks for the remaining 21 source-task/domain slices until
+  the full 125-request x 4-model result set is complete.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
