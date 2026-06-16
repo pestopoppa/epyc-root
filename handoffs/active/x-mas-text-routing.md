@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; true function-axis 5x5 sweep + live A/B remain pending
+**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; **true function-axis 5×5 sweep COMPLETE 2026-06-16** — full 25-cell (domain×function) winner table built from 500 rows (`epyc-inference-research` `4e3ee6c`); **remaining: build the enforce-eligible winner_table.yaml from these winners + the live A/B**
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -1145,6 +1145,22 @@ The cheap-kill v3 N=25 result over-estimated the frontdoor-architect gap by **5�
 
 5. **Should the cheap-kill find a winner for frontdoor / architect_general first?** Their 0% accuracy on multiple cells is a measurement bug, not a capability bug — fixing it changes the winner table. Recommend: yes, with a separate "thinking-mode tax audit" sub-task before the full 5×5.
 6. **Does the deprecation signal hold?** frontdoor + architect_general's 7/15 + 6/15 vs gemma4's 11/15 is striking. If the full 5×5 confirms it, this is a *bigger* finding than X-MAS routing — it's a stack-simplification opportunity. Cross-ref `project_stack_simplification.md`.
+
+### 2026-06-16 — function-axis 5×5 sweep COMPLETE + full winner table
+
+All 5 domains × 5 source-tasks × 5 functions × 4 models swept (reasoning + long_context seeds finished this session via a serial workflow — concurrent chunks would poison the latency-tie-broken winners; math/code/knowledge done prior). Full winner table built from **500 deduped rows, all 25 (domain×function) cells**, in `epyc-inference-research` `4e3ee6c` (`data/research/2026-06-16-xmas-function-axis-winner-table-FULL.json`). Finalization fixed two builder issues: `require_complete` needs the whole 5-domain grid (not per-domain); early seeds wrote `results.jsonl` vs recent `run.jsonl` (gathered both).
+
+| domain \ func | solve | verify | plan | refine | extract |
+|---|---|---|---|---|---|
+| math | worker_general | architect_general | worker_general | worker_general | worker_general |
+| code | worker_general | architect_general | ingest_long_context | worker_general | worker_general |
+| knowledge | worker_general | worker_general | worker_general | worker_general | worker_general |
+| long_context | worker_general | ingest_long_context | worker_general | worker_general | worker_general |
+| reasoning | worker_general | worker_general | worker_general | architect_general | frontdoor |
+
+Winner frequency: worker_general 19/25, architect_general 3 (verify on math/code, refine on reasoning), ingest_long_context 2 (code:plan, long_context:verify), frontdoor 1 (reasoning:extract). Interpretable: worker (gemma4-26B-A4B) is the broad latency/quality winner; verify favors the bigger architect; long_context:verify favors the long-ctx specialist.
+
+**Next (not done):** compile these 25 winners into an enforce-eligible `orchestration/xmas_winner_table.yaml` (the classifier + guarded enforce path already exist, default-off) and run the live A/B (X-MAS routing vs current ad-hoc) before flipping enforce on.
 
 ## References
 
