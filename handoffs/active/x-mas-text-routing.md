@@ -316,6 +316,42 @@ Remaining:
 - Continue filtered chunks for the remaining 24 source-task/domain slices until
   the full 125-request x 4-model result set is complete.
 
+### 2026-06-16 — second complete math seed chunk
+
+Landed in `epyc-inference-research` commit `3b15c85`:
+
+- `data/research/2026-06-16-xmas-function-axis-math-gsm8k00001-005114/`
+  contains a second complete 20-row seed chunk: all five math functions for
+  `gsm8k_00001` across all four models.
+- All 20 rows scored correct. Because accuracy tied in every cell, the current
+  winner rule selected the lowest-latency model:
+  - `math:solve` -> `worker_general`
+  - `math:verify` -> `worker_general`
+  - `math:plan` -> `worker_general`
+  - `math:refine` -> `worker_general`
+  - `math:extract` -> `worker_general`
+- This extends math coverage from one complete source task to two. The first
+  complete chunk still shows function-axis variation (`math:verify` favored
+  `frontdoor`), while this second chunk favors `worker_general` across all five
+  functions, so more filtered chunks are needed before drawing a production
+  conclusion.
+
+Validation:
+
+- Health gate before the run passed.
+- `python3 -m py_compile scripts/research/xmas_function_axis_sweep.py scripts/research/xmas_winner_table.py scripts/research/test_xmas_function_axis_sweep.py scripts/research/test_xmas_winner_table.py` passed.
+- The winner-table builder correctly refused to emit a production table from
+  this partial-domain summary because `summary.table.code` and the remaining
+  non-math cells are absent.
+- `python3 -m pytest ...` and `uv run pytest ...` could not run in the
+  research checkout because `pytest` is not installed in the active Python/uv
+  environment.
+
+Remaining:
+
+- Continue filtered chunks for the remaining 23 source-task/domain slices until
+  the full 125-request x 4-model result set is complete.
+
 **Gate criteria**:
 - The 5×5 table shows ≥2 distinct winners across the 25 cells (i.e., heterogeneity actually exists in our stack — if gemma4-26B-A4B wins everything per its `project_worker_general_swap_2026_05_08` dominance, the spike kills itself early).
 - A/B test on a held-out 100-task suite shows ≥5pp accuracy improvement on at least one domain, no regression on others.
