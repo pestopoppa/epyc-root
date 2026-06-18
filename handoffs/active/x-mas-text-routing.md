@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; **true function-axis 5×5 sweep COMPLETE 2026-06-16** — full 25-cell (domain×function) winner table built from 500 rows (`epyc-inference-research` `4e3ee6c`); **remaining: build the enforce-eligible winner_table.yaml from these winners + the live A/B**
+**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; **true function-axis 5×5 sweep COMPLETE 2026-06-16** — full 25-cell (domain×function) winner table built from 500 rows (`epyc-inference-research` `4e3ee6c`); **enforce-eligible `orchestration/xmas_winner_table.yaml` built and validated 2026-06-18**; **remaining: live A/B before any enforce flip**
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -1160,7 +1160,37 @@ All 5 domains × 5 source-tasks × 5 functions × 4 models swept (reasoning + lo
 
 Winner frequency: worker_general 19/25, architect_general 3 (verify on math/code, refine on reasoning), ingest_long_context 2 (code:plan, long_context:verify), frontdoor 1 (reasoning:extract). Interpretable: worker (gemma4-26B-A4B) is the broad latency/quality winner; verify favors the bigger architect; long_context:verify favors the long-ctx specialist.
 
-**Next (not done):** compile these 25 winners into an enforce-eligible `orchestration/xmas_winner_table.yaml` (the classifier + guarded enforce path already exist, default-off) and run the live A/B (X-MAS routing vs current ad-hoc) before flipping enforce on.
+### 2026-06-18 — enforce table validated + cheap-kill screen refreshed
+
+The full function-axis table is now compiled into the checked-in
+`epyc-orchestrator/orchestration/xmas_winner_table.yaml` and validates as
+enforce-eligible. The checked-in default config remains `mode: off`, and no
+production routing flip happened.
+
+Validation:
+
+- `python3 scripts/validate/validate_xmas_winner_table.py --table orchestration/xmas_winner_table.yaml` -> passed.
+
+Fresh cheap-kill screen:
+
+- Artifact:
+  `/mnt/raid0/llm/tmp/xmas-cheap-kill-20260618/results.json`.
+- Invocation used the Orchestrator Python environment because the research repo
+  environment lacked `httpx`:
+  `/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python scripts/research/xmas_cheap_kill.py --out ...`.
+- Result set: 20 tasks x 4 models = 80 successful calls. The 5
+  `needle_parameterized` long-context task IDs in the harness were absent from
+  `question_pool.jsonl`, so this screen covers math/code/knowledge/reasoning
+  only and must not be read as a long-context verdict.
+- Winners: `worker_general` won math and code; `frontdoor` won knowledge and
+  reasoning; `architect_general` and `ingest_long_context` won zero of the
+  four scored categories.
+- Verdict: `HETEROGENEITY_PRESENT_escalate` with `distinct_winners=2` and
+  `gemma4_won_n_of_5=2`.
+
+**Next (not done):** run the live A/B (X-MAS routing vs current ad-hoc) before
+flipping `xmas_routing.mode: enforce`. The cheap-kill result is acceptance
+screen evidence, not a production-decision substitute.
 
 ## References
 

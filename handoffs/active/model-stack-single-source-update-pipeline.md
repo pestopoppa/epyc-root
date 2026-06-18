@@ -322,10 +322,10 @@ Any future stack update should be accepted only when these hold:
   starting with the next surface that still carries local model facts or
   duplicated stack-prior traversal. After Orchestrator `d744d5f`, the config
   catalog and admission policy share typed serving URL/slot-limit projections.
-  The next best candidate identified by read-only scan is
-  `scripts/graph_router/action_space.py`: pin action ordering and move the
-  remaining legacy raw-label normalization table toward a shared canonical
-  routing-action helper without renumbering persisted classifier labels.
+  After Orchestrator `0c133db`, GraphRouter action extraction also consumes
+  shared canonical role/live-role helpers while preserving persisted classifier
+  label order. Continue with the next manifest surface that still carries local
+  model facts or duplicated stack-prior traversal.
 - [x] Centralize stack-prior serving consumer projection for config/admission:
   Orchestrator `d744d5f` added `live_stack_serving_url_values()` and
   `live_stack_serving_slot_limits()` in `src.registry.stack_priors`, removed
@@ -386,10 +386,16 @@ Any future stack update should be accepted only when these hold:
   canonical live worker roles so it doesn't bypass when routing already chose a
   cheap worker.
 - [x] Keep GraphRouter action normalization canonicalized through
-  `Role.from_string()` before lookup instead of maintaining duplicate
-  worker/coder/architect alias literals. The retired architect regression test
-  now uses a split-string constant so the hardcoded-surface guard stays clean
-  without reintroducing a raw `architect_coding` literal.
+  shared stack-prior helpers before lookup instead of maintaining duplicate
+  worker/coder/architect alias literals. Orchestrator `0c133db` added
+  `canonical_stack_role_id()` and `live_stack_role_ids()` in
+  `src.registry.stack_priors`, moved GraphRouter live-action discovery onto
+  generated stack-prior live roles, preserved the serialized degraded action
+  order, and canonicalizes escalation targets such as retired architect aliases
+  without static live-role maps. Validation: GraphRouter/routing/stack-prior
+  focused suites `26 passed, 1 skipped`; `stack_change_pipeline.py check
+  --run-promotion-gate` passed with `170 passed`; all-surface warning baseline
+  stayed at `legacy_test=1`.
 - [x] Keep the orchestration README visible role tables and routing examples
   using canonical live spellings (`worker_general`, `architect_general`)
   instead of retired aliases. This was a docs-only alignment pass; historical
