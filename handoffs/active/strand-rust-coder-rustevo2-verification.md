@@ -169,6 +169,7 @@ Non-inference validation only; no benchmark run was started.
 - Dataset layout verified: `Dataset/RustEvo^2.json` has 588 tasks, `Dataset/APIDocs.json` has 588 API entries, and `Results/` is the existing output directory.
 - `requirements.txt` in the RustEvo repo includes the OpenAI-compatible client stack needed by the harness, including `openai == 1.66.3` and `langchain-openai == 0.3.8`.
 - The RustEvo evaluation entrypoints under `Evaluate/` compile cleanly, so the gate is still blocked only on the user-approved inference pass.
+- `scripts/benchmark/rustevo2_bench_preflight.py` in `epyc-root` validates these prerequisites and emits the per-model command blocks. It intentionally does not launch `llama-server` or run the benchmark. `--strict-host-quiet` fails while AutoPilot is active; non-strict mode reports the active process as a warning.
 
 **Phase A is now fully complete.** All artifacts, Python deps, and Rust compiler toolchains are in place. Only Phase B (inference, user approval required) remains.
 
@@ -179,6 +180,7 @@ Per memory `feedback_no_concurrent_inference.md`: never launch llama-server/cli/
 #### B-1: Launch protocol (when approved)
 
 - **No autopilot, no parallel agents.** Single standalone `llama-server` instance.
+- Before launching, run `python3 scripts/benchmark/rustevo2_bench_preflight.py --strict-host-quiet --commands` from `epyc-root`; it should pass without AutoPilot warnings and print the exact Strand/base/Gemma command sequence.
 - Canonical CPU baseline per `feedback_canonical_baseline_protocol.md`: `taskset -c 0-95 -t 96 -fa 1`, no `--numa distribute`, no env overrides.
 - OMP env stack per `feedback_omp_env_stack_required.md`: `OMP_PROC_BIND=spread`, `OMP_PLACES=cores`, `OMP_WAIT_POLICY=active`, `numactl --interleave=all`.
 - Drop-caches + throttle check per `feedback_host_throttle_check.md` before launch.

@@ -1226,6 +1226,34 @@ Tiny live smoke:
 **Next (not done):** run a larger held-out A/B. The 3-prompt smoke proves the
 harness and restore path, not production routing quality.
 
+### 2026-06-18 — post-fix held-out rerun command prepared
+
+After `epyc-orchestrator` `273b2c7` fixed the X-MAS function-axis classifier
+and routing metadata carry-through, the next decision-grade check is a full
+rerun over the saved 25-prompt held-out manifest. Reuse
+`benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl`;
+it is the prior held-out set and avoids accidentally falling back to the
+harness's built-in 3-prompt smoke set.
+
+Run only after AutoPilot and other inference jobs are stopped:
+
+```bash
+cd /mnt/raid0/llm/epyc-orchestrator
+python scripts/benchmark/xmas_live_ab.py \
+  --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl \
+  --table orchestration/xmas_winner_table.yaml \
+  --output benchmarks/results/runs/xmas_live_ab/$(date +%Y%m%d-%H%M%S)-heldout-resilient-rerun \
+  --reps 1 \
+  --max-turns 1 \
+  --timeout-s 240 \
+  --host-quiet-confirmed
+```
+
+The harness requires `--host-quiet-confirmed` for real runs and refuses active
+`autopilot.py`, `xmas_cheap_kill.py`, `xmas_function_axis_sweep.py`, and
+`bep_ab.py` processes. Do not pass `--sample-size` for the decision rerun; that
+would truncate the 25-prompt held-out set. Keep baseline restore enabled.
+
 ## References
 
 - Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`
