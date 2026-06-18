@@ -215,8 +215,8 @@ Pointer — full plan tracked in [`granite-97m-r2-bench-plan.md`](granite-97m-r2
 - [ ] **P9.1**: Phase A-1 GGUF + quantization
 - [ ] **P9.2**: Phase A-2 comparator deployments
 - [ ] **P9.3**: Phase A-3 server registry update
-- [ ] **P9.4**: Phase A-4 eval corpus build (fallback path unblocked before K2)
-- [ ] **P9.5**: Phase A-5 bench script with dry-run mode
+- [x] **P9.4**: Phase A-4 eval corpus build (fallback path unblocked before K2) — done 2026-06-18 as `data/benchmarks/eval-corpus-v0.jsonl`: 100 `epyc-orchestrator/src` Python snippets + 30 labeled code-retrieval queries, with all relevance refs resolved.
+- [x] **P9.5**: Phase A-5 bench script with dry-run mode — done 2026-06-18 as `scripts/benchmark/bench_embedder_throughput.py`; validates corpus shape/refs and reports planned server roles without contacting endpoints.
 - [ ] **P9.6**: Phase B-1/B-2/B-3 bench execution (gated, requires per-run inference approval)
 - [ ] **P9.7**: Phase C decision + deployment recommendation; update consuming handoffs
 

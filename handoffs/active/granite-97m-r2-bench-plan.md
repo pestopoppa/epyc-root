@@ -1,6 +1,6 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: refreshed 2026-05-28 — ungated for Phase A fallback corpus; Phase B remains inference-gated
+**Status**: Phase A-fast fallback corpus + dry-run harness landed 2026-06-18; Phase B remains inference-gated
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
 **Updated**: 2026-05-28
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
@@ -30,8 +30,8 @@ This handoff was too conservatively gated. K2 chunker output is the best corpus 
 
 **Gate before Phase B**:
 
-- Corpus exists with labels.
-- Bench script can run in dry-run mode against a fake or existing embedding endpoint.
+- Corpus exists with labels: `data/benchmarks/eval-corpus-v0.jsonl` has 100 `epyc-orchestrator/src` Python snippets and 30 labeled code-retrieval queries.
+- Bench script can run in dry-run mode against a fake or existing embedding endpoint: `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates shape and resolved relevance refs.
 - User-approved inference window exists for model server launches.
 
 **Mitigation**: if Granite underperforms but the corpus reveals multilingual or code-search gaps, do not close the whole retrieval track. Fork to BGE-M3 or Qwen3-Embedding comparator and update `internal-kb-rag.md` with the corpus result.
