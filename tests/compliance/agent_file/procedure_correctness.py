@@ -137,15 +137,16 @@ TASKS: list[ProcedureTask] = [
         notes="Placement Rules table: per-content repo routing. v2: accept repo-name synonyms.",
     ),
     ProcedureTask(
-        task_id="PC-08-thread-safe-cache",
+        task_id="PC-08-opaque-failure-debugging",
         prompt=(
-            "I'm adding a shared cache that multiple threads can update. What's the procedure?"
+            "A real-path failure is opaque. Walk me through the debugging procedure in order."
         ),
         ordered_step_anchors=[
-            ["thread-safe", "thread safe", "thread_safe"],
-            ["lock", "Lock", "RLock", "mutex", "synchroniz"],
+            ["observe before diagnosing"],
+            ["not observable", "looked everywhere"],
+            ["cap blind fixes at one"],
         ],
-        notes="Code Invariants: use thread-safe paths. v2: synonyms for hyphenation + lock variants.",
+        notes="Engineering Standards: Debugging Discipline. v2: replaced the non-procedural shared-cache prompt with a real ordered sequence from the same source file.",
     ),
     ProcedureTask(
         task_id="PC-09-feature-flag-rollout",
