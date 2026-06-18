@@ -48,6 +48,12 @@ unowned local constants.
   runtime state.
 - Direct benchmark runtime enforcement is closed by Orchestrator `09d9028`.
 - `src.api.admission.AdmissionController.from_defaults()` now loads the current stack-prior-derived backend limits at instantiation time, so new app-state admission controllers pick up fresh generated limits instead of reusing the import-time snapshot.
+- `src.registry.stack_priors` now owns stack-prior serving URL and slot-limit
+  projection helpers, and Orchestrator `d744d5f` moved both
+  `src.config.models` URL defaults and `src.api.admission` backend limits onto
+  those typed helpers. The `full:` multi-port format, service URL manifest
+  fallbacks, env override precedence, and degraded static admission fallback
+  remain unchanged.
 - `src.config.models.TimeoutsConfig` now shares a single role-timeout mapping helper across `for_role()` and `role_timeouts_dict()`, so the backward-compatible alias surface is derived from one canonical timeout table instead of duplicate local dict literals.
 - `src.config.models.TimeoutsConfig._normalize_timeout_role()` no longer needs a dedicated `worker_explore` branch because the canonical role helper already resolves that alias, leaving only the explicit `worker_fast` compatibility exception.
 - `src.config.models._CANONICAL_SERVER_URL_ALIASES` no longer carries a redundant `worker_explore` entry; `Role.from_string()` already canonicalizes that spelling to `worker_general`, so the config-catalog helper stays compatible without duplicating the alias table.
@@ -314,13 +320,20 @@ Any future stack update should be accepted only when these hold:
   migrating config or runtime consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers from the manifest,
   starting with the next surface that still carries local model facts or
-  duplicated stack-prior traversal. The routing-classifier loader is covered
-  now, and the classifier artifact saver follows the same canonical path;
-  the ingress-role normalizer in `src/api/routes/chat_pipeline/routing_decision.py`
-  now also resolves `worker_coder` / `worker_code` through canonical
-  `Role.WORKER_GENERAL` rather than a local alias dict, so the remaining live
-  tail should be another consumer with a concrete stale model fact or route
-  boundary alias table.
+  duplicated stack-prior traversal. After Orchestrator `d744d5f`, the config
+  catalog and admission policy share typed serving URL/slot-limit projections.
+  The next best candidate identified by read-only scan is
+  `scripts/graph_router/action_space.py`: pin action ordering and move the
+  remaining legacy raw-label normalization table toward a shared canonical
+  routing-action helper without renumbering persisted classifier labels.
+- [x] Centralize stack-prior serving consumer projection for config/admission:
+  Orchestrator `d744d5f` added `live_stack_serving_url_values()` and
+  `live_stack_serving_slot_limits()` in `src.registry.stack_priors`, removed
+  duplicate URL formatting from `src.config.models`, and removed the local
+  admission merge loop from `src.api.admission`. Validation: config/admission
+  plus registry-helper suites `197 passed`; `stack_change_pipeline.py check
+  --run-promotion-gate` passed with `170 passed`; all-surface warning baseline
+  stayed at `legacy_test=1`.
 - [x] Handle the highest-ROI parked benchmark consumer despite CRITICAL
   GitNexus impact: `scripts/benchmark/seeding_rewards.py:detect_escalation_chains`
   now canonicalizes role aliases before cost-tier ordering and escalation
