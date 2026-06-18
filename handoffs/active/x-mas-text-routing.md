@@ -1254,6 +1254,33 @@ The harness requires `--host-quiet-confirmed` for real runs and refuses active
 `bep_ab.py` processes. Do not pass `--sample-size` for the decision rerun; that
 would truncate the 25-prompt held-out set. Keep baseline restore enabled.
 
+### 2026-06-18 — held-out rerun verdict: do not flip enforce
+
+The 25-prompt held-out rerun completed under `epyc-orchestrator` `756c96b` and
+was recorded in `epyc-orchestrator` commit `29b4460`:
+
+- Result dir:
+  `benchmarks/results/runs/xmas_live_ab/20260618-215637-heldout-resilient-rerun`.
+- Baseline: `n=25`, `scored=13/20`, score rate `0.65`, median latency
+  `2.259s`, routes `{coder_escalation: 24, ingest_long_context: 1}`, timeouts
+  `0`.
+- X-MAS enforce: `n=25`, `scored=6/20`, score rate `0.30`, median latency
+  `36.553s`, routes `{worker_general: 17, architect_general: 3,
+  ingest_long_context: 2, frontdoor: 1, timeout/no-route: 2}`, timeouts `2`.
+- Delta: score `-0.35`, median latency `+34.294s` for X-MAS minus baseline.
+- Domain scored wins: baseline math `4/4`, code `3/4`, knowledge `1/4`,
+  long_context `3/4`, reasoning `2/4`; X-MAS math `1/4`, code `0/4`,
+  knowledge `1/4`, long_context `3/4`, reasoning `1/4`.
+- Restore check: live `/proc/<api-pid>/environ` reported
+  `ORCHESTRATOR_XMAS_ROUTING_MODE=off` and an empty
+  `ORCHESTRATOR_XMAS_WINNER_TABLE_PATH` after the harness restored baseline.
+
+Verdict: **keep X-MAS enforce off**. The function-axis table is useful as
+evidence, but this held-out A/B shows the current enforce policy is slower and
+less accurate than baseline. Next work should diagnose why the table over-routes
+held-out solve/refine/extract traffic to `worker_general` before any new flip
+attempt.
+
 ## References
 
 - Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`
