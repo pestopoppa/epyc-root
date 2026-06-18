@@ -344,9 +344,14 @@ Any future stack update should be accepted only when these hold:
   allows route mutation only when a complete configured winner table is loaded,
   the classifier is confident, and the request is not explicitly forced;
   failure-veto and downstream guards still run after the X-MAS rewrite.
-- [ ] Populate and validate the X-MAS 5x5 winner table through the canonical
-  inference/eval-gated handoff before enabling `mode: enforce` in any live
-  config.
+- [x] Populate and validate the X-MAS 5x5 winner table through the canonical
+  inference/eval-gated handoff. Research `4e3ee6c` built the full
+  function-axis table from the 500-row sweep; Orchestrator `9f89b5d`
+  regenerated `orchestration/xmas_winner_table.yaml` with
+  `provenance.source_results` and per-cell evidence. Validation passed:
+  `validate_xmas_winner_table.py --table`, `--config`, and the classifier /
+  validator tests. `mode: enforce` remains off; the live A/B is still required
+  before any production flip.
 - [x] Extend W4 swap-CI coverage so representative stack swaps prove generated
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`
