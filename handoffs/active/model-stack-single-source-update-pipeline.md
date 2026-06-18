@@ -2,9 +2,10 @@
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - stack-prior single-source contract,
 runtime attestation, generated stack summaries, scanner-rule ownership,
-production launch gate, AutoPilot preflight gate, and direct benchmark runtime
-enforcement are live. Remaining work is other high-risk P2 consumer migrations
-and swap-CI coverage.
+production launch gate, AutoPilot preflight gate, direct benchmark runtime
+enforcement, and representative frontdoor/worker/vision swap-CI coverage are
+live. Remaining work is other high-risk P2 consumer migrations plus future
+swap-CI expansion as new consumers are migrated.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -369,7 +370,12 @@ Any future stack update should be accepted only when these hold:
   artifacts, promotion-gate execution, and selected consumers move together.
   The replay meta-agent now also exposes `generate_candidate_swap_report()`
   and `--swap-replay` so archive-backed candidate swaps can be replayed
-  directly without inventing a new replay subsystem.
+  directly without inventing a new replay subsystem. Orchestrator `d5f119d`
+  added a simulated `worker_vision` / `vision_escalation` swap proving
+  descriptors, stack priors, operator summary/system-card text, q_scorer
+  priors, promotion-gate execution, and vision serving URL/port consumers move
+  together. Validation: fixture suite `11 passed`, vision helper/import sweep
+  `110 passed`, and stack-change promotion gate `171 passed`.
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
 - [x] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
