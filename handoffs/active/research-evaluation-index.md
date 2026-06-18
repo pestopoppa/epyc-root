@@ -111,11 +111,12 @@ Source: "Episodic Memories Generation and Evaluation Benchmark for LLMs" (arXiv 
 
 **Key deep-dive findings**: Scoring is 95% deterministic (string matching against known ground truth tokens — dates, locations, entity names). LLM-as-judge only handles ~5% fuzzy cases. Reasoning models (o1, DeepSeek-R1) catastrophically fail at 100K tokens despite near-perfect scores at 10K. Gemini-2.5 is anomalously robust (-1.4% recall drop from 10K→100K vs -61% for o1).
 
-- [ ] Download pre-generated 20ch dataset from Figshare (10K tokens, 456 QA pairs). No generation pipeline needed.
+- [x] Download pre-generated 20ch dataset from Figshare (10K tokens, 456 QA pairs) — ✅ 2026-06-18. Extracted under `/mnt/raid0/llm/data/eval/tulving_episodic/`; compatibility symlinks expose `Udefault_Sdefault_seed0` and sibling variants at the adapter's default root.
 - [x] Write llama-server adapter for answer generation — ✅ 2026-05-27. `scripts/benchmark/tulving_episodic_adapter.py` (`TulvingEpisodicAdapter`, loads QA parquet from configurable path; LLM-judge hook present, uncalled).
 - [x] Implement deterministic F1 scorer: exact + normalized string matching against known ground truth — ✅ 2026-05-27. Token bag-of-words F1 with greedy matching + nb_pred capping; `compute_simple_recall_score` + `compute_chronological_awareness_score`; 77 unit tests.
-- [x] Register as new suite in `dataset_adapters.py` + `suites.py` — ✅ 2026-05-27. Suite `tulving_episodic` registered. **Run gated → bulk-inference-campaign Package K (K-MEM-1)**; dataset = Figshare DOI 10.6084/m9.figshare.28244480.
-- [ ] Run 20ch benchmark on all production models (10K context — any model handles this)
+- [x] Register as new suite in `dataset_adapters.py` + `suites.py` — ✅ 2026-05-27; hardened 2026-06-18 so `suites.load_suite("tulving_episodic")` falls back to the dataset adapter when no YAML exists. Suite now loads the documented Claude 20ch/456-QA slice through the benchmark runner, with the selected book narrative prepended to each prompt. **Run gated → bulk-inference-campaign Package K (K-MEM-1)**; dataset = Figshare DOI 10.6084/m9.figshare.28244480.
+- [ ] Run 20ch benchmark on production long-context model(s) (10K context — any model handles this). First queued role:
+  `PYTHONPATH=scripts/benchmark uv run --extra benchmark python scripts/benchmark/run_benchmark.py --model ingest_long_context --suite tulving_episodic --server-mode --new-run`
 - [ ] (Deferred to P4) Download 200ch dataset (100K tokens, 686 QA pairs) for YaRN quality gating
 
 ### P3c — LongMemEval-V2 Agent-Memory Eval Target (from intake-612 deep-dive, 2026-05-27)
