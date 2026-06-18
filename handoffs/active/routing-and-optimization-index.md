@@ -96,8 +96,8 @@ When making a routing-architecture proposal, name which of these four (and which
   reported config/admission/registry pytest -> 197 passed, stack-change
   pipeline with promotion gate -> 170 passed, path-scoped `git diff --check`,
   and unchanged all-surface warning baseline (`legacy_test=1`).
-- Evidence-plane W5 landed in `epyc-orchestrator` `0bc1f32` as planner-only/read-only evidence context. W4 safety-gate mechanism landed in `eab6a32`, and W4 AutoPilot shadow call-site wiring landed in `9f89b5d`; both remain default-off for authority.
-- Sequential-verdict readiness reporting landed in `epyc-orchestrator` `d446f68` as read-only W4/W6 report tooling. The 2026-06-18 live report over `orchestration` is blocked: trusted vectors 26, raw 33, untrusted 7, seq shadow rows 0, blockers `trusted history <120`, `seq shadow <30`, and no flip-rate denominator.
+- Evidence-plane W5 landed in `epyc-orchestrator` `0bc1f32` as planner-only/read-only evidence context. W4 safety-gate mechanism landed in `eab6a32`, W4 AutoPilot shadow call-site wiring landed in `9f89b5d`, and baseline-freshness / fresh-eval promotion finalization landed in `8f5f78b` plus `8824d4d`; all remain default-off for authority.
+- Sequential-verdict readiness reporting landed in `epyc-orchestrator` `d446f68` as read-only W4/W6 report tooling. The latest 2026-06-18 live report over `orchestration` is blocked: trusted vectors 31, raw 38, untrusted 7, seq shadow rows 3, blockers `trusted history <120` and `seq shadow <30`. Trial `#835` is the first forced baseline-reference draw row (`seed_batch n_questions=14`, `seq.state=accumulating`).
 - AutoPilot clean window after archive repair ran through `trial_counter=813`; rows `#807-#812` were clean with no infrastructure-collapse signature, and the repair backup is `/mnt/raid0/llm/epyc-orchestrator/orchestration/autopilot_state.json.bak-archive-repair-20260614T045917Z`.
 
 ---
