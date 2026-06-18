@@ -5,7 +5,7 @@ description: Use when reviewing a diff, commit, PR, dependency change, agent/too
 
 # Security Review
 
-Use this skill for focused security review. It complements general code review: emit only security findings with a plausible exploit path, or say no exploitable issue was found.
+Use this skill for focused security review. It complements general code review: emit only security findings with a plausible exploit path, or say no exploitable issue was found. The dedicated slash command wrapper lives in `.claude/commands/security-review.md`.
 
 ## Inputs
 

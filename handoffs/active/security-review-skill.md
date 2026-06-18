@@ -1,6 +1,6 @@
 # Security-Review Skill (two-pass STRIDE + OWASP)
 
-**Status**: v1 skill scaffold landed 2026-06-13; CI/command integration deferred
+**Status**: v1 skill scaffold landed 2026-06-13; slash-command integration landed 2026-06-18; CI gate deferred
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: agent_architecture, benchmark_methodology, tool_implementation
 
@@ -23,7 +23,7 @@ The v1 skill covers the Factory-derived mechanism:
 - Structured finding schema: title, location, problem, exploit path, suggested fix, residual risk, checks run.
 - Explicit false-positive guard: do not emit a finding unless attacker capability, reachability, trust-boundary crossing, vulnerable sink, unblocked mitigation analysis, concrete impact, minimal fix, and file/line evidence all pass.
 
-Decision: no separate slash command or CI gate in v1. The skill is sufficient for manual/autonomous review invocation; CI and PR-summary integration stay deferred until a concrete enforcement workflow exists.
+Decision: the skill now has a dedicated slash command wrapper. CI and PR-summary integration stay deferred until a concrete enforcement workflow exists.
 
 ## Research Context
 
