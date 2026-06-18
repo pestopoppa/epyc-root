@@ -157,6 +157,11 @@ unowned local constants.
   canonicalizes alias roles through `Role.from_string()` before grouping
   degraded model-server targets, so the preflight fallback collapses worker
   aliases onto the live `worker_general` role.
+- `scripts.autopilot.preflight_audit` now shares live and degraded
+  model-server target grouping through the stack-prior serving helpers
+  (`stack_prior_serving`, `stack_prior_endpoint_port`) while preserving
+  manifest-derived fallback ports for duplicate canonical-role aliases
+  (`epyc-orchestrator` `2abbe1d`).
 - `src.api.routes.chat_utils.apply_chat_template_for_role()` now canonicalizes
   role aliases through `Role.from_string()` before registry lookup, so
   `worker_explore` aliases resolve through the live `worker_general` model
