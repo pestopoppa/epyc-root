@@ -5,13 +5,24 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from compress_tool_output import (
     MIN_COMPRESS_CHARS,
+    _anti_thrash_history,
+    _content_hash,
     compress_tool_output,
     compress_tool_output_with_metadata,
 )
+
+
+@pytest.fixture(autouse=True)
+def _reset_anti_thrash_history():
+    _anti_thrash_history.clear()
+    yield
+    _anti_thrash_history.clear()
 
 
 # ---------------------------------------------------------------------------
@@ -49,6 +60,31 @@ class TestPassthrough:
         assert result.original_chars == len(text)
         assert result.compressed_chars == len(text)
         assert not result.changed
+
+
+class TestAntiThrashing:
+    def test_third_flip_is_suppressed(self):
+        text = PYTEST_ALL_PASS
+        content_hash = _content_hash(text)
+        _anti_thrash_history.extend([(content_hash, True), (content_hash, False)])
+
+        result = compress_tool_output_with_metadata(text, "pytest tests/")
+
+        assert result.text == text
+        assert result.strategy == "pytest_anti_thrash_suppressed"
+        assert not result.changed
+        assert result.compressed_chars == len(text)
+
+    def test_non_oscillating_history_still_compresses(self):
+        text = PYTEST_ALL_PASS
+        content_hash = _content_hash(text)
+        _anti_thrash_history.extend([(content_hash, True), (content_hash, True)])
+
+        result = compress_tool_output_with_metadata(text, "pytest tests/")
+
+        assert result.strategy == "pytest"
+        assert result.changed
+        assert result.compressed_chars < result.original_chars
 
 
 # ---------------------------------------------------------------------------

@@ -15,14 +15,20 @@ Usage as CLI:
 """
 from __future__ import annotations
 
+import hashlib
 import re
 from collections import Counter
+from collections import deque
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Callable
 
 # Minimum output length to trigger compression. Short outputs are returned as-is.
 MIN_COMPRESS_CHARS = 500
+_ANTI_THRASH_HISTORY_MAX_EVENTS = 64
+
+
+_anti_thrash_history: deque[tuple[str, bool]] = deque(maxlen=_ANTI_THRASH_HISTORY_MAX_EVENTS)
 
 
 @dataclass(frozen=True)
@@ -52,6 +58,7 @@ def compress_tool_output_with_metadata(text: str, command: str) -> CompressionRe
     """Compress output and report which strategy was selected."""
     original_chars = len(text or "")
     if not text or len(text) < MIN_COMPRESS_CHARS:
+        _record_anti_thrash_event(text, False)
         return CompressionResult(
             text=text,
             strategy="passthrough_below_threshold",
@@ -65,24 +72,61 @@ def compress_tool_output_with_metadata(text: str, command: str) -> CompressionRe
             result = handler(text, cmd)
             # Only use compressed result if it's actually shorter
             if len(result) < len(text):
+                if _should_suppress_anti_thrash(text):
+                    _record_anti_thrash_event(text, False)
+                    return CompressionResult(
+                        text=text,
+                        strategy=f"{strategy}_anti_thrash_suppressed",
+                        original_chars=original_chars,
+                        compressed_chars=original_chars,
+                    )
+                _record_anti_thrash_event(text, True)
                 return CompressionResult(
                     text=result,
                     strategy=strategy,
                     original_chars=original_chars,
                     compressed_chars=len(result),
                 )
+            _record_anti_thrash_event(text, False)
             return CompressionResult(
                 text=text,
                 strategy=f"{strategy}_passthrough_not_shorter",
                 original_chars=original_chars,
                 compressed_chars=original_chars,
             )
+    _record_anti_thrash_event(text, False)
     return CompressionResult(
         text=text,
         strategy="passthrough_no_handler",
         original_chars=original_chars,
         compressed_chars=original_chars,
     )
+
+
+def _content_hash(text: str) -> str:
+    return hashlib.sha256((text or "").encode("utf-8", errors="surrogatepass")).hexdigest()
+
+
+def _recent_outcomes_for_hash(content_hash: str) -> list[bool]:
+    """Return the two most recent outcomes for a content hash, oldest first."""
+    recent: list[bool] = []
+    for seen_hash, compressed in reversed(_anti_thrash_history):
+        if seen_hash != content_hash:
+            continue
+        recent.append(compressed)
+        if len(recent) == 2:
+            break
+    return list(reversed(recent))
+
+
+def _should_suppress_anti_thrash(text: str) -> bool:
+    """Suppress the third flip in a recent compress -> passthrough -> compress loop."""
+    content_hash = _content_hash(text)
+    return _recent_outcomes_for_hash(content_hash) == [True, False]
+
+
+def _record_anti_thrash_event(text: str, compressed: bool) -> None:
+    _anti_thrash_history.append((_content_hash(text), compressed))
 
 
 # ---------------------------------------------------------------------------
