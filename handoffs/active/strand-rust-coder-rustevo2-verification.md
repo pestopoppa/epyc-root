@@ -116,14 +116,24 @@ The harness ALREADY uses the OpenAI Python SDK with `api_key` + `base_url` as en
    export API_KEY=dummy            # llama-server ignores; SDK requires non-empty
    export BASE_URL=http://localhost:9091/v1
    ```
-3. **Single-file edit**: the canonical Pass@1 / API Usage Accuracy / Coverage numbers (the leaderboard table above) are produced by `Evaluate/eval_models_rq1.py`. Edit its `MODELS` list (lines 18-30) to contain the alias our llama-server reports (e.g., `"strand-rust-coder-14b"`). Use `llama-server --alias strand-rust-coder-14b ...` to set that alias deterministically.
-4. Invoke via `cd Evaluate && python eval_models_rq1.py --file_a ./data/final_dataset.json --file_b ./data/final_dataset.json --output ./data/RQ1/rq1_strand.json` (per the harness's own docstring example at the top of `eval_models_rq1.py:1-3`).
+3. **No edit needed**: `Evaluate/eval_models_rq1.py` supports `--models` and `--max_workers`, so pass the llama-server alias directly (e.g., `"strand-rust-coder-14b"`). Use `llama-server --alias strand-rust-coder-14b ...` to set that alias deterministically.
+4. Invoke from the repo root with the actual checkout paths:
+   ```bash
+   cd /workspace/tmp/rustevo/RustEvo
+   API_KEY=dummy BASE_URL=http://127.0.0.1:9091/v1 \
+     /workspace/tmp/rustevo/.venv/bin/python Evaluate/eval_models_rq1.py \
+       --file_a 'Dataset/RustEvo^2.json' \
+       --file_b Dataset/APIDocs.json \
+       --output Results/rq1_strand.json \
+       --models strand-rust-coder-14b \
+       --max_workers 1
+   ```
 
 **No adapter code to write.** The custom adapter speculation in the earlier version of this handoff was wrong — the harness was already OpenAI-API-compatible from the start.
 
-**HOST PREREQ for Phase B — Rust toolchain not installed on EPYC**:
+**HOST PREREQ for Phase B — Rust toolchain installed 2026-06-18**:
 
-The harness runs each generated solution + test via `subprocess` calls to `cargo`/`rustc` (see `Evaluate/unit.py:run_rust_code`). Verified 2026-05-27 on the bench host: `cargo` and `rustc` are NOT installed. Without them, every task fails with "Execution error" and Pass@1 collapses to 0%.
+The harness runs each generated solution + test via `subprocess` calls to `cargo`/`rustc` (see `Evaluate/unit.py:run_rust_code`). The bench host was missing `cargo`/`rustc` on 2026-05-27; without them, every task fails with "Execution error" and Pass@1 collapses to 0%.
 
 Install before Phase B (no special permissions, installs to user home):
 ```bash
@@ -131,9 +141,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --defaul
 source $HOME/.cargo/env
 cargo --version && rustc --version  # confirm
 ```
-The harness has no documented minimum Rust version; pick the current stable. Approx ~300 MB of disk for the toolchain + Cargo registry; well within `/home` budget.
+The README also requires the historical Rust range `1.71.0` through `1.84.0`; the evaluator uses each task's `to_version`, so installing only stable is insufficient. Verified 2026-06-18: stable `cargo 1.96.0` / `rustc 1.96.0` are installed, and `rustup run <version> rustc --version` succeeds for every version from `1.71.0` through `1.84.0`.
 
-Also install Python deps from `requirements.txt` (openai 1.66.3, langchain 0.3.x, tree-sitter 0.20.4, semver 3.0.4, etc.) into a clean venv to avoid polluting the orchestrator's Python env.
+Python deps from `requirements.txt` (openai 1.66.3, langchain 0.3.x, tree-sitter 0.20.4, semver 3.0.4, etc.) are installed in `/workspace/tmp/rustevo/.venv` on CPython `3.11.15` to avoid polluting the orchestrator's Python env. Do not use CPython 3.14 for this harness: pinned `aiohttp==3.8.3` does not build there.
 
 #### A-3: Pick + acquire comparison baselines — DONE 2026-05-27
 
@@ -154,11 +164,13 @@ Strand-Rust-Coder-14B Q4_K_M is the model under test (A-1).
 
 Non-inference validation only; no benchmark run was started.
 
-- `python3 -m py_compile /workspace/tmp/rustevo/RustEvo/Evaluate/unit.py /workspace/tmp/rustevo/RustEvo/Evaluate/eval_models.py /mnt/raid0/llm/epyc-inference-research/scripts/validate_model_registry.py /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/validate_long_context_datasets.py /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/validate_compaction_live.py`
+- `/workspace/tmp/rustevo/.venv/bin/python -m py_compile /workspace/tmp/rustevo/RustEvo/Evaluate/unit.py /workspace/tmp/rustevo/RustEvo/Evaluate/eval_models.py /workspace/tmp/rustevo/RustEvo/Evaluate/eval_models_rq1.py`
+- `/workspace/tmp/rustevo/.venv/bin/python /workspace/tmp/rustevo/RustEvo/Evaluate/eval_models_rq1.py --help` confirms `--models` and `--max_workers`.
+- Dataset layout verified: `Dataset/RustEvo^2.json` has 588 tasks, `Dataset/APIDocs.json` has 588 API entries, and `Results/` is the existing output directory.
 - `requirements.txt` in the RustEvo repo includes the OpenAI-compatible client stack needed by the harness, including `openai == 1.66.3` and `langchain-openai == 0.3.8`.
 - The RustEvo evaluation entrypoints under `Evaluate/` compile cleanly, so the gate is still blocked only on the user-approved inference pass.
 
-**Phase A is now fully complete.** All artifacts in place; only Phase B (inference, user approval required) and its `rustup` prereq remain.
+**Phase A is now fully complete.** All artifacts, Python deps, and Rust compiler toolchains are in place. Only Phase B (inference, user approval required) remains.
 
 ### Phase B — Single-instance bench (USER APPROVAL REQUIRED)
 
