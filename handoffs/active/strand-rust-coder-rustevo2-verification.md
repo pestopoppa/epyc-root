@@ -150,6 +150,14 @@ Also install Python deps from `requirements.txt` (openai 1.66.3, langchain 0.3.x
 
 Strand-Rust-Coder-14B Q4_K_M is the model under test (A-1).
 
+#### A-4: Static harness validation — DONE 2026-06-18
+
+Non-inference validation only; no benchmark run was started.
+
+- `python3 -m py_compile /workspace/tmp/rustevo/RustEvo/Evaluate/unit.py /workspace/tmp/rustevo/RustEvo/Evaluate/eval_models.py /mnt/raid0/llm/epyc-inference-research/scripts/validate_model_registry.py /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/validate_long_context_datasets.py /mnt/raid0/llm/epyc-inference-research/scripts/benchmark/validate_compaction_live.py`
+- `requirements.txt` in the RustEvo repo includes the OpenAI-compatible client stack needed by the harness, including `openai == 1.66.3` and `langchain-openai == 0.3.8`.
+- The RustEvo evaluation entrypoints under `Evaluate/` compile cleanly, so the gate is still blocked only on the user-approved inference pass.
+
 **Phase A is now fully complete.** All artifacts in place; only Phase B (inference, user approval required) and its `rustup` prereq remain.
 
 ### Phase B — Single-instance bench (USER APPROVAL REQUIRED)
