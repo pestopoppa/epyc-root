@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; **true function-axis 5×5 sweep COMPLETE 2026-06-16** — full 25-cell (domain×function) winner table built from 500 rows (`epyc-inference-research` `4e3ee6c`); **enforce-eligible `orchestration/xmas_winner_table.yaml` built and validated 2026-06-18**; **remaining: live A/B before any enforce flip**
+**Status**: classifier/table scaffold landed 2026-06-13; default-off shadow telemetry hook landed 2026-06-14; guarded enforce semantics landed 2026-06-15; evidence-backed domain-proxy table workflow landed 2026-06-15; **true function-axis 5×5 sweep COMPLETE 2026-06-16** — full 25-cell (domain×function) winner table built from 500 rows (`epyc-inference-research` `4e3ee6c`); **enforce-eligible `orchestration/xmas_winner_table.yaml` built and validated 2026-06-18**; **live A/B harness landed with a 3-prompt smoke 2026-06-18**; **remaining: decision-grade held-out A/B before any enforce flip**
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (zero-infra-change immediate win — replaces ad-hoc role mapping with empirical (domain × function) lookup)
@@ -1191,6 +1191,40 @@ Fresh cheap-kill screen:
 **Next (not done):** run the live A/B (X-MAS routing vs current ad-hoc) before
 flipping `xmas_routing.mode: enforce`. The cheap-kill result is acceptance
 screen evidence, not a production-decision substitute.
+
+### 2026-06-18 — live A/B harness + tiny smoke
+
+Landed in `epyc-orchestrator` commit `52d3d02`:
+
+- `scripts/benchmark/xmas_live_ab.py`: focused live X-MAS A/B harness that
+  validates the winner table, alternates baseline/X-MAS arms, reloads the
+  Orchestrator with explicit X-MAS env per arm, records routing metadata,
+  latency, scores, answer excerpts, and restores baseline config by default.
+- `tests/unit/test_xmas_live_ab.py`: unit coverage for arm sequencing, reload
+  env construction, prompt loading, scoring, and summary aggregation.
+
+Validation:
+
+- `uv run pytest -q tests/unit/test_xmas_live_ab.py tests/unit/test_validate_xmas_winner_table.py tests/classifiers/test_xmas_routing.py` -> `29 passed`.
+- `uv run python scripts/benchmark/xmas_live_ab.py --dry-run --output /mnt/raid0/llm/tmp/xmas-live-ab-dryrun-20260618` -> passed.
+- `python3 -m py_compile scripts/benchmark/xmas_live_ab.py` -> passed.
+- `uv run ruff check scripts/benchmark/xmas_live_ab.py tests/unit/test_xmas_live_ab.py` -> passed.
+
+Tiny live smoke:
+
+- Command:
+  `uv run python scripts/benchmark/xmas_live_ab.py --host-quiet-confirmed --output /mnt/raid0/llm/tmp/xmas-live-ab-smoke-20260618 --reps 1 --max-turns 1 --timeout-s 300`.
+- Result: baseline `n=3`, scored `3/3`, median latency `1.113s`,
+  routes `{frontdoor: 1, coder_escalation: 2}`, X-MAS applied `0`.
+- Result: X-MAS `n=3`, scored `3/3`, median latency `0.915s`, routes
+  `{frontdoor: 1, coder_escalation: 1, worker_general: 1}`, X-MAS applied `1`.
+- Delta: score `0.0`, latency `-0.198s` for X-MAS minus baseline.
+- Post-smoke process env was verified restored to
+  `ORCHESTRATOR_XMAS_ROUTING_MODE=off` and empty
+  `ORCHESTRATOR_XMAS_WINNER_TABLE_PATH`.
+
+**Next (not done):** run a larger held-out A/B. The 3-prompt smoke proves the
+harness and restore path, not production routing quality.
 
 ## References
 
