@@ -579,59 +579,69 @@ def create_snapshot(
 
     metrics = defaultdict(int)
     errors: list[str] = []
+    staging_root = Path(tempfile.mkdtemp(prefix=".epyc-f4-snapshot-", dir=str(target_root)))
 
-    for (repo_name, pattern), sources in collected.items():
-        del pattern
-        repo_root = Path(cast(str, repos[repo_name]))
-        for source in sources:
-            rel_path = source.relative_to(repo_root)
-            destination = snapshot_root / repo_name / rel_path
-            try:
-                sqlite_backed_up = _copy_file_to_snapshot(source, destination)
-            except (OSError, sqlite3.DatabaseError) as exc:
-                errors.append(f"copy_failed: {source} -> {destination}: {exc}")
-                continue
-            metrics["files_copied"] += 1
-            if sqlite_backed_up:
-                metrics["sqlite_backups"] += 1
+    try:
+        for (repo_name, pattern), sources in collected.items():
+            del pattern
+            repo_root = Path(cast(str, repos[repo_name]))
+            for source in sources:
+                rel_path = source.relative_to(repo_root)
+                destination = staging_root / repo_name / rel_path
+                try:
+                    sqlite_backed_up = _copy_file_to_snapshot(source, destination)
+                except (OSError, sqlite3.DatabaseError) as exc:
+                    errors.append(f"copy_failed: {source} -> {destination}: {exc}")
+                    continue
+                metrics["files_copied"] += 1
+                if sqlite_backed_up:
+                    metrics["sqlite_backups"] += 1
 
-    metadata = {
-        "created_at_utc": datetime.now(tz=timezone.utc).isoformat(),
-        "manifest": str(manifest_path),
-        "manifest_sha256": file_checksum(manifest_path),
-        "selected_tiers": sorted(selected_tiers),
-        "source_repos": {name: repos[name] for name in sorted(selected_repo_names) if name in repos},
-        "summary": dict(metrics),
-        "errors": errors,
-    }
-    snapshot_root.mkdir(parents=True, exist_ok=True)
-    (snapshot_root / "SNAPSHOT.json").write_text(
-        json.dumps(metadata, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+        metadata = {
+            "created_at_utc": datetime.now(tz=timezone.utc).isoformat(),
+            "manifest": str(manifest_path),
+            "manifest_sha256": file_checksum(manifest_path),
+            "selected_tiers": sorted(selected_tiers),
+            "source_repos": {name: repos[name] for name in sorted(selected_repo_names) if name in repos},
+            "summary": dict(metrics),
+            "errors": errors,
+        }
+        (staging_root / "SNAPSHOT.json").write_text(
+            json.dumps(metadata, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
 
-    if report_json:
-        with Path(report_json).open("w", encoding="utf-8") as handle:
-            json.dump(
-                {
-                    "target_root": str(target_root),
-                    "snapshot_root": str(snapshot_root),
-                    **metadata,
-                },
-                handle,
-                indent=2,
-                sort_keys=True,
-            )
+        summary = [
+            f"snapshot_root={snapshot_root}",
+            f"tiers={sorted(selected_tiers)}",
+            f"files_copied={metrics['files_copied']}",
+            f"sqlite_backups={metrics['sqlite_backups']}",
+        ]
+        if errors:
+            return 1, summary + ["errors:"] + errors
 
-    summary = [
-        f"snapshot_root={snapshot_root}",
-        f"tiers={sorted(selected_tiers)}",
-        f"files_copied={metrics['files_copied']}",
-        f"sqlite_backups={metrics['sqlite_backups']}",
-    ]
-    if errors:
-        return 1, summary + ["errors:"] + errors
-    return 0, summary
+        snapshot_root.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            staging_root.rename(snapshot_root)
+        except OSError as exc:
+            return 1, summary + ["errors:"] + [f"snapshot finalize failed: {staging_root} -> {snapshot_root}: {exc}"]
+
+        if report_json:
+            with Path(report_json).open("w", encoding="utf-8") as handle:
+                json.dump(
+                    {
+                        "target_root": str(target_root),
+                        "snapshot_root": str(snapshot_root),
+                        **metadata,
+                    },
+                    handle,
+                    indent=2,
+                    sort_keys=True,
+                )
+        return 0, summary
+    finally:
+        if staging_root.exists():
+            shutil.rmtree(staging_root, ignore_errors=True)
 
 
 def verify_restore(

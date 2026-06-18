@@ -7,6 +7,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "backup"))
 
+import continuity_backup as continuity_backup_module  # noqa: E402
 from continuity_backup import create_snapshot, verify_restore  # noqa: E402
 
 
@@ -105,3 +106,38 @@ def test_create_snapshot_layout_verifies_with_explicit_test_override(tmp_path):
         restore_root=str(tmp_path / "restore"),
     )
     assert verify_code == 0, verify_lines
+
+
+def test_create_snapshot_cleans_up_partial_staging_on_copy_failure(tmp_path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "state.json").write_text('{"value": "snapshot"}\n', encoding="utf-8")
+    nested = repo / "nested"
+    nested.mkdir()
+    (nested / "other.json").write_text('{"value": "nested"}\n', encoding="utf-8")
+
+    manifest = tmp_path / "MANIFEST.yaml"
+    _write_manifest(manifest, repo, paths=["state.json", "nested/other.json"])
+
+    original_copy = continuity_backup_module._copy_file_to_snapshot
+    call_count = {"count": 0}
+
+    def flaky_copy(source, destination):
+        call_count["count"] += 1
+        if call_count["count"] == 2:
+            raise OSError("simulated write failure")
+        return original_copy(source, destination)
+
+    monkeypatch.setattr(continuity_backup_module, "_copy_file_to_snapshot", flaky_copy)
+
+    target_root = tmp_path / "target"
+    exit_code, lines = create_snapshot(
+        manifest,
+        target_root,
+        snapshot_name="snap",
+        allow_same_device=True,
+    )
+
+    assert exit_code == 1, lines
+    assert not (target_root / "snap").exists()
+    assert list(target_root.iterdir()) == []
