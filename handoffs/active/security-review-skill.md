@@ -44,7 +44,7 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 ## Open Questions
 
 - Which local model(s) drive it? OWASP-LLM analysis of our own stack ideally uses a cross-family reviewer (avoid self-blindness) — tie to eval-tower EV-6.
-- Scope presets (base-branch compare / uncommitted / specific commit / custom) — skill text supports all four by scope, but no wrapper command exists yet.
+- Scope presets (base-branch compare / uncommitted / specific commit / custom) — the slash command now accepts an optional scope argument and defaults to the current diff; richer CI/PR presets remain future work.
 - Existing code-review skill upgrade — no local `.claude/skills/code-review` exists in this repo. The reusable 8-gate filter and finding schema live in `security-review/SKILL.md`; fold them into a future code-review skill if/when one is added.
 - CI integration: PR-summary + min-severity threshold gate — wire later.
 

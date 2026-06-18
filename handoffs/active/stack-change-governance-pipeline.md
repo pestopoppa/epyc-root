@@ -845,7 +845,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   selection now reads live warm worker records from stack priors and fails
   closed to sequential execution when none exist in `cc401c0`; runtime worker
   concurrency caps now read live warm-worker stack-prior slots and fail closed
-  to single-lane execution in `f41f956`;
+  to single-lane execution in `f41f956`; the legacy `WorkerPoolManager`
+  default config now attaches to the generated live `worker_general`
+  stack-prior backend instead of carrying stale Qwen2.5 7B/1.5B model paths,
+  and marks stack-managed backends as unmanaged so the pool cannot kill or
+  relaunch production stack ports in `b4fe84d`;
   GGUF-derived `ctx_max` projection landed in
   `b8477b0`; REAP quality projection landed in `2ea28dd`; descriptor-native
   thinking-control evidence landed in `865b2b1`; shared-runtime alias
