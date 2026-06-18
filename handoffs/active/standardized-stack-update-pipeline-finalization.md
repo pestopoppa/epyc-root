@@ -56,7 +56,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   health/dashboard stack-prior witnesses landed in `8beaf79`; representative
   routing/API role-surface witnesses landed in `edd20f7`; stack-manifest vs
   registry drift gating landed in `3c18a17`; swap-CI can still be broadened as
-  new high-risk consumers are migrated.
+  new high-risk consumers are migrated. Long-context ingest swap-CI coverage
+  landed in `63b8612`, proving generated descriptors, stack priors, operator
+  summary, system card, health/dashboard endpoint hints, q_scorer priors, and
+  promotion-gate execution move together for `ingest_long_context`.
 
 ## Outstanding Work
 
@@ -68,8 +71,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
   frontdoor swap fixture now also exercises promotion-gate execution in the
-  same swapped state, so the remaining gap is broader representative coverage
-  rather than a missing end-to-end happy-path proof.
+  same swapped state, and representative worker, vision, and long-context ingest
+  swaps now cover distinct live role classes. The remaining gap is opportunistic
+  expansion as new high-risk consumers are migrated rather than a missing
+  end-to-end happy-path proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
