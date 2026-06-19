@@ -332,10 +332,11 @@ Any future stack update should be accepted only when these hold:
   starting with the next surface that still carries local model facts or
   duplicated stack-prior traversal. After Orchestrator `d744d5f`, the config
   catalog and admission policy share typed serving URL/slot-limit projections.
-  After Orchestrator `0c133db`, GraphRouter action extraction also consumes
-  shared canonical role/live-role helpers while preserving persisted classifier
-  label order. Continue with the next manifest surface that still carries local
-  model facts or duplicated stack-prior traversal.
+  After Orchestrator `0c133db` and `c57a029`, GraphRouter action extraction
+  and action-index lookup also consume shared canonical role/live-role helpers
+  while preserving persisted classifier label order. Continue with the next
+  manifest surface that still carries local model facts or duplicated
+  stack-prior traversal.
 - [x] Centralize stack-prior serving consumer projection for config/admission:
   Orchestrator `d744d5f` added `live_stack_serving_url_values()` and
   `live_stack_serving_slot_limits()` in `src.registry.stack_priors`, removed
@@ -411,6 +412,14 @@ Any future stack update should be accepted only when these hold:
   focused suites `26 passed, 1 skipped`; `stack_change_pipeline.py check
   --run-promotion-gate` passed with `170 passed`; all-surface warning baseline
   stayed at `legacy_test=1`.
+- [x] Keep GraphRouter action-index lookup canonicalized without classifier
+  label renumbering. Orchestrator `c57a029` added
+  `action_index_for_raw_label()`, routed training/debiased verifier extraction
+  through canonical action lookup, and added tests proving raw legacy labels
+  map onto the existing classifier action list without sorting, compacting, or
+  changing saved label-map width/order. Current focused validation:
+  `uv run --with pytest pytest -q tests/unit/test_graph_router_action_space.py`
+  -> 10 passed.
 - [x] Keep the orchestration README visible role tables and routing examples
   using canonical live spellings (`worker_general`, `architect_general`)
   instead of retired aliases. This was a docs-only alignment pass; historical
