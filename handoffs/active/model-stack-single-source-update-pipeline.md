@@ -40,6 +40,11 @@ unowned local constants.
 
 - Source contract is generated through model descriptors and
   `orchestration/derived/stack_priors.yaml`.
+- 2026-06-19 no-inference refresh repaired descriptor drift from the
+  research registry hash: `stack_change_pipeline.py update` regenerated only
+  `orchestration/model_descriptors.yaml` and
+  `orchestration/derived/stack_priors.yaml` source-artifact metadata, and the
+  follow-up `check --run-promotion-gate` passed with 172 tests.
 - Runtime attestation is part of the stack-change pipeline and currently
   reports `runtime_attestation: ok`.
 - q_scorer prior provenance is part of the pipeline and currently reports

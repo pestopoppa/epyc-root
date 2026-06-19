@@ -48,6 +48,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   the last retired-role launch test as intentional legacy coverage, and
   `stack_change_pipeline.py check --run-promotion-gate` now reports
   `guard_all_surfaces: ok`.
+- 2026-06-19 descriptor drift from the research registry hash was repaired
+  through the canonical `stack_change_pipeline.py update` path. The generated
+  diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`
+  source-artifact metadata and `check --run-promotion-gate` returned
+  `summary: ok` with 172 tests passing.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
