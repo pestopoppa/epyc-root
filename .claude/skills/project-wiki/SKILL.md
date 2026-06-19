@@ -132,7 +132,23 @@ For a full recompilation (ignore last compile timestamp):
 python3 .claude/skills/project-wiki/scripts/compile_sources.py --full
 ```
 
+For a reviewable source-manifest baseline:
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py --full --write-manifest
+```
+
+Before recompiling from an existing baseline, check source drift:
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py --check-manifest
+```
+
+To feed an incremental refresh / re-embed adapter, emit only added or changed sources:
+```
+python3 .claude/skills/project-wiki/scripts/compile_sources.py --changed-since-manifest
+```
+
 Review the `total_new` count. If 0, no compilation needed — inform the user and stop.
+The persisted manifest path is configured by `compile.source_manifest` in `wiki.yaml`.
 
 #### Step 2: Read and Analyze Sources
 

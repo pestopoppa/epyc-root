@@ -13,6 +13,9 @@ Usage:
     python3 compile_sources.py --touch      # update .last_compile after output
     python3 compile_sources.py --type research  # filter by source type
     python3 compile_sources.py --since 2026-04-01  # override since-date
+    python3 compile_sources.py --full --write-manifest
+    python3 compile_sources.py --check-manifest
+    python3 compile_sources.py --changed-since-manifest
 """
 
 from __future__ import annotations
@@ -48,6 +51,8 @@ def _find_project_root() -> Path:
 
 
 ROOT = _find_project_root()
+MANIFEST_SCHEMA_VERSION = 1
+MANIFEST_KIND = "project-wiki-source-manifest"
 
 
 def load_config() -> dict:
@@ -56,6 +61,7 @@ def load_config() -> dict:
     defaults = {
         "output_dir": "wiki",
         "last_compile": "wiki/.last_compile",
+        "source_manifest": "wiki/source_manifest.json",
         "skip_filenames": ["INDEX.md", "README.md", "master-handoff-index.md"],
         "skip_patterns": ["*-index.md"],
         "source_dirs": [
@@ -84,6 +90,7 @@ def load_config() -> dict:
 
 CONFIG = load_config()
 LAST_COMPILE_PATH = ROOT / CONFIG["last_compile"]
+SOURCE_MANIFEST_PATH = ROOT / CONFIG.get("source_manifest", "wiki/source_manifest.json")
 SKIP_FILENAMES = set(CONFIG["skip_filenames"])
 SKIP_PATTERNS = CONFIG["skip_patterns"]
 
@@ -213,6 +220,42 @@ def source_set_hash(sources: list[dict]) -> str:
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
+def source_index(sources: list[dict]) -> dict[str, dict]:
+    """Return sources keyed by repository-relative path."""
+    return {
+        str(source["path"]): source
+        for source in sources
+        if isinstance(source, dict) and source.get("path")
+    }
+
+
+def diff_manifest_sources(saved_sources: list[dict], current_sources: list[dict]) -> dict:
+    """Compare saved/current source lists using path + content hash."""
+    saved_by_path = source_index(saved_sources)
+    current_by_path = source_index(current_sources)
+    saved_paths = set(saved_by_path)
+    current_paths = set(current_by_path)
+
+    added = sorted(current_paths - saved_paths)
+    removed = sorted(saved_paths - current_paths)
+    changed = sorted(
+        path
+        for path in saved_paths & current_paths
+        if saved_by_path[path].get("content_hash")
+        != current_by_path[path].get("content_hash")
+    )
+
+    return {
+        "added": [current_by_path[path] for path in added],
+        "changed": [current_by_path[path] for path in changed],
+        "removed": [saved_by_path[path] for path in removed],
+        "added_count": len(added),
+        "changed_count": len(changed),
+        "removed_count": len(removed),
+        "has_drift": bool(added or changed or removed),
+    }
+
+
 def build_manifest(sources: list[dict], mode: str) -> dict:
     """Build the output manifest from collected sources."""
     by_type: dict[str, int] = {}
@@ -220,6 +263,8 @@ def build_manifest(sources: list[dict], mode: str) -> dict:
         by_type[s["type"]] = by_type.get(s["type"], 0) + 1
 
     return {
+        "schema_version": MANIFEST_SCHEMA_VERSION,
+        "kind": MANIFEST_KIND,
         "last_compile": get_last_compile_iso(),
         "scan_time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "mode": mode,
@@ -228,6 +273,105 @@ def build_manifest(sources: list[dict], mode: str) -> dict:
         "by_type": by_type,
         "source_set_hash": source_set_hash(sources),
     }
+
+
+def read_manifest(path: Path) -> dict:
+    """Read and validate a saved source manifest."""
+    try:
+        manifest = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"manifest not found: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"manifest is not valid JSON: {path}") from exc
+
+    if not isinstance(manifest, dict):
+        raise ValueError(f"manifest root must be an object: {path}")
+    if manifest.get("kind") != MANIFEST_KIND:
+        raise ValueError(
+            f"manifest kind must be {MANIFEST_KIND!r}: {manifest.get('kind')!r}"
+        )
+    if manifest.get("schema_version") != MANIFEST_SCHEMA_VERSION:
+        raise ValueError(
+            "manifest schema_version must be "
+            f"{MANIFEST_SCHEMA_VERSION}: {manifest.get('schema_version')!r}"
+        )
+    sources = manifest.get("sources")
+    if not isinstance(sources, list):
+        raise ValueError("manifest sources must be a list")
+    return manifest
+
+
+def write_manifest(path: Path, manifest: dict) -> None:
+    """Persist a manifest as stable, reviewable JSON."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def full_current_manifest() -> dict:
+    """Build a full manifest for drift comparison."""
+    return build_manifest(scan_sources(0.0, None), "full")
+
+
+def build_manifest_drift_report(saved_path: Path) -> dict:
+    """Compare a saved source manifest to the current full source set."""
+    saved = read_manifest(saved_path)
+    current = full_current_manifest()
+    drift = diff_manifest_sources(saved["sources"], current["sources"])
+    return {
+        "schema_version": MANIFEST_SCHEMA_VERSION,
+        "kind": "project-wiki-source-manifest-drift",
+        "manifest_path": str(saved_path.relative_to(ROOT))
+        if saved_path.is_relative_to(ROOT)
+        else str(saved_path),
+        "scan_time": current["scan_time"],
+        "saved_source_set_hash": saved.get("source_set_hash"),
+        "current_source_set_hash": current.get("source_set_hash"),
+        "ok": not drift["has_drift"],
+        "drift": drift,
+    }
+
+
+def changed_sources_since_manifest(saved_path: Path) -> dict:
+    """Build a manifest containing sources added/changed since saved_path."""
+    saved = read_manifest(saved_path)
+    current = full_current_manifest()
+    drift = diff_manifest_sources(saved["sources"], current["sources"])
+    changed_paths = {
+        str(source["path"])
+        for source in [*drift["added"], *drift["changed"]]
+        if source.get("path")
+    }
+    changed_sources = [
+        source for source in current["sources"] if source.get("path") in changed_paths
+    ]
+    manifest = build_manifest(changed_sources, f"changed-since-manifest:{saved_path}")
+    manifest["baseline_manifest"] = str(saved_path.relative_to(ROOT)) if (
+        saved_path.is_relative_to(ROOT)
+    ) else str(saved_path)
+    manifest["baseline_source_set_hash"] = saved.get("source_set_hash")
+    manifest["current_source_set_hash"] = current.get("source_set_hash")
+    manifest["removed_sources"] = drift["removed"]
+    manifest["removed_count"] = drift["removed_count"]
+    manifest["drift"] = {
+        "added_count": drift["added_count"],
+        "changed_count": drift["changed_count"],
+        "removed_count": drift["removed_count"],
+        "has_drift": drift["has_drift"],
+    }
+    return manifest
+
+
+def resolve_manifest_arg(value: str | None) -> Path:
+    """Resolve optional manifest CLI arguments against the project root."""
+    if not value:
+        return SOURCE_MANIFEST_PATH
+    path = Path(value).expanduser()
+    if not path.is_absolute():
+        path = ROOT / path
+    return path
 
 
 def main() -> int:
@@ -253,8 +397,67 @@ def main() -> int:
         "--since",
         help="Override since-date (YYYY-MM-DD). Takes precedence over .last_compile.",
     )
+    parser.add_argument(
+        "--write-manifest",
+        nargs="?",
+        const="",
+        metavar="PATH",
+        help=(
+            "Write the emitted manifest to PATH, or to compile.source_manifest "
+            "when PATH is omitted."
+        ),
+    )
+    parser.add_argument(
+        "--check-manifest",
+        nargs="?",
+        const="",
+        metavar="PATH",
+        help=(
+            "Compare saved manifest at PATH, or compile.source_manifest when "
+            "PATH is omitted, to the current full source set."
+        ),
+    )
+    parser.add_argument(
+        "--changed-since-manifest",
+        nargs="?",
+        const="",
+        metavar="PATH",
+        help=(
+            "Emit only sources added/changed since saved manifest at PATH, or "
+            "compile.source_manifest when PATH is omitted."
+        ),
+    )
 
     args = parser.parse_args()
+
+    if args.check_manifest is not None and args.changed_since_manifest is not None:
+        print(
+            "ERROR: --check-manifest and --changed-since-manifest are mutually exclusive",
+            file=sys.stderr,
+        )
+        return 1
+
+    if args.check_manifest is not None:
+        manifest_path = resolve_manifest_arg(args.check_manifest)
+        try:
+            report = build_manifest_drift_report(manifest_path)
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        json.dump(report, sys.stdout, indent=2, sort_keys=True)
+        print()
+        return 0 if report["ok"] else 1
+
+    if args.changed_since_manifest is not None:
+        manifest_path = resolve_manifest_arg(args.changed_since_manifest)
+        try:
+            manifest = changed_sources_since_manifest(manifest_path)
+        except ValueError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
+        json.dump(manifest, sys.stdout, indent=2, sort_keys=True)
+        print()
+        return 0
 
     if args.full:
         since = 0.0
@@ -279,6 +482,9 @@ def main() -> int:
 
     json.dump(manifest, sys.stdout, indent=2)
     print()
+
+    if args.write_manifest is not None:
+        write_manifest(resolve_manifest_arg(args.write_manifest), manifest)
 
     if args.touch:
         touch_last_compile()

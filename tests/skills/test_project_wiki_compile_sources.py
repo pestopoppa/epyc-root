@@ -26,6 +26,7 @@ def _configure_temp_project(module, root: Path) -> None:
     module.ROOT = root
     module.CONFIG = {
         "last_compile": "wiki/.last_compile",
+        "source_manifest": "wiki/source_manifest.json",
         "skip_filenames": ["INDEX.md"],
         "skip_patterns": ["*-index.md"],
         "source_dirs": [
@@ -34,6 +35,7 @@ def _configure_temp_project(module, root: Path) -> None:
         ],
     }
     module.LAST_COMPILE_PATH = root / "wiki" / ".last_compile"
+    module.SOURCE_MANIFEST_PATH = root / "wiki" / "source_manifest.json"
     module.SKIP_FILENAMES = set(module.CONFIG["skip_filenames"])
     module.SKIP_PATTERNS = module.CONFIG["skip_patterns"]
 
@@ -60,6 +62,8 @@ def test_manifest_sources_include_content_hash_and_source_set_hash(tmp_path: Pat
     expected_hash = hashlib.sha256("# Alpha\n\nFirst.\n".encode("utf-8")).hexdigest()
     assert sources[0]["content_hash"] == expected_hash
     assert len(manifest["source_set_hash"]) == 64
+    assert manifest["kind"] == module.MANIFEST_KIND
+    assert manifest["schema_version"] == module.MANIFEST_SCHEMA_VERSION
 
     reversed_manifest = module.build_manifest(list(reversed(sources)), "full")
     assert reversed_manifest["source_set_hash"] == manifest["source_set_hash"]
@@ -80,3 +84,74 @@ def test_source_set_hash_changes_when_source_content_hash_changes(tmp_path: Path
     ]
 
     assert second_hash != first_hash
+
+
+def test_manifest_drift_report_detects_added_changed_and_removed_sources(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    beta = tmp_path / "handoffs" / "active" / "beta.md"
+    gamma = tmp_path / "progress" / "2026-06" / "gamma.md"
+    manifest_path = tmp_path / "wiki" / "source_manifest.json"
+    _write(alpha, "# Alpha\n\nFirst.\n")
+    _write(beta, "# Beta\n\nSecond.\n")
+    module.write_manifest(
+        manifest_path,
+        module.build_manifest(module.scan_sources(0.0, None), "full"),
+    )
+
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    beta.unlink()
+    _write(gamma, "# Gamma\n\nNew.\n")
+
+    report = module.build_manifest_drift_report(manifest_path)
+
+    assert report["ok"] is False
+    assert [source["path"] for source in report["drift"]["changed"]] == [
+        "handoffs/active/alpha.md"
+    ]
+    assert [source["path"] for source in report["drift"]["removed"]] == [
+        "handoffs/active/beta.md"
+    ]
+    assert [source["path"] for source in report["drift"]["added"]] == [
+        "progress/2026-06/gamma.md"
+    ]
+
+
+def test_changed_since_manifest_outputs_only_added_and_changed_sources(
+    tmp_path: Path,
+) -> None:
+    module = _load_module()
+    _configure_temp_project(module, tmp_path)
+    alpha = tmp_path / "handoffs" / "active" / "alpha.md"
+    beta = tmp_path / "handoffs" / "active" / "beta.md"
+    gamma = tmp_path / "progress" / "2026-06" / "gamma.md"
+    manifest_path = tmp_path / "wiki" / "source_manifest.json"
+    _write(alpha, "# Alpha\n\nFirst.\n")
+    _write(beta, "# Beta\n\nSecond.\n")
+    module.write_manifest(
+        manifest_path,
+        module.build_manifest(module.scan_sources(0.0, None), "full"),
+    )
+
+    _write(alpha, "# Alpha\n\nChanged.\n")
+    beta.unlink()
+    _write(gamma, "# Gamma\n\nNew.\n")
+
+    manifest = module.changed_sources_since_manifest(manifest_path)
+
+    assert [source["path"] for source in manifest["sources"]] == [
+        "handoffs/active/alpha.md",
+        "progress/2026-06/gamma.md",
+    ]
+    assert [source["path"] for source in manifest["removed_sources"]] == [
+        "handoffs/active/beta.md"
+    ]
+    assert manifest["drift"] == {
+        "added_count": 1,
+        "changed_count": 1,
+        "removed_count": 1,
+        "has_drift": True,
+    }

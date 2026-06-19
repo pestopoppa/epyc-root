@@ -455,6 +455,8 @@ Scope inherited from `autowiki-incremental-kb-generator.md` (now in [`../complet
 - **Change-driven ColBERT re-embed**: re-embed only the changed chunks into the existing ColBERT index (current build = 409 files / 13,537 chunks / 17 min full rebuild) rather than rebuilding — extends the K3 content-hash + K5 on-commit machinery already landed; cross-ref [`colbert-reranker-web-research.md`](colbert-reranker-web-research.md) for the shared encoder.
 - **CI/nightshift trigger**: a push-triggered job with a `paths:` filter, or a `scripts/nightshift/` schedule — the OSS equivalent of Factory's `/install-wiki` GitHub Action.
 
+**2026-06-19 root-only first slice:** `project-wiki`'s `compile_sources.py` now formalizes the source manifest as `project-wiki-source-manifest` schema v1. It can persist a full baseline with `--full --write-manifest`, drift-check added/changed/removed sources with `--check-manifest`, and emit the added/changed subset with `--changed-since-manifest`. This does not yet wire orchestrator KB-RAG ingestion; the existing downstream hook is still path-list based (`kb_rag.update_files(paths, ...)`), so the remaining integration step is a thin manifest-row-to-path adapter plus path normalization.
+
 Open design questions (carried from the stub, unresolved):
 
 1. The page→source-paths manifest is also the basis for **drift detection** — does it subsume / improve the `scripts/validate/` document-drift validator?

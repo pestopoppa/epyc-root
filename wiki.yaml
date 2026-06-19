@@ -52,6 +52,7 @@ lint:
 compile:
   output_dir: "wiki"
   last_compile: "wiki/.last_compile"
+  source_manifest: "wiki/source_manifest.json"
   skip_filenames: ["INDEX.md", "README.md", "master-handoff-index.md", "SCHEMA.md"]
   skip_patterns: ["*-index.md"]
   source_dirs:

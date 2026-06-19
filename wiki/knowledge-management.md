@@ -42,7 +42,7 @@ Self-reported headline numbers from Flywheel's README (HotpotQA 90.0% doc recall
 
 This page itself is a product of the `project-wiki` skill compile operation (`/workspace/.claude/skills/project-wiki/SKILL.md` Operation 3). The pipeline:
 
-1. **Source manifest scanner** (`compile_sources.py`) walks active handoffs, completed handoffs, research deep-dives, and progress logs since `.last_compile`.
+1. **Source manifest scanner** (`compile_sources.py`) walks active handoffs, completed handoffs, research deep-dives, and progress logs since `.last_compile`. The scanner now has an explicit `project-wiki-source-manifest` v1 contract: `--full --write-manifest` persists `wiki/source_manifest.json`, `--check-manifest` reports added/changed/removed source drift against current content hashes, and `--changed-since-manifest` emits the added/changed subset that a future KB-RAG `update_files(...)` adapter can consume.
 2. **Cluster by taxonomy** category from `wiki/SCHEMA.md`. Categories with 3+ substantive sources get a full compiled article; fewer get stub entries.
 3. **Synthesize** (this page is one such synthesis).
 4. **Touch** `.last_compile` with `compile_sources.py --touch`.
