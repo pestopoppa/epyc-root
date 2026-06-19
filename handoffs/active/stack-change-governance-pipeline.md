@@ -469,6 +469,11 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `a5aaafb`: `scripts/autopilot/preflight_audit.py` now groups live model
   server probes from generated stack-prior serving endpoints instead of a raw
   port table.
+- AutoPilot preflight fallback cleanup landed in `epyc-orchestrator`
+  `fa8a167`: the degraded manifest fallback no longer builds synthetic
+  stack-prior-like records before grouping targets. It derives health targets
+  directly from `HOT_SERVERS` / `WARM_SERVERS`, while preserving role alias
+  canonicalization and embedding-role filtering.
 - AutoPilot program endpoint guidance migrated in `epyc-orchestrator`
   `60733c7`: `scripts/autopilot/program.md` now queries generated stack priors
   for live compaction endpoints instead of carrying stale target-port examples.
