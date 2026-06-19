@@ -71,6 +71,9 @@ unowned local constants.
   keep generated stack priors as primary and derive degraded fallback specs
   from compiled model descriptors instead of a hand-maintained role/model
   feature table.
+- `scripts.graph_router.train_graph_router` model-fleet training nodes now
+  keep generated stack priors as primary and derive degraded fallback fleet
+  records from compiled model descriptors instead of a static model-fleet table.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path, but the 2026-06-18 held-out A/B returned
   `decision: hold`; regression diagnosis is required before any new enforce
