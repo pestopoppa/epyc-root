@@ -82,6 +82,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   slot-query consumers, dashboard service hints, and seeding reward descriptor
   fallback. A read-only `health_preflight_probes` audit found no further
   duplicate role/port table to migrate in AutoPilot preflight.
+- 2026-06-19 W4 swap-CI follow-up landed in Orchestrator `7a90924`: the
+  simulated worker swap fixture now also proves seeding reward degraded
+  fallback reads swapped model descriptor throughput before the legacy static
+  table.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -112,9 +116,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   frontdoor swap fixture now also exercises promotion-gate execution in the
   same swapped state, and representative worker, vision, and long-context ingest
   swaps now cover distinct live role classes. The worker swap also covers the
-  migrated text-side primary-port consumers after `6c9ac6b`. The remaining gap
-  is opportunistic expansion as new high-risk consumers are migrated rather than
-  a missing end-to-end happy-path proof.
+  migrated text-side primary-port consumers after `6c9ac6b` and the seeding
+  descriptor degraded fallback after `7a90924`. The remaining gap is
+  opportunistic expansion as new high-risk consumers are migrated rather than a
+  missing end-to-end happy-path proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 

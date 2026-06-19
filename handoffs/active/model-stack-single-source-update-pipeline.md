@@ -130,7 +130,8 @@ Any future stack update should be accepted only when these hold:
   is manifest-owned compatibility plumbing, not a stray duplicate table.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
-  consumer to prove.
+  consumer to prove. Latest witness: Orchestrator `7a90924` covers the seeding
+  descriptor degraded fallback in the simulated worker swap fixture.
 - [x] Build an incumbent-aware/constrained X-MAS policy before any new
   `mode: enforce` attempt. `24baac4` keeps production default-off and requires
   table evidence to evaluate both incumbent and suggested roles before an
