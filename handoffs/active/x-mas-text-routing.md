@@ -1281,6 +1281,29 @@ less accurate than baseline. Next work should diagnose why the table over-routes
 held-out solve/refine/extract traffic to `worker_general` before any new flip
 attempt.
 
+### 2026-06-19 — held-out verdict reporter
+
+`epyc-orchestrator` commit `9dcfbf5` made the held-out verdict machine-checkable
+from the benchmark artifact itself:
+
+- `scripts/benchmark/xmas_live_ab.py` now emits per-domain score/latency
+  summaries plus a `decision` block with configurable gates
+  (`min_prompts_per_arm`, `min_score_delta`, `max_domain_regression`,
+  `max_latency_ratio`).
+- `--summarize-results <results.jsonl>` summarizes an existing run without
+  reloading the API or calling inference, so old and future held-out runs can be
+  audited without consuming the clean inference window.
+- Applied to
+  `benchmarks/results/runs/xmas_live_ab/20260618-215637-heldout-resilient-rerun/results.jsonl`,
+  the generated decision is `hold`: overall score delta `-0.35`, latency ratio
+  `16.18x`, no lift domain, and regressions in `code`, `math`, and `reasoning`.
+
+Validation: GitNexus impact for `scripts/benchmark/xmas_live_ab.py:summarize`
+and `run` was LOW; `uv run pytest -q tests/unit/test_xmas_live_ab.py
+tests/unit/test_validate_xmas_winner_table.py tests/classifiers/test_xmas_routing.py`
+-> 41 passed; `py_compile`, `ruff`, and path-limited `git diff --check`
+passed.
+
 ## References
 
 - Deep-dive: `/workspace/research/deep-dives/2026-05-19-latent-mas-cluster.md`
