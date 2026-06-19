@@ -55,6 +55,10 @@ unowned local constants.
   runtime-policy consumers. Completed details through 2026-06-19 are compacted
   in
   [model-stack-single-source-update-pipeline-history-through-2026-06-19.md](../archived/model-stack-single-source-update-pipeline-history-through-2026-06-19.md).
+- `src.runtime.inference_tap` safe-mode stream policy now resolves its
+  generated-prior or manifest-derived non-stream role set dynamically instead
+  of freezing `SAFE_NON_STREAM_ROLES` at import time; the legacy module
+  attribute remains available for compatibility.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path, but the 2026-06-18 held-out A/B returned
   `decision: hold`; regression diagnosis is required before any new enforce
