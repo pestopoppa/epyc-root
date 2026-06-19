@@ -208,6 +208,30 @@ See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../
 - **Smoke status**: disposable server smokes on port `19087` did not reach decode. The obsolete tiny model failed GGUFv1 load, and two modern small-model attempts exited during model load under the current no-GPU/loaded environment. All attempted PIDs were verified gone. Do not count these as acceptance-rate evidence.
 - **Next gate**: rerun the aligned qwen35/frontdoor N5 smoke in a clean window and bin alpha only if the path reaches draft/verify and emits real acceptance data.
 
+## N5 Retest Preflight Checklist
+
+This is the bounded no-inference checklist for the next frontdoor drafter alpha retest. Do not start the smoke until every item below is true.
+
+1. Confirm the llama.cpp tree-spec fix is the active build:
+   - repo HEAD is `a6c793fc6`
+   - the safety containment patch `53e9a6550` is present in the same tree
+   - the binaries under `build/` were rebuilt after those commits
+2. Confirm the test pair is the qwen35-compatible one, not the stale Qwen3-1.7B pair:
+   - target: `Qwen_Qwen3.6-35B-A3B-Q8_0.gguf`
+   - draft: `Qwen3.5-0.8B-Q8_0.gguf` or the aligned scratch copy at `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf`
+3. Confirm the draft path is metadata-aligned before any server run:
+   - BOS/EOS/PAD must be `248044/248046/248044`
+   - token arrays, merges, and token_type must still match
+4. Confirm the run will emit decision-grade evidence:
+   - `llama-server` metrics must expose `draft acceptance rate`
+   - any later acceptance binning must come from draft/verify traffic, not from crash, model-load, or fail-closed logs
+5. Use the existing harnesses as controls only:
+   - `scripts/benchmark/bench_tree_speculation_server.sh` already parses acceptance stats, but its built-in pairs are not the N5 frontdoor pair
+   - `scripts/benchmark/bench_numa_qwen35_sweep.sh` and `scripts/benchmark/bench_hispec_external.sh` are useful for regression control, not for the N5 frontdoor alpha itself
+6. Keep the smoke command explicit and minimal:
+   - `numactl --interleave=all /mnt/raid0/llm/llama.cpp/build/bin/llama-server -m <target> -md <draft> --draft-max 1 -t 96 -np 1 -c 8192 -ub 8192 -fa on -ctk q8_0 -ctv q8_0 --port <free-port> --metrics --jinja --reasoning auto`
+   - if the binary is launched outside the build tree, bind the matching shared libraries with `LD_LIBRARY_PATH` so it does not fall back to production libs
+
 ---
 
 ## Retest Plan (gated on MI200 acquisition)
