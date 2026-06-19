@@ -59,6 +59,14 @@ Validation: `uv run python -m py_compile scripts/benchmark/e2_eval_driver_ab.py 
 
 No decision-grade E2/E1 result was binned. Current host state still requires a clean host-health/reboot window before claim-grade P-BENCH-3 measurement. A direct-port RoPE scout against the resident frontdoor server was attempted as non-decision-grade resource utilization only, then stopped after 8/100 unparseable responses; no artifact was written and no result should be used.
 
+Follow-up `epyc-inference-research` commit `74e580e` added the no-inference result summarizer:
+`e2_eval_driver_ab.py --summarize-run <run_dir>` reads the batch arm `summary.csv` plus the current
+EvalTower `current_quarters.jsonl`, computes wall-minutes/eval and
+`speedup_current_over_batch`, and emits `summary.json` with
+`keep_candidate` / `kill_candidate` / `scout_only` / `incomplete` status. Non-decision-grade manifests
+stay `scout_only`, so the summarizer cannot accidentally promote host-health-warning data into a
+production keep/kill claim.
+
 ## Gates & pitfalls
 
 - Operator window required: per `feedback_no_concurrent_inference` / `feedback_speed_verify_via_llama_bench`, the operator runs the benches — this handoff prepares commands, harness, and analysis; schedule inside the bulk-campaign Queue-2 quiesce window (one attested reload serves all).
