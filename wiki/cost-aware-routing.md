@@ -118,13 +118,13 @@ Sources: [Fable 5 objective design](../handoffs/active/fable5-findings-05-object
 
 ## 2026-06-13 Update — Stack-Prior Cost Contract
 
-The model-stack audit found that the next routing/scoring reliability problem is not a missing optimizer; it is stale model constants. `q_scorer.py` now prefers structured registry-derived TPS and memory data, but seeding rewards still carry a local `DEFAULT_BASELINE_TPS` table with duplicate `coder_escalation` and retired `architect_coding` entries. That can train cost-aware routing on a dead stack even when live serving has moved to shared frontdoor/coder Qwen3.6 and HOT architect/ingest roles.
+The model-stack audit found that the next routing/scoring reliability problem is not a missing optimizer; it is stale model constants. `q_scorer.py` now prefers generated stack-prior data, and seeding rewards now prefer generated stack-prior throughput with an explicit degraded path through `orchestration/model_descriptors.yaml` before the legacy static fallback table. That keeps cost-aware reward shaping aligned with the live stack when generated priors are healthy, and still preserves an auditable offline fallback when generated priors are missing.
 
 The durable rule is that stack-dependent quantities must flow through generated `orchestration/derived/stack_priors.yaml`: throughput, memory cost, hot/warm status, context limits, quality/latency priors, and provenance. Local tables are allowed only as explicit degraded-mode fallback and must exclude retired live roles. This makes model swaps data-only: edit registry/descriptors, regenerate priors, run `stack_change_guard.py`, and fail if a live consumer still owns hardcoded model facts.
 
 The same rule applies to learned or distilled routing artifacts. Agent-config and MemRL distillation action spaces should be compiled from live stack priors, with historical labels preserved through era metadata, rather than letting a stale role roster leak into new policies. This keeps q_scorer, seeding rewards, GraphRouter, AutoPilot journals, and future distillation datasets on one model-stack contract.
 
-Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
+Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
 
 ## Actionable for EPYC
 

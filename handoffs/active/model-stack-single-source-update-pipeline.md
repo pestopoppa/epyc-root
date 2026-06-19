@@ -74,6 +74,9 @@ unowned local constants.
 - `scripts.graph_router.train_graph_router` model-fleet training nodes now
   keep generated stack priors as primary and derive degraded fallback fleet
   records from compiled model descriptors instead of a static model-fleet table.
+- `scripts.benchmark.seeding_rewards` throughput priors now keep generated
+  stack priors as primary and derive explicit degraded fallback throughput from
+  compiled model descriptors before falling back to the legacy static table.
 - `src.api.routes.openai_compat` now uses the shared stack-prior primary-port
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
