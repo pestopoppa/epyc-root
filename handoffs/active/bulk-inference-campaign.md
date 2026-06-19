@@ -206,6 +206,16 @@ and regenerated the v2 calibration artifacts:
 1,806 / 375 / 419. This is dataset prep only; G10/G11 live per-model AA-Omniscience runs and the downstream
 `src/classifiers/factual_risk.py` tier update remain open and should stay on the main thread when touched.
 
+**2026-06-19 measurement/report prep:** Research `cf3cd3a` added
+`scripts/benchmark/aa_omniscience_manifest.py` plus generated
+`docs/data/aa_omniscience_measurement_manifest.json` and
+`docs/data/aa_omniscience_measurement_commands.sh`. The adapter preflight sees all 600 AA-Omniscience
+questions, 56 candidate roles, 43 ready roles, and 13 blocked roles with missing local model paths. The
+generated command file leaves canonical preflight enabled and comments blocked roles instead of executing
+them. Orchestrator `8546b3e` added `scripts/analysis/factual_risk_calibration_report.py`, which summarizes
+the v2 corpus/splits and can aggregate future G10/G11 result JSONL by role/model/outcome. This does not
+satisfy G10/G11; it makes the next clean-window live run and G12 analysis turnkey.
+
 **Implementation notes**:
 - Prompt template from paper: `"You are answering questions about {domain}, and in particular {topic}. You will be given a question, answer with JUST the answer (no explanation). If you do not know the answer, or you need more context or tools to answer the question, be clear about this - it is better that you say this than get the wrong answer."`
 - Grading: LLM-as-judge with 4-class output, or regex for exact-match answers (many are short factual: dates, names, section numbers)

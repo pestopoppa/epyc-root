@@ -180,6 +180,12 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   targets fail closed with `EditScopeError`; `target_files=None` still preserves the whole-root fallback
   subject to the existing caps. Future enhancement: automatic target discovery / structured base-hash patch
   form for callers that cannot supply target files.
+- **Clean-window evidence scripts.** ✅ 2026-06-19 (`epyc-orchestrator` `8546b3e`): the BEP edit-transaction
+  module validator and edit-mode wiring probe now default to no-inference/stub execution, emit attested JSON
+  headers (timestamp, orchestrator head, scratch/edit root, task/probe ids, mode), and bucket failures as
+  `412/precondition`, `scope-cap reject`, `parse/no blocks`, `rollback/self-check`, `verifier fail`, or
+  `chat/http error`. Live paths remain behind explicit confirmation flags. Local no-inference smokes pass
+  5/5 module tasks and 3/3 wiring probes.
 - **Functional verifier in the loop.** The self-check is **syntax-only** (`compile`) — it does not run a task's
   functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
