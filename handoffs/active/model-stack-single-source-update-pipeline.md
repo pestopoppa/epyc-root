@@ -63,6 +63,10 @@ unowned local constants.
   generated-prior or manifest-derived lock role sets dynamically instead of
   freezing `HEAVY_ROLES` / `LIGHT_ROLES` at import time; legacy module
   attributes remain available for compatibility.
+- `src.api.routes.chat_routing` heuristic prior roles now keep generated stack
+  priors as primary and derive degraded fallback candidates from the computed
+  stack manifest instead of a four-role static tuple; embedding services are
+  excluded and aliases are canonicalized.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path, but the 2026-06-18 held-out A/B returned
   `decision: hold`; regression diagnosis is required before any new enforce
