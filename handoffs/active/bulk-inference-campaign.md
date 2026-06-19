@@ -60,12 +60,11 @@ Ordered manifest (one reload, then everything rides it):
   by live model path, captures research/orchestrator registry hashes, and
   comments blocked rows instead of executing them. Current observed live ports
   and contexts (`frontdoor=8070/32768`, `worker_general=8072/16384`,
-  `architect_general=8083/16384`, `ingest_long_context=8085/32768`) yield
-  **17 ready / 6 blocked** cells. Blockers are: G5 runner still absent,
-  worker_general G11 blocked because the research benchmark registry still maps
-  worker_general to stale Meta-Llama while the live orchestrator registry maps it
-  to gemma4-26B-A4B, and the 32K RoPE cells for worker/architect exceed the
-  currently resident server contexts.
+  `architect_general=8083/16384`, `ingest_long_context=8085/32768`) now yield
+  **18 ready / 5 blocked** cells after research `worker_general` was reconciled
+  to the live gemma4-26B-A4B target. Remaining blockers are: G5 runner still
+  absent, and the 32K RoPE cells for worker/architect exceed the currently
+  resident server contexts.
 - **K-EMB-1** embedder-only (standalone granite/BGE servers; informs the N9/retrain-routing re-embed choice).
 - **H7** Ouro-2.6B transformers-CPU, serial (feeds H5).
 
