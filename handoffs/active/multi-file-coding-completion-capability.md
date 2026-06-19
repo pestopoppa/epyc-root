@@ -186,6 +186,11 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
   `412/precondition`, `scope-cap reject`, `parse/no blocks`, `rollback/self-check`, `verifier fail`, or
   `chat/http error`. Live paths remain behind explicit confirmation flags. Local no-inference smokes pass
   5/5 module tasks and 3/3 wiring probes.
+- **Positive route-unit coverage.** ✅ 2026-06-19 (`epyc-orchestrator` `c1936f9`): added a mocked
+  no-inference `_handle_chat()` positive-path test proving `force_mode="edit"` enters the edit-transaction
+  branch when both `ORCHESTRATOR_EDIT_TRANSACTION=1` and scoped `ORCHESTRATOR_EDIT_ROOT` are present,
+  applies the returned file block transactionally, and returns an `edit` response. This complements the
+  existing fail-closed 412 route coverage; live rollout still requires clean-window evidence.
 - **Functional verifier in the loop.** The self-check is **syntax-only** (`compile`) — it does not run a task's
   functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.

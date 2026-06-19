@@ -58,6 +58,13 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   artifacts fresh, `guard_all_surfaces: ok`, `runtime_attestation: ok`, and the
   executable promotion gate passed 172 no-inference tests. No pipeline code
   changes were needed for N11 in this pass.
+- 2026-06-19 high-risk N11a consumer migration landed in Orchestrator `911b880`:
+  stack-prior primary-port selection is centralized in
+  `stack_prior_primary_port()` and direct endpoint-first fallback consumers
+  (`orch status`, corpus gate model discovery, GraphRouter fleet discovery, and
+  AutoPilot preflight target grouping) now share that helper. Consumers with
+  intentionally different precedence, such as worker-pool port-first binding and
+  stack-summary rendering, were left unchanged.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -79,6 +86,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
+  Latest completed slice: Orchestrator `911b880` primary-port helper migration;
+  remaining slices should continue to distinguish de-duplication from deliberate
+  precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
