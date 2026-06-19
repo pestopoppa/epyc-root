@@ -197,6 +197,15 @@ Scoring methodology (from paper): Omniscience Index = 50% accuracy + 50% (1 - ha
 | G11 | AA-Omniscience: frontdoor + worker | Run 600 Qs through the live `frontdoor` target, Qwen3.6-35B-A3B Q8, and the live `worker_general` target, gemma4-26B-A4B-it-Q4_K_M. Compare hallucination rates to establish tier separation. | frontdoor, worker_general (sequential) | ~3h |
 | G12 | Calibrate capability tiers | Use G10+G11 hallucination rates to compute empirical tier multipliers. Update `_DEFAULT_ROLE_TIERS` in `src/classifiers/factual_risk.py`. Augment with SimpleQA failures from seeding logs (`data/package_a/`, `data/package_b/`) for larger calibration set. | No inference — analysis only | ~1h |
 
+**2026-06-19 G12 offline prep:** Orchestrator `7d729e3` repaired
+`scripts/build_factual_risk_calibration_v2.py` so HuggingFace `datasets` is not shadowed by the local
+`scripts/datasets` package when run by path, hardened JSONL writing to ASCII-escape Unicode line separators,
+and regenerated the v2 calibration artifacts:
+`orchestration/factual_risk_calibration_v2.jsonl` plus `_train`, `_val`, `_test`. Completed artifact has
+2,600 rows (`v1_regex` 2,000 + `aa_omniscience` 600), risk features populated for all rows, and split counts
+1,806 / 375 / 419. This is dataset prep only; G10/G11 live per-model AA-Omniscience runs and the downstream
+`src/classifiers/factual_risk.py` tier update remain open and should stay on the main thread when touched.
+
 **Implementation notes**:
 - Prompt template from paper: `"You are answering questions about {domain}, and in particular {topic}. You will be given a question, answer with JUST the answer (no explanation). If you do not know the answer, or you need more context or tools to answer the question, be clear about this - it is better that you say this than get the wrong answer."`
 - Grading: LLM-as-judge with 4-class output, or regex for exact-match answers (many are short factual: dates, names, section numbers)

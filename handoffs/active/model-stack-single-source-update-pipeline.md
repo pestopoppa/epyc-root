@@ -220,7 +220,11 @@ unowned local constants.
 - `src.runtime.inference_lock.py` and `src.runtime.inference_tap.py` now spell
   their remaining degraded fallback sets through canonical `Role` constants
   instead of raw strings, keeping the final compatibility path aligned with
-  live role truth.
+  live role truth. Orchestrator `e27c946` tightened the lock side further:
+  generated stack priors still win, and the degraded fallback derives shared
+  light-lock roles from `scripts/server/stack_manifest.py` hot-server metadata
+  (`worker_pool` / worker-vision classification) instead of a hardcoded worker
+  role list.
 - `scripts/graph_router/action_space.py` now canonicalizes raw labels through
   `Role.from_string()` before action lookup, so aliases like `worker_explore`,
   `worker_fast`, `coder`, and `architect_coding` resolve through the live
@@ -455,7 +459,8 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep inference-tap stream policy canonicalized at the role boundary so
   canonical worker aliases follow live worker policy.
 - [x] Keep the remaining lock/tap degraded fallback sets spelled through
-  canonical `Role` constants instead of raw strings.
+  canonical `Role` constants and manifest-derived worker classifications
+  instead of raw strings or duplicated worker-role lists.
 - [x] Keep session-log compaction centralized on `worker_general` while
   preserving the distinct `worker_fast` profile via the raw role string.
 - [x] Keep host-health cache-flush rewarm fallback derived from generated stack

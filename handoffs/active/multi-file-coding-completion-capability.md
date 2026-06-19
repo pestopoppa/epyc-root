@@ -1,6 +1,6 @@
 ---
 title: Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap (coder_escalation = Qwen3.6-35B-A3B)
-status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84; docstring + 412 regression test 0f00708). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + smart target selection + optional functional-verifier-in-the-loop (self-check is syntax-only today).
+status: REMEDIATION BUILT 2026-05-27 — diagnosed as an agentic protocol/tool-loop problem, NOT model coding capability (one-shot ablation 5/5 on the same tasks+verifiers while the REPL/BEP loop fails); model swap moot. Fix shipped = first-class flag-gated `force_mode="edit"` one-shot edit transaction (default-OFF): module validated 5/5, live server path validated 3/3. 5-point review hardening landed 2026-05-27 (fail-closed 412 / scope caps / clean syntax-check / all-or-nothing / cc-roles single-source-of-truth — d4fafdf; stat-before-read scope cap fba6c84; docstring + 412 regression test 0f00708). Explicit target-file selection landed 2026-06-19 (`994f168`). Open = production rollout decision (when/how routine coding edits auto-route to edit-mode) + optional functional-verifier-in-the-loop (self-check is syntax-only today).
 created: 2026-05-27
 owners: unassigned (operator will drive a dedicated session)
 priority: HIGH (core tool-mediated coding-completion gap; diagnosis proven, remediation open)
@@ -175,8 +175,11 @@ implemented and validated end-to-end (flag-gated, default-OFF, zero production b
 **Open / not-yet-done (rollout decisions, not blockers):**
 - **Default routing.** Edit-mode is opt-in (`force_mode="edit"` + flags). Routine coding edits do NOT yet
   auto-route to it — needs a routing decision (which tasks/roles, and a non-scratch edit-root policy).
-- **Smart target selection.** Scope caps are the safety *floor*; selecting the *relevant* files (vs assembling
-  the whole scoped root) is the enhancement for larger repos. A structured base-hash patch form is an option.
+- **Smart target selection.** ✅ 2026-06-19 (`epyc-orchestrator` `994f168`): explicit `target_files`
+  are now canonicalized, de-duplicated, sorted, and path-checked before context assembly. Unsafe explicit
+  targets fail closed with `EditScopeError`; `target_files=None` still preserves the whole-root fallback
+  subject to the existing caps. Future enhancement: automatic target discovery / structured base-hash patch
+  form for callers that cannot supply target files.
 - **Functional verifier in the loop.** The self-check is **syntax-only** (`compile`) — it does not run a task's
   functional verifier or re-prompt on failure. Iterate-on-verifier-failure is a possible enhancement.
 - **Model choice:** MOOT — Qwen3.6 is proven capable one-shot; do NOT pursue a model swap for this problem.
@@ -202,6 +205,11 @@ are still gated.
 `capability-registry-and-promotion.md` once W1 exists. Keep `actionable_by=operator` until descriptor,
 applicator, validated range, kill condition, and one shadowed trial are present. Only then may the monthly
 promotion pass consider `actionable_by=autopilot` or `gated:<condition>`.
+
+**2026-06-19 registry checkpoint:** `epyc-orchestrator` `3f6692b` canonicalized the live
+`orchestration/capability_registry.yaml` row id to `edit_transaction_auto_routing`, set it explicitly to
+`actionable_by=operator`, recorded the A2 kill condition in the row, and added a loader invariant that a
+`promotion_state=promoted` row must define `kill_condition`.
 
 **Required clean-window evidence before enablement:**
 - Fixed code-edit slice of at least 50 routine edit tasks, comparing current default mode vs edit mode on the
