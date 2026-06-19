@@ -168,6 +168,12 @@ The append-only journal remains the archive authority even before an archive-bea
 
 Operationally, if a fresh or reset AutoPilot lifecycle save lacks archive-bearing journal rows, treat the missing fold as a reason to skip archive cache writes, not as permission to rehydrate state-cache authority. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 archive-save fallback retirement`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
 
+## Append-only scrub hygiene (2026-06-19)
+
+Evidence-plane correction tools must fail closed if they would rewrite live history or derived memory stores. The retired gate-lock narrative scrubber is the concrete example: an older one-shot script could rewrite `autopilot_journal.jsonl`, generated STM, StrategyStore rows, FTS, and FAISS mirrors in place. It now exits with operator guidance to append supersession events via `scrub_journal.py` and validate with `archive_authority_report.py --strict`.
+
+The durable rule is to keep the journal as the append-only source, express retroactive corrections as policy-versioned events, and regenerate or fold read views instead of editing mirrors directly. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 W2 gate-lock scrubber retirement`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+
 ## Evidence-plane handoff compaction (2026-06-19)
 
 The active evidence-plane ledger was compacted after W4/W7 implementation history began obscuring the live dispatch gate. Completed W1-W7 chronology now lives in [`handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md`](../handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md), while the active handoff starts with the current readiness blocker: `57/120` trusted vectors and `5/30` seq shadow rows. This is the intended wrap-up pattern for large active handoffs: keep the active file as the next-action surface and move validated chronology to a dated sibling.
