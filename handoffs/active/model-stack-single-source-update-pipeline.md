@@ -59,6 +59,10 @@ unowned local constants.
   generated-prior or manifest-derived non-stream role set dynamically instead
   of freezing `SAFE_NON_STREAM_ROLES` at import time; the legacy module
   attribute remains available for compatibility.
+- `src.runtime.inference_lock` exclusive/shared role policy now resolves its
+  generated-prior or manifest-derived lock role sets dynamically instead of
+  freezing `HEAVY_ROLES` / `LIGHT_ROLES` at import time; legacy module
+  attributes remain available for compatibility.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path, but the 2026-06-18 held-out A/B returned
   `decision: hold`; regression diagnosis is required before any new enforce
