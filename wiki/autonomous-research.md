@@ -3,7 +3,7 @@
 **Category**: `autonomous_research`
 **Confidence**: verified
 **Last compiled**: 2026-06-19
-**Sources**: 62+ documents (added 2026-06-19 W4/W6 readiness, W7 game-layer hardening, and PEAF budget-credit updates)
+**Sources**: 62+ documents (added 2026-06-19 W4/W6 readiness, W7 game-layer hardening, PEAF budget-credit, and per-question provenance updates)
 
 ## Summary
 
@@ -141,7 +141,7 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - **Planner hygiene now treats metric-free loops as a measurement problem.** Repeated meta bookkeeping actions are forced back into a small measured action, and learning-excluded trials must not emit keep guidance into the next planner pass. Sources: [progress/2026-06/2026-06-01.md](../progress/2026-06/2026-06-01.md), [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md), [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).
 - **Goodput and task-rate are useful only as shadow telemetry for now.** The objective work explicitly stops short of flipping live dominance until the evidence-plane restart and replay gates can validate the new metric surface. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/active/fable5-findings-05-objective-design.md).
 - **Sequential verdict authority is implemented but still blocked by evidence volume.** The W4 mechanism, AutoPilot call-site wiring, cached-verdict repair, fallback reselection, action-local gate threading, and failed-trial denominator repair remain default-off for authority. The current readiness report is `57/120` trusted vectors and `5/30` seq shadow rows, so the correct action is continued clean accrual, not a flag flip. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
-- **W7 hardens the game layer around evidence, not only the scalar gate.** The current W7 tranche adds critic-visible production measurement context, clamps production eval sampling knobs, reports audit-stream gaming alarms, and credits species budgets by PEAF information gain for trusted trials. The remaining W7 tail is richer per-question diff/provenance flags so critic and planner context can distinguish real effects from sampling or audit artifacts. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
+- **W7 hardens the game layer around evidence, not only the scalar gate.** The completed W7 tranche adds critic-visible production measurement context, clamps production eval sampling knobs, reports audit-stream gaming alarms, credits species budgets by PEAF information gain for trusted trials, and exposes compact per-question diff/provenance summaries to planner and critic context without leaking prompt/answer text. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
 
 ## Actionable for EPYC
 
