@@ -1,4 +1,4 @@
-<!-- Adopted 2026-06-12 from the Fable 5 architecture review (handoffs/active/fable5-proposed-MEASUREMENT.md).
+<!-- Adopted 2026-06-12 from the Fable 5 architecture review (handoffs/completed/fable5-proposed-MEASUREMENT.md).
      Amendments: PR-reviewed, append-or-version. The autopilot may READ this file, never edit it. -->
 
 # MEASUREMENT.md — How numbers become claims in this project

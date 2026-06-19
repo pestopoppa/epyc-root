@@ -1,6 +1,6 @@
 # Fable 5 findings 04 — IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration
 
-**Date**: 2026-06-12 (refinement pass, operator-requested). **Companion to**: `fable5-findings-04-northstar-portfolio-indices.md` and `fable5-proposed-master-index-rewrite.md`. This doc makes the five invariant interfaces and the index reorg buildable. (Interface 1, the measurement ledger, is fully specified in `fable5-findings-01-impl-plan.md`; interface 2, descriptors, in `fable5-findings-02-impl-plan.md` Phase 2. This doc covers 3–5 + the doc layer.)
+**Date**: 2026-06-12 (refinement pass, operator-requested). **Companion to**: `fable5-findings-04-northstar-portfolio-indices.md` and historical rewrite artifact `../completed/fable5-proposed-master-index-rewrite.md`. This doc makes the five invariant interfaces and the index reorg buildable. (Interface 1, the measurement ledger, is fully specified in `fable5-findings-01-impl-plan.md`; interface 2, descriptors, in `fable5-findings-02-impl-plan.md` Phase 2. This doc covers 3–5 + the doc layer.)
 
 ---
 
@@ -49,7 +49,7 @@ Compiled into the planner's Action-Availability section (replacing the hand-main
 
 ## E. Index migration mechanics (executing the rewrite)
 
-1. **One-shot migration script** `scripts/maintenance/migrate_master_index.py`: parse the current 66-row queue; rows matching terminal markers (`✅|DONE|CLOSED|DEPRECATED|~~`) → emit a `handoffs/completed/master-index-terminal-ledger-2026-06.md` (id, item, outcome, links) + drop; live rows → re-emit in the NOW/ACTIVE/GATED/HW tiers from `fable5-proposed-master-index-rewrite.md` (manual triage of ~10 ambiguous rows flagged by the script). Header narrative → `progress/2026-06/master-index-header-archive.md`.
+1. **One-shot migration script** `scripts/maintenance/migrate_master_index.py`: parse the current 66-row queue; rows matching terminal markers (`✅|DONE|CLOSED|DEPRECATED|~~`) → emit a `handoffs/completed/master-index-terminal-ledger-2026-06.md` (id, item, outcome, links) + drop; live rows → re-emit in the NOW/ACTIVE/GATED/HW tiers from `../completed/fable5-proposed-master-index-rewrite.md` (manual triage of ~10 ambiguous rows flagged by the script). Header narrative → `progress/2026-06/master-index-header-archive.md`.
 2. **Freshness with teeth**: extend `scripts/validate/check_handoff_freshness.sh` to also lint the master index (any row >14d untouched without `gated:` tag → exit 2) and wire it into the pre-commit hook set (hooks infra exists).
 3. **Per-index slimming** (one pass each, biggest first): inference-acceleration (move 14 intake appendices → intake index links; add the missing checkbox/dependency/reporting sections), cpu (move the 330 chronology lines above the task list → progress), routing (prune the ~78 checked boxes → completed ledger). Pipeline index is the template.
 4. **`A-by` column backfill** from the capability registry (C.1) — script, not hand-edit, so the two never diverge.

@@ -1,6 +1,11 @@
-# PROPOSAL v2 — master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)
+# PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)
 
-> **Historical proposal, already applied/superseded.** Keep this file as the Fable 5 rewrite artifact, not as an active execution queue. The live dispatch surface is [master-handoff-index.md](master-handoff-index.md); newer facts such as K-RAG K7 certification and clean `#793/#794` AutoPilot vectors live there and in the owning handoffs.
+> **Historical ledger only; current dispatch lives in `../active/master-handoff-index.md`.**
+> This Fable 5 rewrite proposal was applied/superseded and archived from
+> `handoffs/active/` on 2026-06-19. Keep it as the concrete rewrite artifact,
+> not as an active execution queue. Newer facts such as K-RAG K7 certification,
+> X-MAS constrained-policy status, K-MEM lane state, and sequential-readiness
+> blockers live in the master index and owning handoffs.
 
 > **v2 supersedes v1** (same day). v1 was seeded from the old queue's live rows; **v2 is grounded in a full review of all 96 active handoffs + blocked/ + a deep audit of bulk-inference-campaign.md** (5 reviewer agents, 108 classified rows; raw verdicts in `fable5-findings-appendix-evidence-reports.md`). Apply by replacing the master index body; per-handoff header refreshes and archive moves listed in §D. **All MI210-dependent work stays HW-GATED per operator instruction** — the only GPU-adjacent active items are hardware-independent de-risking measurements.
 

@@ -1,6 +1,12 @@
-# PROPOSAL — MEASUREMENT.md (the instrument constitution)
+# PROPOSAL - MEASUREMENT.md (the instrument constitution)
 
-> **This file is a ready-to-adopt draft** (Fable 5 review, 2026-06-12). Adopt by copying to `/workspace/MEASUREMENT.md`, adding one pointer line in CLAUDE.md (§Code Style or a new §Measurement), and treating changes thereafter as reviewed amendments. Sources: CPU20 (`cpu-benchmark-rigor-and-revalidation.md`), `feedback_canonical_baseline_protocol`, `canonical_recipe.py`/`bench_canonical.sh` (2026-05-28), the eval-tower instrument audit (fable5-findings-01), and the objective redesign (fable5-findings-05).
+> **Historical ledger only; current measurement policy lives in `/workspace/MEASUREMENT.md`.**
+> This Fable 5 draft was adopted into the root measurement constitution and
+> archived from `handoffs/active/` on 2026-06-19. Sources: CPU20
+> (`cpu-benchmark-rigor-and-revalidation.md`),
+> `feedback_canonical_baseline_protocol`, `canonical_recipe.py` /
+> `bench_canonical.sh` (2026-05-28), the eval-tower instrument audit
+> (fable5-findings-01), and the objective redesign (fable5-findings-05).
 
 ---
 
