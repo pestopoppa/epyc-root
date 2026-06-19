@@ -302,10 +302,10 @@ remaining open lanes.
   `Role.from_string()` and drops the duplicate `worker_explore` color entry,
   so dashboard status labels keep the live worker color without carrying the
   retired alias as a separate swatch.
-- Dashboard topology service hints now derive the `worker_fast` port from the
-  live stack manifest instead of a hardcoded `8102` literal, so the fallback
-  port label stays aligned with the manifest-backed service truth and no
-  standalone service-port fallback remains in the dashboard helper.
+- Dashboard topology service hints first moved the `worker_fast` fallback from
+  a hardcoded `8102` literal to manifest data, then Orchestrator `98148f1`
+  removed that stale model-serving fallback entirely. Service hints are now
+  auxiliary-only; model-serving labels come from stack-prior port hints.
 - Current handoff examples that still referenced the retired worker spelling
   now use `worker_general` in the live comparison rows, keeping the active
   docs aligned with the canonical worker role while leaving historical notes
@@ -445,8 +445,8 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep server-URL defaults in `src.config.models._server_url_default()`
   aligned with canonical worker alias truth instead of duplicating a
   `worker_explore` literal fallback.
-- [x] Keep dashboard topology service hints aligned with the live manifest
-  instead of a hardcoded `worker_fast` port literal.
+- [x] Keep dashboard topology service hints auxiliary-only; model-serving
+  labels, including worker aliases, must come from stack-prior port hints.
 - [x] Keep the `ChatPipelineConfig.try_cheap_first_role` default set to the
   canonical live worker role, not the retired `worker_explore` alias.
 - [x] Keep ingress worker aliases in
