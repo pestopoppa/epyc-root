@@ -222,7 +222,7 @@ Use this sequence for future stack changes. Steps marked "no inference" should b
   - `scripts/server/stack_manifest.py` only where launcher metadata still lacks generated ownership.
 - [ ] Compile descriptors, preserving gaps instead of inventing values.
 - [ ] Compile stack priors.
-- [ ] Sync procedure role enums.
+- [x] Sync procedure role enums. Verified current via `python3 scripts/registry/sync_procedure_role_enums.py --check` (`OK`).
 - [ ] Run loose guard, all-surface guard, and strict guard.
 - [ ] Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched consumer.
 - [ ] Run simulated model-swap tests:
