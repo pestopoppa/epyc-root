@@ -65,6 +65,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   AutoPilot preflight target grouping) now share that helper. Consumers with
   intentionally different precedence, such as worker-pool port-first binding and
   stack-summary rendering, were left unchanged.
+- 2026-06-19 W4 swap-CI expansion landed in Orchestrator `6c9ac6b`: the
+  simulated worker swap fixture now proves the text-side primary-port consumers
+  migrated in `911b880` (`orch status`, corpus quality gate discovery,
+  GraphRouter fleet loading, and AutoPilot preflight health grouping) all read
+  the same generated `stack_priors.yaml` primary port after a data-only stack
+  change.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -94,9 +100,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   execution, and selected consumer witnesses move together. The simulated
   frontdoor swap fixture now also exercises promotion-gate execution in the
   same swapped state, and representative worker, vision, and long-context ingest
-  swaps now cover distinct live role classes. The remaining gap is opportunistic
-  expansion as new high-risk consumers are migrated rather than a missing
-  end-to-end happy-path proof.
+  swaps now cover distinct live role classes. The worker swap also covers the
+  migrated text-side primary-port consumers after `6c9ac6b`. The remaining gap
+  is opportunistic expansion as new high-risk consumers are migrated rather than
+  a missing end-to-end happy-path proof.
 - [ ] Keep direct benchmark, production launch, and AutoPilot preflight wired to
   the canonical gate; no new bypasses.
 
