@@ -1,8 +1,8 @@
 # Bulk Inference Campaign — active backlog (Packages G–K)
 
-**Status**: active — see *Current State (2026-06-12) — Three-Queue Structure* below. Packages A-F complete + archived (`../completed/bulk-inference-2026-04-packages.md`); cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) closed/certified + archived. Live backlog: Queue-1 offline cleanup, the one consolidated quiesce window (Queue 2), the restart bundle (Queue 3), standalone model-batched windows, and Package I frozen after the current-traffic DAR-1 replay failed its gate. K-EVAL-1 folded into H5; J6 superseded. BEP-2 remediation is built; J8 is an optional decision experiment for the legacy batch-edit path, not the critical remediation gate. J7 offline replay closed 2026-06-12; DCP-6a repair code landed on the live orchestrator branch at `2e2e0d3`, 2026-06-19 launch-code provenance is satisfied (`server_launch_git_sha=eeb8cce` contains `2e2e0d3` and `756c96b`), orchestrator `29b9ba3` adds the runnable J7/DCP A/B driver, and orchestrator `56a72f6` records the first live 3-off/3-on A/B after `f96a6ab` fixed cached-delegation telemetry. Result is evidence against immediate promotion: zero errors and all rows delegated, but ON worsened p50 latency (32.628s vs 20.219s) while reducing average generated tokens (247.333 vs 352.0). `dcp_pre_assembly` remains default-off. K-RAG K7 certification is complete; its remaining work is doc hygiene/default-policy follow-through, not a formal sweep.
+**Status**: active - live backlog is Queue 1 offline cleanup, Queue 2 consolidated quiesce-window measurements, Queue 3 restart-bundle evidence accrual, standalone model-batched windows, and Package I frozen after the DAR-1 replay failed its reopen gate. J7/DCP remains default-off after the first live A/B worsened latency; K-MEM-1 is the current throughput-sensitive standalone lane.
 **Created**: 2026-04-06
-**Updated**: 2026-06-19 — DCP-6a launch-code provenance is satisfied and first J7 live A/B evidence is packaged in orchestrator `56a72f6`; `dcp_pre_assembly` remains default-off because the small clean run cut tokens but worsened p50 latency, and broad operational attestation still has caveats (`670aab4` deleted llama-server executable paths / feature-flag intent diffs). Research `307f83c` corrected the canonical preflight tripwire floor to the raw Coder-30B llama-bench contract (`~29 t/s`, not the accelerated MoE/spec/lookup `~47 t/s` recipe); full preflight passed at `29.43 t/s` and K-MEM-1 run `20260619_141212` is now active on `ingest_long_context` after its own passing preflight. K-ROPE chat-harness repair landed in research (`8dbb613`), clean-window 4K cells landed in `e1e6bb8`, clean-window 8K cells landed in `8944349`, and 16K `frontdoor` / `ingest_long_context` cells landed in `cbc1597` (each completed cell 100/100, 0 skipped, accuracy 1.000). Research `971a448` corrected clean-window manifest readiness so exact-boundary chat RoPE cells are blocked instead of run; the current standalone manifest is 17 ready / 6 blocked under observed live ports/contexts. `worker_general` is blocked by a Gemma4 MTP serving/slot-state issue, not by RoPE evidence. Earlier the same day, G5 short-m@k runner and clean-window manifest wiring landed in research (`cbf00e1`). Prior: 2026-06-13 — marked current-traffic DAR-1 replay closed (0.00% identifiable mean regret; Package I remains frozen) and landed J13 cosmetic BT prompt cleanup (`b8c0611`) after the 2026-06-12 three-queue restructure. Prior: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted.
+**Updated**: 2026-06-19 - K-MEM-1 run `20260619_141212` is active on `ingest_long_context` after corrected raw-throughput preflight; do not schedule another throughput-sensitive model job until it completes. K-ROPE clean-window evidence has valid 4K/8K cells plus valid 16K frontdoor/ingest cells; exact-boundary rows and the current `worker_general` MTP serving path remain blocked. J7/DCP launch-code provenance is satisfied, but the first live A/B does not support enablement.
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -23,7 +23,7 @@
 The 2026-04 campaign (Packages A–F) is complete/overtaken and archived (see *Completed* below). The cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) are CLOSED (see the compaction note in Package J). The remaining inference-gated backlog is organized into three queues plus standalone windows and a frozen block, per the Fable 5 portfolio pass. Per-task detail is preserved in the Package G/H/I/J/K sections below — this is the dispatch view.
 
 ### Queue 1 — offline-now (≈0 llama-hours; run today alongside the live autopilot)
-- ✅ **J7 DCP-6 offline replay + DCP-6a repair CLOSED/PREPARED 2026-06-12; code landed 2026-06-13; launch-code provenance checked 2026-06-19; first live A/B packaged 2026-06-19** — initial scratch/task-root replay covered all 7 existing required files at budgets 500/1000/2000 but found one-line slices (7/17 lines, 41.2%) and null hashes. Rebased branch `fix/dcp6a-context-depth-current` commit `530128b7` fixed full-small-file/padded scratch ranges and per-file `content_sha256`; replay artifacts at `/mnt/raid0/llm/tmp/dcp6a_current_offline_replay_20260612/` show 100% file coverage, 100% line coverage, and 0 missing hashes at all budgets. Current live branch contains equivalent code at `2e2e0d3`; current API reports `git_sha=27e09a1`, and `server_launch_git_sha=eeb8cce` includes both `2e2e0d3` and the `756c96b` attestation primitive. Orchestrator `670aab4` records drift-clean, 6-worker attestation with remaining operational warnings. API was reloaded with `gate3-tool-telemetry` before the first live run, and orchestrator `56a72f6` packages `benchmarks/results/runs/dcp_j7/20260619T113143Z/`: 6/6 HTTP 200, zero errors, all delegated; ON p50 32.628s vs OFF 20.219s, ON avg generated tokens 247.333 vs OFF 352.0. Next: keep flag off; run larger/quality-scored falsification only after deciding whether token reduction is worth investigating despite latency regression, and separately clear/re-attest broad operational warnings.
+- ✅ **J7 DCP-6 offline replay + DCP-6a repair CLOSED/PREPARED; first live A/B does not support enablement** — launch-code provenance is satisfied and orchestrator `56a72f6` packages the first 3-off/3-on live run. Result: 6/6 HTTP 200, zero errors, all delegated, fewer generated tokens with DCP ON, but worse p50 latency (32.628s vs 20.219s). Keep `dcp_pre_assembly` off; rerun only for a larger quality-scored falsification after operational attestation cleanup.
 - ✅ **DAR-1 regret replay CLOSED 2026-06-12** — current-traffic replay over 2026-06-05..2026-06-12 analyzed 12,057 routing decisions, matched 11,249 outcomes, found 8,145 regret-identifiable decisions, and measured 0.00% identifiable mean regret versus the >=5% reopen gate. Package I and broader learned-routing expansion remain frozen. Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.md`; code/telemetry landed in `epyc-orchestrator` `1dfbc22`.
 - ✅ **K-RAG-1 formal K7 sweep CLOSED 2026-06-13** — final 70-case pool over the fresh K7 index produced 420 rows with `ok=true` and no missing evidence files. Safety/default candidate is `recency_w0.3_s90` (recall@10 0.6167, 0 missed-all-evidence cases); aggregate winner `recency_w0.1_s90_rerank_w0.3` reached recall@10 0.6298 but missed 3 all-evidence cases, and the 1.31pp gap is below the declared 2pp noise floor. Temporal recency is validated; cross-encoder rerank stays opt-in for first-rank/recall@3-biased consumers.
 - ✅ **J13 P17.BT-3 analysis CLOSED 2026-06-12; cleanup landed 2026-06-13** — 341 rich/stagnation-fired trials and 75 logged BT-disagreement events satisfy the sample-size gate, but the journal does not persist the BT top trial ID, the hypervolume-top trial ID, or whether the planner followed either seed. Available proxy outcomes do not justify P17.BT-4 (`current frontier`: 2/75 BT-disagreement events vs 9/266 no-disagreement rich events; cluster-start next-10 frontier: 1/7 vs 8/34 thinned no-disagreement). Verdict: do not queue peer-judged BT. The cosmetic `bt_tiebreak_hint` rich-prompt block was removed while AutoPilot was paused in orchestrator `b8c0611`; the offline/shared BT helper remains.
@@ -51,62 +51,10 @@ Ordered manifest (one reload, then everything rides it):
 - Then **H5/EV-4** calibration baseline against the **redesigned** tower (K-EVAL-1 folded into H5 — single owner; see the Package K note).
 
 ### Standalone model-batched windows (~27h; group by model so each GGUF loads once)
-- **K-MEM-1 × K-ROPE-1 × G11 × G5** grouped **by model** — run each cell while that GGUF is resident. K-MEM-1 is now data/harness-ready for the first role: `ingest_long_context`; use `--skip-moe-reduction` for production/default-expert evidence so the run stays at the GGUF default rather than sweeping reduced-expert configs.
-- **2026-06-19 preflight unblock + active K-MEM run**: research `307f83c`
-  fixed the stale canonical tripwire target. The preflight command runs raw
-  `llama-bench` and reproduces the documented raw Coder-30B floor around
-  `29 t/s`; the previous `45 t/s` floor was the accelerated MoE/spec/lookup
-  recipe and incorrectly blocked clean-window work. Full standalone preflight
-  passed at `29.43 t/s` (`data/preflight/2026-06-19_141151.json`), and
-  `run_benchmark.py` preflight passed at `29.11 t/s` before launching K-MEM-1
-  run `20260619_141212`. Active tmux/log:
-  `kmem_tulving_20260619T141200Z` /
-  `/mnt/raid0/llm/tmp/kmem_tulving_20260619T141200Z.log`. Do not schedule
-  another throughput-sensitive model job while this run is collecting evidence.
-  Research `8249be9` adds `scripts/benchmark/score_tulving_run.py`, an
-  offline scorer that turns the raw run JSON into Simple Recall,
-  Chronological Awareness, retrieval-type F1, and Markdown/JSON reports; use
-  it after the run completes before committing K-MEM result artifacts. The
-  initial launch omitted `--skip-moe-reduction` and was stopped after 8 baseline
-  rows, before any reduced-expert config ran; the corrected resume uses
-  `--skip-moe-reduction` and reports `448/456` baseline-only rows pending.
-- **2026-06-19 clean-window manifest prep**: research added
-  `scripts/benchmark/clean_window_manifest.py` and generated
-  `docs/data/clean_window_measurement_manifest.json` plus
-  `docs/data/clean_window_measurement_commands.sh`. The generated plan groups
-  G10/G11 AA-Omniscience, K-MEM-1 Tulving, and K-ROPE-1 direct-port probe cells
-  by live model path, captures research/orchestrator registry hashes, and
-  comments blocked rows instead of executing them. Current observed live ports
-  and contexts (`frontdoor=8070/32768`, `worker_general=8072/16384`,
-  `architect_general=8083/16384`, `ingest_long_context=8085/32768`) now yield
-  **17 ready / 6 blocked** cells after exact-boundary chat RoPE probes were
-  blocked in research `971a448`; before that correction the plan incorrectly
-  advertised 16K cells on 16K servers and 32K cells on 32K servers as ready.
-  Research `worker_general` was reconciled to the live gemma4-26B-A4B target
-  and G5 short-m@k runner wiring landed in
-  research `cbf00e1`. G5 commands now run k=3/m=3 sequential clean-window
-  majority voting over GPQA/math for frontdoor, worker, and architect. Remaining
-  blocked K-ROPE rows are exact-boundary or over-boundary cells without
-  chat-template headroom.
-- **2026-06-19 K-ROPE execution progress**: research `8dbb613` repaired the
-  K-ROPE harness/manifest to use the live chat-completions path with
-  `enable_thinking=false`; the previous `/completion` diagnostic returned only
-  an empty `<think>` block and parsed no answer. Research `e1e6bb8` records the
-  first completed 4K clean-window cells: `frontdoor`, `architect_general`, and
-  `ingest_long_context` each answered 100/100 with 0 skipped rows and
-  accuracy=1.000. Research `8944349` records the corresponding 8K cells for the
-  same three roles, again each 100/100 with 0 skipped rows and accuracy=1.000.
-  Research `cbc1597` records valid 16K cells for `frontdoor` and
-  `ingest_long_context`, both 100/100 with 0 skipped rows and accuracy=1.000.
-  The attempted `architect_general` 16K cell hit HTTP 400 for all rows at the
-  exact live context and was not committed; `971a448` now blocks that row.
-  `worker_general` is blocked separately: 4K timed out on its first 120s
-  request, a 512-token diagnostic also timed out, and a retry after a clean
-  `toolrunner` reload timed out again before the worker was reloaded to restore
-  health. Do not schedule more worker K-ROPE traffic until the Gemma4 MTP 8072
-  serving path is fixed and re-attested. A parallel `architect_general` G5
-  short-m@k attempt failed with no successful completions and left no valid
-  artifact.
+- **Current lane: K-MEM-1 Tulving on `ingest_long_context`** — run `20260619_141212` is active under tmux/log `kmem_tulving_20260619T141200Z` / `/mnt/raid0/llm/tmp/kmem_tulving_20260619T141200Z.log`. The corrected command uses `--skip-moe-reduction` so evidence reflects production/default GGUF expert settings. Do not schedule another throughput-sensitive model job until this completes.
+- **After K-MEM completes** — score with `scripts/benchmark/score_tulving_run.py`, then commit/package result artifacts if valid.
+- **Clean-window manifest state** — `docs/data/clean_window_measurement_manifest.json` and commands group G10/G11, K-MEM-1, K-ROPE-1, and G5 by model. Current readiness is 17 ready / 6 blocked under observed live ports/contexts.
+- **K-ROPE progress** — valid 4K and 8K clean-window cells exist for `frontdoor`, `architect_general`, and `ingest_long_context`; valid 16K cells exist for `frontdoor` and `ingest_long_context`. Exact-boundary rows are now blocked, and `worker_general` is blocked by the Gemma4 MTP 8072 serving/slot-state issue until reloaded/re-attested.
 - **K-EMB-1** embedder-only (standalone granite/BGE servers; informs the N9/retrain-routing re-embed choice).
 - **H7** Ouro-2.6B transformers-CPU, serial (feeds H5).
 

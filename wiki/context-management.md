@@ -2,8 +2,8 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-05-27
-**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries)
+**Last compiled**: 2026-06-19
+**Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries) + 2026-06-19 K-MEM Tulving run state
 
 ## Summary
 
@@ -93,6 +93,7 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - **Two-level condensation** (Phase 1 complete): Granular per-turn blocks accumulate without re-summarization (deterministic formatting from structured turn data, no LLM call). Deep consolidation fires at escalation boundaries, sub-task completion, or when 15+ blocks accumulate, using 7B model for a single bounded-window LLM call. Feature-flagged `two_level_condensation`. Replaces the previous every-2-turn full re-summarization.
 - **Compression quality evaluation** (Phase 2a/2b done): 30B-A3B validated as minimum viable summarizer (3.0/3.0 retention). 5-level compression ladder tested: L3 is the sweet spot at 82% compression with 2.84/3 retention. L5 and Phase 3c (process reward signals) pending.
 - **Segment retention scoring**: ConsolidatedSegment with access_count, importance_score (accumulates +3 per access, +5 per update, decays at 0.995 per turn delta), and maturity tiers (draft at creation, validated at score 65+, core at 85+, demotion below 35/60).
+- **K-MEM Tulving episodic-memory baseline**: `epyc-inference-research` run `20260619_141212` is collecting Tulving 20ch episodic-memory evidence on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`). Treat this as measurement, not a context-management feature change; score with `scripts/benchmark/score_tulving_run.py` after completion before drawing memory-routing conclusions. Source: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
 - **Memento KV block masking feasibility**: Confirmed 2026-04-13 that `llama_memory_seq_rm()` can serve as the block eviction primitive in llama.cpp. Mid-sequence removal works; position gap semantics are correct (RoPE phases preserved). Training script for OpenMementos-228K ready with two-stage LoRA design. Blocked on model fine-tuning compute.
 - **REPL turn efficiency: S6 bug fixes + observability (2026-04-16, done)**: Three systemic bugs accounting for ~25% wasted specialist REPL turns (810/3227 calls) fixed: (a) `extract_code_from_response` dropping bare `"""` lines causing 473 NameErrors; (b) `CALL("run_python_code")` routing through registry instead of REPL globals causing 182 ValueErrors; (c) dedup guard `continue → break` causing 63 wasted turns. Added `repl_turn_errors` tracking and `specialist_repl_errors` anomaly signal. Added `web_search()` REPL global and role-aware specialist prompts. S4 (A/B benchmark) and S5 Gap 1-3 implementations (workspace_scan, STUCK signal, llm_batch combined-op) remain pending inference. [repl-turn-efficiency handoff](../handoffs/active/repl-turn-efficiency.md)
 
