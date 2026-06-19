@@ -67,6 +67,10 @@ unowned local constants.
   priors as primary and derive degraded fallback candidates from the computed
   stack manifest instead of a four-role static tuple; embedding services are
   excluded and aliases are canonicalized.
+- `src.api.admission` now keeps generated stack-prior slot limits as primary
+  and derives degraded fallback URL/slot limits from the computed stack
+  manifest at controller construction time instead of preserving an import-time
+  static URL table; embedding services remain excluded from admission gating.
 - `orchestration.repl_memory.bilinear_scorer` cold-start model features now
   keep generated stack priors as primary and derive degraded fallback specs
   from compiled model descriptors instead of a hand-maintained role/model

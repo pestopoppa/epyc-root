@@ -97,6 +97,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   planner/operator stack truth by explicitly marking live role, port, tier,
   throughput, baseline, and trust-boundary facts unavailable until
   `gen_system_card.py --check` passes again.
+- 2026-06-19 admission degraded-fallback cleanup landed in Orchestrator
+  `3007610`: `src.api.admission` still uses generated stack-prior slot limits
+  as primary truth, but empty/bad priors now fall back to computed stack-manifest
+  launch records at controller construction time instead of an import-time
+  static URL table. Embedding services are skipped so they do not become
+  request-admission gates.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -119,10 +125,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
   Latest completed slices: Orchestrator `95a23aa` canonicalized the
-  generated-stack-docs raw-registry degraded fallback, and `523cb02` made
-  AutoPilot system-card generation fail closed instead of reusing checked-in
-  stale guidance; remaining slices should continue to distinguish
-  de-duplication from deliberate precedence changes.
+  generated-stack-docs raw-registry degraded fallback, `523cb02` made AutoPilot
+  system-card generation fail closed instead of reusing checked-in stale
+  guidance, and `3007610` moved admission degraded fallback URL/slot limits to
+  computed stack-manifest truth; remaining slices should continue to
+  distinguish de-duplication from deliberate precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
