@@ -86,6 +86,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   simulated worker swap fixture now also proves seeding reward degraded
   fallback reads swapped model descriptor throughput before the legacy static
   table.
+- 2026-06-19 high-risk generated-stack-docs cleanup landed in Orchestrator
+  `95a23aa`: the final raw-registry degraded fallback in
+  `render_stack_summary.py:registry_role_rows` now emits only canonical current
+  roles or generic chain aliases resolved to canonical roles, and skips retired
+  serialized aliases or arbitrary auxiliary server names.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -107,9 +112,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
-  Latest completed slice: Orchestrator `a168903` seeding reward descriptor
-  fallback; remaining slices should continue to distinguish de-duplication from
-  deliberate precedence changes.
+  Latest completed slice: Orchestrator `95a23aa` canonicalized the
+  generated-stack-docs raw-registry degraded fallback; remaining slices should
+  continue to distinguish de-duplication from deliberate precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated

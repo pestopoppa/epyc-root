@@ -77,6 +77,10 @@ unowned local constants.
 - `scripts.benchmark.seeding_rewards` throughput priors now keep generated
   stack priors as primary and derive explicit degraded fallback throughput from
   compiled model descriptors before falling back to the legacy static table.
+- `scripts.registry.render_stack_summary` still keeps generated stack priors
+  and compiled descriptors as the normal sources for operator/system-card role
+  rows, while the last-resort raw-registry fallback now canonicalizes generic
+  chain aliases and refuses retired or arbitrary server-mode aliases.
 - `scripts.autopilot.preflight_audit` was re-audited after the generated-prior
   migrations: live model-server targets already come from stack-prior serving
   URLs, while the remaining degraded fallback intentionally reads
