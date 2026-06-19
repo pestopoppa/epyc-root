@@ -44,8 +44,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   `q_scorer_priors: ok`, and descriptors/stack priors fresh.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
-- Current all-surface warning baseline: `2 unique / 2 total`; both remaining
-  surfaces are owned, expiring `waived_production_blocker` compatibility guards.
+- Current all-surface warning baseline: clean. Orchestrator `d459f46` labeled
+  the last retired-role launch test as intentional legacy coverage, and
+  `stack_change_pipeline.py check --run-promotion-gate` now reports
+  `guard_all_surfaces: ok`.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
