@@ -537,6 +537,18 @@ Each gate is a **decision point**, not just a measurement: run → branch on the
 
 **Run-command note**: each adapter is registered as a named suite, so existing seeding/eval harnesses pick them up by suite name (`scoring_verifiers`, `tulving_episodic`). K-RAG-1 + K-ROPE-1 are standalone scripts (env-var-swept / `--context-length` per cell). **K-SKILL-1 is the exception** — it is not a suite run; its default-off accept-path wiring exists, but validation is a flag-isolated paired-mutation A/B after the restart bundle, so it cannot be picked up turnkey like the others. Per `feedback_speed_verify_via_llama_bench` + `feedback_no_concurrent_inference`: the user/campaign runs these manually with per-run approval — code is prepared, not executed.
 
+**K-RAG-1 seed sweep update (2026-06-19)**: the CPU-only K7 seed sweep ran during
+the active AutoPilot window without touching llama servers:
+`uv run python scripts/kb_rag/cli.py eval --output-dir
+data/kb_rag/eval/k7_seed_20260619T0411Z` in `epyc-orchestrator`. The ignored
+derived artifact contains 20 cases, 6 configs, no missing evidence files, index
+stats 142 files / 4,958 chunks, and `onnxruntime 1.26.0` working in the
+orchestrator venv. Best recall@10 was `0.300` for `rerank_w0.3`,
+`rerank_w0.6`, and `recency_w0.1_s90_rerank_w0.3` vs MaxSim baseline `0.275`
+(+2.5pp on the seed suite). Treat this as a seed-suite positive for rerank, not
+a final default-weight promotion; the case file itself says it is not the final
+50+20 certification pool.
+
 ---
 
 ## Reporting
