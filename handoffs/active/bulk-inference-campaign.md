@@ -52,6 +52,20 @@ Ordered manifest (one reload, then everything rides it):
 
 ### Standalone model-batched windows (~27h; group by model so each GGUF loads once)
 - **K-MEM-1 × K-ROPE-1 × G11 × G5** grouped **by model** — run each cell while that GGUF is resident. K-MEM-1 is now data/harness-ready for the first role: `ingest_long_context` dry-run reports `1824/1824` pending tests (`4 configs × 456` Tulving prompts) via `PYTHONPATH=scripts/benchmark uv run --extra benchmark python scripts/benchmark/run_benchmark.py --model ingest_long_context --suite tulving_episodic --dry-run --skip-preflight`.
+- **2026-06-19 clean-window manifest prep**: research added
+  `scripts/benchmark/clean_window_manifest.py` and generated
+  `docs/data/clean_window_measurement_manifest.json` plus
+  `docs/data/clean_window_measurement_commands.sh`. The generated plan groups
+  G10/G11 AA-Omniscience, K-MEM-1 Tulving, and K-ROPE-1 direct-port probe cells
+  by live model path, captures research/orchestrator registry hashes, and
+  comments blocked rows instead of executing them. Current observed live ports
+  and contexts (`frontdoor=8070/32768`, `worker_general=8072/16384`,
+  `architect_general=8083/16384`, `ingest_long_context=8085/32768`) yield
+  **17 ready / 6 blocked** cells. Blockers are: G5 runner still absent,
+  worker_general G11 blocked because the research benchmark registry still maps
+  worker_general to stale Meta-Llama while the live orchestrator registry maps it
+  to gemma4-26B-A4B, and the 32K RoPE cells for worker/architect exceed the
+  currently resident server contexts.
 - **K-EMB-1** embedder-only (standalone granite/BGE servers; informs the N9/retrain-routing re-embed choice).
 - **H7** Ouro-2.6B transformers-CPU, serial (feeds H5).
 
