@@ -153,6 +153,12 @@ The `GEPA + Pareto Frontier` dashboard panel should be journal-backed, not state
 
 Operationally, apparent Pareto plot staleness should be diagnosed by checking the endpoint source and payload first: `/dashboard/api/pareto` now reports `source=journal_current_session` when it is using the durable journal, plus live totals for frontier size, entry count, and hypervolume points. Source: [`2026-05-28-pareto-dashboard.md`](../progress/2026-05/2026-05-28-pareto-dashboard.md).
 
+## Autopilot journal authority during empty-journal saves (2026-06-19)
+
+The append-only journal remains the archive authority even before an archive-bearing trial exists. Empty-journal lifecycle saves should persist ordinary operational state directly and must not recreate a legacy `pareto_archive` cache through `archive.save(state)`. Compatibility save APIs can remain for explicit state-payload tests/tools, but the live AutoPilot save path should not use them as a fallback when the journal fold is unavailable.
+
+Operationally, if a fresh or reset AutoPilot lifecycle save lacks archive-bearing journal rows, treat the missing fold as a reason to skip archive cache writes, not as permission to rehydrate state-cache authority. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md) (`A8 archive-save fallback retirement`) and [`handoffs/active/evidence-plane-event-sourcing-and-narrative.md`](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+
 ## PII / secret hygiene pre-commit hook (2026-05-06)
 
 Regex-only pre-commit hook scanning staged git blobs (NOT working tree, so `git add -p` partial stages are caught) for accidentally-committed secrets and account-number-shaped strings. Installed at `.git/hooks/pre-commit` across the three EPYC repos via exec wrappers pointing to a single canonical `scripts/hooks/pii_precommit.sh` in epyc-root.
