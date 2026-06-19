@@ -501,6 +501,7 @@ Tasks:
   - post-launch: running-state attestation compares live PIDs/ports/flags/binary paths against stack priors
 - DONE in `0573e02`: `orchestrator_stack.py status` performs read-only live cmdline attestation for concrete GGUF model paths and warns on `model-drift`.
 - DONE in `3bdd506`: stack status now loads generated stack-prior launch requirements for VL projector paths and extends live cmdline attestation to expected `--mmproj` arguments, warning with `mmproj-drift` on missing or mismatched projectors.
+- DONE in `8bad5e9`: stack status now uses the same generated launch-contract path as the runtime attestation gate, so `orchestrator_stack.py status` surfaces runtime flag/cache/spec drift such as stale context size, `--flash-attn`, or speculative-draft flags instead of only model/mmproj drift.
 - DONE in `3e8121d`: `role.model.mmproj_path` now compiles into descriptor
   `serving.requirements.mmproj_path`, so Qwen2.5-VL and Qwen3-VL projector
   dependencies are descriptor-native before stack-prior regeneration.
