@@ -50,10 +50,10 @@ unowned local constants.
   `orchestration/stack_change_surface_manifest.yaml` with
   `consumer_surface_count=13` and `rule_count=27`; the previous active-code
   warning baseline is clean.
-- Shared stack-prior helpers now cover the main config/admission, health,
-  status, preflight, routing/action, prompt/delegation, benchmark/eval, and
-  runtime-policy consumers. Completed details through 2026-06-19 are compacted
-  in
+- Shared stack-prior helpers now cover the main config/admission, OpenAI
+  model-list ordering, health, status, preflight, routing/action,
+  prompt/delegation, benchmark/eval, and runtime-policy consumers. Completed
+  details through 2026-06-19 are compacted in
   [model-stack-single-source-update-pipeline-history-through-2026-06-19.md](../archived/model-stack-single-source-update-pipeline-history-through-2026-06-19.md).
 - `src.runtime.inference_tap` safe-mode stream policy now resolves its
   generated-prior or manifest-derived non-stream role set dynamically instead
@@ -74,6 +74,10 @@ unowned local constants.
 - `scripts.graph_router.train_graph_router` model-fleet training nodes now
   keep generated stack priors as primary and derive degraded fallback fleet
   records from compiled model descriptors instead of a static model-fleet table.
+- `src.api.routes.openai_compat` now uses the shared stack-prior primary-port
+  helper for `/v1/models` ordering instead of keeping a route-local port
+  resolver; explicit endpoint precedence and compatibility aliases are
+  preserved.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
   `decision: hold`; regression diagnostics showed hard replacement of the

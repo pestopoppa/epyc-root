@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-19 (manual incremental update: W4/W7 evidence-plane including per-question provenance, X-MAS function-axis routing, Attention Matching stale review, K-MEM measurement context)
+**Last compiled**: 2026-06-19 (manual incremental update: W4/W7 evidence-plane, X-MAS function-axis/constrained routing, stack-prior OpenAI model-list helper, Attention Matching stale review, K-MEM measurement context)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 513+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
