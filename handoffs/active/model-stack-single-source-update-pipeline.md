@@ -81,6 +81,10 @@ unowned local constants.
 - `scripts.benchmark.seeding_rewards` throughput priors now keep generated
   stack priors as primary and derive explicit degraded fallback throughput from
   compiled model descriptors before falling back to the legacy static table.
+- `scripts.benchmark.seeding_types` benchmark topology constants still keep
+  generated stack priors as primary, but degraded fallback role/port/heavy-port
+  discovery now derives from the lean registry `server_mode` records instead
+  of preserving a separate current-stack role/port table.
 - `scripts.registry.render_stack_summary` still keeps generated stack priors
   and compiled descriptors as the normal sources for operator/system-card role
   rows, while the last-resort raw-registry fallback now canonicalizes generic

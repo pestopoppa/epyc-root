@@ -103,6 +103,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   launch records at controller construction time instead of an import-time
   static URL table. Embedding services are skipped so they do not become
   request-admission gates.
+- 2026-06-19 benchmark seeding topology fallback cleanup landed in Orchestrator
+  `93722b1`: `scripts.benchmark.seeding_types` still uses generated stack
+  priors for default roles, role ports, heavy ports, and model ports, but the
+  degraded fallback now derives topology from lean-registry `server_mode`
+  records instead of preserving a separate static current-stack role/port table.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -128,8 +133,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   generated-stack-docs raw-registry degraded fallback, `523cb02` made AutoPilot
   system-card generation fail closed instead of reusing checked-in stale
   guidance, and `3007610` moved admission degraded fallback URL/slot limits to
-  computed stack-manifest truth; remaining slices should continue to
-  distinguish de-duplication from deliberate precedence changes.
+  computed stack-manifest truth; `93722b1` moved seeding degraded benchmark
+  topology fallback to registry-derived truth. Remaining slices should continue
+  to distinguish de-duplication from deliberate precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
