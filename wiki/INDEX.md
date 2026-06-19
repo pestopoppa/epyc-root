@@ -40,7 +40,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
 | [Autonomous Research](autonomous-research.md) | 62+ | AutoPilot sequential authority is code-complete but sample-gated; W7 hardens critic context, eval clamps, audit alarms, PEAF budget credit, and per-question provenance evidence |
-| [Memory-Augmented Models](memory-augmented.md) | 25 | Episodic FAISS writes require cross-process locking; llama RAM drift needs residency telemetry/recycle, not drop_caches |
+| [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is active measurement, not a memory feature flip |
 
 ## Context & Compression
 

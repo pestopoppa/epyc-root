@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-06-03
-**Sources**: 25 documents (2 deep-dives, 18 intake entries, 3 handoffs, 1 progress log, 2 cross-referenced deep-dives)
+**Last compiled**: 2026-06-19
+**Sources**: 25+ documents (2 deep-dives, 18 intake entries, active handoffs, progress logs, and K-MEM/Tulving measurement context)
 
 ## Summary
 
@@ -18,6 +18,14 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-06-19) — K-MEM Tulving baseline is active measurement, not a memory feature flip
+
+- **The Tulving episodic-memory benchmark is now the active K-MEM evidence lane for `ingest_long_context`.** Research run `20260619_141212` is collecting the 20ch Tulving slice with production/default GGUF expert settings (`--skip-moe-reduction`) after the canonical raw-throughput tripwire was corrected. The run should remain the only throughput-sensitive inference lane until completion, then be scored with `scripts/benchmark/score_tulving_run.py` before any memory-routing or long-context conclusion is claimed. This is measurement state, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
+
+### New Finding (2026-06-19) — Sequential evidence remains sample-gated
+
+- **Sequential verdict authority is implemented but still evidence-volume blocked.** The W4/W6 path can journal per-question sequential evidence, failed-trial seq blocks, and action-local seq gate checks behind `AUTOPILOT_SEQ_VERDICT`, but baseline/sequential authority must stay disabled until readiness clears. Current durable readiness is trusted vectors `57 / 120` and seq shadow rows `5 / 30`, so the correct memory/evidence action is continued clean accrual rather than promotion. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
 
 ### New Finding (2026-06-03) — FAISS episodic-memory durability repair
 

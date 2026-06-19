@@ -76,8 +76,9 @@ unowned local constants.
   records from compiled model descriptors instead of a static model-fleet table.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path, but the 2026-06-18 held-out A/B returned
-  `decision: hold`; regression diagnosis is required before any new enforce
-  attempt.
+  `decision: hold`; regression diagnostics show hard replacement of the learned
+  incumbent route, so a constrained/incumbent-aware policy is required before
+  any new enforce attempt.
 
 ## Completed Scope
 
@@ -114,9 +115,11 @@ Any future stack update should be accepted only when these hold:
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove.
-- [ ] Diagnose the held-out X-MAS regression before any new `mode: enforce`
-  attempt. The table is evidence-backed, but the 2026-06-18 held-out run
-  returned `decision: hold`, so production routing remains default-off.
+- [ ] Build an incumbent-aware/constrained X-MAS policy before any new
+  `mode: enforce` attempt. The table is evidence-backed, but the 2026-06-18
+  held-out run returned `decision: hold` and diagnostics identify hard route
+  replacement as the first-order failure, so production routing remains
+  default-off.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
