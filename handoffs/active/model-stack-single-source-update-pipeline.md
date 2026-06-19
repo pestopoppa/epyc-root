@@ -142,17 +142,10 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
-- [x] Re-audit `health_preflight_probes` after the generated-prior migrations.
-  Live targets are already generated from stack priors; the remaining fallback
-  is manifest-owned compatibility plumbing, not a stray duplicate table.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest witness: Orchestrator `7a90924` covers the seeding
   descriptor degraded fallback in the simulated worker swap fixture.
-- [x] Build an incumbent-aware/constrained X-MAS policy before any new
-  `mode: enforce` attempt. `24baac4` keeps production default-off and requires
-  table evidence to evaluate both incumbent and suggested roles before an
-  override can apply.
 - [ ] Rerun the X-MAS held-out A/B in a quiet window; production routing remains
   default-off until the constrained policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run

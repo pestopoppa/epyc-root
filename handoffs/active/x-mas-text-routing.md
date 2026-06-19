@@ -25,8 +25,6 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 ## Current Gate
 
 - [ ] Keep `ORCHESTRATOR_XMAS_ROUTING_MODE=off` and `ORCHESTRATOR_XMAS_WINNER_TABLE_PATH` empty in production until a future held-out run passes the verdict gates.
-- [x] Diagnose the first-order held-out failure shape: hard replacement of the learned baseline route caused broad `coder_escalation -> worker_general` over-routing, no observed X-MAS-only quality wins, and severe latency regression.
-- [x] Design and land a constrained policy that treats the learned baseline route as the incumbent rather than blindly replacing it; HIGH-risk hook work was kept on the main thread after GitNexus impact reported HIGH for `_apply_xmas_enforce_override` and `build_xmas_routing_metadata`.
 - [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks after the current K-MEM throughput lane completes or a separate quiet window is approved.
 - [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
 
