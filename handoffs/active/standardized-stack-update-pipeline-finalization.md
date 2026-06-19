@@ -39,7 +39,7 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Canonical command:
   `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
   in `epyc-orchestrator`.
-- Default check after Orchestrator `3c18a17` is green:
+- Default check after Orchestrator `9dcfbf5` is green:
   `stack_manifest_registry: ok`, `runtime_attestation: ok`,
   `q_scorer_priors: ok`, and descriptors/stack priors fresh.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
@@ -53,6 +53,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`
   source-artifact metadata and `check --run-promotion-gate` returned
   `summary: ok` with 172 tests passing.
+- 2026-06-19 recheck after the X-MAS reporting and KB-RAG manifest-prune
+  commits again returned `summary: ok`: descriptor/stack-prior/procedure/operator
+  artifacts fresh, `guard_all_surfaces: ok`, `runtime_attestation: ok`, and the
+  executable promotion gate passed 172 no-inference tests. No pipeline code
+  changes were needed for N11 in this pass.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
