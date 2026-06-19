@@ -2,8 +2,8 @@
 
 **Category**: `inference_serving`
 **Confidence**: verified
-**Last compiled**: 2026-06-15
-**Sources**: 36 documents (added 2026-06-13 Fable 5 serving/kernel review, routing truth restoration, batch-serving gap, and stack-prior serving-truth audit)
+**Last compiled**: 2026-06-19
+**Sources**: 36 documents (added 2026-06-19 stack-prior fallback and chat-completions fallback canonicalization updates)
 
 ## Summary
 
