@@ -1,6 +1,6 @@
 # Eval Tower Verification Framework
 
-**Status**: IN PROGRESS — EV-1/2/6 code complete (2026-04-15). EV-3 pending (Scoring Verifiers download). EV-4/5/7 need inference. AA-Omniscience hallucination suite integrated (2026-04-15).
+**Status**: IN PROGRESS — EV-1/2/3/6 code complete. EV-3 was schema-corrected and validated on 2026-06-19; EV-4/5/7 need inference. AA-Omniscience hallucination suite integrated (2026-04-15).
 **Created**: 2026-04-14 (from deep-dive research, 5 papers + 2 subsystem threads)
 **Updated**: 2026-04-15
 **Priority**: MEDIUM (depends on AP-27 and Ouro P7)
@@ -148,14 +148,22 @@ From Aletheia (intake-370, TU Darmstadt):
 
 **Files modified**: `safety_gate.py` (EvalResult dataclass + to_grep_lines), `eval_tower.py` (_aggregate)
 
-### EV-3: Download Scoring Verifiers benchmarks (~50 lines)
+### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19
 
-- [ ] Download from HuggingFace `nvidia/Scoring-Verifiers` (HE-R+, MBPP-R+)
-- [ ] Create adapter class in `dataset_adapters.py` (following existing adapter pattern)
-- [ ] Register in `suites.py` as new evaluation suites
-- [ ] Validate: load datasets, verify schema, count problems
+- [x] Download from HuggingFace `nvidia/Scoring-Verifiers` (HE-R, HE-R+, MBPP-R, MBPP-R+) to `/mnt/raid0/llm/data/eval/scoring_verifiers`
+- [x] Create adapter class in `scripts/benchmark/scoring_verifiers_adapter.py`
+- [x] Register in `dataset_adapters.py` / `suites.py` as suite `scoring_verifiers`
+- [x] Validate: load datasets, verify schema, count candidate solutions
 
-**Files**: `dataset_adapters.py`, `suites.py`, data storage at `/mnt/raid0/llm/data/eval/`
+**Files**: `scripts/benchmark/scoring_verifiers_adapter.py`, `dataset_adapters.py`, `suites.py`, data storage at `/mnt/raid0/llm/data/eval/scoring_verifiers/`
+
+**2026-06-19 correction**: the downloaded JSONL schema stores one problem row
+with `all_solutions[]` candidate solutions and `average_test_score` oracle
+scores. Research `7c11920` expands each candidate into a labeled verifier item
+instead of treating the problem row as one unlabeled example. Validation:
+`39` adapter tests passed, `py_compile` passed, and the real local snapshot
+loads `6,701` candidate-level items across HE-R/HE-R+/MBPP-R/MBPP-R+ with
+`3,395` expected `correct` and `3,306` expected `incorrect` labels.
 
 ### EV-4: Calibration baseline (needs inference)
 
