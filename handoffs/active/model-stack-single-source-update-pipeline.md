@@ -235,7 +235,11 @@ unowned local constants.
 - `scripts/autopilot/kv_compress.py` now derives its degraded production-port
   fallback from the live stack manifest instead of a literal role/port table,
   while preserving the generated-priors primary path and the alias-aware
-  `production_ports_from_stack_priors()` behavior.
+  `production_ports_from_stack_priors()` behavior. Orchestrator `d9797af`
+  removed the import-time `PRODUCTION_PORTS` snapshot from that compatibility
+  path; legacy imports now resolve dynamically through
+  `degraded_production_ports()` so a stack-manifest change is not frozen at
+  module load.
 - `src.runtime.inference_lock.py` and `src.runtime.inference_tap.py` now spell
   their remaining degraded fallback sets through canonical `Role` constants
   instead of raw strings, keeping the final compatibility path aligned with
@@ -494,7 +498,9 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep host-health cache-flush rewarm fallback derived from generated stack
   priors before it drops to the final degraded no-op path.
 - [x] Keep KV-compression degraded production ports derived from the live
-  stack manifest instead of a manual fallback table.
+  stack manifest instead of a manual fallback table, and keep the legacy
+  `PRODUCTION_PORTS` compatibility surface dynamic rather than an import-time
+  snapshot.
 - [x] Keep proactive-delegation actor lookup canonicalized at the role
   boundary so the canonical worker path resolves before the legacy fallback
   is applied.
