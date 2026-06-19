@@ -77,16 +77,21 @@ unowned local constants.
 - `scripts.benchmark.seeding_rewards` throughput priors now keep generated
   stack priors as primary and derive explicit degraded fallback throughput from
   compiled model descriptors before falling back to the legacy static table.
+- `scripts.autopilot.preflight_audit` was re-audited after the generated-prior
+  migrations: live model-server targets already come from stack-prior serving
+  URLs, while the remaining degraded fallback intentionally reads
+  stack-manifest HOT/WARM auxiliary metadata and launch-mode filtering. Do not
+  churn this surface unless a concrete duplicated role/port fact reappears.
 - `src.api.routes.openai_compat` now uses the shared stack-prior primary-port
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
   preserved.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
-  `decision: hold`; regression diagnostics showed hard replacement of the
-  learned incumbent route. The incumbent-aware constrained policy landed in
-  `epyc-orchestrator` `24baac4`, so the next X-MAS gate is a fresh quiet
-  held-out A/B, not more routing plumbing.
+  `decision: hold` after hard replacement of the learned incumbent route; the
+  incumbent-aware constrained policy landed in `epyc-orchestrator` `24baac4`,
+  so the next X-MAS gate is a fresh quiet held-out A/B, not more routing
+  plumbing.
 
 ## Completed Scope
 
@@ -120,6 +125,9 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
+- [x] Re-audit `health_preflight_probes` after the generated-prior migrations.
+  Live targets are already generated from stack priors; the remaining fallback
+  is manifest-owned compatibility plumbing, not a stray duplicate table.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove.

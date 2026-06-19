@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-19 (manual incremental update: W4/W7 evidence-plane, X-MAS function-axis/constrained routing, stack-prior OpenAI model-list helper, Attention Matching stale review, K-MEM measurement context)
+**Last compiled**: 2026-06-19 (manual incremental update: W4/W7 evidence-plane, X-MAS function-axis/constrained routing, stack-prior OpenAI/model-list/seeding/preflight wrap-up, Attention Matching stale review, K-MEM measurement context)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 513+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -22,7 +22,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Inference Serving](inference-serving.md) | 36 | Stack-priors now drive concrete serving/preflight consumers; launch projection and single-instance batched decode remain the key gaps |
+| [Inference Serving](inference-serving.md) | 36 | Stack-priors now drive concrete serving/preflight consumers; AutoPilot preflight's remaining fallback is manifest-owned compatibility plumbing, while launch projection and single-instance batched decode remain the key gaps |
 | [Local Inference](local-inference.md) | 16 | Cherry-picked upstream fixes unblock Qwen3.6 (0%→73.8%); fork conflict risk lower than assessed; full rebase deferred |
 | [Chat Templates](chat-templates.md) | 2 | Per-family turn markers + when to use `/completion` (Qwen/gemma-3/Llama3) vs `/v1/chat/completions` (gemma-4 multi-channel) — checklist for onboarding new models without silent routing failures |
 

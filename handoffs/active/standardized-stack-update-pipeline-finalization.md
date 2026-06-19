@@ -1,8 +1,10 @@
 # Standardized Stack Update Pipeline Finalization
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change command and
-promotion gates are live; current default check is green. Remaining work is
-high-risk consumer migrations and W4 swap-CI.
+promotion gates are live. Generated-contract and guard checks are clean;
+runtime-attestation-bearing checks are expected to stop while the isolated
+K-MEM Tulving listener owns stack port `8080`. Remaining work is high-risk
+consumer migrations and opportunistic W4 swap-CI.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack
@@ -39,9 +41,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 - Canonical command:
   `uv run python scripts/registry/stack_change_pipeline.py check --run-promotion-gate`
   in `epyc-orchestrator`.
-- Default check after Orchestrator `9dcfbf5` is green:
+- Default check after Orchestrator `9dcfbf5` was green:
   `stack_manifest_registry: ok`, `runtime_attestation: ok`,
-  `q_scorer_priors: ok`, and descriptors/stack priors fresh.
+  `q_scorer_priors: ok`, and descriptors/stack priors fresh. Current
+  full-pipeline checks should treat the live K-MEM Tulving listener on port
+  `8080` as an expected runtime-attestation blocker, not a stack-change
+  regression.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
 - Current all-surface warning baseline: clean. Orchestrator `d459f46` labeled
@@ -71,6 +76,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   GraphRouter fleet loading, and AutoPilot preflight health grouping) all read
   the same generated `stack_priors.yaml` primary port after a data-only stack
   change.
+- 2026-06-19 follow-up migrations after `6c9ac6b` removed or constrained
+  several remaining stack-prior consumers: OpenAI `/v1/models` helper ordering,
+  chat-completions degraded fallback role order, stack-monitoring and
+  slot-query consumers, dashboard service hints, and seeding reward descriptor
+  fallback. A read-only `health_preflight_probes` audit found no further
+  duplicate role/port table to migrate in AutoPilot preflight.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -92,9 +103,9 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
-  Latest completed slice: Orchestrator `911b880` primary-port helper migration;
-  remaining slices should continue to distinguish de-duplication from deliberate
-  precedence changes.
+  Latest completed slice: Orchestrator `a168903` seeding reward descriptor
+  fallback; remaining slices should continue to distinguish de-duplication from
+  deliberate precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated
