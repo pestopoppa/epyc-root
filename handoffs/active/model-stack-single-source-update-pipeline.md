@@ -120,6 +120,13 @@ unowned local constants.
   metadata (`launch.runtime.flags.jinja` plus
   `acceleration.enable_thinking=false`), with a narrow degraded fallback when
   priors are unavailable.
+- Orchestrator `08ec417` tightened that chat-completions degraded fallback:
+  when generated priors are unavailable, the fallback now walks computed
+  `HOT_SERVERS` / `WARM_SERVERS` order and derives eligible roles from
+  `ROLE_LAUNCH_META` launch classes (frontdoor shared process and
+  `worker_pool` explore process), canonicalizing aliases through `Role` and
+  excluding architect, ingest, vision, embedding, and warm fast-worker launch
+  modes. The live generated-prior set remains the primary source.
 - `scripts/autopilot/gen_system_card.py` now derives its legacy-role note from
   live stack-prior role records instead of parsing the rendered markdown table,
   and the checked-in system card was regenerated from the current live state.
@@ -401,7 +408,7 @@ Any future stack update should be accepted only when these hold:
 - [x] Keep prompt-builder allowlists and delegation labels aligned with live
   stack truth rather than static role lists.
 - [x] Keep chat-completions fallback roles in `src/chat_completions_roles.py`
-  expressed through canonical `Role` constants instead of duplicated literals.
+  derived from stack-manifest launch classes instead of duplicated literals.
 - [x] Keep prompt-family fallback logic aligned with canonical role truth, not
   with ad hoc alias tables.
 - [x] Keep delegation report helper role buckets in
