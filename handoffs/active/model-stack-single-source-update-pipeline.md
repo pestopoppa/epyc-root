@@ -138,6 +138,13 @@ unowned local constants.
   records when they exist. The helper now canonicalizes any recognized alias
   spellings it sees in the server lists or live role IDs before deduping so
   the fallback stays on live canonical names.
+- Orchestrator `cb7cb80` tightened that `/v1/models` degraded fallback further:
+  the fallback order now follows the computed HOT/WARM server manifest order,
+  skips manifest roles whose launch mode is `embedding`, and reuses the ingress
+  role normalizer for context-specific worker aliases such as `worker_coder`.
+  Compatibility aliases (`orchestrator`, `architect`, `worker`) still lead the
+  API response, and generated stack-prior role order still wins whenever priors
+  are readable.
 - `orchestration.repl_memory.routing_classifier.RoutingClassifier.load()`
   now canonicalizes loaded action labels through `Role.from_string()` so
   serialized alias labels like `worker_explore` and `coder` rehydrate to the
