@@ -407,7 +407,12 @@ winner table plus route-mutation tests.
   classifier is confident, and no explicit forced role is present. The rewrite
   happens before failure-veto and downstream guards, so safety guards still get
   final say. The true function-axis winner table is compiled, but the held-out
-  live A/B returned `decision: hold`; regression diagnosis is the open X-MAS tail. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  live A/B returned `decision: hold` because hard replacement overrode the
+  learned incumbent route. The constrained policy in `epyc-orchestrator`
+  `24baac4` now treats that learned route as incumbent and requires table
+  evidence for both incumbent and suggested roles before any override; replay
+  diagnostics estimate it would suppress 22/23 replacements from the failed
+  bundle. The remaining gate is a fresh quiet-window held-out A/B. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
   [progress 2026-06-19](../progress/2026-06/2026-06-19.md),
   [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md),
   `src/classifiers/xmas_routing.py`, `src/api/routes/chat_pipeline/routing.py`.
@@ -418,7 +423,7 @@ winner table plus route-mutation tests.
   table from measured rows and compiled it to
   `orchestration/xmas_winner_table.yaml`. The validator refuses enforce mode
   unless the table is complete and evidence-backed; the remaining gate is the
-  held-out live A/B and operator deploy decision. Sources:
+  constrained-policy held-out live A/B and operator deploy decision. Sources:
   [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
   [progress 2026-06-19](../progress/2026-06/2026-06-19.md),
   [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md).

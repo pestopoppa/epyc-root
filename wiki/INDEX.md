@@ -31,7 +31,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 30 | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, and future distillation action spaces |
-| [Routing Intelligence](routing-intelligence.md) | 50+ | X-MAS now has a measured true function-axis table, but enforce remains default-off until live A/B |
+| [Routing Intelligence](routing-intelligence.md) | 50+ | X-MAS now has measured function-axis evidence and an incumbent-aware policy, but enforce remains default-off until a fresh held-out A/B |
 | [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs and audit alarms are now acceptance evidence |
 
 ## Agent & Architecture
