@@ -34,3 +34,23 @@ So a verbose config and a terse config at equal correctness are **Pareto-indisti
 2. Replay the full journal under the new vector → rebuilt 3-D frontier + a one-page diff report ("which historical 'wins' were bloat artifacts") — this report is itself the decisive observation: if ≥2 of the 5 current frontier points fall off under goodput, the case is proven on your own data.
 3. Flip the archive/gate/baseline to the new vector behind a policy-version bump; retire the t/s axis from dominance.
 4. Update `program.md`/system-card goal-metric text to match (closing the §"program describes a different cost proxy" divergence).
+
+## 2026-06-19 Replay Refresh
+
+The replay tool and shadow objective path already exist in current
+`epyc-orchestrator` (`scripts/analysis/task_rate_goodput_replay.py`,
+`src/autopilot_core/tier_specs.py`, and
+`src/autopilot_core/journal_reconstruction.py`). A fresh full-journal replay
+was generated as
+`orchestration/reports/task_rate_goodput_replay_2026-06-19.md`.
+
+Result: the raw frontier-drop signal now passes. `3/6` legacy canonical T1
+frontier points fall off under `task_rate_3d_v1`, satisfying the dynamic
+`>=3 of 6` threshold equivalent to the original `>=2 of 5` criterion.
+However, live promotion remains blocked: the task-rate frontier admits five
+quality-floor violations, so this should be treated as evidence that
+speed/goodput matters, not as authorization to flip the live Pareto vector.
+
+Next gate: build or run a quality-eligible replay/shadow proof after the N2
+ledger/sequential-verdict and E4/core-v2 retire-view gates are ready. Until
+then, keep task-rate/goodput as shadow telemetry and planner/report context.
