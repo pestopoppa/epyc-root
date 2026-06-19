@@ -16,7 +16,7 @@ Do not reimplement Phases 0, 1, 1+, 2a, 2b L1-L4, 2c scaffolding, 3a, or 3b. The
 
 - [ ] **CF-L5 maximum-compression validation**: run the L5 single-sentence-per-segment compression check only if it answers a current production question. Compare against the known L3 sweet spot and record whether L5 is rejected, role-limited, or worth further tuning.
 - [ ] **CF-3c live quality-monitor validation**: validate `CompactionQualityMonitor` on real traffic/telemetry. The class scaffold exists; tune degradation thresholds only after upstream-compressor anti-thrashing in [tool-output-compression.md](tool-output-compression.md) Phase 3d is accounted for.
-- [ ] **CF-2c.0 / NIB2-43 dual-objective alpha sweep**: implement the task-success classifier or retrieval proxy, score existing summarizer outputs at alpha values `{0.0, 0.25, 0.5, 0.75, 1.0}`, and measure correlation with downstream task success.
+- [x] **CF-2c.0 / NIB2-43 dual-objective alpha sweep**: implemented an offline retrieval proxy in `epyc-inference-research` `scripts/benchmark/compaction_alpha_sweep.py` and scored existing Package-C compaction/summarizer rows at alpha values `{0.0, 0.25, 0.5, 0.75, 1.0}`. Result artifacts: `data/research/2026-06-19-compaction-alpha-sweep/alpha_sweep.{json,csv}`. On 110 valid rows, alpha `0.0` beat faithfulness-only alpha `1.0` by `+0.051315` average precision (`0.940463` vs `0.889148`) and improved ROC-AUC (`0.743056` vs `0.534420`), crossing the `>2%` promotion gate. This is still a proxy result, not a deployment decision: promote dual-objective scoring into the Phase 2b design variant, then require a live/held-out validation before changing production compaction behavior.
 
 ## Decision Record: CF-DD8 / NIB2-40
 
@@ -41,7 +41,7 @@ Reopen criteria: only promote new context-folding code if clean live telemetry s
 | L5 quality collapses or only helps non-coding roles | Keep L3 as the default sweet spot; document any role-specific exception. |
 | L5 is competitive with L3 on target roles | Promote a narrow follow-up to tune L5 per role, gated by live monitor results. |
 | CF-3c telemetry is noisy due to compress/uncompress oscillation | Sequence after [tool-output-compression.md](tool-output-compression.md) Phase 3d anti-thrashing work. |
-| Alpha sweep shows alpha < 1.0 beats helpfulness-only by >2% | Promote the dual-objective score into the Phase 2b design variant. |
+| Alpha sweep shows alpha < 1.0 beats helpfulness-only by >2% | **MET 2026-06-19**: alpha `0.0` improved average precision by `+5.13pp` over alpha `1.0` on the Package-C offline proxy. Promote the dual-objective score into the Phase 2b design variant, with live/held-out validation before production behavior changes. |
 | Alpha sweep shows no signal | Park dual-objective compression until GPU/fine-tune capacity exists. |
 
 ## Completed Scope
