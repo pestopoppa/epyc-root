@@ -1,8 +1,8 @@
 # BEP-2 / DCP-6 Falsification Harness
 
-**Status**: COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair code landed on the live orchestrator branch at `2e2e0d3`; server reload/attestation before J7 inference remains. Optional J8 provenance remains.
+**Status**: COMPACTED 2026-05-28 - BEP-2 remediation complete; DCP-6 offline replay closed 2026-06-12 and DCP-6a repair code landed on the live orchestrator branch at `2e2e0d3`; the reload/attestation primitive landed 2026-06-18 in `epyc-orchestrator` `756c96b`, so the remaining J7 gate is now a clean server reload/attestation boundary plus the host-quiet inference run. Optional J8 provenance remains.
 **Created**: 2026-05-26
-**Updated**: 2026-06-12
+**Updated**: 2026-06-19
 **Priority**: MEDIUM
 **Parent index**: [master-handoff-index.md](master-handoff-index.md), [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Completed ledger**: [bep-dcp-falsification-harness-completed-through-2026-05-28.md](../completed/bep-dcp-falsification-harness-completed-through-2026-05-28.md)
@@ -15,7 +15,7 @@ The original BEP-2 read-loop blocker is remediated by the default-off `force_mod
 
 - [x] **DCP-6 offline replay**: CLOSED 2026-06-12. Scratch/task-root replay over 5 historical BEP tasks confirmed bundles read task files, not orchestrator files; all 7 existing required files were selected and budgets 500/1000/2000 all fit.
 - [x] **DCP-6a content-depth/freshness repair**: branch `fix/dcp6a-context-depth-current` commit `530128b7` changes task-root search/packing so tiny task files are included as full files or padded slices instead of one-line snippets, and populates manifest `content_sha256`. Equivalent code landed on the current live branch at `2e2e0d3`. Focused current-lineage tests: 30 passed after landing.
-- [ ] **DCP-6 deploy attestation + inference gate**: reload/attest `2e2e0d3` or later at a clean boundary; then use a host-quiet window for inference and record top-up rate, token overhead, and success deltas.
+- [ ] **DCP-6 deploy attestation + inference gate**: reload/attest `2e2e0d3` or later at a clean boundary, using the `756c96b` attestation primitive; then use a host-quiet window for inference and record top-up rate, token overhead, and success deltas.
 - [ ] **J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.
 - [ ] **Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md), not here.
 
