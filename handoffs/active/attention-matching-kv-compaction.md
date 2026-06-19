@@ -1,8 +1,8 @@
 # Attention Matching KV Compaction
 
-**Status**: active — L1-L4 merged to production-consolidated-v3, Python validation continues
+**Status**: active, refreshed 2026-06-19 — L1-L4+L4b merged; evidence refresh remains open
 **Created**: 2026-04-13 (via research intake)
-**Updated**: 2026-04-13 (L1-L4+L4b merged to production)
+**Updated**: 2026-06-19 (wrap-up stale review; open work unchanged, still inference-gated)
 **Categories**: kv_cache_optimization, inference_serving
 
 ## Current Work — Resume Here
@@ -24,7 +24,9 @@ Research intake processed 4 entries. Deep-dive completed for all (see `research/
 
 ### State
 
-P1 complete. P2 validated on Qwen2.5-7B (2026-04-13): **2x=1.000 (lossless), 5x=0.906, 10x=0.807**. Early layers compress perfectly; deep layers need adaptive strategy. Next: P2 on Qwen2.5-Coder-32B coding benchmarks, P3 comparison vs Expected Attention.
+P1 complete. P2 validated on Qwen2.5-7B (2026-04-13): **2x=1.000 (lossless), 5x=0.906, 10x=0.807**. Early layers compress perfectly; deep layers need adaptive strategy.
+
+**2026-06-19 wrap-up review**: keep this handoff active. Native L1-L4+L4b production work is done, but no new Attention Matching rollout decision should be made from the April Qwen2.5-only premise. The next useful evidence gate is a current-stack refresh against production long-context/coding traffic, including the current Qwen3.6-era stack and any live Coder-32B comparison still relevant to the workload. Do not load additional models during unrelated clean measurement windows; queue this for the next approved inference window.
 
 ### P2 Validation Results (Qwen2.5-7B, 3 prompts, 3 layers, head 0)
 
@@ -88,7 +90,7 @@ Decomposition into closed-form subproblems (no gradient descent):
 | Step | Task | Effort | Dependency |
 |---|---|---|---|
 | P1 | ~~Port HighestAttnKeys-fast from adamzweiger/compaction to our eval harness~~ ✅ 2026-04-13 | LOW | None |
-| P2 | Run on Qwen2.5-Coder-32B coding benchmarks (LongCodeBench if available, else our eval suite) | MEDIUM | P1 |
+| P2 | Refresh against current production long-context/coding workload, including Qwen3.6-era stack and any still-relevant Coder-32B coding comparison | MEDIUM | P1 |
 | P3 | Compare quality vs Expected Attention (S1) at 5x, 10x, 20x | MEDIUM | P1 + triattention S1 |
 | P4 | Test AM + Hadamard q4_0 stacking — quality under dual compression | MEDIUM | P2 |
 
@@ -262,4 +264,3 @@ Online compaction (repeated 50% compactions preserving reasoning state) opens a 
 - **[intake-554] PBKV** (arxiv:2605.06472, Zheng et al.) — **strongest orchestrator-stack match**. Workflow-level prediction of next-agent invocation drives KV residency. 1.85× over LRU on dynamic workflows. Maps directly onto frontdoor → coder/worker hand-offs where shared long prompts pay BW-bound re-prefill cost on EPYC. Requires a tiny next-agent predictor + llama.cpp prefix-cache hooks; complements frozen GGUF weights.
 
 **Net update to this handoff's roadmap**: KV reduction now has four distinguishable axes — write-time vs read-time selection (SP-KV vs H2O family), per-head vs uniform budget allocation (LU-KV/ForesightKV), workflow-aware vs request-local residency (PBKV), and learned vs heuristic (KVP/SP-KV/ForesightKV vs sink+window). The clearest near-term EPYC opportunity is **PBKV's workflow-aware residency** because it operates at the orchestrator layer (no attention-kernel surgery, no fine-tuning) and matches our frontdoor→worker hand-off pattern.
-

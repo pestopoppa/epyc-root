@@ -2,8 +2,8 @@
 
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-06-15
-**Sources**: 18 active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-13 K-RAG K7 seed/certification status and repo-readiness governance)
+**Last compiled**: 2026-06-19
+**Sources**: 18+ active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-19 K-RAG K7 certification result and wrap-up source-manifest refresh)
 
 ## Summary
 
@@ -79,11 +79,11 @@ The load-bearing rule is qualitative: line count is only a prompt to inspect. Co
 
 The 2026-06-15 wrap-up hygiene pass confirmed that a no-op compaction is an acceptable outcome when completed-history passages are still intertwined with live next actions, blockers, or reporting instructions. A later N11/N11a correction on the same day clarified the boundary: when commit-by-commit chronology starts burying the pickup contract, preserve that history in completed/archived siblings and compact the active handoff and master-index row back to current state plus next actions. Source: [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md).
 
-## K-RAG Validation Update (2026-06-13)
+## K-RAG Validation Update (2026-06-19)
 
 K1-K6 are no longer just architecture notes: the internal KB-RAG indexer/query path has shipped, and K7 now has both a seed harness and a certification pool. The fresh K7 build indexed 577 files into 18,010 chunks with about 1.2 GiB of embeddings. On the 20-case seed suite, the best recall@10 config was `recency_w0.1_s90` at 0.6417 overall, with no missed-all-evidence cases. Rerank settings improved recall@3 and first-evidence rank but lost recall@10 and introduced missed-all-evidence failures.
 
-The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The next clean-window action is to run that certification pool against `/mnt/raid0/llm/tmp/kbrag_index_k7_20260612`; only that sweep should update the retrieval-quality claim.
+The seed result is calibration only. The decision pool is now a 70-case evidence-grounded suite: 50 HotpotQA-style and 20 LoCoMo-style cases, with JSON/count/evidence validation passed. The certification sweep is complete: 420 rows passed artifact checks, `recency_w0.3_s90` was the zero-miss candidate with recall@10 `0.6167`, and `recency_w0.1_s90_rerank_w0.3` had the best aggregate recall@10 `0.6298` while missing three all-evidence cases. Use the zero-miss candidate for safety-sensitive retrieval defaults unless a later certification explicitly trades that property away.
 
 Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 
@@ -93,15 +93,15 @@ The repo-readiness scorer makes knowledge-management maturity measurable. Its v1
 
 Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
-## 2026-06-15 Update — K7 Moves To Certification
+## 2026-06-19 Update — K7 Certified, Wiki Compile Refreshed
 
-- **K7 is now a certification problem, not just a build problem.** The fresh index covered 577 files / 18,010 chunks / ~1.2 GiB of embeddings, and the 20-case seed suite only established a provisional best setting (`recency_w0.1_s90` at 0.6417 recall@10). Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+- **K7 is certified for a zero-miss retrieval candidate.** The full 70-case pool produced 420 valid rows; the aggregate winner has slightly higher recall@10, but the zero-miss candidate is the safer default for evidence-seeking workflows because it avoided all-evidence misses. Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 - **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 - **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
 ## Open Questions
 
-- What is the document-recall baseline via grep on our actual corpus? K7 will measure this against KB-RAG top-3.
+- Should the K7 zero-miss candidate become the default for Explore-agent KB retrieval, or should the higher-recall aggregate winner stay available only as an explicit exploratory mode?
 - Does SLIDERS' reconciliation pattern (provenance + rationale + metadata columns) yield governance insights useful for our wiki even if SQL-as-primary-path is not adopted? Worth investigating after KB-RAG K7 ships.
 - Can Flywheel's wikilink learning-loop scorer (accept/reject feedback updates link weights) be adapted for `wiki/INDEX.md` cross-reference quality? Deferred as K8.
 - What corpus scale threshold makes structured-DB alternatives (SLIDERS) viable vs ColBERT? Current rough estimate: >1M tokens; SLIDERS' headline gains are at 36M-token corpora, far above our scale.

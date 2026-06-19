@@ -2,9 +2,9 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-13 (manual incremental update: Fable 5 evidence-plane, routing truth, K-RAG K7, security hardening, repo-readiness, batch-serving gaps, stack-prior contract)
+**Last compiled**: 2026-06-19 (manual incremental update: W4/W7 evidence-plane, X-MAS function-axis routing, Attention Matching stale review, K-MEM measurement context)
 **Articles**: 26 compiled, 4 stub categories
-**Total sources**: 513 scanned documents across 6 source types; 2026-06-13 pass compiled the highest-value Fable/evidence/routing/K-RAG/stack-prior clusters
+**Total sources**: 513+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
 ---
 
@@ -14,7 +14,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Speculative Decoding](speculative-decoding.md) | 26 | Verification wall on hybrid SSM models kills all draft-verify approaches; NUMA parallelism is the dominant lever |
 | [MoE Optimization](moe-optimization.md) | 23 | REAP 25-40% expert pruning is near-lossless; 30% sometimes outperforms 20% due to routing redistribution |
-| [KV Cache](kv-cache.md) | 34 | Attention Matching achieves 50x compression; autopilot slot_compact integration complete with slot memory visibility |
+| [KV Cache](kv-cache.md) | 34 | Attention Matching is production-implemented but current-stack rollout decisions still need refreshed long-context/coding evidence |
 | [Quantization](quantization.md) | 25 | Hadamard+q4_0 is the proven production KV config; exotic formats (TQ3, PolarQuant, QJL) all lose to it on CPU |
 | [Hardware Optimization](hardware-optimization.md) | 58 | Batch=1 decode micro-opts are closed, but frontdoor spec-dec, DSA, batched eval serving, and MI210-as-eval-engine remain live angles |
 
@@ -31,15 +31,15 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 30 | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, and future distillation action spaces |
-| [Routing Intelligence](routing-intelligence.md) | 50 | Routing truth repair is live-attested; DAR-1 replay shows 0.00% identifiable regret, so routing expansion stays frozen |
-| [Benchmark Methodology](benchmark-methodology.md) | 54 | T1 instrument repair and per-question ledgers are the new benchmark priority; claims need protocol, reps, date, and attestation |
+| [Routing Intelligence](routing-intelligence.md) | 50+ | X-MAS now has a measured true function-axis table, but enforce remains default-off until live A/B |
+| [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs and audit alarms are now acceptance evidence |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
-| [Autonomous Research](autonomous-research.md) | 62 | AutoPilot's binding constraint is decision-grade evidence; hotfixes landed, ledger/event-sourcing work remains the restart inflection point |
+| [Autonomous Research](autonomous-research.md) | 62+ | AutoPilot sequential authority is code-complete but sample-gated; W7 now hardens critic context, eval clamps, audit alarms, and PEAF budget credit |
 | [Memory-Augmented Models](memory-augmented.md) | 25 | Episodic FAISS writes require cross-process locking; llama RAM drift needs residency telemetry/recycle, not drop_caches |
 
 ## Context & Compression
@@ -70,7 +70,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Search & Retrieval](search-retrieval.md) | 31 | K-RAG K7 seed eval picks recency-weighted recall@10, but final retrieval claim waits on the 70-case certification pool |
-| [Knowledge Management](knowledge-management.md) | 18 | K-RAG has a fresh 18K-chunk index and certification pool; repo-readiness scoring turns governance gaps into deterministic criteria |
+| [Knowledge Management](knowledge-management.md) | 18+ | K-RAG K7 certification produced a zero-miss retrieval candidate; wiki compile remains a derived wrap-up artifact |
 | [RAG Alternatives](rag-alternatives.md) | 2 | SLIDERS structured-DB+SQL alternative gated behind Phase 0 falsification (GPT-4.1 hard-wired adoption blocker; not on ColBERT upgrade path) |
 | [Tool Implementation](tool-implementation.md) | 24 | Security-review, source-quarantine validation, and repo-readiness scoring extend governance tooling without autonomous index edits |
 

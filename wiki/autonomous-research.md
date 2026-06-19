@@ -2,8 +2,8 @@
 
 **Category**: `autonomous_research`
 **Confidence**: verified
-**Last compiled**: 2026-06-15
-**Sources**: 62 documents (added 2026-06-13 evidence-plane restart plan, goodput shadow policy, event-sourcing, and frontier lab strategy)
+**Last compiled**: 2026-06-19
+**Sources**: 62+ documents (added 2026-06-19 W4/W6 readiness, W7 game-layer hardening, and PEAF budget-credit updates)
 
 ## Summary
 
@@ -135,11 +135,13 @@ A convergent wave of research in April 2026 brought four significant upgrades to
 - **Task-rate/goodput is now telemetry, not a gate.** Fable 5 correctly identified t/s blindness to token bloat, but the first replay did not meet the proof threshold and surfaced a zero-quality high-rate candidate. Keep `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` as planner-visible diagnostics until the quality-eligible policy replays cleanly after the evidence-plane restart. Source: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
 - **The strategic spine is real-task capture, self-running lab jobs, and a data flywheel.** Fable 5's F1-F3 frontier says the project should define its own demand distribution from recurring work, run local agents through reviewed lab-maintenance jobs, and convert those reviewed tuples into training data. The hard constraint is trust: intake-touching jobs must wait for injection hardening and write to review queues, not handoffs or indices directly. Source: [fable5-findings-07-strategic-frontiers.md](../handoffs/active/fable5-findings-07-strategic-frontiers.md).
 
-## 2026-06-15 Update — Evidence Plane Became The Default Research Substrate
+## 2026-06-19 Update — Evidence Plane Authority Remains Sample-Gated
 
 - **Archive reconstruction and strategy quarantine now live on the read side, not just in the narrative.** The evidence-plane handoff has concrete journal-derived archive reconstruction, strategy retrieval filtering by excluded evidence IDs, and generated STM previews, while full W1 cutover is still open. Sources: [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md), [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md).
 - **Planner hygiene now treats metric-free loops as a measurement problem.** Repeated meta bookkeeping actions are forced back into a small measured action, and learning-excluded trials must not emit keep guidance into the next planner pass. Sources: [progress/2026-06/2026-06-01.md](../progress/2026-06/2026-06-01.md), [progress/2026-05/2026-05-31.md](../progress/2026-05/2026-05-31.md), [tool-use-eval-contract.md](../handoffs/active/tool-use-eval-contract.md).
 - **Goodput and task-rate are useful only as shadow telemetry for now.** The objective work explicitly stops short of flipping live dominance until the evidence-plane restart and replay gates can validate the new metric surface. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/active/fable5-findings-05-objective-design.md).
+- **Sequential verdict authority is implemented but still blocked by evidence volume.** The W4 mechanism, AutoPilot call-site wiring, cached-verdict repair, fallback reselection, action-local gate threading, and failed-trial denominator repair remain default-off for authority. The current readiness report is `57/120` trusted vectors and `5/30` seq shadow rows, so the correct action is continued clean accrual, not a flag flip. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
+- **W7 hardens the game layer around evidence, not only the scalar gate.** The current W7 tranche adds critic-visible production measurement context, clamps production eval sampling knobs, reports audit-stream gaming alarms, and credits species budgets by PEAF information gain for trusted trials. The remaining W7 tail is richer per-question diff/provenance flags so critic and planner context can distinguish real effects from sampling or audit artifacts. Sources: [evidence-plane-ledger-and-sequential-verdicts.md](../handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
 
 ## Actionable for EPYC
 
@@ -347,7 +349,7 @@ Exact TB-2.0 numbers (verified from local PDF read at `/workspace/tmp/echo.pdf`)
 
 ### PEAF — EPYC-actionable spinoff (NOT ECHO, default-on)
 
-`scripts/autopilot/peaf.py` in epyc-orchestrator implements **Prediction-Error-As-Feature**: when the autopilot controller proposes a trial, optionally emit a `json:peaf_prediction` block forecasting the four eval objectives (quality / speed / cost / reliability). After dispatch, `peaf.compute_surprise()` logs L1 distance in normalized objective space alongside the actuals. Default-on (overhead ~$0.05-0.45/day in Claude output tokens; never feeds into Pareto scoring); disable via `EPYC_AUTOPILOT_PEAF=0` for a baseline A/B period. Cheap-kill criterion via `python autopilot.py peaf`: abandon if Pearson r² between surprise and Δquality from parent trial is < 0.10 over ≥200 predicted trials. Borrows ECHO's "prediction error = understanding signal" intuition without any RL training — the only ECHO-adjacent thing buildable on CPU today.
+`scripts/autopilot/peaf.py` in epyc-orchestrator implements **Prediction-Error-As-Feature**: when the autopilot controller proposes a trial, optionally emit a `json:peaf_prediction` block forecasting the four eval objectives (quality / speed / cost / reliability). After dispatch, `peaf.compute_surprise()` logs L1 distance in normalized objective space alongside the actuals. Default-on (overhead ~$0.05-0.45/day in Claude output tokens; never feeds into Pareto scoring); disable via `EPYC_AUTOPILOT_PEAF=0` for a baseline A/B period. Cheap-kill criterion via `python autopilot.py peaf`: abandon if Pearson r² between surprise and Δquality from parent trial is < 0.10 over ≥200 predicted trials. As of 2026-06-19, PEAF surprise also contributes a capped trusted-trial `budget_rate` for species rebalancing while leaving the legacy Pareto `rate` visible for diagnostics. Borrows ECHO's "prediction error = understanding signal" intuition without any RL training — the only ECHO-adjacent thing buildable on CPU today.
 
 ### Sources (2026-05-20 update)
 

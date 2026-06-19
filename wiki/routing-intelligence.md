@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-15
-**Sources**: 50 documents (added 2026-06-13 routing truth restoration, model descriptors, X-MAS scaffold, and Fable 5 routing architecture)
+**Last compiled**: 2026-06-19
+**Sources**: 50+ documents (added 2026-06-19 X-MAS true function-axis winner table and validator status)
 
 ## Summary
 
@@ -201,7 +201,7 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 - **The immediate routing defect was running-state truth, not a missing decision theory.** Fable 5 found production using test feature defaults and runtime flag mutation reaching only one of six uvicorn workers. The repair handoff landed explicit stack-managed feature env, shared `runtime_flags.json`, `/config/attest`, and a validation client that samples all workers. The immediate repair scope is complete and live-attested. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 - **Routing expansion is frozen by evidence, not indecision.** The 2026-06-12 DAR-1 replay over 12,057 decisions found 8,145 regret-identifiable learned decisions with 0.00% identifiable mean regret, while 99.1% of Q-values remained uniform. That keeps Phase 3 cascade work frozen until new action-top-k telemetry or a fresh gate changes the picture. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 - **Model-capability descriptors are the model-agnosticism interface.** The descriptor schema and compiler are keyed by model identity, not role, and now carry suite vectors, speed, GGUF-derived context, acceleration/thinking-control evidence, serving, and provenance for live deployed identities. The 2026-06-13 strict-evidence tranche moved shared-runtime aliases into `role_bindings.alias_overrides` / `evidence.alias_overrides`, so generated descriptors and stack priors compile with empty `known_gaps`; the remaining descriptor work is consumer migration and swap-CI, not basic evidence coverage. Source: [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
-- **X-MAS is partially scaffolded, not yet a live router.** The deterministic 5-domain x 5-function classifier, winner-table schema, and tests landed in orchestrator, but the production hook is deliberately separate because GitNexus impact on `_classify_and_route` is HIGH. The next decision-grade step is still the full 5x5 sweep and a guarded `XMAS_ROUTING_ENABLED` integration. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
+- **X-MAS has moved from scaffold to measured default-off decision table.** The deterministic 5-domain x 5-function classifier, guarded production hook, validator, true function-axis sweep, and compiled `orchestration/xmas_winner_table.yaml` are now present. The table is enforce-eligible by schema/evidence, but live behavior stays default-off until the held-out A/B confirms no quality or latency regression under production traffic. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
 - **Delete/freeze discipline is now part of routing architecture.** Dead confidence-routing and three-way routing paths were removed; `dispatch_swarm_fanout` remains under an ownership watch through 2026-07-12. Future shadow layers need durable telemetry and ratification paths or they should not run. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 
 ## Actionable for EPYC
@@ -401,23 +401,24 @@ optimization while rejecting parent-directory and symlink escapes outside the
 prompt root. X-MAS enforce routing stays gated on a validated complete 5x5
 winner table plus route-mutation tests.
 
-- **X-MAS enforce semantics are now guarded, but still default-off.**
+- **X-MAS enforce semantics are now guarded, evidence-backed, and still default-off.**
   `src/api/routes/chat_pipeline/routing.py` can apply a table winner only in
   `mode=enforce` when a complete configured 5x5 table is loaded, the
   classifier is confident, and no explicit forced role is present. The rewrite
   happens before failure-veto and downstream guards, so safety guards still get
-  final say. The eval-populated winner table and live A/B remain the open
-  X-MAS tail. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  final say. The true function-axis winner table is compiled; the live A/B
+  remains the open X-MAS tail. Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  [progress 2026-06-19](../progress/2026-06/2026-06-19.md),
   [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md),
   `src/classifiers/xmas_routing.py`, `src/api/routes/chat_pipeline/routing.py`.
 
-- **X-MAS winner-table production path now has evidence gates.** A research
-  builder converts existing X-MAS sweep summaries into an orchestrator winner
-  table with provenance and per-cell candidate metrics, and the generated
-  `xmas_winner_table.domain_proxy.yaml` captures the current v3 nothink domain
-  winners. The validator accepts that table as a shadow/advisory evidence
-  artifact, but refuses to validate `mode: enforce` against it because the
-  derivation reuses domain winners for all five functions. Live enforce now
-  requires true function-axis 5x5 sweep evidence plus the held-out A/B gate.
-  Sources: [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+- **X-MAS winner-table production path now has true function-axis evidence.**
+  The initial domain-proxy artifact remains shadow/advisory only, but the
+  later 5-domain x 5-function x 4-model sweep produced a complete 25-cell
+  table from measured rows and compiled it to
+  `orchestration/xmas_winner_table.yaml`. The validator refuses enforce mode
+  unless the table is complete and evidence-backed; the remaining gate is the
+  held-out live A/B and operator deploy decision. Sources:
+  [progress 2026-06-15](../progress/2026-06/2026-06-15.md),
+  [progress 2026-06-19](../progress/2026-06/2026-06-19.md),
   [X-MAS Heterogeneous Text-MAS Routing Spike](../handoffs/active/x-mas-text-routing.md).
