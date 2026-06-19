@@ -215,7 +215,10 @@ promotion pass consider `actionable_by=autopilot` or `gated:<condition>`.
 **2026-06-19 registry checkpoint:** `epyc-orchestrator` `3f6692b` canonicalized the live
 `orchestration/capability_registry.yaml` row id to `edit_transaction_auto_routing`, set it explicitly to
 `actionable_by=operator`, recorded the A2 kill condition in the row, and added a loader invariant that a
-`promotion_state=promoted` row must define `kill_condition`.
+`promotion_state=promoted` row must define `kill_condition`. Follow-up `63bbc8b` tightens that invariant:
+promoted rows must be `actionable_by=autopilot` and carry a non-empty string kill condition, while
+`actionable_by` itself is restricted to `operator`, `autopilot`, or `gated:<condition>`. Production remains
+explicit-only; no default chat routing was enabled.
 
 **Required clean-window evidence before enablement:**
 - Fixed code-edit slice of at least 50 routine edit tasks, comparing current default mode vs edit mode on the
