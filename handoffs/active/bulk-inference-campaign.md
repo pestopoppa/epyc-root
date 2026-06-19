@@ -2,7 +2,7 @@
 
 **Status**: active — see *Current State (2026-06-12) — Three-Queue Structure* below. Packages A-F complete + archived (`../completed/bulk-inference-2026-04-packages.md`); cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) closed/certified + archived. Live backlog: Queue-1 offline cleanup, the one consolidated quiesce window (Queue 2), the restart bundle (Queue 3), standalone model-batched windows, and Package I frozen after the current-traffic DAR-1 replay failed its gate. K-EVAL-1 folded into H5; J6 superseded. BEP-2 remediation is built; J8 is an optional decision experiment for the legacy batch-edit path, not the critical remediation gate. J7 offline replay closed 2026-06-12; DCP-6a repair code landed on the live orchestrator branch at `2e2e0d3` but server reload/attestation remains pending before J7 inference. K-RAG K7 certification is complete; its remaining work is doc hygiene/default-policy follow-through, not a formal sweep.
 **Created**: 2026-04-06
-**Updated**: 2026-06-13 — marked current-traffic DAR-1 replay closed (0.00% identifiable mean regret; Package I remains frozen) and landed J13 cosmetic BT prompt cleanup (`b8c0611`) after the 2026-06-12 three-queue restructure. Prior: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted.
+**Updated**: 2026-06-19 — G5 short-m@k runner and clean-window manifest wiring landed in research (`cbf00e1`), moving the standalone model-batched manifest to 21 ready / 2 blocked under observed live ports/contexts. Prior: 2026-06-13 — marked current-traffic DAR-1 replay closed (0.00% identifiable mean regret; Package I remains frozen) and landed J13 cosmetic BT prompt cleanup (`b8c0611`) after the 2026-06-12 three-queue restructure. Prior: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted.
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -61,10 +61,12 @@ Ordered manifest (one reload, then everything rides it):
   comments blocked rows instead of executing them. Current observed live ports
   and contexts (`frontdoor=8070/32768`, `worker_general=8072/16384`,
   `architect_general=8083/16384`, `ingest_long_context=8085/32768`) now yield
-  **18 ready / 5 blocked** cells after research `worker_general` was reconciled
-  to the live gemma4-26B-A4B target. Remaining blockers are: G5 runner still
-  absent, and the 32K RoPE cells for worker/architect exceed the currently
-  resident server contexts.
+  **21 ready / 2 blocked** cells after research `worker_general` was reconciled
+  to the live gemma4-26B-A4B target and G5 short-m@k runner wiring landed in
+  research `cbf00e1`. G5 commands now run k=3/m=3 sequential clean-window
+  majority voting over GPQA/math for frontdoor, worker, and architect. Remaining
+  blockers are only the 32K RoPE cells for worker/architect, which exceed the
+  currently resident server contexts.
 - **K-EMB-1** embedder-only (standalone granite/BGE servers; informs the N9/retrain-routing re-embed choice).
 - **H7** Ouro-2.6B transformers-CPU, serial (feeds H5).
 
@@ -187,7 +189,7 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 
 ### Prioritization (updated 2026-04-13)
 
-- **G1 + G5 together**: Memento S1 DONE. G5 (short-m@k voting) still pending — run if any GPQA/math eval is scheduled.
+- **G1 + G5 together**: Memento S1 DONE. G5 runner/manifest wiring is READY in research `cbf00e1`; run the clean-window G5 GPQA/math commands with the standalone model-batched window, not during active AutoPilot evidence collection.
 - **G2 + G3 sequentially**: G2 proxy DONE (gate passed). Full KVPress evaluation + G3 stacking test pending. **AM compaction is now the primary path** — P2 results show structured attention compresses near-losslessly at 2-5x with layer-adaptive strategy.
 - **G4**: Defer — FlowSteer library maturity unconfirmed.
 - **G6**: Low priority — v3 smoke tests showed no regression.

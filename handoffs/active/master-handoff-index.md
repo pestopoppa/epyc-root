@@ -51,10 +51,11 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
 - **Queue 3 — restart bundle**: N2 substrate/readiness reporting and J11 observe-only BSV are live/read-only, and W4 mechanism + default-off AutoPilot shadow wiring are landed, but W4/W6 authority cutover remains blocked. W5 `core_v2` calibration is held open/no-go after 5×300 rows (`33/40`, no promotion), with no smaller fallback `core_id` and no extra repeat planned in this window. The 2026-06-18 live sequential-readiness report is still blocked: trusted vectors 26, raw 33, untrusted 7, seq shadow rows 0, no flip-rate denominator. Continue vector collection and collect live AutoPilot `seq` shadow rows only after a clean restart window and successful barrier checks.
 - **Standalone model-batched windows** (~27h): clean-window manifest/commands are staged in research
   `docs/data/clean_window_measurement_manifest.json` and
-  `docs/data/clean_window_measurement_commands.sh` (18 ready / 5 blocked using the current live
-  ports/contexts after research `worker_general` was reconciled to the live gemma4 worker). It groups
-  K-MEM-1 × K-ROPE-1 × G11 × G5 **by model** so each GGUF loads once; G5 remains blocked on short-m@k
-  runner wiring. K-EMB-1 embedder-only; H7 transformers-CPU serial.
+  `docs/data/clean_window_measurement_commands.sh` (21 ready / 2 blocked using the current live
+  ports/contexts after research `worker_general` was reconciled to the live gemma4 worker and G5
+  short-m@k runner wiring landed in research `cbf00e1`). It groups K-MEM-1 × K-ROPE-1 × G11 × G5
+  **by model** so each GGUF loads once; only the worker/architect 32K RoPE cells remain blocked by
+  resident context. K-EMB-1 embedder-only; H7 transformers-CPU serial.
 - **Frozen after DAR-1 replay**: Package I (SPO+/bilinear/ThinkPRM) stays frozen because the 2026-06-12 replay measured 0.00% identifiable mean regret (<5% gate).
 - Stale premises corrected in the campaign doc's §Staleness corrections: J6 superseded (continuous run IS the soak), G9 targets the removed architect_coding role, G10/G11 name pre-swap models, J12 wiring was verified against LlamaServerBackend `/v1/chat/completions` (not openai.py), flag A/Bs set flags via launch env + per-worker attestation, speed-metric paragraph changes when the task_rate objective lands.
 
