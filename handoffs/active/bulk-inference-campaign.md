@@ -2,7 +2,7 @@
 
 **Status**: active — see *Current State (2026-06-12) — Three-Queue Structure* below. Packages A-F complete + archived (`../completed/bulk-inference-2026-04-packages.md`); cross-role N-way matrix + within-role placement SM (J1/J4a-J4c/J4/J5) closed/certified + archived. Live backlog: Queue-1 offline cleanup, the one consolidated quiesce window (Queue 2), the restart bundle (Queue 3), standalone model-batched windows, and Package I frozen after the current-traffic DAR-1 replay failed its gate. K-EVAL-1 folded into H5; J6 superseded. BEP-2 remediation is built; J8 is an optional decision experiment for the legacy batch-edit path, not the critical remediation gate. J7 offline replay closed 2026-06-12; DCP-6a repair code landed on the live orchestrator branch at `2e2e0d3` but server reload/attestation remains pending before J7 inference. K-RAG K7 certification is complete; its remaining work is doc hygiene/default-policy follow-through, not a formal sweep.
 **Created**: 2026-04-06
-**Updated**: 2026-06-19 — K-ROPE chat-harness repair landed in research (`8dbb613`), clean-window 4K cells landed in `e1e6bb8`, and clean-window 8K cells landed in `8944349` (`frontdoor`, `architect_general`, `ingest_long_context`: each completed cell 100/100, 0 skipped, accuracy 1.000). `worker_general` is blocked by a Gemma4 MTP serving/slot-state issue, not by RoPE evidence. Earlier the same day, G5 short-m@k runner and clean-window manifest wiring landed in research (`cbf00e1`), moving the standalone model-batched manifest to 21 ready / 2 blocked under observed live ports/contexts. Prior: 2026-06-13 — marked current-traffic DAR-1 replay closed (0.00% identifiable mean regret; Package I remains frozen) and landed J13 cosmetic BT prompt cleanup (`b8c0611`) after the 2026-06-12 three-queue restructure. Prior: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted.
+**Updated**: 2026-06-19 — K-ROPE chat-harness repair landed in research (`8dbb613`), clean-window 4K cells landed in `e1e6bb8`, clean-window 8K cells landed in `8944349`, and 16K `frontdoor` / `ingest_long_context` cells landed in `cbc1597` (each completed cell 100/100, 0 skipped, accuracy 1.000). Research `971a448` corrected clean-window manifest readiness so exact-boundary chat RoPE cells are blocked instead of run; the current standalone manifest is 17 ready / 6 blocked under observed live ports/contexts. `worker_general` is blocked by a Gemma4 MTP serving/slot-state issue, not by RoPE evidence. Earlier the same day, G5 short-m@k runner and clean-window manifest wiring landed in research (`cbf00e1`). Prior: 2026-06-13 — marked current-traffic DAR-1 replay closed (0.00% identifiable mean regret; Package I remains frozen) and landed J13 cosmetic BT prompt cleanup (`b8c0611`) after the 2026-06-12 three-queue restructure. Prior: 2026-06-12 — restructured into 3 queues (offline-now / one consolidated quiesce window / restart bundle) + standalone model-batched windows + frozen-pending-DAR-1 block, per the Fable 5 portfolio pass; added a §Staleness corrections block; respecified stale G9/G10/G11 model-role rows against the live stack; K-EVAL-1 folded into H5; closed placement/matrix gates compacted.
 **Categories**: evaluation, inference, coordination
 **Priority**: HIGH
 **Depends on**: Package A results (complete)
@@ -61,12 +61,15 @@ Ordered manifest (one reload, then everything rides it):
   comments blocked rows instead of executing them. Current observed live ports
   and contexts (`frontdoor=8070/32768`, `worker_general=8072/16384`,
   `architect_general=8083/16384`, `ingest_long_context=8085/32768`) now yield
-  **21 ready / 2 blocked** cells after research `worker_general` was reconciled
-  to the live gemma4-26B-A4B target and G5 short-m@k runner wiring landed in
+  **17 ready / 6 blocked** cells after exact-boundary chat RoPE probes were
+  blocked in research `971a448`; before that correction the plan incorrectly
+  advertised 16K cells on 16K servers and 32K cells on 32K servers as ready.
+  Research `worker_general` was reconciled to the live gemma4-26B-A4B target
+  and G5 short-m@k runner wiring landed in
   research `cbf00e1`. G5 commands now run k=3/m=3 sequential clean-window
   majority voting over GPQA/math for frontdoor, worker, and architect. Remaining
-  blockers are only the 32K RoPE cells for worker/architect, which exceed the
-  currently resident server contexts.
+  blocked K-ROPE rows are exact-boundary or over-boundary cells without
+  chat-template headroom.
 - **2026-06-19 K-ROPE execution progress**: research `8dbb613` repaired the
   K-ROPE harness/manifest to use the live chat-completions path with
   `enable_thinking=false`; the previous `/completion` diagnostic returned only
@@ -75,11 +78,17 @@ Ordered manifest (one reload, then everything rides it):
   `ingest_long_context` each answered 100/100 with 0 skipped rows and
   accuracy=1.000. Research `8944349` records the corresponding 8K cells for the
   same three roles, again each 100/100 with 0 skipped rows and accuracy=1.000.
+  Research `cbc1597` records valid 16K cells for `frontdoor` and
+  `ingest_long_context`, both 100/100 with 0 skipped rows and accuracy=1.000.
+  The attempted `architect_general` 16K cell hit HTTP 400 for all rows at the
+  exact live context and was not committed; `971a448` now blocks that row.
   `worker_general` is blocked separately: 4K timed out on its first 120s
-  request, a 512-token diagnostic also timed out, and `/slots` retained the
-  diagnostic prompt with one decoded token and three remaining despite `/health`
-  reporting idle. Do not schedule more worker K-ROPE traffic until the Gemma4
-  MTP 8072 serving path is repaired/restarted and re-attested.
+  request, a 512-token diagnostic also timed out, and a retry after a clean
+  `toolrunner` reload timed out again before the worker was reloaded to restore
+  health. Do not schedule more worker K-ROPE traffic until the Gemma4 MTP 8072
+  serving path is fixed and re-attested. A parallel `architect_general` G5
+  short-m@k attempt failed with no successful completions and left no valid
+  artifact.
 - **K-EMB-1** embedder-only (standalone granite/BGE servers; informs the N9/retrain-routing re-embed choice).
 - **H7** Ouro-2.6B transformers-CPU, serial (feeds H5).
 
