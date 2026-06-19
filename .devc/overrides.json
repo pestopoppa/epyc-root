@@ -5,7 +5,8 @@
     "--network=host",
     "--pid=host",
     "--ipc=host",
-    "--ulimit", "memlock=-1:-1"
+    "--ulimit", "memlock=-1:-1",
+    "--ulimit", "core=0:0"
   ],
   "mounts": [
     "source=/mnt/raid0/llm,target=/mnt/raid0/llm,type=bind",
@@ -14,8 +15,10 @@
     "source=claude-code-config-epyc,target=/home/node/.claude,type=volume",
     "source=codex-config-epyc,target=/home/node/.codex,type=volume",
     "source=gh-config-epyc,target=/home/node/.config/gh,type=volume",
-    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly"
+    "source=${localEnv:HOME}/.gitconfig,target=/home/node/.gitconfig,type=bind,consistency=cached,readonly",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
   ],
+  "postStartCommand": "sudo groupmod -g $(stat -c '%g' /var/run/docker.sock) docker 2>/dev/null || true",
   "containerEnv": {
     "LD_LIBRARY_PATH": "/opt/AMD/aocc-compiler-5.0.0/lib:/mnt/raid0/llm/llama.cpp/build/bin:/mnt/raid0/llm/llama.cpp-dflash/build/bin",
     "OMP_NUM_THREADS": null

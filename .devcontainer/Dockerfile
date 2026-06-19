@@ -72,6 +72,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     htop \
     time \
     bc \
+    docker.io \
+    clang-20 \
+    git-lfs \
+    ruff \
+    sqlite3 \
   && rm -rf /var/lib/apt/lists/*
 RUN if command -v fdfind >/dev/null 2>&1 && [ ! -e /usr/local/bin/fd ]; then \
     ln -s /usr/bin/fdfind /usr/local/bin/fd; \
@@ -128,6 +133,20 @@ RUN echo '. /etc/profile.d/00-commandhistory.sh' >> /etc/bash.bashrc \
   && touch /etc/zsh/zshrc \
   && echo 'source /etc/profile.d/00-commandhistory.sh' >> /etc/zsh/zshrc
 
+# Suppress core dumps for normal container processes.
+# --ulimit core=0:0 in runArgs is the primary control; this is shell defense in depth.
+RUN cat >/etc/profile.d/01-nocoredumps.sh <<'EOF'
+ulimit -c 0 2>/dev/null || true
+EOF
+
+RUN chmod 0644 /etc/profile.d/01-nocoredumps.sh \
+  && echo '. /etc/profile.d/01-nocoredumps.sh' >> /etc/bash.bashrc \
+  && echo 'source /etc/profile.d/01-nocoredumps.sh' >> /etc/zsh/zshrc
+
+# Fish does not read /etc/profile.d.
+RUN mkdir -p /etc/fish/conf.d \
+  && echo 'ulimit -c 0 2>/dev/null; or true' > /etc/fish/conf.d/nocoredumps.fish
+
 # Helpful marker for shell prompts / scripts.
 ENV DEVCONTAINER=true
 
@@ -171,6 +190,11 @@ RUN uv python install 3.14
 # Passwordless sudo for the non-root user (for unattended / automation workflows).
 USER root
 RUN echo "node ALL=(root) NOPASSWD: ALL" > /etc/sudoers.d/yolo \
-  && chmod 0440 /etc/sudoers.d/yolo
+  && chmod 0440 /etc/sudoers.d/yolo \
+  && usermod -aG docker node
+
+# Global CLI tools baked into the image so they survive container rebuilds.
+RUN --mount=type=cache,target=/root/.npm \
+  npm install -g gitnexus@1.6.1
 
 USER node
