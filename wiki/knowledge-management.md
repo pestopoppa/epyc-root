@@ -3,7 +3,7 @@
 **Category**: `knowledge_management`
 **Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
 **Last compiled**: 2026-06-19
-**Sources**: 18+ active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-19 K-RAG K7 certification result and wrap-up source-manifest refresh)
+**Sources**: 18+ active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-19 K-RAG K7 certification result and wrap-up/freshness audit refresh)
 
 ## Summary
 
@@ -78,6 +78,8 @@ The first compaction pass created or refreshed 11 completed ledgers: Lightning A
 The load-bearing rule is qualitative: line count is only a prompt to inspect. Compact only when the first screen of the active handoff no longer answers "what do I do next?" Large active handoffs whose open work is itself large should stay whole. For partial compaction, create or extend the sibling and edit the active file in place; reserve `git mv` for fully complete handoffs. Source: [`handoff-backlog-hygiene-audit.md`](../handoffs/completed/handoff-backlog-hygiene-audit.md), [`progress/2026-05/2026-05-28.md`](../progress/2026-05/2026-05-28.md), [`wrap-up.md`](../.claude/commands/wrap-up.md).
 
 The 2026-06-15 wrap-up hygiene pass confirmed that a no-op compaction is an acceptable outcome when completed-history passages are still intertwined with live next actions, blockers, or reporting instructions. A later N11/N11a correction on the same day clarified the boundary: when commit-by-commit chronology starts burying the pickup contract, preserve that history in completed/archived siblings and compact the active handoff and master-index row back to current state plus next actions. Source: [`progress/2026-06/2026-06-15.md`](../progress/2026-06/2026-06-15.md).
+
+The 2026-06-19 manual wrap-up rerun confirmed the same evidence-based pruning rule: a full audit can legitimately archive or compact nothing when active indices already expose the pickup state. The handoff freshness check is a hard stale gate, not a reason to reset mtimes. Operational detail: `scripts/validate/check_handoff_freshness.sh` accepts positional numeric thresholds (`WARN_DAYS`, `STALE_DAYS`) despite usage text mentioning long options; the default run reported `0 stale (>30d)` and `23 aging (>14d)`. Source: [`progress/2026-06/2026-06-19.md`](../progress/2026-06/2026-06-19.md).
 
 ## K-RAG Validation Update (2026-06-19)
 
