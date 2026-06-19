@@ -91,6 +91,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   `render_stack_summary.py:registry_role_rows` now emits only canonical current
   roles or generic chain aliases resolved to canonical roles, and skips retired
   serialized aliases or arbitrary auxiliary server names.
+- 2026-06-19 AutoPilot system-card fail-closed cleanup landed in Orchestrator
+  `523cb02`: `_render_system_card()` no longer falls back to checked-in
+  `system_card.md` when live generation breaks. The degraded card blocks stale
+  planner/operator stack truth by explicitly marking live role, port, tier,
+  throughput, baseline, and trust-boundary facts unavailable until
+  `gen_system_card.py --check` passes again.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked
@@ -112,9 +118,11 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   expiring; remove them if compatibility no longer needs them.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
-  Latest completed slice: Orchestrator `95a23aa` canonicalized the
-  generated-stack-docs raw-registry degraded fallback; remaining slices should
-  continue to distinguish de-duplication from deliberate precedence changes.
+  Latest completed slices: Orchestrator `95a23aa` canonicalized the
+  generated-stack-docs raw-registry degraded fallback, and `523cb02` made
+  AutoPilot system-card generation fail closed instead of reusing checked-in
+  stale guidance; remaining slices should continue to distinguish
+  de-duplication from deliberate precedence changes.
 - [ ] Finish W4 swap-CI so representative stack changes prove generated
   descriptors, stack priors, q_scorer priors, operator summary, promotion-gate
   execution, and selected consumer witnesses move together. The simulated

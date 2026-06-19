@@ -81,6 +81,11 @@ unowned local constants.
   and compiled descriptors as the normal sources for operator/system-card role
   rows, while the last-resort raw-registry fallback now canonicalizes generic
   chain aliases and refuses retired or arbitrary server-mode aliases.
+- AutoPilot controller system-card rendering now fails closed when the live
+  generator is unavailable instead of falling back to checked-in
+  `scripts/autopilot/system_card.md`; degraded controller guidance explicitly
+  says live role/port/tier/throughput facts are unavailable and forbids using
+  historical docs, memories, or old logs as authoritative stack truth.
 - `scripts.autopilot.preflight_audit` was re-audited after the generated-prior
   migrations: live model-server targets already come from stack-prior serving
   URLs, while the remaining degraded fallback intentionally reads
