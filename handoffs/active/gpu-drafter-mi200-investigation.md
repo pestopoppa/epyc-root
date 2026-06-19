@@ -1,6 +1,6 @@
 # GPU-Drafter on MI200 — Frontdoor Acceleration + CPU-Tier Spec-Dec
 
-**Status**: BLOCKED 2026-06-14 - CPU-testable N5 alpha is now blocked on qwen35/qwen35moe M-RoPE decode-position failures; fail-closed safety patch landed
+**Status**: PATCHED-PENDING-RETEST 2026-06-19 - CPU-testable N5 alpha still has no acceptance-rate evidence; tree speculative branch sequence capacity is fixed in llama.cpp `a6c793fc6`, so the next gate is a clean aligned qwen35/frontdoor retest
 **Created**: 2026-05-27 (via session synthesis + companion `/research-intake` run)
 **Categories**: speculative_decoding, hardware_optimization, inference_serving, local_inference
 **Hardware gate**: contingent on MI200-class GPU (MI210 or MI250/X) acquisition. GT 1030 (currently present) is BW-poorer than CPU and not viable for any role here — see § GT 1030 falsification.
@@ -10,6 +10,8 @@
 > **N5 blocker / rescope (updated 2026-06-14)**: the CPU-testable alpha attempt for target `/mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf` with draft `/mnt/raid0/llm/models/Qwen3-1.7B-Q8_0.gguf` at `gamma=3` is invalid evidence. Both `llama-server` and `llama-cli` abort in the current production llama.cpp external-draft path with `init: invalid seq_id[1][0] = 1 >= 1`, `get_logits_ith: invalid logits id 1`, and `common/sampling.cpp:152: GGML_ASSERT(logits != nullptr) failed` through `common_speculative_state_tree::draft` / `common_speculative_draft`. Metadata confirms the stale premise: target tokenizer is qwen35 (`n_vocab=248320`, EOS `248046`, BOS/PAD `248044`), while Qwen3-1.7B is qwen2 (`n_vocab=151936`, EOS `151645`, BOS/PAD `151643`).
 >
 > Qwen3.5-0.8B Q8/Q4 are still the right qwen35-family candidates by token/merge arrays. A disposable, metadata-aligned draft copy outside git at `/mnt/raid0/llm/scratch/n5/Qwen3.5-0.8B-Q8_0.frontdoor-specials.gguf` changed BOS/EOS/PAD to the frontdoor target values (`bos=248044`, `eos=248046`, `pad=248044`); token arrays, merges, and token_type already matched. With that copy, `llama-speculative` passed compatibility and ran, proving special-token metadata was the first blocker. It still emitted repeated M-RoPE decode failures even with `--draft 1`; draft2/draft4 were worse. Do **not** route N5 through Qwen3-1.7B or bin any Qwen3.5-0.8B crash/compatibility/fail-closed smoke as alpha evidence. The immediate safety patch is llama.cpp private-fork commit `53e9a6550` (`Fail closed on speculative decode errors`), which prevents crashes/fake success by exiting `llama-speculative` non-zero on decode failure and making shared speculative draft/tree paths return empty drafts on negative `llama_decode`. Real performance alpha remains blocked until the underlying qwen35/qwen35moe M-RoPE/GDN decode-position/rollback issue is fixed, or a non-failing draft path is found. TLI/SLEM or train/retrofit work is still required before Qwen3-1.7B is decision-useful.
+>
+> **N5 repair update (2026-06-19)**: llama.cpp commit `a6c793fc6` (`Fix tree speculative draft sequence capacity`) fixes the concrete tree-spec sequence-shape bug behind `invalid seq_id[...] = 1 >= 1`. The tree implementation was allocating both the draft context and batch as single-sequence while later creating branch sequence ids `1..31`; the patch centralizes `SPEC_TREE_MAX_SEQS=32`, applies it to tree draft-context initialization, applies it to the tree batch allocation, and replaces the hard-coded branch guard. Validation: GitNexus impact on `common_speculative_state_tree::draft` was LOW; `git diff --check`; `cmake --build build --target llama-speculative -j $(nproc)`; `cmake --build build --target llama-server -j $(nproc)`. Two disposable server smokes were attempted on port `19087` with 2-thread CPU-only model pairs, but both exited during model load before decode under the current loaded/no-GPU environment; PIDs were verified gone. Treat this as a code unblock for the `seq_id >= 1` failure, not alpha evidence. The next valid N5 action is a clean aligned qwen35/frontdoor retest that actually reaches draft/verify and reports acceptance data.
 
 ---
 
@@ -162,12 +164,12 @@ The clean retest is the experiment described below.
 
 ## The Gating Measurement — $\alpha$(frontdoor drafter → Qwen3.6)
 
-**This remains the single highest-leverage measurement in this investigation, but N5 is blocked as of 2026-06-14.** A single number - the production-traffic acceptance rate of a validated frontdoor drafter against Qwen3.6 at $\gamma=3$ - gates three independent downstream investments. The attempted Qwen3-1.7B measurement does not supply that number because the pair is tokenizer-incompatible and the current llama.cpp external-draft path crashes. Qwen3.5-0.8B Q8/Q4 match the qwen35 token/merge arrays, and the scratch aligned Q8 copy clears special-token compatibility, but aligned linear/server smokes still fail before any decision-grade acceptance data because of qwen35/qwen35moe M-RoPE/GDN decode-position failures.
+**This remains the single highest-leverage measurement in this investigation, but N5 still has no acceptance-rate evidence as of 2026-06-19.** A single number - the production-traffic acceptance rate of a validated frontdoor drafter against Qwen3.6 at $\gamma=3$ - gates three independent downstream investments. The attempted Qwen3-1.7B measurement does not supply that number because the pair is tokenizer-incompatible. Qwen3.5-0.8B Q8/Q4 match the qwen35 token/merge arrays, and the scratch aligned Q8 copy clears special-token compatibility. The 2026-06-19 tree sequence-capacity fix removes the `seq_id >= 1` shape failure from the tree path, but it must be followed by a clean aligned qwen35/frontdoor retest before any decision-grade acceptance data exists.
 
 Acceptable evidence must come from one of these paths:
 
 - a Qwen3.5-0.8B aligned-metadata draft path that passes linear `llama-speculative` without negative `llama_decode` returns and actually drafts tokens;
-- a fixed or disabled/avoided llama.cpp external-draft tree path for qwen35/qwen35moe M-RoPE/GDN rollback, followed by a clean server smoke that actually drafts tokens; fail-closed behavior alone is safety containment, not performance evidence;
+- the fixed llama.cpp external-draft tree path from `a6c793fc6`, followed by a clean aligned qwen35/frontdoor server smoke that actually drafts tokens; fail-closed behavior alone is safety containment, not performance evidence;
 - a non-M-RoPE target/draft path that can answer the CPU alpha question without confusing it with qwen35/qwen35moe path bugs;
 - a ported heterogeneous-vocabulary algorithm such as Timor TLI/SLEM, or a trained/retrofitted drafter that makes Qwen3-1.7B compatible enough to evaluate after the external-draft path is usable.
 
@@ -198,6 +200,14 @@ See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../
 - **Operator hygiene**: without `LD_LIBRARY_PATH`, the isolated executable loaded production shared libs and reproduced the old abort (`/tmp/n5_qwen35_0_8b_q8_aligned_server_failclosed_20260614_062552.log`). Future isolated llama.cpp tests must bind the matching build's shared libraries.
 - **Conclusion**: N5 is no longer blocked on tokenizer metadata alone. Aligned metadata clears compatibility, but Qwen35/Qwen35moe external speculation still has M-RoPE/GDN decode-position failures. Speeds from these CPU-only/contention smokes are observations only and must not gate performance decisions.
 
+## 2026-06-19 Advancement - Tree Speculative Sequence Capacity
+
+- **Root cause addressed**: tree speculation allocated the draft context/batch for one sequence while its DySpec frontier creates branch sequence ids `1..31`. That matched the observed `invalid seq_id[...] = 1 >= 1` failure.
+- **Patch landed**: llama.cpp `a6c793fc6` centralizes `SPEC_TREE_MAX_SEQS=32`, widens only tree speculation's draft context and batch capacity, and uses the same constant for the branch guard. Linear draft speculation remains single-sequence.
+- **Validation**: GitNexus upstream impact for `common_speculative_state_tree::draft` was LOW; `git diff --check`; `cmake --build build --target llama-speculative -j $(nproc)`; `cmake --build build --target llama-server -j $(nproc)`.
+- **Smoke status**: disposable server smokes on port `19087` did not reach decode. The obsolete tiny model failed GGUFv1 load, and two modern small-model attempts exited during model load under the current no-GPU/loaded environment. All attempted PIDs were verified gone. Do not count these as acceptance-rate evidence.
+- **Next gate**: rerun the aligned qwen35/frontdoor N5 smoke in a clean window and bin alpha only if the path reaches draft/verify and emits real acceptance data.
+
 ---
 
 ## Retest Plan (gated on MI200 acquisition)
@@ -216,7 +226,7 @@ See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../
 ### Stage 1 — External GPU drafter for CPU-resident frontdoor (validated vocabulary path only)
 
 - Place Qwen3.6 on CPU (current state).
-- Place a validated drafter on the MI200 only after Qwen3.5-0.8B aligned-metadata linear/server smokes pass without M-RoPE/GDN decode failures, or after a different non-failing draft path is found. The fail-closed patch must be present for safety but does not satisfy the alpha gate.
+- Place a validated drafter on the MI200 only after Qwen3.5-0.8B aligned-metadata linear/server smokes pass on the `a6c793fc6` tree-capacity fix and emit real draft/verify acceptance data, or after a different non-failing draft path is found. The fail-closed patch must be present for safety but does not satisfy the alpha gate.
 - Run llama.cpp's spec-dec path with cross-device drafter + target.
 - **Gate**: ≥1.3× end-to-end speedup on frontdoor workload, plus usable alpha evidence. If this fails for a valid pair, no other GPU-drafter configuration will pay off.
 
@@ -248,7 +258,7 @@ See [`research/deep-dives/2026-05-27-cross-tokenizer-specdec-and-mtp.md`](../../
 
 ## Open Questions
 
-1. **Can any validated qwen35-compatible path draft tokens?** The aligned Qwen3.5-0.8B Q8 copy clears compatibility but fails during qwen35/qwen35moe M-RoPE/GDN decode-position handling even at `--draft 1`; production server tree speculation also fails unless the new fail-closed path falls back. The next gate is repairing/avoiding that decode path or finding a non-failing draft path, then rerunning a clean linear/server smoke before any server alpha binning. The current Qwen3-1.7B and Qwen3.5-0.8B crash/fallback outputs cannot be used as alpha evidence.
+1. **Can any validated qwen35-compatible path draft tokens?** The aligned Qwen3.5-0.8B Q8 copy clears compatibility, and llama.cpp `a6c793fc6` fixes the tree branch sequence-capacity failure that produced `invalid seq_id >= 1`. The next gate is rerunning a clean aligned linear/server smoke before any server alpha binning. The current Qwen3-1.7B and Qwen3.5-0.8B crash/fallback/model-load outputs cannot be used as alpha evidence.
 2. **Which MI200 SKU?** MI210 single-GCD vs MI250/X dual-GCD changes the contention story. MI250/X is architecturally cleaner; MI210 is likely cheaper used. Worth concrete pricing scan before committing.
 3. **PCIe-NUMA placement.** Under NPS4, each CPU NUMA node owns separate PCIe lanes. Which CPU node's lanes host the GPU determines latency to each CPU-resident role. Worth `lspci -vv` + `numactl --hardware` audit at install time. Cost is µs-scale, not catastrophic, but it tilts which CPU-role pairs best with which drafter slot.
 4. **ROCm + custom llama.cpp fork.** gfx90a (MI200) is supported in upstream llama.cpp; need to verify HIP build leg in our fork including the v5 kernels (CPU2 AVX-512BW won't apply but other knobs do).
