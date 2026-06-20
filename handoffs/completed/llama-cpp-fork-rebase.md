@@ -2,7 +2,7 @@
 
 > Archived to `handoffs/completed/` on 2026-05-27. This tracker was superseded once the kernel push/rebase path landed.
 
-**Status**: superseded — merged into [llama-cpp-kernel-push-rebase.md](../active/llama-cpp-kernel-push-rebase.md). v4 branch has all cherry-picks + full rebase + TIDE.
+**Status**: COMPLETED / superseded — merged into [llama-cpp-kernel-push-rebase.md](llama-cpp-kernel-push-rebase.md). v4 branch has all cherry-picks + full rebase + TIDE.
 **Created**: 2026-04-20
 **Updated**: 2026-04-20
 **Priority**: HIGH (blocking quality benchmarks for Qwen3.6, M2.7, Gemma4)

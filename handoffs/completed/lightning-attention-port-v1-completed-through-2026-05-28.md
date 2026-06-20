@@ -6,7 +6,7 @@
 
 # Lightning Attention Port to llama.cpp
 
-**Status**: REFRESHED 2026-05-28 — v1 port COMPLETE; active only for quality, long-context, drafter, and profile-gated L5 validation. Do not redo L1-L4 unless the branch no longer builds.
+**Status**: COMPLETED / historical v1 ledger — v1 port complete; current quality, long-context, drafter, and profile-gated L5 validation lives in `../active/lightning-attention-port.md`. Do not redo L1-L4 unless the branch no longer builds.
 **Created**: 2026-04-29 (after audit of `llama.cpp-experimental` revealed Lightning Attention is essentially a constant-`g` GLA op)
 **Updated**: 2026-05-28 (executor-facing validation slice added; historical implementation log retained below)
 **Categories**: ssm_hybrid, context_extension, kv_cache, training_distillation, inference_serving

@@ -17,7 +17,7 @@
 
 ---
 
-**Status**: SPIKE RESOLVED — **NO-GO-roofline + NO-GO-backend** (2026-05-27). Re-eval triggers documented in § Resolution below. Keep in active/ as a frozen reference for the re-eval conditions; do NOT promote to implementation handoff.
+**Status**: COMPLETED / spike resolved — **NO-GO-roofline + NO-GO-backend** (2026-05-27). Re-eval triggers documented in § Resolution below. Keep this completed file as the frozen reference for the re-eval conditions; do NOT promote to implementation handoff.
 **Created**: 2026-05-27 (from research-intake of Fortytwo Network)
 **Categories**: speculative_decoding, swarm_techniques, agent_architecture, hardware_optimization
 **Priority**: LOW until the premise is verifiable; do NOT start before [`swarm-dataset-distillation.md`](../active/swarm-dataset-distillation.md) Phase-1 decision is in.

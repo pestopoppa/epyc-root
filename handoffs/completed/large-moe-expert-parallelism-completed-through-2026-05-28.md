@@ -2,7 +2,7 @@
 
 # CPU15 — Large-MoE as Primary Target + Expert Parallelism
 
-**Status**: **ACTIVE (Phase 3 complete, 2026-04-26 evening) — EP wins DOWNGRADED to noise on proper baseline**. Inter-process EP is bit-correct but the historical "+17% on Qwen3.6-35B Q8_0" win was measured against the warmed mmap=1 reference; on the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all`) EP delivers **+1.6%** (noise). The "−47% regression on REAP-246B" was also a sub-baseline artifact — on proper canonical EP is **neutral** (5.92 vs 5.94, 0%). EP machinery is no longer a meaningful production gain on its own; production candidacy is now solely the canonical config change. See `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
+**Status**: COMPLETED / historical ledger — Phase 3 completed 2026-04-26 evening; EP wins were downgraded to noise on the proper baseline. Inter-process EP is bit-correct but the historical "+17% on Qwen3.6-35B Q8_0" win was measured against the warmed mmap=1 reference; on the proper cold-cache canonical (`--mmap 0 + numactl --interleave=all`) EP delivers **+1.6%** (noise). The "−47% regression on REAP-246B" was also a sub-baseline artifact — on proper canonical EP is **neutral** (5.92 vs 5.94, 0%). EP machinery is no longer a meaningful production gain on its own; production candidacy is now solely the canonical config change. See `data/cpu_optimization/2026-04-26-compounding/SUMMARY.md`.
 
 > **2026-04-26 evening compounding-matrix correction (load-bearing)**:
 >

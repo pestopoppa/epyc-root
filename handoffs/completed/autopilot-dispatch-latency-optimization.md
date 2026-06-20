@@ -14,7 +14,7 @@
 
 ---
 
-**Status**: active implementation handoff; initial code landed 2026-05-26.
+**Status**: COMPLETED / historical reference — initial code landed 2026-05-26; optional residuals are documented in the closure note above.
 **Created**: 2026-05-26
 **Updated**: 2026-05-26
 **Priority**: HIGH

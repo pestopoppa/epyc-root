@@ -1,6 +1,6 @@
 # v5 Kernel Push — Cleanup Audit
 
-**Status**: ACTIVE — pending execution
+**Status**: COMPLETED 2026-04-30 — v5 cleanup audit executed and `production-consolidated-v5` was later pushed; this file is the historical audit ledger.
 **Priority**: HIGH (gates `production-consolidated-v5` branch creation)
 **Created**: 2026-04-30
 **Owner**: TBD (single dedicated session)

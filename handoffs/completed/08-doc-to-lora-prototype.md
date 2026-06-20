@@ -12,7 +12,7 @@
 
 ---
 
-**Status**: BACKBURNER (reference material) — 2026-04-21 audit confirms: keep in `active/` per backburner-no-archive policy. Use case largely solved by existing REPL tooling; findings 1-8 retained as research reference. Phase B blocked on cloud GPU acquisition.
+**Status**: COMPLETED / historical reference — the 2026-06-12 portfolio pass superseded the older backburner policy. Use case largely solved by existing REPL tooling; findings 1-8 retained as research reference. Phase B reopens only if the GPU + demonstrated-need triggers above fire.
 **Created**: 2026-03-03
 **Revised**: 2026-03-17 (added QVAC Fabric/BitNet research context, Finding 8, Phase A-bis)
 **Updated**: 2026-04-21 (backburner confirmation — prior "queued for archive" flag superseded)

@@ -33,6 +33,20 @@
 | K-DIV-1 | Diversity metric code exists; semantic baseline requires embedder/model serving. | Keep thresholds gated until N2 ledger vectors and validation rows exist. |
 | K-SKILL-1 | Decision logic and default-off accept-path wiring exist. | Run paired skill/no-skill validation before any accept-path authority. |
 
+## Additional Active References
+
+These handoffs are still active but currently sit behind specific evidence, model-availability, or policy gates. Keep them indexed; do not spend inference unless the owning gate is met.
+
+| Handoff | Current role | Next action |
+|---|---|---|
+| [agent-file-prose-compression.md](agent-file-prose-compression.md) | Static agent-file compression pilot; Phase 3 eval is the blocker. | Write the runnable Phase 3 command, then evaluate per-model compliance curves. |
+| [integration-test-coverage.md](integration-test-coverage.md) | Active test-gap backlog after Phases 1-4 compaction. | Add narrow integration tests only when a current failing surface or coverage tranche justifies it. |
+| [mathsmith-hc-formalizer-eval.md](mathsmith-hc-formalizer-eval.md) | Formalizer evaluation gate. | Check model artifacts, then run the S4 mini-protocol. |
+| [per-request-reasoning-budget.md](per-request-reasoning-budget.md) | Hybrid SSM/MoE reasoning-budget investigation. | Steps 3-4 need a running server; keep code changes gated by reproduction. |
+| [rao-redel-substrate-spike.md](rao-redel-substrate-spike.md) | RAO/ReDel substrate spike; preflight passed and harness is prepared. | Execute Step 2 only in a clean inference window. |
+| [sliders-local-validation.md](sliders-local-validation.md) | Parked speculative SLIDERS validation. | Do not integrate before KB-RAG/default-retrieval gates justify it. |
+| [strand-rust-coder-rustevo2-verification.md](strand-rust-coder-rustevo2-verification.md) | Standalone RustEvo2 verification gate. | Launch only after approval; result gates swarm dataset work. |
+
 ## Dependency Graph
 
 ```text

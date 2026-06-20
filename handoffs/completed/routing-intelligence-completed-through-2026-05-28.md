@@ -4,7 +4,7 @@
 
 **Created**: 2026-02-18 (consolidated from `classifier-refactoring.md` + `delegation-escalation-factual-risk-routing-track.md`)
 **Last audited**: 2026-04-21
-**Status**: PHASES 0-5 CODE COMPLETE — RI-2–6 implemented (2026-03-29), RI-1 calibration dataset built (2026-03-29, 2000 examples), RI-7 A/B ran (2026-03-31, underpowered n=70/arm, NS results), RI-8 risk fields on `RoleResult` verified (2026-03-29). Phase 6 (RI-10 canary) **ACTIVE since 2026-04-06**, window extended to 2026-04-27 for adequate n≥50 high-risk samples.
+**Status**: COMPLETED / historical ledger — Phases 0-5 code complete: RI-2–6 implemented (2026-03-29), RI-1 calibration dataset built (2026-03-29, 2000 examples), RI-7 A/B ran (2026-03-31, underpowered n=70/arm, NS results), RI-8 risk fields on `RoleResult` verified (2026-03-29). Current canary/rollout work lives in `../active/routing-intelligence.md`.
 **Priority**: HIGH
 **Blocked by**: RI-10 canary completion + RI-11/12 rollout stages
 

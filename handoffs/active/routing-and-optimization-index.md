@@ -80,6 +80,21 @@ This index is a dispatch surface. Completed implementation chronology was pruned
 | P2 | Research-derived routing experiments | [decision-aware-routing.md](decision-aware-routing.md), [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md), [outer-coordinator-learned-head.md](outer-coordinator-learned-head.md), [swarm-dataset-distillation.md](swarm-dataset-distillation.md), [halo-trace-loop-spike.md](halo-trace-loop-spike.md) | Keep DAR/tri-role/outer-coordinator expansion frozen until clean-week, DAR regret, and per-question-vector gates pass; treat HALO and swarm-as-dataset as separate gated spikes. |
 | P3 | Web/search and PromptForge tails | [searxng-search-backend.md](searxng-search-backend.md), [minddr-deep-research-mode.md](minddr-deep-research-mode.md), [agent-world-env-synthesis.md](agent-world-env-synthesis.md) | Run SX-5/6 only after AR-3/Camofox gates; run MD-9 sentinel A/B and AW scaffolding as isolated work. |
 
+## Additional Active References
+
+These files remain active but are not the shortest pickup path for the main queues above. Keep them indexed for discoverability; update the owning row if one becomes the primary implementation surface.
+
+| Handoff | Current role | Next action |
+|---------|--------------|-------------|
+| [launcher-numa-mode-gating.md](launcher-numa-mode-gating.md) | Launcher flag implemented; production default remains an operator decision. | Decide whether `--numa-mode` should become the canonical default or stay explicit. |
+| [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md) | Stack-change standardization audit/provenance for N11/N11a. | Use as supporting context; current pickup path is the stack-governance and SSoT handoffs. |
+| [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Historical-detail support for the stack-prior consumer-migration contract. | Keep shrinking residual consumer surfaces through the concise SSoT handoff. |
+| [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | BEP/multi-file edit transaction remediation is built but rollout-gated. | Run the clean-window A/B and promotion evidence before enabling routine edit-mode routing. |
+| [non-inference-backlog.md](non-inference-backlog.md) | Cross-cutting no-inference backlog; only three Round-2 baseline items remain open. | Use as filler only when it does not preempt higher-ROI active queues. |
+| [orchestrator-nps4-48x4-notes.md](orchestrator-nps4-48x4-notes.md) | Notes-only NPS4/topology reference. | Consult before stack/placement changes; do not treat as an implementation queue. |
+| [repo-readiness-scorer.md](repo-readiness-scorer.md) | Deterministic readiness scorer landed; AutoPilot consumption is future work. | Wire into AutoPilot only after a concrete promotion/remediation workflow exists. |
+| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Tool-use sentinels and Gate-3 are live; native/child-LM tool seams remain open. | Patch the child/sub-LM return schema and design the native-tools seam when scheduled. |
+
 ## Dependency Graph
 
 ```mermaid

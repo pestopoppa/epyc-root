@@ -267,4 +267,4 @@ Add a single placement-aware decision function and route both callers through it
 ### Standing operational context
 - Stack is UP (started this session, all 35 components healthy, `[1.5]` prewarm validated — NUMA balance 26/24.6/24.6/24.6%).
 - J6 autopilot soak RUNNING: daemon `autopilot.py start --no-controller --max-trials 2000`, state at `orchestration/autopilot_state.json` (NOT scripts/autopilot/), resumed at trial_counter=124. Log `logs/autopilot_relaunch15_*.log`. **Do NOT touch/restart autopilot or stack without explicit operator permission** (two standing CRITICAL constraints).
-- [shape-keyed-contention-gating-B-RESUME.md] Part B admit_set scaffolding resume checkpoint
+- [../archived/shape-keyed-contention-gating-B-RESUME-history-through-2026-06-20.md](../archived/shape-keyed-contention-gating-B-RESUME-history-through-2026-06-20.md) Part B admit_set scaffolding resume checkpoint

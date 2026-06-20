@@ -1,5 +1,7 @@
 # Part B/C Checkpoint — Shape-Keyed Contention Gating (2026-05-30)
 
+> **Historical ledger only. Current work lives in [`../active/shape-keyed-contention-gating.md`](../active/shape-keyed-contention-gating.md).** Archived during the 2026-06-20 wrap-up because the active handoff now carries the live rollout instructions and this checkpoint is superseded history.
+
 **Read this first, then `handoffs/active/shape-keyed-contention-gating.md` (the full design + A/A-1 record).**
 
 ## Current resume point (UPDATED wrap-up 2026-05-31 — Step 1 staged, Step 2 dispatch-wiring DONE)

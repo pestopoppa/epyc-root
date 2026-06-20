@@ -9,7 +9,7 @@
 - **Where residual items now live**: the standing protocol → `/workspace/MEASUREMENT.md` §1 (P-BENCH-1/2/3) + §3 noise table + §5 retroactivity (era E0→E1 cites CPU20 as the boundary event). The Phase 2.5 artifact backfills for CPU21/23/24/25 were completed 2026-04-28 (see `cpu-inference-optimization-index.md` CPU20 row); the historical "Required Revalidation Set" stays here as record only — it was never a blanket rerun queue.
 - **Reopen triggers**: none — protocol amendments go to MEASUREMENT.md via its governance rules, never here.
 
-**Status**: refreshed 2026-05-28 — ACTIVE PROTOCOL, not a one-off implementation task
+**Status**: COMPLETED / superseded protocol — `/workspace/MEASUREMENT.md` is the living protocol source.
 **Created**: 2026-04-26
 **Updated**: 2026-05-28
 **Priority**: CRITICAL

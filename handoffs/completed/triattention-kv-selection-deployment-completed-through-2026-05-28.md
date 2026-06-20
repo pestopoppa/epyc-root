@@ -6,7 +6,7 @@
 
 # KV Cache Selection/Eviction (TriAttention / Expected Attention)
 
-**Status**: REFRESHED 2026-05-28 — Expected Attention pipeline deployed; active only for S8 autopilot profiles and S9 auto-trigger
+**Status**: COMPLETED / historical deployment ledger — Expected Attention pipeline deployed; current S8 autopilot profiles and S9 auto-trigger work lives in `../active/triattention-kv-selection.md`.
 **Created**: 2026-04-08 (via research intake)
 **Updated**: 2026-05-28 (historical eval gates separated from live S8/S9 queue)
 **Priority**: MEDIUM

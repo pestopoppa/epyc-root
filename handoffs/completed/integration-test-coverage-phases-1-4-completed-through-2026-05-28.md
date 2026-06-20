@@ -6,7 +6,7 @@
 
 # Integration Test Coverage — Remaining Gaps
 
-**Status**: refreshed 2026-05-28 — active coverage backlog; Phases 1-4 are historical, remaining work is focused slices + inference-backed paths
+**Status**: COMPLETED / historical ledger — Phases 1-4 are historical; current coverage work lives in `../active/integration-test-coverage.md`.
 **Created**: 2026-04-13
 **Updated**: 2026-05-28
 **Priority**: MEDIUM
