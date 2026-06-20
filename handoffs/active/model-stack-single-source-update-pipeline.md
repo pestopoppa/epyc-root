@@ -107,6 +107,11 @@ unowned local constants.
   loaded classifier label maps through the GraphRouter action-space helper, so
   seeded frontdoor actions and legacy role aliases normalize to current routing
   targets instead of relying on a route-local `Role.from_string()` path.
+- `src.api.routes.chat_pipeline.routing_decision.resolve_timeout` now resolves
+  live request timeouts through the current config helper instead of the
+  compatibility `ROLE_TIMEOUTS` import-time snapshot; `RoutingResult` uses the
+  same current-config helper for escalation timeout lookups while preserving
+  the legacy dict export for older importers.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
   `decision: hold` after hard replacement of the learned incumbent route; the
