@@ -11,7 +11,7 @@
 2. Verify `kernel.numa_balancing` runtime state before benchmarking; do not trust only sysctl files.
 3. Treat `--mmap 0 + numactl --interleave=all -t 96 -fa 1` as the cold-cache canonical for throughput claims unless the owning handoff says otherwise.
 4. Never claim a new CPU optimization is deployable without CPU20-style repeated measurements and explicit cache-state labels.
-5. Coordinate inference windows with [bulk-inference-campaign.md](bulk-inference-campaign.md); K-MEM Tulving and frontdoor/worker G11 are packaged, and the next throughput-sensitive factual-risk lane is architect G10 when `architect_general` is idle/clean.
+5. Coordinate inference windows with [bulk-inference-campaign.md](bulk-inference-campaign.md); K-MEM Tulving and frontdoor/worker G11 are packaged, and architect G10 run `20260620_081041` is active on resident `architect_general :8083`.
 
 ## Active Queue
 
