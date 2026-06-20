@@ -59,7 +59,12 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
   (`456/456` scored, avg F1 `0.4309`, Simple Recall `0.5530`,
   Chronological Awareness `0.1593`, `17.27 t/s`; mixed lexical recall,
   weak event/detail and chronology, zero-answer hallucination failure, no
-  memory-routing promotion). K-MEM no longer blocks the next throughput-sensitive
+  memory-routing promotion). Research `2eb94f8` adds the targeted Tulving
+  follow-up manifest:
+  `data/package_k/tulving_followup_20260619_141212_manifest.jsonl`
+  (`120` ID-only rows: `40` zero-answer abstention, `40` event-content/detail,
+  `40` chronology-order). It is a repair slice for the next clean Tulving
+  window, not a memory-routing promotion gate. K-MEM no longer blocks the next throughput-sensitive
   lane. Frontdoor G5 short-m@k clean-window evidence is now packaged in research
   `7e9f67f` at
   `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/clean_window/short_mk_voting/frontdoor.json`
