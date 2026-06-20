@@ -8,7 +8,7 @@
 
 1. Read [master-handoff-index.md](master-handoff-index.md) for global priority and active inference-lane constraints.
 2. Use `/workspace/MEASUREMENT.md` for benchmark claim grammar and cache-state labeling.
-3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving, frontdoor G5 short-m@k, and frontdoor+worker G11 AA-Omniscience collection/scoring are complete; architect G10 and the scoring-policy decision still need clean scheduling before G12 tier calibration.
+3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving, frontdoor G5 short-m@k, frontdoor+worker G11 AA-Omniscience, and architect G10 collection/scoring are complete; G12 tier calibration has accepted deterministic AA-Omniscience 4-class scoring and updated production role multipliers. Remaining clean-window work is the consolidated measurement batch, not more G12 scoring.
 4. Do not revive closed speculative-decoding or NUMA tracks without their documented reopen trigger.
 5. For llama.cpp work, use a dedicated feature branch/worktree and do not touch the production binary without an explicit rollout plan.
 

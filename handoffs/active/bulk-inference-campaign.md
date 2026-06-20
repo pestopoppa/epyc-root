@@ -190,15 +190,15 @@ The following medium-term tasks could piggyback on AR-3 stack sessions:
 
 **Source**: intake-381/intake-383 ([arxiv:2511.13029](https://arxiv.org/abs/2511.13029)), [routing-intelligence.md](routing-intelligence.md) Phase 4 calibration gap
 **Dataset**: `ArtificialAnalysis/AA-Omniscience-Public` (600 Qs, Apache 2.0, already in HuggingFace cache)
-**Goal**: Replace heuristic capability tiers in `factual_risk.py` (`_DEFAULT_ROLE_TIERS`: tier_1=0.6, tier_2=0.8, tier_3=1.0) with measured per-model hallucination rates
+**Goal**: Replace heuristic capability tiers in `factual_risk.py` (`_DEFAULT_ROLE_TIERS`: tier_1=0.6, tier_2=0.8, tier_3=1.0) with measured per-model hallucination rates. **Done 2026-06-20**: deterministic AA-Omniscience 4-class scoring was accepted for this role-tier recalibration, and orchestrator now uses measured tier_1 `0.727978`, tier_2 `0.824178`, tier_3 `1.0`.
 
 Scoring methodology (from paper): Omniscience Index = 50% accuracy + 50% (1 - hallucination_rate), where hallucination_rate = incorrect / (incorrect + partial + not_attempted). Answers graded as CORRECT/INCORRECT/PARTIAL_ANSWER/NOT_ATTEMPTED. Models prompted to say "I don't know" rather than guess.
 
 | # | Task | Description | Models Needed | Effort |
 |---|------|-------------|--------------|--------|
 | G10 | AA-Omniscience: architect_general | Run 600 Qs through the live `architect_general` target, Qwen3.5-122B-A10B. Record per-domain accuracy + hallucination rate. Expect above-zero Omniscience Index. | architect_general (solo) | ~2h |
-| G11 | AA-Omniscience: frontdoor + worker | ✅ Raw-response + deterministic-F1 evidence packaged for live `frontdoor` (research `587c6cd` + `92a5602`) and live `worker_general` (research `32f2c27`). Compare hallucination rates only after deciding whether deterministic-F1 is sufficient or an LLM-judge pass is required. | frontdoor, worker_general (sequential) | complete for deterministic scorer |
-| G12 | Calibrate capability tiers | Use G10+G11 hallucination rates to compute empirical tier multipliers. Update `_DEFAULT_ROLE_TIERS` in `src/classifiers/factual_risk.py`. Augment with SimpleQA failures from seeding logs (`data/package_a/`, `data/package_b/`) for larger calibration set. | No inference — analysis only | ~1h |
+| G11 | AA-Omniscience: frontdoor + worker | ✅ Raw-response + deterministic-F1 evidence packaged for live `frontdoor` (research `587c6cd` + `92a5602`) and live `worker_general` (research `32f2c27`). | frontdoor, worker_general (sequential) | complete |
+| G12 | Calibrate capability tiers | ✅ Deterministic AA-Omniscience 4-class scoring accepted for role-tier recalibration; `_DEFAULT_ROLE_TIERS`, default config, and live `classifier_config.yaml` updated to measured multipliers. Future SimpleQA augmentation is optional evidence expansion, not a blocker for this tier update. | No inference — analysis only | complete |
 
 **2026-06-19 G12 offline prep:** Orchestrator `7d729e3` repaired
 `scripts/build_factual_risk_calibration_v2.py` so HuggingFace `datasets` is not shadowed by the local
@@ -222,8 +222,10 @@ the v2 corpus/splits and can aggregate future G10/G11 result JSONL by role/model
 `61e670d` extends that report with AA outcome rates and a fail-closed `tier_calibration_readiness`
 block. After research `b91d16c`, the deterministic report observes all expected roles and reports
 `ready_for_tier_update`: architect multiplier preview `0.727978`, frontdoor `0.824178`, and
-worker_general `1.0` relative to the current worst observed hallucination rate. This is still preview-only:
-do not update `src/classifiers/factual_risk.py` until the deterministic-vs-LLM-judge scoring decision is resolved.
+worker_general `1.0` relative to the current worst observed hallucination rate. Orchestrator then accepted deterministic
+AA-Omniscience 4-class scoring for this role-tier recalibration only and updated `src/classifiers/factual_risk.py`,
+`src/classifiers/config_loader.py`, and `orchestration/classifier_config.yaml` to those measured values. Factual-risk
+mode/canary/enforce decisions remain on their separate telemetry gates.
 
 **Implementation notes**:
 - Prompt template from paper: `"You are answering questions about {domain}, and in particular {topic}. You will be given a question, answer with JUST the answer (no explanation). If you do not know the answer, or you need more context or tools to answer the question, be clear about this - it is better that you say this than get the wrong answer."`
@@ -233,10 +235,10 @@ do not update `src/classifiers/factual_risk.py` until the deterministic-vs-LLM-j
 - SimpleQA augmentation: grep seeding logs for `simpleqa` suite with `passed=False`, extract prompt+answer pairs, cross-reference with AA-Omniscience domains for combined calibration
 
 **Exit criteria**:
-- Per-model hallucination rate per domain computed
-- Empirical tier multipliers differ from heuristic by >5% (otherwise heuristic was adequate)
-- `factual_risk.py` `_DEFAULT_ROLE_TIERS` updated with measured values
-- routing-intelligence.md Phase 4 calibration gap closed
+- [x] Per-model hallucination rate per domain computed
+- [x] Empirical tier multipliers differ from heuristic by >5% (otherwise heuristic was adequate)
+- [x] `factual_risk.py` `_DEFAULT_ROLE_TIERS` updated with measured values
+- [x] routing-intelligence.md Phase 4 calibration gap closed for role-tier calibration
 
 ## Package H: Research-Driven Inference Tasks (2026-04-12 research intake)
 
