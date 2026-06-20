@@ -1,14 +1,14 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-06-20 K-MEM completion, G11 frontdoor raw package, and Granite warm embedder recipe refresh.
+**Updated**: 2026-06-20 K-MEM completion, G11 frontdoor+worker scoring, and Granite warm embedder recipe refresh.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 ## Start Here
 
 1. Read [master-handoff-index.md](master-handoff-index.md) for global priority and active inference-lane constraints.
 2. Use `/workspace/MEASUREMENT.md` for benchmark claim grammar and cache-state labeling.
-3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving, frontdoor G5 short-m@k, and frontdoor G11 raw AA-Omniscience collection are complete; G11 scoring and the remaining worker/architect model-batched lanes still need clean scheduling.
+3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving, frontdoor G5 short-m@k, and frontdoor+worker G11 AA-Omniscience collection/scoring are complete; architect G10 and the scoring-policy decision still need clean scheduling before G12 tier calibration.
 4. Do not revive closed speculative-decoding or NUMA tracks without their documented reopen trigger.
 5. For llama.cpp work, use a dedicated feature branch/worktree and do not touch the production binary without an explicit rollout plan.
 
@@ -55,7 +55,7 @@ These are not active work queues. Read their completed handoffs before reopening
 
 ```mermaid
 flowchart TD
-    G11[G11 frontdoor raw package complete] --> Quiet[Quiet/model-batched windows]
+    G11[G11 frontdoor+worker scoring complete] --> Quiet[Quiet/model-batched windows]
     Quiet --> E2[E2 eval batching]
     Quiet --> E1[E1 CPU14 -np sweep]
     E1 --> E3[E3 SIMD if justified]
