@@ -28,6 +28,10 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 - Quiet-window command to run the required constrained-policy A/B:
   `cd /mnt/raid0/llm/epyc-orchestrator && uv run python scripts/benchmark/xmas_live_ab.py --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl --reps 2 --host-quiet-confirmed --output benchmarks/results/runs/xmas_live_ab/$(date -u +%Y%m%dT%H%M%SZ)-constrained-policy`.
   The run writes `meta.json`, `results.jsonl`, `summary.json`, `report.md`, and per-arm reload logs under the output directory. New real-run artifacts must carry `xmas_policy=incumbent_constrained_v1` and `xmas_policy_min_commit=24baac44`; the aggregate gate's `required_policy` field is the next-action label for that same policy requirement, not a persisted artifact key.
+- `epyc-inference-research` `7d05d03` adds this constrained-policy A/B to
+  `docs/data/clean_window_measurement_manifest.json` and
+  `docs/data/clean_window_measurement_commands.sh` as package `X-MAS`, so the
+  next clean-window batch queue now carries DS-E1 KV and X-MAS A/B together.
 
 ## Current Gate
 
