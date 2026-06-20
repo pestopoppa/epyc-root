@@ -76,11 +76,14 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
   packaged in research `587c6cd` at
   `benchmarks/results/runs/20260620_035613/` with `600/600` non-blank rows for
   baseline, moe4, and moe6 (`avg_tps` 24.8823, 25.9453, 25.7758). This is raw
-  response + throughput evidence, not hallucination-rate closure:
-  `algorithmic_score` remains null and G12 still needs the AA grading pass.
-  Next standalone scheduling can move to the `worker_general` G10/G11/G5/K-ROPE
-  group after affinity and canonical preflight pass. K-EMB-1 embedder-only; H7
-  transformers-CPU serial.
+  response + throughput evidence. Research `92a5602` adds deterministic F1
+  scoring for the frontdoor run: baseline accuracy `0.1117`, hallucination
+  rate `0.5610`, Omniscience Index `0.2753`; moe4 accuracy `0.1117`,
+  hallucination rate `0.5666`, OI `0.2725`; moe6 accuracy `0.1233`,
+  hallucination rate `0.5608`, OI `0.2812`. Treat this as deterministic scorer
+  evidence, not LLM-as-judge closure. Next standalone scheduling can move to
+  the `worker_general` G10/G11/G5/K-ROPE group after affinity and canonical
+  preflight pass. K-EMB-1 embedder-only; H7 transformers-CPU serial.
 - **Frozen after DAR-1 replay**: Package I (SPO+/bilinear/ThinkPRM) stays frozen because the 2026-06-12 replay measured 0.00% identifiable mean regret (<5% gate).
 - Stale premises corrected in the campaign doc's §Staleness corrections: J6 closed/superseded (continuous run IS the soak; orchestrator `2eb4437` made EvalTower's default concurrency matrix-aware), G9 targets the removed architect_coding role, G10/G11 name pre-swap models, J12 wiring was verified against LlamaServerBackend `/v1/chat/completions` (not openai.py), flag A/Bs set flags via launch env + per-worker attestation, speed-metric paragraph changes when the task_rate objective lands.
 

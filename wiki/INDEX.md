@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, digest/plot archive-source diagnostics, failed G11 clean-window caveat plus packaged server-mode raw-response run, vision-serving stack-prior role discovery, Granite A-fast verification plus warm embedder recipes, Fable 5 completed-package archival, AutoPilot handoff compaction, and wrap-up handoff/index pruning audit)
+**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, digest/plot archive-source diagnostics, failed G11 clean-window caveat plus packaged and deterministic-F1-scored server-mode run, vision-serving stack-prior role discovery, Granite A-fast verification plus warm embedder recipes, Fable 5 completed-package archival, AutoPilot handoff compaction, and wrap-up handoff/index pruning audit)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 513+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
