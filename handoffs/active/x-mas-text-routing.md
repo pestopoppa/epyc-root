@@ -25,11 +25,14 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 - The constrained policy landed in `epyc-orchestrator` `24baac4`: enforce now treats the existing route as incumbent and only replaces it when the current cell evidence evaluates both roles and proves quality lift or material speed lift within a 1.10 latency cap. A no-inference replay diagnostic against the failed held-out bundle estimates that the policy would suppress 22/23 prior replacements (`incumbent_role_not_evaluated`) and allow only the one evidence-backed speed lift.
 - `epyc-orchestrator` `7f20920` stamps new X-MAS A/B artifacts with `xmas_policy=incumbent_constrained_v1` and makes the aggregate Fable5 gate require that policy id before any held-out `promote_candidate` can count as enforce evidence. Existing 2026-06-18 summaries are therefore explicitly `unknown_legacy`, so the next required run is a fresh quiet-window constrained-policy A/B rather than a replay of old rows.
 - `epyc-orchestrator` `91bdf6d` hardens the X-MAS real-run quiet-window preflight: `--host-quiet-confirmed` is still required, and the runner now refuses known competing evidence/benchmark coordinators including AutoPilot, DCP/BEP A/B, DS-E1 KV measurement, seeding, migration, placement, and generic benchmark runners before any orchestrator reload or chat call.
+- Quiet-window command to run the required constrained-policy A/B:
+  `cd /mnt/raid0/llm/epyc-orchestrator && uv run python scripts/benchmark/xmas_live_ab.py --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl --reps 2 --host-quiet-confirmed --output benchmarks/results/runs/xmas_live_ab/$(date -u +%Y%m%dT%H%M%SZ)-constrained-policy`.
+  The run writes `meta.json`, `results.jsonl`, `summary.json`, `report.md`, and per-arm reload logs under the output directory. New real-run artifacts must carry `xmas_policy=incumbent_constrained_v1` and `xmas_policy_min_commit=24baac44`; the aggregate gate's `required_policy` field is the next-action label for that same policy requirement, not a persisted artifact key.
 
 ## Current Gate
 
 - [ ] Keep `xmas_routing.mode=off` in production until a future held-out run passes the verdict gates; the validated winner table is configured default-off and must not be treated as an enforce flip.
-- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks in an attested quiet window; require the resulting summary to carry `xmas_policy=incumbent_constrained_v1`. Do not tie this to the completed G5/G11 factual-risk lanes.
+- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks in an attested quiet window; require the resulting summary to carry `xmas_policy=incumbent_constrained_v1`, `required_xmas_policy=incumbent_constrained_v1`, `required_xmas_policy_min_commit=24baac44`, and `decision.status=promote_candidate`. Do not tie this to the completed G5/G11 factual-risk lanes.
 - [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
 
 ## Validation Commands
@@ -39,6 +42,7 @@ cd /mnt/raid0/llm/epyc-orchestrator
 uv run pytest -q tests/unit/test_xmas_live_ab.py tests/unit/test_validate_xmas_winner_table.py tests/classifiers/test_xmas_routing.py tests/unit/test_pipeline_routing.py
 uv run python scripts/validate/validate_xmas_winner_table.py --table orchestration/xmas_winner_table.yaml --require-function-axis
 python3 scripts/autopilot/fable5_gate_report.py --strict
+uv run python scripts/benchmark/xmas_live_ab.py --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl --reps 2 --host-quiet-confirmed --output benchmarks/results/runs/xmas_live_ab/$(date -u +%Y%m%dT%H%M%SZ)-constrained-policy
 uv run python scripts/benchmark/xmas_live_ab.py --summarize-results benchmarks/results/runs/xmas_live_ab/20260618-215637-heldout-resilient-rerun/results.jsonl --output /tmp/xmas-replay-diagnostics
 ```
 
