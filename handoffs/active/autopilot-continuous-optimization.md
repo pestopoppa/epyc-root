@@ -16,6 +16,12 @@
 > present. Live smoke on wrapper PID `1091014` / Python PID `1091018` reported
 > trial `902` as `T2 450/500 (70% correct)` in both phase health and the Fable5
 > aggregate phase section, with no restart and no authority flip.
+> Follow-up `epyc-orchestrator` `f5b1898a` (`Surface Fable5 accrual remaining
+> counts`) threads the underlying readiness thresholds into restart/Fable5
+> summary and next-action evidence. Current live smoke reports
+> trusted vectors `67/120` (`53` remaining), seq shadow rows `15/30` (`15`
+> remaining), and W6 audited rows `38/30` (`0` remaining) with the W6 gaming
+> alarm still true.
 
 **Created**: 2026-03-08
 **Updated**: 2026-06-20 (bounded W4/W6 accrual live on wrapper PID `1091014` / Python PID `1091018`; durable journal max `901`, live trial `902` in `dispatch_action`. Latest strict restart preflight after trial `901` is ordinary-restart ready and reports baseline seed preflight `ready`/append-ready, but sequential-cutover remains blocked at 67/120 trusted vectors and 15/30 seq-shadow rows; W6 audit remains alarmed at 38/30 rows with 6 active-window divergences and 7 cumulative divergences. Baseline seed append remains deferred until AutoPilot is stopped. Earlier post-888, post-858, and 2026-06-14 repair/quarantine context remains below.)

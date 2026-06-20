@@ -16,11 +16,15 @@
 > smoke during trial `902` reported `T2 450/500 (70% correct)` in both
 > `phase_health_report.py --json` and the aggregate Fable5 phase section,
 > without restarting or disturbing the W4/W6 accrual process.
+> `epyc-orchestrator` `f5b1898a` then surfaced threshold-derived remaining
+> counts in restart/Fable5 reports. Live smoke shows `53` trusted-vector trials
+> and `15` sequential-shadow rows still needed for N2 sample-size gates, while
+> W6 audited rows are above floor (`38/30`) but blocked by the gaming alarm.
 
 ## Start Here
 
 1. Keep sequential authority disabled until readiness passes: at least 120 trusted vector trials, at least 30 sequential shadow rows, and the flip-rate/e-process criteria in the spec.
-2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Trial `901` is clean sequential-shadow progress but still leaves the gate blocked at `67/120` trusted vectors and `15/30` shadow rows; trial `902` is in progress and phase/Fable5 visibility now shows the live T2 counter from log-tail fallback.
+2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Trial `901` is clean sequential-shadow progress but still leaves the gate blocked at `67/120` trusted vectors and `15/30` shadow rows (`53` trusted vectors and `15` shadow rows remaining); trial `902` is in progress and phase/Fable5 visibility now shows the live T2 counter from log-tail fallback.
 3. After readiness passes, run the disagreement/cutover report and the aggregate restart-readiness report with `--require-seq-cutover --require-w6-audit`; W6 audit must be alarm-free before any authority flip.
 4. Coordinate any restart-bundle flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
 
