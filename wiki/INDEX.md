@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, and wrap-up handoff/index pruning audit)
+**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, digest archive-source diagnostics, active G11 clean-window caveat, and wrap-up handoff/index pruning audit)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 513+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -32,14 +32,14 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 |---------|---------|-------------|
 | [Cost-Aware Routing](cost-aware-routing.md) | 30 | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, and future distillation action spaces |
 | [Routing Intelligence](routing-intelligence.md) | 50+ | X-MAS now has measured function-axis evidence and an incumbent-aware policy, but enforce remains default-off until a fresh held-out A/B |
-| [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs and audit alarms are now acceptance evidence |
+| [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs, audit alarms, and aggregate-artifact validation are now acceptance evidence |
 
 ## Agent & Architecture
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
 | [Agent Architecture](agent-architecture.md) | 48 | Fable 5's strategic spine is real-task corpus -> reviewed self-running lab jobs -> data flywheel, gated by evidence and quarantine |
-| [Autonomous Research](autonomous-research.md) | 62+ | AutoPilot sequential authority is code-complete but sample-gated; W7 hardens critic context, eval clamps, audit alarms, PEAF budget credit, and per-question provenance evidence |
+| [Autonomous Research](autonomous-research.md) | 62+ | AutoPilot sequential authority is code-complete but sample-gated; archive-source diagnostics now cover status/report/digest while W7 hardens critic context and provenance evidence |
 | [Memory-Augmented Models](memory-augmented.md) | 25+ | Episodic FAISS writes require cross-process locking; K-MEM Tulving is a mixed baseline with weak chronology and no memory-routing promotion |
 
 ## Context & Compression
