@@ -188,9 +188,11 @@ Any future stack update should be accepted only when these hold:
   a concrete duplicated live fact reappears.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
-  consumer to prove. Latest generated-consumer migration: Orchestrator
-  `c9d499f` covers vision serving role discovery from stack-prior launch
-  metadata, but it did not add a new swap-CI witness yet.
+  consumer to prove. Latest re-audit: the simulated vision swap already covers
+  the migrated vision serving consumers (`stack_prior_vl_ports`,
+  `_vl_port_for_role`, `_vl_url_for_role`, and `_vl_url_for_port`) against the
+  generated stack-prior artifact, so the old `c9d499f` witness gap is closed as
+  a stale handoff note rather than a new test change.
 - [ ] Rerun the X-MAS held-out A/B in a quiet window; production routing remains
   default-off until the constrained policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
