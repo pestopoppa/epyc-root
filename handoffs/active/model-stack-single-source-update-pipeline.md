@@ -103,6 +103,10 @@ unowned local constants.
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
   preserved.
+- `orchestration.repl_memory.routing_classifier` now canonicalizes saved and
+  loaded classifier label maps through the GraphRouter action-space helper, so
+  seeded frontdoor actions and legacy role aliases normalize to current routing
+  targets instead of relying on a route-local `Role.from_string()` path.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
   `decision: hold` after hard replacement of the learned incumbent route; the
