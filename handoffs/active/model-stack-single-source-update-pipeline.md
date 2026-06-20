@@ -4,8 +4,8 @@
 runtime attestation, generated stack summaries, scanner-rule ownership,
 production launch gate, AutoPilot preflight gate, direct benchmark runtime
 enforcement, and representative frontdoor/worker/vision swap-CI coverage are
-live. Remaining work is other high-risk P2 consumer migrations plus future
-swap-CI expansion as new consumers are migrated.
+live. Remaining work is the `launch_maps` high-risk P2 consumer audit/migration
+plus future swap-CI expansion as new consumers are migrated.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -130,6 +130,11 @@ unowned local constants.
   incumbent-aware constrained policy landed in `epyc-orchestrator` `24baac4`,
   so the next X-MAS gate is a fresh quiet held-out A/B, not more routing
   plumbing.
+- The 2026-06-20 read-only manifest audit found P1 closed and all named
+  P2/HIGH surfaces either migrated, generated, or re-audited except
+  `launch_maps`. Treat `launch_maps` as the next concrete no-inference pickup
+  candidate; do not reopen already-audited surfaces without a new duplicated
+  model/role/serving fact.
 
 ## Completed Scope
 
@@ -154,10 +159,10 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
-- [ ] Pick the next high-risk P2 consumer from
-  `orchestration/stack_change_surface_manifest.yaml`; run focused GitNexus
-  impact before touching production code, and keep HIGH/CRITICAL shared-helper
-  edits on the main thread.
+- [ ] Audit/migrate `launch_maps`, the only manifest surface not explicitly
+  matched to a migrated or re-audited handoff note in the 2026-06-20 wrap-up
+  inventory. Run focused GitNexus impact before touching production code, and
+  keep HIGH/CRITICAL shared-helper edits on the main thread.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete

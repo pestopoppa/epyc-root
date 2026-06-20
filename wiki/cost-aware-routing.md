@@ -3,7 +3,7 @@
 **Category**: `cost_aware_routing`
 **Confidence**: verified
 **Last compiled**: 2026-06-20
-**Sources**: 31 documents (added 2026-06-20 stack-prior generated-contract refresh)
+**Sources**: 31+ documents (added 2026-06-20 stack-prior generated-contract refresh and launch-map consumer audit)
 
 ## Summary
 
@@ -133,6 +133,24 @@ The generated stack-prior contract is now treated as a source-hash freshness con
 The follow-up full gate passed with `summary: ok`, `guard: ok`, `guard_all_surfaces: ok`, `guard_strict: ok`, `runtime_attestation: ok`, and promotion gate `174 passed in 5.78s`. Operationally, this makes cost-aware consumers safer during non-model source changes: a stale generated contract now blocks before q_scorer, seeding, GraphRouter, launch/preflight, or operator summaries can silently rely on out-of-date stack source provenance.
 
 Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), `epyc-orchestrator` `e6d5ce6`.
+
+## 2026-06-20 Update - Remaining Launch-Map Consumer
+
+The wrap-up manifest audit narrowed the remaining model-stack SSoT migration
+queue: P1 is closed, the named P2/HIGH surfaces are either migrated,
+generated, or explicitly re-audited, and `launch_maps` is the remaining
+concrete high-risk P2 consumer to inspect next. This matters for cost-aware
+routing because launch maps bind role, port, alias, context, runtime
+requirements, and command-argument truth before q_scorer, seeding, and
+distillation consumers can trust a stack change.
+
+Treat the next migration as a focused launch-map audit with GitNexus impact
+checks, not a broad search over already-audited surfaces. If `launch_maps`
+still duplicates model/role/serving facts, it should consume generated
+stack-prior launch metadata or own an explicit degraded fallback; if it does
+not, record the audit and leave the surface alone.
+
+Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
 
 ## Actionable for EPYC
 

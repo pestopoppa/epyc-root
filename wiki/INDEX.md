@@ -2,7 +2,7 @@
 
 Compiled knowledge base for the EPYC 9655 inference optimization project. Each article synthesizes findings from research deep-dives, intake entries, handoffs, progress logs, and child repo documentation into a single navigable reference.
 
-**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, digest/plot archive-source diagnostics, failed G11 clean-window caveat plus packaged and deterministic-F1-scored server-mode run, G12 factual-risk readiness blocking on architect evidence, vision-serving stack-prior role discovery, stack-prior generated-contract source-hash refresh, Granite A-fast verification plus warm embedder recipes, Fable 5 completed-package archival, AutoPilot handoff compaction, and wrap-up handoff/index pruning audit)
+**Last compiled**: 2026-06-20 (manual incremental update: corrected K-MEM Tulving scoring/failure modes, live-timeout config migration, N11a routing action-space canonicalization, G5 short-m@k clean-window measurement evidence, W1 raw archive loader narrowing, digest/plot archive-source diagnostics, failed G11 clean-window caveat plus packaged and deterministic-F1-scored server-mode run, G12 factual-risk readiness blocking on architect evidence, vision-serving stack-prior role discovery, stack-prior generated-contract source-hash refresh, Granite A-fast verification plus warm embedder recipes, Fable 5 completed-package archival, AutoPilot handoff compaction, wrap-up handoff/index pruning audit, and launch-map consumer target narrowing)
 **Articles**: 26 compiled, 4 stub categories
 **Total sources**: 514+ scanned documents across 6 source types; 2026-06-19 pass compiled 37 changed/new active-handoff/progress sources into the highest-value evidence/routing/KV clusters
 
@@ -30,7 +30,7 @@ Compiled knowledge base for the EPYC 9655 inference optimization project. Each a
 
 | Article | Sources | Key Insight |
 |---------|---------|-------------|
-| [Cost-Aware Routing](cost-aware-routing.md) | 31 | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, and future distillation action spaces |
+| [Cost-Aware Routing](cost-aware-routing.md) | 31+ | Task-rate/goodput telemetry exposes token bloat; stack-priors anchor q_scorer, seeding, future distillation action spaces, and the remaining launch-map migration target |
 | [Routing Intelligence](routing-intelligence.md) | 51+ | X-MAS now has measured function-axis evidence and an incumbent-aware policy; factual-risk tier updates remain blocked on architect evidence |
 | [Benchmark Methodology](benchmark-methodology.md) | 54+ | Sequential verdicts are code-complete but sample-gated; production eval knobs, audit alarms, and aggregate-artifact validation are now acceptance evidence |
 
