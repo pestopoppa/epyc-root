@@ -134,8 +134,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
 
 ## Outstanding Work
 
-- [ ] Keep the two `waived_production_blocker` surfaces intentional, owned, and
-  expiring; remove them if compatibility no longer needs them.
+- [ ] Keep the `waived_production_blocker` mechanism empty by default and
+  fail-closed: any future waiver must be intentional, owned, expiring, and
+  removed as soon as compatibility no longer needs it. Current guard state has
+  no active waivers (`orchestration/stack_change_guard_exceptions.yaml`
+  contains `exceptions: []`) and `stack_change_pipeline.py check` reports
+  `guard_strict: ok`.
 - [ ] Continue high-risk consumer migrations only after focused GitNexus impact
   checks. Use the stack-change surface manifest to pick the next consumer.
   Latest completed slices: Orchestrator `95a23aa` canonicalized the
