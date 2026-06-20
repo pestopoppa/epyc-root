@@ -23,11 +23,12 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 - `epyc-orchestrator` `209ff62e` surfaces that latest held-out A/B verdict inside `scripts/autopilot/fable5_gate_report.py --strict`, so the aggregate Fable5 pickup check now explains the X-MAS blocker rather than only reporting `mode=off`.
 - The refreshed replay diagnostics in `epyc-orchestrator` `96acc5e` identify the dominant mechanism: X-MAS overrode 23/25 prompts, mostly replacing baseline `coder_escalation` with slower `worker_general`; there were 7 baseline-only quality wins, 0 X-MAS-only wins, 20 prompts with at least `3x` latency regression, and 2 X-MAS timeouts.
 - The constrained policy landed in `epyc-orchestrator` `24baac4`: enforce now treats the existing route as incumbent and only replaces it when the current cell evidence evaluates both roles and proves quality lift or material speed lift within a 1.10 latency cap. A no-inference replay diagnostic against the failed held-out bundle estimates that the policy would suppress 22/23 prior replacements (`incumbent_role_not_evaluated`) and allow only the one evidence-backed speed lift.
+- `epyc-orchestrator` `7f20920` stamps new X-MAS A/B artifacts with `xmas_policy=incumbent_constrained_v1` and makes the aggregate Fable5 gate require that policy id before any held-out `promote_candidate` can count as enforce evidence. Existing 2026-06-18 summaries are therefore explicitly `unknown_legacy`, so the next required run is a fresh quiet-window constrained-policy A/B rather than a replay of old rows.
 
 ## Current Gate
 
 - [ ] Keep `xmas_routing.mode=off` in production until a future held-out run passes the verdict gates; the validated winner table is configured default-off and must not be treated as an enforce flip.
-- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks in an attested quiet window; do not tie this to the completed G5/G11 factual-risk lanes.
+- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks in an attested quiet window; require the resulting summary to carry `xmas_policy=incumbent_constrained_v1`. Do not tie this to the completed G5/G11 factual-risk lanes.
 - [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
 
 ## Validation Commands
