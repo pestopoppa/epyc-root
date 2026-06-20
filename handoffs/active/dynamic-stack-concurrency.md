@@ -1,10 +1,10 @@
 # Dynamic Stack Assembly & Concurrency Management
 
-**Status**: COMPACTED 2026-05-28; default template realigned 2026-06-13. Phases B-D are complete; DS-6/DS-7 design gaps are resolved and scaffolding exists. `epyc-orchestrator` `069f8c0` refreshed `stack_templates/default.yaml` to current live manifest topology with explicit aliases and retired-role rejection. `epyc-orchestrator` DS-E1 evidence packet tooling landed 2026-06-20 and current packet `orchestration/reports/ds_e1_evidence_packet_20260620.md` reports `ready_for_profile_decision=false`: stack roster and contention matrix are ready, while DS-5 manifest freshness, RI-10 sample counts, and direct 2K/8K/32K KV measurements remain blockers. Live work remains evidence-gated Phase E stack exploration, profile codification after Phase E, and optional Phase F KV sharing after AM/q4_0 feasibility.
+**Status**: COMPACTED 2026-05-28; default template realigned 2026-06-13. Phases B-D are complete; DS-6/DS-7 design gaps are resolved and scaffolding exists. `epyc-orchestrator` `069f8c0` refreshed `stack_templates/default.yaml` to current live manifest topology with explicit aliases and retired-role rejection. `epyc-orchestrator` DS-E1 evidence packet tooling landed 2026-06-20 and current packet `orchestration/reports/ds_e1_evidence_packet_20260620.md` reports `ready_for_profile_decision=false`: stack roster, DS-5 manifest freshness, and contention matrix are ready, while RI-10 sample counts and direct 2K/8K/32K KV measurements remain blockers. Live work remains evidence-gated Phase E stack exploration, profile codification after Phase E, and optional Phase F KV sharing after AM/q4_0 feasibility.
 **Priority**: HIGH when Phase E evidence is available; otherwise blocked/monitor.
 **Domain**: routing-and-optimization primary; inference-acceleration cross-list for Phase F KVCOMM only.
 **Completed ledger**: [`../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md`](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md)
-**Updated**: 2026-06-19
+**Updated**: 2026-06-20
 
 ## Start Here
 
@@ -15,7 +15,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
 3. If those inputs are present, translate them into one stack-template/profile change, validate with `--validate-only`, then decide whether QuarterScheduler work is still justified.
 4. Treat Phase F KVCOMM as a separate research fork; it must not block DS-6/DS-7 profile work.
 
-2026-06-20 packet result: DS-E1 is still blocked, but the evidence state is now machine-checkable through `scripts/server/dynamic_stack_evidence_packet.py`. Current output: generated stack-prior roster ready (`10` live roles, compiled `2026-06-20T07:13:46Z`), contention matrix ready for topology `df373c79cc4af06f`, DS-5 research manifest stale (`2026-06-14T14:15:21Z` vs current stack priors), RI-10 config present but missing current canary sample-count artifact, and production KV-size measurements at 2K/8K/32K absent. Do not implement DS-6 or DS-7 profile changes until this packet reports `ready_for_profile_decision=true`.
+2026-06-20 packet result: DS-E1 is still blocked, but the evidence state is now machine-checkable through `scripts/server/dynamic_stack_evidence_packet.py`. Current output: generated stack-prior roster ready (`10` live roles, compiled `2026-06-20T07:13:46Z`), DS-5 research manifest freshness ready against the same compile, contention matrix ready for topology `df373c79cc4af06f`, RI-10 config present but missing current canary sample-count artifact, and production KV-size measurements at 2K/8K/32K absent. Do not implement DS-6 or DS-7 profile changes until this packet reports `ready_for_profile_decision=true`.
 
 ## Outstanding Tasks
 
@@ -23,7 +23,7 @@ Do not restart DS-6 or DS-7 from first principles. The historical ledger contain
   `python3 scripts/server/dynamic_stack_evidence_packet.py --output orchestration/reports/ds_e1_evidence_packet_20260620.md`.
   - [~] Package B single-instance vs concurrent throughput for the roles under consideration: historical April CPU optimization data and current serving docs support the architecture direction, but the strongest numeric data predates the current June role/model map.
   - [ ] RI-10 escalation/canary data for architect burst frequency: still stale/not decision-ready; pull current canary logs before any profile or scheduler decision.
-  - [~] DS-5/autoresearch model roster and role-quality findings: generated stack-prior roster is packaged, but research `docs/MODEL_MANIFEST.md` still references the 2026-06-14 compile and must be refreshed or explicitly accepted before DS-E1 can pass.
+  - [x] DS-5/autoresearch model roster and role-quality findings: generated stack-prior roster is packaged, and research `docs/MODEL_MANIFEST.md` now references the current `2026-06-20T07:13:46Z` stack-prior compile.
   - [ ] Production KV size measurements at 2K/8K/32K tokens: missing as a direct measurement series.
   - [x] Mixed-role NUMA contention evidence, especially same-node cross-model interference: `orchestration/contention_matrix.yaml` is fresh for `df373c79cc4af06f`, and the current serving wiki records full/quarter overlap hazards.
 - [ ] **DS-7-live — Profile codification from evidence**: baseline hygiene is current after `069f8c0` aligned the default template with the live manifest topology (frontdoor/worker/ingest/vision escalation full-plus-quarter prewarm, shared-runtime aliases, one `architect_general`, 22 instances, about 653 GB). Once DS-E1 exists, create or update a stack template that expresses one concrete workload profile. Run template validation before launch. Do not add speculative profiles without evidence.
@@ -109,7 +109,7 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 | DS-6 design audit/gaps | Dynamic URL API, liveness, quarter-fixed ports, drain protocol, idle tracking, and degradation strategy resolved. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 | DS-7 template scaffolding | Template schema, selection mechanism, migration path, and resource validation designed; Gap 3/4 closure implemented 2026-04-21. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 | DS-7 default-template realignment | `069f8c0` added explicit alias support/rejection of retired deployable roles and updated the checked-in default template to current live manifest topology. | `epyc-orchestrator` `069f8c0` |
-| DS-E1 evidence audit | Current stack-prior roster and contention matrix evidence are packaged, but DS-E1 remains blocked on stale DS-5 manifest linkage, RI-10 decision data, and direct 2K/8K/32K KV-size measurements. Do not implement DS-6 yet. | `epyc-orchestrator` `orchestration/reports/ds_e1_evidence_packet_20260620.md`; `python3 scripts/server/dynamic_stack_evidence_packet.py --json` |
+| DS-E1 evidence audit | Current stack-prior roster, DS-5 manifest freshness, and contention matrix evidence are packaged, but DS-E1 remains blocked on RI-10 decision data and direct 2K/8K/32K KV-size measurements. Do not implement DS-6 yet. | `epyc-orchestrator` `orchestration/reports/ds_e1_evidence_packet_20260620.md`; `python3 scripts/server/dynamic_stack_evidence_packet.py --json` |
 | Research intake | DistServe/Splitwise/Mooncake/ORCA/Sarathi and SGLang hybrid-memory implications captured. | [completed ledger](../completed/dynamic-stack-concurrency-completed-through-2026-05-28.md) |
 
 ## Reporting Instructions
