@@ -249,9 +249,9 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 
 ### Bench plan (handoff-driven)
 
-`handoffs/active/granite-97m-r2-bench-plan.md` (gated on K2 chunker activation in `internal-kb-rag.md`):
+`handoffs/active/granite-97m-r2-bench-plan.md` (K2 chunker output is preferred, but the fallback code corpus is no longer blocked on K2):
 
-- **Phase A (2-3 inference-free engineering days)**: GGUF Q8_0 + Q4_K_M quantization; deploy on `:8096`; parallel-deploy multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`; build minimal eval corpus (cheapest fallback: 100 code snippets from `epyc-orchestrator/src/` + 30 NL queries with manual labels, ~half day; alternative: K2 chunker output on a slice of `/workspace/handoffs/active/*.md` + `/workspace/CLAUDE.md`).
+- **Phase A**: fallback corpus + dry-run harness are verified as of 2026-06-20 (`100` Python snippets, `30` labeled queries, no missing relevance refs). Remaining prep is GGUF Q8_0 + Q4_K_M quantization and comparator/server setup: Granite on `:8096`, multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`.
 - **Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy: paper says 8K, card says 32K), end-to-end with GTE-ModernColBERT-v1 reranker.
 - **Phase C decision**: adopt granite (if NDCG@10 within 3pp of BGE-M3 AND ≥3× faster) / adopt BGE-M3 (if ≥5pp better, latency acceptable) / defer both (if neither beats BGE-large-en on actual EPYC corpus).
 

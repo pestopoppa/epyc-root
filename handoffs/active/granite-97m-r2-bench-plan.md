@@ -1,37 +1,47 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: Phase A-fast fallback corpus + dry-run harness landed 2026-06-18; Phase B remains inference-gated
+**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; model-artifact/server setup and Phase B remain open
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
-**Updated**: 2026-05-28
+**Updated**: 2026-06-20
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
 **Priority**: MEDIUM (becomes HIGH the moment any of K-track / web-research-rerank / SearXNG dense-stage activates)
 **Depends on**: `internal-kb-rag.md` (K2 chunker for best corpus, but not required for fallback Phase A), `colbert-reranker-web-research.md` (downstream rerank), `searxng-search-backend.md` (web result ingest)
 **Source deep-dive**: [`/workspace/research/deep-dives/granite-embedding-97m-r2-evaluation.md`](../../research/deep-dives/granite-embedding-97m-r2-evaluation.md)
 
-## 2026-05-28 Audit Reset — Executor Start Here
+## Executor Start Here
+
+Phase A-fast is complete enough to unblock the next decision: `data/benchmarks/eval-corpus-v0.jsonl` has the 100-document / 30-query fallback corpus, and `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates the corpus and run plan with no missing relevance references. The remaining live work is:
+
+1. Decide whether to complete the model-artifact branch now: GGUF conversion/downloads plus embedder server recipes for Granite, multilingual-e5-base, and BGE-M3.
+2. Schedule an embedder-only serving window for Phase B; this does not require a production model-stack reload, but it does require the embedder servers to be live.
+3. After Phase B, update the downstream KB-RAG / rerank / SearXNG handoffs with a concrete dense-retriever decision.
+
+## Completed Scope
+
+| Date | Scope | Verification |
+|---|---|---|
+| 2026-06-18 | A-fast fallback corpus + dry-run harness landed. | `eval-corpus-v0.jsonl` and `bench_embedder_throughput.py` present. |
+| 2026-06-20 | A-fast re-verified during wrap-up. | `python3 -m py_compile scripts/benchmark/bench_embedder_throughput.py`; dry-run returned 100 documents, 30 queries, server roles for `8090/8096/8097/8098`, and `missing_relevance_refs=[]`. |
+
+## 2026-05-28 Audit Reset
 
 This handoff was too conservatively gated. K2 chunker output is the best corpus source, but Phase A already has a fallback code-corpus path and should not wait on K2.
 
 **Critique of older structure**: the status said "gated on K2" even though A-1/A-2/A-5 and the fallback A-4 corpus are inference-free and independently useful. That made a ready engineering task look blocked. The corrected structure is: Phase A can start now with a fallback corpus; Phase B requires an inference window.
 
-**Current next action**:
-
-1. Start with Phase A-4 fallback corpus and A-5 bench script, because those do not require model downloads or server launches.
-2. Keep GGUF conversion A-1/A-2 as a separate branch if storage/download budget is available.
-3. Use K2 output only if it lands before labels are complete; otherwise do not block.
-
 **Forked Phase A plan**:
 
 | Branch | Trigger | Work |
 |---|---|---|
-| A-fast fallback | K2 still not ready | Build `eval-corpus-v0.jsonl` from 100 code snippets + 30 manually labeled queries. |
+| A-fast fallback | K2 still not ready | ✅ Built `eval-corpus-v0.jsonl` from 100 code snippets + 30 manually labeled queries; dry-run validated 2026-06-20. |
 | A-K2 preferred | K2 chunker output available | Build corpus from handoffs/wiki/progress chunks plus 50 NL queries. |
-| A-no-download | operator wants no model artifacts yet | Land corpus schema + bench script only; defer GGUF conversion. |
+| A-no-download | operator wants no model artifacts yet | ✅ Landed corpus schema + dry-run bench script; GGUF conversion remains deferred. |
 
 **Gate before Phase B**:
 
-- Corpus exists with labels: `data/benchmarks/eval-corpus-v0.jsonl` has 100 `epyc-orchestrator/src` Python snippets and 30 labeled code-retrieval queries.
-- Bench script can run in dry-run mode against a fake or existing embedding endpoint: `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates shape and resolved relevance refs.
+- ✅ Corpus exists with labels: `data/benchmarks/eval-corpus-v0.jsonl` has 100 `epyc-orchestrator/src` Python snippets and 30 labeled code-retrieval queries.
+- ✅ Bench script can run in dry-run mode against a fake or existing embedding endpoint: `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates shape and resolved relevance refs.
+- Open: GGUF/comparator artifacts and embedder server recipes are ready to execute or explicitly defer.
 - User-approved inference window exists for model server launches.
 
 **Mitigation**: if Granite underperforms but the corpus reveals multilingual or code-search gaps, do not close the whole retrieval track. Fork to BGE-M3 or Qwen3-Embedding comparator and update `internal-kb-rag.md` with the corpus result.

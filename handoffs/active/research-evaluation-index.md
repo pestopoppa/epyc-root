@@ -16,7 +16,7 @@
 | HIGH | Tulving K-MEM-1 interpretation/follow-up | `bulk-inference-campaign.md` Package K / P3b below | Completed/scored 2026-06-20; corrected in research `9e63af0` after parser repair. Mixed baseline (`avg F1=0.4309`, Simple Recall `0.5530`, chrono `0.1593`) needs targeted follow-up before any memory-routing conclusion. |
 | MED | Tool-output compression P4c-P4e | [`tool-output-compression.md`](tool-output-compression.md) | Top-up telemetry, registration smoke, rollout gate. |
 | MED | Real-task eval distribution | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | W2 needs two-week soak and >=100 real records before W3 suite curation. |
-| MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | Embedder serving window only; does not require production model reload. |
+| MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified; remaining prep is model artifacts/server recipes, then an embedder serving window only. No production model reload required. |
 | MED | RoPE long-context matrix K-ROPE-1 | P10 below / clean-window manifest | Continue only in clean model-batched windows; worker path needs Gemma4 MTP serving fix before evidence. |
 | LOW | Reasoning compression tails | [`reasoning-compression.md`](reasoning-compression.md), [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Enforce path blocked until signal is predictive; Memento S2/S3 remain gated. |
 | LOW | Monitoring-only model/research watches | TQ3, Log-Linear GDN, YaRN, Ouro, SLIDERS, swarm/Strand, AgentWorld | Do not consume inference unless the owning handoff's gate is met. |
