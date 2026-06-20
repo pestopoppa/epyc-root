@@ -7,10 +7,20 @@
 **Related**: [bulk-inference-campaign.md](bulk-inference-campaign.md) Queue 3 — **J11/BSV-2 + K-SKILL-1 co-land at the same restart, flag-isolated** (`AUTOPILOT_BSV2_ACCEPT_GATE` / `AUTOPILOT_SKILL_EFFICACY_GATE`) · [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md) (Phase 2.0/2.1 prereqs for full power) · [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md) · [../../MEASUREMENT.md](../../MEASUREMENT.md) §P-QUAL-T1 (decision rule = this handoff)
 **History**: [evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md](../archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md) preserves completed W1-W7 implementation chronology compacted out of this active handoff.
 
+> **Live visibility update — 2026-06-20.** `epyc-orchestrator` `9cc932fe`
+> (`Surface live eval progress from phase reports`) makes
+> `build_phase_health_report()` fill missing in-flight eval counters from the
+> active `logs/autopilot.log` tail when the heartbeat belongs to the live phase
+> path and the running process predates structured eval counters. Heartbeat
+> counters still win when present, and log-tail matches are trial-scoped. Live
+> smoke during trial `902` reported `T2 450/500 (70% correct)` in both
+> `phase_health_report.py --json` and the aggregate Fable5 phase section,
+> without restarting or disturbing the W4/W6 accrual process.
+
 ## Start Here
 
 1. Keep sequential authority disabled until readiness passes: at least 120 trusted vector trials, at least 30 sequential shadow rows, and the flip-rate/e-process criteria in the spec.
-2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Trial `901` is clean sequential-shadow progress but still leaves the gate blocked at `67/120` trusted vectors and `15/30` shadow rows; trial `902` is in progress.
+2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Trial `901` is clean sequential-shadow progress but still leaves the gate blocked at `67/120` trusted vectors and `15/30` shadow rows; trial `902` is in progress and phase/Fable5 visibility now shows the live T2 counter from log-tail fallback.
 3. After readiness passes, run the disagreement/cutover report and the aggregate restart-readiness report with `--require-seq-cutover --require-w6-audit`; W6 audit must be alarm-free before any authority flip.
 4. Coordinate any restart-bundle flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
 

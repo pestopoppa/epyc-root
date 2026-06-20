@@ -6,6 +6,17 @@
 >
 > Historical current-state banners through 2026-06-19 were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
 
+> **Visibility checkpoint — 2026-06-20.** `epyc-orchestrator` `9cc932fe`
+> (`Surface live eval progress from phase reports`) closes the current
+> long-eval observability gap for already-running AutoPilot processes that lack
+> structured eval counters in `/mnt/raid0/llm/tmp/autopilot_phase.json`.
+> `build_phase_health_report()` now fills missing eval progress from the
+> trial-scoped `logs/autopilot.log` tail only for live `deep_eval` /
+> `structural_experiment` phases; heartbeat counters remain authoritative when
+> present. Live smoke on wrapper PID `1091014` / Python PID `1091018` reported
+> trial `902` as `T2 450/500 (70% correct)` in both phase health and the Fable5
+> aggregate phase section, with no restart and no authority flip.
+
 **Created**: 2026-03-08
 **Updated**: 2026-06-20 (bounded W4/W6 accrual live on wrapper PID `1091014` / Python PID `1091018`; durable journal max `901`, live trial `902` in `dispatch_action`. Latest strict restart preflight after trial `901` is ordinary-restart ready and reports baseline seed preflight `ready`/append-ready, but sequential-cutover remains blocked at 67/120 trusted vectors and 15/30 seq-shadow rows; W6 audit remains alarmed at 38/30 rows with 6 active-window divergences and 7 cumulative divergences. Baseline seed append remains deferred until AutoPilot is stopped. Earlier post-888, post-858, and 2026-06-14 repair/quarantine context remains below.)
 **Location**: `epyc-orchestrator/scripts/autopilot/`
