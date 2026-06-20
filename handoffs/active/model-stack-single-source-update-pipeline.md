@@ -8,8 +8,10 @@ live. The `launch_maps` high-risk P2 surface is now explicitly guarded:
 generated priors cover live llama launch entries, covered aliases are accepted
 only when their primary role has a live prior record, and manifest-owned
 auxiliary launch targets (`embedder*`, warm `worker_fast`) are classified in
-the stack-change validator. Future swap-CI expansion should follow new
-consumer migrations.
+the stack-change validator. Dashboard expected-stack topology now also labels
+manifest-owned warm embedder recipes (`8096/8097/8098`) by their auxiliary
+roles instead of anonymous port names. Future swap-CI expansion should follow
+new consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
