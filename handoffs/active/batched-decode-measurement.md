@@ -1,6 +1,6 @@
 # Batched-Decode Measurement (E1/E2) + Conditional 8x8 GEMM SIMD (E3)
 
-**Status**: IN PROGRESS — harness + non-decision-grade scout complete; decision-grade E1 still requires a reboot/host-health window
+**Status**: IN PROGRESS — harness + non-decision-grade scout complete; Queue-2 commands are staged in the clean-window manifest; decision-grade E1/E2 still require a reboot/host-health window
 **Created**: 2026-06-12
 **Priority**: ACTIVE-HIGH — bench-only, ~1 day for E1+E2; rank 2 in the findings-06 "what remains" table; an evidence vacuum under the highest-volume workload (the eval harness)
 **Spec**: [fable5-findings-06-kernel-and-concurrency.md](../completed/fable5-findings-06-kernel-and-concurrency.md) §2 (E1/E2/E3) + [MEASUREMENT.md](../../MEASUREMENT.md) P-BENCH-3 — read both before claiming any waypoint
@@ -66,6 +66,25 @@ EvalTower `current_quarters.jsonl`, computes wall-minutes/eval and
 `keep_candidate` / `kill_candidate` / `scout_only` / `incomplete` status. Non-decision-grade manifests
 stay `scout_only`, so the summarizer cannot accidentally promote host-health-warning data into a
 production keep/kill claim.
+
+### 2026-06-20 — Queue-2 clean-window manifest wiring
+
+Research `7d2dade` added E2/E1 entries to the tracked clean-window plan:
+`docs/data/clean_window_measurement_manifest.json` now has `27` total entries,
+`21` ready, and `6` blocked under the observed live port/context constraints,
+and `docs/data/clean_window_measurement_commands.sh` includes:
+
+- E2 plan generation:
+  `uv run --extra benchmark python scripts/benchmark/e2_eval_driver_ab.py --run-id "$run_id" --prompt-limit 43 --prompt-seed 42 --tier 1 --batch-np 8 --current-concurrency 3`
+- E1 decision-grade sweep command:
+  `uv run --extra benchmark python scripts/benchmark/server_np_sweep.py --run-id "$run_id" --prompt-limit 43 --prompt-seed 42 --tier 1 --np-levels 1,2,4,8,16`
+
+The E2 command is intentionally a no-inference run-plan generator; it writes the
+fresh attested E2 manifest and arm-level `commands.sh`. A smoke against
+`/mnt/raid0/llm/tmp/e2_plan_smoke/` during the active AutoPilot window produced
+`status=blocked decision_grade=false` with host-health warnings for uptime, NUMA
+state, and existing llama processes, proving the planner still fails closed for
+claim-grade evidence. No decision-grade E1/E2 result was binned.
 
 ## Gates & pitfalls
 
