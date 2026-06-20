@@ -4,8 +4,12 @@
 runtime attestation, generated stack summaries, scanner-rule ownership,
 production launch gate, AutoPilot preflight gate, direct benchmark runtime
 enforcement, and representative frontdoor/worker/vision swap-CI coverage are
-live. Remaining work is the `launch_maps` high-risk P2 consumer audit/migration
-plus future swap-CI expansion as new consumers are migrated.
+live. The `launch_maps` high-risk P2 surface has been audited far enough to
+identify the remaining concrete implementation decision: generated priors cover
+live llama launch entries, while manifest-only auxiliary launch targets
+(`embedder*`, `worker_fast`) still need either generated witness coverage or an
+explicit validator classification. Future swap-CI expansion should follow new
+consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -131,10 +135,20 @@ unowned local constants.
   so the next X-MAS gate is a fresh quiet held-out A/B, not more routing
   plumbing.
 - The 2026-06-20 read-only manifest audit found P1 closed and all named
-  P2/HIGH surfaces either migrated, generated, or re-audited except
-  `launch_maps`. Treat `launch_maps` as the next concrete no-inference pickup
-  candidate; do not reopen already-audited surfaces without a new duplicated
-  model/role/serving fact.
+  P2/HIGH surfaces either migrated, generated, or re-audited. The follow-up
+  `launch_maps` audit verified that generated stack priors carry launch entries
+  for live llama roles (`frontdoor`, `worker_general`, `architect_general`,
+  `worker_vision`, `vision_escalation`) and the hardcoded-surface inventory is
+  still `consumer_surface_count=13`, `rule_count=27`.
+- The remaining `launch_maps` tail is narrower than the original audit:
+  `stack_change_guard._launch_manifest_targets()` sees 21 launch targets,
+  including manifest-only auxiliary targets (`embedder`,
+  `embedder_granite_97m_r2`, `worker_fast`), but
+  `orchestration/derived/stack_priors.yaml` has no role records for those three.
+  Next work should decide whether auxiliary launch targets belong in generated
+  priors as launch witnesses or should be explicitly classified/validated as
+  manifest-owned auxiliaries. Keep any shared launch or validator edit in the
+  main thread after focused GitNexus impact checks.
 
 ## Completed Scope
 
@@ -159,10 +173,13 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
-- [ ] Audit/migrate `launch_maps`, the only manifest surface not explicitly
-  matched to a migrated or re-audited handoff note in the 2026-06-20 wrap-up
-  inventory. Run focused GitNexus impact before touching production code, and
-  keep HIGH/CRITICAL shared-helper edits on the main thread.
+- [ ] Resolve the `launch_maps` auxiliary-role coverage decision: generated
+  priors already project live llama launch metadata, but manifest-only
+  auxiliaries (`embedder*`, `worker_fast`) are visible to launch-manifest guard
+  targets while absent from generated role records. Add generated auxiliary
+  launch witnesses or an explicit validator classification; run focused
+  GitNexus impact before touching production code, and keep HIGH/CRITICAL
+  shared-helper edits on the main thread.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete

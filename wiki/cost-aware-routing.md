@@ -134,21 +134,30 @@ The follow-up full gate passed with `summary: ok`, `guard: ok`, `guard_all_surfa
 
 Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), `epyc-orchestrator` `e6d5ce6`.
 
-## 2026-06-20 Update - Remaining Launch-Map Consumer
+## 2026-06-20 Update - Launch-Map Auxiliary Witness Gap
 
 The wrap-up manifest audit narrowed the remaining model-stack SSoT migration
 queue: P1 is closed, the named P2/HIGH surfaces are either migrated,
-generated, or explicitly re-audited, and `launch_maps` is the remaining
-concrete high-risk P2 consumer to inspect next. This matters for cost-aware
-routing because launch maps bind role, port, alias, context, runtime
-requirements, and command-argument truth before q_scorer, seeding, and
-distillation consumers can trust a stack change.
+generated, or explicitly re-audited, and `launch_maps` has been reduced to a
+specific auxiliary-witness decision. This matters for cost-aware routing
+because launch maps bind role, port, alias, context, runtime requirements, and
+command-argument truth before q_scorer, seeding, and distillation consumers can
+trust a stack change.
 
-Treat the next migration as a focused launch-map audit with GitNexus impact
-checks, not a broad search over already-audited surfaces. If `launch_maps`
-still duplicates model/role/serving facts, it should consume generated
-stack-prior launch metadata or own an explicit degraded fallback; if it does
-not, record the audit and leave the surface alone.
+The verified boundary is now sharper. Generated stack priors already carry
+launch entries for live llama roles such as `frontdoor`, `worker_general`,
+`architect_general`, `worker_vision`, and `vision_escalation`; the
+hardcoded-surface inventory remains `consumer_surface_count=13`,
+`rule_count=27`. The uncovered edge is auxiliary launch topology:
+`stack_change_guard._launch_manifest_targets()` sees 21 launch targets,
+including `embedder*` and `worker_fast`, while the generated prior role map
+does not include `embedder`, `embedder_granite_97m_r2`, or `worker_fast`.
+
+Treat the next migration as a focused main-thread implementation decision with
+GitNexus impact checks: either add generated auxiliary launch witnesses or make
+the validator classification explicit that these targets are manifest-owned
+auxiliaries. Do not reopen already-audited routing/scoring consumers without a
+new duplicated model, role, serving, or runtime fact.
 
 Sources: [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
 
