@@ -218,7 +218,11 @@ generated command file leaves canonical preflight enabled and comments blocked r
 them. Research `7d27597` refreshed this generator after the failed frontdoor G11 run so every AA quality command
 uses `--server-mode --skip-speed-tests`; do not resurrect the older subprocess/speed-sweep command shape for
 G10/G11 evidence. Orchestrator `8546b3e` added `scripts/analysis/factual_risk_calibration_report.py`, which summarizes
-the v2 corpus/splits and can aggregate future G10/G11 result JSONL by role/model/outcome. This does not
+the v2 corpus/splits and can aggregate future G10/G11 result JSONL by role/model/outcome. Orchestrator
+`61e670d` extends that report with AA outcome rates and a fail-closed `tier_calibration_readiness`
+block: frontdoor+worker artifacts preview `frontdoor=0.824178` and `worker_general=1.0` relative to the
+current worst observed hallucination rate, but status remains `blocked_missing_roles` until
+`architect_general` is present and the deterministic-vs-LLM-judge scoring decision is resolved. This does not
 satisfy G10/G11; it makes the next clean-window live run and G12 analysis turnkey.
 
 **Implementation notes**:
