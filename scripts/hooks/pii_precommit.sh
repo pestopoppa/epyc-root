@@ -126,6 +126,17 @@ is_social_status_url_line() {
   return 1
 }
 
+is_benchmark_answer_line() {
+  # Generated benchmark result artifacts can legitimately contain long integer
+  # factual answers. Keep this narrow: only suppress account-number hits for
+  # answer-tagged numeric model responses in benchmark/package result files.
+  local path="$1"
+  local line="$2"
+  [[ "$path" =~ ^benchmarks/results/runs/.+[.]json$ || "$path" =~ ^data/package_g/.+[.](jsonl|json)$ ]] || return 1
+  echo "$line" | grep -qE '"response"[[:space:]]*:[[:space:]]*"?<answer>[0-9]{12,19}</answer>"?' && return 0
+  return 1
+}
+
 scan_blob() {
   local path="$1"
   local blob_content="$2"
@@ -164,6 +175,9 @@ scan_blob() {
         continue
       fi
       if is_social_status_url_line "$fullline"; then
+        continue
+      fi
+      if is_benchmark_answer_line "$path" "$fullline"; then
         continue
       fi
       printf 'BLOCKED: %s:%s: [%s] %s — matched: %s\n' "$path" "$lineno" "$label" "$desc" "$(echo "$match" | head -c 80)" >&2
