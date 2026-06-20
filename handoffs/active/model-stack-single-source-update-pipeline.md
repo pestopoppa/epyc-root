@@ -4,11 +4,11 @@
 runtime attestation, generated stack summaries, scanner-rule ownership,
 production launch gate, AutoPilot preflight gate, direct benchmark runtime
 enforcement, and representative frontdoor/worker/vision swap-CI coverage are
-live. The `launch_maps` high-risk P2 surface has been audited far enough to
-identify the remaining concrete implementation decision: generated priors cover
-live llama launch entries, while manifest-only auxiliary launch targets
-(`embedder*`, `worker_fast`) still need either generated witness coverage or an
-explicit validator classification. Future swap-CI expansion should follow new
+live. The `launch_maps` high-risk P2 surface is now explicitly guarded:
+generated priors cover live llama launch entries, covered aliases are accepted
+only when their primary role has a live prior record, and manifest-owned
+auxiliary launch targets (`embedder*`, warm `worker_fast`) are classified in
+the stack-change validator. Future swap-CI expansion should follow new
 consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
@@ -140,15 +140,16 @@ unowned local constants.
   for live llama roles (`frontdoor`, `worker_general`, `architect_general`,
   `worker_vision`, `vision_escalation`) and the hardcoded-surface inventory is
   still `consumer_surface_count=13`, `rule_count=27`.
-- The remaining `launch_maps` tail is narrower than the original audit:
-  `stack_change_guard._launch_manifest_targets()` sees 21 launch targets,
-  including manifest-only auxiliary targets (`embedder`,
-  `embedder_granite_97m_r2`, `worker_fast`), but
-  `orchestration/derived/stack_priors.yaml` has no role records for those three.
-  Next work should decide whether auxiliary launch targets belong in generated
-  priors as launch witnesses or should be explicitly classified/validated as
-  manifest-owned auxiliaries. Keep any shared launch or validator edit in the
-  main thread after focused GitNexus impact checks.
+- Orchestrator `471a4d2` closes the `launch_maps` auxiliary-role tail with an
+  explicit validator classification rather than widening generated prior role
+  semantics. `validate_launch_manifest_serving_alignment()` now rejects
+  unclassified launch targets without generated live priors, allows covered
+  aliases only when their primary role has a live prior record, allows
+  embedding-mode launch targets as manifest-owned auxiliaries, and allows only
+  the explicit warm `worker_fast` legacy worker-pool candidate outside the live
+  prior map. The full no-inference promotion gate passed (`174 passed`) and
+  `stack_change_pipeline.py check --run-promotion-gate` returned
+  `summary: ok`.
 
 ## Completed Scope
 
@@ -173,13 +174,11 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
-- [ ] Resolve the `launch_maps` auxiliary-role coverage decision: generated
-  priors already project live llama launch metadata, but manifest-only
-  auxiliaries (`embedder*`, `worker_fast`) are visible to launch-manifest guard
-  targets while absent from generated role records. Add generated auxiliary
-  launch witnesses or an explicit validator classification; run focused
-  GitNexus impact before touching production code, and keep HIGH/CRITICAL
-  shared-helper edits on the main thread.
+- [x] Resolve the `launch_maps` auxiliary-role coverage decision with explicit
+  validator classification (`epyc-orchestrator` `471a4d2`). Generated priors
+  remain the source for live llama launch metadata; manifest-owned auxiliaries
+  and covered aliases are now intentional validator states rather than silent
+  gaps.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
