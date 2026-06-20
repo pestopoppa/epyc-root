@@ -1,14 +1,14 @@
 # Inference Acceleration — Active Index
 
 **Purpose**: dispatch point for local inference optimization across CPU throughput, KV/context efficiency, speculative decoding, GPU-prep work, and model-serving experiments.
-**Updated**: 2026-06-19 wrap-up compaction.
+**Updated**: 2026-06-20 K-MEM completion and active G5 lane refresh.
 **History**: pre-compaction detail lives in [../archived/inference-acceleration-index-history-through-2026-06-19.md](../archived/inference-acceleration-index-history-through-2026-06-19.md).
 
 ## Start Here
 
 1. Read [master-handoff-index.md](master-handoff-index.md) for global priority and active inference-lane constraints.
 2. Use `/workspace/MEASUREMENT.md` for benchmark claim grammar and cache-state labeling.
-3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). As of this wrap-up, K-MEM Tulving is running on `ingest_long_context` and should remain the sole throughput-sensitive lane until it completes.
+3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving is complete; the active throughput-sensitive lane is the frontdoor G5 short-m@k run on port `8070`.
 4. Do not revive closed speculative-decoding or NUMA tracks without their documented reopen trigger.
 5. For llama.cpp work, use a dedicated feature branch/worktree and do not touch the production binary without an explicit rollout plan.
 
@@ -17,8 +17,8 @@
 | Area | Owner handoff | Status | Next action |
 |------|---------------|--------|-------------|
 | Batched decode / eval batching | [batched-decode-measurement.md](batched-decode-measurement.md) | ACTIVE-HIGH; scout exists, decision-grade E1/E2 still pending | Run E2 then E1 in the consolidated quiet window; use results to decide E3 SIMD work. |
-| X-MAS / routing measurement dependency | [x-mas-text-routing.md](x-mas-text-routing.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) | Enforce default-off; constrained policy needs quiet held-out A/B | Rerun only after K-MEM or another active throughput-sensitive lane clears. |
-| K-MEM / Tulving episodic benchmark | [research-evaluation-index.md](research-evaluation-index.md), [bulk-inference-campaign.md](bulk-inference-campaign.md) | Running on dedicated port `8080` | Let run finish, then score with `scripts/benchmark/score_tulving_run.py`. |
+| X-MAS / routing measurement dependency | [x-mas-text-routing.md](x-mas-text-routing.md), [routing-and-optimization-index.md](routing-and-optimization-index.md) | Enforce default-off; constrained policy needs quiet held-out A/B | Rerun only after the active G5 frontdoor lane clears or a separate quiet window is approved. |
+| K-MEM / Tulving episodic benchmark | [research-evaluation-index.md](research-evaluation-index.md), [bulk-inference-campaign.md](bulk-inference-campaign.md) | Completed/scored; corrected score in research `9e63af0` | Use failure-mode report for follow-up design; no memory-routing promotion. |
 | RoPE long-context probes | [research-evaluation-index.md](research-evaluation-index.md), [yarn-context-extension-research.md](yarn-context-extension-research.md) | Partial 4K/8K/16K evidence; worker path blocked by Gemma4 MTP serving issue | Resume K-ROPE cells in clean model-batched windows after active lane clears. |
 | KV compaction stack | [attention-matching-kv-compaction.md](attention-matching-kv-compaction.md), [triattention-kv-selection.md](triattention-kv-selection.md), [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md), [streaming-llm-baseline.md](streaming-llm-baseline.md) | Quantization deployed; AM merged; Expected Attention deployed; Memento S2 and StreamingLLM sweep remain open | Run current-stack long-context/coding refresh and StreamingLLM floor sweep before more rollout decisions. |
 | CPU throughput backlog | [cpu-inference-optimization-index.md](cpu-inference-optimization-index.md) | Active queue compacted; high-value gates are batched decode, DSA, MoE-Spec, and roofline calibration | Start with the CPU index and owning handoffs; do not use old historical sections as current instructions. |
@@ -42,7 +42,7 @@ These are not active work queues. Read their completed handoffs before reopening
 
 ```mermaid
 flowchart TD
-    KMem[K-MEM Tulving running] --> Quiet[Quiet/model-batched windows]
+    G5[G5 frontdoor running] --> Quiet[Quiet/model-batched windows]
     Quiet --> E2[E2 eval batching]
     Quiet --> E1[E1 CPU14 -np sweep]
     E1 --> E3[E3 SIMD if justified]

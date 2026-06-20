@@ -56,10 +56,12 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
   short-m@k runner wiring landed in research `cbf00e1`). It groups K-MEM-1 × K-ROPE-1 × G11 × G5
   **by model** so each GGUF loads once; only the worker/architect 32K RoPE cells remain blocked by
   resident context. K-MEM-1 Tulving on `ingest_long_context` completed and was packaged in research
-  `b6edc64` at
+  `b6edc64`, then rescored after the Tulving parser fix in research `9e63af0`, at
   `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/`
-  (`456/456` scored, avg F1/Simple Recall `0.0439`, Chronological Awareness `0.0556`, `17.27 t/s`;
-  weak baseline, no memory-routing promotion). K-MEM no longer blocks the next throughput-sensitive
+  (`456/456` scored, avg F1 `0.4309`, Simple Recall `0.5530`,
+  Chronological Awareness `0.1593`, `17.27 t/s`; mixed lexical recall,
+  weak event/detail and chronology, zero-answer hallucination failure, no
+  memory-routing promotion). K-MEM no longer blocks the next throughput-sensitive
   lane. A frontdoor G5 short-m@k clean-window run is in progress on port `8070`
   (output target
   `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/clean_window/short_mk_voting/frontdoor.json`);

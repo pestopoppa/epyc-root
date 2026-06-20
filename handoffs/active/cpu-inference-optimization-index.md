@@ -2,7 +2,7 @@
 
 **Purpose**: forward-looking backlog for unimplemented CPU decode/prefill throughput work on local EPYC 9655 Turin hardware.
 **Scope**: CPU-only single-instance or aggregate throughput. GPU work lives in [gpu-acceleration-path.md](gpu-acceleration-path.md); routing/orchestration lives in [routing-and-optimization-index.md](routing-and-optimization-index.md); eval/quality lives in [research-evaluation-index.md](research-evaluation-index.md).
-**Updated**: 2026-06-19 wrap-up compaction.
+**Updated**: 2026-06-20 active-lane refresh.
 **History**: pre-compaction detail lives in [../archived/cpu-inference-optimization-index-history-through-2026-06-19.md](../archived/cpu-inference-optimization-index-history-through-2026-06-19.md).
 
 ## Start Here
@@ -11,7 +11,7 @@
 2. Verify `kernel.numa_balancing` runtime state before benchmarking; do not trust only sysctl files.
 3. Treat `--mmap 0 + numactl --interleave=all -t 96 -fa 1` as the cold-cache canonical for throughput claims unless the owning handoff says otherwise.
 4. Never claim a new CPU optimization is deployable without CPU20-style repeated measurements and explicit cache-state labels.
-5. Coordinate inference windows with [bulk-inference-campaign.md](bulk-inference-campaign.md); K-MEM Tulving is currently running and should remain the only throughput-sensitive lane until it completes.
+5. Coordinate inference windows with [bulk-inference-campaign.md](bulk-inference-campaign.md); K-MEM Tulving is complete, and the active throughput-sensitive lane is now the frontdoor G5 short-m@k run.
 
 ## Active Queue
 

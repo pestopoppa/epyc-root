@@ -25,7 +25,7 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 ## Current Gate
 
 - [ ] Keep `ORCHESTRATOR_XMAS_ROUTING_MODE=off` and `ORCHESTRATOR_XMAS_WINNER_TABLE_PATH` empty in production until a future held-out run passes the verdict gates.
-- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks after the current K-MEM throughput lane completes or a separate quiet window is approved.
+- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks after the active G5 frontdoor throughput lane completes or a separate quiet window is approved.
 - [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
 
 ## Validation Commands
