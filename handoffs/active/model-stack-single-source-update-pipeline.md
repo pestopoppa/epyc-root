@@ -112,6 +112,11 @@ unowned local constants.
   compatibility `ROLE_TIMEOUTS` import-time snapshot; `RoutingResult` uses the
   same current-config helper for escalation timeout lookups while preserving
   the legacy dict export for older importers.
+- `src.services.escalation_prewarmer` now derives the architect prewarm
+  endpoint and chat-template model hint from generated stack priors; legacy
+  `ARCHITECT_PORTS` and `ARCHITECT_PORT_MODEL_HINT` imports remain as explicit
+  degraded fallback compatibility only. This was a main-thread CRITICAL-risk
+  migration because the prewarm path feeds live graph escalation.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
   `decision: hold` after hard replacement of the learned incumbent route; the
@@ -151,6 +156,11 @@ Any future stack update should be accepted only when these hold:
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
   duplicated model/role/serving fact or duplicated stack-prior traversal still
   exists; avoid broad renderer rewrites unless there is a narrow helper seam.
+- [ ] Treat `scripts.benchmark.seeding_rewards`,
+  `scripts.benchmark.corpus_quality_gate`, and `scripts.autopilot.kv_compress`
+  as re-audited surfaces: the current implementations already keep generated
+  stack priors primary with explicit degraded fallback. Do not churn them unless
+  a concrete duplicated live fact reappears.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
   consumer to prove. Latest witness: Orchestrator `7a90924` covers the seeding
