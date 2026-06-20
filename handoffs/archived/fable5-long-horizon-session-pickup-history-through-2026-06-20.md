@@ -1,6 +1,12 @@
-# Fable5 Long-Horizon Session Pickup
+# Fable5 Long-Horizon Session Pickup - History Through 2026-06-20
 
-**Status**: LIVE PICKUP — focused continuity note for the current autonomous Fable5 follow-through. This is not a replacement for the owning handoffs; it points the next session at the transient state that progress logs and indices do not capture cleanly.
+> Historical ledger only. Current work lives in the owning active handoffs:
+> [`../active/evidence-plane-instrument-repair.md`](../active/evidence-plane-instrument-repair.md),
+> [`../active/evidence-plane-ledger-and-sequential-verdicts.md`](../active/evidence-plane-ledger-and-sequential-verdicts.md),
+> [`../active/bulk-inference-campaign.md`](../active/bulk-inference-campaign.md), and
+> [`../active/master-handoff-index.md`](../active/master-handoff-index.md).
+
+**Status**: ARCHIVED 2026-06-20 - stale transient pickup. The referenced PIDs and trial state are historical; do not use this file as resume guidance.
 **Created**: 2026-06-15
 **Last verified**: 2026-06-15T12:34:47Z
 **Primary owners**: [evidence-plane-instrument-repair.md](evidence-plane-instrument-repair.md), [evidence-plane-ledger-and-sequential-verdicts.md](evidence-plane-ledger-and-sequential-verdicts.md), [master-handoff-index.md](master-handoff-index.md)

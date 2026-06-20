@@ -26,6 +26,7 @@
 | Package | Current status | Next action |
 |---|---|---|
 | K-MEM-1 Tulving episodic | Completed/scored on `ingest_long_context` with `--server-mode --skip-moe-reduction`; research `b6edc64` packages raw run JSON, scorer JSON/Markdown, index rows, and preflight. Scorer: `456/456` scored, missing ground truth `0`, avg F1 / Simple Recall `0.0439`, Chronological Awareness `0.0556`, avg decode `17.27 t/s`. | Treat as a weak baseline and inspect failure modes; K-MEM no longer blocks the next throughput-sensitive lane. |
+| G5 short-m@k clean-window | Frontdoor run active on resident port `8070`; target artifact `benchmarks/results/clean_window/short_mk_voting/frontdoor.json` is not yet evidence until the runner exits and JSON validates. | Package and commit the frontdoor artifact after completion; then schedule remaining G5 roles only in clean model-batched windows. |
 | K-ROPE-1 | Valid 4K/8K rows for frontdoor/architect/ingest and valid 16K rows for frontdoor/ingest are committed in research; worker rows are not evidence. | Fix/re-attest worker serving before counting worker RoPE cells; continue exact-boundary-safe chat-mode probes. |
 | EV-4 / H5 Scoring Verifiers | Adapter loads 6,701 candidate-level verifier items after research `7c11920`. | Run calibration baseline only after evidence substrate sequencing is clear. |
 | K-DIV-1 | Diversity metric code exists; semantic baseline requires embedder/model serving. | Keep thresholds gated until N2 ledger vectors and validation rows exist. |

@@ -2,8 +2,8 @@
 
 **Category**: `speculative_decoding`
 **Confidence**: verified
-**Last compiled**: 2026-05-28
-**Sources**: 34 documents (added 2026-05-28 DeepSeek-V4 MTP sidecar reference)
+**Last compiled**: 2026-06-20
+**Sources**: 34+ documents (added 2026-06-20 G5 short-m@k clean-window measurement state)
 
 ## Summary
 
@@ -37,6 +37,8 @@ The current state of the art for our stack is not speculative decoding at all --
 - **draft_max tuning gives free throughput**: Increasing `--draft-max` from 16 to 24-48 yields +17-21% across all production models with zero code changes. REAP-25B optimal is dm=24 linear (39.62 t/s). This was the single highest-ROI speculative optimization. [REAP handoff](../handoffs/completed/reap-moe-expert-pruning.md)
 
 - **Shorter reasoning chains are more accurate (short-m@k)**: Within any given question, shorter reasoning chains are up to 34.5% more accurate (LN-Super-49B) and use 42-54% fewer tokens. Correct reasoning is concise; incorrect reasoning wanders with compounding per-token error. Deployable without parallelism: short-1@k (take single shortest) gives equal accuracy with 40% fewer thinking tokens and approximately 50% less wall-time. Finetuning on short chains yields +2.8% accuracy and -5.8% tokens. [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
+
+- **G5 short-m@k measurement is active, not evidence yet (2026-06-20).** The frontdoor clean-window run is executing on the resident port `8070` with target artifact `epyc-inference-research/benchmarks/results/clean_window/short_mk_voting/frontdoor.json`. Do not use it as a benchmark result until the runner exits, the JSON validates, and the artifact is committed. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
 
 - **Length alarm integrates with difficulty bands**: Easy problems benefit most from length-based filtering (wrong/right token ratio 2x vs 1.3x for hard). Our band-adaptive budgets (easy=1,500, medium=3,500, hard=7,000) are well-calibrated. The addition: if generation exceeds 1.5x band budget, treat as failure signal and re-generate. Three-layer stack: conciseness prompting (shifts distribution left) + band budgets (caps right tail) + length alarm (actively selects shorter chains). [short-m@k deep-dive](../research/deep-dives/short-mk-parallel-reasoning.md)
 
