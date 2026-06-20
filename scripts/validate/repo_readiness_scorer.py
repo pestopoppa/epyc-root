@@ -632,6 +632,58 @@ def render_markdown(report: dict[str, object]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_remediation_markdown(
+    queue: dict[str, object],
+    *,
+    limit: int | None = None,
+) -> str:
+    """Render the deterministic remediation queue as an agent pickup artifact."""
+    items = list(queue.get("items", []))
+    if limit is not None:
+        items = items[:limit]
+
+    lines = [
+        "# EPYC Repo Readiness Remediation Queue",
+        "",
+        f"Generated: `{queue.get('generated_at')}`",
+        f"Queue version: `{queue.get('version')}`",
+        f"Total open items: `{queue.get('item_count')}`",
+        "",
+        "This queue is advisory input for planning and dashboards. It is not an",
+        "AutoPilot authority gate; every item still requires normal handoff ownership,",
+        "GitNexus impact checks, implementation validation, and operator policy gates",
+        "where applicable.",
+        "",
+        "| Priority | Repo | Criterion | Level | Pillar | Blocking next gate | Acceptance |",
+        "|---|---|---|---:|---|---|---|",
+    ]
+    for item in items:
+        blocking = "yes" if item.get("blocking_next_gate") else "no"
+        lines.append(
+            f"| {item.get('priority')} | {item.get('repo')} | "
+            f"`{item.get('criterion_id')}` | {item.get('level')} | "
+            f"{item.get('pillar')} | {blocking} | {item.get('acceptance')} |"
+        )
+
+    if limit is not None and int(queue.get("item_count", 0) or 0) > limit:
+        lines.extend([
+            "",
+            f"_Showing first {limit} items; see the JSON queue for the full list._",
+        ])
+
+    lines.extend([
+        "",
+        "## Pickup Rules",
+        "",
+        "- Prefer P0 items that unblock the current repo's next maturity gate.",
+        "- Keep generated or runtime artifacts out of remediation commits unless the",
+        "  owning handoff says they are durable evidence.",
+        "- Do not wire this queue into live AutoPilot behavior without a separate",
+        "  protocol and explicit default-off integration gate.",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def _parse_repo_arg(values: list[str] | None) -> dict[str, Path]:
     if not values:
         return DEFAULT_REPOS
@@ -659,6 +711,17 @@ def main(argv: list[str] | None = None) -> int:
         help="Write failed readiness criteria as deterministic remediation queue JSON.",
     )
     parser.add_argument(
+        "--output-remediation-md",
+        type=Path,
+        help="Write failed readiness criteria as advisory remediation queue Markdown.",
+    )
+    parser.add_argument(
+        "--remediation-md-limit",
+        type=int,
+        default=None,
+        help="Limit rows in --output-remediation-md while leaving JSON complete.",
+    )
+    parser.add_argument(
         "--min-portfolio-level",
         type=int,
         default=0,
@@ -674,6 +737,13 @@ def main(argv: list[str] | None = None) -> int:
         args.output_remediation_json.parent.mkdir(parents=True, exist_ok=True)
         queue_json = json.dumps(report["remediation_queue"], indent=2, sort_keys=True)
         args.output_remediation_json.write_text(queue_json, encoding="utf-8")
+    if args.output_remediation_md:
+        args.output_remediation_md.parent.mkdir(parents=True, exist_ok=True)
+        queue_md = render_remediation_markdown(
+            report["remediation_queue"],
+            limit=args.remediation_md_limit,
+        )
+        args.output_remediation_md.write_text(queue_md, encoding="utf-8")
     markdown = render_markdown(report)
     if args.output_md:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)

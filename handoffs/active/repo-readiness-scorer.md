@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; AutoPilot consumption remains future work
+**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; advisory Markdown queue rendering and refreshed 2026-06-20 queue artifacts are live. AutoPilot consumption remains future work and requires a separate protocol/default-off gate.
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -43,6 +43,8 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - JSON report: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_2026-06-13.json`
 - Markdown report: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-2026-06-13.md`
 - Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
+- Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`
+- Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-remediation-2026-06-20.md`
 
 2026-06-13 first-run summary:
 
@@ -64,6 +66,13 @@ Validation:
 - Changed files: `/workspace/scripts/validate/repo_readiness_scorer.py` and `/workspace/tests/validate/test_repo_readiness_scorer.py`.
 - Validation from the implementation sidecar: `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 5 passed.
 - Remaining integration work: feed the exported queue into AutoPilot remediation planning or a passive dashboard without letting the scorer become a decision gate without a protocol.
+
+2026-06-20 advisory-queue rendering update:
+
+- Added `--output-remediation-md` plus `--remediation-md-limit` to render the deterministic queue as a Markdown pickup artifact while keeping JSON complete.
+- Generated refreshed artifacts: `data/repo_readiness/repo_readiness_2026-06-20.json`, `progress/2026-06/repo-readiness-2026-06-20.md`, `data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`, and `progress/2026-06/repo-readiness-remediation-2026-06-20.md`.
+- Current queue: 49 open items; top P0 blockers include `epyc-inference-research` L3 style/test/task/dev-env/security gaps, `epyc-llama` L3 task/dev-env/security/experiment gaps, and `epyc-root` L5 auto-eval/self-optimizing-loop gaps. Markdown output is explicitly advisory and not an AutoPilot authority gate.
+- Validation: GitNexus LOW on `score_repositories`, `build_remediation_queue`, and `render_markdown`; `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 7 passed; JSON and diff checks passed.
 
 ## Notes
 

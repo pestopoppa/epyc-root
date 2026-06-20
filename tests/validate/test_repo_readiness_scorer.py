@@ -116,3 +116,41 @@ def test_cli_writes_remediation_queue_json(tmp_path):
     assert queue["version"] == 1
     assert queue["item_count"] == 45
     assert queue["items"][0]["id"] == "readiness:sample:L1.style_config"
+
+
+def test_remediation_queue_markdown_is_advisory_and_limitable(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "empty"
+    repo.mkdir()
+
+    report = scorer.score_repositories({"empty": repo})
+    markdown = scorer.render_remediation_markdown(
+        report["remediation_queue"],
+        limit=2,
+    )
+
+    assert "# EPYC Repo Readiness Remediation Queue" in markdown
+    assert "not an\nAutoPilot authority gate" in markdown
+    assert markdown.count("| P0 | empty |") == 2
+    assert "Showing first 2 items" in markdown
+
+
+def test_cli_writes_remediation_queue_markdown(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    output = tmp_path / "queue.md"
+
+    rc = scorer.main([
+        "--repo",
+        f"sample={repo}",
+        "--output-remediation-md",
+        str(output),
+        "--remediation-md-limit",
+        "1",
+    ])
+
+    markdown = output.read_text(encoding="utf-8")
+    assert rc == 0
+    assert "EPYC Repo Readiness Remediation Queue" in markdown
+    assert markdown.count("| P0 | sample |") == 1
