@@ -22,7 +22,7 @@ Staged HF sources from the 2026-06-20 no-RAM prep pass:
 - BGE-M3: `/mnt/raid0/llm/hf/BAAI_bge-m3` (`pytorch_model.bin` 2,271,145,830 bytes; dense-only path for this bench)
 - multilingual-e5-base: `/mnt/raid0/llm/hf/intfloat_multilingual-e5-base` (`model.safetensors` 1,112,201,288 bytes)
 
-Do not start conversion during active throughput-sensitive G11 benchmarking; conversion needs a dedicated llama.cpp Python env with CPU `torch`/`transformers`/`safetensors` and can create enough CPU/RAM/IO pressure to skew benchmark measurements.
+Do not start conversion during active throughput-sensitive G11 benchmarking; conversion can create enough CPU/RAM/IO pressure to skew benchmark measurements. The dedicated conversion env is staged at `/mnt/raid0/llm/venvs/llama-gguf-convert` and verified to import CPU `torch`, `transformers`, `safetensors`, `sentencepiece`, `numpy`, and `gguf`; `/mnt/raid0/llm/llama.cpp/convert_hf_to_gguf.py --help` starts successfully there.
 
 ## Completed Scope
 

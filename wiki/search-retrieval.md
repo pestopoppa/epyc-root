@@ -252,6 +252,7 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 `handoffs/active/granite-97m-r2-bench-plan.md` (K2 chunker output is preferred, but the fallback code corpus is no longer blocked on K2):
 
 - **Phase A**: fallback corpus + dry-run harness are verified as of 2026-06-20 (`100` Python snippets, `30` labeled queries, no missing relevance refs). HF sources are staged locally under `/mnt/raid0/llm/hf/` for Granite (`model.safetensors` 194,889,568 bytes), multilingual-e5-base (`model.safetensors` 1,112,201,288 bytes), and BGE-M3 (`pytorch_model.bin` 2,271,145,830 bytes; dense-only comparator path). Remaining prep is GGUF Q8_0 + Q4_K_M quantization and comparator/server setup: Granite on `:8096`, multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`.
+- **Conversion env**: staged outside repo worktrees at `/mnt/raid0/llm/venvs/llama-gguf-convert`; verified imports for CPU `torch`, `transformers`, `safetensors`, `sentencepiece`, `numpy`, and `gguf`, plus `convert_hf_to_gguf.py --help`. Conversion remains deferred until the active G11 benchmark exits.
 - **Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy: paper says 8K, card says 32K), end-to-end with GTE-ModernColBERT-v1 reranker.
 - **Phase C decision**: adopt granite (if NDCG@10 within 3pp of BGE-M3 AND ≥3× faster) / adopt BGE-M3 (if ≥5pp better, latency acceptable) / defer both (if neither beats BGE-large-en on actual EPYC corpus).
 
