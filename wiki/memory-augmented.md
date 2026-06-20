@@ -2,7 +2,7 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-06-19
+**Last compiled**: 2026-06-20
 **Sources**: 25+ documents (2 deep-dives, 18 intake entries, active handoffs, progress logs, and K-MEM/Tulving measurement context)
 
 ## Summary
@@ -19,9 +19,9 @@ The connection between memory and the autopilot is especially significant. Befor
 
 ## Key Findings
 
-### New Finding (2026-06-19) — K-MEM Tulving baseline is active measurement, not a memory feature flip
+### New Finding (2026-06-20) — K-MEM Tulving baseline completed with weak recall/chronology
 
-- **The Tulving episodic-memory benchmark is now the active K-MEM evidence lane for `ingest_long_context`.** Research run `20260619_141212` is collecting the 20ch Tulving slice with production/default GGUF expert settings (`--skip-moe-reduction`) after the canonical raw-throughput tripwire was corrected. The run should remain the only throughput-sensitive inference lane until completion, then be scored with `scripts/benchmark/score_tulving_run.py` before any memory-routing or long-context conclusion is claimed. This is measurement state, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md).
+- **The Tulving episodic-memory benchmark is complete for the first `ingest_long_context` baseline, but it is not a memory-routing promotion signal.** Research run `20260619_141212` used production/default GGUF expert settings (`--skip-moe-reduction`) and was packaged in `epyc-inference-research` commit `b6edc64`. The scorer covered `456/456` questions with no missing ground truth, avg F1 / Simple Recall `0.0439`, Chronological Awareness `0.0556`, and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This clears the throughput-sensitive K-MEM lane and creates an analysis/follow-up comparison task, not a change to episodic retrieval/write behavior. Sources: [bulk-inference-campaign.md](../handoffs/active/bulk-inference-campaign.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), [progress 2026-06-20](../progress/2026-06/2026-06-20.md).
 
 ### New Finding (2026-06-19) — Sequential evidence remains sample-gated
 

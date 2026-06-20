@@ -2,8 +2,8 @@
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change command and
 promotion gates are live. Generated-contract and guard checks are clean;
-runtime-attestation-bearing checks are expected to stop while the isolated
-K-MEM Tulving listener owns stack port `8080`. Remaining work is high-risk
+the previous runtime-attestation stop caused by the isolated K-MEM Tulving
+listener on stack port `8080` cleared after run completion. Remaining work is high-risk
 consumer migrations and opportunistic W4 swap-CI.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
@@ -43,10 +43,10 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   in `epyc-orchestrator`.
 - Default check after Orchestrator `9dcfbf5` was green:
   `stack_manifest_registry: ok`, `runtime_attestation: ok`,
-  `q_scorer_priors: ok`, and descriptors/stack priors fresh. Current
-  full-pipeline checks should treat the live K-MEM Tulving listener on port
-  `8080` as an expected runtime-attestation blocker, not a stack-change
-  regression.
+  `q_scorer_priors: ok`, and descriptors/stack priors fresh. The 2026-06-20
+  N11a migration checks that failed runtime attestation did so only while the
+  isolated K-MEM Tulving listener owned port `8080`; that listener is now gone,
+  so future full-pipeline checks should expect runtime attestation to run again.
 - Generated descriptors and stack priors are `status: compiled`; stack-prior
   role `known_gaps` are empty.
 - Current all-surface warning baseline: clean. Orchestrator `d459f46` labeled

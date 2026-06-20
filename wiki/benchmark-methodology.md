@@ -118,6 +118,8 @@ Key findings for benchmark methodology:
 
 Pre-generated datasets are available on Figshare (MIT license). Integration into our harness requires: download 20ch dataset, llama-server adapter, deterministic F1 scorer, suite registration. The 200ch variant is proposed as a YaRN context extension quality gate (P3b in research-evaluation-index).
 
+2026-06-20 EPYC baseline: `epyc-inference-research` run `20260619_141212` completed the documented 20ch/456-QA Tulving slice on `ingest_long_context` with production/default GGUF expert settings (`--skip-moe-reduction`) and was packaged in research commit `b6edc64`. The deterministic scorer covered `456/456` questions with no missing ground truth, avg F1 / Simple Recall `0.0439`, Chronological Awareness `0.0556`, and avg decode `17.27 t/s`; the benchmark log ended `448 completed, 8 skipped, 0 errors` because the corrected resume reused the first 8 rows. This result is a weak baseline and should drive failure-mode analysis or follow-up model-batched comparisons, not routing/memory promotion.
+
 > Source: [intake-408](/workspace/research/intake_index.yaml) -- arXiv 2501.13121, ICLR 2025; [decision-aware-routing.md](/workspace/handoffs/active/decision-aware-routing.md) -- routing intelligence data; [research-evaluation-index.md](/workspace/handoffs/active/research-evaluation-index.md) P3b -- integration plan
 
 > Source: [Integration Test Coverage](/workspace/handoffs/active/integration-test-coverage.md) -- intake-369, Terminal-Bench 2.0 methodology patterns, outcome-driven verification, container-per-test, three-property test design
