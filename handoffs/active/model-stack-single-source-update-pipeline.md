@@ -10,8 +10,10 @@ only when their primary role has a live prior record, and manifest-owned
 auxiliary launch targets (`embedder*`, warm `worker_fast`) are classified in
 the stack-change validator. Dashboard expected-stack topology now also labels
 manifest-owned warm embedder recipes (`8096/8097/8098`) by their auxiliary
-roles instead of anonymous port names. Future swap-CI expansion should follow
-new consumer migrations.
+roles instead of anonymous port names. WorkerPool now consumes stack-prior
+primary ports and server-mode launch paths through the generated artifact, with
+swap-CI proving a worker model/port replacement reaches the runtime config.
+Future swap-CI expansion should follow new consumer migrations.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific quantities can silently corrupt
 routing, scoring, launch, planner prompts, replay analysis, and operator docs
@@ -109,6 +111,12 @@ unowned local constants.
   helper for `/v1/models` ordering instead of keeping a route-local port
   resolver; explicit endpoint precedence and compatibility aliases are
   preserved.
+- `src.services.worker_pool` now uses the shared stack-prior primary-port
+  helper and generated launch requirements for worker model paths. The compiler
+  and stack-change guard both treat explicit `server_mode.model_path`,
+  `draft_model_path`, and `mmproj_path` as launch-requirement overrides on top
+  of stack-manifest defaults, so a data-only worker swap updates the generated
+  artifact before WorkerPool consumes it.
 - `orchestration.repl_memory.routing_classifier` now canonicalizes saved and
   loaded classifier label maps through the GraphRouter action-space helper, so
   seeded frontdoor actions and legacy role aliases normalize to current routing
@@ -188,11 +196,11 @@ Any future stack update should be accepted only when these hold:
   a concrete duplicated live fact reappears.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
-  consumer to prove. Latest re-audit: the simulated vision swap already covers
+  consumer to prove. Latest re-audits: the simulated vision swap already covers
   the migrated vision serving consumers (`stack_prior_vl_ports`,
   `_vl_port_for_role`, `_vl_url_for_role`, and `_vl_url_for_port`) against the
-  generated stack-prior artifact, so the old `c9d499f` witness gap is closed as
-  a stale handoff note rather than a new test change.
+  generated stack-prior artifact, and the simulated worker swap now covers
+  WorkerPool primary-port/model-path consumption after a generated worker swap.
 - [ ] Rerun the X-MAS held-out A/B in a quiet window; production routing remains
   default-off until the constrained policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run

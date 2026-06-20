@@ -84,6 +84,14 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   slot-query consumers, dashboard service hints, and seeding reward descriptor
   fallback. A read-only `health_preflight_probes` audit found no further
   duplicate role/port table to migrate in AutoPilot preflight.
+- 2026-06-20 WorkerPool follow-through landed in Orchestrator `1a8cb729` and
+  `b0150e1c`: runtime worker-pool config now uses shared stack-prior
+  primary-port selection and generated launch requirements for worker model
+  paths. The stack-prior compiler and guard both honor explicit
+  `server_mode` launch-path overrides on top of stack-manifest defaults, and
+  the simulated worker swap fixture proves a data-only worker model/port swap
+  reaches WorkerPool. `stack_change_pipeline.py check` returned `summary: ok`
+  and the executable promotion target passed 174 no-inference tests.
 - 2026-06-19 W4 swap-CI follow-up landed in Orchestrator `7a90924`: the
   simulated worker swap fixture now also proves seeding reward degraded
   fallback reads swapped model descriptor throughput before the legacy static
