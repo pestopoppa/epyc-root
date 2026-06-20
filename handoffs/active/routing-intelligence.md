@@ -1,8 +1,8 @@
 # Routing Intelligence: Factual-Risk Rollout
 
-**Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14.
+**Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14. 2026-06-20 audit found sufficient raw high-risk sample volume (`444` since canary start; `283` frontdoor) but no observable enforce/shadow canary-arm telemetry, so RI-10 remains blocked on instrumentation/evaluable-arm evidence rather than raw sample count.
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
-**Blocked by**: current canary sample counts / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
+**Blocked by**: enforce/shadow canary-arm telemetry / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
 **Updated**: 2026-06-20
 
@@ -12,13 +12,15 @@ Do not implement the old Phase 4/5 sections from the completed ledger. They were
 
 1. Pull current RI-10 canary data from logs before deciding anything; elapsed calendar time is not sufficient.
 2. If high-risk sample count is still below target, keep the canary running and update AR-3/bulk-inference sources.
-3. If sample count is adequate, compare enforce vs shadow on accuracy/factuality, escalation/review rate, latency, and cost.
+3. If sample count is adequate, confirm the logs expose both enforce and shadow canary arms before comparing accuracy/factuality, escalation/review rate, latency, and cost.
 4. Only then choose RI-11 expand, rollback to shadow, or threshold rework.
+
+Current 2026-06-20 report: `orchestration/reports/ri10_canary_sample_report_20260620.json` counts `444` high-risk routing decisions since the 2026-04-06 canary start (`283` frontdoor), but `canary_arm_counts_since_canary_start` is `0` enforce / `0` shadow. Most high-risk rows report `not_enforced:risk_control_disabled`, so this is not a valid RI-10 enforce-vs-shadow decision sample.
 
 ## Live Tasks
 
-- [ ] **RI-10 — Shadow-to-enforce canary decision**: current canary is 25% enforce / 75% shadow on frontdoor. Decision requires:
-  - >=50 high-risk samples or a documented reason to use a lower-powered decision;
+- [ ] **RI-10 — Shadow-to-enforce canary decision**: current canary is configured as 25% enforce / 75% shadow on frontdoor, but current logs do not expose an evaluable enforce/shadow split. Decision requires:
+  - >=50 high-risk samples or a documented reason to use a lower-powered decision; current raw count is sufficient, but arm attribution is not;
   - no p95 latency regression >10%;
   - no cost regression >5% at equal factuality;
   - no unexplained escalation/review inflation >20%;
