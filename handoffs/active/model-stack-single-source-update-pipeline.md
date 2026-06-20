@@ -174,11 +174,6 @@ Any future stack update should be accepted only when these hold:
 
 ## Outstanding Work
 
-- [x] Resolve the `launch_maps` auxiliary-role coverage decision with explicit
-  validator classification (`epyc-orchestrator` `471a4d2`). Generated priors
-  remain the source for live llama launch metadata; manifest-owned auxiliaries
-  and covered aliases are now intentional validator states rather than silent
-  gaps.
 - [ ] Preserve env override precedence and explicit degraded fallbacks whenever
   migrating config, runtime, benchmark, or prompt consumers.
 - [ ] Continue migrating remaining high-risk P2 consumers only where a concrete
