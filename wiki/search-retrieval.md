@@ -245,13 +245,13 @@ NextPLAID lost 8/14 queries to landings in `tests/` files because its index cove
 - **llama.cpp**: native support — `convert_hf_to_gguf.py:12452` registers `ModernBertModel(BertModel)` with `MODEL_ARCH.MODERN_BERT`, sliding-window + RoPE handling. Model card explicitly provides a `convert_hf_to_gguf.py` example.
 - **Sentence-transformers**: v3.3.0+ ships OpenVINO INT8 quantization (~4× CPU speedup); requires `transformers ≥ 4.48.0`.
 - **"Ollama unsupported - ModernBERT" line refers ONLY to Ollama's wrapper.** llama.cpp is fully supported.
-- **Recommended deployment path on EPYC**: GGUF + `llama-embedding` HTTP server on port `:8096` (matches existing BGE-large `:8090–:8095` pattern). The OpenVINO/sentence-transformers route requires cp312/cp313 venv (orchestrator currently cp314).
+- **Recommended deployment path on EPYC**: GGUF + `llama-server --embedding` on port `:8096` (matches existing BGE-large `:8090–:8095` pattern). The local llama.cpp build currently has `llama-server` and `llama-quantize`, but no standalone `llama-embedding` binary. The OpenVINO/sentence-transformers route requires cp312/cp313 venv (orchestrator currently cp314).
 
 ### Bench plan (handoff-driven)
 
 `handoffs/active/granite-97m-r2-bench-plan.md` (K2 chunker output is preferred, but the fallback code corpus is no longer blocked on K2):
 
-- **Phase A**: fallback corpus + dry-run harness are verified as of 2026-06-20 (`100` Python snippets, `30` labeled queries, no missing relevance refs). Remaining prep is GGUF Q8_0 + Q4_K_M quantization and comparator/server setup: Granite on `:8096`, multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`.
+- **Phase A**: fallback corpus + dry-run harness are verified as of 2026-06-20 (`100` Python snippets, `30` labeled queries, no missing relevance refs). HF sources are staged locally under `/mnt/raid0/llm/hf/` for Granite (`model.safetensors` 194,889,568 bytes), multilingual-e5-base (`model.safetensors` 1,112,201,288 bytes), and BGE-M3 (`pytorch_model.bin` 2,271,145,830 bytes; dense-only comparator path). Remaining prep is GGUF Q8_0 + Q4_K_M quantization and comparator/server setup: Granite on `:8096`, multilingual-e5-base on `:8097`, BGE-M3 dense on `:8098`.
 - **Phase B (1 inference day)**: throughput bench (1000 docs across 6 length buckets), nDCG@10 / recall@10/50, 32K context probe (validate paper-vs-card discrepancy: paper says 8K, card says 32K), end-to-end with GTE-ModernColBERT-v1 reranker.
 - **Phase C decision**: adopt granite (if NDCG@10 within 3pp of BGE-M3 AND ≥3× faster) / adopt BGE-M3 (if ≥5pp better, latency acceptable) / defer both (if neither beats BGE-large-en on actual EPYC corpus).
 
