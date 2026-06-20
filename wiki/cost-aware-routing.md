@@ -2,8 +2,8 @@
 
 **Category**: `cost_aware_routing`
 **Confidence**: verified
-**Last compiled**: 2026-06-15
-**Sources**: 30 documents (added 2026-06-13 task-rate/goodput objective replay, Fable 5 objective-design update, and stack-prior cost-contract audit)
+**Last compiled**: 2026-06-20
+**Sources**: 31 documents (added 2026-06-20 stack-prior generated-contract refresh)
 
 ## Summary
 
@@ -125,6 +125,14 @@ The durable rule is that stack-dependent quantities must flow through generated 
 The same rule applies to learned or distilled routing artifacts. Agent-config and MemRL distillation action spaces should be compiled from live stack priors, with historical labels preserved through era metadata, rather than letting a stale role roster leak into new policies. This keeps q_scorer, seeding rewards, GraphRouter, AutoPilot journals, and future distillation datasets on one model-stack contract.
 
 Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-update-pipeline-audit.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), [progress 2026-06-19](../progress/2026-06/2026-06-19.md), [MEMRL distillation design](../docs/reference/agent-config/MEMRL_DISTILLATION_DESIGN.md).
+
+## 2026-06-20 Update - Stack-Prior Contract Freshness
+
+The generated stack-prior contract is now treated as a source-hash freshness contract, not just a value file. After recent stack-manifest and stack-launch source edits, `stack_change_pipeline.py check --run-promotion-gate` correctly failed because `orchestration/model_descriptors.yaml` and `orchestration/derived/stack_priors.yaml` still carried older source-artifact hashes. The canonical `stack_change_pipeline.py update` path regenerated only metadata: compile timestamp, repo commit fields, and source-artifact hashes. No role/model values changed.
+
+The follow-up full gate passed with `summary: ok`, `guard: ok`, `guard_all_surfaces: ok`, `guard_strict: ok`, `runtime_attestation: ok`, and promotion gate `174 passed in 5.78s`. Operationally, this makes cost-aware consumers safer during non-model source changes: a stale generated contract now blocks before q_scorer, seeding, GraphRouter, launch/preflight, or operator summaries can silently rely on out-of-date stack source provenance.
+
+Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [Model Stack Single-Source Update Pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md), `epyc-orchestrator` `e6d5ce6`.
 
 ## Actionable for EPYC
 

@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-06-19
-**Sources**: 50+ documents (added 2026-06-19 X-MAS true function-axis winner table and validator status)
+**Last compiled**: 2026-06-20
+**Sources**: 51+ documents (added 2026-06-20 G12 factual-risk tier readiness status)
 
 ## Summary
 
@@ -204,26 +204,31 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 - **X-MAS has moved from scaffold to measured default-off decision table, with a diagnosed held-out failure mode.** The deterministic 5-domain x 5-function classifier, guarded production hook, validator, true function-axis sweep, and compiled `orchestration/xmas_winner_table.yaml` are now present. The table is enforce-eligible by schema/evidence, but the 2026-06-18 held-out A/B returned `decision: hold` after quality and latency regressions. Replay diagnostics now show the dominant failure was hard route replacement: X-MAS overrode 23/25 prompts, mostly `coder_escalation->worker_general`, with 7 baseline-only quality wins, 0 X-MAS-only wins, 20 prompts at >=3x latency regression, and 2 X-MAS timeouts. Live behavior stays default-off; the next task is an incumbent-aware/constrained policy design before any new A/B. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
 - **Delete/freeze discipline is now part of routing architecture.** Dead confidence-routing and three-way routing paths were removed; `dispatch_swarm_fanout` remains under an ownership watch through 2026-07-12. Future shadow layers need durable telemetry and ratification paths or they should not run. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 
+### New Findings (2026-06-20 - Factual-risk tier readiness)
+
+- **Factual-risk tier recalibration is evidence-gated by role completeness, not just by having some scored rows.** Frontdoor G11 and worker G11 AA-Omniscience runs are packaged and deterministic-F1-scored, but the tier-calibration report is still `blocked_missing_roles` until `architect_general` evidence exists. Current input rows are 1,800 frontdoor and 600 worker scored examples; frontdoor baseline accuracy is `0.1156` with hallucination rate `0.5628`, while worker baseline accuracy is `0.1433` with hallucination rate `0.6829`. The report can preview relative multipliers for observed roles, but it must not update factual-risk role tiers until the architect run is scored and the deterministic-vs-LLM-judge decision is made. Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), `epyc-orchestrator` `61e670d`.
+
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
-1. **RI-7 A/B test** -- run factual-risk enforce vs off on 500+ questions to validate risk-aware routing. Blocked on production stack + orchestrator API running.
-2. **Phase 4 enforcement wiring** -- integrate risk outputs into cheap-first bypass, plan review gate, escalation policy, failure graph veto, and review objective. The shadow data should now have weeks of accumulated scores for threshold calibration.
+1. **Finish G10/G12 factual-risk calibration input** -- run and score `architect_general` G10 once the architect server is idle, then decide whether deterministic F1 is sufficient or whether an LLM-judge pass is required before changing role-tier multipliers.
+2. **RI-7 A/B test** -- run factual-risk enforce vs off on 500+ questions to validate risk-aware routing after role-tier calibration is complete. Blocked on production stack + orchestrator API running.
+3. **Phase 4 enforcement wiring** -- integrate risk outputs into cheap-first bypass, plan review gate, escalation policy, failure graph veto, and review objective. The shadow data should now have weeks of accumulated scores for threshold calibration.
 
 ### Medium Priority
-3. **Risk fields on RoleResult** in `seeding_types.py` -- claimed complete 2026-03-06 but verification shows fields absent. Must re-add before Phase 5 seeding integration.
-4. **Structured review objective** -- replace `answer[:100]` proxy with `{"task_type": str, "risk_band": str, "key_claims": list[str], "verification_focus": str}` for the review trigger.
-5. **Risk-aware reward shaping** -- high-risk prompts that produce correct answers should get a Q-value reward bonus in `q_scorer.py`. This trains the routing to prefer capable models for factual queries.
-6. **Unified routing priority scheme** -- document and implement the priority ordering and blend formula for all 9 routing subsystems when running simultaneously.
+4. **Risk fields on RoleResult** in `seeding_types.py` -- claimed complete 2026-03-06 but verification shows fields absent. Must re-add before Phase 5 seeding integration.
+5. **Structured review objective** -- replace `answer[:100]` proxy with `{"task_type": str, "risk_band": str, "key_claims": list[str], "verification_focus": str}` for the review trigger.
+6. **Risk-aware reward shaping** -- high-risk prompts that produce correct answers should get a Q-value reward bonus in `q_scorer.py`. This trains the routing to prefer capable models for factual queries.
+7. **Unified routing priority scheme** -- document and implement the priority ordering and blend formula for all 9 routing subsystems when running simultaneously.
 
 ### Lower Priority
-7. **Evaluate Reason-ModernColBERT** (intake-174) as a replacement for the classification retriever's current embedding model. Late-interaction retrievers are optimized for reasoning tasks, and the 150M parameter size is CPU-friendly.
-8. **GAT risk feature injection** -- when the GraphRouter+GAT is enabled, factual-risk band should be an input feature, not a post-hoc filter.
-9. **Skill-augmented risk attenuation** -- when web_search skill is available, factual-risk score should be attenuated (the model can verify claims externally).
-10. **OPSDC difficulty signal** -- integrate conciseness-ratio difficulty estimation as an auxiliary input to the difficulty_signal.py classifier.
+8. **Evaluate Reason-ModernColBERT** (intake-174) as a replacement for the classification retriever's current embedding model. Late-interaction retrievers are optimized for reasoning tasks, and the 150M parameter size is CPU-friendly.
+9. **GAT risk feature injection** -- when the GraphRouter+GAT is enabled, factual-risk band should be an input feature, not a post-hoc filter.
+10. **Skill-augmented risk attenuation** -- when web_search skill is available, factual-risk score should be attenuated (the model can verify claims externally).
+11. **OPSDC difficulty signal** -- integrate conciseness-ratio difficulty estimation as an auxiliary input to the difficulty_signal.py classifier.
 
 ### Blocked
-11. **Phase 6 controlled rollout** -- progressive enforcement from frontdoor canary (25%) through global. Blocked on Phase 4 + RI-7 results.
+12. **Phase 6 controlled rollout** -- progressive enforcement from frontdoor canary (25%) through global. Blocked on Phase 4 + RI-7 results.
 
 ## 2026-06-15 Update — Generated Stack Priors And Frozen Expansion
 
