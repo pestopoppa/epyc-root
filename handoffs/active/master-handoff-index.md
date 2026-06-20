@@ -67,16 +67,17 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
   `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/clean_window/short_mk_voting/frontdoor.json`
   (`40` questions, `14/40`, accuracy `0.35`, no completion errors). Next clean-window
   scheduling launched frontdoor G11 run `20260620_035613`
-  (`/mnt/raid0/llm/tmp/g11_frontdoor_20260620T035601Z.log`); it exited after
-  `24:57` with `26 completed`, `0 skipped`, and `1800 errors`. Only partial
-  `moe4_lookup`, `moe6_lookup`, and `moe8_lookup` artifacts exist, with no final
-  `frontdoor_baseline.json`, so no G11 evidence is claimed. Triage found the
-  quality rows omitted `--server-mode` and failed through missing subprocess
-  binaries while lookup artifacts were speed-only telemetry; regenerated
-  AA/clean-window suite commands now use `--server-mode --skip-speed-tests`.
-  Resume the failed run with that shape (`--force` if preserving the existing
-  speed artifacts) before the `worker_general` G10/G11/G5/K-ROPE group, and
-  only run the worker group after affinity and canonical preflight pass. K-EMB-1
+  (`/mnt/raid0/llm/tmp/g11_frontdoor_20260620T035601Z.log`); it first exited
+  after `24:57` with `26 completed`, `0 skipped`, and `1800 errors`. The
+  failure was not claim-grade evidence: quality rows omitted `--server-mode`
+  and fell through missing subprocess binaries, while lookup artifacts were
+  speed-only telemetry. Regenerated AA/clean-window suite commands now use
+  `--server-mode --skip-speed-tests`; the corrected rerun is active under the
+  same run id with `--force --baseline-run 20260620_035613` and passed preflight
+  at `data/preflight/2026-06-20_043836.json`. `frontdoor_baseline.json` exists
+  but the runner is still live, so no G11 evidence is claimed until exit and
+  aggregate validation. Only run the `worker_general` G10/G11/G5/K-ROPE group
+  after this run completes plus affinity and canonical preflight pass. K-EMB-1
   embedder-only; H7 transformers-CPU serial.
 - **Frozen after DAR-1 replay**: Package I (SPO+/bilinear/ThinkPRM) stays frozen because the 2026-06-12 replay measured 0.00% identifiable mean regret (<5% gate).
 - Stale premises corrected in the campaign doc's §Staleness corrections: J6 closed/superseded (continuous run IS the soak; orchestrator `2eb4437` made EvalTower's default concurrency matrix-aware), G9 targets the removed architect_coding role, G10/G11 name pre-swap models, J12 wiring was verified against LlamaServerBackend `/v1/chat/completions` (not openai.py), flag A/Bs set flags via launch env + per-worker attestation, speed-metric paragraph changes when the task_rate objective lands.
