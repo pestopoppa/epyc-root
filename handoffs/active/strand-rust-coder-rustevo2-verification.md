@@ -241,3 +241,12 @@ Note whether **Qwen2.5-Coder-14B-Instruct itself** outperforms our gemma4-26B-A4
 - **Downstream handoff (gated on this result)**: [`swarm-dataset-distillation.md`](swarm-dataset-distillation.md)
 - **Methodology references**: canonical-baseline protocol (memory `feedback_canonical_baseline_protocol.md`), OMP env stack (memory `feedback_omp_env_stack_required.md`), no-concurrent-inference rule (memory `feedback_no_concurrent_inference.md`), llama-bench fa-default (memory `feedback_llama_bench_fa_default.md`), drop-caches re-warm (memory `feedback_drop_caches_numa_eviction.md`)
 - **Index entries**: this handoff is registered in [`research-evaluation-index.md`](research-evaluation-index.md) Subsystem Status
+
+## Research Intake Update — 2026-06-20
+
+### gemma-4-12B coder fine-tune (intake-702 → C-3)
+
+- Community coder fine-tune of dense google/gemma-4-12B-it (yuxinlu1; execution-verified CoT distillation; GGUF Q4_K_M ~7.38GB). Candidate cheap coder specialist.
+- FREE no-inference KILL-gate FIRST: confirm dense gemma-4-12B (gemma4_unified) loads on the mainline production-consolidated-v5 build — the deployed gemma4-26B-A4B runs on a SEPARATE ik_llama.cpp gemma-mtp binary, so MoE-worker success does NOT prove dense-12B mainline support.
+- If it loads, benchmark vs the REAL coding incumbents — coder_escalation (Qwen3.6-35B Q8, ~97%) and worker_general (gemma4-26B-A4B). There is NO "coder pool" (architect_coding was removed 2026-05-06).
+- Likely-DROP: dense 12B reads ~12B params/token vs ~3B active for the MoE incumbent (slower on BW-bound CPU) and has no MTP head. No benchmarks on the v1 card (observations). Per feedback_always_sweep, measure before any deploy call.

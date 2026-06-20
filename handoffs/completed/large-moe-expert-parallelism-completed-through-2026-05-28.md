@@ -835,3 +835,11 @@ After each phase:
   - Key technique: Per-tensor-role precision (routed experts ≪ shared experts ≪ router/embed) with explicit on-card justification; chat-tuned imatrix.
   - Reported results: Q2 = 80.8 GiB, Q4 = 153.3 GiB on-disk (no benchmarks on card).
   - Delta from current approach: Q4 variant fits on this 1.1 TB host (CPU-only). Pattern is transferable to other native `deepseek*` MoE arches in the registry (but NOT to dense DeepSeek-R1-Distill-* Llama/Qwen derivatives). Cross-reference also under `moe-spec-cpu-spec-dec-integration.md` (MTP sidecar drafter) and `llama-cpp-dsa-contribution.md` (arch support gating).
+
+## Research Intake Update — 2026-06-20 — Kimi-K2.7-Code (intake-703)
+
+> **Append-only addendum** per MEASUREMENT.md ("Never edit historical records to 'fix' them — append"). The historical Research-Context row "Kimi-K2 (~1T MoE) … deferred (storage + user-approval gated)" (and the sizing-table row with the same model) is preserved unmodified above; this note refines that deferral with newly-verified specifics.
+
+- A newer Code-specialized Kimi has appeared: **moonshotai/Kimi-K2.7-Code** (mradermacher GGUF). Same ~1T-total / 32B-active MoE class as the deferred Kimi-K2 row, now coding-specialized and (claimed) multimodal.
+- Refines the existing deferral with verified specifics: GGUF footprints **Q4_K_M 620.7 GB / Q3_K_M 489.2 GB / Q2_K 373 GB**. The **MoonViT vision encoder is UNSUPPORTED in our fork** (no `moonvit` handling) — only the **TEXT path** is plausibly supported (deepseek2/MLA + kimi-k2 tokenizer).
+- **STORAGE PRE-GATE (the binding new fact)**: raid0 has only **~633 GB FREE**, so **Q4_K_M (620.7 GB) is effectively non-viable** without offloading cold models; **Q3_K_M (489 GB) leaves ~144 GB**. (The intake's earlier "~480 GB headroom" figure was RAM, not disk.) Deferral stands: storage + operator approval + a canonical CPU decode-t/s + coding-eval gate before any keep/promote. All Moonshot benchmark numbers are self-reported **observations** (not decision-gating per MEASUREMENT.md).

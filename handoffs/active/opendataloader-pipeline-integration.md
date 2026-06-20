@@ -230,3 +230,11 @@ PDF Input
 
 ### New Related Research (deep-dived, from the intake-694 open-weights roundup)
 - **PaddleOCR-VL-1.6** (2026-06, Apache-2.0 — distinct from the pluggable PaddleOCR HTTP *engine*): a 1B-param VLM document parser (ERNIE-4.5-0.3B backbone), **OmniDocBench v1.6 overall 96.33 (SOTA: text / formula / tables / layout, + Real5 SOTA)**. Official **GGUF + mmproj** (`PaddlePaddle/PaddleOCR-VL-1.6-GGUF`), llama-mtmd CPU path — so it's runnable on our stack. Unlike the PaddleOCR engine (Phase-1 fast-path slot), this is a full VLM parser overlapping the **LightOnOCR slow-path + ODL structural extraction**. **Action (eval-gated):** bench PaddleOCR-VL-1.6 vs LightOnOCR on the doc test corpus for structured layout/table/formula extraction. **P1 follow-up — warrants its own intake entry.** See `research/deep-dives/2026-06-12-open-weights-roundup-followups.md`.
+
+## Research Intake Update — 2026-06-20
+
+### neural-txt — conditional cheap-specialist watch-item (intake-718)
+
+- neural-txt (AVB) is a CPU-cheap 135M task-specialist + constrained-decoding (Outlines) harness for structured NLP (bullets / Q&A pairs / KG triplets). CONDITIONAL watch-item: there is NO live consumer slot today (`document_formalizer` is a 1B OCR VLM; this pipeline has no cheap text-extraction stage). Re-surface ONLY if this pipeline grows a structured-NLP-extraction stage.
+- Its reward-model reranking half (NeuralTxtReward / neuraltxt-reward-tiny) is folded into intake-719 / the AVB offline-reward digest — not duplicated here.
+- No benchmarks (educational repo, observations).

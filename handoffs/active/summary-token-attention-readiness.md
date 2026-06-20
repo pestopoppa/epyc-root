@@ -82,6 +82,9 @@ All gating is OR-logic: ANY of these fires → activate the implementation plan 
 | llama.cpp upstream (ggml-org) | Monthly | PRs mentioning "summary token", "gist", "chunk attention", "selective unfolding" |
 | arxiv.org cs.CL | Monthly | Follow-up papers in summary-token cluster; competing mechanisms |
 | Major-lab model announcements | Monthly | Qwen, DeepSeek, Kimi, Meta, Google releases with summary-token mechanisms |
+| Still — amortized KV synthesis (intake-708) [†] | Monthly | Public code OR released compactor weights for a served family (Qwen/Gemma) |
+
+[†] **Still (intake-708 / arXiv 2606.07878)** — amortized KV synthesis via a per-layer Perceiver; needs one-time GPU forward-KL distillation per base model (this tracker's gating domain); NO public code/weights as of 2026-06-05. Trigger: public code OR released compactor weights for a served family (Qwen/Gemma). Then gate on CPU compute-overhead-vs-quality vs the deployed Expected-Attention compactor.
 
 Optional: schedule a weekly background agent via `/schedule` to check the two GitHub repos and ping when commits or releases land.
 

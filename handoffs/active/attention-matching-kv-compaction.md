@@ -170,6 +170,7 @@ Decomposition into closed-form subproblems (no gradient descent):
 - **triattention-kv-selection.md**: Token selection (which tokens to keep). AM could replace selection at high compression, or compose. S1 (Expected Attention) is the comparison target at 5-10x.
 - **kv-cache-quantization.md** (completed): Quantization (how tokens are stored). Orthogonal — stacking untested but theoretically multiplicative.
 - **llama.cpp #20037**: Community RFC for full ggml implementation. We can move faster with Track 2 hybrid approach (Python compaction + C++ decode).
+- **Still (intake-708, arXiv 2606.07878)** — the published *amortized-synthesis* challenger to the deployed *selection* path. Tracked in summary-token-attention-readiness.md (GPU-CPT-gated, no public code as of 2026-06-05). NB: our deployed default compactor is Expected-Attention (TriAttention); even the AM path here is selection+beta, not synthesis, so Still has no deployed synthesis counterpart to benchmark today. (This handoff/experiment still say 'production-consolidated-v3'; production is now v5 — functionality carried forward across rebases.)
 
 ## Compression Stacking Analysis
 

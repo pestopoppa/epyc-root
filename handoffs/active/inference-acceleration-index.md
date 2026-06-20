@@ -26,6 +26,9 @@
 | Frontdoor drafter / speculative decoding | [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) | Blocked by qwen35/qwen35moe decode-position failures; metadata compatibility alone is not acceptance evidence | Find a non-failing draft path or fix decode-position handling, then rerun clean qwen35/frontdoor retest. |
 | GPU acceleration / MI210 prep | [gpu-acceleration-path.md](gpu-acceleration-path.md), [agentic-rocm-kernel-authoring.md](agentic-rocm-kernel-authoring.md), [rocm-verify-profile-backend.md](rocm-verify-profile-backend.md) | Hardware-gated until MI210; prep only | Pin commits, license/env recipe, and gfx90a verification protocol before hardware arrives. |
 | DSA / DeepSeek V3.2 / GLM-5.1 | [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md), [deepseek-v4-flash-cpu-port.md](deepseek-v4-flash-cpu-port.md), [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md) | Active tracker, user/inference-gated | Pull/build/smoke PR #21149 under explicit approval; reuse outcome for GLM-5.1 readiness. |
+| GLM-5.2 (PRIMARY GLM target) | [glm51-reap-cpu-evaluation.md](glm51-reap-cpu-evaluation.md), [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) | GATED on DSA PR #21149 (dense-MLA fallback today); intake-699, supersedes GLM-5.1 | GLM-5.2 (754B GLM-MoE-DSA, MIT) is now the primary GLM target. Gated on the DSA forward-pass landing in our fork (currently dense-MLA fallback; tracked in llama-cpp-dsa-contribution.md). Storage-viable via unsloth UD-IQ2 (~238 GB); see glm51-reap-cpu-evaluation.md RIU 2026-06-20. (added 2026-06-20 via research-intake batch deep-dive) |
+| Amortized KV-cache synthesis (AM watch) | [summary-token-attention-readiness.md](summary-token-attention-readiness.md) | GATED: no public code + GPU-CPT required; watch-item only | Still — amortized KV-cache synthesis (intake-708) watch-item; primary tracker summary-token-attention-readiness.md. NB deployed default compactor is Expected-Attention, not AM. (added 2026-06-20 via research-intake batch deep-dive) |
+| Kimi-K2.7-Code (coder_escalation candidate) | large-MoE completed ledger (2026-06-20 addendum) | DEFERRED on storage + operator approval | Kimi-K2.7-Code (~1T MoE, intake-703) — coder_escalation candidate, deferred: raid0 only ~633 GB free (Q4_K_M 620 GB near-blocker; Q3_K_M 489 GB), MoonViT unsupported in fork. See the large-moe completed ledger 2026-06-20 addendum. (added 2026-06-20 via research-intake batch deep-dive) |
 | Linear / recurrent architecture watches | [lightning-attention-port.md](lightning-attention-port.md), [log-linear-gated-deltanet-readiness.md](log-linear-gated-deltanet-readiness.md), [summary-token-attention-readiness.md](summary-token-attention-readiness.md), [engram-conditional-memory.md](engram-conditional-memory.md) | Mostly monitoring or role-decision gated | Activate only when the owning handoff's evidence template or checkpoint availability gate is satisfied. |
 | Future context extension | [yarn-context-extension-research.md](yarn-context-extension-research.md) | Deferred pending datasets and RoPE bounds | Use Tulving 200ch and RoPE collapse points to set the next YaRN quality gate. |
 
@@ -63,8 +66,11 @@ flowchart TD
     Quiet --> Xmas[X-MAS constrained A/B]
     Quiet --> KROPE[K-ROPE remaining cells]
     Streaming[StreamingLLM floor] --> KVCluster[KV admission cluster decisions]
-    DSA[DSA PR #21149 smoke] --> GLM[GLM-5.1 readiness]
+    DSAfwd[DSA forward-pass / PR #21149] --> GLM[GLM-5.x family readiness]
+    DSAfwd --> GLM52[GLM-5.2 754B GLM-MoE-DSA primary target]
 ```
+
+**Cross-cutting (added 2026-06-20 via research-intake batch deep-dive)**: the ~633 GB raid0 free-space gate bounds BOTH GLM-5.2 and Kimi-K2.7, but asymmetrically — GLM-5.2 escapes it via unsloth UD-IQ2 (~238 GB), while Kimi-K2.7 stays storage-tight even at Q2_K (373 GB) and is a near-blocker at Q4_K_M (620 GB). Do not double-count the same headroom across both.
 
 ## Reporting
 

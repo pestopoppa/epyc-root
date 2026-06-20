@@ -463,3 +463,13 @@ Open design questions (carried from the stub, unresolved):
 2. Generator model: which local model writes the pages, and how do we keep it from hallucinating structure (lint gate on output)?
 3. Scope: in-repo git-versioned wiki only (we already have this — git = versioning); any app/UI sync is SaaS-only, skip.
 4. Trigger cadence: on-push CI vs nightshift batch — and how does it coordinate with the autopilot loop without contending for inference?
+
+## Research Intake Update — 2026-06-20
+
+### MRAgent — evidence-pruned retrieval (intake-698, comparative datapoint)
+
+- **[intake-698] "MRAgent — Memory is Reconstructed, Not Retrieved"** (arXiv:2606.06036) — **comparative datapoint against the parked self-correcting two-pass retrieval note (above, line ~414, under "Research Intake Deep-Dive — 2026-05-27 (six-signal retrieval → scoped K9/K10)", sourced from agent-oss / intake-610), NOT a new workstream.**
+  - **Mechanism**: a Cue-Tag-Content associative graph with ACTIVE RECONSTRUCTION — LLM reasoning is interleaved with retrieval, iteratively exploring the graph and PRUNING retrieval paths on intermediate evidence rather than fetching a flat top-k. This is evidence-conditioned path-pruning: the same family as the already-parked "evidence incomplete → gap-query → re-retrieve at a lower threshold" pattern, approached from the pruning side rather than the re-retrieval side.
+  - **Why logged here**: this is a SECOND independent instance of the parked self-correcting two-pass retrieval pattern (the first being agent-oss / intake-610). Record it as a comparative datapoint against that parked note. It stays **deferred-pending-a-consumer-that-emits-an-incompleteness-signal**, exactly like the existing note — no new K-track, no plan delta.
+  - **Observations (NOT decision-gating)**: token cost ~118k vs 245k–3.3M for baselines; reports LoCoMo / LongMemEval gains. BUT it is cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5), with NO CPU/local results, and it **LOSES to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)**. The transferable idea, given our token-budget constraints, is the **token-cost discipline** of evidence-pruned traversal — not the accuracy headline.
+  - **Routing**: do NOT route this to `delta-mem-reproduction` — that handoff's open gates are GPU-bound accuracy reproduction, not retrieval token-cost. Keep this parked alongside the agent-oss two-pass note here on the KB-RAG handoff.

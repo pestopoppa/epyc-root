@@ -1,7 +1,7 @@
 # Hermes Agent — Integration Index
 
 **Status**: active
-**Updated**: 2026-06-19
+**Updated**: 2026-06-20
 **Purpose**: dispatch surface for Hermes/OpenGauss-derived UX, shell, and agent-runtime work.
 
 > Completed pre-2026-06-19 checklist and research-intake chronology was compacted to [`../archived/hermes-agent-index-history-through-2026-06-19.md`](../archived/hermes-agent-index-history-through-2026-06-19.md). Current implementation status lives in the owning handoffs below.
@@ -15,6 +15,7 @@
 | MED | Subagent + single-slot llama-server validation | [`hermes-outer-shell.md`](hermes-outer-shell.md) Phase 2 validation G | Requires controlled inference; do not overlap throughput-sensitive evidence windows. |
 | LOW | Multi-user auth flow | [`hermes-outer-shell.md`](hermes-outer-shell.md) | Deferred while deployment remains single-user. |
 | LOW | Open-source extraction sketch | Future/open-source track | Do not drive abstraction until MemRL/routing validation justifies it. |
+| LOW | Centaur credential-egress-proxy (intake-696) — evaluate a placeholder-credential egress-proxy pattern (agents see placeholders; real secrets injected only on authorized outbound) as a credential-hygiene design note for the outer shell; see hermes-outer-shell.md RIU 2026-06-20. The other Centaur/eve/ruflo patterns are duplicative of existing work (HOS-Pattern-S / strategy_store / pi-agent hooks); ruflo federation out-of-scope. | [`hermes-outer-shell.md`](hermes-outer-shell.md) RIU 2026-06-20 | Design note only; no implementation gate (added 2026-06-20 via research-intake batch deep-dive). |
 
 ## Additional Active References
 
@@ -22,6 +23,7 @@
 |---|---|---|
 | [repl-turn-efficiency.md](repl-turn-efficiency.md) | Core REPL efficiency changes landed; S4 Omega A/B remains the active gate. | Measure turns/task, token cost/task, and accuracy delta before adding more REPL tool surfaces. |
 | [security-review-skill.md](security-review-skill.md) | Security-review skill and slash command are landed; CI integration is deferred. | Wire CI/PR-summary gates only after a concrete enforcement workflow exists. |
+| [tool-use-eval-contract.md](tool-use-eval-contract.md) | Note corrected 2026-06-20 (intake-705): the batched child-LLM structured-return path is ALREADY SHIPPED (commit 18b5ceb); only a single-query/new-delegate path remains; a server-side delegate already exists (chat_delegation.py). (added 2026-06-20 via research-intake batch deep-dive) | Real future delta = cost-aware capable→cheaper-worker delegation mode. |
 
 ## Closed Baseline
 

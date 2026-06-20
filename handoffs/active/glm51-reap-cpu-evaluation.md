@@ -77,6 +77,7 @@ Evaluate GLM-5.1-555B-A14B-REAP Q4_K_M GGUF as a potential single-model replacem
 | **Quantization** | Mixed: Q8_0 (attention, shared expert, DSA indexer, dense layers 0-2) + Q4_K/Q6_K (routed experts) |
 | **llama.cpp flags** | `--reasoning on --reasoning-format deepseek --jinja` |
 | **llama.cpp arch** | `LLM_ARCH_GLM_DSA` (PR#19460, DSA indexer tensors loaded but forward pass not implemented — dense MLA fallback) |
+| **GLM-5.2 (2026-06-20, PRIMARY target — intake-699, supersedes GLM-5.1)** | `zai-org/GLM-5.2`, 754B GLM-MoE-DSA, MIT, 1M context; adds new IndexShare indexer-reuse (arXiv 2603.12201). GGUF: unsloth UD dynamic-quant ladder — UD-IQ2_XXS/M ~238 GB, UD-Q2_K_XL 254 GB, Q4_K_M 466 GB. Same `LLM_ARCH_GLM_DSA` dense-MLA fallback (no DSA forward pass) → gated on PR #21149 per `llama-cpp-dsa-contribution.md`. |
 
 ## Published Benchmarks (0xSero, Q4_K_M GGUF)
 
@@ -197,3 +198,12 @@ Evaluate GLM-5.1-555B-A14B-REAP Q4_K_M GGUF as a potential single-model replacem
   - V3.2 vs GLM-5.1 size: V3.2 is 671B-class (Q4_K_M ~380 GB local) vs GLM-5.1 555B-A14B (Q4_K_M ~325 GB). Both share the indexer-falls-back-to-dense-MLA blocker on llama.cpp PR#19460.
   - V3.2-Exp validation point: matches V3.1-Terminus on GSM8K/GPQA-Diamond (per vLLM blog). Useful sanity-check baseline if/when we run quality comparisons on a DSA-enabled fork.
   - Verdict: **worth_investigating** — track upstream llama.cpp DSA indexer PR as the highest-leverage external event for both V3.2 AND GLM-5.1. Consider opening a fork patch ourselves if community PR stalls — this is now a 2-models-for-1-effort proposition.
+
+## Research Intake Update — 2026-06-20
+
+### GLM-5.2 is now the PRIMARY GLM-MoE-DSA target (intake-699, supersedes GLM-5.1)
+
+- Per user direction 2026-06-20, **GLM-5.2 is now the PRIMARY GLM-MoE-DSA target** (intake-699: `GLM-5.2-GGUF`, unsloth dynamic quants of `zai-org/GLM-5.2`, 754B GLM-MoE-DSA, MIT, 1M context). It **supersedes GLM-5.1 as the primary target** — with 5.2 released there is no reason to keep 5.1 primary. GLM-5.1 is retained as a **fallback datapoint** (its REAP'd 555B/192-expert evaluation history above stays intact and is not deleted). The decision-state / disposition in the "2026-05-28 Audit Reset" table and the WAIT-DSA fork should be read through this lens: the model under evaluation is now GLM-5.2, with GLM-5.1-REAP demoted to fallback comparison.
+- **Gating event** = the DSA forward pass landing in our fork (currently `LLM_ARCH_GLM_DSA` only loads tensors → dense-MLA fallback; no Lightning Indexer / sparse fattn). Tracked via **PR #21149** in [`llama-cpp-dsa-contribution.md`](llama-cpp-dsa-contribution.md). Until that lands, GLM-5.2's 1M-context / IndexShare value collapses to short-context dense fallback — exactly the same WAIT-DSA disposition that applied to GLM-5.1, now reframed onto the primary target.
+- **STORAGE is NOT the blocker — DSA is.** Pursue the unsloth **UD-IQ2 dynamic quant (~238 GB)** as the storage-viable path: it fits comfortably in the ~633 GB raid0 free, well under Q4_K_M (466 GB). The UD ladder (UD-IQ2_XXS/M ~238 GB, UD-Q2_K_XL 254 GB, Q4_K_M 466 GB) all clear current free space. (Contrast: Kimi-K2.7-Code stays storage-tight even at Q2_K 373 GB — see the large-moe ledger.)
+- GLM-5.2 vendor benchmarks (AIME 99.2, SWE-bench Pro 62.1, etc.) are **vendor self-reported = observations** per `MEASUREMENT.md`; usable for hypotheses, never to gate keep/deploy decisions.

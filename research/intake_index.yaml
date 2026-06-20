@@ -34744,3 +34744,1514 @@
   verdict_justification: 'worth_investigating — flag the individually-notable new drops for separate intake rather than dismissing (per project "never dismiss" policy). Highest-priority follow-ups for EPYC: PaddleOCR-VL-1.6 (doc pipeline), Step-3.7-Flash and Mellum2 (Apache-2.0 coding/VLM MoE candidates), Nemotron 3 Ultra (track for the SSM-hybrid readiness line, GPU-gated). credibility null — promotional digest, no empirical claims of its own.'
   contradicting_evidence: null
   notes: 'User-provided input 2026-06-10 (pasted X post by @victormustar, 2026-06-05; placeholder status URL — no canonical link provided). Digest entry; see recommended follow-ups for individual models warranting their own intake. Holo-3.1-4B from the same author''s self-reply is intake-691. DEEP-DIVE 2026-06-12 (research/deep-dives/2026-06-12-open-weights-roundup-followups.md): triaged vs stack. Own-entry follow-ups: PaddleOCR-VL-1.6 (P1, GGUF+mmproj, doc pipeline), Nemotron-3-Ultra-550B (P1 — CORRECTION: not GPU-gated; BF16/Q4 GGUF runs CPU, Q4_K_M ~300 GB fits, does NOT fire Log-Linear-GDN gate), Step-3.7-Flash (P2, Apache-2.0 coder_escalation eval candidate), Mellum2-12B (P3 cheap FIM, not a drafter). Audio -> multimodal TTS/ASR shortlist; image/video/3D/music gen dismissed.'
+
+- id: intake-695
+  arxiv_id: null
+  url: https://gemma-challenge-gemma-dashboard.hf.space/
+  source_type: blog
+  title: The Fast Gemma Challenge — multi-agent collaborative inference-optimization dashboard (HF Space)
+  authors:
+  - gemma-challenge (Hugging Face organization)
+  categories:
+  - autonomous_research
+  - swarm_techniques
+  - benchmark_methodology
+  - inference_serving
+  key_claims:
+  - Autonomous LLM agents work in parallel to make Google's gemma-4-E4B-it run inference as fast as possible, measured in tokens/sec on a fixed A10G GPU.
+  - Score = TPS (higher better); perplexity must stay near a reference value (accuracy-gated) to prevent quality degradation.
+  - 'Agents coordinate through a shared message board / HF bucket: posting plans, claiming directions, running benchmarks, publishing result files in real time.'
+  - 'Suggested agent research directions: vLLM, quantization, torch.compile, speculative decoding, custom kernels.'
+  techniques:
+  - Multi-agent collective optimization via shared message board / HF bucket
+  - Quality-gated optimization (perplexity-near-reference as acceptance gate)
+  - TPS-as-objective leaderboard scoring on fixed hardware (A10G GPU)
+  reported_results:
+  - No populated standings at retrieval (JS leaderboard / counters showed loading/empty).
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - swarm-dataset-distillation.md
+    - meta-harness-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-248
+  contradicting_evidence:
+  - Dashboard empty at fetch (no standings/results), so no concrete techniques or numbers could be mined; pattern is the only takeaway.
+  recommended_actions:
+  - 'PASSIVE WATCH-ITEM (downgraded 2026-06-20): nothing actionable now — the shared-bucket swarm-coordination pattern is already Applied in autopilot (intake-248, B1/B4/B5) and the dashboard was empty with GPU-only (A10G) suggested directions. Re-fetch only if it populates AND a surfaced technique is non-GPU-specific; else drop. Logged at autopilot-continuous-optimization.md as a duplicate-instance footnote.'
+  novelty_justification: Collective-intelligence inference optimization (shared-memory swarm + accuracy gate) already captured by intake-248 (SiliconSwarm@Ensue) and operationalized in autopilot NumericSwarm. Adds a second public instantiation but no new technique; medium.
+  relevance_justification: 'Name-family overlap only: the challenge target is dense gemma-4-E4B-it on an A10G GPU, whereas deployed worker_general is the 26B-A4B MoE on EPYC CPU — direct technique transfer is low. The coordination methodology maps onto autopilot/swarm workstreams but is already Applied (intake-248); GPU-only, so not directly actionable.'
+  verdict_justification: 'adopt_patterns: nothing to import (empty board, no artifact); coordination design (real-time shared-bucket publishing + per-submission method/perplexity/TPS schema; perplexity-near-reference acceptance gate) corroborates/refines autopilot swarm coordination.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-696
+  arxiv_id: null
+  url: https://centaur.run/
+  source_type: blog
+  title: Centaur — self-hosted multiplayer AI agent platform (Slack-integrated, MIT; Paradigm/Tempo)
+  authors:
+  - Paradigm
+  - Tempo
+  - paradigmxyz/centaur
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - inference_serving
+  - autonomous_research
+  key_claims:
+  - Self-hosted, open-source (MIT) platform to run shared 'multiplayer' agents invoked from Slack threads or API; durable transcript/event state in PostgreSQL.
+  - 'Harness-agnostic: a sandbox adapter lets one control plane drive CLI agents (Amp, Claude Code, Codex, pi-mono), decoupling orchestration from any single runtime.'
+  - Each conversation runs in an isolated per-conversation Kubernetes sandbox (k3s local) with shell/git/Python/Node, default-deny NetworkPolicy.
+  - 'Credential-safe: agents see placeholders; an ''iron-proxy'' (mitmproxy) swaps real secrets only on authorized outbound requests; 1Password runtime resolution.'
+  - Python public methods auto-become typed REST tool endpoints; durable Python 'workflow' functions can sleep/resume/wait-for-events/spawn child agents and survive restarts.
+  techniques:
+  - control-plane/execution separation
+  - per-conversation k8s sandbox isolation
+  - default-deny NetworkPolicy
+  - credential-injection egress proxy
+  - harness-adapter abstraction
+  - python-method-to-typed-tool-endpoint
+  - durable-workflow functions
+  - child-agent spawning
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 09-claude-debugger.md
+    handoffs:
+    - hermes-outer-shell.md
+    - meta-harness-optimization.md
+    - tool-output-compression.md
+    - tool-use-eval-contract.md
+    - orchestrator-stack-audit.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - No benchmarks/empirical claims; K8s + Slack assumptions don't fit a single-host EPYC deploy; overlaps existing durable-workflow/sandbox prior art (vercel-open-agents).
+  recommended_actions:
+  - 'OPERATOR-REVIEW: only net-new vs current state is Centaur''s placeholder-credential egress proxy (mitmproxy-style secret injection on authorized outbound) — record as a design note in hermes-outer-shell.md Key Questions. DROP the harness-adapter + durable-child-agent asks as DUPLICATIVE (already HOS-Pattern-S + A2A + child-agent Questions in hermes-outer-shell). k3s per-conversation sandbox out-of-scope (single-host EPYC). meta-harness-optimization is compacted (not a mining sink).'
+  novelty_justification: No prior centaur/Paradigm/iron-proxy reference. The integrated packaging (harness-agnostic adapter + placeholder-credential egress proxy + per-conversation k8s sandbox + durable Slack-fronted workflows) is distinct, but constituent primitives are already covered.
+  relevance_justification: Infra/ops-shaped, not a CPU-inference technique, so not high. Several patterns mineable for our harness (harness-agnostic adapter validates multi-harness direction; egress proxy; typed-method->tool-endpoint; durable child agents). K8s/Slack don't fit single-host EPYC.
+  verdict_justification: 'adopt_patterns: self-hosted MIT (passes open-source constraint) but a platform not a technique, no empirical claims, overlaps existing durable-workflow/sandbox prior art. Extract patterns; don''t adopt the K8s/Slack stack wholesale.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - hermes-outer-shell.md
+  handoffs_created: []
+- id: intake-697
+  arxiv_id: null
+  url: https://vercel.com/eve
+  source_type: blog
+  title: eve — The Agent Framework (Vercel; open-sourced 2026-06-17)
+  authors:
+  - Vercel
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - autonomous_research
+  key_claims:
+  - 'Filesystem-first agent framework (''Next.js for agents''): an agent is a directory of Markdown instructions + TypeScript tools + config compiled into a deployable system.'
+  - 'Durable execution: each conversation is a durable workflow (Vercel Workflow SDK) checkpointing every step; sessions pause/park and resume after crash or next message.'
+  - 'Hierarchical subagent delegation: the main agent delegates subtrees to specialized child agents with own instructions/tools, then combines results.'
+  - 'Zero-registration tools: a TS file in tools/ (defineTool() + Zod schemas) auto-registers; tool execution runs in isolated on-demand sandbox VMs.'
+  - Conditional Markdown 'skills', human-in-the-loop approval gates, scheduled/cron execution, eval suites on every deploy, multi-channel deploy from one codebase.
+  techniques:
+  - filesystem-as-config agent definition
+  - durable workflow w/ per-step checkpoint + pause/resume
+  - hierarchical subagent delegation
+  - conditional skill/playbook loading
+  - zero-registration tool discovery (filename->tool, Zod)
+  - per-agent isolated sandbox VMs
+  - human-in-the-loop approval gates
+  - eval-suite-on-deploy
+  reported_results:
+  - No benchmarks; product/launch page only (launched 2026-06-17).
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization.md
+    - repl-turn-efficiency.md
+    - tool-output-compression.md
+    experiments: []
+    intake_entries:
+    - intake-397
+  contradicting_evidence:
+  - Framework-ization of already-ingested vercel-labs/open-agents (intake-397) on the same cloud substrate; closed Vercel Workflows/Sandbox/Gateway, CPU-EPYC-irrelevant infra, no measurable results.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: one-line tracking note only — eve is the productized successor of intake-397 (vercel-labs/open-agents); all patterns already enumerated in the vercel-open-agents deep-dive and carried in hermes-outer-shell + tool-output-compression + tool-use-eval-contract Phase 2. No net-new lift; eval-suite-on-deploy (if anything) belongs to eval-tower, not meta-harness (compacted).'
+  novelty_justification: Eve is the productized successor of vercel-labs/open-agents (intake-397) on the identical substrate; constituent patterns already enumerated in the prior deep-dive. Packaging is new; techniques are not, and they mirror our own thin-map + skills + subagent harness.
+  relevance_justification: Direct overlap with our harness focus (subagent delegation, conditional skills, zero-registration tools, durable pause/resume, eval-on-deploy). Medium because cloud-managed TS substrate is not adoptable on CPU-only self-hosted EPYC; value is pattern-mining.
+  verdict_justification: adopt_patterns (same disposition as intake-397). Mine productized abstractions vs meta-harness/eval-tower; cloud substrate not adoptable; surviving novel pieces already extracted in the vercel-open-agents deep-dive.
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - hermes-outer-shell.md
+  handoffs_created: []
+- id: intake-698
+  arxiv_id: '2606.06036'
+  url: https://arxiv.org/pdf/2606.06036
+  source_type: paper
+  title: 'Memory is Reconstructed, Not Retrieved: Graph Memory for LLM Agents (MRAgent)'
+  authors:
+  - Shuo Ji
+  - Yibo Li
+  - Bryan Hooi
+  categories:
+  - memory_augmented
+  - agent_architecture
+  - rag_alternatives
+  - knowledge_management
+  key_claims:
+  - Static 'retrieve-then-reason' fixes memory access before inference and can't adapt retrieval to evidence accumulated during reasoning; memory should be actively reconstructed.
+  - Memory as a Cue-Tag-Content graph where associative tags bridge retrieval cues and stored content, enabling multi-hop associative traversal.
+  - Active reconstruction interleaves LLM reasoning with memory access, iteratively exploring and pruning retrieval paths on intermediate evidence.
+  - Path pruning prevents combinatorial explosion, keeping token/runtime cost low while improving answer quality.
+  techniques:
+  - Cue-Tag-Content associative memory graph
+  - active reconstruction (LLM-reasoning-in-the-loop retrieval)
+  - evidence-conditioned retrieval-path pruning
+  - multi-hop associative traversal
+  reported_results:
+  - 'LoCoMo overall J: 84.21% (Gemini-2.5-Flash)/88.32% (Claude-Sonnet-4.5) vs Mem0 68.31/69.02'
+  - 'LongMemEval: MRAgent* 86.76% vs Mem0 53.01% (~32% improvement)'
+  - Token consumption ~118k vs 245k-3,268k for baselines
+  referenced_arxiv_ids:
+  - '2407.04363'
+  - '2504.19413'
+  - '2510.18866'
+  - '2501.00309'
+  - '2501.13956'
+  - '2506.06326'
+  - '2502.12110'
+  - '2511.01448'
+  - '2503.09516'
+  - '2512.13564'
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - delta-mem-reproduction.md
+    - research-evaluation-index.md
+    - internal-kb-rag.md
+    - colbert-reranker-web-research.md
+    experiments: []
+    intake_entries:
+    - intake-346
+    - intake-326
+    - intake-539
+    - intake-568
+    - intake-610
+    - intake-611
+    - intake-612
+  contradicting_evidence:
+  - Cloud-LLM-bound for both storage construction and retrieval reasoning (Gemini-2.5-Flash, Claude-Sonnet-4.5); no CPU/local/quantized results. Slight loss vs Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17). Benchmarks/baselines/framing are well-trodden.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: append as a comparative datapoint to internal-kb-rag.md''s ALREADY-PARKED self-correcting two-pass retrieval note (evidence-conditioned path-pruning is a second instance of the same deferred-pending-a-consumer-signal pattern). Do NOT route the token-cost figure to delta-mem-reproduction (its open gates are GPU-bound accuracy reproduction, not retrieval cost). Token/accuracy numbers are observations (cloud-LLM-bound; loses to Mem0 on LoCoMo multi-hop F1).'
+  novelty_justification: Agent-memory cluster heavily covered, but MRAgent's mechanism (LLM reasoning folded into retrieval via evidence-conditioned path pruning over a Cue-Tag-Content graph) is distinct from prefix/KV/slot topologies and static-graph approaches; adds new results + token-cost advantage. Medium.
+  relevance_justification: Maps to active delta-mem B1 slot and internal-kb-rag/ColBERT retrieval; uses our standing memory eval targets (LoCoMo, LongMemEval). Lowered from high because cloud-LLM-bound — pattern-transfer source, not drop-in. Token-cost discipline most transferable.
+  verdict_justification: 'adopt_patterns: associative-tag graph + evidence-conditioned path-pruning are reusable for internal-kb-rag two-pass retrieval and delta-mem B1, independent of cloud backbones. credibility 2 (recent preprint, known coauthor Bryan Hooi, no peer-review yet).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - internal-kb-rag.md
+  handoffs_created: []
+- id: intake-699
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/GLM-5.2-GGUF
+  source_type: repo
+  title: GLM-5.2-GGUF (unsloth dynamic GGUF quants of zai-org/GLM-5.2)
+  authors:
+  - unsloth (GGUF quantization)
+  - zai-org / Z.ai / Zhipu AI (base model)
+  categories:
+  - local_inference
+  - quantization
+  - moe_optimization
+  - kv_cache
+  - context_extension
+  key_claims:
+  - 'Base zai-org/GLM-5.2: 754B-param GLM-MoE-DSA (MoE + Dynamic Sparse Attention), flagship agentic/coding, 1M-token context, MIT license.'
+  - New IndexShare reuses the same sparse-attention indexer across every four sparse-attn layers, cutting per-token FLOPs 2.9x at 1M context (arxiv 2603.12201).
+  - 'unsloth UD dynamic GGUF ladder: UD-IQ1_S 217GB ... UD-Q2_K_XL 254GB ... UD-Q4_K_M 466GB ... UD-Q6_K 626GB, Q8_0 801GB, BF16 1.51TB.'
+  - 'Card benchmarks: AIME 2026 99.2, GPQA-Diamond 91.2, SWE-bench Pro 62.1, Terminal Bench 2.1 81.0-82.7, Tool-Decathlon 48.2.'
+  techniques:
+  - mixture-of-experts
+  - dynamic sparse attention (DSA)
+  - IndexShare indexer reuse
+  - unsloth dynamic quantization
+  - GGUF
+  reported_results:
+  - AIME 2026 99.2; GPQA-Diamond 91.2; SWE-bench Pro 62.1; Terminal Bench 2.1 81-82.7; UD-Q4_K_M=466GB; UD-Q2_K_XL=254GB
+  referenced_arxiv_ids:
+  - '2602.15763'
+  - '2603.12201'
+  novelty: low
+  relevance: medium
+  credibility_score: 3
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 02-moe-optimization.md
+    handoffs:
+    - glm51-reap-cpu-evaluation.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    - cpu-shape-specialized-gemv-decode.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - 'DSA indexer/forward-pass still not implemented in our llama.cpp path (LLM_ARCH_GLM_DSA dispatches to a dense-MLA fallback; gated on PR #21149) — without DSA the 1M-context value collapses to short-context dense fallback. Storage is NOT the blocker: UD-Q4_K_M=466GB exceeds the ~250GB working-set budget, but the unsloth UD-IQ2 path (~238GB) fits the ~633GB raid0 free with headroom. Benchmarks are vendor self-reported (observations).'
+  recommended_actions:
+  - 'OPERATOR-REVIEW: ELEVATE GLM-5.2 to the PRIMARY GLM-MoE-DSA target in glm51-reap-cpu-evaluation.md (supersedes GLM-5.1 — no need to keep 5.1 primary once 5.2 is released). Gating event = the DSA forward-pass landing in our fork (currently LLM_ARCH_GLM_DSA dispatches to a dense-MLA fallback; tracked via PR #21149 in llama-cpp-dsa-contribution.md). Pursue the unsloth UD-IQ2 dynamic quant (UD-IQ2_XXS/M ~238 GB, UD-Q2_K_XL 254 GB) as the storage-viable path — well under the Q4_K_M 466 GB and fits the ~633 GB raid0 free. (User-directed 2026-06-20.)'
+  novelty_justification: Incremental point release of an already-documented family (GLM-5, GLM-5.1 in intake). Same 754B GLM-MoE-DSA base. Only genuinely new technique is IndexShare (arxiv 2603.12201).
+  relevance_justification: Strong MIT coding/agentic GGUF and a plausible primary GLM target, but deployment is gated on the unimplemented DSA forward pass (tracked in llama-cpp-dsa-contribution.md). Storage is tractable via the UD-IQ2 dynamic quant (~238GB). Medium until DSA lands.
+  verdict_justification: 'worth_investigating, not new_opportunity: family already an active investigation (glm51-reap + llama-cpp-dsa-contribution). credibility 3 (recent, major lab Zhipu, but self-reported and CPU-blocked).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - glm51-reap-cpu-evaluation.md
+  - llama-cpp-dsa-contribution.md
+  - inference-acceleration-index.md
+  - master-handoff-index.md
+  handoffs_created: []
+- id: intake-700
+  arxiv_id: null
+  url: https://github.com/ruvnet/ruflo
+  source_type: repo
+  title: Ruflo — agent meta-harness for Claude Code (multi-agent swarm orchestration; successor to Claude Flow)
+  authors:
+  - rUv (ruvnet)
+  - Cognitum.One
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - tool_implementation
+  - memory_augmented
+  - routing_intelligence
+  key_claims:
+  - 'Renamed successor to Claude Flow: extends Claude Code with coordinated multi-agent swarms, self-learning memory, federated cross-machine comms, enterprise security.'
+  - Swarm coordination with hierarchical/mesh/adaptive topologies + consensus (Raft, Byzantine, Gossip); 100+ specialized agents, 12 auto-triggered background workers.
+  - ~210 MCP tools across 34 plugins with parallel tool execution; 27 hook integration points for task routing and learning.
+  - Persistent memory via HNSW-indexed AgentDB vector DB + graph traversal; self-learning via SONA neural patterns + ReasoningBank trajectory learning with adaptive routing.
+  - 'Agent federation: zero-trust cross-machine collaboration (PII-gating, mTLS, ed25519, behavioral trust scoring); multi-model provider routing.'
+  techniques:
+  - swarm topologies (hierarchical/mesh/adaptive)
+  - consensus (Raft/Byzantine/Gossip)
+  - MCP tool orchestration (parallel)
+  - hook-based task routing
+  - HNSW vector memory (AgentDB)
+  - ReasoningBank trajectory learning
+  - GOAP + A* planning
+  - zero-trust mTLS/ed25519 federation
+  - multi-model provider routing
+  reported_results:
+  - v3.8.0 self-published wins 1.3x-1953x vs LangGraph/AutoGen/CrewAI (external gist); vector memory ~1.9x-4.7x vs brute force, recall@10 ~0.99; ~60.3k stars, 6,899 commits, latest v3.12.4 (2026-06-18)
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - meta-harness-optimization.md
+    - meta-harness-optimization-completed-through-2026-05-28.md
+    - swarm-dataset-distillation.md
+    experiments: []
+    intake_entries:
+    - intake-248
+    - intake-244
+    - intake-451
+    - intake-615
+  contradicting_evidence:
+  - Self-published benchmarks with extreme range (1.3x-1953x) lacking protocol/attestation — observations only per MEASUREMENT.md. Recent CWE-78 security patch (v3.12.4). Federation/enterprise-security layer out of scope for single-host single-user EPYC.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: no new mining — ruflo''s named primitives are already covered (strategy_store + 4-tier ReasoningBank memory in meta-harness-completed; SiliconSwarm cross-species sharing Applied + Fortytwo BT consensus killed in autopilot; pi-agent-core hooks). Record as a maturity datapoint confirming existing design lines; the only net-new element (zero-trust cross-machine federation) is out-of-scope for single-host EPYC. Note the CWE-78 patch (v3.12.4) if its hook-shell surface is ever inspected. Benchmarks are vendor self-reported (observations).'
+  novelty_justification: Every named primitive already covered (SiliconSwarm, Meta-Harness, Goose, Flywheel, ByteRover, Fortytwo). Contribution is integration/packaging at production maturity, not a new mechanism. Federation layer is the one fresh-but-out-of-scope element.
+  relevance_justification: 'High to harness/orchestration: mature heavily-starred reference implementation of exactly the agent-meta-harness + swarm space EPYC is building. Mineable: hook task-routing, background-worker auto-trigger, ReasoningBank trajectory learning, topology/consensus abstractions. Not relevant: federation/enterprise/multi-cloud.'
+  verdict_justification: 'adopt_patterns: open-source TS Claude-Code extension whose coordination patterns transfer; not adopt_component (Node/TS, not the Python orchestrator) and benchmarks are vendor self-reported. credibility 2.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - hermes-outer-shell.md
+  handoffs_created: []
+- id: intake-701
+  arxiv_id: null
+  url: https://github.com/cleanunicorn/drove
+  source_type: repo
+  title: Drove — local model server manager (lazy-loading OpenAI-compatible proxy for llama.cpp + ONNX ASR)
+  authors:
+  - cleanunicorn (GitHub individual maintainer)
+  categories:
+  - inference_serving
+  - local_inference
+  - tool_implementation
+  - document_processing
+  key_claims:
+  - Local model server manager that 'wakes models when you need them and shuts them down when you don't', acting as a proxy in front of an OpenAI-compatible API.
+  - 'Lazy loading: model processes start on first request, stop after idle timeout; multiple models can run concurrently.'
+  - 'Drop-in OpenAI SDK compat: exposes /v1/ endpoints (chat completions + /v1/audio/transcriptions).'
+  - Serves text (GGUF via llama-server, with per-model flag passthrough) and STT via a built-in ONNX worker (e.g. NVIDIA Parakeet) with no external ASR binary.
+  - HuggingFace auto-download + GGUF conversion, TOML+env config, request logging, TUI/web inspectors + TUI chat.
+  techniques:
+  - on-demand process lifecycle (spawn-on-request + idle-timeout teardown)
+  - OpenAI-compatible reverse proxy
+  - per-model llama-server flag passthrough
+  - in-process ONNX-runtime ASR worker
+  - HF auto-download + GGUF conversion
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - dynamic-stack-concurrency.md
+    - multimodal-pipeline.md
+    - non-inference-backlog.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Wholesale lazy-load is an anti-pattern for our deliberately pre-warmed + mlock single-user latency-critical stack (dynamic-stack-concurrency prewarms 22 instances ~653GB). llama-server flag passthrough / HF auto-conversion already solved in orchestrator_stack.py. Tiny project (8 stars, single maintainer), no benchmarks.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: DROP the ONNX-ASR / OpenAI /v1/audio/transcriptions facade ask — already shipped (whisper_server.py exposes /v1/audio/transcriptions; start_whisper is a first-class managed service). Keep only: proactive whole-process idle-teardown of COLD/RARE roles as an optional RAM-reclaim policy (DS-7-profile in dynamic-stack-concurrency.md), explicitly DISTINCT from the existing DS-6 quarter-eviction idle-timeout and from earlyoom (reactive ceiling); never for hot pre-warmed roles.'
+  novelty_justification: Integration/lifecycle tooling, no new algorithm. Core 'lazy-load OpenAI-compatible swapper in front of llama.cpp' is the known llama-swap pattern; ONNX-ASR worker + HF auto-GGUF are standard glue.
+  relevance_justification: 'Medium: idle-unload-to-reclaim-RAM and unified /v1/audio/transcriptions over a CPU ONNX ASR worker are on-topic for managed-services + multimodal-pipeline, but the orchestrator''s pre-warm + mlock + shared-process-per-GGUF design is the opposite of drove''s model.'
+  verdict_justification: 'adopt_patterns: no empirical claims (credibility null); wholesale lazy-load is an anti-pattern here, but idle-teardown-for-cold-roles and in-process OpenAI ASR facade are worth mining. Neither requires importing drove.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - dynamic-stack-concurrency.md
+  - pipeline-integration-index.md
+  handoffs_created: []
+- id: intake-702
+  arxiv_id: null
+  url: https://huggingface.co/yuxinlu1/gemma-4-12B-coder-fable5-composer2.5-v1-GGUF
+  source_type: repo
+  title: Gemma4-12B-Coder GGUF — Composer 2.5 x Fable 5 v1 (community coder fine-tune of google/gemma-4-12B-it)
+  authors:
+  - yuxinlu1 (independent / community)
+  categories:
+  - training_distillation
+  - local_inference
+  - agent_architecture
+  - quantization
+  key_claims:
+  - Coder fine-tune of base google/gemma-4-12B-it (dense 12B, gemma4_unified arch, 256K context), distilled from execution-verified chain-of-thought for Python/algorithmic coding.
+  - 'Two CoT distillation sources: Composer 2.5 (genuine traces kept only when the solution passed tests) and Fable 5 (re-derived self-consistent CoT for Composer-2.5 failures, also test-gated).'
+  - Every training trace is execution-verified before ingestion (no synthetic reasoning without test-pass validation) — the core recipe claim.
+  - 'GGUF ladder: Q2_K 4.83GB ... Q4_K_M 7.38GB (recommended) ... Q8_0 12.7GB; Apache 2.0.'
+  techniques:
+  - execution-verified rejection-sampling distillation
+  - chain-of-thought SFT
+  - test-gated trace filtering
+  - GGUF quantization
+  reported_results:
+  - No HumanEval/MBPP for v1 (card omits coding scores); a v2 successor (not this checkpoint) self-reports ~55% tau2-bench telecom vs ~15% base.
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 01-speculative-decoding.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - multimodal-pipeline.md
+    - strand-rust-coder-rustevo2-verification.md
+    experiments: []
+    intake_entries:
+    - intake-682
+  contradicting_evidence:
+  - No benchmarks on the v1 card (only a v2 self-report that isn't this checkpoint). Dense 12B reads ~12B params/token vs ~3B active for the MoE incumbent worker_general -> likely slower per-token on BW-bound CPU; must measure. gemma4_unified arch support in our fork must be confirmed; Python-only specialization; no MTP drafter head.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: free no-inference KILL-gate first — confirm dense gemma-4-12B (gemma4_unified) loads on the mainline production-consolidated-v5 build (the deployed gemma4-26B-A4B runs on a SEPARATE ik_llama.cpp gemma-mtp binary, so MoE-worker success does NOT prove dense-12B mainline support). If it loads, benchmark vs the REAL coding incumbents — coder_escalation (Qwen3.6-35B Q8, 97%) and worker_general (gemma4-26B-A4B); there is no ''coder pool''. Likely-drop: dense 12B reads ~12B/token vs ~3B active MoE and has no MTP head. Attach any result to strand-rust-coder-rustevo2-verification.md C-3.'
+  novelty_justification: Family heavily covered (deployed 26B-A4B MTP, 31B-dense + drafter deep-dives, intake-682 SAME 12B-it base). Net-new is only the coder-SFT layer + test-gated CoT recipe; no novel algorithm/paper. Low.
+  relevance_justification: Gemma-4 is production-load-bearing and there is interest in cheaper coder/draft tiers; a dense 12B Python coder (Q4_K_M 7.38GB) is a CPU-runnable specialist candidate, but no benchmarks and likely-slower dense decode -> needs measurement. Medium.
+  verdict_justification: worth_investigating, not already_integrated (deployed Gemma-4 is the 26B-A4B MoE) and not not_applicable (plausible CPU coder candidate). credibility null (community GGUF, no independent empirical claims).
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - strand-rust-coder-rustevo2-verification.md
+  handoffs_created: []
+- id: intake-703
+  arxiv_id: null
+  url: https://huggingface.co/mradermacher/Kimi-K2.7-Code-GGUF
+  source_type: repo
+  title: Kimi-K2.7-Code-GGUF (mradermacher GGUF quants of Moonshot AI Kimi-K2.7-Code)
+  authors:
+  - mradermacher (GGUF quantizer)
+  - 'Moonshot AI (base: moonshotai/Kimi-K2.7-Code)'
+  categories:
+  - local_inference
+  - moe_optimization
+  - quantization
+  - agent_architecture
+  - multimodal
+  key_claims:
+  - Base ~1T-total / 32B-active MoE (384 experts, top-8 + 1 shared, 61 layers incl. 1 dense), MLA attention, 256K context; coding-focused agentic model.
+  - 'Now multimodal: ships a 400M MoonViT vision encoder; GGUF set includes separate mmproj files (mmproj-Q8_0 0.7GB, mmproj-f16 1.1GB).'
+  - 'GGUF footprints: Q2_K 373GB, Q3_K_M 489.2GB, IQ4_XS 551.6GB, Q4_K_S 582.6GB, Q4_K_M 620.7GB — all fit 1.1TB RAM, but raid0 has only ~633GB FREE, so Q4_K_M (620.7GB) is a storage near-blocker (the ~480GB figure is RAM headroom, not disk).'
+  - 'Moonshot base benchmarks: Kimi Code Bench v2 62.0 (vs GPT-5.5 69.0 / Opus 4.8 67.4); Program Bench 53.6; MCP Atlas 76.0; MCP Mark Verified 81.1.'
+  techniques:
+  - MoE (384 experts, top-8 + 1 shared)
+  - MLA (multi-head latent attention)
+  - GGUF post-training quantization
+  - MoonViT vision encoder + mmproj projection
+  - 256K long-context
+  reported_results:
+  - Kimi Code Bench v2 62.0; Program Bench 53.6; MLS Bench Lite 35.1; Kimi Claw 24/7 46.9; MCP Atlas 76.0; MCP Mark Verified 81.1 (Moonshot self-reported, no protocol/attestation)
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 2
+  verdict: worth_investigating
+  cross_references:
+    chapters: []
+    handoffs:
+    - large-moe-expert-parallelism-completed-through-2026-05-28.md
+    - reap-moe-expert-pruning.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Enormous footprint (620.7GB Q4_K_M) -> CPU decode t/s on a ~1T MoE will be low (unmeasured); 620.7GB GGUF vs only ~633GB raid0 FREE = storage near-blocker (the intake's '~480GB headroom' was RAM, not disk). MoonViT vision encoder is UNSUPPORTED in the fork (no moonvit handling); only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly supported. All cited numbers are Moonshot self-reports (observations, not decision-grade).
+  recommended_actions:
+  - 'OPERATOR-REVIEW (completed-handoff edit, operator-gated): UPDATE the existing Kimi-K2 deferral row in large-moe-expert-parallelism-completed-through-2026-05-28.md with K2.7-Code specifics (Code-specialized; now multimodal but MoonViT UNSUPPORTED in fork — text path works via deepseek2/MLA + kimi-k2 tokenizer; Q4_K_M 620.7 GB / Q3_K_M 489.2 GB / Q2_K 373 GB). STORAGE PRE-GATE first: raid0 has only ~633 GB FREE, so Q4_K_M is effectively non-viable without offloading cold models. Keep the canonical CPU decode-t/s + coding-eval gate; do NOT edit the active disposition file (different scope).'
+  novelty_justification: 'Kimi-K2 ~1T MoE arch + generic GGUF wrapper already known (deferred in large-moe-expert-parallelism; K2.5 quants/drafters in intake). New: K2.7 ''Code'' specialization with fresh self-reported coding/agentic benchmarks and the model becoming multimodal (MoonViT + mmproj). Medium.'
+  relevance_justification: CPU-runnable in RAM (Q4_K_M 620.7GB fits 1.1TB) frontier-class coding/agentic MoE mapping onto the deferred coder_escalation slot; MLA + 256K + agentic/MCP focus align. High in principle, but storage-gated (only ~633GB raid0 free -> Q3_K_M 489GB or lower needed) and the 'now multimodal' selling point does not apply (MoonViT unsupported in fork).
+  verdict_justification: worth_investigating — not already_integrated (no Kimi role deployed; deferred in completed handoff), not new_opportunity (K2-as-coder_escalation already on record). credibility 2 (major lab Moonshot + recent; GGUF card has no independent claims; base benchmarks lack protocol).
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - large-moe-expert-parallelism-completed-through-2026-05-28.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+- id: intake-704
+  arxiv_id: null
+  url: https://sakana.ai/marlin-release/
+  source_type: blog
+  title: Sakana Marlin — 'Virtual CSO' autonomous business-strategy research assistant (commercial product)
+  authors:
+  - Sakana AI
+  categories:
+  - autonomous_research
+  - agent_architecture
+  - swarm_techniques
+  key_claims:
+  - Marlin is a COMMERCIAL autonomous research-assistant product ('Virtual CSO') for corporate strategy/market/risk/competitive analysis — not a model or open system.
+  - 'Built on Sakana''s long-horizon reasoning stack: AB-MCTS (coordinates multiple models), The AI Scientist (automated discovery), ALE-Agent (automated algorithm engineering).'
+  - Runs autonomously up to ~8 hours per task; produces a strategy report up to ~100 pages plus summary slides.
+  - Closed beta (~300 testers, Apr 2026); launched 2026-06-15; paid tiers; no open code/weights.
+  techniques:
+  - AB-MCTS (adaptive-branching MCTS) multi-model inference-time scaling
+  - AI-Scientist automated-discovery pipeline
+  - ALE-Agent automated algorithm engineering
+  - long-horizon agentic orchestration
+  reported_results:
+  - Run duration up to ~8h/task; reports up to ~100 pages; ~300 beta testers; no quantitative benchmarks (qualitative beta sentiment only).
+  referenced_arxiv_ids:
+  - '2503.04412'
+  novelty: low
+  relevance: low
+  credibility_score: 2
+  verdict: not_applicable
+  cross_references:
+    chapters: []
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - hermes-agent-index.md
+    - repo-readiness-scorer.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-493
+  contradicting_evidence:
+  - 'Closed commercial SaaS (GPU-cloud, paid tiers, no code/weights), business-report domain; constituent techniques already tracked; no quantitative results; standing Sakana vendor-bias caveat (2502.14297 ''Evaluating Sakana''s AI Scientist: Bold Claims, Mixed Results'').'
+  recommended_actions:
+  - 'OPERATOR-REVIEW: the actionable building block is AB-MCTS (arXiv 2503.04412), now ingested as intake-720 (inference-time multi-model coordination, more EPYC-relevant than this product).'
+  novelty_justification: Product-launch announcement, not new research. AB-MCTS / AI Scientist / ALE-Agent are pre-existing; Sakana agentic-research lineage extensively covered (Trinity intake-474, Conductor intake-493, EvoScientist). No new method/benchmark.
+  relevance_justification: 'Low: closed commercial SaaS for business-strategy reports, orthogonal to CPU-only EPYC self-hosted inference and forbidden by open-source-only for deploy. Not ''none'' because the long-horizon thesis maps to autopilot and AB-MCTS is EPYC-relevant.'
+  verdict_justification: 'not_applicable for the blog as an artifact (closed product, no open code/weights/benchmarks, GPU-cloud SaaS, techniques already tracked). Flagged-not-dismissed: AB-MCTS (2503.04412) ingested separately as intake-720. credibility 2.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-705
+  arxiv_id: null
+  url: https://openrouter.ai/docs/guides/features/server-tools/subagent
+  source_type: blog
+  title: Subagent (OpenRouter Server Tools) — provider-hosted nested-model delegation primitive
+  authors:
+  - OpenRouter
+  categories:
+  - agent_architecture
+  - tool_implementation
+  - cost_aware_routing
+  key_claims:
+  - openrouter:subagent server tool lets a model delegate self-contained tasks to a cheaper/faster worker model mid-generation; OpenRouter runs the nested call server-side and returns the result — no client orchestration code.
+  - 'Each task is isolated: the worker sees only task_description (full context/inputs/constraints/format), not the parent conversation, and keeps no memory between tasks.'
+  - Tool definition pins the worker at configure time (model, instructions, nested server tools, max_tool_calls 1-25, max_completion_tokens, temperature, reasoning.effort); invoked at runtime with task_name + task_description.
+  - 'Constraints: subagent can''t be the worker model; nested worker tools must be server tools (function tools -> HTTP 400); per-request task-execution cap bounds cost/latency. Beta.'
+  - One of 8 server tools; sibling of openrouter:fusion (panel + judge) and openrouter:advisor.
+  techniques:
+  - provider-hosted server-side subagent spawning
+  - stateless scoped delegation (worker isolated from parent)
+  - cost-aware delegation to a cheaper worker
+  - configure-time worker pinning + runtime invocation
+  - per-request task cap as cost guard
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - meta-harness-optimization-completed-through-2026-05-28.md
+    - orchestrator-conversation-management.md
+    - tool-use-eval-contract.md
+    - fable5-architecture-review.md
+    experiments: []
+    intake_entries:
+    - intake-451
+    - intake-550
+    - intake-249
+    - intake-693
+  contradicting_evidence:
+  - SaaS, not self-hostable (governs deploy not analyze). Subagent returns are FREE-TEXT with no JSON-Schema return contract — the exact gap intake-693 flags for RLM fan-out. Docs show no explicit parallel/fan-out guarantee (tasks appear sequential within a completion).
+  recommended_actions:
+  - 'OPERATOR-REVIEW: the structured-return lift is ALREADY SHIPPED for the fan-out path (commit 18b5ceb, combined_ops.py _batch_llm_query: schema= / validate-on-FINAL / retry) — correct the now-stale tool-use-eval-contract.md note (batch path done; only a single-query/new-delegate path remains). A server-side delegate primitive already exists (chat_delegation.py: architect->specialist, role pinning, per-request caps, re-entrance guard). Real remaining delta to feature-mine = a cost-aware capable->CHEAPER-worker delegation MODE (current delegation is architect->specialist, not cost-driven). DROP fable5-architecture-review + orchestrator-conversation-management as live targets (completed; intake-249 already there).'
+  novelty_justification: 'Underlying recursive-delegation-to-cheaper-worker pattern heavily covered (ReDel, CC fresh/forked, RAO). New is the packaging: a routing provider hosting subagent spawning as a server-side tool inside one completion, with configure-time worker pinning + per-request execution caps. Medium.'
+  relevance_justification: 'High: maps onto the RLM subagent fan-out, structured-tool-output/tool-contract work, and cost-aware role routing (capable parent offloads to cheaper worker). Configure-time pinning + per-request cap is a clean reference design.'
+  verdict_justification: 'adopt_patterns: SaaS (deploy-blocked) but API shape directly feature-mineable; notable gap = free-text returns (no schema), so adopt the delegation SHAPE and add our structured-return contract.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - tool-use-eval-contract.md
+  - hermes-agent-index.md
+  handoffs_created: []
+- id: intake-706
+  arxiv_id: null
+  url: https://github.com/avbiswas/finetuning_recipes
+  source_type: repo
+  title: Finetuning Recipes — end-to-end post-training recipes for small LMs (AVB / Neural Breakdown course companion)
+  authors:
+  - Avishek Biswas (AVB, @neural_avb)
+  categories:
+  - training_distillation
+  - cost_aware_routing
+  - routing_intelligence
+  key_claims:
+  - 'Umbrella repo of end-to-end post-training recipes for small LMs: CPT, SFT (instruction_tuning), DPO (preference_optimization), RLVR/reasoning (in dev), plus a reward_models module and a paper_researcher inference/agent module.'
+  - 'The reward_models recipe is a REGRESSION reward model (not Bradley-Terry pairwise): scores ''{reference} [SEP] {response}'' on a continuous scale via MSE on tiny sentence-transformers (all-MiniLM-L6-v2 22M, distilbert-base-cased 66M), raw PyTorch (not TRL/PEFT).'
+  - Training data from paperbd/paper_answers_reward (1,645 base responses from 18 models) + synthetic confounds + prometheus Feedback-Collection + answer-equivalence + STS-B (~19.5K-38K records).
+  - 'Findings doc: MiniLM v7-1 Spearman 0.718 / DistilBERT v9-2 0.757 vs RewardBert 0.44; answer-equivalence ROC-AUC 0.942 vs Word-F1 0.887; confound resistance 8-12% fooled vs RewardBert 53%; contrastive aug lifts antonym detection 29->81%.'
+  techniques:
+  - regression (pointwise) reward modeling (MSE on reference+response)
+  - tiny sentence-transformer reward backbones
+  - frozen-encoder warm-up then progressive unfreeze w/ differential LRs
+  - contrastive minimal-edit augmentation
+  - synthetic confound injection
+  - CPT->SFT->DPO->RLVR pipeline scaffolding
+  reported_results:
+  - MiniLM v7-1 Spearman 0.718; DistilBERT v9-2 0.757 (vs RewardBert 0.44); answer-equivalence ROC-AUC 0.942; confound resistance 8-12% fooled vs RewardBert 53%
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: high
+  credibility_score: 2
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - retrain-routing-models.md
+    - learned-routing-controller.md
+    - 08-doc-to-lora-prototype.md
+    - 05-search-r1-reward-design.md
+    experiments: []
+    intake_entries:
+    - intake-693
+  contradicting_evidence:
+  - Self-reported findings on a tiny eval (n=100 paper set), no external reproduction, single-author practitioner repo (~96 stars); educational course scaffolding tied to AVB's own datasets/libs.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (merge with 716/717/719 into ONE action; see research/deep-dives/2026-06-20-avb-offline-reward-stack.md): contribute the recipe-level design inputs (pointwise reference+response MSE, frozen-then-unfreeze + differential LR, contrastive/confound augmentation) to an OFFLINE quality-oracle eval anchored on learned-routing-controller.md NEXT-A2/A3 (NEXT-A itself is closed/no-op). Frame OFFLINE-only: the live reward ''quality'' term is binary (q_reward.py) and ClaudeAsJudge is disabled — the AVB scorer is a CPU-cheap alternative to enabling ClaudeAsJudge. Do NOT target decision-aware-routing / retrain-routing-models (expansion-FROZEN per fable5-findings-02).'
+  novelty_justification: 'Educational, framework-standard post-training recipes (CPT/SFT/DPO/RLVR) from a course author already indexed (intake-693, intake-541). Mildly novel-for-us: pointwise reference-vs-response regression reward + contrastive minimal-edit aug; not a research advance. Low.'
+  relevance_justification: 'High: cost-aware routing has a reward-model component (ch08) + active routing/reward retraining workstreams. A working, CPU-cheap recipe for a tiny reference-grounded answer-quality scorer with measured metrics and a reproducible schedule; tiny scorers run fine on EPYC CPU.'
+  verdict_justification: 'adopt_patterns: no component to import wholesale (course scaffolding tied to AVB datasets/libs), but the reward_models recipe + augmentation are concrete reusable design inputs. credibility 2 (real internal metrics, tiny eval, no external reproduction).'
+  notes: 'User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction (''don''t write handoffs without my permission''); proposed handoff updates are captured in recommended_actions as operator-review candidates. Sibling artifacts in this batch: intake-716 (train_reward_model.py focused file), intake-717 (paper_answers_reward dataset), intake-718 (neural-txt), intake-719 (neuraltxt-reward-tiny).'
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - learned-routing-controller.md
+  - routing-and-optimization-index.md
+  - master-handoff-index.md
+  handoffs_created:
+  - research/deep-dives/2026-06-20-avb-offline-reward-stack.md
+- id: intake-707
+  arxiv_id: '2606.06492'
+  url: https://arxiv.org/pdf/2606.06492
+  source_type: paper
+  title: 'Code2LoRA: Hypernetwork-Generated Adapters for Code Language Models under Software Evolution'
+  authors:
+  - Liliana Hotsko
+  - Yinxi Li
+  - Yuntian Deng
+  - Pengyu Nie
+  categories:
+  - training_distillation
+  - agent_architecture
+  - benchmark_methodology
+  key_claims:
+  - A hypernetwork generates repository-specific LoRA adapters injecting repo-level knowledge (imports, APIs, conventions) with ZERO inference-time token overhead, replacing RAG/long-context or per-repo fine-tuning.
+  - Code2LoRA-Static converts a single repo snapshot into one adapter; Code2LoRA-Evo maintains an adapter via a GRU hidden state updated per code diff (for evolving codebases).
+  - 'Static assertion-completion: Code2LoRA-Static 63.8% cross-repo / 66.2% in-repo EM, matching the per-repository-LoRA upper bound.'
+  - 'Evolution track: Code2LoRA-Evo 60.3% cross-repo EM, +5.2pp over a single shared LoRA, amortizing per-diff updates into a recurrent state.'
+  - 'Introduces RepoPeftBench: 604 Python repos; static 40K/12K, evolution 215K/87K commit-derived tasks.'
+  techniques:
+  - hypernetwork-generated LoRA adapters
+  - GRU recurrent hidden-state update per diff (online adapter maintenance)
+  - LoRA/PEFT on code LLMs
+  - repo-level context conditioning as a RAG alternative
+  reported_results:
+  - 'Static: 63.8% cross-repo / 66.2% in-repo EM (= per-repo LoRA bound); Evo: 60.3% cross-repo (+5.2pp vs shared LoRA); RepoPeftBench 604 repos'
+  referenced_arxiv_ids:
+  - '2510.19733'
+  - '2602.15902'
+  - '2403.10059'
+  - '2306.10998'
+  - '2308.12950'
+  - '2009.10297'
+  - '2506.05176'
+  novelty: medium
+  relevance: medium
+  credibility_score: 1
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - 08-doc-to-lora-prototype.md
+    - multi-file-coding-completion-capability.md
+    - strand-rust-coder-rustevo2-verification.md
+    experiments: []
+    intake_entries:
+    - intake-153
+  contradicting_evidence:
+  - 'Hypernetwork training requires GPU (the DocToLoRA Phase B blocker applies verbatim). CPU-relevant slice = the D2L->PEFT->GGUF conversion + quality (Steps 1-5, never run); llama.cpp LoRA adapter hot-swap itself is ALREADY implemented (08-doc-to-lora Finding 1) — the real gap is orchestrator LoRA WIRING (Finding 7: no --lora in build_server_command/ModelConfig/_build_payload). Mechanism not new (Text2LoRA, DocToLoRA 2602.15902, Hypertuning).'
+  recommended_actions:
+  - 'OPERATOR-REVIEW: log against the EXACT 08-doc-to-lora-prototype.md reopen-trigger (GPU available AND a need REPL retrieval can''t cover); on reopen evaluate the Evo/GRU diff-tracking variant + RepoPeftBench from Finding 5 onward. CORRECTION: the orchestrator gap is the Finding-7 LoRA WIRING gap (no --lora in build_server_command / ModelConfig / _build_payload), NOT a hot-swap gap — llama.cpp LoRA hot-swap already exists (Finding 1). Attach any serving-layer follow-up to the existing LoRAX/S-LoRA note in the 08 handoff, not multi-file-coding-completion-capability.'
+  novelty_justification: 'Hypernetwork->LoRA generation not new (DocToLoRA 2602.15902 already ingested). Genuinely new: the EVOLUTION variant (GRU state per diff) and RepoPeftBench (static+evolution, commit-derived tasks). Code-domain time-aware specialization of a known family. Medium.'
+  relevance_justification: Strong topical fit (repo-level code knowledge for coder roles; zero-token context injection attractive on CPU) but GPU-gated training + LoRA infra gap; CPU slice is inference-time hot-swap, unproven. Not tied to an active deliverable. Medium.
+  verdict_justification: 'worth_investigating: natural next datapoint on the doc/code-to-LoRA line (handoff 08); doesn''t change the standing decision (hypernetwork retraining stays GPU-gated/backburner; REPL retrieval covers core context injection on CPU). credibility 1 (recent preprint, no peer review).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - 08-doc-to-lora-prototype.md
+  - pipeline-integration-index.md
+  handoffs_created: []
+- id: intake-708
+  arxiv_id: '2606.07878'
+  url: https://www.arxiv.org/html/2606.07878v1
+  source_type: paper
+  title: 'Still: Amortized KV Cache Compaction in a Single Forward Pass'
+  authors:
+  - Charles O'Neill
+  - Alex Sandomirsky
+  - Harry Partridge
+  - Mudith Jayasekara
+  - Max Kirkby
+  categories:
+  - kv_cache
+  - context_management
+  - context_extension
+  - training_distillation
+  key_claims:
+  - Still is a small per-layer Perceiver, trained once against a frozen base model, that synthesizes compact keys/values in a single forward pass — combining selection-method lightness with synthesis-method expressiveness (previously needing per-context optimization like Cartridges).
+  - On Qwen and Gemma it occupies the favorable side of the speed-quality frontier across 8x-200x compression and 8k-128k context; on RULER it exceeds KV-Distill by 8-22 points in 16/18 cells.
+  - Because compaction is a forward pass (not gradient descent), it can be applied iteratively/chunked over a trajectory for streaming/long-horizon regimes.
+  - The same trained compactor transfers across model scales (4B-32B) and attention architectures unmodified; trained via forward-KL distillation from a full-context teacher.
+  - Position-free compaction via inverse-RoPE -> latent positioning -> re-rotation lets compact entries be placed independent of original positions.
+  techniques:
+  - per-layer Perceiver compactor (learned latent queries cross-attending the KV cache)
+  - amortized synthesis vs per-context optimization vs token selection
+  - forward-KL distillation from frozen teacher
+  - position-free compaction (inverse RoPE)
+  - single-pass + iterative chunked compaction
+  reported_results:
+  - 'RULER: beats KV-Distill by 8-22 pts in 16/18 cells; HELMET multi_lexsum 94.9% util @8k -> 59.3% @128k; summarization preserves 74-95% of full-context gain; LongBench v1 summarization wins 60% pairwise vs KV-Distill; 256k @100x = 40.7% QuALITY'
+  referenced_arxiv_ids:
+  - '2304.09864'
+  - '2506.06266'
+  - '2602.16284'
+  - '2503.10337'
+  - '2412.15204'
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - attention-matching-kv-compaction.md
+    - summary-token-attention-readiness.md
+    - triattention-kv-selection.md
+    - streaming-llm-baseline.md
+    - inference-acceleration-index.md
+    experiments:
+    - attention-matching-kv-compaction.md
+    intake_entries:
+    - intake-351
+    - intake-350
+    - intake-352
+    - intake-353
+    - intake-553
+    - intake-554
+  contradicting_evidence:
+  - Adds a learned per-layer Perceiver forward pass — extra compute on BW-bound CPU where deployed Attention-Matching compaction is offline/cheap; net EPYC benefit unmeasured (paper is H200/GPU, no llama.cpp/vLLM integration). Requires GPU CPT to train the compactor once per base model. AM handoff documents learned-KV brittleness (SIP/Steele falsification, ForesightKV). Commercial bias (Baseten).
+  recommended_actions:
+  - 'OPERATOR-REVIEW: PRIMARY home = summary-token-attention-readiness.md Monitoring Targets (Still needs a one-time GPU forward-KL distillation per base model = the readiness tracker''s gating domain; verified NO public code/weights as of 2026-06-05). Leave only a one-line cross-ref in attention-matching-kv-compaction.md Relationship-to-Existing-Work as the published SYNTHESIS challenger. CORRECTIONS: the deployed default compactor is Expected-Attention (TriAttention), NOT Attention-Matching (AM K-norm is the legacy fallback); even AM is selection+beta, not synthesis, so Still has no deployed synthesis counterpart to benchmark today; the AM handoff/experiment cite ''production-consolidated-v3'' but prod is now v5 (functionality carried forward across rebases).'
+  novelty_justification: 'Introduces the missing third KV-compaction category: amortized synthesis. Prior coverage has selection (AM, deployed) and per-context synthesis (Cartridges); Still is a single trained Perceiver doing synthesis in one pass, reportedly Pareto-dominant at 8-200x. Cross-arch/scale transfer + position-free placement are new. High.'
+  relevance_justification: 'Maps onto an ACTIVE production line: KV compaction is live in production-consolidated-v5 via a native compact endpoint (deployed default scorer is Expected-Attention/TriAttention; Attention-Matching K-norm is the legacy path; the AM handoff/experiment still say ''v3''). Still is the strongest published SYNTHESIS challenger, though even the deployed AM path is selection+beta, not synthesis. KV compaction directly serves the EPYC long-context KV residency bottleneck.'
+  verdict_justification: 'worth_investigating, not adopt_component: strong alignment + clean head-to-head vs deployed AM, but three CPU-deployability blockers (extra Perceiver compute on BW-bound CPU; GPU CPT per base model; learned-KV brittleness precedent). credibility 3.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - summary-token-attention-readiness.md
+  - attention-matching-kv-compaction.md
+  - inference-acceleration-index.md
+  handoffs_created: []
+- id: intake-709
+  arxiv_id: null
+  url: https://github.com/Tencent-Hunyuan/UniRL
+  source_type: repo
+  title: UniRL — a reinforcement-learning framework for unified multimodal models (Tencent Hunyuan)
+  authors:
+  - Tencent Hunyuan team
+  - Haonan Wang
+  - Linyu Wu
+  - Qian Qiu
+  - Lewei Jin
+  categories:
+  - multimodal
+  - training_distillation
+  - routing_intelligence
+  - reinforcement_learning
+  key_claims:
+  - A single RL post-training loop (generate -> score -> advantages -> update -> sync) applied uniformly across diffusion, autoregressive (LLM/VLM), prompt-enhancer, and unified AR+diffusion families.
+  - Model support and algorithm support are independent composable dimensions, making the system layered/pluggable across text/image/video.
+  - 'Three team algorithms: Flow-DPPO (divergence trust-region masks for flow-matching/diffusion), DRPO (advantage-weighted divergence regularization), CPPO (position-weighted cumulative-prefix token-level trust regions).'
+  - 13+ models covered (SD3/3.5, FLUX.2-Klein, Qwen-Image, HunyuanVideo, WAN 2.1/2.2, Qwen-VL, Qwen3; unified HunyuanImage3, Bagel).
+  - 'Distributed runtime: Ray DevicePool + FSDP with a Transfer Queue (TQ) for weight sync; LoRA/full-weight sync.'
+  techniques:
+  - Flow-DPPO
+  - DRPO
+  - CPPO
+  - GRPO/DiffusionNFT/DanceGRPO/MixGRPO
+  - Ray DevicePool + FSDP runtime
+  - Transfer Queue weight sync
+  - divergence-based trust-region masking
+  reported_results: []
+  referenced_arxiv_ids:
+  - '2606.09821'
+  - '2606.11025'
+  - '2606.10968'
+  novelty: medium
+  relevance: low
+  credibility_score: 1
+  verdict: not_applicable
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs: []
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Multi-GPU RL training framework (Ray + FSDP) for image/video/multimodal generators; no TRAINING GPU on CPU-only EPYC, training code only (no inference/serving). A CPU image-generation role IS deployed (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp), but UniRL is multi-GPU training-only; no video role. README has no benchmark numbers. The three team algorithms are incremental GRPO/PPO trust-region variants.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: DGX-gated passive watch-item under gpu-acceleration-path.md — the LLM-targeted token-level trust-region variants (CPPO/DRPO; arXiv 2606.10968 / 2606.09821) could transfer to a FUTURE on-prem LLM RL track on DGX Spark (none exists today; the ''learned'' tracks are supervised routing classifiers, not policy-gradient RL). CORRECTION: there IS a deployed CPU image-generation role (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp), so UniRL''s diffusion-RL (Flow-DPPO) could one day fine-tune it — the blocker is ''no training GPU'', not ''no image role''.'
+  novelty_justification: 'Unified-RL-loop-across-modalities + diffusion/flow-matching RL algorithms (Flow-DPPO, DanceGRPO, DiffusionNFT) are new to the corpus (deep LLM-side RL coverage, none on generation/diffusion RL). Not high: engineering composition (Ray+FSDP+TQ) of separately-published algorithms. Medium.'
+  relevance_justification: 'Low: GPU-side distributed training infra for multimodal generators; no prod GPU serving, no image/video role, training-only. CPPO/DRPO (LLM-targeted token-level trust regions) carry the only hypothesis-grade transfer potential.'
+  verdict_justification: 'not_applicable: multi-GPU RL training framework incompatible with CPU-only EPYC inference/orchestration, no near-term integration path, no benchmark numbers. Flagged-not-dismissed: token-level trust-region variants for a future DGX Spark. credibility 1.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - gpu-acceleration-path.md
+  - pipeline-integration-index.md
+  handoffs_created: []
+- id: intake-710
+  arxiv_id: null
+  url: https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing
+  source_type: blog
+  title: Introducing the Open Knowledge Format (OKF) — Google Cloud
+  authors:
+  - Sam McVeety (Google Cloud)
+  - Amir Hormati (Google Cloud)
+  - Google Cloud
+  categories:
+  - knowledge_management
+  - rag_alternatives
+  key_claims:
+  - 'OKF v0.1 formalizes the ''LLM-wiki'' pattern (Karpathy gist, Obsidian, AGENTS.md/CLAUDE.md) into a vendor-neutral portable spec — a FORMAT not a platform: producible without SDKs, consumable without integrations.'
+  - An OKF bundle is a directory of markdown files with YAML frontmatter; each file is one concept; the file path IS the concept identity; concepts cross-link via plain markdown links to form a graph.
+  - Only mandatory frontmatter field is `type`; conventional title/description/resource/tags/timestamp; optional index.md (progressive disclosure) + log.md (change history); single-page conformance spec.
+  - Goal is interoperability + portability across parties/agents/orgs without a translation layer; same file is human- and agent-readable.
+  - Google Cloud Knowledge Catalog ingests OKF; reference impls ship an enrichment agent (BigQuery->OKF), a static-HTML graph visualizer, and three sample bundles.
+  techniques:
+  - markdown + YAML-frontmatter knowledge files
+  - file-path-as-concept-identity
+  - markdown-link graph
+  - progressive-disclosure index.md
+  - log.md change tracking
+  - single-page conformance spec
+  - LLM-enrichment agent
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - internal-kb-rag.md
+    - knowledge-base-governance-improvements.md
+    - stack-change-governance-pipeline.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Every primitive (markdown+frontmatter, index/progressive disclosure, graph-via-links, change logs) already present in our own KB; the only new element is codification as a named v0.1 spec. No empirical claims. Enrichment agent + Knowledge Catalog are BigQuery/cloud-coupled (no EPYC analog).
+  recommended_actions:
+  - 'OPERATOR-REVIEW (merged with 711 into one OKF-convention adoption): adopt ONLY the two genuinely-new conventions — an okf_version/schema_version stamp + a short ## Conformance section (wiki/SCHEMA.md + intake-schema.md), and codify permissive-consumption as an intentional contract. REJECT the 5 already-covered conventions (we have wiki/INDEX.md, a permissive validator, per-file dated change history, equivalent section headings, GitNexus graph viz). Target wiki/SCHEMA.md (append at EOF) — NOT knowledge-base-governance-improvements (COMPLETED); reopen a Phase 6 there only if the user wants it tracked as work. Drop stack-change-governance-pipeline from scope (model/stack governance, not KB-doc schema).'
+  novelty_justification: 'Constituent ideas all pre-existing and already in our KB. Genuinely new: consolidation into a named, vendor-neutral, single-page conformance spec with a minimal mandatory-field set + index.md/log.md conventions — standardization, not a new technique. Medium.'
+  relevance_justification: 'High: knowledge_management is an active workstream (internal-kb-rag, knowledge-base-governance, wiki/ SCHEMA+INDEX). OKF is a published external schema for exactly what we build by hand; can inform wiki SCHEMA/INDEX, the intake_index schema, and cross-org interoperability framing.'
+  verdict_justification: 'adopt_patterns (not adopt_component): value is the schema/conventions, not Google''s BigQuery-coupled code (cloud deps violate self-hosted-only). credibility null (vendor blog, v0.1 spec, no empirical claims).'
+  notes: 'User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction (''don''t write handoffs without my permission''); proposed handoff updates are captured in recommended_actions as operator-review candidates. Sibling: intake-711 (the OKF reference repo).'
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: &id001
+  - wiki/SCHEMA.md
+  - .claude/skills/research-intake/references/intake-schema.md
+  handoffs_created: []
+- id: intake-711
+  arxiv_id: null
+  url: https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf
+  source_type: repo
+  title: Open Knowledge Format (OKF) — vendor-neutral markdown+YAML knowledge-bundle spec (GoogleCloudPlatform/knowledge-catalog)
+  authors:
+  - GoogleCloudPlatform
+  categories:
+  - knowledge_management
+  - rag_alternatives
+  - document_processing
+  key_claims:
+  - 'OKF v0.1: a universal vendor-neutral format representing knowledge as plain markdown files with YAML frontmatter; each concept is one .md mixing queryable frontmatter + unstructured body; git-versionable, portable (Obsidian/Notion/MkDocs).'
+  - 'Minimal schema: exactly one REQUIRED frontmatter field `type`; RECOMMENDED title/description/resource/tags/timestamp; producers MAY add arbitrary keys and consumers MUST preserve unknown fields (permissive consumption).'
+  - 'Bundle = directory of concept .md files + two reserved filenames: index.md (no frontmatter; bullet-list progressive disclosure, may be auto-generated) and log.md (newest-first ISO-8601 change history).'
+  - 'Documents form a GRAPH not a tree via untyped directed markdown links (bundle-relative recommended); relationship semantics in prose; broken links tolerated. Conventional headings # Schema / # Examples / # Citations.'
+  - 'Conformance: parseable YAML frontmatter with non-empty `type`; root index.md MAY declare okf_version ''0.1''. Repo ships an enrichment agent (BigQuery metadata->OKF), sample bundles, and an HTML force-directed visualizer.'
+  techniques:
+  - markdown+YAML-frontmatter knowledge atom
+  - minimal-required-keys + permissive-consumption schema
+  - graph via untyped markdown links
+  - auto-generated index.md
+  - log.md append-only history
+  - producer/consumer separation + okf_version forward-compat
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - knowledge-base-governance-improvements.md
+    - internal-kb-rag.md
+    - context-folding-progressive.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Every primitive already represented in our intake corpus and is how EPYC's own KB governance is built; only new-to-us element is codification as a named versioned interchange spec. No empirical claims. Enrichment agent + bundles are Google Cloud / BigQuery-oriented.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (canonical of the merged 710+711 OKF action): append a ## Conformance section at EOF of wiki/SCHEMA.md adding okf_version + an explicit conformance statement + a permissive-consumption rule (preserve unknown fields), and mirror the version/permissive note in .claude/skills/research-intake/references/intake-schema.md. REJECT as redundant: reserved index.md (have wiki/INDEX.md), per-bundle log.md (we use per-file dated update sections), #Schema/#Examples/#Citations heading renames (our Summary/Key-Findings/Source-References are equivalent), and the HTML force-directed visualizer (GitNexus wiki/cypher already covers it). internal-kb-rag is the certified CONSUMER — no producer-schema work-item there.'
+  novelty_justification: All primitives well-represented in intake and in EPYC's own three-layer KB. Only genuinely new-to-us element is the named, versioned, vendor-neutral interchange spec (SPEC.md + okf_version + producer/consumer conformance + permissive-consumption). Low.
+  relevance_justification: 'High: directly informs how we structure/share the intake index, wiki, and handoff governance. SPEC.md + conformance + okf_version is a reference model for hardening wiki.yaml/SCHEMA.md; permissive-consumption keeps the YAML index forward-compatible across parallel agents.'
+  verdict_justification: 'adopt_patterns, not adopt_component: a reference spec with no empirical claims (credibility null), BigQuery/data-catalog-oriented; we already run an equivalent home-grown three-layer KB. Lift specific conventions.'
+  notes: 'User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction (''don''t write handoffs without my permission''); proposed handoff updates are captured in recommended_actions as operator-review candidates. Sibling: intake-710 (the OKF announcement blog).'
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: *id001
+  handoffs_created: []
+- id: intake-712
+  arxiv_id: null
+  url: https://openrouter.ai/fusion
+  source_type: blog
+  title: OpenRouter Fusion — multi-model deliberation server tool (panel + judge + outer model)
+  authors:
+  - OpenRouter
+  categories:
+  - routing_intelligence
+  - agent_architecture
+  - cost_aware_routing
+  - inference_serving
+  - tool_implementation
+  key_claims:
+  - 'Fusion gives any model access to multi-model deliberation: the outer model invokes the tool, a panel answers in parallel, a judge compares responses, and structured analysis returns for the final answer.'
+  - 'Three-stage pipeline: 1-8 panel models in parallel (each with web search/fetch), a judge synthesizes outputs into structured JSON, the outer model writes the final answer.'
+  - The judge does NOT merge/concatenate — it does comparative analysis (consensus, contradictions, unique insights, partial coverage, blind spots).
+  - 'Invoked as a server tool (tools: [{type:''openrouter:fusion''}]); tool_choice:''required'' forces it; panel customizable via analysis_models; judge defaults to the outer model.'
+  - Default panel is a cross-vendor frontier set (Claude Opus, GPT-latest, Gemini Pro) — a heterogeneous SaaS ensemble.
+  techniques:
+  - Mixture-of-Agents (parallel proposer panel -> judge -> synthesis)
+  - model-as-tool server-side invocation
+  - structured judge output (JSON consensus/contradictions/insights/blind-spots)
+  - heterogeneous multi-vendor panel
+  - panel models granted web search/fetch
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters: []
+    handoffs:
+    - routing-and-optimization-index.md
+    - swarm-dataset-distillation.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  contradicting_evidence:
+  - SaaS over multiple frontier APIs (governs deploy not analyze); on CPU-only EPYC the 1-8-frontier-model+judge-per-query cost model is the opposite of our RAM/BW constraints. The deployable equivalent (self-hosted MoA) is already intake-601 (OptiLLM), which degrades on llama.cpp (no `n` multi-sample). No published quality/latency/cost numbers.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (merge with 714): mine the model-self-invoked-deliberation control flow + structured-JSON judge contract (consensus/contradictions/blind-spots) for our escalation/ensemble aggregation, anchored on the P21.B method-selection axis as documented in autopilot/program.md + research/deep-dives/optillm-test-time-techniques.md (NOT a section of routing-and-optimization-index, which has no P21.B body). Cross-link intake-601 (OptiLLM). Drop swarm-dataset-distillation as a target (SFT-dataset distillation, not runtime aggregation). Note P21.B is GATED/not-built and Fusion''s own MoA panel is the n-degraded path.'
+  novelty_justification: The panel+judge mechanism IS Mixture-of-Agents, already in the index (intake-601 OptiLLM explicitly ships MoA; Fortytwo/Chimera/EVA cover the ensemble family). Only novel framing is packaging MoA as a model-invoked server tool with a structured-JSON judge. Low.
+  relevance_justification: 'Medium: deliberation-as-a-tool + ''outer model decides to escalate'' control flow are mineable for an escalation tier, but it is a SaaS layer over frontier APIs and the parallel-panel cost model fights CPU/BW constraints; the deployable equivalent is already intake-601.'
+  verdict_justification: 'adopt_patterns: no empirical claims (credibility null); MoA already integrated via OptiLLM; mine the model-self-invoked-deliberation control flow + structured-judge contract for routing/escalation and swarm aggregation.'
+  notes: 'User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction (''don''t write handoffs without my permission''); proposed handoff updates are captured in recommended_actions as operator-review candidates. Sibling: intake-714 (the fusion server-tool docs).'
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: &id002
+  - research/deep-dives/optillm-test-time-techniques.md
+  - routing-and-optimization-index.md
+  handoffs_created: []
+- id: intake-713
+  arxiv_id: '2602.11685'
+  url: https://www.arxiv.org/html/2602.11685v1
+  source_type: paper
+  title: 'DRACO: a Cross-Domain Benchmark for Deep Research Accuracy, Completeness, and Objectivity (Perplexity AI)'
+  authors:
+  - Perplexity AI team (equal-contribution lead authors; full list not enumerated in HTML)
+  categories:
+  - benchmark_methodology
+  - agent_architecture
+  - autonomous_research
+  - search_retrieval
+  key_claims:
+  - DRACO is a 100-task, 10-domain benchmark for deep-research agents from real production queries (40 countries), scored on Factual Accuracy, Breadth/Depth, Presentation Quality, Citation Quality.
+  - 'Orchestration matters beyond base capability: Perplexity Deep Research (Opus 4.6) 70.5% vs bare Claude Opus 4.6 59.8%; beats Gemini DR 59.0% and OpenAI DR o3 52.1%.'
+  - Factual accuracy is the weakest dimension across all systems (~64-68%) while presentation quality is strongest (~90%).
+  - Five-stage automated task construction (production-query sampling -> PII removal -> scope augmentation -> automated objectivity/tractability/difficulty filtering -> expert curation), with saturation testing rejecting >90%-scoring tasks.
+  - Weighted-rubric LLM-as-a-judge with separate positive/negative weighting, validated for ranking stability across three judge models.
+  techniques:
+  - five-stage task construction (auto filtering + expert curation)
+  - saturation testing for difficulty calibration
+  - weighted-rubric LLM-as-judge (separate positive/negative weights)
+  - multi-judge ranking-stability validation
+  - efficiency-vs-quality reporting
+  reported_results:
+  - 'Perplexity DR (Opus 4.6) 70.5%; Opus 4.6 base 59.8%; Gemini DR 59.0%; OpenAI DR o3 52.1%; per-axis (Perplexity): factual 67.9 / breadth-depth 66.0 / presentation 90.3 / citation 64.6; latency Perplexity 245.3s vs OpenAI o3 1808.1s'
+  referenced_arxiv_ids:
+  - '2508.12752'
+  - '2506.18096'
+  - '2505.14963'
+  - '2507.16280'
+  - '2512.17776'
+  - '2510.00172'
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    - 07-benchmark-suite-construction.md
+    handoffs:
+    - minddr-deep-research-mode.md
+    - research-evaluation-index.md
+    - colbert-reranker-web-research.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries: []
+  contradicting_evidence:
+  - Closed commercial-system leaderboard (Perplexity/Opus/GPT-5.2-class) not runnable on CPU-only EPYC; self-reported SOTA for the authors' own product (commercial bias); arXiv preprint, not peer-reviewed; deep-research eval methodology already well-trodden.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: append the three genuinely-new, CPU-portable DRACO ideas to eval-tower-verification.md EV-9 (the OWNING handoff; research-evaluation-index only holds a collective pointer): (1) separate positive/negative rubric weighting in EV-9''s judge scoring; (2) multi-judge ranking-stability across >=2 local judges (reuse src/bradley_terry.py from autopilot P17.BT-1); (3) saturation testing (reject >90%-scoring sentinels) — also flag for ch07 (recommendation only). Flag production-query sampling as desirable-but-gated (no Perplexity-scale traffic; draw from frontier-f1-real-task-corpus once W2 yields >=100 records). NB: EV-9''s existing 4 dims are MindDR-process, not DRACO''s 4 content axes — DRACO''s axes are an ADDITION, not a swap; deep_research_sentinel already built (MD-8 done).'
+  novelty_justification: 'Deep-research-agent benchmarking + multi-criteria LLM-as-judge already covered (MindDR, DeepPlanning). Incremental novelty: production-query cross-domain construction, separate positive/negative rubric weighting, explicit orchestration-beats-base finding. Methodology refinements. Medium.'
+  relevance_justification: EPYC can't run a Perplexity/Opus-class stack and DRACO is a closed-system leaderboard, but we have an active deep_research_mode (minddr), an open EV-9 rubric-extension task with a deep_research_sentinel suite, and benchmark-construction chapters — DRACO's four-axis weighted rubric + saturation filtering are directly portable. Medium.
+  verdict_justification: 'adopt_patterns: reuse the construction methodology for EV-9 + deep_research_sentinel without adopting code/model. Not adopt_component (closed system). credibility 3 (recent, Perplexity, but preprint + commercial bias).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - eval-tower-verification.md
+  - research-evaluation-index.md
+  handoffs_created: []
+- id: intake-714
+  arxiv_id: null
+  url: https://openrouter.ai/docs/guides/features/server-tools/fusion
+  source_type: blog
+  title: Fusion (OpenRouter Server Tools) — API mechanics of model-invoked Mixture-of-Agents
+  authors:
+  - OpenRouter
+  categories:
+  - routing_intelligence
+  - agent_architecture
+  - cost_aware_routing
+  - tool_implementation
+  key_claims:
+  - 'Fusion is a model-invoked server tool implementing Mixture-of-Agents: a panel answers in parallel, a judge compares, structured analysis JSON returns to the outer model for the final answer.'
+  - Panel via analysis_models (1-8); default three frontier models (~anthropic/claude-opus-latest, ~openai/gpt-latest, ~google/gemini-pro-latest), each with openrouter:web_search + web_fetch.
+  - Judge (configurable `model`, defaults to outer model) emits structured JSON with consensus / contradictions / partial_coverage / unique_insights / blind_spots.
+  - Invocation is model-discretionary; tool_choice:'required' forces it; max_tool_calls default 8 (range 1-16).
+  - 'Recursion bounded: one fusion call per turn, panel/judge can''t recursively invoke fusion (x-openrouter-fusion-depth header).'
+  techniques:
+  - Mixture-of-Agents
+  - LLM-as-judge ensemble aggregation
+  - model-invoked server tool
+  - structured-JSON deliberation output
+  - parallel multi-model panel
+  - recursion-depth guarding
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 09-claude-debugger.md
+    handoffs:
+    - routing-and-optimization-index.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-601
+  contradicting_evidence:
+  - SaaS routing to frontier cloud models we can't host; the self-hostable path (MoA via OptiLLM intake-601) is documented as DEGRADED on llama.cpp (missing `n` multi-sample, sequential fallback); no prod GPU; no quality/latency/cost numbers published.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (canonical of merged 712+714): feed the typed judge schema (consensus/contradictions/partial_coverage/unique_insights/blind_spots), model-discretionary invocation w/ tool_choice:required override, and recursion-depth bounding into the GATED P21.B method-selection axis as documented in autopilot/program.md:353 + research/deep-dives/optillm-test-time-techniques.md (the index only references it; it has no P21.B body). CAVEAT: only the judge contract + invocation + recursion bound port n-free — Fusion''s parallel panel IS the n-degraded MoA path already documented for intake-601. P21.A (DeepConf) is a closed negative.'
+  novelty_justification: MoA (panel + judge) already covered via OptiLLM (intake-601). Only fresh element is packaging MoA as a model-invoked server tool with a typed judge schema + depth-bounded recursion — a clean API framing, not a new technique. Low.
+  relevance_justification: Conceptually adjacent to active escalation-tier + ensemble work (P21.B method-selection axis), but OpenRouter is SaaS, the self-hostable MoA path is already documented as degraded on our backend, and no prod GPU. Medium — feature-mine, not deploy.
+  verdict_justification: 'adopt_patterns: portable backend-agnostic ideas (typed judge schema, invocation policy, recursion-depth bounding) implementable over llama-server. Not adopt_component (SaaS, frontier panel) and not already_integrated (OptiLLM ships MoA but not this server-tool framing/judge contract).'
+  notes: 'User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction (''don''t write handoffs without my permission''); proposed handoff updates are captured in recommended_actions as operator-review candidates. Sibling: intake-712 (the fusion product page).'
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated: *id002
+  handoffs_created: []
+- id: intake-715
+  arxiv_id: '2605.22721'
+  url: https://arxiv.org/pdf/2605.22721
+  source_type: paper
+  title: Self-Evolving Multi-Agent Systems via Decentralized Memory (DecentMem)
+  authors:
+  - Guangya Hao
+  - Yunbo Long
+  - Zhuokai Zhao
+  categories:
+  - agent_architecture
+  - memory_augmented
+  - autonomous_research
+  key_claims:
+  - Centralized shared memory in self-evolving MAS adds coordination overhead, raises privacy concerns, and collapses agent diversity; a decentralized per-agent memory avoids all three.
+  - 'DecentMem gives each agent its own dual-pool memory: an exploitation pool of consolidated past trajectories and an exploration pool of LLM-generated candidates for unseen contexts.'
+  - The two pools are reweighted online using stage-wise LLM-as-a-judge feedback, balancing reuse vs exploration.
+  - 'Theory: global reachability of the solution space and O(log T) cumulative regret, matching the stochastic-bandit lower bound up to constants.'
+  - 'Framework-agnostic: improves accuracy across three MAS frameworks and five benchmarks while cutting token usage.'
+  techniques:
+  - decentralized per-agent memory (no central repository)
+  - dual-pool memory (exploitation + exploration)
+  - online pool reweighting via LLM-as-judge stage-wise feedback
+  - bandit-style regret analysis
+  reported_results:
+  - Up to +23.8% avg accuracy over strongest centralized-memory baseline; up to +52.5% over no-memory; up to 49% token reduction; 3 MAS frameworks (AutoGen/DyLAN/AgentNet); backbones Qwen3 4B/8B/14B + Gemma4 E2B/E4B; 5 benchmarks
+  referenced_arxiv_ids: []
+  novelty: high
+  relevance: medium
+  credibility_score: 1
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - delta-mem-reproduction.md
+    - orchestrator-conversation-management.md
+    - unified-trace-memory-service.md
+    - meta-harness-optimization.md
+    - autopilot-continuous-optimization.md
+    experiments: []
+    intake_entries:
+    - intake-539
+    - intake-568
+  contradicting_evidence:
+  - No released code found (no repo in abstract). Results use cloud-favorable small backbones (Qwen3 4B-14B, Gemma4 E2B/E4B) on AutoGen/DyLAN/AgentNet (not our orchestrator). Adds an extra LLM-judge call per stage — real token/latency cost on CPU-only EPYC. Preprint, no clear major-lab signal, no corroboration.
+  recommended_actions:
+  - 'OPERATOR-REVIEW: route the decentralized dual-pool (exploitation/exploration) STRUCTURE to autopilot-continuous-optimization.md strategy_store (the real per-agent evolutionary-memory home) as a comparative datapoint alongside queued HCC tiered-memory + staleness work — NOT new scope. FLAG THE CONFLICT: DecentMem''s per-stage LLM-as-judge reweighting collides with autopilot AP-27 (''state matching, not LLM-as-judge'') and the 2026-06-12 P17.BT-4 KILL of judge-model scoring on cost grounds — so only the dual-pool structure transfers, not the judge-reweighting. DROP unified-trace-memory-service as an ''exploitation pool'' (charter read-only); B1 user-modeling already shipped (M.1-Prefix, the weak design delta-mem aims to replace). No released code; numbers are observations.'
+  novelty_justification: Decentralized per-agent dual-pool (exploitation vs exploration) for self-evolving MAS memory, with online LLM-judge reweighting AND a matching O(log T) bandit regret bound, is a combination not in the compendium (prior coverage is centralized/shared or retrieval/associative). High.
+  relevance_justification: 'Maps to the multi-role/self-evolving stack: per-agent dual-pool reweighted by a judge fits role-routed agents + autopilot/meta-harness loops; unified-trace-memory + B1 supply exploitation-pool data. Not high: cloud-favorable small backbones on frameworks we don''t run, extra per-stage judge cost, not a single handoff''s top priority.'
+  verdict_justification: 'adopt_patterns: transferable value is the decentralized dual-pool + judge-reweighting design, not a drop-in (no code, framework mismatch, CPU judge cost). credibility 1 (preprint, no artifact); regret-bound/accuracy claims are hypotheses pending reproduction.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  handoffs_created: []
+- id: intake-716
+  arxiv_id: null
+  url: https://github.com/avbiswas/finetuning_recipes/blob/main/reward_models/train_reward_model.py
+  source_type: repo
+  title: train_reward_model.py — MiniLM/DistilBERT scalar answer-quality reward via MSE regression on (reference [SEP] response) (AVB / finetuning_recipes)
+  authors:
+  - Avishek Biswas (AVB, @neural_avb)
+  categories:
+  - cost_aware_routing
+  - training_distillation
+  - routing_intelligence
+  key_claims:
+  - Backbone is a sentence-transformer encoder via AutoModel (MODEL_ID = all-MiniLM-L6-v2; distilbert-base-cased alternate) wrapped in a custom RewardModel(nn.Module) with a scalar head — a POINTWISE regression reward, not Bradley-Terry pairwise.
+  - Loss is MSE on a scalar quality score (F.mse_loss); labels normalized to [0,1] via (score-1.0)/4.0 (1-5 rubric).
+  - 'Input concatenates reference + candidate: ''{reference} [SEP] {response}'', float label; data merged from an internal science set + Prometheus Feedback-Collection (~10K) + answer-equivalence (~9K) + STS-B. Pooling ''meanmax'' (mean+max concat) -> dropout+linear scalar head.'
+  - 'Hand-rolled raw-PyTorch loop (no HF Trainer / TRL): AdamW two param groups (head 5e-4 / encoder 5e-5), batch 64, 50 epochs, max_len 512, dropout 0.2, early stop patience 5 on val MSE.'
+  - 'Frozen-then-unfreeze: only the last 3 encoder layers unfrozen; imports scipy spearmanr + external augment.build_augmentations.'
+  techniques:
+  - pointwise scalar reward regression (MSE)
+  - (reference [SEP] response) encoding
+  - mean+max pooling -> scalar head
+  - frozen-then-unfreeze (last 3 layers) + discriminative two-group AdamW LRs
+  - early stopping on val MSE; Spearman signal
+  - 1-5 rubric -> [0,1] normalization
+  reported_results:
+  - No accuracy numbers in the script (only val MSE tracked + imported spearmanr); no reward_models/README.md (404).
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - learned-routing-controller.md
+    - retrain-routing-models.md
+    - decision-aware-routing.md
+    experiments: []
+    intake_entries:
+    - intake-693
+    - intake-706
+  contradicting_evidence:
+  - Single educational script, no reward_models README (404), no empirical/benchmark claims beyond internal val MSE — observation-grade only. Depends on a local augment.py + four ad-hoc datasets; not packaged.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (merge into the 706-anchored AVB action): use train_reward_model.py as the concrete recipe to train/eval the OFFLINE NEXT-A quality oracle (learned-routing-controller.md NEXT-A2/A3) on our episodic+eval (reference, response, score) pairs. DROP the ''meanmax = the open CLS/mean pooling question (P4/P6)'' cross-ref — it conflates the reward model''s internal MiniLM pooling with the unrelated BGE input-pooling ablation (P4.1), and P4.1.3 is an IRT-feature audit, not pooling.'
+  novelty_justification: Ingredients textbook, no novel algorithm/paper. But first concrete pointwise BERT-regression quality-scorer recipe for THIS codebase (existing AutoModel hits are all CausalLM; routing infra trains Q-tables/bilinear/BGE-classifier heads, never a small MSE answer-quality regressor). Medium.
+  relevance_justification: 'High: directly applicable tiny CPU-runnable recipe for the missing ''quality oracle'' learned-routing-controller NEXT-A asks for and the ''quality'' term in ch08''s reward = quality - lambda*cost. all-MiniLM-L6-v2 (~22M) trains/infers comfortably on EPYC CPU; reference [SEP] response maps onto our (reference, response) eval pairs.'
+  verdict_justification: 'adopt_patterns: no component to import as-is (single PyTorch script, local deps), but a clean blueprint (pointwise MSE quality scorer, frozen-then-unfreeze MiniLM, meanmax pooling, two-group AdamW). credibility null (no empirical claims, observation-grade).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates. Focused-file companion to intake-706 (finetuning_recipes repo).
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created:
+  - research/deep-dives/2026-06-20-avb-offline-reward-stack.md
+- id: intake-717
+  arxiv_id: null
+  url: https://huggingface.co/datasets/paperbd/paper_answers_reward
+  source_type: repo
+  title: paper_answers_reward — answer-quality reward dataset (paperbd / AVB)
+  authors:
+  - paperbd (Paper Breakdown — Avishek Biswas / AVB, @neural_avb)
+  categories:
+  - cost_aware_routing
+  - benchmark_methodology
+  - training_distillation
+  - routing_intelligence
+  key_claims:
+  - 'Answer-quality reward dataset: rows pair an academic-paper reference answer with a candidate response and a numeric quality score, for training/evaluating answer-quality reward models.'
+  - 'Schema is three columns: orig_reference_answer (string, 2-4,830 chars), orig_response (string, 0-6,190 chars), orig_score (float, 1-5).'
+  - 22,423 rows across two splits — train 19,600 / test 2,780 — ~17.8 MB.
+  - paperbd/neuraltxt-reward-tiny was trained on this dataset, confirming it is the actual training corpus for a small answer-quality reward model.
+  - Card does NOT document judge methodology, scoring procedure, or source models (the ~1,645-responses / ~18-models hint is unconfirmed on the card).
+  techniques:
+  - reference-vs-response answer-quality scoring (1-5)
+  - tiny reward model trained on (reference, response, score) triples
+  - train/test split for reward-model eval
+  reported_results:
+  - 22,423 rows (train 19,600 / test 2,780), ~17.8 MB; orig_reference_answer 2-4,830 chars; orig_response 0-6,190 chars; orig_score 1-5
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  verdict: adopt_component
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    - 07-benchmark-suite-construction.md
+    - 06-benchmarking-framework.md
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-693
+    - intake-706
+    - intake-716
+    - intake-719
+  contradicting_evidence:
+  - Card omits judge model, scoring rubric, and source-model provenance; the '~1,645 responses / ~18 models' hint is unverified — confirm by inspecting the parquet before treating provenance as established.
+  recommended_actions:
+  - 'OPERATOR-REVIEW (DATASET component of the merged 706 AVB action): use the 22.4K (reference, response, score) rows to reproduce/eval the AVB scorer, then re-train on OUR (reference, response, score) pairs harvested from seed_specialist_routing.py / debug_scorer expected-fields (addresses cross-domain transfer risk). Use = OFFLINE NEXT-A quality-oracle label generation + eval (NOT live routing/quality-gating — no serve-time reference exists in chat_pipeline). Verify provenance (judge/rubric/source models) by inspecting the parquet before trusting the ~1,645-resp/18-model hint.'
+  novelty_justification: New to the index and a ready-made (reference, response, score) reward corpus from a known author. Not a novel technique (straightforward 1-5 graded answer quality) but no equivalent answer-quality reward dataset is catalogued; ch08 covers cost-aware routing rewards, a different signal. Medium.
+  relevance_justification: 'High: cost-aware routing has a reward-model component + active routing/reward retraining; the index already references neuraltxt-reward-tiny trained on exactly this data. A (reference, response, 1-5) corpus is directly usable to train a tiny CPU-friendly scorer; small (17.8MB), CPU-trainable.'
+  verdict_justification: 'adopt_component: a concrete importable dataset (22.4K labeled rows) usable as training/eval data + scoring-methodology reference. credibility null (descriptive schema/size only, no empirical claims). Caveat: verify provenance.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created:
+  - research/deep-dives/2026-06-20-avb-offline-reward-stack.md
+- id: intake-718
+  arxiv_id: null
+  url: https://github.com/avbiswas/neural-txt
+  source_type: repo
+  title: neural-txt — super-fast local inference for structured NLP via a fine-tuned 135M LM (AVB)
+  authors:
+  - Avishek Biswas (AVB, @neural_avb)
+  categories:
+  - tool_implementation
+  - document_processing
+  - knowledge_management
+  - local_inference
+  - training_distillation
+  key_claims:
+  - 'An inference harness/Python library running structured NLP tasks locally via a fine-tuned 135M LM (paperbd/neuraltxt-v1-135M), no external API: bullet extraction, Q&A-pair generation, KG-triplet extraction, question generation, fact extraction, rephrasing, continuation.'
+  - Ships a reward model (paperbd/neuraltxt-reward-tiny, exposed as NeuralTxtReward) for scoring/ranking candidate responses against reference answers.
+  - Structured-output via constrained decoding (Outlines) for JSON mode, plus a reasoning variant emitting <think> traces; supports multiple rollouts + beam search.
+  - 'Dual backend: HuggingFace/PyTorch and Apple-Silicon MLX; optional Gradio UI + Textual TUI; core modules NeuralTxt (generation), NeuralTxtReward (scoring).'
+  - 'Open data lineage: dataset paperbd/paper_instructions_300K-v1 + synthetic augmentation via the author''s text-albumentations.'
+  techniques:
+  - constrained decoding (Outlines) / JSON mode
+  - reward-model scoring + ranking
+  - multiple rollouts + beam search
+  - reasoning <think> traces
+  - small-LM distillation (135M)
+  - MLX + HF backends
+  - KG-triplet extraction
+  reported_results: []
+  referenced_arxiv_ids: []
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - 01-fast-rlm-budget-controls.md
+    - rlm-orchestrator-roadmap.md
+    - repl-final-schema-validation.md
+    - rao-redel-substrate-spike.md
+    - meta-harness-optimization-completed-through-2026-05-28.md
+    experiments: []
+    intake_entries:
+    - intake-693
+  contradicting_evidence:
+  - Packaging/inference harness around off-the-shelf techniques (Outlines, beam search, reward reranking, <think>); no new algorithm/architecture, no arxiv, no benchmarks; educational/practitioner repo (~14 commits).
+  recommended_actions:
+  - 'OPERATOR-REVIEW (SPLIT): (a) 135M structured-NLP specialist = conditional watch-item — NO live consumer slot today (document_formalizer is a 1B OCR VLM; the opendataloader pipeline has no cheap text-extraction stage), so re-surface only if opendataloader-pipeline-integration.md grows a structured-NLP-extraction stage. (b) reward-model reranking half = FOLD into intake-719 (the actual model), already pointed at the live reward/scorer work. Replace the stale 01-fast-rlm / rlm-orchestrator-roadmap (archived) / repl-final-schema-validation (completed) cross-refs.'
+  novelty_justification: Packaging around a fine-tuned 135M LM using off-the-shelf techniques; no new method/architecture, no arxiv. Novelty for us is the concrete recipe (tiny task-specialist LM + reward model + structured-decoding harness in one lib), not the techniques. Low.
+  relevance_justification: 'Medium: inference-side counterpart of an indexed author (intake-693, text-albumentations) overlapping doc_processing/knowledge_management (135M trivially CPU-only) and cost_aware_routing (NeuralTxtReward). Not relevant to GPU/throughput core (no spec-dec/MoE/NUMA).'
+  verdict_justification: 'adopt_patterns: nothing to import wholesale, but two reusable patterns (CPU-cheap 135M task-specialist + constrained-decoding harness; small reward-model reranking). credibility null (educational, no empirical claims). Flagged-not-dismissed per no-soft-dismiss policy.'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - opendataloader-pipeline-integration.md
+  - pipeline-integration-index.md
+  handoffs_created: []
+- id: intake-719
+  arxiv_id: null
+  url: https://huggingface.co/paperbd/neuraltxt-reward-tiny
+  source_type: repo
+  title: neuraltxt-reward-tiny — 22M MiniLM reference-grounded answer-equivalence reward model (paperbd / AVB)
+  authors:
+  - Avishek Biswas (AVB, paperbd / @neural_avb)
+  categories:
+  - cost_aware_routing
+  - training_distillation
+  - routing_intelligence
+  - local_inference
+  key_claims:
+  - 'Encoder-only reward model on all-MiniLM-L6-v2: 22M total params (~8.87M trainable in final layers/head), trivially CPU-runnable.'
+  - Scores a candidate vs a reference answer on a 0-1 scale for answer equivalence / factual correctness (reference-grounded, not free-running quality).
+  - Trained on paperbd/paper_answers_reward (~6K pairs) augmented with confound training, preference distillation, contrastive minimal-edit examples + cross-domain STS-B/Feedback-Collection/answer-equivalence data.
+  - Intended as a fast cheap reward signal for RL / Q&A grading, emphasizing robustness to lexical-overlap confounds.
+  - Self-reports beating RewardBert on answer-equivalence and confound resistance; weak on synonym-swap detection (3% caught).
+  techniques:
+  - all-MiniLM-L6-v2 backbone (encoder-only, ~22M)
+  - mean+max pooling -> MSE regression head
+  - reference-grounded pairwise scoring (0-1)
+  - confound/contrastive minimal-edit training + preference distillation + cross-domain augmentation
+  reported_results:
+  - Answer equivalence 0.93 (vs RewardBert 0.86); confound resistance 6% fooled (vs RewardBert 53%, Word-F1 78%); antonym swaps 81% / negation 85% / synonym swaps only 3% caught
+  referenced_arxiv_ids: []
+  novelty: medium
+  relevance: high
+  credibility_score: 1
+  verdict: worth_investigating
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - decision-aware-routing.md
+    - retrain-routing-models.md
+    - learned-routing-controller.md
+    - routing-intelligence.md
+    experiments: []
+    intake_entries:
+    - intake-693
+    - intake-706
+    - intake-716
+    - intake-717
+  contradicting_evidence:
+  - Self-reported model-card metrics only, no independent reproduction, no peer review. Glaring synonym-swap weakness (3% caught) could silently undercount correct paraphrases as low-quality — risky as a routing reward. Scores answer-equivalence vs a reference, which the online routing path doesn't always have (better for offline eval/label generation than live routing).
+  recommended_actions:
+  - 'OPERATOR-REVIEW (TRAINED-MODEL component of the merged 706 AVB action; this rec is the soundest): eval neuraltxt-reward-tiny as the candidate independent OFFLINE quality oracle for learned-routing-controller.md NEXT-A''s policy-debiased label (its consumer is the BUILT-but-default-OFF NEXT-A2 frontdoor verifier, whose Q/outcome label is the policy-biased label NEXT-A wants to replace). Reproduce/retrain via 716 on 717 + our seeding pairs; gate on Spearman/agreement vs the binary q_reward scorer AND a paraphrase/synonym stress test (3%-synonym-catch weakness). Offline only — no serve-time reference in the live routing path.'
+  novelty_justification: 'Cost-aware-reward pattern + reward modeling already covered (ch08; ThinkPRM, on-policy RM). New: a concrete tiny (22M) CPU-trivial reference-grounded answer-equivalence scorer with explicit confound-robustness training — the first such tiny-reward-model component in the index. Underlying idea mundane; medium.'
+  relevance_justification: 'High: a 22M reference-grounded reward model runs trivially on EPYC CPU and maps onto the cost-aware-routing reward component (ch08 ''quality'' term) + active routing/reward retraining; plausible drop-in scorer/quality-signal baseline for decision-aware-routing / learned-routing-controller.'
+  verdict_justification: 'worth_investigating (a tiny usable reward model): directly runnable but (1) self-reported metrics only + synonym-swap weakness (reliability risk), (2) needs a reference at scoring time (fits offline eval/label generation, not always live routing). credibility 1 (concrete head-to-head numbers but practitioner self-reported, no reproduction).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates.
+  discovered_via: input
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - learned-routing-controller.md
+  handoffs_created:
+  - research/deep-dives/2026-06-20-avb-offline-reward-stack.md
+- id: intake-720
+  arxiv_id: '2503.04412'
+  url: https://arxiv.org/abs/2503.04412
+  source_type: paper
+  title: Wider or Deeper? Scaling LLM Inference-Time Compute with Adaptive Branching Tree Search (AB-MCTS)
+  authors:
+  - Kou Misaki
+  - Yuichi Inoue
+  - Yuki Imajuku
+  - So Kuroki
+  - Taishi Nakamura
+  - Takuya Akiba
+  categories:
+  - agent_architecture
+  - swarm_techniques
+  - autonomous_research
+  - benchmark_methodology
+  - routing_intelligence
+  discovered_via: expansion
+  expanded_from: intake-704
+  key_claims:
+  - AB-MCTS unifies repeated sampling ('go wider' = new candidates) and sequential refinement ('go deeper' = revise) into one search, dynamically deciding which from external feedback — overcoming standard MCTS's fixed branching factor.
+  - Action selection uses Thompson Sampling over Bayesian posteriors; plain UCT is inapplicable because unbounded-branching GEN nodes break the fixed-arm bandit assumption.
+  - 'Two variants: AB-MCTS-M (mixed-effects model separating initial-generation vs refinement variance) and AB-MCTS-A (node aggregation via CONT nodes, Gaussian or Beta priors).'
+  - Consistently outperforms repeated sampling and standard MCTS across coding (CodeContests) and ML-engineering (MLE-Bench), with the gap widening beyond ~64 generations.
+  - Follow-up Multi-LLM AB-MCTS (June 2025 blog + open code, not the original paper) keeps a per-model Thompson posterior so the search learns WHICH model to call.
+  techniques:
+  - AB-MCTS (adaptive/unbounded branching MCTS, GEN nodes)
+  - AB-MCTS-M (mixed-effects variant)
+  - AB-MCTS-A (node aggregation, Gaussian/Beta priors)
+  - Thompson Sampling go-wider/go-deeper action selection
+  - per-model online posteriors (Multi-LLM extension)
+  - requires an external feedback/verifier signal
+  reported_results:
+  - 'CodeContests: AB-MCTS variants exceed repeated sampling + standard MCTS across budgets (best at 128 gens); MLE-Bench Nomad2018 <0.060 RMSLE; Multi-LLM follow-up on ARC-AGI-2: single-LLM 23% -> AB-MCTS 27.5% -> Multi-LLM >30%'
+  referenced_arxiv_ids:
+  - '2407.21787'
+  - '2410.07095'
+  - '2410.20285'
+  - '2305.14992'
+  novelty: high
+  relevance: medium
+  credibility_score: 4
+  verdict: adopt_patterns
+  cross_references:
+    chapters:
+    - 08-cost-aware-rewards.md
+    handoffs:
+    - autopilot-continuous-optimization.md
+    - tri-role-coordinator-architecture.md
+    - routing-and-optimization-index.md
+    - outer-coordinator-learned-head.md
+    - meta-harness-optimization-completed-through-2026-05-28.md
+    experiments: []
+    intake_entries:
+    - intake-474
+    - intake-493
+    - intake-704
+  contradicting_evidence:
+  - No published replication failure or external refutation found across three web searches, but virtually all secondary coverage is Sakana-authored/promotional — independent third-party evaluation essentially absent as of June 2026 (confirmation-bias risk).
+  - 'Author-acknowledged: UCT inapplicable to AB-MCTS (GEN nodes break the fixed-arm bandit), so the exploration guarantee rests on the Thompson-Sampling posterior model being well-specified.'
+  - 'Statefulness critique (Empirical-MCTS 2602.04248): AB-MCTS is stateless — strategies discovered in one search are discarded, so per-query compute does not amortize across queries.'
+  - 'Verifier-dependence: every reported gain assumes a reliable external feedback signal; tasks without a cheap faithful verifier collapse AB-MCTS toward plain repeated sampling.'
+  - 'Cost framing: ''without increasing computational cost'' is relative to an equal sample-budget baseline, not absolute — up to 512 model calls/query in-paper; the Multi-LLM ARC-AGI-2 result used frontier APIs (o4-mini/Gemini-2.5-Pro/R1-0528), not CPU-local models.'
+  recommended_actions:
+  - 'OPERATOR-REVIEW: track three transferable patterns, sharpened to current state — (1) Thompson-Sampling go-wider/go-deeper allocation as a principled replacement for autopilot''s heuristic WEIGHTED-RANDOM species selection (meta_optimizer.py:139-145; no bandit/posterior exists today); (2) per-model online Bayesian posteriors as a no-train alternative to the STAGED MLP routing classifier (routing_classifier=false in prod, Phases 1.5+ FROZEN) — tie to decision-aware-routing DAR-1 0.00%-regret (the gating signal any online bandit also needs); (3) mixed-effects variance-separation trick -> ch08 (recommendation only). tri-role-coordinator + outer-coordinator-learned-head are genuinely complementary (offline-learned vs AB-MCTS no-train inference search). Verifier-dependent; 512-call tree not CPU-deployable as-is.'
+  novelty_justification: AB-MCTS is a genuinely new mechanism (unbounded adaptive branching unifying repeated sampling + sequential refinement under one Thompson-Sampling tree, with explicit UCT-inapplicability). Not covered by Trinity (intake-474, sep-CMA-ES) or Conductor (intake-493, RL coordinator); AB-MCTS does NO training, searching at inference with online posteriors. High (mechanism-specific, not extrapolated).
+  relevance_justification: 'Medium: go-wider/go-deeper Thompson allocation + per-model online posteriors map onto autopilot explore/exploit budgeting, heterogeneous-pool coordination (tri-role-coordinator, outer-coordinator-learned-head), and online bandit routing. Below high because the cost model fights the hardware (many calls/query + a faithful verifier; the only multi-model headline used frontier APIs, not CPU-local).'
+  verdict_justification: 'adopt_patterns: original paper ships no code (open TreeQuest/ab-mcts-arc2 belong to the later Multi-LLM follow-up, frontier-API-oriented); 512-call verifier-gated tree not CPU-deployable as-is. Not new_opportunity (actionable insight is a pattern), not already_integrated (no AB-MCTS-style search in autopilot/orchestrator), not superseded (Trinity/Conductor learn offline; AB-MCTS searches at inference — complementary). credibility 4 (ICLR 2025 Workshop peer-reviewed venue + open follow-up code; tempered by Sakana vendor bias + no CPU-local validation).'
+  notes: User-provided research-intake batch 2026-06-19 (25 URLs + 1 Phase-3 expansion). Phase 4 handoff writes intentionally SKIPPED per operator instruction ('don't write handoffs without my permission'); proposed handoff updates are captured in recommended_actions as operator-review candidates. Phase-3 Tier-1 reference-chase from the Sakana Marlin blog (intake-704). ICLR 2025 Workshop (Foundation Models in the Wild, OpenReview 3HF6yogDEm). Multi-LLM ARC-AGI-2 results are from the June-2025 follow-up (TreeQuest/ab-mcts-arc2, Apache-2.0), not the original 2503.04412 body.
+  ingested_date: '2026-06-19'
+  handoffs_updated:
+  - autopilot-continuous-optimization.md
+  - routing-and-optimization-index.md
+  handoffs_created: []

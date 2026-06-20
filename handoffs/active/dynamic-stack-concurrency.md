@@ -119,3 +119,10 @@ The within-role placement handoff owns the full-to-quarter transition trigger an
 - Update [`inference-acceleration-index.md`](inference-acceleration-index.md) only for Phase F KVCOMM status.
 - If DS-E1 blocks on missing evidence, update the source handoff for the missing evidence rather than expanding this file.
 - If Phase F is abandoned or deferred, record the reason here and in [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md).
+
+## Research Intake Update — 2026-06-20
+
+### drove — proactive cold-role idle-teardown (intake-701)
+
+- DROP drove's ASR-facade idea: already shipped (`whisper_server.py` exposes OpenAI `/v1/audio/transcriptions`; `start_whisper` is a first-class managed service in `orchestrator_stack`).
+- KEEP: proactive WHOLE-PROCESS idle-teardown of COLD/RARE roles (e.g. `sd_server`, `document_formalizer`) as an OPTIONAL RAM-reclaim policy (a "DS-7-profile" option), explicitly DISTINCT from the existing DS-6 quarter-eviction idle-timeout (reassigns quarters, does NOT reclaim RAM) and from earlyoom (reactive ceiling). NEVER for hot pre-warmed roles — wholesale lazy-load is an anti-pattern for our deliberately pre-warmed + mlock single-user stack. Gated on the DS-E1 evidence packet. No benchmarks (tiny project, observations).

@@ -126,3 +126,20 @@ On 3 of 4 questions the single highest-confidence trace was **wrong** — the mo
 **P21.A3 (wire knob surface for autopilot): DO NOT PROCEED.** No accuracy benefit + real cost. The `program.md` gate is updated from "not-yet-built" to "do-not-wire (A2 negative)". The branch is preserved as a validated reference (default-OFF, not merged to `main`) in case a future, better-calibrated model or a much larger trace budget (N≫6) warrants a revisit — but the *confidence metric itself* is anti-correlated here, which more traces won't fix (they'd only help the vote, which already ties majority).
 
 **Takeaway:** the sanity check did its job — it prevented wiring a no-gain technique into production and handing autopilot a useless, compute-burning knob surface.
+
+---
+
+## Research Intake Update — 2026-06-20 — OpenRouter Fusion (P21.B inputs)
+
+**Source intakes**: intake-712 (OpenRouter Fusion product page) + intake-714 (Fusion server-tool docs), merged. Feeds the **P21.B method-selection axis** (the "which test-time technique, above role-routing" item — see Phase B above and `epyc-orchestrator/scripts/autopilot/program.md`, where P21.B is a **GATED denylist row**, not-yet-built). **P21.B has no body section in `routing-and-optimization-index.md`** — it lives *here* and in `program.md`; do not redirect to the index.
+
+**What Fusion is**: OpenRouter Fusion is a model-invoked **Mixture-of-Agents server tool** — a panel of **1–8 models** answers a query in parallel, a **judge** *compares* (does **not** merge) the panel outputs into structured JSON, and the **outer/orchestrating model** writes the final answer from that judgment. It is **SaaS over frontier-model APIs** — it **governs DEPLOY, not ANALYZE** (open-source-only / self-hosted constraint, `feedback_opensource_only`), so the product itself is off the table; only the *design ideas* port. Cross-link **intake-601 (OptiLLM)** as the self-hostable MoA analogue.
+
+**Portable, `n`-free ideas for the (GATED, not-yet-built) P21.B axis** — all three implementable over llama-server **without** the `n` multi-sampling param llama.cpp lacks:
+- **Typed judge schema** — the judge emits **structured deliberation** over fixed fields (`consensus` / `contradictions` / `partial_coverage` / `unique_insights` / `blind_spots`) instead of a naive merge or majority-vote. A single judge call producing typed JSON needs no multi-sampling.
+- **Model-discretionary invocation** with a `tool_choice: required` override — the model **self-decides when to escalate** to a panel (and the operator can force invocation). A policy/flag surface, not a sampling feature.
+- **Recursion-depth bounding** — **one deliberation call per turn**; the panel/judge **cannot recurse** (no panel-inside-a-panel). A counter/guard, not a sampling feature.
+
+**CAVEAT (the `n`-degradation):** Fusion's parallel **panel** *is itself the `n`-degraded MoA path already documented here* — see the backend-compatibility matrix in §1 (BoN / MoA / CEPO are **DEGRADED** over llama-server because llama.cpp lacks `n` and falls back to sequential generation, losing parallelism). Only the **judge contract + invocation policy + recursion bound** port cleanly `n`-free; the **panel inherits the sequential-fallback cost** (1–8 sequential completions on CPU). The judge/policy/bound layer is the additive value over plain OptiLLM-style MoA; the panel underneath is the same already-documented degraded primitive.
+
+**Numbers**: none. No published quality / latency / cost figures — these are **observations only** (not decision-gating per `MEASUREMENT.md`).

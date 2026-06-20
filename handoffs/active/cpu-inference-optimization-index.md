@@ -35,6 +35,7 @@
 ## Key References
 
 - [inference-acceleration-index.md](inference-acceleration-index.md) — domain-level acceleration landscape.
+- **Cross-cutting (2026-06-20)**: the ~633 GB raid0 free-space gate now bounds the large-MoE candidates tracked in [inference-acceleration-index.md](inference-acceleration-index.md) (GLM-5.2 escapable via IQ2 ~238 GB; Kimi-K2.7 storage-tight even at Q2_K ~373 GB). Not a CPU-kernel-throughput task — pointer only; the storage gate governs whether these GGUFs can land before any CPU bench is even possible.
 - [../completed/cpu-benchmark-rigor-and-revalidation.md](../completed/cpu-benchmark-rigor-and-revalidation.md) — historical CPU20 protocol record; living protocol is `/workspace/MEASUREMENT.md`.
 - [../completed/cpu-optimization-thesis-pause-2026-04-26.md](../completed/cpu-optimization-thesis-pause-2026-04-26.md) — methodology/conclusion correction ledger.
 - [../completed/numa-mirror-integration.md](../completed/numa-mirror-integration.md) — NUMA_MIRROR closure.

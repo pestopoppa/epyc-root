@@ -55,3 +55,16 @@ IDs must be sequential: `intake-001`, `intake-002`, etc. The `seed_index.py` scr
 - Primary key: `arxiv_id` (exact match)
 - Secondary: `url` (exact match for non-arXiv)
 - Duplicate entries get `novelty: duplicate` and are not expanded
+
+## Schema versioning & permissive consumption (added 2026-06-20, intake-710/711)
+
+The intake index follows a **permissive-consumption contract**: `validate_intake.py`
+validates the REQUIRED fields and enum values listed above, but PRESERVES
+unknown/extra keys — it does not reject an entry for carrying fields beyond the
+required set. This makes new optional fields forward-compatible: a field can be
+added by one agent without breaking validation for parallel agents that do not
+yet know about it.
+
+The taxonomy and this schema are versioned (`schema_version: "1.0"`) so consumers
+can detect drift. See `wiki/SCHEMA.md` → `## Conformance` for the canonical
+statement of both the version stamp and the permissive-consumption contract.

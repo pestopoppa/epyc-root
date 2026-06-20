@@ -129,3 +129,46 @@ Maps informal/variant category names to canonical categories above.
 | `theorem_proving` | `formal_verification` |
 | `small_model_deployment` | `local_inference` |
 | `web_systems` | `inference_serving` |
+
+## Conformance (added 2026-06-20 — OKF-inspired, intake-710/711)
+
+This section adopts the two genuinely-new conventions surfaced by the Open
+Knowledge Format (OKF v0.1, Google Cloud) deep-dive. The other four OKF
+conventions were already satisfied by existing infrastructure (see *Rejected as
+already-covered* below).
+
+**Schema version stamp.** This taxonomy is at `schema_version: "1.0"`. The
+version is declared here so that parallel agents and cross-repo consumers can
+detect schema drift — if the category set, alias map, or conformance contract
+changes in a backward-incompatible way, bump this number. Treat it as the
+authoritative OKF-style version stamp for the wiki taxonomy and the intake index
+schema it backs.
+
+**Permissive-consumption contract (the genuinely-new adoption).** Consumers of
+intake entries MUST preserve unknown/extra keys and MUST NOT reject an entry for
+carrying fields beyond the required set. New optional fields may be added
+forward-compatibly without coordinating a flag-day across parallel agents. This
+is already the de-facto behavior of
+`.claude/skills/research-intake/scripts/validate_intake.py` — it only flags
+MISSING required fields (and invalid enum values), and never rejects an entry for
+carrying additional keys. This section CODIFIES that behavior as an intentional
+contract so a future validator change does not silently regress it: any change
+that would cause the validator to reject entries on the basis of extra/unknown
+fields is a conformance break and must be rejected in review.
+
+**Rejected as already-covered.** The following OKF conventions were evaluated and
+deliberately NOT adopted because existing infrastructure already provides the
+equivalent capability:
+
+- Reserved `index.md` — we already have `wiki/INDEX.md` as a
+  progressive-disclosure index.
+- Per-bundle `log.md` change history — we use per-file dated "Research Intake
+  Update" sections, giving change history at finer (per-file) granularity.
+- `#Schema` / `#Examples` / `#Citations` heading renames — our existing
+  Summary / Key-Findings / Source-References headings are equivalent in role.
+- A bespoke HTML force-directed graph visualizer — GitNexus `wiki` / `cypher`
+  already cover graph visualization of symbols and relationships.
+
+Full OKF analysis lives in intake-710/711. This is a conventions-adoption, not a
+tooling import: OKF's enrichment agent is BigQuery-coupled and therefore out of
+scope for the self-hosted EPYC stack.

@@ -471,3 +471,10 @@ Deep-dived the kernel-generation cluster (intake-660–679) for the incoming **M
 | 666 | EvoEngineer | Train-free evolutionary | high | adopt_patterns | **Lead controller** — leanest loop runnable on one MI210; modular evaluator = ROCm re-target seam |
 
 Delta from this handoff's current plan: gpu-acceleration-path tracks *consuming/hand-porting* ROCm kernel libraries; this cluster suggests *automated authoring* on top of them. New work is gated on the MI210 and tracked in the two new handoffs; this entry is the cross-reference anchor.
+
+## Research Intake Update — 2026-06-20
+
+### UniRL — DGX-gated multimodal/LLM RL watch-item (intake-709)
+
+- UniRL (Tencent Hunyuan): multi-GPU RL post-training framework (Ray+FSDP) for diffusion/AR/multimodal generators — training code only, no inference/serving, no prod GPU on EPYC. not_applicable today; DGX-gated watch-item.
+- CORRECTION (the intake's earlier "no image role" claim was wrong): a CPU image-generation role IS deployed (`sd_server` / ERNIE-Image-Turbo via stable-diffusion.cpp). UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune it — the blocker is "no TRAINING GPU", not "no image role". The LLM-targeted token-level trust-region variants (CPPO/DRPO; arXiv 2606.10968 / 2606.09821) could transfer to a FUTURE on-prem LLM RL track (none exists today; current "learned" tracks are supervised routing classifiers). README has no benchmark numbers (observations).
