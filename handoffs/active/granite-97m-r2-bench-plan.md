@@ -1,6 +1,6 @@
 # Granite-97M-r2 Multilingual Embedder Bench Plan
 
-**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts fetched 2026-06-20; GGUF conversion, server setup, and Phase B remain open
+**Status**: Phase A-fast fallback corpus + dry-run harness landed and re-verified 2026-06-20; HF model artifacts and conversion env staged; warm/default-off orchestrator embedder recipes landed 2026-06-20; GGUF conversion and Phase B remain open
 **Created**: 2026-04-30 (post-intake-519 deep-dive)
 **Updated**: 2026-06-20
 **Categories**: search_retrieval, knowledge_management, rag_alternatives, local_inference
@@ -12,7 +12,7 @@
 
 Phase A-fast is complete enough to unblock the next decision: `data/benchmarks/eval-corpus-v0.jsonl` has the 100-document / 30-query fallback corpus, and `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates the corpus and run plan with no missing relevance references. The remaining live work is:
 
-1. Complete the model-artifact branch from the staged HF sources: GGUF conversion/quantization plus embedder server recipes for Granite, multilingual-e5-base, and BGE-M3.
+1. Complete the model-artifact branch from the staged HF sources: GGUF conversion/quantization for Granite, multilingual-e5-base, and BGE-M3.
 2. Schedule an embedder-only serving window for Phase B; this does not require a production model-stack reload, but it does require the embedder servers to be live.
 3. After Phase B, update the downstream KB-RAG / rerank / SearXNG handoffs with a concrete dense-retriever decision.
 
@@ -22,7 +22,7 @@ Staged HF sources from the 2026-06-20 no-RAM prep pass:
 - BGE-M3: `/mnt/raid0/llm/hf/BAAI_bge-m3` (`pytorch_model.bin` 2,271,145,830 bytes; dense-only path for this bench)
 - multilingual-e5-base: `/mnt/raid0/llm/hf/intfloat_multilingual-e5-base` (`model.safetensors` 1,112,201,288 bytes)
 
-Do not start conversion during active throughput-sensitive G11 benchmarking; conversion can create enough CPU/RAM/IO pressure to skew benchmark measurements. The dedicated conversion env is staged at `/mnt/raid0/llm/venvs/llama-gguf-convert` and verified to import CPU `torch`, `transformers`, `safetensors`, `sentencepiece`, `numpy`, and `gguf`; `/mnt/raid0/llm/llama.cpp/convert_hf_to_gguf.py --help` starts successfully there.
+The dedicated conversion env is staged at `/mnt/raid0/llm/venvs/llama-gguf-convert` and verified to import CPU `torch`, `transformers`, `safetensors`, `sentencepiece`, `numpy`, and `gguf`; `/mnt/raid0/llm/llama.cpp/convert_hf_to_gguf.py --help` starts successfully there. Avoid conversion during any future throughput-sensitive benchmark window because conversion can create enough CPU/RAM/IO pressure to skew measurements.
 
 ## Completed Scope
 
@@ -31,6 +31,7 @@ Do not start conversion during active throughput-sensitive G11 benchmarking; con
 | 2026-06-18 | A-fast fallback corpus + dry-run harness landed. | `eval-corpus-v0.jsonl` and `bench_embedder_throughput.py` present. |
 | 2026-06-20 | A-fast re-verified during wrap-up. | `python3 -m py_compile scripts/benchmark/bench_embedder_throughput.py`; dry-run returned 100 documents, 30 queries, server roles for `8090/8096/8097/8098`, and `missing_relevance_refs=[]`. |
 | 2026-06-20 | HF sources fetched for Granite, BGE-M3, and multilingual-e5-base. | Local staged dirs under `/mnt/raid0/llm/hf/`; target weights are checked out at 194,889,568 bytes, 2,271,145,830 bytes, and 1,112,201,288 bytes respectively. |
+| 2026-06-20 | Warm/default-off embedder server recipes landed. | Orchestrator `e2922d7` adds `embedder_granite_97m_r2:8096`, `embedder_multilingual_e5_base:8097`, and `embedder_bge_m3:8098` plus recipe-driven embedding commands; focused embedder tests passed. |
 
 ## 2026-05-28 Audit Reset
 
@@ -51,7 +52,7 @@ This handoff was too conservatively gated. K2 chunker output is the best corpus 
 - ✅ Corpus exists with labels: `data/benchmarks/eval-corpus-v0.jsonl` has 100 `epyc-orchestrator/src` Python snippets and 30 labeled code-retrieval queries.
 - ✅ Bench script can run in dry-run mode against a fake or existing embedding endpoint: `scripts/benchmark/bench_embedder_throughput.py --dry-run --corpus data/benchmarks/eval-corpus-v0.jsonl --servers 8090 8096 8097 8098` validates shape and resolved relevance refs.
 - ✅ HF model sources are staged locally for Granite, BGE-M3, and multilingual-e5-base.
-- Open: GGUF conversion/quantization and embedder server recipes are ready to execute after the active G11 throughput-sensitive run exits.
+- Open: GGUF conversion/quantization, server smoke, and Phase B benchmark execution.
 - User-approved inference window exists for model server launches.
 
 **Mitigation**: if Granite underperforms but the corpus reveals multilingual or code-search gaps, do not close the whole retrieval track. Fork to BGE-M3 or Qwen3-Embedding comparator and update `internal-kb-rag.md` with the corpus result.
@@ -115,7 +116,7 @@ Acceptance: GGUF loads via the local embedding server path, produces non-degener
 
 #### A-3: Server deployment recipe [~1 day]
 
-Add `granite-97m-r2` to the embedder pool on port `8096` (matches existing BGE-large `:8090–:8095` pattern). Update `parallel_embedder.py` registry. Three model servers up: granite-97m-r2 (8096), multilingual-e5-base (8097), BGE-M3 (8098).
+Add `granite-97m-r2` to the embedder pool on port `8096` (matches existing BGE-large `:8090–:8095` pattern). Update stack launch metadata and embedding command recipes for three warm/default-off candidates: granite-97m-r2 (8096), multilingual-e5-base (8097), BGE-M3 (8098). This recipe scaffold landed in orchestrator `e2922d7`; still required before Phase B: GGUF files at the recipe paths and a load/vector smoke.
 
 #### A-4: Build minimal eval corpus [~half day]
 
