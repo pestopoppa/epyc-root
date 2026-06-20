@@ -204,22 +204,21 @@ The Trinity-derived tri-role architecture has cleared the first three implementa
 - **X-MAS has moved from scaffold to measured default-off decision table, with a diagnosed held-out failure mode.** The deterministic 5-domain x 5-function classifier, guarded production hook, validator, true function-axis sweep, and compiled `orchestration/xmas_winner_table.yaml` are now present. The table is enforce-eligible by schema/evidence, but the 2026-06-18 held-out A/B returned `decision: hold` after quality and latency regressions. Replay diagnostics now show the dominant failure was hard route replacement: X-MAS overrode 23/25 prompts, mostly `coder_escalation->worker_general`, with 7 baseline-only quality wins, 0 X-MAS-only wins, 20 prompts at >=3x latency regression, and 2 X-MAS timeouts. Live behavior stays default-off; the next task is an incumbent-aware/constrained policy design before any new A/B. Source: [x-mas-text-routing.md](../handoffs/active/x-mas-text-routing.md).
 - **Delete/freeze discipline is now part of routing architecture.** Dead confidence-routing and three-way routing paths were removed; `dispatch_swarm_fanout` remains under an ownership watch through 2026-07-12. Future shadow layers need durable telemetry and ratification paths or they should not run. Source: [routing-truth-restoration.md](../handoffs/active/routing-truth-restoration.md).
 
-### New Findings (2026-06-20 - Factual-risk tier readiness)
+### New Findings (2026-06-20 - Factual-risk tier calibration)
 
-- **Factual-risk tier recalibration is evidence-gated by role completeness, not just by having some scored rows.** Frontdoor G11 and worker G11 AA-Omniscience runs are packaged and deterministic-F1-scored, but the tier-calibration report is still `blocked_missing_roles` until `architect_general` evidence exists. Current input rows are 1,800 frontdoor and 600 worker scored examples; frontdoor baseline accuracy is `0.1156` with hallucination rate `0.5628`, while worker baseline accuracy is `0.1433` with hallucination rate `0.6829`. The report can preview relative multipliers for observed roles, but it must not update factual-risk role tiers until the architect run is scored and the deterministic-vs-LLM-judge decision is made. Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), `epyc-orchestrator` `61e670d`.
+- **Factual-risk tier recalibration is complete, while enforcement remains separately gated.** Frontdoor G11, worker G11, and architect G10 AA-Omniscience runs are packaged and deterministic-F1-scored; the combined report reached `ready_for_tier_update`. Deterministic AA-Omniscience 4-class scoring was accepted for role-tier recalibration only, and `epyc-orchestrator` `d0e082a7` updated measured tier multipliers to `0.727978`, `0.824178`, and `1.0`. Do not reopen G12 for LLM-judge scoring; factual-risk mode/canary/enforce decisions remain RI-10/telemetry gates. Sources: [progress 2026-06-20](../progress/2026-06/2026-06-20.md), [research-evaluation-index.md](../handoffs/active/research-evaluation-index.md), `epyc-orchestrator` `d0e082a7`.
 
 ## Actionable for EPYC
 
 ### High Priority (next compute session)
-1. **Finish G10/G12 factual-risk calibration input** -- run and score `architect_general` G10 once the architect server is idle, then decide whether deterministic F1 is sufficient or whether an LLM-judge pass is required before changing role-tier multipliers.
-2. **RI-7 A/B test** -- run factual-risk enforce vs off on 500+ questions to validate risk-aware routing after role-tier calibration is complete. Blocked on production stack + orchestrator API running.
-3. **Phase 4 enforcement wiring** -- integrate risk outputs into cheap-first bypass, plan review gate, escalation policy, failure graph veto, and review objective. The shadow data should now have weeks of accumulated scores for threshold calibration.
+1. **RI-7 A/B test** -- run factual-risk enforce vs off on 500+ questions to validate risk-aware routing after role-tier calibration. Treat it as a separate telemetry/enforcement gate, not a continuation of G12.
+2. **Phase 4 enforcement wiring** -- integrate risk outputs into cheap-first bypass, plan review gate, escalation policy, failure graph veto, and review objective. The shadow data should now have weeks of accumulated scores for threshold calibration.
 
 ### Medium Priority
-4. **Risk fields on RoleResult** in `seeding_types.py` -- claimed complete 2026-03-06 but verification shows fields absent. Must re-add before Phase 5 seeding integration.
-5. **Structured review objective** -- replace `answer[:100]` proxy with `{"task_type": str, "risk_band": str, "key_claims": list[str], "verification_focus": str}` for the review trigger.
-6. **Risk-aware reward shaping** -- high-risk prompts that produce correct answers should get a Q-value reward bonus in `q_scorer.py`. This trains the routing to prefer capable models for factual queries.
-7. **Unified routing priority scheme** -- document and implement the priority ordering and blend formula for all 9 routing subsystems when running simultaneously.
+3. **Risk fields on RoleResult** in `seeding_types.py` -- claimed complete 2026-03-06 but verification shows fields absent. Must re-add before Phase 5 seeding integration.
+4. **Structured review objective** -- replace `answer[:100]` proxy with `{"task_type": str, "risk_band": str, "key_claims": list[str], "verification_focus": str}` for the review trigger.
+5. **Risk-aware reward shaping** -- high-risk prompts that produce correct answers should get a Q-value reward bonus in `q_scorer.py`. This trains the routing to prefer capable models for factual queries.
+6. **Unified routing priority scheme** -- document and implement the priority ordering and blend formula for all 9 routing subsystems when running simultaneously.
 
 ### Lower Priority
 8. **Evaluate Reason-ModernColBERT** (intake-174) as a replacement for the classification retriever's current embedding model. Late-interaction retrievers are optimized for reasoning tasks, and the 150M parameter size is CPU-friendly.
