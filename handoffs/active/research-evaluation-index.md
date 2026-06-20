@@ -1,7 +1,7 @@
 # Research & Evaluation — Coordination Index
 
 **Status**: active
-**Updated**: 2026-06-19
+**Updated**: 2026-06-20
 **Purpose**: dispatch surface for pre-production research, evaluation, and monitoring work. Production orchestrator changes should route through `routing-and-optimization-index.md`.
 
 > Completed checklist and research-intake chronology was compacted to [`../archived/research-evaluation-index-history-through-2026-06-19.md`](../archived/research-evaluation-index-history-through-2026-06-19.md). Current task truth lives in the owning handoffs and machine artifacts named below.
@@ -13,7 +13,7 @@
 | HIGH | N2 per-question ledger + sequential verdict readiness | [`evidence-plane-ledger-and-sequential-verdicts.md`](evidence-plane-ledger-and-sequential-verdicts.md) | Continue trusted vector and seq-shadow accrual; do not enable authority until readiness passes. |
 | HIGH | N1+N4 evidence-plane instrument repair tails | [`evidence-plane-instrument-repair.md`](evidence-plane-instrument-repair.md) | W5 core_v2 remains no-go; W6/W8 need larger clean evidence windows. |
 | HIGH | Eval-tower verification EV-4/8/9/10 | [`eval-tower-verification.md`](eval-tower-verification.md) | Re-sequenced after N2/N4 evidence substrate; EV-4/H5 is inference-gated. |
-| HIGH | Tulving K-MEM-1 completion and scoring | `bulk-inference-campaign.md` Package K / P3b below | Active 2026-06-19 on `ingest_long_context`; score after run completes. |
+| HIGH | Tulving K-MEM-1 completion and scoring | `bulk-inference-campaign.md` Package K / P3b below | Active 2026-06-20 on `ingest_long_context`; baseline artifact exists but runner/listener are still live, so score/package only after process exit. |
 | MED | Tool-output compression P4c-P4e | [`tool-output-compression.md`](tool-output-compression.md) | Top-up telemetry, registration smoke, rollout gate. |
 | MED | Real-task eval distribution | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | W2 needs two-week soak and >=100 real records before W3 suite curation. |
 | MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | Embedder serving window only; does not require production model reload. |
@@ -25,7 +25,7 @@
 
 | Package | Current status | Next action |
 |---|---|---|
-| K-MEM-1 Tulving episodic | Running on `ingest_long_context` with runner PID `3601825`, listener PID `3602196`, port `8080`, `--server-mode --skip-moe-reduction`. | Keep as the only throughput-sensitive lane; run `scripts/benchmark/score_tulving_run.py` after completion. |
+| K-MEM-1 Tulving episodic | Running on `ingest_long_context` with runner PID `3601825`, listener PID `3602196`, port `8080`, `--server-mode --skip-moe-reduction`; `ingest_long_context_baseline.json` is present with the `tulving_episodic` summary, but the benchmark process remains live. | Keep as the only throughput-sensitive lane; run `scripts/benchmark/score_tulving_run.py` only after completion/process exit. |
 | K-ROPE-1 | Valid 4K/8K rows for frontdoor/architect/ingest and valid 16K rows for frontdoor/ingest are committed in research; worker rows are not evidence. | Fix/re-attest worker serving before counting worker RoPE cells; continue exact-boundary-safe chat-mode probes. |
 | EV-4 / H5 Scoring Verifiers | Adapter loads 6,701 candidate-level verifier items after research `7c11920`. | Run calibration baseline only after evidence substrate sequencing is clear. |
 | K-DIV-1 | Diversity metric code exists; semantic baseline requires embedder/model serving. | Keep thresholds gated until N2 ledger vectors and validation rows exist. |

@@ -57,8 +57,9 @@ Full structure + per-task detail in [bulk-inference-campaign.md](bulk-inference-
   **by model** so each GGUF loads once; only the worker/architect 32K RoPE cells remain blocked by
   resident context. K-MEM-1 Tulving is currently running on `ingest_long_context` (runner PID
   `3601825`, dedicated listener PID `3602196` on port `8080`, results directory
-  `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/`) and should stay
-  the only throughput-sensitive inference lane until it completes. K-EMB-1 embedder-only; H7
+  `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/`); the baseline
+  JSON exists, but the runner/listener are still live, so score/package only after process exit.
+  K-MEM should stay the only throughput-sensitive inference lane until it completes. K-EMB-1 embedder-only; H7
   transformers-CPU serial.
 - **Frozen after DAR-1 replay**: Package I (SPO+/bilinear/ThinkPRM) stays frozen because the 2026-06-12 replay measured 0.00% identifiable mean regret (<5% gate).
 - Stale premises corrected in the campaign doc's §Staleness corrections: J6 closed/superseded (continuous run IS the soak; orchestrator `2eb4437` made EvalTower's default concurrency matrix-aware), G9 targets the removed architect_coding role, G10/G11 name pre-swap models, J12 wiring was verified against LlamaServerBackend `/v1/chat/completions` (not openai.py), flag A/Bs set flags via launch env + per-worker attestation, speed-metric paragraph changes when the task_rate objective lands.
