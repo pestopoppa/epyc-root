@@ -1,5 +1,7 @@
 # Fable 5 findings 02 — Routing/serving decision architecture (facet 3)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. **Scope**: brief §4.3. Citations `file:line` under `/mnt/raid0/llm/epyc-orchestrator`. Live-process evidence from PID 1884727 (`/proc/<pid>/environ`) and `logs/progress/2026-06-11.jsonl` (1,765 requests tallied).
 
 ---

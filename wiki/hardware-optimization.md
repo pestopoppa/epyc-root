@@ -69,7 +69,7 @@ Five live angles remain:
 
 The MI210 hypothesis also changes emphasis. Dense frontdoor residency remains plausible, but GPU-as-eval-engine may compound more quickly: faster promotion evals increase statistical power per day, which directly addresses the evidence-plane bottleneck.
 
-Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-kernel-and-concurrency.md), [Fable 5 serving and GPU](../handoffs/active/fable5-findings-03-serving-and-gpu.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
+Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-06-kernel-and-concurrency.md), [Fable 5 serving and GPU](../handoffs/completed/fable5-findings-03-serving-and-gpu.md), [gpu-drafter-mi200-investigation.md](../handoffs/active/gpu-drafter-mi200-investigation.md).
 
 ## Actionable for EPYC
 

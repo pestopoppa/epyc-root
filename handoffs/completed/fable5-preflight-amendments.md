@@ -1,5 +1,7 @@
 # Fable 5 preflight amendments — corrections to the entry brief
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. **Author**: Fable 5 (session preflight). **Verdict: the brief is sound; proceed under six amendments.** None of them invalidate the mandate — they sharpen it.
 
 ## A1. Freshness gate executed; one stale index found and fixed

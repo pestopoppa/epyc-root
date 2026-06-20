@@ -1,5 +1,7 @@
 # Fable 5 findings 04 — North Star critique, backlog-relevance map, index reorganization (deliverables §8.2–8.3, §8.5)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. Inventory basis: all 7 indices read; 105 active / 1 blocked / 96 completed / 80 archived handoffs counted; ~75 outstanding workstreams classified; autopilot action surface verified in code (`actions.py:679-694`, `structural_lab.py:359-412`, `features.py:77-188`, `numeric_swarm.py:31-96`, `config_applicator.py:27-93`).
 
 ---

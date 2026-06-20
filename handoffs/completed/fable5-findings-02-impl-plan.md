@@ -1,5 +1,7 @@
 # Fable 5 findings 02 — IMPLEMENTATION PLAN: routing decision architecture
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (refinement pass, operator-requested). **Companion to**: `fable5-findings-02-routing-decision-architecture.md`. Phases ordered by (damage stopped) ÷ (effort); everything before Phase 3 is justified regardless of which routing end-state you pick.
 
 ---

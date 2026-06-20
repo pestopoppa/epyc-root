@@ -1,5 +1,7 @@
 # Fable 5 findings 04 — IMPLEMENTATION PLAN: invariant interfaces, capability registry, index migration
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (refinement pass, operator-requested). **Companion to**: `fable5-findings-04-northstar-portfolio-indices.md` and historical rewrite artifact `../completed/fable5-proposed-master-index-rewrite.md`. This doc makes the five invariant interfaces and the index reorg buildable. (Interface 1, the measurement ledger, is fully specified in `fable5-findings-01-impl-plan.md`; interface 2, descriptors, in `fable5-findings-02-impl-plan.md` Phase 2. This doc covers 3–5 + the doc layer.)
 
 ---

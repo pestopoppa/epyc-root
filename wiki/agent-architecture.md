@@ -230,7 +230,7 @@ Fable 5 reframes the North Star as a lab architecture, not just a serving/router
 
 Two architectural guardrails matter. First, the evidence plane comes before autonomy: lab jobs must inherit per-question ledger, attestation, and claims discipline, or they will amplify stale narratives. Second, external-source injection hardening is a prerequisite for intake-touching jobs, because arbitrary papers/blogs/READMEs can otherwise smuggle instructions into future executable handoffs.
 
-Sources: [Fable 5 strategic frontiers](../handoffs/active/fable5-findings-07-strategic-frontiers.md), [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
+Sources: [Fable 5 strategic frontiers](../handoffs/completed/fable5-findings-07-strategic-frontiers.md), [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 
 ## Updates — 2026-04-28
 

@@ -3,8 +3,8 @@
 **Status**: IN PROGRESS — W1 workload taxonomy branch-ready 2026-06-12; W2 real-task harvester, passive `task_record.v1` capture, and operator verdict metadata landed on orchestrator main through `de07475`; W2 acceptance still needs a 2-week soak with >=100 real records, then W3 real-suite curation
 **Created**: 2026-06-12
 **Priority**: MED — start passive capture anytime
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F1 — read it before claiming any waypoint
-**Related**: [unified-trace-memory-service.md](unified-trace-memory-service.md) (capture substrate, BUILT); [fable5-findings-01-impl-plan.md](fable5-findings-01-impl-plan.md) Phase 2 (promotion evals); workload model in [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §D
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F1 — read it before claiming any waypoint
+**Related**: [unified-trace-memory-service.md](unified-trace-memory-service.md) (capture substrate, BUILT); [fable5-findings-01-impl-plan.md](../completed/fable5-findings-01-impl-plan.md) Phase 2 (promotion evals); workload model in [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §D
 
 ## Why
 

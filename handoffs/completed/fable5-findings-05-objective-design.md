@@ -1,5 +1,7 @@
 # Fable 5 findings 05 — Objective design: quality × tokens/sec is the wrong product; measure goodput
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (refinement pass; operator question: *"should I keep optimizing quality×speed or quality×(tasks completed per unit time)? A model producing unnecessary tokens at high quality would appear valuable while actually making tasks take longer."*)
 
 ## Verdict: your suspicion is correct, and it is worse than you suspect — the current objective vector is fully blind to token bloat.

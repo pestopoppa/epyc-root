@@ -18,7 +18,7 @@ Security review has a separate but complementary tool surface. The v1 security-r
 - **External content is data, not instructions.** A source may be quoted, summarized, and cited, but not copied into action positions unless an operator or project agent explicitly authors the instruction outside quarantine. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 - **Quarantine needs provenance.** New source-derived blocks carry URL, retrieval timestamp, and SHA prefix, making later review and validator warnings traceable. Source: [frontier-f5-intake-injection-hardening.md](../handoffs/completed/frontier-f5-intake-injection-hardening.md).
 - **Security-review findings require exploit validation.** The security skill's two-pass design avoids listing theoretical issues unless attacker capability, reachability, trust boundary crossing, vulnerable sink, mitigation bypass, concrete impact, minimal fix, and file/line evidence are all present. Source: [security-review-skill.md](../handoffs/active/security-review-skill.md).
-- **Safety work composes with the evidence plane.** Injection hardening prevents adversarial narrative contamination; the evidence plane prevents accidental narrative contamination from re-entering planner memory. Both are provenance problems. Sources: [Fable 5 executive summary](../handoffs/active/fable5-findings-00-executive-summary.md), [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
+- **Safety work composes with the evidence plane.** Injection hardening prevents adversarial narrative contamination; the evidence plane prevents accidental narrative contamination from re-entering planner memory. Both are provenance problems. Sources: [Fable 5 executive summary](../handoffs/completed/fable5-findings-00-executive-summary.md), [evidence-plane-event-sourcing-and-narrative.md](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md).
 
 ## 2026-06-15 Update — Safety Became Tooling
 
@@ -42,5 +42,5 @@ Security review has a separate but complementary tool surface. The v1 security-r
 
 - [Frontier F5 intake injection hardening](../handoffs/completed/frontier-f5-intake-injection-hardening.md) — completed quarantine policy, renderer, validator, and canary.
 - [Security-review skill](../handoffs/active/security-review-skill.md) — two-pass STRIDE/OWASP/LLM/supply-chain review skill.
-- [Fable 5 executive summary](../handoffs/active/fable5-findings-00-executive-summary.md) — evidence-plane framing.
+- [Fable 5 executive summary](../handoffs/completed/fable5-findings-00-executive-summary.md) — evidence-plane framing.
 - [Evidence-plane event sourcing and narrative](../handoffs/active/evidence-plane-event-sourcing-and-narrative.md) — provenance-first narrative regeneration plan.

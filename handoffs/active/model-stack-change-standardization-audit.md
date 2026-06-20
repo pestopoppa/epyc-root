@@ -4,7 +4,7 @@
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model constants can silently bias routing, scoring, launch, planner prompts, and benchmark interpretation after a stack change
 **Scope**: Documentation/audit handoff only. No inference, AutoPilot, server restarts, code edits, index edits, or progress-log edits were performed.
-**Related**: [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md), [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md), [fable5-findings-01-measurement-and-integrity.md](fable5-findings-01-measurement-and-integrity.md)
+**Related**: [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md), [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md), [model-capability-descriptors.md](model-capability-descriptors.md), [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md), [fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md)
 
 ## Problem Statement
 

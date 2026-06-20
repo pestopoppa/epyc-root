@@ -198,5 +198,5 @@ Surface inventory checks:
 
 ```bash
 uv run python scripts/validate/stack_change_guard.py --surface-summary-only --all-hardcoded-surfaces
-uv run python scripts/validate/stack_change_guard.py --inventory-json /tmp/stack-change-inventory.json
+uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules --surface-inventory-format json > /tmp/stack-change-inventory.json
 ```

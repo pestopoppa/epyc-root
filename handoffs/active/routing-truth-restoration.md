@@ -3,7 +3,7 @@
 **Status**: IMMEDIATE SCOPE COMPLETE 2026-06-12 — W1-W8 landed and live-attested/deployed; routing expansion remains frozen by the W8/DAR-1 gate; `dispatch_swarm_fanout` is a conditional ownership watch through 2026-07-12
 **Created**: 2026-06-12
 **Priority**: CLOSED/HIGH — immediate repair scope completed; remaining item is the 2026-07-12 `dispatch_swarm_fanout` ownership watch
-**Spec**: [fable5-findings-02-impl-plan.md](fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
+**Spec**: [fable5-findings-02-impl-plan.md](../completed/fable5-findings-02-impl-plan.md) Phases 0–1 + [fable5-findings-02-routing-decision-architecture.md](../completed/fable5-findings-02-routing-decision-architecture.md) §2/§4 — read both before claiming any waypoint
 **Related**: [decision-aware-routing.md](decision-aware-routing.md) (DAR-1 replay result recorded there), [learned-routing-controller.md](learned-routing-controller.md) (the dead MLP fast-path), [running-state-attestation.md](running-state-attestation.md) (system-wide ATTESTATION generator — this handoff owns ONLY the flags endpoint)
 
 ## Why

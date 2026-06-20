@@ -1,5 +1,7 @@
 # Fable 5 findings 01 — Epistemic integrity & the optimizer↔evaluator game (facets 1+2, merged)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. **Status**: final consult output. **Scope**: brief §4.1 + §4.2, treated as one problem per the brief's own suspicion — confirmed correct to merge.
 **Evidence**: 5-agent sweep (full reports archived; citations inline are `file:line` under `/mnt/raid0/llm/epyc-orchestrator` unless absolute) + first-hand reads of `program.md`, `short_term_memory.md`, live `autopilot_state.json` (trial 777), and adversarial re-verification of the load-bearing claims.
 

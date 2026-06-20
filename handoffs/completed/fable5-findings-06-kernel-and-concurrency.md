@@ -1,5 +1,7 @@
 # Fable 5 findings 06 — The kernel program & concurrent serving: what is exhausted, what was avoided
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (refinement pass; operator questions: *"none of your findings discuss the epyc-inference-research kernel work — was everything found exhausted, or is there another angle?"* and *"review the infrastructure used to execute inference concurrently — have I been unnecessarily avoiding obvious performance improvement pipelines?"*)
 **Evidence**: dedicated kernel-program sweep (roofline findings.md read in full; fork source verified; all handoff gates re-read) + the earlier serving sweep; citations inline.
 

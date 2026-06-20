@@ -1,5 +1,7 @@
 # Fable 5 findings 01c — Sequential verdict: worked e-process specification
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. **Companion to**: `fable5-findings-01-impl-plan.md` Phase 1.4 (this doc IS that phase, fully specified). **Prereqs**: Phase 1.1–1.2 (per-question ledger), Phase 2.0 (instrument repair), Phase 2.1 (designed core) — the spec works on the accidental 43-set too, with lower power.
 
 ## 0. Why e-processes (and not SPRT or more MAD)

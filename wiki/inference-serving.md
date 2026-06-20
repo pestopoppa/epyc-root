@@ -60,7 +60,7 @@ The decisive next measurements are E1/E2 from the kernel/concurrency handoff: ru
 
 Frontdoor speculative decoding is another unharvested config path. It is not a general GPU-drafter endorsement; it is the first cheap measurement that unlocks or kills several downstream hypotheses, including MoE-Spec reuse on frontdoor verification batches.
 
-Sources: [Fable 5 kernel and concurrency](../handoffs/active/fable5-findings-06-kernel-and-concurrency.md), [routing truth restoration](../handoffs/active/routing-truth-restoration.md).
+Sources: [Fable 5 kernel and concurrency](../handoffs/completed/fable5-findings-06-kernel-and-concurrency.md), [routing truth restoration](../handoffs/active/routing-truth-restoration.md).
 
 ## 2026-06-13 Update — Stack-Prior Serving Truth
 

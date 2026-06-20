@@ -1,5 +1,7 @@
 # Fable 5 findings 03 — Post-bandwidth-wall serving & the MI210 (facet 4)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12. **Scope**: brief §4.4 + §5. Citations `file:line` under `/mnt/raid0/llm/epyc-orchestrator` and `/mnt/raid0/llm/llama.cpp`; handoffs under `/workspace/handoffs/active/`.
 
 ---

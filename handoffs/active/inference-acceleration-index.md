@@ -8,7 +8,7 @@
 
 1. Read [master-handoff-index.md](master-handoff-index.md) for global priority and active inference-lane constraints.
 2. Use `/workspace/MEASUREMENT.md` for benchmark claim grammar and cache-state labeling.
-3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving is complete; the active throughput-sensitive lane is the frontdoor G5 short-m@k run on port `8070`.
+3. Coordinate all throughput-sensitive runs with [bulk-inference-campaign.md](bulk-inference-campaign.md). K-MEM Tulving and frontdoor G5 short-m@k are complete; the active throughput-sensitive lane is the corrected frontdoor G11 AA-Omniscience rerun `20260620_035613`.
 4. Do not revive closed speculative-decoding or NUMA tracks without their documented reopen trigger.
 5. For llama.cpp work, use a dedicated feature branch/worktree and do not touch the production binary without an explicit rollout plan.
 
@@ -42,7 +42,7 @@ These are not active work queues. Read their completed handoffs before reopening
 
 ```mermaid
 flowchart TD
-    G5[G5 frontdoor running] --> Quiet[Quiet/model-batched windows]
+    G11[G11 frontdoor running] --> Quiet[Quiet/model-batched windows]
     Quiet --> E2[E2 eval batching]
     Quiet --> E1[E1 CPU14 -np sweep]
     E1 --> E3[E3 SIMD if justified]

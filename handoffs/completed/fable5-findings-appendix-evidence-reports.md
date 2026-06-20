@@ -1,5 +1,7 @@
 # Fable 5 review — appendix: raw evidence-agent reports (2026-06-12)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 Five parallel read-only investigators; every claim cites file:line or live state. Synthesized + adversarially verified in fable5-findings-00..04.
 
 ---

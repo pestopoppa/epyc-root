@@ -1,5 +1,7 @@
 # Fable 5 Architectural Review — entry handoff (a prompt, not a task list)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Status**: READY (pending pre-run gitnexus refresh — see Run configuration).
 **Created**: 2026-06-12.
 **What this is**: the entry prompt for a one-shot strategic-architecture review by Claude

@@ -3,7 +3,7 @@
 **Status**: COMPLETE — W1-W4 branch-ready; awaiting merge/deploy to live orchestrator clone
 **Created**: 2026-06-12
 **Priority**: HIGH — independent of other fable5 tracks; highest trust-per-effort; ~3–4 days total (consolidation of existing ad-hoc checks, not invention)
-**Spec**: [fable5-findings-04-impl-plan.md](../active/fable5-findings-04-impl-plan.md) §B
+**Spec**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §B
 **Related**: [routing-truth-restoration.md](../active/routing-truth-restoration.md) (sibling handoff, owns the `GET /config/attest` flags endpoint W2 consumes); [frontier-f4-continuity-backup.md](../active/frontier-f4-continuity-backup.md) (backup-age + unpushed-commit checks ride this artifact); [MEASUREMENT.md](../../MEASUREMENT.md) (this artifact is the `attest <id>` referent in the claim grammar)
 
 ## Why

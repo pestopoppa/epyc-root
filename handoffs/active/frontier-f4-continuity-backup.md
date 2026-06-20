@@ -3,8 +3,8 @@
 **Status**: IN PROGRESS — W1 inventory/policy landed 2026-06-12; W2 snapshot job tooling + W3 validation/restore tooling landed 2026-06-14; first real backup remains blocked on a real off-RAID/off-host target
 **Created**: 2026-06-12
 **Priority**: HIGH — this-month, existential ROI at trivial effort
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F4 — read before claiming
-**Related**: MEASUREMENT.md §5 dump-list note (consolidate 1.2GB superseded blobs first); the ATTESTATION artifact in [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §B (backup-age + unpushed-commit checks)
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F4 — read before claiming
+**Related**: MEASUREMENT.md §5 dump-list note (consolidate 1.2GB superseded blobs first); the ATTESTATION artifact in [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §B (backup-age + unpushed-commit checks)
 
 ## Why
 

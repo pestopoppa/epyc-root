@@ -21,7 +21,7 @@ preserves the completed chronology compacted out of this active handoff.
 [model-stack-change-standardization-audit.md](model-stack-change-standardization-audit.md),
 [model-capability-descriptors.md](model-capability-descriptors.md),
 [routing-truth-restoration.md](routing-truth-restoration.md),
-[fable5-findings-01-measurement-and-integrity.md](fable5-findings-01-measurement-and-integrity.md)
+[fable5-findings-01-measurement-and-integrity.md](../completed/fable5-findings-01-measurement-and-integrity.md)
 
 ## Purpose
 

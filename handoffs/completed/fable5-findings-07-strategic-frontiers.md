@@ -1,5 +1,7 @@
 # Fable 5 findings 07 — Strategic frontiers beyond the backlog (implementation-grade)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (expanded same day per operator: written so a less-capable agent can implement each strategy — prerequisites, waypoints, deliverables, acceptance gates, pitfalls).
 **Question answered**: *high-effort/high-ROI explorations beyond current infrastructure and backlog; strategic angles not yet considered.*
 **Read first if implementing**: `fable5-findings-00-executive-summary.md` (context), `/workspace/MEASUREMENT.md` (claims discipline — applies to every number produced here), `agents/shared/MEASUREMENT_POLICY.md`. Ranked by (ROI × novelty). F4/F5 are this-month and independent; **F1→F2→F3 is the strategic spine** — the honest completion of the North Star: an orchestration that "learns to use every tool" ends with the orchestration running the lab that improves it.

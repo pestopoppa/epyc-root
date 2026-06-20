@@ -3,8 +3,8 @@
 **Status**: W1 capture-hygiene current-lineage branch-ready except F2-W3 tuple evidence; W2 dataset builders landed on current orchestrator branch; reviewed-label capture + triage baseline still open (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: MED — W1/W2 capture+curation now, W3 training HW-GATED with the MI210 portfolio per operator instruction
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
-**Related**: [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](retrain-routing-models.md) (routing-classifier stack reuse)
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F3 — read it before claiming any waypoint
+**Related**: [frontier-f2-self-running-lab.md](frontier-f2-self-running-lab.md) (W3 tuples are this frontier's gold data); [fable5-findings-01c-sequential-verdict-spec.md](../completed/fable5-findings-01c-sequential-verdict-spec.md) (outcome labels); [gpu-drafter-mi200-investigation.md](gpu-drafter-mi200-investigation.md) (drafter training); [retrain-routing-models.md](retrain-routing-models.md) (routing-classifier stack reuse)
 
 ## Why
 

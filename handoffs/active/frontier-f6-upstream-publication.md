@@ -3,7 +3,7 @@
 **Status**: IN PROGRESS — W2 methodology-post draft scaffold + claim backfill landed 2026-06-13; W3 generator + protocol-backfill parser + missing-field summary landed, first P-BENCH-2 section metadata backfilled 2026-06-14; W1/W3/W4 still open
 **Created**: 2026-06-12
 **Priority**: MED — D2 PR is the spearhead and already an ACTIVE queue item
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F6 — read before claiming
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F6 — read before claiming
 **Related**: [llama-cpp-dsa-contribution.md](llama-cpp-dsa-contribution.md) (D2 = spearhead); MEASUREMENT.md (claims grammar governs every published number); `agents/research-writer.md`
 
 ## Why

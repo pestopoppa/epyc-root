@@ -1,5 +1,7 @@
 # PROPOSAL v2 - master-handoff-index.md rewritten (full-portfolio review, 2026-06-12)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 > **Historical ledger only; current dispatch lives in `../active/master-handoff-index.md`.**
 > This Fable 5 rewrite proposal was applied/superseded and archived from
 > `handoffs/active/` on 2026-06-19. Keep it as the concrete rewrite artifact,

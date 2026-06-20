@@ -1,5 +1,7 @@
 # Fable 5 findings 01 — IMPLEMENTATION PLAN: the evidence plane
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 **Date**: 2026-06-12 (refinement pass, operator-requested — supersedes the original brief's "no implementation plans" constraint for this doc).
 **Companion to**: `fable5-findings-01-measurement-and-integrity.md` (the architecture and evidence). This doc is the build plan: phases, exact touchpoints, schemas, rollout/shadow strategy, acceptance gates, risks. Phases are ordered so each is independently shippable and none blocks the running autopilot for more than a restart.
 

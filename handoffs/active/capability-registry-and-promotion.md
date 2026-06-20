@@ -3,8 +3,8 @@
 **Status**: IN PROGRESS — W0 traffic-class interface branch-ready 2026-06-13 and TaskIR/task-record capture landed 2026-06-19; W1-W4 remain gated on evidence-plane ledger
 **Created**: 2026-06-12
 **Priority**: GATED — on `evidence-plane-ledger.md` (sibling handoff = findings-01 Phase 1: the instrument must certify effects before the optimizer gets bigger levers; spec §C.4). W0 (workload model) is NOT gated and can run now.
-**Spec**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
-**Related**: [fable5-findings-04-northstar-portfolio-indices.md](fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) (`moe_spec_budget` evidence source)
+**Spec**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) §C + §D — read before claiming any waypoint
+**Related**: [fable5-findings-04-northstar-portfolio-indices.md](../completed/fable5-findings-04-northstar-portfolio-indices.md) (why backlog→actionable must be a state transition); [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) (edit-transaction = first-cohort member); [moe-spec-cpu-spec-dec-integration.md](moe-spec-cpu-spec-dec-integration.md) (`moe_spec_budget` evidence source)
 
 ## Why
 

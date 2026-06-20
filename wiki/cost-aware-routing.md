@@ -114,7 +114,7 @@ Fable 5 identified a cost blind spot in the live AutoPilot objective: `quality`,
 
 The first implementation deliberately stopped short of flipping live dominance. `task_rate_qph`, `goodput_qph`, and `tokens_per_solved_task` are now journaled as shadow telemetry, and historical replay over 656 rows parsed cleanly. The proof gate did not pass: only 1 of 5 legacy canonical T1 frontier points fell off under `task_rate_3d_v1`, and raw task-rate admitted a zero-quality high-rate point. Live Pareto dominance stays on the existing vector until the evidence-plane restart, core/version boundary, and quality-eligible replay prevent that failure mode.
 
-Sources: [Fable 5 objective design](../handoffs/active/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
+Sources: [Fable 5 objective design](../handoffs/completed/fable5-findings-05-objective-design.md), [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md).
 
 ## 2026-06-13 Update — Stack-Prior Cost Contract
 
@@ -162,9 +162,9 @@ Sources: [model-stack-update-pipeline-audit.md](../handoffs/active/model-stack-u
 
 ## 2026-06-15 Update — Decision-Aware Routing Stayed Frozen
 
-- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/active/fable5-findings-02-impl-plan.md).
+- **DAR-1 replay remains the gate for any expansion beyond the current local cost-aware policy.** The Q-scorer still has the predict-then-optimize pathology, so learned routing is frozen until regret replay and per-question vectors justify a broader rollout. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [fable5-findings-02-impl-plan.md](../handoffs/completed/fable5-findings-02-impl-plan.md).
 - **The practical CPU-feasible path is still decision-aware losses plus runtime cost weights.** Trinity anchors the black-box ES class, while BaRP/LLM Bandit-style knobs reinforce the idea that the local design surface is in decision shaping, not end-to-end router training. Sources: [decision-aware-routing.md](../handoffs/active/decision-aware-routing.md), [model-capability-descriptors.md](../handoffs/active/model-capability-descriptors.md).
-- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/active/fable5-findings-05-objective-design.md).
+- **Shadow telemetry now covers task-rate and goodput, but it is not yet a live objective.** The Fable 5 objective change tracks solved-task throughput, not just token throughput, yet the old Pareto vector remains authoritative until evidence-plane replay proves the new one. Sources: [objective-task-rate-goodput.md](../handoffs/active/objective-task-rate-goodput.md), [fable5-findings-05-objective-design.md](../handoffs/completed/fable5-findings-05-objective-design.md).
 
 ## Open Questions
 

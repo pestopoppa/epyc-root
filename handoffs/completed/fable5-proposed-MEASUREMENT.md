@@ -1,5 +1,7 @@
 # PROPOSAL - MEASUREMENT.md (the instrument constitution)
 
+> **Completed 2026-06-20**: Historical standing reference; current executable work lives in the active owning handoffs and domain indices.
+
 > **Historical ledger only; current measurement policy lives in `/workspace/MEASUREMENT.md`.**
 > This Fable 5 draft was adopted into the root measurement constitution and
 > archived from `handoffs/active/` on 2026-06-19. Sources: CPU20

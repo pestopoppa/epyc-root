@@ -3,8 +3,8 @@
 **Status**: W1 inventory + W2 runner/shadow wrapper + W3 promotion/tuple-capture scaffold landed on current orchestrator branch; W2 live nightly deployment/scoring + W3 evidence collection + W4 still open (created from the Fable 5 strategic-frontiers review)
 **Created**: 2026-06-12
 **Priority**: HIGH but GATED on N1–N4 instrument repair + N2 ledger; F5 injection policy is complete
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F2 — read it before claiming any waypoint
-**Related**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) (capability registry); [frontier-f5-intake-injection-hardening.md](../completed/frontier-f5-intake-injection-hardening.md) (injection policy, COMPLETE); [internal-kb-rag.md](internal-kb-rag.md) (kb-search context assembly); [delegation-context-preassembly.md](delegation-context-preassembly.md) (DCP bundles)
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F2 — read it before claiming any waypoint
+**Related**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) (capability registry); [frontier-f5-intake-injection-hardening.md](../completed/frontier-f5-intake-injection-hardening.md) (injection policy, COMPLETE); [internal-kb-rag.md](internal-kb-rag.md) (kb-search context assembly); [delegation-context-preassembly.md](delegation-context-preassembly.md) (DCP bundles)
 
 ## Why
 

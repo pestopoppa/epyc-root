@@ -3,8 +3,8 @@
 **Status**: IN PROGRESS — W1 ledger branch-ready 2026-06-13; W2 digest wiring + W3 rule scaffold branch-ready but not live-attested
 **Created**: 2026-06-12
 **Priority**: LOW-MED — piggybacks existing logs
-**Spec**: [fable5-findings-07-strategic-frontiers.md](fable5-findings-07-strategic-frontiers.md) §F7 — read before claiming
-**Related**: [fable5-findings-04-impl-plan.md](fable5-findings-04-impl-plan.md) (digest wiring); `scripts/autopilot/digest.py`
+**Spec**: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md) §F7 — read before claiming
+**Related**: [fable5-findings-04-impl-plan.md](../completed/fable5-findings-04-impl-plan.md) (digest wiring); `scripts/autopilot/digest.py`
 
 ## Why
 
