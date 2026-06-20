@@ -2,7 +2,7 @@
 
 **Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14. 2026-06-20 audit found sufficient raw high-risk sample volume (`444` since canary start; `283` frontdoor) but no observable enforce/shadow canary-arm telemetry in existing rows. `epyc-orchestrator` `7647b32e` repaired the routing telemetry path so future rows persist the sampled canary arm; RI-10 now remains blocked on fresh post-fix evaluable-arm evidence, not raw sample count.
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
-**Blocked by**: fresh post-`7647b32e` enforce/shadow canary-arm telemetry / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
+**Blocked by**: controlled restart/window with `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`, then fresh post-`7647b32e` enforce/shadow canary-arm telemetry / AR-3 traffic; operator-approved inference/eval windows for rollout decisions.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
 **Updated**: 2026-06-20
 
@@ -15,11 +15,12 @@ Do not implement the old Phase 4/5 sections from the completed ledger. They were
 3. If sample count is adequate, confirm the logs expose both enforce and shadow canary arms before comparing accuracy/factuality, escalation/review rate, latency, and cost.
 4. Only then choose RI-11 expand, rollback to shadow, or threshold rework.
 
-Current 2026-06-20 report: `orchestration/reports/ri10_canary_sample_report_20260620.json` counts `444` high-risk routing decisions since the 2026-04-06 canary start (`283` frontdoor), but `canary_arm_counts_since_canary_start` is `0` enforce / `0` shadow. Most high-risk rows report `not_enforced:risk_control_disabled`, so this is not a valid RI-10 enforce-vs-shadow decision sample. The missing arm attribution was traced to routing metadata sampling/logging: risk assessment checked configured canary state without recording the chosen arm, while plan review could sample a second arm. `7647b32e` adds non-sampling configured-mode lookup, persists the sampled `factual_risk_mode` into progress metadata, and makes plan review reuse that persisted arm.
+Current 2026-06-20 report: `orchestration/reports/ri10_canary_sample_report_20260620.json` counts `444` high-risk routing decisions since the 2026-04-06 canary start (`283` frontdoor), but `canary_arm_counts_since_canary_start` is `0` enforce / `0` shadow. Most high-risk rows report `not_enforced:risk_control_disabled`, so this is not a valid RI-10 enforce-vs-shadow decision sample. The missing arm attribution was traced to routing metadata sampling/logging: risk assessment checked configured canary state without recording the chosen arm, while plan review could sample a second arm. `7647b32e` adds non-sampling configured-mode lookup, persists the sampled `factual_risk_mode` into progress metadata, and makes plan review reuse that persisted arm. The config already has `factual_risk.mode: "canary"`, `canary_ratio: 0.25`, and `canary_roles: ["frontdoor"]`; fresh evidence also requires risk control enabled (`MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`) and a controlled process restart because classifier/config loaders are cached in-process.
 
 ## Live Tasks
 
 - [ ] **RI-10 — Shadow-to-enforce canary decision**: current canary is configured as 25% enforce / 75% shadow on frontdoor, and `7647b32e` now exposes the chosen arm in routing progress metadata. Decision requires:
+  - controlled restart/window with `MEMRL_RETRIEVAL_RISK_CONTROL_ENABLED=true`; `ORCHESTRATOR_FACTUAL_RISK_MODE` is not the canary switch because it only accepts `off|shadow|enforce`;
   - >=50 high-risk samples or a documented reason to use a lower-powered decision; current raw count is sufficient, but arm attribution is not;
   - no p95 latency regression >10%;
   - no cost regression >5% at equal factuality;
