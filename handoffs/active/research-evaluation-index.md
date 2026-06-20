@@ -15,7 +15,7 @@
 | HIGH | Eval-tower verification EV-4/8/9/10 | [`eval-tower-verification.md`](eval-tower-verification.md) | Re-sequenced after N2/N4 evidence substrate; EV-4/H5 is inference-gated. |
 | HIGH | Tulving K-MEM-1 interpretation/follow-up | `bulk-inference-campaign.md` Package K / P3b below | Completed/scored 2026-06-20; corrected in research `9e63af0` after parser repair. Mixed baseline (`avg F1=0.4309`, Simple Recall `0.5530`, chrono `0.1593`) now has a targeted follow-up manifest in research `2eb94f8`; use it before any memory-routing conclusion. |
 | MED | Tool-output compression P4c-P4e | [`tool-output-compression.md`](tool-output-compression.md) | Top-up telemetry, registration smoke, rollout gate. |
-| MED | Real-task eval distribution | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | W2 compact corpus landed in orchestrator `e59577b7`: 372 training-eligible class+outcome rows, prompt text/hash refs omitted. Count subgate is satisfied; two-week soak and token completeness remain open before W3 suite curation. |
+| MED | Real-task eval distribution | [`frontier-f1-real-task-corpus.md`](frontier-f1-real-task-corpus.md) | W2 compact corpus landed in orchestrator `e59577b7`: 372 training-eligible class+outcome rows, prompt text/hash refs omitted. Token telemetry for future rows landed in orchestrator `b8c8ac52`. Next: W2b historical conversation backfill from cloud/Claude archives with source-family weighting, then W3 suite curation. |
 | MED | Granite embedder bench Phase B | [`granite-97m-r2-bench-plan.md`](granite-97m-r2-bench-plan.md) | A-fast corpus/harness verified; remaining prep is model artifacts/server recipes, then an embedder serving window only. No production model reload required. |
 | MED | RoPE long-context matrix K-ROPE-1 | P10 below / clean-window manifest | Continue only in clean model-batched windows; worker path needs Gemma4 MTP serving fix before evidence. |
 | LOW | Reasoning compression tails | [`reasoning-compression.md`](reasoning-compression.md), [`memento-block-reasoning-compression.md`](memento-block-reasoning-compression.md) | Enforce path blocked until signal is predictive; Memento S2/S3 remain gated. |
@@ -58,7 +58,7 @@ Completed K-MEM baseline
   -> interpret low Tulving score / compare follow-up cells
   -> schedule next clean-window model-batched package
 
-Real-task corpus soak + token completeness
+Real-task corpus historical backfill or continued soak + token completeness
   -> real-suite v1 curation
   -> promotion eval real-task slice
 ```
@@ -71,6 +71,7 @@ Real-task corpus soak + token completeness
 | Tulving results | `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260619_141212/` |
 | Tulving targeted follow-up | `/mnt/raid0/llm/epyc-inference-research/data/package_k/tulving_followup_20260619_141212_manifest.jsonl` |
 | F1 compact real-task corpus | `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/real_task_corpus_20260620/real_tasks.training_eligible.compact.jsonl` |
+| F1 historical conversation sources | `/mnt/raid0/llm/cloud-llm-vault/epyc/claude/`, `/mnt/raid0/llm/cloud-llm-vault/claude/`, `/mnt/raid0/llm/claude-backups/` |
 | Packaged G11 frontdoor raw-response run | `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260620_035613/` |
 | Scored G11 frontdoor AA labels | `/mnt/raid0/llm/epyc-inference-research/data/package_g/omniscience/frontdoor_20260620_035613_aa_omniscience.jsonl` |
 | Packaged G11 worker raw-response run | `/mnt/raid0/llm/epyc-inference-research/benchmarks/results/runs/20260620_062750/` |
