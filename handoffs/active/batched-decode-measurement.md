@@ -86,6 +86,19 @@ fresh attested E2 manifest and arm-level `commands.sh`. A smoke against
 state, and existing llama processes, proving the planner still fails closed for
 claim-grade evidence. No decision-grade E1/E2 result was binned.
 
+Follow-up orchestrator `4bbf1163` added the missing no-inference worker-process
+attestation step for the Queue-2 reload. `docs/reference/stack-change-launch-runbook.md`
+now pairs the existing `attest_flags.py` feature-state check with
+`scripts/validate/attest_orchestrator_workers.py`, which discovers API worker
+PIDs through `/config/attest` and reads only requested keys from
+`/proc/<pid>/environ`. Live read-only checks at the documented poll budget saw
+all six API workers with no feature diffs and no env diffs for the declared
+Queue-2 contract (`specialist_routing=true`, `model_fallback=true`, dormant
+wave-2 features off, cross-role/placement/reverse-migration/URE/structured-output
+process env present). This does not satisfy the host-health/reboot gate for
+decision-grade E1/E2; it closes the reload/attestation runbook gap before that
+window.
+
 ## Gates & pitfalls
 
 - Operator window required: per `feedback_no_concurrent_inference` / `feedback_speed_verify_via_llama_bench`, the operator runs the benches — this handoff prepares commands, harness, and analysis; schedule inside the bulk-campaign Queue-2 quiesce window (one attested reload serves all).

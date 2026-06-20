@@ -33,7 +33,7 @@ The 2026-04 campaign (Packages A–F) is complete/overtaken and archived (see *C
 
 ### Queue 2 — ONE consolidated quiesce window (t1000 or operator SIGTERM; ~28–31h; one attested reload serves all)
 Ordered manifest (one reload, then everything rides it):
-1. **Reload with declared production env** (fixes test-defaults; sets EVERY flag this window needs in launch env) **+ per-worker attestation** — the only route around the 1-of-6 `POST /config` propagation bug. Verify `/proc/<pid>/environ` per worker before trusting any flag.
+1. **Reload with declared production env** (fixes test-defaults; sets EVERY flag this window needs in launch env) **+ per-worker attestation** — orchestrator `4bbf1163` adds the concrete runbook and local `attest_orchestrator_workers.py` process-env proof, paired with `attest_flags.py`; live read-only default-poll checks saw all six API workers with no feature/env diffs. This is the only route around the 1-of-6 `POST /config` propagation bug. Rerun both attesters after the Queue-2 reload before trusting any flag.
 2. **E2 then E1 batched-decode measurements FIRST** (findings-06 — E2 makes every later eval cheaper; they also fire the sarathi-serve workload-shift gate).
 3. **Shape-keyed flag-on bracket** (`CROSS_ROLE_DISJOINT_PLACEMENT=1` live → verify env → multi-role fan-out probe → `SHAPE_AWARE_CONTENTION=1` smoke → revert or `mark_epoch`).
 4. **J2/J3** single-worker live migration probe (`--workers 1`).
