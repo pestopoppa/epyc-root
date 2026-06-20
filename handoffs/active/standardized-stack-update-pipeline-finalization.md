@@ -1,10 +1,12 @@
 # Standardized Stack Update Pipeline Finalization
 
 **Status**: PARTIAL IMPLEMENTATION LANDED - canonical stack-change command and
-promotion gates are live. Generated-contract and guard checks are clean;
-the previous runtime-attestation stop caused by the isolated K-MEM Tulving
-listener on stack port `8080` cleared after run completion. Remaining work is high-risk
-consumer migrations and opportunistic W4 swap-CI.
+promotion gates are live. Generated-contract and guard checks are clean.
+Runtime-attestation checks can still stop during intentionally isolated
+clean-window measurements that bind stack ports; the latest frontdoor G11
+measurement window caused such a stop while active, then exited without a
+claim-grade aggregate. A rerun after that exit returned `summary: ok`.
+Remaining work is high-risk consumer migrations and opportunistic W4 swap-CI.
 **Created**: 2026-06-13
 **Priority**: HIGH - stale model-specific constants can corrupt scoring,
 routing, launch, planner context, and benchmark interpretation after stack
@@ -108,6 +110,13 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   priors for default roles, role ports, heavy ports, and model ports, but the
   degraded fallback now derives topology from lean-registry `server_mode`
   records instead of preserving a separate static current-stack role/port table.
+- 2026-06-20 high-risk vision-serving consumer migration landed in Orchestrator
+  `c9d499f`: `src.api.routes.vision_serving` now derives the live vision role
+  set from generated stack-prior launch metadata, and `chat_vision` plus
+  `chat_pipeline.vision_stage` consume that helper for VL endpoint/role
+  resolution. Legacy `VISION_ROLES`/VL port constants remain degraded fallback
+  compatibility only; valid generated priors with no vision launch roles do not
+  silently re-enable legacy vision roles.
 - Guard inventory currently reports `consumer_surface_count=13` and
   `rule_count=27`.
 - Active operator topology docs were refreshed in `8221971`, `d94954a` marked

@@ -117,6 +117,13 @@ unowned local constants.
   `ARCHITECT_PORTS` and `ARCHITECT_PORT_MODEL_HINT` imports remain as explicit
   degraded fallback compatibility only. This was a main-thread CRITICAL-risk
   migration because the prewarm path feeds live graph escalation.
+- `src.api.routes.vision_serving` now derives the live vision role set from
+  generated stack-prior launch metadata, and both chat-vision endpoint
+  resolution paths consume that helper instead of a route-local static role
+  set. Legacy `VISION_ROLES` and degraded VL ports remain compatibility exports
+  only; a valid generated artifact with no vision launch roles no longer
+  silently resurrects legacy vision roles. This was a main-thread HIGH-risk
+  migration because it touches multimodal request routing.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
   default-off guarded enforce path. The 2026-06-18 held-out A/B returned
   `decision: hold` after hard replacement of the learned incumbent route; the
@@ -163,8 +170,9 @@ Any future stack update should be accepted only when these hold:
   a concrete duplicated live fact reappears.
 - [ ] Broaden W4 swap-CI opportunistically as migrated consumers create new
   witness surfaces; do not add abstract fixture coverage without a migrated
-  consumer to prove. Latest witness: Orchestrator `7a90924` covers the seeding
-  descriptor degraded fallback in the simulated worker swap fixture.
+  consumer to prove. Latest generated-consumer migration: Orchestrator
+  `c9d499f` covers vision serving role discovery from stack-prior launch
+  metadata, but it did not add a new swap-CI witness yet.
 - [ ] Rerun the X-MAS held-out A/B in a quiet window; production routing remains
   default-off until the constrained policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
