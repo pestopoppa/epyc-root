@@ -135,6 +135,50 @@ def parse_args() -> argparse.Namespace:
         "--report-json",
         help="write JSON summary report to this path",
     )
+
+    latest_parser = subparsers.add_parser(
+        "check-latest",
+        help="find the newest timestamped snapshot under a target root and verify it",
+    )
+    latest_parser.add_argument(
+        "--manifest",
+        default=DEFAULT_MANIFEST,
+        help="path to continuity backup manifest",
+    )
+    latest_parser.add_argument(
+        "--target-root",
+        required=True,
+        help="directory containing timestamped continuity snapshots",
+    )
+    latest_parser.add_argument(
+        "--restore-root",
+        help="explicit restore destination; if omitted a temp dir is used",
+    )
+    latest_parser.add_argument(
+        "--tiers",
+        default="T0_irreplaceable",
+        help="comma-separated tier names to verify (default: T0_irreplaceable)",
+    )
+    latest_parser.add_argument(
+        "--max-age-days",
+        type=int,
+        required=True,
+        help="fail if the newest snapshot is older than this many days",
+    )
+    latest_parser.add_argument(
+        "--skip-json-yaml",
+        action="store_true",
+        help="skip JSON/YAML parsing validation",
+    )
+    latest_parser.add_argument(
+        "--skip-sqlite",
+        action="store_true",
+        help="skip SQLite integrity checks",
+    )
+    latest_parser.add_argument(
+        "--report-json",
+        help="write JSON summary report to this path",
+    )
     return parser.parse_args()
 
 
@@ -781,6 +825,65 @@ def verify_restore(
     return 0, summary
 
 
+def _candidate_snapshots(target_root: Path) -> list[Path]:
+    if not target_root.exists() or not target_root.is_dir():
+        return []
+    return sorted(
+        (path for path in target_root.iterdir() if path.is_dir() and (path / "SNAPSHOT.json").is_file()),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+
+
+def check_latest_snapshot(
+    manifest_path: Path,
+    target_root: Path,
+    *,
+    restore_root: str | None = None,
+    tier_csv: str = "T0_irreplaceable",
+    max_age_days: int,
+    skip_json_yaml: bool = False,
+    skip_sqlite: bool = False,
+    report_json: str | None = None,
+) -> tuple[int, list[str]]:
+    snapshots = _candidate_snapshots(target_root)
+    if not snapshots:
+        return 1, [f"no continuity snapshots found under target root: {target_root}"]
+
+    latest = snapshots[0]
+    exit_code, verify_lines = verify_restore(
+        manifest_path,
+        latest,
+        restore_root=restore_root,
+        tier_csv=tier_csv,
+        max_age_days=max_age_days,
+        skip_json_yaml=skip_json_yaml,
+        skip_sqlite=skip_sqlite,
+    )
+    lines = [
+        f"target_root={target_root}",
+        f"latest_snapshot_root={latest}",
+        f"snapshot_count={len(snapshots)}",
+    ] + verify_lines
+
+    if report_json:
+        with Path(report_json).open("w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "manifest": str(manifest_path),
+                    "target_root": str(target_root),
+                    "latest_snapshot_root": str(latest),
+                    "snapshot_count": len(snapshots),
+                    "exit_code": exit_code,
+                    "lines": lines,
+                },
+                handle,
+                indent=2,
+                sort_keys=True,
+            )
+    return exit_code, lines
+
+
 def main() -> int:
     args = parse_args()
 
@@ -816,6 +919,21 @@ def main() -> int:
         exit_code, lines = verify_restore(
             manifest_path=Path(args.manifest),
             snapshot_root=Path(args.snapshot_root),
+            restore_root=args.restore_root,
+            tier_csv=args.tiers,
+            max_age_days=args.max_age_days,
+            skip_json_yaml=args.skip_json_yaml,
+            skip_sqlite=args.skip_sqlite,
+            report_json=args.report_json,
+        )
+        for line in lines:
+            print(line)
+        return exit_code
+
+    if args.command == "check-latest":
+        exit_code, lines = check_latest_snapshot(
+            manifest_path=Path(args.manifest),
+            target_root=Path(args.target_root),
             restore_root=args.restore_root,
             tier_csv=args.tiers,
             max_age_days=args.max_age_days,
