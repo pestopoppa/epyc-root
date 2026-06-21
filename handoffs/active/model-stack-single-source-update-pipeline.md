@@ -142,8 +142,11 @@ unowned local constants.
   default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
   A/B carried `xmas_policy=incumbent_constrained_v1` and still returned
   `decision.status=hold` (`score_delta=-0.25`, latency ratio `0.714`), so
-  enforce remains off and the next X-MAS gate is policy/table regression
-  repair, not another identical quiet-window run.
+  enforce remains off. Orchestrator `f517902d` repairs the identified
+  same-cheap-role failure mode by preserving try-cheap-first when X-MAS
+  enforces the configured cheap role, and the A/B harness now records response
+  `xmas_meta` for apply-reason/incumbent proof. The next X-MAS gate is a
+  deploy/reload plus repaired quiet-window A/B, not enablement.
 - The 2026-06-20 read-only manifest audit found P1 closed and all named
   P2/HIGH surfaces either migrated, generated, or re-audited. The follow-up
   `launch_maps` audit verified that generated stack priors carry launch entries
@@ -201,9 +204,9 @@ Any future stack update should be accepted only when these hold:
   `_vl_port_for_role`, `_vl_url_for_role`, and `_vl_url_for_port`) against the
   generated stack-prior artifact, and the simulated worker swap now covers
   WorkerPool primary-port/model-path consumption after a generated worker swap.
-- [ ] Diagnose and repair the X-MAS constrained-policy quality regressions
-  before another held-out A/B; production routing remains default-off until a
-  future repaired policy passes the verdict gates.
+- [ ] Deploy/reload the repaired X-MAS constrained policy and rerun the
+  held-out quiet-window A/B with `xmas_meta` capture; production routing remains
+  default-off until a future repaired policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future
