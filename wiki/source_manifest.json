@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T14:02:18Z",
+  "scan_time": "2026-06-21T14:17:07Z",
   "schema_version": 1,
-  "source_set_hash": "91ab4dd9f3a7f474afe400b1ffb54c6f8d93483990bbef4eac45ebee67ed40c5",
+  "source_set_hash": "ead813f30beaf3f322b5f2a7407d2eaa3ceeb9376885642c9cba9014fcf872bc",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -519,10 +519,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "76f8f7b69a518e2ab8927feb386592f9ed768967aa6cb8e96298a570b5d91511",
-      "modified": "2026-06-21T14:01:19Z",
+      "content_hash": "418a7e3eda3461f2ecc0fd943676bb9e9090507cd18a8688e476f56846e028dc",
+      "modified": "2026-06-21T14:16:23Z",
       "path": "handoffs/active/opendataloader-pipeline-integration.md",
-      "size": 28348,
+      "size": 30368,
       "title": "OpenDataLoader PDF \u2014 Pipeline Integration",
       "type": "handoff-active"
     },
@@ -1583,10 +1583,10 @@
       "type": "handoff-completed"
     },
     {
-      "content_hash": "68fef328ef55adb2d93709ae6e79f60d9f721bfa2b006c86c5b472ca7a336f36",
-      "modified": "2026-06-14T11:33:54Z",
+      "content_hash": "ad01c9ead2e9fd440b3a01670064d60d486a74c805b56020d0df9b9654014584",
+      "modified": "2026-06-21T14:15:31Z",
       "path": "handoffs/completed/privacy-hygiene-precommit-hooks.md",
-      "size": 12932,
+      "size": 13041,
       "title": "Privacy / Secret Hygiene \u2014 Pre-Commit Hooks",
       "type": "handoff-completed"
     },
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "2f09d85a84ce5582081f61390c36f76a955e83fea3b6c78c63b06b9cad1954fa",
-      "modified": "2026-06-21T14:02:01Z",
+      "content_hash": "4ea875580e96677c5af076a02711ec8d646fcc2aa669ba68c63379c2afde7b63",
+      "modified": "2026-06-21T14:15:21Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 146869,
+      "size": 149338,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },

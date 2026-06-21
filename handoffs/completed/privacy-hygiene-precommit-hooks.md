@@ -5,7 +5,7 @@
 **Updated**: 2026-06-14
 **Categories**: knowledge_management, document_processing, tool_implementation
 **Priority**: MEDIUM (no immediate incident, but cheap insurance against accidental commits)
-**Scope note**: NOT a close for [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md) gap #5 (prompt-injection filter). PII span extraction is adjacent to, not a substitute for, adversarial-instruction detection. Gap #5 stays open.
+**Scope note**: NOT a close for [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md)'s remaining document-body prompt-injection policy. PII span extraction is adjacent to, not a substitute for, adversarial-instruction detection. ODL structured metadata gained a scanner gate on 2026-06-21, but primary extracted text policy remains separate.
 
 ## Completion Note — 2026-06-14
 
@@ -120,7 +120,7 @@ Deep-dives:
 
 ## Why this slot, not opendataloader Phase 2
 
-The [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md) handoff covers PDF → structured-context ingestion for the orchestrator's research/RAG path. Its **gap #5** is *prompt injection filtering*, which is adversarial-instruction detection — a different problem class from PII span extraction.
+The [`opendataloader-pipeline-integration.md`](../active/opendataloader-pipeline-integration.md) handoff covers PDF → structured-context ingestion for the orchestrator's research/RAG path. Its remaining document-body prompt-injection policy is adversarial-instruction detection — a different problem class from PII span extraction.
 
 This handoff covers a **different slot**: pre-commit hygiene across three repos to prevent accidentally-committed credentials/secrets/account-numbers from entering git history. That's a workflow-level concern, not an inference-pipeline concern.
 

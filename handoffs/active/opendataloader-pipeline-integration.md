@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, and use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode. ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata. Remaining Phase 2 work: table routing/hybrid extraction, prompt-injection filtering, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, and suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled. ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filter is additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: table routing/hybrid extraction, primary document-body injection policy, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -25,7 +25,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 2. **No reading order**: pdftotext `-layout` interleaves multi-column text
 3. **Binary routing**: pdftotext (fast) OR LightOnOCR (slow) — no per-page complexity routing
 4. **Blind figure analysis**: VL models receive cropped images without document context (caption, surrounding text, semantic type)
-5. **No prompt injection filtering**: extracted text passed raw to LLM context
+5. **Incomplete prompt-injection policy**: ODL structured headings/captions/tables are suppressible under `INJECTION_SCANNING`, but primary OCR text is still treated as source content and needs an explicit body-level policy
 
 ## Three-Phase Plan
 
@@ -56,8 +56,9 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Feed figure context to `figure_analyzer.py`: type, caption, surrounding text, heading position
 - [x] Replace PyMuPDF figure extraction with ODL bboxes in ODL structured mode (skip `_extract_figures_pymupdf`)
 - [x] Improve `document_chunker.py`: use heading hierarchy from ODL instead of regex splitting
+- [x] Suppress unsafe ODL structured metadata before chunking / VL prompt enrichment when `INJECTION_SCANNING` is enabled
 - [ ] Route detected tables to ODL hybrid for 0.93 accuracy extraction
-- [ ] Add prompt injection filtering from ODL safety layer
+- [ ] Define primary extracted-text prompt-injection policy for document bodies
 
 **Key files**:
 - `src/services/figure_analyzer.py` — enrich VL prompts with document context
@@ -88,6 +89,14 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - `PDFRouter.extract()` and the local `DocumentClient` producer path both prefer the ODL bbox adapter when `structured_data` is present, and tests assert `_extract_figures_pymupdf()` is not called in that mode.
 - Validation: GitNexus LOW for `_extract_local_structured_pdf`, `_extract_figures_pymupdf`, and `PDFRouter.extract`; `py_compile`, `ruff`, `git diff --check`, focused PDF/document tests (`21 passed, 2 skipped`), and the broader ODL/PDF/figure/document suite (`114 passed, 2 skipped`) passed.
 - Residual risk: ODL structured figures currently carry bbox/caption/type context, but not extracted image bytes. Downstream figure analysis crops from the source PDF using the bbox, so this is acceptable for the current pipeline.
+
+**2026-06-21 ODL structured-context injection checkpoint (`epyc-orchestrator` `76dcd42c`)**
+
+- `DocumentPreprocessor.preprocess()` now routes optional ODL structured metadata through the existing `src.security.injection_scanner.scan_content()` path when `INJECTION_SCANNING` is enabled.
+- Unsafe ODL headings, figure captions/surrounding text/breadcrumbs, and table captions/markdown/rows suppress the additive structured document before chunking and figure analysis. The fallback path keeps OCR text processing intact, so structured metadata cannot steer section titles or VL prompts after a scanner hit.
+- Default-off compatibility is preserved: with injection scanning disabled, existing ODL structured metadata continues to drive heading chunking and figure context.
+- Validation: GitNexus MEDIUM for `DocumentPreprocessor.preprocess` and `ODLStructuredDocument`, LOW for `scan_content`; `py_compile`, `ruff`, `git diff --check`, focused injection/ODL tests (`41 passed`), and the broader ODL/PDF/figure/document suite (`116 passed, 2 skipped`) passed.
+- Residual risk: this is structured-metadata filtering, not a full body-level policy for primary OCR text. That policy remains open because blocking source document text requires separate product/security semantics and false-positive handling.
 
 ### Phase 3: Hybrid Mode + Benchmark Integration
 
@@ -186,10 +195,10 @@ PDF Input
 ### New Related Research
 
 - **[intake-449] "OpenAI Privacy Filter: PII Token-Classifier (1.5B MoE / 50M active, Apache 2.0)"** (huggingface.co/openai/privacy-filter)
-  - Relevance: **adjacent, not identical, to gap #5** ("No prompt injection filtering") — the OpenAI privacy filter is a PII detector, not a prompt-injection detector. But it is in the same architectural slot (a small preprocessing classifier that runs on extracted text before it reaches the LLM context), so it's worth tagging as a candidate plug-in for any future pipeline step that needs to mask sensitive spans before downstream-LLM ingestion.
+  - Relevance: **adjacent, not identical, to the remaining document-body safety policy** — the OpenAI privacy filter is a PII detector, not a prompt-injection detector. But it is in the same architectural slot (a small preprocessing classifier that runs on extracted text before it reaches the LLM context), so it's worth tagging as a candidate plug-in for any future pipeline step that needs to mask sensitive spans before downstream-LLM ingestion.
   - Key technique: bidirectional token classifier (AR-pretrained, converted to encoder), 1.5B total / 50M active sparse-MoE (128 experts top-4), banded attention (band=128, effective 257-token window) at 128k context, BIOES span decoding over 8 PII classes. Apache 2.0.
   - Reported results: no quantitative numbers disclosed in the model card at fetch time (2026-04-23). Self-identified failure modes: non-English degradation, uncommon names / regional conventions, span fragmentation, novel credentials. 1,888 downloads/month on HF.
-  - Delta from current approach: this pipeline does not currently have a PII-masking step. If/when a step is added (either for KB ingestion or if the orchestrator ever handles third-party user data), this is the default Apache-2.0 option to evaluate. Does not address gap #5 (prompt injection) — that remains an open requirement.
+  - Delta from current approach: this pipeline does not currently have a PII-masking step. If/when a step is added (either for KB ingestion or if the orchestrator ever handles third-party user data), this is the default Apache-2.0 option to evaluate. Does not address the remaining document-body prompt-injection policy, which is separate from the 2026-06-21 ODL structured-metadata scanner integration.
   - Action: **track only**. Do not add a privacy step to Phase 1 or Phase 2 of this pipeline unless a concrete requirement surfaces.
 
 ## Research Intake Update — 2026-04-24
@@ -199,8 +208,8 @@ PDF Input
 - **[intake-452] "OpenAI Privacy Parser — inverse of OpenAI Privacy Filter (returns PII spans instead of masking)"** (`github.com/chiefautism/privacy-parser`)
   - Relevance: lightweight Apache-2.0 Python wrapper over the exact intake-449 opf 1.5B weights — returns structured character spans instead of `<REDACTED>` masks. Three backends: pure-regex (1.000 F1 on fixture, µs), model-only (0.733 F1, ~500 ms CPU), and HybridPIIParser (model + span-merge + regex backstop, **0.929 F1, ~600 ms CPU**).
   - Key technique: BIOES + tuned Viterbi over opf logits → char spans → span-merge → regex backstop for URL/secret/account_number. The model+regex hybrid pattern is the non-trivial engineering contribution beyond intake-449.
-  - Delta from current approach: this pipeline's gap #5 (no PII/injection filter) remains open. If a PII step is ever added, `HybridPIIParser` is a drop-in — avoids re-wrapping the raw opf weights ourselves. ~600 ms CPU latency is acceptable for offline/batch KB ingestion but would dominate per-request orchestrator latency.
-  - Action: **track only** — consistent with the intake-449 action above. No pipeline change. Bookmark for the offline/batch slot when a concrete requirement surfaces. Does not address prompt-injection filtering (still gap #5).
+  - Delta from current approach: this pipeline's remaining document-body PII/injection policy is still separate from pre-commit hygiene and from the 2026-06-21 ODL structured-metadata scanner integration. If a PII step is ever added, `HybridPIIParser` is a drop-in — avoids re-wrapping the raw opf weights ourselves. ~600 ms CPU latency is acceptable for offline/batch KB ingestion but would dominate per-request orchestrator latency.
+  - Action: **track only** — consistent with the intake-449 action above. No pipeline change. Bookmark for the offline/batch slot when a concrete requirement surfaces. Does not address primary document-body prompt-injection handling.
 
 ## Research Intake Update — 2026-05-20
 

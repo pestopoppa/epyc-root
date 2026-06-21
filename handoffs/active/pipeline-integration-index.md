@@ -1,7 +1,7 @@
 # Pipeline Integration — Coordination Index
 
 **Status**: active
-**Updated**: 2026-06-21 ODL structured producer/consumer/bbox checkpoints
+**Updated**: 2026-06-21 ODL structured producer/consumer/bbox/injection checkpoints
 **Purpose**: dispatch surface for new capability pipelines being added to the EPYC stack. Production routing, stack, and evidence-plane behavior route through [routing-and-optimization-index.md](routing-and-optimization-index.md).
 **History**: pre-compaction detail lives in [../archived/pipeline-integration-index-history-through-2026-06-19.md](../archived/pipeline-integration-index-history-through-2026-06-19.md).
 
@@ -19,7 +19,7 @@
 |----------|----------|---------------|----------------------------|
 | P0 | Multimodal vision validation | [multimodal-pipeline.md](multimodal-pipeline.md) | Re-test live VL servers on ports `8086/8087`, then register vision tools in the orchestrator tool surface if the smoke passes. |
 | P0.5 | Local image generation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | CPU backend is deployed; remaining work is prompt-enhancer heuristic, content-filter audit, typography spot-check, and GPU/Spark rebench when available. |
-| P1 | PDF extraction / OpenDataLoader / LiteParse | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | ODL structured context now feeds chunking and per-figure VL prompts, local PDF processing can produce it under explicit `PDF_EXTRACTOR=opendataloader` + `ORCHESTRATOR_ODL_STRUCTURED=1` gates, and ODL structured figure bboxes replace PyMuPDF image enumeration in that mode; next work is table/hybrid routing, prompt-injection filtering, and LiteParse born-digital fast-path evidence. |
+| P1 | PDF extraction / OpenDataLoader / LiteParse | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | ODL structured context now feeds chunking and per-figure VL prompts, local PDF processing can produce it under explicit `PDF_EXTRACTOR=opendataloader` + `ORCHESTRATOR_ODL_STRUCTURED=1` gates, ODL structured figure bboxes replace PyMuPDF image enumeration in that mode, and unsafe ODL structured metadata is suppressed when `INJECTION_SCANNING` is enabled; next work is table/hybrid routing, primary document-body injection policy, and LiteParse born-digital fast-path evidence. |
 | P2 | Lean 4 proving | Completed Lean baseline plus this index | Goedel-CP GGUF exists as a candidate; next active work is Leanstral expert profiling, then REAP prune and end-to-end proof-pipeline validation if profiling supports it. |
 | P3 | Multimodal TTS | [multimodal-pipeline.md](multimodal-pipeline.md) | Benchmark the first viable path among Qwen3 TTS, MiniCPM-O, Qwen3-TTS sidecar, or ZipVoice-Distill; promote only with RTF/latency/WER/memory evidence. |
 | P4 | Doc-to-LoRA | [08-doc-to-lora-prototype.md](../completed/08-doc-to-lora-prototype.md) | Archived/low priority; reopen only with GPU availability and a demonstrated need not solved by REPL tooling. |
@@ -39,7 +39,8 @@ LiteParse/ODL extraction evidence
   -> PDF router fast-path decision
   -> structural sidecar or chunking changes
   -> gated local ODL structured producer path
-  -> ODL table/safety integration
+  -> ODL table integration
+  -> primary document-body safety policy
 
 Leanstral profile
   -> REAP prune decision
