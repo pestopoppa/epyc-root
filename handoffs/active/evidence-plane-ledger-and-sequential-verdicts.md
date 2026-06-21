@@ -25,10 +25,20 @@
 > smoke reports `28` future clean audited trials are needed to age the active
 > alarm events out of the trailing-30 window, assuming no new divergences occur.
 
+> **Live visibility update — 2026-06-21.** `epyc-orchestrator` `4cfe6567`
+> (`Surface W4/W6 cutover horizon`) adds a combined strict-cutover horizon to
+> `restart_readiness_report.py` and `fable5_gate_report.py`. The horizon is a
+> read-only lower bound over remaining trusted-vector rows, seq-shadow rows,
+> W6 audited rows, and W6 alarm-clearance rows; it does not change gate
+> semantics. Live smoke during active trial `916` reports trusted vectors
+> `81/120` (`39` remaining), seq-shadow rows `29/30` (`1` remaining), W6 audited
+> rows `51/30` (`0` remaining), W6 alarm clearance `26`, and combined horizon
+> `39` with blocker `seq_trusted_vectors`.
+
 ## Start Here
 
 1. Keep sequential authority disabled until readiness passes: at least 120 trusted vector trials, at least 30 sequential shadow rows, and the flip-rate/e-process criteria in the spec.
-2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Trial `902` is clean sequential-shadow progress but still leaves the gate blocked at `68/120` trusted vectors and `16/30` shadow rows (`52` trusted vectors and `14` shadow rows remaining); W6 additionally needs `28` future clean audited trials to age active alarm events out of the trailing window if no new divergences occur. Trial `903` is in progress.
+2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Live strict report during trial `916` leaves the gate blocked at `81/120` trusted vectors and `29/30` seq-shadow rows; W6 audited rows are above floor at `51/30`, but the trailing alarm still needs `26` clean audited rows to age out if no new divergences occur. The combined clean-trial horizon is `39`, currently dominated by `seq_trusted_vectors`.
 3. After readiness passes, run the disagreement/cutover report and the aggregate restart-readiness report with `--require-seq-cutover --require-w6-audit`; W6 audit must be alarm-free before any authority flip.
 4. Coordinate any restart-bundle flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
 
