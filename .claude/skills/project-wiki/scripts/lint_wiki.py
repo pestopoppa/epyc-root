@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lint the project knowledge base for governance hygiene issues.
 
-Runs 5 lint passes against handoffs, intake index, and cross-references.
+Runs lint passes against handoffs, intake index, wiki pages, and cross-references.
 Reads thresholds from wiki.yaml, falls back to sensible defaults.
 
 Exit code: 1 if any ERRORs found, 0 otherwise.
@@ -9,7 +9,6 @@ Exit code: 1 if any ERRORs found, 0 otherwise.
 
 from __future__ import annotations
 
-import os
 import re
 import sys
 import time
@@ -31,6 +30,9 @@ INFO = "INFO"
 
 Issue = tuple[str, str, str]  # (severity, file, message)
 
+ADMIN_WIKI_FILES = {"INDEX.md", "SCHEMA.md"}
+SOURCE_REFERENCE_HEADINGS = {"Source References", "References"}
+
 
 def load_wiki_config() -> dict:
     """Load wiki.yaml from repo root. Returns empty dict if not found."""
@@ -50,7 +52,7 @@ def _get_lint_config(config: dict) -> dict:
         "unactioned_intake_days": lint.get("unactioned_intake_days", 7),
         "enabled_passes": lint.get("enabled_passes", [
             "orphan_handoffs", "stale_entries", "contradictory_status",
-            "unactioned_intake", "missing_cross_refs",
+            "unactioned_intake", "missing_cross_refs", "wiki_article_structure",
         ]),
     }
 
@@ -58,6 +60,23 @@ def _get_lint_config(config: dict) -> dict:
 def _extract_md_links(content: str) -> list[str]:
     """Extract markdown link targets from content: [text](target.md)."""
     return re.findall(r'\[(?:[^\]]*)\]\(([^)]+\.md)\)', content)
+
+
+def _extract_h2_headings(content: str) -> set[str]:
+    """Extract level-2 markdown headings without trailing anchor text."""
+    headings = set()
+    for match in re.finditer(r"^##\s+(.+?)\s*$", content, flags=re.MULTILINE):
+        heading = match.group(1).strip()
+        headings.add(heading)
+    return headings
+
+
+def _extract_category(content: str) -> str | None:
+    """Return the wiki category metadata value if present."""
+    match = re.search(r"^\*\*Category\*\*:\s*`?([^`\n]+)`?\s*$", content, re.MULTILINE)
+    if not match:
+        return None
+    return match.group(1).strip()
 
 
 def _extract_referenced_handoffs(active_dir: Path) -> set[str]:
@@ -208,6 +227,63 @@ def check_missing_crossrefs(active_dir: Path, completed_dir: Path) -> list[Issue
     return issues
 
 
+def check_wiki_article_structure(wiki_dir: Path) -> list[Issue]:
+    """Pass 6: Check generated wiki pages have minimum reviewable structure."""
+    issues: list[Issue] = []
+    if not wiki_dir.exists():
+        return [(ERROR, str(wiki_dir), "Wiki directory not found")]
+
+    required_sections = {"Summary"}
+    recommended_sections = {"Key Findings", "Open Questions", "Related Categories"}
+
+    for md_file in sorted(wiki_dir.glob("*.md")):
+        if md_file.name in ADMIN_WIKI_FILES:
+            continue
+
+        content = md_file.read_text(errors="replace")
+        target = f"wiki/{md_file.name}"
+        h1_count = len(re.findall(r"^#\s+.+", content, flags=re.MULTILINE))
+        if h1_count == 0:
+            issues.append((ERROR, target, "Missing top-level H1 heading"))
+        elif h1_count > 1:
+            issues.append((WARNING, target, f"Expected one H1 heading, found {h1_count}"))
+
+        category = _extract_category(content)
+        if not category:
+            issues.append((
+                WARNING,
+                target,
+                "Missing **Category** metadata; treating as a legacy/reference page",
+            ))
+            continue
+
+        expected_slug = category.replace("_", "-")
+        if md_file.stem != expected_slug:
+            issues.append((
+                WARNING,
+                target,
+                f"Category `{category}` does not match filename slug `{md_file.stem}`",
+            ))
+
+        headings = _extract_h2_headings(content)
+        for section in sorted(required_sections):
+            if section not in headings:
+                issues.append((ERROR, target, f"Missing required section: ## {section}"))
+
+        if not headings & SOURCE_REFERENCE_HEADINGS:
+            issues.append((
+                ERROR,
+                target,
+                "Missing source-reference section: ## Source References or ## References",
+            ))
+
+        for section in sorted(recommended_sections):
+            if section not in headings:
+                issues.append((WARNING, target, f"Missing recommended section: ## {section}"))
+
+    return issues
+
+
 def main() -> int:
     config = load_wiki_config()
     lint_cfg = _get_lint_config(config)
@@ -216,6 +292,7 @@ def main() -> int:
     active_dir = ROOT / "handoffs" / "active"
     completed_dir = ROOT / "handoffs" / "completed"
     index_path = ROOT / "research" / "intake_index.yaml"
+    wiki_dir = ROOT / "wiki"
 
     if not active_dir.exists():
         print(f"ERROR: Active handoffs directory not found at {active_dir}")
@@ -253,6 +330,12 @@ def main() -> int:
         issues = check_missing_crossrefs(active_dir, completed_dir)
         all_issues.extend(issues)
         pass_names.append(("Missing cross-refs", issues))
+
+    # Pass 6: Generated wiki article structure
+    if "wiki_article_structure" in enabled:
+        issues = check_wiki_article_structure(wiki_dir)
+        all_issues.extend(issues)
+        pass_names.append(("Wiki article structure", issues))
 
     # Print report
     print("=" * 70)

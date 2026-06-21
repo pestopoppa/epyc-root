@@ -34,3 +34,10 @@ Detailed documentation for each lint pass in `lint_wiki.py`.
 **Severity**: ERROR
 **Logic**: Extract markdown links from each active handoff. Check that target `.md` files exist in `handoffs/active/` or `handoffs/completed/`. Skip external URLs and anchors.
 **Fix**: Fix the link target, or remove the broken link.
+
+## Pass 6: Wiki Article Structure
+
+**Severity**: ERROR for structural corruption, WARNING for legacy or incomplete article shape.
+**Logic**: Scan generated `wiki/*.md` article pages, excluding `INDEX.md` and `SCHEMA.md`. Pages with `**Category**` metadata must have one H1, `## Summary`, and either `## Source References` or `## References`. The pass warns when the filename slug does not match the category, or when recommended sections (`## Key Findings`, `## Open Questions`, `## Related Categories`) are absent. Pages without `**Category**` metadata are treated as legacy/reference pages and warned, not failed.
+**Config**: `wiki.yaml` → `lint.enabled_passes` includes `wiki_article_structure`.
+**Fix**: Repair the generated article before advancing `compile_sources.py --touch` or refreshing `wiki/source_manifest.json`. Add the missing metadata/sections, or explicitly keep the page as a legacy reference and accept the warning.

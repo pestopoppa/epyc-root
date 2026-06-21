@@ -66,6 +66,12 @@ Or invoke this skill with: "lint the knowledge base" / "check KB health"
    - Verify each target file exists (relative to handoffs/active/ or handoffs/completed/)
    - Flag broken links
 
+6. **Wiki article structure**:
+   - Scan generated `wiki/*.md` article pages, excluding `INDEX.md` and `SCHEMA.md`
+   - For pages with `**Category**` metadata, require one H1, `## Summary`, and a source-reference section
+   - Warn on missing recommended article sections or legacy/reference pages without category metadata
+   - Use this before advancing compile timestamps or source manifests after generated wiki updates
+
 #### Output
 
 Structured report grouped by pass, with severity levels:

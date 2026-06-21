@@ -459,10 +459,12 @@ Scope inherited from `autowiki-incremental-kb-generator.md` (now in [`../complet
 
 **2026-06-21 hook integration slice:** `.claude/hooks/post_commit_kb_rag_update.sh` now uses the manifest contract instead of raw `git diff` markdown filtering. On first run it emits a full project-wiki source manifest, updates KB-RAG through `kb_rag update --manifest ... --manifest-root <repo>`, then persists the baseline at `wiki/source_manifest.json`; later runs emit `--changed-since-manifest` deltas and skip KB-RAG entirely when there are no added/changed/removed sources. This closes the deterministic source-manifest-to-ColBERT refresh loop; the AutoWiki page generator/writer and output lint gate remain open design work below.
 
+**2026-06-21 output lint gate slice:** the project-wiki lint command now includes `wiki_article_structure`, enabled in `wiki.yaml`. It scans generated `wiki/*.md` article pages, excludes `INDEX.md`/`SCHEMA.md`, errors on structural corruption (missing H1, `## Summary`, or source-reference section), and warns on legacy/reference pages without category metadata or missing recommended article sections. Focused tests landed in `tests/skills/test_project_wiki_lint.py`. Live smoke passed with zero errors; current warnings are the expected legacy/reference debt (`chat-templates.md` uncategorized, and three pages missing recommended section headings). This closes the deterministic output lint gate for generated wiki updates; the model-backed AutoWiki page writer remains open.
+
 Open design questions (carried from the stub, unresolved):
 
 1. The page→source-paths manifest is also the basis for **drift detection** — does it subsume / improve the `scripts/validate/` document-drift validator?
-2. Generator model: which local model writes the pages, and how do we keep it from hallucinating structure (lint gate on output)?
+2. Generator model: which local model writes the pages? The deterministic structure lint gate now exists; the remaining question is the writer/model and evidence policy for content quality beyond structural conformance.
 3. Scope: in-repo git-versioned wiki only (we already have this — git = versioning); any app/UI sync is SaaS-only, skip.
 4. Trigger cadence: on-push CI vs nightshift batch — and how does it coordinate with the autopilot loop without contending for inference?
 

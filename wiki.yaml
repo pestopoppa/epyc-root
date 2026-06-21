@@ -47,6 +47,7 @@ lint:
     - contradictory_status
     - unactioned_intake
     - missing_cross_refs
+    - wiki_article_structure
 
 # Compile configuration (consumed by project-wiki skill compile operation)
 compile:
