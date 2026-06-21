@@ -145,8 +145,10 @@ unowned local constants.
   enforce remains off. Orchestrator `f517902d` repairs the identified
   same-cheap-role failure mode by preserving try-cheap-first when X-MAS
   enforces the configured cheap role, and the A/B harness now records response
-  `xmas_meta` for apply-reason/incumbent proof. The next X-MAS gate is a
-  deploy/reload plus repaired quiet-window A/B, not enablement.
+  `xmas_meta` for apply-reason/incumbent proof. Orchestrator `b108f865`
+  versions the repaired policy as `incumbent_constrained_cheapfirst_v2` so the
+  next A/B is distinguishable from the held `v1` evidence. The next X-MAS gate
+  is a deploy/reload plus repaired quiet-window A/B, not enablement.
 - The 2026-06-20 read-only manifest audit found P1 closed and all named
   P2/HIGH surfaces either migrated, generated, or re-audited. The follow-up
   `launch_maps` audit verified that generated stack priors carry launch entries
@@ -205,7 +207,8 @@ Any future stack update should be accepted only when these hold:
   generated stack-prior artifact, and the simulated worker swap now covers
   WorkerPool primary-port/model-path consumption after a generated worker swap.
 - [ ] Deploy/reload the repaired X-MAS constrained policy and rerun the
-  held-out quiet-window A/B with `xmas_meta` capture; production routing remains
+  held-out quiet-window A/B with `xmas_meta` capture and required policy
+  `incumbent_constrained_cheapfirst_v2`; production routing remains
   default-off until a future repaired policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
