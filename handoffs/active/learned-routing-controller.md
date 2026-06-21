@@ -886,6 +886,13 @@ observation artifacts in `epyc-orchestrator`:
   response text. The private packet for actual review text is intentionally
   outside git at
   `/mnt/raid0/llm/tmp/a9_answer_equivalence_review_20260621_private.jsonl`.
+- `1e08e459` seeds source-backed labels into the review queue. All `43`
+  `current_positive_not_deterministically_reconstructable` rows have source
+  `passed=True` and are now `final_label=equivalent`,
+  `label_source=source_passed_true`, `label_status=seeded`. The remaining `5`
+  `current_negative_deterministically_equivalent` rows stay
+  `label_status=needs_semantic_judge` because deterministic equivalence
+  conflicts with source `passed=False`.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -896,6 +903,7 @@ false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
 deterministic reconstruction is also insufficient: most current positives need
 semantic/manual/judge review rather than more threshold tuning. The review queue
-now makes that next step concrete: label the `48` private packet rows, merge the
-labels back through the redacted manifest fields, then rerun the scorer gate
-before this scorer feeds learned-routing labels.
+now has `43/48` rows seeded from source pass/fail evidence. Next step is to
+resolve the remaining `5` deterministic-equivalence/source-failed conflicts,
+then rerun the scorer gate against `final_label` before this scorer feeds
+learned-routing labels.
