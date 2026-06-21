@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 SCAFFOLDING LANDED 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. Gated behind `ORCHESTRATOR_ODL_STRUCTURED=1`. 17 new unit tests + 38/38 existing tests still pass (back-compat verified). Phase 2 deeper integration (replace PyMuPDF figure extraction, replace regex chunker entirely, document_preprocessor refactor) is multi-day per-service work, deferred. Phase 3 (sidecar + benchmark) inference-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-up (`epyc-orchestrator` `bd3f6f4e`) wires optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`: ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts. This is still default-inert unless upstream supplies structured data. Remaining Phase 2 work: replace PyMuPDF figure extraction with ODL bboxes, table routing/hybrid extraction, prompt-injection filtering, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -51,10 +51,10 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 **Goal**: VL models + chunker get rich structural context from ODL JSON output
 **Effort**: Medium
 
-- [ ] Parse ODL JSON output: extract figure bboxes + semantic types + captions
-- [ ] Feed figure context to `figure_analyzer.py`: type, caption, surrounding text, heading position
+- [x] Parse ODL JSON output: extract figure bboxes + semantic types + captions
+- [x] Feed figure context to `figure_analyzer.py`: type, caption, surrounding text, heading position
 - [ ] Replace PyMuPDF figure extraction with ODL bboxes (skip `_extract_figures_pymupdf`)
-- [ ] Improve `document_chunker.py`: use heading hierarchy from ODL instead of regex splitting
+- [x] Improve `document_chunker.py`: use heading hierarchy from ODL instead of regex splitting
 - [ ] Route detected tables to ODL hybrid for 0.93 accuracy extraction
 - [ ] Add prompt injection filtering from ODL safety layer
 
@@ -62,6 +62,15 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - `src/services/figure_analyzer.py` — enrich VL prompts with document context
 - `src/services/document_chunker.py` — structural splitting from JSON headings
 - `src/services/document_preprocessor.py` — orchestrate structured context flow
+
+**2026-06-21 implementation checkpoint (`epyc-orchestrator` `bd3f6f4e`)**
+
+- Added `coerce_structured_document()` and preserved `OCRResult.structured_data` through API/cache dict conversions.
+- `DocumentPreprocessor.preprocess()` now extracts structured payloads from TaskIR metadata or the returned OCR result, passes them to `chunk_document()`, and forwards ODL figure contexts to figure analysis.
+- `DocumentChunker.process()` now prefers ODL headings and falls back to the existing regex splitter when structured headings do not align with extracted text.
+- `FigureAnalyzer` now accepts per-figure contexts and builds per-figure prompts without changing the base prompt path for context-free figures.
+- Validation: GitNexus LOW for `chunk_by_odl_headings`, `build_figure_prompt_with_context`, and `FigureAnalyzer.analyze_figures`; MEDIUM for `DocumentPreprocessor.preprocess`. `py_compile` passed. `ruff` passed. Focused tests passed: `tests/unit/test_odl_structured.py`, `tests/unit/test_pdf_router.py`, `tests/unit/test_figure_analyzer.py`, and `tests/integration/test_document_pipeline.py::TestDocumentPreprocessor::test_preprocess_uses_structured_context_when_available` (`61 passed, 2 skipped`).
+- Residual risk: ODL figure-context alignment assumes ODL figure order matches extracted figure order; mismatch degrades to an un-enriched prompt. The current OCR server endpoints still do not emit `structured_data`; this slice preserves and consumes it when present, but does not yet make the LightOnOCR endpoint itself produce it.
 
 ### Phase 3: Hybrid Mode + Benchmark Integration
 
