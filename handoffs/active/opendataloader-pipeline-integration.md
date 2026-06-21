@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, and suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled. ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filter is additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: table routing/hybrid extraction, primary document-body injection policy, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, and carry ODL table metadata through preprocessing/cache/TaskIR output. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, and ODL tables are first-class `TableRef` records for downstream routing. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filter is additionally gated by `INJECTION_SCANNING`. Remaining Phase 2 work: ODL hybrid table extraction/routing, primary document-body injection policy, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -57,6 +57,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Replace PyMuPDF figure extraction with ODL bboxes in ODL structured mode (skip `_extract_figures_pymupdf`)
 - [x] Improve `document_chunker.py`: use heading hierarchy from ODL instead of regex splitting
 - [x] Suppress unsafe ODL structured metadata before chunking / VL prompt enrichment when `INJECTION_SCANNING` is enabled
+- [x] Carry detected ODL tables through preprocessing/cache/TaskIR output as first-class table records
 - [ ] Route detected tables to ODL hybrid for 0.93 accuracy extraction
 - [ ] Define primary extracted-text prompt-injection policy for document bodies
 
@@ -97,6 +98,14 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - Default-off compatibility is preserved: with injection scanning disabled, existing ODL structured metadata continues to drive heading chunking and figure context.
 - Validation: GitNexus MEDIUM for `DocumentPreprocessor.preprocess` and `ODLStructuredDocument`, LOW for `scan_content`; `py_compile`, `ruff`, `git diff --check`, focused injection/ODL tests (`41 passed`), and the broader ODL/PDF/figure/document suite (`116 passed, 2 skipped`) passed.
 - Residual risk: this is structured-metadata filtering, not a full body-level policy for primary OCR text. That policy remains open because blocking source document text requires separate product/security semantics and false-positive handling.
+
+**2026-06-21 ODL table-carrier checkpoint (`epyc-orchestrator` `634a9078`)**
+
+- Added `TableRef` to the document preprocessing result model, with cache serialization and default-empty backwards compatibility.
+- `DocumentChunker.process()` now converts `ODLStructuredDocument.tables` into `TableRef` records with page, bbox, caption, markdown, rows, and best-effort section association.
+- `DocumentPreprocessor.enrich_task_ir()` now emits table summaries alongside sections and figures, and archive preprocessing preserves table IDs through merged document results.
+- Validation: GitNexus MEDIUM for `DocumentPreprocessResult` and `TableContext`; `py_compile`, `ruff`, `git diff --check`, focused table/cache/enrichment tests (`36 passed`), and broader ODL/PDF/figure/document/archive tests (`153 passed, 2 skipped`) passed.
+- Residual risk: this is the table-routing substrate, not full hybrid extraction. The next table step is a gated ODL hybrid sidecar/router decision backed by fixture or benchmark evidence.
 
 ### Phase 3: Hybrid Mode + Benchmark Integration
 
