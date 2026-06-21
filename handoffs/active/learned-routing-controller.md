@@ -1104,3 +1104,12 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   seeding-eval rebuild as another null result, not a live gate. Next A9 work
   should shift away from retuning this MLP/calibrator setup and toward better
   balanced offline evidence or a materially different reward/verifier design.
+- 2026-06-21 follow-up: orchestrator now has a repeatable A9 stop-condition
+  artifact at
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_verifier_decision_summary.{json,md}`.
+  It summarizes `14` verifier/calibrator/model-family artifacts: all `14` are
+  `not_promotion_grade`, `0` are promotion-grade, and the best pass rate is
+  only `0.2` (`random_forest:ece_temperature_bias`). Decision:
+  `stop_current_verifier_family`; runtime gate changes remain disallowed. Next
+  A9 work must change the reward-oracle/label contract or collect materially
+  different balanced evidence, not retune the same verifier family again.
