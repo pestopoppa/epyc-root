@@ -893,6 +893,12 @@ observation artifacts in `epyc-orchestrator`:
   `current_negative_deterministically_equivalent` rows stay
   `label_status=needs_semantic_judge` because deterministic equivalence
   conflicts with source `passed=False`.
+- `419440ea` adds a prompt-free manual label overlay for those remaining `5`
+  conflict rows and regenerates the redacted review manifest as
+  `labeling_complete`: final labels are `47` equivalent and `1`
+  not-equivalent, with label status split `43` seeded / `5`
+  manual-reviewed. The overlay stores only item IDs, labels, label source/
+  status, and note codes; prompt/reference/response text stays outside git.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -901,9 +907,7 @@ with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
-deterministic reconstruction is also insufficient: most current positives need
-semantic/manual/judge review rather than more threshold tuning. The review queue
-now has `43/48` rows seeded from source pass/fail evidence. Next step is to
-resolve the remaining `5` deterministic-equivalence/source-failed conflicts,
-then rerun the scorer gate against `final_label` before this scorer feeds
-learned-routing labels.
+deterministic reconstruction is also insufficient, but the review queue is now
+fully labeled through the prompt-free manual overlay. Next step is to rerun the
+scorer gate against `final_label` before this scorer feeds learned-routing
+labels.
