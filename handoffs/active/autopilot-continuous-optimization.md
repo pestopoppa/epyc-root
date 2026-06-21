@@ -6,6 +6,8 @@
 >
 > **Live update - 2026-06-21T15:30Z.** AutoPilot is still running under wrapper PID `2472032` / Python PID `2472037` on trial `934` T2; the suspected `architect_general` stall was stale, with `8083` idle and live slot progress continuing on other roles. `epyc-orchestrator` `dc601feb` makes the aggregate Fable5 report surface `append_baseline_seed_event` as the first P0 next action when the baseline seed preflight is ready/required. It is blocked while AutoPilot is active and carries guarded expectations `trial_counter=934` and `journal_max_trial_id=933`; no event was appended. Latest strict readiness remains blocked at trusted vectors `97/120` (`23` remaining), seq shadow rows `44/30`, W6 audited rows `65/30`, and W6 alarm clearance `23` clean audited trials.
 >
+> **W6 report alignment - 2026-06-21T15:40Z.** `epyc-orchestrator` `0c593b23` makes direct `audit_block_report.py` CLI runs default to the same trailing-30 alarm window used by restart/Fable5 readiness, while preserving `build_report(..., alarm_window=None)` for explicit all-history library callers. Live direct smoke over the current journal reports W6 audited rows `65`, alarm window `30/30`, `gaming_alarm=true`, clearance `23`, and cumulative divergences `12`.
+>
 > Historical current-state banners through 2026-06-19 were compacted to [../completed/autopilot-continuous-optimization-history-through-2026-06-20.md](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md).
 
 > **Visibility checkpoint — 2026-06-20.** `epyc-orchestrator` `9cc932fe`
