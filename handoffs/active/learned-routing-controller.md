@@ -1185,3 +1185,25 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   best `logistic_l2`, mean accuracy/AUC `0.8807/0.9677` over `616` test pairs.
   Current blockers are `source_family:seeding_eval` and `suite:thinking`.
   Runtime gate changes remain disallowed.
+- 2026-06-21 follow-up: orchestrator also ran the analogous targeted
+  `suite:thinking` expansion:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_thinking_expansion_*`
+  and
+  `offline_reward_pairwise_ranker_score_ordered_hard_holdouts_expanded_summary.{json,md}`.
+  The planner found `1,359` prompt-free thinking candidate rows across `363`
+  non-overlapping groups, scored/exported them with target agreement `0.9360`,
+  and rebuilt a `1,271`-pair score-ordered contract (`769` cross-action rows).
+  This is a diagnostic null rather than a repair: random group-disjoint signal
+  remains strong (`hist_gradient_boosting` mean accuracy/AUC `0.8121/0.9210`),
+  but independent holdout worsens to `5/9` passing. `suite:thinking` still
+  fails (`logistic_l2`, mean accuracy/AUC `0.5732/0.6770` over `410` test
+  pairs), and new failures appear for `source_family:orchestrator_live_seed`
+  and `suite:general`. Treat the livecodebench-expanded artifact as the better
+  current A9 pairwise checkpoint; do not use the hard-holdout-expanded artifact
+  for downstream routing.
+- Seeding sidecar audit: the `seeding_eval` blocker is not a planner path
+  mistake. Current seeding livecodebench files expose only frontdoor-family
+  remaining groups after existing-manifest exclusions and missing-response
+  skips, so they fail the cross-action gate. Repairing
+  `source_family:seeding_eval` requires new or regenerated seeding data with a
+  second canonical action for the same source-record groups.

@@ -44,11 +44,16 @@ failed `source_family:seeding_eval` and `suite:livecodebench`; the targeted
 holdout expansion then added `778` prompt-free livecodebench candidate rows,
 rebuilt a `889`-row score-ordered pairwise contract with `512` cross-action
 rows, and repaired `suite:livecodebench` to holdout signal (`0.8807/0.9677`
-mean accuracy/AUC over `616` test pairs). Overall holdout remains mixed
-(`7/9` pass) because `source_family:seeding_eval` and `suite:thinking` still
-fail. Runtime gate changes remain disallowed. Next A9 work is either new
-non-overlapping `seeding_eval` evidence or a small `thinking` holdout repair;
-do not route downstream on this artifact yet.
+mean accuracy/AUC over `616` test pairs). A follow-up `suite:thinking`
+expansion added `1,359` prompt-free rows and rebuilt a `1,271`-pair hard-
+holdout diagnostic, but it is a null result: random-split signal remains strong
+while independent holdout worsens to `5/9` passing and `thinking` still fails.
+Runtime gate changes remain disallowed. Next A9 work is new/better
+`seeding_eval` evidence or a materially different pairwise feature/stratified
+design; do not route downstream on either expanded artifact yet.
+Current seeding source paths are not merely misconfigured: after exclusions,
+they leave only frontdoor-family groups, so `seeding_eval` repair needs new
+cross-action seeding evidence.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
