@@ -908,6 +908,16 @@ observation artifacts in `epyc-orchestrator`:
   (`tp=21 fp=13 fn=31 tn=113`), best agreement threshold `0.66`
   (`tp=18 fp=6 fn=34 tn=120`), and no-false-positive threshold `0.84`
   recalls only `6/52` positives.
+- 2026-06-21 follow-up: the evaluator now reports target-source, suite, and
+  role-key slices for the final-label run. The aggregate `0.7528` agreement is
+  mostly carried by the negative-heavy `original_binary_reward` subset
+  (`130` rows, `5` positives / `125` negatives, agreement `0.9000`,
+  Spearman `0.3129`, confusion `tp=5 fp=13 fn=0 tn=112`). The reviewed
+  `answer_equivalence_final_label` subset is the actual failure surface:
+  `48` rows, `47` positives / `1` negative, agreement `0.3542`, Spearman
+  `-0.0579`, confusion `tp=16 fp=0 fn=31 tn=1`. Worst slices are
+  `livecodebench` (`24` positives, `tp=1 fn=23`) and `frontdoor:direct`
+  (`44` positives / `5` negatives, `tp=14 fp=3 fn=30 tn=2`).
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -918,7 +928,8 @@ false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
 deterministic reconstruction is also insufficient, and the final-label rerun
 does not rescue the scorer for NEXT-A2/A3 labels. Agreement improves under the
-new target, but rank correlation stays weak and useful no-false-positive recall
-is too low. Next step is scorer/target improvement or an alternate offline
-oracle; do not feed NeuralTxt labels into learned-routing reward signals from
-this report alone.
+new target, but rank correlation stays weak, useful no-false-positive recall is
+too low, and the sliced view shows the reviewed-positive long-response/code
+rows are where NeuralTxt fails. Next step is scorer/target improvement or an
+alternate offline oracle; do not feed NeuralTxt labels into learned-routing
+reward signals from this report alone.
