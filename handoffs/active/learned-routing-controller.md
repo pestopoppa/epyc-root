@@ -935,6 +935,20 @@ observation artifacts in `epyc-orchestrator`:
   `1` negative, agreement `0.3542`, Spearman `-0.0579`, `tp=16 fp=0 fn=31
   tn=1`). The blocker is now the scorer/target quality signal itself, not
   missing stress evidence.
+- 2026-06-21 follow-up: the answer-equivalence audit now has an explicit
+  `review_candidates` export that can include target/proxy-agreed negatives.
+  The regenerated review manifest has `173` labeled rows: `47` equivalent and
+  `126` not-equivalent (`125` from the agreed-negative bucket, `5`
+  manual-reviewed conflict rows, `43` source-passed positives). The evaluator
+  now honors `target_score` before legacy `binary_reward`, so these final
+  labels are actually authoritative in the report. The latest
+  final-label-with-stress artifact still has `322` rows and still blocks, but
+  the blocker has moved: answer-equivalence coverage passes (`173` rows,
+  `47` positives / `126` negatives), while quality misses remain
+  (`agreement=0.7457` vs `0.75`, Spearman `0.1845` vs `0.2`, confusion
+  `tp=16 fp=13 fn=31 tn=113`). Aggregate quality also remains below gate
+  (`agreement=0.6925`, Spearman `0.2771`, best balanced accuracy `0.6949`).
+  A9 now needs a better oracle/scorer, not more coverage plumbing.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -943,10 +957,11 @@ with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
-deterministic reconstruction is also insufficient, and the final-label rerun
-does not rescue the scorer for NEXT-A2/A3 labels. Agreement improves under the
-new target, but rank correlation stays weak, useful no-false-positive recall is
-too low, and the sliced view shows the reviewed-positive long-response/code
-rows are where NeuralTxt fails. Next step is scorer/target improvement or an
-alternate offline oracle that can clear the `decision_gate`; do not feed
-NeuralTxt labels into learned-routing reward signals from this report alone.
+deterministic reconstruction is also insufficient, and the expanded final-label
+rerun does not rescue the scorer for NEXT-A2/A3 labels. Coverage is now
+adequate, but rank correlation stays weak, useful no-false-positive recall is
+too low, and the sliced view shows the long-response/code answer-equivalence
+rows are where NeuralTxt fails. Next step is an alternate offline oracle or a
+material scorer/target improvement that can clear the `decision_gate`; do not
+feed NeuralTxt labels into learned-routing reward signals from this report
+alone.
