@@ -962,6 +962,20 @@ observation artifacts in `epyc-orchestrator`:
   offline-only/forbidden-live-use contract. The manifest builder rejects the
   failed NeuralTxt final-label report (`decision_gate.status=blocked`) and
   writes no adoption artifact for it.
+- 2026-06-21 follow-up: `scripts/graph_router/export_offline_reward_oracle_labels.py`
+  consumes the adoption manifest plus the private scored JSONL and emits a
+  prompt-free row-level label export at
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_labels.jsonl`
+  with summary files beside it. The export has `322` labels, `161` oracle
+  positives / `161` oracle negatives, and target agreement `0.9410`; it strips
+  prompt/reference/response/expected/answer fields and fails closed on
+  non-adoptable manifests. This is now the durable offline label table for
+  NEXT-A2/A3 preparation. It is not yet a verifier NPZ because these A9 rows do
+  not carry the memory IDs needed to join directly to
+  `extract_verifier_training_data_debiased.py`; the next integration step is an
+  explicit source-row/role-to-feature join or a separate benchmark-row embedding
+  extractor, not a silent replacement of the existing outcome-backed verifier
+  labels.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -976,6 +990,7 @@ but rank correlation stays weak, useful no-false-positive recall is too low,
 and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
-manifest in the NEXT-A2/A3 offline reward-signal path; do not feed NeuralTxt
-labels into learned-routing reward signals from the failed NeuralTxt report
-alone.
+manifest/label export in the NEXT-A2/A3 offline reward-signal feature path by
+adding an explicit join key or benchmark-row embedding extractor; do not feed
+NeuralTxt labels into learned-routing reward signals from the failed NeuralTxt
+report alone.
