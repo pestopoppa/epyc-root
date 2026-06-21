@@ -1008,6 +1008,17 @@ observation artifacts in `epyc-orchestrator`:
   `-0.0101`; ROC-AUC is `0.7478` (misses `>=0.75`) and ECE is `0.1465` (misses
   `<=0.05`). No live weight was promoted and
   `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE` remains default-off.
+- 2026-06-21 follow-up: the broader multi-action verifier path now consumes the
+  same manifest-backed NPZ directly by using the verifier feature prefix as the
+  classifier-baseline input when no row-aligned `X` matrix is present. This
+  offline eval covers all `322` rows (`161` positive / `161` negative) with a
+  `64`-row validation split and represented actions `{frontdoor: 224,
+  architect_general: 10, coder_escalation: 88}`. It is better than the
+  frontdoor-only attempt but still not promotable: Brier delta is `+0.1008`
+  versus the best softmax baseline and `+0.0412` versus constant base-rate, and
+  ROC-AUC is `0.8916`, but ECE is `0.1783` (misses `<=0.05`). No live weight was
+  promoted; the next offline step is calibration/data improvement, not a runtime
+  verifier gate change.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1023,6 +1034,6 @@ and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
 manifest-backed NPZ in a stronger NEXT-A2/A3 offline reward-signal experiment:
-improve the scorer/data/model or evaluate a broader reward-signal consumer
-before any runtime verifier gate change. Do not feed NeuralTxt labels into
+calibrate or improve the broader multi-action consumer before any runtime
+verifier gate change. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
