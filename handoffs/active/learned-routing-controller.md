@@ -1113,3 +1113,15 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   `stop_current_verifier_family`; runtime gate changes remain disallowed. Next
   A9 work must change the reward-oracle/label contract or collect materially
   different balanced evidence, not retune the same verifier family again.
+- 2026-06-21 follow-up: orchestrator now has that materially different
+  prompt-free contract:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_preference_contract.{jsonl,summary.json,summary.md}`.
+  The new `within_task_pairwise_preference_v1` contract converts the `720`-row
+  feature manifest into `280` within-task preference pairs across `103`
+  contrastive source-record groups and `8` action-pair directions, including
+  `87` cross-action routing preferences and `193` same-action response-quality
+  contrasts. It changes the learning target from absolute binary prompt/action
+  classification to within-source-record positive-over-negative preference,
+  keeps prompt/answer/expected text excluded, and explicitly allows no runtime
+  gate change. Next A9 work is an offline pairwise reward-ranker train/eval,
+  not another absolute verifier retune.
