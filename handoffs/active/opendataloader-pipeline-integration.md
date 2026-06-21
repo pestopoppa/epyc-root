@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, then route explicitly gated local PDF processing through the ODL structured extractor. ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata. Remaining Phase 2 work: replace PyMuPDF figure extraction with ODL bboxes, table routing/hybrid extraction, prompt-injection filtering, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, and use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode. ODL headings now drive chunking when present with regex fallback, and ODL figure contexts enrich per-figure VL prompts. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata. Remaining Phase 2 work: table routing/hybrid extraction, prompt-injection filtering, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -54,7 +54,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Parse ODL JSON output: extract figure bboxes + semantic types + captions
 - [x] Route explicitly gated local PDFs into ODL structured extraction and preserve `structured_data` into preprocessing
 - [x] Feed figure context to `figure_analyzer.py`: type, caption, surrounding text, heading position
-- [ ] Replace PyMuPDF figure extraction with ODL bboxes (skip `_extract_figures_pymupdf`)
+- [x] Replace PyMuPDF figure extraction with ODL bboxes in ODL structured mode (skip `_extract_figures_pymupdf`)
 - [x] Improve `document_chunker.py`: use heading hierarchy from ODL instead of regex splitting
 - [ ] Route detected tables to ODL hybrid for 0.93 accuracy extraction
 - [ ] Add prompt injection filtering from ODL safety layer
@@ -80,6 +80,14 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - The implementation deliberately calls the structured ODL helper directly, not `PDFRouter.extract()`, so this opt-in path does not fall through to LightOnOCR/model-backed OCR fallback. Default PDF processing still uses the existing OCR-client path.
 - Validation: GitNexus MEDIUM for `DocumentPreprocessor.preprocess`, LOW for `process_document`, LOW for `DocumentFormalizerClient.ocr_pdf`, and LOW for `PDFRouter.extract`. `py_compile`, `ruff`, `git diff --check`, focused tests (`63 passed, 2 skipped`), and the full `tests/integration/test_document_pipeline.py` file (`51 passed`) passed.
 - Residual risk: page text remains document-level because the structured helper returns whole-document markdown, not per-page markdown. Figure bboxes still come from PyMuPDF until the ODL bbox replacement task is completed.
+
+**2026-06-21 ODL bbox checkpoint (`epyc-orchestrator` `4f7f6d1d`)**
+
+- `PDFRouter` now adapts `ODLStructuredDocument.figures[*].bbox` into normalized `ExtractedFigure` bboxes when ODL structured data is present.
+- The adapter uses PyMuPDF only to read page dimensions for PDF-point-to-normalized-coordinate conversion; it does not enumerate images or extract figure bytes.
+- `PDFRouter.extract()` and the local `DocumentClient` producer path both prefer the ODL bbox adapter when `structured_data` is present, and tests assert `_extract_figures_pymupdf()` is not called in that mode.
+- Validation: GitNexus LOW for `_extract_local_structured_pdf`, `_extract_figures_pymupdf`, and `PDFRouter.extract`; `py_compile`, `ruff`, `git diff --check`, focused PDF/document tests (`21 passed, 2 skipped`), and the broader ODL/PDF/figure/document suite (`114 passed, 2 skipped`) passed.
+- Residual risk: ODL structured figures currently carry bbox/caption/type context, but not extracted image bytes. Downstream figure analysis crops from the source PDF using the bbox, so this is acceptable for the current pipeline.
 
 ### Phase 3: Hybrid Mode + Benchmark Integration
 
