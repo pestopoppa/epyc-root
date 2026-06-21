@@ -976,6 +976,18 @@ observation artifacts in `epyc-orchestrator`:
   explicit source-row/role-to-feature join or a separate benchmark-row embedding
   extractor, not a silent replacement of the existing outcome-backed verifier
   labels.
+- 2026-06-21 follow-up: `scripts/graph_router/build_offline_reward_feature_manifest.py`
+  now validates that label export against the original benchmark source rows
+  and emits
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_feature_manifest.jsonl`
+  plus summary files. The manifest has `322` prompt-free feature-input rows,
+  `89` unique source records, and records the real label provenance as
+  `source_record_index_base=one_based` for all rows while storing the resolved
+  zero-based `source_record_offset`. Prompt/expected/answer text is represented
+  only by SHA-256 hashes and lengths. This closes the source/role join gap for
+  NEXT-A2/A3 preparation; the remaining integration step is an embedding/NPZ
+  extractor that consumes this manifest, embeds source prompt/context rows, and
+  joins labels by `join_key`.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -991,6 +1003,6 @@ and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
 manifest/label export in the NEXT-A2/A3 offline reward-signal feature path by
-adding an explicit join key or benchmark-row embedding extractor; do not feed
-NeuralTxt labels into learned-routing reward signals from the failed NeuralTxt
-report alone.
+building the manifest-backed embedding/NPZ extractor; do not feed NeuralTxt
+labels into learned-routing reward signals from the failed NeuralTxt report
+alone.
