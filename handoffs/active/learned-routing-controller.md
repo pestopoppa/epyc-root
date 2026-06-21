@@ -1027,6 +1027,24 @@ observation artifacts in `epyc-orchestrator`:
   failed (`0.1810` -> `0.1788`, gate `<=0.05`). No live weight was promoted;
   simple post-hoc scaling is not enough, so the next offline step is better
   data/model calibration.
+- 2026-06-21 follow-up: the feature-contract repair now adds a prompt-free
+  source-family axis. `build_offline_reward_feature_manifest.py` emits
+  `source_family_onehot[4]` derived from source path metadata
+  (`orchestrator_live_seed`, `seeding_eval`, `three_way_eval`, `other`), and
+  `build_offline_reward_verifier_npz.py` adds the explicit
+  `source_family_response_telemetry` contract while keeping the old
+  `prompt_only` and `response_telemetry` contracts intact. The regenerated
+  expansion manifest has `524` rows and engineered feature dimension `11`.
+  The new conflict-dropped NPZ summary records `336` retained rows,
+  `feature_dim=1039`, `source_family_onehot[4]`, and `0` conflicting
+  model-input groups. Robustness remains `not_promotion_grade`: calibrated pass
+  rates are `0/10` for `temperature_bias`, `0/10` for `ece_temperature_bias`,
+  `0/10` for `isotonic`, and `1/10` for `quantile_histogram`. The best
+  aggregate mean ECE is still too high (`isotonic=0.1119`,
+  `ece_temperature_bias=0.1225`, `quantile_histogram=0.1174`). No live verifier
+  weights or runtime gate changed. This partially improves discrimination but
+  confirms the next useful A9 step is a model-family or split-stratification
+  repair, not another scalar post-hoc calibration pass.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1043,5 +1061,8 @@ where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
 manifest-backed NPZ in a stronger NEXT-A2/A3 offline reward-signal experiment:
 improve data/model calibration for the broader multi-action consumer before any
-runtime verifier gate change. Do not feed NeuralTxt labels into
+runtime verifier gate change. The source-family repair is now measured and
+insufficient for promotion, so prefer verifier model-family repair or
+source-stratified calibration/evaluation over another scalar calibration retry.
+Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
