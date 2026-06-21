@@ -1138,3 +1138,20 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   against a random-pair baseline accuracy/AUC of `0.5/0.5`. Runtime gate
   changes remain disallowed. Next A9 work is cross-validating on an expanded
   pairwise contract, especially more cross-action preference rows.
+- 2026-06-21 follow-up: orchestrator now has the expanded pairwise
+  cross-validation artifact:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_preference_contract_score_ordered.{jsonl,summary.json,summary.md}`
+  and
+  `offline_reward_pairwise_ranker_score_ordered_eval_summary.{json,md}`.
+  The builder keeps the original `binary_label` mode as the default and adds an
+  explicit `score_ordered` mode that orders rows with distinct offline oracle
+  scores inside the same source-record group. This expands the prompt-free
+  contract from `280` to `365` pair rows, contrastive groups from `103` to
+  `133`, and canonical cross-action rows from `87` to `143` while preserving
+  the no-runtime-gate policy. The expanded ranker still marks
+  `pairwise_ranker_signal`; best family remains `random_forest` with mean
+  accuracy/AUC `0.6552/0.7475` over five group-disjoint seeds. This is a
+  coverage cross-check, not a promotion artifact. Next A9 work is to validate
+  the signal on an independently held-out source-family/task-family split or
+  collect more non-overlapping cross-action preferences before any downstream
+  routing use.
