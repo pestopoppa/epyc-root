@@ -918,6 +918,12 @@ observation artifacts in `epyc-orchestrator`:
   `-0.0579`, confusion `tp=16 fp=0 fn=31 tn=1`. Worst slices are
   `livecodebench` (`24` positives, `tp=1 fn=23`) and `frontdoor:direct`
   (`44` positives / `5` negatives, `tp=14 fp=3 fn=30 tn=2`).
+- 2026-06-21 follow-up: the evaluator now emits a machine-readable
+  `decision_gate`. The final-label report is explicitly `blocked` by aggregate
+  agreement/Spearman/balanced-accuracy thresholds, answer-equivalence slice
+  negatives/agreement/Spearman, and missing paraphrase/confound stress rows.
+  This prevents the negative-heavy aggregate from being mistaken for
+  NEXT-A2/A3 adoption evidence.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -931,5 +937,5 @@ does not rescue the scorer for NEXT-A2/A3 labels. Agreement improves under the
 new target, but rank correlation stays weak, useful no-false-positive recall is
 too low, and the sliced view shows the reviewed-positive long-response/code
 rows are where NeuralTxt fails. Next step is scorer/target improvement or an
-alternate offline oracle; do not feed NeuralTxt labels into learned-routing
-reward signals from this report alone.
+alternate offline oracle that can clear the `decision_gate`; do not feed
+NeuralTxt labels into learned-routing reward signals from this report alone.
