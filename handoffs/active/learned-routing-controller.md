@@ -1090,3 +1090,17 @@ calibration retry. The first source-stratified readout points at
 `three_way_eval` calibration and `seeding_eval` coverage as the concrete next
 targets. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
+- 2026-06-21 follow-up: orchestrator `caba3929` completed the seeding-eval
+  NPZ/robustness rebuild from
+  `offline_reward_feature_manifest_with_seeding_eval_expansion.jsonl`. The
+  source-family control and intended `source_action_response_telemetry`
+  artifact both retain `532/720` rows after exact conflict dropping, with
+  canonical action coverage `architect_general=212`, `coder_escalation=78`,
+  `frontdoor=242`. The source-action contract adds
+  `source_family_x_action_onehot[40]` interaction features (`z_dim=1089`), but
+  still fails promotion: 10-seed calibrated pass counts are `0/10` for
+  `temperature_bias` and `0/10` for `quantile_histogram`; mean calibrated
+  ROC-AUC/ECE are `0.7054/0.1308` and `0.6724/0.1400`. This closes the
+  seeding-eval rebuild as another null result, not a live gate. Next A9 work
+  should shift away from retuning this MLP/calibrator setup and toward better
+  balanced offline evidence or a materially different reward/verifier design.

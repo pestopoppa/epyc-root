@@ -246,6 +246,19 @@ prompt-free feature rows spanning the prior source-family expansion plus the
 new seeding-eval repair. No runtime verifier gate changed, and the next A9 step
 is now a quiet-window NPZ/robustness rebuild from that manifest, not another
 planner/model-family/source-action sweep.
+2026-06-21 addendum: orchestrator `caba3929` completed that seeding-eval
+rebuild. The source-family control and the intended
+`source_action_response_telemetry` contract both retain `532/720` rows after
+dropping `188` conflicting rows, with canonical action coverage
+`architect_general=212`, `coder_escalation=78`, `frontdoor=242` and no unmapped
+actions. The source-action verifier adds `source_family_x_action` interaction
+features (`z_dim=1089`), but still remains `not_promotion_grade`: 10-seed
+robustness gives `temperature_bias=0/10` and `quantile_histogram=0/10`
+calibrated passes, with mean calibrated ROC-AUC/ECE `0.7054/0.1308` and
+`0.6724/0.1400` respectively. No live verifier weights or runtime gate changed.
+The seeding-eval rebuild is therefore closed as a null result; next A9 work
+should stop retuning this MLP/calibrator path and instead add better balanced
+offline evidence or a materially different reward/verifier design.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
