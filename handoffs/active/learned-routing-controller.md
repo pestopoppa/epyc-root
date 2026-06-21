@@ -1167,3 +1167,21 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   `mixed_holdout_signal`, runtime gate changes remain disallowed, and the next
   A9 step is targeted collection of non-overlapping cross-action preferences
   for those weak strata rather than downstream routing use.
+- 2026-06-21 follow-up: orchestrator now has the targeted pairwise holdout
+  expansion for the failed `suite:livecodebench` stratum:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_holdout_expansion_*`
+  plus
+  `offline_reward_pairwise_preference_contract_score_ordered_holdout_expanded.{jsonl,summary.json,summary.md}`
+  and
+  `offline_reward_pairwise_ranker_score_ordered_holdout_expanded_summary.{json,md}`.
+  The new planner selects non-overlapping prompt-free source/role keys and
+  found `778` livecodebench candidate rows across `209` candidate groups; a
+  focused seeding-only diagnostic found no new non-overlapping `seeding_eval`
+  candidates in the current artifact scan. The expanded pairwise contract grows
+  to `889` pair rows, `512` cross-action pair rows, and `301` contrastive
+  groups. Random group-disjoint eval strengthens to `pairwise_ranker_signal`
+  with best `random_forest` mean accuracy/AUC `0.8525/0.9495`. Independent
+  holdout remains mixed (`7/9` pass), but `suite:livecodebench` is repaired:
+  best `logistic_l2`, mean accuracy/AUC `0.8807/0.9677` over `616` test pairs.
+  Current blockers are `source_family:seeding_eval` and `suite:thinking`.
+  Runtime gate changes remain disallowed.

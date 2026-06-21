@@ -38,16 +38,17 @@ A9 pairwise split: the `280` prompt-free preference rows include `87`
 cross-action routing preferences and `193` same-action response-quality
 contrasts.
 
-A9 pairwise ranker: the first offline train/eval is complete and marks
-`pairwise_ranker_signal`; best family is `random_forest` with mean
-accuracy/AUC `0.6615/0.7631` over five group-disjoint seeds. Expanded
-score-ordered cross-validation is also complete: `365` pair rows, `143`
-canonical cross-action rows, `pairwise_ranker_signal`, best `random_forest`
-accuracy/AUC `0.6552/0.7475`. Independent held-out validation is now mixed
-(`7/9` holdouts pass): `source_family:seeding_eval` and `suite:livecodebench`
-are below signal gate. Runtime gate changes remain disallowed. Next A9 work is
-targeted non-overlapping cross-action preference collection for those weak
-strata before any downstream routing use.
+A9 pairwise ranker: the first offline train/eval and score-ordered expansion
+both mark `pairwise_ranker_signal`. Independent held-out validation initially
+failed `source_family:seeding_eval` and `suite:livecodebench`; the targeted
+holdout expansion then added `778` prompt-free livecodebench candidate rows,
+rebuilt a `889`-row score-ordered pairwise contract with `512` cross-action
+rows, and repaired `suite:livecodebench` to holdout signal (`0.8807/0.9677`
+mean accuracy/AUC over `616` test pairs). Overall holdout remains mixed
+(`7/9` pass) because `source_family:seeding_eval` and `suite:thinking` still
+fail. Runtime gate changes remain disallowed. Next A9 work is either new
+non-overlapping `seeding_eval` evidence or a small `thinking` holdout repair;
+do not route downstream on this artifact yet.
 
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |

@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T20:33:53Z",
+  "scan_time": "2026-06-21T20:51:56Z",
   "schema_version": 1,
-  "source_set_hash": "f9d5b6988200cea9df9c3b1098c13075802e6164c838da49483a2d29f0f2557b",
+  "source_set_hash": "13142e82911dc15e6bd30ec47068c6b3767c776b0e9e0065d5c11befd05692f1",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -359,10 +359,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "54f4430638f87c8eba5a9daf2f5ca45c5bd4810836dc6823dcb24fdec9c67bd6",
-      "modified": "2026-06-21T20:33:01Z",
+      "content_hash": "271a76c282b1835669391e7787f40c8f4b10d817d96ecaf5db64b63cef15e331",
+      "modified": "2026-06-21T20:51:41Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 111136,
+      "size": 112414,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "70999c642c3bb537a61faa67efbf32a9b5b14ff2728f8e98be7291ff9c5bd5b9",
-      "modified": "2026-06-21T20:33:40Z",
+      "content_hash": "b9873632752085bba797a63136db696a776cfed175c4b468a4da9bedaf8516c5",
+      "modified": "2026-06-21T20:51:41Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 214635,
+      "size": 217959,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },
