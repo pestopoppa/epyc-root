@@ -457,6 +457,8 @@ Scope inherited from `autowiki-incremental-kb-generator.md` (now in [`../complet
 
 **2026-06-19 first implementation slice:** `project-wiki`'s `compile_sources.py` now formalizes the source manifest as `project-wiki-source-manifest` schema v1. It can persist a full baseline with `--full --write-manifest`, drift-check added/changed/removed sources with `--check-manifest`, and emit the added/changed subset with `--changed-since-manifest`. Follow-up orchestrator commits `0af0415` and `3418188` wire the KB-RAG update CLI to this contract: `scripts/kb_rag/cli.py update --manifest <manifest.json> --manifest-root /workspace` resolves manifest rows to paths, forwards current `sources[].path` rows into `kb_rag.update_files(paths, ...)`, and prunes `removed_sources[].path` rows through `kb_rag.remove_files(...)` so catalog rows, FTS rows, and stale embedding files are removed without a full rebuild.
 
+**2026-06-21 hook integration slice:** `.claude/hooks/post_commit_kb_rag_update.sh` now uses the manifest contract instead of raw `git diff` markdown filtering. On first run it emits a full project-wiki source manifest, updates KB-RAG through `kb_rag update --manifest ... --manifest-root <repo>`, then persists the baseline at `wiki/source_manifest.json`; later runs emit `--changed-since-manifest` deltas and skip KB-RAG entirely when there are no added/changed/removed sources. This closes the deterministic source-manifest-to-ColBERT refresh loop; the AutoWiki page generator/writer and output lint gate remain open design work below.
+
 Open design questions (carried from the stub, unresolved):
 
 1. The page→source-paths manifest is also the basis for **drift detection** — does it subsume / improve the `scripts/validate/` document-drift validator?

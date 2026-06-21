@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Post-commit hook (Claude Code PostToolUse on Bash git commit/merge):
-# Incrementally refresh the KB-RAG index for any markdown files in HEAD's diff.
+# Incrementally refresh the KB-RAG index from the project-wiki source manifest.
 #
 # Coexists with the GitNexus PostToolUse hook (which handles code).
 # Runs as a thin shell wrapper; heavy lifting is in src/retrieval/kb_rag.py.
@@ -25,24 +25,53 @@ if [[ ! -d "$ORCHESTRATOR/src/retrieval" ]]; then
   exit 0
 fi
 
-# Collect markdown changes from the last commit.
-# Falls back gracefully if HEAD~1 doesn't exist (initial commit / shallow clone).
-if ! git rev-parse --quiet --verify HEAD~1 >/dev/null 2>&1; then
-  CHANGED=$(git show --name-only --pretty=format: HEAD)
-else
-  CHANGED=$(git diff --name-only HEAD~1 HEAD)
+COMPILE_SOURCES="${REPO_ROOT}/.claude/skills/project-wiki/scripts/compile_sources.py"
+
+if [[ ! -f "$COMPILE_SOURCES" ]]; then
+  exit 0
 fi
 
-# Filter to markdown files; rewrite to absolute paths from REPO_ROOT.
-MD_FILES=$(echo "$CHANGED" | awk -v r="$REPO_ROOT" '/\.md$/ {print r"/"$0}')
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/kb-rag-manifest.XXXXXX")
+trap 'rm -rf "$TMP_DIR"' EXIT
+DELTA_MANIFEST="${TMP_DIR}/source_manifest_delta.json"
+MANIFEST_ERR="${TMP_DIR}/source_manifest.err"
 
-if [[ -z "$MD_FILES" ]]; then
+if ! "$PYTHON" "$COMPILE_SOURCES" --changed-since-manifest >"$DELTA_MANIFEST" 2>"$MANIFEST_ERR"; then
+  if grep -q "manifest not found" "$MANIFEST_ERR"; then
+    "$PYTHON" "$COMPILE_SOURCES" --full >"$DELTA_MANIFEST" 2>"$MANIFEST_ERR" || {
+      tail -10 "$MANIFEST_ERR" >&2
+      exit 0
+    }
+  else
+    tail -10 "$MANIFEST_ERR" >&2
+    exit 0
+  fi
+fi
+
+if ! "$PYTHON" - "$DELTA_MANIFEST" <<'PY'
+import json
+import sys
+
+manifest = json.load(open(sys.argv[1], encoding="utf-8"))
+if manifest.get("sources") or manifest.get("removed_sources"):
+    raise SystemExit(0)
+raise SystemExit(1)
+PY
+then
   exit 0
 fi
 
 # Run the incremental updater. Errors are logged but do not block the commit
-# (this is a post-commit hook; the commit has already landed).
-echo "$MD_FILES" | xargs "$PYTHON" "$ORCHESTRATOR/scripts/kb_rag/cli.py" update --files 2>&1 | tail -10 || {
+# (this is a post-commit hook; the commit has already landed). Keep the saved
+# source manifest unchanged on failure so the next hook run can retry.
+"$PYTHON" "$ORCHESTRATOR/scripts/kb_rag/cli.py" update \
+  --manifest "$DELTA_MANIFEST" \
+  --manifest-root "$REPO_ROOT" 2>&1 | tail -10 || {
   echo "kb_rag update failed (non-fatal)" >&2
+  exit 0
+}
+
+"$PYTHON" "$COMPILE_SOURCES" --full --write-manifest >/dev/null 2>&1 || {
+  echo "project-wiki source manifest refresh failed (non-fatal)" >&2
   exit 0
 }
