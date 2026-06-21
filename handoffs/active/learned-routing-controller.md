@@ -840,3 +840,30 @@ A 2026-06-20 deep-dive consolidated four sibling intake entries — AVB's "offli
 - **Caveats (load-bearing).** All magnitude numbers (self-reported MiniLM Spearman ~0.718 / DistilBERT ~0.757 vs RewardBert 0.44; answer-equiv ROC-AUC ~0.93–0.94; confound resistance 6–12% fooled) are **observations** — no protocol, never decision-gating (`MEASUREMENT.md`). intake-717's dataset card omits judge/rubric/source-model **provenance — verify the parquet first**. intake-719 catches only ~3% of **synonym swaps** (paraphrase-correct answers scored low) — a mandatory paraphrase/synonym stress test before any adoption. Do **not** propose this under `decision-aware-routing.md` or `retrain-routing-models.md` (both expansion-FROZEN per fable5-findings-02).
 
 Full digest: [2026-06-20-avb-offline-reward-stack.md](../../research/deep-dives/2026-06-20-avb-offline-reward-stack.md)
+
+### Implementation checkpoint — 2026-06-21
+
+The A9 offline reward-oracle lane now has working scorer plumbing and two
+observation artifacts in `epyc-orchestrator`:
+
+- `8fecf4a2` adds
+  `scripts/graph_router/score_offline_reward_oracle_neuraltxt.py` and unit
+  tests for the optional-dependency `paperbd/neuraltxt-reward-tiny` adapter;
+- `6b99b2b1` records the first real-checkpoint smoke report at
+  `orchestration/reports/offline_reward_oracle_neuraltxt_20260621/`
+  (`50` source rows, `69` scored rows, Spearman `0.7564`, agreement
+  `0.7391`);
+- `71beeb4f` records the broader binary/stress observation report at
+  `orchestration/reports/offline_reward_oracle_neuraltxt_broad_20260621/`
+  (`89` source rows, `87` scored rows, Spearman `0.8018`, agreement
+  `0.7701`, paraphrase/confound stress `0/29`).
+
+These reports prove the adapter can emit real non-baseline `oracle_score`
+values and that the evaluator can consume them. They do **not** yet prove the
+NEXT-A2/A3 label-quality gate: the current target is still binary/stress
+derived from existing seeding rewards, source coverage is frontdoor-heavy, and
+the stress rows are deterministic. Next step is a graded or held-out artifact
+run, preferably
+`epyc-inference-research/benchmarks/results/orchestrator/seeding_live_seed42.json`
+or `benchmarks/results/eval/seeding_20260305_203724.jsonl`, then a scorer
+comparison that separates graded-target fit from binary `q_reward` agreement.
