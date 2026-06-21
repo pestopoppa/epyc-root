@@ -55,6 +55,12 @@ descriptor -> stack-prior -> guard -> consumer-migration path.
   the last retired-role launch test as intentional legacy coverage, and
   `stack_change_pipeline.py check --run-promotion-gate` now reports
   `guard_all_surfaces: ok`.
+- 2026-06-21 A9 follow-up `3693f6c7` restored that clean baseline after the
+  offline reward verifier tests intentionally added historical
+  `architect_coding:delegated` remap fixtures. The fixtures now carry exact
+  `stack-change-guard: allow` markers, `guard_all_surfaces: ok` is restored,
+  `stack_change_pipeline.py check --run-promotion-gate` passed, and the
+  executable promotion gate reported `174 passed`.
 - 2026-06-19 descriptor drift from the research registry hash was repaired
   through the canonical `stack_change_pipeline.py update` path. The generated
   diff was limited to `model_descriptors.yaml` / `stack_priors.yaml`
