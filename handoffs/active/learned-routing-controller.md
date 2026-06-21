@@ -856,14 +856,18 @@ observation artifacts in `epyc-orchestrator`:
 - `71beeb4f` records the broader binary/stress observation report at
   `orchestration/reports/offline_reward_oracle_neuraltxt_broad_20260621/`
   (`89` source rows, `87` scored rows, Spearman `0.8018`, agreement
-  `0.7701`, paraphrase/confound stress `0/29`).
+  `0.7701`, paraphrase/confound stress `0/29`);
+- `40b9c44f` records the held-out-style observation report at
+  `orchestration/reports/offline_reward_oracle_neuraltxt_heldout_20260621/`
+  over `seeding_live_seed42.json` and `seeding_20260305_203724.jsonl`
+  (`178` source rows, `144` scored rows, Spearman `0.2728`, agreement
+  `0.6181`, `tp=41 fp=0 fn=55 tn=48`).
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
-values and that the evaluator can consume them. They do **not** yet prove the
-NEXT-A2/A3 label-quality gate: the current target is still binary/stress
-derived from existing seeding rewards, source coverage is frontdoor-heavy, and
-the stress rows are deterministic. Next step is a graded or held-out artifact
-run, preferably
-`epyc-inference-research/benchmarks/results/orchestrator/seeding_live_seed42.json`
-or `benchmarks/results/eval/seeding_20260305_203724.jsonl`, then a scorer
-comparison that separates graded-target fit from binary `q_reward` agreement.
+values and that the evaluator can consume them. They do **not** prove the
+NEXT-A2/A3 label-quality gate. The held-out-style run is a cautionary signal:
+with broader role coverage and graded `q_reward` inputs, rank agreement drops
+sharply and threshold `0.5` behaves conservatively (zero false positives, many
+false negatives). Next step is threshold/calibration analysis and/or a better
+target construction that separates answer equivalence from current binary
+`q_reward` artifacts before this scorer feeds learned-routing labels.
