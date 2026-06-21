@@ -899,6 +899,15 @@ observation artifacts in `epyc-orchestrator`:
   not-equivalent, with label status split `43` seeded / `5`
   manual-reviewed. The overlay stores only item IDs, labels, label source/
   status, and note codes; prompt/reference/response text stays outside git.
+- `87728c44` records the final-label NeuralTxt rerun at
+  `orchestration/reports/offline_reward_oracle_neuraltxt_final_labels_20260621/`.
+  The report scores all `178` base held-out rows, uses reviewed
+  `final_label` targets for the `48` answer-equivalence review rows, and keeps
+  original binary targets for the other `130` rows. Result: Spearman `0.2416`,
+  Pearson `0.3630`, threshold-`0.5` agreement `0.7528`
+  (`tp=21 fp=13 fn=31 tn=113`), best agreement threshold `0.66`
+  (`tp=18 fp=6 fn=34 tn=120`), and no-false-positive threshold `0.84`
+  recalls only `6/52` positives.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -907,7 +916,9 @@ with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
-deterministic reconstruction is also insufficient, but the review queue is now
-fully labeled through the prompt-free manual overlay. Next step is to rerun the
-scorer gate against `final_label` before this scorer feeds learned-routing
-labels.
+deterministic reconstruction is also insufficient, and the final-label rerun
+does not rescue the scorer for NEXT-A2/A3 labels. Agreement improves under the
+new target, but rank correlation stays weak and useful no-false-positive recall
+is too low. Next step is scorer/target improvement or an alternate offline
+oracle; do not feed NeuralTxt labels into learned-routing reward signals from
+this report alone.
