@@ -1,6 +1,6 @@
 # OpenDataLoader PDF — Pipeline Integration
 
-**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, and add a default-inert ODL table backend routing seam. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, and ODL tables are first-class `TableRef` records for downstream routing. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filter is additionally gated by `INJECTION_SCANNING`, and `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` currently falls back to local structured ODL until a sidecar/client exists. Remaining Phase 2 work: real ODL hybrid table sidecar/client extraction, primary document-body injection policy, and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
+**Status**: Phase 1 done (NIB2-13). Phase 2 scaffolding landed 2026-05-06 — `src/models/odl_structured.py` (FigureContext, HeadingNode, TableContext, ODLStructuredDocument); `_extract_with_opendataloader_structured()` in pdf_router; `build_figure_prompt_with_context()` additive helper in figure_analyzer; `chunk_by_odl_headings()` additive helper in document_chunker. 2026-06-21 follow-ups (`epyc-orchestrator` `bd3f6f4e`, `55d1ed16`, `4f7f6d1d`, `76dcd42c`, `634a9078`, `fa1b5460`, `a0e8ae09`) wire optional structured payloads through `OCRResult`, `DocumentPreprocessor`, `DocumentChunker`, and `FigureAnalyzer`, route explicitly gated local PDF processing through the ODL structured extractor, use ODL structured figure bboxes instead of PyMuPDF image enumeration in ODL structured mode, suppress unsafe ODL structured metadata when `INJECTION_SCANNING` is enabled, carry ODL table metadata through preprocessing/cache/TaskIR output, add a default-inert ODL table backend routing seam, and add a default-off primary document-body warning policy. ODL headings now drive chunking when present with regex fallback, ODL figure contexts enrich per-figure VL prompts unless the injection scanner suppresses the additive structured context, ODL tables are first-class `TableRef` records for downstream routing, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` can scan extracted OCR/body pages without mutating or blocking source text. This remains default-inert unless `PDF_EXTRACTOR=opendataloader` and `ORCHESTRATOR_ODL_STRUCTURED=1` are set or TaskIR provides structured metadata; the injection filters are additionally gated by `INJECTION_SCANNING`, and `ORCHESTRATOR_ODL_TABLE_BACKEND=hybrid` currently falls back to local structured ODL until a sidecar/client exists. Remaining Phase 2 work: real ODL hybrid table sidecar/client extraction and fixture/benchmark evidence. Phase 3 (sidecar + benchmark) remains inference/sidecar-gated.
 **Created**: 2026-03-17 (via research intake deep dive)
 **Priority**: P2 — medium priority, medium effort, high payoff for document processing quality
 **Categories**: document_processing, multimodal
@@ -25,7 +25,7 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 2. **No reading order**: pdftotext `-layout` interleaves multi-column text
 3. **Binary routing**: pdftotext (fast) OR LightOnOCR (slow) — no per-page complexity routing
 4. **Blind figure analysis**: VL models receive cropped images without document context (caption, surrounding text, semantic type)
-5. **Incomplete prompt-injection policy**: ODL structured headings/captions/tables are suppressible under `INJECTION_SCANNING`, but primary OCR text is still treated as source content and needs an explicit body-level policy
+5. **Hybrid/table evidence gap**: the local structured path carries ODL table metadata, but the real hybrid table sidecar/client and benchmark-backed routing policy are not implemented
 
 ## Three-Phase Plan
 
@@ -59,8 +59,8 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - [x] Suppress unsafe ODL structured metadata before chunking / VL prompt enrichment when `INJECTION_SCANNING` is enabled
 - [x] Carry detected ODL tables through preprocessing/cache/TaskIR output as first-class table records
 - [x] Add a default-inert ODL table backend routing seam for local structured vs future hybrid extraction
+- [x] Define primary extracted-text prompt-injection policy for document bodies
 - [ ] Implement the ODL hybrid table sidecar/client path for 0.93 accuracy extraction
-- [ ] Define primary extracted-text prompt-injection policy for document bodies
 
 **Key files**:
 - `src/services/figure_analyzer.py` — enrich VL prompts with document context
@@ -115,6 +115,15 @@ Integrate [OpenDataLoader PDF](https://github.com/opendataloader-project/opendat
 - `DocumentClient.process_document()` now reaches local structured PDF extraction through the router helper instead of duplicating result assembly and page-count logic.
 - Validation: GitNexus LOW for `PDFRouter`, `process_document`, `_extract_local_structured_pdf`, and `PDFRouter.extract`; `py_compile`, `ruff`, `git diff --check`, focused ODL/router/client tests (`4 passed`), and the broader ODL/PDF/cache/document suite (`106 passed, 2 skipped`) passed.
 - Residual risk: this is only the default-inert routing seam. The actual hybrid sidecar/client, table-selection policy, and opendataloader-bench/fixture evidence remain open.
+
+**2026-06-21 document body injection policy checkpoint (`epyc-orchestrator` `a0e8ae09`)**
+
+- `DocumentPreprocessor` now has an explicit primary body policy gate via `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY`.
+- Default behavior remains `source`: primary OCR/PDF body text is not scanned, mutated, suppressed, or blocked beyond the existing source-content path.
+- `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn`, combined with `INJECTION_SCANNING`, scans page body text with the existing injection scanner and appends warnings such as `Document body injection scan warning (page N: ...)` without altering chunked document content.
+- The structured metadata scanner remains independent: unsafe ODL headings/figures/tables can still suppress additive structured context, while source OCR body text stays available for downstream chunking.
+- Validation: GitNexus MEDIUM for `DocumentPreprocessor.preprocess`; HIGH for `scan_content` and deliberately no scanner edit. `py_compile`, `ruff`, `git diff --check`, focused body/structured policy tests (`4 passed`), and the broader document/ODL/PDF/cache/scanner suite (`124 passed, 2 skipped`) passed.
+- Residual risk: warn-mode is annotation only. Any future `block` or redact behavior needs separate false-positive/product semantics and broader caller evidence.
 
 ### Phase 3: Hybrid Mode + Benchmark Integration
 
