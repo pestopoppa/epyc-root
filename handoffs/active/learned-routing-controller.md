@@ -1045,6 +1045,18 @@ observation artifacts in `epyc-orchestrator`:
   weights or runtime gate changed. This partially improves discrimination but
   confirms the next useful A9 step is a model-family or split-stratification
   repair, not another scalar post-hoc calibration pass.
+- 2026-06-21 follow-up: the model-family scout now compares
+  `logistic_l2`, `hist_gradient_boosting`, `random_forest`, and
+  `mlp_sklearn` over the same source-family conflict-dropped NPZ, split seeds,
+  softmax baseline, and calibration gates. It remains `not_promotion_grade`.
+  Best discrimination/Brier families improve the measured ceiling
+  (`hist_gradient_boosting` raw AUC `0.9000`, temperature-bias mean Brier
+  `0.1269`; `random_forest` raw AUC `0.8951`), but calibrated ECE still fails.
+  Highest pass counts are only `2/10` (`logistic_l2` + isotonic,
+  `random_forest` + ECE-temperature); no family/method reaches the required
+  `10/10`. This narrows the next A9 step again: the blocker is not simply the
+  NumPy MLP head. Prefer source-stratified calibration/evaluation and/or more
+  balanced evidence rows before another verifier family sweep.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1061,8 +1073,8 @@ where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
 manifest-backed NPZ in a stronger NEXT-A2/A3 offline reward-signal experiment:
 improve data/model calibration for the broader multi-action consumer before any
-runtime verifier gate change. The source-family repair is now measured and
-insufficient for promotion, so prefer verifier model-family repair or
-source-stratified calibration/evaluation over another scalar calibration retry.
-Do not feed NeuralTxt labels into
+runtime verifier gate change. The source-family and model-family repairs are
+now measured and insufficient for promotion, so prefer source-stratified
+calibration/evaluation or more balanced evidence rows over another scalar
+calibration retry. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
