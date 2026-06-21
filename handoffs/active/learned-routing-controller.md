@@ -919,11 +919,22 @@ observation artifacts in `epyc-orchestrator`:
   `livecodebench` (`24` positives, `tp=1 fn=23`) and `frontdoor:direct`
   (`44` positives / `5` negatives, `tp=14 fp=3 fn=30 tn=2`).
 - 2026-06-21 follow-up: the evaluator now emits a machine-readable
-  `decision_gate`. The final-label report is explicitly `blocked` by aggregate
-  agreement/Spearman/balanced-accuracy thresholds, answer-equivalence slice
-  negatives/agreement/Spearman, and missing paraphrase/confound stress rows.
-  This prevents the negative-heavy aggregate from being mistaken for
-  NEXT-A2/A3 adoption evidence.
+  `decision_gate`. The first final-label report was explicitly `blocked` by
+  aggregate agreement/Spearman/balanced-accuracy thresholds,
+  answer-equivalence slice negatives/agreement/Spearman, and missing
+  paraphrase/confound stress rows. This prevents the negative-heavy aggregate
+  from being mistaken for NEXT-A2/A3 adoption evidence.
+- 2026-06-21 follow-up: the final-label report now reuses the already-scored
+  held-out stress rows, producing a `322`-row final-label-with-stress artifact:
+  `178` base/final-label rows plus `144` held-out stress rows (`48` base,
+  `48` paraphrase, `48` confound). Stress checks now pass (`48` groups,
+  paraphrase penalty rate `0.0000`, confound fooled rate `0.0000`). The
+  `decision_gate` remains `blocked` by aggregate agreement `0.6925`, Spearman
+  `0.2771`, best balanced accuracy `0.6949`, and the same
+  `answer_equivalence_final_label` slice failure (`48` rows, `47` positives /
+  `1` negative, agreement `0.3542`, Spearman `-0.0579`, `tp=16 fp=0 fn=31
+  tn=1`). The blocker is now the scorer/target quality signal itself, not
+  missing stress evidence.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
