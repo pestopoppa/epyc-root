@@ -44,11 +44,25 @@
 > request is still pending, the wrapper now gives the orchestrator response a
 > short completion grace before emitting `slot_idle_orphan`. This targets false
 > `[INFRA_SKIP] worker_general` rows without changing reward semantics.
+> Follow-up live smoke after durable trial `917` reports trusted vectors
+> `83/120` (`37` remaining), seq-shadow rows `31/30` (`0` remaining), W6 audited
+> rows `53/30` (`0` remaining), W6 alarm clearance `29`, and combined horizon
+> `37` with blocker `seq_trusted_vectors`.
+> A guarded stop-window watcher is now resident as PID `1862928`. It waits for
+> the current AutoPilot Python PID `1091018` to exit, requires
+> `trial_counter >= 930`, `paused=False`, and no `_dispatch_deficiency`, runs
+> ordinary `restart_readiness_report.py --json --strict`, appends the prepared
+> baseline seed only if the report says append-ready/required with exact guard
+> values, then restarts the same W4/W6 collection flags to
+> `autopilot.py start --max-trials 970`. Runtime logs are under
+> `/mnt/raid0/llm/tmp/w4w6_seed_then_continue_20260621T0358.log`. The watcher
+> runs from a temp Python script so pgrep-based AutoPilot guards see only the
+> real `autopilot.py start` process.
 
 ## Start Here
 
 1. Keep sequential authority disabled until readiness passes: at least 120 trusted vector trials, at least 30 sequential shadow rows, and the flip-rate/e-process criteria in the spec.
-2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Live strict report after durable trial `916` leaves the gate blocked at `82/120` trusted vectors; seq-shadow rows have reached `30/30`, W6 audited rows are above floor at `52/30`, but the trailing alarm still needs `25` clean audited rows to age out if no new divergences occur. The combined clean-trial horizon is `38`, currently dominated by `seq_trusted_vectors`.
+2. Continue clean vector collection and sequential shadow accrual; do not treat early high flip-rate over a small row count as deploy evidence. The current 2026-06-20 bounded run is collection-only and was restarted after `c13e5ae` so default eval fanout is serial on the current full-only fleet; discount killed trial `894` as recovery evidence, not clean readiness progress. Live strict report after durable trial `917` leaves the gate blocked at `83/120` trusted vectors; seq-shadow rows have reached `31/30`, W6 audited rows are above floor at `53/30`, but the trailing alarm still needs `29` clean audited rows to age out if no new divergences occur. The combined clean-trial horizon is `37`, currently dominated by `seq_trusted_vectors`. A guarded watcher will use the natural `--max-trials 930` stop window to append the ready baseline seed before continuing the same collection posture to `--max-trials 970`.
 3. After readiness passes, run the disagreement/cutover report and the aggregate restart-readiness report with `--require-seq-cutover --require-w6-audit`; W6 audit must be alarm-free before any authority flip.
 4. Coordinate any restart-bundle flips with J11/BSV-2 and K-SKILL-1 because all three are accept-path gates.
 
