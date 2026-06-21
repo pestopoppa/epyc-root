@@ -861,13 +861,19 @@ observation artifacts in `epyc-orchestrator`:
   `orchestration/reports/offline_reward_oracle_neuraltxt_heldout_20260621/`
   over `seeding_live_seed42.json` and `seeding_20260305_203724.jsonl`
   (`178` source rows, `144` scored rows, Spearman `0.2728`, agreement
-  `0.6181`, `tp=41 fp=0 fn=55 tn=48`).
+  `0.6181`, `tp=41 fp=0 fn=55 tn=48`);
+- `78bdc573` adds threshold calibration to the evaluator and regenerates the
+  held-out report: best agreement is threshold `0.16`
+  (`tp=60 fp=4 fn=36 tn=44`), best zero-false-positive threshold is `0.25`
+  (`tp=53 fp=0 fn=43 tn=48`), and best F1 is a degenerate all-positive
+  threshold `0.00`.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
 NEXT-A2/A3 label-quality gate. The held-out-style run is a cautionary signal:
 with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
-false negatives). Next step is threshold/calibration analysis and/or a better
-target construction that separates answer equivalence from current binary
-`q_reward` artifacts before this scorer feeds learned-routing labels.
+false negatives). Calibration explains the operating points but does not
+rescue the scorer for labels. Next step is a better target construction that
+separates answer equivalence from current binary `q_reward` artifacts before
+this scorer feeds learned-routing labels.
