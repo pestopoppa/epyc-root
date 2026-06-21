@@ -988,6 +988,17 @@ observation artifacts in `epyc-orchestrator`:
   NEXT-A2/A3 preparation; the remaining integration step is an embedding/NPZ
   extractor that consumes this manifest, embeds source prompt/context rows, and
   joins labels by `join_key`.
+- 2026-06-21 follow-up: `scripts/graph_router/build_offline_reward_verifier_npz.py`
+  now consumes the feature manifest and emits a verifier-compatible offline NPZ
+  at
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_verifier_data.npz`
+  plus summary files. The artifact has `322` rows, embeds `89` unique source
+  records, uses feature dimension `1031` (`1024` BGE embedding plus the 7
+  engineered features), appends the live 10-action one-hot, and carries
+  balanced oracle labels (`161` positive / `161` negative). Metadata remains
+  prompt-free; prompt/expected/answer text is represented only by SHA-256 hashes
+  and source offsets. This closes the manifest-backed NPZ extraction step for
+  NEXT-A2/A3 preparation.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1002,7 +1013,7 @@ but rank correlation stays weak, useful no-false-positive recall is too low,
 and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
-manifest/label export in the NEXT-A2/A3 offline reward-signal feature path by
-building the manifest-backed embedding/NPZ extractor; do not feed NeuralTxt
-labels into learned-routing reward signals from the failed NeuralTxt report
-alone.
+manifest-backed NPZ in the NEXT-A2/A3 offline reward-signal feature path by
+training/evaluating the frontdoor verifier or reward-signal consumer from
+`offline_reward_verifier_data.npz`; do not feed NeuralTxt labels into
+learned-routing reward signals from the failed NeuralTxt report alone.
