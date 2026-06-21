@@ -2,7 +2,7 @@
 
 **Category**: `context_management`
 **Confidence**: verified
-**Last compiled**: 2026-06-19
+**Last compiled**: 2026-06-21
 **Sources**: 25 documents (6 deep-dives, 4 active handoffs, 15 intake entries) + 2026-06-19 K-MEM Tulving run state
 
 ## Summary
@@ -16,6 +16,14 @@ The research landscape is converging on a spectrum from text-level to KV-level c
 The EPYC orchestrator implements a 5-layer context management stack that predates much of this research but aligns well with the emerging consensus. Active development is upgrading it to a multi-tier condensation system informed by AgentFold (two-level architecture), ReSum (compaction timing), CMV (structural trimming), and the Memento cluster (KV-retaining compression). The implementation is phased: Phase 0 (compaction trigger raised to 75%) and Phase 1 (two-level condensation) are complete, Phase 2 (summarizer quality evaluation) is substantially done, and Phase 3 (process reward signals) is in design.
 
 ## Key Findings
+
+### New Finding (2026-06-21)
+
+- **Amortized KV-cache compaction enables iterative compaction over a long-horizon trajectory — the streaming-context residency angle.** Still (intake-708, arXiv:2606.07878) trains a small per-layer Perceiver once against a frozen base model that synthesizes compact keys/values in a single forward pass. Because compaction is a forward pass rather than per-context gradient descent (the Cartridges regime), the same compactor can be applied **iteratively/chunked over a trajectory**, which is the property that matters for context management here: a multi-turn REPL or streaming long-horizon session can re-compact its KV residency in-flight without a re-optimization step per context. This is the KV-mechanism cousin of the text-side folding/compaction this page tracks — it manages the *KV residency* of long-context rather than the text summary. Primary KV-mechanism home is [kv-cache.md]; readiness tracking lives in [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md). [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
+
+- **Still is a GPU-CPT-gated watch-item, not a deployable context-management lever today.** Adoption requires a one-time GPU forward-KL distillation per base model (the same gating domain as the KSA/GSA summary-token cluster), and there is NO public code or compactor weights for a served family (Qwen/Gemma) as of 2026-06-05. On the BW-bound EPYC CPU regime the added per-layer Perceiver forward pass is extra decode-time compute, so net benefit vs the deployed Expected-Attention/TriAttention compactor is unmeasured. Tracked as a monitoring target in [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md); trigger = public code OR released compactor weights for a served family, then gate on CPU compute-overhead-vs-quality. [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
+
+- **Position-free compaction (inverse-RoPE) lets compacted entries be placed independent of original positions.** Still removes RoPE, positions in a latent space, then re-rotates, so a synthesized compact KV block is not pinned to the source-token positions it summarizes. For long-horizon residency management this decouples *where* compacted history is placed in the cache from *when* the underlying tokens arrived — relevant to any future folded-summary side-car that needs to re-inject consolidated state at an arbitrary cache position rather than appending. Reported: beats KV-Distill by 8-22 pts in 16/18 RULER cells across 8x-200x compression and 8k-128k context (vendor/GPU; H200, no llama.cpp integration). [intake-708](https://www.arxiv.org/html/2606.07878v1) `external`
 
 ### New Finding (2026-05-27)
 
@@ -159,6 +167,8 @@ The EPYC orchestrator implements a 5-layer context management stack that predate
 - [intake-418](https://arxiv.org/abs/2604.08224) Externalization in LLM Agents -- survey: weights→context→harness era progression; validates meta-harness optimization thesis (worth_investigating)
 - [intake-425](https://arxiv.org/abs/2604.14004) Memory Transfer Learning -- simple embedding retrieval (cosine, N=3) outperforms LLM reranking; 431 curated insight-format memories beat 5,899 raw memories; validates FAISS-based strategy_store approach
 - [intake-426](https://arxiv.org/abs/2604.14228) Dive into Claude Code -- five-layer compaction pipeline (budget reduction → snip → microcompact → context collapse → auto-compact); Budget Reduction gap identified for EPYC; "context as scarce resource" design principle
+- [intake-708](https://www.arxiv.org/html/2606.07878v1) Still: Amortized KV Cache Compaction in a Single Forward Pass -- per-layer Perceiver synthesizes compact KV in one forward pass (vs per-context optimization); iterative/chunked compaction over a trajectory for streaming/long-horizon residency; position-free via inverse-RoPE; needs one-time GPU forward-KL distillation per base model, no public code as of 2026-06-05. Context-management angle here; primary KV-mechanism home is [kv-cache.md](kv-cache.md)
+- [summary-token-attention-readiness.md](../handoffs/active/summary-token-attention-readiness.md) -- learnable-compaction readiness tracker; Still added as a GPU-CPT-gated monitoring target alongside the KSA/GSA summary-token cluster
 
 ## Updates — 2026-04-28
 

@@ -2,8 +2,8 @@
 
 **Category**: `memory_augmented`
 **Confidence**: verified
-**Last compiled**: 2026-06-20
-**Sources**: 25+ documents (2 deep-dives, 18 intake entries, active handoffs, progress logs, and K-MEM/Tulving measurement context)
+**Last compiled**: 2026-06-21
+**Sources**: 25+ documents (2 deep-dives, 20 intake entries, active handoffs, progress logs, and K-MEM/Tulving measurement context)
 
 ## Summary
 
@@ -18,6 +18,16 @@ Two high-relevance entries point toward concrete next steps. MemPalace (intake-3
 The connection between memory and the autopilot is especially significant. Before the strategy store and Evolution Manager were implemented, species operated statelessly: Seeder never read past trial outcomes, NumericSwarm used only Optuna's internal state, PromptForge built mutation prompts without past mutation outcomes, and StructuralLab did not consult experiment history. The experiment journal existed but was passive -- consumed only by the Controller's prompt template as flat text (last 20 entries). EvoScientist's finding that memory-augmented proposals dramatically outperform memoryless ones (ablation: -45.83 gap without evolution) motivated the strategy store implementation. Species now retrieve relevant past insights before making proposals via semantic search against the strategy store.
 
 ## Key Findings
+
+### New Finding (2026-06-21) — Evidence-pruned reconstruction (MRAgent) is a second instance of the parked two-pass-retrieval pattern, not a new workstream
+
+- **MRAgent's "active reconstruction" is the same evidence-conditioned retrieval family already parked on the KB-RAG handoff, approached from the pruning side.** MRAgent (intake-698, arXiv:2606.06036, Ji/Li/Hooi) replaces static "retrieve-then-reason" with a Cue-Tag-Content associative memory graph traversed by interleaving LLM reasoning with retrieval — iteratively exploring and pruning retrieval paths on intermediate evidence rather than fetching a flat top-k. This is the same self-correcting two-pass pattern recorded from agent-oss (intake-610): "evidence incomplete → gap-query → re-retrieve at a lower threshold," but realized as path-pruning instead of re-retrieval. It is logged as a **comparative datapoint** against `internal-kb-rag.md`'s parked note, and stays **deferred-pending-a-consumer-that-emits-an-incompleteness-signal** — no new K-track, no plan delta.
+- **MRAgent's only transferable lever is token-cost discipline, not its accuracy headline.** Reported token consumption is ~118k vs 245k–3.3M for baselines, with LoCoMo/LongMemEval gains — but all numbers are **cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with NO CPU/local/quantized results**, and MRAgent actually **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)**. Under EPYC's token-budget constraints, the reusable idea is evidence-pruned traversal's cost behavior; the accuracy figures are observations (per MEASUREMENT.md), never decision-gating. Routing note: do NOT attach this to `delta-mem-reproduction.md` (its open gates are GPU-bound accuracy reproduction, not retrieval token-cost). Sources: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md) (2026-06-20 MRAgent RIU), [intake-698](https://arxiv.org/abs/2606.06036). `external (preprint, cloud-bound)`
+
+### New Finding (2026-06-21) — DecentMem dual-pool structure transfers; its LLM-judge reweighting conflicts with autopilot policy
+
+- **Only the decentralized dual-pool STRUCTURE of DecentMem maps onto the autopilot strategy store — the per-stage LLM-judge reweighting must be dropped.** DecentMem (intake-715, arXiv:2605.22721, Hao/Long/Zhao) gives each agent its own dual-pool memory — an *exploitation* pool of consolidated past trajectories plus an *exploration* pool of LLM-generated candidates for unseen contexts — reweighted online by stage-wise LLM-as-a-judge feedback, with a claimed O(log T) cumulative regret bound matching the stochastic-bandit lower bound. The exploitation/exploration split is a clean comparative datapoint for the `autopilot-continuous-optimization.md` strategy_store (the real per-agent evolutionary-memory home), alongside queued HCC tiered-memory + staleness work — but it is **not new scope**.
+- **DecentMem's judge-reweighting collides head-on with two standing autopilot decisions.** The per-stage LLM-as-judge reweighting conflicts with autopilot **AP-27 ("state matching, not LLM-as-judge")** and with the 2026-06-12 **P17.BT-4 KILL of judge-model scoring on cost grounds** — and on CPU-only EPYC every extra per-stage judge call is a real token/latency cost. So the dual-pool structure transfers; the reweighting mechanism does not. Confidence is low: no released code, results use cloud-favorable small backbones (Qwen3 4B-14B, Gemma4 E2B/E4B) on AutoGen/DyLAN/AgentNet frameworks we do not run, so the regret bound and +23.8%/+52.5% accuracy / 49% token-reduction claims are hypotheses pending reproduction. The shipped B1 user-modeling (M.1-Prefix) already occupies the slot delta-mem aims to replace; `unified-trace-memory-service` is read-only by charter and is NOT an exploitation-pool source. Sources: [intake-715](https://arxiv.org/abs/2605.22721), [autopilot-continuous-optimization.md](../handoffs/active/autopilot-continuous-optimization.md). `external (preprint, no code)`
 
 ### New Finding (2026-06-20) — K-MEM Tulving baseline corrected to mixed recall with weak chronology
 
@@ -133,6 +143,8 @@ The connection between memory and the autopilot is especially significant. Befor
 - [intake-316](https://x.com/chrysb/status/2043020014035570784) Long-Term Memory survey -- nine-axis design space, raw vs derived tension, unsolved forgetting policies (worth_investigating, high relevance)
 - [intake-326](https://github.com/MemPalace/mempalace) MemPalace -- 96.6% LongMemEval R@5, palace hierarchical architecture (wings/rooms/drawers), +34% from metadata filtering (new_opportunity, high relevance)
 - [intake-346](https://mem0.ai/blog/state-of-ai-agent-memory-2026) Mem0 -- $24M cloud memory platform, ~85% LongMemEval, LLM-based extraction (worth_investigating)
+- [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") -- Cue-Tag-Content associative graph + active reconstruction (LLM-reasoning-in-the-loop, evidence-conditioned path-pruning); ~118k tokens vs 245k-3.3M baselines; cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5), no CPU/local results, loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17). Logged as a comparative datapoint against internal-kb-rag's parked two-pass retrieval; transferable lever = token-cost discipline (adopt_patterns)
+- [intake-715](https://arxiv.org/abs/2605.22721) DecentMem ("Self-Evolving Multi-Agent Systems via Decentralized Memory") -- decentralized per-agent dual-pool memory (exploitation + exploration) with online LLM-judge reweighting + claimed O(log T) regret bound; only the dual-pool structure transfers to the autopilot strategy_store, the per-stage judge-reweighting conflicts with AP-27 + the P17.BT-4 KILL; no released code, cloud-favorable small backbones on frameworks we don't run (adopt_patterns)
 
 ## Updates — 2026-04-28
 

@@ -1,9 +1,9 @@
 # Knowledge Management
 
 **Category**: `knowledge_management`
-**Confidence**: framework (methodology + scoping; primary KB-RAG implementation pre-deployment)
-**Last compiled**: 2026-06-19
-**Sources**: 18+ active/blocking coordination docs, 17 completed handoffs, 3 intake entries (added 2026-06-19 K-RAG K7 certification result and wrap-up/freshness audit refresh)
+**Confidence**: framework (methodology + scoping; KB-RAG K1–K7 CERTIFIED 2026-06-13 and shipped)
+**Last compiled**: 2026-06-20
+**Sources**: 18+ active/blocking coordination docs, 17 completed handoffs, 5 intake entries (added 2026-06-20 OKF conventions adoption [intake-710/711], MRAgent evidence-pruned-retrieval datapoint [intake-698], and the certified-consumer/parked-two-pass framing)
 
 ## Summary
 
@@ -51,6 +51,17 @@ Lint (`Operation 1`): orphan handoffs, stale entries (>30d ERROR, >14d WARNING),
 
 The `research-intake` skill is the upstream complement — it ingests new papers/repos/blogs into `research/intake_index.yaml` with cross-referencing into existing handoffs and chapter docs. Wiki compile pulls *from* intake; intake does NOT write to the wiki. This separation avoids duplicate cross-referencing logic and keeps the wiki a derived artefact.
 
+## OKF Conformance Adoption (2026-06-20, intake-710/711)
+
+The Open Knowledge Format (OKF v0.1, Google Cloud) is a vendor-neutral spec that formalizes the "LLM-wiki" pattern — a knowledge bundle is a directory of markdown files with YAML frontmatter, one concept per file, file path as concept identity, concepts cross-linked via plain markdown links to form a graph. Its mandatory schema is deliberately minimal (exactly one required frontmatter field, `type`), with conventional `index.md` (progressive disclosure) and `log.md` (newest-first change history) reserved filenames, conventional `# Schema` / `# Examples` / `# Citations` headings, and a producer/consumer separation where producers MAY add arbitrary keys and consumers MUST preserve unknown fields. OKF is a FORMAT, not a platform — producible without SDKs and consumable without integrations. Confidence: external (vendor blog + v0.1 spec, no empirical claims, credibility null); verdict `adopt_patterns` not `adopt_component`, because Google's reference enrichment agent and Knowledge Catalog ingest are BigQuery/cloud-coupled and have no self-hosted EPYC analog.
+
+The load-bearing intake finding is **convergence, not novelty**: 5 of OKF's 6 conventions were already satisfied by existing EPYC infrastructure. The deep-dive (intake-710/711) verified this rather than asserting it, and only two genuinely-new conventions were adopted — both now codified in [`wiki/SCHEMA.md` ## Conformance](SCHEMA.md):
+
+1. **Schema-version stamp** — the wiki taxonomy now declares `schema_version: "1.0"` (OKF's `okf_version` analog), so parallel agents and cross-repo consumers can detect backward-incompatible drift in the category set, alias map, or conformance contract.
+2. **Codified permissive-consumption contract** — consumers of intake entries MUST preserve unknown/extra keys and MUST NOT reject an entry for carrying fields beyond the required set. This was already the de-facto behavior of `validate_intake.py` (it flags only MISSING required fields and invalid enums); the Conformance section makes it an *intentional* contract, so any future validator change that rejects entries on extra/unknown fields is a conformance break that must be rejected in review. This adoption is **verified** (the behavior exists; the section pins it).
+
+The four conventions deliberately **rejected as already-covered** (confidence: verified): reserved `index.md` (we have `wiki/INDEX.md` as a progressive-disclosure index); per-bundle `log.md` change history (we use per-file dated "Research Intake Update" sections, finer per-file granularity); the `# Schema` / `# Examples` / `# Citations` heading renames (our Summary / Key-Findings / Source-References headings are equivalent in role); and a bespoke HTML force-directed graph visualizer (GitNexus `wiki` / `cypher` already cover symbol-and-relationship graph visualization). This is a conventions adoption, not a tooling import; OKF's enrichment agent is out of scope.
+
 ## Governance skill backlog (2026-06-05)
 
 Three active stubs extend the knowledge-management surface beyond retrieval: AutoWiki-style incremental KB generation, repo-readiness scoring, and security-review skill design. The shared pattern is that these are governance tools first: they should emit reviewable artifacts and explicit contracts before they become autonomous writers over handoffs, wiki pages, or code. For wiki/RAG work specifically, this preserves the current source-of-truth layering: intake and handoffs remain primary records, wiki pages are compiled derivatives, and readiness/security outputs are evidence attached to the relevant handoff rather than hidden state.
@@ -95,6 +106,14 @@ The seed result is calibration only. The decision pool is now a 70-case evidence
 
 Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
 
+## Certified KB-RAG Consumer and Parked Two-Pass Retrieval (2026-06-13 / 2026-06-20)
+
+KB-RAG is no longer pre-deployment: K1–K7 are **CERTIFIED 2026-06-13** and shipped under `epyc-orchestrator/src/retrieval/` (additive `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py`), plus a query CLI, the `post_commit_kb_rag_update.sh` hook, the `kb-search` Skill (the production Explore-subagent integration path — the MCP-tool variant was never needed), and unit tests. Beyond the certified single-pass MaxSim retrieval (with K9 cross-encoder rerank and K10 Gaussian recency as measured-but-conditional blends, and K11 FTS5 lexical landed default-off, measure-first), there is one **parked retrieval-policy idea** worth tracking so it is not re-discovered: a **self-correcting two-pass retrieval** pattern (from agent-oss, intake-610) — when a downstream consumer signals "evidence incomplete," emit gap-queries and re-retrieve at a lower MaxSim threshold before answering. It stays deferred behind a prerequisite that does not exist yet: a consumer (Explore subagent / orchestrator) that actually emits the incompleteness signal.
+
+A 2026-06-20 research intake added a **second independent instance** of that same family: **MRAgent** ([intake-698], "Memory is Reconstructed, Not Retrieved," arXiv:2606.06036) uses a Cue-Tag-Content associative graph with active reconstruction — LLM reasoning interleaved with retrieval, iteratively exploring the graph and *pruning* retrieval paths on intermediate evidence rather than fetching a flat top-k. It approaches the same evidence-conditioned problem from the pruning side, where agent-oss approaches it from the re-retrieval side. It is logged as a **comparative datapoint against the parked note, not a new workstream** — same deferral, no new K-track, no plan delta. Its numbers are observations, not decision-gating: token cost ~118k vs 245k–3.3M for baselines (the genuinely transferable idea, given our token-budget constraints, is the *token-cost discipline* of evidence-pruned traversal), but it is cloud-LLM-bound (Gemini-2.5-Flash / Claude-Sonnet-4.5) with no CPU/local results and it **loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17)** — so the accuracy headline does not carry. Explicitly NOT routed to `delta-mem-reproduction` (whose open gates are GPU-bound accuracy reproduction, not retrieval token-cost).
+
+Source: [internal-kb-rag.md](../handoffs/active/internal-kb-rag.md).
+
 ## Governance Tooling Update (2026-06-13)
 
 The repo-readiness scorer makes knowledge-management maturity measurable. Its v1 deterministic criteria put the portfolio at Documented (L2), with root at Optimized (L4) and each child repo at Documented (L2). The useful output is the failing-criteria queue: standardized security automation, dev environment enforcement, generated docs, health automation, prioritized task discovery, and autonomous security review. Treat this as a governance backlog generator, not a subjective quality grade.
@@ -107,8 +126,19 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - **Wiki compilation remains a derived artifact pipeline with wrap-up discipline.** Active handoffs and indices should stay live-only while completed detail moves to completed/archived twins; the wiki is updated from those sources, not edited as the primary record. Source: [handoff-backlog-hygiene-audit.md](../handoffs/completed/handoff-backlog-hygiene-audit.md).
 - **Repo-readiness scoring is a backlog generator, not a quality certificate.** The deterministic scorer is useful because it turns governance gaps into concrete remediation work, but it does not certify the artifact quality behind those gaps. Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 
+## 2026-06-20 Update — OKF Conventions Adopted, KB-RAG Consumer Certified
+
+- **OKF validates our hand-built KB shape as convergent, not idiosyncratic.** An external vendor-neutral spec (OKF v0.1) independently arrives at markdown+frontmatter knowledge atoms, file-path-as-identity, a markdown-link graph, a progressive-disclosure index, and change history — 5 of its 6 conventions were already present in our KB. The finding is design-risk reduction, not a migration mandate. Source: [intake-710], [intake-711].
+- **Only two OKF conventions were genuinely new and both were adopted** (verified): a `schema_version` stamp and a codified permissive-consumption contract, now in `wiki/SCHEMA.md` ## Conformance. The other four were rejected because existing infrastructure (INDEX.md, per-file dated histories, equivalent headings, GitNexus graph viz) already provides the capability — adopting them would be redundant. Source: [`wiki/SCHEMA.md`](SCHEMA.md), [intake-710].
+- **Permissive consumption is now a contract, not an accident.** `validate_intake.py` already ignored extra keys; pinning that as an intentional conformance contract means a future validator change that rejects entries on unknown fields is a reviewable regression, which protects forward-compatible schema evolution across parallel agents. Source: [`wiki/SCHEMA.md`](SCHEMA.md).
+- **The certified KB-RAG is single-pass; smarter retrieval policy is deliberately parked, not abandoned.** Self-correcting two-pass retrieval (agent-oss / intake-610) and evidence-pruned graph traversal (MRAgent / intake-698) are the same deferred pattern from two angles, both blocked on the absence of a consumer that emits an incompleteness signal. The transferable lever is token-cost discipline, not the cloud-LLM accuracy headlines. Source: [internal-kb-rag.md].
+- **Self-hosted constraint governs OKF adoption.** OKF's reference enrichment agent and Knowledge Catalog ingest are BigQuery/cloud-coupled, so the verdict is `adopt_patterns` (conventions) not `adopt_component` (tooling) — the schema is portable, the implementation is not. Source: [intake-710], [intake-711].
+
 ## Open Questions
 
+- Should the schema-version stamp eventually be machine-enforced by `validate_intake.py` (reject artifacts whose declared `schema_version` is incompatible), or remain an advisory drift signal as it is today?
+- If a consumer that emits an "evidence-incomplete" signal ever ships (Explore subagent / orchestrator), should the parked two-pass retrieval be implemented from the re-retrieval side (agent-oss style) or the evidence-pruning side (MRAgent style) — or measured both ways on our corpus before choosing?
+- Does OKF's `okf_version` / cross-org interoperability framing justify ever emitting an OKF-conformant export of the wiki for external sharing, or is that purely hypothetical given the single-user self-hosted scope?
 - Should the K7 zero-miss candidate become the default for Explore-agent KB retrieval, or should the higher-recall aggregate winner stay available only as an explicit exploratory mode?
 - Does SLIDERS' reconciliation pattern (provenance + rationale + metadata columns) yield governance insights useful for our wiki even if SQL-as-primary-path is not adopted? Worth investigating after KB-RAG K7 ships.
 - Can Flywheel's wikilink learning-loop scorer (accept/reject feedback updates link weights) be adapted for `wiki/INDEX.md` cross-reference quality? Deferred as K8.
@@ -139,6 +169,10 @@ Source: [repo-readiness-scorer.md](../handoffs/active/repo-readiness-scorer.md).
 - [intake-453](https://huggingface.co/DataScience-UIBK/Reason-mxbai-colbert-v0-32m) Reason-mxbai-colbert-v0-32m — 32M edge-scale ColBERT, BRIGHT 19.00 (natural-language splits 20–44), Apache-2.0/CC-BY-NC-4.0 README license conflict, ONNX INT8 unvalidated, CPU-latency fallback candidate for KB-RAG K1
 - [intake-492](https://github.com/velvetmonkey/flywheel-memory) Flywheel — local-first MCP memory layer (Apache-2.0); HotpotQA 90.0% doc recall on 4,960-doc sui-generis pool; LoCoMo 81.9% evidence recall on 695q; ~1 pp LLM-non-determinism variance band; credibility 3 (1,092 commits + 3,292 tests + 385 releases + dual-OS CI; capped by no peer review / no independent replication / contributor-graph unconfirmed)
 - [intake-494](https://arxiv.org/abs/2604.22294) SLIDERS (Joshi/Shethia/Dao/Lam, Stanford OVAL/Genie) — code released at `github.com/stanford-oval/sliders` (MIT, also on PyPI as `sliders-genie`); credibility 4; +6.6 pp avg over GPT-4.1 on FinanceBench / Loong / Oolong existing benchmarks; +~19 pp WikiCeleb100 (3.9M tokens); +~32 pp (abstract) / +~50 pp (repo README) FinQ100 (36M tokens, SEC 10-Q derived) — unresolved discrepancy
+- [intake-710](https://cloud.google.com/blog/products/data-analytics/how-the-open-knowledge-format-can-improve-data-sharing) OKF announcement (Google Cloud blog) — formalizes the LLM-wiki pattern into a vendor-neutral v0.1 spec; verdict `adopt_patterns`, credibility null (no empirical claims); 5/6 conventions already present in our KB; enrichment agent + Knowledge Catalog are BigQuery/cloud-coupled (no EPYC analog)
+- [intake-711](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) OKF reference repo (GoogleCloudPlatform/knowledge-catalog) — markdown+YAML-frontmatter knowledge atoms, one required field (`type`), permissive consumption (preserve unknown keys), reserved `index.md`/`log.md`, graph via untyped markdown links, `okf_version` forward-compat; verdict `adopt_patterns`
+- [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") — Cue-Tag-Content associative graph with evidence-conditioned path-pruning; comparative datapoint for the parked self-correcting two-pass retrieval note, NOT a new workstream; cloud-LLM-bound (no CPU/local), loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17); transferable idea = token-cost discipline (~118k vs 245k–3.3M)
+- [`wiki/SCHEMA.md`](SCHEMA.md) ## Conformance (added 2026-06-20) — `schema_version: "1.0"` stamp + codified permissive-consumption contract; the two genuinely-new OKF conventions adopted, with the four already-covered ones recorded as deliberate rejections
 
 ## Unified trace / memory service (2026-05-06)
 

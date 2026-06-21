@@ -2,8 +2,8 @@
 
 **Category**: `rag_alternatives`
 **Confidence**: research (pre-deployment, evaluation-gated)
-**Last compiled**: 2026-04-28
-**Sources**: 1 active handoff (sliders-local-validation), 1 intake entry (intake-494)
+**Last compiled**: 2026-06-21
+**Sources**: 1 active handoff (sliders-local-validation), 3 intake entries (intake-494, intake-710/711 OKF, intake-698 MRAgent)
 
 ## Summary
 
@@ -49,6 +49,27 @@ A pattern adjacent to RAG-vs-SQL that EPYC actively uses: **persistent LLM-compi
 
 Tradeoff: latency (pre-written articles) vs curation burden + staleness risk. EPYC uses a hybrid — `project-wiki` for stable / cross-cutting topics where curation pays off, KB-RAG for dense ad-hoc cross-referencing during Explore-agent runs.
 
+## Structured-Knowledge Format: OKF (intake-710/711)
+
+The **Open Knowledge Format** (OKF v0.1, Google Cloud) is a vendor-neutral spec that formalizes the "LLM-wiki" pattern (Karpathy gist, Obsidian, AGENTS.md/CLAUDE.md) into a portable format — explicitly a *format, not a platform*: producible without SDKs, consumable without integrations. An OKF bundle is a directory of markdown files with YAML frontmatter, where each file is one concept, the **file path IS the concept identity**, and concepts cross-link via plain markdown links to form a graph. This is the compilation-vs-retrieval / structured-knowledge axis: it standardizes the curated-markdown surface that the persistent-compiled-wiki alternative already produces, rather than introducing a new retrieval mechanism.
+
+**Adoption verdict (2026-06-20): 5 of 6 conventions were already satisfied by existing EPYC infrastructure; only 2 genuinely-new conventions were adopted**, both landed in `wiki/SCHEMA.md ## Conformance`:
+
+1. **`schema_version` / okf-style version stamp** — the wiki taxonomy is now stamped `schema_version: "1.0"` so parallel agents and cross-repo consumers can detect backward-incompatible drift.
+2. **Permissive-consumption contract** — codifies as an *intentional* contract that intake-entry consumers MUST preserve unknown/extra keys and MUST NOT reject an entry for carrying extra fields (already the de-facto behavior of `validate_intake.py`, now protected against silent regression).
+
+**Rejected as already-covered**: reserved `index.md` (we have `wiki/INDEX.md` progressive-disclosure index), permissive validator (already implemented), per-file dated change history, equivalent section headings, and GitNexus graph visualization. Confidence: **external (vendor spec)** — OKF informs interoperability framing and KB-doc schema hygiene, not a deployment dependency.
+
+> Source: [intake-710/711](https://arxiv.org/abs/2606.09821) OKF (Google Cloud); [`wiki/SCHEMA.md`](SCHEMA.md) ## Conformance (added 2026-06-20)
+
+## Active Reconstruction vs Static Retrieve-then-Reason: MRAgent (intake-698)
+
+MRAgent ("Memory is Reconstructed, Not Retrieved") frames a **process-level** RAG alternative orthogonal to SLIDERS' structural one: rather than fixing memory access *before* inference (the static retrieve-then-reason pipeline that ColBERT/dense RAG implements), it **actively reconstructs** memory by interleaving LLM reasoning with retrieval — iteratively exploring and **pruning retrieval paths on intermediate evidence** over a Cue-Tag-Content associative graph. The pitch: static retrieval cannot adapt to evidence accumulated during reasoning, while evidence-conditioned path-pruning keeps token/runtime cost bounded against combinatorial blowup. Reported LongMemEval 86.76% vs Mem0 53.01% and ~118k tokens vs 245k–3,268k for baselines.
+
+**EPYC disposition**: comparative datapoint only. It is **cloud-LLM-bound** (Gemini-2.5-Flash / Claude-Sonnet-4.5 for both graph construction and retrieval reasoning) with no CPU/local/quantized path, and it loses to Mem0 on LoCoMo multi-hop F1 (43.69 vs 45.17), so its accuracy/token figures are observations, not decision-gating. The transferable asset is the **active-reconstruction retrieval policy + token-cost discipline via path-pruning**, which is logged alongside KB-RAG's parked self-correcting two-pass retrieval as a second instance of the same deferred-pending-a-consumer-signal pattern. See also [Search & Retrieval](search-retrieval.md) for the retrieval-policy framing.
+
+> Source: [intake-698](https://arxiv.org/abs/2606.06036) MRAgent — active reconstruction (LLM-reasoning-in-the-loop retrieval); cloud-LLM-bound; token-cost discipline transferable
+
 ## Closure-Inflation Discipline Note
 
 Per `feedback_closure_inflation.md` memory: SLIDERS-as-released failing the Phase 0 gate on Coder-30B at FinQ5 scale would be a **specific** closure ("SLIDERS as released, on Coder-30B, at FinQ5 scale, fails gate X"). It does NOT close:
@@ -75,3 +96,5 @@ Document the closure scope explicitly in the closure block when the gate is deci
 - [`sliders-local-validation.md`](../handoffs/active/sliders-local-validation.md) — Phase 0 falsification gate, bounded 2–3 sessions, gates on schema-hallucination > 20% and call-count > 5× baseline, "Does NOT block `internal-kb-rag.md`" header
 - [intake-494](https://arxiv.org/abs/2604.22294) SLIDERS (Joshi/Shethia/Dao/Lam, Stanford OVAL/Genie, submitted 2026-04-24) — credibility 4 (Stanford major-lab signal +1, within-12mo +1, code released +1, peer-review pending +1, no independent corroboration 0); +6.6 pp avg over union of baselines on existing benchmarks; +~19 pp WikiCeleb100; +~32/~50 pp FinQ100 (abstract-vs-README discrepancy unresolved at intake date); GPT-4.1 hard-wired adoption blocker (Tier 2b); per-query reconciliation cost-heavy by construction
 - [`research/intake_index.yaml`](../research/intake_index.yaml) intake-494 — full Tier 2b critique enumerating frontier-API-only architecture, headline-number disagreement, schema-hallucination as #1 LLM-to-SQL production failure, long-context relational reasoning underprediction (arxiv:2510.03611), single-source results, per-document amortization caveat
+- [intake-710/711](https://arxiv.org/abs/2606.09821) OKF — Open Knowledge Format v0.1 (Google Cloud): markdown+YAML-frontmatter knowledge bundles as a structured-knowledge / compilation-vs-retrieval alternative; 5/6 conventions already in the KB, only `schema_version` stamp + permissive-consumption contract adopted (now in [`wiki/SCHEMA.md`](SCHEMA.md) ## Conformance, 2026-06-20)
+- [intake-698](https://arxiv.org/abs/2606.06036) MRAgent ("Memory is Reconstructed, Not Retrieved") — active-reconstruction retrieval policy (Cue-Tag-Content graph + evidence-conditioned path pruning) as a process-level RAG alternative to static retrieve-then-reason; cloud-LLM-bound comparator, token-cost discipline is the transferable lever; cross-linked from [Search & Retrieval](search-retrieval.md)

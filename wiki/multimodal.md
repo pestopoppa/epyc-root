@@ -2,8 +2,8 @@
 
 **Category**: `multimodal`
 **Confidence**: verified
-**Last compiled**: 2026-06-05
-**Sources**: 34 documents (added 2026-06-05 LocateAnything/Gemma 4 benchmark-first update)
+**Last compiled**: 2026-06-21
+**Sources**: 34 documents (added 2026-06-05 LocateAnything/Gemma 4 benchmark-first update; 2026-06-21 Kimi-K2.7-Code MoonViT / UniRL intake merge)
 
 ## Summary
 
@@ -43,6 +43,10 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - **Voicebox ROCm support is README-only**: No HSA/ROCm detection code exists anywhere in the repo (926 lines of Rust, all Python backends). CPU coverage is LuxTTS-specific only -- the only backend with explicit per-CPU thread tuning. Do not cite voicebox as ROCm prior art. [voicebox-multi-engine-tts-studio.md] `verified`
 - **Voicebox chunked_tts.py is production-quality and directly reusable**: ~240 lines of pure numpy/regex implementing sentence-boundary splitting (with abbreviation list, CJK punctuation, decimal-number handling, bracket-tag atomicity), linear-crossfade concatenation, and per-chunk seed decorrelation. [voicebox-multi-engine-tts-studio.md] `verified`
 - **Voicebox's serial asyncio queue is 40 lines** -- one worker, coroutine-per-item, no preemption. Adopt with a bounded queue size and reject-on-full policy. The TTSBackend Protocol (6-method typing.Protocol + ModelConfig dataclass registry) shapes a clean extension surface for adding future engines. [voicebox-multi-engine-tts-studio.md] `verified`
+- **Kimi-K2.7-Code's "now multimodal" selling point does NOT apply on EPYC today**: the model became multimodal via a 400M MoonViT vision encoder shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7GB, mmproj-f16 1.1GB), but **MoonViT is UNSUPPORTED in our llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable. The vision capability is unreachable on our stack regardless of the larger storage/decode-throughput blockers. [intake-703] `verified` (fork)
+- **MoonViT support is fork-state, not mainline-state**: MoonViT is supported in *mainline* llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26 — relevant to intake-680/683 LocateAnything), but that support has not been carried into our production fork. Do not infer Kimi-K2.7-Code vision-runnability from the mainline LocateAnything analysis. [intake-703] `verified` (fork)
+- **UniRL is a multi-GPU RL training framework, not_applicable on CPU-only EPYC**: Tencent Hunyuan's UniRL (Ray + FSDP, Flow-DPPO and other GRPO/PPO trust-region variants) trains unified diffusion/multimodal *generators* — it is training code only, with no inference/serving path and no training GPU on the EPYC host. The blocker is "no training GPU," not "no image role." [intake-709] `external/DGX-gated`
+- **A CPU image-generation role IS already deployed** (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190), so UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model — but only on a future training GPU (DGX Spark). Held as a DGX-gated passive watch-item, not a rejection. [intake-709] `external/DGX-gated`
 
 ## Actionable for EPYC
 
@@ -92,6 +96,8 @@ Gemma 4 (intake-251/252) introduces Any-to-Any multimodal models (text+image+aud
 - [intake-396] Voicebox (jamiepine/voicebox) -- Multi-engine TTS studio; patterns adopted, ROCm discredited
 - [intake-401] LuxTTS (YatharthS/LuxTTS) -- ZipVoice-Distill fine-tune with 48kHz vocoder; credibility 2/5 (fork), parent 4/5; Path D vehicle
 - [intake-402] TADA (HumeAI/tada) -- Long-form TTS via text-acoustic dual alignment; GPU-only as shipped; shelved pending long-form workload or GPU access
+- [intake-703](https://huggingface.co/mradermacher/Kimi-K2.7-Code-GGUF) Kimi-K2.7-Code-GGUF (Moonshot AI) -- ~1T coding MoE now multimodal via 400M MoonViT + mmproj GGUFs, but MoonViT UNSUPPORTED in our fork (text path only); text-only coder_escalation contender, storage-gated
+- [intake-709](https://github.com/Tencent-Hunyuan/UniRL) UniRL (Tencent Hunyuan) -- Multi-GPU RL training framework (Ray + FSDP, Flow-DPPO) for unified multimodal/diffusion generators; not_applicable CPU-only (no training GPU); DGX-gated watch-item, could one day fine-tune deployed sd_server / ERNIE-Image-Turbo
 
 ## KAME — tandem speech-to-speech with parallel oracle injection (2026-04-30)
 
@@ -201,3 +207,13 @@ Sources: [research/intake_index.yaml#intake-575](../research/intake_index.yaml),
 **Open-weights roundup follow-ups (intake-694).** Triaging the 2026-06-05 HF roundup against the actual stack surfaced two VLM/doc-relevant P-items: **PaddleOCR-VL-1.6** (P1, Apache-2.0, 1B doc-parsing VLM on an ERNIE-4.5-0.3B backbone, OmniDocBench 96.33 SOTA, **official GGUF + mmproj** → CPU-runnable) is a candidate vs LightOnOCR for the doc pipeline (see document-processing / opendataloader handoff); and **Step-3.7-Flash** (P2, Apache-2.0, 196B/11B-active MoE VLM, SWE-Bench Verified 76.5, official GGUF) is a coder_escalation eval candidate. Image/video/music/3D generators (Ideogram 4, Magenta RT 2, Cosmos3-Super, TripoSplat, NAVA) are out of scope.
 
 Sources: [`research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md`](../research/deep-dives/2026-06-12-holo-3.1-4b-gui-vlm.md), [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md), intake-691/694.
+
+## Kimi-K2.7-Code multimodality (MoonViT) & UniRL diffusion-RL (2026-06-21)
+
+Two intake items touch the multimodal stack from opposite ends — a frontier coding MoE that quietly became a VLM, and a multimodal-generator RL trainer. Both are blocked on EPYC today for different reasons.
+
+**Kimi-K2.7-Code (intake-703) — multimodality unreachable in our fork.** Moonshot AI's Code-specialized ~1T MoE (mradermacher GGUF quants) became multimodal via a **400M MoonViT vision encoder** shipped as separate mmproj GGUFs (mmproj-Q8_0 0.7 GB, mmproj-f16 1.1 GB). The decisive point for this category: **MoonViT is UNSUPPORTED in our production llama.cpp fork (no moonvit handling)** — only the text path (deepseek2/MLA + kimi-k2 tokenizer) is plausibly usable, so the "now multimodal" selling point does not apply on EPYC. This is a *fork* limitation: MoonViT is in mainline llama.cpp (PR #15458, Kimi-VL, merged 2025-08-26, relevant to the intake-680/683 LocateAnything thread) but that support was never carried into our fork. The model's primary disposition is as a text-only coder_escalation contender, where it is independently storage-gated (Q4_K_M GGUF 620.7 GB vs ~633 GB raid0 free) and tracked under the large-MoE expert-parallelism handoff — not here.
+
+**UniRL (intake-709) — multi-GPU RL trainer, DGX-gated.** Tencent Hunyuan's UniRL is a reinforcement-learning *training* framework (Ray + FSDP) for unified multimodal/diffusion generators, bundling several GRPO/PPO trust-region variants (Flow-DPPO et al.). It is **not_applicable on CPU-only EPYC**: it is training code only (no inference/serving path) and there is no training GPU on the host. The README has no benchmark numbers; the three team algorithms are incremental trust-region variants (observations, not decision-grade). It is *not* rejected outright, because a CPU image-generation role IS already deployed (sd_server / ERNIE-Image-Turbo via stable-diffusion.cpp, port 8190) — UniRL's diffusion-RL (Flow-DPPO) could one day fine-tune that exact model. Held as a DGX-gated passive watch-item under the GPU-acceleration path: the blocker is "no training GPU," not "no image role."
+
+Sources: intake-703 (Kimi-K2.7-Code-GGUF, MoonViT fork-unsupported — verified), intake-709 (UniRL, Tencent Hunyuan — external/DGX-gated), [`handoffs/active/multimodal-pipeline.md`](../handoffs/active/multimodal-pipeline.md).

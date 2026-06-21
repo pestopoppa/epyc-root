@@ -2,8 +2,8 @@
 
 **Category**: `kv_cache`
 **Confidence**: verified
-**Last compiled**: 2026-04-14
-**Sources**: 34 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 23 intake entries, 1 progress log)
+**Last compiled**: 2026-06-20
+**Sources**: 35 documents (3 deep-dives, 5 active handoffs, 2 completed handoffs, 24 intake entries, 1 progress log)
 
 ## Summary
 
@@ -42,6 +42,10 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 - **Online compaction enables effective context extension**: 2048 physical KV + 6 repeated 50% compactions = 8192 effective context = 13/30 on AIME, matching uncompacted 8192. Reasoning state preserved across consecutive compactions. This pattern (compact-in-place during generation) composes with all other layers: if live KV is quantized + block-masked, AM compaction dequantizes for scoring, fits compact (K,beta,V), re-quantizes. [AM deep-dive](../research/deep-dives/kv-compaction-attention-matching-cluster.md)
 
 - **Latent Briefing is broken -- do NOT use as reference**: Code audit revealed PGD beta optimization is a no-op (optimizes against kept-only attention pattern, not full-cache pattern -- the target variable is created but never referenced in the loss). Ridge C2 correction ignores V_full. "Cross-model KV transfer" is standard text-passing via Anthropic API. The AM paper is the correct formalization. [AM deep-dive](../research/deep-dives/kv-compaction-attention-matching-cluster.md)
+
+- **Still introduces the missing third compaction category -- amortized synthesis**: Compaction methods now split three ways: token *selection* (keep/evict originals), *per-context synthesis* (optimize a compact cache per input, e.g. Cartridges), and *amortized synthesis* (Still). Still trains a small per-layer Perceiver -- learned latent queries cross-attending the live KV cache -- **once** against a frozen base model via forward-KL distillation from a full-context teacher, then synthesizes compact K/V in a **single forward pass** (not gradient descent per context). This combines selection-method lightness with synthesis-method expressiveness. The trained compactor transfers across model scales (4B-32B) and attention architectures unmodified, and runs iteratively/chunked for streaming. Position-free placement via inverse-RoPE -> latent positioning -> re-rotation. Reported: beats KV-Distill by 8-22 points in 16/18 RULER cells across 8x-200x compression and 8k-128k context; 256k @100x = 40.7% QuALITY. No public code or released compactor weights as of 2026-06-05 -- gated on a one-time GPU distillation pass per base model. [intake-708] Still
+
+- **Our deployed default compactor is Expected-Attention (TriAttention), NOT Attention-Matching**: Despite the AM native ggml work being merged, the production default compactor on the live stack is Expected-Attention (the TriAttention selection scorer); AM K-norm is the *legacy fallback*. Crucially, even AM is selection+beta (keep a key subset, add fitted bias/values), **not synthesis** -- so there is no deployed amortized-synthesis path against which Still could be benchmarked today. The AM handoff/experiment notes still cite the `production-consolidated-v3` branch label, but production has since rebased to v5 (functionality carried forward across rebases). [AM handoff](../handoffs/active/attention-matching-kv-compaction.md)
 
 ### Selection (Active -- Scaffold Ready)
 
@@ -105,6 +109,7 @@ The field is evolving rapidly around closed-form approaches that replace heurist
 - Can Memento-style models be created via LoRA fine-tuning on OpenMementos with GGUF-quantized base models, or does quantization degrade the implicit KV information channel?
 - At what compression ratio does AM compaction subsume selection? The handoff estimates 20x+ but the crossover depends on model architecture and context length
 - Does the L4c true NNLS attention scoring (deferred -- requires graph modification to retain attention weights during inference) offer meaningful quality improvement over L4b K-norm approximation?
+- Does Still's amortized-synthesis quality (RULER wins over KV-Distill) survive the CPU compute-overhead-vs-quality trade vs the deployed Expected-Attention compactor, and can the per-layer Perceiver run cheaply enough on EPYC during decode? Untestable until code/weights release for a served family (Qwen/Gemma) -- tracked as a GPU-CPT-gated watch item in [`summary-token-attention-readiness.md`](../handoffs/active/summary-token-attention-readiness.md)
 
 ## Updates — 2026-04-29 (PM)
 
@@ -119,6 +124,8 @@ Three architectural sub-quadratic-attention papers ingested in same-day batch (i
 **Mechanism comparison axis**: KSA = persistent summaries, soft compression, larger active context per query. GSA = hard top-k + unfolding, sharp compression, smaller active context. DSA = learned indexer for top-k, integrated rather than retrofit. KSA / GSA / DSA all REQUIRE pretraining or CPT — no retrofit path for our existing Qwen production stack. Compares against our deployed retrofit methods (Attention Matching compaction intake-351, Expected Attention selection intake-288) — the retrofit-vs-integrated trade-off becomes a research question worth testing once any of the architectural mechanisms ships in llama.cpp.
 
 **Tracked at**: [`summary-token-attention-readiness.md`](../handoffs/active/summary-token-attention-readiness.md) (joint KSA + GSA readiness stub) and [`llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) (active PR #21149 tracker with three contribution sub-tracks).
+
+**DSA fork-side status update (2026-06-20)**: In our fork the DSA *forward pass* is still **unimplemented** — `LLM_ARCH_GLM_DSA` only loads tensors and falls back to **dense MLA** (no Lightning Indexer, no sparse flash-attention path). PR #21149 (fairydreaming) is the gating dependency, and #19460 is the superseded tensor-loading PR, not the tracking target. This makes the "2-models-for-1" leverage a **multi-model-for-1** proposition: one DSA forward-pass implementation unlocks DeepSeek-V3.2 plus the entire GLM-5.x family, now including the 754B GLM-5.2 (DSA, MIT, 1M context) — for GLM-5.2 the blocker is the DSA path, not storage (unsloth UD-IQ2 ~238 GB already fits raid0). [DSA handoff](../handoffs/active/llama-cpp-dsa-contribution.md)
 
 ## Related Categories
 
@@ -151,6 +158,7 @@ Three architectural sub-quadratic-attention papers ingested in same-day batch (i
 - [intake-350](https://github.com/CuriousCaliBoi/latent-briefing) Latent Briefing -- Broken (PGD no-op, Ridge no-op, do NOT use)
 - [intake-351](https://arxiv.org/abs/2602.16284) Attention Matching paper (2602.16284) -- Closed-form KV compaction, MIT
 - [intake-352](https://arxiv.org/abs/2510.12872) KVCOMM (NeurIPS'25) -- Cross-context KV sharing for homogeneous pools
+- [intake-708](https://www.arxiv.org/html/2606.07878v1) Still: Amortized KV Cache Compaction in a Single Forward Pass (arXiv 2606.07878) -- per-layer Perceiver, forward-KL distillation, amortized synthesis (the third compaction category), position-free via inverse-RoPE; no public code as of 2026-06-05
 
 ## KV admission / eviction cluster + cluster-wide gate (2026-05-19)
 

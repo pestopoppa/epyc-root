@@ -2,8 +2,8 @@
 
 **Category**: `reinforcement_learning`
 **Confidence**: verified
-**Last compiled**: 2026-04-28
-**Sources**: 16 documents
+**Last compiled**: 2026-06-21
+**Sources**: 17 documents
 
 ## Summary
 
@@ -29,6 +29,8 @@ AReaL (intake-111) was thoroughly evaluated and ruled out. It solves distributed
 - Nemotron-Cascade 2 introduces cascade RL training specifically for small models with multi-domain distillation -- directly relevant to EPYC's 2B-35B model range [intake-238](https://arxiv.org/abs/2603.19220)
 - Agent Lightning (intake-344) claims RL can be added to AI agents without code changes -- worth investigating for orchestrator integration [intake-344](https://arxiv.org/abs/2508.03680)
 - RL Latent Thought Trajectories (intake-341) proposes reward-shaping for looped language models -- potentially relevant to reasoning compression [intake-341](https://pli.princeton.edu/events/2026/prioritize-process-not-just-outcome-rewarding-latent-thought-trajectories-improves)
+- UniRL (intake-709, Tencent Hunyuan) is a unified RL post-training framework spanning diffusion / autoregressive / multimodal models with three team algorithms: Flow-DPPO (divergence trust-region masks for flow-matching), DRPO (advantage-weighted divergence regularization), and CPPO (position-weighted cumulative-prefix token-level trust regions). Multi-GPU only (Ray+FSDP), training-only — `not_applicable` on CPU-only EPYC; CPPO/DRPO are the LLM-targeted variants and the only members that could transfer to a FUTURE DGX LLM-RL track [intake-709](https://arxiv.org/abs/2606.09821)
+- UniRL's CPPO/DRPO are distinct optimizer-design-space points from the GRPO/sep-CMA-ES/BaRP cluster already cataloged here — both are divergence-regularized trust-region variants for the policy-gradient-on-billion-parameter class (the same class the AReaL compute-mismatch argument retired). Confidence is external/DGX-gated: no CPU or local results exist [intake-709](https://arxiv.org/abs/2606.09821)
 
 ## Verification Framework Research
 
@@ -141,6 +143,7 @@ For routing-architecture adoption (tri-role axis, DAR phase plan extension, desi
 - [ColBERT-Zero integration](/workspace/handoffs/completed/colbert-zero-research-integration.md) -- MemRL distillation design inspired by ColBERT-Zero 3-stage pipeline
 - [Eval Tower Verification](/workspace/handoffs/active/eval-tower-verification.md) -- ECE/AUC calibration metrics, ThinkPRM process verification, Aletheia scale-dependent RLVR recipes, Scoring Verifiers protocol, cross-family verification constraint
 - [Autopilot Continuous Optimization](/workspace/handoffs/active/autopilot-continuous-optimization.md) -- AP-27 RLVR formalization pointing to eval-tower-verification.md EV-1--EV-7
+- [intake-709](https://arxiv.org/abs/2606.09821) UniRL (Tencent Hunyuan) -- unified RL post-training framework (Flow-DPPO / DRPO / CPPO) across diffusion/AR/multimodal; multi-GPU training-only, not_applicable on CPU EPYC; CPPO/DRPO are the LLM-targeted variants for a future DGX LLM-RL track (companion arxiv:2606.11025, 2606.10968)
 
 ## Evolution Strategies at LLM scale cluster + Hoy 2026 evaluation protocol (2026-05-19)
 
@@ -163,3 +166,15 @@ Four May 2026 papers significantly expanding the gradient-free post-training tie
 **Trinity grandfathering** (intake-474) — sep-CMA-ES on a separate 10K-param routing head with frozen backbone. **Grandfathered** because the frozen-backbone design sidesteps the off-task-drift mechanism (backbone weights don't move). New full-parameter ES proposals **must** meet the four-point protocol above before adoption. Per user 2026-05-19: Trinity retroactive audit will be a **calibration check, not a pass/fail gate** — pass reinforces grandfathering rationale; fail opens a separate discussion handoff (no auto-action).
 
 **Sources**: [intake-532](https://arxiv.org/abs/2511.16652) EGGROLL · [intake-563](https://arxiv.org/abs/2509.24372) ES-at-Scale · [intake-564](https://arxiv.org/abs/2507.04453) ESSA · [intake-565](https://arxiv.org/abs/2604.01499) Matching Accuracy/Different Geometry · [Deep-dive](../research/deep-dives/2026-05-19-es-llm-scale-cluster.md) · [Routing-and-optimization index — ES protocol section](../handoffs/active/routing-and-optimization-index.md)
+
+## UniRL unified RL post-training framework (2026-06-21)
+
+**UniRL** (intake-709, Tencent Hunyuan team) is a unified RL post-training framework that spans diffusion, autoregressive, and multimodal model families under one abstraction. Three team-authored algorithms:
+
+- **Flow-DPPO** — divergence trust-region masks adapted to flow-matching generators.
+- **DRPO** — advantage-weighted divergence regularization.
+- **CPPO** — position-weighted cumulative-prefix token-level trust regions.
+
+**EPYC disposition: `not_applicable` on CPU-only hardware.** The framework is multi-GPU only (Ray + FSDP) and training-only — there is no inference or CPU path. Of the three algorithms, **CPPO and DRPO are the LLM-targeted variants** (Flow-DPPO is diffusion-specific) and are therefore the only members that could transfer to a FUTURE DGX-based LLM-RL track once GPU access exists (per `project_dgx_spark_target`). Both are divergence-regularized trust-region policy-gradient methods operating on billion-parameter policies — the same class the AReaL 6-orders-of-magnitude compute-mismatch argument retired for routing-classifier training, and a distinct design-space point from the GRPO / sep-CMA-ES (Trinity) / BaRP / Conductor cluster cataloged in the 2026-04-28 update. **Confidence: external / DGX-gated** — no CPU, local, or quantized results, no third-party replication at intake.
+
+**Sources**: [intake-709](https://arxiv.org/abs/2606.09821) UniRL · [intake-709b](https://arxiv.org/abs/2606.11025) · [intake-709c](https://arxiv.org/abs/2606.10968)

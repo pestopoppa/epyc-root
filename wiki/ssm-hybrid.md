@@ -2,8 +2,8 @@
 
 **Category**: `ssm_hybrid`
 **Confidence**: verified
-**Last compiled**: 2026-05-29
-**Sources**: 12 documents
+**Last compiled**: 2026-06-21
+**Sources**: 13 documents
 
 ## Summary
 
@@ -42,6 +42,8 @@ The Qwen3.5 frontdoor benchmark sweep confirmed the frontdoor model's production
 - Qwen3.5-35B-A3B frontdoor: Q4_K_M baseline 83% quality, 13.8 t/s. Spec decode is a bust. MoE6 lookup best acceleration at 19.6 t/s [qwen35-frontdoor-benchmark.md]
 - Multiscreen architecture preserves attention paradigm with sub-quadratic complexity -- theoretically compatible with KV cache and speculation, but no implementations exist [multiscreen-attention-evaluation.md]
 - IHA (Interleaved Head Attention) is the highest-priority watch item: FlashAttention-compatible, +112% RULER at 16K multi-key retrieval [multiscreen-attention-evaluation.md]
+- **GLM-MoE-DSA (Dynamic Sparse Attention) forward pass is UNIMPLEMENTED in our fork** — `LLM_ARCH_GLM_DSA` only loads the indexer tensors and dispatches to a dense-MLA fallback (no Lightning Indexer / sparse fattn), so the 1M-context value collapses to short-context dense behavior. Tracked via PR #21149; one DSA forward-pass implementation unlocks DeepSeek-V3.2 + the entire GLM-5.x family (5.1 and 5.2). `verified` (fork inspection) [llama-cpp-dsa-contribution.md, glm51-reap-cpu-evaluation.md]
+- **IndexShare reuses one sparse-attention indexer across every 4 sparse-attn layers**, cutting per-token FLOPs ~2.9x at 1M context (arXiv 2603.12201), introduced with GLM-5.2. It is an indexer-amortization lever stacked on top of DSA — a sparse-attention efficiency mechanism distinct from the linear/recurrent (Delta Net) family the page otherwise tracks. `external` (vendor/preprint) [intake-699]
 
 ## 2026-04-28 Update — Slot-Promotion Reopener (intake-490)
 
@@ -154,6 +156,9 @@ The reason these are tracked under SSM-hybrid (and not under speculative-decodin
 - [intake-354](https://arxiv.org/abs/2602.24281) Memory Caching: RNNs with Growing Memory -- GRM/SSC design space, O(NL) segmented caching
 - [intake-356](https://arxiv.org/abs/2506.04761) Log-Linear Attention -- ICLR 2026, O(L log L) Gated DeltaNet variant by architecture creators
 - [intake-256](https://arxiv.org/abs/2604.01178) Screening Is Enough -- Multiscreen architecture replacing softmax attention
+- [intake-699](https://huggingface.co/unsloth/GLM-5.2-GGUF) GLM-5.2-GGUF (unsloth dynamic quants of zai-org/GLM-5.2) -- 754B GLM-MoE-DSA, MIT, 1M context; DSA forward pass unimplemented in our fork (dense-MLA fallback, gated on PR #21149); new IndexShare (arXiv 2603.12201) reuses the sparse-attn indexer across every 4 layers for ~2.9x FLOP cut at 1M context
+- [llama.cpp DSA contribution handoff](../handoffs/active/llama-cpp-dsa-contribution.md) -- PR #21149 tracking; `LLM_ARCH_GLM_DSA` dense-MLA fallback; one forward-pass impl unlocks V3.2 + GLM-5.1 + GLM-5.2
+- [GLM-5.1 REAP CPU evaluation handoff](../handoffs/active/glm51-reap-cpu-evaluation.md) -- GLM-5.2 elevated to PRIMARY GLM-MoE-DSA target (supersedes 5.1); storage viable via UD-IQ2; gated on DSA forward pass
 - [intake-490](https://pytorch.org/blog/hybrid-models-meet-sglang-more-than-full-attention/) PyTorch SGLang blog (Dec 2025) -- Slot-promotion mechanism for hybrid SSM speculation; per-candidate state slots via `S_new = S_parent + Δ(k,v,β,g)`; the basis for the 2026-04-28 reopener
 - [Hybrid SSM slot-promotion reopener handoff](../handoffs/completed/hybrid-ssm-slot-promotion-spec-dec.md) -- CLOSED 2026-04-30: Phase 1.0 GATE MET, Phase 1.1 dispatcher v1 LANDED but mechanism net-negative on Qwen3.6-35B + Qwen3-1.7B (97% primary wins); dispatcher v1 stays in tree disabled-by-default
 
@@ -286,3 +291,15 @@ Sources: [`research/deep-dives/lfm2-lfm25-family-deep-dive.md`](../research/deep
 From the intake-694 open-weights roundup triage: **NVIDIA Nemotron-3-Ultra-550B-A55B** (hybrid Transformer-**Mamba2** MoE, 55B active, 1M ctx, MMLU 89.1). The deep-dive **corrects the roundup's "GPU/NVFP4-gated" framing**: CPU-runnable GGUFs already exist (unsloth / DevQuasar BF16 + Q4; **Q4_K_M ≈ 300 GB RAM, fits our 1.1 TB host**; build `-DGGML_CUDA=OFF`). This is **not** Log-Linear Gated DeltaNet and **does not fire the GDN readiness gate** — but it is the first production-scale Mamba2-hybrid MoE available as a concrete artifact to smoke-test the **hybrid-SSM CPU decode / state-management path** on our llama.cpp fork. **Pre-req before any load**: verify it doesn't hit the Nemotron-Nano `mamba-base.cpp:173 GGML_ASSERT` regression (ggml-org/llama.cpp#20570) that has bitten sibling Nemotron GGUFs; MTP is unsupported in GGUF. Flagged as a P1 own-entry follow-up.
 
 Sources: [`research/deep-dives/2026-06-12-open-weights-roundup-followups.md`](../research/deep-dives/2026-06-12-open-weights-roundup-followups.md), [`handoffs/active/log-linear-gated-deltanet-readiness.md`](../handoffs/active/log-linear-gated-deltanet-readiness.md), intake-694.
+
+## GLM-5.2 / Dynamic Sparse Attention — the sparse-attention family's CPU blocker is the DSA forward pass (2026-06-21)
+
+The sub-quadratic / sparse-attention family this page tracks (Multiscreen, IHA/MEA/KHA, and the GDN/Delta Net recurrent line) now has a concrete deployment-gated member: **GLM-MoE-DSA**, the architecture behind GLM-5.x and DeepSeek-V3.2. Unlike the linear/recurrent (Delta Net) mechanisms, DSA keeps the attention paradigm but selects a sparse top-k of keys via a learned Lightning Indexer — the same "preserve attention, cut cost" property that makes Multiscreen and IHA tracked here.
+
+- **DSA forward pass is a dense-MLA fallback in our fork (verified).** `LLM_ARCH_GLM_DSA` loads the indexer tensors but does NOT run the Lightning Indexer / sparse fattn — it dispatches to dense MLA. This works for <8K context but means the 1M-context / long-context value collapses to short-context dense behavior. Any GLM-5.x or V3.2 quality result obtained today must be labeled **short-context dense fallback only**, never used to claim 131K/1M viability. Tracked via upstream **PR #21149** (fairydreaming; CPU/CUDA/Vulkan backends, token-gen sparse path only, no prompt-processing speedup yet). One DSA forward-pass implementation unlocks DeepSeek-V3.2 + GLM-5.1 + GLM-5.2 (multi-model-for-1 leverage). [llama-cpp-dsa-contribution.md](../handoffs/active/llama-cpp-dsa-contribution.md), [glm51-reap-cpu-evaluation.md](../handoffs/active/glm51-reap-cpu-evaluation.md)
+
+- **GLM-5.2 is the PRIMARY GLM-MoE-DSA target (intake-699), supersedes GLM-5.1.** 754B GLM-MoE-DSA, MIT, 1M context. Storage is NOT the blocker — the unsloth UD-IQ2 dynamic quant (~238 GB, vs Q4_K_M 466 GB) fits the ~633 GB raid0 free; DSA, not RAM/disk, gates deployment. GLM-5.1-REAP demoted to fallback comparison datapoint.
+
+- **IndexShare (arXiv 2603.12201) is the genuinely-new technique in the 5.2 point release.** It reuses the same sparse-attention indexer across every 4 sparse-attn layers, cutting per-token FLOPs ~2.9x at 1M context — an indexer-amortization lever on top of DSA. External/preprint confidence (vendor-reported, no CPU measurement). Relevant here as a sparse-attention efficiency mechanism distinct from the Delta Net recurrent family, and a future consideration once the base DSA forward pass lands. [intake-699]
+
+Sources: [`handoffs/active/llama-cpp-dsa-contribution.md`](../handoffs/active/llama-cpp-dsa-contribution.md) "Research Intake Update — 2026-06-20", [`handoffs/active/glm51-reap-cpu-evaluation.md`](../handoffs/active/glm51-reap-cpu-evaluation.md), intake-699, [deepseek-v32-dsa deep-dive](../research/deep-dives/deepseek-v32-dsa-llamacpp-pr21149.md).

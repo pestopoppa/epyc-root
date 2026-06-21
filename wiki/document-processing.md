@@ -2,7 +2,7 @@
 
 **Category**: `document_processing`
 **Confidence**: verified
-**Last compiled**: 2026-05-29
+**Last compiled**: 2026-06-21
 **Sources**: 4 documents
 
 ## Summary
@@ -26,6 +26,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - Safety features include hidden text filtering, off-page content removal, and optional PII sanitization [opendataloader-pdf-pipeline-integration.md]
 - Java SDK spawns JVM per convert() call -- sidecar pattern or persistent subprocess recommended [opendataloader-pipeline-integration.md]
 - The 200-PDF opendataloader-bench dataset (MIT license) could be added to EPYC benchmark infrastructure for reproducible comparisons [opendataloader-pipeline-integration.md]
+- neural-txt (intake-718) is a CPU-cheap 135M task-specialist + Outlines constrained-decoding harness for structured NLP (bullets / Q&A pairs / KG triplets) — but it is a CONDITIONAL watch-item with NO live consumer slot: `document_formalizer` is a 1B OCR VLM and the ODL pipeline has no cheap structured-NLP-extraction stage today. Re-surface only if such a stage appears. Educational repo, no benchmarks (observations) [opendataloader-pipeline-integration.md, intake-718]
 
 ## Actionable for EPYC
 
@@ -56,6 +57,7 @@ The Java 11+ runtime dependency is manageable through a sidecar pattern. The Pyt
 - [OpenDataLoader pipeline integration handoff](/workspace/handoffs/active/opendataloader-pipeline-integration.md) -- Three-phase plan, work items, benchmark suite integration
 - [intake-161](https://github.com/opendataloader-project/opendataloader-pdf) OpenDataLoader PDF -- Initial intake evaluation
 - [arXiv:2504.10258] XY-Cut++ paper -- Algorithm details, DocBench-100 results
+- [intake-718](https://github.com/avbiswas/neural-txt) neural-txt (AVB) -- 135M structured-NLP specialist + Outlines constrained decoding; conditional watch-item, no consumer slot, no benchmarks
 
 ## ODL structured-output Phase 2 scaffolding (2026-05-06)
 
@@ -84,3 +86,13 @@ LiteParse (run-llama/LlamaIndex, Apache-2.0, intake-646 blog / intake-647 repo) 
 - **Gated next action**: bench LiteParse-local vs ODL-local vs pdftotext on the born-digital corpus (text fidelity, JVM-free cold-start + RSS, multi-column reading order) under the opendataloader-pipeline-integration handoff (P1b). Verdict: 647 = adopt_component (born-digital fast-path backend), 646 = worth_investigating.
 
 Sources: [`research/deep-dives/liteparse-document-parser-deep-dive.md`](../research/deep-dives/liteparse-document-parser-deep-dive.md), [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md), [`handoffs/active/pipeline-integration-index.md`](../handoffs/active/pipeline-integration-index.md), intake-646/647.
+
+## neural-txt — cheap structured-NLP specialist, no consumer slot yet (2026-06-20)
+
+neural-txt (AVB, intake-718) is a CPU-cheap **135M task-specialist LM paired with an Outlines constrained-decoding harness** for structured NLP extraction — bullet-point summaries, Q&A pairs, and knowledge-graph triplets. It is the closest research candidate to a "cheap structured-extraction stage" the ODL pipeline could theoretically grow, which is why it is tracked here rather than dismissed.
+
+- **Verdict: CONDITIONAL watch-item — NO live consumer slot today.** The ODL/LightOnOCR pipeline has no cheap structured-NLP-extraction stage, and `document_formalizer` is a 1B OCR VLM (a different design point entirely). There is nothing in the current pipeline that would route work to a 135M structured-NLP specialist. Re-surface this entry ONLY if such a stage appears in the pipeline (e.g. a post-OCR triplet/Q&A extraction step feeding a KB or RAG index).
+- **Constrained-decoding is the transferable part**: the Outlines-style schema-constrained decoding harness (guarantee well-formed bullets / KG-triplet JSON without post-hoc parsing) is the engineering pattern worth remembering even though the 135M weights themselves have no slot — it is the same reliability lever as the privacy-parser/PII-span work tracked elsewhere in this handoff (intake-449/452), applied to extraction output rather than masking.
+- **Confidence: external — educational repo, no benchmarks.** All capability claims are observations (no decision-grade numbers); do not gate any pipeline change on neural-txt figures. Its reward-model reranking half (NeuralTxtReward / neuraltxt-reward-tiny) is folded into intake-719 / the AVB offline-reward digest, not duplicated here.
+
+Sources: [`handoffs/active/opendataloader-pipeline-integration.md`](../handoffs/active/opendataloader-pipeline-integration.md) (Research Intake Update 2026-06-20), intake-718.
