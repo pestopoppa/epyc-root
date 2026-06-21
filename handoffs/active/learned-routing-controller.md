@@ -876,6 +876,16 @@ observation artifacts in `epyc-orchestrator`:
   deterministic proxy positives. The disagreements split into `43` current
   positives that are not deterministically reconstructable and `5` current
   negatives that look deterministically equivalent.
+- `0fcebf26` adds
+  `scripts/graph_router/prepare_answer_equivalence_review.py` and records the
+  redacted review queue at
+  `orchestration/reports/offline_reward_oracle_answer_equivalence_review_20260621/`.
+  The committed manifest has `48` rows with `review_bucket`,
+  `manual_label`, `judge_label`, `semantic_label`, `final_label`,
+  `label_source`, and `label_status` slots, and excludes prompt/reference/
+  response text. The private packet for actual review text is intentionally
+  outside git at
+  `/mnt/raid0/llm/tmp/a9_answer_equivalence_review_20260621_private.jsonl`.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -885,6 +895,7 @@ sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
 deterministic reconstruction is also insufficient: most current positives need
-semantic/manual/judge review rather than more threshold tuning. Next step is to
-construct labels for the `48` disagreement rows before this scorer feeds
-learned-routing labels.
+semantic/manual/judge review rather than more threshold tuning. The review queue
+now makes that next step concrete: label the `48` private packet rows, merge the
+labels back through the redacted manifest fields, then rerun the scorer gate
+before this scorer feeds learned-routing labels.
