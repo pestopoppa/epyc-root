@@ -461,9 +461,11 @@ Scope inherited from `autowiki-incremental-kb-generator.md` (now in [`../complet
 
 **2026-06-21 output lint gate slice:** the project-wiki lint command now includes `wiki_article_structure`, enabled in `wiki.yaml`. It scans generated `wiki/*.md` article pages, excludes `INDEX.md`/`SCHEMA.md`, errors on structural corruption (missing H1, `## Summary`, or source-reference section), and warns on legacy/reference pages without category metadata or missing recommended article sections. Focused tests landed in `tests/skills/test_project_wiki_lint.py`. Live smoke passed with zero errors; current warnings are the expected legacy/reference debt (`chat-templates.md` uncategorized, and three pages missing recommended section headings). This closes the deterministic output lint gate for generated wiki updates; the model-backed AutoWiki page writer remains open.
 
+**2026-06-21 manifest-backed doc-drift slice:** `scripts/validate/validate_doc_drift.py` now reuses the project-wiki compiler's `build_manifest_drift_report()` instead of maintaining a second source scan. The validator keeps the existing CLAUDE.md port/path/make checks, and adds a `source-manifest-drift` leg that fails when `wiki/source_manifest.json` is stale against the current source inventory. This makes the source manifest the authoritative wiki freshness gate without pretending it is a universal file/link manifest. Focused unit coverage landed in `tests/validate/test_validate_doc_drift.py`; the live validator now reports added/changed/removed source examples when the manifest needs refresh.
+
 Open design questions (carried from the stub, unresolved):
 
-1. The page→source-paths manifest is also the basis for **drift detection** — does it subsume / improve the `scripts/validate/` document-drift validator?
+1. The page→source-paths manifest now improves `scripts/validate/` document-drift validation as the **wiki source freshness** gate. It does not subsume the existing port, Makefile, or generic CLAUDE.md relative-link checks because those are not project-wiki source inventory concerns.
 2. Generator model: which local model writes the pages? The deterministic structure lint gate now exists; the remaining question is the writer/model and evidence policy for content quality beyond structural conformance.
 3. Scope: in-repo git-versioned wiki only (we already have this — git = versioning); any app/UI sync is SaaS-only, skip.
 4. Trigger cadence: on-push CI vs nightshift batch — and how does it coordinate with the autopilot loop without contending for inference?

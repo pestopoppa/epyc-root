@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 """Detect documentation drift between CLAUDE.md and source code.
 
-Checks three high-value drift vectors:
+Checks four high-value drift vectors:
   1. Port mappings: PORT_MAP in the orchestrator repo vs port table in CLAUDE.md
   2. File path references: relative markdown links in CLAUDE.md vs actual filesystem
   3. Makefile targets: `make <target>` references in CLAUDE.md vs .PHONY targets
+  4. Project-wiki source manifest: saved baseline vs current source inventory
 """
 
 from __future__ import annotations
 
 import ast
+import importlib.util
 import os
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CLAUDE_MD = ROOT / "CLAUDE.md"
+PROJECT_WIKI_COMPILE_SOURCES = (
+    ROOT / ".claude" / "skills" / "project-wiki" / "scripts" / "compile_sources.py"
+)
 
 
 def resolve_repo(name: str, env_var: str, canonical: str) -> Path:
@@ -241,6 +247,82 @@ def check_makefile_drift() -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# 4. Project wiki source-manifest drift
+# ---------------------------------------------------------------------------
+
+def load_project_wiki_compile_sources():
+    """Load the project-wiki source compiler so drift logic has one owner."""
+    spec = importlib.util.spec_from_file_location(
+        "project_wiki_compile_sources_for_doc_drift",
+        PROJECT_WIKI_COMPILE_SOURCES,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"could not load {PROJECT_WIKI_COMPILE_SOURCES}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _source_paths(sources: list[dict]) -> list[str]:
+    return [
+        str(source["path"])
+        for source in sources
+        if isinstance(source, dict) and source.get("path")
+    ]
+
+
+def _format_path_examples(paths: list[str], limit: int = 8) -> str:
+    shown = paths[:limit]
+    suffix = "" if len(paths) <= limit else f", ... (+{len(paths) - limit} more)"
+    return ", ".join(shown) + suffix
+
+
+def check_source_manifest_drift() -> list[str]:
+    """Check project-wiki/source manifest freshness through compile_sources.py."""
+    errors: list[str] = []
+    try:
+        compiler = load_project_wiki_compile_sources()
+        manifest_path = compiler.SOURCE_MANIFEST_PATH
+        report = compiler.build_manifest_drift_report(manifest_path)
+    except Exception as exc:  # noqa: BLE001 - validator should report drift context.
+        errors.append(f"source-manifest-drift: {exc}")
+        return errors
+
+    if report.get("ok"):
+        return errors
+
+    drift = report.get("drift", {})
+    added = _source_paths(drift.get("added", []))
+    changed = _source_paths(drift.get("changed", []))
+    removed = _source_paths(drift.get("removed", []))
+    manifest_display = report.get("manifest_path", str(manifest_path))
+    errors.append(
+        "source-manifest-drift: "
+        f"{manifest_display} stale "
+        f"(added={len(added)} changed={len(changed)} removed={len(removed)}; "
+        f"saved={report.get('saved_source_set_hash')} "
+        f"current={report.get('current_source_set_hash')})"
+    )
+    if added:
+        errors.append(
+            "source-manifest-drift: added sources: "
+            f"{_format_path_examples(added)}"
+        )
+    if changed:
+        errors.append(
+            "source-manifest-drift: changed sources: "
+            f"{_format_path_examples(changed)}"
+        )
+    if removed:
+        errors.append(
+            "source-manifest-drift: removed sources: "
+            f"{_format_path_examples(removed)}"
+        )
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -250,6 +332,7 @@ def run_all_checks() -> list[str]:
     errors.extend(check_port_drift())
     errors.extend(check_path_drift())
     errors.extend(check_makefile_drift())
+    errors.extend(check_source_manifest_drift())
     return errors
 
 

@@ -4,15 +4,15 @@
     "handoff-active": 97,
     "handoff-blocked": 1,
     "handoff-completed": 135,
-    "progress": 171,
+    "progress": 173,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T04:06:15Z",
+  "scan_time": "2026-06-21T10:19:08Z",
   "schema_version": 1,
-  "source_set_hash": "0dcb0fa7180ac8b3691f81236b90ba51b02aa16bf626b3ef2e83f94823890afb",
+  "source_set_hash": "cd68874122d896db1d5dbbf8f7e3d9e44c262ea67d9c054c6e57113ef9422e87",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -55,10 +55,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "870909f70a4e444739c555d03c504ef91c35ef960f249a0f86c273c98a0ce0a7",
-      "modified": "2026-06-20T23:33:44Z",
+      "content_hash": "9e94361ed1e4c4e297f916e769dd133fc0c011271e45475ccb7f23890c41dbe4",
+      "modified": "2026-06-21T09:48:09Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 129588,
+      "size": 131361,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -87,10 +87,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "96c91f3c7ea66d5d66cb81b9405a7a999816a895558aa34c423edcb9e171b780",
-      "modified": "2026-06-20T22:40:39Z",
+      "content_hash": "d2f67c46cd1eb11ba9e8597d8d13a1107c5fbb10c534ae05f88a02afad4492d2",
+      "modified": "2026-06-21T09:48:38Z",
       "path": "handoffs/active/bulk-inference-campaign.md",
-      "size": 109309,
+      "size": 110591,
       "title": "Bulk Inference Campaign \u2014 active backlog (Packages G\u2013K)",
       "type": "handoff-active"
     },
@@ -151,10 +151,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c7e34dfc54211cd760950ad7c5a1ed70ec5f295d93d5dcea686561a3b01dfde6",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "e43e0f5e26a22883af04c3c712c7a9e198900737e838f67f88158b41eaf2d21f",
+      "modified": "2026-06-21T04:49:12Z",
       "path": "handoffs/active/delegation-context-preassembly.md",
-      "size": 18653,
+      "size": 18999,
       "title": "Delegation Context Pre-Assembly (Budget-Bounded)",
       "type": "handoff-active"
     },
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "20ada2e00121b0eac55d57bb2d5dfe1938e1ae8dc6c5ad025c7193be30d69898",
-      "modified": "2026-06-21T04:04:29Z",
+      "content_hash": "44e2bef0a93ab78ef277cee4323ce0b1c2e9be60f164c938e01b9e1f42e59316",
+      "modified": "2026-06-21T04:20:33Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 8986,
+      "size": 10524,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -335,10 +335,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "dffeeeb4c1491f812861f8c61a42be2e5e186310d14dd7fd2fe0f6e3102cbc0c",
-      "modified": "2026-06-21T02:57:46Z",
+      "content_hash": "57a9113bdcec4faaae8bc73b53674fffd4606c44b4815c5bdad58763d8e6f325",
+      "modified": "2026-06-21T10:17:30Z",
       "path": "handoffs/active/internal-kb-rag.md",
-      "size": 71910,
+      "size": 73616,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -367,10 +367,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "4890b5d1b8276eb85ba029d14902cf015df16b1ebdb46688cc6bc47482c4318d",
-      "modified": "2026-06-21T02:48:46Z",
+      "content_hash": "b146ea777e22eb67ddb03e5adc8526151f1441fddb40fe9362e401e253b09972",
+      "modified": "2026-06-21T06:58:45Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 93538,
+      "size": 102326,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -583,10 +583,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "933e06498d0a044488febcfb0f8bf992ec58e208588468fbcfe2d09d5ed34413",
-      "modified": "2026-06-20T11:22:26Z",
+      "content_hash": "4a90ba9679fa01f508b89721025d05c7c0f828ed2ab5d0d0788070d4720d5d56",
+      "modified": "2026-06-21T09:54:23Z",
       "path": "handoffs/active/repo-readiness-scorer.md",
-      "size": 7280,
+      "size": 8937,
       "title": "Repo-Readiness Scorer (Agent-Readiness Model)",
       "type": "handoff-active"
     },
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "78db573e05d4e3a4138d0576d4bd139f0be8ec3e6743297f4f307e584c788cb8",
-      "modified": "2026-06-21T04:04:29Z",
+      "content_hash": "d6dbd78633d8805c5b179652da17da0657421d88e3e1adf3f2aefd7768004795",
+      "modified": "2026-06-21T10:18:55Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 50282,
+      "size": 111483,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },
@@ -4207,10 +4207,26 @@
       "type": "progress"
     },
     {
+      "content_hash": "431e7dd620b8d7f3cb5e24976c409f0fd9a6544c67ca7106bde61d0503a69a80",
+      "modified": "2026-06-21T09:53:20Z",
+      "path": "progress/2026-06/repo-readiness-2026-06-21.md",
+      "size": 7529,
+      "title": "EPYC Repo Readiness Report",
+      "type": "progress"
+    },
+    {
       "content_hash": "c21ec40484b519a3403634c5922fdaf193955f65e8255cdea0aa28e99934aa2b",
       "modified": "2026-06-20T11:21:45Z",
       "path": "progress/2026-06/repo-readiness-remediation-2026-06-20.md",
       "size": 4359,
+      "title": "EPYC Repo Readiness Remediation Queue",
+      "type": "progress"
+    },
+    {
+      "content_hash": "9f4ec4d5f54e14d0f8b9844cc2537342e037a4d961b38210048612e0ab138bf0",
+      "modified": "2026-06-21T09:53:20Z",
+      "path": "progress/2026-06/repo-readiness-remediation-2026-06-21.md",
+      "size": 5197,
       "title": "EPYC Repo Readiness Remediation Queue",
       "type": "progress"
     },
@@ -4327,5 +4343,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 539
+  "total_new": 541
 }
