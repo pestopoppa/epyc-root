@@ -999,6 +999,15 @@ observation artifacts in `epyc-orchestrator`:
   prompt-free; prompt/expected/answer text is represented only by SHA-256 hashes
   and source offsets. This closes the manifest-backed NPZ extraction step for
   NEXT-A2/A3 preparation.
+- 2026-06-21 follow-up: the first offline frontdoor-specialist verifier
+  train/eval on `offline_reward_verifier_data.npz` is a null result for
+  promotion. The frontdoor subset has `224` rows (`142` positive / `82`
+  negative); the validation split has `44` rows. The verifier improves Brier
+  over the best softmax baseline by `+0.0298` (passes the `>=0.02` softmax
+  comparison gate), but is worse than the constant base-rate Brier baseline by
+  `-0.0101`; ROC-AUC is `0.7478` (misses `>=0.75`) and ECE is `0.1465` (misses
+  `<=0.05`). No live weight was promoted and
+  `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE` remains default-off.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1013,7 +1022,7 @@ but rank correlation stays weak, useful no-false-positive recall is too low,
 and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
-manifest-backed NPZ in the NEXT-A2/A3 offline reward-signal feature path by
-training/evaluating the frontdoor verifier or reward-signal consumer from
-`offline_reward_verifier_data.npz`; do not feed NeuralTxt labels into
+manifest-backed NPZ in a stronger NEXT-A2/A3 offline reward-signal experiment:
+improve the scorer/data/model or evaluate a broader reward-signal consumer
+before any runtime verifier gate change. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
