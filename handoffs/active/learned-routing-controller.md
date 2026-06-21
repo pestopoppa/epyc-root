@@ -1019,6 +1019,14 @@ observation artifacts in `epyc-orchestrator`:
   ROC-AUC is `0.8916`, but ECE is `0.1783` (misses `<=0.05`). No live weight was
   promoted; the next offline step is calibration/data improvement, not a runtime
   verifier gate change.
+- 2026-06-21 follow-up: a disjoint train/calibration/test scout adds
+  temperature/bias post-hoc calibration to the same multi-action verifier path.
+  The split is `194` train / `64` calibration / `64` test rows. Calibration
+  improves Brier (`0.2325` -> `0.1854`) and accuracy (`0.7188` -> `0.7344`) on
+  the held-out test split, while preserving ROC-AUC `0.8709`, but ECE remains
+  failed (`0.1810` -> `0.1788`, gate `<=0.05`). No live weight was promoted;
+  simple post-hoc scaling is not enough, so the next offline step is better
+  data/model calibration.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1034,6 +1042,6 @@ and the sliced view shows the long-response/code answer-equivalence rows are
 where NeuralTxt fails. The current adoptable offline baseline is the
 deterministic token-coverage manifest above. Next step is to consume that
 manifest-backed NPZ in a stronger NEXT-A2/A3 offline reward-signal experiment:
-calibrate or improve the broader multi-action consumer before any runtime
-verifier gate change. Do not feed NeuralTxt labels into
+improve data/model calibration for the broader multi-action consumer before any
+runtime verifier gate change. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
