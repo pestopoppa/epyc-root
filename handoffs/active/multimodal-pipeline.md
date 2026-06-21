@@ -1,7 +1,7 @@
 # Multimodal Pipeline: Vision + TTS + ASR
 
 **Created**: 2026-02-18 (consolidated from `vision-pipeline.md` + `qwen3-tts-voice-synthesis.md` + `minicpm-o-4_5-integration.md`)
-**Status**: Mixed — Vision code-complete, TTS blocked, MiniCPM-O testing pending
+**Status**: Mixed — Vision live-server/tool path validated, TTS blocked, MiniCPM-O testing pending
 **Priority**: LOW
 
 ---
@@ -11,7 +11,7 @@
 | Modality | Status | Blocker |
 |----------|--------|---------|
 | **STT (ASR)** | Production | faster-whisper large-v3-turbo on port 9000, int8, 2.8x RT |
-| **Vision** | Code complete, needs live validation | No blocker — just needs model servers running |
+| **Vision** | Live-server analyzer path and tool registry landed | Needs quiet-window API restart/endpoint smoke to deploy current code |
 | **TTS** | Blocked | Qwen3-TTS llama.cpp port outputs noise; MiniCPM-O TTS untested |
 | **Multimodal (MiniCPM-O)** | Downloaded, untested | Needs Phase 1 testing |
 
@@ -29,6 +29,42 @@ Target:
 
 **~4,500 lines across 23 files. Phases 1-7 complete. Chat pipeline integration done.**
 
+### 2026-06-21 Live-Server Tool Checkpoint
+
+Landed `epyc-orchestrator` changes for the production tool surface:
+
+- `src/vision/analyzers/vl_describe.py` now prefers resident multimodal
+  llama-server inference via `/v1/chat/completions`, with `llama-mtmd-cli`
+  retained as `auto`/`cli` fallback. `ORCHESTRATOR_VISION_VL_BACKEND=server`
+  forces server-only validation.
+- `orchestration/tool_registry.yaml` now exposes `vision_analyze`,
+  `vision_search`, and `vision_face_identify` in the central orchestrator
+  registry; the plugin manifest already exposed the same handlers.
+- `src/api/routes/vision_serving.py` recognizes legacy live stack-prior role
+  IDs (`worker_vision`, `vision_escalation`) even when older generated priors
+  omit explicit vision launch markers.
+
+Live direct analyzer smokes, without restarting the API server:
+
+- `worker_vision` port `8086`: healthy/idle, `VLDescribeAnalyzer(server_port=8086)`
+  succeeded on `/mnt/raid0/llm/llama.cpp/tools/mtmd/test-1.jpeg` in `11402.1ms`.
+- `vision_escalation` port `8087`: healthy/idle, `VLDescribeAnalyzer(server_port=8087)`
+  succeeded on the same image in `5560.7ms`.
+
+Validation:
+
+- `uv run python -m py_compile src/api/routes/vision_serving.py src/vision/analyzers/vl_describe.py tests/unit/test_vision_tools.py`;
+- `uv run ruff check src/api/routes/vision_serving.py src/vision/analyzers/vl_describe.py tests/unit/test_vision_tools.py`;
+- `uv run pytest tests/unit/test_vision_tools.py -q` -> `15 passed`;
+- `uv run pytest tests/unit/test_vision_tools.py tests/unit/test_tool_registry.py tests/test_tool_loader.py tests/unit/test_chat_vision.py tests/unit/test_vision_routing.py -q` -> `132 passed`;
+- central registry smoke loads `59` tools including `ocr_extract`,
+  `vision_analyze`, `vision_search`, and `vision_face_identify`.
+
+Deployment note: the running orchestrator API was not restarted because
+AutoPilot trial `934` was active and healthy. After AutoPilot quiesces, restart
+the API and run `/v1/vision/analyze` endpoint smoke to prove the long-lived
+process has loaded the new analyzer and registry config.
+
 ### What's Done
 - Full analysis pipeline: EXIF, face detection/embedding (InsightFace), VL description (llama-mtmd-cli), CLIP embeddings
 - Batch processing with job queue, progress reporting
@@ -40,9 +76,11 @@ Target:
 - 1234 tests passing
 
 ### What Remains
-- **Live validation** with model servers running (Qwen2.5-VL-7B on 8086, Qwen3-VL-30B on 8087)
-- OpenAI-compat multimodal support (parse image_url in message content)
-- Register vision tools in tool registry for proactive delegation
+- Quiet-window API restart and `/v1/vision/analyze` endpoint smoke so the
+  long-lived API process picks up the server-backed analyzer and registry
+  entries.
+- OpenAI-compat multimodal support follow-through for any remaining chat
+  surfaces that do not already parse image_url message content.
 
 ### Key Files
 - `src/vision/pipeline.py` (385 lines) — core pipeline

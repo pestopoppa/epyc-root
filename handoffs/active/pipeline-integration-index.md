@@ -1,7 +1,7 @@
 # Pipeline Integration — Coordination Index
 
 **Status**: active
-**Updated**: 2026-06-21 ODL structured producer/consumer/bbox/injection/table/seam/body-policy checkpoints
+**Updated**: 2026-06-21 ODL structured producer/consumer/bbox/injection/table/seam/body-policy checkpoints; vision live-server/tool checkpoint
 **Purpose**: dispatch surface for new capability pipelines being added to the EPYC stack. Production routing, stack, and evidence-plane behavior route through [routing-and-optimization-index.md](routing-and-optimization-index.md).
 **History**: pre-compaction detail lives in [../archived/pipeline-integration-index-history-through-2026-06-19.md](../archived/pipeline-integration-index-history-through-2026-06-19.md).
 
@@ -17,7 +17,7 @@
 
 | Priority | Pipeline | Owner handoff | Current gate / next action |
 |----------|----------|---------------|----------------------------|
-| P0 | Multimodal vision validation | [multimodal-pipeline.md](multimodal-pipeline.md) | Re-test live VL servers on ports `8086/8087`, then register vision tools in the orchestrator tool surface if the smoke passes. |
+| P0 | Multimodal vision validation | [multimodal-pipeline.md](multimodal-pipeline.md) | Live direct analyzer smokes passed on `8086/8087`, and `vision_analyze`/`vision_search`/`vision_face_identify` are now in `tool_registry.yaml`; next quiet-window step is API restart plus `/v1/vision/analyze` endpoint smoke so the long-lived process picks up the new code/config. |
 | P0.5 | Local image generation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | CPU backend is deployed; remaining work is prompt-enhancer heuristic, content-filter audit, typography spot-check, and GPU/Spark rebench when available. |
 | P1 | PDF extraction / OpenDataLoader / LiteParse | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | ODL structured context now feeds chunking and per-figure VL prompts, local PDF processing can produce it under explicit `PDF_EXTRACTOR=opendataloader` + `ORCHESTRATOR_ODL_STRUCTURED=1` gates, ODL structured figure bboxes replace PyMuPDF image enumeration in that mode, unsafe ODL structured metadata is suppressed when `INJECTION_SCANNING` is enabled, ODL tables now flow through preprocessing/cache/TaskIR output, a default-inert `ORCHESTRATOR_ODL_TABLE_BACKEND` seam exists, and `ORCHESTRATOR_DOCUMENT_BODY_INJECTION_POLICY=warn` provides default-off primary body warnings; next work is the real ODL hybrid table sidecar/client and LiteParse born-digital fast-path evidence. |
 | P2 | Lean 4 proving | Completed Lean baseline plus this index | Goedel-CP GGUF exists as a candidate; next active work is Leanstral expert profiling, then REAP prune and end-to-end proof-pipeline validation if profiling supports it. |
@@ -34,6 +34,7 @@
 ```text
 Vision live validation
   -> orchestrator tool registration
+  -> quiet-window API restart + endpoint smoke
 
 LiteParse/ODL extraction evidence
   -> PDF router fast-path decision

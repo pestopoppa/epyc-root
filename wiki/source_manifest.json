@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T14:56:15Z",
+  "scan_time": "2026-06-21T15:16:25Z",
   "schema_version": 1,
-  "source_set_hash": "58d8ea723e6ab5ad17941892cb1ea79b12df0d620737a4b52abd84a9c25d2620",
+  "source_set_hash": "295f9b71c8444ba48d7c56e0fc39da15da2cadc1cfd232846bdfe703185bf553",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -479,10 +479,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a541e2c3a8c976cd33bfb6e3023ad15a36b6eaec7f8c71b8a655e90b4196012e",
-      "modified": "2026-06-20T05:21:00Z",
+      "content_hash": "2e8f4dfe3d82f1d7fe8c15f57f12ac887741bd6485139119d10f911eea6ccc4e",
+      "modified": "2026-06-21T15:14:21Z",
       "path": "handoffs/active/multimodal-pipeline.md",
-      "size": 32864,
+      "size": 35070,
       "title": "Multimodal Pipeline: Vision + TTS + ASR",
       "type": "handoff-active"
     },
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "a65d457bdbea5dd349926efd793ec7ea1f788fb0dd658da41a0d52314bf9fce7",
-      "modified": "2026-06-21T14:55:30Z",
+      "content_hash": "80a1abc564ec5249af38b58afb799871176cf417edae730cf840d076ca8a1e0b",
+      "modified": "2026-06-21T15:15:26Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 157655,
+      "size": 160374,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },
