@@ -58,6 +58,7 @@ PILLARS = [
 UNLOCK_THRESHOLD = 0.80
 MAX_READ_BYTES = 256_000
 QUEUE_VERSION = 1
+AUTOPILOT_PICKUP_VERSION = 1
 IGNORED_PARTS = {
     ".git",
     ".pytest_cache",
@@ -684,6 +685,65 @@ def render_remediation_markdown(
     return "\n".join(lines) + "\n"
 
 
+def build_autopilot_remediation_pickup(
+    queue: dict[str, object],
+    *,
+    limit: int | None = None,
+) -> dict[str, object]:
+    """Render queue items into a passive AutoPilot planning artifact.
+
+    This is deliberately not a controller input or authority gate. It gives the
+    planner a deterministic, reviewable pickup contract while preserving normal
+    handoff ownership, GitNexus checks, and validation requirements.
+    """
+    items = list(queue.get("items", []))
+    if limit is not None:
+        items = items[:limit]
+
+    pickup_items: list[dict[str, object]] = []
+    for item in items:
+        pickup_items.append(
+            {
+                "id": item.get("id"),
+                "status": "candidate",
+                "priority": item.get("priority"),
+                "category": item.get("category"),
+                "repo": item.get("repo"),
+                "repo_path": item.get("repo_path"),
+                "criterion_id": item.get("criterion_id"),
+                "pillar": item.get("pillar"),
+                "objective": item.get("objective"),
+                "acceptance": item.get("acceptance"),
+                "blocking_next_gate": item.get("blocking_next_gate"),
+                "source": item.get("source"),
+                "required_preflight": [
+                    "review owning handoff before edits",
+                    "run GitNexus impact on the target symbol/file",
+                    "keep generated/runtime artifacts out of commits unless durable",
+                    "run scorer again and verify the criterion passes",
+                ],
+            }
+        )
+
+    return {
+        "version": AUTOPILOT_PICKUP_VERSION,
+        "generated_at": queue.get("generated_at"),
+        "mode": "advisory_only",
+        "authority_gate": False,
+        "source": "repo_readiness_scorer.remediation_queue",
+        "source_queue_version": queue.get("version"),
+        "source_item_count": queue.get("item_count"),
+        "item_count": len(pickup_items),
+        "items": pickup_items,
+        "pickup_rules": [
+            "Do not mutate live AutoPilot behavior from this artifact.",
+            "Prefer P0 items that unblock the repo's next maturity gate.",
+            "Each item still requires normal GitNexus, tests, and handoff updates.",
+            "This artifact is planning context only, not an acceptance criterion.",
+        ],
+    }
+
+
 def _parse_repo_arg(values: list[str] | None) -> dict[str, Path]:
     if not values:
         return DEFAULT_REPOS
@@ -722,6 +782,17 @@ def main(argv: list[str] | None = None) -> int:
         help="Limit rows in --output-remediation-md while leaving JSON complete.",
     )
     parser.add_argument(
+        "--output-autopilot-remediation-json",
+        type=Path,
+        help="Write a passive AutoPilot pickup artifact from the remediation queue.",
+    )
+    parser.add_argument(
+        "--autopilot-remediation-limit",
+        type=int,
+        default=None,
+        help="Limit rows in --output-autopilot-remediation-json.",
+    )
+    parser.add_argument(
         "--min-portfolio-level",
         type=int,
         default=0,
@@ -744,6 +815,14 @@ def main(argv: list[str] | None = None) -> int:
             limit=args.remediation_md_limit,
         )
         args.output_remediation_md.write_text(queue_md, encoding="utf-8")
+    if args.output_autopilot_remediation_json:
+        args.output_autopilot_remediation_json.parent.mkdir(parents=True, exist_ok=True)
+        pickup = build_autopilot_remediation_pickup(
+            report["remediation_queue"],
+            limit=args.autopilot_remediation_limit,
+        )
+        pickup_json = json.dumps(pickup, indent=2, sort_keys=True)
+        args.output_autopilot_remediation_json.write_text(pickup_json, encoding="utf-8")
     markdown = render_markdown(report)
     if args.output_md:
         args.output_md.parent.mkdir(parents=True, exist_ok=True)

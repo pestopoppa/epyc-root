@@ -1,6 +1,6 @@
 # Repo-Readiness Scorer (Agent-Readiness Model)
 
-**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; advisory Markdown queue rendering and refreshed 2026-06-20 queue artifacts are live. AutoPilot consumption remains future work and requires a separate protocol/default-off gate.
+**Status**: v1 deterministic scorer landed 2026-06-13; first report generated; deterministic remediation queue export landed in root commit `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`; advisory Markdown queue rendering and refreshed 2026-06-20 queue artifacts are live. Passive AutoPilot pickup JSON landed 2026-06-21; it is planning context only (`mode=advisory_only`, `authority_gate=false`) and is not a live controller input or acceptance gate.
 **Created**: 2026-06-03 (via research intake → factory.ai deep-dive)
 **Categories**: benchmark_methodology, autonomous_research, knowledge_management
 
@@ -34,7 +34,7 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - Factory does **not** publish the full per-criterion list (only the 5 levels, 9 pillars, 80% rule, scoring format, one example) — so we authored a v1 criteria catalog: one concrete deterministic criterion per pillar per level (45 total).
 - Where do we already score *high* (Task Discovery = handoff-index + kb-search; Product&Experimentation = autopilot Pareto archive; Observability = `logs/agent_audit.log` + `unified-trace-memory-service.md`) vs *low*? A first pass may mostly confirm strengths.
 - Should detectors be pure shell/python file-presence + config-parse checks (cheap, deterministic) or LLM-judged (richer, noisier)? **Decision for v1**: deterministic only per `feedback_observe_before_diagnosing`; a pass means an artifact exists, not that quality is certified.
-- Integration target: a `/readiness-fix`-analog autopilot remediation queue, or a passive dashboard alongside the tier-segregated Pareto dashboard? **Partially answered**: `--output-remediation-json` now exports a deterministic remediation queue; wiring that queue into AutoPilot or a dashboard remains next work.
+- Integration target: a `/readiness-fix`-analog autopilot remediation queue, or a passive dashboard alongside the tier-segregated Pareto dashboard? **Partially answered**: `--output-remediation-json` exports a deterministic remediation queue; `--output-autopilot-remediation-json` now emits a passive AutoPilot pickup artifact with explicit non-authority metadata. Live AutoPilot consumption still requires a separate protocol/default-off gate.
 
 ## Current Artifacts
 
@@ -45,6 +45,7 @@ Full mining → [`research/factory-ai-harvest-2026-06-03.md`](../../research/fac
 - Remediation queue export: `scripts/validate/repo_readiness_scorer.py --output-remediation-json <path>` (landed in root `7e6b3ee18864f1d86e8b5ce4651449a5fd7c8ee2`)
 - Current remediation queue JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`
 - Current remediation queue Markdown: `/mnt/raid0/llm/epyc-root/progress/2026-06/repo-readiness-remediation-2026-06-20.md`
+- Current passive AutoPilot pickup JSON: `/mnt/raid0/llm/epyc-root/data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-21.json`
 
 2026-06-13 first-run summary:
 
@@ -73,6 +74,13 @@ Validation:
 - Generated refreshed artifacts: `data/repo_readiness/repo_readiness_2026-06-20.json`, `progress/2026-06/repo-readiness-2026-06-20.md`, `data/repo_readiness/repo_readiness_remediation_queue_2026-06-20.json`, and `progress/2026-06/repo-readiness-remediation-2026-06-20.md`.
 - Current queue: 49 open items; top P0 blockers include `epyc-inference-research` L3 style/test/task/dev-env/security gaps, `epyc-llama` L3 task/dev-env/security/experiment gaps, and `epyc-root` L5 auto-eval/self-optimizing-loop gaps. Markdown output is explicitly advisory and not an AutoPilot authority gate.
 - Validation: GitNexus LOW on `score_repositories`, `build_remediation_queue`, and `render_markdown`; `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 7 passed; JSON and diff checks passed.
+
+2026-06-21 passive AutoPilot pickup update:
+
+- Added `--output-autopilot-remediation-json` plus `--autopilot-remediation-limit` to render the deterministic remediation queue as a passive planner-context artifact.
+- Generated refreshed artifacts: `data/repo_readiness/repo_readiness_2026-06-21.json`, `progress/2026-06/repo-readiness-2026-06-21.md`, `data/repo_readiness/repo_readiness_remediation_queue_2026-06-21.json`, `progress/2026-06/repo-readiness-remediation-2026-06-21.md`, and `data/repo_readiness/repo_readiness_autopilot_pickup_2026-06-21.json`.
+- Current pickup JSON carries `mode=advisory_only`, `authority_gate=false`, `source_item_count=49`, and the top 12 candidate items with required preflight rules (`review owning handoff`, GitNexus impact, generated/runtime artifact discipline, rerun scorer). This feeds planning only; it does not mutate AutoPilot or create a decision gate.
+- Validation: GitNexus LOW on `build_remediation_queue`, `render_remediation_markdown`, `score_repositories`, and `main`; `python3 -m py_compile scripts/validate/repo_readiness_scorer.py tests/validate/test_repo_readiness_scorer.py`; `uv run --with pytest pytest -q tests/validate/test_repo_readiness_scorer.py` -> 9 passed; generated pickup JSON inspected with `jq` for passive-mode/non-authority fields.
 
 ## Notes
 

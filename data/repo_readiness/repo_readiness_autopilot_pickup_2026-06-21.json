@@ -1,0 +1,258 @@
+{
+  "authority_gate": false,
+  "generated_at": "2026-06-21T09:53:20.984756+00:00",
+  "item_count": 12,
+  "items": [
+    {
+      "acceptance": "`L3.style_enforced` passes for `epyc-inference-research` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.style_enforced",
+      "id": "readiness:epyc-inference-research:L3.style_enforced",
+      "objective": "Automates lint/style validation.",
+      "pillar": "Style & Validation",
+      "priority": "P0",
+      "repo": "epyc-inference-research",
+      "repo_path": "/mnt/raid0/llm/epyc-inference-research",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.test_automation` passes for `epyc-inference-research` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.test_automation",
+      "id": "readiness:epyc-inference-research:L3.test_automation",
+      "objective": "Automates test execution through CI/config/scripts.",
+      "pillar": "Testing",
+      "priority": "P0",
+      "repo": "epyc-inference-research",
+      "repo_path": "/mnt/raid0/llm/epyc-inference-research",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.structured_experiments` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.structured_experiments",
+      "id": "readiness:epyc-llama:L3.structured_experiments",
+      "objective": "Has structured reports/journals/configured evals.",
+      "pillar": "Product & Experimentation",
+      "priority": "P0",
+      "repo": "epyc-llama",
+      "repo_path": "/mnt/raid0/llm/llama.cpp",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.machine_task_index` passes for `epyc-inference-research` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.machine_task_index",
+      "id": "readiness:epyc-inference-research:L3.machine_task_index",
+      "objective": "Has structured or indexed task coordination.",
+      "pillar": "Task Discovery",
+      "priority": "P0",
+      "repo": "epyc-inference-research",
+      "repo_path": "/mnt/raid0/llm/epyc-inference-research",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.machine_task_index` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.machine_task_index",
+      "id": "readiness:epyc-llama:L3.machine_task_index",
+      "objective": "Has structured or indexed task coordination.",
+      "pillar": "Task Discovery",
+      "priority": "P0",
+      "repo": "epyc-llama",
+      "repo_path": "/mnt/raid0/llm/llama.cpp",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.standard_dev_env` passes for `epyc-inference-research` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.standard_dev_env",
+      "id": "readiness:epyc-inference-research:L3.standard_dev_env",
+      "objective": "Standardizes local environment setup.",
+      "pillar": "Dev Environment",
+      "priority": "P0",
+      "repo": "epyc-inference-research",
+      "repo_path": "/mnt/raid0/llm/epyc-inference-research",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.standard_dev_env` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.standard_dev_env",
+      "id": "readiness:epyc-llama:L3.standard_dev_env",
+      "objective": "Standardizes local environment setup.",
+      "pillar": "Dev Environment",
+      "priority": "P0",
+      "repo": "epyc-llama",
+      "repo_path": "/mnt/raid0/llm/llama.cpp",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.standard_dev_env` passes for `epyc-orchestrator` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.standard_dev_env",
+      "id": "readiness:epyc-orchestrator:L3.standard_dev_env",
+      "objective": "Standardizes local environment setup.",
+      "pillar": "Dev Environment",
+      "priority": "P0",
+      "repo": "epyc-orchestrator",
+      "repo_path": "/mnt/raid0/llm/epyc-orchestrator",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.security_automation` passes for `epyc-inference-research` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.security_automation",
+      "id": "readiness:epyc-inference-research:L3.security_automation",
+      "objective": "Automates secret/PII/security checks.",
+      "pillar": "Security",
+      "priority": "P0",
+      "repo": "epyc-inference-research",
+      "repo_path": "/mnt/raid0/llm/epyc-inference-research",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.security_automation` passes for `epyc-llama` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.security_automation",
+      "id": "readiness:epyc-llama:L3.security_automation",
+      "objective": "Automates secret/PII/security checks.",
+      "pillar": "Security",
+      "priority": "P0",
+      "repo": "epyc-llama",
+      "repo_path": "/mnt/raid0/llm/llama.cpp",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L3.security_automation` passes for `epyc-orchestrator` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L3.security_automation",
+      "id": "readiness:epyc-orchestrator:L3.security_automation",
+      "objective": "Automates secret/PII/security checks.",
+      "pillar": "Security",
+      "priority": "P0",
+      "repo": "epyc-orchestrator",
+      "repo_path": "/mnt/raid0/llm/epyc-orchestrator",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    },
+    {
+      "acceptance": "`L5.auto_eval_gates` passes for `epyc-root` on the next repo readiness scorer run.",
+      "blocking_next_gate": true,
+      "category": "repo_readiness",
+      "criterion_id": "L5.auto_eval_gates",
+      "id": "readiness:epyc-root:L5.auto_eval_gates",
+      "objective": "Has automated eval/safety gates for candidate changes.",
+      "pillar": "Testing",
+      "priority": "P0",
+      "repo": "epyc-root",
+      "repo_path": "/mnt/raid0/llm/epyc-root",
+      "required_preflight": [
+        "review owning handoff before edits",
+        "run GitNexus impact on the target symbol/file",
+        "keep generated/runtime artifacts out of commits unless durable",
+        "run scorer again and verify the criterion passes"
+      ],
+      "source": "scripts/validate/repo_readiness_scorer.py",
+      "status": "candidate"
+    }
+  ],
+  "mode": "advisory_only",
+  "pickup_rules": [
+    "Do not mutate live AutoPilot behavior from this artifact.",
+    "Prefer P0 items that unblock the repo's next maturity gate.",
+    "Each item still requires normal GitNexus, tests, and handoff updates.",
+    "This artifact is planning context only, not an acceptance criterion."
+  ],
+  "source": "repo_readiness_scorer.remediation_queue",
+  "source_item_count": 49,
+  "source_queue_version": 1,
+  "version": 1
+}

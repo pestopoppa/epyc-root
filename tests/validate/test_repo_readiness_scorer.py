@@ -154,3 +154,46 @@ def test_cli_writes_remediation_queue_markdown(tmp_path):
     assert rc == 0
     assert "EPYC Repo Readiness Remediation Queue" in markdown
     assert markdown.count("| P0 | sample |") == 1
+
+
+def test_autopilot_remediation_pickup_is_passive_and_limitable(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "empty"
+    repo.mkdir()
+
+    report = scorer.score_repositories({"empty": repo})
+    pickup = scorer.build_autopilot_remediation_pickup(
+        report["remediation_queue"],
+        limit=2,
+    )
+
+    assert pickup["mode"] == "advisory_only"
+    assert pickup["authority_gate"] is False
+    assert pickup["item_count"] == 2
+    assert pickup["source_queue_version"] == report["remediation_queue"]["version"]
+    assert pickup["items"][0]["status"] == "candidate"
+    assert "run GitNexus impact" in pickup["items"][0]["required_preflight"][1]
+    assert "not an acceptance criterion" in pickup["pickup_rules"][-1]
+
+
+def test_cli_writes_autopilot_remediation_pickup_json(tmp_path):
+    scorer = _load_module()
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    output = tmp_path / "pickup.json"
+
+    rc = scorer.main([
+        "--repo",
+        f"sample={repo}",
+        "--output-autopilot-remediation-json",
+        str(output),
+        "--autopilot-remediation-limit",
+        "1",
+    ])
+
+    pickup = json.loads(output.read_text(encoding="utf-8"))
+    assert rc == 0
+    assert pickup["mode"] == "advisory_only"
+    assert pickup["authority_gate"] is False
+    assert pickup["item_count"] == 1
+    assert pickup["items"][0]["id"] == "readiness:sample:L1.style_config"
