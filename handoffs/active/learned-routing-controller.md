@@ -867,6 +867,15 @@ observation artifacts in `epyc-orchestrator`:
   (`tp=60 fp=4 fn=36 tn=44`), best zero-false-positive threshold is `0.25`
   (`tp=53 fp=0 fn=43 tn=48`), and best F1 is a degenerate all-positive
   threshold `0.00`.
+- `ba48a522` adds
+  `scripts/graph_router/reconstruct_answer_equivalence_targets.py` and records
+  the prompt-free audit at
+  `orchestration/reports/offline_reward_oracle_answer_equivalence_20260621/`.
+  The conservative deterministic proxy agrees with the current held-out target
+  on `130/178` rows, flags `48` disagreement rows, and finds only `10/178`
+  deterministic proxy positives. The disagreements split into `43` current
+  positives that are not deterministically reconstructable and `5` current
+  negatives that look deterministically equivalent.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. They do **not** prove the
@@ -874,6 +883,8 @@ NEXT-A2/A3 label-quality gate. The held-out-style run is a cautionary signal:
 with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
-rescue the scorer for labels. Next step is a better target construction that
-separates answer equivalence from current binary `q_reward` artifacts before
-this scorer feeds learned-routing labels.
+rescue the scorer for labels. The answer-equivalence audit confirms that exact
+deterministic reconstruction is also insufficient: most current positives need
+semantic/manual/judge review rather than more threshold tuning. Next step is to
+construct labels for the `48` disagreement rows before this scorer feeds
+learned-routing labels.
