@@ -234,6 +234,18 @@ best global pass count stays `random_forest:ece_temperature_bias=2/10`, and
 `three_way_eval` best mean ECE is `0.1276`. This rules out source/action
 interaction terms as the next easy repair; A9 should now generate or repair
 `seeding_eval` evidence.
+2026-06-21 addendum: orchestrator `413cc3a` repairs the prompt-free
+`seeding_eval` evidence layer without llama inference. The selected missing
+sources `seeding_20260304_195000.jsonl`, `seeding_20260305_192103.jsonl`, and
+`seeding_20260305_202050.jsonl` add `114` exact candidate-matched labels
+(`51` positives / `63` negatives; `frontdoor:direct=71`,
+`frontdoor:repl=41`, plus two architect-family rows). The merged label artifact
+now has `720` rows, and
+`offline_reward_feature_manifest_with_seeding_eval_expansion.jsonl` has `720`
+prompt-free feature rows spanning the prior source-family expansion plus the
+new seeding-eval repair. No runtime verifier gate changed, and the next A9 step
+is now a quiet-window NPZ/robustness rebuild from that manifest, not another
+planner/model-family/source-action sweep.
 
 ### 8. Conversation Mgmt B2 ↔ Context Folding Phase 1
 `orchestrator-conversation-management.md` B2 (protected-zone compression from Hermes/OpenGauss) and `context-folding-progressive.md` Phase 1 (two-level condensation) both modify session compaction behavior. They must be sequenced — context-folding Phase 1 should land first as the structural upgrade, then B2's protected-zone logic can layer on top. Alternatively, B2's tool-pair sanitization (`_sanitize_tool_pairs()`) could be extracted as a standalone prerequisite for both. **Updated 2026-04-05**: Context-folding Phase 3b (role-aware compaction profiles) must align with B2's role taxonomy — the `CompactionProfile` roles must match the conversation management role definitions. **Updated 2026-04-05 (session 4)**: `CompactionProfile` roles now defined (`architect`, `worker_coder`, `worker_general`, `worker_fast`) with `get_compaction_profile()` in `session_log.py`. B2 can now reference these profiles directly. `segment_helpfulness()` + `prioritized_compaction()` available as building blocks for B2's protected-zone logic.
