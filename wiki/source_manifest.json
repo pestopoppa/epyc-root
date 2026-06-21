@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 97,
+    "handoff-active": 96,
     "handoff-blocked": 1,
-    "handoff-completed": 135,
+    "handoff-completed": 136,
     "progress": 173,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T15:40:40Z",
+  "scan_time": "2026-06-21T15:47:44Z",
   "schema_version": 1,
-  "source_set_hash": "f3ba44e42397283647fa3c1f0520d104532e2961879235a69fdcd90adfc7caaa",
+  "source_set_hash": "da2cc9fdc3fcf990a9e194d9f87aa2c4b8657fff3952bf89d6031e772a8c2e7c",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -239,10 +239,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "44e2bef0a93ab78ef277cee4323ce0b1c2e9be60f164c938e01b9e1f42e59316",
-      "modified": "2026-06-21T04:20:33Z",
+      "content_hash": "a010d56ca60aece8f194b0c91fb73bf2873fa40b3f434c7565cfbc43673bde63",
+      "modified": "2026-06-21T15:47:17Z",
       "path": "handoffs/active/frontier-f3-data-flywheel.md",
-      "size": 10524,
+      "size": 11101,
       "title": "Frontier F3 \u2014 The Data Flywheel: Train on What the Lab Already Generates",
       "type": "handoff-active"
     },
@@ -260,14 +260,6 @@
       "path": "handoffs/active/frontier-f6-upstream-publication.md",
       "size": 10553,
       "title": "Frontier F6 \u2014 Upstream & Publication Leverage",
-      "type": "handoff-active"
-    },
-    {
-      "content_hash": "154331f554091d08c895b2558795051560251d3fd6871de502d52866dec3d5ff",
-      "modified": "2026-06-21T03:54:55Z",
-      "path": "handoffs/active/frontier-f7-economic-ledger.md",
-      "size": 6981,
-      "title": "Frontier F7 \u2014 The Economic Ledger",
       "type": "handoff-active"
     },
     {
@@ -1228,6 +1220,14 @@
       "path": "handoffs/completed/frontier-f5-intake-injection-hardening.md",
       "size": 6441,
       "title": "Frontier F5 \u2014 Intake Instruction-Injection Hardening",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "dcf3852c71be866f25633b49cc44b386f43fd8592a8e4db54c6de248430420cb",
+      "modified": "2026-06-21T15:46:55Z",
+      "path": "handoffs/completed/frontier-f7-economic-ledger.md",
+      "size": 8644,
+      "title": "Frontier F7 \u2014 The Economic Ledger",
       "type": "handoff-completed"
     },
     {
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "8a4569049f9b8b27c784cf39ad74a46991f5b42146b164e92adaefdd3ca0ed0f",
-      "modified": "2026-06-21T15:39:15Z",
+      "content_hash": "4a034ee36011617fa1e96eaf00e04d9d3f2a1ba1c79e9f2c911209cb7d5d93e7",
+      "modified": "2026-06-21T15:47:36Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 164268,
+      "size": 166376,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },
