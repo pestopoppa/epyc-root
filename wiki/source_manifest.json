@@ -10,9 +10,9 @@
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-06-21T00:08:11Z",
   "mode": "full",
-  "scan_time": "2026-06-21T15:47:44Z",
+  "scan_time": "2026-06-21T16:00:38Z",
   "schema_version": 1,
-  "source_set_hash": "da2cc9fdc3fcf990a9e194d9f87aa2c4b8657fff3952bf89d6031e772a8c2e7c",
+  "source_set_hash": "9cc90fb212ea8faf35b89901b02fb2190c271942fa9015537bbe18c26fc22fcb",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -207,26 +207,26 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d3eeee5deb72d5cf74cd39453a4d634ba216502293b2ccae4438ac1b53bfb4b3",
-      "modified": "2026-06-20T19:19:57Z",
+      "content_hash": "d770801960c8d1b72e08a6566a00df69549b8b538960a31004b442f15456f97c",
+      "modified": "2026-06-21T15:57:19Z",
       "path": "handoffs/active/evidence-plane-instrument-repair.md",
-      "size": 32307,
+      "size": 32921,
       "title": "Evidence Plane \u2014 Instrument Repair (Phase-0 hotfixes + pool sampling)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "27d67541171cc8fb9fda144e0619939c4d9c2193dbde7a7c8078c71e899305ef",
-      "modified": "2026-06-21T15:40:30Z",
+      "content_hash": "15d41a5887ac7e0df50661d754f53ade6c75dec1f8810f8aca6fc79862965a34",
+      "modified": "2026-06-21T15:57:12Z",
       "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
-      "size": 31105,
+      "size": 31550,
       "title": "Evidence Plane \u2014 Per-Question Ledger + Sequential Verdicts (+ game layer)",
       "type": "handoff-active"
     },
     {
-      "content_hash": "068afd38d344cada28f272c3dc79257205789998f3839a355aa919faa539225e",
-      "modified": "2026-06-21T13:20:18Z",
+      "content_hash": "d1ee512423a88df1cbbef50cc121bcd399eeb063ac92d801f7e7ecdd10c2e00f",
+      "modified": "2026-06-21T15:57:02Z",
       "path": "handoffs/active/frontier-f1-real-task-corpus.md",
-      "size": 30742,
+      "size": 31487,
       "title": "Frontier F1 \u2014 Define the Demand Side: a Real-Task Corpus as the Eval Distribution",
       "type": "handoff-active"
     },
@@ -4167,10 +4167,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "4a034ee36011617fa1e96eaf00e04d9d3f2a1ba1c79e9f2c911209cb7d5d93e7",
-      "modified": "2026-06-21T15:47:36Z",
+      "content_hash": "f127fd1d1bb017d2be3e38efa54c1a04ec186954f51a4887e99ccd24cd7ff5cb",
+      "modified": "2026-06-21T16:00:25Z",
       "path": "progress/2026-06/2026-06-21.md",
-      "size": 166376,
+      "size": 169860,
       "title": "2026-06-21 Progress",
       "type": "progress"
     },
