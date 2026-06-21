@@ -139,11 +139,11 @@ unowned local constants.
   silently resurrects legacy vision roles. This was a main-thread HIGH-risk
   migration because it touches multimodal request routing.
 - X-MAS has an evidence-backed true function-axis 5x5 winner table and a
-  default-off guarded enforce path. The 2026-06-18 held-out A/B returned
-  `decision: hold` after hard replacement of the learned incumbent route; the
-  incumbent-aware constrained policy landed in `epyc-orchestrator` `24baac4`,
-  so the next X-MAS gate is a fresh quiet held-out A/B, not more routing
-  plumbing.
+  default-off guarded enforce path. The 2026-06-21 quiet constrained-policy
+  A/B carried `xmas_policy=incumbent_constrained_v1` and still returned
+  `decision.status=hold` (`score_delta=-0.25`, latency ratio `0.714`), so
+  enforce remains off and the next X-MAS gate is policy/table regression
+  repair, not another identical quiet-window run.
 - The 2026-06-20 read-only manifest audit found P1 closed and all named
   P2/HIGH surfaces either migrated, generated, or re-audited. The follow-up
   `launch_maps` audit verified that generated stack priors carry launch entries
@@ -201,8 +201,9 @@ Any future stack update should be accepted only when these hold:
   `_vl_port_for_role`, `_vl_url_for_role`, and `_vl_url_for_port`) against the
   generated stack-prior artifact, and the simulated worker swap now covers
   WorkerPool primary-port/model-path consumption after a generated worker swap.
-- [ ] Rerun the X-MAS held-out A/B in a quiet window; production routing remains
-  default-off until the constrained policy passes the verdict gates.
+- [ ] Diagnose and repair the X-MAS constrained-policy quality regressions
+  before another held-out A/B; production routing remains default-off until a
+  future repaired policy passes the verdict gates.
 - [ ] Keep `scripts/autopilot/short_term_memory.md` under review as live run
   state; do not prune it during active AutoPilot execution.
 - [ ] Keep completed implementation logs out of active indices; record future

@@ -1,6 +1,6 @@
 # X-MAS Heterogeneous Text-MAS Routing Spike
 
-**Status**: classifier/table scaffold, guarded default-off enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, default-off config wiring for that table, live A/B harness, machine-readable held-out verdict reporting, no-inference regression diagnostics, and incumbent-aware constrained enforce policy are all landed. The 2026-06-18 held-out A/B returned `decision: hold`; enforce remains OFF pending a fresh quiet held-out A/B of the constrained policy.
+**Status**: classifier/table scaffold, guarded default-off enforce path, true function-axis 5x5 sweep, enforce-eligible `orchestration/xmas_winner_table.yaml`, default-off config wiring for that table, live A/B harness, machine-readable held-out verdict reporting, no-inference regression diagnostics, and incumbent-aware constrained enforce policy are all landed. The 2026-06-21 quiet constrained-policy A/B carried `xmas_policy=incumbent_constrained_v1` and still returned `decision.status=hold`; enforce remains OFF pending policy/table repair plus a future passing held-out decision.
 **Created**: 2026-05-19 (post-latent-MAS-cluster deep-dive)
 **Categories**: agent_architecture, cost_aware_routing, benchmark_methodology, routing_intelligence
 **Priority**: HIGH (empirical heterogeneous-routing artifact exists, but promotion is currently blocked by held-out regression evidence)
@@ -25,18 +25,16 @@ Replicate the X-MAS (intake-557, arxiv:2505.16997, `github.com/MASWorks/X-MAS`) 
 - The constrained policy landed in `epyc-orchestrator` `24baac4`: enforce now treats the existing route as incumbent and only replaces it when the current cell evidence evaluates both roles and proves quality lift or material speed lift within a 1.10 latency cap. A no-inference replay diagnostic against the failed held-out bundle estimates that the policy would suppress 22/23 prior replacements (`incumbent_role_not_evaluated`) and allow only the one evidence-backed speed lift.
 - `epyc-orchestrator` `7f20920` stamps new X-MAS A/B artifacts with `xmas_policy=incumbent_constrained_v1` and makes the aggregate Fable5 gate require that policy id before any held-out `promote_candidate` can count as enforce evidence. Existing 2026-06-18 summaries are therefore explicitly `unknown_legacy`, so the next required run is a fresh quiet-window constrained-policy A/B rather than a replay of old rows.
 - `epyc-orchestrator` `91bdf6d` hardens the X-MAS real-run quiet-window preflight: `--host-quiet-confirmed` is still required, and the runner now refuses known competing evidence/benchmark coordinators including AutoPilot, DCP/BEP A/B, DS-E1 KV measurement, seeding, migration, placement, and generic benchmark runners before any orchestrator reload or chat call.
-- Quiet-window command to run the required constrained-policy A/B:
-  `cd /mnt/raid0/llm/epyc-orchestrator && uv run python scripts/benchmark/xmas_live_ab.py --prompts benchmarks/results/runs/xmas_live_ab/20260618-heldout-resilient/prompts.jsonl --reps 2 --host-quiet-confirmed --output benchmarks/results/runs/xmas_live_ab/$(date -u +%Y%m%dT%H%M%SZ)-constrained-policy`.
-  The run writes `meta.json`, `results.jsonl`, `summary.json`, `report.md`, and per-arm reload logs under the output directory. New real-run artifacts must carry `xmas_policy=incumbent_constrained_v1` and `xmas_policy_min_commit=24baac44`; the aggregate gate's `required_policy` field is the next-action label for that same policy requirement, not a persisted artifact key.
+- The 2026-06-21 quiet constrained-policy A/B (`epyc-orchestrator/benchmarks/results/runs/xmas_live_ab/20260621T112005Z-constrained-policy`) wrote 100 rows and restored `xmas_routing.mode=off`. It carried `xmas_policy=incumbent_constrained_v1` / `required_xmas_policy=incumbent_constrained_v1`, but the verdict remained `hold`: score rate regressed from `0.60` baseline to `0.35` X-MAS (`score_delta_xmas_minus_baseline=-0.25`), while latency improved (`latency_ratio_xmas_over_baseline=0.714`). Regressions were `code`, `math`, and `reasoning`; blockers were `overall score delta -0.250 < required 0.050`, `no domain improved by >= 0.050`, and `domain regressions: code, math, reasoning`.
 - `epyc-inference-research` `7d05d03` adds this constrained-policy A/B to
   `docs/data/clean_window_measurement_manifest.json` and
-  `docs/data/clean_window_measurement_commands.sh` as package `X-MAS`, so the
-  next clean-window batch queue now carries DS-E1 KV and X-MAS A/B together.
+  `docs/data/clean_window_measurement_commands.sh` as package `X-MAS`; the
+  completed 2026-06-21 orchestrator run is the current evidence for that lane.
 
 ## Current Gate
 
 - [ ] Keep `xmas_routing.mode=off` in production until a future held-out run passes the verdict gates; the validated winner table is configured default-off and must not be treated as an enforce flip.
-- [ ] Rerun the held-out A/B with `--host-quiet-confirmed` and preserve baseline restore checks in an attested quiet window; require the resulting summary to carry `xmas_policy=incumbent_constrained_v1`, `required_xmas_policy=incumbent_constrained_v1`, `required_xmas_policy_min_commit=24baac44`, and `decision.status=promote_candidate`. Do not tie this to the completed G5/G11 factual-risk lanes.
+- [ ] Diagnose and repair the constrained policy/table cells that caused quality regressions (`math`, `code`, `reasoning`) before scheduling another held-out A/B. Any future real-run artifact must still carry `xmas_policy=incumbent_constrained_v1`, `required_xmas_policy=incumbent_constrained_v1`, `required_xmas_policy_min_commit=24baac44`, and `decision.status=promote_candidate`.
 - [ ] Do not spend effort on RMAS/LatentMAS/Dead Weights hidden-state paths until this text-mediated route has either a passing decision or a documented kill.
 
 ## Validation Commands
