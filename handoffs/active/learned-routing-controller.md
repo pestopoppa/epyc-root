@@ -1155,3 +1155,15 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   the signal on an independently held-out source-family/task-family split or
   collect more non-overlapping cross-action preferences before any downstream
   routing use.
+- 2026-06-21 follow-up: orchestrator now has that independent held-out
+  pairwise validation:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_ranker_score_ordered_holdout_summary.{json,md}`.
+  The random group split still reports `pairwise_ranker_signal`, but the
+  held-out source-family/suite check is mixed: `7/9` eligible holdouts pass and
+  `2/9` fail. Blockers are `source_family:seeding_eval` (best
+  `random_forest`, mean accuracy/AUC `0.5705/0.6289` over `156` test pairs)
+  and `suite:livecodebench` (best `logistic_l2`, mean accuracy/AUC
+  `0.5978/0.6750` over `92` test pairs). The top-level holdout decision is
+  `mixed_holdout_signal`, runtime gate changes remain disallowed, and the next
+  A9 step is targeted collection of non-overlapping cross-action preferences
+  for those weak strata rather than downstream routing use.
