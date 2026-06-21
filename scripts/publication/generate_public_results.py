@@ -27,6 +27,7 @@ class ResultRow:
     quant_or_size: str
     metrics: str
     protocol_status: str
+    scrub_status: str
     action: str
 
 
@@ -129,6 +130,36 @@ def format_protocol(protocol: ProtocolRef | None) -> str:
     if protocol.attestation:
         pieces.append(f"attest {protocol.attestation}")
     return "; ".join(pieces)
+
+
+SCRUB_PATTERNS: tuple[tuple[str, str], ...] = (
+    (r"(?<!\w)/(?:mnt|workspace|home|tmp|var)/(?:[^\s|`]+)", "local path"),
+    (r"\b(?:localhost|127\.0\.0\.1|0\.0\.0\.0)\b", "loopback endpoint"),
+    (r"\b(?:frontdoor|coder_escalation|architect_general|architect_coding|worker_general|ingest_long_context|toolrunner)\b", "internal role alias"),
+    (r"\b(?:operator|personal[-\s]task|dashboard)\b", "operator/internal workflow term"),
+)
+
+
+def scrub_findings(*fields: str) -> list[str]:
+    text = " ".join(fields)
+    findings: list[str] = []
+    for pattern, label in SCRUB_PATTERNS:
+        if re.search(pattern, text, flags=re.I):
+            findings.append(label)
+    return findings
+
+
+def scrub_status(*fields: str) -> str:
+    findings = scrub_findings(*fields)
+    if not findings:
+        return "public-safe surface"
+    return "needs public scrub: " + ", ".join(findings)
+
+
+def apply_scrub_gate(action: str, scrub: str) -> str:
+    if action == "publish_candidate" and scrub != "public-safe surface":
+        return "hold_for_public_scrub"
+    return action
 
 
 def split_table_row(line: str) -> list[str]:
@@ -246,15 +277,19 @@ def collect_rows(text: str) -> list[ResultRow]:
                 if metrics:
                     nearby = "\n".join(lines[max(0, table_start - 4): min(len(lines), j + 4)])
                     protocol_status, action = classify_protocol(current_section, cells, nearby)
+                    entity = pick_entity(headers, row_map)
+                    quant_or_size = pick_quant_or_size(row_map)
+                    scrub = scrub_status(current_section, entity, quant_or_size, metrics)
                     rows.append(
                         ResultRow(
                             section=current_section,
                             source_line=j + 1,
-                            entity=pick_entity(headers, row_map),
-                            quant_or_size=pick_quant_or_size(row_map),
+                            entity=entity,
+                            quant_or_size=quant_or_size,
                             metrics=metrics,
                             protocol_status=protocol_status,
-                            action=action,
+                            scrub_status=scrub,
+                            action=apply_scrub_gate(action, scrub),
                         )
                     )
                 j += 1
@@ -293,8 +328,16 @@ def action_counts(rows: list[ResultRow]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def scrub_counts(rows: list[ResultRow]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        counts[row.scrub_status] = counts.get(row.scrub_status, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def render_page(rows: list[ResultRow], source: Path) -> str:
     counts = action_counts(rows)
+    scrub_summary = scrub_counts(rows)
     lines = [
         "# Public Results Draft",
         "",
@@ -310,13 +353,18 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
     ]
     for action, count in counts.items():
         lines.append(f"- `{action}`: {count}")
+    lines.append("")
+    lines.append("### Public Scrub Summary")
+    lines.append("")
+    for status, count in scrub_summary.items():
+        lines.append(f"- `{status}`: {count}")
     lines.extend(
         [
             "",
             "## Rows",
             "",
-            "| Section | Entity | Quant/size | Metrics | Protocol status | Action | Source line |",
-            "|---|---|---|---|---|---|---|",
+            "| Section | Entity | Quant/size | Metrics | Protocol status | Scrub status | Action | Source line |",
+            "|---|---|---|---|---|---|---|---|",
         ]
     )
     for row in rows:
@@ -330,6 +378,7 @@ def render_page(rows: list[ResultRow], source: Path) -> str:
                     row.quant_or_size,
                     row.metrics,
                     row.protocol_status,
+                    row.scrub_status,
                     row.action,
                     str(row.source_line),
                 )
