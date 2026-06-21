@@ -1057,6 +1057,16 @@ observation artifacts in `epyc-orchestrator`:
   `10/10`. This narrows the next A9 step again: the blocker is not simply the
   NumPy MLP head. Prefer source-stratified calibration/evaluation and/or more
   balanced evidence rows before another verifier family sweep.
+- 2026-06-21 follow-up: the same model-family scout now aggregates
+  source-family metrics across split seeds. The stratum readout identifies the
+  actual remaining evidence problem: `orchestrator_live_seed` is nearly
+  calibrated (`hist_gradient_boosting:raw` mean ECE `0.0575`, mean AUC
+  `0.9469`), `seeding_eval` has no two-class metric coverage (`11` retained
+  rows total), and `three_way_eval` drives the failure (best mean ECE only
+  `0.1340` from `logistic_l2:quantile_histogram`). Next A9 work should target
+  balanced, source-family-aware evidence expansion or calibration for the
+  `three_way_eval` family, plus enough `seeding_eval` positives/negatives to
+  become measurable.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
 values and that the evaluator can consume them. NeuralTxt does **not** prove the
@@ -1076,5 +1086,7 @@ improve data/model calibration for the broader multi-action consumer before any
 runtime verifier gate change. The source-family and model-family repairs are
 now measured and insufficient for promotion, so prefer source-stratified
 calibration/evaluation or more balanced evidence rows over another scalar
-calibration retry. Do not feed NeuralTxt labels into
+calibration retry. The first source-stratified readout points at
+`three_way_eval` calibration and `seeding_eval` coverage as the concrete next
+targets. Do not feed NeuralTxt labels into
 learned-routing reward signals from the failed NeuralTxt report alone.
