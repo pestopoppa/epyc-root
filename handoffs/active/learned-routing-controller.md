@@ -949,19 +949,33 @@ observation artifacts in `epyc-orchestrator`:
   `tp=16 fp=13 fn=31 tn=113`). Aggregate quality also remains below gate
   (`agreement=0.6925`, Spearman `0.2771`, best balanced accuracy `0.6949`).
   A9 now needs a better oracle/scorer, not more coverage plumbing.
+- 2026-06-21 follow-up: a separate deterministic
+  `reference_token_coverage` scorer now clears the same final-label-with-stress
+  gate at threshold `0.86` (`322` rows, aggregate agreement `0.9410`,
+  Spearman `0.8270`, best balanced accuracy `0.9439`; answer-equivalence slice
+  agreement `0.9017`, Spearman `0.6866`; stress `48` groups, paraphrase
+  penalty `0.0000`, confound fooled `0.0000`). `d03cf706` records the scorer
+  and report, and the follow-up adoption packet at
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/adoption_manifest.json`
+  has schema `offline_reward_oracle_adoption_manifest.v1`,
+  `status=adoptable_offline_oracle`, `oracle_threshold=0.86`, and an explicit
+  offline-only/forbidden-live-use contract. The manifest builder rejects the
+  failed NeuralTxt final-label report (`decision_gate.status=blocked`) and
+  writes no adoption artifact for it.
 
 These reports prove the adapter can emit real non-baseline `oracle_score`
-values and that the evaluator can consume them. They do **not** prove the
+values and that the evaluator can consume them. NeuralTxt does **not** prove the
 NEXT-A2/A3 label-quality gate. The held-out-style run is a cautionary signal:
 with broader role coverage and graded `q_reward` inputs, rank agreement drops
 sharply and threshold `0.5` behaves conservatively (zero false positives, many
 false negatives). Calibration explains the operating points but does not
 rescue the scorer for labels. The answer-equivalence audit confirms that exact
 deterministic reconstruction is also insufficient, and the expanded final-label
-rerun does not rescue the scorer for NEXT-A2/A3 labels. Coverage is now
-adequate, but rank correlation stays weak, useful no-false-positive recall is
-too low, and the sliced view shows the long-response/code answer-equivalence
-rows are where NeuralTxt fails. Next step is an alternate offline oracle or a
-material scorer/target improvement that can clear the `decision_gate`; do not
-feed NeuralTxt labels into learned-routing reward signals from this report
+rerun does not rescue NeuralTxt for NEXT-A2/A3 labels. Coverage is now adequate,
+but rank correlation stays weak, useful no-false-positive recall is too low,
+and the sliced view shows the long-response/code answer-equivalence rows are
+where NeuralTxt fails. The current adoptable offline baseline is the
+deterministic token-coverage manifest above. Next step is to consume that
+manifest in the NEXT-A2/A3 offline reward-signal path; do not feed NeuralTxt
+labels into learned-routing reward signals from the failed NeuralTxt report
 alone.
