@@ -1125,3 +1125,16 @@ learned-routing reward signals from the failed NeuralTxt report alone.
   keeps prompt/answer/expected text excluded, and explicitly allows no runtime
   gate change. Next A9 work is an offline pairwise reward-ranker train/eval,
   not another absolute verifier retune.
+- 2026-06-21 follow-up: orchestrator now has that offline pairwise
+  reward-ranker train/eval:
+  `orchestration/reports/offline_reward_oracle_token_coverage_final_labels_20260621/offline_reward_pairwise_ranker_eval_summary.{json,md}`.
+  The evaluator uses group-disjoint splits, symmetric pair augmentation, and
+  the `pairwise_action_response_delta_v1` prompt-free feature contract; it
+  explicitly excludes target/leakage fields (`oracle_score_delta`,
+  `preferred_oracle_score`, `rejected_oracle_score`) and prompt/answer/
+  expected/reference/response text. The five-seed model-family diagnostic marks
+  `pairwise_ranker_signal`; best family is `random_forest` with mean accuracy
+  `0.6615`, mean AUC `0.7631`, mean Brier `0.1922`, and mean ECE `0.0610`
+  against a random-pair baseline accuracy/AUC of `0.5/0.5`. Runtime gate
+  changes remain disallowed. Next A9 work is cross-validating on an expanded
+  pairwise contract, especially more cross-action preference rows.

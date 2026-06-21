@@ -38,6 +38,12 @@ A9 pairwise split: the `280` prompt-free preference rows include `87`
 cross-action routing preferences and `193` same-action response-quality
 contrasts.
 
+A9 pairwise ranker: the first offline train/eval is complete and marks
+`pairwise_ranker_signal`; best family is `random_forest` with mean
+accuracy/AUC `0.6615/0.7631` over five group-disjoint seeds. Runtime gate
+changes remain disallowed. Next A9 work is expanded-contract cross-validation,
+especially more cross-action preference rows.
+
 ## B2. Frontier programs (strategic spine — spec: [fable5-findings-07-strategic-frontiers.md](../completed/fable5-findings-07-strategic-frontiers.md))
 | # | Prio | Item | Handoff |
 |---|---|---|---|
