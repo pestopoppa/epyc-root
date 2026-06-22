@@ -1,6 +1,20 @@
 # Qwen MTP llama.cpp Port (PR #22673 + #22400)
 
-**Status**: BLOCKED (2026-06-22). #22400 ported (b139eba138). **#22673 cherry-pick is INFEASIBLE** — model-framework generation gap (see finding below). The cheap-port path is dead; landing Qwen MTP needs reimplementation or a fresh-upstream build.
+**Status**: cherry-pick BLOCKED, but the **fresh-upstream-build path is VERIFIED WORKING (2026-06-22)** — Qwen dense MTP runs on CPU at ~2× via a fresh `origin/master` build (see ✅ section below). #22400 ported (b139eba138). **#22673 cherry-pick is INFEASIBLE** — model-framework generation gap (see finding below). The cheap-port path is dead; landing Qwen MTP in *our fork* needs reimplementation, but standing up Qwen MTP at all is now a solved, proven operation via a fresh upstream build.
+
+## ✅ Upgrade verified (2026-06-22) — fresh upstream build runs Qwen dense MTP on CPU
+
+Per operator directive ("we're on llama.cpp-experimental for a reason — perform the upgrade and verify it works"), built a **fresh `origin/master`** (f8cc15f16, the new `llama_model_base` framework + #22673 MTP + EAGLE3) into `/mnt/raid0/llm/llama.cpp-experimental/build-upstream/` (branch `upstream-mtp-verify`) and ran a functional + speed verify on **dense Qwen3.5-9B-Q4_K_M** (in-GGUF NEXTN head, `qwen35.nextn_predict_layers` present):
+
+| config | t/s | draft accept | output |
+|---|---|---|---|
+| baseline (no spec) | 14.90 | n/a | correct (25 primes listed + correct partial sums) |
+| **`--spec-type draft-mtp --spec-draft-n-max 3`** | **29.30** | **184/211 = 87%** | correct, sensible |
+
+- **`--spec-type draft-mtp` loads and is active**; 87% draft acceptance confirms the in-GGUF MTP head is healthy and well-matched. **1.97× speedup** on a dense 9B on CPU.
+- Output **distribution-lossless, not byte-exact** (the two completions diverged at a temp-0 formatting near-tie — same property observed for gemma-4-31B MTP; expected from batched-verify FP rounding).
+- **Caveat (the real decision input)**: this build is **upstream-master kernels — it does NOT carry our fork's NUMA/CPU optimizations**, so the absolute baseline (14.90 t/s) is *not* comparable to production throughput. The verified quantity is the **MTP multiplier (~2×) and that the path runs end-to-end**, not the absolute t/s. Whether to *deploy* via fresh-upstream (loses our kernels) vs reimplement in our fork (option 2) is now a real, data-backed fork — see options below.
+- Reproduce: `build-upstream/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.5-9B-MTP-GGUF/Qwen3.5-9B-Q4_K_M.gguf --port 8099 -t 96 -fa on -c 8192 [--spec-type draft-mtp --spec-draft-n-max 3]`, `taskset -c 0-95 numactl --interleave=all`, `LD_LIBRARY_PATH=/usr/lib/llvm-20/lib:$B/bin:$B/src:$B/ggml/src`. Script: `/mnt/raid0/llm/tmp/verify_qwen_mtp.sh`.
 
 ## ⛔ Port feasibility finding (2026-06-22) — cherry-pick is NOT viable
 
@@ -13,7 +27,7 @@ Attempted the full #22673 cherry-pick + resolved all 25 conflicts (spec subsyste
 **Conclusion**: Qwen MTP (#22673) is **not portable to production-consolidated-v5 by cherry-pick.** The broken resolution was reverted; branch is back at the clean #22400 checkpoint.
 
 ### Realistic options (pick when there's a deployable Qwen MTP need — currently none, see refresh handoff)
-1. **Use a FRESH upstream-master llama.cpp build** for any Qwen-MTP need (it already has the new model framework + MTP + EAGLE3). Cost: loses our fork's CPU/NUMA kernel optimizations → not apples-to-apples for throughput, but trivial to stand up. **Recommended** for the low-ROI infra case.
+1. **Use a FRESH upstream-master llama.cpp build** for any Qwen-MTP need (it already has the new model framework + MTP + EAGLE3). **✅ DONE + VERIFIED this session** (`build-upstream/`, branch `upstream-mtp-verify`): Qwen3.5-9B dense MTP runs at 87% accept / ~2×, correct output — see the ✅ section above. Cost: loses our fork's CPU/NUMA kernel optimizations → **not apples-to-apples for throughput** (the verified 14.9→29.3 t/s is on un-optimized upstream kernels), but trivial to stand up and now a proven path. **Recommended** for the low-ROI infra case / any one-off Qwen-MTP need.
 2. **Reimplement the Qwen MTP graph in our `llm_build_qwen35*` idiom** (framework-aware translation of just the MTP nextn layer + the spec-dec driver). Moderate, focused — but only worth it if a Qwen MTP model becomes deployable (none is: gemma-4-31B/Qwen3.5-9B are Pareto-dominated; Qwen3.6-MoE-MTP is dead on CPU).
 3. **Rebase/catch-up the fork ~901 commits to adopt upstream's model framework** — large, separate effort; out of scope for MTP alone.
 
