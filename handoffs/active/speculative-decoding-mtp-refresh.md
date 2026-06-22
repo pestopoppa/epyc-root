@@ -29,7 +29,22 @@ Decide whether to adopt new MTP (multi-token-prediction) speculative decoding fo
 
 ## Outstanding Tasks (priority order)
 
-- [ ] **T1 (READY now, no port) — gate-bench gemma-4-31B DENSE** on ik_llama `production-gemma4-mtp` (Block A below); re-confirm ~3× under r≥3 + noise bracket, then the quality (Leviathan byte-exact) suite. Operator-run. Decision: promote `gemma4_31b_q4km_mtp` past Tier B only if speed win survives noise AND quality passes.
+- [x] **T1 — gate-bench gemma-4-31B DENSE: DONE 2026-06-22 (host quiesced).** Result **~1.84× at draft_max=3** (see Results below). Speed win confirmed + survives noise; **corrects the prior single-run ~2.98× to ~1.84×**. Remaining for Tier-B promotion: multi-prompt reps + the quality (Leviathan byte-exact) suite + acceptance-rate capture. Operator decision: promote `gemma4_31b_q4km_mtp` only after the quality pass.
+
+## Results — gemma-4-31B dense MTP gate-bench (2026-06-22)
+
+**Protocol** (clean directional measurement, NOT a full canonical gate): host quiesced (full stack stopped via `orchestrator_stack.py stop --all`); ik_llama.cpp `production-gemma4-mtp` `llama-server` + `/completion`; target `gemma-4-31B-it-Q4_K_M` + official `gemma-4-31B-it-assistant-Q8_0`; `taskset -c 0-95 numactl --interleave=all`, `-t 96 -fa 1 --no-mmap -c 16384 -ub 512 -ctk q8_0 -ctv q8_0`, OMP stack + `KMP_BLOCKTIME=10`; `n_predict=128, temp=0, seed=42, cache_prompt=false`; 1 warmup + 2 measured reps; single prompt.
+
+| config | t/s (r1, r2) | median | speedup |
+|---|---|---|---|
+| baseline (no MTP) | 9.17 / 9.11 | 9.14 | 1.00× |
+| MTP draft-max 2 | 15.95 / 16.00 | 15.98 | 1.75× |
+| **MTP draft-max 3** | 16.83 / 16.75 | **16.79** | **1.84×** |
+| MTP draft-max 4 | 16.02 / 16.38 | 16.20 | 1.77× |
+
+**Findings**: dense gemma-4-31B CPU MTP gives a **real ~1.84×** (draft_max=3 optimal; 3 > 4 > 2) — confirming the dense thesis vs MoE's ~1.06×. The prior `gemma4-mtp-drafter-evaluation` 2.98× (7.05→21.02, single-run) does **not** reproduce on a clean host: clean baseline is higher (9.14 vs 7.05) and MTP lower (16.8 vs 21.0), so realized speedup is ~1.84×, not ~3×. Acceptance rate was NOT captured (the `/completion` timings JSON didn't expose draft_n/accepted under the probed keys — needs the server spec-stats path or `llama-speculative`, which currently SIGABRTs on this fork's gemma4-MTP path → use server). Numbers are a clean measurement but single-prompt/r=2 — a Tier-B gate still needs multi-prompt reps + quality byte-exactness.
+
+**Implication for the port (T2)**: a ~1.84× dense win justifies finishing the #22673 Qwen MTP port to test dense **Qwen3.5-9B** (T3) — but it does **not** rescue the MoE cases (Qwen3.6-A3B), where the wall is expert-verification overhead, not draft quality.
 - [ ] **T2 (WS5 port) — finish the Qwen MTP kernel port** in `llama.cpp-experimental` (branch `feature/mtp-qwen36-port`). #22400 DONE (commit b139eba138); remaining = reconcile **PR #22673** (25 conflicted files). **Full context + conflict map + task breakdown: [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md).** Gated behind T1 (don't invest until dense MTP proves out on CPU).
 - [ ] **T3 (after T2 binary) — gate-bench Qwen3.5-9B dense** (Block B) — the cleanest non-gemma dense CPU-MTP datapoint. Download `unsloth/Qwen3.5-9B-MTP-GGUF` first.
 - [ ] **T4 (after T2 binary, low EV) — gate-bench Qwen3.6-35B-A3B** (Block C) for frontdoor/coder; mind the Q8(prod)-vs-Q4(MTP-GGUF) quant-parity caveat + MoE-on-CPU skepticism.
