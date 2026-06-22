@@ -1,6 +1,23 @@
 # Qwen MTP llama.cpp Port (PR #22673 + #22400)
 
-**Status**: active / WIP (created 2026-06-22). #22400 ported; #22673 reconciliation remaining.
+**Status**: BLOCKED (2026-06-22). #22400 ported (b139eba138). **#22673 cherry-pick is INFEASIBLE** — model-framework generation gap (see finding below). The cheap-port path is dead; landing Qwen MTP needs reimplementation or a fresh-upstream build.
+
+## ⛔ Port feasibility finding (2026-06-22) — cherry-pick is NOT viable
+
+Attempted the full #22673 cherry-pick + resolved all 25 conflicts (spec subsystem adopted upstream cleanly: enum rename `DRAFT→DRAFT_SIMPLE` / `EAGLE3→DRAFT_EAGLE3` / `PART_BOUNDED→RS`, added `DRAFT_MTP`; dropped our experimental `tree`-spec — not production-critical). **The build then failed on a STRUCTURAL wall**, not enum/glue:
+
+- **Our fork**: models use the old `struct llm_build_<arch> : public llm_graph_context` graph-builder pattern.
+- **Upstream #22673**: models are `struct llama_model_<arch> : public llama_model_base` classes (`load_arch_hparams`/`build_arch_graph`/nested `graph`). This is a **major model-architecture refactor** that happened somewhere in the **~901 commits our fork is behind**; #22673's Qwen MTP graph is written against it.
+- Result: `models.h:140 error: expected class-name before '{'` + every model class "does not have field `llama_model_base`" / "marked override but does not override" — the MTP graph code cannot be lifted into our `llm_build_*` framework. Confirmed: ours `struct llm_build_llama : public llm_graph_context` vs upstream `struct llama_model_llama : public llama_model_base`.
+
+**Conclusion**: Qwen MTP (#22673) is **not portable to production-consolidated-v5 by cherry-pick.** The broken resolution was reverted; branch is back at the clean #22400 checkpoint.
+
+### Realistic options (pick when there's a deployable Qwen MTP need — currently none, see refresh handoff)
+1. **Use a FRESH upstream-master llama.cpp build** for any Qwen-MTP need (it already has the new model framework + MTP + EAGLE3). Cost: loses our fork's CPU/NUMA kernel optimizations → not apples-to-apples for throughput, but trivial to stand up. **Recommended** for the low-ROI infra case.
+2. **Reimplement the Qwen MTP graph in our `llm_build_qwen35*` idiom** (framework-aware translation of just the MTP nextn layer + the spec-dec driver). Moderate, focused — but only worth it if a Qwen MTP model becomes deployable (none is: gemma-4-31B/Qwen3.5-9B are Pareto-dominated; Qwen3.6-MoE-MTP is dead on CPU).
+3. **Rebase/catch-up the fork ~901 commits to adopt upstream's model framework** — large, separate effort; out of scope for MTP alone.
+
+**#22400 (GDN seq_rm) note**: its commit was resolved forward-compat toward #22673 so it does NOT build standalone (references `DRAFT_MTP`). Since #22673 is shelved, if the GDN backend is ever wanted standalone, re-cherry-pick #22400 resolving its 2 conflicts to the OURS side (drop the MTP-context glue). No current consumer.
 **Categories**: speculative_decoding, hardware_optimization, local_inference
 **Parent**: [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) · [`inference-acceleration-index.md`](inference-acceleration-index.md)
 **Work location**: `/mnt/raid0/llm/llama.cpp-experimental`, branch `feature/mtp-qwen36-port` (NEVER production `/mnt/raid0/llm/llama.cpp`).
