@@ -206,7 +206,7 @@ ik_llama.cpp main does not support `gemma4_mtp` arch. PR #1744 (DRAFT, opened 20
 | Variant | Baseline | + MTP draft-max=3 | Acceptance | Speedup | Verdict |
 |---------|----------|-------------------|------------|---------|---------|
 | **Gemma 4 31B Dense** Q4_K_M target + Q8_0 drafter | 7.05 t/s | **21.02 t/s** | 84.3% per-token (91/108), 100% per-batch (36/36) | **2.98×** | architect-tier candidate |
-| **Gemma 4 26B-A4B MoE** Q4_K_M target + in-house Q8_0 drafter | 41.49 t/s | 44.12 t/s | 58.7% per-token (81/138), 73.9% per-batch (34/46) | 1.06× | tier X — slower than existing Coder-30B-A3B 49.1 t/s |
+| **Gemma 4 26B-A4B MoE** Q4_K_M target + Google official assistant-head Q8_0 drafter (GGUF-converted in-house) | 41.49 t/s | 44.12 t/s | 58.7% per-token (81/138), 73.9% per-batch (34/46) | 1.06× | tier X — slower than existing Coder-30B-A3B 49.1 t/s |
 | (PR #1744 author's mixed-CPU/GPU bench, threads=24, ngl=99, batch=128) | 21.7 | 48.6 | 74% | 2.3× | reference |
 
 ### Two structural findings

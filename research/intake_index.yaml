@@ -36255,3 +36255,188 @@
   - autopilot-continuous-optimization.md
   - routing-and-optimization-index.md
   handoffs_created: []
+- id: intake-721
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF
+  source_type: repo
+  title: unsloth/Qwen3.6-35B-A3B-MTP-GGUF — native NEXTN/MTP head bundled in GGUF
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-06-22'
+  credibility_score: null
+  key_claims:
+  - Qwen3.6-35B-A3B ships a native NEXTN/MTP head; unsloth bundles it in-GGUF (no separate draft file).
+  - 'Runnable via mainline llama.cpp PR #22673 `--spec-type draft-mtp` (CPU build `-DGGML_CUDA=OFF`).'
+  - Backs our frontdoor + coder_escalation roles (both Qwen3.6-35B-A3B Q8, currently no drafter).
+  reported_results:
+  - Vendor ~1.4-2.2x (GPU); MoE batch=1 ~1.06x on CPU-class evidence (observations)
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: Native MTP head + bundled GGUF is new to us, but the pure-MoE-A3B target is the worst CPU-MTP case.
+  relevance_justification: Would unblock two production roles (frontdoor/coder); high relevance, low expected CPU payoff.
+  verdict_justification: 'worth_investigating: needs the hard PR #22673 experimental port + a CPU gate-bench; MoE-on-CPU skepticism (26B-A4B measured 1.06x). Quant parity (prod Q8 vs MTP-GGUF Q4) must be controlled.'
+  notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created:
+  - speculative-decoding-mtp-refresh.md
+- id: intake-722
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/Qwen3.5-122B-A10B-MTP-GGUF
+  source_type: repo
+  title: unsloth/Qwen3.5-122B-A10B-MTP-GGUF — MTP head for the architect model (GDN hybrid)
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: input
+  verdict: not_applicable
+  ingested_date: '2026-06-22'
+  credibility_score: null
+  key_claims:
+  - Qwen3.5-122B-A10B ships a native MTP head; unsloth bundles a GGUF.
+  - Our architect_general runs this model with an external 0.8B draft (spec-dec effectively disabled).
+  reported_results:
+  - MTP-1 on the Qwen3.5 hybrid family already measured 0.56x (net slowdown) — autopilot/program.md:325
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - glm51-reap-cpu-evaluation.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: MTP head exists but the architecture defeats it.
+  relevance_justification: 'Low: architect is a 75% Delta-Net (GDN) recurrent hybrid; recurrent layers don''t benefit from batched speculation.'
+  verdict_justification: 'not_applicable: MTP-1 already measured 0.56x net-negative on this hybrid family (architectural wall, not NUMA/-np). Do not pursue.'
+  notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created:
+  - speculative-decoding-mtp-refresh.md
+- id: intake-723
+  arxiv_id: null
+  url: https://huggingface.co/unsloth/Qwen3.5-9B-MTP-GGUF
+  source_type: repo
+  title: unsloth/Qwen3.5-9B-MTP-GGUF — dense Qwen MTP head (CPU-MTP candidate)
+  categories:
+  - speculative_decoding
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-06-22'
+  credibility_score: null
+  key_claims:
+  - Qwen3.5-9B is pure-dense attention (no recurrent layers) — the promising CPU-MTP regime.
+  - We own Qwen3.5-9B GGUF (Q4/Q6/Q8) locally; MTP-GGUF not yet downloaded.
+  - Not currently in the production stack — a research/gate-bench candidate.
+  reported_results:
+  - Dense models ~1.7-2x+ spec-dec (observations); not yet benched on our CPU
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: Dense Qwen MTP head we don't yet run; cleanest non-gemma dense CPU-MTP datapoint.
+  relevance_justification: 'Medium: dense = best CPU-MTP case, but the model is not in the stack — value is the proof-point, not a deployed role yet.'
+  verdict_justification: 'worth_investigating: download + bench on the WS5 experimental binary (--spec-type draft-mtp); dense should beat the MoE cases.'
+  notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created:
+  - speculative-decoding-mtp-refresh.md
+- id: intake-724
+  arxiv_id: null
+  url: https://huggingface.co/google/gemma-4-31B-it-assistant
+  source_type: repo
+  title: google/gemma-4-31B-it-assistant — official dense gemma-4-31B MTP drafter (on disk)
+  categories:
+  - speculative_decoding
+  - local_inference
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: input
+  verdict: adopt_component
+  ingested_date: '2026-06-22'
+  credibility_score: null
+  key_claims:
+  - Google's official 4-layer MTP assistant drafter for the DENSE gemma-4-31B (Apache-2.0).
+  - Both target (gemma-4-31B-it-Q4_K_M, 18GB) and drafter (assistant-Q8_0, 491MB) are ALREADY on disk.
+  - Runs on our existing ik_llama.cpp production-gemma4-mtp fork — NO kernel port needed.
+  reported_results:
+  - 'Prior directional CPU bench: 7.05->21.02 t/s (~2.98x), 84.3% accept — Tier B, single-run, quality-UNVERIFIED'
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: The dense sibling of our deployed 26B-A4B drafter; dense path is the strongest CPU-MTP candidate and is bench-ready today.
+  relevance_justification: 'High: on-disk, no-port, prior ~3x directional; the primary gate-bench to re-confirm (r>=3 + quality) before any role adoption.'
+  verdict_justification: 'adopt_component (for evaluation): re-bench properly; if speed survives noise AND quality passes, it is a candidate dense tier. Not yet a deployed role.'
+  notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created:
+  - speculative-decoding-mtp-refresh.md
+- id: intake-725
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/22673
+  source_type: repo
+  title: 'llama.cpp / ik_llama.cpp MTP + EAGLE-3 upstream support (PRs #22673/#22400/#23398/#18039, ik #1744)'
+  categories:
+  - speculative_decoding
+  - hardware_optimization
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: adopt_patterns
+  ingested_date: '2026-06-22'
+  credibility_score: null
+  key_claims:
+  - 'Mainline llama.cpp merged generalized MTP (PR #22673, +dep #22400 GDN seq_rm) and gemma-4 MTP (#23398); EAGLE-3 via #18039.'
+  - Our production-consolidated-v5 fork has none of the Qwen MTP / EAGLE-3 paths (--spec-type = ngram-only; EAGLE3 is an inert stub).
+  - 'This session ported #22400 cleanly into llama.cpp-experimental (feature/mtp-qwen36-port, b139eba138); #22673 = 25-file speculative-subsystem reconciliation remaining.'
+  reported_results:
+  - '#22400 cherry-pick: 26/28 files auto-merged, 2 conflicts resolved; #22673: 25 conflicted files (core common/speculative.cpp +1980)'
+  cross_references:
+    chapters: []
+    handoffs:
+    - speculative-decoding-mtp-refresh.md
+    - llama-cpp-dsa-contribution.md
+    - inference-acceleration-index.md
+    experiments: []
+    intake_entries: []
+  novelty_justification: The upstream MTP/EAGLE capability is genuinely new to our fork; the binding constraint is porting it, not the heads existing.
+  relevance_justification: 'High: gates whether ANY Qwen MTP head is runnable for us; #22400 already ported, #22673 is the remaining work.'
+  verdict_justification: 'adopt_patterns/component: porting in progress on the experimental branch; EAGLE-3 (#18039) deferred to the MI210 GPU (~July). Production untouched.'
+  notes: Operator-directed MTP/spec-dec review 2026-06-22; tracked in handoffs/active/speculative-decoding-mtp-refresh.md. Web/vendor numbers are observations (MEASUREMENT.md).
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
+  - inference-acceleration-index.md
+  handoffs_created:
+  - speculative-decoding-mtp-refresh.md

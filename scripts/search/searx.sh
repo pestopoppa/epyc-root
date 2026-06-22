@@ -15,7 +15,13 @@ set -euo pipefail
 
 SEARX_URL="${SEARX_URL:-http://localhost:8888}"
 TOP="${SEARX_TOP:-10}"
-ENGINES=""
+# WS1 default engine set: only engines that are responsive from our egress IP.
+# duckduckgo (CAPTCHA), qwant (access denied) and startpage (Suspended: CAPTCHA)
+# block our IP and are excluded. bing is the reliable workhorse; wikipedia is
+# clean; brave/mojeek are best-effort (intermittently rate-limited) but harmless
+# extras since bing carries results. Override with --engines or SEARX_ENGINES.
+DEFAULT_ENGINES="brave,bing,mojeek,wikipedia"
+ENGINES="${SEARX_ENGINES:-$DEFAULT_ENGINES}"
 
 if [[ $# -lt 1 ]]; then
   echo "usage: $0 '<query>' [--top N] [--engines e1,e2,...]" >&2
@@ -69,6 +75,11 @@ if ! echo "$RESPONSE" | jq -e '(.results | type) == "array"' >/dev/null 2>&1; th
   exit 2
 fi
 
+# WS1: base success on the actual results array, NOT on .number_of_results.
+# SearxNG frequently reports number_of_results: 0 while .results is populated;
+# a naive caller keying on that field wrongly concludes failure.
+RESULT_COUNT=$(echo "$RESPONSE" | jq '(.results | length)')
+
 # Flatten top-N results: title | url | score | engines | content snippet.
 echo "$RESPONSE" | jq --argjson top "$TOP" '
   {
@@ -84,3 +95,11 @@ echo "$RESPONSE" | jq --argjson top "$TOP" '
     }]
   } | . + {number_of_results: (.results | length)}
 '
+
+# A valid JSON response with an empty results array is a soft "no results"
+# (exit 0), NOT a malformed/unreachable failure. Note it on stderr so the
+# caller can decide whether to retry with --engines or fall back to WebSearch.
+if [[ "$RESULT_COUNT" -eq 0 ]]; then
+  echo "searx.sh: 0 results for query (engines=${ENGINES:-default}). Valid response, no hits — try --engines or WebSearch." >&2
+fi
+exit 0
