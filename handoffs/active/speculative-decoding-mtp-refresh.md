@@ -45,6 +45,22 @@ Decide whether to adopt new MTP (multi-token-prediction) speculative decoding fo
 **Findings**: dense gemma-4-31B CPU MTP gives a **real ~1.84×** (draft_max=3 optimal; 3 > 4 > 2) — confirming the dense thesis vs MoE's ~1.06×. The prior `gemma4-mtp-drafter-evaluation` 2.98× (7.05→21.02, single-run) does **not** reproduce on a clean host: clean baseline is higher (9.14 vs 7.05) and MTP lower (16.8 vs 21.0), so realized speedup is ~1.84×, not ~3×. Acceptance rate was NOT captured (the `/completion` timings JSON didn't expose draft_n/accepted under the probed keys — needs the server spec-stats path or `llama-speculative`, which currently SIGABRTs on this fork's gemma4-MTP path → use server). Numbers are a clean measurement but single-prompt/r=2 — a Tier-B gate still needs multi-prompt reps + quality byte-exactness.
 
 **Implication for the port (T2)**: a ~1.84× dense win justifies finishing the #22673 Qwen MTP port to test dense **Qwen3.5-9B** (T3) — but it does **not** rescue the MoE cases (Qwen3.6-A3B), where the wall is expert-verification overhead, not draft quality.
+
+### Hard-T2 verification + quality (2026-06-22, host quiesced)
+
+Re-ran on two substantive checkable tasks (n=384, temp=0, seed=42), capturing output text + diffing baseline vs MTP:
+
+| task | baseline t/s | MTP (dm=3) t/s | speedup | output correct? | MTP==baseline? |
+|---|---|---|---|---|---|
+| P1 Manacher's algorithm (Python) | 10.21 | **26.01** | **2.55×** | ✅ valid O(n) Manacher's | ✗ differs (valid alt impl) |
+| P2 primes<100 + sum | 10.24 | **32.68** | **3.19×** | ✅ exact (25 primes, sum 1060) | ✅ byte-identical |
+
+**The 16.8 t/s was not variance — on real structured/code output MTP is *faster* (26–32 t/s), because predictable tokens (code, `2, 3, 5, 7…`) draft at very high acceptance** (generic prose accepts less, hence the lower 1.84× there). Baseline dense 31B ≈ 10 t/s; MTP 26–32 t/s.
+
+**Quality / losslessness (important correction)**: MTP output is **correct and sensible** (P2 exact answer; P1 valid Manacher's), but it is **distribution-lossless, NOT byte-exact greedy**. P1 diverged from sequential baseline at a near-tie comment token (“symmetry”→“mirroring”) then produced a different-but-equally-valid implementation — expected because the batched verification forward pass has different FP rounding than token-by-token decode, flipping greedy near-ties. This **supersedes the prior `gemma4-mtp-drafter-evaluation` “byte-exact under Leviathan verifier” claim** (too strong). Acceptable for chat/architect roles (output valid); do not rely on bit-determinism.
+
+### Possible architect_general candidacy (flag, do NOT auto-promote)
+gemma-4-31B dense at **26–32 t/s with valid output** is a compelling speed profile vs the current architect **Qwen3.5-122B-A10B (~12 t/s)**. BUT promotion is a **capability decision, not speed**: a 31B replacing a 122B must first win (or acceptably tie) a head-to-head **quality eval on architect-tier tasks** (the eval-tower suite) vs the 122B incumbent. Gate: run that A/B before any role swap. Speed alone is necessary, not sufficient.
 - [ ] **T2 (WS5 port) — finish the Qwen MTP kernel port** in `llama.cpp-experimental` (branch `feature/mtp-qwen36-port`). #22400 DONE (commit b139eba138); remaining = reconcile **PR #22673** (25 conflicted files). **Full context + conflict map + task breakdown: [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md).** Gated behind T1 (don't invest until dense MTP proves out on CPU).
 - [ ] **T3 (after T2 binary) — gate-bench Qwen3.5-9B dense** (Block B) — the cleanest non-gemma dense CPU-MTP datapoint. Download `unsloth/Qwen3.5-9B-MTP-GGUF` first.
 - [ ] **T4 (after T2 binary, low EV) — gate-bench Qwen3.6-35B-A3B** (Block C) for frontdoor/coder; mind the Q8(prod)-vs-Q4(MTP-GGUF) quant-parity caveat + MoE-on-CPU skepticism.
