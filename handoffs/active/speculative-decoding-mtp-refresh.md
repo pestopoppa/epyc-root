@@ -59,8 +59,21 @@ Re-ran on two substantive checkable tasks (n=384, temp=0, seed=42), capturing ou
 
 **Quality / losslessness (important correction)**: MTP output is **correct and sensible** (P2 exact answer; P1 valid Manacher's), but it is **distribution-lossless, NOT byte-exact greedy**. P1 diverged from sequential baseline at a near-tie comment token (“symmetry”→“mirroring”) then produced a different-but-equally-valid implementation — expected because the batched verification forward pass has different FP rounding than token-by-token decode, flipping greedy near-ties. This **supersedes the prior `gemma4-mtp-drafter-evaluation` “byte-exact under Leviathan verifier” claim** (too strong). Acceptable for chat/architect roles (output valid); do not rely on bit-determinism.
 
-### Possible architect_general candidacy (flag, do NOT auto-promote)
-gemma-4-31B dense at **26–32 t/s with valid output** is a compelling speed profile vs the current architect **Qwen3.5-122B-A10B (~12 t/s)**. BUT promotion is a **capability decision, not speed**: a 31B replacing a 122B must first win (or acceptably tie) a head-to-head **quality eval on architect-tier tasks** (the eval-tower suite) vs the 122B incumbent. Gate: run that A/B before any role swap. Speed alone is necessary, not sufficient.
+### Promotion decision (DATA-DRIVEN, 2026-06-22): do NOT promote gemma-4-31B — Pareto-dominated
+We already HAVE the quality benchmarks (`epyc-inference-research/benchmarks/results/reviews/summary.csv`), and MTP is distribution-lossless so the MTP-variant's measured score is the deploy-relevant number. Verdict: gemma-4-31B wins **no** quality×speed frontier vs current incumbents:
+
+| | gemma-4-31B MTP | Qwen3.5-122B (architect) | Qwen3.6-35B (frontdoor) | gemma-4-26B-A4B (worker) |
+|---|---|---|---|---|
+| quality | 90% (164/183) | 93% (196/210) | 94% | 90% + 96% tool |
+| agentic | 23/30 | 30/30 | — | — |
+| long_context | none measured | 24/27 | 27/27 | — |
+| speed (MTP) | 26–32 t/s | 12.3 | 24.3 | 44.7 |
+
+- vs **architect** Qwen3.5-122B: −3pp overall, **−7 agentic**, **no long-context data** (the architect's defining need) → speed can't compensate. No swap.
+- vs **frontdoor/coder** Qwen3.6-35B (94%): lower quality, similar speed. No win.
+- vs **worker** gemma-4-26B-A4B (90%): equal quality but the worker is **faster** (44.7 vs 26–32). No win.
+
+**Conclusion**: keep the stack as-is; gemma-4-31B has no deployment niche. The MTP work's lasting value is **validating dense-CPU-MTP (2.5–3.2×)**, which justifies the Qwen3.5-9B dense path (T3) — not a gemma-31B role. (Per-suite source: progress 2026-05-06 / 2026-05-08; summary.csv:18 gemma-4-31B-MTP, :131 Qwen3.5-122B. Speed: clean 2026-06-22 bench — note the old summary.csv 4.7 t/s for gemma-4-31B-MTP was a stale/contended measurement, superseded by the clean 26–32 t/s here.)
 - [ ] **T2 (WS5 port) — finish the Qwen MTP kernel port** in `llama.cpp-experimental` (branch `feature/mtp-qwen36-port`). #22400 DONE (commit b139eba138); remaining = reconcile **PR #22673** (25 conflicted files). **Full context + conflict map + task breakdown: [`qwen-mtp-llamacpp-port.md`](qwen-mtp-llamacpp-port.md).** Gated behind T1 (don't invest until dense MTP proves out on CPU).
 - [ ] **T3 (after T2 binary) — gate-bench Qwen3.5-9B dense** (Block B) — the cleanest non-gemma dense CPU-MTP datapoint. Download `unsloth/Qwen3.5-9B-MTP-GGUF` first.
 - [ ] **T4 (after T2 binary, low EV) — gate-bench Qwen3.6-35B-A3B** (Block C) for frontdoor/coder; mind the Q8(prod)-vs-Q4(MTP-GGUF) quant-parity caveat + MoE-on-CPU skepticism.
