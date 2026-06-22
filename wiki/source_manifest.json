@@ -1,18 +1,18 @@
 {
   "by_type": {
     "docs": 14,
-    "handoff-active": 98,
+    "handoff-active": 99,
     "handoff-blocked": 1,
     "handoff-completed": 136,
     "progress": 175,
     "research": 121
   },
   "kind": "project-wiki-source-manifest",
-  "last_compile": "2026-06-21T00:08:11Z",
+  "last_compile": "2026-06-22T10:08:57Z",
   "mode": "full",
-  "scan_time": "2026-06-22T10:04:48Z",
+  "scan_time": "2026-06-22T10:37:24Z",
   "schema_version": 1,
-  "source_set_hash": "3afaa26e5e96a9042f96f78109f1080a0f64467d375c85e86bedbbba26406e66",
+  "source_set_hash": "fa6ddab60bc6fdb99862dfb3bee540e1e11bcd15da9a0ad9b53b9b000ccd80c8",
   "sources": [
     {
       "content_hash": "f0506c861200715c31f630966dd5881b4dcff41813aa8d68f3dadd3f1eda1c43",
@@ -551,6 +551,14 @@
       "type": "handoff-active"
     },
     {
+      "content_hash": "cf023fadea40f27600f6ceaa9f776391a9c27e50bee91df19fda0d210a2e797c",
+      "modified": "2026-06-22T10:36:58Z",
+      "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "size": 6801,
+      "title": "Qwen MTP llama.cpp Port (PR #22673 + #22400)",
+      "type": "handoff-active"
+    },
+    {
       "content_hash": "f57397bdfd3b59c8266776267a7de46dc7b4fde7c48d1e5b0b16eea7669f7f14",
       "modified": "2026-06-20T05:21:00Z",
       "path": "handoffs/active/qwen36-27b-cpu-feasibility.md",
@@ -663,10 +671,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "793df377718dbcb4ccc926d6515cf23ed75287e459ebc6c7d07fe29e43304c04",
-      "modified": "2026-06-22T10:01:32Z",
+      "content_hash": "413d8bb68e93c0d841f41b6728dc91a96aab8ffabaa672543318674dcb7b828b",
+      "modified": "2026-06-22T10:37:09Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 9004,
+      "size": 9089,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -4375,5 +4383,5 @@
       "type": "docs"
     }
   ],
-  "total_new": 545
+  "total_new": 546
 }
